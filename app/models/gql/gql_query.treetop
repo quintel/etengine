@@ -1,0 +1,102 @@
+##
+# GQL Query Grammar:
+# Parses Excel like queries to make calculations with the graph.
+#
+# Limitations: Does not support whitespace within queries, as removing all whitespace 
+#  in a query before parsing it, is more efficient and effective.
+#
+# Problems: 
+# - 2010-05-25: We have 2 graphs (present,future) that we need to query independently. Havent found 
+#   a way to tell the grammar which graph it should use, so it calls Gql::GqlQuery.api_methods.
+#
+grammar GqlQuery
+  rule value_term
+    value_function '(' leading:value_term trailing:(separator value_term)* args:(argument_separator value)* ')' {
+      def result(scope)
+        value_terms = merge_value_terms(leading, trailing)
+        params = args.elements.map { |a| a.value.result(scope) } if args
+        value_function.result( value_terms, params, scope )
+      end
+
+      def debug(scope, msg = [])
+        values = [leading.debug(scope, msg)]
+        values += trailing.elements.map { |lead| lead.value_term.debug(scope, msg) } if trailing
+        params = args.elements.map { |a| a.value.debug(scope, msg) } if args
+        value_function.debug( values, params, scope, msg )
+      end
+
+      # Returns the value terms of a function. 
+      # 
+      #   V(foo, bar, baz ; some_method )
+      #   => [foo, bar, baz]
+      #
+      def merge_value_terms(leading, trailing)
+        values = [leading]
+        values += trailing.elements.map(&:value_term) if trailing
+        values
+      end
+    }
+    /
+    value
+    #/ 
+  end
+
+  rule value_function
+    [A-Z_]* <Gql::GqlQuerySyntaxNode>
+  end
+
+  ###################################
+  # Atoms
+  ###################################
+
+  rule argument_separator
+    [;]
+  end
+
+  rule separator
+    [,]
+  end
+
+  rule value
+    number / text / constant 
+  end
+
+  rule text
+    [a-z] [a-zA-Z0-9_\-\/\*\+\s\[\]|<>=\&]* {
+      def result(scope = nil)
+        text_value
+      end
+
+      def debug(scope = nil, msg)
+        msg << "#{result} - #{text_value}"
+        text_value
+      end
+    }
+  end
+
+  rule constant
+    [A-Z_]* {
+      def result(scope = nil)
+        text_value.constantize
+      end
+
+      def debug(scope = nil, msg)
+        msg << "#{result} - #{text_value}"
+        result
+      end
+    }
+  end
+
+  rule number
+    [-]? [0-9\.]+ {
+      def result(scope = nil)
+        text_value.to_f
+      end
+
+      def debug(scope = nil, msg)
+        msg << "#{result} Number"
+        result
+      end
+    }
+  end
+end
