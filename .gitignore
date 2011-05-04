@@ -48,3 +48,7 @@ vendor/bundle
 .bundle
 public/sprockets
 *.tmproj
+.powrc
+.rvmrc
+.tmtags
+.DS_Store
