@@ -1,3 +1,7 @@
+class Constraint < ActiveRecord::Base
+  belongs_to :gquery
+end
+
 class AddGqueriesForPolicies < ActiveRecord::Migration
   def self.up
     add_column :constraints, :gquery_id, :integer
