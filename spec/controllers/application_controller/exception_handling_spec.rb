@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 class RescueController < ApplicationController
   def method_not_implemented
     raise ActionController::NotImplemented.new
@@ -10,12 +9,10 @@ class RescueController < ApplicationController
     raise ActionController::MethodNotAllowed.new
   end
   
-
   def record_not_found
     raise ActiveRecord::RecordNotFound.new
   end
    
-  
   def routing_error
     raise ActionController::RoutingError.new('test')
   end
@@ -24,7 +21,6 @@ class RescueController < ApplicationController
     raise "Some random error"
   end
 end
-
 
 describe RescueController do
   # TODO jaap fix this. breaks the test
@@ -48,14 +44,12 @@ describe RescueController do
       response.response_code.should == 405
     end
   
-  
     it "handles a method that raises an ActiveRecordNotFound error with an NotFound template" do
       get :method_not_allowed
       # response.layout.should == "layouts/pages"
       response.response_code.should == 405
     end
   end  
-  
   
   context "methods that should handle 404 error" do
     it "handles a method that raises an ActiveRecordNotFound error with an NotFound template" do
@@ -71,15 +65,10 @@ describe RescueController do
     end
   end
   
-  
   it "should handle a RuntimeError with a 500 error" do
-
     #$TESTING = true
     #get :runtime_error
     # controller.layout.should == "layouts/pages"
     #response.response_code.should == 500
   end
-  
-  
-  
 end

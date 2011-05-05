@@ -6,7 +6,7 @@ describe Api::ApiScenariosController do
     stub_etm_layout_methods!
     Current.stub_chain(:gql, :query).and_return Gql::GqueryResult.create([[2010,1],[2010,2]])
   end
-  
+
   describe "index" do
     it "should render" do
       get 'index'
@@ -44,10 +44,11 @@ describe Api::ApiScenariosController do
     end
 
     it "should get results" do
-      Gquery.stub!(:get).and_return(mock_model(Gquery, :key => 'gquery_key'))
-      get :show, :id => @api_scenario.api_session_key, 'result[]' => 'gquery_key', 'result[]' => 'gquery_key2'
+      Gquery.stub!(:get).with('gquery_key').and_return(mock_model(Gquery, :key => "gquery_key"))
+      Gquery.stub!(:get).with('gquery_key2').and_return(mock_model(Gquery, :key => "gquery_key2"))
+      Current.instance.stub_chain(:gql, :query).and_return(0.0)
+      get :show, :id => @api_scenario.api_session_key, :result => ['gquery_key', 'gquery_key2']
       assigns(:results).values.should have(2).items
     end
   end
-
 end
