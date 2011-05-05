@@ -52,3 +52,4 @@ public/sprockets
 .rvmrc
 .tmtags
 .DS_Store
+coverage/*

@@ -63,6 +63,7 @@ group :test do
   gem 'selenium-client', '>= 1.2.18'
   gem 'test-unit', '1.2.3'
   gem 'libxml-ruby'
+  gem 'simplecov', :require => false
 end
 
 
