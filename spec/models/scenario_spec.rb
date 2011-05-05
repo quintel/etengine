@@ -199,54 +199,6 @@ describe Scenario do
     end
   end
 
-
-  context "municipality" do
-    describe "#input_element_scaled_for_municipality?" do
-      before do
-        @input_element = mock_model(InputElement)
-        @input_element.stub_chain(:slide, :name).and_return('slide_name')
-      end
-      context "input_elements slide is in supply" do
-        before  { @input_element.stub_chain(:slide, :controller_name).and_return('supply') }
-        specify { @scenario.input_element_scaled_for_municipality?(@input_element).should be_true }
-      end
-      context "input_elements slide is not in supply" do
-        before  { @input_element.stub_chain(:slide, :controller_name).and_return('demand')}
-        specify { @scenario.input_element_scaled_for_municipality?(@input_element).should be_false }
-      end
-      context "input_elements slide is nil" do
-        before  { @input_element.stub!(:slide).and_return(nil)}
-        specify { @scenario.input_element_scaled_for_municipality?(@input_element).should be_false }
-      end      
-    end
-  end
-
-  describe "#scale_factor_for_municipality" do
-    context "input_element is locked_for_municipalities" do
-      before { @input_element = mock_model("InputElement", :locked_for_municipalities => true)}
-      specify { @scenario.scale_factor_for_municipality(@input_element).should be_nil}
-    end
-    context "and not locked_for_municipalities" do
-      before { @input_element = mock_model("InputElement", :locked_for_municipalities => false)}
-
-      context "and scaled for municipality" do
-        before do
-          @scenario.should_receive(:input_element_scaled_for_municipality?).with(any_args).and_return(true) 
-          @scenario.should_receive(:area_region).and_return(mock_model("Area", :current_electricity_demand_in_mj => 30.0))
-          @scenario.should_receive(:area_country).and_return(mock_model("Area", :current_electricity_demand_in_mj => 50.0))
-        end
-        specify { @scenario.scale_factor_for_municipality(@input_element).should be_within(0.1).of(50.0/30.0)}
-      end
-
-      context "and not scaled for municipality" do
-        before do
-          @scenario.should_receive(:input_element_scaled_for_municipality?).with(any_args).and_return(false) 
-        end
-        specify { @scenario.scale_factor_for_municipality(@input_element).should be_nil }
-      end
-    end
-  end
-
   describe "#add_update_statements" do
     before do
       @scenario.update_statements = {'converters' => {
@@ -359,21 +311,6 @@ describe Scenario do
     its(:number_of_existing_households) { should == 130}
     its(:user_values) { should == {}}
     its(:update_statements) { should == {}}
-  end
-  
-  
-  
-  describe "#attachments" do
-    before do
-      @file = File.new(File.join("spec", "fixtures", "attachments", "screenshot.png"))
-    end
-    context "attachments" do
-      it "should save as attachment" do
-        @scenario = Scenario.default
-        attachment = @scenario.attachments.build(:file => @file)
-        attachment.save.should be true
-      end
-    end
   end
   
   describe "Scenario preset" do
