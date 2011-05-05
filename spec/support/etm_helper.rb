@@ -4,8 +4,6 @@ module EtmHelper
   def stub_etm_layout_methods!
     ApplicationController.stub!(:ensure_valid_browser)
     Current.stub!(:graph)
-    constraint = mock()
-    Constraint.stub_chain(:all, :each_with_index).and_return(constraint)    
   end
   
   def logged_in_user

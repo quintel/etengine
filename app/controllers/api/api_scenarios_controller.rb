@@ -3,7 +3,6 @@ class Api::ApiScenariosController < ApplicationController
 
   before_filter :find_model, :only => [:update, :show, :destroy]
 
-
   def index
     @api_scenarios = ApiScenario.order('updated_at DESC')
 
@@ -29,11 +28,11 @@ class Api::ApiScenariosController < ApplicationController
   def show
     Current.scenario = @api_scenario
     update_scenario
-    
+    @results = results
     @json = {
-      'result' => results,
+      'result'   => @results,
       'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :lce_settings]),
-      'errors' => @api_scenario.api_errors(test_scenario?)
+      'errors'   => @api_scenario.api_errors(test_scenario?)
     }
 
     respond_to do |format|
@@ -63,39 +62,35 @@ class Api::ApiScenariosController < ApplicationController
     end
   end
 
-private
+  private
 
-  def test_scenario?
-    params[:id] == 'test'
-  end
+    def test_scenario?
+      params[:id] == 'test'
+    end
 
-  def new_attributes
-    attributes = Scenario.default_attributes.merge(:title => "API")
-    attributes[:api_session_key] = test_scenario? ? 'test' : Time.now.to_i
-    attributes.merge!(params[:settings]) if params[:settings]
-    attributes
-  end
+    def new_attributes
+      attributes = Scenario.default_attributes.merge(:title => "API")
+      attributes[:api_session_key] = test_scenario? ? 'test' : Time.now.to_i
+      attributes.merge!(params[:settings]) if params[:settings]
+      attributes
+    end
 
-  def results
-    @gqueries = params[:result].andand.inject({}) do |hsh, key|
-      if gquery = (Gquery.get(key) rescue nil)
-        hsh.merge(gquery.key => Current.gql.query("Q(#{gquery.key})"))
-      else
-        hsh.merge(key => Current.gql.query(key))
+    def results
+      @gqueries = params[:result].andand.inject({}) do |hsh, key|
+        if gquery = (Gquery.get(key) rescue nil)
+          hsh.merge(gquery.key => Current.gql.query("Q(#{gquery.key})"))
+        else
+          hsh.merge(key => Current.gql.query(key))
+        end
       end
     end
-  end
-
-  def update_scenario
-    
-    Current.scenario.reset! if params[:reset]
-    Current.scenario.update_attributes!(params[:settings]) if params[:settings]
-
-    if params[:input]
-      # update settings
-      Current.scenario.update_input_elements_for_api(params[:input]) 
-      # Save scenario with new user_values, except it is a test version
-      Current.scenario.save unless test_scenario?
+  
+    def update_scenario
+      Current.scenario.reset! if params[:reset]
+      if params[:input]
+        Current.scenario.update_input_elements_for_api(params[:input])
+        # Save scenario with new user_values, except it is a test version
+        Current.scenario.save unless test_scenario?
+      end
     end
-  end
 end
