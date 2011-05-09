@@ -26,43 +26,31 @@ gem 'yui-compressor'
 
 
 # supporting gems
-gem 'annotate'
-gem 'tinder'
 gem 'hoptoad_notifier', '2.4.2'
-gem 'yard', '0.5.4'
 
 # system gems
 gem 'thinking-sphinx', '>=2.0.1'
-gem 'mysql' # Legacy support. Can be removed when all servers have changed their database.yml files.
 gem 'mysql2'
 gem 'memcache-client'
-gem 'mongrel', '1.2.0.pre2'
-
-#gem 'perftools.rb', :require => 'perftools'
-#gem 'visitbench', '0.3.0'
 
 # Optional gems that were commented in environment.rb
-# gem 'authlogic-oid'
 gem 'rubyzip', '0.9.4'
 gem "ruby-openid", :require => "openid"
 
+group :development do
+  gem 'yard', '0.5.4'
+end
 
 group :test, :development do
-  # It needs to be in the :development group to expose generators and rake tasks without having to type RAILS_ENV=test.
   gem "rspec-rails", "~> 2.1.0"
   gem 'ruby-debug19'
   gem 'watchr'
 end
 
 group :test do
-  gem "autotest"
-  #gem 'jasmine'
   gem 'nokogiri'
-
   gem 'factory_girl', '>= 1.2.3'
   gem 'webrat'
-  gem 'selenium-client', '>= 1.2.18'
-  gem 'test-unit', '1.2.3'
   gem 'libxml-ruby'
   gem 'simplecov', :require => false
 end
