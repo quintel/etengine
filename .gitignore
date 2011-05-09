@@ -53,3 +53,5 @@ public/sprockets
 .tmtags
 .DS_Store
 coverage/*
+spec/controllers/coverage/*
+spec/models/coverage/*
