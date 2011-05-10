@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
   after_filter :teardown_current
   
 
-  if Current.server_config.debug_qernel
+  if APP_CONFIG[:debug_qernel]
     rescue_from Qernel::QernelError, :with => :show_qernel_errors
     rescue_from Qernel::CalculationError, :with => :show_qernel_errors
     rescue_from Gql::GqlError, :with => :show_gql_errors

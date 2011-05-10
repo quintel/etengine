@@ -3,8 +3,6 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
-
-
 module Etm
   class Application < Rails::Application
 
@@ -46,13 +44,8 @@ module Etm
   end
 
   require 'lib/session_accessor'
-  require 'config/server_variables'
   require 'app/models/gql/gql_query' # parses and loads treetop file
   require 'vendor/plugins/hodel_3000_compliant_logger/lib/hodel_3000_compliant_logger'
-  
-  
-  
-  
   
   # see ApplicationController#browser for list of browser types
  
