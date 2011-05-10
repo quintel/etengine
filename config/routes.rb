@@ -10,6 +10,11 @@ Etm::Application.routes.draw do
     resources :api_scenarios
   end
 
+  scope '/api/v2', :module => 'api',  do
+    resources :api_scenarios
+    resources :scenarios, :only => [:index, :show]
+  end
+
   namespace :construction do
     match '/' => "blueprint_models#index", :as => 'start'
 
