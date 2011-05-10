@@ -8,7 +8,6 @@ gem 'sass', '~>3.1.1'
 
 gem 'authlogic', :git => 'git://github.com/odorcicd/authlogic.git', :branch => 'rails3'
 gem 'bluecloth'
-gem 'declarative_authorization', '0.5.1' # AWAY
 gem 'formtastic'
 gem 'http_status_exceptions', :git => 'git://github.com/japetheape/http_status_exceptions.git' 
 gem 'jammit'
@@ -25,7 +24,6 @@ gem 'sprockets'
 gem 'sprockets-rails'
 gem 'rack-sprockets'
 gem 'yui-compressor'
-
 
 # supporting gems
 gem 'hoptoad_notifier', '2.4.2'
