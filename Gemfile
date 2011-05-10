@@ -34,7 +34,6 @@ gem 'memcache-client'
 
 # Optional gems that were commented in environment.rb
 gem 'rubyzip', '0.9.4'
-gem "ruby-openid", :require => "openid" # AWAY
 
 group :development do
   gem 'yard', '0.5.4'
@@ -47,10 +46,8 @@ group :test, :development do
 end
 
 group :test do
-  gem 'nokogiri' #AWAY
   gem 'factory_girl', '>= 1.2.3'
   gem 'webrat'
-  gem 'libxml-ruby' # AWAY
   gem 'simplecov', :require => false
 end
 
