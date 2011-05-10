@@ -64,7 +64,7 @@ GEM
       actionpack (>= 2.3.7)
       activesupport (>= 2.3.7)
       i18n (>= 0.4.0)
-    haml (3.0.23)
+    haml (3.1.1)
     hoptoad_notifier (2.4.2)
       activesupport
       builder
@@ -140,6 +140,7 @@ GEM
     ruby_core_source (0.1.4)
       archive-tar-minitar (>= 0.5.2)
     rubyzip (0.9.4)
+    sass (3.1.1)
     simplecov (0.4.2)
       simplecov-html (~> 0.4.4)
     simplecov-html (0.4.4)
@@ -173,7 +174,7 @@ DEPENDENCIES
   default_value_for
   factory_girl (>= 1.2.3)
   formtastic
-  haml (= 3.0.23)
+  haml (~> 3.1.1)
   hoptoad_notifier (= 2.4.2)
   http_status_exceptions!
   jammit
@@ -191,6 +192,7 @@ DEPENDENCIES
   ruby-graphviz
   ruby-openid
   rubyzip (= 0.9.4)
+  sass (~> 3.1.1)
   simplecov
   sprockets
   sprockets-rails

@@ -3,10 +3,12 @@ source 'http://gems.github.com'
 
 gem 'rails', '3.0.7'
 gem 'jquery-rails'
-gem 'haml', '3.0.23'
+gem 'haml', '~>3.1.1'
+gem 'sass', '~>3.1.1'
+
 gem 'authlogic', :git => 'git://github.com/odorcicd/authlogic.git', :branch => 'rails3'
 gem 'bluecloth'
-gem 'declarative_authorization', '0.5.1'
+gem 'declarative_authorization', '0.5.1' # AWAY
 gem 'formtastic'
 gem 'http_status_exceptions', :git => 'git://github.com/japetheape/http_status_exceptions.git' 
 gem 'jammit'
@@ -16,7 +18,7 @@ gem 'treetop', '1.4.8'
 gem 'default_value_for'
 gem 'paperclip', '>= 2.3.8'
 gem 'acts_as_list'
-gem 'ancestry', '~> 1.2.3'
+gem 'ancestry', '~> 1.2.3' # AWAY
 
 # javascript
 gem 'sprockets'
@@ -35,7 +37,7 @@ gem 'memcache-client'
 
 # Optional gems that were commented in environment.rb
 gem 'rubyzip', '0.9.4'
-gem "ruby-openid", :require => "openid"
+gem "ruby-openid", :require => "openid" # AWAY
 
 group :development do
   gem 'yard', '0.5.4'
@@ -48,10 +50,10 @@ group :test, :development do
 end
 
 group :test do
-  gem 'nokogiri'
+  gem 'nokogiri' #AWAY
   gem 'factory_girl', '>= 1.2.3'
   gem 'webrat'
-  gem 'libxml-ruby'
+  gem 'libxml-ruby' # AWAY
   gem 'simplecov', :require => false
 end
 
