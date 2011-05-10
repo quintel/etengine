@@ -46,8 +46,6 @@ GEM
       activesupport (= 3.0.7)
     activesupport (3.0.7)
     acts_as_list (0.1.2)
-    ancestry (1.2.3)
-      activerecord (>= 2.2.2)
     archive-tar-minitar (0.5.2)
     arel (2.0.9)
     bluecloth (2.0.9)
@@ -166,7 +164,6 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_list
-  ancestry (~> 1.2.3)
   authlogic!
   bluecloth
   default_value_for

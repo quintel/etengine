@@ -17,7 +17,6 @@ gem 'treetop', '1.4.8'
 gem 'default_value_for'
 gem 'paperclip', '>= 2.3.8'
 gem 'acts_as_list'
-gem 'ancestry', '~> 1.2.3' # AWAY
 
 # javascript
 gem 'sprockets'
