@@ -4,6 +4,7 @@ class Data::DataController < ApplicationController
 
   before_filter :find_graph
 
+  # TODO: remove, this controller seems useless - PZ Wed 11 May 2011 10:33:25 CEST
   def start
     redirect_to data_converters_url(
       :blueprint_id => params[:blueprint_id] || 'latest', 
@@ -15,7 +16,6 @@ class Data::DataController < ApplicationController
       :blueprint_id => params[:blueprint_id] || 'latest', 
       :region_code => params[:region_code] || 'nl')
   end
-
 
 protected
 
