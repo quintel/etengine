@@ -1,6 +1,5 @@
 db/dumps
 db/sphinx
-config/tinder.rb
 config/development.sphinx.conf
 config/initializers/hoptoad.rb
 db/schema.rb
@@ -42,7 +41,6 @@ import/*
 public/assets
 etm_dev.sql
 public/doc
-config/tinder.rb
 vendor/bundle
 .bundle
 public/sprockets
