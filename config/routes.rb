@@ -76,22 +76,19 @@ Etm::Application.routes.draw do
   end
 
   namespace :admin do
-    match 'carrier_datas/update_by_areagroup/:areagroup/:carrier' => "carrier_datas#update_by_areagroup"
     resources :areas,
-              :areagroups,
               :carriers,
               :expert_predictions, 
-              :input_elements, 
+              :input_elements, # remove?
               :carrier_datas,
               :historic_series, 
               :year_values, 
               :descriptions, 
-              :translations, 
+              :translations, # remove?
               :blackbox_scenarios, 
               :converters, 
               :query_tables, 
               :query_table_cells, 
-              :press_releases, 
               :blueprint_converters, 
               :groups, 
               :converter_positions
