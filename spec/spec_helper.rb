@@ -8,6 +8,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'webrat'
+require 'authlogic/test_case'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -35,4 +36,6 @@ RSpec.configure do |config|
   config.include(EtmHelper)
   config.include(EtmFixtures)
   config.include(Webrat::Matchers)
+  config.include(Authlogic::TestCase)
+  config.include(EtmAuthHelper)
 end
