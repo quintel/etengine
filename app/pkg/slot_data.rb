@@ -1,4 +1,5 @@
 class SlotData < ActiveRecord::Base
+  set_table_name "slot_datas"
   include DatasetTouchOnUpdate
 
   belongs_to :dataset

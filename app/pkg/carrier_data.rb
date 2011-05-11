@@ -1,4 +1,5 @@
 class CarrierData < ActiveRecord::Base
+  set_table_name "carrier_datas"
   include DatasetTouchOnUpdate
 
   has_paper_trail
