@@ -85,22 +85,16 @@ Etm::Application.routes.draw do
               :carrier_datas,
               :historic_series, 
               :year_values, 
-              :tabs, 
-              :slides, 
-              :sidebar_items, 
               :descriptions, 
               :translations, 
               :blackbox_scenarios, 
               :converters, 
-              :output_elements, 
-              :output_element_series, 
               :query_tables, 
               :query_table_cells, 
               :press_releases, 
               :blueprint_converters, 
               :groups, 
-              :converter_positions,
-              :view_nodes
+              :converter_positions
 
     resources :blackboxes do
       get :rspec, :on => :member
@@ -132,7 +126,5 @@ Etm::Application.routes.draw do
     end
   end
 
-  match '/admin' => 'pages#admin', :as => :admin_home
   match '/:controller(/:action(/:id))'
-
 end
