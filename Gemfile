@@ -40,13 +40,14 @@ group :development do
 end
 
 group :test, :development do
-  gem "rspec-rails", "~> 2.1.0"
+  gem "rspec-rails", "~> 2.5.0"
   gem 'ruby-debug19'
   gem 'watchr'
 end
 
 group :test do
-  gem 'factory_girl', '>= 1.2.3'
+  gem 'factory_girl_rails'
+  gem 'shoulda-matchers'
   gem 'webrat'
   gem 'simplecov', :require => false
 end
