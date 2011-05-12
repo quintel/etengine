@@ -9,10 +9,9 @@ class CreateGqueriesFromSeries < ActiveRecord::Migration
     OutputElementSerie.find_each do |serie|
       next if serie.output_element.blank?
       clean_label = serie.label.downcase.gsub(/[^a-z0-9_]/, '_')
-      gquery_key = "#{clean_label}_#{serie.output_element.key}"
-      # serie.update_attribute :gquery, gquery_name
+      gquery_key = "chart_#{clean_label}_#{serie.output_element.key}"
       Gquery.create(
-        :key => gquery_key,
+        :key   => gquery_key,
         :query => serie.key
       )
       
