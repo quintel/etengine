@@ -99,6 +99,7 @@ class Graph < ActiveRecord::Base
   #
   # @return [Qernel::Graph]
   def to_qernel
+    return false unless dataset
     marshal = Rails.cache.fetch("/graph/#{id}/#{dataset.updated_at.to_i}") do
       Marshal.dump(build_qernel)
     end
@@ -112,7 +113,6 @@ class Graph < ActiveRecord::Base
     qernel_graph.dataset = nil
     qernel_graph
   end
-
 end
 
 # == Schema Information
