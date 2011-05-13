@@ -30,10 +30,17 @@ Etm::Application.routes.draw do
       resources :links
     end
   end
+  
+  namespace :admin do
+    resources :graphs, :only => [:index, :show, :update]
+    resources :query_tables
+    resources :query_table_cells
+  end
 
   namespace :data do
     match '/' => "data#start", :as => 'start'
     match '/redirect' => "data#redirect", :as => 'redirect'
+    
 
     scope '/:blueprint_id/:region_code' do
       match '/' => "converters#index"
