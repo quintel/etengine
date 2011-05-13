@@ -15,10 +15,5 @@ end
 
 desc "Runs annotate on all models, incl. app/pkg"
 task :annotate do
-  Dir.glob("app/pkg/").each do |dir|
-    puts "* Annotating: #{dir}"
-    system "annotate --model-dir #{dir}"
-  end
-  puts "* Annotating: app/models"
-  system "annotate"
+  system "annotate -p before -e tests, fixtures"
 end
