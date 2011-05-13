@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   include JavascriptHelper
   include SprocketsHelper
 
-  include ApplicationController::ExceptionHandling
+  include ApplicationController::ExceptionHandling unless Rails.env.development?
   # include ApplicationController::PerformanceProfiling
   include ApplicationController::GcDisabling
   include SortableTable::App::Controllers::ApplicationController
