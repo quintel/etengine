@@ -16,7 +16,7 @@ Etm::Application.routes.draw do
   end
 
   namespace :construction do
-    match '/' => "blueprint_models#index", :as => 'start'
+    root :to => "blueprint_models#index", :as => 'start'
 
     resources :blueprint_models
     resources :blueprints
@@ -38,11 +38,11 @@ Etm::Application.routes.draw do
       end
     end
     resources :query_tables
-    resources :query_table_cells
+    resources :query_table_cells, :except => [:show, :index]
   end
 
   namespace :data do
-    match '/' => "data#start", :as => 'start'
+    root :to => "data#start", :as => 'start'
     match '/redirect' => "data#redirect", :as => 'redirect'
     
 
@@ -83,54 +83,6 @@ Etm::Application.routes.draw do
       end
 
       resources :descriptions
-    end
-  end
-
-  namespace :admin do
-    resources :areas,
-              :carriers,
-              :expert_predictions, 
-              :input_elements, # remove?
-              :carrier_datas,
-              :historic_series, 
-              :year_values, 
-              :descriptions, 
-              :translations, # remove?
-              :blackbox_scenarios, 
-              :converters, 
-              :query_tables, 
-              :query_table_cells, 
-              :blueprint_converters, 
-              :groups, 
-              :converter_positions
-
-    resources :blackboxes do
-      get :rspec, :on => :member
-    end
-    resources :graphs do
-      collection do
-        post :import
-      end
-      resources :converters
-      resources :converter_datas
-      collection do
-        post :import
-      end
-    end
-    resources :gqueries do
-      get :result, :on => :member
-      collection do
-        get :dump
-        post :dump
-        get :test
-        post :test
-        get :result
-      end
-    end
-    resources :blueprints do
-      get :graph, :on => :member
-      resources :blueprint_converters
-      resources :groups
     end
   end
 
