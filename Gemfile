@@ -51,5 +51,3 @@ group :test do
   gem 'webrat'
   gem 'simplecov', :require => false
 end
-
-
