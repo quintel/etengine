@@ -39,7 +39,7 @@ tmp/*
 public/images/converter_12*
 import/*
 public/assets
-etm_dev.sql
+etm_*.sql
 public/doc
 vendor/bundle
 .bundle
