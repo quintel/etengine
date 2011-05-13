@@ -58,7 +58,7 @@
           Region
           = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code]), :onchange => 'submit()'
     
-        = link_to 'Area', data_area_path(:id => @dataset.area_id)
+        = link_to 'Area', data_areas_path
         = link_to 'Carriers', data_carriers_path
         = link_to 'Converters', data_converters_path
         = link_to 'Gqueries', data_gqueries_path
