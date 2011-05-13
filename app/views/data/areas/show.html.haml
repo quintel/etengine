@@ -1,6 +1,5 @@
 = render "list"
 
-
 #content
   .header
     = @area.region_code
@@ -22,4 +21,4 @@
               = auto_number v
             - else
               = v
-  = render "/admin/shared/revisions", :versioned => @area
+  = render "/data/shared/revisions", :versioned => @area

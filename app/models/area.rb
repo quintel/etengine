@@ -109,4 +109,3 @@ end
 #  has_solar_csp                            :boolean(1)
 #  has_old_technologies                     :boolean(1)
 #
-
