@@ -87,4 +87,11 @@ class Admin::GraphsController < Admin::AdminController
     end
     redirect_to admin_graphs_url
   end
+  
+  protected
+  
+    def load_graph
+      @graph = Graph.find(params[:graph_id] || params[:id])
+      Current.graph = @graph
+    end  
 end

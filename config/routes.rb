@@ -32,7 +32,11 @@ Etm::Application.routes.draw do
   end
   
   namespace :admin do
-    resources :graphs, :only => [:index, :show, :update]
+    resources :graphs, :only => [:index, :show, :update] do
+      collection do
+        post :import
+      end
+    end
     resources :query_tables
     resources :query_table_cells
   end
