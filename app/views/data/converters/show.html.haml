@@ -7,11 +7,6 @@
 
     %small= link_to 'edit', edit_data_converter_path(:id => @converter_present.id)
 
-    %small
-      Graph:
-      = link_to 'Present', admin_converter_path(@converter_present.id, :graph_id => @graph.id, :format => 'png'), :target => '_blank'
-      = link_to 'Future', admin_converter_path(@converter_present.id, :graph_id => @graph.id, :graph => 'future', :format => 'png'), :target => '_blank'
-
   - pre = @converter_present.query
   - fut = @converter_future.query
 
