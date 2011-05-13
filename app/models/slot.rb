@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: slots
+#
+#  id           :integer(4)      not null, primary key
+#  blueprint_id :integer(4)
+#  converter_id :integer(4)
+#  carrier_id   :integer(4)
+#  direction    :integer(4)
+#
+
 class Slot < ActiveRecord::Base
 
   INPUT_DIRECTION = 0
@@ -40,15 +51,4 @@ class Slot < ActiveRecord::Base
   end
 end
 
-
-# == Schema Information
-#
-# Table name: slots
-#
-#  id           :integer(4)      not null, primary key
-#  blueprint_id :integer(4)
-#  converter_id :integer(4)
-#  carrier_id   :integer(4)
-#  direction    :integer(4)
-#
 

@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: blueprint_layouts
+#
+#  id         :integer(4)      not null, primary key
+#  key        :string(255)
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 # A BlueprintLayout is a visual layout of converters. 
 # It positions a Converter on a 2D map using ConverterPosition records.
 # The BlueprintLayout is not directly connected to a Blueprint. Thus 

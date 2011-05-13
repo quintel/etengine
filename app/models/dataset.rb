@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: datasets
+#
+#  id           :integer(4)      not null, primary key
+#  blueprint_id :integer(4)
+#  region_code  :string(255)
+#  created_at   :datetime
+#  updated_at   :datetime
+#  area_id      :integer(4)
+#
+
 class Dataset < ActiveRecord::Base
   has_one :graph
   belongs_to :blueprint
@@ -134,14 +146,3 @@ private
     end
   end
 end
-# == Schema Information
-#
-# Table name: datasets
-#
-#  id           :integer(4)      not null, primary key
-#  blueprint_id :integer(4)
-#  region_code  :string(255)
-#  created_at   :datetime
-#  updated_at   :datetime
-#
-

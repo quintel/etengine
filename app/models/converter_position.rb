@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: converter_positions
+#
+#  id                  :integer(4)      not null, primary key
+#  converter_id        :integer(4)
+#  x                   :integer(4)
+#  y                   :integer(4)
+#  created_at          :datetime
+#  updated_at          :datetime
+#  hidden              :boolean(1)
+#  fill_color          :string(255)
+#  stroke_color        :string(255)
+#  blueprint_layout_id :integer(4)
+#
+
 ##
 # This class stores x,y values for the new online sanque diagram.
 #
@@ -47,16 +63,4 @@ class ConverterPosition < ActiveRecord::Base
 
 end
 
-
-# == Schema Information
-#
-# Table name: converter_positions
-#
-#  id           :integer(4)      not null, primary key
-#  converter_id :integer(4)
-#  x            :integer(4)
-#  y            :integer(4)
-#  created_at   :datetime
-#  updated_at   :datetime
-#
 

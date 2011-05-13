@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: blueprint_models
+#
+#  id         :integer(4)      not null, primary key
+#  title      :string(255)
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 ##
 # BlueprintModel is a basically a Meta Blueprint, that's sole purpose
 # is to group Blueprints with their various versions together. Add a new

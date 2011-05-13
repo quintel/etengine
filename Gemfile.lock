@@ -46,6 +46,7 @@ GEM
       activesupport (= 3.0.7)
     activesupport (3.0.7)
     acts_as_list (0.1.2)
+    annotate (2.4.0)
     archive-tar-minitar (0.5.2)
     arel (2.0.9)
     bluecloth (2.0.9)
@@ -169,6 +170,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_list
+  annotate
   authlogic!
   bluecloth
   default_value_for

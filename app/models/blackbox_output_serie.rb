@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: blackbox_output_series
+#
+#  id                      :integer(4)      not null, primary key
+#  blackbox_id             :integer(4)
+#  blackbox_scenario_id    :integer(4)
+#  output_element_serie_id :integer(4)
+#  present_value           :integer(30)
+#  future_value            :integer(30)
+#  created_at              :datetime
+#  updated_at              :datetime
+#
+
 class BlackboxOutputSerie < ActiveRecord::Base
   belongs_to :blackbox
   belongs_to :output_element_serie
@@ -68,18 +82,4 @@ class BlackboxOutputSerie < ActiveRecord::Base
   end
 
 end
-
-# == Schema Information
-#
-# Table name: blackbox_output_series
-#
-#  id                      :integer(4)      not null, primary key
-#  blackbox_id             :integer(4)
-#  blackbox_scenario_id    :integer(4)
-#  output_element_serie_id :integer(4)
-#  present_value           :integer(30)
-#  future_value            :integer(30)
-#  created_at              :datetime
-#  updated_at              :datetime
-#
 

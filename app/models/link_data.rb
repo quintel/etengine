@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: link_datas
+#
+#  id         :integer(4)      not null, primary key
+#  link_type  :integer(4)      default(0)
+#  share      :float
+#  created_at :datetime
+#  updated_at :datetime
+#  dataset_id :integer(4)
+#  link_id    :integer(4)
+#
+
 class LinkData < ActiveRecord::Base
   set_table_name "link_datas"
   include DatasetTouchOnUpdate
@@ -24,19 +37,4 @@ class LinkData < ActiveRecord::Base
 end
 
 
-
-# == Schema Information
-#
-# Table name: link_datas
-#
-#  id            :integer(4)      not null, primary key
-#  parent_id     :integer(4)
-#  converter_id  :integer(4)
-#  link_type     :integer(4)      default(0)
-#  share         :float
-#  created_at    :datetime
-#  updated_at    :datetime
-#  dataset_id :integer(4)
-#  link_id       :integer(4)
-#
 

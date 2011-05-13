@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: carrier_datas
+#
+#  id                         :integer(4)      not null, primary key
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#  carrier_id                 :integer(4)
+#  cost_per_mj                :float
+#  co2_per_mj                 :float
+#  sustainable                :float
+#  typical_production_per_km2 :float
+#  area_id                    :integer(4)
+#  kg_per_liter               :float
+#  mj_per_kg                  :float
+#  co2_exploration_per_mj     :float           default(0.0)
+#  co2_extraction_per_mj      :float           default(0.0)
+#  co2_treatment_per_mj       :float           default(0.0)
+#  co2_transportation_per_mj  :float           default(0.0)
+#  co2_waste_treatment_per_mj :float           default(0.0)
+#
+
 class CarrierData < ActiveRecord::Base
   set_table_name "carrier_datas"
   include DatasetTouchOnUpdate
@@ -29,21 +51,4 @@ class CarrierData < ActiveRecord::Base
   end
 end
 
-
-# == Schema Information
-#
-# Table name: carrier_datas
-#
-#  id                         :integer(4)      not null, primary key
-#  created_at                 :datetime
-#  updated_at                 :datetime
-#  dataset_id              :integer(4)
-#  carrier_id                 :integer(4)
-#  cost_per_mj                :float
-#  co2_per_mj                 :float
-#  sustainable                :float
-#  infinite                   :float
-#  typical_production_per_km2 :float
-#  area_id                    :integer(4)
-#
 

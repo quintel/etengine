@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: blackbox_scenarios
+#
+#  id                :integer(4)      not null, primary key
+#  name              :string(255)
+#  description       :text
+#  user_values       :text
+#  update_statements :text
+#  created_at        :datetime
+#  updated_at        :datetime
+#
+
 class BlackboxScenario < ActiveRecord::Base
   before_validation :copy_scenario_state
 
@@ -57,17 +70,4 @@ class BlackboxScenario < ActiveRecord::Base
   end
 end
 
-
-# == Schema Information
-#
-# Table name: blackbox_scenarios
-#
-#  id                :integer(4)      not null, primary key
-#  name              :string(255)
-#  description       :text
-#  user_values       :text
-#  update_statements :text
-#  created_at        :datetime
-#  updated_at        :datetime
-#
 

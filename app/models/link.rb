@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: links
+#
+#  id           :integer(4)      not null, primary key
+#  blueprint_id :integer(4)
+#  parent_id    :integer(4)
+#  child_id     :integer(4)
+#  carrier_id   :integer(4)
+#  link_type    :integer(4)
+#
+
 #
 #
 # parent_id is to left
@@ -77,16 +89,4 @@ class Link < ActiveRecord::Base
   end
 end
 
-
-# == Schema Information
-#
-# Table name: links
-#
-#  id           :integer(4)      not null, primary key
-#  blueprint_id :integer(4)
-#  parent_id    :integer(4)
-#  child_id     :integer(4)
-#  carrier_id   :integer(4)
-#  link_type    :integer(4)
-#
 

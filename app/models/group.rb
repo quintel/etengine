@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: groups
+#
+#  id         :integer(4)      not null, primary key
+#  title      :string(255)
+#  created_at :datetime
+#  updated_at :datetime
+#  key        :string(255)
+#  shortcut   :string(255)
+#  group_id   :integer(4)
+#
+
 ##
 #
 # @deprecated
@@ -27,17 +40,4 @@ class Group < ActiveRecord::Base
   end
 end
 
-
-# == Schema Information
-#
-# Table name: groups
-#
-#  id                 :integer(4)      not null, primary key
-#  title              :string(255)
-#  created_at         :datetime
-#  updated_at         :datetime
-#  key                :string(255)
-#  shortcut           :string(255)
-#  group_id :integer(4)
-#
 
