@@ -1,7 +1,6 @@
 class Data::CarriersController < Data::DataController
 
-  def index
-    
+  def index    
   end
 
   def edit
