@@ -45,7 +45,6 @@ module Etm
 
   require 'lib/session_accessor'
   require 'app/models/gql/gql_query' # parses and loads treetop file
-  require 'vendor/plugins/hodel_3000_compliant_logger/lib/hodel_3000_compliant_logger'
   
   # see ApplicationController#browser for list of browser types
  
