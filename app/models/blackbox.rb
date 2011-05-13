@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: blackboxes
+#
+#  id          :integer(4)      not null, primary key
+#  name        :string(255)
+#  description :text
+#  graph_id    :integer(4)
+#  created_at  :datetime
+#  updated_at  :datetime
+#
+
 class Blackbox < ActiveRecord::Base
   belongs_to :graph
   has_many :blackbox_output_serie, :dependent => :destroy
@@ -33,16 +45,4 @@ class Blackbox < ActiveRecord::Base
     end
   end
 end
-
-# == Schema Information
-#
-# Table name: blackboxes
-#
-#  id          :integer(4)      not null, primary key
-#  name        :string(255)
-#  description :text
-#  graph_id    :integer(4)
-#  created_at  :datetime
-#  updated_at  :datetime
-#
 

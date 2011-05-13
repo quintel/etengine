@@ -37,6 +37,7 @@ gem 'rubyzip', '0.9.4'
 
 group :development do
   gem 'yard', '0.5.4'
+  gem 'annotate', :require => false
 end
 
 group :test, :development do

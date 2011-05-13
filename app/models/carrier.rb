@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: carriers
+#
+#  id            :integer(4)      not null, primary key
+#  carrier_id    :integer(4)
+#  key           :string(255)
+#  name          :string(255)
+#  infinite      :boolean(1)
+#  created_at    :datetime
+#  updated_at    :datetime
+#  carrier_color :string(255)
+#
+
 class Carrier < ActiveRecord::Base
   belongs_to :blueprint
 
@@ -29,17 +43,4 @@ class Carrier < ActiveRecord::Base
 end
 
 
-
-# == Schema Information
-#
-# Table name: carriers
-#
-#  id         :integer(4)      not null, primary key
-#  carrier_id :integer(4)
-#  key        :string(255)
-#  name       :string(255)
-#  infinite   :boolean(1)
-#  created_at :datetime
-#  updated_at :datetime
-#
 

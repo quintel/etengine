@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: blueprints
+#
+#  id                 :integer(4)      not null, primary key
+#  name               :string(255)
+#  graph_version      :string(255)
+#  description        :string(255)
+#  created_at         :datetime
+#  updated_at         :datetime
+#  blueprint_model_id :integer(4)
+#
+
 
 class Blueprint < ActiveRecord::Base
 
@@ -120,16 +133,4 @@ class Blueprint < ActiveRecord::Base
 
 end
 
-
-# == Schema Information
-#
-# Table name: blueprints
-#
-#  id            :integer(4)      not null, primary key
-#  name          :string(255)
-#  graph_version :string(255)
-#  description   :string(255)
-#  created_at    :datetime
-#  updated_at    :datetime
-#
 

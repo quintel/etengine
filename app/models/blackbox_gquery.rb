@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: blackbox_gqueries
+#
+#  id                   :integer(4)      not null, primary key
+#  blackbox_id          :integer(4)
+#  blackbox_scenario_id :integer(4)
+#  gquery_id            :integer(4)
+#  present_value        :integer(30)
+#  future_value         :integer(30)
+#  created_at           :datetime
+#  updated_at           :datetime
+#
+
 class BlackboxGquery < ActiveRecord::Base
   belongs_to :blackbox
   belongs_to :gquery
@@ -71,18 +85,4 @@ class BlackboxGquery < ActiveRecord::Base
     result.last
   end
 end
-
-# == Schema Information
-#
-# Table name: blackbox_gqueries
-#
-#  id                   :integer(4)      not null, primary key
-#  blackbox_id          :integer(4)
-#  blackbox_scenario_id :integer(4)
-#  gquery_id            :integer(4)
-#  present_value        :integer(30)
-#  future_value         :integer(30)
-#  created_at           :datetime
-#  updated_at           :datetime
-#
 

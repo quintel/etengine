@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: query_tables
+#
+#  id           :integer(4)      not null, primary key
+#  name         :string(255)
+#  description  :text
+#  row_count    :integer(4)
+#  column_count :integer(4)
+#  created_at   :datetime
+#  updated_at   :datetime
+#
+
 class QueryTable < ActiveRecord::Base
   has_many :query_table_cells, :dependent => :delete_all
 
@@ -16,17 +29,4 @@ class QueryTable < ActiveRecord::Base
   end
 
 end
-
-# == Schema Information
-#
-# Table name: query_tables
-#
-#  id           :integer(4)      not null, primary key
-#  name         :string(255)
-#  description  :text
-#  row_count    :integer(4)
-#  column_count :integer(4)
-#  created_at   :datetime
-#  updated_at   :datetime
-#
 

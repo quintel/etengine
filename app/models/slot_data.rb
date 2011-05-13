@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: slot_datas
+#
+#  id         :integer(4)      not null, primary key
+#  dataset_id :integer(4)
+#  slot_id    :integer(4)
+#  conversion :float
+#  dynamic    :boolean(1)
+#
+
 class SlotData < ActiveRecord::Base
   set_table_name "slot_datas"
   include DatasetTouchOnUpdate
@@ -10,15 +21,4 @@ class SlotData < ActiveRecord::Base
   end
 
 end
-
-# == Schema Information
-#
-# Table name: slot_datas
-#
-#  id                :integer(4)      not null, primary key
-#  dataset_id     :integer(4)
-#  slot_id :integer(4)
-#  conversion        :float
-#  dynamic           :boolean(1)
-#
 
