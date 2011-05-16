@@ -10,8 +10,7 @@
 #
 
 class Dataset::SlotData < ActiveRecord::Base
-  set_table_name "slot_datas"
-  include DatasetTouchOnUpdate
+  include Dataset::TouchOnUpdate
 
   belongs_to :dataset
   belongs_to :slot

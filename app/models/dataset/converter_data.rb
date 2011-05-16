@@ -103,8 +103,7 @@
 # 
 #
 class Dataset::ConverterData < ActiveRecord::Base
-  set_table_name "converter_datas"
-  include DatasetTouchOnUpdate
+  include Dataset::TouchOnUpdate
 
   belongs_to :dataset
   belongs_to :converter
