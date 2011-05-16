@@ -1,6 +1,6 @@
 # This usually sits at the root of the project and is called ".watchr"
-@spec_cmd = "bundle exec rspec"
-@cuc_cmd  = "bundle exec cucumber"
+@spec_cmd = "rspec --drb"
+@cuc_cmd  = "cucumber"
 
 # Convenience methods ########################################################
 # Working on eventually adding Growl support. The problem right now is catching
@@ -52,6 +52,7 @@ end
 # Watchr rules ###############################################################
 watch('spec/spec_helper\.rb') { run_all_specs }
 watch('spec/support/.*') { run_all_specs }
+watch('spec/factories/.*') { run_all_specs }
 watch('spec/.*_spec\.rb') { |m| run_spec m[0] }
 watch('app/.*\.rb') { |m| related_specs(m[0]).map { |s| run_spec s } }
 watch('lib/.*\.rb') { |m| related_specs(m[0]).map { |s| run_spec s } }

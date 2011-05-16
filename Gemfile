@@ -45,6 +45,7 @@ group :test, :development do
   gem "rspec-rails", "~> 2.5.0"
   gem 'ruby-debug19'
   gem 'watchr'
+  gem 'spork'
 end
 
 group :test do
