@@ -47,7 +47,13 @@ end
 def run_suite
   run_all_specs
   # run_all_features
+  find_debt
 end
+
+def find_debt
+  system('find . -name "*.rb" | xargs grep -n "# DEBT"')
+end
+
 
 # Watchr rules ###############################################################
 watch('spec/spec_helper\.rb') { run_all_specs }
