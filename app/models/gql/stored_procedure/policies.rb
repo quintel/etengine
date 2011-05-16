@@ -12,10 +12,13 @@ class StoredProcedure
 
   # the number of user-defined policy targets met today and met in the future
   def policy_targets_met
-    GqueryResult.create [
-      [Current.scenario.start_year, 0],
-      [Current.scenario.end_year, Current.gql.policy.goals.select(&:reached?).length]
-    ]
+    # DEBT not working
+    
+    [[2010, 0], [2040,40]]
+    #GqueryResult.create [
+    #  [Current.scenario.start_year, 0],
+    #  [Current.scenario.end_year, Current.gql.policy.goals.select(&:reached?).length]
+    #]
   end
 
   # the scoreof all policies
