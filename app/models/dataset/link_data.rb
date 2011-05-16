@@ -34,6 +34,3 @@ class Dataset::LinkData < ActiveRecord::Base
     }
   end
 end
-
-
-

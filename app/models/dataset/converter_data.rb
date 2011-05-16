@@ -113,7 +113,6 @@ class Dataset::ConverterData < ActiveRecord::Base
     Qernel::DatasetItem.compute_dataset_key(Qernel::Converter, converter_id)
   end
 
-
   ##
   # See {Qernel::Converter} section demand and preset_demand on why we have
   # to add {'demand' => preset_demand}
@@ -123,7 +122,4 @@ class Dataset::ConverterData < ActiveRecord::Base
   def attributes
     @hacked_attrs ||= {}.merge(hacked_attributes)
   end
-
 end
-
-

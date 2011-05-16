@@ -1,3 +1,4 @@
-Factory.define :carrier do |carrier|
-  carrier.name {'carrier_name'}
+Factory.define :carrier do |f|
+  f.name 'carrier_name'
+  f.sequence(:carrier_id) {|n| n}
 end

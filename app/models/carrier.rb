@@ -27,7 +27,7 @@ class Carrier < ActiveRecord::Base
 
   ##
   # makes sure that id is always equals excel_id. As the auto increment can screw things up.
-  #
+  # DEBT ugly
   def assign_carrier_id_to_id
     Carrier.update_all("id = carrier_id", "id = #{self.id}")
     self.id = self.carrier_id
@@ -41,6 +41,3 @@ class Carrier < ActiveRecord::Base
     @qernel ||= Qernel::Carrier.new(id, key, name, (infinite ? 1.0 : 0.0))
   end
 end
-
-
-
