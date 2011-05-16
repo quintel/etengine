@@ -23,12 +23,6 @@
       %td= result.future_value
 
 
-%h2 Constraints (just for testing)
-%table
-  - Constraint.all.each do |constraint|
-    %tr
-      %td= constraint.key
-      %td= constraint.output
 
 
 %pre= Current.scenario.update_statements.inspect
