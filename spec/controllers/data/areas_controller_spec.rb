@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Data::AreasController do
   let(:admin) { Factory :admin }
-  let(:area) { Factory :area }
+  let(:area)  { Factory :area }
   
   before do
     login_as(admin)

@@ -20,7 +20,7 @@
 #  co2_waste_treatment_per_mj :float           default(0.0)
 #
 
-class CarrierData < ActiveRecord::Base
+class Dataset::CarrierData < ActiveRecord::Base
   set_table_name "carrier_datas"
   include DatasetTouchOnUpdate
 
@@ -30,7 +30,6 @@ class CarrierData < ActiveRecord::Base
   belongs_to :carrier
 
   after_save :touch_dataset
-
 
   def datasets
     Dataset.find_all_by_area_id(area_id)
