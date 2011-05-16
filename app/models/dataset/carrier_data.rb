@@ -21,9 +21,6 @@
 #
 
 class Dataset::CarrierData < ActiveRecord::Base
-  set_table_name "carrier_datas"
-  include DatasetTouchOnUpdate
-
   has_paper_trail
 
   belongs_to :area
@@ -49,5 +46,3 @@ class Dataset::CarrierData < ActiveRecord::Base
     Qernel::DatasetItem.compute_dataset_key(Qernel::Carrier, carrier_id)
   end
 end
-
-

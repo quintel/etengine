@@ -12,8 +12,7 @@
 #
 
 class Dataset::LinkData < ActiveRecord::Base
-  set_table_name "link_datas"
-  include DatasetTouchOnUpdate
+  include Dataset::TouchOnUpdate
 
   belongs_to :dataset
   belongs_to :link

@@ -3,7 +3,7 @@
 # such as ConverterData, SlotData, etc.
 #
 #
-module DatasetTouchOnUpdate
+module Dataset::TouchOnUpdate
   def self.included(klass)
     # Mark dataset as updated for caching purposes.
     klass.after_save :touch_dataset
