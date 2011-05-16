@@ -11,7 +11,7 @@
 #  link_id    :integer(4)
 #
 
-class LinkData < ActiveRecord::Base
+class Dataset::LinkData < ActiveRecord::Base
   set_table_name "link_datas"
   include DatasetTouchOnUpdate
 

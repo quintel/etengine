@@ -9,7 +9,7 @@
 #  dynamic    :boolean(1)
 #
 
-class SlotData < ActiveRecord::Base
+class Dataset::SlotData < ActiveRecord::Base
   set_table_name "slot_datas"
   include DatasetTouchOnUpdate
 
@@ -19,6 +19,4 @@ class SlotData < ActiveRecord::Base
   def dataset_key
     Qernel::DatasetItem.compute_dataset_key(Qernel::Slot, slot_id)
   end
-
 end
-

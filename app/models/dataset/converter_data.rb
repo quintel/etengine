@@ -102,7 +102,7 @@
 #
 # 
 #
-class ConverterData < ActiveRecord::Base
+class Dataset::ConverterData < ActiveRecord::Base
   set_table_name "converter_datas"
   include DatasetTouchOnUpdate
 
