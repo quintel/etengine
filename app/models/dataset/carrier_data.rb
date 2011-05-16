@@ -40,7 +40,7 @@ class Dataset::CarrierData < ActiveRecord::Base
     datasets.each(&:touch)
   end
 
-  validates_uniqueness_of :carrier_id, :scope => :area_id, :on => :create, :message => "must be unique"
+  validates_uniqueness_of :carrier_id, :scope => :area_id, :on => :create
 
   def dataset_key
     Qernel::DatasetItem.compute_dataset_key(Qernel::Carrier, carrier_id)
