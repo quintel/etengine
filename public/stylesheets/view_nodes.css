@@ -1,0 +1,47 @@
+.view_nodes {
+  margin: 0px;
+  padding: 0px; }
+  .view_nodes h1, .view_nodes h2, .view_nodes ul, .view_nodes li, .view_nodes div, .view_nodes p {
+    margin: 0px;
+    padding: 0px; }
+  .view_nodes div {
+    float: left; }
+  .view_nodes ul, .view_nodes li {
+    list-style: none; }
+  .view_nodes li.node_list {
+    float: left;
+    width: 200px;
+    height: 500px;
+    padding: 10px;
+    border: 1px black solid; }
+    .view_nodes li.node_list .active {
+      background-color: #63a1c9; }
+      .view_nodes li.node_list .active a {
+        color: white; }
+    .view_nodes li.node_list li.node_item {
+      float: left;
+      clear: both;
+      width: 194px;
+      padding: 3px; }
+      .view_nodes li.node_list li.node_item a {
+        float: left; }
+      .view_nodes li.node_list li.node_item .edit_button {
+        margin-top: 3px;
+        margin-left: 3px; }
+      .view_nodes li.node_list li.node_item form {
+        float: left; }
+        .view_nodes li.node_list li.node_item form div {
+          float: left;
+          height: 14px; }
+        .view_nodes li.node_list li.node_item form input {
+          float: left;
+          margin-left: 5px;
+          padding: 0px;
+          border: 0px;
+          width: 15px;
+          cursor: pointer;
+          background: transparent url("/images/layout/icons/delete.png"); }
+  .view_nodes li.node_list.grey_left {
+    border-left: 1px lightgrey solid; }
+  .view_nodes li.node_list.grey_right {
+    border-right: 1px lightgrey solid; }

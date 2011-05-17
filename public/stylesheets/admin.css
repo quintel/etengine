@@ -1,0 +1,34 @@
+.blackbox-results tr.hide-row {
+  display: none; }
+
+#query_table td:hover {
+  background: #ffffee; }
+#query_table td a {
+  text-decoration: none;
+  display: block; }
+#query_table td.result {
+  text-align: right; }
+  #query_table td.result a {
+    color: black;
+    font-family: courier; }
+#query_table td.new a {
+  color: #999999; }
+#query_table td.total {
+  background: #eeeeee;
+  font-size: 90%; }
+
+table .hasgroup {
+  background: #666666 !important;
+  color: #dddddd; }
+
+table .even .hasgroup {
+  background: #777777 !important; }
+
+table .hasnotgroup {
+  color: #dddddd; }
+
+table#blueprint_converters * {
+  font-size: 11px; }
+
+table#blueprint_converters .group, table#blueprint_converters .group * {
+  font-size: 9px !important; }
