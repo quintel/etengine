@@ -1,0 +1,40 @@
+.information_page {
+  width: 600px;
+  margin: auto; }
+  .information_page .left {
+    float: left; }
+  .information_page .right {
+    float: right; }
+  .information_page li {
+    margin-left: 20px; }
+  .information_page h3 {
+    clear: both;
+    border-bottom: 1px dotted black;
+    margin-bottom: 10px;
+    margin-top: 10px; }
+  .information_page div {
+    clear: both; }
+  .information_page .image {
+    background: url("/images/layout/picture_shadow.png") no-repeat scroll right bottom transparent;
+    margin: 6px;
+    padding: 0 14px 14px;
+    width: 150px; }
+  .information_page table {
+    margin: 20px;
+    width: 90%; }
+    .information_page table tr {
+      margin-bottom: 5px; }
+    .information_page table td {
+      padding: 0 5px 1px 5px;
+      line-height: 2em; }
+    .information_page table tr.even {
+      background-color: #f0f0f0; }
+
+#scorebord ul, #scorebord li {
+  list-style-type: none;
+  float: left; }
+#scorebord ul {
+  clear: both; }
+  #scorebord ul li {
+    width: 150px;
+    float: left; }
