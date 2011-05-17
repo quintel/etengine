@@ -12,7 +12,7 @@ public/tmp/*
 public/packages/*
 public/javascripts/all.js
 public/javascripts/cache_*.js
-vendorpublic/stylesheets/*.css
+public/stylesheets/*.css
 public/system/*
 public/flowplayer/*
 tmp/*
