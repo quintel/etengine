@@ -23,7 +23,8 @@ class PolicyGoal < ActiveRecord::Base
   has_paper_trail
 
   def self.allowed_policies
-    Current.view.root.policy_goals.reject(&:area_dependent)
+    # DEBT this is the concern of etmodel
+    PolicyGoal.all
   end
 
   def to_gql
