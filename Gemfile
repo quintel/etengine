@@ -29,7 +29,7 @@ gem 'hoptoad_notifier', '2.4.2'
 
 # system gems
 gem 'thinking-sphinx', '>=2.0.1'
-gem 'mysql2'
+gem 'mysql2', '~>0.2.6'
 gem 'memcache-client'
 gem 'mongrel', '1.2.0.pre2'
 
@@ -42,7 +42,7 @@ group :development do
 end
 
 group :test, :development do
-  gem "rspec-rails", "~> 2.5.0"
+  gem "rspec-rails", "~> 2.6.0"
   gem 'ruby-debug19'
   gem 'watchr'
   gem 'spork'
