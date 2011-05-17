@@ -37,6 +37,7 @@ Etm::Application.routes.draw do
         post :import
       end
     end
+    resources :historic_series
     resources :query_tables
     resources :query_table_cells, :except => [:show, :index]
   end
