@@ -1,6 +1,7 @@
 <% if current_user%>
   <%= link_to t("header.Sign out"), "/logout" %> 
-  <%= link_to "Home", root_path %> 
+  <%= link_to "Home", root_path %>
+  <%= link_to "Admin", admin_root_path if current_user.admin? %>
 <% else %>
 <h1>Login</h1>
 
