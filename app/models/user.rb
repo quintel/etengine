@@ -40,46 +40,10 @@ class User < ActiveRecord::Base
                         :if => Proc.new { |o| !o.phone_number.nil? }
 
   validates_presence_of :name
-  # validates_length_of :phone_number, :is => 10, :message => "moet 10 cijfers zijn"
   
-  # acts_as_authentic do |a|
-  #     a.validates_format_of_login_field_options = {:with => LOGIN_REGEXP}
-  #     a.validates_format_of_email_field_options = {:with => EMAIL_REGEXP}
-  # end
   acts_as_authentic
-  # no open id right now
-
-  # HUMANIZED_ATTRIBUTES = {
-  #   :name             => I18n.t("user.name"),
-  #   :email            => I18n.t("user.email"),
-  #   :company_school   => I18n.t("user.company_school"),
-  #   :allow_news       => I18n.t("user.allow_news"),
-  #   :heared_first_at  => I18n.t("user.heared_first_at"),
-  #   :phone_number     => I18n.t("user.phone_number")
-  # }
   
   def admin?
-    self.role.andand.name == "admin"
+    self.role.try(:name) == "admin"
   end
-
-  def role_symbols
-    if self.role.andand.name == "admin"
-      [:admin]
-    else
-      [:guest]
-    end
-  end
-  
-
-  # no open id right now
-  # private
-  #
-  # def map_openid_registration(registration)
-  #   self.email = registration["email"] if email.blank?
-  #   self.username = registration["nickname"] if username.blank?
-  # end
-
 end
-
-
-
