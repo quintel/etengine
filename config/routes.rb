@@ -40,6 +40,8 @@ Etm::Application.routes.draw do
     resources :historic_series
     resources :query_tables
     resources :query_table_cells, :except => [:show, :index]
+    
+    root :to => "pages#index"
   end
 
   namespace :data do
