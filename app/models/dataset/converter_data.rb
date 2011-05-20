@@ -107,7 +107,6 @@ class Dataset::ConverterData < ActiveRecord::Base
 
   belongs_to :dataset
   belongs_to :converter
-  has_and_belongs_to_many :groups
 
   def dataset_key
     Qernel::DatasetItem.compute_dataset_key(Qernel::Converter, converter_id)
