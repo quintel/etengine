@@ -272,6 +272,13 @@ class GqlQuerySyntaxNode < Treetop::Runtime::SyntaxNode
     Current.gql.policy.goal(keys.first.to_sym).target_value
   end
 
+  #
+  # @param keys name of the policy goal
+  # @return [Float]
+  #
+  def GOAL_USER_VALUE(keys, arguments, scope)
+    Current.gql.policy.goal(keys.first.to_sym).user_value
+  end
 
   ##
   # {Qernel::GraphApi Graph} attributes: *GRAPH(method)*
