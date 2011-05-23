@@ -14,6 +14,9 @@ Etm::Application.routes.draw do
     resources :api_scenarios
     resources :scenarios, :only => [:index, :show, :create, :update] do
       get :load, :on => :member
+      collection do
+        get :homepage
+      end
     end    
   end
 
