@@ -333,7 +333,7 @@ class InputElement < ActiveRecord::Base
   end
   
   def disabled_with_message?
-    disabled && Current.scenario.transitionprice?
+    disabled
   end
   alias_method :disabled_with_message, :disabled_with_message?
 
