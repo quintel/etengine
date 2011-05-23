@@ -12,7 +12,9 @@ Etm::Application.routes.draw do
 
   scope '/api/v2', :module => 'api',  do
     resources :api_scenarios
-    resources :scenarios, :only => [:index, :show]
+    resources :scenarios, :only => [:index, :show] do
+      get :load, :on => :member
+    end    
   end
 
   namespace :construction do
