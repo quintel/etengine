@@ -4,6 +4,10 @@ class Api::ScenariosController < ApplicationController
   before_filter :find_scenario, :only => [:show, :load, :update]
 
   def index
+    respond_with(@scenarios = Scenario.exclude_api.recent_first)
+  end
+  
+  def homepage
     respond_with(@scenarios = Scenario.where(:in_start_menu => true))
   end
 

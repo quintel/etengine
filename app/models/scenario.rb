@@ -53,6 +53,7 @@ class Scenario < ActiveRecord::Base
   scope :by_region, lambda {|region| where(:region => region) }
   scope :by_type, lambda {|type| where(:scenario_type => type.to_s)}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
+  scope :recent_first, order('created_at DESC')
 
   # before_validation :copy_scenario_state
 

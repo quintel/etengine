@@ -7,8 +7,16 @@ describe Api::ScenariosController do
   end
   
   describe "GET index.xml" do
-    it "should return the scenarios visible in homepage" do
+    it "should return all scenarios" do
       get :index, :format => :xml
+      response.should be_success
+      assigns(:scenarios).to_set.should == [@scenario, @homepage_scenario].to_set
+    end
+  end
+  
+  describe "GET homepage.xml" do
+    it "should return the scenarios visible in homepage" do
+      get :homepage, :format => :xml
       response.should be_success
       assigns(:scenarios).should == [@homepage_scenario]
     end
