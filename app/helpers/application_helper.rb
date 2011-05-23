@@ -117,13 +117,7 @@ module ApplicationHelper
     session[:selected_output_element].andand.to_s && session[:selected_output_element].to_s != session[:default_output_element].to_s
   end
   
-  
   def login_and_come_back_path
     login_path(:redirect_to => request.env['REQUEST_PATH'])
-  end
-  
-  def is_transitionprice?
-    Current.server_config.name.to_s == 'transition_price'
-  end
- 
+  end  
 end

@@ -1,7 +1,5 @@
 = javascript_tag "Util.makeSureConsoleExists();"
-
 = javascript_tag "var ETM = new MainController();"
-
 = javascript_include_tag '/i18n'
   
 
@@ -10,9 +8,6 @@
   - if !Current.setting.show_municipality_introduction
     = javascript_tag "ETM.municipalityController.setMunicipalityMessageShown(true)"
 
-
-- if Current.scenario.transitionprice?
-  = javascript_tag "ETM.transitionpriceController.setTransitionprice(true)"
 
 - if current_user.andand.trackable
   = javascript_include_tag "user_tracking"
