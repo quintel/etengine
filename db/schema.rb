@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110516134408) do
+ActiveRecord::Schema.define(:version => 20110523124449) do
 
   create_table "area_dependencies", :force => true do |t|
     t.string  "dependent_on"
@@ -74,18 +74,6 @@ ActiveRecord::Schema.define(:version => 20110516134408) do
     t.boolean  "has_solar_csp"
     t.boolean  "has_old_technologies"
     t.integer  "parent_id"
-  end
-
-  create_table "attachments", :force => true do |t|
-    t.integer  "attachable_id"
-    t.string   "attachable_type"
-    t.string   "title"
-    t.string   "file_file_name"
-    t.string   "file_content_type"
-    t.string   "file_file_size"
-    t.string   "file_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "blackbox_gqueries", :force => true do |t|
