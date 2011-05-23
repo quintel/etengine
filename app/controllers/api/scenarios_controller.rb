@@ -1,13 +1,24 @@
 class Api::ScenariosController < ApplicationController
   respond_to :xml
   
-  before_filter :find_scenario, :only => [:show, :load]
+  before_filter :find_scenario, :only => [:show, :load, :update]
 
   def index
     respond_with(@scenarios = Scenario.where(:in_start_menu => true))
   end
 
   def show
+    respond_with(@scenario)
+  end
+  
+  def create
+    @scenario = Scenario.new(params[:scenario])
+    @scenario.save
+    respond_with(@scenario)
+  end
+  
+  def update
+    @scenario.update_attributes(params[:scenario])
     respond_with(@scenario)
   end
   
