@@ -38,8 +38,6 @@ class Scenario < ActiveRecord::Base
   # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
 
-  has_many :attachments, :as => :attachable
-
   # A scenario can have a preset. We use this 
   # when it has to be reset to this scenario. 
   #
@@ -48,8 +46,6 @@ class Scenario < ActiveRecord::Base
   has_one :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
 
   validates_presence_of :title, :on => :create, :message => I18n.t("scenario.provide_title")
-
-  accepts_nested_attributes_for :attachments
 
   scope :in_start_menu, where(:in_start_menu => true)
 
@@ -203,5 +199,3 @@ class Scenario < ActiveRecord::Base
   # loads all the "open classes" in calculator
   Dir["app/models/scenario/*.rb"].sort.each {|file| require_dependency file }
 end
-
-

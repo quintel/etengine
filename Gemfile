@@ -15,7 +15,6 @@ gem 'paper_trail', '>= 1.6.4'
 gem 'ruby-graphviz', :require => "graphviz"
 gem 'treetop', '1.4.8'
 gem 'default_value_for'
-gem 'paperclip', '>= 2.3.8'
 gem 'acts_as_list'
 
 # javascript
