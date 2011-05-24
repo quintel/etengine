@@ -10,7 +10,6 @@ gem 'authlogic', :git => 'git://github.com/odorcicd/authlogic.git', :branch => '
 gem 'bluecloth'
 gem 'formtastic'
 gem 'http_status_exceptions', :git => 'git://github.com/japetheape/http_status_exceptions.git' 
-gem 'jammit'
 gem 'paper_trail', '>= 1.6.4'
 gem 'ruby-graphviz', :require => "graphviz"
 gem 'treetop', '1.4.8'
