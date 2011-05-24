@@ -21,7 +21,7 @@ class Scenario < ActiveRecord::Base
     input_element_ids = params.keys
     input_element_ids.each do |key|
       input_element = InputElement.where(['id = ? or `key` = ?', key,key]).first
-      
+
       if params[key] == 'reset'
         delete_from_user_values(input_element.id)
       elsif value = params[key].to_f
@@ -29,28 +29,7 @@ class Scenario < ActiveRecord::Base
         unless input_element.disabled
           update_input_element(input_element, value)
         end
-
       end
-    end
-    
-    add_update_statements(lce.update_statements)
-  end
-
-
-  ##
-  # TODO REFACTOR fix
-  # @untested 2011-01-24 seb
-  #
-  def update_input_elements(params)
-
-    input_element_ids = params.keys.select{|key| key.match(/^\d+$/) }
-    InputElement.find(input_element_ids).each do |input_element|
-      value = params[input_element.id.to_s].to_f
-      # To prevent javascript hacking for disabled sliders we do an extra check. This is needed for the transition price
-      unless input_element.disabled
-        update_input_element(input_element, value)
-      end
-      
     end
     add_update_statements(lce.update_statements)
   end

@@ -61,9 +61,6 @@ class Api::ApiScenariosController < ApplicationController
   ##
   # Is alias to show.
   #
-  # def update
-  #  Current.scenario.update_input_elements(params)
-  # end
   def find_model
     if test_scenario?
       @api_scenario = ApiScenario.new(new_attributes)
