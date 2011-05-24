@@ -1,7 +1,7 @@
 class Api::ApiScenariosController < ApplicationController
   layout 'api'
 
-  before_filter :find_model, :only => [:update, :show, :destroy]
+  before_filter :find_model, :only => [:update, :show, :destroy, :user_values]
 
   def index
     @api_scenarios = ApiScenario.order('updated_at DESC')
@@ -46,6 +46,16 @@ class Api::ApiScenariosController < ApplicationController
   def destroy
     @api_scenario.destroy
     redirect_to api_scenarios_url
+  end
+
+  def user_values
+    puts params[:id]
+    puts @api_scenario = ApiScenario.find_by_api_session_key(params[:id])
+    respond_to do |format|
+      format.json do
+        render :json => @api_scenario.user_values, :callback => params[:callback] 
+      end
+    end
   end
 
   ##
