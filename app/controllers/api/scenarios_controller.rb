@@ -29,19 +29,8 @@ class Api::ScenariosController < ApplicationController
   def load
     respond_with(@scenario.load!)
   end
-  
-  # def users_scenarios
-  #   current_user.stored_scenarios
-  #   RemoteUserScenario {:user_id, :api_session_id, :name, :settings}
-  #   
-  # end
-  # 
-  # def load
-  #   globals.api_session_id = api_session_id
-  # end
-  
+
   private
-    
     def find_scenario
       # DEBT
       @scenario = Scenario.find_by_api_session_key(params[:id]) || Scenario.find(params[:id])

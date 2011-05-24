@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: carrier_datas
+# Table name: dataset_carrier_data
 #
 #  id                         :integer(4)      not null, primary key
 #  created_at                 :datetime

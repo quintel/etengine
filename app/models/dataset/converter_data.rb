@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: converter_datas
+# Table name: dataset_converter_data
 #
 #  id                                                :integer(4)      not null, primary key
 #  name                                              :string(255)

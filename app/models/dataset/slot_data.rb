@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: slot_datas
+# Table name: dataset_slot_data
 #
 #  id         :integer(4)      not null, primary key
 #  dataset_id :integer(4)

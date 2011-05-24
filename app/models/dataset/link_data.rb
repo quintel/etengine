@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: link_datas
+# Table name: dataset_link_data
 #
 #  id         :integer(4)      not null, primary key
 #  link_type  :integer(4)      default(0)
