@@ -43,6 +43,7 @@ class Api::ScenariosController < ApplicationController
   private
     
     def find_scenario
-      @scenario = Scenario.find params[:id]
+      # DEBT
+      @scenario = Scenario.find_by_api_session_key(params[:id]) || Scenario.find(params[:id])
     end
 end
