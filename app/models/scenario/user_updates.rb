@@ -25,9 +25,6 @@ class Scenario < ActiveRecord::Base
       if params[key] == 'reset'
         delete_from_user_values(input_element.id)
       elsif value = params[key].to_f
-        if input_element.id == 335
-          number_of_households = Current.scenario.area.number_households * ((1+(value/input_element.factor)) ** Current.scenario.years)
-        end
         # To prevent javascript hacking for disabled sliders we do an extra check. This is needed for the transition price
         unless input_element.disabled
           update_input_element(input_element, value)
@@ -49,9 +46,6 @@ class Scenario < ActiveRecord::Base
     input_element_ids = params.keys.select{|key| key.match(/^\d+$/) }
     InputElement.find(input_element_ids).each do |input_element|
       value = params[input_element.id.to_s].to_f
-      if input_element.id == 335
-        number_of_households = Current.scenario.area.number_households * ((1+(value/input_element.factor)) ** Current.scenario.years)
-      end
       # To prevent javascript hacking for disabled sliders we do an extra check. This is needed for the transition price
       unless input_element.disabled
         update_input_element(input_element, value)
