@@ -49,8 +49,6 @@ class Api::ApiScenariosController < ApplicationController
   end
 
   def user_values
-    puts params[:id]
-    puts @api_scenario = ApiScenario.find_by_api_session_key(params[:id])
     respond_to do |format|
       format.json do
         render :json => @api_scenario.user_values, :callback => params[:callback] 
