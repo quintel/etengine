@@ -112,8 +112,12 @@ class Scenario < ActiveRecord::Base
   #    
   def user_values=(values)
     values ||= {}
-    raise ArgumentError.new("You must set a hash: " + values.inspect) if !values.kind_of?(Hash)
-    self[:user_values] = values.to_yaml
+    #raise ArgumentError.new("You must set a hash: " + values.inspect) if !values.kind_of?(Hash)
+    self[:user_values] = case values
+      when Hash then values.to_yaml
+      when String then values
+      else raise ArgumentError.new("You must set either a hash or a string: " + values.inspect)
+    end
   end
 
 

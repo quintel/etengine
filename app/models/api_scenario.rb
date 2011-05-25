@@ -40,8 +40,8 @@ class ApiScenario < Scenario
 
   def save_as_scenario(params = {})
     params ||= {}
-    attributes = self.attributes.merge(params).with_indifferent_access
-    attributes.delete(:api_session_key)
+    attributes = self.attributes.merge(params)
+    attributes.delete('api_session_key')
 
     Scenario.create!(attributes)
   end
