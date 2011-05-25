@@ -93,8 +93,6 @@ Etm::Application.routes.draw do
       resources :areas do
         resources :carrier_datas
       end
-
-      resources :descriptions
     end
   end
 
