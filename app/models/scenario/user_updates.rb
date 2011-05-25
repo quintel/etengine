@@ -111,6 +111,7 @@ class Scenario < ActiveRecord::Base
   # @untested 2010-12-22 jape
   #    
   def user_values=(values)
+    values ||= {}
     raise ArgumentError.new("You must set a hash: " + values.inspect) if !values.kind_of?(Hash)
     self[:user_values] = values.to_yaml
   end
