@@ -16,8 +16,13 @@ class Api::ScenariosController < ApplicationController
   end
 
   def create
-    @scenario = Scenario.new(params[:scenario])
-    @scenario.save
+    if api_session_key = params[:scenario].delete("api_session_key")
+      api_scenario = ApiScenario.find_by_api_session_key(api_session_key)
+      @scenario = api_scenario.save_as_scenario(params[:scenario])
+    else
+      #@scenario = Scenario.new(params[:scenario])
+      #@scenario.save
+    end
     respond_with(@scenario)
   end
 

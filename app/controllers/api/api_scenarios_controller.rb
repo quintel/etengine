@@ -27,7 +27,7 @@ class Api::ApiScenariosController < ApplicationController
   # 335=2.4&421=2.9
   def show
     Current.scenario = @api_scenario
-    update_scenario
+    update_scenario(@api_scenario)
     @results = results
     @json = {
       'result'   => @results,
@@ -40,7 +40,7 @@ class Api::ApiScenariosController < ApplicationController
       format.json { render :json => @json, :callback => params[:callback] }
     end
   end
-  # update does the same like show, except that it is a POST request
+  # update does the same like show, but it is a POST request
   alias_method :update, :show
 
   def destroy
@@ -74,10 +74,7 @@ class Api::ApiScenariosController < ApplicationController
     end
 
     def new_attributes
-      attributes = Scenario.default_attributes.merge(:title => "API")
-      attributes[:api_session_key] = test_scenario? ? 'test' : Time.now.to_i
-      attributes.merge!(params[:settings]) if params[:settings]
-      attributes
+      ApiScenario.new_attributes(params[:settings])
     end
 
     def results
@@ -94,12 +91,12 @@ class Api::ApiScenariosController < ApplicationController
       end
     end
   
-    def update_scenario
-      Current.scenario.reset! if params[:reset]
+    def update_scenario(scenario)
+      scenario.reset! if params[:reset]
       if params[:input]
-        Current.scenario.update_input_elements_for_api(params[:input])
+        scenario.update_input_elements_for_api(params[:input])
         # Save scenario with new user_values, except it is a test version
-        Current.scenario.save unless test_scenario?
+        scenario.save unless test_scenario?
       end
     end
 end

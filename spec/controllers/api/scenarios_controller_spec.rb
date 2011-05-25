@@ -29,4 +29,20 @@ describe Api::ScenariosController do
       assigns(:scenario).should == @scenario
     end
   end
+
+  describe "Creating scenario from api_scenario" do
+    before do
+      @api_scenario = Factory(:api_scenario)
+      @api_scenario.country = 'de'
+      @api_scenario.save
+    end
+
+    it "should create a new scenario with values from api_scenario" do
+      put :create, 'scenario' => {'title' => 'foo bar', 'api_session_key' => @api_scenario.api_session_key}
+
+      assigns(:scenario).title.should == 'foo bar'
+      assigns(:scenario).api_session_key.should be_nil
+      assigns(:scenario).country.should == @api_scenario.country
+    end
+  end
 end

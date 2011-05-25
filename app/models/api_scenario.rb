@@ -31,6 +31,21 @@ class ApiScenario < Scenario
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
 
+  def self.new_attributes(settings = {})
+    settings ||= {}
+    attributes = Scenario.default_attributes.merge(:title => "API")
+    attributes[:api_session_key] = settings[:id] == 'test' ? 'test' : Time.now.to_i
+    attributes.merge(settings)
+  end
+
+  def save_as_scenario(params = {})
+    params ||= {}
+    attributes = self.attributes.merge(params).with_indifferent_access
+    attributes.delete(:api_session_key)
+
+    Scenario.create!(attributes)
+  end
+
   def to_param
     api_session_key
   end
