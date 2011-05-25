@@ -14,18 +14,18 @@ class Api::ScenariosController < ApplicationController
   def show
     respond_with(@scenario)
   end
-  
+
   def create
     @scenario = Scenario.new(params[:scenario])
     @scenario.save
     respond_with(@scenario)
   end
-  
+
   def update
     @scenario.update_attributes(params[:scenario])
     respond_with(@scenario)
   end
-  
+
   def load
     respond_with(@scenario.load!)
   end
