@@ -43,7 +43,6 @@ class InputElement < ActiveRecord::Base
   has_paper_trail
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
   belongs_to :slide
-  has_one :description, :as => :describable
   has_one :area_dependency, :as => :dependable
   has_many :expert_predictions
 
@@ -59,8 +58,7 @@ class InputElement < ActiveRecord::Base
     ])
   }
 
-
-  def self.input_elements_grouped
+  def self.input_elements_grouped # TODO: delete?
     @input_elements_grouped ||= InputElement.
       with_share_group.select('id, share_group, `key`').
       group_by(&:share_group)
@@ -80,24 +78,10 @@ class InputElement < ActiveRecord::Base
   def title_for_description
     "slider.#{name}"
   end
-
-  def search_result
-    SearchResult.new(name, description)
-  end
-
-  define_index do
-    indexes name
-    indexes description(:content_en), :as => :description_content_en
-    indexes description(:content_nl), :as => :description_content_nl
-    indexes description(:short_content_en), :as => :description_short_content_en
-    indexes description(:short_content_nl), :as => :description_short_content_nl
-  end
-
   
   def global_cache_settings
     {}
   end
-  
   
   def cache_conditions_key
     "%s_%s_%s_%s" % [self.class.name, self.id, Current.graph.id, Current.scenario.area.id]
@@ -177,11 +161,6 @@ class InputElement < ActiveRecord::Base
     where("slide_id = 4")
   end
   
-  
-  
-  #def fixed?
-  #  
-  #end
   def disabled
     has_locked_input_element_type?(input_element_type)
   end
@@ -208,7 +187,7 @@ class InputElement < ActiveRecord::Base
       :start_value, :min_value, :max_value, :step_value, 
       :user_value, :disabled, :translated_name, 
       :semi_unadaptable,:disabled_with_message, 
-      :input_element_type, :has_flash_movie
+      :input_element_type
     ].inject({}) do |hsh, key|
       hsh.merge key.to_s => self.send(key)
     end
@@ -227,19 +206,11 @@ class InputElement < ActiveRecord::Base
         :number_to_round_with,
         :output, :user_value, :disabled, :translated_name, 
         :semi_unadaptable,:disabled_with_message, 
-        :input_element_type, :has_flash_movie])
+        :input_element_type])
   end
 
   def translated_name
     I18n.t("slider.%s" % self.name)
-  end
-
-  ##
-  # For loading multiple flowplayers classname is needed instead of id
-  # added the andand chack and html_safe to clean up the helper
-  #
-  def parsed_description
-    (description.andand.content.andand.gsub('id="player"','class="player"') || "").html_safe
   end
   
   def parsed_label
@@ -326,10 +297,6 @@ class InputElement < ActiveRecord::Base
   #
   def has_locked_input_element_type?(input_type)
     %w[fixed remainder fixed_share].include?(input_type)
-  end
-  
-  def has_flash_movie
-    description.andand.content.andand.include?("player")  || description.andand.content.andand.include?("object")
   end
   
   def disabled_with_message?

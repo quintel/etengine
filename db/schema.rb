@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110523124449) do
+ActiveRecord::Schema.define(:version => 20110525135156) do
 
   create_table "area_dependencies", :force => true do |t|
     t.string  "dependent_on"
@@ -312,19 +312,6 @@ ActiveRecord::Schema.define(:version => 20110523124449) do
   end
 
   add_index "datasets", ["region_code"], :name => "index_graph_datas_on_region_code"
-
-  create_table "descriptions", :force => true do |t|
-    t.text     "content_en"
-    t.text     "short_content_en"
-    t.integer  "describable_id"
-    t.string   "describable_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "content_nl"
-    t.text     "short_content_nl"
-  end
-
-  add_index "descriptions", ["describable_id", "describable_type"], :name => "index_descriptions_on_describable_id_and_describable_type"
 
   create_table "expert_predictions", :force => true do |t|
     t.integer  "input_element_id"
