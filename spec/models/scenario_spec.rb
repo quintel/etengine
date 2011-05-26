@@ -84,11 +84,9 @@ describe Scenario do
     end
   end
 
-  describe "#municipality?, #has_buildings?, #use_network_calculations?, #number_of_households, #number_of_existing_households" do
+  describe "#municipality?, #number_of_households, #number_of_existing_households" do
     {
       :municipality? => :is_municipality?,
-      :has_buildings? => :has_buildings,
-      :use_network_calculations? => :use_network_calculations,
       :number_of_households => :number_households,
       :number_of_existing_households => :number_of_existing_households
     }.each do |scenario_method_name, area_method_name|
@@ -117,22 +115,6 @@ describe Scenario do
   describe "#number_of_existing_households=" do
     before { @scenario.number_of_existing_households = 15}
     specify { @scenario.number_of_existing_households.should == 15 }
-  end
-
-  describe "#use_peak_load" do
-    context "Scenario != advanced" do
-      before {@scenario.stub!(:advanced?).and_return(false)}
-      specify { @scenario.use_peak_load.should be_false}
-    end
-    context "Scenario is advanced" do
-      before {@scenario.stub!(:advanced?).and_return(true)}
-      [true, false].each do |flag|
-        context "use_network_calculations? = #{flag}" do
-          before {@scenario.stub!(:use_network_calculations?).and_return(flag)}
-          specify { @scenario.use_peak_load.should == flag}
-        end
-      end
-    end
   end
 
   describe "setting and retrieving user_values" do

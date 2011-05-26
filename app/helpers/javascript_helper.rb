@@ -15,10 +15,4 @@ module JavascriptHelper
     end.join(', ')
   end
 
-  def update_constraint(constraint)
-    ''
-  end
-
-
-
 end

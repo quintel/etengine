@@ -1,13 +1,9 @@
 class ApplicationController < ActionController::Base
-  include LayoutHelper
-  include JavascriptHelper
-  include SprocketsHelper
-
   include ApplicationController::ExceptionHandling unless Rails.env.development?
   # include ApplicationController::PerformanceProfiling
   include ApplicationController::GcDisabling
   include SortableTable::App::Controllers::ApplicationController
-  
+
   helper :all
   helper_method :current_user_session, :current_user
 
@@ -26,6 +22,7 @@ class ApplicationController < ActionController::Base
     rescue_from Qernel::CalculationError, :with => :show_qernel_errors
     rescue_from Gql::GqlError, :with => :show_gql_errors
   end
+
   def show_qernel_errors(exception)
     @exception = exception
     render :file => 'pages/qernel_error', :layout => 'pages'
@@ -36,46 +33,11 @@ class ApplicationController < ActionController::Base
     render :file => 'pages/gql_error', :layout => 'pages'
   end
 
-  def set_locale
-    locale
-    redirect_to :back
-  end
-
   def locale
     # update session if passed
     session[:locale] = params[:locale] if params[:locale]
     # set locale based on session or url
-    I18n.locale =  session[:locale] || get_locale_from_url
-  end
-
-  def get_locale_from_url
-    # set locale based on host or default
-    request.host.split(".").last == 'nl' ? 'nl' : I18n.default_locale
-  end
-  
-  ##
-  # Loads Qernel and GQL in the controller, so that exceptions can be catched
-  # by the rescue_from Qernel::*Error and thus displayed a nice debug panel,
-  # instead of the default error page.
-  #
-  def preload_gql
-    Current.gql
-  end
-
-  # TODO make one generic method
-  def page_update_constraints(page)
-    Current.view.root.constraints.each do |constraint|
-      benchmark("updating constraint: #{constraint.key}") do
-        page << update_constraint(constraint)
-      end
-    end
-  end
-
-  def ensure_valid_browser
-    unless ALLOWED_BROWSERS.include?(browser)
-      #TODO: put text in translation files and translate!
-      flash[:notice] = "Your browser is not completely supported. <small><a href='/pages/browser_support/'>more information</a></small>"
-    end
+    I18n.locale =  session[:locale] || 'en'
   end
 
   ##
@@ -100,30 +62,6 @@ protected
 
   def teardown_current
     Current.teardown_after_request!
-  end
-
-  #
-  # Redirect to params[:redirect_to] if if has been set. 
-  #
-  # Usage:
-  #   redirect_to_if
-  #
-  # @untested 2010-12-21 jaap
-  #
-  def redirect_to_if(*args)
-    if params[:redirect_to]
-      redirect_to params[:redirect_to]
-    else
-      redirect_to(*args)
-    end
-  end
-  
-  
-  
-  def ensure_settings_defined    
-    if Current.scenario.country.nil? or Current.scenario.end_year.nil?
-      redirect_to root_path
-    end
   end
 
   def permission_denied
@@ -161,17 +99,4 @@ private
     @current_user = current_user_session && current_user_session.user
   end
 
-  # TODO refactor into lib/browser.rb (seb 2010-10-11)
-  def browser
-    user_agent = request.env['HTTP_USER_AGENT']
-    return 'firefox' if user_agent =~ /Firefox/
-    return 'chrome' if user_agent =~ /Chrome/
-    return 'safari' if user_agent =~ /Safari/
-    return 'opera' if user_agent =~ /Opera/
-    return 'ie9' if user_agent =~ /MSIE 9/
-    return 'ie8' if user_agent =~ /MSIE 8/
-    return 'ie7' if user_agent =~ /MSIE 7/
-    return 'ie6' if user_agent =~ /MSIE 6/
-  end
 end
-
