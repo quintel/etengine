@@ -94,13 +94,6 @@ class Scenario < ActiveRecord::Base
   ##############################
   # Scenario Attributes
   ##############################
-  
-  ##
-  # @tested 2010-11-30 seb
-  # 
-  def use_peak_load
-    advanced? and use_network_calculations?
-  end
 
   ##
   # @tested 2010-11-30 seb

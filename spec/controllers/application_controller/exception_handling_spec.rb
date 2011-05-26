@@ -29,7 +29,6 @@ describe RescueController do
   
   
   before(:each) do
-    ApplicationController.stub!(:ensure_valid_browser)
     Current.stub!(:graph)
     # @controller = RescueController.new
     # RescueController.consider_all_requests_local = false

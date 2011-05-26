@@ -32,27 +32,6 @@ class Scenario < ActiveRecord::Base
   ##
   # @tested 2010-11-30 seb
   # 
-  def has_buildings?
-    area.andand.has_buildings == true
-  end
-
-  ##
-  # @untested 2011-01-23 rob
-  # 
-  def has_agriculture?
-    area.andand.has_agriculture == true
-  end
-
-  ##
-  # @tested 2010-11-30 seb
-  # 
-  def use_network_calculations?
-    area.andand.use_network_calculations == true
-  end
-
-  ##
-  # @tested 2010-11-30 seb
-  # 
   def region_or_country
     region || country
   end
