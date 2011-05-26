@@ -26,15 +26,6 @@ class Policy
     inspect
   end
   
-private
-  def get_default_policy_goals
-    if Current.scenario.complexity_key == "watt_nu"
-      Round.where('completed = 1 OR active = 1').order(:position).map{|x| x.policy_goal.andand.to_gql}
-    else
-      ::PolicyGoal.allowed_policies.map(&:to_gql)
-    end
-  end
-
 end
 
 end

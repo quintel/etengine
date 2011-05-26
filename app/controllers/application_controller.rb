@@ -158,11 +158,6 @@ protected
     redirect_to login_path
   end
 
-  def load_view_settings
-    Current.view = ViewSetting.new(Current.scenario.complexity_key, params[:controller], params[:id])
-  end
-
-
   def restrict_to_admin
     if current_user.andand.admin?
       true
