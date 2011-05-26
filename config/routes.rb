@@ -83,15 +83,15 @@ Etm::Application.routes.draw do
       resources :converters do
         resource :converter_data
       end
-      resources :converter_datas
+      resources :converter_data
 
       resources :carriers do 
         resource :carrier_data
       end
-      resources :carrier_datas
+      resources :carrier_data
 
       resources :areas do
-        resources :carrier_datas
+        resources :carrier_data
       end
     end
   end
