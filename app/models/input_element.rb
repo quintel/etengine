@@ -146,17 +146,7 @@ class InputElement < ActiveRecord::Base
     end
   end
 
-
-  ##### optimizer
-
   def update_current(value)
-    # DON'T do that for now. because of DoubleGqlLoad Weirdness
-    # value = value_within_range(value.to_f)
-    # value = value.to_f
-    # Current.user_values[id] = value
-    # Current.update_user_updates({update_type => {
-    #   keys => {attr_name => value / factor}
-    # }})
     Current.scenario.update_input_element(self, value)
   end
 
