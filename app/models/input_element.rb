@@ -79,11 +79,6 @@ class InputElement < ActiveRecord::Base
     "%s_%s_%s_%s" % [self.class.name, self.id, Current.graph.id, Current.scenario.area.id]
   end
 
-  # TODO refactor (seb 2010-10-11)
-  def start_value
-    return self[:start_value]
-  end
-
   ##
   # update hash for this input_element with the given value.
   # {'converters' => {'converter_keys' => {'demand_growth' => 2.4}}}
@@ -103,12 +98,49 @@ class InputElement < ActiveRecord::Base
     input_element_type == 'remainder'
   end
 
+  def as_json(options={})
+    super(
+      :only => [:id], :methods => [:max_value, :min_value, :start_value]
+    )
+  end
+
+  def self.static_values
+    InputElement.all.inject({}) do |hsh, input_element|
+      hsh.merge input_element.id.to_s => {
+        :max_value => input_element.max_value,
+        :min_value => input_element.min_value,
+        :start_value => input_element.start_value
+      }
+    end
+  end
+
+  def user_value
+    Current.scenario.user_value_for(self)
+  end
+
+  # TODO refactor (seb 2010-10-11)
+  def start_value
+    if gql_query = self[:start_value_gql] and gql_query != ''
+      Current.gql.query(gql_query)
+    else
+      self[:start_value]
+    end
+  end
+
   def min_value
-    self[:min_value] || 0
+    if gql_query = self[:min_value_gql] and gql_query != ''
+      Current.gql.query(gql_query)
+    else
+      self[:min_value] || 0
+    end
   end
 
   def max_value
-    self[:max_value] || 0
+    if gql_query = self[:max_value_gql] and gql_query != ''
+      Current.gql.query(gql_query)
+    else
+      self[:max_value] || 0
+    end
   end
 
   def disabled
