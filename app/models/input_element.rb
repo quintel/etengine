@@ -75,37 +75,10 @@ class InputElement < ActiveRecord::Base
     # end
   end
 
-  def title_for_description
-    "slider.#{name}"
-  end
-  
-  def global_cache_settings
-    {}
-  end
-  
   def cache_conditions_key
     "%s_%s_%s_%s" % [self.class.name, self.id, Current.graph.id, Current.scenario.area.id]
   end
-  
-  # Cache
-  def cache(method, options = {}, &block)
-    if options[:cache] == false
-      yield
-    else
-      Rails.cache.fetch("%s-%s" % [cache_conditions_key, method.to_s]) do
-        yield
-      end
-    end
-  end
-  
-  def number_to_round_with
-    if factor == 1           
-      step_value == 1 ? 0 : 1
-    elsif factor >= 100      
-      3
-    end         
-  end
-  
+
   # TODO refactor (seb 2010-10-11)
   def start_value
     return self[:start_value]
@@ -130,24 +103,6 @@ class InputElement < ActiveRecord::Base
     input_element_type == 'remainder'
   end
 
-  # The input elements that must also be updated if this input element is updated.
-  def input_elements_to_update
-    return [] if self.update_value.blank?
-    elements_to_update = self.update_value.blank? ? [] : self.update_value.split("_")
-    InputElement.find(elements_to_update)
-  end
-
-  # some input values are not adaptable by municipalities
-  def semi_unadaptable?
-    Current.scenario.municipality? && locked_for_municipalities == true
-  end
-  alias_method :semi_unadaptable, :semi_unadaptable?
-
-
-  def hidden_input_element?
-    false
-  end
-
   def min_value
     self[:min_value] || 0
   end
@@ -156,14 +111,10 @@ class InputElement < ActiveRecord::Base
     self[:max_value] || 0
   end
 
-
-  def self.households_heating_sliders
-    where("slide_id = 4")
-  end
-  
   def disabled
     has_locked_input_element_type?(input_element_type)
   end
+
   #############################################
   # Methods that interact with a users values
   #############################################
@@ -180,50 +131,7 @@ class InputElement < ActiveRecord::Base
     end
     Current.scenario.store_user_value(self, value || start_value || 0).round(2)
   end
-  
-  def backbone_options
-    [
-      :id, :name, :unit, :share_group,
-      :start_value, :min_value, :max_value, :step_value, 
-      :user_value, :disabled, :translated_name, 
-      :semi_unadaptable,:disabled_with_message, 
-      :input_element_type
-    ].inject({}) do |hsh, key|
-      hsh.merge key.to_s => self.send(key)
-    end
-  end
 
-  def as_json(options = {})
-    super(:only => [:id, :name, :unit, :share_group, :factor], 
-      :methods => [ 
-        :start_value, 
-        :start_value_gql,
-        :min_value, 
-        :min_value_gql,
-        :max_value, 
-        :max_value_gql,
-        :step_value, 
-        :number_to_round_with,
-        :output, :user_value, :disabled, :translated_name, 
-        :semi_unadaptable,:disabled_with_message, 
-        :input_element_type])
-  end
-
-  def translated_name
-    I18n.t("slider.%s" % self.name)
-  end
-  
-  def parsed_label
-    "#{Current.gql.query_present(label_query).round(2)} #{label}".html_safe unless label_query.blank?
-  end
-  
-  ##
-  # For showing the name and the action of the inputelement in the admin
-  #
-  
-  def parsed_name_for_admin
-    "#{key} | #{name} | #{unit} | #{input_element_type}"
-  end
   ##
   # Resets the user values
   #
@@ -241,35 +149,6 @@ class InputElement < ActiveRecord::Base
 
   ##### optimizer
 
-  def calculated_step_value
-    ((max_value - min_value) / 100).round(2)
-  end
-
-
-  # TODO refactor (seb 2010-10-11)
-  def use_for_optimize?
-    self.share_group != "other hidden_slider" and 
-    self.update_type != "carriers" and 
-    self.update_type != "policies" and 
-    self.slide.andand.controller_name !="costs" and 
-    self.slide.andand.controller_name !=nil and 
-    self.input_element_type != "fixed" and 
-    self.share_group != "hidden_slider"
-  end
-  alias_method :use_for_optimize, :use_for_optimize?
-
-  def use_for_calibrate
-    self.use_for_optimize and self.keys != nil and self.keys != 0 and self.keys != "" and !self.attr_name.include? "_conversion"
-  end
-
-  def use_value
-    if value = Current.user_values[self.id] rescue nil
-    elsif value = self.start_value rescue nil
-    elsif value = Current.gql.query(self.start_value_gql) rescue nil
-    end
-    return value
-  end  
-
   def update_current(value)
     # DON'T do that for now. because of DoubleGqlLoad Weirdness
     # value = value_within_range(value.to_f)
@@ -281,31 +160,11 @@ class InputElement < ActiveRecord::Base
     Current.scenario.update_input_element(self, value)
   end
 
-  def value_within_range(value)
-    raise "DANGEROUS: DoubleGqlLoad Weirdness ahead"
-    if value > max_value
-      max_value
-    elsif value < min_value
-      min_value
-    else
-      value
-    end
-  end
-
   ##
   # @tested 2010-12-22 robbert
   #
   def has_locked_input_element_type?(input_type)
     %w[fixed remainder fixed_share].include?(input_type)
-  end
-  
-  def disabled_with_message?
-    disabled
-  end
-  alias_method :disabled_with_message, :disabled_with_message?
-
-  def is_policy?
-    key.split('_').first == "policy" 
   end
 end
 
