@@ -13,9 +13,7 @@
 
 
 class Blueprint < ActiveRecord::Base
-
-  belongs_to :blueprint_model
-
+  belongs_to :blueprint_model 
   has_many :datasets
   # I explicitly call the association *_records, because we currently also 
   # have a method #converters that returns qernel_converters. After renaming
@@ -25,9 +23,7 @@ class Blueprint < ActiveRecord::Base
   has_many :slots, :dependent => :delete_all
 
   scope :ordered, order('id DESC')
-
   scope :latest, order('id DESC').limit(1)
-
   scope :has_group, lambda {|group| joins(:groups).where(["groups.id = ?", group.id]) }
 
   def copy_blueprint!
@@ -128,9 +124,4 @@ class Blueprint < ActiveRecord::Base
     end
     @slot_qernels
   end
-
-
-
 end
-
-
