@@ -34,12 +34,6 @@ form, fieldset {
 body#model #wrapper {
   min-height: 100%; }
 
-body#outside-model #wrapper {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -160px; }
-
 #wrapper {
   min-width: 980px;
   width: 100%;
@@ -49,31 +43,11 @@ body#outside-model #wrapper {
   height: 100%;
   overflow: visible; }
 
-body#model #content {
-  padding: 160px 0px 160px 35px;
-  z-index: 1; }
-
-body#outside-model #content {
-  padding: 130px 0px 150px 35px;
-  z-index: 0; }
-
-.monotyped {
-  font-family: Courier; }
-
 #content {
   position: relative;
   min-width: 950px;
   max-width: 1230px;
   margin: 0 auto; }
-  #content .seo {
-    position: absolute;
-    left: -9999px;
-    top: auto;
-    height: 1px;
-    width: 1px; }
-  #content .tree-columns {
-    width: 100%;
-    overflow: hidden; }
   #content #flash {
     position: absolute;
     left: 50%;
@@ -90,9 +64,6 @@ body#outside-model #content {
     #content #flash p {
       padding: 1px 10px;
       margin: 0; }
-
-body#outside-model #flash {
-  top: 95px; }
 
 table.default thead th {
   background: #5da1cb;
@@ -115,116 +86,6 @@ table.default tr.odd td, table.default tr.odd th {
 
 .tac {
   text-align: center; }
-
-#under_construction {
-  float: left;
-  width: 60%;
-  border: 1px solid #e07033;
-  background-color: #e07033;
-  padding: 100px;
-  color: white;
-  text-align: center; }
-
-.description_container_nl .en {
-  display: none; }
-
-.description_container_en .nl {
-  display: none; }
-
-.side_tabs {
-  position: fixed;
-  left: 0;
-  top: 25%;
-  border-width: 0;
-  height: 118px !important;
-  width: 27px !important;
-  cursor: pointer;
-  z-index: 2000; }
-
-#feedback-tab.nl {
-  background: url("../images/layout/feedback_button_nl.png") no-repeat scroll 0 0 white;
-  height: 97px !important; }
-
-#feedback-tab.en {
-  background: url("../images/layout/feedback_button.gif") no-repeat scroll 0 0 white; }
-
-#epn_module.nl {
-  margin-top: 107px;
-  background: url("../images/layout/education_button_nl.gif") no-repeat scroll 0 0 white; }
-
-#epn_module.en {
-  margin-top: 127px;
-  background: url("../images/layout/education_button.gif") no-repeat scroll 0 0 white; }
-
-#refman-tab.en {
-  background: url("../images/layout/publications_button.png") no-repeat scroll 0 0 white;
-  height: 129px !important;
-  margin-top: 249px; }
-
-#refman-tab.nl {
-  background: url("../images/layout/publications_button_nl.png") no-repeat scroll 0 0 white;
-  height: 114px !important;
-  margin-top: 229px; }
-
-.locator {
-  position: absolute; }
-
-#locator_hv {
-  left: 402px;
-  top: 288px; }
-
-#locator_hv-mv {
-  left: 414px;
-  top: 172px; }
-
-#locator_mv {
-  left: 188px;
-  top: 202px; }
-
-#locator_mv-lv {
-  left: 207px;
-  top: 117px; }
-
-#locator_lv {
-  left: 26px;
-  top: 131px; }
-
-.municipality-left {
-  float: left; }
-
-.municipality-right {
-  float: left;
-  margin-left: 30px;
-  width: 430px; }
-  .municipality-right h2 {
-    font: 20px/25px Georgia, "Times New Roman", Times, serif; }
-
-.style_button {
-  float: left;
-  text-decoration: none;
-  cursor: pointer; }
-  .style_button div {
-    float: left;
-    height: 51px; }
-
-.button_left_movie {
-  background: white url(../images/layout/movie_button_left_with_icon.png) no-repeat;
-  width: 70px; }
-
-.button_left {
-  background: white url(../images/layout/movie_button_left_with_icon.png) no-repeat;
-  width: 10px; }
-
-.button_center {
-  background: white url(../images/layout/movie_button_middle.png) repeat-x; }
-  .button_center span {
-    float: left;
-    margin: 15px 10px 0 0;
-    color: black; }
-
-.button_right {
-  background: white url(../images/layout/movie_button_right.png) no-repeat;
-  width: 34px; }
 
 .clear {
   clear: both; }
@@ -527,51 +388,3 @@ a#shadow-bg-close-button {
   height: 34px;
   z-index: 1003;
   background: url(/images/layout/close_button.gif) no-repeat center center; }
-
-.view_nodes {
-  margin: 0px;
-  padding: 0px; }
-  .view_nodes h1, .view_nodes h2, .view_nodes ul, .view_nodes li, .view_nodes div, .view_nodes p {
-    margin: 0px;
-    padding: 0px; }
-  .view_nodes div {
-    float: left; }
-  .view_nodes ul, .view_nodes li {
-    list-style: none; }
-  .view_nodes li.node_list {
-    float: left;
-    width: 200px;
-    height: 500px;
-    padding: 10px;
-    border: 1px black solid; }
-    .view_nodes li.node_list .active {
-      background-color: #63a1c9; }
-      .view_nodes li.node_list .active a {
-        color: white; }
-    .view_nodes li.node_list li.node_item {
-      float: left;
-      clear: both;
-      width: 194px;
-      padding: 3px; }
-      .view_nodes li.node_list li.node_item a {
-        float: left; }
-      .view_nodes li.node_list li.node_item .edit_button {
-        margin-top: 3px;
-        margin-left: 3px; }
-      .view_nodes li.node_list li.node_item form {
-        float: left; }
-        .view_nodes li.node_list li.node_item form div {
-          float: left;
-          height: 14px; }
-        .view_nodes li.node_list li.node_item form input {
-          float: left;
-          margin-left: 5px;
-          padding: 0px;
-          border: 0px;
-          width: 15px;
-          cursor: pointer;
-          background: transparent url("/images/layout/icons/delete.png"); }
-  .view_nodes li.node_list.grey_left {
-    border-left: 1px lightgrey solid; }
-  .view_nodes li.node_list.grey_right {
-    border-right: 1px lightgrey solid; }
