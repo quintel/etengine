@@ -160,13 +160,13 @@ class Gql
   #
   def query(query)
     aggregation, queries = query.match(/^(\w*)\.(.*)/).andand.captures
-    result = ::Graph.benchmark("GQL#query #{query}") do
+    #result = ::Graph.benchmark("GQL#query #{query}") do
       result = if aggregation.blank?
         query_gql2(query)
       else
         send("query_#{aggregation}", query)
       end
-    end
+    #end
     result
   end
 
