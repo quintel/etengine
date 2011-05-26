@@ -80,16 +80,6 @@ module ApplicationHelper
     end
   end
 
-  # TODO document - what the hell is %s/%s... (seb 2010-10-11)
-  def last_etm_path(options = {})
-    options[:include_action] = true if !options.has_key?(:include_action)
-    if options[:include_action]
-     "%s/%s" % [Current.setting.last_etm_controller_name, Current.setting.last_etm_controller_action]
-    else
-      "%s" % [Current.setting.last_etm_controller_name]
-    end
-  end
-
   # TODO refactor (what does this do?) (seb 2010-10-11)
   # Probably isnt used anyway
   def show_locale_files
