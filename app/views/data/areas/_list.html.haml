@@ -13,4 +13,4 @@
           %li.level_0{:'data-search' => area.region_code}
             .content
               %h1
-                = link_to area.region_code, data_area_path(area)
+                = link_to area.region_code, data_area_path(area, :blueprint_id => params[:blueprint_id], :region_code => params[:region_code])

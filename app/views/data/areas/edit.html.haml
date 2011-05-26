@@ -16,9 +16,8 @@
   = render 'form'
 
   %p
-    = link_to "Show", admin_area_path(@area)
+    = link_to "Show", data_area_path(@area)
     |
-    = link_to "View All", admin_areas_path
+    = link_to "View All", data_areas_path
 
-
-  = render "/admin/shared/revisions", :versioned => @area
+  = render "/data/shared/revisions", :versioned => @area
