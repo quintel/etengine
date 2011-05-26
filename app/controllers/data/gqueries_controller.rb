@@ -80,21 +80,23 @@ class Data::GqueriesController < Data::DataController
       redirect_to admin_gqueries_url
     end
   end
-
-  def find_model
-    if params[:version_id]
-      @version = Version.find(params[:version_id])
-      @gquery = @version.reify
-      flash[:notice] = "Revision"
-    else
-      @gquery = Gquery.find(params[:id])
-    end
-  end
   
-  def assign_query_groups(gquery,groups)
-    groups.each do |group|
-      gquery.gquery_groups.delete_all
-      GqueriesGqueryGroup.new(:gquery_group_id => group, :gquery_id => gquery.id).save
+  private
+
+    def find_model
+      if params[:version_id]
+        @version = Version.find(params[:version_id])
+        @gquery = @version.reify
+        flash[:notice] = "Revision"
+      else
+        @gquery = Gquery.find(params[:id])
+      end
     end
-  end
+  
+    def assign_query_groups(gquery,groups)
+      groups.each do |group|
+        gquery.gquery_groups.delete_all
+        GqueriesGqueryGroup.new(:gquery_group_id => group, :gquery_id => gquery.id).save
+      end
+    end
 end
