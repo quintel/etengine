@@ -49,9 +49,13 @@ class Api::ApiScenariosController < ApplicationController
   end
 
   def user_values
+    hsh = InputElement.static_values
+    @api_scenario.user_values.each do |id, user_value|
+      hsh[id.to_s][:user_value] = user_value if hsh[id.to_s]
+    end
     respond_to do |format|
       format.json do
-        render :json => @api_scenario.user_values, :callback => params[:callback] 
+        render :json => hsh, :callback => params[:callback] 
       end
     end
   end
