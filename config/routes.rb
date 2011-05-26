@@ -22,6 +22,7 @@ Etm::Application.routes.draw do
         get :user_values
       end
     end
+    resources :areas, :only => [:index, :show]
   end
 
   namespace :construction do
