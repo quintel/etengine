@@ -73,6 +73,10 @@ ActiveRecord::Schema.define(:version => 20110525135156) do
     t.integer  "current_electricity_demand_in_mj",         :limit => 8, :default => 1
     t.boolean  "has_solar_csp"
     t.boolean  "has_old_technologies"
+    t.integer  "parent_id"
+    t.boolean  "has_cold_network"
+    t.float    "cold_network_potential"
+    t.boolean  "has_heat_import"
   end
 
   create_table "blackbox_gqueries", :force => true do |t|
@@ -421,6 +425,19 @@ ActiveRecord::Schema.define(:version => 20110525135156) do
   add_index "input_elements", ["key"], :name => "unique api key", :unique => true
   add_index "input_elements", ["slide_id"], :name => "index_input_elements_on_slide_id"
 
+  create_table "lce_values", :force => true do |t|
+    t.string   "using_country"
+    t.string   "origin_country"
+    t.float    "co2_exploration_per_mj"
+    t.float    "co2_extraction_per_mj"
+    t.float    "co2_treatment_per_mj"
+    t.float    "co2_transportation_per_mj"
+    t.float    "co2_conversion_per_mj"
+    t.float    "co2_waste_treatment_per_mj"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "links", :force => true do |t|
     t.integer "blueprint_id"
     t.integer "parent_id"
@@ -671,6 +688,7 @@ ActiveRecord::Schema.define(:version => 20110525135156) do
     t.string   "group"
     t.string   "trackable",          :default => "0"
     t.boolean  "send_score",         :default => false
+    t.boolean  "new_round"
   end
 
   add_index "users", ["trackable"], :name => "index_users_on_trackable"

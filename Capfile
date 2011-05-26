@@ -28,23 +28,12 @@ end
 
 namespace :deploy do
   task :after_update_code do
-    run "cp #{config_files}/database.yml #{release_path}/config/database.yml"
-    run "cp #{config_files}/server_variables.rb #{release_path}/config/server_variables.rb"
-    run "cp #{config_files}/hoptoad.rb #{release_path}/config/initializers/hoptoad.rb"
-    run "cd #{release_path}; ls -lh public"
+    run "cp #{config_files}/* #{release_path}/config/"
     run "cd #{release_path}; chmod 777 public/images public/stylesheets tmp"
-    run "ln -nfs #{shared_path}/assets #{release_path}/public/assets"
-    run "ln -nfs #{shared_path}/assets/pdf #{release_path}/public/pdf"
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
     run "cd #{release_path} && bundle install"
 
-    #deploy.generate_rdoc
     memcached.flush
-  end
-
-  desc 'Import seeds on server'
-  task :seed, :roles => [:db] do
-    run "cd #{deploy_to}/current; rake db:seed RAILS_ENV=#{stage}"
   end
 
   task :start do ; end
@@ -72,13 +61,4 @@ task :db2local do
   system "gunzip -f etm_#{server_type}.sql.gz"
   puts "Importing sql file to db"
   system "mysql -u root etm_dev < etm_#{server_type}.sql"
-end
-
-
-%w[staging testing prod].each do |stage|
-  desc "Move #{stage} db to local db"
-  task "#{stage}2local" do
-    self.send(stage)
-    db2local
-  end
 end

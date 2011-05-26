@@ -1,5 +1,5 @@
 require 'bundler/capistrano'
-require 'thinking_sphinx/deploy/capistrano'
+
 
 
 set :application, "etengine"
@@ -19,9 +19,8 @@ end
 
 set :user, 'ubuntu'
 
-
 set :deploy_to, "/home/ubuntu/apps/#{application}"
-set :config_files, "/home/ubuntu/config_files"
+set :config_files, "/home/ubuntu/config_files/#{application}"
 
 set :scm, :git
 set :repository,  "git@github.com:dennisschoenmakers/etengine.git"
