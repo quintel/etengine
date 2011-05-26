@@ -3,24 +3,6 @@
 #
 # I created a new Setting class, which holds all the settings specific for a user session. Such as :show_municipality_introduction and so on. 
 # 
-# == Current.setting
-# 
-# Holds all the settings specific for a user session. Such as :show_municipality_introduction and so on. 
-# Attributes in Setting are meant for front-end and similar things. And cannot influence the GQL.
-# 
-#   Current.setting.show_municipality_introduction
-#   Current.setting.show_municipality_introduction = false
-# 
-# At any point if you want to reset settings:
-#
-#   Current.reset_setting!
-#   # which is a shortcut to
-#   Current.setting.reset!
-#   # which does more less the same as:
-#   Current.setting = Setting.default
-# 
-# The setting object will be persisted in the session.
-#
 # == Current.scenario
 #
 # At any point if you want to reset the scenario:
@@ -67,14 +49,6 @@ class Current
 
   def scenario
     session[:scenario] ||= Scenario.default
-  end
-
-  def setting=(setting)
-    session[:setting] = setting
-  end
-
-  def setting
-    session[:setting] ||= Setting.default
   end
 
   def current_slide=(current_slide)

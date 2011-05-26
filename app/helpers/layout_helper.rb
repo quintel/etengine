@@ -72,11 +72,6 @@ module LayoutHelper
     end
   end
 
-  def back_to_model_link
-    link_to t("back to model"), :controller => Current.setting.last_etm_controller_name, :action => session[:last_etm_action_name] unless Current.setting.last_etm_controller_name.blank?
-  end
-  
-  
   def shadowbox(&block)
     haml_tag :div, :id => "shadowbox-outer", :style => "width: 70%; margin: 10px 0px 40px 15%;" do
       ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'].each do |dir|
