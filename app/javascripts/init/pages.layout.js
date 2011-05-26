@@ -4,5 +4,3 @@
 //= require <init/always>
 //= require <old>
 
-//= require <lib/helpers/util>
-
