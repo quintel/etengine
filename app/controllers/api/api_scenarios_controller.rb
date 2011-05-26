@@ -74,7 +74,8 @@ class Api::ApiScenariosController < ApplicationController
     end
 
     def new_attributes
-      ApiScenario.new_attributes(params[:settings])
+      settings = params[:settings].present? ? params[:settings] : {}
+      ApiScenario.new_attributes(settings)
     end
 
     def results
