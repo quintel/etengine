@@ -1,3 +1,8 @@
+#header #nav ul li {
+  list-style-type: none;
+  float: left;
+  padding: 5px; }
+
 .blackbox-results tr.hide-row {
   display: none; }
 

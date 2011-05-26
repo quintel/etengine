@@ -16,22 +16,20 @@
 
   %body#model
     #header
-      #nav.nav-admin
-        .nav-holder.nav-holder-inner{:style=>"float:left"}
-          %ul
-            - tab("Graphs", 'admin/graphs', '')
-            - tab("Gqueries", "data/latest/#{Current.scenario.country}/gqueries", '')
-            - tab("Tables", 'admin/query_tables', '')
-            - tab("Areas", "data/latest/#{Current.scenario.country}/areas", '')
-            - tab("Carriers", "data/latest/#{Current.scenario.country}/carriers", '')
-            - tab("Blackboxes", 'admin/blackboxes', '')
-            - tab("Bb scenarios", 'admin/blackbox_scenarios', '')
-            - tab("Translations", 'admin/translations', '')
-            - tab("Historic", 'admin/historic_series', '')
-            - tab("Expert", 'admin/expert_predictions', '')
-      
+      #nav
+        %ul
+          - tab("Graphs", 'admin/graphs', '')
+          - tab("Gqueries", "data/latest/#{Current.scenario.country}/gqueries", '')
+          - tab("Tables", 'admin/query_tables', '')
+          - tab("Areas", "data/latest/#{Current.scenario.country}/areas", '')
+          - tab("Carriers", "data/latest/#{Current.scenario.country}/carriers", '')
+          - tab("Blackboxes", 'admin/blackboxes', '')
+          - tab("Bb scenarios", 'admin/blackbox_scenarios', '')
+          - tab("Translations", 'admin/translations', '')
+          - tab("Historic", 'admin/historic_series', '')
+          - tab("Expert", 'admin/expert_predictions', '')
+        .clear
     #wrapper
       #content
         - flash_message
         = yield
-        .clear
