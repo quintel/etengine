@@ -142,63 +142,7 @@
   margin: 0;
   padding: 0; }
 
-#shadowbox-content {
-  position: relative;
-  float: left; }
-  #shadowbox-content #text {
-    height: 350px;
-    width: 67%;
-    float: left; }
-    #shadowbox-content #text .right {
-      position: absolute;
-      bottom: 0px;
-      right: 200px; }
-  #shadowbox-content #diamond-container {
-    float: left;
-    height: 300px;
-    width: 23%;
-    position: relative;
-    margin-top: 50px; }
-    #shadowbox-content #diamond-container a#home {
-      width: 50px;
-      height: 35px;
-      position: absolute;
-      left: 30px;
-      top: 0;
-      text-align: center; }
-    #shadowbox-content #diamond-container #diamonds {
-      position: relative;
-      margin-left: 30%;
-      margin-top: 10px; }
-      #shadowbox-content #diamond-container #diamonds .diamond {
-        width: 97px;
-        height: 103px;
-        position: absolute;
-        background: url(/images/layout/diamond_white.png) no-repeat;
-        text-align: center; }
-        #shadowbox-content #diamond-container #diamonds .diamond a {
-          padding-top: 37px;
-          height: 100%;
-          display: block;
-          color: black;
-          text-decoration: none; }
-        #shadowbox-content #diamond-container #diamonds .diamond a:hover {
-          color: white; }
-      #shadowbox-content #diamond-container #diamonds .active a {
-        color: white; }
-      #shadowbox-content #diamond-container #diamonds #policy {
-        left: 52px; }
-      #shadowbox-content #diamond-container #diamonds #demand {
-        top: 52px; }
-      #shadowbox-content #diamond-container #diamonds #supply {
-        top: 52px;
-        left: 104px; }
-      #shadowbox-content #diamond-container #diamonds #costs {
-        top: 104px;
-        left: 52px; }
-      #shadowbox-content #diamond-container #diamonds .active {
-        background: url(/images/layout/diamond_blue.png) no-repeat;
-        color: white; }
+
 
 #arrow_box {
   position: absolute;
