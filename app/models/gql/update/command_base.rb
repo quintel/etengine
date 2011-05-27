@@ -14,7 +14,7 @@ class CommandBase
       Rails.logger.warn(@errors.values.join('\n'))
       return nil
     end
-    Rails.logger.debug("updating: #{object} ##{@attr_name} with #{value}")
+    Rails.logger.info("updating: #{object} ##{@attr_name} with #{value}")
     object[@attr_name] = value
   end
 

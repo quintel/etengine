@@ -1,10 +1,24 @@
 class Qernel::ConverterApi
 
+  def heating_peak_load_delta
+    return nil if required_attributes_contain_nil?(:heating_peak_load_delta)
+
+    simult_we *
+      electricity_input_conversion *
+      typical_capacity_gross_in_mj_s *
+      share_of_heating_demand_households_energetic
+  end
+  attributes_required_for :heating_peak_load_delta, [  
+    :simult_we,
+    :electricity_input_conversion,
+    :typical_capacity_gross_in_mj_s,
+    :share_of_heating_demand_households_energetic
+  ]
+
   def delta_in_capacity_in_mj_s
     return nil if required_attributes_contain_nil?(:delta_in_capacity_in_mj_s)
     (((production_based_on_number_of_plants.to_f / typical_production.to_f).to_f - (electricitiy_production_actual.to_f / typical_production.to_f).to_f) * typical_capacity_gross_in_mj_s.to_f).to_f
   end
-
   attributes_required_for :delta_in_capacity_in_mj_s, [
     :production_based_on_number_of_plants,
     :typical_production,

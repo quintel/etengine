@@ -52,7 +52,9 @@ class Area
     :insulation_level_existing_houses,
     :has_buildings,
     :has_solar_csp,
-    :has_old_technologies
+    :has_old_technologies,
+    :cold_network_potential,
+    :has_cold_network
   ]
 
   dataset_accessors ATTRIBUTES_USED

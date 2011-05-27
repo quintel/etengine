@@ -4,7 +4,7 @@ class Carrier
   include DatasetAttributes
 
   CO2_LCE_COMPONENTS = [
-    :co2_per_mj, # => :co2_conversion_per_mj
+    :co2_conversion_per_mj,
     :co2_exploration_per_mj,
     :co2_extraction_per_mj,
     :co2_treatment_per_mj,
@@ -13,11 +13,14 @@ class Carrier
   ]
 
   DATASET_ATTRIBUTES = [
+    # :co2_per_mj,
     :cost_per_mj,
     :sustainable,
     :typical_production_per_km2,
     :kg_per_liter,
     :mj_per_kg,
+    :supply_chain_margin_per_mj,
+    :oil_price_correlated_part_production_costs,
 
     *CO2_LCE_COMPONENTS
   ]
@@ -58,11 +61,16 @@ class Carrier
   # @return [Float] 
   #   The sum of CO2_LCE_COMPONENTS.
   #
-  def co2_LCE_per_mj
-    CO2_LCE_COMPONENTS.map do |key|
-      self.send(key)
-    end.compact.sum
+  def co2_per_mj
+    if Current.scenario.use_lce_settings?
+      CO2_LCE_COMPONENTS.map do |key|
+        self.send(key)
+      end.compact.sum
+    else
+      co2_conversion_per_mj
+    end
   end
+  
 
   def electricity?
     key == :electricity

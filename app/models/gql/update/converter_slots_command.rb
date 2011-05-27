@@ -31,9 +31,9 @@ class ConverterSlotsCommand < CommandBase
     upd_cmd = AttributeCommand.new(update_slot, :conversion, value.to_f, type)
     cmds << upd_cmd
 
-    if remaining_slot = (slots - [update_slot]).first
-      cmds << AttributeCommand.new(remaining_slot, :conversion, 1.0 - upd_cmd.value, :value)
-    end
+    # if remaining_slot = (slots - [update_slot]).first #and slots.length > 2
+    #   cmds << AttributeCommand.new(remaining_slot, :conversion, 1.0 - upd_cmd.value, :value)
+    # end
 
     cmds
   end

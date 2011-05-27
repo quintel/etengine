@@ -131,8 +131,8 @@ class PolicyGoal
     if score > 1
       score = (1 -(score - 1))  
     end
-    if score < -1
-      score = -1
+    if score < 0
+      score = 0
     end
     (score.round(2) * 100).to_i
   end

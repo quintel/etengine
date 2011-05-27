@@ -81,30 +81,31 @@ class ConverterApi
     :electricitiy_production_actual, # TODO typo (from:jape)
     :wacc,
     :co2_free,
-    # Attributes for peak load calculation
     :peak_load_units_present,
     :simult_wd,
     :simult_sd,
     :simult_we,
     :simult_se,
-    # 2010-12-28 seb: New attributes
     :typical_electric_capacity,
     :typical_heat_capacity,
     :full_load_hours,
     :operation_hours,
-    :operation_and_maintenance_cost_fixed,
-    :operation_and_maintenance_cost_variable,
+    :operation_and_maintenance_cost_fixed_per_mw_input,
+    :operation_and_maintenance_cost_variable_per_full_load_hour,
     :investment,
     :purchase_price,
     :installing_costs,
     :economic_lifetime,
-    :typical_input_capacity,
+    :typical_nominal_input_capacity,
     :fixed_operation_and_maintenance_cost_per_mw_input,
     :residual_value_per_mw_input,
     :decommissioning_costs_per_mw_input,
     :purchase_price_per_mw_input,
     :installing_costs_per_mw_input,
-    :part_ets
+    :part_ets,
+    :decrease_in_nomimal_capacity_over_lifetime,
+    :ccs_operation_and_maintenance_cost_per_full_load_hour,
+    :ccs_investment_per_mw_input
   ]
 
   dataset_accessors ATTRIBUTES_USED
@@ -327,7 +328,7 @@ class ConverterApi
         end
       end
     elsif m = /^share_of_(\w*)$/.match(method_id.to_s) and parent = m.captures.first
-      self.converter.output_links.select{|l| l.parent.full_key.to_s == parent.to_s}.first.share
+      self.converter.output_links.select{|l| l.parent.full_key.to_s == parent.to_s}.first.andand.share
     else
       puts method_id
       super

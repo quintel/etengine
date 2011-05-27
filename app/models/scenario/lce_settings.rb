@@ -25,7 +25,7 @@
 # E.g. 
 #
 #   Current.scenario.lce_settings = {
-#     :biodiesel => {
+#     :coal => {
 #       :exploration => {:ch => 1.0},
 #       :extraction => {:ch => 0.8, :de => 0.2 }
 #     }
@@ -42,29 +42,6 @@ class Scenario < ActiveRecord::Base
   serialize :lce_settings
 
   class LifeCycleEmission
-    # TODO At some point load from db columns.
-    LCE_VALUES = {
-      :exploration => {
-        :biodiesel => {'de' => 0.1, 'ch' => 0.005 }
-      },
-      :extraction => {
-        :biodiesel => {'de' => 0.1, 'ch' => 0.005 }
-      },
-      :treatment => {
-        :biodiesel => {'de' => 0.1, 'ch' => 0.005 }
-      },
-      :transportation => {
-        :biodiesel => {'de' => 0.1, 'ch' => 0.005 }
-      },
-      :waste_treatment => {
-        :biodiesel => {'de' => 0.1, 'ch' => 0.005 }
-      }
-    }.with_indifferent_access
-
-    LCE_CARRIERS = [
-      :biodiesel
-    ]
-
     ##
     # Set @settings_hash by calling self.settings
     #
@@ -113,25 +90,21 @@ class Scenario < ActiveRecord::Base
     #
     #
     def update_statements
-      statements = {}
-      statements = statements.deep_merge(update_statements_for(:extraction))
-      {'carriers' => statements}
+      {'carriers' => update_statements_for_lce}
     end
 
   private
     ## 
     #
     #
-    def update_statements_for(state_of_lce)
+    def update_statements_for_lce
       hsh = {}
       lce_settings = self.settings
       lce_settings.each do |carrier_key, updates|
-        co2_extraction_per_mj = updates[state_of_lce].map do |country, weight|
-          country_co2 = LCE_VALUES[state_of_lce][carrier_key][country]
-          raise "LceSettings: no value found for country: #{carrier_key} / #{country}" if country_co2.nil?
-          country_co2 * weight.to_f
-        end.compact.sum
-        hsh[carrier_key.to_s] = {'co2_extraction_per_mj_value' => co2_extraction_per_mj}
+        updates.each do |carrier_attr,values|
+          hsh[carrier_key.to_s] = {} if hsh[carrier_key.to_s].nil?
+          hsh[carrier_key.to_s]["#{carrier_attr}_value"] = values.map(&:last).sum
+        end
       end
       hsh
     end
@@ -158,7 +131,6 @@ class Scenario < ActiveRecord::Base
   def lce_settings=(values)
     lce.settings = values
     self[:lce_settings] = lce.to_yaml
-    
   end
 
 end
