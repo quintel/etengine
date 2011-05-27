@@ -418,7 +418,7 @@ class GqlQuerySyntaxNode < Treetop::Runtime::SyntaxNode
   #
   def DIVIDE(values, arguments, scope = nil)
     a,b = values.flatten
-    if a == 0.0
+    if a == 0.0 || a.nil?
       0.0
     else
       a / b
