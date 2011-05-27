@@ -41,7 +41,6 @@ Spork.prefork do
     # instead of true.
     config.use_transactional_fixtures = true
 
-    config.include(CustomMatchers)
     config.include(EtmHelper)
     config.include(EtmFixtures)
     config.include(Webrat::Matchers)
