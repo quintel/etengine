@@ -87,11 +87,15 @@ class InputElement < ActiveRecord::Base
   # @return [Hash]
   #
   def update_statement(value)
-    {
-      update_type => {
-        keys => {
-          attr_name => value / factor
-    }}}
+    if update_type == 'lce'
+      Gql::Update::LceCommand.create(keys, attr_name, value / factor)
+    else
+      {
+        update_type => {
+          keys => {
+            attr_name => value / factor
+      }}}
+    end
   end
 
   def remainder?

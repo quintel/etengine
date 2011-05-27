@@ -79,7 +79,7 @@ module Gql::Update
       nil
 
     end
-      
+    
     def municipality_production_in_mw
     	converter = converter_proxy.converter
       converter.municipality_demand = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
@@ -94,15 +94,31 @@ module Gql::Update
 
     def om_growth_total
       [
-        AttributeCommand.new(converter_proxy, :cost_om_fixed_per_mj, value, :growth_total),
-        AttributeCommand.new(converter_proxy, :cost_om_variable_ex_fuel_co2_per_mj, value, :growth_total)
+        AttributeCommand.new(converter_proxy, :operation_and_maintenance_cost_fixed_per_mw_input, value, :growth_total),
+        AttributeCommand.new(converter_proxy, :operation_and_maintenance_cost_variable_per_full_load_hour, value, :growth_total)
       ]
     end
-
+    
+    def cost_per_mj_oil_related_growth_total
+      carrier = converter_proxy
+      new_cost_per_mj = (1 + value) * (carrier.cost_per_mj - carrier.supply_chain_margin_per_mj) * carrier.oil_price_correlated_part_production_costs + ( 1 - carrier.oil_price_correlated_part_production_costs) * ( carrier.cost_per_mj - carrier.supply_chain_margin_per_mj ) + carrier.supply_chain_margin_per_mj     
+      AttributeCommand.new(carrier, :cost_per_mj, new_cost_per_mj, :value)
+    end
+    
     def ventilation_rate_buildings
       calculated_value = value / graph.query.area.ventilation_rate
       new_demand = calculated_value * converter_proxy.demand
       AttributeCommand.new(converter_proxy, :preset_demand, new_demand, :value)
+    end
+    
+    def constant_output_link_value
+      converter = converter_proxy.converter
+      converter.outputs.each do |slot|
+       slot.links.select(&:constant?).each do |link|
+         link.share = value.to_f
+       end
+      end
+      AttributeCommand.new(converter_proxy, :preset_demand, value.to_f, :value)
     end
 
     def solarpanel_market_penetration
@@ -134,6 +150,8 @@ module Gql::Update
         production_in_mw
         municipality_production_in_mw
         national_production_in_mw
+        constant_output_link_value
+        cost_per_mj_oil_related_growth_total
       ].include?(key.to_s)
     end
 

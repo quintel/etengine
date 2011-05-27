@@ -9,6 +9,7 @@ class Qernel::ConverterApi
     co2_of_input = co2_of_input_including_co2_free
     co2_of_input = co2_of_input * (1 - co2_free) if co2_free
     co2_of_input = 0.0 if co2_of_input < 0
+    co2_of_input += co2_of_lce_input
     co2_of_input
   end
 
@@ -20,9 +21,17 @@ class Qernel::ConverterApi
   #
   def co2_of_input_including_co2_free
     converter.inputs.map do |input_slot|
-      (input_slot.external_value || 0.0) * (input_slot.carrier.co2_per_mj || 0.0)
+      (input_slot.external_value || 0.0) * (input_slot.carrier.co2_conversion_per_mj || 0.0)
+    end.compact.sum
+    
+  end
+
+  def co2_of_lce_input
+    converter.inputs.map do |input_slot|
+      (input_slot.external_value || 0.0) * (input_slot.carrier.co2_per_mj - input_slot.carrier.co2_conversion_per_mj || 0.0)
     end.compact.sum
   end
+
 
   def co2_price
     converter.graph.area.co2_price

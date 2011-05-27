@@ -89,8 +89,16 @@ module Qernel::Converter::PrimaryDemand
   end
 
   def weighted_carrier_cost_per_mj_factor(link)
-    if right_dead_end? and link
-      link.carrier.electricity? ? 0.0 : link.carrier.cost_per_mj
+    ##
+    # because electricity and steam_hot_water are calculated seperatly these are excluded from this calculation
+    # old: if right_dead_end? and link
+    # new: always 0 for elec and steam_hw
+    if link
+      if (link.carrier.electricity? || link.carrier.steam_hot_water?)
+        0.0
+      else
+        right_dead_end? ? 0.0 : link.carrier.cost_per_mj
+      end
     else
       nil
     end
@@ -107,7 +115,7 @@ module Qernel::Converter::PrimaryDemand
 
   def weighted_carrier_co2_per_mj_factor(link)
     if right_dead_end? and link
-      link.carrier.co2_per_mj
+      link.carrier.co2_conversion_per_mj
     else
       nil
     end
@@ -431,8 +439,8 @@ module Qernel::Converter::PrimaryDemand
     link ||= output_links.first
 
     if link and carrier = link.carrier and link.carrier.key == carrier_key
-      return 0.0 if query.co2_free.nil? or carrier.co2_per_mj.nil?
-      (1.0 - query.co2_free) * carrier.co2_per_mj
+      return 0.0 if query.co2_free.nil? or carrier.co2_conversion_per_mj.nil?
+      carrier.co2_per_mj - (query.co2_free * carrier.co2_conversion_per_mj)
     else
       0.0
     end
@@ -452,9 +460,9 @@ module Qernel::Converter::PrimaryDemand
     carrier = link.nil? ? output_carriers.reject(&:loss?).first : link.carrier
     puts "no carrier for #{self.name}" if carrier.nil?
 
-    return 0.0 if query.co2_free.nil? or carrier.co2_per_mj.nil?
-    co2_ex_free = (1.0 - query.co2_free) * carrier.co2_per_mj
-    (primary_energy_demand? and carrier.co2_per_mj) ? co2_ex_free : 0.0
+    return 0.0 if query.co2_free.nil? or carrier.co2_conversion_per_mj.nil?
+    co2_ex_free = carrier.co2_per_mj - (query.co2_free * carrier.co2_conversion_per_mj)
+    (primary_energy_demand? and carrier.co2_conversion_per_mj) ? co2_ex_free : 0.0
   end
 
 

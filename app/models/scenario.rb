@@ -95,6 +95,14 @@ class Scenario < ActiveRecord::Base
   # Scenario Attributes
   ##############################
 
+  def use_lce_settings?
+    self[:use_lce_settings]
+  end
+
+  def use_lce_settings=(value)
+    self[:use_lce_settings] = value
+  end
+
   ##
   # @tested 2010-11-30 seb
   # 
