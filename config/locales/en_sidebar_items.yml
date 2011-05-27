@@ -23,9 +23,13 @@ en:  # ---------------------------- #
     # ----------- Supply ----------- #
     
     electricity:           "Electricity"
-    electricity_renewable: "Renewable electricity/gas"
+    electricity_renewable: "Renewable electricity"
     fossil_heat:           "Fossil heat"
     renewable_heat:        "Renewable heat"
     transport_fuels:       "Transport fuels"
     fuels:                  "Fuels"
     infrastructure:        "Infrastructure"
+    fuel_mix:      "Fuel mix"
+    other_fuels:           "Other fuels"
+    #---- LCE --
+    lce: "Pre-combustion emissions"

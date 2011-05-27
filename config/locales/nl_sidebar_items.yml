@@ -24,9 +24,13 @@ nl:  # ---------------------------- #
     # ----------- Supply ----------- #
     
     electricity:           "Elektriciteit"
-    electricity_renewable: "Duurzame elektr./gas"
+    electricity_renewable: "Hernieuwbare elektriciteit"
     fossil_heat:           "Fossiele warmte"
-    renewable_heat:        "Duurzame warmte"
+    renewable_heat:        "Hernieuwbare warmte"
     transport_fuels:       "Transport brandstoffen"
     fuels:                 "(Transport) brandstoffen"
-    infrastructure:        "Elektriciteitsnet"
+    infrastructure:        "Infrastructuur"
+    fuel_mix:      "Fuel mix"
+    other_fuels:           "Andere brandstoffen"
+    infrastructure:        "Infrastructuur"
+    lce:                   "Ketenanalyse"
