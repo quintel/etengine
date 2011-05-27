@@ -97,7 +97,7 @@ module Qernel::Converter::PrimaryDemand
       if (link.carrier.electricity? || link.carrier.steam_hot_water?)
         0.0
       else
-        right_dead_end? ? 0.0 : link.carrier.cost_per_mj
+        right_dead_end? ? link.carrier.cost_per_mj : nil
       end
     else
       nil
