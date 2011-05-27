@@ -82,13 +82,18 @@ class Api::ApiScenariosController < ApplicationController
 
     def new_attributes
       settings = params[:settings].present? ? params[:settings] : {}
+      settings.each do |key,value|
+        settings[key] = nil if value == 'null' or key == 'undefined'
+      end
       ApiScenario.new_attributes(settings)
     end
 
     def results
       if params[:result]
         @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
-          if gquery = (Gquery.get(key) rescue nil)
+          if key == "null" or key == "undefined"
+            hsh
+          elsif gquery = (Gquery.get(key) rescue nil)
             hsh.merge(gquery.key => Current.gql.query(gquery.query))
           else
             hsh.merge(key => Current.gql.query(key))
