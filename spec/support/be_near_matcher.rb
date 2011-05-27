@@ -1,27 +1,17 @@
-module CustomMatchers
-  ##
-  # The be_near matcher is a shortcut for be_close(.., 0.01)
-  #
-  class BeNear
-    def initialize(expected)
-      @expected = expected
-    end
-
-    def matches?(actual)
-      @actual = actual
-      (@actual - @expected).abs < 0.01
-    end
-
-    def failure_message_for_should
-      "expected #{@actual.inspect} to be near #{@expected.inspect}"
-    end
-
-    def failure_message_for_should_not
-      "expected #{@actual.inspect} not to to be near #{@expected.inspect}"
-    end
+RSpec::Matchers.define :be_near do |expected|
+  match do |actual|
+    (actual - expected).abs < 0.01
   end
 
-  def be_near(expected)
-    BeNear.new(expected)
+  failure_message_for_should do |actual|
+    "expected #{actual} to be near #{expected}"
+  end
+
+  failure_message_for_should_not do |actual|
+    "expected #{actual} not to be near #{expected}"
+  end
+
+  description do
+    "be near #{expected}"
   end
 end
