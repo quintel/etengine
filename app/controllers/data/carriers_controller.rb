@@ -1,6 +1,7 @@
 class Data::CarriersController < Data::DataController
 
-  def index    
+  def index
+    
   end
 
   def edit
@@ -11,4 +12,5 @@ class Data::CarriersController < Data::DataController
   def show
     redirect_to edit_data_carrier_carrier_data_url(:carrier_id => params[:id])
   end
+
 end

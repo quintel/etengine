@@ -1,6 +1,7 @@
 class Data::ConvertersController < Data::DataController
 
   def index
+    
   end
 
   def edit
