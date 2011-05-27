@@ -1,6 +1,8 @@
 class Api::ApiScenariosController < ApplicationController
   layout 'api'
 
+  around_filter :disable_gc, :only => [:update, :show]
+
   before_filter :find_model, :only => [:update, :show, :destroy, :user_values]
 
   def index
@@ -34,7 +36,6 @@ class Api::ApiScenariosController < ApplicationController
       'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :lce_settings]),
       'errors'   => @api_scenario.api_errors(test_scenario?)
     }
-
     respond_to do |format|
       format.html { render }
       format.json { render :json => @json, :callback => params[:callback] }
