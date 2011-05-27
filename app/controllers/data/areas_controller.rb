@@ -1,4 +1,5 @@
 class Data::AreasController < Data::DataController
+  before_filter :find_model, :only => [:update, :show, :edit]
 
   def index
     @area = Area.find_by_country(params[:region_code])
@@ -20,8 +21,6 @@ class Data::AreasController < Data::DataController
   end
 
   def update
-    find_model
-
     if @area.update_attributes(params[:area])
       flash[:notice] = "Successfully updated area."
       redirect_to [:data, @area]
@@ -38,25 +37,24 @@ class Data::AreasController < Data::DataController
   end
 
   def show
-    find_model
   end
 
   def edit
-    find_model
   end
 
-  def find_model
-    if params[:version_id]
-      @version = Version.find(params[:version_id])
-      @area = @version.reify
-      flash[:notice] = "Revision"
-    else
-      if params[:id]
-        @area = Area.find(params[:id])
+  private
+
+    def find_model
+      if params[:version_id]
+        @version = Version.find(params[:version_id])
+        @area = @version.reify
+        flash[:notice] = "Revision"
       else
-        @area = Area.find_by_country(params[:region_code])
+        if params[:id]
+          @area = Area.find(params[:id])
+        else
+          @area = Area.find_by_country(params[:region_code])
+        end
       end
     end
-  end
-  
 end
