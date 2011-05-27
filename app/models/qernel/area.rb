@@ -67,6 +67,10 @@ class Area
     "area_data"
   end
 
+  def number_of_existing_households
+    number_households * (1 - (percentage_of_new_houses/100))
+  end
+
   def co2_emission_1990_billions
     co2_emission_1990 * BILLIONS
   end
