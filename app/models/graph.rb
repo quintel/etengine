@@ -45,7 +45,6 @@ class Graph < ActiveRecord::Base
 
   # to be returned by Current.graph, Graph needs to provide the methods
   # latest_from_country, gql, create_gql
-
   def self.latest_from_country(country)
     self.find_by_dataset_id(Dataset.latest_from_country(country).id)
     #Graph.ordered.country(country).first
