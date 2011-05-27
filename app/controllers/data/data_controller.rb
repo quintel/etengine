@@ -17,6 +17,10 @@ class Data::DataController < ApplicationController
       :region_code => params[:region_code] || 'nl')
   end
 
+  def kick
+    Rails.cache.clear # system("echo 'flush_all' | nc 127.0.0.1 11211 -w 3")
+    start
+  end
 protected
 
   def find_graph

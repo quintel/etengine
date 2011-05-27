@@ -1,9 +1,8 @@
 class Data::AreasController < Data::DataController
 
   def index
-    # @area = Area.find_by_country(params[:region_code])
-    # redirect_to data_area_url(@area)
-    @area = Area.all
+    @area = Area.find_by_country(params[:region_code])
+    redirect_to data_area_url(:id => @area.id)
   end
 
   def new
@@ -59,4 +58,5 @@ class Data::AreasController < Data::DataController
       end
     end
   end
+  
 end
