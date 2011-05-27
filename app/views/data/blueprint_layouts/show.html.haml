@@ -8,7 +8,15 @@
     %li Double-click on converter to open details in new converter
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
 
-  = render 'graph_controls'
+
+  %ul
+    %li
+      = select_tag 'selected', options_for_select([*Qernel::Converter::SECTORS.values, 'all'])
+      = link_to 'show', 'javascript:GRAPH.show_selected()'
+      = link_to 'hide', 'javascript:GRAPH.hide_selected()'
+      (to only show one sector, hide 'all' first, then show 'sector')
+
+
   = render 'initialize_graph'
 
 

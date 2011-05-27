@@ -1,4 +1,5 @@
 %h3 Revisions
+%p= params.inspect
 
 %table
   %tr
@@ -15,8 +16,8 @@
         %strong Updated @
 
     %td    
-      = link_to('show', :action => :show)
-      = link_to('edit', :action => :edit)
+      = link_to('show', :id => versioned, :action => :show)
+      = link_to('edit', :id => versioned, :action => :edit)
     
   - versioned.versions.reverse.each do |version|
     %tr
@@ -31,5 +32,6 @@
       %td
         %small= format_date_nicely_with_time version.created_at
       %td
-        = link_to 'show', :action => :show, :version_id => version.id
-        = link_to 'edit', :action => :edit, :version_id => version.id
+        = link_to 'show', :action => 'show', :id => versioned, :version_id => version.id
+        = link_to 'edit', :action => 'edit', :id => versioned, :version_id => version.id
+        

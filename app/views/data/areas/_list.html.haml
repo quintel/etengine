@@ -1,6 +1,7 @@
 #panel.panel.panel_tree{:style => "width: 300px; float: left"}
   .header
     %div
+      -#%label#search-label{:for => 'search'} Search
       %table
         %tr
           %td
@@ -13,4 +14,5 @@
           %li.level_0{:'data-search' => area.region_code}
             .content
               %h1
-                = link_to area.region_code, data_area_path(area, :blueprint_id => params[:blueprint_id], :region_code => params[:region_code])
+                %a{:href => data_area_path(:id => area.id)}
+                  %span.key= area.region_code
