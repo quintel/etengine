@@ -86,7 +86,7 @@ class Api::ApiScenariosController < ApplicationController
 
     def results
       if params[:result]
-        @gqueries = params[:result].inject({}) do |hsh, key|
+        @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
           if gquery = (Gquery.get(key) rescue nil)
             hsh.merge(gquery.key => Current.gql.query(gquery.query))
           else
