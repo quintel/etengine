@@ -8,7 +8,7 @@
 
   = render 'form'
 
-  = render '/admin/shared/revisions', :versioned => @gquery
+  = render '/data/shared/revisions', :versioned => @gquery
 
   - @query = Gql::GqueryCleanerParser.clean(@gquery.query)
 
