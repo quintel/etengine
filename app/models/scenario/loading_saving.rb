@@ -64,6 +64,7 @@ class Scenario < ActiveRecord::Base
   def clone!
     fresh = Scenario.new
     fresh.copy_scenario_state(self)
+    fresh.title = self.title
     fresh.save
     fresh
   end
