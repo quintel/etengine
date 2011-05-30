@@ -53,11 +53,18 @@ class Scenario < ActiveRecord::Base
   # @untested 2010-12-06 seb
   #
   def copy_scenario_state(scenario)
-    self.user_values = scenario.user_values.clone
-    self.end_year = scenario.end_year
-    self.country = scenario.country ? scenario.country.clone : nil
-    self.region = scenario.region ? scenario.region.clone : nil
+    self.user_values  = scenario.user_values.clone
+    self.end_year     = scenario.end_year
+    self.country      = scenario.country ? scenario.country.clone : nil
+    self.region       = scenario.region ? scenario.region.clone : nil
     self.lce_settings = scenario.lce_settings
   end
-
+  
+  # Returns a copy of a scenario. Used
+  def clone!
+    fresh = Scenario.new
+    fresh.copy_scenario_state(self)
+    fresh.save
+    fresh
+  end
 end
