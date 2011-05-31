@@ -5,6 +5,7 @@ gem 'rails', '3.0.7'
 gem 'jquery-rails'
 gem 'haml', '~>3.1.1'
 gem 'sass', '~>3.1.1'
+gem 'rake', '0.8.7' # 0.9 breaks things
 
 gem 'authlogic', :git => 'git://github.com/odorcicd/authlogic.git', :branch => 'rails3'
 gem 'bluecloth'
