@@ -12,6 +12,9 @@ class Api::ScenariosController < ApplicationController
   end
 
   def show
+    if params[:clone]
+      @scenario = @scenario.clone!
+    end    
     respond_with(@scenario)
   end
 
