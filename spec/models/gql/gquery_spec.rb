@@ -175,8 +175,8 @@ describe Gquery do
     end
 
     describe "RESCUE" do
-      query_should_be_close "RESCUE(DIVIDE(NIL(),1);5)", 5.0
-      query_should_be_close "RESCUE(DIVIDE(NIL(),1))", 0.0, "withouth param rescues with default 0.0"
+      query_should_be_close "RESCUE(AVG(NIL());5)", 5.0
+      query_should_be_close "RESCUE(AVG(NIL()))", 0.0, "withouth param rescues with default 0.0"
     end
 
     describe "FOR_COUNTRIES" do
