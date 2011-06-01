@@ -4,17 +4,13 @@
   .header
     Create new Blueprint
 
-  = form_for [:construction, @blueprint] do |f|
+  = form_for [:admin, @blueprint] do |f|
     %table
       %tbody
         %tr
           %th Copy from
           %td
             = select_tag :copy_blueprint_id, options_from_collection_for_select(Blueprint.ordered, :id, :to_label, params[:copy_blueprint_id])
-        %tr
-          %th Version
-          %td
-            = f.text_field :version
         %tr
           %th Description
           %td= f.text_field :description
