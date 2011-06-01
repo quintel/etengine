@@ -31,7 +31,6 @@ Etm::Application.routes.draw do
     resources :blueprint_models
     resources :blueprints
     resources :datasets
-    resources :graphs
 
     scope '/:blueprint_model_id' do
       match '/' => "converters#index"
@@ -42,7 +41,7 @@ Etm::Application.routes.draw do
   end
   
   namespace :admin do
-    resources :graphs, :only => [:index, :show, :update] do
+    resources :graphs do
       collection do
         post :import
       end
