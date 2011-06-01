@@ -1,0 +1,18 @@
+#panel.panel.panel_tree
+  .header
+    %div
+      %table
+        %tr
+          %td
+            %input#search{:'data-search_scope' => 'converters'}
+
+  .tree
+    =# cache("construction/blueprints/_list/#{Blueprint.order('created_at DESC').first.created_at}") do
+    %ul
+      - Blueprint.order('created_at DESC').includes(:datasets).each do |blueprint|
+        %li.level_0{:'data-search' => [blueprint.description, blueprint.datasets.map(&:region_code)].flatten.join(' ')}
+          .content
+            %h1
+              = link_to admin_blueprint_path(blueprint) do
+                %span.id== ##{blueprint.graph_version}
+                %span.key= blueprint.description
