@@ -1,4 +1,4 @@
-class Construction::ConvertersController  < Construction::ConstructionController
+class Admin::ConvertersController  < Admin::AdminController
   before_filter :find_blueprint_model
   before_filter :find_latest_blueprint
 
