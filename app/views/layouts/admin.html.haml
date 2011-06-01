@@ -18,11 +18,9 @@
     #header
       #nav
         %ul
+          - tab("Data", '/data', '')
           - tab("Graphs", 'admin/graphs', '')
-          - tab("Gqueries", "data/latest/#{Current.scenario.country}/gqueries", '')
           - tab("Tables", 'admin/query_tables', '')
-          - tab("Areas", "data/latest/#{Current.scenario.country}/areas", '')
-          - tab("Carriers", "data/latest/#{Current.scenario.country}/carriers", '')
           - tab("Blackboxes", 'admin/blackboxes', '')
           - tab("Bb scenarios", 'admin/blackbox_scenarios', '')
           - tab("Translations", 'admin/translations', '')
