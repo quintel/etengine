@@ -1,4 +1,4 @@
-class Construction::BlueprintModelsController < Construction::ConstructionController
+class Admin::BlueprintModelsController < Admin::AdminController
 
 
   def index
