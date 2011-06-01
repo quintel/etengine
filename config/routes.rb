@@ -28,8 +28,6 @@ Etm::Application.routes.draw do
   namespace :construction do
     root :to => "blueprint_models#index", :as => 'start'
 
-    resources :blueprint_models
-
     scope '/:blueprint_model_id' do
       match '/' => "converters#index"
       resources :converters
@@ -48,6 +46,7 @@ Etm::Application.routes.draw do
     resources :query_tables
     resources :query_table_cells, :except => [:show, :index]
     resources :blueprints
+    resources :blueprint_models
     
     root :to => "pages#index"
   end

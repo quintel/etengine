@@ -1,0 +1,7 @@
+#content
+  .header
+    Blueprint
+    
+  %ul
+    - @blueprint_models.each do |blueprint_model|
+      %li= link_to blueprint_model.title, '#'      
