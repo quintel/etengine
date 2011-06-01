@@ -3,7 +3,8 @@ require 'spec_helper'
 module Qernel
   describe ConverterApi do
     before do
-      @calculator = ConverterApi.new(nil, {})
+      @converter  = Converter.new(1, 'foo')
+      @calculator = ConverterApi.new(@converter)
     end
 
     # TODO: check logic. A test was failing; from what I understood the co2_free attribute is a ratio (1 = 100%)
