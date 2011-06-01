@@ -1,6 +1,10 @@
 class Admin::GraphsController < Admin::AdminController
   before_filter :load_graph, :only => [:show, :groups, :edit, :destroy, :updated]
 
+  def new
+    @graph = Graph.new
+  end  
+
   def chart
     render :layout => false
   end
@@ -36,13 +40,19 @@ class Admin::GraphsController < Admin::AdminController
     end
   end
 
+  # Taken from the construction namespace
   def create
-# QUESTION sebi we don't want to try to support csv import right?
-# REPLY ed Yes we do want to support csv import. There will be two modes:
-#          - import blueprint from CSV (creates a new blueprint)
-#          - import dataset from CSV (for a specific blueprint)
-# but this actually happens in #import
-    render :text => 'Sorry, csv import is no longer supported. A GUI is coming soon.'
+    if params[:copy_graph_id]
+      original = Graph.find(params[:copy_graph_id])
+      graph = original.copy_graph!
+      if graph.update_attributes(params[:graph])
+        flash[:notice] = 'Graph Created'
+        redirect_to construction_graphs_url
+      end
+    else
+      flash[:notice] = 'Specify a graph to copy from'
+      render :action => 'new'
+    end
   end
 
   def destroy

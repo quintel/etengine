@@ -1,3 +1,6 @@
+%h2 Create a new Graph by copying from an old one. 
+= link_to "Create a new Graph", new_admin_graph_path
+
 %h2 Upload Zipfile
 - form_tag '/admin/graphs/import', :multipart => true do 
 
@@ -15,19 +18,24 @@
 %table{table_defaults}
   %thead
     %tr
+      %th Id
       %th.tal Country
+      %th Blueprint
+      %th Dataset      
       %th.tal Version
       %th.tal Description
       %th.tal Created
       %th.tal
 
-  - @graphs.each do |graph|
+  - @graphs.each do |graph|    
     %tr{cycles}
+      %td= graph.id
       %td
         = image_tag "icons/#{graph.country}.png" if graph.country and graph.country.length == 2
         = graph.country
+      %td= link_to graph.blueprint.id, '#'
+      %td= link_to graph.dataset.id, '#'
       %td= link_to graph.version, admin_graph_path(graph)
       %td= link_to graph.description, admin_graph_path(graph)
       %td= graph.created_at
       %td= link_to 'Delete', admin_graph_path(graph), :method => :delete, :confirm => 'Are you sure'
-
