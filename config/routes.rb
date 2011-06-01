@@ -30,7 +30,6 @@ Etm::Application.routes.draw do
 
     resources :blueprint_models
     resources :blueprints
-    resources :datasets
 
     scope '/:blueprint_model_id' do
       match '/' => "converters#index"
