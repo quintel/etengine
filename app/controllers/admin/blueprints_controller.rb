@@ -1,6 +1,4 @@
-class Construction::BlueprintsController < Construction::ConstructionController
-
-
+class Admin::BlueprintsController < Admin::AdminController
   def index
     @blueprints = Blueprint.ordered.includes(:datasets)
   end
@@ -11,7 +9,7 @@ class Construction::BlueprintsController < Construction::ConstructionController
   end
 
   def show
-    @blueprint = Blueprint.find(params[:copy_blueprint_id])
+    @blueprint = Blueprint.find(params[:id])
   end
 
   def create
@@ -23,7 +21,7 @@ class Construction::BlueprintsController < Construction::ConstructionController
       notice = 'Blueprint Created'
 
       params[:copy_dataset_id].each do |copy_dataset_id|
-        dataset = Dataset.find(copy_dataset_id) 
+        dataset = Dataset.find(copy_dataset_id)
         dataset.copy_dataset!(blueprint.id)
         notice += ", #{dataset.region_code}"
       end
@@ -39,24 +37,24 @@ class Construction::BlueprintsController < Construction::ConstructionController
     end
   end
 
-#protected
-#
-#  def find_graph
-#    blueprint_id = params[:blueprint_id]
-#    region_code  = params[:region_code]
-#
-#    if region_code and blueprint_id
-#      @graph = Graph.latest_from_country(region_code)
-#
-#      # We have to assign the gql to Current. So that we are able
-#      #  to use Current.gql.query().
-#      Current.gql = @graph.gql
-#      @present_graph = @graph.gql.present
-#      @future_graph  = @graph.gql.future
-#
-#      @blueprint  = @graph.blueprint
-#      @dataset = @graph.dataset
-#    end
-#  end
-#
+  #protected
+  #
+  #  def find_graph
+  #    blueprint_id = params[:blueprint_id]
+  #    region_code  = params[:region_code]
+  #
+  #    if region_code and blueprint_id
+  #      @graph = Graph.latest_from_country(region_code)
+  #
+  #      # We have to assign the gql to Current. So that we are able
+  #      #  to use Current.gql.query().
+  #      Current.gql = @graph.gql
+  #      @present_graph = @graph.gql.present
+  #      @future_graph  = @graph.gql.future
+  #
+  #      @blueprint  = @graph.blueprint
+  #      @dataset = @graph.dataset
+  #    end
+  #  end
+  #
 end
