@@ -33,7 +33,7 @@
       %td
         = image_tag "icons/#{graph.country}.png" if graph.country and graph.country.length == 2
         = graph.country
-      %td= link_to graph.blueprint.id, '#'
+      %td= link_to graph.blueprint.id, [:admin, graph.blueprint]
       %td= link_to graph.dataset.id, '#'
       %td= link_to graph.version, admin_graph_path(graph)
       %td= link_to graph.description, admin_graph_path(graph)
