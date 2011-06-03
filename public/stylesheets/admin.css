@@ -1,7 +1,13 @@
-#header #nav ul li {
+body #header #nav ul li {
   list-style-type: none;
   float: left;
-  padding: 5px; }
+  background-color: #6a97c7;
+  margin-right: 2px; }
+  body #header #nav ul li a {
+    margin: 30px 5px;
+    color: white; }
+  body #header #nav ul li:hover {
+    background-color: #b1b2b3; }
 
 .blackbox-results tr.hide-row {
   display: none; }
@@ -11,12 +17,12 @@
 #query_table td a {
   text-decoration: none;
   display: block; }
-#query_table td.result {
+#query_table td .result {
   text-align: right; }
-  #query_table td.result a {
+  #query_table td .result a {
     color: black;
     font-family: courier; }
-#query_table td.new a {
+#query_table td .new a {
   color: #999999; }
 #query_table td.total {
   background: #eeeeee;
@@ -25,15 +31,11 @@
 table .hasgroup {
   background: #666666 !important;
   color: #dddddd; }
-
 table .even .hasgroup {
   background: #777777 !important; }
-
 table .hasnotgroup {
   color: #dddddd; }
-
 table#blueprint_converters * {
   font-size: 11px; }
-
-table#blueprint_converters .group, table#blueprint_converters .group * {
+table#blueprint_converters .group, table table#blueprint_converters .group * {
   font-size: 9px !important; }
