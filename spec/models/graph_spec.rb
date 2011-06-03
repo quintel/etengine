@@ -6,7 +6,10 @@ describe Graph do
   
   describe "#to_qernel" do
     it "should return a Qernel::Graph object" do
-      pending "the method fails without proper blueprint and dataset"
+      d = Factory :dataset
+      b = Factory :blueprint
+      g = Factory :graph, :blueprint => b, :dataset => d
+      g.to_qernel.should be_a(Qernel::Graph)
     end
   end
 end
