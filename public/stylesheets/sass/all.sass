@@ -17,7 +17,6 @@ img, div
 a
   color: #63A0C9
   &:hover
-    //text-decoration: none
 
 input.button
   cursor: pointer
@@ -46,20 +45,13 @@ body#model #wrapper
 
 #content
   position: relative
-  min-width: 950px
-  max-width: 1230px
   margin: 0 auto
 
   #flash
-    position: absolute
-    left: 50%
-    top: 150px
     background: #FFF1A8
     width: 400px
-    margin-left:  -200px
     -moz-border-radius: 8px
     -webkit-border-radius: 8px
-
     &.error
       background: #ff9999
     &.error a
@@ -92,7 +84,30 @@ table.default
 
 .clear
   clear: both
+
+  p.button 
+    float: right
+    height: 22px
+    margin: 0px
+    background: #63a1c9
+    border: 1px solid black 
+    p.button a.button, p.button input.button 
+      background: none
+      border: 0px
+      text-decoration: none
+      color: white 
+
+  a.button, input.button 
+    border: 1px solid black
+    padding: 5px 10px
+    background: #63a1c9
+    text-decoration: none
+    color: white 
+
+  a.button:hover, input.button:hover 
+    background: #568cb0 
+
+  input 
+    font-family: inherit 
   
 @import fancybox
-@import "home"
-@import shadowbox

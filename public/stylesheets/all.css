@@ -45,16 +45,10 @@ body#model #wrapper {
 
 #content {
   position: relative;
-  min-width: 950px;
-  max-width: 1230px;
   margin: 0 auto; }
   #content #flash {
-    position: absolute;
-    left: 50%;
-    top: 150px;
     background: #fff1a8;
     width: 400px;
-    margin-left: -200px;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px; }
     #content #flash.error {
@@ -89,6 +83,27 @@ table.default tr.odd td, table.default tr.odd th {
 
 .clear {
   clear: both; }
+  .clear p.button {
+    float: right;
+    height: 22px;
+    margin: 0px;
+    background: #63a1c9;
+    border: 1px solid black; }
+    .clear p.button p.button a.button, .clear p.button p.button input.button {
+      background: none;
+      border: 0px;
+      text-decoration: none;
+      color: white; }
+  .clear a.button, .clear input.button {
+    border: 1px solid black;
+    padding: 5px 10px;
+    background: #63a1c9;
+    text-decoration: none;
+    color: white; }
+  .clear a.button:hover, .clear input.button:hover {
+    background: #568cb0; }
+  .clear input {
+    font-family: inherit; }
 
 h1 {
   font-family: Georgia, Times New Roman;
@@ -170,221 +185,3 @@ h1 {
     border: 4px solid white; }
   #tutorial_wrapper .left_movie {
     margin-right: 10px; }
-
-.clear {
-  clear: both; }
-
-p.button {
-  float: right;
-  height: 22px;
-  margin: 0px;
-  background: #63a1c9;
-  border: 1px solid black; }
-
-p.button a.button, p.button input.button {
-  background: none;
-  border: 0px;
-  text-decoration: none;
-  color: white; }
-
-a.button, input.button {
-  border: 1px solid black;
-  padding: 5px 10px;
-  background: #63a1c9;
-  text-decoration: none;
-  color: white; }
-
-a.button:hover, input.button:hover {
-  background: #568cb0; }
-
-input {
-  font-family: inherit; }
-
-ul#blocks {
-  list-style: none;
-  width: 680px;
-  margin: 30px auto 30px auto;
-  height: 250px;
-  position: relative; }
-
-ul#blocks li {
-  float: left;
-  width: 100px;
-  border: 1px solid black;
-  height: 100px;
-  margin-left: 10px;
-  position: absolute;
-  text-align: center;
-  bottom: 10px;
-  line-height: 2em;
-  background-color: #dfe8f3; }
-
-ul#blocks li a {
-  color: black;
-  text-decoration: none;
-  height: 100%;
-  display: block; }
-
-ul#blocks li .number, ul#blocks li .percentage {
-  position: absolute;
-  top: -2em;
-  color: white; }
-
-ul#blocks li .number {
-  left: 0px; }
-
-ul#blocks li .percentage {
-  right: 0px;
-  font-size: small; }
-
-ul#blocks li.active {
-  background-color: #63a1c9;
-  color: white; }
-
-ul#blocks li.active a {
-  color: white;
-  text-decoration: none; }
-
-ul#blocks li.active .number {
-  color: black; }
-
-ul#blocks li.active .percentage {
-  color: #666666; }
-
-ul#blocks li.households {
-  left: 0;
-  height: 75px; }
-
-ul#blocks li.buildings {
-  left: 120px;
-  height: 50px; }
-
-ul#blocks li.transport {
-  left: 240px;
-  height: 90px; }
-
-ul#blocks li.industry {
-  left: 360px;
-  height: 205px; }
-
-ul#blocks li.agriculture {
-  left: 480px;
-  height: 25px; }
-
-ul#blocks li.other {
-  left: 600px;
-  height: 10px; }
-
-#start ul#new_scenario_form, #start ul#existing_scenario_form {
-  clear: both;
-  float: left;
-  display: none;
-  width: 304px;
-  margin-left: 20px;
-  margin-top: 15px; }
-
-#start ul#new_scenario_form h3, #start ul#existing_scenario_form h3 {
-  width: 100%; }
-
-#start ul#new_scenario_form select, #start ul#existing_scenario_form select {
-  margin-top: 5px; }
-
-#shadowbox-outer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 1003; }
-
-.shadow-bg {
-  position: absolute;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  width: 20px;
-  height: 20px;
-  z-index: 1001; }
-
-#shadow-bg-n {
-  position: absolute;
-  float: left;
-  top: -20px;
-  left: 0;
-  width: 100%;
-  background-image: url("/images/layout/shadowbox-x.png");
-  z-index: 1005; }
-
-#shadow-bg-ne {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  background-image: url("/images/layout/shadowbox.png");
-  background-position: -40px -162px;
-  z-index: 1001; }
-
-#shadow-bg-e {
-  position: absolute;
-  top: 0;
-  right: -20px;
-  height: 100%;
-  background-image: url("/images/layout/shadowbox-y.png");
-  background-position: -20px 0px;
-  z-index: 1001; }
-
-#shadow-bg-se {
-  position: absolute;
-  bottom: -20px;
-  right: -20px;
-  background-image: url("/images/layout/shadowbox.png");
-  background-position: -40px -182px;
-  z-index: 1001; }
-
-#shadow-bg-s {
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  width: 100%;
-  background-image: url("/images/layout/shadowbox-x.png");
-  background-position: 0px -20px;
-  z-index: 1001; }
-
-#shadow-bg-sw {
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  background-image: url("/images/layout/shadowbox.png");
-  background-position: -40px -142px;
-  z-index: 1001; }
-
-#shadow-bg-w {
-  position: absolute;
-  top: 0;
-  left: -20px;
-  height: 100%;
-  background-image: url("/images/layout/shadowbox-y.png");
-  z-index: 1001; }
-
-#shadow-bg-nw {
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  background-image: url("/images/layout/shadowbox.png");
-  background-position: -40px -122px;
-  z-index: 1001; }
-
-#shadow-bg-arrow-tip {
-  position: absolute;
-  background-image: url("/images/layout/arrow_tip.png");
-  height: 38px;
-  width: 71px;
-  left: 40px;
-  bottom: -33px;
-  z-index: 1004; }
-
-a#shadow-bg-close-button {
-  position: absolute;
-  right: 5px;
-  top: 5px;
-  width: 34px;
-  height: 34px;
-  z-index: 1003;
-  background: url(/images/layout/close_button.gif) no-repeat center center; }
