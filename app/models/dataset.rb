@@ -23,7 +23,7 @@ class Dataset < ActiveRecord::Base
   has_many :time_curve_entries, :foreign_key => 'graph_id', :dependent => :delete_all
 
   # named scopes for finding graphs by version/country/creation date
-  scope :version, lambda {|version| where(:graph_version => version) }
+  scope :version, lambda {|version| where(:graph_version => version) } # CHECK missing column!
   scope :region_code, lambda {|region_code| where(:region_code => region_code) }
   scope :ordered, order("created_at DESC")
 
