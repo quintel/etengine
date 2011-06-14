@@ -12,7 +12,8 @@
         %th Attribute
         %th= @area.region_code
     %tbody
-      - Area.column_names.sort.each do |column_name|
+      - attributes = Qernel::Area::ATTRIBUTES_USED.map(&:to_s) & Area.column_names
+      - attributes.each do |column_name|
         %tr{cycles}
           %th= column_name
           - v = @area.send(column_name)
