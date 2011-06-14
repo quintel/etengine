@@ -112,7 +112,6 @@ class Scenario < ActiveRecord::Base
   #    
   def user_values=(values)
     values ||= {}
-    #raise ArgumentError.new("You must set a hash: " + values.inspect) if !values.kind_of?(Hash)
     self[:user_values] = case values
       when Hash then values.to_yaml
       when String then values
@@ -139,9 +138,9 @@ class Scenario < ActiveRecord::Base
   #
   # @untested 2010-12-06 seb
   #
-  def build_update_statements(load_as_municipality)
+  def build_update_statements
     user_values.each_pair do |id, value|
-      build_update_statements_for_element(load_as_municipality, id, value)
+      build_update_statements_for_element(id, value)
     end
   end
 
@@ -154,46 +153,13 @@ class Scenario < ActiveRecord::Base
   #
   # @tested 2010-12-06 seb
   #
-  def build_update_statements_for_element(load_as_municipality, id, value)
+  def build_update_statements_for_element(id, value)
 
     input_element = InputElement.find(id)
-    if load_as_municipality and scale_factor = scale_factor_for_municipality(input_element)
-      value /= scale_factor
-    end
     update_input_element(input_element, value)
 
   rescue ActiveRecord::RecordNotFound
     Rails.logger.warn("WARNING: Scenario loaded, but InputElement nr.#{id} was not found")    
   end
 
-
-  ##
-  # Returns the scale factor for the municipality. Nil if not scaled
-  #
-  # @param [InputElement] input_element
-  # @return [Float, nil] the scale factor or nil if not scaled.
-  #
-  # @tested 2010-12-06 seb
-  #
-  def scale_factor_for_municipality(input_element)
-    return nil if input_element.locked_for_municipalities.blank?
-    if input_element_scaled_for_municipality?(input_element)
-      electricity_country = area_country.current_electricity_demand_in_mj
-      electricity_region = area_region.current_electricity_demand_in_mj
-      (electricity_country / electricity_region).to_f
-    end
-  end
-
-  ##
-  # Does the input_element have to be scaled?
-  #
-  # @param [InputElement] input_element
-  # @return [Boolean]
-  #
-  # @tested 2010-12-06 seb
-  #
-  def input_element_scaled_for_municipality?(input_element)
-    # TODO move to InputElement as no scenario state is used anymore
-    input_element.slide.andand.controller_name == 'supply' || input_element.slide.contains_chp_slider?
-  end
 end
