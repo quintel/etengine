@@ -37,26 +37,10 @@ class Scenario < ActiveRecord::Base
   end
 
   ##
-  # @tested 2010-12-06 seb
-  # 
-  def area_country
-    Area.find_by_country(country)
-  end
-
-  ##
-  # @tested 2010-12-06 seb
-  # 
-  def area_region
-    Area.find_by_country(Current.scenario.region)
-  end
-
-  ##
   # @tested 2010-11-30 seb
   # 
   def area
     @area ||= Area.find_by_country(region_or_country)
   end
-
-
 
 end

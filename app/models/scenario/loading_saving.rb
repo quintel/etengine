@@ -24,27 +24,9 @@ class Scenario < ActiveRecord::Base
   # Called from current. 
   #
   def load!
-    build_update_statements(false)
+    build_update_statements
   end
 
-  ##
-  # 
-  # @untested 2010-12-06 seb
-  #
-  def load_scenario(options = {})
-    # TODO make a scenario type which is a municipality_preset (2010-12-21 jape)
-    build_update_statements(options[:municipality_preset])
-
-    scenario_before = Current.scenario
-    if options[:municipality_preset]
-      store_region = Current.scenario.region
-      Current.scenario = self
-      Current.scenario.region = store_region
-    else
-      Current.scenario = self
-    end
-
-  end
 
   ##
   # Stores the current settings into the attributes. For when we want to save
