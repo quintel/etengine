@@ -24,7 +24,7 @@
 #
 class Graph < ActiveRecord::Base
   belongs_to :blueprint # blueprint for the graph
-  belongs_to :dataset # data for the graph
+  belongs_to :dataset, :dependent => :destroy # data for the graph
 
   scope :ordered, order('created_at DESC')
 
