@@ -66,6 +66,15 @@ class Area < ActiveRecord::Base
 
   after_create :create_carrier_datas
 
+  def self.ordered_column_names
+    Qernel::Area::ATTRIBUTES_USED.map(&:to_s) & Area.column_names
+  end
+
+  def self.editable_column_names
+    ordered_column_names - %w[id country created_at updated_at]
+  end
+
+
   # TODO change country to region_code
   def region_code
     country

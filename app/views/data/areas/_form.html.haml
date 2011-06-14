@@ -8,9 +8,7 @@
         %th
 
     %tbody.numeric_rows
-      - attributes = Qernel::Area::ATTRIBUTES_USED.map(&:to_s) & Area.column_names
-      - attributes = attributes - %w[id country created_at updated_at]
-      - attributes.each do |key|
+      - Area.editable_column_names.each do |key|
         %tr
           %th= key
           %td= f.text_field key
