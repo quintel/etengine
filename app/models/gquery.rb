@@ -57,9 +57,9 @@ class Gquery < ActiveRecord::Base
   # Instead we memoize (see self.gquery_hash) the clean queries
   # once and for all, saving us a few milliseconds per request.
   #
-  # ejp- cleaning algorithm is encapsulated in Gql:GqueryCleanerParser
+  # ejp- cleaning algorithm is encapsulated in Gql:Gquery::CleanerParser
   def parsed_query
-    @parsed_query ||= Gql::GqueryCleanerParser.clean_and_parse(query)
+    @parsed_query ||= Gql::Gquery::CleanerParser.clean_and_parse(query)
   end
 
   @@gquery_hash = nil
@@ -90,7 +90,7 @@ private
 
 
   def validate_query_parseable
-    if Gql::GqueryCleanerParser.check_query(self[:query]).nil?
+    if Gql::Gquery::CleanerParser.check_query(self[:query]).nil?
       errors.add(:query, "cannot be parsed")
       false
     else

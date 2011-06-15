@@ -582,7 +582,7 @@ class GqlQuerySyntaxNode < Treetop::Runtime::SyntaxNode
   # @return [Object] value or nil if not in country
   #
   def FOR_COUNTRIES(value_terms, arguments, scope = nil)
-    # TODO: fix Current.scenario.country to use graph
+    # DEBT: fix Current.scenario.country to use graph
     if arguments.include?(Current.scenario.country)
       values = value_terms.map{|value_term| value_term.result(scope) }
       values.length == 1 ? values.first : values

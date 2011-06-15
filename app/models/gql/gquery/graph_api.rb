@@ -4,7 +4,7 @@
 #
 #
 #
-module Gql::GqueryGraphApi
+module Gql::Gquery::GraphApi
   ##
   # The currently active graph (present or future)
   #

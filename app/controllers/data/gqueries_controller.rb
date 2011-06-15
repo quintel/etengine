@@ -39,7 +39,7 @@ class Data::GqueriesController < Data::DataController
 
   def result
     raw_query = params[:id] ? Gquery.find(params[:id]) : (params[:query] ? params[:query] : '')
-    @query = Gql::GqueryCleanerParser.clean(raw_query)
+    @query = Gql::Gquery::CleanerParser.clean(raw_query)
     render 'result'
   end
 

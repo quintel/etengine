@@ -70,7 +70,7 @@ class BlackboxGquery < ActiveRecord::Base
 
   def result
     if gquery
-      @result ||= Current.gql.query(Gql::GqueryCleanerParser.clean(gquery.query))
+      @result ||= Current.gql.query(Gql::Gquery::CleanerParser.clean(gquery.query))
       @result.map(&:last).map{|re| re.respond_to?(:to_i) ? re.to_i : nil }
     else # if gquery has been deleted
       [nil,nil]
