@@ -16,16 +16,13 @@
   %body#model
     #header
       #nav
-        %ul
-          - tab("Data", 'data')
-          - tab("Graphs", 'admin/graphs', '')
-          - tab("Tables", 'admin/query_tables', '')
-          - tab("Blackboxes", 'admin/blackboxes', '')
-          - tab("Bb scenarios", 'admin/blackbox_scenarios', '')
-          - tab("Historic", 'admin/historic_series', '')
-          - tab("Expert", 'admin/expert_predictions', '')
-          - tab("Blueprints", 'admin/blueprints', '')
-          - tab("Converters", 'admin/converters', '')
+        - tabs_tag do |t|
+          = t.data            "Data",         data_start_path
+          = t.graphs          "Graphs",       admin_graphs_path
+          = t.query_tables    "Query Tables", admin_query_tables_path
+          = t.historic_series "Historic",     admin_historic_series_path
+          = t.blueprints      "Blueprints",   admin_blueprints_path
+          = t.converters      "Converters",   admin_converters_path
         .clear
     #wrapper
       #content

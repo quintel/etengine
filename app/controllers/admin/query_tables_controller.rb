@@ -1,4 +1,6 @@
 class Admin::QueryTablesController < Admin::AdminController
+  set_tab :query_tables
+  
   def index
     @query_tables = QueryTable.all
   end
