@@ -42,7 +42,7 @@ grammar GqlQuery
   end
 
   rule value_function
-    [A-Z_]* <Gql::GqlQuerySyntaxNode>
+    [A-Z_]* <Gql::GqlExpression>
   end
 
   ###################################
