@@ -1,5 +1,3 @@
-= render "list"
-
 #content
   .header
     Blueprints
@@ -11,7 +9,7 @@
   %p
     Create a new Blueprint by copying from an old one. 
     %br
-    = link_to "Create a new Blueprint", new_construction_blueprint_path
+    = link_to "Create a new Blueprint", new_admin_blueprint_path
 
   %table{table_defaults}
     %thead
@@ -20,14 +18,14 @@
         %th Version
         %th Description
         %th
-        %th Datasets
+        %th{:style => 'width: 220px'} Datasets
         %th Created At
     %tbody
       - @blueprints.each do |blueprint|
-        %tr
+        %tr{cycles}
           %td= blueprint.id
           %td= blueprint.graph_version
           %td= blueprint.description
-          %td= link_to 'Copy', new_construction_blueprint_path(:copy_blueprint_id => blueprint.id)
+          %td= link_to 'Copy', new_admin_blueprint_path(:copy_blueprint_id => blueprint.id)
           %th= blueprint.datasets.map(&:region_code).join(', ')
           %td= blueprint.created_at
