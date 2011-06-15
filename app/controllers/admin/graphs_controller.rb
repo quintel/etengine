@@ -1,5 +1,6 @@
 class Admin::GraphsController < Admin::AdminController
   before_filter :load_graph, :only => [:show, :groups, :edit, :destroy, :updated]
+  set_tab :graphs
 
   def new
     @graph = Graph.new
