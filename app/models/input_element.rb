@@ -124,15 +124,15 @@ class InputElement < ActiveRecord::Base
 
   # TODO refactor (seb 2010-10-11)
   def start_value
-    if gql_query = self[:start_value_gql] and gql_query != ''
-      Current.gql.query(gql_query)
+    if gql_query = self[:start_value_gql] and !gql_query.blank?
+      Current.gql.query(gql_query) * factor
     else
       self[:start_value]
     end
   end
 
   def min_value
-    if gql_query = self[:min_value_gql] and gql_query != ''
+    if gql_query = self[:min_value_gql] and !gql_query.blank?
       Current.gql.query(gql_query)
     else
       self[:min_value] || 0
@@ -140,7 +140,7 @@ class InputElement < ActiveRecord::Base
   end
 
   def max_value
-    if gql_query = self[:max_value_gql] and gql_query != ''
+    if gql_query = self[:max_value_gql] and !gql_query.blank?
       Current.gql.query(gql_query)
     else
       self[:max_value] || 0
