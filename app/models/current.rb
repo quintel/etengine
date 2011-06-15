@@ -14,7 +14,7 @@
 # == Scenario vs Setting
 # 
 # A big difference between Setting and Scenario is, that Scenario influences the GQL.
-# E.g. in scenario we set end_year, can overwrite number_of_households, etc.
+# E.g. in scenario we set end_year, etc.
 #
 #
 # == Implementation details

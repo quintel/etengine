@@ -103,28 +103,6 @@ class Scenario < ActiveRecord::Base
     self[:use_lce_settings] = value
   end
 
-  ##
-  # @tested 2010-11-30 seb
-  # 
-  def number_of_households
-    self[:number_of_households] ||= area.andand.number_households
-  end
-
-  def number_of_households=(value)
-    self[:number_of_households] = value
-  end
-
-
-  ##
-  # @tested 2010-11-30 seb
-  # 
-  def number_of_existing_households
-    self[:number_of_existing_households] ||= area.andand.number_of_existing_households
-  end
-
-  def number_of_existing_households=(value)
-    self[:number_of_existing_households] = value
-  end
 
   ##
   # @tested 2010-11-30 seb

@@ -69,11 +69,9 @@ describe Scenario do
   end
 
 
-  describe "#municipality?, #number_of_households, #number_of_existing_households" do
+  describe "#municipality?" do
     {
-      :municipality? => :is_municipality?,
-      :number_of_households => :number_households,
-      :number_of_existing_households => :number_of_existing_households
+      :municipality? => :is_municipality?
     }.each do |scenario_method_name, area_method_name|
       describe "##{scenario_method_name} should be true if area##{area_method_name} is true" do
         before { @scenario.stub!(:area).and_return(mock_model(Area, area_method_name => true))}
@@ -84,22 +82,6 @@ describe Scenario do
         specify { @scenario.send(scenario_method_name).should be_false}
       end
     end
-  end
-
-  describe "number_of_households is memoized (does not lookup value from area when present)" do
-    before { @scenario = Scenario.new(:number_of_households => 15, :number_of_existing_households => 20)}
-    specify { @scenario.number_of_households.should == 15}
-    specify { @scenario.number_of_existing_households.should == 20}
-  end
-
-  describe "#number_of_households=" do
-    before { @scenario.number_of_households = 15}
-    specify { @scenario.number_of_households.should == 15 }
-  end
-
-  describe "#number_of_existing_households=" do
-    before { @scenario.number_of_existing_households = 15}
-    specify { @scenario.number_of_existing_households.should == 15 }
   end
 
   describe "setting and retrieving user_values" do
@@ -225,18 +207,12 @@ describe Scenario do
 
   describe "#reset!" do
     before do
-      @scenario.stub!(:area).and_return(mock_model("Area", 
-        :number_households => 120, 
-        :number_of_existing_households => 130))
-      @scenario.number_of_households = 140
-      @scenario.number_of_existing_households = 160
+      @scenario.stub!(:area).and_return(mock_model("Area"))
       @scenario.user_values = {}
       @scenario.update_statements = {:foo => :bar}
       @scenario.reset!
     end
     subject {@scenario}
-    its(:number_of_households) { should == 120}
-    its(:number_of_existing_households) { should == 130}
     its(:user_values) { should == {}}
     its(:update_statements) { should == {}}
   end
