@@ -13,8 +13,6 @@ class Scenario < ActiveRecord::Base
     self.user_values = {}
     self.update_statements = {}
     self.lce_settings = {}
-    self.number_of_households = nil
-    self.number_of_existing_households = nil
   end
   alias_method :reset_user_values!, :reset!
 
