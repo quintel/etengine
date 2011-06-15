@@ -8,7 +8,7 @@
 # Or:
 # query.query("Q ( electricity_production ) ")
 #
-module Gql::GqueryBase
+module Gql::Gquery::Base
   ##
   #
   #
@@ -60,7 +60,7 @@ module Gql::GqueryBase
   # Is the given gquery_string valid?
   #
   def check(query)
-    Gql::GqueryCleanerParser.check_query(query)
+    Gql::Gquery::CleanerParser.check_query(query)
   end
 
   ##
@@ -81,11 +81,11 @@ module Gql::GqueryBase
   private
 
   def clean(query_string)
-    Gql::GqueryCleanerParser.clean(query_string)
+    Gql::Gquery::CleanerParser.clean(query_string)
   end
 
   def clean_and_parse(query_string)
-    Gql::GqueryCleanerParser.clean_and_parse(query_string)
+    Gql::Gquery::CleanerParser.clean_and_parse(query_string)
   end
 
 

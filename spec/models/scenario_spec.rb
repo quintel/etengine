@@ -68,21 +68,6 @@ describe Scenario do
     end
   end
 
-  describe "#area_country" do
-    before { @scenario = Scenario.default }
-    it "should return area" do
-      Area.should_receive(:find_by_country).with(@scenario.country).and_return(:foo)
-      @scenario.area_country
-    end
-  end
-
-  describe "#area_region" do
-    before { @scenario = Scenario.default }
-    it "should return area" do
-      Area.should_receive(:find_by_country).with(@scenario.region).and_return(:foo)
-      @scenario.area_region
-    end
-  end
 
   describe "#municipality?, #number_of_households, #number_of_existing_households" do
     {
@@ -230,21 +215,10 @@ describe Scenario do
       @input_element = mock_model(InputElement, :id => 5)
       InputElement.stub!(:find).with(@input_element.id).and_return(@input_element)
     end
-    context "with scale_factor" do
-      before { @scenario.stub!(:scale_factor_for_municipality).and_return(0.5) }
-      it "should update_input_element scaled when load_as_municipality" do
-        @scenario.should_receive(:update_input_element).with(@input_element, 2.0 / 0.5)
-        @scenario.build_update_statements_for_element(true, @input_element.id, 2.0)
-      end
-      it "should update_input_element unscaled when not load_as_municipality" do
-        @scenario.should_receive(:update_input_element).with(@input_element, 2.0)
-        @scenario.build_update_statements_for_element(false, @input_element.id, 2.0)
-      end
-    end
     context "if no input_element found" do
       before { InputElement.stub!(:find).and_raise(ActiveRecord::RecordNotFound) }
       it "should catch the error" do
-        @scenario.build_update_statements_for_element(false, @input_element.id, 2.0)
+        @scenario.build_update_statements_for_element(@input_element.id, 2.0)
       end
     end
   end

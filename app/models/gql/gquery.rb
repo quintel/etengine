@@ -11,8 +11,8 @@ class Gquery
   # The implementation of #query, #subquery is done in GqueryBase,
   # so that we can extend it with caching strategies defined in
   # e.g. GqueryCache and GqueryMemoizedSubqueries.
-  include GqueryBase
-  include GqueryGraphApi
+  include Base
+  include GraphApi
 
   # Following includes are responsible for caching of queries
   # The order of includes is important.
@@ -34,7 +34,7 @@ class Gquery
     #  values from scenario 1. We could also implement better cache keys to circumvent that.
     include GqueryCache # optional
   end
-  include GqueryMemoizedSubqueries # optional
+  include MemoizedSubqueries # optional
 
 
 end

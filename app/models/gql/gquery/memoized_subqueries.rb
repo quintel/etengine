@@ -2,7 +2,7 @@ module Gql
 ##
 # GqueryMemoizedSubqueries memoizes subquery calls for future and present graphs.
 #
-module GqueryMemoizedSubqueries
+module Gquery::MemoizedSubqueries
 
   def graph=(graph)
     @graph = graph

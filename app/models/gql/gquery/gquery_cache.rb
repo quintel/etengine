@@ -2,7 +2,7 @@ module Gql
 ##
 # GqueryCache caches #query and #subquery calls on the present graph using Rails.cache.
 #
-module GqueryCache
+module Gquery::GqueryCache
 
   ##
   # DANGEEROURS. What happens if Converter objects are returned???

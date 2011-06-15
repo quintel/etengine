@@ -15,8 +15,6 @@ class Scenario < ActiveRecord::Base
     self.lce_settings = {}
     self.number_of_households = nil
     self.number_of_existing_households = nil
-    # TODO: This is not working now
-    # Current.setting.network_parts_affected = []
   end
   alias_method :reset_user_values!, :reset!
 

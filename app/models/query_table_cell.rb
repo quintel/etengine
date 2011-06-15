@@ -21,7 +21,7 @@ class QueryTableCell < ActiveRecord::Base
       name
     else
       begin
-        result = Current.gql.query(Gql::GqueryCleanerParser.clean(gquery))
+        result = Current.gql.query(Gql::Gquery::CleanerParser.clean(gquery))
         if result.is_a?(Numeric)
           result
         else
