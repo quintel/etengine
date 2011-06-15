@@ -228,7 +228,7 @@ module UpdatingConverter
     number_of_houses_to_replace = (present_old_houses_demand - future_demand_old_houses_cmd.value) / ## calculate the diff in demand for old_houses
                                   demand_per_old_house(present_old_houses_demand,perc_of_new_hh,nr_of_hh)
                                   
-    Current.scenario.number_of_existing_households = nr_of_hh - number_of_houses_to_replace
+    number_of_existing_households = nr_of_hh - number_of_houses_to_replace
 
     new_house_converter = present_converter("heating_new_houses_current_insulation_households_energetic")
     demand_per_new_house = new_house_converter.query.preset_demand / (perc_of_new_hh * nr_of_hh)
@@ -236,6 +236,7 @@ module UpdatingConverter
     # the nr of extrahouses multiplied with their demand is added to the original demand
     new_houses_future_demand_value = new_house_converter.query.demand + (demand_per_new_house * number_of_houses_to_replace)
 
+    cmds << Update::AttributeCommand.new(graph.area, :number_of_existing_households, number_of_existing_households, value)
     cmds << future_demand_old_houses_cmd
     cmds << Update::AttributeCommand.new(new_house_converter, :preset_demand, new_houses_future_demand_value, :value)
 
