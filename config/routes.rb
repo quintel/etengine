@@ -49,8 +49,6 @@ Etm::Application.routes.draw do
     scope '/:blueprint_id/:region_code' do
       match '/' => "converters#index"
 
-      # Todo: this temporary redirect can be removed after 2011-04-24
-      match '/graph', :to => redirect("/data/%{blueprint_id}/%{region_code}/blueprint_layouts")
       resources :blueprint_layouts do
         resources :converter_positions
       end
