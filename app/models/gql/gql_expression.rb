@@ -1,6 +1,6 @@
 module Gql
 
-class GqlQuerySyntaxNode < Treetop::Runtime::SyntaxNode
+class GqlExpression < Treetop::Runtime::SyntaxNode
   ##
   # Functions that should evaluate the value_terms itself.
   # We treat them as exceptions because the majority of functions
