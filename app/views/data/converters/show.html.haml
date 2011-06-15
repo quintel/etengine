@@ -195,4 +195,4 @@
     %p This converter key is (explicitly) used here (most probably, just a simple CMD+F style search):
     %ul
       - Gquery.contains(@converter_present.full_key).each do |gquery|
-        %li= link_to gquery.key, admin_gquery_path(:id => gquery.id)
+        %li= link_to gquery.key, data_gquery_path(:id => gquery.id)
