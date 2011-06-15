@@ -1,1 +1,1 @@
-//= require <jquery>
+//= require <init/admin.interface>
