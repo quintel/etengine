@@ -107,7 +107,7 @@ class Area < ActiveRecord::Base
   end
 
   def dataset_attributes
-    attributes.merge(:area => country)
+    attributes.merge(:area => country, :number_of_existing_households => self.number_of_existing_households)
   end
 
   def self.region_codes

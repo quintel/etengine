@@ -54,7 +54,9 @@ class Area
     :has_solar_csp,
     :has_old_technologies,
     :cold_network_potential,
-    :has_cold_network
+    :has_cold_network,
+    # Special attribute, does not exist in Area columns, has to be added extra in Area#dataset_attributes
+    :number_of_existing_households 
   ]
 
   dataset_accessors ATTRIBUTES_USED
@@ -67,10 +69,6 @@ class Area
 
   def dataset_key
     "area_data"
-  end
-
-  def number_of_existing_households
-    number_households * (1 - (percentage_of_new_houses/100))
   end
 
   def co2_emission_1990_billions
