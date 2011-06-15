@@ -91,12 +91,9 @@ class Gql
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
     return if graph_model == :testing
 
-#    ::Graph.benchmark('GQL#initialize present', Logger::INFO) do
-      @present = graph_model.present
-#    end
-#    ::Graph.benchmark('GQL#initialize future', Logger::INFO) do
-      @future = graph_model.future
-#    end
+    @present = graph_model.present
+    @future = graph_model.future
+
     @present.year = Current.scenario.start_year
     @future.year = Current.scenario.end_year
 
@@ -127,28 +124,22 @@ class Gql
   # @return [Gql] Returns self, so that we can gql = Gql.new(graph).prepare_graphs
   #
   def prepare_graphs
-#    ::Graph.benchmark('GQL#initialize update future', Logger::INFO) do
-      update_time_curves(@future)
-      update_carriers(@future, Current.scenario.update_statements.andand['carriers'])
-      update_area_data(@future, Current.scenario.update_statements.andand['area'])
-      update_converters(@future, Current.scenario.update_statements.andand['converters'])
-#    end
-#    ::Graph.benchmark('GQL#initialize calculate future', Logger::INFO) do
-      @future.calculate
-#    end
-#    ::Graph.benchmark('GQL#initialize update_policies', Logger::INFO) do
-      update_policies(Current.scenario.update_statements.andand['policies'])
+    update_time_curves(@future)
+    if update_statements = Current.scenario.update_statements
+      update_carriers(@future, update_statements['carriers'])
+      update_area_data(@future, update_statements['area'])
+      update_converters(@future, update_statements['converters'])
+    end
+    @future.calculate
+    update_policies(update_statements['policies']) if update_statements
 
     # At this point the gql is calculated. Changes through update statements
     # should no longer be allowed, as they won't have an impact on the 
     # calculation (even though updating prices would work).
     @calculated = true  
 
-#    end
-#    ::Graph.benchmark('GQL#initialize after_calculation', Logger::INFO) do
-      after_calculation_updates(@present)
-      after_calculation_updates(@future)
-#    end
+    after_calculation_updates(@present)
+    after_calculation_updates(@future)
     self
   end
 
@@ -159,15 +150,15 @@ class Gql
   # @return [GqueryResult] Result of present and future graph
   #
   def query(query)
-    aggregation, queries = query.match(/^(\w*)\.(.*)/).andand.captures
-    #result = ::Graph.benchmark("GQL#query #{query}") do
-      result = if aggregation.blank?
-        query_gql2(query)
-      else
-        send("query_#{aggregation}", query)
-      end
-    #end
-    result
+    modifier,gquery = query.split(':')
+    if gquery.nil?
+      GqueryResult.create [
+        [Current.scenario.start_year, query_present(query)],
+        [Current.scenario.end_year, query_future(query)]
+      ]
+    elsif %(present future historic stored).include?(modifier.strip)
+      send("query_#{modifier}", gquery)
+    end
   end
 
   ##
@@ -217,25 +208,7 @@ private
   # @return [GqueryResult] The result of the stored procedure
   #
   def query_stored(query)
-    aggregation, stored_procedure_name = query.match(/^(\w*)\.(.*)/).andand.captures
-    StoredProcedure.execute(stored_procedure_name)
-  end
-
-  ##
-  #
-  # @return [GqueryResult] if query uses both graphs
-  # @return [Flaot] if only one graph queried, e.g. using present: or future: prefix in query
-  #
-  def query_gql2(query)
-    modifier,gquery = query.split(':')
-    if gquery.nil?
-      GqueryResult.create [
-        [Current.scenario.start_year, query_present(query)],
-        [Current.scenario.end_year, query_future(query)]
-      ]
-    elsif %(present future historic).include?(modifier.strip)
-      send("query_#{modifier}", gquery)
-    end
+    StoredProcedure.execute(query)
   end
 
   ##
@@ -248,55 +221,7 @@ private
   end
 
   def graph_query(query, graph)
-    if query.include?('(')
-      return query_interface.query_graph(query, graph)
-    end
-
-    # PROBABLY DEPRECATED
-    
-    aggregation, queries = query.match(/^(\w*)\.(.*)/).captures
-
-    values = values_for_queries(queries, graph)
-
-    if method_name = "collection_#{aggregation}" and self.respond_to?(method_name)
-      self.send("collection_#{aggregation}", values)
-    else
-      collection_sum values
-    end
-  end
-
-  # PROBABLY DEPRECATED
-  def values_for_queries(queries, graph)
-    queries.split(',').map do |query|
-      values_for_query(query, graph)
-    end.flatten
-  end
-
-
-  # PROBABLY DEPRECATED
-  def values_for_query(query, graph)
-    select_query, method_name, unit_conversion = parse_query(query)
-
-    raise GqlError.new("GQL: No method defined in #{query}") if method_name.blank?
-
-    if select_query == 'graph'
-      values = graph.query(method_name)
-    else
-      values = select(select_query, graph).map{|converter| converter.query(method_name)}
-    end
-
-    values = [values].flatten.map{|val| Gql.send(unit_conversion, val)} if unit_conversion
-    values
-  rescue NoMethodError => e
-    raise GqlError.new("GQL: No method found with name #{method_name} for query: #{query}")
-  end
-
-  # PROBABLY DEPRECATED
-  def parse_query(query)
-    select_query, method_unit = query.split('.')
-    method_name, unit_conversion = method_unit.split(':')
-
-    [select_query, method_name, unit_conversion]
+    query_interface.query_graph(query, graph)
   end
 
   def present_converter(id)
@@ -307,9 +232,6 @@ private
     @future.converter(id)
   end
 
-  def collection_sum(values)
-    values.compact.sum
-  end
 end
 
 end
