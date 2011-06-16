@@ -21,14 +21,6 @@ class StoredProcedure
     #]
   end
 
-  # the scoreof all policies
-  def policy_score
-    GqueryResult.create [
-       [Current.scenario.start_year, 0],
-       [Current.scenario.end_year, Current.gql.policy.goals.map{|p| p.score}.sum]
-     ]
-    
-  end
   ##
   # attributes of the area as presently defined
   #

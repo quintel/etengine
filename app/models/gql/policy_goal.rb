@@ -1,58 +1,5 @@
 module Gql
 
-
-# PolicyGoal-specific helper methods to display values to the user
-# This should move to helpers since it is view code
-module PolicyGoalFormatter
-  # Formats a computed future
-  def output_present_value
-    case unit
-      when :eur_pct
-        Metric.performance_html(start_value, start_value)
-      when :co2_pct
-        Metric.performance_html(Current.scenario.area.co2_emission_1990, start_value)
-      when :pct
-        Metric.percentage_html(start_value, :signed => false)
-      when :eur
-        Metric.format_number(start_value, :precision => 2, :suffix => '', :signed => false)
-      else
-        Metric.format_number(start_value, :suffix => unit.to_s, :signed => false)
-    end
-  end
-
-#TODO: merge output_future_value and output_present_value: RD
-  # Formats a computed future
-  def output_future_value
-    case unit
-      when :eur_pct
-        Metric.performance_html(start_value, future_value)
-      when :co2_pct
-        Metric.performance_html(Current.scenario.area.co2_emission_1990, future_value)
-      when :pct
-        Metric.percentage_html(future_value, :signed => false)
-      when :eur
-        Metric.format_number(future_value, :precision => 2, :suffix => '', :signed => false)
-      else
-        Metric.format_number(future_value, :suffix => unit.to_s, :signed => false)
-    end
-  end
-
-  # Formats a target value display the user's value for co2, net_*_import, renewable_percentage, and the
-  # absolute target value (optionally with units) otherwise.
-  def output_user_target
-    return nil? unless user_value
-    case display_format
-      when :percentage  #  display user_values
-        Metric.percentage_html(user_value, :signed => false)
-      when :number
-        Metric.format_number(target_value, :precision => 2)
-      when :number_with_unit
-        Metric.format_number(target_value, :suffix => unit.to_s, :signed => false)
-    end
-  end
-
-end
-
 class PolicyGoal
 
   attr_accessor :id, :key, :name, :query, :user_value
@@ -60,8 +7,6 @@ class PolicyGoal
   # TODO change to use @display_format instead of attr_reader
   attr_reader :display_format, :unit
   private :display_format, :unit
-
-  include PolicyGoalFormatter
 
   # a PolicyGoal typically compares a future value with some user-defined target value to
   # determine if the goal has been reached. These values are computed by GQL queries.
@@ -99,7 +44,6 @@ class PolicyGoal
     @reached_query     = opts[:reached_query] # not used yet
   end
 
-
   # returns an absolute value for the goal, even when the user specifies a factor to increase by
   def target_value
     case key
@@ -125,19 +69,6 @@ class PolicyGoal
 
   def future_value
     query_results.future_value
-  end
-
-  def score
-    return 0 if user_value.nil?
-    score = (output_future_value.to_f - output_present_value.to_f)
-    score /= (output_user_target.to_f - output_present_value.to_f) unless (output_future_value.to_f - output_present_value.to_f) == 0 
-    if score > 1
-      score = (1 -(score - 1))  
-    end
-    if score < 0
-      score = 0
-    end
-    (score.round(2) * 100).to_i
   end
   
   def reached?
@@ -172,7 +103,4 @@ private
 
 
 end
-
-
-
 end
