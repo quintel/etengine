@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110616125125) do
+ActiveRecord::Schema.define(:version => 20110616135332) do
 
   create_table "area_dependencies", :force => true do |t|
     t.string  "dependent_on"
@@ -577,17 +577,6 @@ ActiveRecord::Schema.define(:version => 20110616125125) do
 
   create_table "roles", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "rounds", :force => true do |t|
-    t.string   "name"
-    t.boolean  "active"
-    t.integer  "position"
-    t.integer  "value"
-    t.integer  "policy_goal_id"
-    t.boolean  "completed"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
