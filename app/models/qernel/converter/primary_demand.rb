@@ -148,10 +148,17 @@ module Qernel::Converter::PrimaryDemand
         # (1.0 * 1.0 * 1.0) + (1.0 * 1.0 * 1.0)  # (conversion * link_share * value)
         # => 2.0!
         #
+        # => This has been changed in Link:
+        #      - flexible are assigned share of 1.0 if nil
+        #      - constant are assigned share of 0.0 if nil
+        #
         link_share = link.share
         if link_share.nil?
-          total_link_shares = valid_links.map(&:share).compact.sum
-          link_share = (1.0 - total_link_shares) / valid_links.length
+          # Following code would make sure that combined link_shares would not 
+          # be higher than 1.0:
+          # total_link_shares = valid_links.map(&:share).compact.sum
+          # link_share = (1.0 - total_link_shares) / valid_links.length
+          link_share = 1.0
         end
         if link_share == 0.0 # or link_share.nil? # uncomment if not already checked above.
           0.0
