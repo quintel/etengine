@@ -6,7 +6,7 @@ class Scenario < ActiveRecord::Base
 
   ##
   # If a user attempts to update a share group and the group does not
-  # add up to 100% we should remove all the user_updates of any input_element
+  # add up to 100% we should remove all the user_updates of any input
   # in that group. Otherwise this scenario will be have errors for the
   # time being (you cannot delete user_updates atm through the API).
   #
@@ -44,7 +44,7 @@ class Scenario < ActiveRecord::Base
   end
 
   ##
-  # A hash of input_element (share-) groups and their inputs.
+  # A hash of input (share-) groups and their inputs.
   #
   # @return [Hash] group name => [Array<Input>]
   #
@@ -55,7 +55,7 @@ class Scenario < ActiveRecord::Base
 
     hsh = {}
 
-    # remove groups that have no input_element in user_values
+    # remove groups that have no input in user_values
     groups.each do |group, elements| 
       if (elements.map(&:id) & user_values.keys).present?
         hsh[group] = elements

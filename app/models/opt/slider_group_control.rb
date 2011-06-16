@@ -12,7 +12,7 @@ module Opt
   # [<A_up, B_down, C_none>, <A_up, B_none, C_down>, 
   # <A_down, B_up, C_none>, <A_down, B_none, C_up>, <A_none, B_none, C_none>]
   #
-  # If one of the settings is out of the range of input_element (max, min_value)
+  # If one of the settings is out of the range of input (max, min_value)
   # that setting is rejected.
   #
   #
@@ -22,9 +22,9 @@ module Opt
                   :group_sliders,
                   :ranking
 
-    attr_reader :input_element, :step_value, :min_value, :max_value
+    attr_reader :input, :step_value, :min_value, :max_value
 
-    def initialize(input_element, step_value)
+    def initialize(input, step_value)
       super
       self.group_sliders = []
     end
@@ -94,7 +94,7 @@ module Opt
     # @return [Float] The range from min to max value
     #
     def step_size_range
-      input_element.max_value - input_element.min_value
+      input.max_value - input.min_value
     end
 
     ##
@@ -103,7 +103,7 @@ module Opt
     # @return [true,false] 
     #
     def remainder?
-      input_element.remainder?
+      input.remainder?
     end
 
     ##

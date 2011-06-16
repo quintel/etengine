@@ -45,7 +45,7 @@ module Opt
     end
 
     def inspect
-      "<#{self.class.name} @direction=#{direction} @step_value=#{step_value} @value=#{value} @original_value=#{original_value} @control=#{control.input_element.name}>"
+      "<#{self.class.name} @direction=#{direction} @step_value=#{step_value} @value=#{value} @original_value=#{original_value} @control=#{control.input.name}>"
     end
   end
 

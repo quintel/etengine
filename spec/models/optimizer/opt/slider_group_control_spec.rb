@@ -3,7 +3,7 @@ require 'spec_helper'
 module Opt
   class SliderGroupControl < SliderControl
     ##
-    # overwriting inspect to not cause issues when testing with input_element mocks.
+    # overwriting inspect to not cause issues when testing with input mocks.
     def inspect
       "<SliderGroupControl>"
     end
@@ -12,14 +12,14 @@ module Opt
   describe SliderGroupControl do
 
     before do
-      input_element = mock_model(Input, 
+      input = mock_model(Input, 
           :min_value => 0.0, 
           :max_value => 100.0, 
           :user_value => 50.0
       )
-      @control1 = SliderGroupControl.new(input_element, 5.0)
-      @control2 = SliderGroupControl.new(input_element, 5.0)
-      @control3 = SliderGroupControl.new(input_element, 5.0)
+      @control1 = SliderGroupControl.new(input, 5.0)
+      @control2 = SliderGroupControl.new(input, 5.0)
+      @control3 = SliderGroupControl.new(input, 5.0)
       @control1.stub!(:group_sliders).and_return([@control1, @control2, @control3])
       @settings = @control1.settings
     end

@@ -18,14 +18,14 @@ class Scenario < ActiveRecord::Base
   # @untested 2011-01-24 seb
   #
   def update_inputs_for_api(params)
-    input_element_ids = params.keys
-    input_element_ids.each do |key|
-      input_element = Input.where(['id = ? or `key` = ?', key,key]).first
+    input_ids = params.keys
+    input_ids.each do |key|
+      input = Input.where(['id = ? or `key` = ?', key,key]).first
 
       if params[key] == 'reset'
-        delete_from_user_values(input_element.id)
+        delete_from_user_values(input.id)
       elsif value = params[key].to_f
-        update_input_element(input_element, value)
+        update_input(input, value)
       end
     end
     add_update_statements(lce.update_statements)
@@ -35,14 +35,14 @@ class Scenario < ActiveRecord::Base
   # This method sends the key values to the gql using the input element attr. 
   # Also it fills an array with input elements which must be updated after the calculation
   #
-  # @param input_element <Object> the updated input element
+  # @param input <Object> the updated input element
   # @param value <Float> the posted value
   #
   # @tested 2010-12-06 seb
   # 
-  def update_input_element(input_element, value)
-    store_user_value(input_element, value)
-    add_update_statements(input_element.update_statement(value))
+  def update_input(input, value)
+    store_user_value(input, value)
+    add_update_statements(input.update_statement(value))
   end
 
   ##
@@ -68,14 +68,14 @@ class Scenario < ActiveRecord::Base
   ##
   # Stores the user value in the session.
   #
-  # @param [Input] input_element
+  # @param [Input] input
   # @param [Flaot] value
   # @return [Float] the value
   #
   # @tested 2010-11-30 seb
   #
-  def store_user_value(input_element, value)
-    key = input_element.id
+  def store_user_value(input, value)
+    key = input.id
     self.user_values = self.user_values.merge key => value 
     value
   end
@@ -84,15 +84,15 @@ class Scenario < ActiveRecord::Base
   ##
   # @tested 2010-11-30 seb
   #
-  def user_value_for(input_element)
-    user_values[input_element.id]
+  def user_value_for(input)
+    user_values[input.id]
   end
 
   ##
   # TODO fix this, it's weird
   #
   # Holds all values chosen by the user for a given slider. 
-  # Hash {input_element.id => Float}, e.g.
+  # Hash {input.id => Float}, e.g.
   # {3=>-1.1, 4=>-1.1, 5=>-1.1, 6=>-1.1, 203=>1.1, 204=>0.0}
   #
   # @tested 2010-11-30 seb
@@ -152,8 +152,8 @@ class Scenario < ActiveRecord::Base
   #
   def build_update_statements_for_element(id, value)
 
-    input_element = Input.find(id)
-    update_input_element(input_element, value)
+    input = Input.find(id)
+    update_input(input, value)
 
   rescue ActiveRecord::RecordNotFound
     Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")    

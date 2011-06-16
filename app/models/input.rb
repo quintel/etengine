@@ -22,7 +22,7 @@
 #  update_type               :string(255)
 #  unit                      :string(255)
 #  factor                    :float
-#  input_element_type        :string(255)
+#  input_type        :string(255)
 #  label                     :string(255)
 #  comments                  :text
 #  update_value              :string(255)
@@ -33,7 +33,7 @@
 #  label_query               :string(255)
 #
 
- # More defined in pkg/optimize/input_element.rb!!!
+ # More defined in pkg/optimize/input.rb!!!
 #
 #
 #
@@ -72,10 +72,10 @@ class Input < ActiveRecord::Base
   end
 
   ##
-  # update hash for this input_element with the given value.
+  # update hash for this input with the given value.
   # {'converters' => {'converter_keys' => {'demand_growth' => 2.4}}}
   #
-  # @param [Float] value the (user) value of that input_element
+  # @param [Float] value the (user) value of that input
   # @return [Hash]
   #
   def update_statement(value)
@@ -91,7 +91,7 @@ class Input < ActiveRecord::Base
   end
 
   def remainder?
-    input_element_type == 'remainder'
+    input_type == 'remainder'
   end
 
   def as_json(options={})
@@ -101,11 +101,11 @@ class Input < ActiveRecord::Base
   end
 
   def self.static_values
-    Input.all.inject({}) do |hsh, input_element|
-      hsh.merge input_element.id.to_s => {
-        :max_value => input_element.max_value,
-        :min_value => input_element.min_value,
-        :start_value => input_element.start_value
+    Input.all.inject({}) do |hsh, input|
+      hsh.merge input.id.to_s => {
+        :max_value => input.max_value,
+        :min_value => input.min_value,
+        :start_value => input.start_value
       }
     end
   end
@@ -150,7 +150,7 @@ class Input < ActiveRecord::Base
   # @return [Float] Users value
   #
   def user_value
-    unless input_element_type == "fixed" # if a slider is fixed, the user cant 
+    unless input_type == "fixed" # if a slider is fixed, the user cant 
       value = Current.scenario.user_value_for(self) 
     end
     Current.scenario.store_user_value(self, value || start_value || 0).round(2)
@@ -171,7 +171,7 @@ class Input < ActiveRecord::Base
   end
 
   def update_current(value)
-    Current.scenario.update_input_element(self, value)
+    Current.scenario.update_input(self, value)
   end
 end
 

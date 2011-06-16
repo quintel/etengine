@@ -59,7 +59,7 @@ class Optimizer
   end
 
   def inputs
-    @slider_controls.map(&:input_element)
+    @slider_controls.map(&:input)
   end
 
   def mission
@@ -80,12 +80,12 @@ class Optimizer
   #     step_values_in_PJ = Hash.new
   #     primary_demand_normal = Current.gql.query('future:SUM(V(G(final_demand_cbs);primary_demand))')
   # 
-  #     inputs.shuffle.each do |input_element|
-  #       value = input_element.start_value + input_element.step_value
-  #       step_size_100 = (input_element.max_value - input_element.min_value) / 100
+  #     inputs.shuffle.each do |input|
+  #       value = input.start_value + input.step_value
+  #       step_size_100 = (input.max_value - input.min_value) / 100
   # 
   #       Current.teardown_after_request!
-  #       input_element.update_current(value) # Current.user_updates(...)
+  #       input.update_current(value) # Current.user_updates(...)
   # 
   #       primary_demand_after_step = Current.gql.query('future:SUM(V(G(final_demand_cbs);primary_demand))')
   #       difference = primary_demand_after_step - primary_demand_normal
@@ -93,17 +93,17 @@ class Optimizer
   #         difference = step_size_100.to_f
   #       end
   # 
-  #       step_values_in_PJ[input_element.id] = difference.abs
+  #       step_values_in_PJ[input.id] = difference.abs
   #     end
   # 
   #     step_values_in_PJ
   #   end
   # end
   # 
-  # def step_value_PJ(input_element)
-  #   change = step_values_in_pj[input_element.id]
+  # def step_value_PJ(input)
+  #   change = step_values_in_pj[input.id]
   #   if change.nil? or change == 0.0
-  #     input_element.step_value
+  #     input.step_value
   #   else
   #     1_000_000_000 / change
   #   end
