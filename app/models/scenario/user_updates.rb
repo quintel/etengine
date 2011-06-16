@@ -25,10 +25,7 @@ class Scenario < ActiveRecord::Base
       if params[key] == 'reset'
         delete_from_user_values(input_element.id)
       elsif value = params[key].to_f
-        # To prevent javascript hacking for disabled sliders we do an extra check. This is needed for the transition price
-        unless input_element.disabled
-          update_input_element(input_element, value)
-        end
+        update_input_element(input_element, value)
       end
     end
     add_update_statements(lce.update_statements)
