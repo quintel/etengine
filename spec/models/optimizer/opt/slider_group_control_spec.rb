@@ -12,7 +12,7 @@ module Opt
   describe SliderGroupControl do
 
     before do
-      input_element = mock_model(InputElement, 
+      input_element = mock_model(Input, 
           :min_value => 0.0, 
           :max_value => 100.0, 
           :user_value => 50.0

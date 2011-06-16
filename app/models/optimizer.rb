@@ -72,7 +72,7 @@ class Optimizer
 
   ## DEPRECATED this doesn't seem to be used anywhere anymore (seb 2011-02-01)
   #
-  # calculation is put here and not in InputElement#step_value_in_PJ 
+  # calculation is put here and not in Input#step_value_in_PJ 
   # because like this we can calculate them in one batch.
   #
   # def step_values_in_pj

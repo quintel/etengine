@@ -51,7 +51,7 @@ class Api::ApiScenariosController < ApplicationController
 
   def user_values
     hsh = Rails.cache.fetch("input_elements.user_values.#{Current.graph.id}") do
-      InputElement.static_values
+      Input.static_values
     end
     @api_scenario.user_values.each do |id, user_value|
       hsh[id.to_s][:user_value] = user_value if hsh[id.to_s]

@@ -86,7 +86,7 @@ describe Scenario do
 
   describe "setting and retrieving user_values" do
     before do
-      @input_element = mock_model(InputElement, :id => 1)
+      @input_element = mock_model(Input, :id => 1)
       @scenario.store_user_value(@input_element, 10)
     end
     specify { @scenario.user_value_for(@input_element).should == 10}
@@ -178,7 +178,7 @@ describe Scenario do
   describe "#update_input_element" do
     before do
       @value = 13.3
-      @input_element = mock_model(InputElement)
+      @input_element = mock_model(Input)
       @input_element.stub!(:update_statement).with(@value).and_return({})
       Current.stub!(:gql_calculated?).and_return(false)
     end
@@ -194,11 +194,11 @@ describe Scenario do
 
   describe "#build_update_statements_for_element" do
     before do
-      @input_element = mock_model(InputElement, :id => 5)
-      InputElement.stub!(:find).with(@input_element.id).and_return(@input_element)
+      @input_element = mock_model(Input, :id => 5)
+      Input.stub!(:find).with(@input_element.id).and_return(@input_element)
     end
     context "if no input_element found" do
-      before { InputElement.stub!(:find).and_raise(ActiveRecord::RecordNotFound) }
+      before { Input.stub!(:find).and_raise(ActiveRecord::RecordNotFound) }
       it "should catch the error" do
         @scenario.build_update_statements_for_element(@input_element.id, 2.0)
       end
@@ -234,15 +234,15 @@ describe Scenario do
   describe "#used_groups_add_up?" do
     before do
       @scenario = Scenario.default
-      InputElement.stub!(:input_elements_grouped).and_return({
+      Input.stub!(:input_elements_grouped).and_return({
         'share_group' => [
-          mock_model(InputElement, :id => 1, :key => 'element_1', :share_group => 'share_group'),
-          mock_model(InputElement, :id => 2, :key => 'element_2', :share_group => 'share_group'),
-          mock_model(InputElement, :id => 3, :key => 'element_3', :share_group => 'share_group')
+          mock_model(Input, :id => 1, :key => 'element_1', :share_group => 'share_group'),
+          mock_model(Input, :id => 2, :key => 'element_2', :share_group => 'share_group'),
+          mock_model(Input, :id => 3, :key => 'element_3', :share_group => 'share_group')
         ],
         'share_group_unused' => [
-          mock_model(InputElement, :id => 5, :key => 'element_5', :share_group => 'share_group_unused'),
-          mock_model(InputElement, :id => 6, :key => 'element_6', :share_group => 'share_group_unused'),
+          mock_model(Input, :id => 5, :key => 'element_5', :share_group => 'share_group_unused'),
+          mock_model(Input, :id => 6, :key => 'element_6', :share_group => 'share_group_unused'),
         ]
       })
     end

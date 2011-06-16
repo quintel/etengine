@@ -46,12 +46,12 @@ class Scenario < ActiveRecord::Base
   ##
   # A hash of input_element (share-) groups and their input_elements.
   #
-  # @return [Hash] group name => [Array<InputElement>]
+  # @return [Hash] group name => [Array<Input>]
   #
   # @tested 2011-01-22 seb
   #
   def used_groups
-    groups = InputElement.input_elements_grouped
+    groups = Input.input_elements_grouped
 
     hsh = {}
 

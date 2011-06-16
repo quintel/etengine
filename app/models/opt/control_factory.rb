@@ -3,7 +3,7 @@ module Opt
     def self.create(*args)
       object = args.first
       params = args[1..-1]
-      if object.is_a?(InputElement)
+      if object.is_a?(Input)
         if object.share_group.present?
           Opt::SliderGroupControl.new(*args)
         else
