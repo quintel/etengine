@@ -121,30 +121,56 @@ module Qernel::Converter::PrimaryDemand
     end
   end
 
-  # TODO: this is a quick fix to make sustainability_share work.
-  #       it is the same as wouter_dance but without losses.
+  # WARNING: This method should only be used for attributes unrelated to demand
+  # See the exceptions in the code for why.
+  #
   def wouter_dance_without_losses(strategy_method, converter_share_method = nil, link = nil, *args)
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
-
-      val = self.input_links.reject{|l| l.child.environment? }.map do |link|
+      valid_links = self.input_links.reject{|l| l.child.environment? }
+      val = valid_links.map do |link|
         child = link.child
-        link_share = link.share ||= 1.0 # when import and local production of a carrier is 0 we still need a share of 1, otherwise the costs for fuel will always be 0
-        if link_share.nil? or link_share == 0.0
+        # Exception 1:
+        # when import and local production of a carrier is 0 we still need a share of 1, 
+        # otherwise the costs for fuel will always be 0.
+        #
+        # Exception 2:
+        # If the demand for a converter is zero, certain links are assigned a nil share.
+        # If a slot has two links with nil share, we have to assign shares, so they sum
+        # up to 1.0 (and not 2.0, if we just did link.share || 1.0, to fix exception 1).
+        # Therefore we assign averages, just to make this calculation work.
+        #
+        #                         --- link (constant: share nil) --- c_2 (method: 1.0)
+        # slot(conversin: 1.0) <
+        #                         --- link (flexible: share nil) --- c_3 (method: 1.0)
+        # 
+        # (1.0 * 1.0 * 1.0) + (1.0 * 1.0 * 1.0)  # (conversion * link_share * value)
+        # => 2.0!
+        #
+        link_share = link.share
+        if link_share.nil?
+          total_link_shares = valid_links.map(&:share).compact.sum
+          link_share = (1.0 - total_link_shares) / valid_links.length
+        end
+        if link_share == 0.0 # or link_share.nil? # uncomment if not already checked above.
           0.0
         else
           # we have to multiply the share with the conversion of the corresponding slot
           # to deal with following scenario:
+          #
           #       o slot(conversin: 0.9) --- link (share 1.0) --- c_2 (method: 100)
           # c_1 < 
           #       o slot(conversin: 0.1) --- link (share 1.0) --- c_3 (method: 80)
+          # 
           # c_1 should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
           #
-  
-          child_slot = self.input(link.carrier)
-          child_demand = child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
-          link_share * child_demand * (child_slot.andand.conversion || 1.0)
+          child_conversion = self.input(link.carrier).andand.conversion || 1.0
+          child_value = child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
+
+          puts("#{self.id}) val: #{child_value}, conv: #{child_conversion}, share: #{link_share}")
+
+          link_share * child_value * child_conversion
         end
       end
       val.sum
@@ -275,8 +301,8 @@ module Qernel::Converter::PrimaryDemand
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
           0.0
         else
-          child_demand = child.wouter_dance(strategy_method, converter_share_method, link, *args)
-          demanding_share * loss_share * converter_share * child_demand
+          child_value = child.wouter_dance(strategy_method, converter_share_method, link, *args)
+          demanding_share * loss_share * converter_share * child_value
         end
       end
       val.sum
