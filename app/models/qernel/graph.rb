@@ -63,11 +63,7 @@ class Graph
     self.finished_converters = []
 
     while converter = converter_stack.detect(&:ready?)
-      # begin
-        converter.calculate
-      # rescue Exception => e
-      #   raise CalculationError.new("General qernel calculation exception for: ##{converter.id} #{converter.full_key}", converter)
-      # end
+      converter.calculate
       self.finished_converters << converter_stack.delete(converter)
     end
 
