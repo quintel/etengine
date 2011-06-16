@@ -28,10 +28,14 @@ class PolicyGoal < ActiveRecord::Base
   end
 
   def to_gql
-    Gql::PolicyGoal.new(id, key, name, query, display_format, unit, start_value_query, reached_query)
+    Gql::PolicyGoal.new({
+      :id                => id, 
+      :key               => key, 
+      :name              => name, 
+      :query             => query,
+      :display_format    => display_format, 
+      :unit              => unit, 
+      :start_value_query => start_value_query,
+      :reached_query     =>  reached_query})
   end
 end
-
-
-
-
