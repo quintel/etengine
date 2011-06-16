@@ -20,8 +20,7 @@
       %td= api_scenario.updated_at.to_s
       %td= button_to 'del', api_scenario_path(api_scenario), :method => 'delete'
       %td
-        %span{:style => "color: #999"} Deprecated load in ETM
-        -#= link_to 'load in ETM', "#" # DEBT: load_scenario_path is now in etmodel. load_scenario_path(:id => api_scenario.id)
+        == copy-paste to etmodel: /scenarios/#{api_scenario.api_session_key}/load
 
 
 
