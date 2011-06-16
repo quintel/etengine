@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: input_elements
+# Table name: inputs
 #
 #  id                        :integer(4)      not null, primary key
 #  name                      :string(255)
@@ -46,7 +46,6 @@ class Input < ActiveRecord::Base
   has_one :area_dependency, :as => :dependable
   has_many :expert_predictions
 
-  scope :ordered_for_admin, order("slides.controller_name, slides.action_name, slides.name, input_elements.id").includes('slide')
   scope :max_complexity, lambda {|complexity| where("complexity <= #{complexity}") }
   
   scope :with_share_group, where('NOT(share_group IS NULL OR share_group = "")')
@@ -58,8 +57,8 @@ class Input < ActiveRecord::Base
     ])
   }
 
-  def self.input_elements_grouped # TODO: delete?
-    @input_elements_grouped ||= Input.
+  def self.inputs_grouped # TODO: delete?
+    @inputs_grouped ||= Input.
       with_share_group.select('id, share_group, `key`').
       group_by(&:share_group)
   end

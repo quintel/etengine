@@ -50,7 +50,7 @@ class Api::ApiScenariosController < ApplicationController
   end
 
   def user_values
-    hsh = Rails.cache.fetch("input_elements.user_values.#{Current.graph.id}") do
+    hsh = Rails.cache.fetch("inputs.user_values.#{Current.graph.id}") do
       Input.static_values
     end
     @api_scenario.user_values.each do |id, user_value|
@@ -107,7 +107,7 @@ class Api::ApiScenariosController < ApplicationController
     def update_scenario(scenario)
       scenario.reset! if params[:reset]
       if params[:input]
-        scenario.update_input_elements_for_api(params[:input])
+        scenario.update_inputs_for_api(params[:input])
         # Save scenario with new user_values, except it is a test version
         scenario.save unless test_scenario?
       end

@@ -111,7 +111,7 @@ module UpdatingConverter
   #
   def update_policies(updates)
     updates.andand.each do |id, updates|
-      # all policy related input_elements have attr_name = value
+      # all policy related inputs have attr_name = value
       policy.goal(id).user_value = updates['value'] if policy.goal(id)
     end
   end
