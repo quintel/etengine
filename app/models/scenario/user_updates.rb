@@ -17,7 +17,7 @@ class Scenario < ActiveRecord::Base
   # TODO fix
   # @untested 2011-01-24 seb
   #
-  def update_input_elements_for_api(params)
+  def update_inputs_for_api(params)
     input_element_ids = params.keys
     input_element_ids.each do |key|
       input_element = Input.where(['id = ? or `key` = ?', key,key]).first

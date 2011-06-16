@@ -58,7 +58,7 @@ class Optimizer
     @steps << step
   end
 
-  def input_elements
+  def inputs
     @slider_controls.map(&:input_element)
   end
 
@@ -80,7 +80,7 @@ class Optimizer
   #     step_values_in_PJ = Hash.new
   #     primary_demand_normal = Current.gql.query('future:SUM(V(G(final_demand_cbs);primary_demand))')
   # 
-  #     input_elements.shuffle.each do |input_element|
+  #     inputs.shuffle.each do |input_element|
   #       value = input_element.start_value + input_element.step_value
   #       step_size_100 = (input_element.max_value - input_element.min_value) / 100
   # 
