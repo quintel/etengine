@@ -83,17 +83,20 @@ class PolicyGoal
   # @param start_value_query [String] GQL to compute the start value, which also serves as a default target when none is given
   # reached_query - GQL to determine if the goal has been met.
   #
-  # TODO refactor the 8 parameters (seb 2010-10-11)
-  def initialize(id, key, name, query, display_format = :number, unit = nil, start_value_query = nil, reached_query = nil)
-    self.id = id
-    self.key = key.to_sym
-    self.name = name
-    self.query = query
+  def initialize(opts = {})
+    opts.reverse_merge!({
+      :display_format => :number
+    })
+    
+    self.id    = opts[:id]
+    self.key   = opts[:key].try(:to_sym)
+    self.name  = opts[:name]
+    self.query = opts[:query]
 
-    @display_format = display_format.to_sym
-    @unit = unit.to_sym
-    @start_value_query = start_value_query
-    @reached_query = reached_query # not used yet
+    @display_format    = opts[:display_format].try(:to_sym)
+    @unit              = opts[:unit].try(:to_sym)
+    @start_value_query = opts[:start_value_query]
+    @reached_query     = opts[:reached_query] # not used yet
   end
 
 
