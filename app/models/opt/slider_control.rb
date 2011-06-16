@@ -18,7 +18,7 @@ module Opt
 
 
     ##
-    # @param [InputElement] input_element
+    # @param [Input] input_element
     # @param [Float] step_value
     #
     def initialize(input_element, step_value)

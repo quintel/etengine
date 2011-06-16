@@ -2,7 +2,7 @@ module Opt
   ##
   # A mission defines all the elements of an optimizer run.
   # - Targets (Gqueries with expected target values and weight)
-  # - InputElements (user-defined step_value)
+  # - Inputs (user-defined step_value)
   # - Country, Graph, etc.
   #
   class Mission

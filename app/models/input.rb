@@ -38,7 +38,7 @@
 #
 #
 #
-class InputElement < ActiveRecord::Base
+class Input < ActiveRecord::Base
   include AreaDependent
   has_paper_trail
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
@@ -59,7 +59,7 @@ class InputElement < ActiveRecord::Base
   }
 
   def self.input_elements_grouped # TODO: delete?
-    @input_elements_grouped ||= InputElement.
+    @input_elements_grouped ||= Input.
       with_share_group.select('id, share_group, `key`').
       group_by(&:share_group)
   end
@@ -109,7 +109,7 @@ class InputElement < ActiveRecord::Base
   end
 
   def self.static_values
-    InputElement.all.inject({}) do |hsh, input_element|
+    Input.all.inject({}) do |hsh, input_element|
       hsh.merge input_element.id.to_s => {
         :max_value => input_element.max_value,
         :min_value => input_element.min_value,

@@ -20,7 +20,7 @@ class Scenario < ActiveRecord::Base
   def update_input_elements_for_api(params)
     input_element_ids = params.keys
     input_element_ids.each do |key|
-      input_element = InputElement.where(['id = ? or `key` = ?', key,key]).first
+      input_element = Input.where(['id = ? or `key` = ?', key,key]).first
 
       if params[key] == 'reset'
         delete_from_user_values(input_element.id)
@@ -71,7 +71,7 @@ class Scenario < ActiveRecord::Base
   ##
   # Stores the user value in the session.
   #
-  # @param [InputElement] input_element
+  # @param [Input] input_element
   # @param [Flaot] value
   # @return [Float] the value
   #
@@ -148,18 +148,18 @@ class Scenario < ActiveRecord::Base
   # Called from build_update_statements
   #
   # @param [Boolean] load_as_municipality
-  # @param [Integer] id InputElement#id
+  # @param [Integer] id Input#id
   # @param [Float] value user value
   #
   # @tested 2010-12-06 seb
   #
   def build_update_statements_for_element(id, value)
 
-    input_element = InputElement.find(id)
+    input_element = Input.find(id)
     update_input_element(input_element, value)
 
   rescue ActiveRecord::RecordNotFound
-    Rails.logger.warn("WARNING: Scenario loaded, but InputElement nr.#{id} was not found")    
+    Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")    
   end
 
 end
