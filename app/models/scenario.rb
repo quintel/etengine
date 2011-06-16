@@ -29,7 +29,7 @@
 #   Scenario.default
 #
 # A user updates a slider:
-#   scenario.update_input_element(input_element, 4.5)
+#   scenario.update_input(input, 4.5)
 #
 #
 #

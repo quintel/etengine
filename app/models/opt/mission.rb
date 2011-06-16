@@ -46,14 +46,14 @@ module Opt
     #   share groups is done differently
     #
     def move_remainders_to_back
-      @slider_controls = @slider_controls.sort_by{|sc| (sc.input_element.remainder?) ? 0 : 1}
+      @slider_controls = @slider_controls.sort_by{|sc| (sc.input.remainder?) ? 0 : 1}
     end
 
     ##
     # @return [Hash(String => Array<SliderControl>)] the controls grouped by their share_group
     #
     def groups
-      slider_controls.group_by{|sc| sc.input_element.share_group }
+      slider_controls.group_by{|sc| sc.input.share_group }
     end
 
     ##

@@ -86,18 +86,18 @@ describe Scenario do
 
   describe "setting and retrieving user_values" do
     before do
-      @input_element = mock_model(Input, :id => 1)
-      @scenario.store_user_value(@input_element, 10)
+      @input = mock_model(Input, :id => 1)
+      @scenario.store_user_value(@input, 10)
     end
-    specify { @scenario.user_value_for(@input_element).should == 10}
+    specify { @scenario.user_value_for(@input).should == 10}
 
     it "should return the value when store_user_value" do
-      @scenario.store_user_value(@input_element, 10).should == 10
+      @scenario.store_user_value(@input, 10).should == 10
     end
 
     describe "overwriting user_value" do
-      before { @scenario.store_user_value(@input_element, 20) }
-      specify { @scenario.user_value_for(@input_element).should == 20}
+      before { @scenario.store_user_value(@input, 20) }
+      specify { @scenario.user_value_for(@input).should == 20}
     end
   end
 
@@ -175,32 +175,32 @@ describe Scenario do
     end
   end
 
-  describe "#update_input_element" do
+  describe "#update_input" do
     before do
       @value = 13.3
-      @input_element = mock_model(Input)
-      @input_element.stub!(:update_statement).with(@value).and_return({})
+      @input = mock_model(Input)
+      @input.stub!(:update_statement).with(@value).and_return({})
       Current.stub!(:gql_calculated?).and_return(false)
     end
     it "should store the user value" do
-      @scenario.should_receive(:store_user_value).with(@input_element, @value)
-      @scenario.update_input_element(@input_element, @value)
+      @scenario.should_receive(:store_user_value).with(@input, @value)
+      @scenario.update_input(@input, @value)
     end
     it "should add update_statements" do
       @scenario.should_receive(:add_update_statements).with({})
-      @scenario.update_input_element(@input_element, @value)
+      @scenario.update_input(@input, @value)
     end
   end
 
   describe "#build_update_statements_for_element" do
     before do
-      @input_element = mock_model(Input, :id => 5)
-      Input.stub!(:find).with(@input_element.id).and_return(@input_element)
+      @input = mock_model(Input, :id => 5)
+      Input.stub!(:find).with(@input.id).and_return(@input)
     end
-    context "if no input_element found" do
+    context "if no input found" do
       before { Input.stub!(:find).and_raise(ActiveRecord::RecordNotFound) }
       it "should catch the error" do
-        @scenario.build_update_statements_for_element(@input_element.id, 2.0)
+        @scenario.build_update_statements_for_element(@input.id, 2.0)
       end
     end
   end
