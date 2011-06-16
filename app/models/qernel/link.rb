@@ -107,7 +107,14 @@ class Link
 
   def assign_share
     demand = input_external_demand
-    self.share = self.value / demand if self.value and demand and demand > 0
+    if self.value and demand and demand > 0
+      self.share = self.value / demand
+    elsif value == 0.0
+      # if the value is 0.0, we have to set rules what links
+      # get what shares. In order to have wouter_dances work properly.
+      self.share = 0.0 if constant?
+      self.share = 1.0 if flexible?
+    end
   end
 
 private
