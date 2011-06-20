@@ -16,7 +16,7 @@ var link_styles = {
   'dependent' : '--..'  
 };
 
-var Graph = Model.extend({
+var Graph = Class.extend({
   GRID_STEP_SIZE : 800,
 
   init:function(width, height) {
@@ -99,7 +99,7 @@ var Graph = Model.extend({
 })
 
 
-var Link = Model.extend({
+var Link = Class.extend({
   init:function(converter_input_id, converter_output_id, color, style) {
     this.color = color;
     this.style = style;
@@ -146,7 +146,7 @@ var Link = Model.extend({
   }
 });
 
-var Converter = EventDispatcher.extend({
+var Converter = Class.extend({
   STYLE_SELECTED : {fill : '#cff', 'stroke' : '#f00' },
   STYLE_HIGHLIGHT : {'stroke' : '#f00'},
 
