@@ -10,16 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110616135332) do
-
-  create_table "area_dependencies", :force => true do |t|
-    t.string  "dependent_on"
-    t.text    "description"
-    t.integer "dependable_id"
-    t.string  "dependable_type"
-  end
-
-  add_index "area_dependencies", ["dependable_id", "dependable_type"], :name => "index_area_dependencies_on_dependable_id_and_dependable_type"
+ActiveRecord::Schema.define(:version => 20110620121432) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
