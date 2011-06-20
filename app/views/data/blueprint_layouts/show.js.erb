@@ -20,7 +20,7 @@ var GRAPH = new Graph();
 
 <% @bp.links.includes(:carrier).each do |bl| 
   if blueprint_converter_ids.include?(bl.parent_id) and blueprint_converter_ids.include?(bl.child_id)
-    params = [bl.child_id, bl.parent_id, "##{bl.carrier.carrier_color || '999'}", "1|#{bl.link_style}"]
+    params = [bl.child_id, bl.parent_id, "#{bl.carrier.carrier_color || '#999'}", "1|#{bl.link_style}"]
     -%>
 <%= "new Link(#{js_params(params)});".html_safe %>
   <% end %>
