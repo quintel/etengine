@@ -1,4 +1,5 @@
 require 'bundler/capistrano'
+require 'hoptoad_notifier/capistrano'
 
 
 
