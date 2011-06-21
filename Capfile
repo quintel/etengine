@@ -44,8 +44,19 @@ namespace :deploy do
 
   task :after_deploy do
     deploy.cleanup
+    notify_hoptoad
   end
 
+  desc "Notify Hoptoad of the deployment"
+  task :notify_hoptoad, :except => { :no_release => true } do
+    rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
+    local_user = ENV['USER'] || ENV['USERNAME']
+    notify_command = "bundle exec rake hoptoad:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
+    notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
+    puts "Notifying Hoptoad of Deploy of #{server_type} (#{notify_command})"
+    run "cd #{release_path} && #{notify_command}"
+    puts "Hoptoad Notification Complete."
+  end
 end
 
 desc "Move db server to local db"
