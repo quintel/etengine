@@ -235,8 +235,7 @@ module UpdatingConverter
 
     # the nr of extrahouses multiplied with their demand is added to the original demand
     new_houses_future_demand_value = new_house_converter.query.demand + (demand_per_new_house * number_of_houses_to_replace)
-
-    cmds << Update::AttributeCommand.new(graph.area, :number_of_existing_households, number_of_existing_households, value)
+    cmds << Update::AttributeCommand.new(graph.area, :number_of_existing_households, number_of_existing_households, :value)
     cmds << future_demand_old_houses_cmd
     cmds << Update::AttributeCommand.new(new_house_converter, :preset_demand, new_houses_future_demand_value, :value)
 
