@@ -109,6 +109,14 @@ class Input < ActiveRecord::Base
     end
   end
 
+  def self.dynamic_start_values
+    Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
+      hsh.merge input.id.to_s => {
+        :start_value => input.start_value
+      }
+    end
+  end
+
   def user_value
     Current.scenario.user_value_for(self)
   end
@@ -120,6 +128,10 @@ class Input < ActiveRecord::Base
     else
       self[:start_value]
     end
+  end
+
+  def dynamic_start_value?
+    self[:start_value_gql] && self[:start_value_gql].match(/^future:/) != nil 
   end
 
   def min_value

@@ -50,15 +50,20 @@ class Api::ApiScenariosController < ApplicationController
   end
 
   def user_values
-    hsh = Rails.cache.fetch("inputs.user_values.#{Current.graph.id}") do
+    values = Rails.cache.fetch("inputs.user_values.#{Current.graph.id}") do
       Input.static_values
     end
+
+    Input.dynamic_start_values.each do |id, dynamic_values|
+      values[id.to_s][:start_value] = dynamic_values[:start_value] if values[id.to_s]
+    end
+
     @api_scenario.user_values.each do |id, user_value|
-      hsh[id.to_s][:user_value] = user_value if hsh[id.to_s]
+      values[id.to_s][:user_value] = user_value if values[id.to_s]
     end
     respond_to do |format|
       format.json do
-        render :json => hsh, :callback => params[:callback] 
+        render :json => values, :callback => params[:callback] 
       end
     end
   end
