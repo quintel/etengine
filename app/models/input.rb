@@ -102,9 +102,10 @@ class Input < ActiveRecord::Base
   def self.static_values
     Input.all.inject({}) do |hsh, input|
       hsh.merge input.id.to_s => {
-        :max_value => input.max_value,
-        :min_value => input.min_value,
-        :start_value => input.start_value
+        :max_value    => input.max_value,
+        :min_value    => input.min_value,
+        :start_value  => input.start_value,
+        :full_label   => input.full_label
       }
     end
   end
@@ -119,6 +120,10 @@ class Input < ActiveRecord::Base
 
   def user_value
     Current.scenario.user_value_for(self)
+  end
+
+  def full_label
+    "#{Current.gql.query_present(label_query).round(2)} #{label}".html_safe unless label_query.blank?
   end
 
   # TODO refactor (seb 2010-10-11)
