@@ -75,9 +75,14 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   #
   def store_user_value(input, value)
-    key = input.id
-    self.user_values = self.user_values.merge key => value 
-    value
+    if input.nil?
+      Rails.logger.warn("trying to update an input that does not exist")
+      value
+    else
+      key = input.id
+      self.user_values = self.user_values.merge key => value 
+      value
+    end
   end
 
 
