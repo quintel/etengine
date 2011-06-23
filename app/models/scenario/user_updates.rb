@@ -20,12 +20,14 @@ class Scenario < ActiveRecord::Base
   def update_inputs_for_api(params)
     input_ids = params.keys
     input_ids.each do |key|
-      input = Input.where(['id = ? or `key` = ?', key,key]).first
-
-      if params[key] == 'reset'
-        delete_from_user_values(input.id)
-      elsif value = params[key].to_f
-        update_input(input, value)
+      if input = Input.where(['id = ? or `key` = ?', key,key]).first
+        if params[key] == 'reset'
+          delete_from_user_values(input.id)
+        elsif value = params[key].to_f
+          update_input(input, value)
+        end
+      else
+        Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
       end
     end
     add_update_statements(lce.update_statements)
@@ -75,14 +77,9 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   #
   def store_user_value(input, value)
-    if input.nil?
-      Rails.logger.warn("trying to update an input that does not exist")
-      value
-    else
-      key = input.id
-      self.user_values = self.user_values.merge key => value 
-      value
-    end
+    key = input.id
+    self.user_values = self.user_values.merge key => value 
+    value
   end
 
 
