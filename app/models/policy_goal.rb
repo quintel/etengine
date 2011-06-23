@@ -35,6 +35,6 @@ class PolicyGoal < ActiveRecord::Base
       :display_format    => display_format, 
       :unit              => unit, 
       :start_value_query => start_value_query,
-      :reached_query     =>  reached_query})
+      :reached_query     => reached_query})
   end
 end
