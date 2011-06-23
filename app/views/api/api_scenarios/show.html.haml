@@ -15,7 +15,7 @@
       %th= Current.scenario.start_year
       %th= Current.scenario.end_year
 
-  - @json['result'].each do |key, result|
+  - @json['result'].andand.each do |key, result|
     %tr
       %td= key
       -# TODO make it possible to write Current.gql.query(gquery)
