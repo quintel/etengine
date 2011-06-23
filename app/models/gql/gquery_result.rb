@@ -6,7 +6,6 @@ module Gql
 class GqueryResult < Array
   include ActiveModel::Serialization
 
-
   def present
     first
   end
@@ -31,8 +30,6 @@ class GqueryResult < Array
   def future_year
     future.first
   end
-  alias target_value future_value
-
 
   ##
   # Method to easily convert "old" results.
