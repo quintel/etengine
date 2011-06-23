@@ -175,7 +175,7 @@ module Qernel::Converter::PrimaryDemand
           child_conversion = self.input(link.carrier).andand.conversion || 1.0
           child_value = child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
 
-          puts("#{self.id}) val: #{child_value}, conv: #{child_conversion}, share: #{link_share}")
+          # puts("#{self.id}) val: #{child_value}, conv: #{child_conversion}, share: #{link_share}")
 
           link_share * child_value * child_conversion
         end

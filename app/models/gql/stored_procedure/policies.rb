@@ -10,15 +10,14 @@ module Gql
 #
 class StoredProcedure
   # TODO: reimplement and simplify related js code on the ETM
-  # the number of user-defined policy targets met today and met in the future
+  # the number of user-defined policy targets met today (?) and met in the future
+  # do we need today targets? I'd use future targets only - PZ Thu 23 Jun 2011 14:36:23 CEST
   def policy_targets_met
-    # DEBT not working
-    
-    [[2010, 0], [2040,40]]
-    #GqueryResult.create [
-    #  [Current.scenario.start_year, 0],
-    #  [Current.scenario.end_year, Current.gql.policy.goals.select(&:reached?).length]
-    #]
+    Current.gql.policy.goals.count{|x| x.reached?}
+  end
+
+  def policy_targets_set
+    Current.gql.policy.goals.count{|x| !x.user_value.nil?}
   end
 
   # TODO: add procedures to get a hash of data for the policy goals,
