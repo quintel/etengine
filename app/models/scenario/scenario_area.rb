@@ -33,7 +33,7 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   # 
   def region_or_country
-    region || country
+    region.present? ? region : country
   end
 
   ##
