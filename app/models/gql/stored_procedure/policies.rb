@@ -2,14 +2,14 @@ module Gql
 
 ##
 # StoredProcedure is to Graph/Qernel what a stored procedure is to a database. These 'canned' queries
-# can be expressed with a simple syntax such as 'stored.present_area'
+# can be expressed with a simple syntax such as 'stored:present_area'
 #
 # == Useage
 #
-#   Current.gql.query('stored.policy_electricity_cost')
+#   Current.gql.query('stored:policy_electricity_cost')
 #
 class StoredProcedure
-
+  # TODO: reimplement and simplify related js code on the ETM
   # the number of user-defined policy targets met today and met in the future
   def policy_targets_met
     # DEBT not working
@@ -20,6 +20,14 @@ class StoredProcedure
     #  [Current.scenario.end_year, Current.gql.policy.goals.select(&:reached?).length]
     #]
   end
+
+  # TODO: add procedures to get a hash of data for the policy goals,
+  # something to return a hash like this:
+  # { :key => 'co2_emission',
+  #   :goal_value => 123, # nil if the goal has not been set
+  #   :current_value => 234,
+  #   :success => true|false
+  # }
 
   ##
   # attributes of the area as presently defined
