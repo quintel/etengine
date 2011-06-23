@@ -23,6 +23,7 @@ Etm::Application.routes.draw do
       end
     end
     resources :areas, :only => [:index, :show]
+    resources :inputs, :only => [:index, :show]
   end
 
   namespace :admin do
