@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110620121432) do
+ActiveRecord::Schema.define(:version => 20110623102111) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -401,7 +401,6 @@ ActiveRecord::Schema.define(:version => 20110620121432) do
     t.string   "key"
     t.text     "keys"
     t.string   "attr_name"
-    t.integer  "slide_id"
     t.string   "share_group"
     t.string   "start_value_gql"
     t.string   "min_value_gql"
@@ -409,26 +408,17 @@ ActiveRecord::Schema.define(:version => 20110620121432) do
     t.float    "min_value"
     t.float    "max_value"
     t.float    "start_value"
-    t.float    "order_by"
-    t.decimal  "step_value",                :precision => 4, :scale => 2
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "update_type"
     t.string   "unit"
     t.float    "factor"
-    t.string   "input_type"
     t.string   "label"
     t.text     "comments"
-    t.string   "update_value"
-    t.integer  "complexity",                                              :default => 1
-    t.string   "interface_group"
-    t.string   "update_max"
-    t.boolean  "locked_for_municipalities"
     t.string   "label_query"
   end
 
   add_index "inputs", ["key"], :name => "unique api key"
-  add_index "inputs", ["slide_id"], :name => "index_input_elements_on_slide_id"
 
   create_table "lce_values", :force => true do |t|
     t.string   "using_country"

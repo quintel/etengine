@@ -33,20 +33,6 @@ module Opt
       @original_update_statements = Current.scenario.update_statements.clone
 
       assign_groups_to_slider_controls
-      move_remainders_to_back
-    end
-
-    ##
-    # HACK HACK HACK
-    # We have to move remainder_sliders to the back, otherwise they
-    # get wrong values (because sliders that come after haven't been 
-    # properly updated).
-    #
-    # @deprecated i dont' think this is needed anymore. because the calculation of 
-    #   share groups is done differently
-    #
-    def move_remainders_to_back
-      @slider_controls = @slider_controls.sort_by{|sc| (sc.input.remainder?) ? 0 : 1}
     end
 
     ##

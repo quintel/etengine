@@ -41,12 +41,10 @@
 class Input < ActiveRecord::Base
   has_paper_trail
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
-  belongs_to :slide
+
   has_one :area_dependency, :as => :dependable
   has_many :expert_predictions
 
-  scope :max_complexity, lambda {|complexity| where("complexity <= #{complexity}") }
-  
   scope :with_share_group, where('NOT(share_group IS NULL OR share_group = "")')
 
   scope :contains, lambda{|search| 
@@ -60,14 +58,6 @@ class Input < ActiveRecord::Base
     @inputs_grouped ||= Input.
       with_share_group.select('id, share_group, `key`').
       group_by(&:share_group)
-  end
-
-  def step_value
-    if Current.scenario.municipality? and self.locked_for_municipalities? and self.slide.andand.controller_name == "supply" 
-      (self[:step_value] / 1000).to_f
-    else
-      self[:step_value].to_f
-    end
   end
 
   ##
@@ -87,10 +77,6 @@ class Input < ActiveRecord::Base
             attr_name => value / factor
       }}}
     end
-  end
-
-  def remainder?
-    input_type == 'remainder'
   end
 
   def as_json(options={})
@@ -166,9 +152,6 @@ class Input < ActiveRecord::Base
   # @return [Float] Users value
   #
   def user_value
-    unless input_type == "fixed" # if a slider is fixed, the user cant 
-      value = Current.scenario.user_value_for(self) 
-    end
     Current.scenario.store_user_value(self, value || start_value || 0).round(2)
   end
 

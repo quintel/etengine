@@ -97,14 +97,6 @@ module Opt
       input.max_value - input.min_value
     end
 
-    ##
-    # Is SliderControl the slider that adds up to 100%?
-    #
-    # @return [true,false] 
-    #
-    def remainder?
-      input.remainder?
-    end
 
     ##
     # @param [:up, :down, :none] direction of setting
