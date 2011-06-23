@@ -46,6 +46,9 @@ group :test, :development do
   gem 'ruby-debug19'
   gem 'watchr'
   gem 'spork'
+  gem 'hirb'
+  gem 'wirble'
+  gem 'awesome_print'
 end
 
 group :test do
