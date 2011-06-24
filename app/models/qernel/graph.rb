@@ -162,11 +162,6 @@ class Graph
     "Do not inspect. Because graph is to big that it takes a long time to inspect."
   end
 
-  def sanity_check
-
-  end
-
-
   ##
   # optimizes calculation speed of graph by rearranging order of converters array
   #
