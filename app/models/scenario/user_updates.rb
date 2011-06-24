@@ -20,7 +20,7 @@ class Scenario < ActiveRecord::Base
   def update_inputs_for_api(params)
     input_ids = params.keys
     input_ids.each do |key|
-      if input = Input.where(['id = ? or `key` = ?', key,key]).first
+      if input = Input.get_cached(key)
         if params[key] == 'reset'
           delete_from_user_values(input.id)
         elsif value = params[key].to_f
@@ -153,11 +153,11 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-12-06 seb
   #
   def build_update_statements_for_element(id, value)
-    input = Input.find(id)
-    update_input(input, value)
-
-  rescue ActiveRecord::RecordNotFound
-    Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")    
+    if input = Input.get_cached(id)
+      update_input(input, value)
+    else
+      Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")    
+    end
   end
 
 end
