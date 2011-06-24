@@ -52,8 +52,11 @@ class ApiScenario < Scenario
   end
 
   def scenario_id=(scenario_id)
-    if scenario = Scenario.find(scenario_id)
-      copy_scenario_state(scenario)
+    unless scenario_id.blank?
+      if scenario = Scenario.find(scenario_id)
+        copy_scenario_state(scenario)
+        preset_scenario_id = scenario_id
+      end
     end
   end
 
