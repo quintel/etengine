@@ -20,7 +20,7 @@ class Scenario < ActiveRecord::Base
   def update_inputs_for_api(params)
     input_ids = params.keys
     input_ids.each do |key|
-      if input = Input.get_cached(key)
+      if input = Input.where(['id = ? or `key` = ?', key,key]).first
         if params[key] == 'reset'
           delete_from_user_values(input.id)
         elsif value = params[key].to_f
@@ -77,9 +77,8 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   #
   def store_user_value(input, value)
-    if key = input.andand.id
-      self.user_values = self.user_values.merge key => value 
-    end
+    key = input.id
+    self.user_values = self.user_values.merge key => value 
     value
   end
 
@@ -154,8 +153,7 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-12-06 seb
   #
   def build_update_statements_for_element(id, value)
-
-    input = Input.get_cached(id)
+    input = Input.find(id)
     update_input(input, value)
 
   rescue ActiveRecord::RecordNotFound
