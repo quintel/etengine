@@ -78,7 +78,7 @@ private
 
   def create_converter_data(dataset)
     converter_attributes do |attributes|
-      attributes = strip_attributes(attributes, ConverterData)
+      attributes = strip_attributes(attributes, Dataset::ConverterData)
       dataset.converter_datas.create!(attributes)
     end
   end
@@ -93,7 +93,7 @@ private
         }
       )
 
-      attributes = strip_attributes(attributes, LinkData)
+      attributes = strip_attributes(attributes, Dataset::LinkData)
       dataset.link_datas.create!(attributes.merge!(:link_id => blueprint_link.id))
     end
   end
@@ -108,7 +108,7 @@ private
         }
       )
 
-      attributes = strip_attributes(attributes, SlotData)
+      attributes = strip_attributes(attributes, Dataset::SlotData)
       dataset.slot_datas.create!(attributes.merge!(:slot_id => slot.id))
     end
   end
@@ -206,7 +206,7 @@ private
   def converter_attributes(&block)
     rows = load_csv(:converter, false)
     header = rows.first.map{|h| h.to_sym}
-    attribute_names = [Converter, ConverterData].map(&:column_names).flatten.map(&:to_sym).select{|key| header.index(key) }
+    attribute_names = [Converter, Dataset::ConverterData].map(&:column_names).flatten.map(&:to_sym).select{|key| header.index(key) }
     rows[1..-1].each do |row|
       row = fix_row(row)
       next if row.first.blank?
