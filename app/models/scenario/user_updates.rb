@@ -77,8 +77,9 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   #
   def store_user_value(input, value)
-    key = input.id
-    self.user_values = self.user_values.merge key => value 
+    if key = input.andand.id
+      self.user_values = self.user_values.merge key => value 
+    end
     value
   end
 
