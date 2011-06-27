@@ -20,16 +20,14 @@ class Scenario < ActiveRecord::Base
   def update_inputs_for_api(params)
     input_ids = params.keys
     input_ids.each do |key|
-      self.class.benchmark("Benchmark::Scenario:: update_inputs_for_api(#{key})") do
-        if input = Input.get_cached(key)
-          if params[key] == 'reset'
-            delete_from_user_values(input.id)
-          elsif value = params[key].to_f
-            update_input(input, value)
-          end
-        else
-          Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
+      if input = Input.get_cached(key)
+        if params[key] == 'reset'
+          delete_from_user_values(input.id)
+        elsif value = params[key].to_f
+          update_input(input, value)
         end
+      else
+        Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
       end
     end
     add_update_statements(lce.update_statements)
