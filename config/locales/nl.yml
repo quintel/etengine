@@ -315,15 +315,15 @@ nl:
   subheaders:
     number: "aantal"
     change: "verandering"
-    % of total: "% van totaal"
-    %/year: "%/jaar"
-    % of potential/: "% van potentieel"
+    '% of total': "% van totaal"
+    '%/year': "%/jaar"
+    '% of potential/': "% van potentieel"
     share: "aandeel"
     market penetration: "marktpenetratie" 
     maximum: "maximum"
     maximum increase: "maximum toename"
     max surface: "max oppervlak" 
-    % of potential: "% van potentieel"
+    '% of potential': "% van potentieel"
     insulation level: "isolatiewaarde"
 
   # ------------ Sliders ---------- #

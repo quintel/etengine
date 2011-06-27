@@ -321,14 +321,14 @@ en:
   subheaders:
     number: "number"
     change: "change"
-    % of total: "% of total"
-    %/year: "%/year"
+    '% of total': "% of total"
+    '%/year': "%/year"
     share: "share"
     market penetration: "market penetration" 
     maximum: "maximum"
     maximum increase: "maximum increase"
     max surface: "max surface"
-    % of potential: "% of potential"
+    '% of potential': "% of potential"
     insulation level: "insulation level"
 
 
