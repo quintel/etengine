@@ -10,7 +10,8 @@ set :stage, :production
 #### UNCOMMENT roles when we setup server
 
 task :production do
-  set :domain, "46.137.109.15"
+  set :domain, "46.137.90.62"
+  # set :domain, "46.137.109.15" # high cpu
   role :web, domain # Your HTTP server, Apache/etc
   role :app, domain # This may be the same as your `Web` server
   role :db,  domain, :primary => true # This is where Rails migrations will run
