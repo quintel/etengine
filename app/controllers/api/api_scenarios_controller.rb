@@ -29,7 +29,7 @@ class Api::ApiScenariosController < ApplicationController
   # 335=2.4&421=2.9
   def show
     Current.scenario = @api_scenario
-    update_scenario(@api_scenario)
+    update_scenario(@api_scenario) 
     @results = results
     @json = {
       'result'   => @results,
@@ -94,18 +94,20 @@ class Api::ApiScenariosController < ApplicationController
     end
 
     def results
-      if params[:result]
-        @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
-          if key == "null" or key == "undefined"
-            hsh
-          elsif gquery = (Gquery.get(key) rescue nil)
-            hsh.merge(gquery.key => Current.gql.query(gquery.query))
-          else
-            hsh.merge(key => Current.gql.query(key))
+      benchmark("ApiScenarios::results") do
+        if params[:result]
+          @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
+            if key == "null" or key == "undefined"
+              hsh
+            elsif gquery = (Gquery.get(key) rescue nil)
+              hsh.merge(gquery.key => Current.gql.query(gquery.query))
+            else
+              hsh.merge(key => Current.gql.query(key))
+            end
           end
+        else
+          @gqueries = nil
         end
-      else
-        @gqueries = nil
       end
     end
   

@@ -58,11 +58,14 @@ class Input < ActiveRecord::Base
   end
 
   def self.all_cached
-    @@all_cached ||= Input.all.inject({}) do |hsh, input| 
-      hsh = hsh.merge input.id.to_s => input
-      hsh.merge input.key => input if input.key.present?
-      hsh
+    unless @all_cached
+      @all_cached = Input.all.inject({}) do |hsh, input| 
+        hsh = hsh.merge input.id.to_s => input
+        hsh.merge input.key => input if input.key.present?
+        hsh
+      end
     end
+    @all_cached
   end
 
   def self.inputs_grouped # TODO: delete?

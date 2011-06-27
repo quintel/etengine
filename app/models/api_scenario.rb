@@ -61,14 +61,16 @@ class ApiScenario < Scenario
   end
 
   def api_errors(test_scenario)
-    if used_groups_add_up?
-       []
-    else
-      groups = used_groups_not_adding_up
-      remove_groups_and_elements_not_adding_up!(test_scenario)
-      groups.map do |group, elements|
-        element_ids = elements.map{|e| "#{e.id} [#{e.key || 'no_key'}]" }.join(', ')
-        "Group '#{group}' does not add up to 100. Elements (#{element_ids}) "
+    benchmark("ApiScenario::api_errors") do
+      if used_groups_add_up?
+         []
+      else
+        groups = used_groups_not_adding_up
+        remove_groups_and_elements_not_adding_up!(test_scenario)
+        groups.map do |group, elements|
+          element_ids = elements.map{|e| "#{e.id} [#{e.key || 'no_key'}]" }.join(', ')
+          "Group '#{group}' does not add up to 100. Elements (#{element_ids}) "
+        end
       end
     end
   end
