@@ -62,7 +62,15 @@ class Scenario < ActiveRecord::Base
       scenario.copy_scenario_state(preset)
     end
   end
-  
+
+  before_save :serialize_user_values
+
+  def serialize_user_values
+    if @user_values_hash
+      self[:user_values] = @user_values_hash.to_yaml
+    end
+  end
+
   ##############################
   # Default Scenario
   ##############################

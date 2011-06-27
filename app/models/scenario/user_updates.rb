@@ -20,14 +20,16 @@ class Scenario < ActiveRecord::Base
   def update_inputs_for_api(params)
     input_ids = params.keys
     input_ids.each do |key|
-      if input = Input.get_cached(key)
-        if params[key] == 'reset'
-          delete_from_user_values(input.id)
-        elsif value = params[key].to_f
-          update_input(input, value)
+      self.class.benchmark("Benchmark::Scenario:: update_inputs_for_api(#{key})") do
+        if input = Input.get_cached(key)
+          if params[key] == 'reset'
+            delete_from_user_values(input.id)
+          elsif value = params[key].to_f
+            update_input(input, value)
+          end
+        else
+          Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
         end
-      else
-        Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
       end
     end
     add_update_statements(lce.update_statements)
@@ -78,10 +80,9 @@ class Scenario < ActiveRecord::Base
   #
   def store_user_value(input, value)
     key = input.id
-    self.user_values = self.user_values.merge key => value 
+    self.user_values.merge! key => value 
     value
   end
-
 
   ##
   # @tested 2010-11-30 seb
@@ -93,6 +94,9 @@ class Scenario < ActiveRecord::Base
   ##
   # TODO fix this, it's weird
   #
+  # DEBT: This has had it's fair share of refactorings behind. 
+  #       Make the serialization of user_values more straightforward
+  #
   # Holds all values chosen by the user for a given slider. 
   # Hash {input.id => Float}, e.g.
   # {3=>-1.1, 4=>-1.1, 5=>-1.1, 6=>-1.1, 203=>1.1, 204=>0.0}
@@ -100,8 +104,11 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   #
   def user_values
-    self[:user_values] ||= {}.to_yaml
-    YAML::load(self[:user_values])
+    unless @user_values_hash
+      self[:user_values] ||= {}.to_yaml
+      @user_values_hash = YAML::load(self[:user_values])
+    end
+    @user_values_hash
   end
 
   ##
@@ -111,10 +118,12 @@ class Scenario < ActiveRecord::Base
   #    
   def user_values=(values)
     values ||= {}
-    self[:user_values] = case values
-      when Hash then values.to_yaml
-      when String then values
-      else raise ArgumentError.new("You must set either a hash or a string: " + values.inspect)
+    if values.is_a?(Hash)
+      @user_values_hash = values
+    elsif values.is_a?(String)
+      @user_values_hash = YAML::load(values)
+    else 
+      raise ArgumentError.new("You must set either a hash or a string: " + values.inspect)
     end
   end
 
@@ -125,6 +134,7 @@ class Scenario < ActiveRecord::Base
   # @untested 2010-12-22 seb
   #
   def delete_from_user_values(id)
+    # DEBT: this can now just be self.user_values.delete(id)
     values = user_values
     values.delete(id)
     self.user_values = values

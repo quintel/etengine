@@ -91,8 +91,12 @@ class Gql
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
     return if graph_model == :testing
 
-    @present = graph_model.present
-    @future = graph_model.future
+    benchmark('present graph') do
+      @present = graph_model.present
+    end
+    benchmark('future graph') do
+      @future = graph_model.future
+    end
 
     @present.year = Current.scenario.start_year
     @future.year = Current.scenario.end_year
@@ -118,19 +122,29 @@ class Gql
     @policy ||= Policy.new(@present, @future)
   end
 
+  def benchmark(title)
+    ::Graph.benchmark("Benchmark::Gql:: #{title}") do
+      yield
+    end
+  end
+
   ##
   # Updates and calculates the graphs
   #
   # @return [Gql] Returns self, so that we can gql = Gql.new(graph).prepare_graphs
   #
   def prepare_graphs
-    update_time_curves(@future)
     if update_statements = Current.scenario.update_statements
-      update_carriers(@future, update_statements['carriers'])
-      update_area_data(@future, update_statements['area'])
-      update_converters(@future, update_statements['converters'])
+      benchmark('GQL :: update statements') do
+      update_time_curves(@future)      
+        update_carriers(@future, update_statements['carriers'])
+        update_area_data(@future, update_statements['area'])
+        update_converters(@future, update_statements['converters'])
+      end
     end
-    @future.calculate
+    benchmark('GQL :: calculate future') do
+      @future.calculate
+    end
     update_policies(update_statements['policies']) if update_statements
 
     # At this point the gql is calculated. Changes through update statements
@@ -150,14 +164,16 @@ class Gql
   # @return [GqueryResult] Result of present and future graph
   #
   def query(query)
-    modifier,gquery = query.split(':')
-    if gquery.nil?
-      GqueryResult.create [
-        [Current.scenario.start_year, query_present(query)],
-        [Current.scenario.end_year, query_future(query)]
-      ]
-    elsif %(present future historic stored).include?(modifier.strip)
-      send("query_#{modifier}", gquery)
+    benchmark "query: #{query}" do
+      modifier,gquery = query.split(':')
+      if gquery.nil?
+        GqueryResult.create [
+          [Current.scenario.start_year, query_present(query)],
+          [Current.scenario.end_year, query_future(query)]
+        ]
+      elsif %(present future historic stored).include?(modifier.strip)
+        send("query_#{modifier}", gquery)
+      end
     end
   end
 
