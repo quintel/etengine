@@ -29,8 +29,13 @@ class Graph
     @calculated = false
 
     self.converters = converters
+
+    @group_converters_cache = {}
+
     self.area = Qernel::Area.new(self)
     build_lookup_hash
+
+    prepare_memoization
   end
 
   def time_curves
@@ -112,8 +117,8 @@ class Graph
   # @return [Array<Converter>]
   #
   def use_converters(key)
-    # TODO: optimize
-    self.converters.select{|c| c.use_key == key.to_sym }
+    use_key_sym = key.to_sym
+    self.converters.select{|c| c.use_key == use_key_sym }
   end
 
   ##
@@ -123,8 +128,8 @@ class Graph
   # @return [Array<Converter>]
   #
   def sector_converters(sector_key)
-    # TODO: optimize
-    self.converters.select{|c| c.sector_key == sector_key.to_sym }
+    sector_key_sym = sector_key.to_sym
+    self.converters.select{|c| c.sector_key == sector_key_sym }
   end
 
   ##
@@ -134,8 +139,10 @@ class Graph
   # @return [Array<Converter>]
   #
   def group_converters(group_key)
-    # TODO: optimize
-    self.converters.select{|c| c.groups.map(&:key).include?(group_key.to_sym)}
+    group_key_sym = group_key.to_sym
+
+    @group_converters_cache[group_key_sym] ||= 
+      self.converters.select{|c| c.groups.map(&:key).include?(group_key_sym)}
   end
 
   ##
@@ -181,6 +188,11 @@ class Graph
   end
 
 private
+
+  def prepare_memoization
+    groups.map(&:key).uniq.each {|key| group_converters(key)}
+  end
+
   def build_lookup_hash
     @converters_hash = {}
     self.converters.each do |converter|

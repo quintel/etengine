@@ -164,7 +164,7 @@ class Gql
   # @return [GqueryResult] Result of present and future graph
   #
   def query(query)
-    benchmark "query: #{query}" do
+    #benchmark "query: #{query}" do
       modifier,gquery = query.split(':')
       if gquery.nil?
         GqueryResult.create [
@@ -174,7 +174,7 @@ class Gql
       elsif %(present future historic stored).include?(modifier.strip)
         send("query_#{modifier}", gquery)
       end
-    end
+    #end
   end
 
   ##
