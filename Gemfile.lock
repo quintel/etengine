@@ -58,6 +58,7 @@ GEM
     builder (2.1.2)
     columnize (0.3.3)
     daemons (1.0.10)
+    dalli (1.0.5)
     default_value_for (1.0.1)
     diff-lcs (1.1.2)
     erubis (2.6.6)
@@ -178,6 +179,7 @@ DEPENDENCIES
   authlogic!
   awesome_print
   bluecloth
+  dalli
   default_value_for
   factory_girl_rails
   formtastic

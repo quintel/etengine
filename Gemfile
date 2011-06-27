@@ -30,6 +30,7 @@ gem 'hoptoad_notifier', '2.4.2'
 # system gems
 # gem 'thinking-sphinx', '>=2.0.1'
 gem 'mysql2', '~>0.2.6'
+gem 'dalli'
 gem 'memcache-client'
 gem 'mongrel', '1.2.0.pre2'
 

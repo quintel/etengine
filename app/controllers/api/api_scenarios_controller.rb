@@ -94,7 +94,7 @@ class Api::ApiScenariosController < ApplicationController
     end
 
     def results
-      benchmark("ApiScenarios::results") do
+      # benchmark("ApiScenarios::results") do
         if params[:result]
           @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
             if key == "null" or key == "undefined"
@@ -108,7 +108,7 @@ class Api::ApiScenariosController < ApplicationController
         else
           @gqueries = nil
         end
-      end
+      # end
     end
   
     def update_scenario(scenario)
