@@ -33,6 +33,7 @@ Etm::Application.routes.draw do
         post :import
       end
     end
+    resources :gql_test_cases
     resources :historic_series
     resources :query_tables
     resources :query_table_cells, :except => [:show, :index]
@@ -54,7 +55,6 @@ Etm::Application.routes.draw do
       resources :blueprint_layouts do
         resources :converter_positions
       end
-      resources :gql_test_cases
 
       resources :gqueries do
         get :result, :on => :member

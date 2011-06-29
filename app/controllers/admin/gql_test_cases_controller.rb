@@ -1,4 +1,6 @@
-class Data::GqlTestCasesController < Data::BaseController
+class Admin::GqlTestCasesController < Admin::AdminController
+  layout 'gql_test_cases'
+
   before_filter :find_model, :only => [:show, :edit, :update, :destroy]
 
   def index
@@ -18,19 +20,19 @@ class Data::GqlTestCasesController < Data::BaseController
   def create
     @gql_test_case = GqlTestCase.new(params[:gql_test_case])
     if @gql_test_case.save
-      redirect_to data_gql_test_cases_url
+      redirect_to admin_gql_test_cases_url
     end
   end
 
   def destroy
     @gql_test_case.destroy
     flash[:notice] = 'Test Case deleted'
-    redirect_to data_gql_test_cases_url
+    redirect_to admin_gql_test_cases_url
   end
 
   def update
     if @gql_test_case.update_attributes(params[:gql_test_case])
-      redirect_to data_gql_test_cases_url
+      redirect_to admin_gql_test_cases_url
     end
   end
 

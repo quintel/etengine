@@ -1,0 +1,19 @@
+!!! Strict
+%html{ :xmlns => "http://www.w3.org/1999/xhtml" }
+  %head
+    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
+    %title
+      EnergyTransitionModel
+
+    = javascript_include_tag :defaults
+    = javascript_include_tag "underscore.min"
+    = sprocket_layout_init :data
+    = sprocket_layout_init :admin
+    = sprocket_layout_init :testcases
+
+    = stylesheet_link_tag 'all'
+    = stylesheet_link_tag 'jasmine'
+    = stylesheet_link_tag 'vendor/formtastic', 'formtastic_changes', 'admin'
+
+  %body
+    = yield

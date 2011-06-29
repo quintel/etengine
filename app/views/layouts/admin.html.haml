@@ -6,7 +6,12 @@
       EnergyTransitionModel
 
     = javascript_include_tag :defaults
+    = sprocket_layout_init :data
+    = sprocket_layout_init :admin
+    = sprocket_layout_init :testcases
+
     = stylesheet_link_tag 'all'
+    = stylesheet_link_tag 'jasmine'
     = stylesheet_link_tag 'vendor/formtastic', 'formtastic_changes', 'admin'
     
     /
