@@ -1,75 +1,86 @@
-= render 'list'
+=# render 'list'
 
-#content
-  .header
-    GQL Test Cases
-
-  %p= link_to 'New Test', new_data_gql_test_case_path
-  %p= link_to 'Run Tests', '#', :onclick => 'run_tests()'
-
-  %p
-    %label
-      API Server: 
-      = select_tag 'server', options_for_select([['This Server', ''], ['testing', 'http://testing.et-model.com'],['staging', 'http://staging.et-model.com']])
+:javascript
+  var matches = function(object_name, present_expected, future_expected, tolerance_in_percent) {
+    var text = ""+object_name+" matches "+present_expected+" / "+future_expected
+    return jasmine.getEnv().it(text, function() {
+      expect(window[object_name]).toMatch(present_expected, future_expected, tolerance_in_percent);
+    });
+  };
+  
+  var cost_total = new Gquery({key : 'cost_total'});
+  var co2_emission_electricity_ex_import = new Gquery({key : 'co2_emission_electricity_ex_import'});
+  
+  function load_queries() {
+    $.getJSON(
+      '/api/v2/api_scenarios/test.json?setting[country]=nl&setting[end_year]=2050',
+      {'result' : window.gqueries.keys() },
+      
+      function(data) {
+        var result   = data.result;   // Results of this request for every "result[]" parameter
+        $.each(result, function(gquery_key, value_arr) { 
+          $.each(window.gqueries.with_key(gquery_key), function(i, gquery) {
+            gquery.handle_api_result(value_arr);
+          });
+        });
+        run_tests();
+        create_tests();
+      }
+    );
+  }
+  load_queries();
+  
+  describe("For country NL, end_year 2050", function() {
     
-  %ul
-    - @gql_test_cases.each do |gql_test_case|
-      - api_path = "/api/v1/api_scenarios/test.json?callback=?&#{gql_test_case.api_params}"
-      %li.gql_test_case[gql_test_case]{:'data-json' => api_path}
-        %h3
-          == ##{gql_test_case.id} #{gql_test_case.name}
-          %small
-            = link_to 'Edit', edit_data_gql_test_case_path(:id => gql_test_case)
-            = link_to 'JSON', api_path
-            = link_to 'Inspect', api_path.gsub('test.json', 'test')
-            = link_to 'Delete', data_gql_test_case_path(:id => gql_test_case), :method => "delete", :confirm => "are you sure?"
-            = link_to 'Run', "javascript:run_test($('##{dom_id(gql_test_case)}'));"
-        %p= gql_test_case.description
-        %pre= gql_test_case.instruction
-        
-        %p
-          %ol
-            - gql_test_case.result_queries.each do |query, line|
-              - min, max = GqlTestCase.min_max_of(line)
-              %li.matcher{:'data-query' => query, :'data-min-result' => min, :'data-max-result' => max}
-                = query
-                %label
-                  = line
-                  == (#{detailed_number(min)} - #{detailed_number(max)})
-                %strong.result ...
-                %small
-
-  :javascript
-    function run_test(matcher_element, index) {
-      if ($(matcher_element).length == 0) {return false;}
-      
-      $('.result', matcher_element).empty().append('loading...');
-      var url = $('#server').val();
-      url += $(matcher_element).attr('data-json');
-      
-      $.getJSON(url, function(data) {
-        $('.matcher', matcher_element).each(function(i,matcher) {
-          var query = $(matcher).attr('data-query');
-          var result = parseInt(data.result[query][1][1]);
-          var min = parseInt($(matcher).attr('data-min-result'));
-          var max = parseInt($(matcher).attr('data-max-result'));
-          var res = (result > min && result < max) ? 'passed' : 'failed';
+    beforeEach(function() {
+      this.addMatchers({
+        toMatch: function(present_expected, future_expected, precision_in_percent) {
+          var gquery = this.actual;
+          var present_value = gquery.get('present_value');
+          var future_value = gquery.get('future_value');
           
-          $(matcher).addClass(res);
-          
-          $('.result', matcher).empty().append(res);
-          $('.result', matcher).attr('title', result);
-        })
-        if (index > 0) {
-          next_test(index)
+          // DEBT check this calculation
+          ((present_value - present_expected) / present_value) < (precision_in_percent / 100)
+          return (((present_value - present_expected) / present_value) < (precision_in_percent / 100))
+              && (((future_value - future_expected) / future_value) < (precision_in_percent / 100))
         }
       })
-    }
-    function run_tests() {
-      run_test($('.gql_test_case:nth-child(1)'), 1);
-      run_test($('.gql_test_case:nth-child(2)'), 2);
-    }
-    function next_test(curent_index) {
-      var next_index = curent_index + 2;
-      run_test($('.gql_test_case:nth-child('+next_index+')'), next_index);      
-    }
+    });
+    
+    
+    matches('cost_total', 41852270320, 41852270320, 1);
+    // equivalent to:
+    it("costs_total matches 41, 41", function() {
+      expect(cost_total).toMatch(41852270320, 41852270320, 1);
+    });
+    
+    
+    //it("costs_total should be equal to 90, 80", function() {});
+    //it("costs_total should be increase by 5%", function() {});
+    //it("costs_total should be decrease by 5%", function() { });
+  });
+  
+  function run_tests() {
+    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+    jasmine.getEnv().execute();
+  }
+  
+  function create_tests() {
+    window.gqueries.each(function(gquery) {
+      var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);"
+      $('#test_suite').append(str);
+    })
+  };
+
+
+%pre#test_suite
+
+
+
+
+
+
+
+
+
+
