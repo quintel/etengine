@@ -12,6 +12,9 @@
         %th Query
         %td= f.text_area :query
       %tr
+        %th Unit
+        %td= f.text_field :unit
+      %tr
         %th Groups
         %td
           = select_tag :gquery_groups, options_from_collection_for_select(GqueryGroup.all, :id,:group_key, @gquery.gquery_groups.map(&:id)),:multiple => true
