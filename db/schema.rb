@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110623151304) do
+ActiveRecord::Schema.define(:version => 20110704154453) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -349,6 +349,7 @@ ActiveRecord::Schema.define(:version => 20110623151304) do
     t.datetime "updated_at"
     t.boolean  "not_cacheable",        :default => false
     t.boolean  "usable_for_optimizer", :default => false
+    t.string   "unit"
   end
 
   create_table "gqueries_gquery_groups", :id => false, :force => true do |t|
