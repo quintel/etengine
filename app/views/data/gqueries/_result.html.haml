@@ -3,9 +3,11 @@
     %tr
       %td= result.present_year
       %td.tar= result.present_value
+      %td= @gquery.unit
     %tr
       %td= result.future_year
       %td.tar= result.future_value
+      %td= @gquery.unit
 
 - else
   %pre Error 
