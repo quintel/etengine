@@ -94,6 +94,7 @@ class Data::GqueriesController < Data::DataController
     end
   
     def assign_query_groups(gquery,groups)
+      return unless groups.kind_of?(Array)
       groups.each do |group|
         gquery.gquery_groups.delete_all
         GqueriesGqueryGroup.new(:gquery_group_id => group, :gquery_id => gquery.id).save
