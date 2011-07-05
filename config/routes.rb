@@ -45,7 +45,7 @@ Etm::Application.routes.draw do
   namespace :data do
     root :to => "data#start", :as => 'start'
     match '/redirect' => "data#redirect", :as => 'redirect'
-    
+    match '/kick' => 'data#kick', :as => 'kick'
 
     scope '/:blueprint_id/:region_code' do
       match '/' => "converters#index"
