@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Data::DataController do
+describe Data::BaseController do
   let!(:admin) { FactoryGirl.create :admin }
   let!(:graph) { FactoryGirl.create :graph }
 

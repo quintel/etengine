@@ -1,4 +1,4 @@
-class Data::BlueprintLayoutsController < Data::DataController
+class Data::BlueprintLayoutsController < Data::BaseController
   before_filter :find_models, :only => [:show, :edit]
 
   helper_method :attributes_for_json

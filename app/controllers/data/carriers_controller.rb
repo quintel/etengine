@@ -1,5 +1,4 @@
-class Data::CarriersController < Data::DataController
-
+class Data::CarriersController < Data::BaseController
   def index
     
   end

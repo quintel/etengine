@@ -1,4 +1,4 @@
-class Data::AreasController < Data::DataController
+class Data::AreasController < Data::BaseController
   before_filter :find_model, :only => [:update, :show, :edit]
 
   def index

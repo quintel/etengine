@@ -1,4 +1,4 @@
-class Data::DescriptionsController < Data::DataController
+class Data::DescriptionsController < Data::BaseController
 
 
   def index

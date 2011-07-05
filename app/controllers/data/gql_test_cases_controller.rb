@@ -1,4 +1,4 @@
-class Data::GqlTestCasesController < Data::DataController
+class Data::GqlTestCasesController < Data::BaseController
   before_filter :find_model, :only => [:show, :edit, :update, :destroy]
 
   def index

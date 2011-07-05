@@ -1,4 +1,4 @@
-class Data::GqueriesController < Data::DataController
+class Data::GqueriesController < Data::BaseController
   sortable_attributes :key, :updated_at,:gquery_group => "`gquery_group`"
 
   def index

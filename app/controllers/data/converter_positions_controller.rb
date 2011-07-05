@@ -1,4 +1,4 @@
-class Data::ConverterPositionsController  < Data::DataController
+class Data::ConverterPositionsController < Data::BaseController
 
   def create
     if params[:converter_positions]

@@ -3,9 +3,7 @@ require 'spec_helper'
 describe Data::AreasController do
   let(:admin)     { Factory :admin }
   let!(:area)     { Factory :area, :country => 'nl' }
-  let(:blueprint) { Factory :blueprint }
   let!(:graph)    { Factory :graph }
-  let!(:dataset)  { Factory :dataset, :area => area }
   
   before do
     login_as(admin)
