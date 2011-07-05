@@ -1,4 +1,4 @@
-class Data::ConverterDatasController < Data::DataController
+class Data::ConverterDatasController < Data::BaseController
   before_filter :find_model
 
   def find_model

@@ -1,4 +1,4 @@
-class Data::ConvertersController < Data::DataController
+class Data::ConvertersController < Data::BaseController
 
   def index
     

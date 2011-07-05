@@ -1,4 +1,4 @@
-class Data::CarrierDatasController < Data::DataController
+class Data::CarrierDatasController < Data::BaseController
   before_filter :find_model
 
   def find_model
