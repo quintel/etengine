@@ -13,14 +13,14 @@ describe Data::AreasController do
   
   describe "GET index" do    
     it "should be successful" do
-      get :index, :blueprint_id => graph.blueprint.id, :region_code => 'nl'
-      response.should redirect_to(data_area_path(:id => area.id, :blueprint_id => graph.blueprint.id, :region_code => 'nl'))
+      get :index, :blueprint_id => 'latest', :region_code => 'nl'
+      response.should redirect_to(data_area_path(:id => area.id, :blueprint_id => 'latest', :region_code => 'nl'))
     end
   end
   
   describe "GET show" do    
     it "should be successful" do
-      get :show, :id => area.id
+      get :show, :blueprint_id => 'latest', :region_code => 'nl', :id => area.id
       response.should render_template(:show)
     end
   end

@@ -6,14 +6,14 @@ class Data::DataController < ApplicationController
   # TODO: remove, this controller seems useless - PZ Wed 11 May 2011 10:33:25 CEST
   def start
     redirect_to data_converters_url(
-      :blueprint_id => params[:blueprint_id] || 'latest',
-    :region_code => params[:region_code] || 'nl')
+      :blueprint_id => params[:blueprint_id],
+      :region_code  => params[:region_code])
   end
 
   def redirect
     redirect_to data_converters_url(
-      :blueprint_id => params[:blueprint_id] || 'latest',
-    :region_code => params[:region_code] || 'nl')
+      :blueprint_id => params[:blueprint_id],
+      :region_code  => params[:region_code])
   end
 
   def kick
@@ -24,8 +24,11 @@ class Data::DataController < ApplicationController
   protected
 
     def find_graph
+      params[:blueprint_id] ||= 'latest'
+      params[:region_code]  ||= 'nl'
+
       blueprint_id = params[:blueprint_id]
-      region_code = params[:region_code]
+      region_code  = params[:region_code]
 
       if blueprint_id != 'latest'
         @api_scenario = Scenario.find_by_api_session_key(blueprint_id)

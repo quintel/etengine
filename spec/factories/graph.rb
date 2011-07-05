@@ -1,4 +1,6 @@
-Factory.define :graph do |f|
-  f.association :dataset,   :factory => :dataset
-  f.association :blueprint, :factory => :blueprint
+FactoryGirl.define do
+  factory :graph do
+    dataset
+    blueprint
+  end
 end
