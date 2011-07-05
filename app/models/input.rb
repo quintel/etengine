@@ -101,20 +101,36 @@ class Input < ActiveRecord::Base
 
   def self.static_values
     Input.all.inject({}) do |hsh, input|
-      hsh.merge input.id.to_s => {
-        :max_value    => input.max_value,
-        :min_value    => input.min_value,
-        :start_value  => input.start_value,
-        :full_label   => input.full_label
-      }
+      begin 
+        hsh.merge input.id.to_s => {
+          :max_value    => input.max_value,
+          :min_value    => input.min_value,
+          :start_value  => input.start_value,
+          :full_label   => input.full_label
+        }
+      rescue => ex
+        HoptoadNotifier.notify(
+          :error_message => "Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
+          :backtrace => caller,
+          :parameters => {:input => input, :api_scenario => Current.scenario })
+        return hsh
+      end
     end
   end
 
   def self.dynamic_start_values
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
-      hsh.merge input.id.to_s => {
-        :start_value => input.start_value
-      }
+      begin
+        hsh.merge input.id.to_s => {
+          :start_value => input.start_value
+        }
+      rescue => ex
+        HoptoadNotifier.notify(
+          :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
+          :backtrace => caller,
+          :parameters => {:input => input, :api_scenario => Current.scenario })
+        return hsh
+      end
     end
   end
 
