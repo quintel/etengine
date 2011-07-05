@@ -4,11 +4,11 @@
   .header
     Key:
     = @gquery.key
-    %small= link_to 'Edit', edit_data_gquery_path(@gquery)
+    %small= link_to 'Edit', edit_data_gquery_path(:id => @gquery)
 
   %h2
     = @gquery.key
-    %small= link_to 'Edit', edit_data_gquery_path(@gquery)
+    %small= link_to 'Edit', edit_data_gquery_path(:id => @gquery)
 
   %h3 Query
 
