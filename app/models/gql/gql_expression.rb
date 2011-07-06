@@ -143,7 +143,11 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # e.g. V(converter; [demand + co2] ** 3)
   #
   def replace_gql_with_ruby_brackets(attr_name)
-    attr_name.strip.gsub('[','(').gsub(']',')')
+    if attr_name.include?('[')
+      attr_name.strip.gsub('[','(').gsub(']',')')
+    else
+      attr_name.strip
+    end
   end
 
   ##
