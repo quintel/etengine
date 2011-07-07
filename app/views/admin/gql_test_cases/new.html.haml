@@ -1,18 +1,23 @@
+
 %script
   // create Gquery objects for the gqueries we will test later.
-  - Gquery.limit(20).each do |gquery|
-    == var #{gquery.key} = new Gquery({key: '#{gquery.key}'});
+  - Gquery.limit(500).reject{|g| g.unit == 'converters'}.each do |gquery|
+    == var #{gquery.key} = new Gquery({id : '#{gquery.id}', key: '#{gquery.key}'});
 
 
-%pre#test_suite
-  :javascript
-    // This simply outputs the test cases for all the Gquery Objects
-    // It is now called after the JSON request
-    function create_tests() {
-      window.gqueries.each(function(gquery) {
-        var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);\n"
-        $('#test_suite').append(str);
-      })
-    };
-    // Make an API call. When complete runs the test-suites
-    load_queries(create_tests);
+%textarea#test_suite
+
+
+:javascript
+  // This simply outputs the test cases for all the Gquery Objects
+  // It is now called after the JSON request
+  function create_tests() {
+    var test_suite = "";
+    window.gqueries.each(function(gquery) {
+      var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);\n"
+      test_suite = test_suite + str
+    })
+    $('#test_suite').val(test_suite);
+  };
+  // Make an API call. When complete runs the test-suites
+  load_queries(create_tests);

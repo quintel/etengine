@@ -1,2 +1,5 @@
-=# render 'list'
+// this is in index action, but eventually should be a show action
 
+%ul
+  - @gql_test_cases.each do |gql_test_case|
+    %li= link_to gql_test_case.name, [:admin, gql_test_case]
