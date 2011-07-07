@@ -30,24 +30,26 @@
         var text = ""+object_name+" matches "+present_expected+" / "+future_expected
         return jasmine.getEnv().it(text, function() {
           // DEBT: find a better solution then window[object_name]. e.g. a hash. 
-          expect(object_name).toMatch(present_expected, future_expected, tolerance_in_percent);
+          expect({gquery_key : object_name}).toMatch(present_expected, future_expected, tolerance_in_percent);
         });
       };
       
       var value_match = function(expected, actual, precision_in_percent) {
         // DEBT check this calculation
         if (expected == 0 && actual == 0) { return true }
-        return (((actual - expected) / actual) < (precision_in_percent / 100))
+        return (Math.abs(((actual - expected) / actual)) < (precision_in_percent / 100))
       }
       
       var customMatchers = {
         toMatch: function(present_expected, future_expected, precision_in_percent) {
-          var gquery = window[this.actual];
+          var gquery = window[this.actual.gquery_key];
           var present_value = gquery.get('present_value');
           var future_value = gquery.get('future_value');
+          // add this for a nice error message if spec fails
+          this.actual.present_value = present_value;
+          this.actual.future_value =  future_value ;
           
-          return value_match(present_expected, present_value, precision_in_percent) 
-              && value_match(future_expected, future_value, precision_in_percent);
+          return value_match(present_expected, present_value, precision_in_percent) && value_match(future_expected, future_value, precision_in_percent);
         }
       };
       
