@@ -65,15 +65,18 @@
     jasmine.getEnv().execute();
   }
   
-  function create_tests() {
-    window.gqueries.each(function(gquery) {
-      var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);"
-      $('#test_suite').append(str);
-    })
-  };
-
-
 %pre#test_suite
+
+  :javascript
+    // This simply outputs the test cases for all the Gquery Objects
+    // It is now called after the JSON request
+    function create_tests() {
+      window.gqueries.each(function(gquery) {
+        var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);\n"
+        $('#test_suite').append(str);
+      })
+    };
+
 
 
 
