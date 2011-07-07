@@ -15,5 +15,62 @@
     = stylesheet_link_tag 'jasmine'
     = stylesheet_link_tag 'vendor/formtastic', 'formtastic_changes', 'admin'
 
+    :javascript
+      // custom jasmine matcher. so that we can write a concise:
+      //   matches('cost_total', 41852270320, 41852270320,1); 
+      //
+      // It is equivalent to:
+      //
+      //   it("costs_total matches 41, 41", function() {
+      //     expect(cost_total).toMatch(41852270320, 41852270320, 1);
+      //   });
+      
+      var matches = function(object_name, present_expected, future_expected, tolerance_in_percent) {
+        window[object_name] = new Gquery({key : object_name});
+        var text = ""+object_name+" matches "+present_expected+" / "+future_expected
+        return jasmine.getEnv().it(text, function() {
+          // DEBT: find a better solution then window[object_name]. e.g. a hash. 
+          expect(window[object_name]).toMatch(present_expected, future_expected, tolerance_in_percent);
+        });
+      };
+      
+      var value_match = function(expected, actual, precision_in_percent) {
+        // DEBT check this calculation
+        if (expected == 0 && actual == 0) { return true }
+        return (((actual - expected) / actual) < (precision_in_percent / 100))
+      }
+      
+      var customMatchers = {
+        toMatch: function(present_expected, future_expected, precision_in_percent) {
+          var gquery = this.actual;
+          var present_value = gquery.get('present_value');
+          var future_value = gquery.get('future_value');
+          
+          return value_match(present_expected, present_value, precision_in_percent) 
+              && value_match(future_expected, future_value, precision_in_percent);
+        }
+      };
+      
+      // complete_function a function that will be run after api_call is finished.
+      function load_queries(complete_function) {
+        // This eventually should be JSONP (so we can test different servers)
+        $.getJSON(
+          '/api/v2/api_scenarios/test.json?setting[country]=nl&setting[end_year]=2050',
+          {'result' : window.gqueries.keys() },
+      
+          function(data) {
+            var result   = data.result;   // Results of this request for every "result[]" parameter
+            $.each(result, function(gquery_key, value_arr) { 
+              $.each(window.gqueries.with_key(gquery_key), function(i, gquery) {
+                gquery.handle_api_result(value_arr);
+              });
+            });
+            
+            complete_function();
+          }
+        );
+      }
+
+
   %body
     = yield
