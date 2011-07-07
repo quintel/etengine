@@ -30,7 +30,7 @@
         var text = ""+object_name+" matches "+present_expected+" / "+future_expected
         return jasmine.getEnv().it(text, function() {
           // DEBT: find a better solution then window[object_name]. e.g. a hash. 
-          expect(window[object_name]).toMatch(present_expected, future_expected, tolerance_in_percent);
+          expect(object_name).toMatch(present_expected, future_expected, tolerance_in_percent);
         });
       };
       
@@ -42,7 +42,7 @@
       
       var customMatchers = {
         toMatch: function(present_expected, future_expected, precision_in_percent) {
-          var gquery = this.actual;
+          var gquery = window[this.actual];
           var present_value = gquery.get('present_value');
           var future_value = gquery.get('future_value');
           
@@ -56,7 +56,7 @@
         // This eventually should be JSONP (so we can test different servers)
         $.getJSON(
           '/api/v2/api_scenarios/test.json?setting[country]=nl&setting[end_year]=2050',
-          {'result' : window.gqueries.keys() },
+          {'r' : window.gqueries.keys().join(";") },
       
           function(data) {
             var result   = data.result;   // Results of this request for every "result[]" parameter

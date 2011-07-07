@@ -33,9 +33,11 @@ class Api::ApiScenariosController < ApplicationController
     @results = results
     @json = {
       'result'   => @results,
-      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :lce_settings, :preset_scenario_id]),
-      'errors'   => @api_scenario.api_errors(test_scenario?)
+      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :lce_settings, :preset_scenario_id])
+      
+      #, 'errors'   => @api_scenario.api_errors(test_scenario?)
     }
+
     respond_to do |format|
       format.html { render }
       format.json { render :json => @json, :callback => params[:callback] }
@@ -105,8 +107,12 @@ class Api::ApiScenariosController < ApplicationController
         @gqueries = results.inject({}) do |hsh, key|
           if key == "null" or key == "undefined"
             hsh
-          elsif gquery = (Gquery.get(key) rescue nil) 
-            hsh.merge(key => Current.gql.query(gquery.query))
+          elsif gquery = (Gquery.get(key) rescue nil)
+            if gquery.unit != 'converters'
+              hsh.merge(key => Current.gql.query(gquery.query))
+            else
+              hsh
+            end
           else
             hsh.merge(key => Current.gql.query(key))
           end
