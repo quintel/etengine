@@ -96,7 +96,7 @@ class Api::ApiScenariosController < ApplicationController
     def results
       if params[:result] || params[:r]
         # split by ";" because "," is url encoded into 3 characters.
-        results = [params[:result], params[:r].split(';')]
+        results = [params[:result], params[:r].andand.split(';')]
         results.flatten!
         results.compact!
         results.map!(&:to_s) # key could be passsed as integer with json(P)
