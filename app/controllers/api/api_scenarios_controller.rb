@@ -95,7 +95,7 @@ class Api::ApiScenariosController < ApplicationController
 
     def results
       if params[:result] || params[:r]
-        results = [params[:result], params[:r]]
+        results = [params[:result], params[:r].split(',')]
         results.flatten!
         results.compact!
         results.map!(&:to_s) # key could be passsed as integer with json(P)
