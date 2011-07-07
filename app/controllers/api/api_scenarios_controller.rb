@@ -99,8 +99,8 @@ class Api::ApiScenariosController < ApplicationController
           @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
             if key == "null" or key == "undefined"
               hsh
-            elsif gquery = (Gquery.get(key) rescue nil)
-              hsh.merge(gquery.key => Current.gql.query(gquery.query))
+            elsif gquery = (Gquery.get(key.to_s) rescue nil)
+              hsh.merge(key => Current.gql.query(gquery.query))
             else
               hsh.merge(key => Current.gql.query(key))
             end
