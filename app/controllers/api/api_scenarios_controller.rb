@@ -94,21 +94,25 @@ class Api::ApiScenariosController < ApplicationController
     end
 
     def results
-      # benchmark("ApiScenarios::results") do
-        if params[:result]
-          @gqueries = params[:result].reject(&:blank?).inject({}) do |hsh, key|
-            if key == "null" or key == "undefined"
-              hsh
-            elsif gquery = (Gquery.get(key.to_s) rescue nil)
-              hsh.merge(key => Current.gql.query(gquery.query))
-            else
-              hsh.merge(key => Current.gql.query(key))
-            end
+      if params[:result] || params[:r]
+        results = [params[:result], params[:r]]
+        results.flatten!
+        results.compact!
+        results.map!(&:to_s) # key could be passsed as integer with json(P)
+        results.reject!(&:blank?)
+
+        @gqueries = results.inject({}) do |hsh, key|
+          if key == "null" or key == "undefined"
+            hsh
+          elsif gquery = (Gquery.get(key) rescue nil) 
+            hsh.merge(key => Current.gql.query(gquery.query))
+          else
+            hsh.merge(key => Current.gql.query(key))
           end
-        else
-          @gqueries = nil
         end
-      # end
+      else
+        @gqueries = nil
+      end
     end
   
     def update_scenario(scenario)
