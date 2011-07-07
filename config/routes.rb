@@ -24,6 +24,7 @@ Etm::Application.routes.draw do
     end
     resources :areas, :only => [:index, :show]
     resources :inputs, :only => [:index, :show]
+    resources :gqueries, :only => [:index]
   end
 
   namespace :admin do

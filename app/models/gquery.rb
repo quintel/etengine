@@ -24,6 +24,7 @@ class Gquery < ActiveRecord::Base
   validates_presence_of :key
   validates_uniqueness_of :key
   validates_presence_of :query
+  # DEBT: Add a validates_format_of :query (e.g. should have at least one a-z)
   validate :validate_query_parseable
   # belongs_to :gquery_group
   has_and_belongs_to_many :gquery_groups
@@ -71,7 +72,7 @@ class Gquery < ActiveRecord::Base
   end
 
   def self.build_gquery_hash
-    self.all.inject({}) {|hsh,gquery| hsh.merge(gquery.key => gquery)}
+    self.all.inject({}) {|hsh,gquery| hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery)}
   end
 
   def self.load_gquery_hash_from_marshal(filename)
