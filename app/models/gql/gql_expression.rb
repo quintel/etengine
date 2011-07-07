@@ -266,7 +266,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # Goal (or target) for some policy
   # e.g.
   #   GOAL(co2_emission)
-
+  # The target value might be calculated on top of the user_set value
+  # ie when the user sets a factor to increase/decrease something
   #
   # @param keys indentifies the policy goal to check
   # @return [Float]
@@ -279,6 +280,10 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   # @param keys name of the policy goal
   # @return [Float]
+  #
+  # This is what the user has set. If he didn't set any value
+  # we'll get nil. Notice that the target value might be a
+  # different value
   #
   def GOAL_USER_VALUE(keys, arguments, scope)
     Current.gql.policy.goal(keys.first.to_sym).user_value
