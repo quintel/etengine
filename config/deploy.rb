@@ -1,28 +1,39 @@
 require 'bundler/capistrano'
 require 'hoptoad_notifier/capistrano'
 
-
-
 set :application, "etengine"
-
 set :stage, :production
-
-#### UNCOMMENT roles when we setup server
+set :server_type, 'production'
 
 task :production do
   set :domain, "46.137.90.62"
-  # set :domain, "46.137.109.15" # high cpu
+  set :branch, "master"
+
+  set :application_key, "#{application}"
+  set :deploy_to, "/home/ubuntu/apps/#{application_key}"
+  set :config_files, "/home/ubuntu/config_files/#{application_key}"
+
   role :web, domain # Your HTTP server, Apache/etc
   role :app, domain # This may be the same as your `Web` server
   role :db,  domain, :primary => true # This is where Rails migrations will run
-  set :branch, "master"
-  set :server_type, 'production'
 end
 
-set :user, 'ubuntu'
+task :staging do
+  set :domain, "ec2-46-137-12-48.eu-west-1.compute.amazonaws.com"
+  set :branch, "master"
 
-set :deploy_to, "/home/ubuntu/apps/#{application}"
-set :config_files, "/home/ubuntu/config_files/#{application}"
+  # change this to #{application}_staging when you want it in a different directory
+  set :application_key, "#{application}_staging" 
+  set :deploy_to, "/home/ubuntu/apps/#{application_key}"
+  set :config_files, "/home/ubuntu/config_files/#{application_key}"
+
+  role :web, domain # Your HTTP server, Apache/etc
+  role :app, domain # This may be the same as your `Web` server
+  role :db,  domain, :primary => true # This is where Rails migrations will run
+end
+
+
+set :user, 'ubuntu'
 
 set :scm, :git
 set :repository,  "git@github.com:dennisschoenmakers/etengine.git"
