@@ -58,6 +58,8 @@ namespace :deploy do
     puts "Hoptoad Notification Complete."
   end
 end
+after "deploy", "deploy:migrate"
+
 
 desc "Move db server to local db"
 task :db2local do
