@@ -1,11 +1,21 @@
 
 %script
   // create Gquery objects for the gqueries we will test later.
-  - Gquery.limit(50).reject{|g| g.unit == 'converters'}.each do |gquery|
+  - Gquery.all.reject{|g| g.unit == 'converters'}.each do |gquery|
     == var #{gquery.key} = new Gquery({id : '#{gquery.id}', key: '#{gquery.key}'});
 
-
-%textarea#test_suite
+= form_for [:admin, @gql_test_case] do |f|
+  %p
+    = f.label :name
+    = f.text_field :name
+  %p
+    = f.label :instruction
+    = f.text_area :instruction
+  %p
+    = f.label :description
+    = f.text_area :description
+  %p
+    = f.submit
 
 
 :javascript
@@ -17,7 +27,7 @@
       var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);\n"
       test_suite = test_suite + str
     })
-    $('#test_suite').val(test_suite);
+    $('#gql_test_case_instruction').val(test_suite);
   };
   // Make an API call. When complete runs the test-suites
   load_queries(create_tests);
