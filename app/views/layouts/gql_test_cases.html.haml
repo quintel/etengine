@@ -56,11 +56,15 @@
       // complete_function a function that will be run after api_call is finished.
       function load_queries(complete_function) {
         // This eventually should be JSONP (so we can test different servers)
-        $.getJSON(
+        $.post(
           '/api/v2/api_scenarios/test.json?setting[country]=nl&setting[end_year]=2050',
-          {'r' : window.gqueries.keys().join(";") },
+          {
+            '_method' : 'put',
+            'r' : window.gqueries.keys().join(";")
+          },
       
           function(data) {
+            console.log(data);
             var result   = data.result;   // Results of this request for every "result[]" parameter
             $.each(result, function(gquery_key, value_arr) { 
               $.each(window.gqueries.with_key(gquery_key), function(i, gquery) {
