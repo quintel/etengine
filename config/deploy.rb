@@ -7,7 +7,7 @@ set :server_type, 'production'
 
 task :production do
   set :domain, "46.137.90.62"
-  set :branch, "master"
+  set :branch, "production"
 
   set :application_key, "#{application}"
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
@@ -20,7 +20,7 @@ end
 
 task :staging do
   set :domain, "ec2-46-137-12-48.eu-west-1.compute.amazonaws.com"
-  set :branch, "master"
+  set :branch, "staging"
 
   # change this to #{application}_staging when you want it in a different directory
   set :application_key, "#{application}_staging" 
