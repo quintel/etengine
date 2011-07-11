@@ -36,7 +36,7 @@ class Group < ActiveRecord::Base
   end
 
   def to_qernel
-    @qernel ||= Qernel::Group.new(id, key)
+    @qernel ||= key.to_sym
   end
 end
 

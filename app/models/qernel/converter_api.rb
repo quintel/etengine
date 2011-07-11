@@ -56,15 +56,12 @@ class ConverterApi
     :typical_capacity_effective_in_mj_s,
     :typical_thermal_capacity_effective_in_mj_yr,
     :max_capacity_factor,
-    :capacity_factor_emperical_scaling_excl, # TODO: remove this value. (still needed for legacy tests)
     :capacity_factor,
     :land_use_in_nl,
     :technical_lifetime,
     :technological_maturity,
     :lead_time,
     :construction_time,
-    :net_electrical_yield, # Todo remove from everywhere
-    :net_heat_yield, # Todo remove from everywhere
     :cost_om_fixed_per_mj,
     :cost_om_variable_ex_fuel_co2_per_mj,
     :cost_co2_capture_ex_fuel_per_mj,
@@ -244,6 +241,14 @@ class ConverterApi
   create_methods_for_each_carrier(::Carrier.all.map(&:key))
 
 
+  def primary_demand
+    self.converter.primary_demand
+  end
+
+  def final_demand
+    self.converter.final_demand
+  end
+
   ##
   #
   #
@@ -305,17 +310,11 @@ class ConverterApi
   #   @return [Float]
   #
   def method_missing(method_id, *arguments)
-    if method_id == :to_ary
-      puts "to_ary"
-      super
-    elsif m = /^cost_(\w*)$/.match(method_id.to_s) and method_name = m.captures.first
-      self.send(method_name)
+    # Rails.logger.info("ConverterApi:method_missing #{method_id}")
 
-    elsif m = /^primary_demand(\w*)$/.match(method_id.to_s)
-      self.converter.send(method_id, *arguments)
-    elsif m = /^final_demand(\w*)$/.match(method_id.to_s)
-      self.converter.send(method_id, *arguments)
     # electricity_
+    if m = /^share_of_(\w*)$/.match(method_id.to_s) and parent = m.captures.first
+      self.converter.output_links.select{|l| l.parent.full_key.to_s == parent.to_s}.first.andand.share
     elsif m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
       carrier_name, side, method = m.captures
       if carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/)
@@ -327,8 +326,13 @@ class ConverterApi
           link.send(method)
         end
       end
-    elsif m = /^share_of_(\w*)$/.match(method_id.to_s) and parent = m.captures.first
-      self.converter.output_links.select{|l| l.parent.full_key.to_s == parent.to_s}.first.andand.share
+    elsif m = /^cost_(\w*)$/.match(method_id.to_s) and method_name = m.captures.first
+      self.send(method_name)
+    elsif m = /^primary_demand(\w*)$/.match(method_id.to_s)
+      # puts arguments
+      self.converter.send(method_id, *arguments)
+    elsif m = /^final_demand(\w*)$/.match(method_id.to_s)
+      self.converter.send(method_id, *arguments)
     else
       puts method_id
       super
