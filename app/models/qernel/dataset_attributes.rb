@@ -34,11 +34,11 @@ module Qernel::DatasetAttributes
   # corresponding blueprint item's id.
   #
   def compute_dataset_key
-    dataset_key
+    @dataset_key ||= dataset_key
   end
 
   def dataset
-    raise "#{self.class.name} has not defined a graph" if graph.nil?
+    #raise "#{self.class.name} has not defined a graph" if graph.nil?
     graph.dataset
   end
 
