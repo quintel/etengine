@@ -56,15 +56,12 @@ class ConverterApi
     :typical_capacity_effective_in_mj_s,
     :typical_thermal_capacity_effective_in_mj_yr,
     :max_capacity_factor,
-    :capacity_factor_emperical_scaling_excl, # TODO: remove this value. (still needed for legacy tests)
     :capacity_factor,
     :land_use_in_nl,
     :technical_lifetime,
     :technological_maturity,
     :lead_time,
     :construction_time,
-    :net_electrical_yield, # Todo remove from everywhere
-    :net_heat_yield, # Todo remove from everywhere
     :cost_om_fixed_per_mj,
     :cost_om_variable_ex_fuel_co2_per_mj,
     :cost_co2_capture_ex_fuel_per_mj,
