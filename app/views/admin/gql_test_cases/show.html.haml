@@ -2,7 +2,7 @@
 %p= @gql_test_case.description
 
 :javascript  
-  var settings = #{@gql_test_case.settings.inspect};
+  var settings = #{(@gql_test_case.settings || '').inspect};
   
   describe("For country NL, end_year 2050", function() {
     beforeEach(function() { this.addMatchers(customMatchers); });
