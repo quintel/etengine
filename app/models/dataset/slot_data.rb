@@ -16,6 +16,6 @@ class Dataset::SlotData < ActiveRecord::Base
   belongs_to :slot
 
   def dataset_key
-    Qernel::DatasetItem.compute_dataset_key(Qernel::Slot, slot_id)
+    Qernel::Slot.compute_dataset_key(slot_id)
   end
 end

@@ -43,6 +43,6 @@ class Dataset::CarrierData < ActiveRecord::Base
   validates_uniqueness_of :carrier_id, :scope => :area_id, :on => :create
 
   def dataset_key
-    Qernel::DatasetItem.compute_dataset_key(Qernel::Carrier, carrier_id)
+    Qernel::Carrier.compute_dataset_key(carrier_id)
   end
 end
