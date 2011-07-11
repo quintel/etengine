@@ -117,8 +117,12 @@ class Dataset::ConverterData < ActiveRecord::Base
   # to add {'demand' => preset_demand}
   #
   # hack code to deal with missing preset_demand attribute
-  alias_method :hacked_attributes, :attributes
-  def attributes
-    @hacked_attrs ||= {}.merge(hacked_attributes)
+  def dataset_attributes
+    attrs = Qernel::ConverterApi::ATTRIBUTES_USED.inject({}) do |hsh, key| 
+      hsh.merge(key => self[key])
+    end
+    attrs[:demand] = self.preset_demand
+    attrs[:preset_demand] = self.preset_demand
+    attrs
   end
 end
