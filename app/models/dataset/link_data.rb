@@ -18,7 +18,7 @@ class Dataset::LinkData < ActiveRecord::Base
   belongs_to :link
 
   def dataset_key
-    Qernel::DatasetItem.compute_dataset_key(Qernel::Link, link_id)
+    Qernel::Link.compute_dataset_key(link_id)
   end
 
   def dataset_attributes

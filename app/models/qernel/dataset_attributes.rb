@@ -24,8 +24,8 @@ module Qernel::DatasetAttributes
       end
     end
 
-    def compute_dataset_key(klass, id)
-      "#{klass}_#{id}".downcase.to_sym
+    def compute_dataset_key(id)
+      "#{self.name}_#{id}".downcase.to_sym
     end
   end
 
@@ -39,7 +39,7 @@ module Qernel::DatasetAttributes
   end
 
   def dataset_key
-    @dataset_key ||= self.class.compute_dataset_key(self.class, id)
+    @dataset_key ||= self.class.compute_dataset_key(id)
   end
 
   def dataset_fetch(attr_name, &block)
