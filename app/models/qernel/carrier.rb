@@ -25,7 +25,6 @@ class Carrier
     *CO2_LCE_COMPONENTS
   ]
 
-
   attr_accessor :id, :key, :name, :graph, :infinite
 
   dataset_accessors DATASET_ATTRIBUTES

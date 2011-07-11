@@ -27,12 +27,7 @@ class Gquery
   # GqueryBase#subquery
   #   Executes the subquery
   #
-  unless Rails.env.test?
-    # Do not memcache queries in testing. Otherwise we have a problem with the blackbox_spec
-    #  As it uses the same graphs for testing different scenarios, so scenario 2 gets cached
-    #  values from scenario 1. We could also implement better cache keys to circumvent that.
-    include GqueryCache # optional
-  end
+  include GqueryCache # optional
   include MemoizedSubqueries # optional
 
 

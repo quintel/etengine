@@ -20,7 +20,8 @@ class Slot
   attr_accessor :converter, :converter_id, :graph
   attr_reader :carrier, :direction, :id
 
-  dataset_accessors [:conversion, :dynamic]
+  DATASET_ATTRIBUTES = [:conversion, :dynamic]
+  dataset_accessors DATASET_ATTRIBUTES
 
   ##
   # @deprecated params conversion
