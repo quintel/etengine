@@ -2,6 +2,8 @@
 %p= @gql_test_case.description
 
 :javascript  
+  var settings = #{(@gql_test_case.settings || '').inspect};
+  
   describe("For country NL, end_year 2050", function() {
     beforeEach(function() { this.addMatchers(customMatchers); });
     
@@ -16,4 +18,4 @@
   }
   
   // Make an API call. When complete runs the test-suites
-  load_queries(run_tests);
+  load_queries(settings, run_tests);

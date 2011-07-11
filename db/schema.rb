@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110711072246) do
+ActiveRecord::Schema.define(:version => 20110711113032) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -185,14 +185,11 @@ ActiveRecord::Schema.define(:version => 20110711072246) do
     t.float    "typical_capacity_effective_in_mj_s"
     t.float    "typical_thermal_capacity_effective_in_mj_yr"
     t.float    "max_capacity_factor"
-    t.float    "capacity_factor_emperical_scaling_excl"
     t.float    "land_use_in_nl"
     t.float    "technical_lifetime"
     t.float    "technological_maturity"
     t.float    "lead_time"
     t.float    "construction_time"
-    t.float    "net_electrical_yield"
-    t.float    "net_heat_yield"
     t.float    "cost_om_fixed_per_mj"
     t.float    "cost_om_variable_ex_fuel_co2_per_mj"
     t.float    "cost_co2_capture_ex_fuel_per_mj"
@@ -301,6 +298,8 @@ ActiveRecord::Schema.define(:version => 20110711072246) do
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "settings",    :limit => 2147483647
+    t.text     "inputs",      :limit => 2147483647
   end
 
   create_table "gqueries", :force => true do |t|
@@ -382,7 +381,7 @@ ActiveRecord::Schema.define(:version => 20110711072246) do
     t.string   "label_query"
   end
 
-  add_index "inputs", ["key"], :name => "unique api key"
+  add_index "inputs", ["key"], :name => "unique api key", :unique => true
 
   create_table "lce_values", :force => true do |t|
     t.string   "using_country"
