@@ -55,10 +55,10 @@
       };
       
       // complete_function a function that will be run after api_call is finished.
-      function load_queries(complete_function) {
+      function load_queries(settings, complete_function) {
         // This eventually should be JSONP (so we can test different servers)
         $.post(
-          '/api/v2/api_scenarios/test.json?setting[country]=nl&setting[end_year]=2050',
+          '/api/v2/api_scenarios/test.json?'+settings,
           {
             '_method' : 'put',
             'r' : window.gqueries.keys().join(";")
