@@ -54,7 +54,7 @@
   - with_options :delimiter => "'", :precision => 0 do |numb|
     %table{:border => 1}
       %tr
-        %th{:colspan => 2}= group.key
+        %th{:colspan => 2}= group
         %th Demand
         %th Primary
         %th Difference
@@ -62,7 +62,7 @@
         %th Co2
 
       - demand_total, primary_total = 0.0, 0.0
-      - converters = Current.gql.present.group_converters(group.key)
+      - converters = Current.gql.present.group_converters(group)
       - converters.each do |converter|
         - future = Current.gql.future.converter(converter.id)
         %tr
