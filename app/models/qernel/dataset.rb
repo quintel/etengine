@@ -76,17 +76,17 @@ class Dataset
   end
 
   def get(object_key, attr_name)
-    raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
-    if @data[object_key.to_sym].has_key?(attr_name)
-      @data[object_key.to_sym][attr_name]
+    #raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
+    if @data[object_key].has_key?(attr_name)
+      @data[object_key][attr_name]
     else
       nil
     end
   end
 
   def set(object_key, attr_name, value)
-    @data[object_key.to_sym] ||= {}
-    @data[object_key.to_sym][attr_name] = value
+    @data[object_key] ||= {}
+    @data[object_key][attr_name] = value
   end
 
 end
