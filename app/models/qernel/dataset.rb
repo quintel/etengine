@@ -40,14 +40,19 @@ class Dataset
   end
 
   ##
-  #
+  # Adds the hash to the @data. Removes key/value pairs where value is nil
+  #  for better performance.
   #
   # @param [Hash]
   #
   def <<(hsh)
     hsh.each do |key, values|
       @data[key.to_sym] = values.inject({}) do |hsh,arr| 
-        hsh.merge arr.first.to_sym => arr.last
+        if arr.last.nil?
+          hsh
+        else
+          hsh.merge arr.first.to_sym => arr.last
+        end
       end
     end
   end
@@ -75,6 +80,8 @@ class Dataset
     end
   end
 
+  # In the dataset values that are nil do not get a key. So it should return nil.
+  #
   def get(object_key, attr_name)
     #raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
     if @data[object_key].has_key?(attr_name)

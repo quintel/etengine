@@ -45,4 +45,9 @@ class Dataset::CarrierData < ActiveRecord::Base
   def dataset_key
     Qernel::Carrier.compute_dataset_key(carrier_id)
   end
+
+  def dataset_attributes
+    Qernel::Carrier::DATASET_ATTRIBUTES.inject({}) {|hsh, key| hsh.merge key => self[key] }
+  end
+
 end
