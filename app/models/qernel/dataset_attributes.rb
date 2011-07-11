@@ -25,7 +25,6 @@ module Qernel::DatasetAttributes
     end
 
     def compute_dataset_key(klass, id)
-      Rails.logger.info "compute_dataset_key #{klass} #{id}"
       "#{klass}_#{id}".downcase.to_sym
     end
   end
