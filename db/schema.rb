@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110711072246) do
+ActiveRecord::Schema.define(:version => 20110711101614) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -382,7 +382,7 @@ ActiveRecord::Schema.define(:version => 20110711072246) do
     t.string   "label_query"
   end
 
-  add_index "inputs", ["key"], :name => "unique api key"
+  add_index "inputs", ["key"], :name => "unique api key", :unique => true
 
   create_table "lce_values", :force => true do |t|
     t.string   "using_country"
