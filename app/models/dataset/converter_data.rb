@@ -109,7 +109,7 @@ class Dataset::ConverterData < ActiveRecord::Base
   belongs_to :converter
 
   def dataset_key
-    Qernel::DatasetItem.compute_dataset_key(Qernel::Converter, converter_id)
+    Qernel::Converter.compute_dataset_key(converter_id)
   end
 
   ##
