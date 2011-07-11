@@ -1,5 +1,7 @@
 // this is in index action, but eventually should be a show action
+= link_to "new test suite", new_admin_gql_test_case_path
 
 %ul
   - @gql_test_cases.each do |gql_test_case|
-    %li= link_to gql_test_case.name, [:admin, gql_test_case]
+    %li
+      = link_to gql_test_case.name, [:admin, gql_test_case]
