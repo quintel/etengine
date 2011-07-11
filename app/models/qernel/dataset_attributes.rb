@@ -13,28 +13,21 @@ module Qernel::DatasetAttributes
   module ClassMethods
     def dataset_accessors(dataset_attributes)
       dataset_attributes.each do |attr_name|
+        attr_name_sym = attr_name.to_sym
         define_method attr_name do
-          dataset_get attr_name.to_sym
+          dataset_get attr_name_sym
         end
 
         define_method "#{attr_name}=" do |value|
-          dataset_set attr_name.to_sym, value
+          dataset_set attr_name_sym, value
         end
       end
     end
 
     def compute_dataset_key(klass, id)
+      Rails.logger.info "compute_dataset_key #{klass} #{id}"
       "#{klass}_#{id}".downcase.to_sym
     end
-  end
-
-  # TODO ejp consider using blueprint_x_id
-  # The dataset_key must be unique for the item and must be computable by the Qernel object that
-  # references it. For now, we just use the QernelObject's id. In the future we should use the
-  # corresponding blueprint item's id.
-  #
-  def compute_dataset_key
-    @dataset_key ||= dataset_key
   end
 
   def dataset

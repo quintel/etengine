@@ -29,6 +29,7 @@ class Link
     @parent, @child, @carrier, @link_type = parent, child, carrier, link_type.to_sym
     @parent.add_input_link(self) if @parent # only used in testing
     @child.add_output_link(self) if @child  # only used in testing
+    self.dataset_key # memoize dataset_key
   end
 
   def name

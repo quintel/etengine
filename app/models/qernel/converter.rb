@@ -132,6 +132,7 @@ class Converter
 
     @groups = []
     self.calculator = Qernel::ConverterApi.new(self)
+    self.dataset_key # memoize dataset_key
   end
 
 
