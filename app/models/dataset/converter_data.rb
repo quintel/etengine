@@ -116,7 +116,6 @@ class Dataset::ConverterData < ActiveRecord::Base
   # See {Qernel::Converter} section demand and preset_demand on why we have
   # to add {'demand' => preset_demand}
   #
-  # hack code to deal with missing preset_demand attribute
   def dataset_attributes
     attrs = Qernel::ConverterApi::ATTRIBUTES_USED.inject({}) do |hsh, key| 
       hsh.merge(key => self[key])
