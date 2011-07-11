@@ -30,6 +30,7 @@ class Slot
     @converter = converter
     @carrier = carrier
     @direction = direction
+    self.dataset_key # memoize dataset_key
   end
 
   ##

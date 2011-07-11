@@ -43,6 +43,8 @@ class Carrier
     self.key = key.andand.to_sym
     self.name = name
     self.infinite = infinite
+
+    self.dataset_key # memoize dataset_key 
   end
 
   def dataset
