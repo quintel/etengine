@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110708043815) do
+ActiveRecord::Schema.define(:version => 20110711064615) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -334,7 +334,7 @@ ActiveRecord::Schema.define(:version => 20110708043815) do
 
   create_table "gql_test_cases", :force => true do |t|
     t.string   "name"
-    t.text     "instruction"
+    t.text     "instruction", :limit => 2147483647
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
