@@ -1,7 +1,7 @@
 module Qernel
 ##
 # TODO (interface so that):
-# g = Qernel::Graph.new([Qernel::Converter], [Qernel::Carrier], [Qernel::Group])
+# g = Qernel::Graph.new([Qernel::Converter], [Qernel::Carrier])
 # g.links = [Qernel::Link]
 # g.slot = [Qernel::Slot]
 #
@@ -142,7 +142,7 @@ class Graph
     group_key_sym = group_key.to_sym
 
     @group_converters_cache[group_key_sym] ||= 
-      self.converters.select{|c| c.groups.map(&:key).include?(group_key_sym)}
+      self.converters.select{|c| c.groups.include?(group_key_sym) }
   end
 
   ##
@@ -190,7 +190,7 @@ class Graph
 private
 
   def prepare_memoization
-    groups.map(&:key).uniq.each {|key| group_converters(key)}
+    groups.uniq.each {|key| group_converters(key)}
   end
 
   def build_lookup_hash

@@ -255,24 +255,24 @@ public
   end
 
   def primary_energy_demand?
-    @groups.detect{|g| g.key == :primary_energy_demand} != nil
-  end; memoize :primary_energy_demand?
+    @groups.include? :primary_energy_demand
+  end
 
   def useful_demand?
-    @groups.detect{|g| g.key == :useful_demand} != nil
-  end; memoize :useful_demand?
+    @groups.include? :useful_demand
+  end
 
   def final_demand_cbs?
-    @groups.detect{|g| g.key == :final_demand_cbs} != nil
-  end; memoize :final_demand_cbs?
+    @groups.include? :final_demand_cbs
+  end
 
   def non_energetic_use?
-    @groups.detect{|g| g.key == :non_energetic_use} != nil
-  end; memoize :non_energetic_use?
+    @groups.include? :non_energetic_use
+  end
 
   def energy_import_export?
-    @groups.detect{|g| g.key == :energy_import_export} != nil
-  end; memoize :energy_import_export?
+    @groups.include? :energy_import_export
+  end
 
   ##########################################
   # Building Graph
