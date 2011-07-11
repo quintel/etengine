@@ -1,7 +1,7 @@
 
 %script
   // create Gquery objects for the gqueries we will test later.
-  - Gquery.limit(500).reject{|g| g.unit == 'converters'}.each do |gquery|
+  - Gquery.limit(1500).reject{|g| g.unit == 'converters'}.each do |gquery|
     == var #{gquery.key} = new Gquery({id : '#{gquery.id}', key: '#{gquery.key}'});
 
 = form_for [:admin, @gql_test_case] do |f|
