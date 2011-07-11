@@ -52,7 +52,7 @@ class Data::GqueriesController < Data::BaseController
     if @gquery.update_attributes(params[:gquery])
       assign_query_groups(@gquery, params[:gquery_groups])
       flash[:notice] = "Gquery updated"
-      redirect_to data_gquery_url(@gquery)
+      redirect_to data_gquery_url(:id => @gquery)
     else
       flash[:error] = "Save failed!"
       render :action => 'edit'
