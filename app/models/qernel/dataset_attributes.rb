@@ -54,16 +54,16 @@ module Qernel::DatasetAttributes
     dataset.memoize(self, attr_name, &block)
   end
 
+  # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    dataset.set(dataset_key, attr_name.to_sym, value)
+    dataset.set(dataset_key, attr_name, value)
     value
   end
-  alias_method :write_dataset_attribute, :dataset_set
 
+  # @param attr_name [Symbol]
   def dataset_get(attr_name)
-    dataset.get(dataset_key, attr_name.to_sym)
+    dataset.get(dataset_key, attr_name)
   end
-  alias_method :read_dataset_attribute, :dataset_get
 
   def [](attr_name)
     send(attr_name)
