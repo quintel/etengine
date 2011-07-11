@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110711064615) do
+ActiveRecord::Schema.define(:version => 20110711072246) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -68,43 +68,6 @@ ActiveRecord::Schema.define(:version => 20110711064615) do
     t.boolean  "has_cold_network"
     t.float    "cold_network_potential"
     t.boolean  "has_heat_import"
-  end
-
-  create_table "blackbox_gqueries", :force => true do |t|
-    t.integer  "blackbox_id"
-    t.integer  "blackbox_scenario_id"
-    t.integer  "gquery_id"
-    t.decimal  "present_value",        :precision => 30, :scale => 0
-    t.decimal  "future_value",         :precision => 30, :scale => 0
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "blackbox_output_series", :force => true do |t|
-    t.integer  "blackbox_id"
-    t.integer  "blackbox_scenario_id"
-    t.integer  "output_element_serie_id"
-    t.decimal  "present_value",           :precision => 30, :scale => 0
-    t.decimal  "future_value",            :precision => 30, :scale => 0
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "blackbox_scenarios", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.text     "user_values"
-    t.text     "update_statements"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "blackboxes", :force => true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.integer  "graph_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "blueprint_layouts", :force => true do |t|
