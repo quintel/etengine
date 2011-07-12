@@ -160,8 +160,12 @@ class Gql
   ##
   # Query the present and future graph.
   #
+  # For performance reason it is suggested to pass a Gquery for 'query'
+  # object rather than it's Gquery#query. Because parsing a gql statement
+  # takes rather long time.
+  #
   # @param query [String, Gquery] the single query.
-  # @return [GqueryResult] Result of present and future graph
+  # @return [GqueryResult] Result query, depending on its gql_modifier
   #
   def query(query)
     if query.is_a?(::Gquery)
