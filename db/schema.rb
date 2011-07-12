@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110711101614) do
+ActiveRecord::Schema.define(:version => 20110711151538) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -185,14 +185,11 @@ ActiveRecord::Schema.define(:version => 20110711101614) do
     t.float    "typical_capacity_effective_in_mj_s"
     t.float    "typical_thermal_capacity_effective_in_mj_yr"
     t.float    "max_capacity_factor"
-    t.float    "capacity_factor_emperical_scaling_excl"
     t.float    "land_use_in_nl"
     t.float    "technical_lifetime"
     t.float    "technological_maturity"
     t.float    "lead_time"
     t.float    "construction_time"
-    t.float    "net_electrical_yield"
-    t.float    "net_heat_yield"
     t.float    "cost_om_fixed_per_mj"
     t.float    "cost_om_variable_ex_fuel_co2_per_mj"
     t.float    "cost_co2_capture_ex_fuel_per_mj"
@@ -544,7 +541,7 @@ ActiveRecord::Schema.define(:version => 20110711101614) do
     t.integer  "preset_scenario_id"
     t.string   "type"
     t.string   "api_session_key"
-    t.text     "lce_settings"
+    t.boolean  "use_fce"
   end
 
   create_table "sidebar_items", :force => true do |t|

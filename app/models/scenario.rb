@@ -20,7 +20,7 @@
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  api_session_key    :string(255)
-#  lce_settings       :text
+#  use_fce            :boolean
 #
 
 ##
@@ -92,7 +92,7 @@ class Scenario < ActiveRecord::Base
       :complexity => 3,
       :country => 'nl',
       :user_values => {},
-      :lce_settings => {},
+      :use_fce => false,
       :region => nil,
       :end_year => 2040
     }.with_indifferent_access
@@ -102,15 +102,6 @@ class Scenario < ActiveRecord::Base
   ##############################
   # Scenario Attributes
   ##############################
-
-  def use_lce_settings?
-    self[:use_lce_settings]
-  end
-
-  def use_lce_settings=(value)
-    self[:use_lce_settings] = value
-  end
-
 
   ##
   # @tested 2010-11-30 seb
