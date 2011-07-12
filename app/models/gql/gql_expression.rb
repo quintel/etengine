@@ -10,16 +10,17 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   LAZY_CALCULATE_VALUE_TERMS = %w[IF RESCUE FOR_COUNTRIES]
 
   def result( value_terms, params, scope )
-    if respond_to?(text_value)
-      if LAZY_CALCULATE_VALUE_TERMS.include?(text_value)
-        send(text_value, value_terms, params, scope)
-      else
-        values = value_terms.map{|value_term| value_term.result(scope) }
-        send(text_value, values, params, scope)
-      end
+    # DEBT this is not really needed as we check for query correctness
+    # if respond_to?(text_value)
+    if LAZY_CALCULATE_VALUE_TERMS.include?(text_value)
+      send(text_value, value_terms, params, scope)
     else
-      raise GqlError.new("GQL: No such function defined: #{text_value}")
+      values = value_terms.map{|value_term| value_term.result(scope) }
+      send(text_value, values, params, scope)
     end
+    # else
+    #   raise GqlError.new("GQL: No such function defined: #{text_value}")
+    # end
   end
 
   def debug(*args)
