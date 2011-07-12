@@ -63,11 +63,10 @@ class Slot
   # @return [Array<Link>]
   #
   def active_links
-    @active_links ||= case input?
-      when true
-        links.select(&:calculated_by_parent?)
-      else
-        links.select(&:calculated_by_child?)
+    @active_links ||= if input? 
+      links.select(&:calculated_by_parent?)
+    else
+      links.select(&:calculated_by_child?)
     end
   end
 
@@ -86,11 +85,10 @@ class Slot
   # @return [Array<Link>]
   #
   def passive_links
-    @passive_links ||= case input?
-      when true
-        links.select(&:calculated_by_child?)
-      else
-        links.select(&:calculated_by_parent?)
+    @passive_links ||= if input? 
+      links.select(&:calculated_by_child?) 
+    else 
+      links.select(&:calculated_by_parent?)
     end
   end
 
