@@ -33,7 +33,7 @@ class Api::ApiScenariosController < ApplicationController
     @results = results
     @json = {
       'result'   => @results,
-      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :lce_settings, :preset_scenario_id])
+      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id])
       
       #, 'errors'   => @api_scenario.api_errors(test_scenario?)
     }
