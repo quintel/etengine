@@ -67,9 +67,11 @@ class Graph
     converter_stack = converters.clone
     self.finished_converters = []
 
-    while converter = converter_stack.detect(&:ready?)
+    # delete_at is much faster as delete, that's why use #index rather than #detect
+    while index = converter_stack.index(&:ready?)
+      converter = converter_stack[index]
       converter.calculate
-      self.finished_converters << converter_stack.delete(converter)
+      self.finished_converters << converter_stack.delete_at(index)
     end
 
     self.finished_converters.map(&:input_links).flatten.each(&:assign_share)
