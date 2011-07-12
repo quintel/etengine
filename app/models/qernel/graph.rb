@@ -81,7 +81,7 @@ class Graph
     @calculated = true
 
     unless converter_stack.empty?
-      Rails.logger.warn "Following converters have not finished: #{converter_stack.map(&:name).join(', ')}"
+      Rails.logger.warn "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}"
     end
   end
 
