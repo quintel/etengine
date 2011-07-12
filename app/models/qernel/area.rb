@@ -68,7 +68,7 @@ class Area
   end
 
   def dataset_key
-    "area_data"
+    :area_data
   end
 
   def co2_emission_1990_billions

@@ -20,6 +20,10 @@
 #
 #
 class Gquery < ActiveRecord::Base
+  GQL_MODIFIERS = %(present future historic stored)
+  GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
+
+
   has_paper_trail
   validates_presence_of :key
   validates_uniqueness_of :key
@@ -72,16 +76,20 @@ class Gquery < ActiveRecord::Base
   end
 
   def self.build_gquery_hash
-    self.all.inject({}) {|hsh,gquery| hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery)}
+    self.all.inject({}) do |hsh, gquery|
+      hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery)
+    end
   end
 
-  def self.load_gquery_hash_from_marshal(filename)
-    raise "File '#{filename}' does not exist" unless File.exists?(filename)
-    @@gquery_hash = Marshal.load(File.read(filename))
+  def gql_modifier
+    @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
+  end
+
+  def query_cleaned
+    Gql::Gquery::CleanerParser.clean(query)
   end
 
 private
-
   ##
   # Method to invalidate the memoized gquery_hash.
   #

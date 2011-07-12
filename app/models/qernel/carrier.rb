@@ -25,7 +25,6 @@ class Carrier
     *CO2_LCE_COMPONENTS
   ]
 
-
   attr_accessor :id, :key, :name, :graph, :infinite
 
   dataset_accessors DATASET_ATTRIBUTES
@@ -43,6 +42,8 @@ class Carrier
     self.key = key.andand.to_sym
     self.name = name
     self.infinite = infinite
+
+    self.dataset_key # memoize dataset_key 
   end
 
   def dataset

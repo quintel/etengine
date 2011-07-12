@@ -22,6 +22,8 @@ module Gql::Gquery::CleanerParser
   # @return [String] Query string without whitespace. Empty string if query_string is nil
   #
   def self.clean(query_string)
+    query_string ||= ''
+    query_string = remove_gql_modifier(query_string)
     query_string = remove_whitespace(query_string)
     query_string = remove_comments(query_string)
     query_string
@@ -47,13 +49,17 @@ module Gql::Gquery::CleanerParser
   end
 
 private
+  def self.remove_gql_modifier(query_string)
+    query_string.gsub(Gquery::GQL_MODIFIER_REGEXP,'')
+  end
+
   def self.remove_whitespace(query_string)
-    query_string.andand.gsub(/\s/,'') || ''
+    query_string.gsub(/\s/,'')
   end
 
   def self.remove_comments(query_string)
     # regexp matches /* (everything except */) */
     # everything execpt */ => [^(\*\/)]+
-    query_string.andand.gsub(/\/\*[^(\*\/)]+\*\//, '')
+    query_string.gsub(/\/\*[^(\*\/)]+\*\//, '')
   end
 end

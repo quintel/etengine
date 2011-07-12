@@ -13,32 +13,24 @@ module Qernel::DatasetAttributes
   module ClassMethods
     def dataset_accessors(dataset_attributes)
       dataset_attributes.each do |attr_name|
+        attr_name_sym = attr_name.to_sym
         define_method attr_name do
-          dataset_get attr_name.to_sym
+          dataset_get attr_name_sym
         end
 
         define_method "#{attr_name}=" do |value|
-          dataset_set attr_name.to_sym, value
+          dataset_set attr_name_sym, value
         end
       end
     end
 
-    def compute_dataset_key(klass, id)
-      "#{klass}_#{id}".downcase.to_sym
+    def compute_dataset_key(id)
+      "#{self.name}_#{id}".downcase.to_sym
     end
   end
 
-  # TODO ejp consider using blueprint_x_id
-  # The dataset_key must be unique for the item and must be computable by the Qernel object that
-  # references it. For now, we just use the QernelObject's id. In the future we should use the
-  # corresponding blueprint item's id.
-  #
-  def compute_dataset_key
-    dataset_key
-  end
-
   def dataset
-    raise "#{self.class.name} has not defined a graph" if graph.nil?
+    #raise "#{self.class.name} has not defined a graph" if graph.nil?
     graph.dataset
   end
 
@@ -47,23 +39,23 @@ module Qernel::DatasetAttributes
   end
 
   def dataset_key
-    @dataset_key ||= self.class.compute_dataset_key(self.class, id)
+    @dataset_key ||= self.class.compute_dataset_key(id)
   end
 
   def dataset_fetch(attr_name, &block)
     dataset.memoize(self, attr_name, &block)
   end
 
+  # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    dataset.set(dataset_key, attr_name.to_sym, value)
+    dataset.set(dataset_key, attr_name, value)
     value
   end
-  alias_method :write_dataset_attribute, :dataset_set
 
+  # @param attr_name [Symbol]
   def dataset_get(attr_name)
-    dataset.get(dataset_key, attr_name.to_sym)
+    dataset.get(dataset_key, attr_name)
   end
-  alias_method :read_dataset_attribute, :dataset_get
 
   def [](attr_name)
     send(attr_name)
