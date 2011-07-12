@@ -4,7 +4,7 @@ class Qernel::ConverterApi
     return nil if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mje)
 
     electricity_conversion = converter.outputs.select{|output|
-     output.carrier == :electricity
+     output.carrier === :electricity
      }.first.conversion
     (electricity_conversion == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / electricity_conversion)
   end

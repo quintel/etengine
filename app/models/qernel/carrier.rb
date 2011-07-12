@@ -51,7 +51,15 @@ class Carrier
   end
 
   def loss?
-    key == :loss
+    key === :loss
+  end
+
+  def electricity?
+    key === :electricity
+  end
+
+  def steam_hot_water?
+    key === :steam_hot_water
   end
 
   # The effective total co2 emission that gets emitted from 
@@ -71,19 +79,10 @@ class Carrier
       co2_conversion_per_mj
     end
   end
-  
-
-  def electricity?
-    key == :electricity
-  end
-
-  def steam_hot_water?
-    key == :steam_hot_water
-  end
 
   def ==(other)
     if other.is_a?(Symbol)
-      self.key == other
+      self.key === other
     else
       self.id == other.andand.id
     end

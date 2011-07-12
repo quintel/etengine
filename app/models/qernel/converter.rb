@@ -214,7 +214,7 @@ public
   #
   def full_key
     unless @full_key
-      custom_use_key = (use_key == :undefined) ? '' : "_#{use_key}"
+      custom_use_key = (use_key === :undefined) ? '' : "_#{use_key}"
       @full_key = :"#{key}_#{sector_key}#{custom_use_key}"
     end
     @full_key
@@ -230,7 +230,7 @@ public
   end
 
   def sector_environment?
-    sector_key == :environment
+    sector_key === :environment
   end
 
   ##
@@ -252,7 +252,7 @@ public
   alias_method :proxy, :query
 
   def environment?
-    full_key == :environment_environment
+    full_key === :environment_environment
   end
 
   def primary_energy_demand?
