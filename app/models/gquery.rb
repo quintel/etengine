@@ -20,7 +20,9 @@
 #
 #
 class Gquery < ActiveRecord::Base
-  GQL_MODIFIER_REGEXP = /^([a-z]+)\:/
+  GQL_MODIFIERS = %(present future historic stored)
+  GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
+
 
   has_paper_trail
   validates_presence_of :key
@@ -81,6 +83,10 @@ class Gquery < ActiveRecord::Base
 
   def gql_modifier
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
+  end
+
+  def query_cleaned
+    Gql::Gquery::CleanerParser.clean(query)
   end
 
 private

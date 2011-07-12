@@ -43,15 +43,17 @@ module Gql::Gquery::Base
 
   ##
   #
-  # @param query_string [String] Excaped query_string
+  # @param query [String, Gquery] Escaped query_string
   # @return [Float]
   # @raise [Gql::GqlError] if query is not valid.
   #
-  def query(query_string)
-    if parsed = clean_and_parse(query_string)
+  def query(query)
+    if query.is_a?(::Gquery)
+      query.parsed_query.result(scope)
+    elsif parsed = clean_and_parse(query)
       parsed.result(scope)
     else
-      raise Gql::GqlError.new("Gql::Gquery.query query is not valid: #{clean(query_string)}.")
+      raise Gql::GqlError.new("Gql::Gquery.query query is not valid: #{clean(query)}.")
     end
   end
 
@@ -72,7 +74,8 @@ module Gql::Gquery::Base
     # It is a subquery of a #query, so it should still use the same
     # graph_for_grammar.
     if gquery = ::Gquery.get(gquery_key)
-      gquery.parsed_query.andand.result(scope)
+      query(gquery)
+      # gquery.parsed_query.andand.result(scope)
     else
       nil
     end

@@ -142,9 +142,9 @@ class Gql
         update_converters(@future, update_statements['converters'])
       end
     end
-    benchmark('GQL :: calculate future') do
-      @future.calculate
-    end
+
+    @future.calculate
+
     update_policies(update_statements['policies']) if update_statements
 
     # At this point the gql is calculated. Changes through update statements
@@ -160,21 +160,25 @@ class Gql
   ##
   # Query the present and future graph.
   #
-  # @param query [String] the single query.
+  # @param query [String, Gquery] the single query.
   # @return [GqueryResult] Result of present and future graph
   #
   def query(query)
-    #benchmark "query: #{query}" do
-      modifier,gquery = query.split(':')
-      if gquery.nil?
-        GqueryResult.create [
-          [Current.scenario.start_year, query_present(query)],
-          [Current.scenario.end_year, query_future(query)]
-        ]
-      elsif %(present future historic stored).include?(modifier.strip)
-        send("query_#{modifier}", gquery)
-      end
-    #end
+    if query.is_a?(::Gquery)
+      modifier = query.gql_modifier
+      query_cleaned = query
+    elsif query.is_a?(String)
+      query_cleaned, modifier = query.split(':').reverse
+    end
+    
+    if modifier.nil?
+      GqueryResult.create [
+        [Current.scenario.start_year, query_present(query_cleaned)],
+        [Current.scenario.end_year, query_future(query_cleaned)]
+      ]
+    elsif ::Gquery::GQL_MODIFIERS.include?(modifier.strip)
+      send("query_#{modifier}", query_cleaned)
+    end
   end
 
   ##
