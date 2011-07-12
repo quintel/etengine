@@ -17,10 +17,11 @@
     - elements.each do |el|
       %tr
         %td== #{el.label} (#{el.id})
-        -left_total_now += Current.gql.query_present(el.key)
-        -left_total_fut += Current.gql.query_future(el.key)
-        %td.tar= (Current.gql.query_present(el.key) / 10**9).round(2)
-        %td.tar= (Current.gql.query_future(el.key) / 10**9).round(2)
+        - result = Current.gql.query(el.key)
+        -left_total_now += result.present_value
+        -left_total_fut += result.future_value
+        %td.tar= (result.present_value / 10**9).round(2)
+        %td.tar= (result.future_value / 10**9).round(2)
       %tr
         %td{:colspan => 3}
           %small= el.key
@@ -51,10 +52,11 @@
     - elements.each do |el|
       %tr
         %td== #{el.label} (#{el.id})
-        -left_total_now += Current.gql.query_present(el.key)
-        -left_total_fut += Current.gql.query_future(el.key)
-        %td.tar= (Current.gql.query_present(el.key) / 10**9).round(2)
-        %td.tar= (Current.gql.query_future(el.key) / 10**9).round(2)
+        - result = Current.gql.query(el.key)
+        - left_total_now += result.present_value
+        - left_total_fut += result.future_value
+        %td.tar= (result.present_value / 10**9).round(2)
+        %td.tar= (result.future_value / 10**9).round(2)
       %tr
         %td{:colspan => 3}
           %small= el.key
@@ -86,10 +88,11 @@
     - elements.each do |el|
       %tr
         %td== #{el.label} (#{el.id})
-        -left_total_now += Current.gql.query_present(el.key)
-        -left_total_fut += Current.gql.query_future(el.key)
-        %td.tar= (Current.gql.query_present(el.key) / 10**9).round(2)
-        %td.tar= (Current.gql.query_future(el.key) / 10**9).round(2)
+        - result = Current.gql.query(el.key)
+        - left_total_now += result.present_value
+        - left_total_fut += result.future_value
+        %td.tar= (result.present_value / 10**9).round(2)
+        %td.tar= (result.future_value / 10**9).round(2)
       %tr
         %td{:colspan => 3}
           %small= el.key

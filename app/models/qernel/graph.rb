@@ -61,7 +61,9 @@ class Graph
   # TODO refactor
   def calculate
     # TODO seb move @calculate to dataset
-    Rails.logger.warn('Graph already calculated') if @calculated
+    # Rails.logger.warn('Graph already calculated') if @calculated
+    Rails.logger.info('Qernel::Graph#calculate')
+
 
     # FIFO stack of all the converters. Converters are removed from the stack after calculation.
     converter_stack = converters.clone
