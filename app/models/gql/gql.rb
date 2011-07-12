@@ -91,17 +91,11 @@ class Gql
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
     return if graph_model == :testing
 
-    benchmark('present graph') do
-      @present = graph_model.present
-    end
-    benchmark('future graph') do
-      @future = graph_model.future
-    end
+    @present = graph_model.present
+    @future = graph_model.future
 
     @present.year = Current.scenario.start_year
     @future.year = Current.scenario.end_year
-
-    # TODO refactor. Move this to own method
   end
 
   ##
@@ -134,13 +128,13 @@ class Gql
   # @return [Gql] Returns self, so that we can gql = Gql.new(graph).prepare_graphs
   #
   def prepare_graphs
-    if update_statements = Current.scenario.update_statements
-      benchmark('GQL :: update statements') do
+    update_statements = Current.scenario.update_statements
+
+    if update_statements
       update_time_curves(@future)      
-        update_carriers(@future, update_statements['carriers'])
-        update_area_data(@future, update_statements['area'])
-        update_converters(@future, update_statements['converters'])
-      end
+      update_carriers(@future, update_statements['carriers'])
+      update_area_data(@future, update_statements['area'])
+      update_converters(@future, update_statements['converters'])
     end
 
     @future.calculate
@@ -233,15 +227,6 @@ private
   #
   def query_stored(query)
     StoredProcedure.execute(query)
-  end
-
-  ##
-  # @deprecated but still in use :( for costs chart
-  def query_sum(query)
-    GqueryResult.create [
-      [Current.scenario.start_year, query_present(query)],
-      [Current.scenario.end_year, query_future(query)]
-    ]
   end
 
   def graph_query(query, graph)
