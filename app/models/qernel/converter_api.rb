@@ -237,9 +237,46 @@ class ConverterApi
       end
     end
   end
-
   create_methods_for_each_carrier(::Carrier.all.map(&:key))
 
+  # creates a method during run time if method_missing
+  # 
+  def self.create_share_of_converter_method(converter_key)
+    key = converter_key.to_sym
+    define_method "share_of_#{key}" do
+      self.converter.output_links.detect{|l| l.parent.full_key == key}.andand.share
+    end
+  end
+  
+  # creates a method during run time if method_missing and returns the value
+  # 
+  def self.create_share_of_converter_method_and_execute(caller, converter_key)
+    create_share_of_converter_method(converter_key)
+    caller.send("share_of_#{converter_key}")
+  end
+
+  # creates a method during run time if method_missing
+  # 
+  def self.create_input_link_method(method_id, carrier_name, side, method)
+    if carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/)
+      carrier_name, link_type = carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
+      link_type = "inversed_flexible" if link_type == "inversedflexible"
+    end
+    define_method method_id do
+      if slot = self.converter.send(side, carrier_name.to_sym)
+        if link = link_type.nil? ? slot.links.first : slot.links.detect{|l| l.send("#{link_type}?")}
+          link.send(method)
+        end
+      end
+    end
+  end
+
+  # creates a method during run time if method_missing and returns the value
+  # 
+  def self.create_input_link_method_and_execute(caller, method_id, carrier_name, side, method)
+    create_input_link_method(method_id, carrier_name, side, method)
+    caller.send(method_id)
+  end
 
   def primary_demand
     self.converter.primary_demand
@@ -310,22 +347,14 @@ class ConverterApi
   #   @return [Float]
   #
   def method_missing(method_id, *arguments)
-    # Rails.logger.info("ConverterApi:method_missing #{method_id}")
+    Rails.logger.info("ConverterApi:method_missing #{method_id}")
 
-    # electricity_
-    if m = /^share_of_(\w*)$/.match(method_id.to_s) and parent = m.captures.first
-      self.converter.output_links.select{|l| l.parent.full_key.to_s == parent.to_s}.first.andand.share
-    elsif m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
+    # electricity_      
+    if m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
       carrier_name, side, method = m.captures
-      if carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/)
-        carrier_name, link_type = carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
-        link_type = "inversed_flexible" if link_type == "inversedflexible"
-      end
-      if slot = self.converter.send(side, carrier_name.to_sym)
-        if link = link_type.nil? ? slot.links.first : slot.links.detect{|l| l.send("#{link_type}?")}
-          link.send(method)
-        end
-      end
+      self.class.create_input_link_method_and_execute(self, method_id, carrier_name, side, method)
+    elsif m = /^share_of_(\w*)$/.match(method_id.to_s) and parent = m.captures.first
+      self.class.create_share_of_converter_method_and_execute(self, parent)
     elsif m = /^cost_(\w*)$/.match(method_id.to_s) and method_name = m.captures.first
       self.send(method_name)
     elsif m = /^primary_demand(\w*)$/.match(method_id.to_s)
@@ -334,7 +363,7 @@ class ConverterApi
     elsif m = /^final_demand(\w*)$/.match(method_id.to_s)
       self.converter.send(method_id, *arguments)
     else
-      puts method_id
+      Rails.logger.info("ConverterApi#method_missing: #{method_id}")
       super
     end
   end
