@@ -152,8 +152,8 @@ class Converter
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
-     dataset_set(:preset_demand, safe_to_f(val)) 
-     update_initial_demand
+    dataset_set(:preset_demand, safe_to_f(val)) 
+    update_initial_demand
   end
 
   def demand

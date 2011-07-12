@@ -55,9 +55,13 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    # if object_dataset[attr_name] = value
-    
+    # object_dataset[attr_name] = value
     dataset.set(dataset_key, attr_name, value)
+    # if dataset_get(attr_name) != value
+    #   Rails.logger.warn("waaaarning")
+    #   debugger 
+    # end
+    # value
   end
 
   # @param attr_name [Symbol]
@@ -70,6 +74,14 @@ module Qernel::DatasetAttributes
   end
 
   def []=(attr_name, value)
-    send("#{attr_name}=", value)
+    # Converter overrides the normal dataset_accessors with custom stuff for demand
+    # calculation. so we can stack multiple demands together
+    #
+    # attr_name_sym = attr_name.to_sym
+    # if attr_name_sym === :preset_demand || attr_name_sym === :municipality_demand
+    #  send("#{attr_name}=", value)
+    # else
+      self.send("#{attr_name}=", value)
+    # end
   end
 end
