@@ -152,7 +152,7 @@ class Gql
   end
 
   ##
-  # Query the present and future graph.
+  # Query the GQL, takes care of gql modifier strings.
   #
   # For performance reason it is suggested to pass a Gquery for 'query'
   # object rather than it's Gquery#query. Because parsing a gql statement
@@ -161,30 +161,34 @@ class Gql
   # @param query [String, Gquery] the single query.
   # @return [GqueryResult] Result query, depending on its gql_modifier
   #
-  def query(query)
-    if query.is_a?(::Gquery)
-      modifier = query.gql_modifier
-      query_cleaned = query
-    elsif query.is_a?(String)
-      query_cleaned, modifier = query.split(':').reverse
+  def query(gquery_or_string)
+    if gquery_or_string.is_a?(::Gquery)
+      modifier = gquery_or_string.gql_modifier
+      query = gquery_or_string
+    elsif gquery_or_string.is_a?(String)
+      query, modifier = gquery_or_string.split(':').reverse
     end
     
     if modifier.nil?
-      GqueryResult.create [
-        [Current.scenario.start_year, query_present(query_cleaned)],
-        [Current.scenario.end_year, query_future(query_cleaned)]
-      ]
+      query_standard(query)
     elsif ::Gquery::GQL_MODIFIERS.include?(modifier.strip)
-      send("query_#{modifier}", query_cleaned)
+      send("query_#{modifier}", query)
     end
   end
 
-  ##
-  # @param query [String] The query
-  # @return [Float] The result of the future graph
+
+private
+
+  # Standard query without modifiers. Queries present and future graph.
   #
-  def query_future(query)
-    graph_query(query, @future)
+  # @param query [String, Gquery] the single query.
+  # @return [GqueryResult] Result query, depending on its gql_modifier
+  #
+  def query_standard(query)
+    GqueryResult.create [
+      [Current.scenario.start_year, query_present(query)],
+      [Current.scenario.end_year, query_future(query)]
+    ]
   end
 
   ##
@@ -193,6 +197,14 @@ class Gql
   #
   def query_present(query)
     graph_query(query, @present)
+  end
+
+  ##
+  # @param query [String] The query
+  # @return [Float] The result of the future graph
+  #
+  def query_future(query)
+    graph_query(query, @future)
   end
 
   ##
@@ -215,7 +227,6 @@ class Gql
     end
   end
 
-private
   ##
   # Not called directly. Use #query instead, e.g.:
   #

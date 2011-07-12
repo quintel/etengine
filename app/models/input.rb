@@ -141,7 +141,7 @@ class Input < ActiveRecord::Base
   end
 
   def full_label
-    "#{Current.gql.query_present(label_query).round(2)} #{label}".html_safe unless label_query.blank?
+    "#{Current.gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
   end
 
   # TODO refactor (seb 2010-10-11)

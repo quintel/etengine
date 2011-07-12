@@ -37,9 +37,9 @@
     %th Total
     - groups.each do |select|
       %td{:style => "text-align: right"}
-        %strong= (Current.gql.query("present.#{select}.primary_demand") / 10**9).round(1)
+        %strong= (Current.gql.query("present:SUM(V(G(#{select});primary_demand))") / 10**9).round(1)
     %td{:style => "text-align: right"}
-      %strong= (Current.gql.query_present('sum.group_final_demand_cbs.primary_co2_emission') / 10**9).round(1)
+      %strong= (Current.gql.query('present:SUM(V(G(final_demand_cbs); primary_co2_emission))') / 10**9).round(1)
 
   %tr
     %th Infinite
