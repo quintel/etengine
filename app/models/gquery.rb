@@ -76,8 +76,10 @@ class Gquery < ActiveRecord::Base
   end
 
   def self.build_gquery_hash
-    self.all.inject({}) do |hsh, gquery|
-      hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery)
+    benchmark("** Loading Gquery.build_gquery_hash") do
+      self.all.inject({}) do |hsh, gquery|
+        hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery)
+      end
     end
   end
 
