@@ -59,13 +59,14 @@ class Input < ActiveRecord::Base
 
   def self.all_cached
     unless @all_cached
-      benchmark("** Loading Input.all_cached") do
+      #@all_cached = nil
+      #benchmark("** Loading Input.all_cached") do
         @all_cached = Input.all.inject({}) do |hsh, input| 
           hsh = hsh.merge input.id.to_s => input
           hsh.merge input.key => input if input.key.present?
           hsh
         end
-      end
+      #end
     end
     @all_cached
   end
@@ -111,7 +112,7 @@ class Input < ActiveRecord::Base
           :full_label   => input.full_label
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}")
+        Rails.logger.warn("Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}")
         HoptoadNotifier.notify(
           :error_message => "Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
           :backtrace => caller,
