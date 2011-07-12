@@ -180,7 +180,7 @@ class Slot
   # @return [Boolean]
   #
   def input?
-    (direction == :input)
+    (direction === :input)
   end
 
   def output?

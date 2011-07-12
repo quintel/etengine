@@ -50,23 +50,23 @@ class Link
   #########################
 
   def share?
-    link_type == :share
+    link_type === :share
   end
 
   def flexible?
-    link_type == :flexible
+    link_type === :flexible
   end
 
   def inversed_flexible?
-    link_type == :inversed_flexible
+    link_type === :inversed_flexible
   end
 
   def dependent?
-    link_type == :dependent
+    link_type === :dependent
   end
 
   def constant?
-    link_type == :constant
+    link_type === :constant
   end
 
   #########################
