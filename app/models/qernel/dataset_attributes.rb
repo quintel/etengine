@@ -1,4 +1,3 @@
-
 ##
 #
 #
@@ -25,7 +24,7 @@ module Qernel::DatasetAttributes
     end
 
     def compute_dataset_key(id)
-      "#{self.name}_#{id}".downcase.to_sym
+      "#{self.name.split("::").last.downcase}_#{id}".downcase.to_sym
     end
   end
 
@@ -42,19 +41,28 @@ module Qernel::DatasetAttributes
     @dataset_key ||= self.class.compute_dataset_key(id)
   end
 
+  def object_dataset_reset
+    @object_dataset = nil
+  end
+
+  def object_dataset
+    @object_dataset ||= (dataset.data[dataset_key] ||= {})
+  end
+
   def dataset_fetch(attr_name, &block)
     dataset.memoize(self, attr_name, &block)
   end
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
+    # if object_dataset[attr_name] = value
+    
     dataset.set(dataset_key, attr_name, value)
-    value
   end
 
   # @param attr_name [Symbol]
   def dataset_get(attr_name)
-    dataset.get(dataset_key, attr_name)
+    object_dataset[attr_name]
   end
 
   def [](attr_name)

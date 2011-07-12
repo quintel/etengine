@@ -8,7 +8,7 @@ module Qernel
 #
 class Dataset
   attr_accessor :time_curves
-  attr_reader :id
+  attr_reader :id, :data
 
   def memoize(object, attr_name, &block)
     @memoized_data[object] ||= {}
@@ -20,7 +20,7 @@ class Dataset
       Rails.logger.warn("Qernel::Dataset initialized without a id. Can lead to conflicts with Gquery Caching.")
     end
     @id = id
-    @data = {}
+    @data = {:graph => {}}
     @memoized_data = {}
   end
 
@@ -84,11 +84,11 @@ class Dataset
   #
   def get(object_key, attr_name)
     #raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
-    if @data[object_key].has_key?(attr_name)
+    # if @data[object_key].has_key?(attr_name)
       @data[object_key][attr_name]
-    else
+    # else
       nil
-    end
+    # end
   end
 
   def set(object_key, attr_name, value)

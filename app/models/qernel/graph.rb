@@ -38,6 +38,20 @@ class Graph
     prepare_memoization
   end
 
+  def reset_dataset_objects
+    self.area.object_dataset_reset
+    self.carriers.each(&:object_dataset_reset)
+    self.converters.each do |c|
+      c.object_dataset_reset
+      c.input_links.each(&:object_dataset_reset)
+      c.inputs.each(&:object_dataset_reset)
+    end
+  end
+
+  def calculated?
+    dataset.get(:graph, :calculated)
+  end
+
   def time_curves
     dataset.time_curves
   end
@@ -61,7 +75,7 @@ class Graph
   # TODO refactor
   def calculate
     # TODO seb move @calculate to dataset
-    # Rails.logger.warn('Graph already calculated') if @calculated
+    Rails.logger.warn('Graph already calculated') if calculated?
     Rails.logger.info('Qernel::Graph#calculate')
 
 
@@ -78,7 +92,7 @@ class Graph
 
     self.finished_converters.map(&:input_links).flatten.each(&:assign_share)
 
-    @calculated = true
+    dataset.set(:graph, :calculated, true)
 
     unless converter_stack.empty?
       Rails.logger.warn "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}"
