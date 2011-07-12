@@ -4,6 +4,9 @@ class StoredProcedure
 
   def self.execute(query)
     @instance ||= new()
+    if query.is_a?(::Gquery)
+      query = query.query_cleaned
+    end
     @instance.send(query)
   end
 
