@@ -145,6 +145,7 @@ GEM
       linecache19 (>= 0.5.11)
       ruby-debug-base19 (>= 0.11.19)
     ruby-graphviz (1.0.0)
+    ruby-prof (0.10.7)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
     rubyzip (0.9.4)
@@ -200,6 +201,7 @@ DEPENDENCIES
   rspec-rails (~> 2.6.0)
   ruby-debug19
   ruby-graphviz
+  ruby-prof
   rubyzip (= 0.9.4)
   sass (~> 3.1.1)
   shoulda-matchers
