@@ -73,9 +73,18 @@ namespace :db do
     end
     
     puts "Dropping the remote db and recreating a new one!"
+    puts "I'll first make a backup on /tmp though"
+    dump_db_to_tmp
     # replace puts with run
     run "mysqladmin drop #{db_name}"
     run "mysqladmin create #{db_name} -u #{db_user} --password=#{db_pass}"
+  end
+  
+  desc "If you've unintenionally ran db:empty"
+  task :oops do
+    puts "Shame on you!"
+    file = "/tmp/#{db_name}.sql"
+    run "mysql -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} < #{file}"
   end
 end
 
@@ -106,5 +115,5 @@ end
 # watchout! this works on remote boxes, not on the developer box
 def load_sql_into_db(file)
   puts "Importing sql file to db"
-  run "mysql -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} < #{file}l"
+  run "mysql -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} < #{file}"
 end
