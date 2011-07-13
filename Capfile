@@ -1,5 +1,6 @@
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 Dir['vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
+load 'lib/capistrano/db_recipes'
 
 load 'config/deploy' # remove this line to skip loading any of the default tasks
 
@@ -58,20 +59,5 @@ namespace :deploy do
     puts "Hoptoad Notification Complete."
   end
 end
+
 after "deploy", "deploy:migrate"
-
-
-desc "Move db server to local db"
-task :db2local do
-  puts "Exporting db to sql file"
-  file = "/tmp/#{application_key}.sql"
-  run "mysqldump -u #{application_key} --password=Energy2.0 --host=etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com #{application_key} > #{file}"
-  puts "Gzipping sql file"
-  run "gzip -f #{file}"
-  puts "Downloading gzip file"
-  get file + ".gz", "#{application_key}.sql.gz"
-  puts "Gunzip gzip file"
-  system "gunzip -f #{application_key}.sql.gz"
-  puts "Importing sql file to db"
-  system "mysql -u root etengine_dev < #{application_key}.sql"
-end
