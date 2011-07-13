@@ -129,5 +129,11 @@ class Api::ApiScenariosController < ApplicationController
         # Save scenario with new user_values, except it is a test version
         scenario.save unless test_scenario?
       end
+      
+      if params[:use_fce]
+        # If the use_fce setting has changed it should be updated. this influences emission calculations
+        scenario.use_fce = params[:use_fce] if scenario.use_fce != params[:use_fce]
+        scenario.save unless test_scenario?
+      end
     end
 end
