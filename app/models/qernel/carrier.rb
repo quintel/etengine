@@ -71,7 +71,7 @@ class Carrier
   #   The sum of CO2_LCE_COMPONENTS.
   #
   def co2_per_mj
-    if Current.scenario.use_lce_settings?
+    if Current.scenario.use_fce
       CO2_LCE_COMPONENTS.map do |key|
         self.send(key)
       end.compact.sum

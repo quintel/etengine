@@ -20,7 +20,7 @@
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  api_session_key    :string(255)
-#  lce_settings       :text
+#  use_fce            :boolean
 #
 
 class ApiScenario < Scenario
@@ -76,7 +76,7 @@ class ApiScenario < Scenario
   # used for api/v1/api_scenarios.json
   def as_json(options={})
     super(
-      :only => [:api_session_key, :user_values, :country, :region, :end_year, :start_year, :id]
+      :only => [:api_session_key, :user_values, :country, :region, :end_year, :start_year, :id, :use_fce]
     )
   end
 end
@@ -103,5 +103,5 @@ end
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  api_session_key    :string(255)
-#  lce_settings       :text
+#  use_fce            :boolean
 #
