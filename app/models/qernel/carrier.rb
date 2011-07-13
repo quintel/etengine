@@ -62,7 +62,6 @@ class Carrier
   #   The sum of CO2_LCE_COMPONENTS.
   #
   def co2_per_mj
-    puts "CO2: #{Current.scenario.inspect}"
     if Current.scenario.use_fce
       CO2_LCE_COMPONENTS.map do |key|
         self.send(key)
