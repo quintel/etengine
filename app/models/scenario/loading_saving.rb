@@ -12,6 +12,7 @@ class Scenario < ActiveRecord::Base
   def reset!
     self.user_values = {}
     self.update_statements = {}
+    self.fce_settings = {}
     self.use_fce = false
   end
   alias_method :reset_user_values!, :reset!

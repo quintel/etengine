@@ -3,7 +3,7 @@ module Qernel
 class Carrier
   include DatasetAttributes
 
-  CO2_LCE_COMPONENTS = [
+  CO2_FCE_COMPONENTS = [
     :co2_conversion_per_mj,
     :co2_exploration_per_mj,
     :co2_extraction_per_mj,
@@ -22,7 +22,7 @@ class Carrier
     :supply_chain_margin_per_mj,
     :oil_price_correlated_part_production_costs,
 
-    *CO2_LCE_COMPONENTS
+    *CO2_FCE_COMPONENTS
   ]
 
   attr_accessor :id, :key, :name, :graph, :infinite
@@ -68,11 +68,11 @@ class Carrier
   # origin of country for a specific carrier.
   #
   # @return [Float] 
-  #   The sum of CO2_LCE_COMPONENTS.
+  #   The sum of CO2_FCE_COMPONENTS.
   #
   def co2_per_mj
     if Current.scenario.use_fce
-      CO2_LCE_COMPONENTS.map do |key|
+      CO2_FCE_COMPONENTS.map do |key|
         self.send(key)
       end.compact.sum
     else
