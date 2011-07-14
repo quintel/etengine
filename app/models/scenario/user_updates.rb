@@ -30,7 +30,6 @@ class Scenario < ActiveRecord::Base
         Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
       end
     end
-    add_update_statements(lce.update_statements)
   end
 
   ##
