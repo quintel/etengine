@@ -90,7 +90,7 @@ end
 
 desc "Move db server to local db"
 task :db2local do
-  file = CapHelpers::dump_db_to_tmp
+  file = dump_db_to_tmp
   puts "Gzipping sql file"
     run "gzip -f #{file}"
   puts "Downloading gzip file"
