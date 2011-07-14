@@ -1,12 +1,7 @@
 namespace :db do
   desc "Move production db to staging db, overwriting everything"
-  task :prod2staging do
-    
-    if Capistrano::CLI.ui.agree("You know what you're doing, right?")
-      puts "I don't trust you!"; exit
-    else
-      puts "Wise man"; exit
-    end
+  task :prod2staging do    
+    warning("You know what you're doing, right? You will overwrite the staging db!")
     
     puts "Loading production environment"
       production
@@ -47,11 +42,7 @@ namespace :db do
     }
     # We're not updating scenarios!
     
-    if Capistrano::CLI.ui.agree("You know what you're doing, right?")
-      puts "I don't trust you!"; exit
-    else
-      puts "Wise man"; exit
-    end
+    warning("You know what you're doing, right? You will overwrite most production tables!")
     
     puts "Loading staging environment"
       staging
@@ -65,17 +56,11 @@ namespace :db do
   
   desc "Empty db - be sure you know what you're doing"
   task :empty do
-    
-    if Capistrano::CLI.ui.agree("You know what you're doing, right?")
-      puts "I don't trust you!"; exit
-    else
-      puts "Wise man"; exit
-    end
+    warning("You know what you're doing, right? This will drop the current db")
     
     puts "Dropping the remote db and recreating a new one!"
     puts "I'll first make a backup on /tmp though"
     dump_db_to_tmp
-    # replace puts with run
     run "mysqladmin drop #{db_name}"
     run "mysqladmin create #{db_name} -u #{db_user} --password=#{db_pass}"
   end
@@ -116,4 +101,11 @@ end
 def load_sql_into_db(file)
   puts "Importing sql file to db"
   run "mysql -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} < #{file}"
+end
+
+def warning(msg)
+  puts "Warning! These tasks have destructive effects."
+  unless Capistrano::CLI.ui.agree(msg)
+    puts "Wise man"; exit
+  end
 end
