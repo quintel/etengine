@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110712042557) do
+ActiveRecord::Schema.define(:version => 20110714095941) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -283,6 +283,20 @@ ActiveRecord::Schema.define(:version => 20110712042557) do
 
   add_index "expert_predictions", ["input_element_id"], :name => "index_expert_predictions_on_input_element_id"
 
+  create_table "fce_values", :force => true do |t|
+    t.string   "using_country"
+    t.string   "origin_country"
+    t.float    "co2_exploration_per_mj"
+    t.float    "co2_extraction_per_mj"
+    t.float    "co2_treatment_per_mj"
+    t.float    "co2_transportation_per_mj"
+    t.float    "co2_conversion_per_mj"
+    t.float    "co2_waste_treatment_per_mj"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "carrier"
+  end
+
   create_table "general_user_notifications", :force => true do |t|
     t.string   "key"
     t.string   "notification_nl"
@@ -382,20 +396,6 @@ ActiveRecord::Schema.define(:version => 20110712042557) do
   end
 
   add_index "inputs", ["key"], :name => "unique api key", :unique => true
-
-  create_table "lce_values", :force => true do |t|
-    t.string   "using_country"
-    t.string   "origin_country"
-    t.float    "co2_exploration_per_mj"
-    t.float    "co2_extraction_per_mj"
-    t.float    "co2_treatment_per_mj"
-    t.float    "co2_transportation_per_mj"
-    t.float    "co2_conversion_per_mj"
-    t.float    "co2_waste_treatment_per_mj"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "carrier"
-  end
 
   create_table "links", :force => true do |t|
     t.integer "blueprint_id"
