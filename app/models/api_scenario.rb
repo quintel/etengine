@@ -25,17 +25,22 @@
 
 class ApiScenario < Scenario
 
-  validates_presence_of :api_session_key, :on => :create, :message => "can't be blank"
-  validates_uniqueness_of :api_session_key, :on => :create, :message => "must be unique"
+  validates_presence_of :api_session_key, :on => :update, :message => "can't be blank"
+  validates_uniqueness_of :api_session_key, :on => :update, :message => "must be unique"
 
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
 
+  after_create :copy_id_to_api_session_key!
+
+  def copy_id_to_api_session_key!
+    self.update_attribute :api_session_key, self.id
+  end
 
   def self.new_attributes(settings = {})
     settings ||= {}
     attributes = Scenario.default_attributes.merge(:title => "API")
-    attributes[:api_session_key] = settings[:id] == 'test' ? 'test' : Time.now.to_i
+    attributes[:api_session_key] = settings[:id] == 'test' ? 'test' : nil
     attributes.merge(settings)
   end
 
