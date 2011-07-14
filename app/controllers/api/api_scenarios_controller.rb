@@ -30,6 +30,8 @@ class Api::ApiScenariosController < ApplicationController
   def show 
     Current.scenario = @api_scenario
     # RD: why are we using a update command inside the show method?
+    # SB: - this updates the scenario with the submitted slider values params[:input]
+    #     - the API is a GET show request, so that we can use it with JSON-P
     update_scenario(@api_scenario) 
     @results = results
     @json = {
