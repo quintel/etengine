@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110714095941) do
+ActiveRecord::Schema.define(:version => 20110715122053) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -68,6 +68,8 @@ ActiveRecord::Schema.define(:version => 20110714095941) do
     t.boolean  "has_cold_network"
     t.float    "cold_network_potential"
     t.boolean  "has_heat_import"
+    t.boolean  "has_industry"
+    t.boolean  "has_other"
   end
 
   create_table "blueprint_layouts", :force => true do |t|
