@@ -55,7 +55,7 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    # object_dataset[attr_name] = value
+    object_dataset[attr_name] = value
     dataset.set(dataset_key, attr_name, value)
     # if dataset_get(attr_name) != value
     #   Rails.logger.warn("waaaarning")
