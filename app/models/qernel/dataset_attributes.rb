@@ -23,14 +23,21 @@ module Qernel::DatasetAttributes
       end
     end
 
+    def dataset_group
+      @dataset_group ||= self.name.split("::").last.downcase.to_sym
+    end
+
     def compute_dataset_key(id)
-      "#{self.name.split("::").last.downcase}_#{id}".downcase.to_sym
+      id #{}"#{dataset_group}_#{id}".downcase.to_sym
     end
   end
 
   def dataset
-    #raise "#{self.class.name} has not defined a graph" if graph.nil?
     graph.dataset
+  end
+
+  def dataset_group
+    self.class.dataset_group
   end
 
   def graph
@@ -46,17 +53,17 @@ module Qernel::DatasetAttributes
   end
 
   def object_dataset
-    @object_dataset ||= (dataset.data[dataset_key] ||= {})
+    @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
   end
 
   def dataset_fetch(attr_name, &block)
-    dataset.memoize(self, attr_name, &block)
+    dataset.memoize(dataset_group, self, attr_name, &block)
   end
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
     object_dataset[attr_name] = value
-    dataset.set(dataset_key, attr_name, value)
+    dataset.set(dataset_group, dataset_key, attr_name, value)
     # if dataset_get(attr_name) != value
     #   Rails.logger.warn("waaaarning")
     #   debugger 

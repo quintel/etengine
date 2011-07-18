@@ -123,6 +123,10 @@ class ConverterApi
     converter.dataset_key
   end
 
+  def dataset_group
+    converter.dataset_group
+  end
+
   def area
     converter.graph.area
   end
@@ -288,63 +292,6 @@ class ConverterApi
 
   ##
   #
-  #
-  # @overload output_of_CARRIER
-  #   The output of a specific carrier.
-  #   e.g.
-  #     output_of_electricity
-  #   @param CARRIER [String] carrier_key
-  #   @return [Float] energy output of carrier
-  #
-  # @overload input_of_CARRIER
-  #   The input of a specific carrier.
-  #   e.g.
-  #     input_of_electricity
-  #   @param CARRIER [String] carrier_key
-  #   @return [Float] energy input of carrier
-  #
-  # @overload primary_demand_of_CARRIER
-  #   Primary demand of a specific carrier
-  #   e.g.
-  #     primary_demand_of_electricity
-  #   @return [Float]
-  #
-  # @overload primary_demand_of_sustainable
-  #   Primary demand of sustainable energy
-  #   @return [Float]
-  #
-  # @overload primary_demand
-  #   The primary energy demand of a converter
-  #   @return [Float]
-  #
-  # @overload final_demand
-  #   The final energy demand of a converter
-  #   @return [Float]
-  #
-  # @overload CARRIER_DIRECTIION_link_ATTRIBUTE
-  #   Attribute (ATTRIBUTE: share or value) of the *first* link with
-  #   CARRIER and DIRECTION (input or output).
-  #   e.g.
-  #     electricity_input_link_share
-  #     natural_gas_output_link_value
-  #
-  #   @param CARRIER [String] carrier_key
-  #   @param DIRECTION ['input','output']
-  #   @param ATTRIBUTE [conversion,value,share,actual_conversion]
-  #   @return [Float]
-  #
-  # @overload share_of_OUTPUT_CONVERTER_KEY
-  #   @param OUTPUT_CONVERTER_KEY [String] is the key of a converter on the output side.
-  #   @return [Float]
-  #
-  # @output CARRIER_DIRECTION_ATTRIBUTE
-  #   Slot attributes
-  #   e.g.
-  #     electricity_input_conversion
-  #   @param CARRIER [String] carrier_key
-  #   @param DIRECTION ['input','output']
-  #   @param ATTRIBUTE [String] attribute of slot
-  #   @return [Float]
   #
   def method_missing(method_id, *arguments)
     Rails.logger.info("ConverterApi:method_missing #{method_id}")

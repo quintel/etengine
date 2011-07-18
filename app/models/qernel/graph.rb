@@ -14,6 +14,7 @@ module Qernel
 #
 class Graph
   extend ActiveModel::Naming
+  include DatasetAttributes
 
   attr_accessor :dataset,
                 :converters,
@@ -22,6 +23,19 @@ class Graph
                 :region_code,
                 :year,
                 :graph_id
+
+  # ---- DatasetAttributes ----------------------------------------
+
+  def dataset_key
+    :graph
+  end
+
+  # used for DatasetAttributes
+  def graph
+    self
+  end
+
+
 
   # def initialize(converters, carriers, groups)
   def initialize(converters, optimize = true, dataset = nil, carriers = nil)
@@ -39,6 +53,7 @@ class Graph
   end
 
   def reset_dataset_objects
+    self.object_dataset_reset
     self.area.object_dataset_reset
     self.carriers.each(&:object_dataset_reset)
     self.converters.each do |c|
@@ -49,7 +64,7 @@ class Graph
   end
 
   def calculated?
-    dataset.get(:graph, :calculated)
+    dataset_get(:calculated)
   end
 
   def time_curves
@@ -92,12 +107,13 @@ class Graph
 
     self.finished_converters.map(&:input_links).flatten.each(&:assign_share)
 
-    dataset.set(:graph, :calculated, true)
+    dataset_set(:calculated, true)
 
     unless converter_stack.empty?
       Rails.logger.warn "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}"
     end
   end
+
 
   def links
     @links ||= converters.map(&:input_links).flatten.uniq
