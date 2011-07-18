@@ -117,8 +117,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
             # c in this case is most probably a Carrier (we don't get other data)
             c.instance_eval(attr_name)
           end
-        rescue Exception => e
-          raise "VALUE(#{converters.join(',')};#{attribute_name.first.strip.gsub('[','(').gsub(']',')')}) for #{c.full_key} throws an exception: #{e}"
+        #rescue Exception => e
+        #  raise "VALUE(#{converters.join(',')};#{attribute_name.first.strip.gsub('[','(').gsub(']',')')}) for #{c.full_key} throws an exception: #{e}"
         end
       end
 

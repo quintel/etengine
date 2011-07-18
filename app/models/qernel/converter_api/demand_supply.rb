@@ -3,20 +3,24 @@ class Qernel::ConverterApi
 
 
   def demand_of_fossil
-    converter.input_carriers.map do |carrier|
-      if carrier.sustainable and demand = demand_of_carrier(carrier)
-        demand * (1 - carrier.sustainable)
-      end
-    end.compact.sum
+    dataset_fetch(:demand_of_fossil) do
+      converter.input_carriers.map do |carrier|
+        if carrier.sustainable and demand = demand_of_carrier(carrier)
+          demand * (1 - carrier.sustainable)
+        end
+      end.compact.sum
+    end
   end
   alias_method :output_of_fossil, :demand_of_fossil
 
   def demand_of_sustainable
-    converter.input_carriers.map do |carrier|
-      if carrier.sustainable and demand = demand_of_carrier(carrier)
-        demand * carrier.sustainable
-      end
-    end.compact.sum
+    dataset_fetch(:demand_of_sustainable) do
+      converter.input_carriers.map do |carrier|
+        if carrier.sustainable and demand = demand_of_carrier(carrier)
+          demand * carrier.sustainable
+        end
+      end.compact.sum
+    end
   end
   alias_method :output_of_sustainable, :demand_of_sustainable
 
@@ -30,30 +34,42 @@ class Qernel::ConverterApi
   # Helper method to get all heat inputs (useable_heat, hot_water, steam_hot_wather)
   #
   def input_of_heat_carriers
-    input_of_useable_heat + input_of_hot_water + input_of_steam_hot_water
+    dataset_fetch(:input_of_heat_carriers) do
+      input_of_useable_heat + input_of_hot_water + input_of_steam_hot_water
+    end
   end
 
   ##
   # Helper method to get all heat outputs (useable_heat, hot_water, steam_hot_wather)
   #
   def output_of_heat_carriers
-    output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water
+    dataset_fetch(:input_of_heat_carriers) do
+      output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water
+    end
   end
   
   def output_of_heat_and_cooling_carriers
-    output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water + output_of_cooling
+    dataset_fetch(:output_of_heat_and_cooling_carriers) do
+      output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water + output_of_cooling
+    end
   end
 
   def input_of_fossil_carriers
-    input_of_coal + input_of_crude_oil + input_of_natural_gas + input_of_diesel + input_of_gasoline + input_of_steam_hot_water + input_of_gasmix
+    dataset_fetch(:input_of_fossil_carriers) do
+      input_of_coal + input_of_crude_oil + input_of_natural_gas + input_of_diesel + input_of_gasoline + input_of_steam_hot_water + input_of_gasmix
+    end
   end
 
   def input_of_biomass_group
-    input_of_biomass + input_of_biofuel + input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol
+    dataset_fetch(:input_of_biomass_group) do
+      input_of_biomass + input_of_biofuel + input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol
+    end
   end
   
   def input_of_ambient_carriers
-    input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
+    dataset_fetch(:input_of_ambient_carriers) do
+      input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
+    end
   end
   
   def demand_of_carrier(carrier)
@@ -77,11 +93,13 @@ class Qernel::ConverterApi
   end
 
   def loss_ex_input_loss
-    out = converter.output(:loss)
-    out = out and out.expected_value
-    inp = converter.input(:loss)
-    inp = inp and inp.expected_value
-    (out || 0.0) - (inp || 0.0)
+    dataset_fetch(:loss_ex_input_loss) do
+      out = converter.output(:loss)
+      out = out and out.expected_value
+      inp = converter.input(:loss)
+      inp = inp and inp.expected_value
+      (out || 0.0) - (inp || 0.0)
+    end
   end
 
 end
