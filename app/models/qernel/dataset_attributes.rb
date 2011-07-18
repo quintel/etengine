@@ -59,10 +59,11 @@ module Qernel::DatasetAttributes
 
   # HANDLE_NIL_SECURLY = true has better output for debugging
   # HANDLE_NIL_SECURLY = false is 50 ms faster. but harder to debug if problem occurs
+  HANDLE_NIL_SECURLY = true 
   def dataset_fetch_handle_nil(attr_name, handle_nil_securly = false, &block)
     if object_dataset.has_key?(attr_name)
       object_dataset[attr_name]
-    elsif handle_nil_securly
+    elsif HANDLE_NIL_SECURLY || handle_nil_securly
       if required_attributes_contain_nil?(attr_name)
         object_dataset[attr_name] = nil
       else

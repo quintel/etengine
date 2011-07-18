@@ -17,7 +17,7 @@ class Qernel::ConverterApi
 
   def delta_in_capacity_in_mj_s
     dataset_fetch_handle_nil(:delta_in_capacity_in_mj_s) do
-      (((production_based_on_number_of_plants.to_f / typical_production.to_f).to_f - (electricitiy_production_actual.to_f / typical_production.to_f).to_f) * typical_capacity_gross_in_mj_s.to_f).to_f
+      (((production_based_on_number_of_plants / typical_production).to_f - (electricitiy_production_actual / typical_production).to_f) * typical_capacity_gross_in_mj_s.to_f).to_f
     end
   end
   attributes_required_for :delta_in_capacity_in_mj_s, [
