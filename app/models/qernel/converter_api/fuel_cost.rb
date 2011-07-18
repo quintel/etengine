@@ -34,7 +34,7 @@ class Qernel::ConverterApi
   end
 
   def useful_output
-    dataset_fetch(:useful_output_memoized) do
+    dataset_fetch(:useful_output) do
       [ converter.output(:electricity),
         converter.output(:useable_heat),
         converter.output(:steam_hot_water),
@@ -45,7 +45,7 @@ class Qernel::ConverterApi
 
   # TODO: Dry up with useful_output
   def useful_heat_output
-    dataset_fetch(:useful_output_memoized) do
+    dataset_fetch(:useful_output) do
       [
         converter.output(:useable_heat),
         converter.output(:steam_hot_water),
