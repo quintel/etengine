@@ -53,8 +53,22 @@ module Qernel::DatasetAttributes
     @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
   end
 
+  def dataset_fetch_handle_nil(attr_name, &block)
+    if object_dataset.has_key?(attr_name)
+      object_dataset[attr_name]
+    else
+      object_dataset[attr_name] = yield rescue nil
+    end
+  end
+  
+  # Memoization
+  #
   def dataset_fetch(attr_name, &block)
-    object_dataset[attr_name] ||= yield
+    if object_dataset.has_key?(attr_name)
+      object_dataset[attr_name]
+    else
+      object_dataset[attr_name] = yield
+    end
   end
 
   # @param attr_name [Symbol]
