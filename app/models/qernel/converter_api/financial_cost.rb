@@ -12,12 +12,15 @@ class Qernel::ConverterApi
   attributes_required_for :production_based_on_number_of_plants, [:number_of_plants, :typical_production]
 
   def number_of_plants
-    if val = dataset_get(:number_of_plants_future)
-      return val
+    dataset_fetch(:number_of_plants) do
+      if val = dataset_get(:number_of_plants_future)
+        val
+      elsif required_attributes_contain_nil?(:number_of_plants)
+        nil
+      else
+        (output_of_electricity / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)).to_f
+      end
     end
-    return nil if required_attributes_contain_nil?(:number_of_plants)
-    (output_of_electricity / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)).to_f
-    # @installed_capacity_effective_in_mj_s / @typical_capacity_effective_in_mj_s
   end
   attributes_required_for :number_of_plants, [
     :typical_capacity_effective_in_mj_s,
@@ -25,20 +28,26 @@ class Qernel::ConverterApi
   ]
 
   def number_of_heat_plants_future
-    return nil if required_attributes_contain_nil?(:number_of_heat_plants_future)
+    dataset_fetch(:number_of_heat_plants_future) do
+      return nil if required_attributes_contain_nil?(:number_of_heat_plants_future)
 
-    # ((output_of_useable_heat + output_of_steam_hot_water + output_of_hot_water) / ((((typical_capacity_effective_in_mj_s / output_of_electricity) *(output_of_useable_heat + output_of_steam_hot_water + output_of_hot_water))* 8760 * 3600) * capacity_factor))
-    ([output_of_useable_heat,output_of_steam_hot_water,output_of_hot_water].sum / ((typical_capacity_effective_in_mj_s* 8760 * 3600) * capacity_factor)).to_f
+      # ((output_of_useable_heat + output_of_steam_hot_water + output_of_hot_water) / ((((typical_capacity_effective_in_mj_s / output_of_electricity) *(output_of_useable_heat + output_of_steam_hot_water + output_of_hot_water))* 8760 * 3600) * capacity_factor))
+      ([output_of_useable_heat,output_of_steam_hot_water,output_of_hot_water].sum / ((typical_capacity_effective_in_mj_s* 8760 * 3600) * capacity_factor)).to_f
+    end
   end
-
   attributes_required_for :number_of_heat_plants_future, [
     :typical_capacity_effective_in_mj_s,
     :capacity_factor
   ]
 
   def number_of_plants_future
-    return nil if required_attributes_contain_nil?(:number_of_plants_future)
-    (output_of_electricity / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)).to_f
+    dataset_fetch(:number_of_plants_future) do
+      if required_attributes_contain_nil?(:number_of_plants_future)
+        nil
+      else
+        (output_of_electricity / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)).to_f
+      end
+    end
   end
   attributes_required_for :number_of_plants_future, [
     :typical_capacity_effective_in_mj_s,
@@ -46,23 +55,32 @@ class Qernel::ConverterApi
   ]
   
   def electricity_production_in_mw
-    return nil if required_attributes_contain_nil?(:electricity_production_in_mw)
-    output_of_electricity / SECS_PER_YEAR / capacity_factor
+    dataset_fetch(:electricity_production_in_mw) do
+      if required_attributes_contain_nil?(:electricity_production_in_mw)
+        nil
+      else
+        output_of_electricity / SECS_PER_YEAR / capacity_factor
+      end
+    end
   end
-  
   attributes_required_for :electricity_production_in_mw, [
     :capacity_factor,
     :output_of_electricity
   ]
 
   def heat_production_in_mw
-    return nil if required_attributes_contain_nil?(:heat_production_in_mw)
-    [output_of_useable_heat,output_of_steam_hot_water,output_of_hot_water].sum  / SECS_PER_YEAR / capacity_factor
+    dataset_fetch(:heat_production_in_mw) do
+      if required_attributes_contain_nil?(:heat_production_in_mw)
+        nil
+      else
+        [output_of_useable_heat,output_of_steam_hot_water,output_of_hot_water].sum  / SECS_PER_YEAR / capacity_factor
+      end
+    end
   end
-  
   attributes_required_for :heat_production_in_mw, [
     :capacity_factor
   ]
+
   ##
   # NOT NEEDED YET
   # def municipality_production_in_mw
@@ -139,17 +157,21 @@ class Qernel::ConverterApi
 
 
   def cost_of_capital
-    return nil if required_attributes_contain_nil?(:cost_of_capital)
-    construction_time = self.construction_time || 0.0
-
-    return nil if [
-      technical_lifetime,
-      typical_production
-    ].any?{|val| val.nil? or val.to_f == 0.0}
-
-    (
-      overnight_investment_total / 2 * wacc * (construction_time + technical_lifetime) / technical_lifetime
-    ) / typical_production
+    dataset_fetch(:cost_of_capital) do
+      if required_attributes_contain_nil?(:cost_of_capital)
+        nil
+      else
+        construction_time = self.construction_time || 0.0
+      
+        if [ technical_lifetime, typical_production].any?{|val| val.nil? or val.to_f == 0.0}
+          nil
+        else
+          (
+            overnight_investment_total / 2 * wacc * (construction_time + technical_lifetime) / technical_lifetime
+          ) / typical_production
+        end
+      end
+    end
   end
   attributes_required_for :cost_of_capital, [
     :overnight_investment_total,

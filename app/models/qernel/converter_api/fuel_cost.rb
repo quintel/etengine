@@ -1,23 +1,31 @@
 class Qernel::ConverterApi
 
   def fuel_cost_raw_material_per_mje
-    return nil if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mje)
-
-    electricity_conversion = converter.outputs.select{|output|
-     output.carrier === :electricity
-     }.first.conversion
-    (electricity_conversion == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / electricity_conversion)
+    dataset_fetch(:fuel_cost_raw_material_per_mje) do
+      if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mje)
+        nil
+      else
+        electricity_conversion = converter.outputs.select{|output|
+         output.carrier === :electricity
+         }.first.conversion
+        (electricity_conversion == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / electricity_conversion)
+      end
+    end
   end
   attributes_required_for :fuel_cost_raw_material_per_mje, [:electricity_output]
 
 
   def fuel_cost_raw_material_per_mj
-    return nil if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mj)
-
-    # sum_unless_empty converter.inputs.map{|input|
-    #   (useful_output == 0.0) ? 0.0 : ((input.carrier.cost_per_mj || 0.0) * input.conversion / useful_output)
-    # }
-    (useful_output == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / useful_output)
+    dataset_fetch(:fuel_cost_raw_material_per_mj) do
+      if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mj)
+        nil
+      else
+      # sum_unless_empty converter.inputs.map{|input|
+      #   (useful_output == 0.0) ? 0.0 : ((input.carrier.cost_per_mj || 0.0) * input.conversion / useful_output)
+      # }
+        (useful_output == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / useful_output)
+      end
+    end
   end
   attributes_required_for :fuel_cost_raw_material_per_mj, [:useful_output]
 
@@ -28,7 +36,9 @@ class Qernel::ConverterApi
   end
 
   def sustainable_input_factor
-    converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
+    dataset_fetch(:sustainable_input_factor) do
+      converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
+    end
   end
 
   def useful_output
@@ -59,10 +69,12 @@ class Qernel::ConverterApi
 
 
   def fuel_cost_raw_material
-    carriers = converter.input_carriers
-    prices = carriers.map {|carrier| fuel_cost_raw_material_for_carrier(carrier) }
+    dataset_fetch(:fuel_cost_raw_material) do
+      carriers = converter.input_carriers
+      prices = carriers.map {|carrier| fuel_cost_raw_material_for_carrier(carrier) }
 
-    sum_unless_empty prices
+      sum_unless_empty prices
+    end
   end
 
 
