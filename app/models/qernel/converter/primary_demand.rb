@@ -321,8 +321,10 @@ module Qernel::Converter::PrimaryDemand
   #
   def loss_share
     # TODO optimize by using dataset_fetch
-    v = self.share_of_losses
-    (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
+    dataset_fetch(:loss_share) do
+      v = self.share_of_losses
+      (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
+    end
   end
 
   ##

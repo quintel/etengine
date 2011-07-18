@@ -78,6 +78,11 @@ class Dataset
     end
   end
 
+  def set(group, object_key, attr_name, value)
+    @data[group][object_key] ||= {}
+    @data[group][object_key][attr_name] = value
+  end
+
 end
 
 end

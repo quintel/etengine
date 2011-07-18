@@ -40,24 +40,16 @@ class Qernel::ConverterApi
 
 
   def total_cost
-    dataset_fetch(:total_cost) do
-      if required_attributes_contain_nil?(:total_cost)
-        nil
-      else
-        total_cost_per_mj * demand * useful_output
-      end
+    dataset_fetch_handle_nil(:total_cost) do
+      total_cost_per_mj * demand * useful_output
     end
   end
   attributes_required_for :total_cost, [:total_cost_per_mje, :demand, :useful_output]
 
 
   def total_cost_electricity
-    dataset_fetch(:total_cost_electricity) do
-      if required_attributes_contain_nil?(:total_cost_electricity)
-        nil
-      else
-        total_cost_per_mje * demand * electricity_output
-      end
+    dataset_fetch_handle_nil(:total_cost_electricity) do
+      total_cost_per_mje * demand * electricity_output
     end
   end
   attributes_required_for :total_cost_electricity, [:total_cost_per_mje, :demand, :electricity_output]
