@@ -27,7 +27,7 @@ class Gquery
   # GqueryBase#subquery
   #   Executes the subquery
   #
-  # include GqueryCache # optional
+  include GqueryCache # optional
   include MemoizedSubqueries # optional
 
 
