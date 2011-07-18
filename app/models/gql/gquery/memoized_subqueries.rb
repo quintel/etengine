@@ -23,6 +23,12 @@ module Gquery::MemoizedSubqueries
   # Subqueries are memoized, so that if a subquery is called twice, we save performance.
   #
   def subquery(gquery_key)
+    if gquery_key.is_a?(::Gquery)
+      gquery = gquery_key
+    else
+      gquery = ::Gquery.get(gquery_key)
+    end
+
     graph_key = graph_cache_key
     @memoized_subquery ||= {}
     memoized_subqueries = @memoized_subquery[graph_key] ||= {}
