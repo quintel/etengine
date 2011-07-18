@@ -72,6 +72,8 @@ class Carrier
   #
   def co2_per_mj
     if Current.scenario.use_fce
+      # TODO: Properly memoize this. otherwise it will slow down gqueries!
+      #       use #dataset_fetch for memoization within the qernel.
       CO2_FCE_COMPONENTS.map do |key|
         self.send(key)
       end.compact.sum
