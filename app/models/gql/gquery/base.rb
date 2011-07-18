@@ -49,7 +49,7 @@ module Gql::Gquery::Base
   #
   def query(query)
     if query.is_a?(::Gquery)
-      query.parsed_query.result(scope)
+      subquery(query.key)
     elsif parsed = clean_and_parse(query)
       parsed.result(scope)
     else
@@ -73,8 +73,15 @@ module Gql::Gquery::Base
     # subquery should not set or reset the graph_for_grammar.
     # It is a subquery of a #query, so it should still use the same
     # graph_for_grammar.
-    if gquery = ::Gquery.get(gquery_key)
-      query(gquery)
+    if gquery_key.is_a?(::Gquery)
+      gquery = gquery_key
+    else
+      gquery = ::Gquery.get(gquery_key)
+    end
+
+    if gquery
+      #query(gquery)
+      gquery.parsed_query.result(scope)
       # gquery.parsed_query.andand.result(scope)
     else
       nil
