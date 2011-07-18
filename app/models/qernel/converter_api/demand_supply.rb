@@ -71,6 +71,8 @@ class Qernel::ConverterApi
       input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
     end
   end
+
+
   
   def demand_of_carrier(carrier)
     Rails.logger.info('demand_of_* is deprecated. Use output_of_* instead')
@@ -88,8 +90,10 @@ class Qernel::ConverterApi
   end
 
   def electricity_output_efficiency
-    c = converter.output(:electricity)
-    c and c.conversion
+    dataset_fetch(:electricity_output_efficiency) do
+      c = converter.output(:electricity)
+      c and c.conversion
+    end
   end
 
   def loss_ex_input_loss

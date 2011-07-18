@@ -5,9 +5,13 @@ class Qernel::ConverterApi
   end
 
   def production_based_on_number_of_plants
-    return nil if required_attributes_contain_nil?(:production_based_on_number_of_plants)
-
-    number_of_plants * typical_production
+    dataset_fetch(:production_based_on_number_of_plants) do
+      if required_attributes_contain_nil?(:production_based_on_number_of_plants)
+        nil
+      else
+        number_of_plants * typical_production
+      end
+    end
   end
   attributes_required_for :production_based_on_number_of_plants, [:number_of_plants, :typical_production]
 
@@ -104,8 +108,13 @@ class Qernel::ConverterApi
   # ]
 
   def total_land_use
-    return nil if required_attributes_contain_nil?(:total_land_use)
-    (output_of_electricity / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)) * land_use_in_nl
+    dataset_fetch(:total_land_use) do
+      if required_attributes_contain_nil?(:total_land_use)
+        nil
+      else
+        (output_of_electricity / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)) * land_use_in_nl
+      end
+    end
   end
   attributes_required_for :total_land_use, [
     :installed_capacity_effective_in_mj_s,
@@ -123,17 +132,25 @@ class Qernel::ConverterApi
   #
   #
   def typical_production
-    return nil if required_attributes_contain_nil?(:typical_production)
-
-    capacity_factor * typical_capacity_effective_in_mj_s * SECS_PER_YEAR
+    dataset_fetch(:typical_production) do
+      if required_attributes_contain_nil?(:typical_production)
+        nil
+      else
+        capacity_factor * typical_capacity_effective_in_mj_s * SECS_PER_YEAR
+      end
+    end
   end
   attributes_required_for :typical_production, [:capacity_factor, :typical_capacity_effective_in_mj_s]
 
 
   def overnight_investment_total
-    return nil if required_attributes_contain_nil?(:overnight_investment_total)
-
-    typical_capacity_gross_in_mj_s * (overnight_investment_ex_co2_per_mj_s + overnight_investment_co2_capture_per_mj_s)
+    dataset_fetch(:overnight_investment_total) do
+      if required_attributes_contain_nil?(:overnight_investment_total)
+        nil
+      else
+        typical_capacity_gross_in_mj_s * (overnight_investment_ex_co2_per_mj_s + overnight_investment_co2_capture_per_mj_s)
+      end
+    end
   end
   attributes_required_for :overnight_investment_total, [
     :typical_capacity_gross_in_mj_s,
@@ -143,15 +160,21 @@ class Qernel::ConverterApi
 
 
   def depreciation
-    return nil if required_attributes_contain_nil?(:depreciation)
-
-    overnight_investment_total / technical_lifetime / typical_production
+    dataset_fetch(:depreciation) do
+      if required_attributes_contain_nil?(:depreciation)
+        nil
+      else
+        overnight_investment_total / technical_lifetime / typical_production
+      end
+    end
   end
   attributes_required_for :depreciation, [:overnight_investment_total, :technical_lifetime, :typical_production]
 
 
   def finance_and_capital_cost
-    sum_unless_empty values_for_method(:finance_and_capital_cost)
+    dataset_fetch(:finance_and_capital_cost) do
+      sum_unless_empty values_for_method(:finance_and_capital_cost)
+    end
   end
   attributes_required_for :finance_and_capital_cost, [:depreciation, :cost_of_capital]
 
