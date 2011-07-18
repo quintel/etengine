@@ -48,9 +48,9 @@ class Carrier
     self.name = name
     self.infinite = infinite
 
-    @loss = key === :loss
-    @electricity = key === :electricity
-    @steam_hot_water = key === :steam_hot_water
+    @loss = self.key === :loss
+    @electricity = self.key === :electricity
+    @steam_hot_water = self.key === :steam_hot_water
 
     self.dataset_key # memoize dataset_key 
   end
