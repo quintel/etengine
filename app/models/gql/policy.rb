@@ -15,7 +15,7 @@ class Policy
   end
 
   def goals
-    @goals ||= ::PolicyGoal.allowed_policies.map(&:to_gql)
+    @goals ||= ::PolicyGoal.all.map(&:to_gql)
   end
 
   def inspect
