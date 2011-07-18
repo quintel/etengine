@@ -147,7 +147,8 @@ private
   end
 
   def calculate_dependent
-    output.andand.expected_external_value || 0.0
+    o = output
+    (o and o.expected_external_value) || 0.0
   end
 
   def calculate_share
@@ -173,7 +174,8 @@ private
     total_demand = input_external_demand
     return nil if total_demand.nil?
 
-    already_supplied_demand = input.andand.external_passive_link_value || 0.0
+    inp = input
+    already_supplied_demand = (inp and inp.external_passive_link_value) || 0.0
     new_value = total_demand - already_supplied_demand
 
     lower_boundary_for_flexible(new_value)
