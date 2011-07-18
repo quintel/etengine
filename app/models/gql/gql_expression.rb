@@ -12,12 +12,10 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def result( value_terms, params, scope )
     # DEBT this is not really needed as we check for query correctness
     # if respond_to?(text_value)
-    if LAZY_CALCULATE_VALUE_TERMS.include?(text_value)
-      send(text_value, value_terms, params, scope)
-    else
+    if !LAZY_CALCULATE_VALUE_TERMS.include?(text_value)
       value_terms.map!{|value_term| value_term.result(scope) }
-      send(text_value, value_terms, params, scope)
     end
+    send(text_value, value_terms, params, scope)
     # else
     #   raise GqlError.new("GQL: No such function defined: #{text_value}")
     # end
@@ -129,10 +127,10 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
       #   somehow weird behaviour...
       values.length <= 1 ? (values.first || 0.0) : values
     else
-      converters
+      converters.tap(&:flatten!)
     end
   end
-  alias_method :V, :VALUE
+  alias V VALUE
 
   ##
   # Arguments of VALUE are normal ruby instance_eval's. But because
@@ -170,9 +168,9 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def QUERY(keys, arguments, scope)
     scope.subquery(keys.first)
   end
-  alias_method :Q, :QUERY
+  alias Q QUERY
   # @deprecated
-  alias_method :SUBQUERY, :QUERY
+  alias SUBQUERY QUERY
 
   ##
   # Children of a converter(s).
@@ -220,7 +218,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def GROUP(keys, arguments, scope)
     scope.group_converters(keys)
   end
-  alias_method :G, :GROUP
+  alias G GROUP
 
   ##
   # Converters of a sector : *SECTOR(households)*
