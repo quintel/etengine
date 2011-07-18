@@ -30,7 +30,6 @@ class Graph
     :graph
   end
 
-  # used for DatasetAttributes
   def graph
     self
   end
@@ -39,9 +38,6 @@ class Graph
 
   # def initialize(converters, carriers, groups)
   def initialize(converters, optimize = true, dataset = nil, carriers = nil)
-    # TODO @calculated should be in Dataset
-    @calculated = false
-
     self.converters = converters
 
     @group_converters_cache = {}
@@ -52,14 +48,14 @@ class Graph
     prepare_memoization
   end
 
-  def reset_dataset_objects
-    self.object_dataset_reset
-    self.area.object_dataset_reset
-    self.carriers.each(&:object_dataset_reset)
+  def assign_dataset_objects
+    self.assign_object_dataset
+    self.area.assign_object_dataset
+    self.carriers.each(&:assign_object_dataset)
     self.converters.each do |c|
-      c.object_dataset_reset
-      c.input_links.each(&:object_dataset_reset)
-      c.inputs.each(&:object_dataset_reset)
+      c.assign_object_dataset
+      c.input_links.each(&:assign_object_dataset)
+      c.inputs.each(&:assign_object_dataset)
     end
   end
 
@@ -89,10 +85,8 @@ class Graph
   #
   # TODO refactor
   def calculate
-    # TODO seb move @calculate to dataset
     Rails.logger.warn('Graph already calculated') if calculated?
     Rails.logger.info('Qernel::Graph#calculate')
-
 
     # FIFO stack of all the converters. Converters are removed from the stack after calculation.
     converter_stack = converters.clone

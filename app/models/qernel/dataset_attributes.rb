@@ -6,6 +6,7 @@
 module Qernel::DatasetAttributes
 
   def self.included(klass)
+    klass.send(:attr_accessor, :object_dataset)
     klass.extend(ClassMethods)
   end
 
@@ -28,7 +29,7 @@ module Qernel::DatasetAttributes
     end
 
     def compute_dataset_key(id)
-      id #{}"#{dataset_group}_#{id}".downcase.to_sym
+      id
     end
   end
 
@@ -48,27 +49,17 @@ module Qernel::DatasetAttributes
     @dataset_key ||= self.class.compute_dataset_key(id)
   end
 
-  def object_dataset_reset
-    @object_dataset = nil
-  end
-
-  def object_dataset
-    @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
+  def assign_object_dataset
+    @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
   end
 
   def dataset_fetch(attr_name, &block)
-    dataset.memoize(dataset_group, self, attr_name, &block)
+    object_dataset[attr_name] ||= yield
   end
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
     object_dataset[attr_name] = value
-    dataset.set(dataset_group, dataset_key, attr_name, value)
-    # if dataset_get(attr_name) != value
-    #   Rails.logger.warn("waaaarning")
-    #   debugger 
-    # end
-    # value
   end
 
   # @param attr_name [Symbol]

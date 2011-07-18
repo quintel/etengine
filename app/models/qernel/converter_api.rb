@@ -127,6 +127,10 @@ class ConverterApi
     converter.dataset_group
   end
 
+  def object_dataset
+    converter.object_dataset
+  end
+
   def area
     converter.graph.area
   end
