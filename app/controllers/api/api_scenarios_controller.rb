@@ -112,9 +112,9 @@ class Api::ApiScenariosController < ApplicationController
             hsh
           elsif gquery = (Gquery.get(key) rescue nil)
             if gquery.unit != 'converters'
-              Current.gql.benchmark("query: #{gquery.key}") do
+              #Current.gql.benchmark("query: #{gquery.key}") do
                 hsh.merge(key => Current.gql.query(gquery))
-              end
+              #end
             else
               hsh
             end
