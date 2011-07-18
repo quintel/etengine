@@ -1,30 +1,22 @@
 class Qernel::ConverterApi
 
   def fuel_cost_raw_material_per_mje
-    dataset_fetch(:fuel_cost_raw_material_per_mje) do
-      if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mje)
-        nil
-      else
-        electricity_conversion = converter.outputs.select{|output|
-         output.carrier === :electricity
-         }.first.conversion
-        (electricity_conversion == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / electricity_conversion)
-      end
+    dataset_fetch_handle_nil(:fuel_cost_raw_material_per_mje) do
+      electricity_conversion = converter.outputs.select{|output|
+       output.carrier === :electricity
+       }.first.conversion
+      (electricity_conversion == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / electricity_conversion)
     end
   end
   attributes_required_for :fuel_cost_raw_material_per_mje, [:electricity_output]
 
 
   def fuel_cost_raw_material_per_mj
-    dataset_fetch(:fuel_cost_raw_material_per_mj) do
-      if required_attributes_contain_nil?(:fuel_cost_raw_material_per_mj)
-        nil
-      else
+    dataset_fetch_handle_nil(:fuel_cost_raw_material_per_mj) do
       # sum_unless_empty converter.inputs.map{|input|
       #   (useful_output == 0.0) ? 0.0 : ((input.carrier.cost_per_mj || 0.0) * input.conversion / useful_output)
       # }
         (useful_output == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / useful_output)
-      end
     end
   end
   attributes_required_for :fuel_cost_raw_material_per_mj, [:useful_output]

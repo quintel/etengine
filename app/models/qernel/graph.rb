@@ -48,7 +48,7 @@ class Graph
     prepare_memoization
   end
 
-  def assign_dataset_objects
+  def refresh_dataset_objects
     self.assign_object_dataset
     self.area.assign_object_dataset
     self.carriers.each(&:assign_object_dataset)
@@ -56,6 +56,7 @@ class Graph
       c.assign_object_dataset
       c.input_links.each(&:assign_object_dataset)
       c.inputs.each(&:assign_object_dataset)
+      c.outputs.each(&:assign_object_dataset)
     end
   end
 

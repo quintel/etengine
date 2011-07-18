@@ -12,8 +12,9 @@ class Qernel::ConverterApi
   # Determines the value of the converter at the end of its economical life.
   #
   def end_of_life_value_per_mw_input
-    return nil if required_attributes_contain_nil?(:end_of_life_value_per_mw_input)
-    residual_value_per_mw_input - decommissioning_costs_per_mw_input
+    dataset_fetch_handle_nil(:end_of_life_value_per_mw_input) do
+      residual_value_per_mw_input - decommissioning_costs_per_mw_input
+    end
   end
   attributes_required_for :end_of_life_value_per_mw_input, [
   :residual_value_per_mw_input, :decommissioning_costs_per_mw_input]
@@ -37,8 +38,9 @@ class Qernel::ConverterApi
   # The total of fixed costs for the converter per year, based on how many units are required to meet demand.
   #
   def operation_and_maintenance_cost_fixed
-  return nil if required_attributes_contain_nil?(:operation_and_maintenance_cost_fixed)
-  operation_and_maintenance_cost_fixed_per_mw_input * mw_input_capacity
+    dataset_fetch_handle_nil(:operation_and_maintenance_cost_fixed) do
+      operation_and_maintenance_cost_fixed_per_mw_input * mw_input_capacity
+    end
   end
   attributes_required_for :operation_and_maintenance_cost_fixed, [
   :operation_and_maintenance_cost_fixed_per_mw_input, :mw_input_capacity]
@@ -46,8 +48,9 @@ class Qernel::ConverterApi
   # Total capital cost for the converter per year.
   #
   def cost_of_capital_total
-  return nil if required_attributes_contain_nil?(:cost_of_capital_total)
-  cost_of_capital_per_mw_input * mw_input_capacity
+    dataset_fetch_handle_nil(:cost_of_capital_total) do
+      cost_of_capital_per_mw_input * mw_input_capacity
+    end
   end
   attributes_required_for :cost_of_capital_total, [
   :cost_of_capital_per_mw_input, :mw_input_capacity]
@@ -55,9 +58,10 @@ class Qernel::ConverterApi
   # The capital cost of the converter per MW input.
   #
   def cost_of_capital_per_mw_input
-    return nil if required_attributes_contain_nil?(:cost_of_capital_per_mw_input)
-          # construction_time = 0 if construction_time.nil? 
-    average_investment_per_mw_input * wacc * ( construction_time + economic_lifetime) / economic_lifetime
+    dataset_fetch_handle_nil(:cost_of_capital_per_mw_input) do
+      # construction_time = 0 if construction_time.nil? 
+      average_investment_per_mw_input * wacc * ( construction_time + economic_lifetime) / economic_lifetime
+    end
   end
   attributes_required_for :cost_of_capital_per_mw_input, [
   :average_investment_per_mw_input, :wacc, :economic_lifetime,:construction_time]
@@ -65,8 +69,9 @@ class Qernel::ConverterApi
   # The average investment is determined, to later determine the costs of financing this capital.
   #
   def average_investment_per_mw_input
-    return nil if required_attributes_contain_nil?(:average_investment_per_mw_input)
-    (initial_investment_costs_per_mw_input + end_of_life_value_per_mw_input) / 2
+    dataset_fetch_handle_nil(:average_investment_per_mw_input) do
+      (initial_investment_costs_per_mw_input + end_of_life_value_per_mw_input) / 2
+    end
   end
   attributes_required_for :average_investment_per_mw_input, [
   :initial_investment_costs_per_mw_input, :end_of_life_value_per_mw_input]
@@ -74,8 +79,9 @@ class Qernel::ConverterApi
   # Calculates the total depreciation for the converter in euros per year. 
   #
   def depreciation_total
-    return nil if required_attributes_contain_nil?(:depreciation_total)
-    depreciation_per_mw_input * mw_input_capacity
+    dataset_fetch_handle_nil(:depreciation_total) do
+      depreciation_per_mw_input * mw_input_capacity
+    end
   end
   attributes_required_for :depreciation_total, [
   :mw_input_capacity, :depreciation_per_mw_input]
@@ -83,8 +89,9 @@ class Qernel::ConverterApi
   # Calculates the depreciation for the converter in euros per mw input.
   #
   def depreciation_per_mw_input
-    return nil if required_attributes_contain_nil?(:depreciation_per_mw_input)
-    (initial_investment_costs_per_mw_input - end_of_life_value_per_mw_input) / economic_lifetime
+    dataset_fetch_handle_nil(:depreciation_per_mw_input) do
+      (initial_investment_costs_per_mw_input - end_of_life_value_per_mw_input) / economic_lifetime
+    end
   end
   attributes_required_for :depreciation_per_mw_input, [
   :initial_investment_costs_per_mw_input, :end_of_life_value_per_mw_input, :economic_lifetime]
@@ -116,8 +123,9 @@ class Qernel::ConverterApi
 # Calculates the total variable costs for the converter, including variable CCS costs.
   #
   def operation_and_maintenance_cost_variable_total
-    return nil if required_attributes_contain_nil?(:operation_and_maintenance_cost_variable_total)
-    (operation_and_maintenance_cost_variable_per_full_load_hour + ccs_operation_and_maintenance_cost_per_full_load_hour) * full_load_hours * number_of_units
+    dataset_fetch_handle_nil(:operation_and_maintenance_cost_variable_total) do
+      (operation_and_maintenance_cost_variable_per_full_load_hour + ccs_operation_and_maintenance_cost_per_full_load_hour) * full_load_hours * number_of_units
+    end
   end
   attributes_required_for :operation_and_maintenance_cost_variable_total, [
   :number_of_units, :ccs_operation_and_maintenance_cost_per_full_load_hour, :operation_and_maintenance_cost_variable_per_full_load_hour, :full_load_hours]
@@ -125,9 +133,10 @@ class Qernel::ConverterApi
 # Calculates the variable costs for the converter per MWh input, including variable CCS costs.
   #
   def operation_and_maintenance_cost_variable_per_mwh_input
-    return nil if required_attributes_contain_nil?(:operation_and_maintenance_cost_variable_per_mwh_input)
-    # return 0 if typical_input_capacity == 0
-    (operation_and_maintenance_cost_variable_per_full_load_hour + ccs_operation_and_maintenance_cost_per_full_load_hour) / typical_input_capacity
+    dataset_fetch_handle_nil(:operation_and_maintenance_cost_variable_per_mwh_input) do
+      # return 0 if typical_input_capacity == 0
+      (operation_and_maintenance_cost_variable_per_full_load_hour + ccs_operation_and_maintenance_cost_per_full_load_hour) / typical_input_capacity
+    end
   end
   attributes_required_for :operation_and_maintenance_cost_variable_per_mwh_input, [
   :operation_and_maintenance_cost_variable_per_full_load_hour, :typical_input_capacity]
@@ -135,8 +144,9 @@ class Qernel::ConverterApi
   # Determines the fuel costs, bases on the weighted costs of the used input.
   #
   def fuel_costs_total
-    return nil if required_attributes_contain_nil?(:fuel_costs_total)
-    demand * weighted_carrier_cost_per_mj
+    dataset_fetch_handle_nil(:fuel_costs_total) do
+      demand * weighted_carrier_cost_per_mj
+    end
   end
   attributes_required_for :fuel_costs_total, [
   :demand, :weighted_carrier_cost_per_mj  ]
@@ -144,24 +154,27 @@ class Qernel::ConverterApi
   # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
   #
   def fuel_costs_per_mwh_input
-    return nil if required_attributes_contain_nil?(:fuel_costs_per_mwh_input)
-    SECS_PER_HOUR * weighted_carrier_cost_per_mj
+    dataset_fetch_handle_nil(:fuel_costs_per_mwh_input) do
+      SECS_PER_HOUR * weighted_carrier_cost_per_mj
+    end
   end
   attributes_required_for :fuel_costs_per_mwh_input, [
   :weighted_carrier_cost_per_mj  ]
 
   # This returns the costs for co2 emission credits, based on the CO2_per mwh input.
   def cost_of_co2_emission_credits
-    return nil if required_attributes_contain_nil?(:cost_of_co2_emission_credits)
-    cost_of_co2_emission_credits_per_mwh_input * mwh_input
+    dataset_fetch_handle_nil(:cost_of_co2_emission_credits) do
+      cost_of_co2_emission_credits_per_mwh_input * mwh_input
+    end
   end
   attributes_required_for :cost_of_co2_emission_credits, [:cost_of_co2_emission_credits_per_mwh_input, :mwh_input]
 
   # This returns the costs for co2 emission credits per MWh input, as it multiplies the CO2 emitted by the converter by the price of the CO2 emissions.
   #
   def cost_of_co2_emission_credits_per_mwh_input
-    return nil if required_attributes_contain_nil?(:cost_of_co2_emission_credits_per_mwh_input)
-    (1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR
+    dataset_fetch_handle_nil(:cost_of_co2_emission_credits_per_mwh_input) do
+      (1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR
+    end
   end
   attributes_required_for :cost_of_co2_emission_credits_per_mwh_input, [:part_ets, :weighted_carrier_co2_per_mj]
 
