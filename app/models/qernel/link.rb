@@ -24,20 +24,34 @@ class Link
 
   dataset_accessors DATASET_ATTRIBUTES
 
+  attr_reader :is_loss, :is_share, :flexible, :dependent, :constant, :inversed_flexible
+
+  alias loss? is_loss
+  alias share? is_share
+  alias flexible? flexible
+  alias dependent? dependent
+  alias constant? constant
+  alias inversed_flexible? inversed_flexible
+
   def initialize(id, parent, child, carrier, link_type)
     @id = id
     @parent, @child, @carrier, @link_type = parent, child, carrier, link_type.to_sym
     @parent.add_input_link(self) if @parent # only used in testing
     @child.add_output_link(self) if @child  # only used in testing
+
+    @is_loss = @carrier.id == 1
+    @is_share = link_type === :share
+    @flexible = link_type === :flexible
+    @inversed_flexible = link_type === :inversed_flexible
+    @dependent = link_type === :dependent
+    @constant = link_type === :constant
+
     self.dataset_key # memoize dataset_key
   end
 
+
   def name
     "#{@parent.name} <- #{@child.name}"
-  end
-
-  def loss?
-    @carrier.id == 1
   end
 
   def inspect
@@ -49,25 +63,6 @@ class Link
   # LINK TYPES
   #########################
 
-  def share?
-    link_type === :share
-  end
-
-  def flexible?
-    link_type === :flexible
-  end
-
-  def inversed_flexible?
-    link_type === :inversed_flexible
-  end
-
-  def dependent?
-    link_type === :dependent
-  end
-
-  def constant?
-    link_type === :constant
-  end
 
   #########################
   # CALCULATION  FLOW
