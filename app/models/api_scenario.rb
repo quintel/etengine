@@ -20,22 +20,27 @@
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  api_session_key    :string(255)
-#  lce_settings       :text
+#  use_fce            :boolean
 #
 
 class ApiScenario < Scenario
 
-  validates_presence_of :api_session_key, :on => :create, :message => "can't be blank"
-  validates_uniqueness_of :api_session_key, :on => :create, :message => "must be unique"
+  validates_presence_of :api_session_key, :on => :update, :message => "can't be blank"
+  validates_uniqueness_of :api_session_key, :on => :update, :message => "must be unique"
 
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
 
+  after_create :copy_id_to_api_session_key!
+
+  def copy_id_to_api_session_key!
+    self.update_attribute :api_session_key, self.id
+  end
 
   def self.new_attributes(settings = {})
     settings ||= {}
     attributes = Scenario.default_attributes.merge(:title => "API")
-    attributes[:api_session_key] = settings[:id] == 'test' ? 'test' : Time.now.to_i
+    attributes[:api_session_key] = settings[:id] == 'test' ? 'test' : nil
     attributes.merge(settings)
   end
 
@@ -76,7 +81,7 @@ class ApiScenario < Scenario
   # used for api/v1/api_scenarios.json
   def as_json(options={})
     super(
-      :only => [:api_session_key, :user_values, :country, :region, :end_year, :start_year, :id]
+      :only => [:api_session_key, :user_values, :country, :region, :end_year, :start_year, :id, :use_fce]
     )
   end
 end
@@ -103,5 +108,5 @@ end
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  api_session_key    :string(255)
-#  lce_settings       :text
+#  use_fce            :boolean
 #

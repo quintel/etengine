@@ -8,6 +8,7 @@ Factory.define :scenario do |f|
   f.region "abc"
   f.country "nl"
   f.end_year 2040
+  f.use_fce false
 end
 
 Factory.define :scenario_visible_in_homepage, :parent => :scenario do |f|

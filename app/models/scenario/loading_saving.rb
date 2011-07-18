@@ -12,7 +12,8 @@ class Scenario < ActiveRecord::Base
   def reset!
     self.user_values = {}
     self.update_statements = {}
-    self.lce_settings = {}
+    self.fce_settings = {}
+    self.use_fce = false
   end
   alias_method :reset_user_values!, :reset!
 
@@ -35,7 +36,7 @@ class Scenario < ActiveRecord::Base
     self.end_year     = scenario.end_year
     self.country      = scenario.country ? scenario.country.clone : nil
     self.region       = scenario.region ? scenario.region.clone : nil
-    self.lce_settings = scenario.lce_settings
+    self.use_fce      = scenario.use_fce
   end
   
   # Returns a copy of a scenario. Used

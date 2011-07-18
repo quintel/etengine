@@ -1,6 +1,6 @@
 class Qernel::ConverterApi
 
-  def co2_LCE_per_mj
+  def co2_FCE_per_mj
     
   end
 
