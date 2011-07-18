@@ -149,11 +149,6 @@ private
   def graph
     @graph
   end
-
-
-  # add all the attributes and methods that are modularized in calculator/
-  # loads all the "open classes" in calculator
-  Dir["app/models/qernel/graph_query/*.rb"].sort.each {|file| require_dependency file }
 end
 
 end

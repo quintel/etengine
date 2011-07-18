@@ -10,9 +10,10 @@ class Dataset
   attr_accessor :time_curves
   attr_reader :id, :data
 
-  def memoize(object, attr_name, &block)
-    @memoized_data[object] ||= {}
-    @memoized_data[object][attr_name] ||= yield
+  def memoize(group, object, attr_name, &block)
+    @memoized_data[group] ||= {}
+    @memoized_data[group][object] ||= {}
+    @memoized_data[group][object][attr_name] ||= yield
   end
 
   def initialize(id = nil)
@@ -20,7 +21,7 @@ class Dataset
       Rails.logger.warn("Qernel::Dataset initialized without a id. Can lead to conflicts with Gquery Caching.")
     end
     @id = id
-    @data = {:graph => {}}
+    @data = {:graph => {:graph => {}}}
     @memoized_data = {}
   end
 
@@ -31,12 +32,14 @@ class Dataset
   # @param carrier_data [Array<::Carrier>]
   # @param link_data [Array<::Link>]
   # @param slot_data [Array<::Slot>]
+  # @param area_data [Array<::Area>]
   #
-  def add_graph(converter_data, carrier_data, link_data, slot_data)
-    add_data converter_data
-    add_data carrier_data
-    add_data link_data
-    add_data slot_data
+  def add_dataset(converter_data, carrier_data, link_data, slot_data, area_data)
+    add_data :converter, converter_data
+    add_data :carrier, carrier_data
+    add_data :link, link_data
+    add_data :slot, slot_data
+    add_data :area, area_data
   end
 
   ##
@@ -45,9 +48,10 @@ class Dataset
   #
   # @param [Hash]
   #
-  def <<(hsh)
+  def <<(group, hsh)
+    @data[group] ||= {}
     hsh.each do |key, values|
-      @data[key.to_sym] = values.inject({}) do |hsh,arr| 
+      @data[group][key] = values.inject({}) do |hsh,arr| 
         if arr.last.nil?
           hsh
         else
@@ -62,9 +66,9 @@ class Dataset
   #
   # @param [Array<Hash>]
   #
-  def add(objects)
+  def add(group, objects)
     objects.each do |obj|
-      self.<< obj
+      self.<< group, obj
     end
   end
 
@@ -72,28 +76,28 @@ class Dataset
   # adds a collection of things that respond_to :to_qernel.dataset_key
   # @param [Array<#dataset_key and #attributes>] data
   #
-  def add_data(collection)
+  def add_data(group, collection)
     [collection].flatten.each do |item|
       raise "cannot add a #{item.class} to graph data" unless item.respond_to? :dataset_key
       attrs = item.respond_to?(:dataset_attributes) ? item.dataset_attributes : item.attributes
-      self.<<(item.dataset_key => attrs)
+      self.<<(group, item.dataset_key => attrs)
     end
   end
 
   # In the dataset values that are nil do not get a key. So it should return nil.
   #
-  def get(object_key, attr_name)
-    #raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
-    # if @data[object_key].has_key?(attr_name)
-      @data[object_key][attr_name]
-    # else
-      nil
-    # end
-  end
+  # def get(object_key, attr_name)
+  #   #raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
+  #   # if @data[object_key].has_key?(attr_name)
+  #     @data[object_key][attr_name]
+  #   # else
+  #   #  nil
+  #   # end
+  # end
 
-  def set(object_key, attr_name, value)
-    @data[object_key] ||= {}
-    @data[object_key][attr_name] = value
+  def set(group, object_key, attr_name, value)
+    @data[group][object_key] ||= {}
+    @data[group][object_key][attr_name] = value
   end
 
 end

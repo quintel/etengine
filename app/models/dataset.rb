@@ -94,9 +94,10 @@ private
   def build_qernel
     qernel = Qernel::Dataset.new(id)
 
-    [converter_datas, carrier_area_datas, area, link_datas, slot_datas].each do |data|
-      qernel.add_data data
-    end
+    # [converter_datas, carrier_area_datas, area, link_datas, slot_datas].each do |data|
+    #   qernel.add_data data
+    # end
+    qernel.add_dataset(converter_datas, carrier_area_datas, link_datas, slot_datas, area)
     qernel.time_curves = time_curves
     qernel
   end
