@@ -215,17 +215,14 @@ class Graph
   #
   # @todo Calculate graph, and order converters array according to finished_converters
   def optimize_calculation_order
-    original_dataset = @dataset 
-    self.dataset = original_dataset.clone
-    self.calculate
-    self.finished_converters.reverse.each_with_index do |converter, index|
-      if old = self.converter(converter.id)
-        self.converters.delete(old)
-        self.converters.unshift(old)
+    copy = Marshal.load(Marshal.dump(self))
+    copy.calculate
+    copy.finished_converters.reverse.each_with_index do |converter, index|
+      if old = converters.detect{|c| c.id == converter.id}
+        converters.delete(old)
+        converters.unshift(old)
       end
     end
-    self.dataset = original_dataset
-    self.finished_converters = []
   end
 
 private
