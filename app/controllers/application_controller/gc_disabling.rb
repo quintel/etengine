@@ -12,7 +12,6 @@ module ApplicationController::GcDisabling
     logger.info "Disabling GC."
     GC.disable
     yield
-    GC.start      
     ensure
       logger.info "Enabling GC."
       GC.enable
