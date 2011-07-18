@@ -85,8 +85,12 @@ class Input < ActiveRecord::Base
   # @return [Hash]
   #
   def update_statement(value)
-    if update_type == 'lce'
-      Gql::Update::LceCommand.create(keys, attr_name, value / factor)
+    
+    ##
+    # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
+    # The Gql::Update::FceCommand takes care of this.
+    if update_type == 'fce'
+      Gql::Update::FceCommand.create(keys, attr_name, value / factor)
     else
       {
         update_type => {
@@ -149,8 +153,8 @@ class Input < ActiveRecord::Base
 
   # TODO refactor (seb 2010-10-11)
   def start_value
-    if gql_query = self[:start_value_gql] and !gql_query.blank?
-      Current.gql.query(gql_query) * factor
+    if gql_query = self[:start_value_gql] and !gql_query.blank? and result = Current.gql.query(gql_query)
+      result * factor
     else
       self[:start_value]
     end

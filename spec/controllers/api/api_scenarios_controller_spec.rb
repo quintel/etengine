@@ -48,5 +48,19 @@ describe Api::ApiScenariosController do
       get :show, :id => @api_scenario.api_session_key, :result => ['gquery_key', 'gquery_key2']
       assigns(:results).values.should have(2).items
     end
+
+    context "use_fce" do
+      it "should be false when created" do
+        @api_scenario.use_fce.should be_false
+      end
+      
+      it "should updated in the scenario when params[:use_fce] is different then the scenario value" do
+        get :show, :id => @api_scenario.api_session_key, :use_fce => false
+        ApiScenario.find_by_api_session_key(@api_scenario.api_session_key).use_fce.should be_false
+
+        get :show, :id => @api_scenario.api_session_key, :use_fce => true
+        ApiScenario.find_by_api_session_key(@api_scenario.api_session_key).use_fce.should be_true
+      end
+    end
   end
 end

@@ -27,13 +27,16 @@ class Api::ApiScenariosController < ApplicationController
   ##
   # GET result[]=gquery_key&result[]=gquery_key2
   # 335=2.4&421=2.9
-  def show
+  def show 
     Current.scenario = @api_scenario
+    # RD: why are we using a update command inside the show method?
+    # SB: - this updates the scenario with the submitted slider values params[:input]
+    #     - the API is a GET show request, so that we can use it with JSON-P
     update_scenario(@api_scenario) 
     @results = results
     @json = {
       'result'   => @results,
-      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :lce_settings, :preset_scenario_id])
+      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id])
       
       #, 'errors'   => @api_scenario.api_errors(test_scenario?)
     }
@@ -130,6 +133,18 @@ class Api::ApiScenariosController < ApplicationController
         scenario.update_inputs_for_api(params[:input])
         # Save scenario with new user_values, except it is a test version
         scenario.save unless test_scenario?
+      end
+      
+      if params[:use_fce]
+        # If the use_fce setting has changed it should be updated. this influences emission calculations
+        # TODO RD The following statement probably will always be true, as 
+        #         params[:use_fce] will be a string, whereas scenario.use_fce is stored
+        #         and retrieved as a boolean. true == "1" => false. 
+        #         maybe use the use_fce_changed? rails method instead?
+        if scenario.use_fce != params[:use_fce]
+          scenario.use_fce = params[:use_fce] 
+          scenario.save unless test_scenario?
+        end
       end
     end
 end
