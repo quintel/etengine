@@ -27,7 +27,9 @@ class Qernel::ConverterApi
 
   def number_of_heat_plants_future
     dataset_fetch_handle_nil(:number_of_heat_plants_future) do
-      ([output_of_useable_heat,output_of_steam_hot_water,output_of_hot_water].sum / ((typical_capacity_effective_in_mj_s* 8760 * 3600) * capacity_factor)).to_f
+      ([ output_of_useable_heat, 
+        output_of_steam_hot_water,
+        output_of_hot_water].sum / ((typical_capacity_effective_in_mj_s * 8760 * 3600) * capacity_factor)).to_f
     end
   end
   attributes_required_for :number_of_heat_plants_future, [
