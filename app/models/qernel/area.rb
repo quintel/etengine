@@ -62,13 +62,11 @@ class Area
   dataset_accessors ATTRIBUTES_USED
 
   attr_accessor :graph
+  attr_reader :dataset_key
 
   def initialize(graph = nil)
     self.graph = graph unless graph.nil?
-  end
-
-  def dataset_key
-    :area_data
+    @dataset_key = :area_data
   end
 
   def co2_emission_1990_billions

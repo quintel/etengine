@@ -115,14 +115,24 @@ class Converter
     3 => :undefined
   }
 
-  attr_reader :id, :output_links, :input_links, :groups
-  attr_accessor :name, :calculator, :key, :sector_id, :use_id, :graph
+  attr_reader :id, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key
+  attr_accessor :calculator, :key, :graph
+
+  attr_reader :environment_converter, :sector_environment
+  alias environment? environment_converter
+  alias sector_environment? sector_environment
+
+  attr_reader :primary_energy_demand, :useful_demand, :final_demand_cbs, :non_energetic_use, :energy_import_export
+  alias primary_energy_demand? primary_energy_demand
+  alias useful_demand? useful_demand
+  alias final_demand_cbs? final_demand_cbs
+  alias non_energetic_use? non_energetic_use
+  alias energy_import_export? energy_import_export
 
   dataset_accessors [:demand, :preset_demand, :municipality_demand]
 
-  def initialize(id, name)
+  def initialize(id, key, use_id, sector_id, groups)
     @id = id
-    self.name = name
 
     @output_links = []
     @input_links = []
@@ -130,11 +140,34 @@ class Converter
     @output_hash = {}
     @input_hash = {}
 
-    @groups = []
+    # TODO check if @key is ever used somewhere
+    @key = key
+
+    @use_key = USES[use_id]
+    @sector_key = SECTORS[sector_id]
+
+    @groups = groups
+
+    custom_use_key = (self.use_key === :undefined) ? '' : "_#{use_key}"
+    @full_key = "#{key}_#{sector_key}#{custom_use_key}".to_sym
+
+    @environment_converter = full_key === :environment_environment
+    @sector_environment = sector_key === :environment
+
+    @primary_energy_demand = @groups.include? :primary_energy_demand
+    @useful_demand = @groups.include? :useful_demand
+    @final_demand_cbs = @groups.include? :final_demand_cbs
+    @non_energetic_use = @groups.include? :non_energetic_use
+    @energy_import_export = @groups.include? :energy_import_export
+    
+    
     self.calculator = Qernel::ConverterApi.new(self)
     self.dataset_key # memoize dataset_key
   end
 
+  def name
+    full_key
+  end
 
   ##########################################
   # Demands
@@ -205,42 +238,6 @@ public
   # Values and State
   ##########################################
 
-  ##
-  # The unique key of a converter. [key]_[sector_key]_[use_key]
-  #
-  # if {#use_key} is <tt>:undefined</tt> the full_key is [key]_[sector_key]
-  #
-  # @return [Symbol]
-  #
-  def full_key
-    unless @full_key
-      custom_use_key = (use_key === :undefined) ? '' : "_#{use_key}"
-      @full_key = :"#{key}_#{sector_key}#{custom_use_key}"
-    end
-    @full_key
-  end
-
-  ##
-  # The sector key. See #{Qernel::Converter::SECTORS} for valid keys.
-  #
-  # @return [Symbol]
-  #
-  def sector_key
-    SECTORS[sector_id]
-  end
-
-  def sector_environment?
-    sector_key === :environment
-  end
-
-  ##
-  # The use key. See #{Qernel::Converter::USES} for valid keys.
-  #
-  # @return [Symbol]
-  #
-  def use_key
-    USES[use_id]
-  end
 
   def query(method_name = nil)
     if method_name.nil?
@@ -251,29 +248,6 @@ public
   end
   alias_method :proxy, :query
 
-  def environment?
-    full_key === :environment_environment
-  end
-
-  def primary_energy_demand?
-    @groups.include? :primary_energy_demand
-  end
-
-  def useful_demand?
-    @groups.include? :useful_demand
-  end
-
-  def final_demand_cbs?
-    @groups.include? :final_demand_cbs
-  end
-
-  def non_energetic_use?
-    @groups.include? :non_energetic_use
-  end
-
-  def energy_import_export?
-    @groups.include? :energy_import_export
-  end
 
   ##########################################
   # Building Graph
@@ -495,7 +469,7 @@ public
   ##########################################
 
   def to_s
-    "#{@name} #{[@id]}" || 'untitled'
+    "#{name} #{[@id]}" || 'untitled'
   end
 
   def inspect

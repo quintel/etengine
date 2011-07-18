@@ -110,21 +110,10 @@ class ConverterApi
   ##
   # The converter all calculations are based on
   #
-  attr_reader :converter
+  attr_reader :converter, :dataset_key, :dataset_group
 
   def dataset
     converter.dataset
-  end
-
-  ##
-  # Returns the unique key for this object that is used in Dataset.
-  #
-  def dataset_key
-    converter.dataset_key
-  end
-
-  def dataset_group
-    converter.dataset_group
   end
 
   def object_dataset
@@ -149,6 +138,8 @@ class ConverterApi
   #
   def initialize(converter_qernel, attrs = {})
     @converter = converter_qernel
+    @dataset_key = converter.dataset_key
+    @dataset_group = converter.dataset_group
   end
 
 
