@@ -75,10 +75,6 @@ class Graph < ActiveRecord::Base
       @future_graph.dataset = dataset.to_qernel
     end
 
-    Graph.benchmark("Graph#future refresh_dataset_objects") do
-      @future_graph.refresh_dataset_objects
-    end
-
     @future_graph
   end
 
@@ -96,7 +92,6 @@ class Graph < ActiveRecord::Base
     end
     Graph.benchmark("Graph#calculated_present_qernel dataset") do
       qernel.dataset = calculated_present_data
-      qernel.refresh_dataset_objects
     end
     qernel
   end
@@ -105,7 +100,6 @@ class Graph < ActiveRecord::Base
     marshal = Rails.cache.fetch("/graph/#{dataset.id}/#{dataset.updated_at.to_i}/calculated_present_data") do
       qernel = present_qernel
       qernel.dataset = dataset.to_qernel
-      qernel.refresh_dataset_objects
       qernel.calculate
       Marshal.dump(qernel.dataset)
     end
@@ -135,12 +129,12 @@ class Graph < ActiveRecord::Base
   end
 
   def build_qernel
-    qernel_graph = blueprint.to_qernel
-    qernel_graph.dataset = dataset.to_qernel
-    qernel_graph.refresh_dataset_objects
-    qernel_graph.optimize_calculation_order
-    qernel_graph.dataset = nil
-    qernel_graph
+    qernel = blueprint.to_qernel
+    qernel.dataset = dataset.to_qernel
+    qernel.optimize_calculation_order
+    qernel.reset_dataset_objects
+    qernel.dataset = nil
+    qernel
   end
 end
 

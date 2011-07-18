@@ -107,21 +107,16 @@ class ConverterApi
 
   dataset_accessors ATTRIBUTES_USED
 
-  ##
-  # The converter all calculations are based on
-  #
+  # attributes updated by #initialize
   attr_reader :converter, :dataset_key, :dataset_group
+  # attributes updated by Converter#graph=
+  attr_accessor :area, :graph
+  # dataset attributes of converter
+  dataset_accessors [:municipality_demand, :preset_demand, :demand]
 
-  def dataset
-    converter.dataset
-  end
-
-  def object_dataset
-    converter.object_dataset
-  end
-
-  def area
-    converter.graph.area
+  # ConverterApi has same accessor as it's converter
+  def self.dataset_group
+    @dataset_group ||= Qernel::Converter.dataset_group
   end
 
   def to_s
@@ -129,7 +124,7 @@ class ConverterApi
   end
 
   def inspect
-    converter.full_key.to_s
+    to_s
   end
 
 
@@ -142,15 +137,6 @@ class ConverterApi
     @dataset_group = converter.dataset_group
   end
 
-
-  ##
-  # See {Qernel::Converter} for municipality_demand
-  #
-  def municipality_demand
-    converter.municipality_demand
-  end
-  register_calculation_method :municipality_demand
-
   ##
   # See {Qernel::Converter} for municipality_demand
   #
@@ -158,28 +144,12 @@ class ConverterApi
     converter.municipality_demand = val
   end
 
-  ##
-  # See {Qernel::Converter} for difference of demand/preset_demand
-  #
-  def preset_demand
-    converter.preset_demand
-  end
 
   ##
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
     converter.preset_demand = val
-  end
-
-  ##
-  # The total energy demand of the converter
-  # See {Qernel::Converter} for difference of demand/preset_demand
-  #
-  # @return [Float] total energy demand
-  #
-  def demand
-    converter.demand
   end
 
   ##
@@ -243,7 +213,8 @@ class ConverterApi
   def self.create_share_of_converter_method(converter_key)
     key = converter_key.to_sym
     define_method "share_of_#{key}" do
-      self.converter.output_links.detect{|l| l.parent.full_key == key}.andand.share
+      ol = self.converter.output_links.detect{|l| l.parent.full_key == key}
+      ol and ol.share
     end
   end
   
