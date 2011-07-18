@@ -117,7 +117,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
             c.instance_eval(attr_name)
           end
         rescue Exception => e
-          raise "VALUE(#{converters.join(',')};#{attribute_name.first.strip.gsub('[','(').gsub(']',')')}) for #{c.full_key} throws an exception: #{e}"
+          #Rails.logger.warn(e.stacktrace)
+          raise "VALUE(#{converters.join(',')};#{replace_gql_with_ruby_brackets(attribute_name.first)}) for #{c.full_key} throws an exception: #{e}"
         end
       end
 
