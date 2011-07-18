@@ -54,7 +54,11 @@ class Slot
   #
   def links
     # For legacy reasons, we still access links through the converter.
-    @links ||= input? ? converter.input_links.select{|l| l.carrier == @carrier} : converter.output_links.select{|l| l.carrier == @carrier}
+    @links ||= if input? 
+      converter.input_links.select{|l| l.carrier == @carrier} 
+    else
+      converter.output_links.select{|l| l.carrier == @carrier}
+    end
   end
 
   ##

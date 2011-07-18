@@ -317,21 +317,21 @@ public
   # @return [Array<Slot>] all input slots
   #
   def inputs
-    input_hash.values
+    @inputs ||= input_hash.values
   end
 
   ##
   # @return [Array<Slot>] all output slots
   #
   def outputs
-    output_hash.values
+    @outputs ||= output_hash.values
   end
 
   ##
   # @return [Array<Slot>] input *and* output slots
   #
   def slots
-    [inputs, outputs].flatten
+    @_slots ||= [inputs, outputs].flatten
   end
 
   ##
@@ -410,14 +410,6 @@ public
   #
   def ready?
     slots.all?(&:ready?)
-  end
-
-  ##
-  # Passive links have to be calculated from the other converters.
-  # The calculation of demand starts when all the passive links are filled.
-  #
-  def passive_links
-    slots.map(&:passive_links).flatten
   end
 
   ##
