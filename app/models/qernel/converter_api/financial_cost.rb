@@ -96,18 +96,6 @@ class Qernel::ConverterApi
     :land_use_in_nl,
   ]
 
-#  def capacity_factor_actual
-#    return nil if required_attributes_contain_nil?
-#
-#    if @installed_capacity_effective_in_mj_s.to_i == 0
-#      @capacity_factor
-#    else
-#      @electricitiy_production_actual / @installed_capacity_effective_in_mj_s
-#    end
-#  end
-#  attributes_required_for :capacity_factor_actual, [:electricitiy_production_actual, :installed_capacity_effective_in_mj_s]
-
-
   def cost_om_per_mj
     sum_unless_empty values_for_method(:cost_om_per_mj)
   end

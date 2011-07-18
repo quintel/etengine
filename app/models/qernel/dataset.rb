@@ -10,12 +10,6 @@ class Dataset
   attr_accessor :time_curves
   attr_reader :id, :data
 
-  def memoize(group, object, attr_name, &block)
-    @memoized_data[group] ||= {}
-    @memoized_data[group][object] ||= {}
-    @memoized_data[group][object][attr_name] ||= yield
-  end
-
   def initialize(id = nil)
     if id.nil?
       Rails.logger.warn("Qernel::Dataset initialized without a id. Can lead to conflicts with Gquery Caching.")
@@ -82,22 +76,6 @@ class Dataset
       attrs = item.respond_to?(:dataset_attributes) ? item.dataset_attributes : item.attributes
       self.<<(group, item.dataset_key => attrs)
     end
-  end
-
-  # In the dataset values that are nil do not get a key. So it should return nil.
-  #
-  # def get(object_key, attr_name)
-  #   #raise "Dataset#get #{object_key} #{attr_name}" unless @data.has_key?(object_key.to_sym)
-  #   # if @data[object_key].has_key?(attr_name)
-  #     @data[object_key][attr_name]
-  #   # else
-  #   #  nil
-  #   # end
-  # end
-
-  def set(group, object_key, attr_name, value)
-    @data[group][object_key] ||= {}
-    @data[group][object_key][attr_name] = value
   end
 
 end
