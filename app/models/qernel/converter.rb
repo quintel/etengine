@@ -165,6 +165,13 @@ class Converter
     self.dataset_key # memoize dataset_key
   end
 
+  def graph=(graph)
+    @graph = graph
+    self.calculator.graph = @graph
+    self.calculator.area = @graph.area
+    @graph
+  end
+
   def name
     full_key
   end

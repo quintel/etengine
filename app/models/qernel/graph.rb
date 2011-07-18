@@ -34,8 +34,6 @@ class Graph
     self
   end
 
-
-
   # def initialize(converters, carriers, groups)
   def initialize(converters, optimize = true, dataset = nil, carriers = nil)
     self.converters = converters
@@ -48,16 +46,30 @@ class Graph
     prepare_memoization
   end
 
-  def refresh_dataset_objects
-    self.assign_object_dataset
-    self.area.assign_object_dataset
-    self.carriers.each(&:assign_object_dataset)
+  def dataset=(dataset)
+    @dataset = dataset
+    self.refresh_dataset_objects if @dataset
+  end
+
+  def each_dataset_object_item(method_name)
+    self.send(method_name)
+    self.area.send(method_name)
+    self.carriers.each(&method_name)
     self.converters.each do |c|
-      c.assign_object_dataset
-      c.input_links.each(&:assign_object_dataset)
-      c.inputs.each(&:assign_object_dataset)
-      c.outputs.each(&:assign_object_dataset)
+      c.query.send(method_name)
+      c.send(method_name)
+      c.input_links.each(&method_name)
+      c.inputs.each(&method_name)
+      c.outputs.each(&method_name)
     end
+  end
+
+  def reset_dataset_objects
+    each_dataset_object_item(:reset_object_dataset)
+  end
+
+  def refresh_dataset_objects
+    each_dataset_object_item(:assign_object_dataset)
   end
 
   def calculated?
@@ -203,17 +215,17 @@ class Graph
   #
   # @todo Calculate graph, and order converters array according to finished_converters
   def optimize_calculation_order
-    # converters with preset_demand should be in the beginning of the array
-    # makes calculating faster (as they are already ready?)
-
-    copy = Marshal.load(Marshal.dump(self))
-    copy.calculate
-    copy.finished_converters.reverse.each_with_index do |converter, index|
-      if old = converters.detect{|c| c.id == converter.id}
-        converters.delete(old)
-        converters.unshift(old)
+    original_dataset = @dataset 
+    self.dataset = original_dataset.clone
+    self.calculate
+    self.finished_converters.reverse.each_with_index do |converter, index|
+      if old = self.converter(converter.id)
+        self.converters.delete(old)
+        self.converters.unshift(old)
       end
     end
+    self.dataset = original_dataset
+    self.finished_converters = []
   end
 
 private

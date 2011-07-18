@@ -6,7 +6,7 @@
 module Qernel::DatasetAttributes
 
   def self.included(klass)
-    #klass.send(:attr_accessor, :object_dataset)
+    klass.send(:attr_accessor, :object_dataset)
     klass.extend(ClassMethods)
   end
 
@@ -49,13 +49,17 @@ module Qernel::DatasetAttributes
     @dataset_key ||= self.class.compute_dataset_key(id)
   end
 
-  def assign_object_dataset
+  def reset_object_dataset
     @object_dataset = nil
   end
 
-  def object_dataset
-    @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
+  def assign_object_dataset
+    @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
   end
+
+  #def object_dataset
+  #  @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
+  #end
 
   # HANDLE_NIL_SECURLY = true has better output for debugging
   # HANDLE_NIL_SECURLY = false is 50 ms faster. but harder to debug if problem occurs
