@@ -137,7 +137,9 @@ class Gql
       update_converters(@future, update_statements['converters'])
     end
 
-    @future.calculate
+    benchmark("calculate future") do
+      @future.calculate
+    end
 
     update_policies(update_statements['policies']) if update_statements
 
