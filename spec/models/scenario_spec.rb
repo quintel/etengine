@@ -289,6 +289,6 @@ describe Scenario do
     its(:end_year) { should == @s.end_year}
     its(:country) { should == @s.country}
     its(:region) { should == @s.region}
-    its(:lce_settings) { should == @s.lce_settings}
+    #its(:use_fce) { should == @s.fce}
   end
 end

@@ -16,7 +16,6 @@ class Dataset
     end
     @id = id
     @data = {:graph => {:graph => {}}}
-    @memoized_data = {}
   end
 
   ##
