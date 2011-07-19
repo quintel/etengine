@@ -25,7 +25,7 @@ describe Api::ApiScenariosController do
       api_session_key = Time.now.to_i
 
       expect {
-        get :new, {:settings => {:country => 'uk', :api_session_key => api_session_key}}
+        get :new, {:settings => {:country => 'uk', :api_session_key => api_session_key.to_s}}
       }.to change(ApiScenario, :count).by(1)
 
       ApiScenario.find_by_api_session_key(api_session_key).should_not be_nil
@@ -35,12 +35,12 @@ describe Api::ApiScenariosController do
 
   describe "show" do
     before(:all) do
-      @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo', :api_session_key => 'foo'))
+      @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo'))
     end
 
     it "should assign @api_scenario" do
-      get :show, :id => @api_scenario.api_session_key
-      assigns(:api_scenario).api_session_key.should == @api_scenario.api_session_key
+      get :show, :id => @api_scenario.api_session_key.to_s
+      assigns(:api_scenario).api_session_key.to_s.should == @api_scenario.api_session_key.to_s
     end
 
     it "should get results" do
