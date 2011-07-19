@@ -131,7 +131,7 @@ class Converter
 
   dataset_accessors [:demand, :preset_demand, :municipality_demand]
 
-  def initialize(id, key, use_id, sector_id, groups)
+  def initialize(id, key, use_id = nil, sector_id = nil, groups = nil)
     @id = id
 
     @output_links = []
@@ -146,7 +146,7 @@ class Converter
     @use_key = USES[use_id]
     @sector_key = SECTORS[sector_id]
 
-    @groups = groups
+    @groups = groups || []
 
     custom_use_key = (self.use_key === :undefined) ? '' : "_#{use_key}"
     @full_key = "#{key}_#{sector_key}#{custom_use_key}".to_sym

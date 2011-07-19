@@ -5,5 +5,3 @@ module Qernel
     
   end
 end
-
-end
