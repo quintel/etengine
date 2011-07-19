@@ -33,6 +33,12 @@ module Qernel::DatasetAttributes
     end
   end
 
+  # For testing only
+    def with(hsh)
+      @object_dataset = hsh
+      self
+    end
+  
   def dataset
     graph.dataset
   end

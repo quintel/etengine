@@ -16,8 +16,8 @@ class Graph
   extend ActiveModel::Naming
   include DatasetAttributes
 
+  attr_reader   :converters
   attr_accessor :dataset,
-                :converters,
                 :finished_converters,
                 :area,
                 :region_code,
@@ -35,15 +35,18 @@ class Graph
   end
 
   # def initialize(converters, carriers, groups)
-  def initialize(converters, optimize = true, dataset = nil, carriers = nil)
+  def initialize(converters = [])
     self.converters = converters
-
-    @group_converters_cache = {}
-
     self.area = Qernel::Area.new(self)
-    build_lookup_hash
+  end
 
-    prepare_memoization
+  def converters=(converters)
+    @converters = converters
+    @converters.each{|converter| converter.graph = self }
+
+    self.reset_memoized_methods
+
+    @converters
   end
 
   def dataset=(dataset)
@@ -207,7 +210,7 @@ class Graph
   ##
   # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of converters.
   def inspect
-    "Do not inspect. Because graph is to big that it takes a long time to inspect."
+    "<Qernel::Graph graph_id:#{graph_id}>"
   end
 
   ##
@@ -225,13 +228,50 @@ class Graph
     end
   end
 
+  # ====== Methods only used for Testing =============================
+  
+  if Rails.env.test? || Rails.env.development?
+    # create slot if necessary.
+    # return link
+    def connect(lft, rgt, carrier, link_type = :share)
+      lft = converter(lft) if lft.is_a?(Symbol)
+      rgt = converter(rgt) if rgt.is_a?(Symbol)
+
+      unless lft.input(carrier)
+        lft.add_slot(Slot.new(lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
+      end
+      unless rgt.output(carrier)
+        rgt.add_slot(Slot.new(rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
+      end
+      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type)
+    end
+
+    def with_converters(key_dataset_hsh)
+      self.converters = key_dataset_hsh.map do |key, dataset|
+        Converter.new(self.converters.length+1, key).with(dataset)
+      end
+    end
+  end
+
+
+  def reset_memoized_methods
+    reset_group_converters_and_memoize
+    reset_converter_lookup_and_memoize
+
+    @carriers = nil
+    @links = nil
+    @groups = nil
+    @primary_energy_carriers = nil
+  end
+
 private
 
-  def prepare_memoization
+  def reset_group_converters_and_memoize
+    @group_converters_cache = {}
     groups.uniq.each {|key| group_converters(key)}
   end
 
-  def build_lookup_hash
+  def reset_converter_lookup_and_memoize
     @converters_hash = {}
     self.converters.each do |converter|
       Qernel::Converter::KEYS_FOR_LOOKUP.each do |method_for_key|

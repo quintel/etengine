@@ -148,8 +148,8 @@ class Converter
 
     @groups = groups || []
 
-    custom_use_key = (self.use_key === :undefined) ? '' : "_#{use_key}"
-    @full_key = "#{key}_#{sector_key}#{custom_use_key}".to_sym
+    custom_use_key = (@use_key === :undefined) ? nil : @use_key.to_s
+    @full_key = [@key, @sector_key, @use_key].compact.join("_").to_sym
 
     @environment_converter = full_key === :environment_environment
     @sector_environment = sector_key === :environment
@@ -276,6 +276,7 @@ public
     @input_links << link
   end
 
+  # @return [Qernel::Slot]
   def add_slot(slot)
     slot.converter = self
 
@@ -288,11 +289,19 @@ public
       carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
       @output_hash.merge! carrier_key => slot
     end
+    reset_memoized_slot_methods
+    slot
   end
 
   ##########################################
   # Slots
   ##########################################
+
+  def reset_memoized_slot_methods
+    @inputs = nil
+    @outputs = nil
+    @_slots = nil
+  end
 
   ##
   # @return [Array<Slot>] all input slots
