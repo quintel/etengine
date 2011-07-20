@@ -29,10 +29,10 @@ class Link
 
   # --------- Flow ------------------------------------------------------------
 
-  attr_accessor :reverse
+  attr_accessor :reversed
   attr_reader :is_loss
 
-  alias reversed? reverse
+  alias reversed? reversed
   alias loss? is_loss
 
 
@@ -49,10 +49,12 @@ class Link
 
   # --------- Initialize ------------------------------------------------------
 
-  def initialize(id, parent, child, carrier, link_type, reverse = false)
+  def initialize(id, parent, child, carrier, link_type, reversed = false)
     @id = id
-    @reverse = reverse
-    @parent, @child, @carrier, @link_type = parent, child, carrier, link_type.to_sym
+    @reversed = reversed
+    @parent, @child, @carrier = parent, child, carrier
+    
+    self.link_type = link_type
 
     connect
     memoize_for_cache
@@ -67,13 +69,20 @@ protected
 
   def memoize_for_cache
     @is_loss = @carrier.id == 1
+
+    self.dataset_key # memoize dataset_key
+  end
+
+  def link_type=(link_type)
+    @link_type = link_type
     @is_share = @link_type === :share
     @flexible = @link_type === :flexible
     @inversed_flexible = @link_type === :inversed_flexible
     @dependent = @link_type === :dependent
     @constant = @link_type === :constant
+  end
 
-    self.dataset_key # memoize dataset_key
+  def after_assign_object_dataset
   end
 
 
@@ -136,7 +145,7 @@ protected
   end
 
   def calculate_share
-    self.share * input_external_demand
+    share * input_external_demand
   end
 
 
