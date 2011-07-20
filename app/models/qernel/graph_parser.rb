@@ -2,11 +2,11 @@ module Qernel
   class GraphParser
     attr_reader :lines
     CARRIERS = {
-      'loss' => Carrier.new(1, 'loss', '', 1.0),
-      'el' => Carrier.new(2, 'el', '', 1.0),
-      'hw' => Carrier.new(3, 'hw', '', 1.0),
-      'electricity' => Carrier.new(4, 'electricity', '', 1.0)
-    }
+      'foo' => Carrier.new(2, 'foo', '', 1.0),
+      'bar' => Carrier.new(3, 'bar', '', 1.0),
+    }.merge(
+      ::Carrier.all.inject({}) {|hsh,c| hsh.merge c.key => c.to_qernel }
+    )
 
     LINK_TYPES = {
       's' => :share,
@@ -85,7 +85,7 @@ module Qernel
     # el[1.0;1.0]
     # el[0.5;1.0]
     def carrier(str)
-      carrier_key = str.nil? ? 'el' : str.match(/^(\w+).*:/).captures.first
+      carrier_key = str.nil? ? 'foo' : str.match(/^(\w+).*:/).captures.first
       CARRIERS[carrier_key]
     end
 
