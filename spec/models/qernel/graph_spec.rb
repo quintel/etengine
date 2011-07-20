@@ -77,10 +77,24 @@ module Qernel
       @g.calculate
     end
 
+    # ----- SYNTAX  ------------------------------------------------
+    
+    # defaults:
+    # carrier: foo
+    # conversion: 1.0
+    # link_share: nil
+    # demand: nil
+    #
+    # so:
+    # "foo  == s ==> bar"
+    # is equivalent to:
+    # "foo[1.0;1.0]: foo(nil) == s(nil) ==> bar(nil)"
+
+
     # ----- Mutliple carriers ------------------------------------------------
 
-    it "hw[0.5]: lft(100) == s(1.0) ==> rgt1 
-        el[0.5]: lft      == s(1.0) ==> rgt2" do
+    it "bar[0.5]: lft(100) == s(1.0) ==> rgt1 
+        foo[0.5]: lft      == s(1.0) ==> rgt2" do
 
       @g.converter(:rgt1).demand.should == 50.0
       @g.converter(:rgt2).demand.should == 50.0
@@ -178,9 +192,9 @@ module Qernel
 
     it "# if outputs are higher then inputs fill up inversed_flexible
         # with the remainder.
-        hw:   loss(nil) == i(nil)   ==> mid(nil)
-        el:   lft1(50)  == s(1)   ==> mid
-        el:   mid       == c(nil) ==> rgt1(70)" do
+        bar:   loss(nil) == i(nil)   ==> mid(nil)
+        foo:   lft1(50)  == s(1)   ==> mid
+        foo:   mid       == c(nil) ==> rgt1(70)" do
       
       @g.converter(:rgt1).demand.should == 70.0
       @g.converter(:lft1).demand.should == 50.0
@@ -191,10 +205,10 @@ module Qernel
 
     it "# we don't want inversed_flexible to become negative
         # if outputs are higher then inputs set inversed_flexible to 0.0
-        hw:   loss(nil) == i(nil)   ==> mid(nil)
-        el:   lft1(100) == s(1)   ==> mid
-        el:   mid       == c(nil) ==> rgt1(40) 
-        el:   mid       == f(nil) ==> rgt2(30)" do
+        bar:   loss(nil) == i(nil)   ==> mid(nil)
+        foo:   lft1(100) == s(1)   ==> mid
+        foo:   mid       == c(nil) ==> rgt1(40) 
+        foo:   mid       == f(nil) ==> rgt2(30)" do
       
       @g.converter(:lft1).demand.should == 100.0
       @g.converter(:mid).demand.should ==  100.0
@@ -205,9 +219,9 @@ module Qernel
 
     it "# dependent consumes everything
         loss:      loss(nil)      == i(nil) ==> mid(nil)
-        el[1;0.5]: el_output(nil) == d(nil) ==> mid
-        hw[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
-        el:        mid            == c(nil) ==> rgt1(120)" do
+        foo[1;0.5]: el_output(nil) == d(nil) ==> mid
+        bar[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
+        foo:        mid            == c(nil) ==> rgt1(120)" do
       
       @g.converter(:rgt1).demand.should == 120.0
       @g.converter(:hw_demand).demand.should == 60.0
@@ -220,9 +234,9 @@ module Qernel
     it "# dependent takes it's cut from the total demand (120)
         # is not depending on the other output-links
         loss:      loss(nil)      == i(nil) ==> mid(nil)
-        el[1;0.5]: el_output(nil) == d(nil) ==> mid
-        hw[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
-        el:        mid            == c(nil) ==> rgt1(120)" do
+        foo[1;0.5]: el_output(nil) == d(nil) ==> mid
+        bar[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
+        foo:        mid            == c(nil) ==> rgt1(120)" do
       
       @g.converter(:rgt1).demand.should == 120.0
       @g.converter(:hw_demand).demand.should == 50.0
@@ -234,9 +248,9 @@ module Qernel
 
     # ----- Dependent  --------------------------------------
 
-    it "hw[1.0;0.7]: hw_demand(70) == s(1) ==> chp(nil)
-        el[1.0;0.3]: el_output(nil) == d()  ==> chp(nil)
-        el:          chp(nil)       == s(1) ==> rgt(nil) " do
+    it "bar[1.0;0.7]: hw_demand(70) == s(1) ==> chp(nil)
+        foo[1.0;0.3]: el_output(nil) == d()  ==> chp(nil)
+        foo:          chp(nil)       == s(1) ==> rgt(nil) " do
       
       @g.converter(:hw_demand).demand.should == 70.0
       @g.converter(:el_output).demand.should == 30.0
@@ -244,10 +258,10 @@ module Qernel
       @g.converter(:rgt).demand.should == 100.0
     end
 
-    it "hw[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
-        el[1.0;0.3]: el_output(40)  == d      ==> chp
-        el:          el_output      == f(nil) ==> rgt1
-        #el:          el_output      == s(0.6) ==> rgt2" do
+    it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+        foo[1.0;0.3]: el_output(40)  == d      ==> chp
+        foo:          el_output      == f(nil) ==> rgt1
+        #foo:          el_output      == s(0.6) ==> rgt2" do
       
       @g.converter(:hw_demand).demand.should == 70.0
       @g.converter(:chp).demand.should == 100.0
@@ -256,15 +270,14 @@ module Qernel
       @g.converter(:rgt1).demand.should == 10.0
     end
 
-    
     it "# BUG/INCONSISTENCY
         # Dependent together with shares do not work correctly!!
         # Share seems to be calculated first or doesn't take into account
         # dependent value
-        hw[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
-        el[1.0;0.3]: el_output(40)  == d      ==> chp
-        el:          el_output      == f(nil) ==> rgt1
-        el:          el_output      == s(0.6) ==> rgt2" do
+        bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+        foo[1.0;0.3]: el_output(40)  == d      ==> chp
+        foo:          el_output      == f(nil) ==> rgt1
+        foo:          el_output      == s(0.6) ==> rgt2" do
       
       @g.converter(:hw_demand).demand.should == 70.0
       @g.converter(:chp).demand.should == 100.0
