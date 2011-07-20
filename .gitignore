@@ -1,3 +1,4 @@
+bin/*
 db/dumps
 db/sphinx
 config/development.sphinx.conf
