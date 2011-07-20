@@ -183,7 +183,7 @@ private
 
   ##
   # Flexible links take the remainder, so it can also become negative.
-  # This is only allowed if the carrier is electricity, steam_hot_water
+  # This is only allowed if the carrier is electricity 
   # or for the energy_import_export converter.
   #
   # @param value [Float] value
@@ -197,6 +197,19 @@ private
     else
       new_value
     end
+  end
+
+public
+  def graph_parser_expression
+    slot_data = [
+      "#{input.andand.conversion}#{input.andand.dynamic? ? ',dyn' : ''}",
+      "#{output.andand.conversion}#{output.andand.dynamic? ? ',dyn' : ''}"
+    ].join(';')
+    str = "#{@carrier.key}[#{slot_data}]: "
+    str += "#{@parent.andand.key}(#{@parent.andand.demand || nil})"
+    str += " == #{@link_type.to_s[0]}(#{self.share || nil}) ==> "
+    str += "#{@child.andand.key}(#{@child.andand.demand || nil})"
+    str
   end
 end
 
