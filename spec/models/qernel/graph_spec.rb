@@ -75,6 +75,10 @@ module Qernel
     before do 
       @g = GraphParser.new(example.description).build
       @g.calculate
+      @g.converters.each do |converter|
+        instance_variable_set("@#{converter.key}", converter)
+      end
+
     end
 
     # ----- SYNTAX  ------------------------------------------------
@@ -96,8 +100,8 @@ module Qernel
     it "bar[0.5]: lft(100) == s(1.0) ==> rgt1 
         foo[0.5]: lft      == s(1.0) ==> rgt2" do
 
-      @g.converter(:rgt1).demand.should == 50.0
-      @g.converter(:rgt2).demand.should == 50.0
+      @rgt1.demand.should == 50.0
+      @rgt2.demand.should == 50.0
     end
 
     # ----- Share only ------------------------------------------------
@@ -105,8 +109,8 @@ module Qernel
     it "lft(100) == s(0.3) ==> rgt1(nil)
         lft      == s(0.7) ==> rgt2(nil)" do
 
-      @g.converter(:rgt1).demand.should == 30.0
-      @g.converter(:rgt2).demand.should == 70.0
+      @rgt1.demand.should == 30.0
+      @rgt2.demand.should == 70.0
     end
 
     # ----- Constant ------------------------------------------------
@@ -114,17 +118,17 @@ module Qernel
     it "mid(nil) == c(30) ==> rgt1 
         mid      == c(20) ==> rgt2" do
 
-      @g.converter(:mid).demand.should ==  0.0 
-      @g.converter(:rgt1).demand.should == 30.0 
-      @g.converter(:rgt2).demand.should == 20.0 
+      @mid.demand.should ==  0.0 
+      @rgt1.demand.should == 30.0 
+      @rgt2.demand.should == 20.0 
     end
 
     it "mid(nil) == c(nil) ==> rgt1(80) 
         mid      == c(nil) ==> rgt2(20)" do
 
-      @g.converter(:mid).demand.should == 100.0 
-      @g.converter(:rgt1).demand.should == 80.0 
-      @g.converter(:rgt2).demand.should == 20.0 
+      @mid.demand.should == 100.0 
+      @rgt1.demand.should == 80.0 
+      @rgt2.demand.should == 20.0 
     end
 
     # ----- Flexible & Share  --------------------------------------
@@ -132,8 +136,8 @@ module Qernel
     it "mid(100) == s(0.8) ==> rgt1(nil) 
         mid      == f(1.0) ==> rgt2(nil)" do
 
-      @g.converter(:rgt1).demand.should == 80.0
-      @g.converter(:rgt2).demand.should == 20.0 
+      @rgt1.demand.should == 80.0
+      @rgt2.demand.should == 20.0 
     end
 
     # ----- Flexible & Constant  --------------------------------------
@@ -142,9 +146,9 @@ module Qernel
         mid(nil) == c(80)  ==> rgt1(nil) 
         mid      == f(1.0) ==> rgt2(nil)" do
 
-      @g.converter(:mid).demand.should == 0.0
-      @g.converter(:rgt1).demand.should == 80.0
-      @g.converter(:rgt2).demand.should == 0.0
+      @mid.demand.should == 0.0
+      @rgt1.demand.should == 80.0
+      @rgt2.demand.should == 0.0
     end
 
     it "# This works, because mid gets demand from lft
@@ -152,39 +156,39 @@ module Qernel
         mid(nil) == c(80) ==> rgt1(nil) 
         mid      == f(1)  ==> rgt2(nil)" do
 
-      @g.converter(:lft).demand.should ==  100.0
+      @lft.demand.should ==  100.0
 
-      @g.converter(:mid).demand.should ==  100.0
-      @g.converter(:rgt1).demand.should == 80.0
-      @g.converter(:rgt2).demand.should == 20.0
+      @mid.demand.should ==  100.0
+      @rgt1.demand.should == 80.0
+      @rgt2.demand.should == 20.0
     end
 
     it "# if constant share is nil, assign right demand to the mid
         mid(nil) == c(nil) ==> rgt1(80)
         mid      == f(1.0) ==> rgt2(nil)" do
 
-      @g.converter(:rgt1).demand.should == 80.0
+      @rgt1.demand.should == 80.0
 
-      @g.converter(:mid).demand.should ==  80.0
-      @g.converter(:rgt2).demand.should ==  0.0
+      @mid.demand.should ==  80.0
+      @rgt2.demand.should ==  0.0
     end
 
     it "# flexible normally should not become negative
         mid(100) == c(120) ==> rgt1(nil)
         mid      == f(1.0) ==> rgt2(nil)" do
 
-      @g.converter(:mid).demand.should ==  100.0
-      @g.converter(:rgt1).demand.should == 120.0
-      @g.converter(:rgt2).demand.should ==  0.0
+      @mid.demand.should ==  100.0
+      @rgt1.demand.should == 120.0
+      @rgt2.demand.should ==  0.0
     end
 
     it "# flexible can become negative for carrier electricity
         electricity: mid(100) == c(120) ==> rgt1(nil)
         electricity: mid      == f(1.0) ==> rgt2(nil)" do
 
-      @g.converter(:mid).demand.should ==  100.0
-      @g.converter(:rgt1).demand.should == 120.0
-      @g.converter(:rgt2).demand.should == -20.0
+      @mid.demand.should ==  100.0
+      @rgt1.demand.should == 120.0
+      @rgt2.demand.should == -20.0
     end
 
 
@@ -196,11 +200,11 @@ module Qernel
         foo:   lft1(50)  == s(1)   ==> mid
         foo:   mid       == c(nil) ==> rgt1(70)" do
       
-      @g.converter(:rgt1).demand.should == 70.0
-      @g.converter(:lft1).demand.should == 50.0
+      @rgt1.demand.should == 70.0
+      @lft1.demand.should == 50.0
 
-      @g.converter(:mid).demand.should ==  70.0
-      @g.converter(:loss).demand.should == 20.0
+      @mid.demand.should ==  70.0
+      @loss.demand.should == 20.0
     end
 
     it "# we don't want inversed_flexible to become negative
@@ -210,11 +214,11 @@ module Qernel
         foo:   mid       == c(nil) ==> rgt1(40) 
         foo:   mid       == f(nil) ==> rgt2(30)" do
       
-      @g.converter(:lft1).demand.should == 100.0
-      @g.converter(:mid).demand.should ==  100.0
-      @g.converter(:rgt1).demand.should == 40.0
-      @g.converter(:rgt2).demand.should == 30.0
-      @g.converter(:loss).demand.should ==  0.0
+      @lft1.demand.should == 100.0
+      @mid.demand.should ==  100.0
+      @rgt1.demand.should == 40.0
+      @rgt2.demand.should == 30.0
+      @loss.demand.should ==  0.0
     end
 
     it "# dependent consumes everything
@@ -223,12 +227,12 @@ module Qernel
         bar[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
         foo:        mid            == c(nil) ==> rgt1(120)" do
       
-      @g.converter(:rgt1).demand.should == 120.0
-      @g.converter(:hw_demand).demand.should == 60.0
+      @rgt1.demand.should == 120.0
+      @hw_demand.demand.should == 60.0
 
-      @g.converter(:mid).demand.should == 120.0
-      @g.converter(:el_output).demand.should == 60.0
-      @g.converter(:loss).demand.should == 0.0
+      @mid.demand.should == 120.0
+      @el_output.demand.should == 60.0
+      @loss.demand.should == 0.0
     end
 
     it "# dependent takes it's cut from the total demand (120)
@@ -238,12 +242,12 @@ module Qernel
         bar[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
         foo:        mid            == c(nil) ==> rgt1(120)" do
       
-      @g.converter(:rgt1).demand.should == 120.0
-      @g.converter(:hw_demand).demand.should == 50.0
+      @rgt1.demand.should == 120.0
+      @hw_demand.demand.should == 50.0
 
-      @g.converter(:mid).demand.should == 120.0
-      @g.converter(:el_output).demand.should == 60.0
-      @g.converter(:loss).demand.should == 10.0
+      @mid.demand.should == 120.0
+      @el_output.demand.should == 60.0
+      @loss.demand.should == 10.0
     end
 
     # ----- Dependent  --------------------------------------
@@ -252,10 +256,10 @@ module Qernel
         foo[1.0;0.3]: el_output(nil) == d()  ==> chp(nil)
         foo:          chp(nil)       == s(1) ==> rgt(nil) " do
       
-      @g.converter(:hw_demand).demand.should == 70.0
-      @g.converter(:el_output).demand.should == 30.0
-      @g.converter(:chp).demand.should == 100.0
-      @g.converter(:rgt).demand.should == 100.0
+      @hw_demand.demand.should == 70.0
+      @el_output.demand.should == 30.0
+      @chp.demand.should == 100.0
+      @rgt.demand.should == 100.0
     end
 
     it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
@@ -263,11 +267,11 @@ module Qernel
         foo:          el_output      == f(nil) ==> rgt1
         #foo:          el_output      == s(0.6) ==> rgt2" do
       
-      @g.converter(:hw_demand).demand.should == 70.0
-      @g.converter(:chp).demand.should == 100.0
-      @g.converter(:el_output).demand.should == 40.0
+      @hw_demand.demand.should == 70.0
+      @chp.demand.should == 100.0
+      @el_output.demand.should == 40.0
 
-      @g.converter(:rgt1).demand.should == 10.0
+      @rgt1.demand.should == 10.0
     end
 
     it "# BUG/INCONSISTENCY
@@ -279,12 +283,12 @@ module Qernel
         foo:          el_output      == f(nil) ==> rgt1
         foo:          el_output      == s(0.6) ==> rgt2" do
       
-      @g.converter(:hw_demand).demand.should == 70.0
-      @g.converter(:chp).demand.should == 100.0
-      @g.converter(:el_output).demand.should == 40.0
+      @hw_demand.demand.should == 70.0
+      @chp.demand.should == 100.0
+      @el_output.demand.should == 40.0
 
-      @g.converter(:rgt2).demand.should == 24.0
-      @g.converter(:rgt1).demand.should == 0.0
+      @rgt2.demand.should == 24.0
+      @rgt1.demand.should == 0.0
     end
   end
 

@@ -127,6 +127,9 @@ class Converter
 
   dataset_accessors [:demand, :preset_demand, :municipality_demand]
 
+
+  # --------- Initializing ----------------------------------------------------
+
   def initialize(id, key, use_id = nil, sector_id = nil, groups = nil)
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}
@@ -142,6 +145,16 @@ class Converter
     custom_use_key = (@use_key === :undefined || @use_key.nil?) ? nil : @use_key.to_s
     @full_key = [@key, @sector_key, custom_use_key].compact.join("_").to_sym
 
+
+    memoize_for_cache
+    self.calculator = Qernel::ConverterApi.new(self)
+  end
+
+protected
+
+  # Memoize here, so it doesn't have to at runtime
+  #
+  def memoize_for_cache
     @environment_converter = full_key === :environment_environment
     @sector_environment = sector_key === :environment
 
@@ -150,15 +163,11 @@ class Converter
     @final_demand_cbs = @groups.include? :final_demand_cbs
     @non_energetic_use = @groups.include? :non_energetic_use
     @energy_import_export = @groups.include? :energy_import_export
-    
-    
-    self.calculator = Qernel::ConverterApi.new(self)
+
     self.dataset_key # memoize dataset_key
   end
 
-
-
-  # --------- Initializing ----------------------------------------------------
+public
 
   # Set the graph so that we can access other parts.
   #
@@ -296,7 +305,7 @@ class Converter
   end
 
 
-private
+protected
 
   # Hash of input slots, with the carrier keys as keys and slots as values
   # e.g.
@@ -357,7 +366,7 @@ public
     output_links.select(&:inversed_flexible?).each(&:calculate)
   end
 
-private
+protected
 
   # The highest internal_value of in/output slots is the demand of
   # this converter. If there are slots with different internal_values
@@ -447,6 +456,7 @@ public
   def converter
     self
   end
+
 
   # --------- Debug -----------------------------------------------------------
 
