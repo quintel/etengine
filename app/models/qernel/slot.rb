@@ -95,10 +95,13 @@ class Slot
     # I assume it must be because of inversed_flexible?
     # and [constant with undefined value].
 
-    active_links.select(&:constant?).each(&:calculate)
-    active_links.select(&:share?).each(&:calculate)
-    active_links.select(&:flexible?).each(&:calculate)
+    if input?
+      active_links.select(&:constant?).each(&:calculate)
+      active_links.select(&:share?).each(&:calculate)
+      active_links.select(&:flexible?).each(&:calculate)
+    end
     if output?
+      links.select(&:reversed?).each(&:calculate)
       links.select(&:dependent?).each(&:calculate)
     end
   end
