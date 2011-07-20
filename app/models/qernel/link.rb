@@ -88,7 +88,8 @@ public
   end
 
   def calculated_by_right?
-    dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)
+    !reverse? && 
+      (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true))
   end
 
 
