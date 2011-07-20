@@ -131,7 +131,7 @@ protected
   #
   def calculate_constant
     if self.share.nil?
-      val = output_external_demand || 0.0
+      val = output_external_demand
       raise "Constant Link with share = nil expects a demand of child converter #{@child.full_key}" if val.nil?
       val
     else
@@ -140,8 +140,7 @@ protected
   end
 
   def calculate_dependent
-    o = output
-    (o and o.expected_external_value) || 0.0
+    output_external_demand
   end
 
   def calculate_share
@@ -195,13 +194,11 @@ protected
   # --------- Demands ---------------------------------------------------------
 
   def output_external_demand
-    out = output
-    (out and out.expected_external_value) || 0.0
+    output.expected_external_value || 0.0
   end
 
   def input_external_demand
-    inp = input
-    (inp and inp.expected_external_value) || 0.0
+    input && input.expected_external_value || 0.0
   end
 
   def input
