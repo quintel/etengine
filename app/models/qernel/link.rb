@@ -18,7 +18,7 @@ class Link
 
   # --------- Accessor ---------------------------------------------------------
 
-  attr_accessor :graph,
+  attr_accessor :graph, # needed for dataset
                 :parent, # Parent is the converter to the left (towards useful demand)
                 :child,  # Child is the converter to the right (towards useful primary demand)
                 :carrier 
@@ -29,10 +29,10 @@ class Link
 
   # --------- Flow ------------------------------------------------------------
 
-  attr_reader :reverse, 
-              :is_loss
+  attr_accessor :reverse
+  attr_reader :is_loss
 
-  alias reverse? reverse
+  alias reversed? reverse
   alias loss? is_loss
 
 
@@ -88,16 +88,14 @@ public
   end
 
   def calculated_by_right?
-    !reverse? && 
-      (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true))
+    (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)) || reversed?
   end
-
 
   # --------- Calculation ------------------------------------------------------
 
   def calculate
     if self.calculated != true
-      self.value = self.send("calculate_#{link_type}")
+      self.value = self.send("calculate_#{@link_type}")
       self.calculated = true
     end
     self.value
@@ -198,11 +196,11 @@ protected
   end
 
   def input
-    @parent.input(@carrier)
+    reversed? ? @child.output(@carrier) : @parent.input(@carrier)
   end
 
   def output
-    @child.output(@carrier)
+    reversed? ? @parent.input(@carrier) : @child.output(@carrier)
   end
 
 
