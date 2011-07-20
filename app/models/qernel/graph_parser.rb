@@ -50,7 +50,7 @@ module Qernel
         link = graph.
           connect(c_lft, c_rgt, carrier, link_type ).
           with(:share => link_share)
-        link.reverse = reversed
+        link.reversed = reversed
         s_lft, s_rgt = slot(carrier_key)
         c_lft.input(carrier.key).with(s_lft) if s_lft
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt

@@ -59,8 +59,12 @@ module Qernel::DatasetAttributes
     @object_dataset = nil
   end
 
+  def after_assign_object_dataset
+  end
+
   def assign_object_dataset
     @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
+    after_assign_object_dataset
   end
 
   #def object_dataset
