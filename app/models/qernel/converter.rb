@@ -355,14 +355,19 @@ public
   # @pre converter must be #ready?
   #
   def calculate
+    # Constant links are treated differently.
+    # They can overwrite the preset_demand of this converter
     output_links.select(&:constant?).each(&:calculate)
 
+    # If the demand is already set (is not nil), do not overwrite it. 
     if self.demand.nil?
       self.demand ||= update_demand
-    end
+    end # Demand is set
 
+    # Now calculate the slots of this controller
     slots.each(&:calculate)
 
+    # inversed_flexible fills up the difference of the calculated input/output slot.
     output_links.select(&:inversed_flexible?).each(&:calculate)
   end
 
@@ -375,8 +380,10 @@ protected
   # @pre converter must be #ready?
   # @pre has to be used from within #calculate, as slots have to be adjusted
   #
+  # @return [Float] The demand of this converter
+  #
   def update_demand
-    if output_links.any?(&:inversed_flexible?)
+    if output_links.any?(&:inversed_flexible?) or output_links.any?(&:reversed?)
       slots.map(&:internal_value).compact.sort_by(&:abs).last
     elsif output_links.empty?
       # 2010-06-23: If there is no output links we take the highest value from input.
