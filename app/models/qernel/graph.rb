@@ -97,7 +97,7 @@ class Graph
   # 2. Calculate the converter (see: {Qernel::Converter#calculate})
   # 3. Remove converter from stack and move it to {#finished_converters}
   # 5. => (continue at 1. until stack is empty)
-  # 6. recalculate link shares of output_links (see: {Qernel::Link#assign_share})
+  # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
   #
   # TODO refactor
   def calculate
@@ -115,7 +115,7 @@ class Graph
       self.finished_converters << converter_stack.delete_at(index)
     end
 
-    self.finished_converters.map(&:input_links).flatten.each(&:assign_share)
+    self.finished_converters.map(&:input_links).flatten.each(&:update_share)
 
     dataset_set(:calculated, true)
 

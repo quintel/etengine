@@ -68,9 +68,9 @@ class Slot
   #
   def active_links
     @active_links ||= if input? 
-      links.select(&:calculated_by_parent?)
+      links.select(&:calculated_by_left?)
     else
-      links.select(&:calculated_by_child?)
+      links.select(&:calculated_by_right?)
     end
   end
 
@@ -90,9 +90,9 @@ class Slot
   #
   def passive_links
     @passive_links ||= if input? 
-      links.select(&:calculated_by_child?) 
+      links.select(&:calculated_by_right?) 
     else 
-      links.select(&:calculated_by_parent?)
+      links.select(&:calculated_by_left?)
     end
   end
 
