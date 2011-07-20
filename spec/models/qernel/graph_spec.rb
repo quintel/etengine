@@ -2,8 +2,6 @@ require 'spec_helper'
 
 module Qernel
 
-
-
   describe Graph, '#initialize' do
     it "should initialize without attributes" do
       @g = Qernel::Graph.new()
@@ -81,12 +79,12 @@ module Qernel
 
     # ----- Mutliple carriers ------------------------------------------------
 
-    # it "hw: lft(100) [0.5]== s(1.0) ==> rgt1 
-    #           el: lft      [0.5]== s(1.0) ==> rgt2" do
-    # 
-    #   @g.converter(:rgt1).demand.should == 50.0
-    #   @g.converter(:rgt2).demand.should == 50.0
-    # end
+    it "hw[0.5]: lft(100) == s(1.0) ==> rgt1 
+        el[0.5]: lft      == s(1.0) ==> rgt2" do
+
+      @g.converter(:rgt1).demand.should == 50.0
+      @g.converter(:rgt2).demand.should == 50.0
+    end
 
     # ----- Share only ------------------------------------------------
 
@@ -141,6 +139,7 @@ module Qernel
         mid      == f(1)  ==> rgt2(nil)" do
 
       @g.converter(:lft).demand.should ==  100.0
+
       @g.converter(:mid).demand.should ==  100.0
       @g.converter(:rgt1).demand.should == 80.0
       @g.converter(:rgt2).demand.should == 20.0
@@ -150,26 +149,130 @@ module Qernel
         mid(nil) == c(nil) ==> rgt1(80)
         mid      == f(1.0) ==> rgt2(nil)" do
 
-      @g.converter(:mid).demand.should ==  80.0
       @g.converter(:rgt1).demand.should == 80.0
+
+      @g.converter(:mid).demand.should ==  80.0
       @g.converter(:rgt2).demand.should ==  0.0
     end
 
+    it "# flexible normally should not become negative
+        mid(100) == c(120) ==> rgt1(nil)
+        mid      == f(1.0) ==> rgt2(nil)" do
+
+      @g.converter(:mid).demand.should ==  100.0
+      @g.converter(:rgt1).demand.should == 120.0
+      @g.converter(:rgt2).demand.should ==  0.0
+    end
+
+    it "# flexible can become negative for carrier electricity
+        electricity: mid(100) == c(120) ==> rgt1(nil)
+        electricity: mid      == f(1.0) ==> rgt2(nil)" do
+
+      @g.converter(:mid).demand.should ==  100.0
+      @g.converter(:rgt1).demand.should == 120.0
+      @g.converter(:rgt2).demand.should == -20.0
+    end
+
+
     # ----- Inversed Flexible  --------------------------------------
 
-    it "# mid assigned 100 from lft1 fills up l
-        loss(nil) == i(1)  ==> mid(nil)
-        lft1(100) == s(1)   ==> mid
-        mid       == c(nil) ==> rgt1(40) 
-        mid       == f(nil) ==> rgt2(30)" do
-    
+    it "# if outputs are higher then inputs fill up inversed_flexible
+        # with the remainder.
+        hw:   loss(nil) == i(nil)   ==> mid(nil)
+        el:   lft1(50)  == s(1)   ==> mid
+        el:   mid       == c(nil) ==> rgt1(70)" do
+      
+      @g.converter(:rgt1).demand.should == 70.0
+      @g.converter(:lft1).demand.should == 50.0
+
+      @g.converter(:mid).demand.should ==  70.0
+      @g.converter(:loss).demand.should == 20.0
+    end
+
+    it "# we don't want inversed_flexible to become negative
+        # if outputs are higher then inputs set inversed_flexible to 0.0
+        hw:   loss(nil) == i(nil)   ==> mid(nil)
+        el:   lft1(100) == s(1)   ==> mid
+        el:   mid       == c(nil) ==> rgt1(40) 
+        el:   mid       == f(nil) ==> rgt2(30)" do
+      
       @g.converter(:lft1).demand.should == 100.0
       @g.converter(:mid).demand.should ==  100.0
       @g.converter(:rgt1).demand.should == 40.0
       @g.converter(:rgt2).demand.should == 30.0
-      @g.converter(:loss).demand.should ==  30.0
+      @g.converter(:loss).demand.should ==  0.0
     end
 
+    it "# dependent consumes everything
+        loss:      loss(nil)      == i(nil) ==> mid(nil)
+        el[1;0.5]: el_output(nil) == d(nil) ==> mid
+        hw[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
+        el:        mid            == c(nil) ==> rgt1(120)" do
+      
+      @g.converter(:rgt1).demand.should == 120.0
+      @g.converter(:hw_demand).demand.should == 60.0
+
+      @g.converter(:mid).demand.should == 120.0
+      @g.converter(:el_output).demand.should == 60.0
+      @g.converter(:loss).demand.should == 0.0
+    end
+
+    it "# dependent takes it's cut from the total demand (120)
+        # is not depending on the other output-links
+        loss:      loss(nil)      == i(nil) ==> mid(nil)
+        el[1;0.5]: el_output(nil) == d(nil) ==> mid
+        hw[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
+        el:        mid            == c(nil) ==> rgt1(120)" do
+      
+      @g.converter(:rgt1).demand.should == 120.0
+      @g.converter(:hw_demand).demand.should == 50.0
+
+      @g.converter(:mid).demand.should == 120.0
+      @g.converter(:el_output).demand.should == 60.0
+      @g.converter(:loss).demand.should == 10.0
+    end
+
+    # ----- Dependent  --------------------------------------
+
+    it "hw[1.0;0.7]: hw_demand(70) == s(1) ==> chp(nil)
+        el[1.0;0.3]: el_output(nil) == d()  ==> chp(nil)
+        el:          chp(nil)       == s(1) ==> rgt(nil) " do
+      
+      @g.converter(:hw_demand).demand.should == 70.0
+      @g.converter(:el_output).demand.should == 30.0
+      @g.converter(:chp).demand.should == 100.0
+      @g.converter(:rgt).demand.should == 100.0
+    end
+
+    it "hw[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+        el[1.0;0.3]: el_output(40)  == d      ==> chp
+        el:          el_output      == f(nil) ==> rgt1
+        #el:          el_output      == s(0.6) ==> rgt2" do
+      
+      @g.converter(:hw_demand).demand.should == 70.0
+      @g.converter(:chp).demand.should == 100.0
+      @g.converter(:el_output).demand.should == 40.0
+
+      @g.converter(:rgt1).demand.should == 10.0
+    end
+
+    
+    it "# BUG/INCONSISTENCY
+        # Dependent together with shares do not work correctly!!
+        # Share seems to be calculated first or doesn't take into account
+        # dependent value
+        hw[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+        el[1.0;0.3]: el_output(40)  == d      ==> chp
+        el:          el_output      == f(nil) ==> rgt1
+        el:          el_output      == s(0.6) ==> rgt2" do
+      
+      @g.converter(:hw_demand).demand.should == 70.0
+      @g.converter(:chp).demand.should == 100.0
+      @g.converter(:el_output).demand.should == 40.0
+
+      @g.converter(:rgt2).demand.should == 24.0
+      @g.converter(:rgt1).demand.should == 0.0
+    end
   end
 
 end

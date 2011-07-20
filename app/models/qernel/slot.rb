@@ -218,6 +218,8 @@ class Slot
     (conversion == 0.0) ? 0.0 : value / conversion
   end
 
+
+  # DEBT remove this, probably no longer used
   ##
   # The actual_conversion is used, when no conversion is defined.
   # It is calculated by the external_value and the demand.
@@ -237,7 +239,7 @@ class Slot
   #
   def conversion
     return 1.0 if environment?
-    return actual_conversion if dynamic?
+    return actual_conversion if dynamic? # DEBT remove this, probably no longer used
     dataset_get(:conversion) || 0.0
   end
 

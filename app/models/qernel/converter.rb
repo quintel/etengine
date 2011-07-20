@@ -148,7 +148,7 @@ class Converter
 
     @groups = groups || []
 
-    custom_use_key = (@use_key === :undefined) ? nil : @use_key.to_s
+    custom_use_key = (@use_key === :undefined || @use_key.nil?) ? nil : @use_key.to_s
     @full_key = [@key, @sector_key, custom_use_key].compact.join("_").to_sym
 
     @environment_converter = full_key === :environment_environment
