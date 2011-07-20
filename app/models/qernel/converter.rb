@@ -83,15 +83,11 @@ module Qernel
 #
 class Converter
   extend ActiveModel::Naming
-  extend ActiveSupport::Memoizable
 
-  include PrimaryDemand # app/models/qernel/converter/primary_demand.rb
+  include PrimaryDemand
   include DatasetAttributes
 
-
-  ##
   # Following keys can be looked up by {Qernel::Graph#converter}.
-  #
   KEYS_FOR_LOOKUP = [
     :id,
     :full_key
@@ -132,17 +128,12 @@ class Converter
   dataset_accessors [:demand, :preset_demand, :municipality_demand]
 
   def initialize(id, key, use_id = nil, sector_id = nil, groups = nil)
-    @id = id
-
-    @output_links = []
-    @input_links = []
-
-    @output_hash = {}
-    @input_hash = {}
+    @output_links, @input_links = [], []
+    @output_hash, @input_hash = {}, {}
 
     # TODO check if @key is ever used somewhere
+    @id = id
     @key = key
-
     @use_key = USES[use_id]
     @sector_key = SECTORS[sector_id]
 
@@ -165,6 +156,12 @@ class Converter
     self.dataset_key # memoize dataset_key
   end
 
+
+
+  # --------- Initializing ----------------------------------------------------
+
+  # Set the graph so that we can access other parts.
+  #
   def graph=(graph)
     @graph = graph
     self.calculator.graph = @graph
@@ -172,15 +169,6 @@ class Converter
     @graph
   end
 
-  def name
-    full_key
-  end
-
-  ##########################################
-  # Demands
-  ##########################################
-
-  ##
   # See {Qernel::Converter} for explanation of municipality_demand
   #
   def municipality_demand=(val)
@@ -188,7 +176,6 @@ class Converter
     update_initial_demand
   end
 
-  ##
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
@@ -197,14 +184,202 @@ class Converter
   end
 
   def demand
-    _demand = dataset_get(:demand)
-    _demand ||= update_initial_demand
-    _demand
+    dataset_get(:demand) || update_initial_demand
+  end
+
+  # Just calling to_f, would give wrong results nil.to_f => 0.0
+  # But we also want to convert it to a float in case its an int.
+  #
+  # @param [Float, nil] 
+  # @return [Float, nil] 
+  #
+  def safe_to_f(val)
+    val.nil? ? nil : val.to_f
+  end
+
+
+  # --------- Traversal -------------------------------------------------------
+
+  # @return [Array<Converter>] Converters to the right
+  #
+  def children
+    @children ||= input_links.map(&:child)
+  end
+
+  # @return [Array<Converter>] Converters to the left
+  #
+  def parents
+    @parents ||= output_links.map(&:parent)
+  end
+
+
+  # --------- Links -----------------------------------------------------------
+
+  # @param link [Link]
+  #
+  def add_output_link(link)
+    @output_links << link
+  end
+
+  # @param link [Link]
+  #
+  def add_input_link(link)
+    @input_links << link
+  end
+
+
+  # --------- Slots -----------------------------------------------------------
+
+  # @param slot [Qernel::Slot]
+  # @return [Qernel::Slot]
+  #
+  def add_slot(slot)
+    slot.converter = self
+
+    if slot.input?
+      carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
+      @input_hash.merge! carrier_key => slot
+    end
+
+    if slot.output?
+      carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
+      @output_hash.merge! carrier_key => slot
+    end
+    reset_memoized_slot_methods
+    slot
+  end
+
+  # @return [Array<Slot>] all input slots
+  #
+  def inputs
+    @inputs ||= input_hash.values
+  end
+
+  # @return [Array<Slot>] all output slots
+  #
+  def outputs
+    @outputs ||= output_hash.values
+  end
+
+  # @return [Array<Slot>] input *and* output slots
+  #
+  def slots
+    @_slots ||= [inputs, outputs].flatten
+  end
+
+  # Returns the input slot for the given carrier (key or object).
+  #
+  # e.g.
+  # converter.input(:electricity)
+  # => <Slot>
+  #
+  # @param carrier [Symbol,Carrier] the carrier key
+  # @return [Slot]
+  #
+  def input(carrier = nil)
+    carrier = carrier.key if carrier.respond_to?(:key)
+    input_hash[carrier]
+  end
+
+  # Returns the output slot for the given carrier (key or object).
+  #
+  # e.g.
+  # converter.output(:electricity)
+  # => <Slot>
+  #
+  # @param carrier [Symbol,Carrier] the carrier key
+  # @return [Slot]
+  #
+  def output(carrier = nil)
+    carrier = carrier.key if carrier.respond_to?(:key)
+    output_hash[carrier]
+  end
+
+
+private
+
+  # Hash of input slots, with the carrier keys as keys and slots as values
+  # e.g.
+  # { :loss => <Slot> }
+  #
+  # @return [Hash]
+  #
+  def input_hash
+    @input_hash
+  end
+
+  # Hash of output slots, with the carrier keys as keys and slots as values
+  # e.g.
+  # { :loss => <Slot> }
+  #
+  # @return [Hash]
+  #
+  def output_hash
+    @output_hash
+  end
+
+  def reset_memoized_slot_methods
+    @inputs = nil
+    @outputs = nil
+    @_slots = nil
+  end
+
+
+  # --------- Calculations ----------------------------------------------------
+
+public
+
+  # Can the converters demand be calculated?
+  #
+  # @return [true,false]
+  #
+  def ready?
+    slots.all?(&:ready?)
+  end
+
+  # Calculates the demand of the converter and of the links that depend on this demand.
+  #
+  # == Algorithm
+  #
+  # 1. (unless preset_demand is set) Sums demand of output_links (without dependent links) links.
+  #
+  # @pre converter must be #ready?
+  #
+  def calculate
+    output_links.select(&:constant?).each(&:calculate)
+
+    if self.demand.nil?
+      self.demand ||= update_demand
+    end
+
+    slots.each(&:calculate)
+
+    output_links.select(&:inversed_flexible?).each(&:calculate)
   end
 
 private
-  
-  ##
+
+  # The highest internal_value of in/output slots is the demand of
+  # this converter. If there are slots with different internal_values
+  # they have to update their passive links, (this happens in #calculate).
+  #
+  # @pre converter must be #ready?
+  # @pre has to be used from within #calculate, as slots have to be adjusted
+  #
+  def update_demand
+    if output_links.any?(&:inversed_flexible?)
+      slots.map(&:internal_value).compact.sort_by(&:abs).last
+    elsif output_links.empty?
+      # 2010-06-23: If there is no output links we take the highest value from input.
+      # otherwise left dead end converters don't get values
+      inputs.map(&:internal_value).compact.sort_by(&:abs).last
+    else
+      # 2010-06-23: The normal case. Just take the highest value from outputs.
+      # We did this to make the gas_extraction gas_import_export thing work
+      outputs.map(&:internal_value).compact.sort_by(&:abs).last
+    end
+  end
+
   # Updates the {demand} with the sum of preset_demand and
   # municipality_demand. It is needed to call this method everytime
   # we update either preset_demand or municipality_demand, because
@@ -227,24 +402,34 @@ private
       self.demand = total
     end
   end
-  
-  ##
-  # Just calling to_f, would give wrong results nil.to_f => 0.0
-  # But we also want to convert it to a float in case its an int.
-  #
-  # @param [Float, nil] 
-  # @return [Float, nil] 
-  #
-  def safe_to_f(val)
-    val.nil? ? nil : val.to_f
-  end
+
+  # --------- Carriers --------------------------------------------------------
 
 public
 
-  ##########################################
-  # Values and State
-  ##########################################
+  # @return [Array<Carrier>] Carriers of input
+  #
+  def input_carriers; input_links.map(&:carrier).compact; end
 
+  # @return [Array<Carrier>] Carriers of output
+  #
+  def output_carriers; output_links.map(&:carrier).compact; end
+
+
+  # --------- Loss ------------------------------------------------------------
+
+  # @return [Float] The share output that are losses.
+  #
+  def loss_output_conversion
+    if loss = output(:loss)
+      loss.conversion
+    else
+      0.0
+    end
+  end
+
+
+  # --------- API -------------------------------------------------------------
 
   def query(method_name = nil)
     if method_name.nil?
@@ -255,106 +440,6 @@ public
   end
   alias_method :proxy, :query
 
-
-  ##########################################
-  # Building Graph
-  ##########################################
-
-  def children
-    @children ||= input_links.map(&:child)
-  end
-
-  def parents
-    @parents ||= output_links.map(&:parent)
-  end
-
-  def add_output_link(link)
-    @output_links << link
-  end
-
-  def add_input_link(link)
-    @input_links << link
-  end
-
-  # @return [Qernel::Slot]
-  def add_slot(slot)
-    slot.converter = self
-
-    if slot.input?
-      carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
-      @input_hash.merge! carrier_key => slot
-    end
-
-    if slot.output?
-      carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
-      @output_hash.merge! carrier_key => slot
-    end
-    reset_memoized_slot_methods
-    slot
-  end
-
-  ##########################################
-  # Slots
-  ##########################################
-
-  def reset_memoized_slot_methods
-    @inputs = nil
-    @outputs = nil
-    @_slots = nil
-  end
-
-  ##
-  # @return [Array<Slot>] all input slots
-  #
-  def inputs
-    @inputs ||= input_hash.values
-  end
-
-  ##
-  # @return [Array<Slot>] all output slots
-  #
-  def outputs
-    @outputs ||= output_hash.values
-  end
-
-  ##
-  # @return [Array<Slot>] input *and* output slots
-  #
-  def slots
-    @_slots ||= [inputs, outputs].flatten
-  end
-
-  ##
-  # Returns the input slot for the given carrier (key or object).
-  #
-  # e.g.
-  # converter.input(:electricity)
-  # => <Slot>
-  #
-  # @param carrier [Symbol,Carrier] the carrier key
-  # @return [Slot]
-  #
-  def input(carrier = nil)
-    carrier = carrier.key if carrier.respond_to?(:key)
-    input_hash[carrier]
-  end
-
-  ##
-  # Returns the output slot for the given carrier (key or object).
-  #
-  # e.g.
-  # converter.output(:electricity)
-  # => <Slot>
-  #
-  # @param carrier [Symbol,Carrier] the carrier key
-  # @return [Slot]
-  #
-  def output(carrier = nil)
-    carrier = carrier.key if carrier.respond_to?(:key)
-    output_hash[carrier]
-  end
-
-  ##
   # Sort of a hack, because we sometimes call converter on a 
   # converter_api object, to get the converter. 
   # Should actually be removed and made proper when we have time.
@@ -363,126 +448,11 @@ public
     self
   end
 
-private
-  ##
-  # Hash of input slots, with the carrier keys as keys and slots as values
-  # e.g.
-  # { :loss => <Slot> }
-  #
-  # @return [Hash]
-  #
-  def input_hash
-    @input_hash
+  # --------- Debug -----------------------------------------------------------
+
+  def name
+    full_key
   end
-
-  ##
-  # Hash of output slots, with the carrier keys as keys and slots as values
-  # e.g.
-  # { :loss => <Slot> }
-  #
-  # @return [Hash]
-  #
-  def output_hash
-    @output_hash
-  end
-
-  ##########################################
-  # Calculations
-  ##########################################
-
-public
-
-  ##
-  # Can the converters demand be calculated?
-  #
-  # @return [true,false]
-  # @todo Memoize smartly. use notifier.
-  #
-  def ready?
-    slots.all?(&:ready?)
-  end
-
-  ##
-  # Calculates the demand of the converter and of the links that depend on this demand.
-  #
-  # == Algorithm
-  #
-  # 1. (unless preset_demand is set) Sums demand of output_links (without dependent links) links.
-  #
-  # @pre converter must be #ready?
-  #
-  def calculate
-    output_links.select(&:constant?).each(&:calculate)
-
-    if self.demand.nil?
-      self.demand ||= update_demand
-    end
-
-    slots.each(&:calculate)
-
-    output_links.select(&:inversed_flexible?).each(&:calculate)
-  end
-
-private
-  ##
-  # The highest internal_value of in/output slots is the demand of
-  # this converter. If there are slots with different internal_values
-  # they have to update their passive links, (this happens in #calculate).
-  #
-  # @pre converter must be #ready?
-  # @pre has to be used from within #calculate, as slots have to be adjusted
-  #
-  def update_demand
-    if output_links.any?(&:inversed_flexible?)
-      slots.map(&:internal_value).compact.sort_by(&:abs).last
-    elsif output_links.empty?
-      # 2010-06-23: If there is no output links we take the highest value from input.
-      # otherwise left dead end converters don't get values
-      inputs.map(&:internal_value).compact.sort_by(&:abs).last
-    else
-      # 2010-06-23: The normal case. Just take the highest value from outputs.
-      # We did this to make the gas_extraction gas_import_export thing work
-      outputs.map(&:internal_value).compact.sort_by(&:abs).last
-    end
-  end
-
-  ##########################################
-  # Shortcuts
-  ##########################################
-
-public
-
-  ##
-  # Carriers of input
-  #
-  # @return [Array<Carrier>]
-  #
-  def input_carriers; input_links.map(&:carrier).compact; end
-
-  ##
-  # Carriers of output
-  #
-  # @return [Array<Carrier>]
-  #
-  def output_carriers; output_links.map(&:carrier).compact; end
-
-
-public
-
-  ##
-  # The share output that are losses.
-  #
-  def loss_output_conversion
-    if loss = output(:loss)
-      loss.conversion
-    else
-      0.0
-    end
-  end
-
-  ##########################################
-  # R E P O R T S
-  ##########################################
 
   def to_s
     "#{name} #{[@id]}" || 'untitled'
