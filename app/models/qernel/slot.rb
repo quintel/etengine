@@ -20,7 +20,7 @@ class Slot
   attr_accessor :converter, :converter_id, :graph
   attr_reader :carrier, :direction, :id
 
-  DATASET_ATTRIBUTES = [:conversion, :dynamic]
+  DATASET_ATTRIBUTES = [:conversion]
   dataset_accessors DATASET_ATTRIBUTES
 
   ##
@@ -189,16 +189,6 @@ class Slot
     !input?
   end
 
-  ##
-  # Is slot dynamic? ie: no conversion defined and therefore
-  #  needs to calculate the conversion at the end.
-  #
-  # @return [Boolean]
-  #
-  def dynamic?
-    self.dynamic == true
-  end
-
   def environment?
     converter.environment?
   end
@@ -239,7 +229,6 @@ class Slot
   #
   def conversion
     return 1.0 if environment?
-    return actual_conversion if dynamic? # DEBT remove this, probably no longer used
     dataset_get(:conversion) || 0.0
   end
 

@@ -202,8 +202,8 @@ private
 public
   def graph_parser_expression
     slot_data = [
-      "#{input.andand.conversion}#{input.andand.dynamic? ? ',dyn' : ''}",
-      "#{output.andand.conversion}#{output.andand.dynamic? ? ',dyn' : ''}"
+      "#{input.andand.conversion}",
+      "#{output.andand.conversion}"
     ].join(';')
     str = "#{@carrier.key}[#{slot_data}]: "
     str += "#{@parent.andand.key}(#{@parent.andand.demand || nil})"
