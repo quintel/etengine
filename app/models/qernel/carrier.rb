@@ -94,6 +94,10 @@ class Carrier
     "Carrier: #{key}"
   end
 
+  def inspect
+    "carrier"
+  end
+
 end
 
 end
