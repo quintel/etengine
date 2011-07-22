@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110722060845) do
+ActiveRecord::Schema.define(:version => 20110722070900) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -186,11 +186,9 @@ ActiveRecord::Schema.define(:version => 20110722060845) do
     t.integer  "demand_expected_value",                                      :limit => 8
     t.float    "typical_capacity_gross_in_mj_s"
     t.float    "typical_capacity_effective_in_mj_s"
-    t.float    "typical_thermal_capacity_effective_in_mj_yr"
     t.float    "max_capacity_factor"
     t.float    "land_use_in_nl"
     t.float    "technical_lifetime"
-    t.float    "technological_maturity"
     t.float    "lead_time"
     t.float    "construction_time"
     t.float    "cost_om_fixed_per_mj"
@@ -203,7 +201,6 @@ ActiveRecord::Schema.define(:version => 20110722060845) do
     t.float    "sustainable"
     t.float    "mainly_baseload"
     t.float    "intermittent"
-    t.float    "cost_co2_expected_per_mje"
     t.float    "co2_production_kg_per_mj_output"
     t.integer  "use_id"
     t.integer  "sector_id"
@@ -226,13 +223,9 @@ ActiveRecord::Schema.define(:version => 20110722060845) do
     t.float    "operation_hours"
     t.float    "operation_and_maintenance_cost_fixed_per_mw_input"
     t.float    "operation_and_maintenance_cost_variable_per_full_load_hour"
-    t.float    "investment"
-    t.float    "purchase_price"
-    t.float    "installing_costs"
     t.float    "economic_lifetime"
     t.integer  "municipality_demand",                                        :limit => 8
     t.float    "typical_nominal_input_capacity"
-    t.float    "fixed_operation_and_maintenance_cost_per_mw_input"
     t.float    "residual_value_per_mw_input"
     t.float    "decommissioning_costs_per_mw_input"
     t.float    "purchase_price_per_mw_input"
@@ -399,20 +392,6 @@ ActiveRecord::Schema.define(:version => 20110722060845) do
   end
 
   add_index "inputs", ["key"], :name => "unique api key", :unique => true
-
-  create_table "lce_values", :force => true do |t|
-    t.string   "using_country"
-    t.string   "origin_country"
-    t.float    "co2_exploration_per_mj"
-    t.float    "co2_extraction_per_mj"
-    t.float    "co2_treatment_per_mj"
-    t.float    "co2_transportation_per_mj"
-    t.float    "co2_conversion_per_mj"
-    t.float    "co2_waste_treatment_per_mj"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "carrier"
-  end
 
   create_table "links", :force => true do |t|
     t.integer "blueprint_id"

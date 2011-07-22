@@ -7,7 +7,6 @@ class RemoveOldConverterAttributes < ActiveRecord::Migration
     remove_column :dataset_converter_data, :fixed_operation_and_maintenance_cost_per_mw_input
     remove_column :dataset_converter_data, :purchase_price
     remove_column :dataset_converter_data, :installing_costs
-    mncc
   end
 
   def self.down
