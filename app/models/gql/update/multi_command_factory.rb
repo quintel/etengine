@@ -39,12 +39,9 @@ module Gql::Update
       LinkShareCommand.new(converter_proxy.converter, rc_value_link_name, saving_percentage)
     end
 
-    ##
-    # experimental
-    
-    def number_of_plants
+    def number_of_units_update
       converter = converter_proxy.converter
-      converter_proxy.number_of_plants_planned = value.to_f
+      converter_proxy.number_of_units = value.to_f
 
       converter.outputs.each do |slot|
        slot.links.select(&:constant?).each do |link|
@@ -53,7 +50,10 @@ module Gql::Update
       end
       nil
     end
- 
+    ##
+    # TODO: remove all links to number_of_plants so we can remove the alias
+    alias number_of_plants number_of_units_update 
+    
     ##
     # experimental
     def production_in_mw
