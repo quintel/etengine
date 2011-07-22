@@ -518,7 +518,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def GREATER(values, arguments, scope = nil)
     a,b = values
-    a > b
+    a > b rescue false # FIX to make certain gqueries run with municipalities
   end
 
   ##
