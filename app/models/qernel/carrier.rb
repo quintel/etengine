@@ -29,6 +29,11 @@ class Carrier
 
   dataset_accessors DATASET_ATTRIBUTES
 
+  attr_reader :electricity, :steam_hot_water, :loss
+  alias electricity? electricity
+  alias steam_hot_water? steam_hot_water
+  alias loss? loss
+
   ##
   #
   # @param id [int]
@@ -43,23 +48,15 @@ class Carrier
     self.name = name
     self.infinite = infinite
 
+    @loss = self.key === :loss
+    @electricity = self.key === :electricity
+    @steam_hot_water = self.key === :steam_hot_water
+
     self.dataset_key # memoize dataset_key 
   end
 
   def dataset
     graph.dataset
-  end
-
-  def loss?
-    key === :loss
-  end
-
-  def electricity?
-    key === :electricity
-  end
-
-  def steam_hot_water?
-    key === :steam_hot_water
   end
 
   # The effective total co2 emission that gets emitted from 
@@ -71,27 +68,33 @@ class Carrier
   #   The sum of CO2_FCE_COMPONENTS.
   #
   def co2_per_mj
-    if Current.scenario.use_fce
-      # TODO: Properly memoize this. otherwise it will slow down gqueries!
-      #       use #dataset_fetch for memoization within the qernel.
-      CO2_FCE_COMPONENTS.map do |key|
-        self.send(key)
-      end.compact.sum
-    else
-      co2_conversion_per_mj
+    dataset_fetch(:co2_per_mj) do
+      if Current.scenario.use_fce
+        CO2_FCE_COMPONENTS.map do |key|
+          self.send(key)
+        end.compact.sum
+      else
+        co2_conversion_per_mj
+      end
     end
   end
 
   def ==(other)
     if other.is_a?(Symbol)
+      #Rails.logger.info('carrier === Symbol')
       self.key === other
     else
-      self.id == other.andand.id
+      #Rails.logger.info('carrier === Carrier')
+      self.id == other.id
     end
   end
 
   def to_s
     "Carrier: #{key}"
+  end
+
+  def inspect
+    "carrier"
   end
 
 end

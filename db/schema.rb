@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110715122053) do
+ActiveRecord::Schema.define(:version => 20110722060845) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -70,6 +70,7 @@ ActiveRecord::Schema.define(:version => 20110715122053) do
     t.boolean  "has_heat_import"
     t.boolean  "has_industry"
     t.boolean  "has_other"
+    t.boolean  "has_fce"
   end
 
   create_table "blueprint_layouts", :force => true do |t|
@@ -398,6 +399,20 @@ ActiveRecord::Schema.define(:version => 20110715122053) do
   end
 
   add_index "inputs", ["key"], :name => "unique api key", :unique => true
+
+  create_table "lce_values", :force => true do |t|
+    t.string   "using_country"
+    t.string   "origin_country"
+    t.float    "co2_exploration_per_mj"
+    t.float    "co2_extraction_per_mj"
+    t.float    "co2_treatment_per_mj"
+    t.float    "co2_transportation_per_mj"
+    t.float    "co2_conversion_per_mj"
+    t.float    "co2_waste_treatment_per_mj"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "carrier"
+  end
 
   create_table "links", :force => true do |t|
     t.integer "blueprint_id"

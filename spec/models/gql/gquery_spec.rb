@@ -94,13 +94,16 @@ describe Gquery do
       # We cannot mock easily Converters using mock('Converter', :demand => 1)
       # Because Array#flatten calls to_ary on every object within an array - and we 
       # use flatten a lot in GQL queries. I haven't found a way to easily do that with a mock. (sb)
-      @c1 = Qernel::Converter.new(1,'foo')
-      @c2 = Qernel::Converter.new(2,'bar')
-      @c3 = Qernel::Converter.new(3,'baz')
+      @c1 = Qernel::Converter.new(1, 'foo')
+      @c2 = Qernel::Converter.new(2, 'bar')
+      @c3 = Qernel::Converter.new(3, 'baz')
 
       @c1.stub!(:demand).and_return(1.0)
       @c2.stub!(:demand).and_return(2.0)
       @c3.stub!(:demand).and_return(3.0)
+      @c1.query.stub!(:demand).and_return(1.0)
+      @c2.query.stub!(:demand).and_return(2.0)
+      @c3.query.stub!(:demand).and_return(3.0)
 
       @query_interface.stub!(:converters).and_return([@c1,@c2,@c3])
       @query_interface.stub!(:group_converters).with(['foo']).and_return([@c1,@c2])

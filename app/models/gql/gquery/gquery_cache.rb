@@ -8,7 +8,13 @@ module Gquery::GqueryCache
   # DANGEEROURS. What happens if Converter objects are returned???
   #
   def subquery(gquery_key)
-    if scope.graph.present? and gquery = ::Gquery.get(gquery_key) and !gquery.not_cacheable?
+    if gquery_key.is_a?(::Gquery)
+      gquery = gquery_key
+    else
+      gquery = ::Gquery.get(gquery_key)
+    end
+
+    if scope.graph.present? and gquery and gquery.cacheable?
       val = Rails.cache.fetch("/gquery_cache/#{scope.dataset_id}/#{gquery.key}/#{gquery.updated_at}") do
         # BUG/DEBT memcached seems to be unable to store false values
         val = super(gquery_key)

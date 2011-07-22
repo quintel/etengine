@@ -1,4 +1,3 @@
-
 ##
 #
 #
@@ -7,6 +6,7 @@
 module Qernel::DatasetAttributes
 
   def self.included(klass)
+    klass.send(:attr_accessor, :object_dataset)
     klass.extend(ClassMethods)
   end
 
@@ -24,14 +24,27 @@ module Qernel::DatasetAttributes
       end
     end
 
+    def dataset_group
+      @dataset_group ||= self.name.split("::").last.downcase.to_sym
+    end
+
     def compute_dataset_key(id)
-      "#{self.name}_#{id}".downcase.to_sym
+      id
     end
   end
 
+  # For testing only
+    def with(hsh)
+      @object_dataset = hsh
+      self
+    end
+  
   def dataset
-    #raise "#{self.class.name} has not defined a graph" if graph.nil?
     graph.dataset
+  end
+
+  def dataset_group
+    self.class.dataset_group
   end
 
   def graph
@@ -42,19 +55,58 @@ module Qernel::DatasetAttributes
     @dataset_key ||= self.class.compute_dataset_key(id)
   end
 
+  def reset_object_dataset
+    @object_dataset = nil
+  end
+
+  def assign_object_dataset
+    @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
+  end
+
+  #def object_dataset
+  #  @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
+  #end
+
+  # HANDLE_NIL_SECURLY = true has better output for debugging
+  # HANDLE_NIL_SECURLY = false is 50 ms faster. but harder to debug if problem occurs
+  HANDLE_NIL_SECURLY = true 
+  def dataset_fetch_handle_nil(attr_name, handle_nil_securly = false, &block)
+    if object_dataset.has_key?(attr_name)
+      object_dataset[attr_name]
+    elsif HANDLE_NIL_SECURLY || handle_nil_securly
+      if required_attributes_contain_nil?(attr_name)
+        object_dataset[attr_name] = nil
+      else
+        object_dataset[attr_name] = yield
+      end
+    else
+      object_dataset[attr_name] = yield rescue nil
+    end
+  end
+  
+  # Memoization
+  #
   def dataset_fetch(attr_name, &block)
-    dataset.memoize(self, attr_name, &block)
+    if object_dataset.has_key?(attr_name)
+      object_dataset[attr_name]
+    else
+      object_dataset[attr_name] = yield
+    end
+  end
+
+  def dataset_delete(attr_name)
+    object_dataset.delete(attr_name)
   end
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    dataset.set(dataset_key, attr_name, value)
-    value
+    object_dataset[attr_name] = value
+    # dataset.set(dataset_group, dataset_key, attr_name, value)
   end
 
   # @param attr_name [Symbol]
   def dataset_get(attr_name)
-    dataset.get(dataset_key, attr_name)
+    object_dataset[attr_name]
   end
 
   def [](attr_name)
@@ -62,6 +114,14 @@ module Qernel::DatasetAttributes
   end
 
   def []=(attr_name, value)
-    send("#{attr_name}=", value)
+    # Converter overrides the normal dataset_accessors with custom stuff for demand
+    # calculation. so we can stack multiple demands together
+    #
+    # attr_name_sym = attr_name.to_sym
+    # if attr_name_sym === :preset_demand || attr_name_sym === :municipality_demand
+    #  send("#{attr_name}=", value)
+    # else
+      self.send("#{attr_name}=", value)
+    # end
   end
 end

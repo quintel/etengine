@@ -48,17 +48,20 @@ class Dataset < ActiveRecord::Base
   end
 
   def time_curves
-    entries = self.time_curve_entries
-    time_curves = entries.select(&:preset_demand?).group_by(&:converter_id)
-    time_curves.each do |key,arr|
-      hsh = {}
-      arr.each do |serie|
-        hsh[serie.value_type] ||= {}
-        hsh[serie.value_type][serie.year] = serie.value
+    #marshal = Rails.cache.fetch("/dataset/#{id}/time_curves/#{updated_at.to_i}") do
+      entries = self.time_curve_entries
+      time_curves = entries.select(&:preset_demand?).group_by(&:converter_id)
+      time_curves.each do |key,arr|
+        hsh = {}
+        arr.each do |serie|
+          hsh[serie.value_type] ||= {}
+          hsh[serie.value_type][serie.year] = serie.value
+        end
+        time_curves[key] = hsh
       end
-      time_curves[key] = hsh
-    end
-    time_curves
+      time_curves
+    #end
+    #Marshal.load marshal
   end
 
 
@@ -94,9 +97,10 @@ private
   def build_qernel
     qernel = Qernel::Dataset.new(id)
 
-    [converter_datas, carrier_area_datas, area, link_datas, slot_datas].each do |data|
-      qernel.add_data data
-    end
+    # [converter_datas, carrier_area_datas, area, link_datas, slot_datas].each do |data|
+    #   qernel.add_data data
+    # end
+    qernel.add_dataset(converter_datas, carrier_area_datas, link_datas, slot_datas, area)
     qernel.time_curves = time_curves
     qernel
   end
