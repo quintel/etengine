@@ -56,7 +56,7 @@ class Carrier
   end
 
   def dataset
-    graph.dataset
+    graph && graph.dataset
   end
 
   # The effective total co2 emission that gets emitted from 

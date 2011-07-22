@@ -18,7 +18,7 @@ class Link
 
   # --------- Accessor ---------------------------------------------------------
 
-  attr_accessor :graph,
+  attr_accessor :graph, # needed for dataset
                 :parent, # Parent is the converter to the left (towards useful demand)
                 :child,  # Child is the converter to the right (towards useful primary demand)
                 :carrier 
@@ -29,10 +29,10 @@ class Link
 
   # --------- Flow ------------------------------------------------------------
 
-  attr_reader :reverse, 
-              :is_loss
+  attr_accessor :reversed
+  attr_reader :is_loss
 
-  alias reverse? reverse
+  alias reversed? reversed
   alias loss? is_loss
 
 
@@ -49,10 +49,12 @@ class Link
 
   # --------- Initialize ------------------------------------------------------
 
-  def initialize(id, parent, child, carrier, link_type, reverse = false)
+  def initialize(id, parent, child, carrier, link_type, reversed = false)
     @id = id
-    @reverse = reverse
-    @parent, @child, @carrier, @link_type = parent, child, carrier, link_type.to_sym
+    @reversed = reversed
+    @parent, @child, @carrier = parent, child, carrier
+    
+    self.link_type = link_type
 
     connect
     memoize_for_cache
@@ -67,13 +69,25 @@ protected
 
   def memoize_for_cache
     @is_loss = @carrier.id == 1
+
+    self.dataset_key # memoize dataset_key
+  end
+
+  def link_type=(link_type)
+    @link_type = link_type
+
     @is_share = @link_type === :share
     @flexible = @link_type === :flexible
     @inversed_flexible = @link_type === :inversed_flexible
     @dependent = @link_type === :dependent
     @constant = @link_type === :constant
+  end
 
-    self.dataset_key # memoize dataset_key
+  def after_assign_object_dataset
+    if self.dependent?
+      #puts(self.graph_parser_expression)
+      #@reversed = true
+    end
   end
 
 
@@ -88,15 +102,14 @@ public
   end
 
   def calculated_by_right?
-    dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)
+    (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)) || reversed?
   end
-
 
   # --------- Calculation ------------------------------------------------------
 
   def calculate
     if self.calculated != true
-      self.value = self.send("calculate_#{link_type}")
+      self.value = self.send("calculate_#{@link_type}")
       self.calculated = true
     end
     self.value
@@ -123,7 +136,7 @@ protected
   #
   def calculate_constant
     if self.share.nil?
-      val = output_external_demand || 0.0
+      val = output_external_demand
       raise "Constant Link with share = nil expects a demand of child converter #{@child.full_key}" if val.nil?
       val
     else
@@ -132,12 +145,12 @@ protected
   end
 
   def calculate_dependent
-    o = output
-    (o and o.expected_external_value) || 0.0
+    #calculate_flexible
+    output_external_demand
   end
 
   def calculate_share
-    self.share * input_external_demand
+    share * input_external_demand
   end
 
 
@@ -187,21 +200,19 @@ protected
   # --------- Demands ---------------------------------------------------------
 
   def output_external_demand
-    out = output
-    (out and out.expected_external_value) || 0.0
+    output.expected_external_value || 0.0
   end
 
   def input_external_demand
-    inp = input
-    (inp and inp.expected_external_value) || 0.0
+    input && input.expected_external_value || 0.0
   end
 
   def input
-    @parent.input(@carrier)
+    reversed? ? @child.output(@carrier) : @parent.input(@carrier)
   end
 
   def output
-    @child.output(@carrier)
+    reversed? ? @parent.input(@carrier) : @child.output(@carrier)
   end
 
 
