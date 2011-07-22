@@ -237,6 +237,9 @@ class Slot
     dataset_get(:conversion) || 0.0
   end
 
+  def inspect
+    "slot_#{id}"
+  end
 end
 
 end
