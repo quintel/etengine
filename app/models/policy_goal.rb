@@ -21,11 +21,6 @@ class PolicyGoal < ActiveRecord::Base
   belongs_to :round
   has_paper_trail
 
-  def self.allowed_policies
-    # DEBT this is the concern of etmodel
-    PolicyGoal.all
-  end
-
   def to_gql
     Gql::PolicyGoal.new({
       :id                => id, 

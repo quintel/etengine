@@ -9,12 +9,11 @@ module ApplicationController::GcDisabling
   # @param [Proc] Proc the values
   def disable_gc(&block)
     return yield if !GC_DISABLING_HACK_ENABLED
-    logger.info "Disabling GC."
+    #logger.info "Disabling GC."
     GC.disable
     yield
-    GC.start      
     ensure
-      logger.info "Enabling GC."
+      #logger.info "Enabling GC."
       GC.enable
   end
 

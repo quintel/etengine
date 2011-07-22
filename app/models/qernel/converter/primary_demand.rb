@@ -59,7 +59,7 @@ module Qernel::Converter::PrimaryDemand
   #
   #
   def sustainability_share
-    dataset_fetch(:sustainability_share_factor_mem) do
+    dataset_fetch(:sustainability_share_factor_memoized) do
       wouter_dance_without_losses(:sustainability_share_factor)
     end
   end
@@ -83,7 +83,7 @@ module Qernel::Converter::PrimaryDemand
   #
   #
   def weighted_carrier_cost_per_mj
-    dataset_fetch(:weighted_carrier_cost_per_mj_mem) do
+    dataset_fetch(:weighted_carrier_cost_per_mj_memoized) do
       wouter_dance_without_losses(:weighted_carrier_cost_per_mj_factor)
     end
   end
@@ -108,7 +108,7 @@ module Qernel::Converter::PrimaryDemand
   # Same as weighted_carrier_cost_per_mj but for co2
   #
   def weighted_carrier_co2_per_mj
-    dataset_fetch(:weighted_carrier_co2_per_mj_mem) do
+    dataset_fetch(:weighted_carrier_co2_per_mj_memoized) do
       wouter_dance_without_losses(:weighted_carrier_co2_per_mj_factor)
     end
   end
@@ -172,7 +172,8 @@ module Qernel::Converter::PrimaryDemand
           # 
           # c_1 should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
           #
-          child_conversion = self.input(link.carrier).andand.conversion || 1.0
+          inp = self.input(link.carrier)
+          child_conversion = (inp and inp.conversion) || 1.0
           child_value = child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
 
           # puts("#{self.id}) val: #{child_value}, conv: #{child_conversion}, share: #{link_share}")
@@ -193,7 +194,7 @@ module Qernel::Converter::PrimaryDemand
   # It uses primary_energy_demand? to determine if primary or not.
   #
   def primary_demand
-    dataset_fetch(:primary_demand) do
+    dataset_fetch(:primary_demand_memoized) do
       primary_demand_share = wouter_dance(:primary_demand_factor)
       (self.demand || 0.0) * (primary_demand_share)
     end
@@ -211,7 +212,7 @@ module Qernel::Converter::PrimaryDemand
   # Primary demand of sustainable sources. Uses the Carrier#sustainable attribute
   #
   def primary_demand_of_sustainable
-    dataset_fetch(:primary_demand_of_sustainable) do
+    dataset_fetch(:primary_demand_of_sustainable_memoized) do
       (self.demand || 0.0) * (wouter_dance(:sustainable_factor))
     end
   end
@@ -220,13 +221,13 @@ module Qernel::Converter::PrimaryDemand
   # Primary demand of fossil sources. (primary_demand - primary_demand_of_sustainable)
   #
   def primary_demand_of_fossil
-    dataset_fetch(:primary_demand_of_fossil) do
+    dataset_fetch(:primary_demand_of_fossil_memoized) do
       self.primary_demand - (wouter_dance(:sustainable_factor)) * (self.demand || 0.0)
     end
   end
 
   def primary_co2_emission
-    dataset_fetch(:primary_co2_emission) do
+    dataset_fetch(:primary_co2_emission_memoized) do
       primary_demand_with(:co2_per_mj, :co2_free)
     end
   end
@@ -237,7 +238,7 @@ module Qernel::Converter::PrimaryDemand
   end
 
   def final_demand
-    dataset_fetch(:final_demand) do
+    dataset_fetch(:final_demand_memoized) do
       (self.demand || 0.0) * wouter_dance(:final_demand_factor)
     end
   end
@@ -321,8 +322,10 @@ module Qernel::Converter::PrimaryDemand
   #
   def loss_share
     # TODO optimize by using dataset_fetch
-    v = self.share_of_losses
-    (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
+    dataset_fetch(:loss_share) do
+      v = self.share_of_losses
+      (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
+    end
   end
 
   ##

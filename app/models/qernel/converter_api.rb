@@ -107,24 +107,16 @@ class ConverterApi
 
   dataset_accessors ATTRIBUTES_USED
 
-  ##
-  # The converter all calculations are based on
-  #
-  attr_reader :converter
+  # attributes updated by #initialize
+  attr_reader :converter, :dataset_key, :dataset_group
+  # attributes updated by Converter#graph=
+  attr_accessor :area, :graph
+  # dataset attributes of converter
+  dataset_accessors [:municipality_demand, :preset_demand, :demand]
 
-  def dataset
-    converter.dataset
-  end
-
-  ##
-  # Returns the unique key for this object that is used in Dataset.
-  #
-  def dataset_key
-    converter.dataset_key
-  end
-
-  def area
-    converter.graph.area
+  # ConverterApi has same accessor as it's converter
+  def self.dataset_group
+    @dataset_group ||= Qernel::Converter.dataset_group
   end
 
   def to_s
@@ -132,7 +124,7 @@ class ConverterApi
   end
 
   def inspect
-    converter.full_key.to_s
+    to_s
   end
 
 
@@ -141,16 +133,9 @@ class ConverterApi
   #
   def initialize(converter_qernel, attrs = {})
     @converter = converter_qernel
+    @dataset_key = converter.dataset_key
+    @dataset_group = converter.dataset_group
   end
-
-
-  ##
-  # See {Qernel::Converter} for municipality_demand
-  #
-  def municipality_demand
-    converter.municipality_demand
-  end
-  register_calculation_method :municipality_demand
 
   ##
   # See {Qernel::Converter} for municipality_demand
@@ -159,28 +144,12 @@ class ConverterApi
     converter.municipality_demand = val
   end
 
-  ##
-  # See {Qernel::Converter} for difference of demand/preset_demand
-  #
-  def preset_demand
-    converter.preset_demand
-  end
 
   ##
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
     converter.preset_demand = val
-  end
-
-  ##
-  # The total energy demand of the converter
-  # See {Qernel::Converter} for difference of demand/preset_demand
-  #
-  # @return [Float] total energy demand
-  #
-  def demand
-    converter.demand
   end
 
   ##
@@ -244,7 +213,8 @@ class ConverterApi
   def self.create_share_of_converter_method(converter_key)
     key = converter_key.to_sym
     define_method "share_of_#{key}" do
-      self.converter.output_links.detect{|l| l.parent.full_key == key}.andand.share
+      ol = self.converter.output_links.detect{|l| l.parent.full_key == key}
+      ol and ol.share
     end
   end
   
@@ -288,63 +258,6 @@ class ConverterApi
 
   ##
   #
-  #
-  # @overload output_of_CARRIER
-  #   The output of a specific carrier.
-  #   e.g.
-  #     output_of_electricity
-  #   @param CARRIER [String] carrier_key
-  #   @return [Float] energy output of carrier
-  #
-  # @overload input_of_CARRIER
-  #   The input of a specific carrier.
-  #   e.g.
-  #     input_of_electricity
-  #   @param CARRIER [String] carrier_key
-  #   @return [Float] energy input of carrier
-  #
-  # @overload primary_demand_of_CARRIER
-  #   Primary demand of a specific carrier
-  #   e.g.
-  #     primary_demand_of_electricity
-  #   @return [Float]
-  #
-  # @overload primary_demand_of_sustainable
-  #   Primary demand of sustainable energy
-  #   @return [Float]
-  #
-  # @overload primary_demand
-  #   The primary energy demand of a converter
-  #   @return [Float]
-  #
-  # @overload final_demand
-  #   The final energy demand of a converter
-  #   @return [Float]
-  #
-  # @overload CARRIER_DIRECTIION_link_ATTRIBUTE
-  #   Attribute (ATTRIBUTE: share or value) of the *first* link with
-  #   CARRIER and DIRECTION (input or output).
-  #   e.g.
-  #     electricity_input_link_share
-  #     natural_gas_output_link_value
-  #
-  #   @param CARRIER [String] carrier_key
-  #   @param DIRECTION ['input','output']
-  #   @param ATTRIBUTE [conversion,value,share,actual_conversion]
-  #   @return [Float]
-  #
-  # @overload share_of_OUTPUT_CONVERTER_KEY
-  #   @param OUTPUT_CONVERTER_KEY [String] is the key of a converter on the output side.
-  #   @return [Float]
-  #
-  # @output CARRIER_DIRECTION_ATTRIBUTE
-  #   Slot attributes
-  #   e.g.
-  #     electricity_input_conversion
-  #   @param CARRIER [String] carrier_key
-  #   @param DIRECTION ['input','output']
-  #   @param ATTRIBUTE [String] attribute of slot
-  #   @return [Float]
   #
   def method_missing(method_id, *arguments)
     Rails.logger.info("ConverterApi:method_missing #{method_id}")
