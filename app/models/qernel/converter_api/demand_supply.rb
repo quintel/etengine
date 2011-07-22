@@ -1,7 +1,5 @@
 class Qernel::ConverterApi
 
-
-
   def demand_of_fossil
     dataset_fetch(:demand_of_fossil) do
       converter.input_carriers.map do |carrier|
@@ -71,8 +69,6 @@ class Qernel::ConverterApi
       input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
     end
   end
-
-
   
   def demand_of_carrier(carrier)
     Rails.logger.info('demand_of_* is deprecated. Use output_of_* instead')

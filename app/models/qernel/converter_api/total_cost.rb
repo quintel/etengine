@@ -1,7 +1,6 @@
 class Qernel::ConverterApi
 
   def total_cost_per_mje
-    #output_of_electricity == 0.0
     dataset_fetch_handle_nil(:total_cost_per_mje) do
       total_costs / output_of_electricity
     end
@@ -34,7 +33,91 @@ class Qernel::ConverterApi
   #
   alias total_cost_electricity total_costs
 
+  ## Calcutes the total initial investment needed for the entire converter. Also needed in the network calculations. 
+  #
+  def initial_investment_total
+    dataset_fetch_handle_nil(:initial_investment_total) do
+      number_of_units * initial_investment_costs_per_mw_input * typical_nominal_input_capacity
+    end
+  end
+  attributes_required_for :initial_investment_total, [
+    :initial_investment_costs_per_mw_input,
+    :typical_nominal_input_capacity,
+    :number_of_units
+  ]
 
+  ## Returns the cost of installing one unit 
+  #
+  
+  def cost_of_installing_per_unit
+    dataset_fetch_handle_nil(:cost_of_installing_per_unit) do
+      installing_costs_per_mw_input * typical_nominal_input_capacity
+    end
+  end
+  attributes_required_for :cost_of_installing_per_unit, [
+  :installing_costs_per_mw_input,
+  :typical_nominal_input_capacity
+  ]
+  
+  ## Returns the residual value per unit, the amount of money one unit is worth after the economic lifetime has passed 
+  #
+  def residual_value_per_unit
+    dataset_fetch_handle_nil(:residual_value_per_unit) do
+      residual_value_per_mw_input * typical_nominal_input_capacity
+    end
+  end
+  attributes_required_for :residual_value_per_unit, [
+    :residual_value_per_mw_input,
+    :typical_nominal_input_capacity
+  ]
+
+  ## Returns the decommissioning costs per unit 
+  #
+  def decommissioning_costs_per_unit
+    dataset_fetch_handle_nil(:decommissioning_costs_per_unit) do
+      decommissioning_costs_per_mw_input * typical_nominal_input_capacity
+    end
+  end
+  attributes_required_for :decommissioning_costs_per_unit, [
+    :decommissioning_costs_per_mw_input,
+    :typical_nominal_input_capacity
+  ]
+
+  ## Returns the yearly operation and maintenance costs per unit  
+  #
+  def fixed_yearly_operation_and_maintenance_costs_per_unit
+    dataset_fetch_handle_nil(:fixed_yearly_operation_and_maintenance_costs_per_unit) do
+      decommissioning_costs_per_mw_input * typical_nominal_input_capacity
+    end
+  end
+  
+  attributes_required_for :fixed_yearly_operation_and_maintenance_costs_per_unit, [
+    :decommissioning_costs_per_mw_input,
+    :typical_nominal_input_capacity
+  ]
+  
+  ## Returns the additional initial investment needed for CCS capture per unit. 
+  #
+  def additional_investment_ccs_per_unit
+    dataset_fetch_handle_nil(:additional_investment_ccs_per_unit) do
+      ccs_investment_per_mw_input * typical_nominal_input_capacity
+    end
+  end
+  attributes_required_for :additional_investment_ccs_per_unit, [
+    :ccs_investment_per_mw_input,
+    :typical_nominal_input_capacity
+  ]
+  
+  ## Returns the total of the purchase price and installation of the unit. Relevant for electricity production. 
+  #
+  def initial_investment_excl_ccs_per_unit
+    sum_unless_empty values_for_method(:initial_investment_excl_ccs_per_unit)
+  end
+  attributes_required_for :initial_investment_excl_ccs_per_unit, [
+    :purchase_price_per_unit,
+    :cost_of_installing_per_unit
+  ]
+  
   def cost_of_inputs
     dataset_fetch(:cost_of_inputs) do
       converter.inputs.map do |input_slot|

@@ -1,15 +1,6 @@
 class Qernel::ConverterApi
 
-  # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
-  #
-  def typical_input_capacity
-    dataset_fetch_handle_nil(:typical_input_capacity) do
-      typical_nominal_input_capacity * ( 1 - decrease_in_nomimal_capacity_over_lifetime / 2)
-    end
-  end
-  attributes_required_for :typical_input_capacity, [
-    :typical_nominal_input_capacity, :decrease_in_nomimal_capacity_over_lifetime
-  ]
+
 
   # Determines the value of the converter at the end of its economical life.
   #
@@ -165,53 +156,6 @@ class Qernel::ConverterApi
     :operation_and_maintenance_cost_variable_per_full_load_hour, :typical_input_capacity
   ]
 
-  # Determines the fuel costs, bases on the weighted costs of the used input.
-  #
-  def fuel_costs_total
-    dataset_fetch_handle_nil(:fuel_costs_total) do
-      demand * weighted_carrier_cost_per_mj
-    end
-  end
-  attributes_required_for :fuel_costs_total, [
-    :demand, :weighted_carrier_cost_per_mj  
-  ]
-
-  # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
-  #
-  def fuel_costs_per_mwh_input
-    dataset_fetch_handle_nil(:fuel_costs_per_mwh_input) do
-      SECS_PER_HOUR * weighted_carrier_cost_per_mj
-    end
-  end
-  attributes_required_for :fuel_costs_per_mwh_input, [:weighted_carrier_cost_per_mj  ]
-
-  # This returns the costs for co2 emission credits, based on the CO2_per mwh input.
-  def cost_of_co2_emission_credits
-    dataset_fetch_handle_nil(:cost_of_co2_emission_credits) do
-      cost_of_co2_emission_credits_per_mwh_input * mwh_input
-    end
-  end
-  attributes_required_for :cost_of_co2_emission_credits, [:cost_of_co2_emission_credits_per_mwh_input, :mwh_input]
-
-  # This returns the costs for co2 emission credits per MWh input, as it multiplies the CO2 emitted by the converter by the price of the CO2 emissions.
-  #
-  def cost_of_co2_emission_credits_per_mwh_input
-    dataset_fetch_handle_nil(:cost_of_co2_emission_credits_per_mwh_input) do
-      (1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR
-    end
-  end
-  attributes_required_for :cost_of_co2_emission_credits_per_mwh_input, [
-    :part_ets, :weighted_carrier_co2_per_mj
-  ]
-
-  # The required installed input capacity, based on the demand. 
-  def mwh_input
-    dataset_fetch_handle_nil(:mwh_input) do
-      demand / SECS_PER_HOUR
-    end
-  end
-  attributes_required_for :mwh_input, [:demand]
-
   # The total of all assigned costs for this converter.
   def total_costs
     dataset_fetch(:total_costs) do
@@ -219,14 +163,6 @@ class Qernel::ConverterApi
     end
   end
   attributes_required_for :total_costs, [:fixed_costs, :variable_costs]
-
-  # The MW input capacity that is required to provide the demand.
-  def mw_input_capacity
-    dataset_fetch_handle_nil(:mw_input_capacity) do
-      demand / full_load_seconds
-    end
-  end
-  attributes_required_for :mw_input_capacity, [:demand, :full_load_seconds]
 
   # The total costs of running the converter for 1 MWh of input.
   def total_cost_per_mwh_input
@@ -253,56 +189,15 @@ class Qernel::ConverterApi
   end
   attributes_required_for :initial_investment_costs_per_mw_electricity, [:initial_investment_costs_per_mw_input, :electricity_output_efficiency]
 
-  # How many units are required to fill demand.
-  def number_of_units
-    dataset_fetch_handle_nil(:number_of_units) do
-      # return 0 if typical_input_capacity == 0
-      mw_input_capacity / typical_input_capacity
+  ## Returns the purchase price of one unit 
+  #
+  def purchase_price_per_unit
+    dataset_fetch_handle_nil(:purchase_price_per_unit) do
+      purchase_price_per_mw_input * typical_nominal_input_capacity
     end
   end
-  attributes_required_for :number_of_units, [:mw_input_capacity, :typical_input_capacity]
-
-  alias number_of_plants number_of_units
-  
-  # How many seconds a year the converters runs at full load. 
-  # This is useful because MJ is MW per second.
-  def full_load_seconds
-    dataset_fetch_handle_nil(:full_load_seconds) do
-      full_load_hours * SECS_PER_HOUR
-    end
-  end
-  attributes_required_for :full_load_seconds, [:full_load_hours]
-
-  def production_based_on_number_of_units
-    dataset_fetch_handle_nil(:production_based_on_number_of_units) do
-      number_of_units * typical_electricity_production
-    end
-  end
-  attributes_required_for :production_based_on_number_of_units, [
-    :number_of_units,
-    :typical_electricity_production
+  attributes_required_for :purchase_price_per_unit, [
+    :purchase_price_per_mw_input,
+    :typical_nominal_input_capacity
   ]
-
-  def typical_electricity_production
-    dataset_fetch_handle_nil(:typical_electricity_production) do
-      electricity_output_conversion * typical_input_capacity * full_load_seconds
-    end
-  end
-  attributes_required_for :typical_electricity_production, [
-    :typical_input_capacity, 
-    :electricity_output_conversion,
-    :full_load_seconds
-  ]
-
-  def installed_production_capacity_in_mw_electricity
-    dataset_fetch_handle_nil(:installed_production_capacity_in_mw_electricity) do
-      electricity_output_conversion * typical_nominal_input_capacity * number_of_units
-    end
-  end
-  attributes_required_for :installed_production_capacity_in_mw_electricity, [
-    :electricity_output_conversion,
-    :typical_nominal_input_capacity,
-    :number_of_units
-  ]
-
 end

@@ -13,10 +13,7 @@ class Qernel::ConverterApi
 
   def fuel_cost_raw_material_per_mj
     dataset_fetch_handle_nil(:fuel_cost_raw_material_per_mj) do
-      # sum_unless_empty converter.inputs.map{|input|
-      #   (useful_output == 0.0) ? 0.0 : ((input.carrier.cost_per_mj || 0.0) * input.conversion / useful_output)
-      # }
-        (useful_output == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / useful_output)
+      (useful_output == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / useful_output)
     end
   end
   attributes_required_for :fuel_cost_raw_material_per_mj, [:useful_output]
@@ -69,6 +66,26 @@ class Qernel::ConverterApi
       sum_unless_empty prices
     end
   end
+
+  # Determines the fuel costs, bases on the weighted costs of the used input.
+  #
+  def fuel_costs_total
+    dataset_fetch_handle_nil(:fuel_costs_total) do
+      demand * weighted_carrier_cost_per_mj
+    end
+  end
+  attributes_required_for :fuel_costs_total, [
+    :demand, :weighted_carrier_cost_per_mj  
+  ]
+
+  # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
+  #
+  def fuel_costs_per_mwh_input
+    dataset_fetch_handle_nil(:fuel_costs_per_mwh_input) do
+      SECS_PER_HOUR * weighted_carrier_cost_per_mj
+    end
+  end
+  attributes_required_for :fuel_costs_per_mwh_input, [:weighted_carrier_cost_per_mj  ]
 
 
   def fuel_cost_raw_material_for_carrier(carrier)
