@@ -137,14 +137,8 @@ class Api::ApiScenariosController < ApplicationController
       
       if params[:use_fce]
         # If the use_fce setting has changed it should be updated. this influences emission calculations
-        # TODO RD The following statement probably will always be true, as 
-        #         params[:use_fce] will be a string, whereas scenario.use_fce is stored
-        #         and retrieved as a boolean. true == "1" => false. 
-        #         maybe use the use_fce_changed? rails method instead?
-        if scenario.use_fce != params[:use_fce]
-          scenario.use_fce = params[:use_fce] 
-          scenario.save unless test_scenario?
-        end
+        scenario.use_fce = params[:use_fce] 
+        scenario.save unless test_scenario? || !scenario.changed?
       end
     end
 end
