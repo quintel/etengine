@@ -1,5 +1,8 @@
 class Qernel::ConverterApi
 
+  ##
+  # RD: This method is used by the number_of_units_update in multicommand factory
+  # I dont think this belongs here
   def number_of_units=(val)
     dataset_set(:number_of_units, val)
   end
@@ -23,31 +26,8 @@ class Qernel::ConverterApi
 
   alias number_of_heat_plants_future number_of_units
   
-
   ##
-  # NOT NEEDED YET
-  # def municipality_production_in_mw
-  #   return nil if required_attributes_contain_nil?(:municipality_production_in_mw)
-  #   municipality_demand / SECS_PER_YEAR / capacity_factor
-  # end
-  # 
-  # attributes_required_for :municipality_production_in_mw, [
-  #   :capacity_factor,
-  #   :municipality_demand
-  # ]
-  # 
-  # def national_production_in_mw
-  #   return nil if required_attributes_contain_nil?(:national_production_in_mw)
-  #   preset_demand / SECS_PER_YEAR / capacity_factor
-  # end
-  # 
-  # attributes_required_for :national_production_in_mw, [
-  #   :capacity_factor,
-  #   :preset_demand
-  # ]
-
-  ##
-  #
+  # TO BE REFACTORED
   #
   def typical_production
     dataset_fetch_handle_nil(:typical_production) do
