@@ -31,6 +31,7 @@ class Qernel::ConverterApi
     converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
   end
 
+  #TODO: this method returns a share. But the name presumes it is not!
   def useful_output
     dataset_fetch(:memoized_useful_output) do
       [ converter.output(:electricity),

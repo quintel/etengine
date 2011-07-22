@@ -28,10 +28,10 @@ class Qernel::ConverterApi
 
   def peak_load_units_delta_for_mv_hv
     return nil if required_attributes_contain_nil?(:peak_load_units_delta_for_mv_hv)
-    (number_of_plants_future - peak_load_units_present)
+    (number_of_plants - peak_load_units_present)
 
   end
-  attributes_required_for :peak_load_units_delta_for_mv_hv, [:number_of_plants_future, :peak_load_units_present]
+  attributes_required_for :peak_load_units_delta_for_mv_hv, [:number_of_plants, :peak_load_units_present]
 
   def peak_load_heat_units_delta_for_mv_hv
     return nil if required_attributes_contain_nil?(:peak_load_units_delta_for_mv_hv)

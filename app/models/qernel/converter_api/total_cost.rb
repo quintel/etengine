@@ -1,54 +1,40 @@
 class Qernel::ConverterApi
 
   def total_cost_per_mje
-    sum_unless_empty values_for_method(:total_cost_per_mje)
-  end
-  attributes_required_for :total_cost_per_mje, [
-    :cost_om_per_mj,
-    :fuel_cost_raw_material_per_mje,
-    :cost_fuel_other_per_mj, # TODO change back to: cost_fuel_other_per_mj
-    :cost_co2_per_mj_output,
-    :finance_and_capital_cost
-  ]
-
-  def total_cost_per_mje_excl_co2_and_fuel
-    sum_unless_empty values_for_method(:total_cost_per_mje_excl_co2_and_fuel)
-  end
-  attributes_required_for :total_cost_per_mje_excl_co2_and_fuel, [
-    :cost_om_per_mj,
-    :cost_fuel_other_per_mj, # TODO change back to: cost_fuel_other_per_mj
-    :finance_and_capital_cost
-  ]
-
-
-  def total_cost_per_mj
-    sum_unless_empty values_for_method(:total_cost_per_mj)
-  end
-  attributes_required_for :total_cost_per_mj, [
-    :cost_om_per_mj,
-    :fuel_cost_raw_material_per_mj,
-    :cost_fuel_other_per_mj,
-    :cost_co2_per_mj_output,
-    :finance_and_capital_cost
-  ]
-
-
-  def total_cost
-    if required_attributes_contain_nil?(:total_cost)
+    if required_attributes_contain_nil?(:total_cost_per_mje) || output_of_electricity == 0.0
       nil
     else
-      total_cost_per_mj * demand * useful_output
+      total_costs / output_of_electricity
     end
   end
-  attributes_required_for :total_cost, [:total_cost_per_mje, :demand, :useful_output]
+  attributes_required_for :total_cost_per_mje, [
+    :total_costs,
+    :output_of_electricity
+  ]
 
-
-  def total_cost_electricity
-    return nil if required_attributes_contain_nil?(:total_cost_electricity)
-
-    total_cost_per_mje * demand * electricity_output
+  def total_cost_per_mj
+    if required_attributes_contain_nil?(:total_cost_per_mj)
+       nil
+     else
+       total_costs / ( demand * useful_output )
+     end
   end
-  attributes_required_for :total_cost_electricity, [:total_cost_per_mje, :demand, :electricity_output]
+  attributes_required_for :total_cost_per_mj, [
+    :total_costs,
+    :useful_output
+  ]
+
+  ##
+  # Removed total_cost, refactored to total_costs
+  # Added an alias untill the queries are altered
+  #
+  alias total_cost total_costs
+
+  ##
+  # Removed total_cost_electricity, it now has the same results then total_costs
+  # Added an alias untill the queries are altered
+  #
+  alias total_cost_electricity total_costs
 
   def cost_of_inputs
     converter.inputs.map do |input_slot|
