@@ -75,6 +75,7 @@ protected
 
   def link_type=(link_type)
     @link_type = link_type
+
     @is_share = @link_type === :share
     @flexible = @link_type === :flexible
     @inversed_flexible = @link_type === :inversed_flexible
@@ -83,6 +84,10 @@ protected
   end
 
   def after_assign_object_dataset
+    if self.dependent?
+      #puts(self.graph_parser_expression)
+      #@reversed = true
+    end
   end
 
 
@@ -140,6 +145,7 @@ protected
   end
 
   def calculate_dependent
+    #calculate_flexible
     output_external_demand
   end
 
