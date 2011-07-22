@@ -122,10 +122,6 @@
           - result_fields(pre,fut) do |converter|
             - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
 
-        %tr
-          %th Total Cost Per MWhe excl CO2 and fuel costs
-          - result_fields(pre,fut) do |converter|
-            - converter.total_cost_per_mje_excl_co2_and_fuel.andand.per_mj_to_per_mwh
 
         %tr
           %th Total Losses
