@@ -11,9 +11,7 @@ class Qernel::ConverterApi
   def sustainability_share
     converter.sustainability_share
   end
-  
-  #RD: Does this belong here?
-  # SB: Yes. kinda
+
   def weighted_carrier_cost_per_mj
     converter.weighted_carrier_cost_per_mj
   end
