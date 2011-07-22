@@ -331,56 +331,59 @@ module Qernel
 
     # ----- Reversed Dependent functionality  ------------------
 
-    it "# dependent as reversed share(1)
-        bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
-        foo[1.0;0.3]: el_output(nil) == s(1) ==< chp(nil)
-        foo:          chp(nil)       == s(1) ==> rgt(nil) " do
+    describe "Reversed Dependent functionality" do
       
-      @hw_demand.demand.should == 70.0
-      @el_output.demand.should == 30.0
-      @chp.demand.should == 100.0
-      @rgt.demand.should == 100.0
-    end
-
-    it "# dependent as reversed flexible
-        bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
-        foo[1.0;0.3]: el_output(nil) == f(nil) ==< chp(nil)
-        foo:          chp(nil)       == s(1) ==> rgt(nil) " do
+      it "# dependent as reversed share(1)
+          bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
+          foo[1.0;0.3]: el_output(nil) == s(1) ==< chp(nil)
+          foo:          chp(nil)       == s(1) ==> rgt(nil) " do
       
-      @hw_demand.demand.should == 70.0
-      @el_output.demand.should == 30.0
-      @chp.demand.should == 100.0
-      @rgt.demand.should == 100.0
-    end
+        @hw_demand.demand.should == 70.0
+        @el_output.demand.should == 30.0
+        @chp.demand.should == 100.0
+        @rgt.demand.should == 100.0
+      end
 
-    it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
-        foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
-        foo:          el_output      == f(nil) ==> rgt1" do
+      it "# dependent as reversed flexible
+          bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
+          foo[1.0;0.3]: el_output(nil) == f(nil) ==< chp(nil)
+          foo:          chp(nil)       == s(1) ==> rgt(nil) " do
       
-      @hw_demand.demand.should == 70.0
-      @chp.demand.should == 100.0
-      @el_output.demand.should == 40.0
+        @hw_demand.demand.should == 70.0
+        @el_output.demand.should == 30.0
+        @chp.demand.should == 100.0
+        @rgt.demand.should == 100.0
+      end
 
-      @rgt1.demand.should == 10.0
-    end
-
-    it "# BUG/INCONSISTENCY
-        # Dependent together with shares do not work correctly!!
-        # Share seems to be calculated first or doesn't take into account
-        # dependent value
-        bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
-        foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
-        foo:          el_output      == f(nil) ==> rgt1
-        foo:          el_output      == s(0.6) ==> rgt2" do
+      it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+          foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
+          foo:          el_output      == f(nil) ==> rgt1" do
       
-      @hw_demand.demand.should == 70.0
-      @chp.demand.should == 100.0
-      @el_output.demand.should == 40.0
+        @hw_demand.demand.should == 70.0
+        @chp.demand.should == 100.0
+        @el_output.demand.should == 40.0
 
-      @rgt2.demand.should == 24.0
-      @rgt1.demand.should == 0.0
+        @rgt1.demand.should == 10.0
+      end
+
+      it "# BUG/INCONSISTENCY
+          # Dependent together with shares do not work correctly!!
+          # Share seems to be calculated first or doesn't take into account
+          # dependent value
+          bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+          foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
+          foo:          el_output      == f(nil) ==> rgt1
+          foo:          el_output      == s(0.6) ==> rgt2" do
+      
+        @hw_demand.demand.should == 70.0
+        @chp.demand.should == 100.0
+        @el_output.demand.should == 40.0
+
+        @rgt2.demand.should == 24.0
+        @rgt1.demand.should == 0.0
+      end
+
     end
-
 
     # ----- Reversed & Inversed Flexible functionality  -----------------------
 
