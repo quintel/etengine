@@ -14,28 +14,69 @@ module Qernel
 #
 class Graph
   extend ActiveModel::Naming
+  include DatasetAttributes
 
+  attr_reader   :converters
   attr_accessor :dataset,
-                :converters,
                 :finished_converters,
                 :area,
                 :region_code,
                 :year,
                 :graph_id
 
+  # ---- DatasetAttributes ----------------------------------------
+
+  def dataset_key
+    :graph
+  end
+
+  def graph
+    self
+  end
+
   # def initialize(converters, carriers, groups)
-  def initialize(converters, optimize = true, dataset = nil, carriers = nil)
-    # TODO @calculated should be in Dataset
-    @calculated = false
-
+  def initialize(converters = [])
     self.converters = converters
-
-    @group_converters_cache = {}
-
     self.area = Qernel::Area.new(self)
-    build_lookup_hash
+  end
 
-    prepare_memoization
+  def converters=(converters)
+    @converters = converters
+    @converters.each{|converter| converter.graph = self }
+
+    self.reset_memoized_methods
+
+    @converters
+  end
+
+  def dataset=(dataset)
+    @dataset = dataset
+    self.refresh_dataset_objects if @dataset
+  end
+
+  def each_dataset_object_item(method_name)
+    self.send(method_name)
+    self.area.send(method_name)
+    self.carriers.each(&method_name)
+    self.converters.each do |c|
+      c.query.send(method_name)
+      c.send(method_name)
+      c.input_links.each(&method_name)
+      c.inputs.each(&method_name)
+      c.outputs.each(&method_name)
+    end
+  end
+
+  def reset_dataset_objects
+    each_dataset_object_item(:reset_object_dataset)
+  end
+
+  def refresh_dataset_objects
+    each_dataset_object_item(:assign_object_dataset)
+  end
+
+  def calculated?
+    dataset_get(:calculated)
   end
 
   def time_curves
@@ -56,14 +97,12 @@ class Graph
   # 2. Calculate the converter (see: {Qernel::Converter#calculate})
   # 3. Remove converter from stack and move it to {#finished_converters}
   # 5. => (continue at 1. until stack is empty)
-  # 6. recalculate link shares of output_links (see: {Qernel::Link#assign_share})
+  # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
   #
   # TODO refactor
   def calculate
-    # TODO seb move @calculate to dataset
-    # Rails.logger.warn('Graph already calculated') if @calculated
+    Rails.logger.warn('Graph already calculated') if calculated?
     Rails.logger.info('Qernel::Graph#calculate')
-
 
     # FIFO stack of all the converters. Converters are removed from the stack after calculation.
     converter_stack = converters.clone
@@ -76,14 +115,15 @@ class Graph
       self.finished_converters << converter_stack.delete_at(index)
     end
 
-    self.finished_converters.map(&:input_links).flatten.each(&:assign_share)
+    self.finished_converters.map(&:input_links).flatten.each(&:update_share)
 
-    @calculated = true
+    dataset_set(:calculated, true)
 
     unless converter_stack.empty?
       Rails.logger.warn "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}"
     end
   end
+
 
   def links
     @links ||= converters.map(&:input_links).flatten.uniq
@@ -170,7 +210,7 @@ class Graph
   ##
   # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of converters.
   def inspect
-    "Do not inspect. Because graph is to big that it takes a long time to inspect."
+    "<Qernel::Graph graph_id:#{graph_id}>"
   end
 
   ##
@@ -178,9 +218,6 @@ class Graph
   #
   # @todo Calculate graph, and order converters array according to finished_converters
   def optimize_calculation_order
-    # converters with preset_demand should be in the beginning of the array
-    # makes calculating faster (as they are already ready?)
-
     copy = Marshal.load(Marshal.dump(self))
     copy.calculate
     copy.finished_converters.reverse.each_with_index do |converter, index|
@@ -191,13 +228,50 @@ class Graph
     end
   end
 
+  # ====== Methods only used for Testing =============================
+  
+  if Rails.env.test? || Rails.env.development?
+    # create slot if necessary.
+    # return link
+    def connect(lft, rgt, carrier, link_type = :share)
+      lft = converter(lft) if lft.is_a?(Symbol)
+      rgt = converter(rgt) if rgt.is_a?(Symbol)
+
+      unless lft.input(carrier)
+        lft.add_slot(Slot.new(lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
+      end
+      unless rgt.output(carrier)
+        rgt.add_slot(Slot.new(rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
+      end
+      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type)
+    end
+
+    def with_converters(key_dataset_hsh)
+      self.converters = key_dataset_hsh.map do |key, dataset|
+        Converter.new(self.converters.length+1, key).with(dataset)
+      end
+    end
+  end
+
+
+  def reset_memoized_methods
+    reset_group_converters_and_memoize
+    reset_converter_lookup_and_memoize
+
+    @carriers = nil
+    @links = nil
+    @groups = nil
+    @primary_energy_carriers = nil
+  end
+
 private
 
-  def prepare_memoization
+  def reset_group_converters_and_memoize
+    @group_converters_cache = {}
     groups.uniq.each {|key| group_converters(key)}
   end
 
-  def build_lookup_hash
+  def reset_converter_lookup_and_memoize
     @converters_hash = {}
     self.converters.each do |converter|
       Qernel::Converter::KEYS_FOR_LOOKUP.each do |method_for_key|

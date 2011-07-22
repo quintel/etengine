@@ -12,12 +12,10 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def result( value_terms, params, scope )
     # DEBT this is not really needed as we check for query correctness
     # if respond_to?(text_value)
-    if LAZY_CALCULATE_VALUE_TERMS.include?(text_value)
-      send(text_value, value_terms, params, scope)
-    else
-      values = value_terms.map{|value_term| value_term.result(scope) }
-      send(text_value, values, params, scope)
+    if !LAZY_CALCULATE_VALUE_TERMS.include?(text_value)
+      value_terms.map!{|value_term| value_term.result(scope) }
     end
+    send(text_value, value_terms, params, scope)
     # else
     #   raise GqlError.new("GQL: No such function defined: #{text_value}")
     # end
@@ -99,15 +97,16 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def VALUE(converters, attribute_name, scope = nil)
     converters.flatten!
-    if attribute_name and !attribute_name.empty?
-      converters.map!{|key| key.is_a?(String) ? scope.converters(key) : key}
+    converters.map!{|key| key.is_a?(String) ? scope.converters(key) : key}
 
-      converters.flatten! # converters is a nested array [[[],[]],[]]
-      converters.uniq!    # we might have doubles (e.g. when SECTOR(foo), GROUP(bar))
+    if attribute_name and !attribute_name.empty?
+      # converters is a nested array [[[],[]],[]]
+      # we might have doubles (e.g. when SECTOR(foo), GROUP(bar))
+      flatten_uniq(converters) 
 
       attr_name = replace_gql_with_ruby_brackets(attribute_name.first)
 
-      values = converters.map do |c|
+      converters.map! do |c|
         begin
           if c.respond_to?(:query)
             # We don't access Converter directly, but through their converter_api objects
@@ -118,23 +117,21 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
             c.instance_eval(attr_name)
           end
         rescue Exception => e
-          raise "VALUE(#{converters.join(',')};#{attribute_name.first.strip.gsub('[','(').gsub(']',')')}) for #{c.full_key} throws an exception: #{e}"
+          #Rails.logger.warn(e.stacktrace)
+          raise "VALUE(#{converters.join(',')};#{replace_gql_with_ruby_brackets(attribute_name.first)}) for #{c.full_key} throws an exception: #{e}"
         end
       end
+
+      values = converters
 
       # hmm. If we only have one value, return value instead of array with single value
       #   somehow weird behaviour...
       values.length <= 1 ? (values.first || 0.0) : values
     else
-      [
-        # for all strings in converters lookup converter
-        scope.converters(converters.select{|k| k.is_a?(String) }), 
-        # all Converters within converters
-        converters.reject{|k| k.is_a?(String) } 
-      ].flatten
+      converters.tap(&:flatten!)
     end
   end
-  alias_method :V, :VALUE
+  alias V VALUE
 
   ##
   # Arguments of VALUE are normal ruby instance_eval's. But because
@@ -145,9 +142,12 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def replace_gql_with_ruby_brackets(attr_name)
     if attr_name.include?('[')
-      attr_name.strip.gsub('[','(').gsub(']',')')
+      attr_name.strip!
+      attr_name.gsub!('[','(')
+      attr_name.gsub!(']',')')
+      attr_name
     else
-      attr_name.strip
+      attr_name.tap(&:strip!)
     end
   end
 
@@ -169,9 +169,9 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def QUERY(keys, arguments, scope)
     scope.subquery(keys.first)
   end
-  alias_method :Q, :QUERY
+  alias Q QUERY
   # @deprecated
-  alias_method :SUBQUERY, :QUERY
+  alias SUBQUERY QUERY
 
   ##
   # Children of a converter(s).
@@ -182,7 +182,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Array<Qernel::ConverterApi>] direct children of the converters
   #
   def CHILDREN(converters, arguments, scope)
-    converters.flatten.map{|c| c.converter.children}.flatten.uniq
+    flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.children})
   end
 
   ##
@@ -194,7 +194,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Array<Qernel::ConverterApi>] direct parents of the converters
   #
   def PARENTS(converters, arguments, scope)
-    converters.flatten.map{|c| c.converter.parents}.flatten.uniq
+    flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.parents})
   end
 
   ##
@@ -207,7 +207,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def FILTER(converters, filter_name, scope)
     inst_eval = replace_gql_with_ruby_brackets(filter_name.first)
-    converters.flatten.select{|c| c.query.instance_eval(inst_eval) }.flatten.uniq
+    flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
   end
 
   ##
@@ -219,7 +219,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def GROUP(keys, arguments, scope)
     scope.group_converters(keys)
   end
-  alias_method :G, :GROUP
+  alias G GROUP
 
   ##
   # Converters of a sector : *SECTOR(households)*
@@ -356,7 +356,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Integer] Size of array (ignoring nil values)
   #
   def COUNT(values, arguments, scope = nil)
-    values.flatten.compact.count
+    flatten_compact(values).count
   end
 
   ##
@@ -367,7 +367,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def NIL_TO_ZERO(values, arguments, scope = nil)
     if values.respond_to?(:map)
-      values.flatten.map{|v| v.nil? ? 0 : v }
+      values.tap(&:flatten!).map!{|v| v.nil? ? 0 : v }
+      values
     else
       values.nil? ? 0 : v
     end
@@ -383,7 +384,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     is_invalid = Proc.new {|v| v.nil? || (v.respond_to?(:nan?) && v.nan?) }
 
     if values.respond_to?(:map)
-      values.flatten.map{|v| is_invalid.call(v) ? 0 : v }
+      values.tap(&:flatten!).map!{|v| is_invalid.call(v) ? 0 : v }
+      values
     else
       is_invalid.call(values) ? 0 : v
     end
@@ -396,9 +398,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float] Sum of values (ignoring nil values)
   #
   def SUM(values, arguments, scope = nil)
-    values.flatten!
-    values.compact!
-    values.inject(0) {|total,value| total += value}
+    flatten_compact(values).inject(0) {|total,value| total += value}
   end
 
   ##
@@ -417,9 +417,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float] Product of all values (ignoring nil values).
   #
   def PRODUCT(values, arguments, scope = nil)    
-    values.flatten!
-    values.compact!
-    values.inject(1){|total,value| total = total * value}
+    flatten_compact(values).inject(1) {|total,value| total = total * value}
   end
 
   ##
@@ -427,7 +425,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float]
   #
   def DIVIDE(values, arguments, scope = nil)
-    a,b = values.flatten
+    a,b = values.tap(&:flatten!)
     if a == 0.0 || a.nil?
       0.0
     else
@@ -440,9 +438,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float] the highest number
   #
   def MAX(values, arguments, scope = nil)
-    values.flatten!
-    values.compact!
-    values.max
+    flatten_compact(values).max
   end
 
   ##
@@ -450,9 +446,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float] the lowest number
   #
   def MIN(values, arguments, scope = nil)
-    values.flatten!
-    values.compact!
-    values.min
+    flatten_compact(values).min
   end
 
   ##
@@ -460,9 +454,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Array<Float>] absolute numbers
   #
   def ABS(values, arguments, scope = nil)
-    values.flatten!
-    values.compact!
-    values.map!{|v| v.abs if v }
+    values = flatten_compact(values).map!{|v| v.abs if v }
     values
   end
 
@@ -594,8 +586,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def FOR_COUNTRIES(value_terms, arguments, scope = nil)
     # DEBT: fix Current.scenario.country to use graph
     if arguments.include?(Current.scenario.country)
-      values = value_terms.map{|value_term| value_term.result(scope) }
-      values.length == 1 ? values.first : values
+      value_terms.map!{|value_term| value_term.result(scope) }
+      value_terms.length == 1 ? value_terms.first : value_terms
     else
       nil
     end
@@ -674,9 +666,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float] -(value)
   #
   def NEG(values, arguments, scope = nil)
-    values.flatten!
-    values.compact!
-    values.map!{|v| v * -1.0}
+    values = flatten_compact(values).map!{|v| v * -1.0}
     values.first
   end
 
@@ -704,8 +694,13 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   end
 
   def flatten_compact(arr)
-    arr.flatten.compact
+    arr.tap(&:flatten!).tap(&:compact!)
   end
+
+  def flatten_uniq(arr)
+    arr.tap(&:flatten!).tap(&:uniq!)
+  end
+
 end
 
 end

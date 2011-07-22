@@ -83,6 +83,10 @@ class Gquery < ActiveRecord::Base
     end
   end
 
+  def cacheable?
+    !not_cacheable && unit != 'converters'
+  end
+
   def gql_modifier
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
   end
