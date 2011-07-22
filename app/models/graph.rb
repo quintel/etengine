@@ -68,11 +68,13 @@ class Graph < ActiveRecord::Base
   def future
     @future_graph = nil
     Graph.benchmark("Graph#future qernel") do
-      @future_graph ||= self.class.future_qernel_for(self)
+      @future_graph = self.class.future_qernel_for(self)
     end
+
     Graph.benchmark("Graph#future dataset") do
       @future_graph.dataset = dataset.to_qernel
     end
+
     @future_graph
   end
 
@@ -127,11 +129,12 @@ class Graph < ActiveRecord::Base
   end
 
   def build_qernel
-    qernel_graph = blueprint.to_qernel
-    qernel_graph.dataset = dataset.to_qernel
-    qernel_graph.optimize_calculation_order
-    qernel_graph.dataset = nil
-    qernel_graph
+    qernel = blueprint.to_qernel
+    qernel.dataset = dataset.to_qernel
+    qernel.optimize_calculation_order
+    qernel.reset_dataset_objects
+    qernel.dataset = nil
+    qernel
   end
 end
 

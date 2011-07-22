@@ -84,7 +84,11 @@ class GraphApi
   def electricity_produced_from_gas
     @electricity_produced_from_gas = graph.group_converters(:electricity_production).select do |c|
       c.input(:gasmix) || c.input(:natural_gas)
-    end.map{|c| c.query.output_of_electricity * (c.input(:gasmix).andand.conversion || c.input(:natural_gas).andand.conversion) }.compact.sum
+    end.map{|c| 
+      gasmix = c.input(:gasmix)
+      nat_gas = c.input(:natural_gas)
+      c.query.output_of_electricity * (gasmix and gasmix.conversion || nat_gas and nat_gas.conversion) 
+    }.compact.sum
   end
 
   #
@@ -149,11 +153,6 @@ private
   def graph
     @graph
   end
-
-
-  # add all the attributes and methods that are modularized in calculator/
-  # loads all the "open classes" in calculator
-  Dir["app/models/qernel/graph_query/*.rb"].sort.each {|file| require_dependency file }
 end
 
 end

@@ -64,10 +64,11 @@ class Blueprint < ActiveRecord::Base
   private
 
   def build_qernel
-    qernel_graph = Qernel::Graph.new(converters)
+    qernel_graph = Qernel::Graph.new
+    qernel_graph.converters = converters
     qernel_graph.graph_id = id
     # Here we explicitly set the reference to dataset (via graph) for all the qernel objects
-    (converters + carriers + qernel_slots + qernel_links).each do |obj|
+    (carriers + qernel_slots + qernel_links).each do |obj|
       obj.graph = qernel_graph
     end
     qernel_graph

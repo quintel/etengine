@@ -103,14 +103,7 @@ class Converter < ActiveRecord::Base
   #
   def to_qernel
     unless @qernel_obj
-      @qernel_obj = Qernel::Converter.new(id, name) # demand comes from dataset
-      @qernel_obj.key = key
-      @qernel_obj.use_id = use_id
-      @qernel_obj.sector_id = sector_id
-
-      self.groups.uniq.each do |group|
-        @qernel_obj.groups << group.to_qernel
-      end
+      @qernel_obj = Qernel::Converter.new(id, key, use_id, sector_id, self.groups.map(&:to_qernel).uniq)
     end
     @qernel_obj
   end

@@ -20,6 +20,6 @@ class Dataset::SlotData < ActiveRecord::Base
   end
 
   def dataset_attributes
-    Qernel::Slot::DATASET_ATTRIBUTES.inject({}) {|hsh, key| hsh.merge key => self[key]}
+    Qernel::Slot::DATASET_ATTRIBUTES.inject({}) {|hsh, key| hsh.merge key => self[key] }
   end
 end

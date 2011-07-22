@@ -14,7 +14,7 @@ grammar GqlQuery
     value_function '(' leading:value_term trailing:(separator value_term)* args:(argument_separator value)* ')' {
       def result(scope)
         value_terms = merge_value_terms(leading, trailing)
-        params = args.elements.map { |a| a.value.result(scope) } if args
+        params = args.elements.map{|a| a.value.result(scope) } if args
         value_function.result( value_terms, params, scope )
       end
 
@@ -31,9 +31,11 @@ grammar GqlQuery
       #   => [foo, bar, baz]
       #
       def merge_value_terms(leading, trailing)
-        values = [leading]
-        values += trailing.elements.map(&:value_term) if trailing
-        values
+        if trailing
+          [leading] + trailing.elements.map(&:value_term)
+        else
+          [leading]
+        end  
       end
     }
     /
@@ -58,7 +60,7 @@ grammar GqlQuery
   end
 
   rule value
-    number / text / constant 
+    text / number / constant 
   end
 
   rule text
@@ -79,7 +81,7 @@ grammar GqlQuery
       def result(scope = nil)
         text_value.constantize
       end
-
+  
       def debug(scope = nil, msg)
         msg << "#{result} - #{text_value}"
         result

@@ -20,7 +20,7 @@ class Slot
   attr_accessor :converter, :converter_id, :graph
   attr_reader :carrier, :direction, :id
 
-  DATASET_ATTRIBUTES = [:conversion, :dynamic]
+  DATASET_ATTRIBUTES = [:conversion]
   dataset_accessors DATASET_ATTRIBUTES
 
   ##
@@ -54,7 +54,11 @@ class Slot
   #
   def links
     # For legacy reasons, we still access links through the converter.
-    @links ||= input? ? converter.input_links.select{|l| l.carrier == @carrier} : converter.output_links.select{|l| l.carrier == @carrier}
+    @links ||= if input? 
+      converter.input_links.select{|l| l.carrier == @carrier} 
+    else
+      converter.output_links.select{|l| l.carrier == @carrier}
+    end
   end
 
   ##
@@ -64,9 +68,9 @@ class Slot
   #
   def active_links
     @active_links ||= if input? 
-      links.select(&:calculated_by_parent?)
+      links.select(&:calculated_by_left?)
     else
-      links.select(&:calculated_by_child?)
+      links.select(&:calculated_by_right?)
     end
   end
 
@@ -86,9 +90,9 @@ class Slot
   #
   def passive_links
     @passive_links ||= if input? 
-      links.select(&:calculated_by_child?) 
+      links.select(&:calculated_by_right?) 
     else 
-      links.select(&:calculated_by_parent?)
+      links.select(&:calculated_by_left?)
     end
   end
 
@@ -185,16 +189,6 @@ class Slot
     !input?
   end
 
-  ##
-  # Is slot dynamic? ie: no conversion defined and therefore
-  #  needs to calculate the conversion at the end.
-  #
-  # @return [Boolean]
-  #
-  def dynamic?
-    self.dynamic == true
-  end
-
   def environment?
     converter.environment?
   end
@@ -214,6 +208,8 @@ class Slot
     (conversion == 0.0) ? 0.0 : value / conversion
   end
 
+
+  # DEBT remove this, probably no longer used
   ##
   # The actual_conversion is used, when no conversion is defined.
   # It is calculated by the external_value and the demand.
@@ -232,11 +228,16 @@ class Slot
   # @return 1.0 if converter is environment?
   #
   def conversion
-    return 1.0 if environment?
-    return actual_conversion if dynamic?
-    dataset_get(:conversion) || 0.0
+    if environment?
+      1.0
+    else
+      dataset_get(:conversion) || 0.0
+    end
   end
 
+  def inspect
+    "slot_#{id}"
+  end
 end
 
 end
