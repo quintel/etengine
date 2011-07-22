@@ -40,7 +40,7 @@ module Qernel::DatasetAttributes
     end
   
   def dataset
-    graph.dataset
+    graph && graph.dataset
   end
 
   def dataset_group
@@ -59,8 +59,15 @@ module Qernel::DatasetAttributes
     @object_dataset = nil
   end
 
+  # overwritable method
+  def after_assign_object_dataset
+  end
+
   def assign_object_dataset
-    @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
+    if dataset
+      @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
+    end
+    after_assign_object_dataset
   end
 
   #def object_dataset

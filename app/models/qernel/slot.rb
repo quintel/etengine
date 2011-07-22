@@ -23,9 +23,6 @@ class Slot
   DATASET_ATTRIBUTES = [:conversion]
   dataset_accessors DATASET_ATTRIBUTES
 
-  ##
-  # @deprecated params conversion
-  #
   def initialize(id, converter, carrier, direction = :input)
     @id = id
     @converter = converter
@@ -34,7 +31,6 @@ class Slot
     self.dataset_key # memoize dataset_key
   end
 
-  ##
   # @return [Boolean] is Slot ready for calculation?
   #
   def ready?
@@ -49,7 +45,7 @@ class Slot
     # can skip this (saves a bit of performance).
   end
 
-  ##
+
   # @return [Array<Link>]
   #
   def links
@@ -61,7 +57,6 @@ class Slot
     end
   end
 
-  ##
   # Links that are calculated by this converter
   #
   # @return [Array<Link>]
@@ -74,11 +69,6 @@ class Slot
     end
   end
 
-  def active_links_by_order_of_calculation
-    active_links.sort_by(&:order_of_calculation)
-  end
-
-  ##
   # Links that are calculated by another converter
   #
   # If it is an input slot then:
@@ -104,11 +94,14 @@ class Slot
     # I don't remember why I don't use active_links here.
     # I assume it must be because of inversed_flexible?
     # and [constant with undefined value].
+
     if input?
       active_links.select(&:constant?).each(&:calculate)
       active_links.select(&:share?).each(&:calculate)
       active_links.select(&:flexible?).each(&:calculate)
-    else
+    end
+    if output?
+      links.select(&:reversed?).each(&:calculate)
       links.select(&:dependent?).each(&:calculate)
     end
   end
@@ -206,17 +199,6 @@ class Slot
   def convert(value)
     return nil if value.nil?
     (conversion == 0.0) ? 0.0 : value / conversion
-  end
-
-
-  # DEBT remove this, probably no longer used
-  ##
-  # The actual_conversion is used, when no conversion is defined.
-  # It is calculated by the external_value and the demand.
-  #
-  def actual_conversion
-    d = total_converter_demand || 0.0
-    (d == 0.0) ? 0.0 : external_link_value / d
   end
 
   ##

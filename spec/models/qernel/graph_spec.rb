@@ -78,7 +78,6 @@ module Qernel
       @g.converters.each do |converter|
         instance_variable_set("@#{converter.key}", converter)
       end
-
     end
 
     # ----- SYNTAX  ------------------------------------------------
@@ -289,6 +288,169 @@ module Qernel
 
       @rgt2.demand.should == 24.0
       @rgt1.demand.should == 0.0
+    end
+
+
+    # it "# with same converter does not work
+    #     foo[1.0]:     hw_demand(70)  == s(1) ==> chp(nil)
+    #     foo[1.0]:     el_output(nil) == d()  ==> chp(nil)
+    #     foo:          chp(nil)       == s(1) ==> rgt(nil) " do
+    #   
+    #   @hw_demand.demand.should == 70.0
+    #   @el_output.demand.should == 30.0
+    #   @chp.demand.should == 100.0
+    #   @rgt.demand.should == 100.0
+    # end
+
+    # ----- Reversed  --------------------------------------
+
+    it "lft == s(1.0) ==< rgt(100)" do
+      @lft.demand.should == 100.0
+      @rgt.demand.should == 100.0
+    end
+
+    it "lft == s(1.0) ==< rgt(100)
+        lft == s(1.0) ==< rgt2(100)" do
+
+      @lft.demand.should == 200.0
+    end
+
+    it "lft == s(1.0) ==< rgt(100)
+        lft == f(nil) ==< rgt2(100)" do
+
+      @lft.demand.should == 200.0
+    end
+
+    it "lft      == s(1.0) ==< rgt1(100)
+        lft      == f(nil) ==< rgt2(100)
+        lft2(50) == s(1.0) ==> rgt2" do
+
+      @lft.demand.should == 150.0
+      @rgt2.demand.should == 100.0
+    end
+
+    # ----- Reversed Dependent functionality  ------------------
+
+    describe "Reversed Dependent functionality" do
+      
+      it "# dependent as reversed share(1)
+          bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
+          foo[1.0;0.3]: el_output(nil) == s(1) ==< chp(nil)
+          foo:          chp(nil)       == s(1) ==> rgt(nil) " do
+      
+        @hw_demand.demand.should == 70.0
+        @el_output.demand.should == 30.0
+        @chp.demand.should == 100.0
+        @rgt.demand.should == 100.0
+      end
+
+      it "# dependent as reversed flexible
+          bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
+          foo[1.0;0.3]: el_output(nil) == f(nil) ==< chp(nil)
+          foo:          chp(nil)       == s(1) ==> rgt(nil) " do
+      
+        @hw_demand.demand.should == 70.0
+        @el_output.demand.should == 30.0
+        @chp.demand.should == 100.0
+        @rgt.demand.should == 100.0
+      end
+
+      it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+          foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
+          foo:          el_output      == f(nil) ==> rgt1" do
+      
+        @hw_demand.demand.should == 70.0
+        @chp.demand.should == 100.0
+        @el_output.demand.should == 40.0
+
+        @rgt1.demand.should == 10.0
+      end
+
+      it "# BUG/INCONSISTENCY
+          # Dependent together with shares do not work correctly!!
+          # Share seems to be calculated first or doesn't take into account
+          # dependent value
+          bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
+          foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
+          foo:          el_output      == f(nil) ==> rgt1
+          foo:          el_output      == s(0.6) ==> rgt2" do
+      
+        @hw_demand.demand.should == 70.0
+        @chp.demand.should == 100.0
+        @el_output.demand.should == 40.0
+
+        @rgt2.demand.should == 24.0
+        @rgt1.demand.should == 0.0
+      end
+
+    end
+
+    # ----- Reversed & Inversed Flexible functionality  -----------------------
+
+    # not working
+    #
+    # it "# if outputs are higher then inputs fill up inversed_flexible
+    #     # with the remainder.
+    #     loss:  loss(nil) == f(nil) ==< mid(nil)
+    #     foo:   lft1(50)  == s(1)   ==> mid
+    #     foo:   mid       == c(nil) ==> rgt1(70)" do
+    #   
+    #   @rgt1.demand.should == 70.0
+    #   @lft1.demand.should == 50.0
+    # 
+    #   @mid.demand.should ==  70.0
+    #   @loss.demand.should == 20.0
+    # end
+
+  end
+
+  describe "reversed" do
+    before do
+      @g = Qernel::GraphParser.create("lft == s(1.0) ==< rgt(100)")
+      @rgt = @g.converter(:rgt)
+      @lft = @g.converter(:lft)
+      @l = @g.links.first
+    end
+
+    it "should have reversed link" do
+      @l.reversed.should be_true
+      @l.calculated_by_right?.should be_true
+      @l.send(:input).should == @g.converter(:rgt).slots.first
+      @l.send(:input).expected_external_value.should == 100.0
+      @l.send(:input_external_demand).should == 100.0
+    end
+
+    it "ready" do
+      @lft.input(:foo).passive_links.length.should == 1
+      @rgt.output(:foo).passive_links.length.should == 0
+    end
+
+    it "should calculate link" do
+      @l.send(:calculate_share).should == 100.0
+      @l.send(:calculate).should == 100.0
+      @l.value.should == 100.0
+    end
+
+    it "should calculate rgt slot" do
+      @rgt.output(:foo).calculate
+      @l.value.should == 100.0
+    end
+
+    it "lft slot not ready, rgt slot ready" do
+      @rgt.output(:foo).ready?.should be_true
+      @lft.input(:foo).ready?.should be_false
+    end
+
+    it "should calculate link" do
+      @l.calculate.should == 100.0
+    end
+
+    context "calculated" do
+      before do 
+        @g.calculate
+      end
+
+      # specify { @l.value.should == 100.0 }
     end
   end
 

@@ -2,10 +2,10 @@ module Qernel
   class GraphParser
     attr_reader :lines
     CARRIERS = {
-      'foo' => Carrier.new(2, 'foo', '', 1.0),
-      'bar' => Carrier.new(3, 'bar', '', 1.0),
+      'foo' => Carrier.new(2, 'foo', '', 1.0).with({}),
+      'bar' => Carrier.new(3, 'bar', '', 1.0).with({}),
     }.merge(
-      ::Carrier.all.inject({}) {|hsh,c| hsh.merge c.key => c.to_qernel }
+      ::Carrier.all.inject({}) {|hsh,c| hsh.merge c.key => c.to_qernel.with({}) }
     )
 
     LINK_TYPES = {
@@ -32,7 +32,7 @@ module Qernel
 
       # create converters first
       lines.each do |line|
-        carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=\>(.+)/).first
+        carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=[\>\<](.+)/).first
 
         build_converter(lft)
         build_converter(rgt)
@@ -41,29 +41,33 @@ module Qernel
 
 
       lines.each do |line|
-        carrier_key, lft, link_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=\>(.+)/).first
+        carrier_key, lft, link_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+\=\=[\>\<])(.+)/).first
 
-        link_type, link_share = link(link_str)
+        link_type, link_share, reversed = link(link_str)
         c_lft = build_converter(lft)
         c_rgt = build_converter(rgt)
         carrier = carrier(carrier_key)
         link = graph.
           connect(c_lft, c_rgt, carrier, link_type ).
           with(:share => link_share)
+        link.reversed = reversed
         s_lft, s_rgt = slot(carrier_key)
         c_lft.input(carrier.key).with(s_lft) if s_lft
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt
       end
 
+      graph.refresh_dataset_objects
       graph
     end
   
     # s => :share, nil
     # s(1.0) => :share, 1.0
     def link(str)
+      reversed = str[-1] == "<"
+      str = str[0..-2]
       link_type = LINK_TYPES[str[0]]
       link_share = str.gsub(/[^\d^\.]/, '') == '' ? nil : str.gsub(/[^\d^\.]/,'').to_f
-      [link_type, link_share]
+      [link_type, link_share, reversed]
     end
 
     # el: => nil
