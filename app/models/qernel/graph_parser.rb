@@ -2,10 +2,10 @@ module Qernel
   class GraphParser
     attr_reader :lines
     CARRIERS = {
-      'foo' => Carrier.new(2, 'foo', '', 1.0),
-      'bar' => Carrier.new(3, 'bar', '', 1.0),
+      'foo' => Carrier.new(2, 'foo', '', 1.0).with({}),
+      'bar' => Carrier.new(3, 'bar', '', 1.0).with({}),
     }.merge(
-      ::Carrier.all.inject({}) {|hsh,c| hsh.merge c.key => c.to_qernel }
+      ::Carrier.all.inject({}) {|hsh,c| hsh.merge c.key => c.to_qernel.with({}) }
     )
 
     LINK_TYPES = {
@@ -56,6 +56,7 @@ module Qernel
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt
       end
 
+      graph.refresh_dataset_objects
       graph
     end
   
