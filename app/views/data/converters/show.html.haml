@@ -15,7 +15,7 @@
     = @converter.energy_balance_group
   %h2
     Groups: 
-    = @converter_present.groups.map(&:key).join(' | ')
+    = @converter_present.groups.join(' | ')
 
   %p
     == Sector: #{@converter_present.sector_key}
