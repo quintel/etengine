@@ -2,7 +2,7 @@ class AssignConvertersToGqueryUnit < ActiveRecord::Migration
   def self.up
     Gquery.all.each do |gquery|
       # puts "#{gquery.id} #{gquery.key}"
-      result = Current.gql.query(gquery.query)
+      result = Current.gql.query(gquery.query) rescue nil
       if result.respond_to?(:present_value)
         result = result.present_value
       end
