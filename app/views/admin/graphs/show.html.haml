@@ -32,7 +32,7 @@
         
         %small{:style => "color: #666"}
           == [#{converter.full_key}]
-          == {#{converter.groups.map(&:key).join(', ')}}
+          == {#{converter.groups.join(', ')}}
       %td{:style => "text-align: right"}
         - demand_value(converter)
       %td{:style => "text-align: right"}= converter.preset_demand

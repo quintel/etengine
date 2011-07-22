@@ -217,6 +217,9 @@ class Slot
     end
   end
 
+  def inspect
+    "slot_#{id}"
+  end
 end
 
 end
