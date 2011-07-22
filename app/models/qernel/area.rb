@@ -73,6 +73,18 @@ class Area
     co2_emission_1990 * BILLIONS
   end
 
+  def manure_available_in_pj
+    0.0
+  end
+
+  def manure_available_in_pj=(param)
+    param
+  end
+
+  def inspect
+    "carrier"
+  end
+
 end
 
 end
