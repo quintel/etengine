@@ -17,6 +17,7 @@ gem 'treetop', '1.4.8'
 gem 'default_value_for'
 gem 'acts_as_list'
 gem 'tabs_on_rails'
+gem 'kaminari'
 
 # javascript
 gem 'sprockets'
