@@ -93,6 +93,7 @@ class Qernel::ConverterApi
     :typical_nominal_input_capacity,
     :number_of_units
   ]
+  alias_method :electricity_production_in_mw, :installed_production_capacity_in_mw_electricity
   
   # The MW input capacity that is required to provide the demand.
   def mw_input_capacity
@@ -107,4 +108,14 @@ class Qernel::ConverterApi
   # Added an alias untill the queries are altered
   #  
   alias typical_production typical_electricity_production_per_unit  
+  
+  ###instead of heat_production_in_mw, check for NIL in sum function!
+  def installed_production_capacity_in_mw_heat
+   	return nil if required_attributes_contain_nil?(:installed_production_capacity_in_mw_heat)
+   	[useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].compact.sum * typical_nominal_input_capacity * number_of_units
+  end
+  attributes_required_for :installed_production_capacity_in_mw_heat, [
+   	:typical_nominal_input_capacity,
+   	:number_of_units]
+  alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
 end
