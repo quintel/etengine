@@ -12,7 +12,8 @@ class Qernel::ConverterApi
 
   def total_cost_per_mj
     dataset_fetch_handle_nil(:total_cost_per_mj) do
-      total_costs / ( demand * useful_output )
+      # prevent division by zero
+      total_costs / ( demand * useful_output )  rescue nil
     end
   end
   attributes_required_for :total_cost_per_mj, [
