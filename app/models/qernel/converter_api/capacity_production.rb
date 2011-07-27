@@ -10,14 +10,16 @@ class Qernel::ConverterApi
   
   # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
   #
-  def typical_input_capacity
-    dataset_fetch_handle_nil(:typical_input_capacity) do
+  def typical_input_capacity_in_mw
+    dataset_fetch_handle_nil(:typical_input_capacity_in_mw) do
       typical_nominal_input_capacity * ( 1 - decrease_in_nomimal_capacity_over_lifetime / 2)
     end
   end
-  attributes_required_for :typical_input_capacity, [
+  attributes_required_for :typical_input_capacity_in_mw, [
     :typical_nominal_input_capacity, :decrease_in_nomimal_capacity_over_lifetime
   ]
+  # TODO: get rid of the alias
+  alias typical_input_capacity typical_input_capacity_in_mw
   
   ## Returns the nominal electrical capicity of one unit. 
   #
@@ -112,10 +114,26 @@ class Qernel::ConverterApi
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
    	return nil if required_attributes_contain_nil?(:installed_production_capacity_in_mw_heat)
-   	[useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].compact.sum * typical_nominal_input_capacity * number_of_units
+   	[useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].
+   	  compact.sum * typical_nominal_input_capacity * number_of_units
   end
   attributes_required_for :installed_production_capacity_in_mw_heat, [
    	:typical_nominal_input_capacity,
    	:number_of_units]
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
+  
+  def production_based_on_number_of_heat_units
+   	number_of_units * typical_heat_production_per_unit
+  end
+  attributes_required_for :production_based_on_number_of_heat_units, [
+   	:number_of_units,
+   	:typical_electricity_production_capacity]
+
+  def typical_heat_production_per_unit
+   	return nil if required_attributes_contain_nil?(:typical_heat_production_per_unit)
+   	[useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].
+   	  compact.sum * typical_input_capacity * full_load_seconds
+  end
+  attributes_required_for :typical_heat_production_per_unit, [:typical_input_capacity]
+ 	
 end
