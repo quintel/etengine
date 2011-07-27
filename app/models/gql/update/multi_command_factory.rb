@@ -16,9 +16,6 @@ module Gql::Update
       @value = value
     end
 
-    ##
-    # 
-    #
     def execute
       cmds.each(&:execute)
       cmds
@@ -28,14 +25,9 @@ module Gql::Update
       [send(key)].flatten.compact
     end
 
-    ##
-    #
-    #
     def rc_value
       min_level = 0.2
-
       saving_percentage = saving_percentage_for_rc_value(rc_value_present_value, min_level)
-
       LinkShareCommand.new(converter_proxy.converter, rc_value_link_name, saving_percentage)
     end
 
@@ -44,9 +36,9 @@ module Gql::Update
       converter_proxy.number_of_units = value.to_f
 
       converter.outputs.each do |slot|
-       slot.links.select(&:constant?).each do |link|
-         link.share = converter.query.production_based_on_number_of_plants
-       end
+        slot.links.select(&:constant?).each do |link|
+          link.share = converter.query.production_based_on_number_of_plants
+        end
       end
       nil
     end
@@ -54,6 +46,19 @@ module Gql::Update
     # TODO: remove all links to number_of_plants so we can remove the alias
     alias number_of_plants number_of_units_update 
     
+    def number_of_heat_units_update
+  	  converter = converter_proxy.converter
+  	  converter_proxy.number_of_units = value.to_f
+
+  	  converter.outputs.each do |slot|
+  	    slot.links.select(&:constant?).each do |link|
+    		  link.share = converter.query.production_based_on_number_of_heat_units
+  		  end
+  	  end
+  	  nil
+  	end
+    alias number_of_heat_units number_of_heat_units_update 
+  	
     ##
     # experimental
     def production_in_mw
@@ -77,7 +82,6 @@ module Gql::Update
         end
       end
       nil
-
     end
     
     def municipality_production_in_mw
@@ -89,7 +93,6 @@ module Gql::Update
         end
       end
       nil
-
     end
 
     def om_growth_total
@@ -101,7 +104,12 @@ module Gql::Update
     
     def cost_per_mj_oil_related_growth_total
       carrier = converter_proxy
-      new_cost_per_mj = (1 + value) * (carrier.cost_per_mj - carrier.supply_chain_margin_per_mj) * carrier.oil_price_correlated_part_production_costs + ( 1 - carrier.oil_price_correlated_part_production_costs) * ( carrier.cost_per_mj - carrier.supply_chain_margin_per_mj ) + carrier.supply_chain_margin_per_mj     
+      new_cost_per_mj = (1 + value) * 
+        (carrier.cost_per_mj - carrier.supply_chain_margin_per_mj) * 
+        carrier.oil_price_correlated_part_production_costs + 
+        ( 1 - carrier.oil_price_correlated_part_production_costs) * 
+        ( carrier.cost_per_mj - carrier.supply_chain_margin_per_mj ) + 
+        carrier.supply_chain_margin_per_mj     
       AttributeCommand.new(carrier, :cost_per_mj, new_cost_per_mj, :value)
     end
     
@@ -146,6 +154,7 @@ module Gql::Update
         rc_value
         om_growth_total
         number_of_plants
+        number_of_heat_units
         ventilation_rate_buildings
         production_in_mw
         municipality_production_in_mw
@@ -191,9 +200,8 @@ module Gql::Update
 
     def saving_percentage_for_rc_value(present_rc, min_level)
       # TOOD rob add brackets to clarify what behaviour ( / self.value + min_level or / (self.value + min_level))
-#      (1 - ((1 - min_level) * present_rc / value + min_level))
+      # (1 - ((1 - min_level) * present_rc / value + min_level))
       (1 - ((1 - min_level) * present_rc / @value + min_level))
     end
-
   end
 end
