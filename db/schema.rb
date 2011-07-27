@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110727142657) do
+ActiveRecord::Schema.define(:version => 20110727145558) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -119,13 +119,6 @@ ActiveRecord::Schema.define(:version => 20110727142657) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "gquery_id"
-  end
-
-  create_table "constraints_root_nodes", :id => false, :force => true do |t|
-    t.integer  "constraint_id"
-    t.integer  "root_node_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "converter_positions", :force => true do |t|
@@ -459,14 +452,6 @@ ActiveRecord::Schema.define(:version => 20110727142657) do
   end
 
   add_index "output_elements", ["key"], :name => "index_output_elements_on_key"
-
-  create_table "page_titles", :force => true do |t|
-    t.string   "controller"
-    t.string   "action"
-    t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "partners", :force => true do |t|
     t.string   "name"
