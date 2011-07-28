@@ -25,7 +25,7 @@ class UpdateSlidersHardcodedGql < ActiveRecord::Migration
   def self.down
   end
   
-  def replace_string(s)
+  def self.replace_string(s)
     return unless s
     a = s.gsub(/typical_production/, "typical_electricity_production_per_unit").
       gsub(/typical_capacity_gross_in_mj_s/, "typical_electricity_production_capacity").
