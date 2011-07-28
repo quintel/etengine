@@ -9,6 +9,7 @@ gemfile = File.expand_path('../../Gemfile', __FILE__)
 begin
   ENV['BUNDLE_GEMFILE'] = gemfile
   require 'bundler'
+  YAML::ENGINE.yamler = 'syck' # TODO: remove when ruby will be updated and use psych
   Bundler.setup
 rescue Bundler::GemNotFound => e
   STDERR.puts e.message
