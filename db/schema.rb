@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110727145558) do
+ActiveRecord::Schema.define(:version => 20110728094208) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -121,6 +121,13 @@ ActiveRecord::Schema.define(:version => 20110727145558) do
     t.integer  "gquery_id"
   end
 
+  create_table "constraints_root_nodes", :id => false, :force => true do |t|
+    t.integer  "constraint_id"
+    t.integer  "root_node_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "converter_positions", :force => true do |t|
     t.integer  "converter_id"
     t.integer  "x"
@@ -180,7 +187,7 @@ ActiveRecord::Schema.define(:version => 20110727145558) do
     t.float    "typical_capacity_gross_in_mj_s"
     t.float    "typical_capacity_effective_in_mj_s"
     t.float    "max_capacity_factor"
-    t.float    "land_use_in_nl"
+    t.float    "land_use_per_unit"
     t.float    "technical_lifetime"
     t.float    "lead_time"
     t.float    "construction_time"

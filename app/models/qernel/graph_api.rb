@@ -42,11 +42,11 @@ class GraphApi
     #
     c = graph.converter(:local_solar_pv_grid_connected_energy_energetic).query
 
-    divisor = [c.land_use_in_nl, c.typical_capacity_effective_in_mj_s, c.capacity_factor]
+    divisor = [c.land_use_per_unit, c.typical_capacity_effective_in_mj_s, c.capacity_factor]
 
     unless divisor.any?(&:nil?) or area.roof_surface_available_pv.nil?
       divisor = divisor.inject(1.0) {|n,result| result * n } # multiplies all numbers together
-      (area.roof_surface_available_pv / c.land_use_in_nl) *
+      (area.roof_surface_available_pv / c.land_use_per_unit) *
         (c.typical_capacity_effective_in_mj_s * SECS_PER_YEAR * c.capacity_factor )
     end
   end
@@ -57,10 +57,10 @@ class GraphApi
   def potential_roof_pv_production_buildings
     c = graph.converter(:solar_panels_buildings_energetic).query
 
-    divisor = [c.land_use_in_nl, c.typical_capacity_effective_in_mj_s, c.capacity_factor]
+    divisor = [c.land_use_per_unit, c.typical_capacity_effective_in_mj_s, c.capacity_factor]
     unless divisor.any?(&:nil?) or area.roof_surface_available_pv_buildings.nil?
       divisor = divisor.inject(1.0) {|n,result| result * n } # multiplies all numbers together
-      (area.roof_surface_available_pv_buildings / c.land_use_in_nl) *
+        (area.roof_surface_available_pv_buildings / c.land_use_per_unit) *
         (c.typical_capacity_effective_in_mj_s * SECS_PER_YEAR * c.capacity_factor )
     end
   end
