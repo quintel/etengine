@@ -56,7 +56,7 @@ class ConverterApi
     :typical_capacity_effective_in_mj_s,
     :max_capacity_factor,
     :capacity_factor,
-    :land_use_in_nl,
+    :land_use_per_unit,
     :technical_lifetime,
     :lead_time,
     :construction_time,
