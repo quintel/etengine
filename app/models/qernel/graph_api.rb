@@ -31,7 +31,6 @@ class GraphApi
   ##
   # Still needed here, for updating converters
   #
-  # TODO refactor (seb 2010-10-11)
   def potential_roof_pv_production
     # PRODUCT(
     #  DIVIDE(
@@ -39,33 +38,33 @@ class GraphApi
     #    V(local_solar_pv_grid_connected_energy_energetic;land_use_per_unit)
     #  ),
     #  V(local_solar_pv_grid_connected_energy_energetic;typical_electricity_production_per_unit)
-    # )
-    
+    # )    
     c = graph.converter(:local_solar_pv_grid_connected_energy_energetic).query
     
-    roof_surface_available_pv               = area.roof_surface_available_pv
-    land_use_per_unit                       = c.land_use_per_unit
-    typical_electricity_production_per_unit = c.typical_electricity_production_per_unit
+    roof_surface        = area.roof_surface_available_pv
+    land_use_per_unit   = c.land_use_per_unit
+    production_per_unit = c.typical_electricity_production_per_unit
     
-    if land_use_per_unit.nil? || roof_surface_available_pv.nil? || 
-       typical_electricity_production_per_unit.nil? || land_use_per_unit.zero?
+    if land_use_per_unit.nil?   || roof_surface.nil? || 
+       production_per_unit.nil? || land_use_per_unit.zero?
       return nil 
     end
-    (roof_surface_available_pv / land_use_per_unit) * typical_electricity_production_per_unit
+    (roof_surface / land_use_per_unit) * production_per_unit
   end
-
   attributes_required_for :potential_roof_pv_production, []
 
-  #TODO: RD: make DRY
   def potential_roof_pv_production_buildings
     c = graph.converter(:solar_panels_buildings_energetic).query
-
-    divisor = [c.land_use_per_unit, c.typical_capacity_effective_in_mj_s, c.capacity_factor]
-    unless divisor.any?(&:nil?) or area.roof_surface_available_pv_buildings.nil?
-      divisor = divisor.inject(1.0) {|n,result| result * n } # multiplies all numbers together
-        (area.roof_surface_available_pv_buildings / c.land_use_per_unit) *
-        (c.typical_capacity_effective_in_mj_s * SECS_PER_YEAR * c.capacity_factor )
+    
+    roof_surface        = area.roof_surface_available_pv_buildings
+    land_use_per_unit   = c.land_use_per_unit
+    production_per_unit = c.typical_electricity_production_per_unit
+    
+    if land_use_per_unit.nil?   || roof_surface.nil? || 
+       production_per_unit.nil? || land_use_per_unit.zero?
+      return nil 
     end
+    (roof_surface / land_use_per_unit) * production_per_unit
   end
   attributes_required_for :potential_roof_pv_production_buildings, []
 
