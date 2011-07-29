@@ -34,6 +34,8 @@ gem 'mysql2', '~>0.2.6'
 gem 'dalli'
 gem 'memcache-client'
 gem 'mongrel', '1.2.0.pre2'
+gem 'term-ansicolor', :require => false
+gem 'highline', :require => false
 
 # Optional gems that were commented in environment.rb
 gem 'rubyzip', '0.9.4'

@@ -52,6 +52,14 @@ class Input < ActiveRecord::Base
       {:q => "%#{search}%"}
     ])
   }
+  
+  # quite useful on bulk updates
+  scope :embedded_gql_contains, lambda{|search| 
+    where([
+      "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q",
+      {:q => "%#{search}%"}
+    ])
+  }
 
   def self.get_cached(key)
     all_cached[key.to_s]
