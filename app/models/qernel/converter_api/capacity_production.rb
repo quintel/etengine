@@ -122,10 +122,9 @@ class Qernel::ConverterApi
     :number_of_units]
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
   
+  # NOTE: disabled caching - Fri 29 Jul 2011 16:36:49 CEST
   def production_based_on_number_of_heat_units
-    dataset_fetch_handle_nil(:number_of_units, :typical_heat_production_per_unit) do
-      number_of_units * typical_heat_production_per_unit
-     end
+    number_of_units * typical_heat_production_per_unit
   end
   attributes_required_for :production_based_on_number_of_heat_units, [
     :number_of_units,
