@@ -36,3 +36,6 @@ table#blueprint_converters * {
   font-size: 11px; }
 table#blueprint_converters .group, table table#blueprint_converters .group * {
   font-size: 9px !important; }
+
+strong.highlight {
+  color: red; }
