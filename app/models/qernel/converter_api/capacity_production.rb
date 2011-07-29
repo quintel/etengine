@@ -113,27 +113,29 @@ class Qernel::ConverterApi
   
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
-   	return nil if required_attributes_contain_nil?(:installed_production_capacity_in_mw_heat)
-   	[useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].
-   	  compact.sum * typical_nominal_input_capacity * number_of_units
+    return nil if required_attributes_contain_nil?(:installed_production_capacity_in_mw_heat)
+    [useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].
+      compact.sum * typical_nominal_input_capacity * number_of_units
   end
   attributes_required_for :installed_production_capacity_in_mw_heat, [
-   	:typical_nominal_input_capacity,
-   	:number_of_units]
+    :typical_nominal_input_capacity,
+    :number_of_units]
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
   
   def production_based_on_number_of_heat_units
-   	number_of_units * typical_heat_production_per_unit
+    dataset_fetch_handle_nil(:number_of_units, :typical_heat_production_per_unit) do
+      number_of_units * typical_heat_production_per_unit
+     end
   end
   attributes_required_for :production_based_on_number_of_heat_units, [
-   	:number_of_units,
-   	:typical_electricity_production_capacity]
+    :number_of_units,
+    :typical_electricity_production_capacity]
 
   def typical_heat_production_per_unit
-   	return nil if required_attributes_contain_nil?(:typical_heat_production_per_unit)
-   	[useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].
-   	  compact.sum * typical_input_capacity * full_load_seconds
+    return nil if required_attributes_contain_nil?(:typical_heat_production_per_unit)
+    [useable_heat_output_conversion,steam_hot_water_output_conversion,hot_water_output_conversion].
+      compact.sum * typical_input_capacity * full_load_seconds
   end
   attributes_required_for :typical_heat_production_per_unit, [:typical_input_capacity]
- 	
+  
 end

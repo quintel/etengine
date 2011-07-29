@@ -2,8 +2,7 @@
 
 #content
   .header
-    == ##{@converter_present.id}
-    = @converter_present.full_key
+    \##{@converter_present.id} #{@converter_present.full_key}
 
     %small= link_to 'edit', edit_data_converter_path(:id => @converter_present.id)
 
@@ -18,9 +17,9 @@
     = @converter_present.groups.join(' | ')
 
   %p
-    == Sector: #{@converter_present.sector_key}
+    Sector: #{@converter_present.sector_key}
     %br
-    == Use: #{@converter_present.use_key}
+    Use: #{@converter_present.use_key}
 
   
   - c = @converter_future
