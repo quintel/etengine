@@ -1,43 +1,45 @@
-class Admin::GqlTestCasesController < Admin::AdminController
-  layout 'gql_test_cases'
+module Admin
+  class GqlTestCasesController < BaseController
+    layout 'gql_test_cases'
 
-  before_filter :find_model, :only => [:show, :edit, :update, :destroy]
+    before_filter :find_model, :only => [:show, :edit, :update, :destroy]
 
-  def index
-    @gql_test_cases = GqlTestCase.all
-  end
+    def index
+      @gql_test_cases = GqlTestCase.all
+    end
 
-  def show
-  end
+    def show
+    end
 
-  def edit
-  end
+    def edit
+    end
 
-  def new
-    @gql_test_case = GqlTestCase.new
-  end
+    def new
+      @gql_test_case = GqlTestCase.new
+    end
 
-  def create
-    @gql_test_case = GqlTestCase.new(params[:gql_test_case])
-    if @gql_test_case.save
+    def create
+      @gql_test_case = GqlTestCase.new(params[:gql_test_case])
+      if @gql_test_case.save
+        redirect_to admin_gql_test_cases_url
+      end
+    end
+
+    def destroy
+      @gql_test_case.destroy
+      flash[:notice] = 'Test Case deleted'
       redirect_to admin_gql_test_cases_url
     end
-  end
 
-  def destroy
-    @gql_test_case.destroy
-    flash[:notice] = 'Test Case deleted'
-    redirect_to admin_gql_test_cases_url
-  end
-
-  def update
-    if @gql_test_case.update_attributes(params[:gql_test_case])
-      redirect_to admin_gql_test_cases_url
+    def update
+      if @gql_test_case.update_attributes(params[:gql_test_case])
+        redirect_to admin_gql_test_cases_url
+      end
     end
-  end
 
-private
-  def find_model
-    @gql_test_case = GqlTestCase.find(params[:id])
+  private
+    def find_model
+      @gql_test_case = GqlTestCase.find(params[:id])
+    end
   end
 end
