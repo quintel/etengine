@@ -7,28 +7,28 @@ load 'config/deploy' # remove this line to skip loading any of the default tasks
 namespace :memcached do 
   desc "Start memcached"
   task :start, :roles => [:app] do
-    run "/etc/init.d/memcached start"
+    sudo "/etc/init.d/memcached start"
   end
 
   desc "Stop memcached"
   task :stop, :roles => [:app] do
-    run "/etc/init.d/memcached stop"
+    sudo "/etc/init.d/memcached stop"
   end
 
   desc "Restart memcached"
   task :restart, :roles => [:app] do
-    run "/etc/init.d/memcached restart"
+    sudo "/etc/init.d/memcached restart"
   end        
 
   desc "Flush memcached - this assumes memcached is on port 11211"
   task :flush, :roles => [:app] do
-    run "echo 'flush_all' | nc -q 1 localhost 11211"
+    sudo "echo 'flush_all' | nc -q 1 localhost 11211"
   end     
 end
 
 
 namespace :deploy do
-  task :after_update_code do
+  task :copy_configuration_files do
     run "cp #{config_files}/* #{release_path}/config/"
     run "cd #{release_path}; chmod 777 public/images public/stylesheets tmp"
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
@@ -43,11 +43,6 @@ namespace :deploy do
     run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
   end
 
-  task :after_deploy do
-    deploy.cleanup
-    notify_hoptoad
-  end
-
   desc "Notify Hoptoad of the deployment"
   task :notify_hoptoad, :except => { :no_release => true } do
     rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
@@ -60,4 +55,5 @@ namespace :deploy do
   end
 end
 
-after "deploy", "deploy:migrate"
+after "deploy", "notify_hoptoad"
+after "deploy:update_code", "deploy:copy_configuration_files"
