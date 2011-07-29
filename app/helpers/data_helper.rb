@@ -33,16 +33,16 @@ module DataHelper
       haml_tag :td, auto_number(future_value), :title => title_tag_number(future_value)
 
       change_field(present_value, future_value)
-    end
+    end    
   end
 
   def change_field(present_value, future_value)
-      haml_tag :'td.change' do
-        if future_value == 0.0 and present_value == 0.0
-          haml_concat '' 
-        else
-          haml_concat "#{(((future_value / present_value) - 1) * 100).to_i}%" rescue '-'
-        end
-      end    
+    haml_tag :'td.change' do
+      if future_value == 0.0 and present_value == 0.0
+        haml_concat '' 
+      else
+        haml_concat "#{(((future_value / present_value) - 1) * 100).to_i}%" rescue '-'
+      end
+    end
   end
 end
