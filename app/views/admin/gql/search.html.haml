@@ -10,8 +10,11 @@
   %strong= @q
   \: #{pluralize(@gqueries.size + @inputs.size, 'result')}
 
-- if @gqueries.any?
+  %h3 Inputs: #{pluralize @inputs.size, 'item'}
   %h3 GQueries: #{pluralize @gqueries.size, 'item'}
+
+- if @gqueries.any?
+  %h3 GQueries
   %table{table_defaults}
     %thead
       %tr
@@ -22,10 +25,10 @@
       - @gqueries.each do |g|
         %tr{cycles}
           %td= g.id
-          %td= g.key
+          %td= link_to g.key, data_gquery_path(:id => g.id, :blueprint_id => 'latest', :region_code => 'nl')
           %td= highlight(g.query, @q)
 - if @inputs.any?
-  %h3 Inputs: #{pluralize @inputs.size, 'item'}
+  %h3 Inputs
   %table{table_defaults}
     %thead
       %tr
