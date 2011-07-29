@@ -74,6 +74,7 @@ GEM
       i18n (~> 0.4)
     gem_plugin (0.2.3)
     haml (3.1.2)
+    highline (1.6.2)
     hirb (0.4.5)
     hoptoad_notifier (2.4.2)
       activesupport
@@ -162,6 +163,7 @@ GEM
     sprockets-rails (0.0.1)
       sprockets (>= 1.0.2)
     tabs_on_rails (2.0.2)
+    term-ansicolor (1.0.6)
     thor (0.14.6)
     treetop (1.4.8)
       polyglot (>= 0.3.1)
@@ -191,6 +193,7 @@ DEPENDENCIES
   factory_girl_rails (= 1.1.rc1)
   formtastic
   haml (~> 3.1.1)
+  highline
   hirb
   hoptoad_notifier (= 2.4.2)
   http_status_exceptions!
@@ -215,6 +218,7 @@ DEPENDENCIES
   sprockets
   sprockets-rails
   tabs_on_rails
+  term-ansicolor
   treetop (= 1.4.8)
   watchr
   webrat
