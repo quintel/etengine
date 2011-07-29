@@ -37,14 +37,12 @@ module Gql::Update
 
       converter.outputs.each do |slot|
         slot.links.select(&:constant?).each do |link|
-          link.share = converter.query.production_based_on_number_of_plants
+          link.share = converter.query.production_based_on_number_of_units
         end
       end
       nil
     end
-    ##
-    # TODO: remove all links to number_of_plants so we can remove the alias
-    alias number_of_plants number_of_units_update 
+    alias number_of_units number_of_units_update 
     
     def number_of_heat_units_update
   	  converter = converter_proxy.converter
@@ -153,7 +151,7 @@ module Gql::Update
         buildings_solarpanel_market_penetration
         rc_value
         om_growth_total
-        number_of_plants
+        number_of_units
         number_of_heat_units
         ventilation_rate_buildings
         production_in_mw
@@ -167,8 +165,6 @@ module Gql::Update
     def self.create(graph, converter_proxy, key, value)
       new(graph, converter_proxy, key, value)
     end
-
-
 
   private
 

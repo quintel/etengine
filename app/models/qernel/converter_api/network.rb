@@ -35,7 +35,7 @@ alias delta_in_capacity_in_mj_s delta_in_capacity_in_mw
 	  (number_of_units - peak_load_units_present)
 	end
   end
-  attributes_required_for :peak_load_units_delta_for_mv_hv, [:number_of_plants, :peak_load_units_present]
+  attributes_required_for :peak_load_units_delta_for_mv_hv, [:number_of_units, :peak_load_units_present]
 
   ##
   # Removed peak_load_heat_units_delta_for_mv_hv, because number_of_heat_units is now the same as number_of_units
