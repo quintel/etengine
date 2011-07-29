@@ -42,6 +42,9 @@ Etm::Application.routes.draw do
     resources :converters
     
     root :to => "pages#index"
+    
+    match '/gql' => "gql#index"
+    match '/gql/search' => "gql#search", :as => :gql_search
   end
 
   namespace :data do
