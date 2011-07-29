@@ -6,7 +6,7 @@ module Gql::Update
       %w[
         rc_value
         om_growth_total
-        number_of_plants
+        number_of_units
         ventilation_rate_buildings
       ].each do |key|
         specify { MultiCommandFactory.responsible?(key).should be_true }
@@ -22,10 +22,6 @@ module Gql::Update
         @graph = mock_model(::Qernel::Graph)
         @converter = mock_model(::Qernel::Converter)
         @factory = MultiCommandFactory.new(@graph,@converter, nil, @value)
-      end
-
-      describe "number_of_plants" do
-        #pending
       end
 
       describe "#rc_value" do

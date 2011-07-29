@@ -9,33 +9,12 @@ class Qernel::ConverterApi
   end
   attributes_required_for :number_of_units, [:mw_input_capacity, :typical_input_capacity]
 
-  alias number_of_plants number_of_units
-
   ##
   # RD: This method is used by the number_of_units_update in multicommand factory
   # I dont think this belongs here!
   def number_of_units=(val)
     dataset_set(:number_of_units, val)
   end
-
-  ##
-  # Removed production_based_on_number_of_plants, refactored to production_based_on_number_of_units
-  # Added an alias untill the queries are altered
-  #
-  alias production_based_on_number_of_plants production_based_on_number_of_units
-
-  ##
-  # Removed number_of_plants, refactored to number_of_units
-  # Added an alias untill the queries are altered
-  #
-  alias number_of_plants_future number_of_units
-
-  ##
-  # Removed number_of_heat_plants_future, refactored to number_of_units
-  # Added an alias untill the queries are altered
-  #
-
-  alias number_of_heat_plants_future number_of_units
 
   def total_land_use 
     return nil if required_attributes_contain_nil?(:total_land_use)
