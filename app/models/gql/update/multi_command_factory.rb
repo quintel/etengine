@@ -45,22 +45,22 @@ module Gql::Update
     alias number_of_units number_of_units_update 
     
     def number_of_heat_units_update
-  	  converter = converter_proxy.converter
-  	  converter_proxy.number_of_units = value.to_f
+      converter = converter_proxy.converter
+      converter_proxy.number_of_units = value.to_f
 
-  	  converter.outputs.each do |slot|
-  	    slot.links.select(&:constant?).each do |link|
-    		  link.share = converter.query.production_based_on_number_of_heat_units
-  		  end
-  	  end
-  	  nil
-  	end
+      converter.outputs.each do |slot|
+        slot.links.select(&:constant?).each do |link|
+          link.share = converter.query.production_based_on_number_of_heat_units
+        end
+      end
+      nil
+    end
     alias number_of_heat_units number_of_heat_units_update 
-  	
+    
     ##
     # experimental
     def production_in_mw
-    	converter = converter_proxy.converter
+      converter = converter_proxy.converter
       converter.outputs.each do |slot|
         slot.links.select(&:constant?).each do |link|
           link.share = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
@@ -72,7 +72,7 @@ module Gql::Update
     ##
     # experimental
     def national_production_in_mw
-    	converter = converter_proxy.converter
+      converter = converter_proxy.converter
       converter.preset_demand = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
       converter.outputs.each do |slot|
         slot.links.select(&:constant?).each do |link|
@@ -83,7 +83,7 @@ module Gql::Update
     end
     
     def municipality_production_in_mw
-    	converter = converter_proxy.converter
+      converter = converter_proxy.converter
       converter.municipality_demand = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
       converter.outputs.each do |slot|
         slot.links.select(&:constant?).each do |link|

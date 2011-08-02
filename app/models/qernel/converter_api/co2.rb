@@ -92,5 +92,4 @@ class Qernel::ConverterApi
     :part_ets, :weighted_carrier_co2_per_mj
   ]
 
-
 end
