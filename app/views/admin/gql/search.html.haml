@@ -37,6 +37,7 @@
         %th Start
         %th Min
         %th Max
+        %th Attr_name
     %tbody
       - @inputs.each do |g|
         %tr{cycles}
@@ -45,4 +46,5 @@
           %td= highlight(g.start_value_gql, @q)
           %td= highlight(g.min_value_gql, @q)
           %td= highlight(g.max_value_gql, @q)
+          %td= highlight(g.attr_name, @q)
   

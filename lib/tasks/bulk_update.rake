@@ -27,7 +27,7 @@ namespace :bulk_update do
     @inputs = Input.embedded_gql_contains(@from)
     @inputs.each do |i|
       puts "Input #{i.id}".yellow.bold
-      [:start_value_gql, :min_value_gql, :max_value_gql].each do |field|
+      [:start_value_gql, :min_value_gql, :max_value_gql, :attr_name].each do |field|
         value = i.send(field)
         next if value.blank?
         next unless value.include?(@from)
