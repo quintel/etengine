@@ -56,7 +56,7 @@ class Input < ActiveRecord::Base
   # quite useful on bulk updates
   scope :embedded_gql_contains, lambda{|search| 
     where([
-      "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q",
+      "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql OR attr_name LIKE :q",
       {:q => "%#{search}%"}
     ])
   }
