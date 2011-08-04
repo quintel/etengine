@@ -12,8 +12,8 @@ module Admin
       @q = params[:q]
       
       unless @q.blank?
-        @gqueries = Gquery.contains(@q)
-        @inputs   = Input.contains(@q)
+        @gqueries = Gquery.name_or_query_contains(@q)
+        @inputs   = Input.embedded_gql_contains(@q)
       end
     end
   end

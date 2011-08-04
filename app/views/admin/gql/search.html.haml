@@ -10,13 +10,15 @@
   %strong= @q
   \: #{pluralize(@gqueries.size + @inputs.size, 'result')}
 
-  %h3 Inputs: #{pluralize @inputs.size, 'item'}
-  %h3 GQueries: #{pluralize @gqueries.size, 'item'}
+  %h3 
+    Inputs: #{pluralize @inputs.size, 'item'},
+    GQueries: #{pluralize @gqueries.size, 'item'}
 
 - if @gqueries.any?
-  %h3 GQueries
   %table{table_defaults}
     %thead
+      %tr
+        %th{:colspan => 3} GQueries
       %tr
         %th Id
         %th Key
@@ -24,13 +26,14 @@
     %tbody
       - @gqueries.each do |g|
         %tr{cycles}
-          %td= g.id
-          %td= link_to g.key, data_gquery_path(:id => g.id, :blueprint_id => 'latest', :region_code => 'nl')
+          %td= link_to g.id, data_gquery_path(:id => g.id, :blueprint_id => 'latest', :region_code => 'nl')
+          %td= highlight(g.key, @q)
           %td= highlight(g.query, @q)
 - if @inputs.any?
-  %h3 Inputs
   %table{table_defaults}
     %thead
+      %tr
+        %th{:colspan => 6} Inputs
       %tr
         %th Id
         %th Key
