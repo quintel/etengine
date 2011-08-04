@@ -39,6 +39,9 @@ class Gquery < ActiveRecord::Base
   scope :containing_converter_key, lambda{|key| where("query LIKE ?", "%#{key.to_s}%") }
 
   scope :contains, lambda{|search| where("query LIKE ?", "%#{search}%")}
+  scope :name_or_query_contains, lambda{|q| where([
+    "`key` LIKE :q OR query LIKE :q", { :q => "%#{q}%" }
+  ])}
 
   ##
   # Returns the cleaned query for any given key.
