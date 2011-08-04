@@ -124,7 +124,7 @@ class Qernel::ConverterApi
   
   # NOTE: disabled caching - Fri 29 Jul 2011 16:36:49 CEST
   def production_based_on_number_of_heat_units
-    number_of_units * typical_heat_production_per_unit
+    number_of_units * typical_heat_production_per_unit rescue nil
   end
   attributes_required_for :production_based_on_number_of_heat_units, [
     :number_of_units,
