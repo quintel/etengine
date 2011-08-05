@@ -66,12 +66,12 @@ protected
 
   def permission_denied
     flash[:error] = I18n.t("flash.not_allowed")
-    session[:return_to] = url_for :overwrite_params => {}
+    store_location
     redirect_to login_path
   end
 
   def restrict_to_admin
-    if current_user.andand.admin?
+    if current_user.try(:admin?)
       true
     else
       permission_denied
@@ -80,13 +80,21 @@ protected
   end
 
 private
+  def store_location
+    session[:return_to] = request.url
+  end
+  
+  def clear_stored_location
+    session[:return_to] = nil
+  end
+  
   def assign_current_for_inspection_in_tests
     @current = Current
   end
 
-  def redirect_back_or_default(default)
+  def redirect_back_or_default(default = root_path)
     redirect_to(session[:return_to] || default)
-    session[:return_to] = nil
+    clear_stored_location
   end
 
   def current_user_session
@@ -98,5 +106,13 @@ private
     return @current_user if defined?(@current_user)
     @current_user = current_user_session && current_user_session.user
   end
-
+  
+  def require_no_user
+    if current_user
+      store_location
+      flash[:notice] = "You must be logged out to access this page"
+      redirect_to root_path
+      return false
+    end
+  end
 end

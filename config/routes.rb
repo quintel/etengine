@@ -1,6 +1,6 @@
 Etm::Application.routes.draw do  
-  root :to => 'user_sessions#new'
-
+  root :to => 'pages#index'
+  
   match 'login'  => 'user_sessions#new', :as => :login
   match 'logout' => 'user_sessions#destroy', :as => :logout
 

@@ -1,0 +1,8 @@
+%h1 ETEngine
+- if current_user.try(:admin?)
+  Hi!
+  = link_to 'Admin', admin_root_path
+  = link_to 'Data', data_start_path
+  = link_to 'Logout', logout_path
+- else
+  = render 'user_sessions/form'
