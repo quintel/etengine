@@ -40,7 +40,6 @@ Etm::Application.routes.draw do
     resources :blueprints
     resources :inputs
     resources :blueprint_models
-    resources :converters
     
     root :to => "pages#index"
     
