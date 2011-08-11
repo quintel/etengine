@@ -1,7 +1,6 @@
 class Data::ConvertersController < Data::BaseController
 
   def index
-    
   end
 
   def edit
@@ -14,5 +13,4 @@ class Data::ConvertersController < Data::BaseController
     @converter_present = @graph.gql.present.converter(params[:id].to_i)
     @converter_future  = @graph.gql.future.converter(params[:id].to_i)
   end
-
 end
