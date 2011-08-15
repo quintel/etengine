@@ -80,6 +80,16 @@ module Gql
 #
 #
 module UpdatingConverter
+
+  def present_converter(id)
+    present_interface.graph.converter(id)
+  end
+
+  def future_converter(id)
+    future_interface.graph.converter(id)
+  end
+
+
   def after_calculation_updates(graph)
     cmd = Update::AfterCalculationUpdate.new(graph)
     cmd.execute
