@@ -8,7 +8,8 @@
 # Or:
 # query.query("Q ( electricity_production ) ")
 #
-module Gql::Gquery::Base
+module Gql::QueryInterface::Base
+
   ##
   #
   #
@@ -21,7 +22,7 @@ module Gql::Gquery::Base
     result = self.query(query)
     result
 #  rescue Exception => e
-#    raise Gql::GqlError.new("Gql::Gquery.query_graph exception for query: #{query}. #{e}")
+#    raise Gql::GqlError.new("Gql::QueryInterface.query_graph exception for query: #{query}. #{e}")
   end
 
   def scope
@@ -37,8 +38,10 @@ module Gql::Gquery::Base
       msg
     else
       @graph = nil
-      raise Gql::GqlError.new("Gql::Gquery.query query is not valid: #{clean(query_string)}.")
+      raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query_string)}.")
     end
+  rescue => e
+    e.inspect
   end
 
   ##
@@ -53,7 +56,7 @@ module Gql::Gquery::Base
     elsif parsed = clean_and_parse(query)
       parsed.result(scope)
     else
-      raise Gql::GqlError.new("Gql::Gquery.query query is not valid: #{clean(query)}.")
+      raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query)}.")
     end
   end
 
@@ -62,7 +65,7 @@ module Gql::Gquery::Base
   # Is the given gquery_string valid?
   #
   def check(query)
-    Gql::Gquery::CleanerParser.check_query(query)
+    Gql::QueryInterface::CleanerParser.check_query(query)
   end
 
   ##
@@ -91,11 +94,11 @@ module Gql::Gquery::Base
   private
 
   def clean(query_string)
-    Gql::Gquery::CleanerParser.clean(query_string)
+    Gql::QueryInterface::CleanerParser.clean(query_string)
   end
 
   def clean_and_parse(query_string)
-    Gql::Gquery::CleanerParser.clean_and_parse(query_string)
+    Gql::QueryInterface::CleanerParser.clean_and_parse(query_string)
   end
 
 
