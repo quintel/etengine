@@ -78,9 +78,9 @@ class Gql
   include Selecting
 
   # @return [Qernel::Graph]
-  attr_reader :present
+  attr_reader :present_interface
   # @return [Qernel::Graph]
-  attr_reader :future
+  attr_reader :future_interface
 
   ##
   # assigns, updates and calculates present and future graph upon initializing
@@ -98,6 +98,25 @@ class Gql
 
     @present.year = Current.scenario.start_year
     @future.year = Current.scenario.end_year
+
+    @present_interface = ::Gql::QueryInterface.new(@present)
+    @future_interface = ::Gql::QueryInterface.new(@future)
+  end
+
+  def present_graph
+    @present_interface.graph
+  end
+
+  def future_graph
+    @future_interface.graph
+  end
+
+  def present
+    present_graph
+  end
+
+  def future
+    future_graph
   end
 
   ##
@@ -133,14 +152,14 @@ class Gql
     update_statements = Current.scenario.update_statements
 
     if update_statements
-      update_time_curves(@future)      
-      update_carriers(@future, update_statements['carriers'])
-      update_area_data(@future, update_statements['area'])
-      update_converters(@future, update_statements['converters'])
+      update_time_curves(future_graph)      
+      update_carriers(future_graph, update_statements['carriers'])
+      update_area_data(future_graph, update_statements['area'])
+      update_converters(future_graph, update_statements['converters'])
     end
 
     benchmark("calculate future") do
-      @future.calculate
+      future_graph.calculate
     end
 
     update_policies(update_statements['policies']) if update_statements
@@ -150,8 +169,8 @@ class Gql
     # calculation (even though updating prices would work).
     @calculated = true  
 
-    after_calculation_updates(@present)
-    after_calculation_updates(@future)
+    after_calculation_updates(present_graph)
+    after_calculation_updates(future_graph)
     self
   end
 
@@ -180,18 +199,6 @@ class Gql
     end
   end
 
-  def debug_present(query)
-    query_interface.debug_graph(query, present).reverse.join("\n") 
-  rescue => e
-    e.inspect
-  end
-
-  def debug_future(query)
-    query_interface.debug_graph(query, future).reverse.join("\n") 
-  rescue => e
-    e.inspect
-  end
-
 private
 
   # Standard query without modifiers. Queries present and future graph.
@@ -211,7 +218,7 @@ private
   # @return [Float] The result of the present graph
   #
   def query_present(query)
-    graph_query(query, @present)
+    present_interface.query_graph(query)
   end
 
   ##
@@ -219,14 +226,7 @@ private
   # @return [Float] The result of the future graph
   #
   def query_future(query)
-    graph_query(query, @future)
-  end
-
-  ##
-  # @return [Gquery] The Gquery used for queries
-  #
-  def query_interface
-    @query_interface ||= ::Gql::Gquery.new
+    future_interface.query_graph(query)
   end
 
   ##
@@ -255,16 +255,12 @@ private
     StoredProcedure.execute(query)
   end
 
-  def graph_query(query, graph)
-    query_interface.query_graph(query, graph)
-  end
-
   def present_converter(id)
-    @present.converter(id)
+    present_interface.graph.converter(id)
   end
 
   def future_converter(id)
-    @future.converter(id)
+    future_interface.graph.converter(id)
   end
 
 end

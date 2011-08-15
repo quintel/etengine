@@ -14,8 +14,8 @@
     = render 'result'
     %h2 Query Debug
     %h3 present
-    %pre= Current.gql.debug_present(@query)
+    %pre= Current.gql.present_interface.debug_graph(@query).reverse.join("\n") 
     %h3 future
-    %pre= Current.gql.debug_future(@query)
+    %pre= Current.gql.future_interface.debug_graph(@query).reverse.join("\n") 
   - else
     %em no query
