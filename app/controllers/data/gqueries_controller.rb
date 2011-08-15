@@ -13,7 +13,6 @@ class Data::GqueriesController < Data::BaseController
     end
     respond_to do |format|
       format.html { render }
-      format.marshal { send_marshal(Gquery.build_gquery_hash, :filename => 'gquery_hash.marshal') }
     end
   end
 

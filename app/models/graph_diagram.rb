@@ -1,25 +1,25 @@
 class GraphDiagram
   attr_accessor :nodes, :converters, :g
 
-  def initialize(converters)
+  def initialize(converters, svg_path = nil)
     require 'graphviz'
+    @svg_path = svg_path
     self.nodes = {}
     self.converters = converters.uniq
     @g = GraphViz.new( :G, :type => :digraph )
-  end
-
-  def generate(filename = 'out')
     draw_nodes
     draw_edges
-    write(filename)
+  end
+
+  def to_png
+    @g.output( :png => String )
+  end
+
+  def to_svg
+    @g.output( :svg => String )
   end
 
 private
-  def write(filename = 'out')
-    @g.output( :png => "#{filename}.png" )
-    @g.output( :dot => "#{filename}.dot" )
-  end
-
   def draw_nodes
     converters.each do |converter|
       smiley = case converter.query.demand_expected?
@@ -48,13 +48,15 @@ private
   end
 
   def node_settings(converter)
-    group = [:primary_energy_demand, :useful_demand] & converter.groups.map(&:key)
+    group = [:primary_energy_demand, :useful_demand] & converter.groups
     fillcolor = converter.output_links.empty? ? '#dddddd' : nil
     hsh = {
       :shape => 'box',
       :group => group,
       :fillcolor => fillcolor
     }
+
+    hsh[:href] = "#{@svg_path}#{converter.id}.svg" if @svg_path
 
     if converter.demand.nil?
       hsh[:color] = '#ff0000'

@@ -472,7 +472,7 @@ public
     full_key
   end
 
-  def to_image(depth = 1, file_name = nil)
+  def to_image(depth = 1, svg_path = nil)
     converters = [self]
     children = [self]
     parents = [self]
@@ -481,8 +481,7 @@ public
       children = children.map{|c| [c, c.children] }.uniq.flatten
     end
     converters = [parents, children].flatten
-    g = GraphDiagram.new(converters)
-    g.generate(file_name || self.name.gsub(' ', '_'))
+    g = GraphDiagram.new(converters, svg_path)
   end
 end
 
