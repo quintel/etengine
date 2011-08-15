@@ -2,7 +2,7 @@
 # Performs parsing operations for cleaning/parsing GQL
 #
 
-module Gql::QueryInterface::CleanerParser
+module Gql::QueryInterface::GqlQueryPreparser
 
   ##
   # Cleans and parses a query for the GQL.

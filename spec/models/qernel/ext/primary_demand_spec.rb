@@ -12,10 +12,11 @@ module Qernel
       end
     end
 
-    context " electricity[1;0.8]: lft(80)  == s(1)  ==> mid
-              loss[1;0.2]:        loss(20) == s(1)  ==> mid
-              electricity[0.8]:   mid      == s(1)  ==> rgt1
-              bar[0.2]:           mid      == f(1)  ==> rgt2" do
+    context " # Simple graph
+              electricity[1;0.8]: lft(80)  == s(1) ==> mid
+              loss[1;0.2]:        loss(20) == s(1) ==> mid
+              electricity[0.8]:   mid      == s(1) ==> rgt1
+              bar[0.2]:           mid      == f(1) ==> rgt2" do
 
       before do
         @rgt1.stub!(:primary_energy_demand?).and_return(true)

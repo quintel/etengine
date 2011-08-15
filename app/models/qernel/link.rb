@@ -68,7 +68,7 @@ protected
   end
 
   def memoize_for_cache
-    @is_loss = @carrier.id == 1
+    @is_loss = @carrier and @carrier.id == 1
 
     self.dataset_key # memoize dataset_key
   end

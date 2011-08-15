@@ -10,15 +10,41 @@ module Gql
 #
 class QueryInterface
 
-  def initialize(graph)
-    self.graph = graph
-  end
-
   # The implementation of #query, #subquery is done in GqueryBase,
   # so that we can extend it with caching strategies defined in
   # e.g. GqueryCache and GqueryMemoizedSubqueries.
   include Base
   include GraphApi
+
+  def initialize(graph)
+    self.graph = graph
+  end
+
+  ##
+  # The currently active graph (present or future)
+  #
+  def graph
+    @graph
+  end
+
+  ##
+  # Sets the currently active graph (present or future)
+  #
+  def graph=(graph)
+    @graph = graph
+  end
+
+  def graph_id
+    graph.graph_id
+  end
+
+  def graph_year
+    graph.year
+  end
+
+  def dataset_id
+    graph.dataset.id
+  end
 
   # Following includes are responsible for caching of queries
   # The order of includes is important.
