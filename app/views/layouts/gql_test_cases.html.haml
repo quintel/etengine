@@ -64,7 +64,6 @@
           },
       
           function(data) {
-            console.log(data);
             var result   = data.result;   // Results of this request for every "result[]" parameter
             $.each(result, function(gquery_key, value_arr) { 
               $.each(window.gqueries.with_key(gquery_key), function(i, gquery) {
@@ -74,7 +73,7 @@
             
             complete_function();
           }
-        );
+        ).error(function(data){ console.log(data.responseText)});;
       }
 
 
