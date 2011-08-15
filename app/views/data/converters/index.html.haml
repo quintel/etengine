@@ -29,6 +29,8 @@
         %td= link_to converter.full_key, data_converter_path(:id => converter)
         - fields.each do |field|
           - v = @present_graph.converter(converter.id).send(field)
-          %td.tar{:title => title_tag_number(v)}= auto_number v
+          %td.tar{:title => title_tag_number(v)}
+            = link_to auto_number(v), data_converter_path(:id => converter, :format => 'svg'), :target => :blank
           - v = @future_graph.converter(converter.id).send(field)
-          %td.tar{:title => title_tag_number(v)}= auto_number v
+          %td.tar{:title => title_tag_number(v)}
+            = link_to auto_number(v), data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank

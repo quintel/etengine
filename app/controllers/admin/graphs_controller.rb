@@ -32,7 +32,6 @@ module Admin
           render :json => Current.gql.present.converters.inject({}) {|hsh,c| hsh.merge c.id => {:demand => ((c.proxy.demand / 1000000).round(1) rescue nil)} }
         end
         format.html    { render }
-        format.marshal { send_marshal(Gql::Gql.new(@graph)) }
       end
     end
 

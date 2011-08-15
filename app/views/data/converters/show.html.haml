@@ -4,7 +4,12 @@
   .header
     \##{@converter_present.id} #{@converter_present.full_key}
 
-    %small= link_to 'edit', edit_data_converter_path(:id => @converter_present.id)
+    %small
+      = link_to 'edit', edit_data_converter_path(:id => @converter_present.id)
+      
+      GraphViz:
+      = link_to 'Present', {:format => 'svg'}, :target => :blank
+      = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
 
   - pre = @converter_present.query
   - fut = @converter_future.query
