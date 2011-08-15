@@ -2,12 +2,13 @@ require 'spec_helper'
 
 module Gql
 
-describe Gquery do
+describe QueryInterface do
   before do
-    @query_interface = Gquery.new
+    @query_interface = QueryInterface.new(nil)
     @query_interface.stub!(:scope_memoized_key).and_return('scope_memoized_key')
     Current.stub_chain(:gql, :query_interface => @query_interface)
   end
+
   describe "Valid Queries" do
 #    specify { Gquery.check("SUM(VALUE(ca,cb,cd;demand))").should be_true}
 #    specify { Gquery.check("SUM(VALUE(ca,cb,cd;demand_co2))").should be_true}

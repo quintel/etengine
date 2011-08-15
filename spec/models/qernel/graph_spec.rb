@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 module Qernel
-
   describe Graph, '#initialize' do
     it "should initialize without attributes" do
       @g = Qernel::Graph.new()

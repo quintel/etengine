@@ -10,7 +10,7 @@
 
   = render '/data/shared/revisions', :versioned => @gquery
 
-  - @query = Gql::QueryInterface::CleanerParser.clean(@gquery.query)
+  - @query = Gql::QueryInterface::GqlQueryPreparser.clean(@gquery.query)
 
   %h3 Result
   = render 'result' rescue 'ERROR in Calculation'

@@ -65,7 +65,7 @@ module Gql::QueryInterface::Base
   # Is the given gquery_string valid?
   #
   def check(query)
-    Gql::QueryInterface::CleanerParser.check_query(query)
+    Gql::QueryInterface::GqlQueryPreparser.check_query(query)
   end
 
   ##
@@ -94,11 +94,11 @@ module Gql::QueryInterface::Base
   private
 
   def clean(query_string)
-    Gql::QueryInterface::CleanerParser.clean(query_string)
+    Gql::QueryInterface::GqlQueryPreparser.clean(query_string)
   end
 
   def clean_and_parse(query_string)
-    Gql::QueryInterface::CleanerParser.clean_and_parse(query_string)
+    Gql::QueryInterface::GqlQueryPreparser.clean_and_parse(query_string)
   end
 
 

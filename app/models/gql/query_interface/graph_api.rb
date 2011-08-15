@@ -5,31 +5,6 @@
 #
 #
 module Gql::QueryInterface::GraphApi
-  ##
-  # The currently active graph (present or future)
-  #
-  def graph
-    @graph
-  end
-
-  def graph_id
-    graph.graph_id
-  end
-
-  def dataset_id
-    graph.dataset.id
-  end
-
-  def graph_year
-    graph.year
-  end
-
-  ##
-  # Sets the currently active graph (present or future)
-  #
-  def graph=(graph)
-    @graph = graph
-  end
 
   ##
   # @param [String] Graph API Method.
