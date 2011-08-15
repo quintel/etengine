@@ -255,13 +255,6 @@ private
     StoredProcedure.execute(query)
   end
 
-  def present_converter(id)
-    present_interface.graph.converter(id)
-  end
-
-  def future_converter(id)
-    future_interface.graph.converter(id)
-  end
 
 end
 
