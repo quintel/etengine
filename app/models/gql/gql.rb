@@ -3,6 +3,8 @@ def gql(query)
   Current.gql.query(query)
 end
 
+# DEBT: debug_present/future query_present/future and query_interface should be refactored.
+#
 module Gql
 ##
 # GQL (Graph Query Language) is to a Graph/Qernel what SQL is to a database.
@@ -177,7 +179,6 @@ class Gql
       send("query_#{modifier}", query)
     end
   end
-
 
   def debug_present(query)
     query_interface.debug_graph(query, present).reverse.join("\n") 
