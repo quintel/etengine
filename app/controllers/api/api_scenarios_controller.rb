@@ -107,19 +107,22 @@ class Api::ApiScenariosController < ApplicationController
         results.map!(&:to_s) # key could be passsed as integer with json(P)
         results.reject!(&:blank?)
 
+        invalid_result = Gql::GqueryResult.create([[2010, 'ERROR'], [2040, 'ERROR']])
         @gqueries = results.inject({}) do |hsh, key|
           if key == "null" or key == "undefined"
             hsh
           elsif gquery = (Gquery.get(key) rescue nil)
             if gquery.unit != 'converters'
-              #Current.gql.benchmark("query: #{gquery.key}") do
-                hsh.merge(key => Current.gql.query(gquery))
-              #end
+              hsh.merge(key => (Current.gql.query(gquery) rescue invalid_result))
             else
               hsh
             end
           else
-            hsh.merge(key => Current.gql.query(key))
+            if key.include?('(')
+              hsh.merge(key => (Current.gql.query(key) rescue invalid_result))
+            else
+              hsh.merge(key => invalid_result)
+            end
           end
         end
       else

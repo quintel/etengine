@@ -2,7 +2,9 @@
 # Performs parsing operations for cleaning/parsing GQL
 #
 
-module Gql::QueryInterface::GqlQueryPreparser
+
+# DEBT: Refactor to class/singleton.
+module Gql::QueryInterface::Preparser
 
   ##
   # Cleans and parses a query for the GQL.
