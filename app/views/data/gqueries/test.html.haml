@@ -13,11 +13,9 @@
   - if @query
     = render 'result'
     %h2 Query Debug
-    %p
-      %small Sorry, that this is ugly, but only had an hour left. Left side is the value return from a function and right the function name and its arguments. 
     %h3 present
-    %pre= Current.gql.query_interface.debug_graph(@query, Current.gql.present).reverse.join("\n") rescue 'error'
+    %pre= Current.gql.debug_present(@query)
     %h3 future
-    %pre= Current.gql.query_interface.debug_graph(@query, Current.gql.present).reverse.join("\n") rescue 'error'
+    %pre= Current.gql.debug_future(@query)
   - else
     %em no query

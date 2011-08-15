@@ -179,6 +179,18 @@ class Gql
   end
 
 
+  def debug_present(query)
+    query_interface.debug_graph(query, present).reverse.join("\n") 
+  rescue => e
+    e.inspect
+  end
+
+  def debug_future(query)
+    query_interface.debug_graph(query, future).reverse.join("\n") 
+  rescue => e
+    e.inspect
+  end
+
 private
 
   # Standard query without modifiers. Queries present and future graph.
