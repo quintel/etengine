@@ -14,7 +14,7 @@ module QueryInterface::MemoizedSubqueries
       gquery = ::Gquery.get(gquery_key)
     end
 
-    @memoized_subquery ||= {}
+    @memoized_subqueries ||= {}
 
     # we cannot use normal memoization, as some gqueries return a boolean (notably peak load)
     if @memoized_subqueries.has_key?(gquery_key)

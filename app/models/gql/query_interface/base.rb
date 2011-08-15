@@ -19,8 +19,7 @@ module Gql::QueryInterface::Base
   #
   def query_graph(query, graph = nil)
     self.graph = graph unless graph.nil?
-    result = self.query(query)
-    result
+    self.query(query)
 #  rescue Exception => e
 #    raise Gql::GqlError.new("Gql::QueryInterface.query_graph exception for query: #{query}. #{e}")
   end
@@ -65,7 +64,7 @@ module Gql::QueryInterface::Base
   # Is the given gquery_string valid?
   #
   def check(query)
-    Gql::QueryInterface::GqlQueryPreparser.check_query(query)
+    Gql::QueryInterface::Preparser.check_query(query)
   end
 
   ##
@@ -83,9 +82,7 @@ module Gql::QueryInterface::Base
     end
 
     if gquery
-      #query(gquery)
       gquery.parsed_query.result(scope)
-      # gquery.parsed_query.andand.result(scope)
     else
       nil
     end
@@ -94,11 +91,11 @@ module Gql::QueryInterface::Base
   private
 
   def clean(query_string)
-    Gql::QueryInterface::GqlQueryPreparser.clean(query_string)
+    Gql::QueryInterface::Preparser.clean(query_string)
   end
 
   def clean_and_parse(query_string)
-    Gql::QueryInterface::GqlQueryPreparser.clean_and_parse(query_string)
+    Gql::QueryInterface::Preparser.clean_and_parse(query_string)
   end
 
 

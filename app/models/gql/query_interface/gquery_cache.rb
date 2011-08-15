@@ -14,8 +14,8 @@ module QueryInterface::GqueryCache
       gquery = ::Gquery.get(gquery_key)
     end
 
-    if scope.graph.present? and gquery and gquery.cacheable?
-      val = Rails.cache.fetch("/gquery_cache/#{scope.dataset_id}/#{gquery.key}/#{gquery.updated_at}") do
+    if graph.present? and gquery and gquery.cacheable?
+      val = Rails.cache.fetch("/gquery_cache/#{dataset_id}/#{gquery.key}/#{gquery.updated_at}") do
         # BUG/DEBT memcached seems to be unable to store false values
         val = super(gquery_key)
         val === false ? :false : val
