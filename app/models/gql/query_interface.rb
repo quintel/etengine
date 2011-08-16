@@ -34,18 +34,6 @@ class QueryInterface
     @options = options
   end
 
-  def graph_id
-    graph.graph_id
-  end
-
-  def graph_year
-    graph.year
-  end
-
-  def dataset_id
-    graph.dataset.id
-  end
-
   # Following includes are responsible for caching of queries
   # The order of includes is important.
   #
