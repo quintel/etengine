@@ -11,17 +11,18 @@ module UpdateInterface
       @graph = graph
     end
 
+    # DEBT legacy because of update_replacement_of_households_rate
     def present_converter(id)
       Current.gql.present_graph.converter(id)
     end
 
+    # DEBT legacy because of update_replacement_of_households_rate
     def future_converter(id)
       Current.gql.future_graph.converter(id)
     end
 
     def after_calculation_updates
-      cmd = AfterCalculationUpdate.new(graph)
-      cmd.execute
+      AfterCalculationUpdate.new(graph).execute
     end
 
     def update_with(update_statements)
