@@ -17,11 +17,25 @@ module Qernel
 class Slot
   include DatasetAttributes
 
-  attr_accessor :converter, :converter_id, :graph
-  attr_reader :carrier, :direction, :id
+
+  # --------- Accessor ---------------------------------------------------------
+
+  attr_accessor :converter, 
+                :converter_id, 
+                :graph
+
+  attr_reader :carrier, 
+              :direction, 
+              :id
+
+
+  # --------- Dataset ---------------------------------------------------------
 
   DATASET_ATTRIBUTES = [:conversion]
   dataset_accessors DATASET_ATTRIBUTES
+
+
+  # --------- Initialize ------------------------------------------------------
 
   def initialize(id, converter, carrier, direction = :input)
     @id = id
@@ -30,6 +44,9 @@ class Slot
     @direction = direction
     self.dataset_key # memoize dataset_key
   end
+
+
+  # --------- Calculation -----------------------------------------------------
 
   # @return [Boolean] is Slot ready for calculation?
   #
@@ -45,49 +62,7 @@ class Slot
     # can skip this (saves a bit of performance).
   end
 
-
-  # @return [Array<Link>]
-  #
-  def links
-    # For legacy reasons, we still access links through the converter.
-    @links ||= if input? 
-      converter.input_links.select{|l| l.carrier == @carrier} 
-    else
-      converter.output_links.select{|l| l.carrier == @carrier}
-    end
-  end
-
-  # Links that are calculated by this converter
-  #
-  # @return [Array<Link>]
-  #
-  def active_links
-    @active_links ||= if input? 
-      links.select(&:calculated_by_left?)
-    else
-      links.select(&:calculated_by_right?)
-    end
-  end
-
-  # Links that are calculated by another converter
-  #
-  # If it is an input slot then:
-  # * dependent?
-  # * inversed_flexible?
-  # * (constant? and share.nil?) # constant links that take the values from a converter
-  #
-  # @return [Array<Link>]
-  #
-  def passive_links
-    @passive_links ||= if input? 
-      links.select(&:calculated_by_right?) 
-    else 
-      links.select(&:calculated_by_left?)
-    end
-  end
-
-  ##
-  # Calculates the link values
+  # Calculate the link values
   #
   def calculate
     # 2010-06-07 sb
@@ -106,78 +81,17 @@ class Slot
     end
   end
 
-  ##
-  # @return [Float] Demand of Converter that the slot belongs to
-  #
-  def total_converter_demand
-    converter.demand
-  end
 
-  ##
-  # Expected value of this slot. Must equal to the actual value (sum of link values * conversion)
-  # expected_demand = total_converter_demand * conversion
-  #
-  # @return [Float]
-  #
-  def expected_value
-    conversion * (total_converter_demand || 0.0)
-  end
-  alias_method :expected_external_value, :expected_value
+  # --------- Slot Types ------------------------------------------------------
 
-  ##
-  # total demand of converter
-  # value for converter
-  #
-  # @return [Float, nil] nil if not all links have values
-  #
-  def internal_value
-    convert(external_value)
-  end
-
-  ##
-  # value to the outside
-  #
-  # @return [Float, nil] nil if not all links have values
-  #
-  def external_value
-    values = links.map(&:value)
-    values.compact.sum.to_f
-  end
-
-  ##
-  # Used for calculation of flexible links.
-  #
-  # @return [Float] Sum of link values
-  #
-  def external_passive_link_value
-    links.reject(&:flexible?).map(&:value).compact.sum
-  end
-
-  ##
-  # Used for calculation of inversed_flexible links.
-  #
-  # @return [Float] Sum of link values
-  #
-  def external_link_value
-    links.map(&:value).compact.sum
-  end
-
-  ##
-  # @unused
-  #
-  def internal_link_value
-    convert(external_link_value)
-  end
-
-  ##
-  # Is slot on the input side?
-  #
-  # @return [Boolean]
+  # @return [Boolean] Is Slot an input (on the left side of converter)
   #
   def input?
     (direction === :input)
   end
 
+  # @return [Boolean] is it an output (on the left side of converter)
+  #
   def output?
     !input?
   end
@@ -190,15 +104,85 @@ class Slot
     carrier.loss?
   end
 
-  ##
-  # Converts a value using the conversion.
-  # Used to calculate internal_values.
+
+  # --------- Traversal -------------------------------------------------------
+
+  # @return [Array<Link>] Links that are calculated by this Slot
   #
-  # @param value [Float] e.g. external_value
+  def active_links
+    @active_links ||= if input? 
+      links.select(&:calculated_by_left?)
+    else
+      links.select(&:calculated_by_right?)
+    end
+  end
+
+
+  # @return [Array<Link>] Links calculated by the converter on the other end.
   #
-  def convert(value)
-    return nil if value.nil?
-    (conversion == 0.0) ? 0.0 : value / conversion
+  def passive_links
+    @passive_links ||= if input? 
+      links.select(&:calculated_by_right?) 
+    else 
+      links.select(&:calculated_by_left?)
+    end
+  end
+
+  # @return [Array<Link>]
+  #
+  def links
+    # For legacy reasons, we still access links through the converter.
+    @links ||= if input? 
+      converter.input_links.select{|l| l.carrier == @carrier} 
+    else
+      converter.output_links.select{|l| l.carrier == @carrier}
+    end
+  end
+
+  # --------- Value -----------------------------------------------------------
+
+  # Expected value of this slot. Must equal to the actual value (sum of link values * conversion)
+  # expected_demand = total_converter_demand * conversion
+  #
+  # @return [Float]
+  #
+  def expected_value
+    conversion * (converter.demand || 0.0)
+  end
+  alias_method :expected_external_value, :expected_value
+
+  # total demand of converter
+  # value for converter
+  #
+  # @return [Float, nil] nil if not all links have values
+  #
+  def internal_value
+    convert(external_value)
+  end
+
+  # Value to the outside
+  #
+  # @return [Float, nil] nil if not all links have values
+  #
+  def external_value
+    values = links.map(&:value)
+    values.compact.sum.to_f
+  end
+
+  # Used for calculation of flexible links.
+  #
+  # @return [Float] Sum of link values
+  #
+  def external_passive_link_value
+    links.reject(&:flexible?).map(&:value).compact.sum
+  end
+
+  # Used for calculation of inversed_flexible links.
+  #
+  # @return [Float] Sum of link values
+  #
+  def external_link_value
+    links.map(&:value).compact.sum
   end
 
   ##
@@ -216,6 +200,19 @@ class Slot
       dataset_get(:conversion) || 0.0
     end
   end
+
+  # Converts a value using the conversion.
+  # Used to calculate internal_values.
+  #
+  # @param value [Float] e.g. external_value
+  #
+  def convert(value)
+    return nil if value.nil?
+    (conversion == 0.0) ? 0.0 : value / conversion
+  end
+
+
+  # --------- Debug -----------------------------------------------------------
 
   def inspect
     "slot_#{id}"

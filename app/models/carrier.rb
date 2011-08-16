@@ -38,6 +38,6 @@ class Carrier < ActiveRecord::Base
   # Build a Qernel::Carrier from a blueprint
   #
   def to_qernel
-    @qernel ||= Qernel::Carrier.new(id, key, name, (infinite ? 1.0 : 0.0))
+    @qernel ||= Qernel::Carrier.new(id, key, (infinite ? 1.0 : 0.0))
   end
 end
