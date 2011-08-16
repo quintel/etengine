@@ -4,7 +4,7 @@ describe Api::ApiScenariosController do
 
   before(:each) do
     stub_etm_layout_methods!
-    Current.stub_chain(:gql, :query).and_return Gql::GqueryResult.create([[2010,1],[2010,2]])
+    Current.stub_chain(:gql, :query).and_return Gql::ResultSet.create([[2010,1],[2010,2]])
   end
 
   describe "index" do

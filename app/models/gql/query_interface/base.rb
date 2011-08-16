@@ -9,7 +9,7 @@ module Gql::QueryInterface::Base
   # @raise [Gql::GqlError] if query is not valid.
   #
   def query(query)
-    if query.is_a?(::Gquery)
+    if query.is_a?(Gquery)
       subquery(query.key)
     elsif parsed = clean_and_parse(query)
       result_of_parsed_query(parsed)

@@ -107,7 +107,7 @@ class Api::ApiScenariosController < ApplicationController
         results.map!(&:to_s) # key could be passsed as integer with json(P)
         results.reject!(&:blank?)
 
-        invalid_result = Gql::GqueryResult.create([[2010, 'ERROR'], [2040, 'ERROR']])
+        invalid_result = Gql::ResultSet.create([[2010, 'ERROR'], [2040, 'ERROR']])
         @gqueries = results.inject({}) do |hsh, key|
           if key == "null" or key == "undefined"
             hsh
