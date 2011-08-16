@@ -52,7 +52,7 @@ module Gql::QueryInterface::Base
 protected
 
   def result_of_parsed_query(parsed_query)
-    Current.gql.prepare_graphs unless Current.gql.calculated?
+    Current.gql.prepare unless Current.gql.calculated?
     
     parsed_query.result(scope)
   end

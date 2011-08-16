@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Gql::Update
+module Gql::UpdateInterface
   describe LinkShareCommand do
     describe "#responsible?" do
       %w[

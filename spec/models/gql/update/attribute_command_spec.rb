@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Gql::Update
+module Gql::UpdateInterface
   describe AttributeCommand do
     describe "#responsible?" do
       %w[demand_decrease_total].each do |key|
