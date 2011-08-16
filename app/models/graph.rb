@@ -60,13 +60,14 @@ class Graph < ActiveRecord::Base
 
   def future
     @future_graph = nil
+
     Graph.benchmark("Graph#future qernel") do
       @future_graph = self.class.future_qernel_for(self)
     end
 
-    Graph.benchmark("Graph#future dataset") do
-      @future_graph.dataset = dataset.to_qernel
-    end
+    # Graph.benchmark("Graph#future dataset") do
+    #   @future_graph.dataset = dataset.to_qernel
+    # end
 
     @future_graph
   end
@@ -83,9 +84,9 @@ class Graph < ActiveRecord::Base
     Graph.benchmark("Graph#calculated_present_qernel qernel") do
       qernel = present_qernel
     end
-    Graph.benchmark("Graph#calculated_present_qernel dataset") do
-      qernel.dataset = calculated_present_data
-    end
+    # Graph.benchmark("Graph#calculated_present_qernel dataset") do
+    #   qernel.dataset = calculated_present_data
+    # end
     qernel
   end
 
