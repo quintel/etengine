@@ -34,8 +34,6 @@ class Carrier
   alias steam_hot_water? steam_hot_water
   alias loss? loss
 
-  ##
-  #
   # @param id [int]
   # @param key [Symbol]
   # @param name [String]

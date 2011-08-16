@@ -84,10 +84,10 @@ protected
   end
 
   def after_assign_object_dataset
-    if self.dependent?
-      #puts(self.graph_parser_expression)
-      #@reversed = true
-    end
+    # if self.dependent?
+    #   puts(self.graph_parser_expression)
+    #   @reversed = true
+    # end
   end
 
 

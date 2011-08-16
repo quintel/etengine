@@ -207,22 +207,7 @@ public
   end
 
 
-  # --------- Traversal -------------------------------------------------------
-
-  # @return [Array<Converter>] Converters to the right
-  #
-  def children
-    @children ||= input_links.map(&:child)
-  end
-
-  # @return [Array<Converter>] Converters to the left
-  #
-  def parents
-    @parents ||= output_links.map(&:parent)
-  end
-
-
-  # --------- Links -----------------------------------------------------------
+  # --------- Building --------------------------------------------------------
 
   # @param link [Link]
   #
@@ -235,9 +220,6 @@ public
   def add_input_link(link)
     @input_links << link
   end
-
-
-  # --------- Slots -----------------------------------------------------------
 
   # @param slot [Qernel::Slot]
   # @return [Qernel::Slot]
@@ -257,6 +239,22 @@ public
     reset_memoized_slot_methods
     slot
   end
+
+
+  # --------- Traversal -------------------------------------------------------
+
+  # @return [Array<Converter>] Converters to the right
+  #
+  def children
+    @children ||= input_links.map(&:child)
+  end
+
+  # @return [Array<Converter>] Converters to the left
+  #
+  def parents
+    @parents ||= output_links.map(&:parent)
+  end
+
 
   # @return [Array<Slot>] all input slots
   #
