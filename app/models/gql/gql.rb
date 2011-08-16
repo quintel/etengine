@@ -24,7 +24,7 @@ module Gql
 #   gql.prepare_graphs          # updates and calculates graphs based on user assumptions
 #
 #   res = gql.query("SUM(1.0,2.0)")
-#   # => <Gql::GqueryResult present_value:3.0 future_value:3.0 present_year:2010 future_year:2040>
+#   # => <Gql::ResultSet present_value:3.0 future_value:3.0 present_year:2010 future_year:2040>
 #
 #   gql.query_present("SUM(1,0,2.0)") # only get the present value
 #   # => 3.0
@@ -59,7 +59,7 @@ module Gql
 # To query a StoredProcedure#foo_bar use:
 # Current.gql.query('stored.foo_bar')
 #
-# === GqueryResult
+# === ResultSet
 #
 # ResultSet of a Gquery.
 #
@@ -182,7 +182,7 @@ class Gql
   # takes rather long time.
   #
   # @param query [String, Gquery] the single query.
-  # @return [GqueryResult] Result query, depending on its gql_modifier
+  # @return [ResultSet] Result query, depending on its gql_modifier
   #
   def query(gquery_or_string)
     if gquery_or_string.is_a?(::Gquery)
@@ -204,10 +204,10 @@ private
   # Standard query without modifiers. Queries present and future graph.
   #
   # @param query [String, Gquery] the single query.
-  # @return [GqueryResult] Result query, depending on its gql_modifier
+  # @return [ResultSet] Result query, depending on its gql_modifier
   #
   def query_standard(query)
-    GqueryResult.create [
+    ResultSet.create [
       [Current.scenario.start_year, query_present(query)],
       [Current.scenario.end_year, query_future(query)]
     ]
@@ -244,7 +244,7 @@ private
   #   gql.query("stored.foo_bar")
   #
   # @param query [String] Calls a stored procedure
-  # @return [GqueryResult] The result of the stored procedure
+  # @return [ResultSet] The result of the stored procedure
   #
   def query_stored(query)
     StoredProcedure.execute(query)

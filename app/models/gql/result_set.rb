@@ -3,7 +3,7 @@ module Gql
 # ResultSet of a GQL query.
 # Currently inherits from Array for backwards compatibility.
 #
-class GqueryResult < Array
+class ResultSet < Array
   include ActiveModel::Serialization
 
   def present
@@ -36,7 +36,7 @@ class GqueryResult < Array
   # @deprecated
   #
   def self.create(arr)
-    result = GqueryResult.new
+    result = ResultSet.new
     arr.each {|row| result << row}
     result
   end

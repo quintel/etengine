@@ -17,7 +17,7 @@ module Gql
 #
 #    describe "policy_targets_met" do
 #      before do
-#        @expected = GqueryResult.create [[2010, 0],[2040, 0]]
+#        @expected = ResultSet.create [[2010, 0],[2040, 0]]
 #      end
 #      subject { @sp.policy_targets_met }
 #      its(:present_value) { should be_near(@expected.present_value) }
@@ -66,7 +66,7 @@ module Gql
 #   describe "policy_total_energy_cost" do
 #     before do
 #       policy_goal = @policy.goal(:total_energy_cost)
-#       @expected = GqueryResult.create [[2010, 41.8033331088373],[2040, 41.8033331088373]]
+#       @expected = ResultSet.create [[2010, 41.8033331088373],[2040, 41.8033331088373]]
 #     end
 #     subject { @sp.policy_total_energy_cost }
 #     its(:present_value) { should be_near @expected.present_value }
@@ -76,7 +76,7 @@ module Gql
 #   describe "policy_electricity_cost" do
 #     before do
 #       policy_goal = @policy.goal(:electricity_cost)
-#       @expected = GqueryResult.create [[2010, 84.9885011063692],[2040, 84.9885011063692]]
+#       @expected = ResultSet.create [[2010, 84.9885011063692],[2040, 84.9885011063692]]
 #     end
 #     subject { @sp.policy_electricity_cost }
 #     its(:present_value) { should be_near @expected.present_value }
@@ -86,7 +86,7 @@ module Gql
 #   describe "policy_co2_emission" do
 #     before do
 #       policy_goal = @policy.goal(:co2_emission)
-#       @expected = GqueryResult.create [[2010, 161.058616696992],[2040, 151.2]]
+#       @expected = ResultSet.create [[2010, 161.058616696992],[2040, 151.2]]
 #     end
 #     subject { @sp.policy_co2_emission }
 #     its(:present_value) { should be_near @expected.present_value }
@@ -96,7 +96,7 @@ module Gql
 #   describe "policy_renewable_percentage" do
 #     before do
 #       policy_goal = @policy.goal(:renewable_percentage)
-#       @expected = GqueryResult.create [[2010, 4.86136111863168],[2040, 4.86136111863168]]
+#       @expected = ResultSet.create [[2010, 4.86136111863168],[2040, 4.86136111863168]]
 #     end
 #     subject { @sp.policy_renewable_percentage }
 #     its(:present_value) { should be_near @expected.present_value }
@@ -107,7 +107,7 @@ module Gql
 #      before do
 #        area = @policy.present_area.onshore_suitable_for_wind
 #        policy_goal = @policy.goal(:onshore_land)
-#        @expected = GqueryResult.create [[2010, 0.00242395280118989], [2040, 0.00242395280118989]]
+#        @expected = ResultSet.create [[2010, 0.00242395280118989], [2040, 0.00242395280118989]]
 #      end
 #      subject { @sp.policy_onshore_land }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -118,7 +118,7 @@ module Gql
 #      before do
 #        area = @policy.present_area.coast_line
 #        policy_goal = @policy.goal(:onshore_coast)
-#        @expected = GqueryResult.create [[2010, 0.12870798548188], [2040, 0.12870798548188]]
+#        @expected = ResultSet.create [[2010, 0.12870798548188], [2040, 0.12870798548188]]
 #      end
 #      subject { @sp.policy_onshore_coast }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -130,7 +130,7 @@ module Gql
 #      before do
 #        area = @policy.present_area.offshore_suitable_for_wind
 #        policy_goal = @policy.goal(:offshore)
-#        @expected = GqueryResult.create [[2010, 0.0349963606251136], [2040, 0.0349963606251136]]
+#        @expected = ResultSet.create [[2010, 0.0349963606251136], [2040, 0.0349963606251136]]
 #      end
 #      subject { @sp.policy_offshore }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -141,7 +141,7 @@ module Gql
 #      before do
 #        area = @policy.present_area.roof_surface_available_pv
 #        policy_goal = @policy.goal(:roofs_for_solar_panels)
-#        @expected = GqueryResult.create [[2010, 0.0641249807627583], [2040, 0.0641249807627583]]
+#        @expected = ResultSet.create [[2010, 0.0641249807627583], [2040, 0.0641249807627583]]
 #      end
 #      subject { @sp.policy_roofs_for_solar_panels }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -152,7 +152,7 @@ module Gql
 #      before do
 #        area = @policy.present_area.land_available_for_solar
 #        policy_goal = @policy.goal(:land_for_solar_panels)
-#        @expected = GqueryResult.create [[2010, 0.0], [2040, 0.0]]
+#        @expected = ResultSet.create [[2010, 0.0], [2040, 0.0]]
 #      end
 #      subject { @sp.policy_land_for_solar_panels }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -163,7 +163,7 @@ module Gql
 #      before do
 #        area = @policy.present_area.land_available_for_solar
 #        policy_goal = @policy.goal(:land_for_csp)
-#        @expected = GqueryResult.create [[2010, 0.0], [2040, 0.0]]
+#        @expected = ResultSet.create [[2010, 0.0], [2040, 0.0]]
 #      end
 #      subject { @sp.policy_land_for_csp }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -198,7 +198,7 @@ module Gql
 #    describe "policy_net_energy_import" do
 #      before do
 #        policy_goal = @policy.goal(:net_energy_import)
-#        @expected = GqueryResult.create [[2010, 25.713336364934], [2040, 25.713336364934]]
+#        @expected = ResultSet.create [[2010, 25.713336364934], [2040, 25.713336364934]]
 #      end
 #      subject { @sp.policy_net_energy_import }
 #      its(:present_value) { should be_near @expected.present_value }
@@ -208,7 +208,7 @@ module Gql
 #    describe "policy_net_electricity_import" do
 #      before do
 #        policy_goal = @policy.goal(:net_electricity_import)
-#        @expected = GqueryResult.create [[2010, 9.84018210180452], [2040, 9.84018210180452]]
+#        @expected = ResultSet.create [[2010, 9.84018210180452], [2040, 9.84018210180452]]
 #      end
 #      subject { @sp.policy_net_electricity_import }
 #      its(:present_value) { should be_near @expected.present_value }
