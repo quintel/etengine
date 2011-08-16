@@ -79,10 +79,7 @@ class Gql
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  # @return [Qernel::Graph]
-  attr_reader :present_interface
-  # @return [Qernel::Graph]
-  attr_reader :future_interface
+  attr_reader :scenario, :graph
 
   ##
   # assigns, updates and calculates present and future graph upon initializing
@@ -95,28 +92,40 @@ class Gql
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
     return if graph_model == :testing
 
-    scenario = Current.scenario
+    @graph_model = graph_model
+    @scenario = Current.scenario
+  end
 
-    @present = graph_model.present
-    @future = graph_model.future
+  def present_interface
+    unless @present_interface 
+      present = build_present_graph
+      @present_interface = QueryInterface.new(present, :cache_prefix => "#{present.graph_id}-present")
+    end
+    @present_interface
+  end
 
-    @present.year = scenario.start_year
-    @future.year = scenario.end_year
-
-    @present_interface = QueryInterface.new(@present, :cache_prefix => "#{@present.dataset.id}-present")
-    if ENABLE_QUERY_CACHE_FOR_FUTURE
-      @future_interface =  QueryInterface.new(@future, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
+  def future_interface
+    @future_interface ||= if ENABLE_QUERY_CACHE_FOR_FUTURE
+      QueryInterface.new(build_future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
     else
-      @future_interface =  QueryInterface.new(@future)
+      QueryInterface.new(build_future_graph)
     end
   end
 
+  def build_present_graph
+    @graph_model.present.tap{|g| g.year = @scenario.start_year}
+  end
+
+  def build_future_graph
+    @graph_model.future.tap{|g| g.year = @scenario.end_year}
+  end
+
   def present_graph
-    @present_interface.graph
+    present_interface.graph
   end
 
   def future_graph
-    @future_interface.graph
+    future_interface.graph
   end
 
   def present
@@ -140,7 +149,7 @@ class Gql
   # @return [Policy]
   #
   def policy
-    @policy ||= Policy.new(@present, @future)
+    @policy ||= Policy.new(present_graph, future_graph)
   end
 
   def benchmark(title)
@@ -155,6 +164,11 @@ class Gql
   #
   def prepare_graphs
     Rails.logger.warn("*** GQL#prepare_graphs")
+
+    if @graph_model
+      present_graph.dataset = @graph_model.calculated_present_data
+      future_graph.dataset = @graph_model.dataset.to_qernel
+    end
 
     update_statements = Current.scenario.update_statements
 
