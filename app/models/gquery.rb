@@ -67,7 +67,7 @@ class Gquery < ActiveRecord::Base
   #
   # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
   def parsed_query
-    @parsed_query ||= Gql::QueryInterface::Preparser.clean_and_parse(query)
+    @parsed_query ||= Gql::QueryInterface::Preparser.new(query).parsed
   end
 
   @@gquery_hash = nil
@@ -95,7 +95,7 @@ class Gquery < ActiveRecord::Base
   end
 
   def query_cleaned
-    Gql::QueryInterface::Preparser.clean(query)
+    Gql::QueryInterface::Preparser.new(query).clean
   end
 
 private
@@ -106,9 +106,8 @@ private
     @@gquery_hash = nil
   end
 
-
   def validate_query_parseable
-    if Gql::QueryInterface::Preparser.check_query(self[:query]).nil?
+    if Gql::QueryInterface::Preparser.new(self[:query]).valid?
       errors.add(:query, "cannot be parsed")
       false
     else

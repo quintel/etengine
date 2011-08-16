@@ -16,7 +16,7 @@
     = color_syntaxed_gquery @gquery.query
 
   %h3 Result
-  - @query = Gql::QueryInterface::Preparser.clean(@gquery.query)
+  - @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
   %p= render 'result'
 
 

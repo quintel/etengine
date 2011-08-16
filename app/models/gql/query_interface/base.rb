@@ -11,7 +11,7 @@ module Gql::QueryInterface::Base
   def query(query)
     if query.is_a?(Gquery)
       subquery(query.key)
-    elsif parsed = clean_and_parse(query)
+    elsif parsed = Gql::QueryInterface::Preparser.new(query).parsed
       result_of_parsed_query(parsed)
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query)}.")
@@ -21,24 +21,21 @@ module Gql::QueryInterface::Base
   # @return [Array<String>] Debug messages
   #
   def debug(query_string)
-    self.graph = graph unless graph.nil?
-    if parsed = clean_and_parse(query_string)
+    if parsed = Gql::QueryInterface::Preparser.new(query_string).parsed
       msg = []
       parsed.debug(scope, msg)
-      @graph = nil
       msg
     else
-      @graph = nil
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query_string)}.")
     end
   rescue => e
-    e.inspect
+    e.inspect # return the error message as a string
   end
 
   # Is the given gquery_string valid?
   #
   def check(query)
-    Gql::QueryInterface::Preparser.check_query(query)
+    Gql::QueryInterface::Preparser.new(query).valid?
   end
 
   # A subquery is a call to another query.
@@ -69,12 +66,9 @@ protected
   end
 
   def clean(query_string)
-    Gql::QueryInterface::Preparser.clean(query_string)
+    Gql::QueryInterface::Preparser.new(query_string).clean
   end
 
-  def clean_and_parse(query_string)
-    Gql::QueryInterface::Preparser.clean_and_parse(query_string)
-  end
 
 
 end
