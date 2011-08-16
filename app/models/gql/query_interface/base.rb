@@ -10,9 +10,6 @@
 #
 module Gql::QueryInterface::Base
 
-  ##
-  #
-  #
   # @param query [String] An (unescaped) gquery
   # @param graph [Qernel::Graph] The Qernel::Graph to be queried
   # @return result
@@ -75,11 +72,7 @@ module Gql::QueryInterface::Base
     # subquery should not set or reset the graph_for_grammar.
     # It is a subquery of a #query, so it should still use the same
     # graph_for_grammar.
-    if gquery_key.is_a?(::Gquery)
-      gquery = gquery_key
-    else
-      gquery = ::Gquery.get(gquery_key)
-    end
+    gquery = get_gquery(gquery_key)
 
     if gquery
       gquery.parsed_query.result(scope)
@@ -88,7 +81,15 @@ module Gql::QueryInterface::Base
     end
   end
 
-  private
+protected
+
+  def get_gquery(gquery_or_key)
+    if gquery_or_key.is_a?(::Gquery)
+      gquery_or_key
+    else
+      ::Gquery.get(gquery_or_key)
+    end
+  end
 
   def clean(query_string)
     Gql::QueryInterface::Preparser.clean(query_string)

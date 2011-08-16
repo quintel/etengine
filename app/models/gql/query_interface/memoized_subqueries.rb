@@ -1,6 +1,6 @@
 module Gql
-##
-# GqueryMemoizedSubqueries memoizes subquery calls for future and present graphs.
+
+# Memoize subquery calls.
 #
 module QueryInterface::MemoizedSubqueries
 
@@ -8,12 +8,6 @@ module QueryInterface::MemoizedSubqueries
   # Subqueries are memoized, so that if a subquery is called twice, we save performance.
   #
   def subquery(gquery_key)
-    if gquery_key.is_a?(::Gquery)
-      gquery = gquery_key
-    else
-      gquery = ::Gquery.get(gquery_key)
-    end
-
     @memoized_subqueries ||= {}
 
     # we cannot use normal memoization, as some gqueries return a boolean (notably peak load)

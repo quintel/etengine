@@ -116,15 +116,22 @@ class ConverterApi
   end
 
   def to_s
-    converter and converter.full_key.to_s
+    converter && converter.full_key.to_s
   end
 
   def inspect
     to_s
   end
 
+  # For testing only
+  # Otherwise graphs by GraphParser won't be Gqueryable
+  # DEBT properly fix
+  if Rails.env.development? or Rails.env.test?
+    def object_dataset
+      converter.object_dataset
+    end
+  end
 
-  ##
   #
   #
   def initialize(converter_qernel, attrs = {})
@@ -133,7 +140,6 @@ class ConverterApi
     @dataset_group = converter.dataset_group
   end
 
-  ##
   # See {Qernel::Converter} for municipality_demand
   #
   def municipality_demand=(val)
@@ -141,14 +147,12 @@ class ConverterApi
   end
 
 
-  ##
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
     converter.preset_demand = val
   end
 
-  ##
   # Is the calculated near the demand_expected_value?
   #
   # @return [nil] if demand or expected is nil
@@ -252,7 +256,6 @@ class ConverterApi
     self.converter.final_demand
   end
 
-  ##
   #
   #
   def method_missing(method_id, *arguments)
