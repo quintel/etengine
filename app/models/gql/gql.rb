@@ -79,7 +79,7 @@ class Gql
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  attr_reader :scenario, :graph
+  attr_reader :scenario, :graph_model
 
   ##
   # assigns, updates and calculates present and future graph upon initializing
@@ -97,11 +97,11 @@ class Gql
   end
 
   def present_graph
-    @present_graph ||= @graph_model.present.tap{|g| g.year = @scenario.start_year}
+    @present_graph ||= graph_model.present.tap{|g| g.year = scenario.start_year}
   end
 
   def future_graph
-    @future_graph ||= @graph_model.future.tap{|g| g.year = @scenario.end_year}
+    @future_graph ||= graph_model.future.tap{|g| g.year = scenario.end_year}
   end
 
   def present
@@ -140,39 +140,54 @@ class Gql
 
   # Updates and calculates the graphs
   #
-  # @return [Gql] Returns self, so that we can gql = Gql.new(graph).prepare_graphs
-  #
   def prepare_graphs
     Rails.logger.warn("*** GQL#prepare_graphs")
 
-    if @graph_model
-      present_graph.dataset = @graph_model.calculated_present_data
-      future_graph.dataset = @graph_model.dataset.to_qernel
-    end
+    # 2011-08-15: the present has to be updated 
+    # otherwise updating the future won't work (we need the present values :-)
+    update_present_graph_from_cache
 
-    update_statements = Current.scenario.update_statements
+    apply_updates(future_graph)
+    calculate_graph(future_graph)
 
-    if update_statements
-      update_time_curves(future_graph)      
-      update_carriers(future_graph, update_statements['carriers'])
-      update_area_data(future_graph, update_statements['area'])
-      update_converters(future_graph, update_statements['converters'])
-    end
-
-    benchmark("calculate future") do
-      future_graph.calculate
-    end
-
-    update_policies(update_statements['policies']) if update_statements
+    apply_policy_updates
 
     # At this point the gql is calculated. Changes through update statements
     # should no longer be allowed, as they won't have an impact on the 
     # calculation (even though updating prices would work).
-    @calculated = true  
+    @calculated = true
 
     after_calculation_updates(present_graph)
     after_calculation_updates(future_graph)
-    self
+  end
+
+
+  def update_present_graph_from_cache
+    present_graph.dataset = graph_model.calculated_present_data
+  end
+
+  def apply_policy_updates
+    update_statements = Current.scenario.update_statements
+    update_policies(update_statements['policies']) if update_statements
+  end
+
+  def apply_updates(graph)
+    update_statements = Current.scenario.update_statements
+
+    graph.dataset = graph_model.dataset.to_qernel
+
+    if update_statements
+      update_time_curves(graph)
+      update_carriers(   graph, update_statements['carriers'])
+      update_area_data(  graph, update_statements['area'])
+      update_converters( graph, update_statements['converters'])
+    end
+  end
+
+  def calculate_graph(graph)
+    benchmark("calculate #{graph.year}") do
+      graph.calculate
+    end
   end
 
   # Query the GQL, takes care of gql modifier strings.
@@ -199,7 +214,7 @@ class Gql
     end
   end
 
-private
+protected
 
   # Standard query without modifiers. Queries present and future graph.
   #

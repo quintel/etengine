@@ -82,11 +82,11 @@ module Gql
 module UpdatingConverter
 
   def present_converter(id)
-    present.graph.converter(id)
+    present_graph.converter(id)
   end
 
   def future_converter(id)
-    future.graph.converter(id)
+    future_graph.converter(id)
   end
 
 
