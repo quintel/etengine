@@ -33,8 +33,8 @@ module Qernel
 
   describe Graph, "Sample graphs" do
     before do
-      @crr_el  = Carrier.new(2, 'el', '', 1.0)
-      @crr_hw  = Carrier.new(3, 'hw', '', 1.0)
+      @crr_el  = Carrier.new(2, 'el', 1.0)
+      @crr_hw  = Carrier.new(3, 'hw', 1.0)
       @g = Graph.new.with({})
     end
 

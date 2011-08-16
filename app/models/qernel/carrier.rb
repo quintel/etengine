@@ -13,7 +13,6 @@ class Carrier
   ]
 
   DATASET_ATTRIBUTES = [
-    # :co2_per_mj,
     :cost_per_mj,
     :sustainable,
     :typical_production_per_km2,
@@ -25,7 +24,7 @@ class Carrier
     *CO2_FCE_COMPONENTS
   ]
 
-  attr_accessor :id, :key, :name, :graph, :infinite
+  attr_accessor :id, :key, :graph, :infinite
 
   dataset_accessors DATASET_ATTRIBUTES
 
@@ -34,16 +33,16 @@ class Carrier
   alias steam_hot_water? steam_hot_water
   alias loss? loss
 
+  alias name key # completely deprecate name at some time
+
   # @param id [int]
   # @param key [Symbol]
-  # @param name [String]
   # @param infinite [Float]
   #
-  def initialize(id,key,name,infinite)
+  def initialize(id, key, infinite)
     self.id = id
 
     self.key = key.andand.to_sym
-    self.name = name
     self.infinite = infinite
 
     @loss = self.key === :loss
@@ -79,10 +78,8 @@ class Carrier
 
   def ==(other)
     if other.is_a?(Symbol)
-      #Rails.logger.info('carrier === Symbol')
       self.key === other
     else
-      #Rails.logger.info('carrier === Carrier')
       self.id == other.id
     end
   end
