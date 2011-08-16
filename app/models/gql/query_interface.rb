@@ -20,9 +20,18 @@ class QueryInterface
   include GraphApi
 
   attr_accessor :graph
+  attr_reader :options
 
-  def initialize(graph)
+  # @param [Hash] options 
+  # @option options [Boolean] :cache_prefix (nil) 
+  #   Set a prefix for the cache key. Changing the prefix will invalidate the caches.
+  #   Use this wisely. E.g. for the present graph, the graph.id is recommended over 
+  #   scenario.id (as present graphs are the same in all scenarios).
+  #   If set to nil, false or not at all defined, query_cache will not be used.
+  #
+  def initialize(graph, options = {})
     @graph = graph
+    @options = options
   end
 
   def graph_id
