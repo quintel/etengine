@@ -63,6 +63,7 @@ class Slot
   end
 
   # Calculate the link values
+  # @return [Array<Link>]
   #
   def calculate
     # 2010-06-07 sb
@@ -85,6 +86,7 @@ class Slot
   # --------- Slot Types ------------------------------------------------------
 
   # @return [Boolean] Is Slot an input (on the left side of converter)
+  # Links that are calculated by this converter
   #
   def input?
     (direction === :input)
