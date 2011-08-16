@@ -96,9 +96,9 @@ class Input < ActiveRecord::Base
     
     ##
     # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
-    # The Gql::Update::FceCommand takes care of this.
+    # The Gql::UpdateInterface::FceCommand takes care of this.
     if update_type == 'fce'
-      Gql::Update::FceCommand.create(keys, attr_name, value / factor)
+      Gql::UpdateInterface::FceCommand.create(keys, attr_name, value / factor)
     else
       {
         update_type => {

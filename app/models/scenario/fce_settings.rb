@@ -46,7 +46,7 @@ class Scenario < ActiveRecord::Base
 
     ##
     # The fce_settings hash stores the co2_emission values per country
-    # This hash is updated using the Gql::Update::FceCommand
+    # This hash is updated using the Gql::UpdateInterface::FceCommand
     def fce_settings
       @fce_settings ||= {}
     end

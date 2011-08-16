@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Gql::Update
+module Gql::UpdateInterface
   describe CommandFactory do
     # Make sure all classes have :responsible?(key) method
     COMMAND_TYPES.each do |klass|
@@ -9,7 +9,7 @@ module Gql::Update
 
     context "First Command is responsible" do
       before do
-        @klass = ::Gql::Update::COMMAND_TYPES.first
+        @klass = ::Gql::UpdateInterface::COMMAND_TYPES.first
         @klass.should_receive(:responsible?).with(anything()).and_return(true)
         @klass.should_receive(:create).with(any_args).and_return(:bla)
       end
@@ -20,7 +20,7 @@ module Gql::Update
 
     context "No Command is responsible" do
       before do
-        ::Gql::Update::COMMAND_TYPES.each do |klass|
+        ::Gql::UpdateInterface::COMMAND_TYPES.each do |klass|
           klass.should_receive(:responsible?).with(anything()).and_return(false)
         end
       end
