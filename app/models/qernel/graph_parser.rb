@@ -6,10 +6,10 @@ module Qernel
       hsh.merge c.key => c.to_qernel.with({}) 
     }.merge({
       # Carriers used in the Specs
-      'foo' => Carrier.new(2, 'foo', '', 1.0).with({}),
-      'bar' => Carrier.new(3, 'bar', '', 1.0).with({}),
-      'loss' => Carrier.new(1, 'loss', '', 0.0),
-      'electricity' => Carrier.new(5, 'electricity', '', 0.0)
+      'foo' => Carrier.new(2, 'foo', 1.0).with({}),
+      'bar' => Carrier.new(3, 'bar', 1.0).with({}),
+      'loss' => Carrier.new(1, 'loss', 0.0),
+      'electricity' => Carrier.new(5, 'electricity', 0.0)
     })
 
     LINK_TYPES = {
