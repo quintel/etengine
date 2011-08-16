@@ -96,44 +96,24 @@ class Gql
     @scenario = Current.scenario
   end
 
-  def present_interface
-    unless @present_interface 
-      present = build_present_graph
-      @present_interface = QueryInterface.new(present, :cache_prefix => "#{present.graph_id}-present")
-    end
-    @present_interface
-  end
-
-  def future_interface
-    @future_interface ||= if ENABLE_QUERY_CACHE_FOR_FUTURE
-      QueryInterface.new(build_future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
-    else
-      QueryInterface.new(build_future_graph)
-    end
-  end
-
-  def build_present_graph
-    @graph_model.present.tap{|g| g.year = @scenario.start_year}
-  end
-
-  def build_future_graph
-    @graph_model.future.tap{|g| g.year = @scenario.end_year}
-  end
-
   def present_graph
-    present_interface.graph
+    @present_graph ||= @graph_model.present.tap{|g| g.year = @scenario.start_year}
   end
 
   def future_graph
-    future_interface.graph
+    @future_graph ||= @graph_model.future.tap{|g| g.year = @scenario.end_year}
   end
 
   def present
-    present_graph
+    @present ||= QueryInterface.new(present_graph, :cache_prefix => "#{present_graph.graph_id}-present")
   end
 
   def future
-    future_graph
+    @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE
+      QueryInterface.new(future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
+    else
+      QueryInterface.new(future_graph)
+    end
   end
 
   # Are the graphs calculated? If true, prevent the programmers
@@ -237,14 +217,14 @@ private
   # @return [Float] The result of the present graph
   #
   def query_present(query)
-    present_interface.query(query)
+    present.query(query)
   end
 
   # @param query [String] The query
   # @return [Float] The result of the future graph
   #
   def query_future(query)
-    future_interface.query(query)
+    future.query(query)
   end
 
   # @param query [String] The query
