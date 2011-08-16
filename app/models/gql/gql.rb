@@ -218,7 +218,7 @@ private
   # @return [Float] The result of the present graph
   #
   def query_present(query)
-    present_interface.query_graph(query)
+    present_interface.query(query)
   end
 
   ##
@@ -226,7 +226,7 @@ private
   # @return [Float] The result of the future graph
   #
   def query_future(query)
-    future_interface.query_graph(query)
+    future_interface.query(query)
   end
 
   ##

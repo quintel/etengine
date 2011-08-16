@@ -6,7 +6,6 @@
 #
 module Gql::QueryInterface::GraphApi
 
-  ##
   # @param [String] Graph API Method.
   # @return [Float]
   #
@@ -14,7 +13,6 @@ module Gql::QueryInterface::GraphApi
     graph.query(key)
   end
 
-  ##
   # @param [String] Area attribute. E.g. areable_land
   # @return [Float]
   #
@@ -26,7 +24,6 @@ module Gql::QueryInterface::GraphApi
     graph.converters
   end
 
-  ##
   # @param [String] Carrier key
   # @return [Carrier]
   #
@@ -38,7 +35,6 @@ module Gql::QueryInterface::GraphApi
     end
   end
 
-  ##
   # @param [String,Array] Use keys
   # @return [Converter]
   #
@@ -50,7 +46,6 @@ module Gql::QueryInterface::GraphApi
     end
   end
 
-  ##
   # @param [String,Array] Sector keys
   # @return [Converter]
   #
@@ -62,7 +57,6 @@ module Gql::QueryInterface::GraphApi
     end
   end
 
-  ##
   # @param [String,Array] Group keys
   # @return [Converter]
   #
@@ -74,7 +68,6 @@ module Gql::QueryInterface::GraphApi
     end
   end
 
-  ##
   # @param [String] Converter keys
   # @return [Converter]
   #
