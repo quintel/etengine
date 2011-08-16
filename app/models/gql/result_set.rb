@@ -1,8 +1,8 @@
 module Gql
-##
 # ResultSet of a GQL query.
 # Currently inherits from Array for backwards compatibility.
 #
+# DEBT remove that Array dependency. only asks for trouble
 class ResultSet < Array
   include ActiveModel::Serialization
 
@@ -31,14 +31,15 @@ class ResultSet < Array
     future.first
   end
 
-  ##
   # Method to easily convert "old" results.
-  # @deprecated
   #
   def self.create(arr)
     result = ResultSet.new
     arr.each {|row| result << row}
     result
   end
+
+  INVALID = ResultSet.create([[2010, 'ERROR'], [2040, 'ERROR']])
+
 end
 end
