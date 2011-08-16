@@ -17,7 +17,7 @@ describe QueryInterface do
   describe "constants" do
     before { @query = "SUM(BILLIONS)"; @result = 10.0**9 }
     specify { @query_interface.check(@query).should be_true }
-    specify { @query_interface.query_graph(@query, nil).should be_near(@result) }
+    specify { @query_interface.query(@query).should be_near(@result) }
   end
 
   def self.query_should_be_close(query, result, optional_title = nil)
