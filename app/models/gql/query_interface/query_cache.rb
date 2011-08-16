@@ -1,12 +1,9 @@
 module Gql
 
-# GqueryCache caches #query and #subquery calls on the present graph using Rails.cache.
+# QueryCache caches #query and #subquery calls on the present graph using Rails.cache.
 #
-module QueryInterface::GqueryCache
+module QueryInterface::QueryCache
 
-  ##
-  # DANGEEROURS. What happens if Converter objects are returned???
-  #
   def subquery(gquery_key)
     gquery = get_gquery(gquery_key)
 
@@ -21,6 +18,8 @@ module QueryInterface::GqueryCache
       super(gquery)
     end
   end
+
+
 end
 
 end

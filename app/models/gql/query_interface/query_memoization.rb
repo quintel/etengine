@@ -2,9 +2,8 @@ module Gql
 
 # Memoize subquery calls.
 #
-module QueryInterface::MemoizedSubqueries
+module QueryInterface::QueryMemoization
 
-  ##
   # Subqueries are memoized, so that if a subquery is called twice, we save performance.
   #
   def subquery(gquery_key)
