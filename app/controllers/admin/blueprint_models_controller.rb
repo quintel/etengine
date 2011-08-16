@@ -16,8 +16,8 @@ module Admin
   #      # We have to assign the gql to Current. So that we are able
   #      #  to use Current.gql.query().
   #      Current.gql = @graph.gql
-  #      @present_graph = @graph.gql.present
-  #      @future_graph  = @graph.gql.future
+  #      @present_graph = @graph.gql.present_graph
+  #      @future_graph  = @graph.gql.future_graph
   #
   #      @blueprint  = @graph.blueprint
   #      @dataset = @graph.dataset

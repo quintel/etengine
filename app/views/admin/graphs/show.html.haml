@@ -9,7 +9,7 @@
 %h4
   Unexpected 
   %br
-  - if unhappy = Current.gql.present.converters.select{|c| c.query.demand_expected? == false}.length
+  - if unhappy = Current.gql.present_graph.graph.converters.select{|c| c.query.demand_expected? == false}.length
     == #{ "&#x2639;".html_safe * unhappy }
     = "everybody's happy" if unhappy == 0
   - else
@@ -24,7 +24,7 @@
       %th Preset Demand
       %th Co2 (primary)
 
-  - Current.gql.present.converters.sort_by(&:id).each do |converter|
+  - Current.gql.present_graph.graph.converters.sort_by(&:id).each do |converter|
     %tr{cycles}
       %td{:style => "text-align: right"}== ##{converter.id}
       %td

@@ -41,8 +41,8 @@ class Data::BaseController < ApplicationController
         # DEBT: this is probablye not needed anymore. instead assign Current.graph = @graph
         Current.gql    = @graph.gql
       end
-      @present_graph = @graph.gql.present
-      @future_graph  = @graph.gql.future
+      @present_graph = @graph.gql.present_graph
+      @future_graph  = @graph.gql.future_graph
       @blueprint     = @graph.blueprint
       @dataset       = @graph.dataset
     end
