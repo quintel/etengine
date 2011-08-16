@@ -1,12 +1,15 @@
 module Gql
 
-##
+# The QueryInterface takes a gquery object (or a raw gql query string) 
+# and runs it on  the selected graph.
 #
-# NEVER EVER! change @graph directly like @graph =. Always change it like self.graph= 
-# Because we have optimizations when changing graphs
+#    graph = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt").build
+#    graph.calculate
 #
-#
-#
+#    q = Gql::QueryInterface.new( graph )
+#    q.query( Gquery.first )
+#    q.query("V(lft; demand)")
+#    
 #
 class QueryInterface
 
@@ -16,21 +19,9 @@ class QueryInterface
   include Base
   include GraphApi
 
+  attr_accessor :graph
+
   def initialize(graph)
-    self.graph = graph
-  end
-
-  ##
-  # The currently active graph (present or future)
-  #
-  def graph
-    @graph
-  end
-
-  ##
-  # Sets the currently active graph (present or future)
-  #
-  def graph=(graph)
     @graph = graph
   end
 
