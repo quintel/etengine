@@ -160,15 +160,6 @@ class Current
     end
   end
 
-  def load_graph_from_marshal(filename)
-    raise "File '#{filename}' does not exist" unless File.exists?(filename)
-    self.gql = Marshal.load(File.read(filename))
-    scenario.area = self.gql.present.area
-
-    self.gql.prepare_graphs
-  end
-
-
   ##############################
   # Resetting
   ##############################

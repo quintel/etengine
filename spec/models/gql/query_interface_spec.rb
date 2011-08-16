@@ -5,13 +5,7 @@ module Gql
 describe QueryInterface do
   before do
     @query_interface = QueryInterface.new(nil)
-    @query_interface.stub!(:scope_memoized_key).and_return('scope_memoized_key')
-    Current.stub_chain(:gql, :query_interface => @query_interface)
-  end
-
-  describe "Valid Queries" do
-#    specify { Gquery.check("SUM(VALUE(ca,cb,cd;demand))").should be_true}
-#    specify { Gquery.check("SUM(VALUE(ca,cb,cd;demand_co2))").should be_true}
+    Current.instance.stub_chain(:gql, :calculated?).and_return(true)
   end
 
   describe "constants" do
@@ -25,7 +19,7 @@ describe QueryInterface do
 
     describe optional_title do
       specify { @query_interface.check(query).should be_true }
-      specify { @query_interface.query_graph(query, nil).should be_near(result) }
+      specify { @query_interface.query(query).should be_near(result) }
     end
   end
 
@@ -34,7 +28,7 @@ describe QueryInterface do
 
     describe optional_title do
       specify { @query_interface.check(query).should be_true }
-      specify { @query_interface.query_graph(query, nil).should eql(result) }
+      specify { @query_interface.query(query).should eql(result) }
     end
   end
 
@@ -77,14 +71,14 @@ describe QueryInterface do
   describe "INVALID_TO_ZERO" do
     describe "basic values" do
       before { @query = "INVALID_TO_ZERO(1,DIVIDE(0,0))"; }
-      subject { @query_interface.query_graph(@query, nil) }
+      subject { @query_interface.query(@query) }
       its(:first) { should be_near(1.0) }
       its(:last)  { should be_near(0.0) }
     end
 
     describe "between VALUE" do
       before { @query = "INVALID_TO_ZERO(V(1,DIVIDE(0,0)))"; }
-      subject { @query_interface.query_graph(@query, nil) }
+      subject { @query_interface.query(@query) }
       its(:first) { should be_near(1.0) }
       its(:last)  { should be_near(0.0) }
     end
@@ -114,30 +108,30 @@ describe QueryInterface do
     describe "GROUP" do
       before { @query = "GROUP(foo)"; @result = [@c1,@c2] }
       specify { @query_interface.check(@query).should be_true }
-      specify { @query_interface.query_graph(@query, nil).should eql(@result) }
+      specify { @query_interface.query(@query).should eql(@result) }
     end
 
     describe "INTERSECTION" do
       before { @query = "INTERSECTION(GROUP(foo),GROUP(bar))"; @result = [@c2] }
       specify { @query_interface.check(@query).should be_true }
-      specify { @query_interface.query_graph(@query, nil).should eql(@result) }
+      specify { @query_interface.query(@query).should eql(@result) }
     end
 
     describe "VALUE" do
       describe "multiple converters" do
         before { @query = "SUM(VALUE(ca,cb,cd;demand))"; @result = 6.0 }
         specify { @query_interface.check(@query).should be_true }
-        specify { @query_interface.query_graph(@query, nil).should be_near(@result) }
+        specify { @query_interface.query(@query).should be_near(@result) }
       end
       describe "ignores duplicates" do
         before { @query = "SUM(VALUE(ca,ca,cb,cb,cd;demand))"; @result = 6.0 }
         specify { @query_interface.check(@query).should be_true }
-        specify { @query_interface.query_graph(@query, nil).should be_near(@result) }
+        specify { @query_interface.query(@query).should be_near(@result) }
       end
       describe "with group" do
         before { @query = "SUM(VALUE(GROUP(foo);demand))"; @result = 3.0 }
         specify { @query_interface.check(@query).should be_true }
-        specify { @query_interface.query_graph(@query, nil).should be_near(@result) }
+        specify { @query_interface.query(@query).should be_near(@result) }
       end
     end
 
@@ -151,7 +145,7 @@ describe QueryInterface do
           before { @query = "IF(5,50,100)" }
           specify do
             lambda {
-              @query_interface.query_graph(@query, nil)
+              @query_interface.query(@query)
             }.should raise_exception
           end
         end
@@ -159,7 +153,7 @@ describe QueryInterface do
           before { @query = "IF(LESS(1,5),50)" }
           specify do
             lambda {
-              @query_interface.query_graph(@query, nil)
+              @query_interface.query(@query)
             }.should raise_exception
           end
         end

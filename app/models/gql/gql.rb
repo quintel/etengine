@@ -77,6 +77,8 @@ class Gql
   include UpdatingConverter
   include Selecting
 
+  ENABLE_QUERY_CACHE_FOR_FUTURE = true
+
   # @return [Qernel::Graph]
   attr_reader :present_interface
   # @return [Qernel::Graph]
@@ -93,14 +95,20 @@ class Gql
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
     return if graph_model == :testing
 
+    scenario = Current.scenario
+
     @present = graph_model.present
     @future = graph_model.future
 
-    @present.year = Current.scenario.start_year
-    @future.year = Current.scenario.end_year
+    @present.year = scenario.start_year
+    @future.year = scenario.end_year
 
-    @present_interface = ::Gql::QueryInterface.new(@present)
-    @future_interface = ::Gql::QueryInterface.new(@future)
+    @present_interface = QueryInterface.new(@present, :cache_prefix => "#{@present.dataset.id}-present")
+    if ENABLE_QUERY_CACHE_FOR_FUTURE
+      @future_interface =  QueryInterface.new(@future, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
+    else
+      @future_interface =  QueryInterface.new(@future)
+    end
   end
 
   def present_graph
@@ -119,7 +127,6 @@ class Gql
     future_graph
   end
 
-  ##
   # Are the graphs calculated? If true, prevent the programmers
   # to add further update statements ({Scenario#add_update_statements}). 
   # Because they won't affect the system anymore.
@@ -130,7 +137,6 @@ class Gql
     @calculated == true
   end
 
-  ##
   # @return [Policy]
   #
   def policy
@@ -143,12 +149,13 @@ class Gql
     end
   end
 
-  ##
   # Updates and calculates the graphs
   #
   # @return [Gql] Returns self, so that we can gql = Gql.new(graph).prepare_graphs
   #
   def prepare_graphs
+    Rails.logger.warn("*** GQL#prepare_graphs")
+
     update_statements = Current.scenario.update_statements
 
     if update_statements
@@ -174,7 +181,6 @@ class Gql
     self
   end
 
-  ##
   # Query the GQL, takes care of gql modifier strings.
   #
   # For performance reason it is suggested to pass a Gquery for 'query'
@@ -213,7 +219,6 @@ private
     ]
   end
 
-  ##
   # @param query [String] The query
   # @return [Float] The result of the present graph
   #
@@ -221,7 +226,6 @@ private
     present_interface.query(query)
   end
 
-  ##
   # @param query [String] The query
   # @return [Float] The result of the future graph
   #
@@ -229,7 +233,6 @@ private
     future_interface.query(query)
   end
 
-  ##
   # @param query [String] The query
   # @return [Float] The result of a historic serie, this values are db values not qernel.
   #
@@ -242,11 +245,9 @@ private
     end
   end
 
-  ##
   # Not called directly. Use #query instead, e.g.:
   #
   #   gql.query("stored.foo_bar")
-  #
   #
   # @param query [String] Calls a stored procedure
   # @return [GqueryResult] The result of the stored procedure

@@ -12,7 +12,7 @@ module Gql::QueryInterface::Base
     if query.is_a?(::Gquery)
       subquery(query.key)
     elsif parsed = clean_and_parse(query)
-      parsed.result(scope)
+      result_of_parsed_query(parsed)
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query)}.")
     end
@@ -46,13 +46,19 @@ module Gql::QueryInterface::Base
   #
   def subquery(gquery_key)
     if gquery = get_gquery(gquery_key)
-      gquery.parsed_query.result(scope)
+      result_of_parsed_query(gquery.parsed_query)
     else
       nil
     end
   end
 
 protected
+
+  def result_of_parsed_query(parsed_query)
+    Current.gql.prepare_graphs unless Current.gql.calculated?
+    
+    parsed_query.result(scope)
+  end
 
   def get_gquery(gquery_or_key)
     if gquery_or_key.is_a?(::Gquery)

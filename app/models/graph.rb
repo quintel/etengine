@@ -51,14 +51,7 @@ class Graph < ActiveRecord::Base
   end
 
   def gql
-    @gql ||= create_gql
-  end
-
-  # to support Gql, Graph needs to provide the methods calculated_present_qernel_qernel and future
-  def create_gql
-    gql = ::Gql::Gql.new(self)
-    gql.prepare_graphs
-    gql
+    @gql ||= ::Gql::Gql.new(self)
   end
 
   def present
