@@ -102,7 +102,7 @@ class Gql
   # @return [QueryInterface]
   #
   def present
-    @present ||= QueryInterface.new(present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.updated_at}")
+    @present ||= QueryInterface.new(present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.present_updated_at}")
   end
 
   # @return [QueryInterface]

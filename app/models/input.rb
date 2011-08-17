@@ -90,6 +90,10 @@ class Input < ActiveRecord::Base
       group_by(&:share_group)
   end
 
+  def updates_present?
+    updateable_period != 'future'
+  end
+
   ##
   # update hash for this input with the given value.
   # {'converters' => {'converter_keys' => {'demand_growth' => 2.4}}}

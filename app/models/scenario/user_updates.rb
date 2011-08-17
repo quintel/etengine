@@ -86,6 +86,7 @@ class Scenario < ActiveRecord::Base
   def store_user_value(input, value)
     key = input.id
     self.user_values.merge! key => value
+    touch(:present_updated_at) if input.updates_present?
     value
   end
 
