@@ -5,8 +5,9 @@ class ApiRequest
   API_ATTRIBUTES = [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]
 
   
-  attr_accessor :settings, :id, :input, :reset, :use_fce
+  attr_accessor :settings, :input, :reset, :use_fce
 
+  # gquery_keys is populated by {#r=} and {#result=}
   attr_reader :gquery_keys
 
   def initialize(attributes = {})
@@ -20,10 +21,10 @@ class ApiRequest
     Current.scenario = scenario
   end
 
-  def self.build(params)
-    
-  end
-
+  # Shortcut to {#response}
+  #
+  # @param [Hash] params request parameters
+  #
   def self.response(params)
     api_request = new(params)
     api_request.apply_inputs
@@ -31,7 +32,7 @@ class ApiRequest
   end
 
   def gql
-    @gql = Current.gql
+    @gql ||= Current.gql
   end
 
   def response
@@ -59,11 +60,15 @@ class ApiRequest
     end
   end
 
+  # :r is a String of gquery_keys separated by {GQUERY_KEY_SEPARATOR}
+  #
   def r=(keys)
-    @gquery_keys += keys.split(";").reject(&:blank?)
+    @gquery_keys += keys.split(GQUERY_KEY_SEPARATOR).reject(&:blank?)
   end
 
-  def results=(keys)
+  # :result is an array of gquery_keys
+  #
+  def result=(keys)
     @gquery_keys += keys.map(&:to_s).reject(&:blank?)
   end
 
