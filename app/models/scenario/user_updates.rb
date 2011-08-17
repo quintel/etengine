@@ -12,8 +12,10 @@ class Scenario < ActiveRecord::Base
     @update_statements ||= {}
   end
 
+  def update_statements_present
+    @update_statements_present ||= {}
+  end
 
-  ##
   # TODO fix
   # @untested 2011-01-24 seb
   #
@@ -32,7 +34,6 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  ##
   # This method sends the key values to the gql using the input element attr. 
   # Also it fills an array with input elements which must be updated after the calculation
   #
@@ -43,10 +44,9 @@ class Scenario < ActiveRecord::Base
   # 
   def update_input(input, value)
     store_user_value(input, value)
-    add_update_statements(input.update_statement(value))
+    add_update_statements(input.update_statement(value), input.updateable_period)
   end
 
-  ##
   # add_update_statements does not persist the slider value.
   # ie. if you update a scenario with add_update_statements the changes
   # are made (and persist), but it does not affect a slider in the UI.
@@ -58,15 +58,23 @@ class Scenario < ActiveRecord::Base
   #
   # @tested 2010-12-06 seb
   #
-  def add_update_statements(update_statement_hash)
+  def add_update_statements(update_statement_hash, updateable_period = :future)
     if Current.gql_calculated?
       raise "Update statements are ignored after the GQL has finished calculating. \nStatement: \n#{update_statement_hash.inspect}" 
     end
     # This has to be self.update_statements otherwise it doesn't work
-    self.update_statements = self.update_statements.deep_merge(update_statement_hash)
+    # use deep_merge!
+    case updateable_period.to_sym
+    when :future  then self.update_statements.deep_merge!(update_statement_hash)
+    when :present then self.update_statements_present.deep_merge!(update_statement_hash)
+    when :both
+      self.update_statements.deep_merge!(update_statement_hash)
+      self.update_statements_present.deep_merge!(update_statement_hash)
+    else
+      Rails.logger.warn("***** No updateable_period")
+    end
   end
 
-  ##
   # Stores the user value in the session.
   #
   # @param [Input] input
@@ -77,18 +85,16 @@ class Scenario < ActiveRecord::Base
   #
   def store_user_value(input, value)
     key = input.id
-    self.user_values.merge! key => value 
+    self.user_values.merge! key => value
     value
   end
 
-  ##
   # @tested 2010-11-30 seb
   #
   def user_value_for(input)
     user_values[input.id]
   end
 
-  ##
   # TODO fix this, it's weird
   #
   # DEBT: This has had it's fair share of refactorings behind. 
@@ -108,7 +114,6 @@ class Scenario < ActiveRecord::Base
     @user_values_hash
   end
 
-  ##
   # Sets the user_values.
   #    
   # @untested 2010-12-22 jape
@@ -125,7 +130,6 @@ class Scenario < ActiveRecord::Base
   end
 
 
-  ##
   # Deletes a uesr_value completely
   #
   # @untested 2010-12-22 seb
@@ -137,7 +141,6 @@ class Scenario < ActiveRecord::Base
     self.user_values = values
   end
 
-  ##
   # Builds update_statements from user_values that are readable by the GQl. 
   #
   # @param [Boolean] load_as_municipality
@@ -150,7 +153,6 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  ##
   # Called from build_update_statements
   #
   # @param [Boolean] load_as_municipality

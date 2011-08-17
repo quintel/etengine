@@ -42,6 +42,8 @@ class Input < ActiveRecord::Base
   has_paper_trail
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
 
+  UPDATEABLE_PERIODS = %w[present future both].freeze
+
   has_many :expert_predictions
 
   scope :with_share_group, where('NOT(share_group IS NULL OR share_group = "")')
@@ -60,6 +62,9 @@ class Input < ActiveRecord::Base
       {:q => "%#{search}%"}
     ])
   }
+
+  validates :updateable_period, :presence => true,
+                                :inclusion => UPDATEABLE_PERIODS
 
   def self.get_cached(key)
     all_cached[key.to_s]

@@ -102,7 +102,7 @@ class Gql
   # @return [QueryInterface]
   #
   def present
-    @present ||= QueryInterface.new(present_graph, :cache_prefix => "#{present_graph.graph_id}-present")
+    @present ||= QueryInterface.new(present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.updated_at}")
   end
 
   # @return [QueryInterface]
@@ -132,7 +132,7 @@ class Gql
   end
 
   def benchmark(title)
-    ::Graph.benchmark("Benchmark::Gql:: #{title}") do
+    ::Graph.benchmark("** Gql::Benchmark #{title}") do
       yield
     end
   end
@@ -170,21 +170,44 @@ class Gql
   def prepare
     # 2011-08-15: the present has to be prepared first. otherwise 
     # updating the future won't work (we need the present values)
-    present_graph.dataset = graph_model.calculated_present_data
-    future_graph.dataset = graph_model.dataset.to_qernel
 
-    UpdateInterface::Graph.new(present_graph).after_calculation_updates
-    UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
+    prepare_present
+    prepare_future
+
     UpdateInterface::Policies.new(policy).update_with(scenario.update_statements)
 
+    benchmark("calculate #{present_graph.year}") do
+      present_graph.calculate
+    end
     benchmark("calculate #{future_graph.year}") do
       future_graph.calculate
     end
+
+    UpdateInterface::Graph.new(present_graph).after_calculation_updates
+    UpdateInterface::Graph.new(future_graph).after_calculation_updates
 
     # At this point the gql is calculated. Changes through update statements
     # should no longer be allowed, as they won't have an impact on the 
     # calculation (even though updating prices would work).
     @calculated = true
+  end
+
+  def prepare_present
+    benchmark("prepare_present") do
+      if scenario.update_statements_present.empty?
+        present_graph.dataset = graph_model.calculated_present_data
+      else
+        present_graph.dataset = graph_model.dataset.to_qernel
+        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
+      end
+    end
+  end
+
+  def prepare_future
+    benchmark("prepare_future") do
+      future_graph.dataset = graph_model.dataset.to_qernel
+      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
+    end
   end
 
   # @param [Array<String>]
