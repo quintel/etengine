@@ -85,6 +85,7 @@ class Graph
 
   def present?
     raise "Qernel::Graph#present? #year not defined" if year.nil?
+    # DEBT remove call to Current.scenario. add variable to graph dataset instead
     year == Current.scenario.start_year
   end
 
