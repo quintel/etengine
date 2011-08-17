@@ -36,7 +36,7 @@
             = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank            
 
         - fields.each do |field|
-          - v = @present_graph.converter(converter.id).send(field)
+          - v = Current.gql.present_graph.converter(converter.id).send(field)
           %td.tar{:title => title_tag_number(v)}=auto_number(v)
-          - v = @future_graph.converter(converter.id).send(field)
+          - v = Current.gql.future_graph.converter(converter.id).send(field)
           %td.tar{:title => title_tag_number(v)}= auto_number(v)

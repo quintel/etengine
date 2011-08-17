@@ -31,6 +31,8 @@ class ApiRequest
     api_request.response
   end
 
+  # Shortcut for Gql.
+  #
   def gql
     @gql ||= Current.gql
   end
