@@ -52,5 +52,12 @@ class Qernel::ConverterApi
     :peak_load_units_delta_for_mv_hv,
     :typical_electricity_production_capacity
   ]
+  
+  def peak_load_capacity_per_unit
+    dataset_fetch_handle_nil(:peak_load_units_capacity_per_unit) do
+      ( (electricity_input_conversion || 0.0) - (electricity_output_conversion|| 0.0) ) * typical_input_capacity
+    end
+  end
+  attributes_required_for :peak_load_capacity_per_unit, [:typical_input_capacity, :electricity_input_conversion, :electricity_output_conversion]
 
 end
