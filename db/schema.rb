@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110817112020) do
+ActiveRecord::Schema.define(:version => 20110817122008) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -555,6 +555,7 @@ ActiveRecord::Schema.define(:version => 20110817112020) do
     t.string   "type"
     t.string   "api_session_key"
     t.boolean  "use_fce"
+    t.datetime "present_updated_at"
   end
 
   create_table "sidebar_items", :force => true do |t|
