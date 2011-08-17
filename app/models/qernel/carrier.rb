@@ -66,6 +66,7 @@ class Carrier
   #
   def co2_per_mj
     dataset_fetch(:co2_per_mj) do
+      # DEBT remove call to Current.scenario. add use_fce variable to graph dataset
       if Current.scenario.use_fce
         CO2_FCE_COMPONENTS.map do |key|
           self.send(key)
