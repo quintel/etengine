@@ -32,7 +32,6 @@ module UpdateInterface
         update_area_data(update_statements['area'])
         update_converters(update_statements['converters'])
       end
-      after_calculation_updates
     end
 
     ##
