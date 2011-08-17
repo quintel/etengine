@@ -30,7 +30,9 @@ class Api::ApiScenariosController < ApplicationController
   # GET result[]=gquery_key&result[]=gquery_key2
   # 335=2.4&421=2.9
   def show
-    @api_response = ApiRequest.response(params)
+    @api_request = ApiRequest.response(params)
+    @api_scenario = @api_request.scenario
+    @api_response = @api_request.response
 
     respond_to do |format|
       format.html { render }

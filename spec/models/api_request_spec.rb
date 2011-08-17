@@ -16,15 +16,15 @@ describe ApiRequest do
       ApiRequest.new(:r => keys.join(ApiRequest::GQUERY_KEY_SEPARATOR)).gquery_keys.should == keys
     end
 
-    it "should assign :results" do
+    it "should assign :result" do
       keys = %w[foo bar]
-      ApiRequest.new(:results => keys).gquery_keys.should == keys
+      ApiRequest.new(:result => keys).gquery_keys.should == keys
     end
 
-    it "should assign :r and :results" do
+    it "should assign :r and :result" do
       keys = %w[foo bar]
       ApiRequest.new(
-        :results => keys,
+        :result => keys,
         :r => %w[baz moo].join(ApiRequest::GQUERY_KEY_SEPARATOR)
       ).gquery_keys.sort.should == %w[foo bar baz moo].sort
     end

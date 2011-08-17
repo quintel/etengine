@@ -1,5 +1,10 @@
 # Encapsulates and parses api requests.
 #
+#    api_request = ApiRequest.new(params)
+#    api_request.apply_inputs
+#
+#    api_request.response
+#
 class ApiRequest
   GQUERY_KEY_SEPARATOR = ";".freeze
   API_ATTRIBUTES = [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]
@@ -17,8 +22,6 @@ class ApiRequest
     attributes.each do |key, value|
       send("#{key}=", value) if respond_to?("#{key}=")
     end
-
-    Current.scenario = scenario
   end
 
   # Shortcut to {#response}
@@ -28,7 +31,7 @@ class ApiRequest
   def self.response(params)
     api_request = new(params)
     api_request.apply_inputs
-    api_request.response
+    api_request
   end
 
   # Shortcut for Gql.
@@ -38,7 +41,7 @@ class ApiRequest
   end
 
   def response
-    results = gquery_keys.nil? ? nil : gql.query_multiple(gquery_keys)
+    results = gquery_keys.empty? ? nil : gql.query_multiple(gquery_keys)
 
     {
       :result   => results,
@@ -55,11 +58,11 @@ class ApiRequest
   end
 
   def scenario
-    @scenario ||= if test_scenario?
+    @scenario ||= (Current.scenario = if test_scenario?
       ApiScenario.new(new_attributes)
     else
       ApiScenario.find_by_api_session_key(@api_scenario_id)
-    end
+    end)
   end
 
   # :r is a String of gquery_keys separated by {GQUERY_KEY_SEPARATOR}

@@ -4,7 +4,7 @@ describe Api::ApiScenariosController do
 
   before(:each) do
     stub_etm_layout_methods!
-    Current.stub_chain(:gql, :query).and_return Gql::ResultSet.create([[2010,1],[2010,2]])
+    Current.instance.stub_chain(:gql, :query_multiple).and_return({'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]) })
   end
 
   describe "index" do
@@ -28,7 +28,7 @@ describe Api::ApiScenariosController do
         get :new, {:settings => {:country => 'uk', :api_session_key => api_session_key.to_s}}
       }.to change(ApiScenario, :count).by(1)
 
-      ApiScenario.find_by_api_session_key(api_session_key).should_not be_nil
+      ApiScenario.find_by_api_session_key(ApiScenario.last.id).should_not be_nil
       response.should be_redirect
     end
   end
@@ -38,15 +38,21 @@ describe Api::ApiScenariosController do
       @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo'))
     end
 
+    before(:each) do
+      Current.instance.stub_chain(:gql, :query_multiple).and_return({
+        'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]),
+        'bar' => Gql::ResultSet.create([[2010,1],[2010,2]])
+      })
+    end
+
     it "should assign @api_scenario" do
       get :show, :id => @api_scenario.api_session_key.to_s
       assigns(:api_scenario).api_session_key.to_s.should == @api_scenario.api_session_key.to_s
     end
 
     it "should get results" do
-      Current.instance.stub_chain(:gql, :query).and_return(0.0)
-      get :show, :id => @api_scenario.api_session_key, :result => ['gquery_key', 'gquery_key2']
-      assigns(:results).values.should have(2).items
+      get :show, :id => @api_scenario.api_session_key, :result => ['foo', 'bar']
+      assigns(:api_response)[:result].values.should have(2).items
     end
 
     context "use_fce" do
