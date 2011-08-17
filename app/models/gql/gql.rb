@@ -144,9 +144,10 @@ class Gql
   # takes rather long time.
   #
   # @param query [String, Gquery] the single query.
+  # @param rescue_resultset [ResultSet] A ResultSet that is return in case of errors.
   # @return [ResultSet] Result query, depending on its gql_modifier
   #
-  def query(gquery_or_string)
+  def query(gquery_or_string, rescue_resultset = nil)
     if gquery_or_string.is_a?(::Gquery)
       modifier = gquery_or_string.gql_modifier
       query = gquery_or_string
@@ -159,6 +160,9 @@ class Gql
     elsif Gquery::GQL_MODIFIERS.include?(modifier.strip)
       send("query_#{modifier}", query)
     end
+  rescue => e
+    raise e unless rescue_resultset
+    rescue_resultset
   end
 
   # Updates and calculates the graphs
@@ -181,6 +185,23 @@ class Gql
     # should no longer be allowed, as they won't have an impact on the 
     # calculation (even though updating prices would work).
     @calculated = true
+  end
+
+  # @param [Array<String>]
+  # @return [Hash<String => ResultSet>]
+  #
+  def query_multiple(gquery_keys)
+    gquery_keys = gquery_keys - ["null", "undefined"]
+
+    gquery_keys.inject({}) do |hsh, key|
+      result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
+        query(gquery, ResultSet::INVALID)
+      else
+        key.include?('(') ? query(key, ResultSet::INVALID) : ResultSet::INVALID
+      end
+      hsh.merge! key => result
+      hsh
+    end
   end
 
 protected

@@ -43,7 +43,7 @@ class Gquery < ActiveRecord::Base
     "`key` LIKE :q OR query LIKE :q", { :q => "%#{q}%" }
   ])}
 
-  ##
+
   # Returns the cleaned query for any given key.
   #
   # @param key [String] Gquery key (see Gquery#key)
@@ -55,6 +55,7 @@ class Gquery < ActiveRecord::Base
     query
   end
 
+  
 
   ##
   # The GqlParser currently does not work with whitespace.
@@ -87,11 +88,11 @@ class Gquery < ActiveRecord::Base
   end
 
   def converters?
-    unit != 'converters'
+    unit == 'converters'
   end
 
   def cacheable?
-    !not_cacheable && converters?
+    !not_cacheable && !converters?
   end
 
   def gql_modifier
