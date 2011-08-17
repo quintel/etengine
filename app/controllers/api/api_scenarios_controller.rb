@@ -33,9 +33,8 @@ class Api::ApiScenariosController < ApplicationController
     # SB: - this updates the scenario with the submitted slider values params[:input]
     #     - the API is a GET show request, so that we can use it with JSON-P
     update_scenario(@api_scenario) 
-    @results = results
     @json = {
-      'result'   => @results,
+      'result'   => results,
       'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id])
       
       #, 'errors'   => @api_scenario.api_errors(test_scenario?)
@@ -73,18 +72,15 @@ class Api::ApiScenariosController < ApplicationController
     end
   end
 
-  ##
-  # Is alias to show.
-  #
-  def find_model
-    if test_scenario?
-      @api_scenario = ApiScenario.new(new_attributes)
-    else
-      @api_scenario = ApiScenario.find_by_api_session_key(params[:id])
-    end
-  end
+  protected
 
-  private
+    def find_model
+      @api_scenario = if test_scenario?
+        ApiScenario.new(new_attributes)
+      else
+        ApiScenario.find_by_api_session_key(params[:id])
+      end
+    end
 
     def test_scenario?
       params[:id] == 'test'
@@ -99,6 +95,14 @@ class Api::ApiScenariosController < ApplicationController
     end
 
     def results
+      if keys = gquery_keys
+        Current.gql.query_multiple(gquery_keys)
+      else
+        nil
+      end
+    end
+
+    def gquery_keys
       if params[:result] || params[:r]
         # split by ";" because "," is url encoded into 3 characters.
         results = [params[:result], params[:r].andand.split(';')]
@@ -106,28 +110,8 @@ class Api::ApiScenariosController < ApplicationController
         results.compact!
         results.map!(&:to_s) # key could be passsed as integer with json(P)
         results.reject!(&:blank?)
-
-        invalid_result = Gql::ResultSet::INVALID
-        @gqueries = results.inject({}) do |hsh, key|
-          if key == "null" or key == "undefined"
-            hsh
-          elsif gquery = (Gquery.get(key) rescue nil)
-            if gquery.converters?
-              hsh.merge(key => (Current.gql.query(gquery) rescue invalid_result))
-            else
-              hsh
-            end
-          else
-            if key.include?('(')
-              hsh.merge(key => (Current.gql.query(key) rescue invalid_result))
-            else
-              hsh.merge(key => invalid_result)
-            end
-          end
-        end
-      else
-        @gqueries = nil
-      end
+        results
+      end      
     end
 
     def update_scenario(scenario)
