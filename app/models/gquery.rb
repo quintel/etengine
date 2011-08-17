@@ -86,8 +86,12 @@ class Gquery < ActiveRecord::Base
     end
   end
 
+  def converters?
+    unit != 'converters'
+  end
+
   def cacheable?
-    !not_cacheable && unit != 'converters'
+    !not_cacheable && converters?
   end
 
   def gql_modifier
