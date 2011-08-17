@@ -36,24 +36,13 @@ class ApiRequest
     api_request
   end
 
-  # Shortcut for Gql.
-  #
-  def gql
-    unless @gql
-      Current.scenario = scenario
-      @gql = Current.gql
+  # DEBT merge with ApiScenario.new_attributes
+  def self.new_attributes(settings)
+    opts = settings.present? ? settings : {}
+    opts.each do |key,value|
+      opts[key] = nil if value == 'null' or key == 'undefined'
     end
-    @gql
-  end
-
-  def response
-    results = gquery_keys.empty? ? nil : gql.query_multiple(gquery_keys)
-
-    {
-      :result   => results,
-      :settings => scenario.serializable_hash(:only => API_ATTRIBUTES),
-      :errors   => scenario.api_errors
-    }.with_indifferent_access
+    ApiScenario.new_attributes(opts)
   end
 
   def apply_inputs
@@ -71,6 +60,38 @@ class ApiRequest
     end
   end
 
+  # Shortcut for Gql.
+  #
+  def gql
+    unless @gql
+      Current.scenario = scenario
+      @gql = Current.gql
+    end
+    @gql
+  end
+
+  def response
+    {
+      :result   => results,
+      :settings => scenario_settings,
+      :errors   => api_errors
+    }.with_indifferent_access
+  end
+
+protected
+
+  def scenario_settings
+    scenario.serializable_hash(:only => API_ATTRIBUTES)
+  end
+
+  def api_errors
+    scenario.api_errors
+  end
+
+  def results
+    gquery_keys.empty? ? nil : gql.query_multiple(gquery_keys)
+  end
+
   # :r is a String of gquery_keys separated by {GQUERY_KEY_SEPARATOR}
   #
   def r=(keys)
@@ -85,15 +106,6 @@ class ApiRequest
 
   def test_scenario?
     @api_scenario_id == 'test'
-  end
-
-  # DEBT merge with ApiScenario.new_attributes
-  def self.new_attributes(settings)
-    opts = settings.present? ? settings : {}
-    opts.each do |key,value|
-      opts[key] = nil if value == 'null' or key == 'undefined'
-    end
-    ApiScenario.new_attributes(opts)
   end
 
   def new_attributes
