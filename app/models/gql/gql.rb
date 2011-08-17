@@ -78,12 +78,6 @@ class Gql
 
   attr_reader :scenario, :graph_model
 
-  ##
-  # assigns, updates and calculates present and future graph upon initializing
-  #
-  # @param present [Qernel::Graph] Graph for present
-  # @param future [Qernel::Graph] Graph for future scenario. Gets updated with Current.scenario.update_statements
-  #
   def initialize(graph_model)
     # The if is a temporary solution.
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
@@ -170,13 +164,18 @@ class Gql
   # Updates and calculates the graphs
   #
   def prepare
-    Rails.logger.warn("*** GQL#prepare")
-
     # 2011-08-15: the present has to be prepared first. otherwise 
     # updating the future won't work (we need the present values)
-    prepare_present
-    prepare_future
-    prepare_policies
+    present_graph.dataset = graph_model.calculated_present_data
+    future_graph.dataset = graph_model.dataset.to_qernel
+
+    UpdateInterface::Graph.new(present_graph).after_calculation_updates
+    UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
+    UpdateInterface::Policies.new(policy).update_with(scenario.update_statements)
+
+    benchmark("calculate #{future_graph.year}") do
+      future_graph.calculate
+    end
 
     # At this point the gql is calculated. Changes through update statements
     # should no longer be allowed, as they won't have an impact on the 
@@ -185,28 +184,6 @@ class Gql
   end
 
 protected
-
-  def prepare_present
-    present_graph.dataset = graph_model.calculated_present_data
-    UpdateInterface::Graph.new(present_graph).after_calculation_updates
-  end
-
-  def prepare_policies
-    UpdateInterface::Policies.new(policy).update_with(scenario.update_statements)
-  end
-
-  def prepare_future
-    future_graph.dataset = graph_model.dataset.to_qernel
-    UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
-    calculate_graph(future_graph)
-  end
-
-  def calculate_graph(graph)
-    benchmark("calculate #{graph.year}") do
-      graph.calculate
-    end
-  end
-
 
   # Standard query without modifiers. Queries present and future graph.
   #
