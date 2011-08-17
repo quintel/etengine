@@ -34,11 +34,11 @@ class Api::ApiScenariosController < ApplicationController
     #     - the API is a GET show request, so that we can use it with JSON-P
     update_scenario(@api_scenario) 
     @results = results
+    @errors = @api_scenario.api_errors(test_scenario?)
     @json = {
       'result'   => @results,
-      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id])
-      
-      #, 'errors'   => @api_scenario.api_errors(test_scenario?)
+      'settings' => @api_scenario.serializable_hash(:only => [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]),
+      'errors'   => @errors
     }
 
     respond_to do |format|
@@ -113,7 +113,7 @@ class Api::ApiScenariosController < ApplicationController
           elsif gquery = (Gquery.get(key) rescue nil)
             if gquery.unit != 'converters'
               #Current.gql.benchmark("query: #{gquery.key}") do
-                hsh.merge(key => Current.gql.query(gquery))
+                hsh.merge(key => (Current.gql.query(gquery) rescue Gql::GqueryResult.create([[2010,'ERROR'],[2040,'ERROR']])))
               #end
             else
               hsh
