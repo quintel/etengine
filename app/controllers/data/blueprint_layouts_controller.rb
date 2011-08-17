@@ -42,8 +42,8 @@ class Data::BlueprintLayoutsController < Data::BaseController
 private
   def result
     @result ||= {
-      'future' => graph_to_json(@future_graph),
-      'present' => graph_to_json(@present_graph)
+      'future' => graph_to_json(Current.gql.future_graph),
+      'present' => graph_to_json(Current.gql.present_graph)
     }
   end
 
