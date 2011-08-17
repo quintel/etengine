@@ -1,3 +1,5 @@
+# DEBT Only access gql through the #gql method!
+#
 # Encapsulates and parses api requests.
 #
 #    api_request = ApiRequest.new(params)
@@ -37,7 +39,11 @@ class ApiRequest
   # Shortcut for Gql.
   #
   def gql
-    @gql ||= Current.gql
+    unless @gql
+      Current.scenario = scenario
+      @gql = Current.gql
+    end
+    @gql
   end
 
   def response
@@ -58,11 +64,11 @@ class ApiRequest
   end
 
   def scenario
-    @scenario ||= (Current.scenario = if test_scenario?
+    @scenario ||= if test_scenario?
       ApiScenario.new(new_attributes)
     else
       ApiScenario.find_by_api_session_key(@api_scenario_id)
-    end)
+    end
   end
 
   # :r is a String of gquery_keys separated by {GQUERY_KEY_SEPARATOR}
