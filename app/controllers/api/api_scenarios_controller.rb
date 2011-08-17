@@ -112,7 +112,7 @@ class Api::ApiScenariosController < ApplicationController
           if key == "null" or key == "undefined"
             hsh
           elsif gquery = (Gquery.get(key) rescue nil)
-            if gquery.unit != 'converters'
+            if gquery.converters?
               hsh.merge(key => (Current.gql.query(gquery) rescue invalid_result))
             else
               hsh
