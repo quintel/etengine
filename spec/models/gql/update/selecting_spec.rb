@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module Gql
+module Gql::UpdateInterface
 
-describe Gql do
+describe Selecting do
 
   describe "#select" do
     before do

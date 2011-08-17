@@ -29,6 +29,8 @@ class Gquery < ActiveRecord::Base
   validates_uniqueness_of :key
   validates_presence_of :query
   # DEBT: Add a validates_format_of :query (e.g. should have at least one a-z)
+  validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
+
   validate :validate_query_parseable
   # belongs_to :gquery_group
   has_and_belongs_to_many :gquery_groups
@@ -112,7 +114,7 @@ private
   end
 
   def validate_query_parseable
-    if Gql::QueryInterface::Preparser.new(self[:query]).valid?
+    if !Gql::QueryInterface::Preparser.new(self[:query]).valid?
       errors.add(:query, "cannot be parsed")
       false
     else
