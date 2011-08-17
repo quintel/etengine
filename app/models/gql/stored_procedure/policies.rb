@@ -125,7 +125,6 @@ private
   end
 
   def policy_result_for(policy_goal, multiplier)
-      puts "BAAA: #{policy_goal.inspect}"
     GqueryResult.create [
       #NEW: when no user goal is initialized it should return 0
       [Current.scenario.start_year, (policy_goal.user_value ? policy_goal.start_value * multiplier : 0)],
