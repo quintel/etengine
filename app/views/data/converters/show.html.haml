@@ -120,7 +120,7 @@
         - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
           %tr
             %th= attr_name
-            - result_fields(pre,fut,attr_name)
+            - result_fields(pre,fut,attr_name) rescue "SERIOUS ERROR!"
         %tr
           %th Total Cost Per MWhe
           - result_fields(pre,fut) do |converter|
