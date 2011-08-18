@@ -38,6 +38,28 @@ module Scenario::UserUpdates
       @update_statements_present ||= {}
     end
 
+    def inputs_present
+      unless @inputs_present
+        @inputs_present = {}
+        user_values.each do |key, value|
+          input = Input.get(key)
+          @inputs_present[input] = value if input.v2? && input.updates_present?
+        end
+      end
+      @inputs_present
+    end
+
+    def inputs_future
+      unless @inputs_future
+        @inputs_future = {}
+        user_values.each do |key, value|
+          input = Input.get(key)
+          @inputs_future[input] = value if input.v2? && input.updates_future?
+        end
+      end
+      @inputs_future
+    end
+
     # TODO fix
     # @untested 2011-01-24 seb
     #
