@@ -193,7 +193,7 @@ class Current
   # @untested 2010-12-27 seb
   #
   def reset_scenario!
-    scenario.reset_user_values!
+    scenario.reset
   end
 
   ##
@@ -218,7 +218,7 @@ class Current
   end
 
   def reset_gql
-    self.scenario.reset_user_values!
+    self.scenario.reset!
     
     self.gql = nil
     self.graph_id = nil
