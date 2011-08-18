@@ -76,7 +76,7 @@ class Gql
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  attr_reader :scenario, :graph_model
+  attr_reader :graph_model
 
   def initialize(graph_model)
     # The if is a temporary solution.
@@ -84,7 +84,10 @@ class Gql
     return if graph_model == :testing
 
     @graph_model = graph_model
-    @scenario = Current.scenario
+  end
+
+  def scenario
+    Current.scenario
   end
 
   # @return [Qernel::Graph]
@@ -195,10 +198,13 @@ class Gql
   def prepare_present
     benchmark("prepare_present") do
       # DEBT wrong. check for present_updated_at!!
-      if scenario.update_statements_present.empty?
-        present_graph.dataset = graph_model.calculated_present_data
+      if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
+        present_graph.dataset ||= graph_model.calculated_present_data
       else
-        present_graph.dataset = graph_model.dataset.to_qernel
+        present_graph.dataset ||= graph_model.dataset.to_qernel
+        scenario.inputs_present.each do |input, value|
+          present.query(input, value)
+        end
         UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
       end
     end
@@ -206,7 +212,10 @@ class Gql
 
   def prepare_future
     benchmark("prepare_future") do
-      future_graph.dataset = graph_model.dataset.to_qernel
+      future_graph.dataset ||= graph_model.dataset.to_qernel
+      scenario.inputs_future.each do |input, value|
+        future.query(input, value)
+      end
       UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
     end
   end

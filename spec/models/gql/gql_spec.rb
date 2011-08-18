@@ -4,6 +4,43 @@ module Gql
 
 describe Gql do
 
+  describe "integration" do
+    before do
+      @gql = Current.gql = Gql.new(nil)
+      p = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt()").build
+      f = Marshal.load(Marshal.dump(p))
+      p.stub!(:dataset).and_return(Dataset.new)
+      f.stub!(:dataset).and_return(Dataset.new)
+
+      @gql.stub!(:present_graph).and_return( p )
+      @gql.stub!(:future_graph ).and_return( f )
+    end
+    
+    it "should properly calculate" do
+      @gql.query("present:V(lft; demand)").should == 100.0
+      @gql.query("present:V(rgt; demand)").should == 100.0
+      @gql.query("future:V(lft; demand)").should == 100.0
+      @gql.query("future:V(rgt; demand)").should == 100.0
+    end
+
+    it "should properly calculate when running manually" do
+      input = Input.new(:query => "UPDATE(V(lft),demand,USER_INPUT())")
+      Current.gql.future.query(input, 300)
+
+      @gql.query("future:V(lft; demand)").should  == 300.0
+      @gql.query("present:V(lft; demand)").should == 100.0
+    end
+
+    it "should properly calculate within user_values" do
+      input = Input.new(:query => "UPDATE(V(lft),demand,USER_INPUT())")
+      @gql.scenario.stub(:inputs_future).and_return({input => 300})
+      @gql.scenario.stub(:inputs_present).and_return({input => 200})
+
+      @gql.query("future:V(lft; demand)").should  == 300.0
+      @gql.query("present:V(lft; demand)").should == 200.0
+    end
+  end
+
   describe "UPDATE" do
     before do
       @graph = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt(120)").build

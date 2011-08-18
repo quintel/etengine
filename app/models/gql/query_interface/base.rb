@@ -16,14 +16,16 @@ module Gql::QueryInterface::Base
   # @return [Float]
   # @raise [Gql::GqlError] if query is not valid.
   #
-  def query(query, user_input = nil)
+  def query(obj, user_input = nil)
     self.user_input = user_input
-    if query.is_a?(Gquery)
-      subquery(query.key)
-    elsif parsed = Gql::QueryInterface::Preparser.new(query).parsed
+    if obj.is_a?(Gquery)
+      subquery(obj.key)
+    elsif obj.is_a?(Input)
+      result_of_parsed_query(Gql::QueryInterface::Preparser.new(obj.query).parsed, false)
+    elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
       result_of_parsed_query(parsed)
     else
-      raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query)}.")
+      raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
     end
   ensure
     self.user_input = nil
@@ -62,13 +64,13 @@ module Gql::QueryInterface::Base
 
 protected
 
-  def result_of_parsed_query(parsed_query)
+  def result_of_parsed_query(parsed_query, check_if_calculated = true)
     # DEBT: decouple from Current.gql
     #       maybe add a Observer to graph:
     #       in gql: present_graph.observe_calculate(Current.gql)
     #       here:   present_graph.notify_observers!
     #
-    Current.gql.prepare unless Current.gql.calculated?
+    Current.gql.prepare if check_if_calculated && !Current.gql.calculated?
     
     parsed_query.result(scope)
   end

@@ -85,8 +85,16 @@ class Input < ActiveRecord::Base
       group_by(&:share_group)
   end
 
+  def v2?
+    query.present?
+  end
+
   def updates_present?
     updateable_period != 'future'
+  end
+
+  def updates_future?
+    updateable_period != 'present'
   end
 
   ##
