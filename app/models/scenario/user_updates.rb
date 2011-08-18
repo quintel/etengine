@@ -48,6 +48,7 @@ module Scenario::UserUpdates
           if params[key] == 'reset'
             delete_from_user_values(input.id)
           elsif value = params[key].to_f
+            # touch(:present_updated_at) if input.updates_present?
             update_input(input, value)
           end
         else

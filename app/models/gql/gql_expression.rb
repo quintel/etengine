@@ -7,7 +7,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # just need the values. We don't want to repeat ourselves in all
   # those methods not listed in this constant.
   #
-  LAZY_CALCULATE_VALUE_TERMS = %w[IF RESCUE FOR_COUNTRIES]
+  LAZY_CALCULATE_VALUE_TERMS = %w[IF RESCUE FOR_COUNTRIES EACH UPDATE]
 
   def result( value_terms, params, scope )
     # DEBT this is not really needed as we check for query correctness
@@ -699,6 +699,50 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def flatten_uniq(arr)
     arr.tap(&:flatten!).tap(&:uniq!)
   end
+
+  # -------- UPDATE -----------------------------------------------------------
+
+  def EACH(value_terms, arguments, scope = nil)
+    value_terms.each do |value_term|
+      value_term.result(scope)
+    end
+  end
+
+  def UPDATE(value_terms, arguments, scope = nil)
+    update_statement = value_terms.pop
+    attribute_name =   value_terms.pop.result(scope)
+    objects = value_terms.map{|object| object.result(scope)}.flatten
+
+    scope.update_collection = objects
+    objects.each do |object|
+      scope.update_object = object # make this object accessible with SELF
+      object[attribute_name] = update_statement.result(scope)
+    end
+  ensure
+    scope.update_collection = nil
+    scope.update_object = nil
+  end
+
+  def USER_INPUT(values, arguments, scope = nil)
+    scope.user_input
+  end
+
+  def UPDATE_OBJECT(values, arguments, scope = nil)
+    if scope.update_object
+      scope.update_object
+    else
+      raise "GQL SELF() has to be inside UPDATE and a valid object has to be defined"
+    end
+  end
+
+  def UPDATE_COLLECTION(values, arguments, scope = nil)
+    if scope.update_collection
+      scope.update_collection
+    else
+      raise "GQL SELF() has to be inside UPDATE and a valid object has to be defined"
+    end
+  end
+
 
 end
 

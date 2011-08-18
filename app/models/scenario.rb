@@ -23,7 +23,6 @@
 #  use_fce            :boolean
 #
 
-##
 # Useage:
 # Getting the default scenario:
 #   Scenario.default
