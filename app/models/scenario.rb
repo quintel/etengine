@@ -35,6 +35,11 @@
 #
 #
 class Scenario < ActiveRecord::Base
+  include Scenario::UserUpdates
+  include Scenario::Persistable
+  include Scenario::FceSettings
+
+
   # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
 

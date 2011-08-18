@@ -1,9 +1,11 @@
-##
-# Loading & Saving Scenarios
+# Load, copy, reset and save
 #
-class Scenario < ActiveRecord::Base
+module Scenario::Persistable
+  extend ActiveSupport::Concern
 
-  ##
+  def included(klass)
+  end
+
   # Reset all values that can be changed by a user and influences GQL
   # to the default/empty values.
   #
@@ -12,20 +14,17 @@ class Scenario < ActiveRecord::Base
   def reset!
     self.user_values = {}
     self.update_statements = {}
+    self.update_statements_present = {}
     self.fce_settings = {}
     self.use_fce = false
   end
-  alias_method :reset_user_values!, :reset!
 
-  ##
   # Called from current. 
   #
   def load!
     build_update_statements
   end
 
-
-  ##
   # Stores the current settings into the attributes. For when we want to save
   # the scenario in the db.
   #

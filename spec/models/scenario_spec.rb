@@ -86,7 +86,7 @@ describe Scenario do
 
   describe "setting and retrieving user_values" do
     before do
-      @input = mock_model(Input, :id => 1)
+      @input = Input.new
       @scenario.store_user_value(@input, 10)
     end
     specify { @scenario.user_value_for(@input).should == 10}
@@ -175,10 +175,11 @@ describe Scenario do
     end
   end
 
+  # DEBT: find a better way with less stubbing/mocking.
   describe "#update_input" do
     before do
       @value = 13.3
-      @input = mock_model(Input)
+      @input = Input.new
       @input.stub!(:update_statement).with(@value).and_return({})
       Current.stub!(:gql_calculated?).and_return(false)
     end
@@ -187,20 +188,20 @@ describe Scenario do
       @scenario.update_input(@input, @value)
     end
     it "should add update_statements" do
-      @scenario.should_receive(:add_update_statements).with({})
+      @scenario.should_receive(:add_update_statements).with({}, 'future')
       @scenario.update_input(@input, @value)
     end
   end
 
   describe "#build_update_statements_for_element" do
     before do
-      @input = mock_model(Input, :id => 5)
-      Input.stub!(:find).with(@input.id).and_return(@input)
+      @input = Input.new()
+      Input.stub!(:find).with(any_args).and_return(@input)
     end
     context "if no input found" do
       before { Input.stub!(:find).and_raise(ActiveRecord::RecordNotFound) }
       it "should catch the error" do
-        @scenario.build_update_statements_for_element(@input.id, 2.0)
+        @scenario.build_update_statements_for_element(1, 2.0)
       end
     end
   end
