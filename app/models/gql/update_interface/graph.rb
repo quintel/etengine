@@ -148,34 +148,37 @@ module UpdateInterface
     end
 
 
-    ##
     # Complex code to refactor. Biggest problem is that we use both present and future graph.
     #
     def update_replacement_of_households_rate(proxy, value)
       cmds = []
+      # DEBT: input keys has following. which is weird with the following line.
+      #   heating_demand_with_current_insulation_households_energetic_AND_heating_new_houses_current_insulation_households_energetic
       return cmds if proxy.to_s != "heating_demand_with_current_insulation_households_energetic"
 
-      nr_of_hh = graph.area.number_households
-      perc_of_new_hh = graph.area.percentage_of_new_houses
+      households = graph.area.number_households
+      percentage_new = graph.area.percentage_of_new_houses
 
       # get the future demand, this is needed for the calculation to determin the total number of houses to be replaced
-      future_demand_old_houses_cmd = AttributeCommand.new(proxy, :preset_demand, value, :decrease_rate)
 
-      present_old_houses_demand = present_converter("heating_demand_with_current_insulation_households_energetic").proxy.preset_demand
+      old_houses_demand_cmd = AttributeCommand.new(proxy, :preset_demand, value, :decrease_rate)
+      old_houses_demand = proxy.preset_demand
 
-      number_of_houses_to_replace = (present_old_houses_demand - future_demand_old_houses_cmd.value) / ## calculate the diff in demand for old_houses
-                                    demand_per_old_house(present_old_houses_demand,perc_of_new_hh,nr_of_hh)
-                                  
-      number_of_existing_households = nr_of_hh - number_of_houses_to_replace
 
-      new_house_converter = present_converter("heating_new_houses_current_insulation_households_energetic")
-      demand_per_new_house = new_house_converter.query.preset_demand / (perc_of_new_hh * nr_of_hh)
+      demand_per_old_house = old_houses_demand / ((1 - (percentage_new/100)) * households)
+      # calculate the diff in demand for old_houses
+      households_to_replace = (old_houses_demand - old_houses_demand_cmd.value) / demand_per_old_house
+
+      households_existing = households - households_to_replace
+
+      new_house_converter = graph.converter("heating_new_houses_current_insulation_households_energetic")
+      demand_per_new_house = new_house_converter.query.preset_demand / (percentage_new * households)
 
       # the nr of extrahouses multiplied with their demand is added to the original demand
-      new_houses_future_demand_value = new_house_converter.query.demand + (demand_per_new_house * number_of_houses_to_replace)
-      cmds << AttributeCommand.new(graph.area, :number_of_existing_households, number_of_existing_households, :value)
-      cmds << future_demand_old_houses_cmd
-      cmds << AttributeCommand.new(new_house_converter, :preset_demand, new_houses_future_demand_value, :value)
+      new_houses_future_demand_value = new_house_converter.query.demand + (demand_per_new_house * households_to_replace)
+
+      cmds << AttributeCommand.new(graph.area, :number_of_existing_households, households_existing, :value)
+      cmds << old_houses_demand_cmd
 
       cmds
     end

@@ -33,11 +33,6 @@
 #  label_query               :string(255)
 #
 
- # More defined in pkg/optimize/input.rb!!!
-#
-#
-#
-#
 class Input < ActiveRecord::Base
   has_paper_trail
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]

@@ -6,6 +6,23 @@
 #
 module Gql::QueryInterface::GraphApi
 
+  def update_object
+    @update_object
+  end
+
+  def update_object=(object)
+    @update_object = object
+  end
+  
+  def update_collection
+    @update_collection
+  end
+
+  def update_collection=(col)
+    @update_collection = col
+  end
+
+
   # @param [String] Graph API Method.
   # @return [Float]
   #

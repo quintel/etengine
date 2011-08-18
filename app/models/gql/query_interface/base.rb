@@ -1,5 +1,13 @@
 module Gql::QueryInterface::Base
 
+  def user_input
+    @user_input
+  end
+
+  def user_input=(val)
+    @user_input = val
+  end
+
   def scope
     self
   end
@@ -8,7 +16,8 @@ module Gql::QueryInterface::Base
   # @return [Float]
   # @raise [Gql::GqlError] if query is not valid.
   #
-  def query(query)
+  def query(query, user_input = nil)
+    self.user_input = user_input
     if query.is_a?(Gquery)
       subquery(query.key)
     elsif parsed = Gql::QueryInterface::Preparser.new(query).parsed
@@ -16,6 +25,8 @@ module Gql::QueryInterface::Base
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(query)}.")
     end
+  ensure
+    self.user_input = nil
   end
 
   # @return [Array<String>] Debug messages
@@ -52,6 +63,11 @@ module Gql::QueryInterface::Base
 protected
 
   def result_of_parsed_query(parsed_query)
+    # DEBT: decouple from Current.gql
+    #       maybe add a Observer to graph:
+    #       in gql: present_graph.observe_calculate(Current.gql)
+    #       here:   present_graph.notify_observers!
+    #
     Current.gql.prepare unless Current.gql.calculated?
     
     parsed_query.result(scope)
