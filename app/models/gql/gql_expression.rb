@@ -710,12 +710,12 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
 
   def UPDATE(value_terms, arguments, scope = nil)
     update_statement = value_terms.pop
-    attribute_name =   value_terms.pop.result(scope)
+    attribute_name   = value_terms.pop.result(scope)
     objects = value_terms.map{|object| object.result(scope)}.flatten
 
-    scope.update_collection = objects
+    scope.update_collection = objects # for UPDATE_COLLECTION()
     objects.each do |object|
-      scope.update_object = object # make this object accessible with SELF
+      scope.update_object = object # for UPDATE_OBJECT()
       object[attribute_name] = update_statement.result(scope)
     end
   ensure
