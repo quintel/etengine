@@ -55,7 +55,7 @@ class Qernel::ConverterApi
   
   def peak_load_capacity_per_unit
     dataset_fetch_handle_nil(:peak_load_units_capacity_per_unit) do
-      ( (electricity_input_conversion || 0.0) - (electricity_output_conversion|| 0.0) ) * typical_input_capacity
+      ( (electricity_input_conversion || 0.0) - (electricity_output_conversion|| 0.0) ) * (typical_input_capacity|| 0.0)
     end
   end
   attributes_required_for :peak_load_capacity_per_unit, [:typical_input_capacity, :electricity_input_conversion, :electricity_output_conversion]
