@@ -209,6 +209,24 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
   end
 
+  def INPUT_LINKS(value_terms, arguments, scope)
+    links = flatten_uniq(value_terms.tap(&:flatten!).map(&:input_links))
+    if arguments.first
+      inst_eval = replace_gql_with_ruby_brackets(arguments.first)
+      links.select!{|link| link.instance_eval(inst_eval) } 
+    end
+    links
+  end
+
+  def OUTPUT_LINKS(value_terms, arguments, scope)
+    links = flatten_uniq(value_terms.tap(&:flatten!).map(&:links))
+    if arguments.first
+      inst_eval = replace_gql_with_ruby_brackets(arguments.first)
+      links.select!{|link| link.instance_eval(inst_eval) } 
+    end
+    links
+  end
+
   ##
   # Converters of a {Qernel::Group Group}: *GROUP(primary_demand_cbs)*
   #
@@ -715,19 +733,23 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
 
     scope.update_collection = objects # for UPDATE_COLLECTION()
     objects.each do |object|
+      object = object.query if object.respond_to?(:query)
+      
       scope.update_object = object # for UPDATE_OBJECT()
 
       # We need to use BigDecimal for pretty numbers (try in irb: 1.15 * 100.0)
       input_value = update_statement.result(scope)
-      cur_value = BigDecimal(object[attribute_name].to_s)
 
       object[attribute_name] = case update_strategy(scope)
       when :absolute then input_value 
-      when :relative_total then cur_value + cur_value * (input_value / 100.0)
+      when :relative_total
+        cur_value = BigDecimal(object[attribute_name].to_s)
+        cur_value + (cur_value * (input_value / 100.0))
       when :relative_per_year
+        cur_value = BigDecimal(object[attribute_name].to_s)
         factor = 1.0 + (input_value / 100.0)
         cur_value * (factor ** Current.scenario.years)
-      end
+      end.to_f
     end
   ensure
     scope.update_collection = nil

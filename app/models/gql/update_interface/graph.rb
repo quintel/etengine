@@ -140,7 +140,6 @@ module UpdateInterface
             elsif c = CommandFactory.create(graph, proxy, key, value)
               cmds << c
             end
-
             execute_commands(cmds)
           end
         end
