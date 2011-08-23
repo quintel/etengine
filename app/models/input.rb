@@ -61,8 +61,18 @@ class Input < ActiveRecord::Base
   validates :updateable_period, :presence => true,
                                 :inclusion => UPDATEABLE_PERIODS
 
+  after_create :reset_all_cached
+
   def self.get_cached(key)
     all_cached[key.to_s]
+  end
+
+  def reset_all_cached
+    self.class.reset_all_cached
+  end
+
+  def self.reset_all_cached
+    @all_cached = nil
   end
 
   def self.all_cached

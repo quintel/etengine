@@ -33,7 +33,6 @@ module Qernel
     def build
       slots = []
       graph = Graph.new.with({})
-
       # create converters first
       lines.each do |line|
         carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=[\>\<](.+)/).first
