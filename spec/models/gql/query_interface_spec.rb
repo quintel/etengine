@@ -30,6 +30,11 @@ describe QueryInterface do
       @q.query("INPUT_LINKS(V(lft,mid))").length.should == 2
       @q.query("OUTPUT_LINKS(V(rgt))").length.should == 2
     end
+
+    it "LINK(lft, rgt)" do
+      @q.query("LINK(lft,rgt)").should be_constant
+      @q.query("LINK(rgt,lft)").should == @q.query("LINK(lft,rgt)")
+    end
   end
 
   describe "constants" do
