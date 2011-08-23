@@ -43,7 +43,7 @@ module Scenario::UserUpdates
         @inputs_present = {}
         user_values.each do |key, value|
           input = Input.get_cached(key)
-          @inputs_present[input] = value if input.v2? && input.updates_present?
+          @inputs_present[input] = value if input.present? && input.v2? && input.updates_present?
         end
       #end
       @inputs_present
@@ -54,7 +54,7 @@ module Scenario::UserUpdates
         @inputs_future = {}
         user_values.each do |key, value|
           input = Input.get_cached(key)
-          @inputs_future[input] = value if input.v2? && input.updates_future?
+          @inputs_future[input] = value if input.present? && input.v2? && input.updates_future?
         end
       #end
       @inputs_future

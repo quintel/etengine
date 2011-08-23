@@ -164,8 +164,13 @@ class Gql
       send("query_#{modifier}", query)
     end
   rescue => e
-    raise e unless rescue_resultset
-    rescue_resultset
+    if rescue_resultset == :debug
+      ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
+    elsif rescue_resultset.present?
+      rescue_resultset
+    else
+      raise e unless rescue_resultset
+    end
   end
 
   # Updates and calculates the graphs
