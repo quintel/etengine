@@ -7,6 +7,7 @@ describe Gql do
   describe "Integration Testing" do
     before do
       @gql = Current.gql = Gql.new(nil)
+      Current.scenario = Scenario.default
       p = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt()").build
       f = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt()").build
       p.stub!(:dataset).and_return(Dataset.new)
@@ -66,7 +67,103 @@ describe Gql do
       @gql.query("future:V(rgt; demand)").should  == 250.0
       @gql.query("present:V(lft; demand)").should  == 200.0
     end
+
+
+
+    context "v1 to v2" do
+      describe "attr_name = growth_rate" do
+        before do 
+          @old_input = Input.create!(
+            :keys => 'lft', :attr_name => 'growth_rate', 
+            :update_type => 'converters', :factor => 100)
+          @new_input = Input.create!(:query => 'UPDATE(V(lft), demand, USER_INPUT())')
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 5.0}
+          @gql.scenario.load!
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (1.05**30)
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "5.0%y"}
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (1.05**30)
+        end
+      end
+
+      # def number_of_units_update
+      #   converter = converter_proxy.converter
+      #   converter_proxy.number_of_units = value.to_f
+      # 
+      #   converter.outputs.each do |slot|
+      #     slot.links.select(&:constant?).each do |link|
+      #       link.share = converter.query.production_based_on_number_of_units
+      #     end
+      #   end
+      #   nil
+      # end
+      describe "attr_name = number_of_units" do
+        before do 
+          @gql = Current.gql = Gql.new(nil)
+          Current.scenario = Scenario.default
+          p = Qernel::GraphParser.new("lft(100) == c(1.0) ==> rgt()").build
+          f = Qernel::GraphParser.new("lft(100) == c(1.0) ==> rgt()").build
+          p.stub!(:dataset).and_return(Dataset.new)
+          f.stub!(:dataset).and_return(Dataset.new)
+
+          @gql.stub!(:present_graph).and_return( p )
+          @gql.stub!(:future_graph ).and_return( f )
+
+          @old_input = Input.create!(
+            :keys => 'lft', :attr_name => 'number_of_units', :update_type => 'converters', :factor => 1)
+          @new_input = Input.create!(:query => "
+          EACH(
+            UPDATE(V(lft), number_of_units, USER_INPUT()),
+            UPDATE(OUTPUT_LINKS(V(lft);constant), share, V(lft; production_based_on_number_of_units))
+          )")
+          @gql.future.graph.converter(:lft).query.number_of_units = 1.0
+          @gql.future.graph.converter(:lft).query.stub!(:typical_electricity_production_per_unit).and_return(8.0)
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 5.0}
+          @gql.scenario.load!
+          @gql.query("V(lft;number_of_units)").future_value.should == 5.0
+          @gql.query("V(rgt;demand)").future_value.should == 40.0
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "5.0"}
+          @gql.query("V(lft;number_of_units)").future_value.should == 5.0
+          @gql.query("V(rgt;demand)").future_value.should == 40.0
+          # lft demand / rgt demand
+          @gql.query("V(OUTPUT_LINKS(V(lft);constant);share)").future_value.should == 0.4
+        end
+      end
+
+      describe "attr_name = cost_per_mj_growth_total for carrier" do
+        before do 
+          @old_input = Input.create!(
+            :keys => 'foo', :attr_name => 'cost_per_mj_growth_total', 
+            :update_type => 'carriers', :factor => 100.0)
+          @new_input = Input.create!(:query => 'UPDATE(CARRIER(foo), cost_per_mj, USER_INPUT())')
+          @gql.future.graph.carrier(:foo).cost_per_mj = 100
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 5.0}
+          @gql.scenario.load!
+          @gql.query("V(CARRIER(foo);cost_per_mj)").future_value.should == 100.0 * 1.05
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "5.0%"}
+          @gql.query("V(CARRIER(foo);cost_per_mj)").future_value.should == 100.0 * 1.05
+        end
+      end
+    end
   end
+
 
   context "basic graph" do
     before do

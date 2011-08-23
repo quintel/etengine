@@ -206,7 +206,7 @@ module Scenario::UserUpdates
     #
     def build_update_statements_for_element(id, value)
       if input = Input.get_cached(id)
-        update_input(input, value)
+        update_input(input, value) unless input.v2?
       else
         Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")    
       end

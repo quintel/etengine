@@ -102,7 +102,8 @@ module Qernel
 
       unless @converters[key]
         id = @converters.keys.length+1
-        dataset = {:demand => dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f }
+        demand = dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f
+        dataset = {:demand => demand, :preset_demand => demand } # preset_demand needed to make old Input v1 updates working
         @converters[key] = Converter.new(id, key).with(dataset)
       end
 
