@@ -30,6 +30,22 @@ module Qernel
       b.build
     end
 
+    def self.gql_stubbed(g)      
+      raise "GraphParser.gql_stubbed only workds in test" unless Rails.env.test?
+      gql = Current.gql = Gql::Gql.new(nil)
+      Current.scenario = Scenario.default
+
+      p = new(g).build
+      f = new(g).build
+      p.stub!(:dataset).and_return(Dataset.new)
+      f.stub!(:dataset).and_return(Dataset.new)
+
+      gql.stub!(:present_graph).and_return( p )
+      gql.stub!(:future_graph ).and_return( f )
+
+      gql
+    end
+
     def build
       slots = []
       graph = Graph.new.with({})
@@ -109,6 +125,7 @@ module Qernel
 
       @converters[key]
     end
+
 
   end
 end
