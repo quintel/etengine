@@ -716,15 +716,47 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.update_collection = objects # for UPDATE_COLLECTION()
     objects.each do |object|
       scope.update_object = object # for UPDATE_OBJECT()
-      object[attribute_name] = update_statement.result(scope)
+
+      # We need to use BigDecimal for pretty numbers (try in irb: 1.15 * 100.0)
+      input_value = update_statement.result(scope)
+      cur_value = BigDecimal(object[attribute_name].to_s)
+
+      object[attribute_name] = case update_strategy(scope)
+      when :absolute then input_value 
+      when :relative_total then cur_value + cur_value * (input_value / 100.0)
+      when :relative_per_year
+        factor = 1.0 + (input_value / 100.0)
+        cur_value * (factor ** Current.scenario.years)
+      end
     end
   ensure
     scope.update_collection = nil
     scope.update_object = nil
   end
 
+
+  def update_strategy(scope)
+    input = scope.user_input
+    if input.is_a?(String)
+      if input.include?('%y') 
+        :relative_per_year
+      elsif input.include?('%') 
+        :relative_total
+      else
+        :absolute
+      end
+    else
+      :absolute
+    end
+  end
+
   def USER_INPUT(values, arguments, scope = nil)
-    scope.user_input
+    input = scope.user_input
+    if input.is_a?(String)
+      BigDecimal(input)
+    else
+      input
+    end
   end
 
   def UPDATE_OBJECT(values, arguments, scope = nil)

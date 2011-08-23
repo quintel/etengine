@@ -75,15 +75,37 @@ describe Gql do
       @q = QueryInterface.new(@graph)
     end
 
-    describe "USER_INPUT() values" do
-      pending "should update 5 as absolute value" do
-        @q.query("UPDATE(V(lft),demand,USER_INPUT())", "5")
-        @q.query("V(lft; demand)").should == 5.0
+    describe "update statement: UPDATE(V(lft),demand,USER_INPUT())" do
+      {
+        "5"    => 5.0,
+        "-5"   => -5.0,
+        "5%"   => 105.0,
+        "-5%"  => 95.0,
+        "5%y"  => 100 * (1.05 ** 30),
+        "-5%y" => 100 * (0.95 ** 30)
+      }.each do |input, expected_demand|
+        it "should assign #{expected_demand} with input: #{input}" do
+          @q.query("UPDATE(V(lft),demand,USER_INPUT())", input)
+          @q.query("V(lft; demand)").should == expected_demand
+        end
+      end
+    end
+
+    describe "more update statements" do
+      it "should update 5%y as growth_rate per year (easy example)" do
+        Current.instance.stub_chain(:scenario, :years).and_return(2)
+        @q.query("UPDATE(V(lft),demand,USER_INPUT())", "5%y")
+        @q.query("V(lft; demand)").should == 100 * 1.05 * 1.05
       end
 
-      pending "should update 5% as total relative value" do
-        @q.query("UPDATE(V(lft),demand,USER_INPUT())", "5%")
-        @q.query("V(lft; demand)").should == 105.0
+      it "should update 10 + USER_INPUT as absolute value" do
+        @q.query("UPDATE(V(lft),demand,SUM(10, USER_INPUT()))", "5")
+        @q.query("V(lft; demand)").should == 15.0
+      end
+
+      it "should update 10 + 5% as relative value" do
+        @q.query("UPDATE(V(lft),demand,SUM(10, USER_INPUT()))", "5%")
+        @q.query("V(lft; demand)").should == 115.0
       end
     end
 
