@@ -83,7 +83,7 @@ describe Gql do
         end
       end
 
-      describe "attr_name = market_share" do
+      describe "MarketShare 'market_share' with flexible link" do
         before do 
           @gql = Qernel::GraphParser.gql_stubbed("
             cooling_buildings_energetic(100) == s(0.0) ==> city_cooling_network_buildings_energetic(nil)
@@ -116,7 +116,7 @@ describe Gql do
         end
       end
 
-      describe "attr_name = market_share without flexible" do
+      describe "MarketShare 'market_share' without flexible" do
         before do 
           @gql = Qernel::GraphParser.gql_stubbed("
             cooling_buildings_energetic(100) == s(0.0) ==> city_cooling_network_buildings_energetic(nil)
@@ -149,6 +149,36 @@ describe Gql do
           @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
           @gql.query("SUM(1.0, NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(cooling_buildings_energetic)),V(LINK(cooling_buildings_energetic,airco_buildings_energetic))); share))))").future_value.should == 0.7
           @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 70.0
+        end
+      end
+
+
+      describe "MarketShareCarrier cooling_market_share" do
+        before do 
+          @gql = Qernel::GraphParser.gql_stubbed("
+            cooling: cooling_demand_households_energetic(100) == s(0.0) ==> heatpump_cooling_households_energetic(nil)
+            cooling: cooling_demand_households_energetic(100) == s(0.0) ==> gasheatpump_cooling_households_energetic(nil)
+            cooling: cooling_demand_households_energetic(100) == s(0.0) ==> heatpump_ts_cooling_households_energetic(nil)
+            cooling: cooling_demand_households_energetic(100) == f(1.0) ==> airco_households_energetic(nil)
+          ")
+
+          @old_input =  Input.create!(:keys => 'heatpump_cooling_households_energetic', :attr_name => 'cooling_market_share', :update_type => 'converters', :factor => 100)
+          @new_input =  Input.create!(:query => 'UPDATE(LINK(heatpump_cooling_households_energetic,cooling_demand_households_energetic), share, DIVIDE(USER_INPUT(),100))')
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 30.0}
+          @gql.scenario.load!
+          @gql.query("V(cooling_demand_households_energetic;demand)").future_value.should == 100.0
+          @gql.query("V(heatpump_cooling_households_energetic;demand)").future_value.should == 30.0
+          @gql.query("V(airco_households_energetic;demand)").future_value.should == 70.0
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "30.0"}
+          @gql.query("V(cooling_demand_households_energetic;demand)").future_value.should == 100.0
+          @gql.query("V(heatpump_cooling_households_energetic;demand)").future_value.should == 30.0
+          @gql.query("V(airco_households_energetic;demand)").future_value.should == 70.0
         end
       end
 
