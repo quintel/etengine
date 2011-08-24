@@ -36,7 +36,7 @@
             = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank            
 
         - fields.each do |field|
-          - v = Current.gql.present_graph.converter(converter.id).send(field)
-          %td.tar{:title => title_tag_number(v)}=auto_number(v)
-          - v = Current.gql.future_graph.converter(converter.id).send(field)
-          %td.tar{:title => title_tag_number(v)}= auto_number(v)
+          - if converter.full_key.present? and query = "V(#{converter.full_key};#{field})"
+            - p, f = Current.gql.query(query).results
+            %td.tar{:title => title_tag_number(p)}=auto_number(p)
+            %td.tar{:title => title_tag_number(f)}= auto_number(f)
