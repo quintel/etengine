@@ -92,23 +92,10 @@ describe Gql do
             cooling_buildings_energetic(100) == f(1.0) ==> airco_buildings_energetic(nil)
           ")
 
-          @old_input = Input.create!(
-            :keys => 'gasheatpump_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', 
-            :update_type => 'converters', :factor => 100)
-          @old_input2 = Input.create!(
-            :keys => 'heatpump_ts_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', 
-            :update_type => 'converters', :factor => 100)
-          @new_input = Input.create!(:query => '
-            UPDATE(LINK(cooling_buildings_energetic,gasheatpump_cooling_buildings_energetic), share, USER_INPUT())
-          ')
-          @new_input2 = Input.create!(:query => '
-            UPDATE(LINK(cooling_buildings_energetic,heatpump_ts_cooling_buildings_energetic), share, USER_INPUT())
-          ')
-        end
-
-        it "should calculate" do
-          @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
-          @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 100.0
+          @old_input =  Input.create!(:keys => 'gasheatpump_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
+          @old_input2 = Input.create!(:keys => 'heatpump_ts_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
+          @new_input =  Input.create!(:query => 'UPDATE(LINK(cooling_buildings_energetic,gasheatpump_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100))')
+          @new_input2 = Input.create!(:query => 'UPDATE(LINK(cooling_buildings_energetic,heatpump_ts_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100))')
         end
 
         it "should work with old" do
@@ -121,11 +108,47 @@ describe Gql do
         end
 
         it "should work with new" do
-          @gql.scenario.user_values = {@new_input.id => "0.3", @new_input2.id => 0.3}
+          @gql.scenario.user_values = {@new_input.id => "30", @new_input2.id => "30"}
           @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
           @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
           @gql.query("V(heatpump_ts_cooling_buildings_energetic;demand)").future_value.should == 30.0
           @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 40.0
+        end
+      end
+
+      describe "attr_name = market_share without flexible" do
+        before do 
+          @gql = Qernel::GraphParser.gql_stubbed("
+            cooling_buildings_energetic(100) == s(0.0) ==> city_cooling_network_buildings_energetic(nil)
+            cooling_buildings_energetic(100) == s(0.0) ==> gasheatpump_cooling_buildings_energetic(nil)
+            cooling_buildings_energetic(100) == s(0.0) ==> heatpump_ts_cooling_buildings_energetic(nil)
+            cooling_buildings_energetic(100) == s(1.0) ==> airco_buildings_energetic(nil)
+          ")
+
+          @old_input =  Input.create!(:keys => 'gasheatpump_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
+          @new_input =  Input.create!(:query => '
+            EACH(
+              UPDATE(LINK(cooling_buildings_energetic,gasheatpump_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100)),
+              UPDATE(LINK(cooling_buildings_energetic,airco_buildings_energetic), share, 
+                SUM(NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(cooling_buildings_energetic)),UPDATE_COLLECTION()); share))), 1)
+              )
+            )')
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 30.0}
+          @gql.scenario.load!
+          @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
+          @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
+          @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 70.0
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "30.0"}
+          @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
+          @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
+          @gql.query("SUM(1.0, NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(cooling_buildings_energetic)),V(LINK(cooling_buildings_energetic,airco_buildings_energetic))); share))))").future_value.should == 0.7
+          @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 70.0
         end
       end
 
@@ -140,7 +163,7 @@ describe Gql do
       #   end
       #   nil
       # end
-      describe "attr_name = number_of_units" do
+      pending "attr_name = number_of_units" do
         before do 
           @gql = Qernel::GraphParser.gql_stubbed("lft(nil) == c(nil) ==> rgt(100)")
 
@@ -180,7 +203,7 @@ describe Gql do
         before do 
           @old_input = Input.create!(
             :keys => 'foo', :attr_name => 'cost_per_mj_growth_total', 
-            :update_type => 'carriers', :factor => 100.0)
+            :update_type => 'carriers', :factor => 100.0, :unit => '%')
           @new_input = Input.create!(:query => 'UPDATE(CARRIER(foo), cost_per_mj, USER_INPUT())')
           @gql.future.graph.carrier(:foo).cost_per_mj = 100
         end
@@ -217,13 +240,13 @@ describe Gql do
         "-5%y" => 100 * (0.95 ** 30)
       }.each do |input, expected_demand|
         it "should assign #{expected_demand} with input: #{input}" do
-          @q.query("UPDATE(V(lft),demand,USER_INPUT())", input)
+          @q.query(Input.new(:query => "UPDATE(V(lft),demand,USER_INPUT())"), input)
           @q.query("V(lft; demand)").should == expected_demand
         end
       end
     end
 
-    describe "more update statements" do
+    pending "more update statements" do
       it "should update 5%y as growth_rate per year (easy example)" do
         Current.instance.stub_chain(:scenario, :years).and_return(2)
         @q.query("UPDATE(V(lft),demand,USER_INPUT())", "5%y")

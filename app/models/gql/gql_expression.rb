@@ -226,7 +226,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   end
 
   def OUTPUT_LINKS(value_terms, arguments, scope)
-    links = flatten_uniq(value_terms.tap(&:flatten!).map(&:links))
+    links = flatten_uniq(value_terms.tap(&:flatten!).map(&:output_links))
     if arguments.first
       inst_eval = replace_gql_with_ruby_brackets(arguments.first)
       links.select!{|link| link.instance_eval(inst_eval) } 
@@ -351,7 +351,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   end
 
   ##
-  # Returns the intersection of two sets of converters.
+  # 
   #
   # e.g.
   #   EXCLUDE([dennis,willem,alexander],[dennis])
@@ -741,21 +741,19 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.update_collection = objects # for UPDATE_COLLECTION()
     objects.each do |object|
       object = object.query if object.respond_to?(:query)
-      
+
       scope.update_object = object # for UPDATE_OBJECT()
 
-      # We need to use BigDecimal for pretty numbers (try in irb: 1.15 * 100.0)
       input_value = update_statement.result(scope)
 
       object[attribute_name] = case update_strategy(scope)
-      when :absolute then input_value 
+      when :absolute then input_value
       when :relative_total
         cur_value = BigDecimal(object[attribute_name].to_s)
-        cur_value + (cur_value * (input_value / 100.0))
+        cur_value + (cur_value * input_value)
       when :relative_per_year
         cur_value = BigDecimal(object[attribute_name].to_s)
-        factor = 1.0 + (input_value / 100.0)
-        cur_value * (factor ** Current.scenario.years)
+        cur_value * ((1.0 + input_value) ** Current.scenario.years)
       end.to_f
     end
   ensure
@@ -763,9 +761,18 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.update_object = nil
   end
 
+  # at the moment only takes care of percentages and absolute numbers.
+  #
+  def input_factor(scope)
+    if scope.input_value.andand.include?('%')
+      100.0
+    else 
+      1.0
+    end
+  end
 
   def update_strategy(scope)
-    input = scope.user_input
+    input = scope.input_value
     if input.is_a?(String)
       if input.include?('%y') 
         :relative_per_year
@@ -780,12 +787,14 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   end
 
   def USER_INPUT(values, arguments, scope = nil)
-    input = scope.user_input
-    if input.is_a?(String)
+    input = scope.input_value
+    input_float = if input.is_a?(String)
+      # We need to use BigDecimal for pretty numbers (try in irb: 1.15 * 100.0)
       BigDecimal(input)
     else
       input
     end
+    input_float / input_factor(scope)
   end
 
   def UPDATE_OBJECT(values, arguments, scope = nil)
