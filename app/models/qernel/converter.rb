@@ -150,6 +150,14 @@ class Converter
     self.calculator = Qernel::ConverterApi.new(self)
   end
 
+  def self.full_key(key,sector_id,use_id)
+    use_key = USES[use_id]
+    sector_key = SECTORS[sector_id]
+
+    custom_use_key = (use_key === :undefined || use_key.nil?) ? nil : use_key.to_s
+    [key, sector_key, custom_use_key].compact.join("_").to_sym
+  end
+
 protected
 
   # Memoize here, so it doesn't have to at runtime

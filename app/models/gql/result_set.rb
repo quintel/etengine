@@ -31,6 +31,10 @@ class ResultSet < Array
     future.first
   end
 
+  def results
+    [present_value, future_value]
+  end
+
   # Method to easily convert "old" results.
   #
   def self.create(arr)
