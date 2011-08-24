@@ -22,7 +22,7 @@ module Gql::QueryInterface::Base
     if obj.is_a?(Gquery)
       subquery(obj.key)
     elsif obj.is_a?(Input)
-      # self.input_value = "#{self.input_value}#{obj.unit}" if obj.unit == '%' && !self.input_value.include?('%')
+      self.input_value = "#{self.input_value}#{obj.v1_legacy_unit}"
       result_of_parsed_query(Gql::QueryInterface::Preparser.new(obj.query).parsed, false)
     elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
       result_of_parsed_query(parsed)
