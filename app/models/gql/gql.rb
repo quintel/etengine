@@ -207,10 +207,10 @@ class Gql
         present_graph.dataset ||= graph_model.calculated_present_data
       else
         present_graph.dataset ||= graph_model.dataset.to_qernel
+        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
         scenario.inputs_present.each do |input, value|
           present.query(input, value)
         end
-        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
       end
     end
   end
@@ -218,10 +218,10 @@ class Gql
   def prepare_future
     benchmark("prepare_future") do
       future_graph.dataset ||= graph_model.dataset.to_qernel
+      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
       scenario.inputs_future.each do |input, value|
         future.query(input, value)
       end
-      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
     end
   end
 
