@@ -91,6 +91,65 @@ describe Gql do
         end
       end
 
+      describe "attr_name = decrease_rate" do
+        before do 
+          @old_input = Input.create!(
+            :keys => 'lft', :attr_name => 'decrease_rate', 
+            :update_type => 'converters', :factor => 100)
+          @new_input = Input.create!(:query => 'UPDATE(V(lft), demand, NEG(USER_INPUT()))', :v1_legacy_unit => '%y')
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 5.0}
+          @gql.scenario.load!
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.95**30)
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "5.0"}
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.95**30)
+        end
+      end
+
+      describe "attr_name = decrease_total" do
+        before do 
+          @old_input = Input.create!(
+            :keys => 'lft', :attr_name => 'decrease_total', 
+            :update_type => 'converters', :factor => 100)
+          @new_input = Input.create!(:query => 'UPDATE(V(lft), demand, NEG(USER_INPUT()))', :v1_legacy_unit => '%')
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 5.0}
+          @gql.scenario.load!
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.95)
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "5.0"}
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.95)
+        end
+      end
+
+      describe "attr_name = decrease_total with weird factor" do
+        before do 
+          @old_input = Input.create!(
+            :keys => 'lft', :attr_name => 'decrease_total', 
+            :update_type => 'converters', :factor => 250)
+          @new_input = Input.create!(:query => 'UPDATE(V(lft), demand, NEG(DIVIDE(USER_INPUT(),V(2.5))))', :v1_legacy_unit => '%')
+        end
+
+        it "should work with old" do
+          @gql.scenario.user_values = {@old_input.id => 5.0}
+          @gql.scenario.load!
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.98)
+        end
+
+        it "should work with new" do
+          @gql.scenario.user_values = {@new_input.id => "5.0"}
+          @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.98)
+        end
+      end
       describe "MarketShare 'market_share' with flexible link" do
         before do 
           @gql = Qernel::GraphParser.gql_stubbed("
@@ -242,7 +301,7 @@ describe Gql do
           @old_input = Input.create!(
             :keys => 'foo', :attr_name => 'cost_per_mj_growth_total', 
             :update_type => 'carriers', :factor => 100.0, :unit => '%')
-          @new_input = Input.create!(:query => 'UPDATE(CARRIER(foo), cost_per_mj, USER_INPUT())')
+          @new_input = Input.create!(:query => 'UPDATE(CARRIER(foo), cost_per_mj, USER_INPUT())', :v1_legacy_unit => '%')
           @gql.future.graph.carrier(:foo).cost_per_mj = 100
         end
 
@@ -253,7 +312,7 @@ describe Gql do
         end
 
         it "should work with new" do
-          @gql.scenario.user_values = {@new_input.id => "5.0%"}
+          @gql.scenario.user_values = {@new_input.id => "5.0"}
           @gql.query("V(CARRIER(foo);cost_per_mj)").future_value.should == 100.0 * 1.05
         end
       end
