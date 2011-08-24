@@ -96,7 +96,7 @@ class Input < ActiveRecord::Base
   end
 
   def v2?
-    query.present?
+    query.present? && !(attr_name == 'decrease_total')
   end
 
   def updates_present?
