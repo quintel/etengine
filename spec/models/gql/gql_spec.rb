@@ -68,7 +68,7 @@ describe Gql do
           @old_input = Input.create!(
             :keys => 'lft', :attr_name => 'growth_rate', 
             :update_type => 'converters', :factor => 100)
-          @new_input = Input.create!(:query => 'UPDATE(V(lft), demand, USER_INPUT())')
+          @new_input = Input.create!(:query => 'UPDATE(V(lft), demand, USER_INPUT())', :v1_legacy_unit => '%y')
         end
 
         it "should work with old" do
@@ -78,7 +78,7 @@ describe Gql do
         end
 
         it "should work with new" do
-          @gql.scenario.user_values = {@new_input.id => "5.0%y"}
+          @gql.scenario.user_values = {@new_input.id => "5.0"}
           @gql.query("V(lft;demand)").future_value.should == 100.0 * (1.05**30)
         end
       end
