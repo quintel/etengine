@@ -127,7 +127,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
       #   somehow weird behaviour...
       values.length <= 1 ? (values.first || 0.0) : values
     else
-      converters.tap(&:flatten!)
+      flatten_uniq(converters)#.tap(&:flatten!)
     end
   end
   alias V VALUE

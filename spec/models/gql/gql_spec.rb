@@ -60,6 +60,14 @@ describe Gql do
       @gql.query("present:V(lft; demand)").should  == 200.0
     end
 
+    it "should update a converter only once when appears multple times" do
+      @input = Input.create!(:query => "UPDATE(V(lft,lft),demand,USER_INPUT())")
+
+      @gql.scenario.user_values = {@input.id => "10%"}
+
+      @gql.query("future:V(lft; demand)").should == 110.0
+    end
+
 
 
     context "v1 to v2" do

@@ -18,6 +18,12 @@ describe QueryInterface do
       @q = QueryInterface.new(@graph)
     end
 
+    describe "VALUE" do
+      it "should return uniq converter" do
+        @q.query("VALUE(lft,lft,mid,mid,rgt)").should have(3).items
+      end
+    end
+
     pending "BUG: LINKS" do
       @q.query("OUTPUT_LINKS(V(lft))").length.should == 0
     end
