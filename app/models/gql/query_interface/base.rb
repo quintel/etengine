@@ -1,26 +1,28 @@
 module Gql::QueryInterface::Base
 
-  def user_input
-    @user_input
+  def input_value
+    @input_value
   end
 
-  def user_input=(val)
-    @user_input = val
+  def input_value=(val)
+    @input_value = val
   end
 
   def scope
     self
   end
 
-  # @param query [String, Gquery] Escaped query_string
+  # @param [String, Gquery] query Escaped query_string
+  # @param [String] input_value user value from param
   # @return [Float]
   # @raise [Gql::GqlError] if query is not valid.
   #
-  def query(obj, user_input = nil)
-    self.user_input = user_input
+  def query(obj, input_value = nil)
+    self.input_value = input_value.to_s
     if obj.is_a?(Gquery)
       subquery(obj.key)
     elsif obj.is_a?(Input)
+      # self.input_value = "#{self.input_value}#{obj.unit}" if obj.unit == '%' && !self.input_value.include?('%')
       result_of_parsed_query(Gql::QueryInterface::Preparser.new(obj.query).parsed, false)
     elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
       result_of_parsed_query(parsed)
@@ -28,7 +30,7 @@ module Gql::QueryInterface::Base
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
     end
   ensure
-    self.user_input = nil
+    self.input_value = nil
   end
 
   # @return [Array<String>] Debug messages

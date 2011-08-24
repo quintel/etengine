@@ -150,7 +150,7 @@ class Gql
   # @param rescue_resultset [ResultSet] A ResultSet that is return in case of errors.
   # @return [ResultSet] Result query, depending on its gql_modifier
   #
-  def query(gquery_or_string, rescue_resultset = nil)
+  def query(gquery_or_string, rescue_with = nil)
     if gquery_or_string.is_a?(::Gquery)
       modifier = gquery_or_string.gql_modifier
       query = gquery_or_string
@@ -164,12 +164,12 @@ class Gql
       send("query_#{modifier}", query)
     end
   rescue => e
-    if rescue_resultset == :debug
+    if rescue_with == :debug
       ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
-    elsif rescue_resultset.present?
-      rescue_resultset
+    elsif rescue_with.present?
+      rescue_with
     else
-      raise e unless rescue_resultset
+      raise e unless rescue_with
     end
   end
 
@@ -231,11 +231,12 @@ class Gql
   def query_multiple(gquery_keys)
     gquery_keys = gquery_keys - ["null", "undefined"]
 
+    rescue_with = ResultSet::INVALID
     gquery_keys.inject({}) do |hsh, key|
       result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
-        query(gquery, ResultSet::INVALID)
+        query(gquery, rescue_with)
       else
-        key.include?('(') ? query(key, ResultSet::INVALID) : ResultSet::INVALID
+        key.include?('(') ? query(key, rescue_with) : rescue_with
       end
       hsh.merge! key => result
       hsh
