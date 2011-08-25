@@ -79,6 +79,14 @@ class Scenario < ActiveRecord::Base
   # Default Scenario
   ##############################
 
+  def test_scenario=(flag)
+    @test_scenario = flag
+  end
+
+  def test_scenario?
+    @test_scenario == true
+  end
+
 
   ##
   # @tested 2010-11-30 seb
