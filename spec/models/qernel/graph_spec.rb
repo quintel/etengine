@@ -31,45 +31,6 @@ module Qernel
     end
   end
 
-  describe Graph, "Sample graphs" do
-    before do
-      @crr_el  = Carrier.new(2, 'el', 1.0)
-      @crr_hw  = Carrier.new(3, 'hw', 1.0)
-      @g = Graph.new.with({})
-    end
-
-    describe "graph lft => rgt" do
-      before do 
-        @lft, @rgt = @g.with_converters(
-          :lft => {:demand => 100.0},
-          :rgt => {:demand => nil}
-        )
-        @link = @g.connect(:lft, :rgt, @crr_el).with(:share => 1.0)
-      end
-
-      it "should make converters accessible" do
-        @g.converter(:lft).should == @lft
-        @g.converter(:rgt).should == @rgt
-      end
-
-      it "should connect properly" do
-        @link.parent.should == @lft
-        @link.child.should == @rgt
-        @link.carrier.should == @crr_el
-        @lft.demand.should == 100.0
-        @rgt.demand.should == nil
-        @lft.input(:el).conversion == 1.0
-        @rgt.output(:el).conversion == 1.0
-      end
-
-      it "should calculate" do
-        @g.calculate
-        @rgt.demand.should == 100.0
-      end
-    end
-  end
-
-
   describe Graph do
     before do 
       @g = GraphParser.new(example.description).build
