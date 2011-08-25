@@ -54,7 +54,7 @@ class ApiRequest
 
   def scenario
     @scenario ||= if test_scenario?
-      ApiScenario.new(new_attributes)
+      ApiScenario.new(new_attributes).tap{|s| s.test_scenario = true }
     else
       ApiScenario.find_by_api_session_key(@api_scenario_id)
     end
