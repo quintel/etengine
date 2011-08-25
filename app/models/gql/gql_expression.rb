@@ -215,9 +215,13 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
 
   def LINK(value_terms, arguments, scope)
     a,b = VALUE(value_terms, arguments, scope)
-    link = a.input_links.detect{|l| l.child == b.converter}
-    link ||= a.output_links.detect{|l| l.parent == b.converter}
-    link
+    if a.nil? || b.nil?
+      nil
+    else
+      link = a.input_links.detect{|l| l.child == b.converter}
+      link ||= a.output_links.detect{|l| l.parent == b.converter}
+      link
+    end
   end
 
   def LINKS(value_terms, arguments, scope)
