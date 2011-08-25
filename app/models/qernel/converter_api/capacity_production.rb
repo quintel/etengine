@@ -123,12 +123,16 @@ class Qernel::ConverterApi
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
   
   # NOTE: disabled caching - Fri 29 Jul 2011 16:36:49 CEST
+  #       - Fixed attributes_required_for and use handle_nil instead. SB - Thu 25. Aug 11
   def production_based_on_number_of_heat_units
-    number_of_units * typical_heat_production_per_unit rescue nil
+    handle_nil(:production_based_on_number_of_heat_units) do
+      number_of_units * typical_heat_production_per_unit 
+    end
   end
   attributes_required_for :production_based_on_number_of_heat_units, [
     :number_of_units,
-    :typical_electricity_production_capacity]
+    :typical_heat_production_per_unit
+  ]
 
   def typical_heat_production_per_unit
     return nil if required_attributes_contain_nil?(:typical_heat_production_per_unit)
