@@ -1,5 +1,7 @@
 class MigrateMarketShareInputs < ActiveRecord::Migration
   def self.up
+    Input.find(383).update_attribute :keys, 'gas_fired_heater_buildings_energetic'
+    
     Gql::UpdateInterface::MarketShareCommand::UPDATES.each do |key, opts|
       Input.where(:attr_name => key).each do |input|
         base, flex = opts
