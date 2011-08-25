@@ -5,7 +5,7 @@ class MigrateNumberOfHeatUnitsInputs < ActiveRecord::Migration
         keys = input.keys.split('_AND_').map(&:strip).compact.uniq.join(',')
 
         query = "EACH(
-            UPDATE(V(#{keys}), number_of_heat_units, USER_INPUT()),
+            UPDATE(V(#{keys}), number_of_units, USER_INPUT()),
             UPDATE(OUTPUT_LINKS(V(#{keys});constant), share, V(#{keys}; production_based_on_number_of_heat_units)),
           )"
 
