@@ -51,14 +51,6 @@ class ApiScenario < Scenario
     Scenario.create!(attributes)
   end
 
-  def test_scenario=(flag)
-    @test_scenario = flag
-  end
-
-  def test_scenario?
-    @test_scenario == true
-  end
-
   def to_param
     api_session_key
   end
