@@ -13,7 +13,8 @@ class MigrateGrowthRateInputs < ActiveRecord::Migration
   def self.down
     Input.where(:attr_name => 'growth_rate').each do |input|
       input.v1_legacy_unit = nil
-      input.update_attribute :query, nil
+      input.query = nil
+      input.save
     end
   end
 end
