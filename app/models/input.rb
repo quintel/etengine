@@ -96,7 +96,11 @@ class Input < ActiveRecord::Base
   end
 
   def v2?
-    query.present? && !(attr_name == 'decrease_total')
+    if Rails.env.test?
+      query.present?
+    else
+      query.present? && !(attr_name == 'decrease_total')
+     end
   end
 
   def updates_present?
