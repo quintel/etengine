@@ -4,7 +4,7 @@
 
 %h2 JSON
 %pre
-  = @json.to_json
+  = @api_response.to_json
 
 %h2 Results
 
@@ -15,7 +15,7 @@
       %th= Current.scenario.start_year
       %th= Current.scenario.end_year
 
-  - @json['result'].andand.each do |key, result|
+  - @api_response['result'].andand.each do |key, result|
     %tr
       %td= key
       -# TODO make it possible to write Current.gql.query(gquery)

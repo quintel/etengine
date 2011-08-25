@@ -56,7 +56,7 @@ class Converter < ActiveRecord::Base
   end
 
   def full_key
-    to_qernel.full_key
+    Qernel::Converter.full_key(key.andand.downcase, sector_id, use_id)
   end
 
   def use_key

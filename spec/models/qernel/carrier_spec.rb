@@ -4,7 +4,7 @@ module Qernel
 
 describe Carrier do
  before do
-   @carrier = Carrier.new(1, 'carrier-1', 'Carrier One')
+   @carrier = Carrier.new(1, 'carrier-1')
  end
 
 

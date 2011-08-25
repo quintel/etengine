@@ -8,10 +8,10 @@ class Data::ConvertersController < Data::BaseController
   end
 
   def show
-    @qernel_graph = @graph.gql.present
+    @qernel_graph = @graph.gql.present_graph
     @converter = Converter.find(params[:id]) # was is ment to be params{id}? it failed..
-    @converter_present = @graph.gql.present.converter(params[:id].to_i)
-    @converter_future  = @graph.gql.future.converter(params[:id].to_i)
+    @converter_present = @graph.gql.present_graph.graph.converter(params[:id].to_i)
+    @converter_future  = @graph.gql.future_graph.graph.converter(params[:id].to_i)
 
     respond_to do |format|
       format.html { render :layout => true }

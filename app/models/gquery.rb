@@ -29,6 +29,8 @@ class Gquery < ActiveRecord::Base
   validates_uniqueness_of :key
   validates_presence_of :query
   # DEBT: Add a validates_format_of :query (e.g. should have at least one a-z)
+  validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
+
   validate :validate_query_parseable
   # belongs_to :gquery_group
   has_and_belongs_to_many :gquery_groups
@@ -43,7 +45,7 @@ class Gquery < ActiveRecord::Base
     "`key` LIKE :q OR query LIKE :q", { :q => "%#{q}%" }
   ])}
 
-  ##
+
   # Returns the cleaned query for any given key.
   #
   # @param key [String] Gquery key (see Gquery#key)
@@ -55,6 +57,7 @@ class Gquery < ActiveRecord::Base
     query
   end
 
+  
 
   ##
   # The GqlParser currently does not work with whitespace.
@@ -65,9 +68,9 @@ class Gquery < ActiveRecord::Base
   # Instead we memoize (see self.gquery_hash) the clean queries
   # once and for all, saving us a few milliseconds per request.
   #
-  # ejp- cleaning algorithm is encapsulated in Gql:Gquery::CleanerParser
+  # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
   def parsed_query
-    @parsed_query ||= Gql::Gquery::CleanerParser.clean_and_parse(query)
+    @parsed_query ||= Gql::QueryInterface::Preparser.new(query).parsed
   end
 
   @@gquery_hash = nil
@@ -86,8 +89,12 @@ class Gquery < ActiveRecord::Base
     end
   end
 
+  def converters?
+    unit == 'converters'
+  end
+
   def cacheable?
-    !not_cacheable && unit != 'converters'
+    !not_cacheable && !converters?
   end
 
   def gql_modifier
@@ -95,7 +102,7 @@ class Gquery < ActiveRecord::Base
   end
 
   def query_cleaned
-    Gql::Gquery::CleanerParser.clean(query)
+    Gql::QueryInterface::Preparser.new(query).clean
   end
 
 private
@@ -106,9 +113,8 @@ private
     @@gquery_hash = nil
   end
 
-
   def validate_query_parseable
-    if Gql::Gquery::CleanerParser.check_query(self[:query]).nil?
+    if !Gql::QueryInterface::Preparser.new(self[:query]).valid?
       errors.add(:query, "cannot be parsed")
       false
     else

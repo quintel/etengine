@@ -150,6 +150,14 @@ class Converter
     self.calculator = Qernel::ConverterApi.new(self)
   end
 
+  def self.full_key(key,sector_id,use_id)
+    use_key = USES[use_id]
+    sector_key = SECTORS[sector_id]
+
+    custom_use_key = (use_key === :undefined || use_key.nil?) ? nil : use_key.to_s
+    [key, sector_key, custom_use_key].compact.join("_").to_sym
+  end
+
 protected
 
   # Memoize here, so it doesn't have to at runtime
@@ -207,22 +215,7 @@ public
   end
 
 
-  # --------- Traversal -------------------------------------------------------
-
-  # @return [Array<Converter>] Converters to the right
-  #
-  def children
-    @children ||= input_links.map(&:child)
-  end
-
-  # @return [Array<Converter>] Converters to the left
-  #
-  def parents
-    @parents ||= output_links.map(&:parent)
-  end
-
-
-  # --------- Links -----------------------------------------------------------
+  # --------- Building --------------------------------------------------------
 
   # @param link [Link]
   #
@@ -235,9 +228,6 @@ public
   def add_input_link(link)
     @input_links << link
   end
-
-
-  # --------- Slots -----------------------------------------------------------
 
   # @param slot [Qernel::Slot]
   # @return [Qernel::Slot]
@@ -257,6 +247,22 @@ public
     reset_memoized_slot_methods
     slot
   end
+
+
+  # --------- Traversal -------------------------------------------------------
+
+  # @return [Array<Converter>] Converters to the right
+  #
+  def children
+    @children ||= input_links.map(&:child)
+  end
+
+  # @return [Array<Converter>] Converters to the left
+  #
+  def parents
+    @parents ||= output_links.map(&:parent)
+  end
+
 
   # @return [Array<Slot>] all input slots
   #
@@ -355,14 +361,19 @@ public
   # @pre converter must be #ready?
   #
   def calculate
+    # Constant links are treated differently.
+    # They can overwrite the preset_demand of this converter
     output_links.select(&:constant?).each(&:calculate)
 
+    # If the demand is already set (is not nil), do not overwrite it. 
     if self.demand.nil?
       self.demand ||= update_demand
-    end
+    end # Demand is set
 
+    # Now calculate the slots of this controller
     slots.each(&:calculate)
 
+    # inversed_flexible fills up the difference of the calculated input/output slot.
     output_links.select(&:inversed_flexible?).each(&:calculate)
   end
 
@@ -375,8 +386,10 @@ protected
   # @pre converter must be #ready?
   # @pre has to be used from within #calculate, as slots have to be adjusted
   #
+  # @return [Float] The demand of this converter
+  #
   def update_demand
-    if output_links.any?(&:inversed_flexible?)
+    if output_links.any?(&:inversed_flexible?) or output_links.any?(&:reversed?)
       slots.map(&:internal_value).compact.sort_by(&:abs).last
     elsif output_links.empty?
       # 2010-06-23: If there is no output links we take the highest value from input.

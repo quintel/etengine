@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110728094210) do
+ActiveRecord::Schema.define(:version => 20110824074331) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -389,6 +389,9 @@ ActiveRecord::Schema.define(:version => 20110728094210) do
     t.string   "label"
     t.text     "comments"
     t.string   "label_query"
+    t.string   "updateable_period", :default => "future", :null => false
+    t.text     "query"
+    t.string   "v1_legacy_unit"
   end
 
   add_index "inputs", ["key"], :name => "unique api key", :unique => true
@@ -459,6 +462,14 @@ ActiveRecord::Schema.define(:version => 20110728094210) do
   end
 
   add_index "output_elements", ["key"], :name => "index_output_elements_on_key"
+
+  create_table "page_titles", :force => true do |t|
+    t.string   "controller"
+    t.string   "action"
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "partners", :force => true do |t|
     t.string   "name"
@@ -546,6 +557,7 @@ ActiveRecord::Schema.define(:version => 20110728094210) do
     t.string   "type"
     t.string   "api_session_key"
     t.boolean  "use_fce"
+    t.datetime "present_updated_at"
   end
 
   create_table "sidebar_items", :force => true do |t|

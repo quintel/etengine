@@ -23,7 +23,6 @@
 #  use_fce            :boolean
 #
 
-##
 # Useage:
 # Getting the default scenario:
 #   Scenario.default
@@ -35,6 +34,11 @@
 #
 #
 class Scenario < ActiveRecord::Base
+  include Scenario::UserUpdates
+  include Scenario::Persistable
+  include Scenario::FceSettings
+
+
   # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
 
@@ -74,6 +78,14 @@ class Scenario < ActiveRecord::Base
   ##############################
   # Default Scenario
   ##############################
+
+  def test_scenario=(flag)
+    @test_scenario = flag
+  end
+
+  def test_scenario?
+    @test_scenario == true
+  end
 
 
   ##

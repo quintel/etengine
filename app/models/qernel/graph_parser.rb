@@ -1,12 +1,16 @@
 module Qernel
   class GraphParser
     attr_reader :lines
-    CARRIERS = {
-      'foo' => Carrier.new(2, 'foo', '', 1.0),
-      'bar' => Carrier.new(3, 'bar', '', 1.0),
-    }.merge(
-      ::Carrier.all.inject({}) {|hsh,c| hsh.merge c.key => c.to_qernel }
-    )
+
+    CARRIERS = ::Carrier.all.inject({}) {|hsh,c| 
+      hsh.merge c.key => c.to_qernel.with({}) 
+    }.merge({
+      # Carriers used in the Specs
+      'foo' => Carrier.new(2, 'foo', 1.0).with({}),
+      'bar' => Carrier.new(3, 'bar', 1.0).with({}),
+      'loss' => Carrier.new(1, 'loss', 0.0),
+      'electricity' => Carrier.new(5, 'electricity', 0.0)
+    })
 
     LINK_TYPES = {
       's' => :share,
@@ -26,13 +30,28 @@ module Qernel
       b.build
     end
 
+    def self.gql_stubbed(g)      
+      raise "GraphParser.gql_stubbed only workds in test" unless Rails.env.test?
+      gql = Current.gql = Gql::Gql.new(nil)
+      Current.scenario = Scenario.default
+
+      p = new(g).build
+      f = new(g).build
+      p.stub!(:dataset).and_return(Dataset.new)
+      f.stub!(:dataset).and_return(Dataset.new)
+
+      gql.stub!(:present_graph).and_return( p )
+      gql.stub!(:future_graph ).and_return( f )
+
+      gql
+    end
+
     def build
       slots = []
       graph = Graph.new.with({})
-
       # create converters first
       lines.each do |line|
-        carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=\>(.+)/).first
+        carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=[\>\<](.+)/).first
 
         build_converter(lft)
         build_converter(rgt)
@@ -41,29 +60,33 @@ module Qernel
 
 
       lines.each do |line|
-        carrier_key, lft, link_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=\>(.+)/).first
+        carrier_key, lft, link_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+\=\=[\>\<])(.+)/).first
 
-        link_type, link_share = link(link_str)
+        link_type, link_share, reversed = link(link_str)
         c_lft = build_converter(lft)
         c_rgt = build_converter(rgt)
         carrier = carrier(carrier_key)
         link = graph.
           connect(c_lft, c_rgt, carrier, link_type ).
           with(:share => link_share)
+        link.reversed = reversed
         s_lft, s_rgt = slot(carrier_key)
         c_lft.input(carrier.key).with(s_lft) if s_lft
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt
       end
 
+      graph.refresh_dataset_objects
       graph
     end
   
     # s => :share, nil
     # s(1.0) => :share, 1.0
     def link(str)
+      reversed = str[-1] == "<"
+      str = str[0..-2]
       link_type = LINK_TYPES[str[0]]
       link_share = str.gsub(/[^\d^\.]/, '') == '' ? nil : str.gsub(/[^\d^\.]/,'').to_f
-      [link_type, link_share]
+      [link_type, link_share, reversed]
     end
 
     # el: => nil
@@ -95,12 +118,14 @@ module Qernel
 
       unless @converters[key]
         id = @converters.keys.length+1
-        dataset = {:demand => dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f }
+        demand = dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f
+        dataset = {:demand => demand, :preset_demand => demand } # preset_demand needed to make old Input v1 updates working
         @converters[key] = Converter.new(id, key).with(dataset)
       end
 
       @converters[key]
     end
+
 
   end
 end

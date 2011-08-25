@@ -33,14 +33,11 @@
 #  label_query               :string(255)
 #
 
- # More defined in pkg/optimize/input.rb!!!
-#
-#
-#
-#
 class Input < ActiveRecord::Base
   has_paper_trail
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
+
+  UPDATEABLE_PERIODS = %w[present future both].freeze
 
   has_many :expert_predictions
 
@@ -61,8 +58,21 @@ class Input < ActiveRecord::Base
     ])
   }
 
+  validates :updateable_period, :presence => true,
+                                :inclusion => UPDATEABLE_PERIODS
+
+  after_create :reset_all_cached
+
   def self.get_cached(key)
     all_cached[key.to_s]
+  end
+
+  def reset_all_cached
+    self.class.reset_all_cached
+  end
+
+  def self.reset_all_cached
+    @all_cached = nil
   end
 
   def self.all_cached
@@ -85,6 +95,22 @@ class Input < ActiveRecord::Base
       group_by(&:share_group)
   end
 
+  def v2?
+    if Rails.env.test?
+      query.present?
+    else
+      query.present? && !(attr_name == 'decrease_total')
+     end
+  end
+
+  def updates_present?
+    updateable_period != 'future'
+  end
+
+  def updates_future?
+    updateable_period != 'present'
+  end
+
   ##
   # update hash for this input with the given value.
   # {'converters' => {'converter_keys' => {'demand_growth' => 2.4}}}
@@ -96,9 +122,9 @@ class Input < ActiveRecord::Base
     
     ##
     # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
-    # The Gql::Update::FceCommand takes care of this.
+    # The Gql::UpdateInterface::FceCommand takes care of this.
     if update_type == 'fce'
-      Gql::Update::FceCommand.create(keys, attr_name, value / factor)
+      Gql::UpdateInterface::FceCommand.create(keys, attr_name, value / factor)
     else
       {
         update_type => {

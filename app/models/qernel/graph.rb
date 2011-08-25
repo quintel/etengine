@@ -85,6 +85,7 @@ class Graph
 
   def present?
     raise "Qernel::Graph#present? #year not defined" if year.nil?
+    # DEBT remove call to Current.scenario. add variable to graph dataset instead
     year == Current.scenario.start_year
   end
 
@@ -101,8 +102,10 @@ class Graph
   #
   # TODO refactor
   def calculate
-    Rails.logger.warn('Graph already calculated') if calculated?
-    Rails.logger.info('Qernel::Graph#calculate')
+    if calculated?
+      Rails.logger.warn('Graph already calculated') 
+      return
+    end
 
     # FIFO stack of all the converters. Converters are removed from the stack after calculation.
     converter_stack = converters.clone
