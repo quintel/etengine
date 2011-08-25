@@ -56,13 +56,13 @@ class Qernel::ConverterApi
   attributes_required_for :full_load_seconds, [:full_load_hours]
 
   def production_based_on_number_of_units
-    dataset_fetch_handle_nil(:production_based_on_number_of_units) do
+    handle_nil(:production_based_on_number_of_units) do
       number_of_units * typical_electricity_production_per_unit
     end
   end
   attributes_required_for :production_based_on_number_of_units, [
     :number_of_units,
-    :typical_electricity_production_capacity
+    :typical_electricity_production_per_unit
   ]
 
   def typical_electricity_production_capacity

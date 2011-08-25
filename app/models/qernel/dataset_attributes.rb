@@ -81,16 +81,20 @@ module Qernel::DatasetAttributes
     if object_dataset.has_key?(attr_name)
       object_dataset[attr_name]
     elsif HANDLE_NIL_SECURLY || handle_nil_securly
-      if required_attributes_contain_nil?(attr_name)
-        object_dataset[attr_name] = nil
-      else
-        object_dataset[attr_name] = yield
-      end
+      object_dataset[attr_name] = handle_nil(attr_name, &block)
     else
       object_dataset[attr_name] = yield rescue nil
     end
   end
-  
+
+  def handle_nil(attr_name, rescue_with = nil, &block)
+    if required_attributes_contain_nil?(attr_name)
+      nil
+    else
+      yield
+    end
+  end
+
   # Memoization
   #
   def dataset_fetch(attr_name, &block)
