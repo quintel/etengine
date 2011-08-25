@@ -260,7 +260,7 @@ describe Gql do
       #   end
       #   nil
       # end
-      pending "attr_name = number_of_units" do
+      describe "attr_name = number_of_units" do
         before do 
           @gql = Qernel::GraphParser.gql_stubbed("lft(nil) == c(nil) ==> rgt(100)")
 
@@ -278,8 +278,8 @@ describe Gql do
           @gql.scenario.user_values = {@old_input.id => 5.0}
           @gql.scenario.load!
 
-          @gql.query("V(OUTPUT_LINKS(V(rgt);constant);value)").future_value.should == 40.0
           @gql.query("V(rgt;number_of_units)").future_value.should == 5.0
+          @gql.query("V(OUTPUT_LINKS(V(rgt);constant);value)").future_value.should == 40.0
           @gql.query("V(rgt;demand)").future_value.should == 100.0
         end
 
@@ -290,8 +290,8 @@ describe Gql do
 
         it "should work with new" do
           @gql.scenario.user_values = {@new_input.id => "5.0"}
-          @gql.query("V(OUTPUT_LINKS(V(rgt);constant);value)").future_value.should == 40.0
           @gql.query("V(rgt;number_of_units)").future_value.should == 5.0
+          @gql.query("V(OUTPUT_LINKS(V(rgt);constant);value)").future_value.should == 40.0
           @gql.query("V(rgt;demand)").future_value.should == 100.0
         end
       end
