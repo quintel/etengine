@@ -236,7 +236,8 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
 
   def INPUT_SLOTS(value_terms, arguments, scope)
     converters = VALUE(value_terms, nil, scope)
-    flatten_uniq converters.map{|c| carrier ? c.input(carrier) : c.outputs}
+    carrier = arguments.first
+    flatten_uniq converters.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.outputs}
   end
 
   def INPUT_LINKS(value_terms, arguments, scope)
