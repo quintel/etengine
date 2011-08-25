@@ -21,6 +21,8 @@ class ApiRequest
     @gquery_keys = []
     @api_scenario_id = attributes.delete(:id)
 
+    Input.reset_all_cached if self.test_scenario?
+
     attributes.each do |key, value|
       send("#{key}=", value) if respond_to?("#{key}=")
     end

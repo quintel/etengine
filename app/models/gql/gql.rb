@@ -217,7 +217,11 @@ class Gql
 
   def prepare_future
     benchmark("prepare_future") do
-      future_graph.dataset ||= graph_model.dataset.to_qernel
+      if Rails.env.test?
+        future_graph.dataset ||= graph_model.dataset.to_qernel
+      else
+        future_graph.dataset = graph_model.dataset.to_qernel
+      end
       UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
       scenario.inputs_future.each do |input, value|
         future.query(input, value)
