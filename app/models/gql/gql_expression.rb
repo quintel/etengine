@@ -209,11 +209,30 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
   end
 
+  def FIRST(value_terms, arguments, scope)
+    value_terms.flatten.first
+  end
+
   def LINK(value_terms, arguments, scope)
     a,b = VALUE(value_terms, arguments, scope)
     link = a.input_links.detect{|l| l.child == b.converter}
     link ||= a.output_links.detect{|l| l.parent == b.converter}
     link
+  end
+
+  def LINKS(value_terms, arguments, scope)
+    value_terms.flatten.compact.map(&:links)
+  end
+
+  def OUTPUT_SLOTS(value_terms, arguments, scope)
+    converters = VALUE(value_terms, nil, scope)
+    carrier = arguments.first
+    flatten_uniq converters.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
+  end
+
+  def INPUT_SLOTS(value_terms, arguments, scope)
+    converters = VALUE(value_terms, nil, scope)
+    flatten_uniq converters.map{|c| carrier ? c.input(carrier) : c.outputs}
   end
 
   def INPUT_LINKS(value_terms, arguments, scope)

@@ -220,6 +220,10 @@ protected
 
 public
 
+  def carrier_key
+    carrier and carrier.key
+  end
+
   def graph_parser_expression
     slot_data = [
       "#{input.andand.conversion}",
