@@ -19,28 +19,13 @@ class LinkShareCommand < CommandBase
   # TODO refactor (seb 2010-10-11)
   def execute
     match = @attr_name.match(MATCHER)
-    if match.nil?
-      # HACK HACK HACK
-      Rails.logger.warn('doesnt match')
-      return nil
-    end
     carrier_name, inout, is_growth_rate = match.captures
 
-
-    if link_type = carrier_name[/^.*_(constant|share)$/,1]
-      carrier_name = carrier_name[/^(.*)_(constant|share)$/, 1]
-    end
     if carrier_name and slot = converter.send(inout, carrier_name.to_sym)
-      links = link_type.nil? ? slot.links : slot.links.select(&:"#{link_type}?")
-      if link = links.first
-        if is_growth_rate.blank?
-          link.share = value
-        else
-          # HACK HACK HACK
-          link.share = (1.0 - (1.0 - value)**Current.scenario.years)
-        end
+      if link = slot.links.first
+        link.share = value #(1.0 - (1.0 - value)**Current.scenario.years)
       end
-      if links.length > 1
+      if slot.links.length > 1
         Rails.logger.warn("LinkShareCommand: multiple links exist for '#{@attr_name}'. But only one link share can be updated. Possible Error")
       end
     end
