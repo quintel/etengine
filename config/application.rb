@@ -41,6 +41,13 @@ module Etm
       g.template_engine :haml
       g.test_framework  :rspec, :fixture => false
     end
+
+    # Add this for Spork 
+    if Rails.env.test? 
+      initializer :after => :initialize_dependency_mechanism do 
+        ActiveSupport::Dependencies.mechanism = :load 
+      end 
+    end
   end
 
   require 'lib/session_accessor'

@@ -24,7 +24,6 @@
 #
 
 class ApiScenario < Scenario
-
   validates_presence_of :api_session_key, :on => :update, :message => "can't be blank"
   validates_uniqueness_of :api_session_key, :on => :update, :message => "must be unique"
 
@@ -65,12 +64,12 @@ class ApiScenario < Scenario
     end
   end
 
-  def api_errors(test_scenario)
+  def api_errors
     if used_groups_add_up?
        []
     else
       groups = used_groups_not_adding_up
-      remove_groups_and_elements_not_adding_up!(test_scenario)
+      remove_groups_and_elements_not_adding_up!
       groups.map do |group, elements|
         element_ids = elements.map{|e| "#{e.id} [#{e.key || 'no_key'}]" }.join(', ')
         "Group '#{group}' does not add up to 100. Elements (#{element_ids}) "

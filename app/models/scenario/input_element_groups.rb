@@ -12,14 +12,14 @@ class Scenario < ActiveRecord::Base
   #
   # @untested 2011-01-22 seb
   #
-  def remove_groups_and_elements_not_adding_up!(save_scenario = true)
+  def remove_groups_and_elements_not_adding_up!
     used_groups_not_adding_up.each do |group, elements| 
       elements.each do |element| 
         delete_from_user_values(element.id)
       end
     end
     # TODO this should probably be save_scenario
-    save if Current.scenario
+    save unless test_scenario?
   end
 
   ##

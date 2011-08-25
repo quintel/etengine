@@ -32,13 +32,6 @@ class GraphApi
   # Still needed here, for updating converters
   #
   def potential_roof_pv_production
-    # PRODUCT(
-    #  DIVIDE(
-    #    AREA(roof_surface_available_pv),
-    #    V(local_solar_pv_grid_connected_energy_energetic;land_use_per_unit)
-    #  ),
-    #  V(local_solar_pv_grid_connected_energy_energetic;typical_electricity_production_per_unit)
-    # )    
     c = graph.converter(:local_solar_pv_grid_connected_energy_energetic).query
     
     roof_surface        = area.roof_surface_available_pv
@@ -95,6 +88,7 @@ class GraphApi
   # @return [Integer] Difference between start_year and end_year
   #
   def number_of_years
+    # DEBT remove call to Current.scenario. add variable to graph dataset
     Current.scenario.years
   end
 

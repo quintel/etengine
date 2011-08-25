@@ -39,26 +39,31 @@
 # }
 #
 #
-class Scenario < ActiveRecord::Base
+module Scenario::FceSettings
+  extend ActiveSupport::Concern
 
+  def included(klass)    
+  end
 
-    attr_writer :fce_settings
+  def fce_settings=(fce_settings)
+    @fce_settings = fce_settings
+  end
 
-    ##
-    # The fce_settings hash stores the co2_emission values per country
-    # This hash is updated using the Gql::Update::FceCommand
-    def fce_settings
-      @fce_settings ||= {}
-    end
+  # The fce_settings hash stores the co2_emission values per country
+  # This hash is updated using the Gql::UpdateInterface::FceCommand
+  #
+  def fce_settings
+    @fce_settings ||= {}
+  end
 
-    def update_statements_for_fce
-      hsh = {"carriers" => {}}
-      fce_settings["carriers"].each do |carrier_key, updates|
-        updates.each do |carrier_attr,values|
-          hsh["carriers"][carrier_key.to_s] = {} if hsh["carriers"][carrier_key.to_s].nil?
-          hsh["carriers"][carrier_key.to_s]["#{carrier_attr}_value"] = values.map(&:last).sum
-        end
+  def update_statements_for_fce
+    hsh = {"carriers" => {}}
+    fce_settings["carriers"].each do |carrier_key, updates|
+      updates.each do |carrier_attr,values|
+        hsh["carriers"][carrier_key.to_s] ||= {}
+        hsh["carriers"][carrier_key.to_s]["#{carrier_attr}_value"] = values.map(&:last).sum
       end
-      hsh
     end
+    hsh
+  end
 end

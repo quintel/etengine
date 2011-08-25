@@ -11,21 +11,21 @@
       %th= group.to_s.gsub('_', ' ')
     %th Co2 (Useful)
     %th Mio EUR
-  - Current.gql.present.primary_energy_carriers.each do |carrier|
+  - Current.gql.present_graph.graph.primary_energy_carriers.each do |carrier|
     %tr
       %th= carrier.key
       - groups.each do |select|
-        - converters = Current.gql.select(select.to_s, Current.gql.present)
+        - converters = Current.gql.select(select.to_s, Current.gql.present_graph)
         - total[select] ||= 0
         - sum = converters.map{|c| c.primary_demand_of_carrier(carrier.key)}.sum
         - total[select] += sum
         %td{:style => "text-align: right"}= (sum / 10**9).round(4)
 
-      - co2 = Current.gql.present.group_converters(:useful_demand).map{|c| c.query.primary_co2_emission_for_carrier(carrier)}.compact.sum
+      - co2 = Current.gql.present_graph.graph.group_converters(:useful_demand).map{|c| c.query.primary_co2_emission_for_carrier(carrier)}.compact.sum
       - total[:co2] ||= 0; total[:co2] += co2
       %td{:style => "text-align: right"}= (co2 / 10**9).round(1)
       %td{:style => "text-align: right"}
-        = (Current.gql.present.group_converters(:primary_energy_demand).map{|c| c.primary_demand_of_carrier(carrier.key)}.sum * (carrier.cost_per_mj || 0) / 10**6).round(4)
+        = (Current.gql.present_graph.graph.group_converters(:primary_energy_demand).map{|c| c.primary_demand_of_carrier(carrier.key)}.sum * (carrier.cost_per_mj || 0) / 10**6).round(4)
 
   %tr
     %th Total (Summed)
@@ -45,7 +45,7 @@
     %th Infinite
     - groups.each do |select|
       %td{:style => "text-align: right"}
-        - sum = Current.gql.select(select.to_s, Current.gql.present).map{|c| c.infinite_demand }.sum
+        - sum = Current.gql.select(select.to_s, Current.gql.present_graph).map{|c| c.infinite_demand }.sum
         %strong= (sum / 10**9).round(1)
 
 - Group.all.map(&:to_qernel).each do |group|
@@ -62,9 +62,9 @@
         %th Co2
 
       - demand_total, primary_total = 0.0, 0.0
-      - converters = Current.gql.present.group_converters(group)
+      - converters = Current.gql.present_graph.graph.group_converters(group)
       - converters.each do |converter|
-        - future = Current.gql.future.converter(converter.id)
+        - future = Current.gql.future_graph.graph.converter(converter.id)
         %tr
           %td= converter.id
           %td= converter.full_key
@@ -95,7 +95,7 @@
     %th Group
     %th Demand
     %th Primary
-  - Current.gql.present.converters.sort_by(&:id).each do |c|
+  - Current.gql.present_graph.graph.converters.sort_by(&:id).each do |c|
     - if c.output_links.empty?
       %tr
         %td= link_to c.id, admin_converter_path(c.id, :graph_id => @graph.id, :format => 'png'), :target => '_blank'

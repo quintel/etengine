@@ -21,10 +21,10 @@ module Gql
 #
 #   graph = Graph.find( 1 )     # the graph we want to query
 #   gql = Gql::Gql.new( graph ) # Create Gql instance for 'graph'
-#   gql.prepare_graphs          # updates and calculates graphs based on user assumptions
+#   gql.prepare          # updates and calculates graphs based on user assumptions
 #
 #   res = gql.query("SUM(1.0,2.0)")
-#   # => <Gql::GqueryResult present_value:3.0 future_value:3.0 present_year:2010 future_year:2040>
+#   # => <Gql::ResultSet present_value:3.0 future_value:3.0 present_year:2010 future_year:2040>
 #
 #   gql.query_present("SUM(1,0,2.0)") # only get the present value
 #   # => 3.0
@@ -59,7 +59,7 @@ module Gql
 # To query a StoredProcedure#foo_bar use:
 # Current.gql.query('stored.foo_bar')
 #
-# === GqueryResult
+# === ResultSet
 #
 # ResultSet of a Gquery.
 #
@@ -74,33 +74,50 @@ module Gql
 class Gql
   extend ActiveModel::Naming
 
-  include UpdatingConverter
-  include Selecting
+  ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  # @return [Qernel::Graph]
-  attr_reader :present
-  # @return [Qernel::Graph]
-  attr_reader :future
+  attr_reader :graph_model
 
-  ##
-  # assigns, updates and calculates present and future graph upon initializing
-  #
-  # @param present [Qernel::Graph] Graph for present
-  # @param future [Qernel::Graph] Graph for future scenario. Gets updated with Current.scenario.update_statements
-  #
   def initialize(graph_model)
     # The if is a temporary solution.
     # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
     return if graph_model == :testing
 
-    @present = graph_model.present
-    @future = graph_model.future
-
-    @present.year = Current.scenario.start_year
-    @future.year = Current.scenario.end_year
+    @graph_model = graph_model
   end
 
-  ##
+  def scenario
+    Current.scenario
+  end
+
+  # @return [Qernel::Graph]
+  #
+  def present_graph
+    @present_graph ||= graph_model.present.tap{|g| g.year = scenario.start_year}
+  end
+
+  # @return [Qernel::Graph]
+  #
+  def future_graph
+    @future_graph ||= graph_model.future.tap{|g| g.year = scenario.end_year}
+  end
+
+  # @return [QueryInterface]
+  #
+  def present
+    @present ||= QueryInterface.new(present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.present_updated_at}")
+  end
+
+  # @return [QueryInterface]
+  #
+  def future
+    @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE && !scenario.test_scenario?
+      QueryInterface.new(future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
+    else
+      QueryInterface.new(future_graph)
+    end
+  end
+
   # Are the graphs calculated? If true, prevent the programmers
   # to add further update statements ({Scenario#add_update_statements}). 
   # Because they won't affect the system anymore.
@@ -111,51 +128,18 @@ class Gql
     @calculated == true
   end
 
-  ##
   # @return [Policy]
   #
   def policy
-    @policy ||= Policy.new(@present, @future)
+    @policy ||= Policy.new(present_graph, future_graph)
   end
 
   def benchmark(title)
-    ::Graph.benchmark("Benchmark::Gql:: #{title}") do
+    ::Graph.benchmark("** Gql::Benchmark #{title}") do
       yield
     end
   end
 
-  ##
-  # Updates and calculates the graphs
-  #
-  # @return [Gql] Returns self, so that we can gql = Gql.new(graph).prepare_graphs
-  #
-  def prepare_graphs
-    update_statements = Current.scenario.update_statements
-
-    if update_statements
-      update_time_curves(@future)      
-      update_carriers(@future, update_statements['carriers'])
-      update_area_data(@future, update_statements['area'])
-      update_converters(@future, update_statements['converters'])
-    end
-
-    benchmark("calculate future") do
-      @future.calculate
-    end
-
-    update_policies(update_statements['policies']) if update_statements
-
-    # At this point the gql is calculated. Changes through update statements
-    # should no longer be allowed, as they won't have an impact on the 
-    # calculation (even though updating prices would work).
-    @calculated = true  
-
-    after_calculation_updates(@present)
-    after_calculation_updates(@future)
-    self
-  end
-
-  ##
   # Query the GQL, takes care of gql modifier strings.
   #
   # For performance reason it is suggested to pass a Gquery for 'query'
@@ -163,9 +147,10 @@ class Gql
   # takes rather long time.
   #
   # @param query [String, Gquery] the single query.
-  # @return [GqueryResult] Result query, depending on its gql_modifier
+  # @param rescue_resultset [ResultSet] A ResultSet that is return in case of errors.
+  # @return [ResultSet] Result query, depending on its gql_modifier
   #
-  def query(gquery_or_string)
+  def query(gquery_or_string, rescue_with = nil)
     if gquery_or_string.is_a?(::Gquery)
       modifier = gquery_or_string.gql_modifier
       query = gquery_or_string
@@ -175,66 +160,126 @@ class Gql
     
     if modifier.nil?
       query_standard(query)
-    elsif ::Gquery::GQL_MODIFIERS.include?(modifier.strip)
+    elsif Gquery::GQL_MODIFIERS.include?(modifier.strip)
       send("query_#{modifier}", query)
+    end
+  rescue => e
+    if rescue_with == :debug
+      ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
+    elsif rescue_with.present?
+      rescue_with
+    else
+      raise e unless rescue_with
     end
   end
 
-  def debug_present(query)
-    query_interface.debug_graph(query, present).reverse.join("\n") 
-  rescue => e
-    e.inspect
+  # Updates and calculates the graphs
+  #
+  def prepare
+    # 2011-08-15: the present has to be prepared first. otherwise 
+    # updating the future won't work (we need the present values)
+
+    prepare_present
+    prepare_future
+
+    UpdateInterface::Policies.new(policy).update_with(scenario.update_statements)
+
+    benchmark("calculate #{present_graph.year}") do
+      present_graph.calculate
+    end
+    benchmark("calculate #{future_graph.year}") do
+      future_graph.calculate
+    end
+
+    UpdateInterface::Graph.new(present_graph).after_calculation_updates
+    UpdateInterface::Graph.new(future_graph).after_calculation_updates
+
+    # At this point the gql is calculated. Changes through update statements
+    # should no longer be allowed, as they won't have an impact on the 
+    # calculation (even though updating prices would work).
+    @calculated = true
   end
 
-  def debug_future(query)
-    query_interface.debug_graph(query, future).reverse.join("\n") 
-  rescue => e
-    e.inspect
+  def prepare_present
+    benchmark("prepare_present") do
+      # DEBT wrong. check for present_updated_at!!
+      if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
+        present_graph.dataset ||= graph_model.calculated_present_data
+      else
+        present_graph.dataset ||= graph_model.dataset.to_qernel
+        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
+        scenario.inputs_present.each do |input, value|
+          present.query(input, value)
+        end
+      end
+    end
   end
 
-private
+  def prepare_future
+    benchmark("prepare_future") do
+      if Rails.env.test?
+        future_graph.dataset ||= graph_model.dataset.to_qernel
+      else
+        future_graph.dataset = graph_model.dataset.to_qernel
+      end
+      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
+      scenario.inputs_future.each do |input, value|
+        future.query(input, value)
+      end
+    end
+  end
+
+  # @param [Array<String>]
+  # @return [Hash<String => ResultSet>]
+  #
+  def query_multiple(gquery_keys)
+    gquery_keys = gquery_keys - ["null", "undefined"]
+
+    rescue_with = ResultSet::INVALID
+    gquery_keys.inject({}) do |hsh, key|
+      result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
+        query(gquery, rescue_with)
+      else
+        key.include?('(') ? query(key, rescue_with) : rescue_with
+      end
+      hsh.merge! key => result
+      hsh
+    end
+  end
+
+protected
 
   # Standard query without modifiers. Queries present and future graph.
   #
   # @param query [String, Gquery] the single query.
-  # @return [GqueryResult] Result query, depending on its gql_modifier
+  # @return [ResultSet] Result query, depending on its gql_modifier
   #
   def query_standard(query)
-    GqueryResult.create [
-      [Current.scenario.start_year, query_present(query)],
-      [Current.scenario.end_year, query_future(query)]
+    ResultSet.create [
+      [scenario.start_year, query_present(query)],
+      [scenario.end_year, query_future(query)]
     ]
   end
 
-  ##
   # @param query [String] The query
   # @return [Float] The result of the present graph
   #
   def query_present(query)
-    graph_query(query, @present)
+    present.query(query)
   end
 
-  ##
   # @param query [String] The query
   # @return [Float] The result of the future graph
   #
   def query_future(query)
-    graph_query(query, @future)
+    future.query(query)
   end
 
-  ##
-  # @return [Gquery] The Gquery used for queries
-  #
-  def query_interface
-    @query_interface ||= ::Gql::Gquery.new
-  end
-
-  ##
   # @param query [String] The query
   # @return [Float] The result of a historic serie, this values are db values not qernel.
   #
   def query_historic(query)
-    historic_serie = HistoricSerie.find_by_key_and_area_code(query,Current.scenario.region)
+    historic_serie = HistoricSerie.find_by_key_and_area_code(query, scenario.region)
     if historic_serie
       historic_serie.year_values.map{|h| [h.year,h.value]}
     else
@@ -242,30 +287,17 @@ private
     end
   end
 
-  ##
   # Not called directly. Use #query instead, e.g.:
   #
   #   gql.query("stored.foo_bar")
   #
-  #
   # @param query [String] Calls a stored procedure
-  # @return [GqueryResult] The result of the stored procedure
+  # @return [ResultSet] The result of the stored procedure
   #
   def query_stored(query)
     StoredProcedure.execute(query)
   end
 
-  def graph_query(query, graph)
-    query_interface.query_graph(query, graph)
-  end
-
-  def present_converter(id)
-    @present.converter(id)
-  end
-
-  def future_converter(id)
-    @future.converter(id)
-  end
 
 end
 

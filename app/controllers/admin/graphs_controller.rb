@@ -29,7 +29,7 @@ module Admin
       end
       respond_to do |format|
         format.json do
-          render :json => Current.gql.present.converters.inject({}) {|hsh,c| hsh.merge c.id => {:demand => ((c.proxy.demand / 1000000).round(1) rescue nil)} }
+          render :json => Current.gql.present_graph.graph.converters.inject({}) {|hsh,c| hsh.merge c.id => {:demand => ((c.proxy.demand / 1000000).round(1) rescue nil)} }
         end
         format.html    { render }
       end

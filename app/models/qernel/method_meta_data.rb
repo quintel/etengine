@@ -2,7 +2,6 @@ module Qernel
 
 module MethodMetaData
 
-  ##
   # Sums all non-nil values.
   # Returns nil if all values are nil.
   #
@@ -14,7 +13,6 @@ module MethodMetaData
     values.empty? ? nil : values.sum
   end
 
-  ##
   # Returns the attribute names of given method.
   # if no method_name given return values of required by the caller_method
   #
@@ -25,7 +23,6 @@ module MethodMetaData
     self.class.required_attributes_for_method(method_name)
   end
 
-  ##
   # Returns the values of given method.
   # if no method_name given return values of required by the caller_method
   #
@@ -38,7 +35,6 @@ module MethodMetaData
       map{|attr_key| self.send(attr_key) }
   end
 
-  ##
   # Is any of the required attributes nil.
   #
   # @return [true,false]
@@ -52,8 +48,7 @@ module MethodMetaData
 
 
   module ClassMethods
-    ##
-    # Tree of all the methods and attributes used for a specific attribute/mathod method_name
+      # Tree of all the methods and attributes used for a specific attribute/mathod method_name
     #
     # @param method_name [Symbol] the attribute/method to inspect
     # @return [<attr_name,[attr_name]>]
@@ -70,35 +65,24 @@ module MethodMetaData
       end
     end
 
-    ##
-    #
-    #
     def register_calculation_method(keys)
       registered_calculation_methods = [registered_calculation_methods, keys].flatten
     end
 
-    ##
-    #
-    #
     def registered_calculation_methods
       @registered_calculation_methods ||= []
     end
 
-    ##
-    #
-    #
     def calculation_methods
       required_attributes.keys + registered_calculation_methods
     end
 
-    ##
     # Hash of :method_name => required_attributes_for_method
     #
     def required_attributes
       @required_attributes ||= {}
     end
 
-    ##
     # @param method_name [String,Symbol]
     # @return [Array<Symbol>] attributes/methods used by given method
     #
@@ -106,7 +90,6 @@ module MethodMetaData
       required_attributes[method_name.to_sym] || []
     end
 
-    ##
     # @param method_name [Symbol]
     # @param attributes [Array<Symbol>]
     #

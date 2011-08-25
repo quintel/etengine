@@ -24,11 +24,8 @@ class Data::BaseController < ApplicationController
   protected
 
     def find_graph
-      params[:blueprint_id] ||= 'latest'
-      params[:region_code]  ||= 'nl'
-
-      blueprint_id = params[:blueprint_id]
-      region_code  = params[:region_code]
+      blueprint_id = params[:blueprint_id] ||= 'latest'
+      region_code  = params[:region_code]  ||= 'nl'
 
       if blueprint_id != 'latest'
         @api_scenario = Scenario.find_by_api_session_key(blueprint_id)
@@ -41,8 +38,6 @@ class Data::BaseController < ApplicationController
         # DEBT: this is probablye not needed anymore. instead assign Current.graph = @graph
         Current.gql    = @graph.gql
       end
-      @present_graph = @graph.gql.present
-      @future_graph  = @graph.gql.future
       @blueprint     = @graph.blueprint
       @dataset       = @graph.dataset
     end

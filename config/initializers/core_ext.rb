@@ -26,7 +26,6 @@ class <<Marshal
   alias_method_chain :load, :rails_classloader
 end
 
-
 class Numeric
   def per_mj_to_per_mwh; self * 3600.0; end
 end
