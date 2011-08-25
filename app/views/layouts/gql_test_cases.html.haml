@@ -35,6 +35,7 @@
       
       var value_match = function(expected, actual, precision_in_percent) {
         // DEBT check this calculation
+        if (_.isString(expected) && expected == actual) { return true }
         if (expected == 0 && actual == 0) { return true }
         if (expected == null && actual == null) { return true }
         return (Math.abs(((actual - expected) / actual)) < (precision_in_percent / 100))
