@@ -21,10 +21,6 @@ module UpdateInterface
       Current.gql.future_graph.converter(id)
     end
 
-    def after_calculation_updates
-      AfterCalculationUpdate.new(graph).execute
-    end
-
     def update_with(update_statements)
       if update_statements
         update_time_curves

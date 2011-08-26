@@ -12,11 +12,6 @@ module Gql
 # It is responsible to update the future graph with user values/assumptions
 # and to query the present and future graph using GQL Queries (Gquery).
 #
-# A Gql instance holds a present and a future graph. The present graph should
-# not change at all (the exception are after_calculation_updates for dynamic
-# values such as the price for gasmix). The future graph gets updated with user
-# values.
-#
 # == Useage
 #
 #   graph = Graph.find( 1 )     # the graph we want to query
@@ -190,9 +185,6 @@ class Gql
     benchmark("calculate #{future_graph.year}") do
       future_graph.calculate
     end
-
-    UpdateInterface::Graph.new(present_graph).after_calculation_updates
-    UpdateInterface::Graph.new(future_graph).after_calculation_updates
 
     # At this point the gql is calculated. Changes through update statements
     # should no longer be allowed, as they won't have an impact on the 
