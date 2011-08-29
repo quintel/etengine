@@ -186,7 +186,6 @@ module Scenario::UserUpdates
 
     # Builds update_statements from user_values that are readable by the GQl. 
     #
-    # @param [Boolean] load_as_municipality
     #
     # @untested 2010-12-06 seb
     #
