@@ -86,10 +86,6 @@ class Area < ActiveRecord::Base
     end
   end
   
-  def is_municipality?
-    entity == "municipality"
-  end
-
   def co2_emission_1990_billions
     co2_emission_1990 * BILLIONS
   end
