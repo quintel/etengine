@@ -89,7 +89,7 @@ class Input < ActiveRecord::Base
     @all_cached
   end
 
-  def self.inputs_grouped # TODO: delete?
+  def self.inputs_grouped
     @inputs_grouped ||= Input.
       with_share_group.select('id, share_group, `key`').
       group_by(&:share_group)
