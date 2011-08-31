@@ -53,6 +53,12 @@ namespace :deploy do
     rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
     local_user = ENV['USER'] || ENV['USERNAME']
     notify_command = "bundle exec rake hoptoad:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
+    if application_key == "etengine"
+      notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
+    elsif application_key == "etengine_staging"
+      notify_command << " API_KEY=a736722b2610573160a2f015f036488b"
+    end
+    
     notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
     puts "Notifying Hoptoad of Deploy of #{server_type} (#{notify_command})"
     run "cd #{release_path} && #{notify_command}"
