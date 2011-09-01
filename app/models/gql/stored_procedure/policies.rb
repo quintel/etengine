@@ -126,9 +126,9 @@ private
 
   def policy_result_for(policy_goal, multiplier)
     ResultSet.create [
-      #NEW: when no user goal is initialized it should return 0
-      [Current.scenario.start_year, (policy_goal.user_value ? policy_goal.start_value * multiplier : 0)],
-      [Current.scenario.end_year, (policy_goal.user_value ? policy_goal.target_value * multiplier : 0 )]
+      #NEW: when no start or target_value is initialized it should return 0
+      [Current.scenario.start_year, (policy_goal.start_value ? policy_goal.start_value * multiplier : 0)],
+      [Current.scenario.end_year, (policy_goal.target_value ? policy_goal.target_value * multiplier : 0 )]
     ]
   end
 
