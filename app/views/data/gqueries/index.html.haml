@@ -3,14 +3,14 @@
 .header
   Gqueries
 
-%div{:style=>"width:200px;float:left"}
+%div
   %h2 Gqueries
 
   %p= link_to 'Query sandbox', test_data_gqueries_path
   %p= link_to 'Create new Gquery', new_data_gquery_path
   %p= link_to 'Query Dump', dump_data_gqueries_path
 
-%div{:style=>"width:600px;float:left; clear:both"}
+%div
   %h2 Groups
   - GqueryGroup.order(:group_key).each do |group|
     %p{:style=>"float:left;width: 190px"}
@@ -19,7 +19,7 @@
   - if params[:groups]
     %p= link_to "Show all queries", data_gqueries_path
 
-%table{table_defaults,:style => "clear: both"}
+%table{table_defaults}
   %thead
     %tr
       = sortable_table_header :name => "Key", :sort=>"key"
