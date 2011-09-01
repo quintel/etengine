@@ -27,26 +27,6 @@ Etm::Application.routes.draw do
     resources :gqueries, :only => [:index]
   end
 
-  namespace :admin do
-    resources :graphs do
-      collection do
-        post :import
-      end
-    end
-    resources :gql_test_cases
-    resources :historic_series
-    resources :query_tables
-    resources :query_table_cells, :except => [:show, :index]
-    resources :blueprints
-    resources :inputs
-    resources :blueprint_models
-    
-    root :to => "pages#index"
-    
-    match '/gql' => "gql#index"
-    match '/gql/search' => "gql#search", :as => :gql_search
-  end
-
   namespace :data do
     root :to => "base#start", :as => 'start'
     match '/redirect' => "base#redirect", :as => 'redirect'
@@ -86,6 +66,26 @@ Etm::Application.routes.draw do
       resources :areas do
         resources :carrier_data
       end
+
+      resources :graphs do
+        collection do
+          post :import
+        end
+      end
+
+      resources :gql_test_cases
+      resources :historic_series
+      resources :query_tables
+      resources :query_table_cells, :except => [:show, :index]
+      resources :blueprints
+      resources :inputs
+      resources :blueprint_models
+
+      root :to => "pages#index"
+
+      match '/gql' => "gql#index"
+      match '/gql/search' => "gql#search", :as => :gql_search
+
     end
   end
 

@@ -29,7 +29,7 @@ class UserSessionsController < ApplicationController
           redirect_to session[:return_to]
           clear_stored_location
         elsif UserSession.find.user.role.andand.name == "admin"
-          redirect_to "/admin"
+          redirect_to "/data"
         else
             redirect_to(root_url)
         end
