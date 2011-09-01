@@ -32,7 +32,13 @@
             %li= link_to 'Graph', data_blueprint_layouts_path
             %li= link_to 'FCE', data_fce_values_path
             %li= link_to "Kick", {:controller => "/data", :action => "kick"}, :confirm =>"This will drop the sessions for ALL users! Are you sure?"
-            %li= link_to "Admin", admin_root_path
+            %li= link_to "Graphs (admin)", data_graphs_path
+            %li= link_to "Query Tables", data_query_tables_path
+            %li= link_to "Historic Series", data_historic_series_path
+            %li= link_to "Blueprints", data_blueprints_path
+            %li= link_to "Inputs", data_inputs_path
+            %li= link_to "GQL", data_gql_path
+
             %li= link_to "Logout", logout_path
       #content
         = yield

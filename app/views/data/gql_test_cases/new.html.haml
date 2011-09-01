@@ -1,0 +1,42 @@
+
+= form_for [:admin, @gql_test_case] do |f|
+  %p
+    = f.label :name
+    = f.text_field :name
+  %p
+    = f.label :settings
+    = f.text_area :settings
+    %p
+      %em e.g.: settings[country]=nl&settings[end_year]=2030
+  -#%p
+    = f.label :inputs
+    = f.text_area :inputs
+  %p
+    = f.label :instruction
+    = f.text_area :instruction
+    = link_to "Generate Test Suite", "#", :onclick => "load_queries($('#gql_test_case_settings').val(), create_tests)"
+
+  %p
+    = f.label :description
+    = f.text_area :description
+  %p
+    = f.submit
+
+%script
+  // create Gquery objects for the gqueries we will test later.
+  - Gquery.limit(1500).reject{|g| g.unit == 'converters'}.each do |gquery|
+    == var #{gquery.key} = new Gquery({id : '#{gquery.id}', key: '#{gquery.key}'});
+
+
+:javascript
+  // This simply outputs the test cases for all the Gquery Objects
+  // It is now called after the JSON request
+  function create_tests() {
+    var test_suite = "";
+    window.gqueries.each(function(gquery) {
+      var str = "matches('"+gquery.get('key')+"', "+gquery.get('present_value')+", "+gquery.get('future_value')+",1);\n"
+      test_suite = test_suite + str
+    })
+    $('#gql_test_case_instruction').val(test_suite);
+  };
+  // Make an API call. When complete runs the test-suites

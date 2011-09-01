@@ -1,5 +1,4 @@
 class Data::ConvertersController < Data::BaseController
-
   def index
   end
 
@@ -27,5 +26,4 @@ private
     converter = params[:graph] == 'future' ? @converter_future : @converter_present
     converter.to_image(depth, base_url)
   end
-
 end
