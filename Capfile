@@ -48,11 +48,11 @@ namespace :deploy do
     restart
   end
 
-  desc "Notify Hoptoad of the deployment"
-  task :notify_hoptoad, :except => { :no_release => true } do
+  desc "Notify Airbrake of the deployment"
+  task :airbrake, :except => { :no_release => true } do
     rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
     local_user = ENV['USER'] || ENV['USERNAME']
-    notify_command = "bundle exec rake hoptoad:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
+    notify_command = "bundle exec rake airbrake:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
     if application_key == "etengine"
       notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
     elsif application_key == "etengine_staging"
@@ -60,11 +60,11 @@ namespace :deploy do
     end
     
     notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
-    puts "Notifying Hoptoad of Deploy of #{server_type} (#{notify_command})"
+    puts "Notifying Airbrake of Deploy of #{server_type} (#{notify_command})"
     run "cd #{release_path} && #{notify_command}"
-    puts "Hoptoad Notification Complete."
+    puts "Airbrake Notification Complete."
   end
 end
 
-after "deploy", "notify_hoptoad"
+after "deploy", "notify_airbrake"
 after "deploy:update_code", "deploy:copy_configuration_files"
