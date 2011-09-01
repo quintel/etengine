@@ -71,6 +71,8 @@ Etm::Application.routes.draw do
         end
       end
 
+      resources :fce_values
+
       resources :converters do
         resource :converter_data
       end
