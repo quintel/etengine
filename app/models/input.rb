@@ -151,7 +151,7 @@ class Input < ActiveRecord::Base
         }
       rescue => ex
         Rails.logger.warn("Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}")
-        HoptoadNotifier.notify(
+        Airbrake.notify(
           :error_message => "Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
           :backtrace => caller,
           :parameters => {:input => input, :api_scenario => Current.scenario })
@@ -168,7 +168,7 @@ class Input < ActiveRecord::Base
         }
       rescue => ex
         Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}")
-        HoptoadNotifier.notify(
+        Airbrake.notify(
           :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
           :backtrace => caller,
           :parameters => {:input => input, :api_scenario => Current.scenario })
