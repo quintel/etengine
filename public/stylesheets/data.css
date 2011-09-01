@@ -48,8 +48,11 @@ table {
   border-spacing: 0; }
 
 #panel {
-  height: 200px;
-  overflow: auto; }
+  float: left;
+  width: 250px;
+  height: 100%;
+  overflow: auto;
+  background-color: white; }
   #panel ul li a .id {
     font-family: Courier, monospace;
     font-size: 12px; }
@@ -147,7 +150,6 @@ h2 {
   font-weight: bold;
   font-size: 120%;
   padding: 5px 6px 8px;
-  margin-left: -6px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   margin-bottom: 1em; }
@@ -156,7 +158,6 @@ h3 {
   background: #ddddff;
   font-weight: bold;
   font-size: 110%;
-  margin-left: -6px;
   padding: 4px 0px 4px 6px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
