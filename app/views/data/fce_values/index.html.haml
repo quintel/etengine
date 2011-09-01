@@ -1,0 +1,34 @@
+
+
+#content
+  .header
+    FCE Values
+  %table{table_defaults,:style => "clear: both"}
+    %thead
+      %tr
+        = sortable_table_header :name => "Carrier", :sort=>"carrier"
+        = sortable_table_header :name => "Using Country", :sort=>"using_country"        
+        = sortable_table_header :name => "Origin Country", :sort=>"origin_country"
+        / %th co2_exploration_per_mj
+        %th co2_extraction_per_mj
+        %th co2_treatment_per_mj
+        %th co2_transportation_per_mj
+        %th co2_conversion_per_mj
+        %th co2_waste_treatment_per_mj
+        %th
+        %th        
+
+    %tbody
+      - @fce_values.flatten.each do |fce_value|
+        %tr{cycles}
+          %td= fce_value.carrier
+          %td= fce_value.using_country
+          %td= fce_value.origin_country
+          / %td= fce_value.co2_exploration_per_mj
+          %td= fce_value.co2_extraction_per_mj
+          %td= fce_value.co2_treatment_per_mj
+          %td= fce_value.co2_transportation_per_mj
+          %td= fce_value.co2_conversion_per_mj
+          %td= fce_value.co2_waste_treatment_per_mj
+          %td=# link_to 'Edit', edit_data_fce_value_url(:id => fce_value)
+          %td=# link_to 'Delete', data_fce_values_path(:id => fce_value), :method => 'delete', :confirm => 'Are you sure?'
