@@ -1,13 +1,10 @@
 = render 'list'
 
-#content
-  .header
-    Test Query
+.header
+  Test Query
 
-  - form_tag test_data_gqueries_path do |f|
-    %p= text_area_tag :query, params[:query], :style => "width: 500px; height: 200px"
-  
-    %p= submit_tag 'check'
+- form_tag test_data_gqueries_path do |f|
+  %p= text_area_tag :query, params[:query], :style => "width: 500px; height: 200px"
 
   %h3 Result
   - if @query
@@ -19,3 +16,4 @@
     %pre= Current.gql.future.debug(@query).reverse.join("\n") 
   - else
     %em no query
+  %p= submit_tag 'check'

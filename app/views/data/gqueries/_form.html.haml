@@ -1,4 +1,4 @@
-- form_for [:data, @gquery], :url => @gquery.new_record? ? data_gqueries_path : data_gquery_path(:id => @gquery) do |f|
+= form_for [:data, @gquery], :url => @gquery.new_record? ? data_gqueries_path : data_gquery_path(:id => @gquery) do |f|
 
   %p.error_messages
     = error_messages_for :gquery
