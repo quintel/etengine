@@ -2,36 +2,38 @@
 %html{ :xmlns => "http://www.w3.org/1999/xhtml" }
   %head
     %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
-    %title
-      EnergyTransitionModel
+    %title EnergyTransitionModel
       
     = javascript_include_tag :defaults
     = javascript_include_tag 'underscore.min'
     = sprocket_layout_init :admin
     = sprocket_layout_init :testcases
 
-    = stylesheet_link_tag 'data.reset', 'data', 'data.panel'
+    = stylesheet_link_tag 'data'
 
   %body#data
-    #header
-      = form_tag(data_redirect_path, {:method => 'get'}) do 
-
-        %label
-          Blueprint
-          = select_tag :blueprint_id, options_for_select(['latest'], params[:blueprint_id]), :onchange => 'submit()'
-        %label
-          Region
-          = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code]), :onchange => 'submit()'
-    
-        = link_to 'Area', data_areas_path
-        = link_to 'Carriers', data_carriers_path
-        = link_to 'Converters', data_converters_path
-        = link_to 'Gqueries', data_gqueries_path
-        =# link_to 'Tests', data_gql_test_cases_path
-        = link_to 'Graph', data_blueprint_layouts_path
-        = link_to "Kick", {:controller => "/data", :action => "kick"}, :confirm =>"This will drop the sessions for ALL users! Are you sure?"
-        = link_to 'FCE', data_fce_values_path
-        = link_to "Admin", admin_root_path
-        = link_to "Logout", logout_path
-
-    = yield
+    #container
+      #header
+        = form_tag(data_redirect_path, {:method => 'get'}) do
+          %label
+            Blueprint
+            = select_tag :blueprint_id, options_for_select(['latest'], params[:blueprint_id]), :onchange => 'submit()'
+          %label
+            Region
+            = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code]), :onchange => 'submit()'
+      #sidebar
+        %nav
+          %ul
+            %li= link_to 'Area', data_areas_path
+            %li= link_to 'Carriers', data_carriers_path
+            %li= link_to 'Converters', data_converters_path
+            %li= link_to 'Gqueries', data_gqueries_path
+            %li=# link_to 'Tests', data_gql_test_cases_path
+            %li= link_to 'Graph', data_blueprint_layouts_path
+            %li= link_to 'FCE', data_fce_values_path
+            %li= link_to "Kick", {:controller => "/data", :action => "kick"}, :confirm =>"This will drop the sessions for ALL users! Are you sure?"
+            %li= link_to "Admin", admin_root_path
+            %li= link_to "Logout", logout_path
+      #content
+        = yield
+      #footer
