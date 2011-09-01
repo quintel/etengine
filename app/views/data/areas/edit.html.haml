@@ -2,22 +2,21 @@
 
 = @area.region_code
 
-#content
-  .header
-    = @area.region_code
-    %small= link_to 'back', data_area_path(:id => @area.id)
-    
+.header
+  = @area.region_code
+  %small= link_to 'back', data_area_path(:id => @area.id)
 
-  = notice_message
-  %p
-    %strong Attention:
-    %em changing area data requires restarting the server.
 
-  = render 'form'
+= notice_message
+%p
+  %strong Attention:
+  %em changing area data requires restarting the server.
 
-  %p
-    = link_to "Show", data_area_path(@area)
-    |
-    = link_to "View All", data_areas_path
+= render 'form'
 
-  = render "/data/shared/revisions", :versioned => @area
+%p
+  = link_to "Show", data_area_path(@area)
+  |
+  = link_to "View All", data_areas_path
+
+= render "/data/shared/revisions", :versioned => @area

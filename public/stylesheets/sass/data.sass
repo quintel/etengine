@@ -4,22 +4,34 @@
 body
   :font-family "Helvetica Neue", "Arial", sans-serif
   :font-size 10pt
-#panel
-  :width 300px
-  :bottom 0
 
-  a
-    :text-decoration none
-    :display block
-    :color #333
-    :cursor hand
-    .id
-      :font-family Courier
-      :font-size 12px
-    .sector, .use
-      :font-size 10px
-  li
-    :cursor pointer
+#header
+  :height 30px
+  :background url(/images/layout/bg-header-inner.gif) repeat-x
+  :color #fff
+  :line-height 28px
+#sidebar
+  float: left
+  width: 100px
+  background-color: #95C4EC
+  nav
+    ul
+      list-style-type: none
+      li
+        padding: 5px
+        a
+          display: block
+          width: 100px
+          text-decoration: none
+
+#content
+  margin-left: 110px
+  .header
+    :font-size 16px
+    :margin-bottom 10px
+    :line-height 26px
+#footer
+  clear: both
 
 #notice
   :background #090
@@ -27,42 +39,7 @@ body
   :color #fff
   :margin-bottom 5px
 
-#content
-  :position absolute
-  :left 300px
-  :right 0
-  :top 30px
-  :padding 40px 10px
 
-  .header
-    :position absolute
-    :left 0
-    :top 0
-    :right 0
-    :background #eee
-    :height 29px
-    :border-bottom 1px solid #666
-
-    :font-size 16px
-    :margin-bottom 10px
-    :line-height 26px
-
-#header
-  :position absolute
-  :left 0
-  :right 0
-  :top 0
-  :height 30px
-  :background url(/images/layout/bg-header-inner.gif) repeat-x
-  :color #fff
-  :line-height 28px
-
-  a
-    :padding  3px 20px 10px
-    :color #000
-    :text-decoration none
-    :opacity 0.8
-    :background #fff
     
 table
   :border-top 1px solid #ccc
@@ -76,7 +53,6 @@ table
     :border-right 1px solid #ccc
     :border-bottom 1px solid #ccc
     :padding 3px
-
   tbody
     th
       :text-align left
