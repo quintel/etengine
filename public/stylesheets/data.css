@@ -53,11 +53,17 @@ table {
   height: 100%;
   overflow: auto;
   background-color: white; }
-  #panel ul li a .id {
-    font-family: Courier, monospace;
-    font-size: 12px; }
-  #panel ul li a .sector, #panel ul li a .use {
-    font-size: 10px; }
+  #panel ul li {
+    padding: 5px; }
+    #panel ul li:nth-child(odd) {
+      background-color: #eeeeee; }
+    #panel ul li a {
+      text-decoration: none; }
+      #panel ul li a .id {
+        font-family: Courier, monospace;
+        font-size: 12px; }
+      #panel ul li a .sector, #panel ul li a .use {
+        font-size: 10px; }
 
 body {
   font-family: "Helvetica Neue", "Arial", sans-serif;
@@ -69,21 +75,20 @@ body {
   color: white;
   line-height: 28px; }
 
-#sidebar {
-  float: left;
-  width: 100px;
+#subheader {
+  height: 30px;
   background-color: #95c4ec; }
-  #sidebar nav ul {
+  #subheader nav ul {
     list-style-type: none; }
-    #sidebar nav ul li {
-      padding: 5px; }
-      #sidebar nav ul li a {
-        display: block;
+    #subheader nav ul li {
+      padding: 5px;
+      float: left; }
+      #subheader nav ul li a {
         width: 100px;
         text-decoration: none; }
 
 #content {
-  margin-left: 110px; }
+  clear: both; }
   #content .header {
     font-size: 16px;
     margin-bottom: 10px;
