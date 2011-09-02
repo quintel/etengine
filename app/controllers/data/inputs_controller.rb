@@ -1,7 +1,6 @@
 class Data::InputsController < Data::BaseController
 
   def index
-    @columns = Input.column_names
     @inputs = Input.all
   end
 
