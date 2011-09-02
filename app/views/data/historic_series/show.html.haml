@@ -1,6 +1,6 @@
 %h2
   ==#{@historic_serie.key}
-  %small= link_to 'Edit', edit_admin_historic_serie_path(@historic_serie)
+  %small= link_to 'Edit', edit_data_historic_serie_path(:id => @historic_serie.id)
 
 
 %pre== Key: #{@historic_serie.key}
@@ -16,6 +16,6 @@
       %tr
         %td= entry.year
         %td= entry.value
-        %td= link_to 'edit', edit_admin_year_value_path(entry)
-= link_to 'New', new_admin_year_value_path
-= render '/admin/shared/revisions', :versioned => @historic_serie
+        %td= link_to 'edit', edit_data_year_value_path(entry)
+= link_to 'New', new_data_year_value_path
+= render '/data/shared/revisions', :versioned => @historic_serie
