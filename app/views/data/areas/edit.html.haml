@@ -1,22 +1,21 @@
 = render "list"
 
-= @area.region_code
+.main
+  .header
+    = @area.region_code
+    %small= link_to 'back', data_area_path(:id => @area.id)
 
-.header
-  = @area.region_code
-  %small= link_to 'back', data_area_path(:id => @area.id)
 
+  = notice_message
+  %p
+    %strong Attention:
+    %em changing area data requires restarting the server.
 
-= notice_message
-%p
-  %strong Attention:
-  %em changing area data requires restarting the server.
+  = render 'form'
 
-= render 'form'
+  %p
+    = link_to "Show", data_area_path(@area)
+    |
+    = link_to "View All", data_areas_path
 
-%p
-  = link_to "Show", data_area_path(@area)
-  |
-  = link_to "View All", data_areas_path
-
-= render "/data/shared/revisions", :versioned => @area
+  = render "/data/shared/revisions", :versioned => @area

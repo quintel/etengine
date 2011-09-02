@@ -3,25 +3,13 @@
 .header
   == ##{@carrier.id}
   = @carrier.key
+  = @carrier_data.area.try(:region_code)
 
 = notice_message
 
-- form_for @carrier_data, :url => data_carrier_data_path(:id => @carrier_data) do |f|
-  %table
-    %thead
-      %tr
-        %th
-        %th= @carrier_data.area.andand.region_code
-    %tbody.numeric_rows
-      - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
-        %tr
-          %th= key
-          %td= f.text_field key
-
-    %tfoot
-      %tr
-        %td
-        %td= f.submit 'save'
-
+= simple_form_for @carrier_data, :url => data_carrier_data_path(:id => @carrier_data) do |f|
+  - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+    = f.input key
+  = f.button :submit
 
 = render :partial => "/data/shared/revisions", :locals => {:versioned => @carrier_data}

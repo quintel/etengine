@@ -1,5 +1,6 @@
-= semantic_form_for [:data, @historic_serie] do |form|
-  = form.inputs
-  = form.buttons
+= simple_form_for [:data, @historic_serie] do |f|
+  = f.input :key
+  = f.input :area_code
+  = f.button :submit
 
 = link_to "back", data_historic_series_path
