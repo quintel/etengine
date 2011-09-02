@@ -65,9 +65,88 @@ table {
       #panel ul li a .sector, #panel ul li a .use {
         font-size: 10px; }
 
+span.gql_operator {
+  color: #dad07e; }
+  span.gql_operator:hover {
+    text-decoration: underline; }
+
+span.gql_gquery_key {
+  color: #71baff; }
+
+span.gql_group_key {
+  color: #65a735; }
+
+span.detailed_number {
+  position: relative; }
+  span.detailed_number small {
+    display: none; }
+  span.detailed_number:hover small {
+    display: inline;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: white;
+    padding: 5px;
+    border: 1px solid #cccccc; }
+
+.gql_test_case .matcher {
+  position: relative;
+  background: #666666;
+  color: white;
+  font-weight: bold;
+  font-size: 100%;
+  padding: 3px 6px 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  margin-bottom: 1em;
+  font-weight: 10px;
+  font-weight: normal; }
+  .gql_test_case .matcher.passed {
+    background: #009900 !important; }
+  .gql_test_case .matcher.failed {
+    background: #990000 !important; }
+  .gql_test_case .matcher .result {
+    position: absolute;
+    top: 2px;
+    right: 10px; }
+
+#blueprint_layout {
+  margin-top: 30px; }
+
 body {
   font-family: "Helvetica Neue", "Arial", sans-serif;
   font-size: 10pt; }
+  body h2 small, body h2 small a, body h3 small, body h3 small a {
+    font-weight: 10px;
+    font-weight: normal; }
+  body h2 {
+    background: #666666;
+    color: white;
+    font-weight: bold;
+    font-size: 120%;
+    padding: 5px 6px 8px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 1em; }
+  body h3 {
+    background: #ddddff;
+    font-weight: bold;
+    font-size: 110%;
+    padding: 4px 0px 4px 6px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 1em; }
+  body pre {
+    background: #333333;
+    color: white;
+    padding: 10px;
+    line-height: 1.2em;
+    margin-bottom: 1.2em;
+    font-family: Courier;
+    font-size: 12px; }
+  body p {
+    line-height: 1.2em;
+    margin-bottom: 1.2em; }
 
 #header {
   height: 30px;
@@ -126,105 +205,3 @@ table.data {
     width: 400px; }
   table.data td {
     width: 120px; }
-
-table.model_form {
-  border: none; }
-  table.model_form th {
-    width: 100px;
-    border: none;
-    font-weight: bold;
-    vertical-align: top; }
-  table.model_form td {
-    border: none;
-    width: 500px;
-    vertical-align: top; }
-    table.model_form td input[type=text] {
-      font-size: 12px; }
-    table.model_form td input[type=text], table.model_form td select {
-      width: 300px; }
-    table.model_form td textarea {
-      width: 500px; }
-
-h2 small, h2 small a, h3 small, h3 small a {
-  font-weight: 10px;
-  font-weight: normal; }
-
-h2 {
-  background: #666666;
-  color: white;
-  font-weight: bold;
-  font-size: 120%;
-  padding: 5px 6px 8px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  margin-bottom: 1em; }
-
-h3 {
-  background: #ddddff;
-  font-weight: bold;
-  font-size: 110%;
-  padding: 4px 0px 4px 6px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  margin-bottom: 1em; }
-
-pre, textarea#gquery_query {
-  background: #333333;
-  color: white;
-  padding: 10px;
-  line-height: 1.2em;
-  margin-bottom: 1.2em;
-  font-family: Courier;
-  font-size: 12px; }
-
-p {
-  line-height: 1.2em;
-  margin-bottom: 1.2em; }
-
-span.gql_operator {
-  color: #dad07e; }
-  span.gql_operator:hover {
-    text-decoration: underline; }
-
-span.gql_gquery_key {
-  color: #71baff; }
-
-span.gql_group_key {
-  color: #65a735; }
-
-span.detailed_number {
-  position: relative; }
-  span.detailed_number small {
-    display: none; }
-  span.detailed_number:hover small {
-    display: inline;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: white;
-    padding: 5px;
-    border: 1px solid #cccccc; }
-
-.gql_test_case .matcher {
-  position: relative;
-  background: #666666;
-  color: white;
-  font-weight: bold;
-  font-size: 100%;
-  padding: 3px 6px 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  margin-bottom: 1em;
-  font-weight: 10px;
-  font-weight: normal; }
-  .gql_test_case .matcher.passed {
-    background: #009900 !important; }
-  .gql_test_case .matcher.failed {
-    background: #990000 !important; }
-  .gql_test_case .matcher .result {
-    position: absolute;
-    top: 2px;
-    right: 10px; }
-
-#blueprint_layout {
-  margin-top: 30px; }

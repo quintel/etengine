@@ -1,0 +1,51 @@
+span.gql_operator
+  //#DD712E
+  color: #DAD07E
+  &:hover
+    text-decoration: underline
+span.gql_gquery_key
+  color: #71BAFF
+span.gql_group_key
+  color: #65A735
+
+
+
+span.detailed_number
+  position: relative
+  small
+    display: none
+  &:hover small
+    display: inline
+    position: absolute
+    top: 0
+    right: 0
+    background: #fff
+    padding: 5px
+    border: 1px solid #ccc
+
+.gql_test_case
+
+  .matcher
+    position: relative
+    background: #666
+    color: #fff
+    font-weight: bold
+    font-size: 100%
+    padding: 3px 6px 5px
+    -moz-border-radius: 5px
+    -webkit-border-radius: 5px
+    margin-bottom: 1em
+    &.passed
+      background: #090 !important
+    &.failed
+      background: #900 !important
+
+    .result
+      position: absolute
+      top: 2px
+      right: 10px
+    font-weight: 10px
+    font-weight: normal
+
+#blueprint_layout
+  margin-top: 30px
