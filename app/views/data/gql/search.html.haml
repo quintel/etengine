@@ -1,6 +1,6 @@
 %h2 Search for GQL
 
-= form_tag admin_gql_search_path, :method => :get do
+= form_tag data_gql_search_path, :method => :get do
   = label_tag "query"
   = text_field_tag :q, @q
   = submit_tag "Search"
@@ -26,7 +26,7 @@
     %tbody
       - @gqueries.each do |g|
         %tr
-          %td= link_to g.id, data_gquery_path(:id => g.id, :blueprint_id => 'latest', :region_code => 'nl')
+          %td= link_to g.id, data_gquery_path(:id => g.id)
           %td= highlight(g.key, @q)
           %td= highlight(g.query, @q)
 - if @inputs.any?
