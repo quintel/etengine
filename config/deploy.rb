@@ -23,7 +23,7 @@ task :production do
 end
 
 task :staging do
-  set :domain, "ec2-46-137-12-48.eu-west-1.compute.amazonaws.com"
+  set :domain, "ec2-46-51-182-128.eu-west-1.compute.amazonaws.com"
   set :branch, "staging"
 
   # change this to #{application}_staging when you want it in a different directory
