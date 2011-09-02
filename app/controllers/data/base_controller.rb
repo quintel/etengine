@@ -11,12 +11,17 @@ class Data::BaseController < ApplicationController
       :blueprint_id => params[:blueprint_id],
       :region_code  => params[:region_code])
   end
+  
+  def redirect
+    redirect_to data_root_path(
+      :blueprint_id => params[:blueprint_id],
+      :region_code  => params[:region_code])    
+  end
 
   protected
-
     def find_graph
       blueprint_id = params[:blueprint_id] ||= 'latest'
-      region_code  = params[:region_code]  ||= 'nl'
+      region_code  = params[:region_code] ||= 'nl'
 
       if blueprint_id != 'latest'
         @api_scenario = Scenario.find_by_api_session_key(blueprint_id)

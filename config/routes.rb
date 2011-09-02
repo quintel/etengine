@@ -28,11 +28,13 @@ Etm::Application.routes.draw do
   end
 
   namespace :data do
-    root :to => "base#start", :as => 'start'
+    root :to => "pages#index", :blueprint_id => 'latest', :region_code => 'nl'
+    
     match '/redirect' => "base#redirect", :as => 'redirect'
     match '/kick' => 'base#kick', :as => 'kick'
 
     scope '/:blueprint_id/:region_code' do
+      root :to => "pages#index"
       resources :blueprint_layouts do
         resources :converter_positions
       end
@@ -79,11 +81,9 @@ Etm::Application.routes.draw do
       resources :inputs
       resources :blueprint_models
 
-      root :to => "pages#index"
 
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
-
     end
   end
 
