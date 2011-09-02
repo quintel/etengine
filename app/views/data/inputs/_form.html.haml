@@ -1,5 +1,24 @@
-= semantic_form_for [:data, @input] do |form|
-  = form.inputs
-  = form.buttons
+= simple_form_for [:data, @input] do |f|
+  = f.input :name
+  = f.input :key
+  = f.input :keys
+  = f.input :attr_name
+  = f.input :share_group
+  = f.input :start_value_gql
+  = f.input :min_value_gql
+  = f.input :max_value_gql
+  = f.input :min_value
+  = f.input :max_value
+  = f.input :start_value
+  = f.input :update_type
+  = f.input :unit
+  = f.input :factor
+  = f.input :label
+  = f.input :comments
+  = f.input :label_query
+  = f.input :updateable_period
+  = f.input :query
+  = f.input :v1_legacy_unit
+  = f.button :submit
 
 = link_to "back", data_input_path(@input.id)

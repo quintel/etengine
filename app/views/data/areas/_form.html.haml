@@ -1,18 +1,4 @@
-- form_for @area, :url => data_area_path(:id => @area) do |f|
-
-  %table
-    %thead
-      %tr
-        %th Area
-        %th
-
-    %tbody.numeric_rows
-      - Area.editable_column_names.each do |key|
-        %tr
-          %th= key
-          %td= f.text_field key
-
-    %tfoot
-      %tr
-        %td
-        %td= f.submit 'save'
+= simple_form_for @area, :url => data_area_path(:id => @area) do |f|
+  - Area.editable_column_names.each do |key|
+    = f.input key
+  = f.button :submit

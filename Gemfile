@@ -9,7 +9,7 @@ gem 'rake', '0.9.2' # 0.9 breaks things
 
 gem 'authlogic', :git => 'git://github.com/odorcicd/authlogic.git', :branch => 'rails3'
 gem 'bluecloth'
-gem 'formtastic'
+gem 'simple_form'
 gem 'http_status_exceptions', :git => 'git://github.com/japetheape/http_status_exceptions.git' 
 gem 'paper_trail', '>= 1.6.4'
 gem 'ruby-graphviz', :require => "graphviz"
