@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
   $('input#search').keyup(function(ev) {
+    if(ev.keyCode == 27) { $(this).val(''); }
     var search = $(this).val();
     var cookie_key = $(this).attr('data-search_scope');
 
