@@ -1,15 +1,6 @@
-- title 'Sliders'
+= render 'list'
 
-%p= link_to 'Create new slider', new_data_input_path
+.header
+  Sliders
 
-%table
-  %thead
-    %tr
-      %th.tal id
-      %th.tal Name
-
-  %tbody
-    - @inputs.each do |input|
-      %tr
-        %td= input.id
-        %td= link_to input.name, edit_data_input_path(:id => input.id)
+%p= link_to 'Create new input', new_data_input_path
