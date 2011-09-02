@@ -21,7 +21,7 @@
           %label
             Region
             = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code]), :onchange => 'submit()'
-      #sidebar
+      #subheader
         %nav
           %ul
             %li= link_to 'Area', data_areas_path
