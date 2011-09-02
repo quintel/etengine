@@ -33,8 +33,6 @@ Etm::Application.routes.draw do
     match '/kick' => 'base#kick', :as => 'kick'
 
     scope '/:blueprint_id/:region_code' do
-      match '/' => "converters#index"
-
       resources :blueprint_layouts do
         resources :converter_positions
       end

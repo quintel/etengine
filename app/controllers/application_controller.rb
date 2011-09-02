@@ -81,11 +81,11 @@ protected
 
 private
   def store_location
-    session[:return_to] = request.url
+    session[:redirect_to] = request.url
   end
   
   def clear_stored_location
-    session[:return_to] = nil
+    session[:redirect_to] = nil
   end
   
   def assign_current_for_inspection_in_tests
@@ -93,7 +93,7 @@ private
   end
 
   def redirect_back_or_default(default = root_path)
-    redirect_to(session[:return_to] || default)
+    redirect_to(session[:redirect_to] || default)
     clear_stored_location
   end
 
