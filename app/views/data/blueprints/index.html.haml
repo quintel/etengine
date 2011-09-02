@@ -11,7 +11,7 @@
     %br
     = link_to "Create a new Blueprint", new_data_blueprint_path
 
-  %table{table_defaults}
+  %table
     %thead
       %tr
         %th ID
@@ -22,7 +22,7 @@
         %th Created At
     %tbody
       - @blueprints.each do |blueprint|
-        %tr{cycles}
+        %tr
           %td= blueprint.id
           %td= blueprint.graph_version
           %td= blueprint.description

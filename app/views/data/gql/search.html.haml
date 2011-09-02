@@ -15,7 +15,7 @@
     GQueries: #{pluralize @gqueries.size, 'item'}
 
 - if @gqueries.any?
-  %table{table_defaults}
+  %table
     %thead
       %tr
         %th{:colspan => 3} GQueries
@@ -25,12 +25,12 @@
         %th Query
     %tbody
       - @gqueries.each do |g|
-        %tr{cycles}
+        %tr
           %td= link_to g.id, data_gquery_path(:id => g.id, :blueprint_id => 'latest', :region_code => 'nl')
           %td= highlight(g.key, @q)
           %td= highlight(g.query, @q)
 - if @inputs.any?
-  %table{table_defaults}
+  %table
     %thead
       %tr
         %th{:colspan => 6} Inputs
@@ -43,7 +43,7 @@
         %th Attr_name
     %tbody
       - @inputs.each do |g|
-        %tr{cycles}
+        %tr
           %td= g.id
           %td= highlight(g.key, @q)
           %td= highlight(g.start_value_gql, @q)

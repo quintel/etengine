@@ -12,7 +12,7 @@
       %th= @area.region_code
   %tbody
     - Area.ordered_column_names.each do |column_name|
-      %tr{cycles}
+      %tr
         %th= column_name
         - v = @area.send(column_name)
         %td{:title => v}

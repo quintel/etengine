@@ -10,6 +10,6 @@
 
   %tbody
     - @inputs.each do |input|
-      %tr{cycles}
+      %tr
         %td= input.id
         %td= link_to input.name, edit_data_input_path(:id => input.id)

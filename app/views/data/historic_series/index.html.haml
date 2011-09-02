@@ -2,7 +2,7 @@
 
 %p= link_to 'Create new serie', new_data_historic_serie_path
 
-%table{table_defaults}
+%table
   %thead
     %tr
       %th.tal id
@@ -11,7 +11,7 @@
       %th.tal
   %tbody
     - @historic_series.each do |historic_serie|
-      %tr{cycles}
+      %tr
         %td= historic_serie.id
         %td= link_to historic_serie.key, data_historic_serie_path(:id => historic_serie.id)
         %td= historic_serie.area_code
