@@ -98,7 +98,7 @@
   - Current.gql.present_graph.graph.converters.sort_by(&:id).each do |c|
     - if c.output_links.empty?
       %tr
-        %td= link_to c.id, admin_converter_path(c.id, :graph_id => @graph.id, :format => 'png'), :target => '_blank'
+        %td= link_to c.id, data_converter_path(c.id, :graph_id => @graph.id, :format => 'png'), :target => '_blank'
         %td= c.full_key
         %td== [#{c.groups.map(&:key).join(', ')}]
         %td= c.demand

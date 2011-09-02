@@ -1,6 +1,5 @@
-%div{:style => "width: 60%"}
-  -semantic_form_for [:admin, @input] do |form|
-    = form.inputs
-    = form.buttons
+= semantic_form_for [:data, @input] do |form|
+  = form.inputs
+  = form.buttons
 
-  = link_to "back", admin_input_path
+= link_to "back", data_input_path(@input.id)

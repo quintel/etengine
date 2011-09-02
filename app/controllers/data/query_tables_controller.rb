@@ -17,7 +17,7 @@ class Data::QueryTablesController < Data::BaseController
     @query_table = QueryTable.new(params[:query_table])
     if @query_table.save
       flash[:notice] = "Successfully created query table."
-      redirect_to [:admin,@query_table]
+      redirect_to [:data, @query_table]
     else
       render :action => 'new'
     end
@@ -31,7 +31,7 @@ class Data::QueryTablesController < Data::BaseController
     @query_table = QueryTable.find(params[:id])
     if @query_table.update_attributes(params[:query_table])
       flash[:notice] = "Successfully updated query table."
-      redirect_to [:admin,@query_table]
+      redirect_to [:data, @query_table]
     else
       render :action => 'edit'
     end
@@ -41,6 +41,6 @@ class Data::QueryTablesController < Data::BaseController
     @query_table = QueryTable.find(params[:id])
     @query_table.destroy
     flash[:notice] = "Successfully destroyed query table."
-    redirect_to admin_query_tables_url
+    redirect_to data_query_tables_url
   end
 end

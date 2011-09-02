@@ -15,7 +15,7 @@ class Data::HistoricSeriesController < Data::BaseController
 
     if @historic_serie.save
       flash[:notice] = "HistoricSerie saved"
-      redirect_to admin_historic_series_url
+      redirect_to data_historic_series_url
     else
       render :action => 'new'
     end
@@ -26,7 +26,7 @@ class Data::HistoricSeriesController < Data::BaseController
 
     if @historic_serie.update_attributes(params[:historic_serie])
       flash[:notice] = "HistoricSerie updated"
-      redirect_to admin_historic_series_url
+      redirect_to data_historic_series_url
     else
       render :action => 'edit'
     end
@@ -36,11 +36,10 @@ class Data::HistoricSeriesController < Data::BaseController
     @historic_serie = HistoricSerie.find(params[:id])
     if @historic_serie.destroy
       flash[:notice] = "Successfully destroyed historic serie."
-      redirect_to admin_historic_series_url
     else
       flash[:error] = "Error while deleting historic serie."
-      redirect_to admin_historic_series_url
     end
+    redirect_to data_historic_series_url
   end
 
 
@@ -52,13 +51,15 @@ class Data::HistoricSeriesController < Data::BaseController
     find_model
   end
 
-  def find_model
-    if params[:version_id]
-      @version = Version.find(params[:version_id])
-      @historic_serie = @version.reify
-      flash[:notice] = "Revision"
-    else
-      @historic_serie = HistoricSerie.find(params[:id])
+  private
+
+    def find_model
+      if params[:version_id]
+        @version = Version.find(params[:version_id])
+        @historic_serie = @version.reify
+        flash[:notice] = "Revision"
+      else
+        @historic_serie = HistoricSerie.find(params[:id])
+      end
     end
-  end
 end

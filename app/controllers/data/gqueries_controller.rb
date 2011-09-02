@@ -73,11 +73,10 @@ class Data::GqueriesController < Data::BaseController
     @gquery = Gquery.find(params[:id])
     if @gquery.destroy
       flash[:notice] = "Gquery #{@gquery.name} deleted"
-      redirect_to admin_gqueries_url
     else
       flash[:error] = "Gquery #{@gquery.name} not deleted"
-      redirect_to admin_gqueries_url
     end
+    redirect_to data_gqueries_url
   end
   
   private
