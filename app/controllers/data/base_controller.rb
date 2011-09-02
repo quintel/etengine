@@ -3,22 +3,13 @@ class Data::BaseController < ApplicationController
   before_filter :restrict_to_admin
   before_filter :find_graph
 
-  # TODO: remove, this controller seems useless - PZ Wed 11 May 2011 10:33:25 CEST
-  def start
-    redirect_to data_converters_url(
-      :blueprint_id => params[:blueprint_id],
-      :region_code  => params[:region_code])
-  end
-
-  def redirect
-    redirect_to data_converters_url(
-      :blueprint_id => params[:blueprint_id],
-      :region_code  => params[:region_code])
-  end
-
   def kick
-    Rails.cache.clear # system("echo 'flush_all' | nc 127.0.0.1 11211 -w 3")
-    start
+    Rails.cache.clear
+    system("touch tmp/restart.txt")
+
+    redirect_to data_converters_url(
+      :blueprint_id => params[:blueprint_id],
+      :region_code  => params[:region_code])
   end
 
   protected
