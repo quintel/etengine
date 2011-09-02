@@ -53,12 +53,17 @@ table {
   height: 100%;
   overflow: auto;
   background-color: white;
-  margin-right: 10px; }
+  margin-right: 10px;
+  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd; }
+  #panel input {
+    width: 100%; }
   #panel ul li {
     padding: 5px; }
     #panel ul li:nth-child(odd) {
       background-color: #eeeeee; }
     #panel ul li a {
+      color: #333333;
       text-decoration: none; }
       #panel ul li a .id {
         font-family: Courier, monospace;
@@ -165,7 +170,7 @@ body {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d7d9da), to(#eaeaea));
   height: 30px;
   line-height: 20px;
-  border-bottom: 1px solid #ededed; }
+  border-bottom: 1px solid #dddddd; }
   #subheader nav ul {
     list-style-type: none; }
     #subheader nav ul li {
@@ -181,9 +186,12 @@ body {
 #content {
   clear: both; }
   #content .header {
+    color: #5e6469;
+    background-color: #eeeeee;
     font-size: 16px;
     margin-bottom: 10px;
-    line-height: 26px; }
+    line-height: 26px;
+    height: 35px; }
 
 #footer {
   clear: both; }
@@ -211,10 +219,3 @@ table {
     background-color: #eeeeee; }
   table tbody.numeric_rows td {
     text-align: right; }
-
-table.data {
-  table-layout: fixed; }
-  table.data th {
-    width: 400px; }
-  table.data td {
-    width: 120px; }

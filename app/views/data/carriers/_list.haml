@@ -1,5 +1,5 @@
-#panel.panel_tree
-  %input#search{:'data-search_scope' => 'carriers'}
+#panel
+  %input#search{:'data-search_scope' => 'carriers', :type => 'search'}
 
   .tree
     = cache("data/#{params[:blueprint_id]}/#{params{:region_code}}/carriers/_list/") do

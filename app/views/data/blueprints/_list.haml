@@ -1,6 +1,5 @@
-#panel.panel.panel_tree
-  .header
-    %input#search{:'data-search_scope' => 'converters'}
+#panel
+  %input#search{:'data-search_scope' => 'converters', :type => 'search'}
 
   .tree
     =# cache("construction/blueprints/_list/#{Blueprint.order('created_at DESC').first.created_at}") do
