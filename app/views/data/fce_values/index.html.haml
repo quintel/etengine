@@ -10,11 +10,11 @@
         = sortable_table_header :name => "Using Country", :sort=>"using_country"        
         = sortable_table_header :name => "Origin Country", :sort=>"origin_country"
         / %th co2_exploration_per_mj
-        %th co2_extraction_per_mj
-        %th co2_treatment_per_mj
-        %th co2_transportation_per_mj
-        %th co2_conversion_per_mj
-        %th co2_waste_treatment_per_mj
+        %th co2_extraction_per_mj (kg)
+        %th co2_treatment_per_mj (kg)
+        %th co2_transportation_per_mj (kg)
+        %th co2_conversion_per_mj (kg)
+        %th co2_waste_treatment_per_mj (kg)
         %th
         %th        
 
@@ -30,6 +30,5 @@
           %td= fce_value.co2_transportation_per_mj
           %td= fce_value.co2_conversion_per_mj
           %td= fce_value.co2_waste_treatment_per_mj
-          %td= fce_value.unit
           %td=# link_to 'Edit', edit_data_fce_value_url(:id => fce_value)
           %td=# link_to 'Delete', data_fce_values_path(:id => fce_value), :method => 'delete', :confirm => 'Are you sure?'
