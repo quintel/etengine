@@ -6,7 +6,7 @@ set :stage, :production
 set :server_type, 'production'
 
 task :production do
-  set :domain, "46.137.90.62"
+  set :domain, "api.et-model.com"
   set :branch, "production"
 
   set :application_key, "#{application}"
@@ -24,7 +24,7 @@ task :production do
 end
 
 task :staging do
-  set :domain, "ec2-46-137-12-48.eu-west-1.compute.amazonaws.com"
+  set :domain, "api.staging.et-model.com"
   set :branch, "staging"
 
   # change this to #{application}_staging when you want it in a different directory
