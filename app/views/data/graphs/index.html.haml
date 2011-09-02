@@ -15,7 +15,7 @@
     = file_field_tag :zip_file
   %p= submit_tag 'upload and import'
 
-%table{table_defaults}
+%table
   %thead
     %tr
       %th Id
@@ -28,7 +28,7 @@
       %th.tal
 
   - @graphs.each do |graph|
-    %tr{cycles}
+    %tr
       %td= graph.id
       %td
         = image_tag "icons/#{graph.country}.png" if graph.country and graph.country.length == 2

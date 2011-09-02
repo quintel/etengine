@@ -3,7 +3,7 @@
 #content
   .header
     FCE Values
-  %table{table_defaults,:style => "clear: both"}
+  %table{:style => "clear: both"}
     %thead
       %tr
         = sortable_table_header :name => "Carrier", :sort=>"carrier"
@@ -20,7 +20,7 @@
 
     %tbody
       - @fce_values.flatten.each do |fce_value|
-        %tr{cycles}
+        %tr
           %td= fce_value.carrier
           %td= fce_value.using_country
           %td= fce_value.origin_country

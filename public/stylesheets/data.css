@@ -52,7 +52,8 @@ table {
   width: 250px;
   height: 100%;
   overflow: auto;
-  background-color: white; }
+  background-color: white;
+  margin-right: 10px; }
   #panel ul li {
     padding: 5px; }
     #panel ul li:nth-child(odd) {
@@ -149,22 +150,33 @@ body {
     margin-bottom: 1.2em; }
 
 #header {
+  background-color: #6a7176;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#6a7176"}, endColorstr="#4d5256");
+  background-image: -moz-linear-gradient(center top, #6a7176, #4d5256);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#6a7176), to(#4d5256));
   height: 30px;
-  background: url(/images/layout/bg-header-inner.gif) repeat-x;
-  color: white;
+  color: #cdcdcd;
   line-height: 28px; }
 
 #subheader {
+  background-color: #d7d9da;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#d7d9da"}, endColorstr="#eaeaea");
+  background-image: -moz-linear-gradient(center top, #d7d9da, #eaeaea);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d7d9da), to(#eaeaea));
   height: 30px;
-  background-color: #95c4ec; }
+  line-height: 20px;
+  border-bottom: 1px solid #ededed; }
   #subheader nav ul {
     list-style-type: none; }
     #subheader nav ul li {
       padding: 5px;
       float: left; }
       #subheader nav ul li a {
+        color: #5e6469;
         width: 100px;
         text-decoration: none; }
+        #subheader nav ul li a:hover {
+          color: red; }
 
 #content {
   clear: both; }
@@ -183,19 +195,20 @@ body {
   margin-bottom: 5px; }
 
 table {
-  border-top: 1px solid #cccccc;
-  border-left: 1px solid #cccccc; }
+  margin: 15px;
+  border: 1px solid #cccccc; }
   table thead th {
     text-align: center;
     background: #dddddd;
     padding: 5px; }
   table th, table td {
-    border-right: 1px solid #cccccc;
-    border-bottom: 1px solid #cccccc;
+    border: 1px solid #cccccc;
     padding: 3px; }
   table tbody th {
     text-align: left;
     font-weight: normal; }
+  table tbody tr:nth-child(odd) {
+    background-color: #eeeeee; }
   table tbody.numeric_rows td {
     text-align: right; }
 

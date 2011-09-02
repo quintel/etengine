@@ -1,11 +1,11 @@
 - title "Query Tables"
 
-%table{table_defaults}
+%table
   %tr
     %th Name
     %th Description
   - for query_table in @query_tables
-    %tr{cycles}
+    %tr
       %td= link_to h(query_table.name), data_query_table_path(:id => query_table.id)
       %td= h(query_table.description)
 

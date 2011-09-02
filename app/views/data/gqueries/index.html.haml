@@ -19,7 +19,7 @@
   - if params[:groups]
     %p= link_to "Show all queries", data_gqueries_path
 
-%table{table_defaults}
+%table
   %thead
     %tr
       = sortable_table_header :name => "Key", :sort=>"key"
@@ -32,7 +32,7 @@
 
   %tbody
     - @gqueries.flatten.each do |gquery|
-      %tr{cycles}
+      %tr
         %td= link_to gquery.key, data_gquery_path(:id => gquery)
         %td= gquery.unit
         %td= link_to 'Edit', edit_data_gquery_url(:id => gquery)

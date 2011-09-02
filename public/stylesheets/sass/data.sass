@@ -1,16 +1,19 @@
 @import "data_reset"
+@import "mixins"
 @import "data_panel"
 @import "data_specific"
 @import "data_typography"
 
 #header
-  :height 30px
-  :background url(/images/layout/bg-header-inner.gif) repeat-x
-  :color #fff
-  :line-height 28px
-#subheader
+  @include gradient(#6a7176, #4d5256)
   height: 30px
-  background-color: #95C4EC
+  color: #CDCDCD
+  line-height: 28px
+#subheader
+  @include gradient(#D7D9DA, #EAEAEA)
+  height: 30px
+  line-height: 20px
+  border-bottom: 1px solid #EDEDED
   nav
     ul
       list-style-type: none
@@ -18,8 +21,11 @@
         padding: 5px
         float: left
         a
+          color: #5e6469
           width: 100px
           text-decoration: none
+          &:hover
+            color: red
 
 #content
   clear: both
@@ -37,21 +43,22 @@
   :margin-bottom 5px
     
 table
-  :border-top 1px solid #ccc
-  :border-left 1px solid #ccc
+  margin: 15px
+  border: 1px solid #ccc
   thead
     th
       :text-align center
       :background #ddd
       :padding 5px
   th,td
-    :border-right 1px solid #ccc
-    :border-bottom 1px solid #ccc
-    :padding 3px
+    border: 1px solid #ccc
+    padding: 3px
   tbody
     th
       :text-align left
       :font-weight normal
+    tr:nth-child(odd)
+      background-color: #eee
   tbody.numeric_rows
     td
       :text-align right

@@ -5,7 +5,7 @@
 
 %pre== Key: #{@historic_serie.key}
 
-%table{table_defaults}
+%table
   %thead
     %tr
       %th.tal year
@@ -13,7 +13,7 @@
       %th.tal
   %tbody
     - @historic_serie.year_values.each do |entry|
-      %tr{cycles}
+      %tr
         %td= entry.year
         %td= entry.value
         %td= link_to 'edit', edit_admin_year_value_path(entry)

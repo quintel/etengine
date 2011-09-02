@@ -23,16 +23,6 @@ module ApplicationHelper
     end
   end
 
-  def table_defaults
-    {:cellspacing => 0, :cellpadding => 0, :border => 0, :class => 'default'}
-  end
-
-  def cycles(html_attrs = {})
-    class_name = cycle('odd', 'even')
-    html_attrs[:class] = "#{html_attrs[:class]} #{class_name}"
-    html_attrs
-  end
-
   def flash_message(type = nil)
     if type.nil?
       flash_message(:notice) if flash[:notice]
