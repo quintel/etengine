@@ -62,6 +62,8 @@ table {
     padding: 5px; }
     #panel ul li:nth-child(odd) {
       background-color: #eeeeee; }
+    #panel ul li:hover {
+      background-color: yellow; }
     #panel ul li a {
       color: #333333;
       text-decoration: none; }

@@ -33,7 +33,7 @@
   %table
     %thead
       %tr
-        %th{:colspan => 6} Inputs
+        %th{:colspan => 7} Inputs
       %tr
         %th Id
         %th Key
@@ -41,6 +41,7 @@
         %th Min
         %th Max
         %th Attr_name
+        %th Label Query
     %tbody
       - @inputs.each do |g|
         %tr
@@ -50,3 +51,4 @@
           %td= highlight(g.min_value_gql, @q)
           %td= highlight(g.max_value_gql, @q)
           %td= highlight(g.attr_name, @q)
+          %td= highlight(g.label_query, @q)
