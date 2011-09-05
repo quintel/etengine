@@ -1,4 +1,4 @@
-= simple_form_for [:data, @input] do |f|
+= simple_form_for [:data, @input], :url => @input.new_record? ? data_inputs_path : data_input_path(:id => @input.id) do |f|
   = f.input :name
   = f.input :key
   = f.input :keys

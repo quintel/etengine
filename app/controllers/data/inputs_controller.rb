@@ -1,15 +1,11 @@
 class Data::InputsController < Data::BaseController
-
+  before_filter :find_input, :only => [:edit, :update, :destroy]
+  
   def index
     @inputs = Input.all
   end
 
-  def show
-    @input = Input.find(params[:id])
-  end
-
   def edit
-    @input = Input.find(params[:id])
   end
 
   def new
@@ -26,17 +22,15 @@ class Data::InputsController < Data::BaseController
   end
 
   def update
-    @input = Input.find(params[:id])
     if @input.update_attributes(params[:input])
       flash[:notice] = "Input updated"
-      redirect_to data_inputs_path
+      redirect_to edit_data_input_path(:id => @input.id)
     else
       render :action => 'edit'
     end
   end
 
   def destroy
-    @input = Input.find(params[:input])
     if @input.destroy
       flash[:notice] = "Input destroyed!"
       redirect_to data_inputs_path
@@ -45,5 +39,10 @@ class Data::InputsController < Data::BaseController
       render :action => 'edit'
     end
   end
-
+  
+  private
+  
+    def find_input
+      @input = Input.find params[:id]
+    end
 end
