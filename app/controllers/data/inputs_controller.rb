@@ -1,5 +1,6 @@
 class Data::InputsController < Data::BaseController
   before_filter :find_input, :only => [:edit, :update, :destroy]
+  cache_sweeper Sweepers::Input
   
   def index
     @inputs = Input.all
