@@ -1,9 +1,10 @@
 #panel
   %input#search{:'data-search_scope' => 'inputs', :type => 'search'}
   .tree
-    %ul    
-      - Input.all.each do |i|
-        %li{:'data-search' => [i.id, i.key]}
-          %a{:href => edit_data_input_path(:id => i)}
-            %span.id== ##{i.id}
-            %span.key= i.key
+    %ul
+      = cache("input_list") do
+        - Input.all.each do |i|
+          %li{:'data-search' => [i.id, i.key]}
+            %a{:href => edit_data_input_path(:id => i)}
+              %span.id== ##{i.id}
+              %span.key= i.key
