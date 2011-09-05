@@ -7,7 +7,7 @@
 
 = notice_message
 
-= simple_form_for @carrier_data, :url => data_carrier_data_path(:id => @carrier_data) do |f|
+= simple_form_for @carrier_data, :url => data_carrier_carrier_data_path(:carrier_id => @carrier.id, :id => @carrier_data.id) do |f|
   - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
     = f.input key
   = f.button :submit

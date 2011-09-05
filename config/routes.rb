@@ -58,7 +58,7 @@ Etm::Application.routes.draw do
       end
       resources :converter_data
 
-      resources :carriers do 
+      resources :carriers, :only => [:index, :edit] do 
         resource :carrier_data
       end
       resources :carrier_data

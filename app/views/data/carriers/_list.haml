@@ -6,6 +6,6 @@
       %ul
         - Carrier.order('id ASC').each do |carrier|
           %li{:'data-search' => carrier.key}
-            %a{:href => data_carrier_path(:id => carrier)}
+            %a{:href => edit_data_carrier_carrier_data_path(:carrier_id => carrier.id)}
               %span.id== ##{carrier.id}
               %span.key= carrier.key
