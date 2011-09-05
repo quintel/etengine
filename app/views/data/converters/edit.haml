@@ -1,6 +1,6 @@
 = render "list"
 
-= simple_form_for [:data, @converter_data] do |f|
+= simple_form_for [:data, @converter_data], :url => data_converter_converter_data_path(:converter_id => @converter.id) do |f|
     - Qernel::ConverterApi::ATTRIBUTES_USED.each do |key|
       = f.input key
   = f.button :submit

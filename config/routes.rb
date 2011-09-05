@@ -53,7 +53,7 @@ Etm::Application.routes.draw do
 
       resources :fce_values
 
-      resources :converters do
+      resources :converters, :only => [:index, :edit, :show] do
         resource :converter_data
       end
       resources :converter_data

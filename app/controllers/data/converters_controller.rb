@@ -19,11 +19,12 @@ class Data::ConvertersController < Data::BaseController
     end
   end
 
-private
-  def diagram
-    depth = params[:depth].andand.to_i || 3
-    base_url = "/data/latest/nl/converters/"
-    converter = params[:graph] == 'future' ? @converter_future : @converter_present
-    converter.to_image(depth, base_url)
-  end
+  private
+
+    def diagram
+      depth = params[:depth].andand.to_i || 3
+      base_url = "/data/latest/nl/converters/"
+      converter = params[:graph] == 'future' ? @converter_future : @converter_present
+      converter.to_image(depth, base_url)
+    end
 end
