@@ -1,21 +1,6 @@
 class Data::CarrierDataController < Data::BaseController
   before_filter :find_model
 
-  def find_model
-    if params[:version_id]
-      @version = Version.find(params[:version_id])
-      @carrier_data = @version.reify
-      @carrier = @carrier_data.carrier
-      flash[:notice] = "Revision"
-    elsif params[:carrier_id]
-      @carrier = Carrier.find(params[:carrier_id])
-      @carrier_data = @dataset.carrier_area_datas.where(:carrier_id => params[:carrier_id]).first
-    else
-      @carrier_data = CarrierData.find(params[:id])
-      @carrier = @carrier_data.carrier
-    end
-  end
-
   def update
     if @carrier_data.update_attributes(params[:carrier_data])
       flash[:notice] = "Carrier has been updated."
@@ -27,5 +12,22 @@ class Data::CarrierDataController < Data::BaseController
 
   def edit
   end
+
+  private
+
+    def find_model
+      if params[:version_id]
+        @version = Version.find(params[:version_id])
+        @carrier_data = @version.reify
+        @carrier = @carrier_data.carrier
+        flash[:notice] = "Revision"
+      elsif params[:carrier_id]
+        @carrier = Carrier.find(params[:carrier_id])
+        @carrier_data = @dataset.carrier_area_datas.where(:carrier_id => params[:carrier_id]).first
+      else
+        @carrier_data = CarrierData.find(params[:id])
+        @carrier = @carrier_data.carrier
+      end
+    end
 
 end

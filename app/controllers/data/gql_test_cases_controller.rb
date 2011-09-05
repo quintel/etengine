@@ -36,8 +36,9 @@ class Data::GqlTestCasesController < Data::BaseController
     end
   end
 
-private
-  def find_model
-    @gql_test_case = GqlTestCase.find(params[:id])
-  end
+  private
+  
+    def find_model
+      @gql_test_case = GqlTestCase.find(params[:id])
+    end
 end

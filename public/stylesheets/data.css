@@ -82,19 +82,6 @@ pre.gql a.gql_gquery_key {
 pre.gql span.gql_group_key {
   color: #65a735; }
 
-span.detailed_number {
-  position: relative; }
-  span.detailed_number small {
-    display: none; }
-  span.detailed_number:hover small {
-    display: inline;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: white;
-    padding: 5px;
-    border: 1px solid #cccccc; }
-
 .gql_test_case .matcher {
   position: relative;
   background: #666666;

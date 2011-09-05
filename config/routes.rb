@@ -61,10 +61,10 @@ Etm::Application.routes.draw do
       resources :carriers, :only => [:index, :edit] do 
         resource :carrier_data
       end
-      resources :carrier_data
+      resources :carrier_data, :only => [:edit, :update]
 
       resources :areas do
-        resources :carrier_data
+        resources :carrier_data, :only => [:edit, :update]
       end
 
       resources :graphs do
