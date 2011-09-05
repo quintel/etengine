@@ -4,7 +4,7 @@
   \##{@converter_present.id} #{@converter_present.full_key}
 
   %small
-    = link_to 'edit', edit_data_converter_path(:id => @converter_present.id)
+    = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
 
     GraphViz:
     = link_to 'Present', {:format => 'svg'}, :target => :blank
