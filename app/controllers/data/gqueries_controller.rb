@@ -3,6 +3,10 @@ class Data::GqueriesController < Data::BaseController
   sortable_attributes :key, :updated_at,:gquery_group => "`gquery_group`"
 
   def index
+    if params[:key] && q = Gquery.find_by_key(params[:key])
+      redirect_to data_gquery_path(:id => q.id) and return
+    end
+    
     sort = params[:sort] ? "`#{params[:sort]}`" : "`key`"
     order = params[:order] == 'ascending' ? "asc" : "desc" 
 
