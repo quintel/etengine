@@ -73,15 +73,13 @@ table {
       #panel ul li a .sector, #panel ul li a .use {
         font-size: 10px; }
 
-span.gql_operator {
+pre.gql span.gql_operator {
   color: #dad07e; }
-  span.gql_operator:hover {
+  pre.gql span.gql_operator:hover {
     text-decoration: underline; }
-
-span.gql_gquery_key {
+pre.gql a.gql_gquery_key {
   color: #71baff; }
-
-span.gql_group_key {
+pre.gql span.gql_group_key {
   color: #65a735; }
 
 span.detailed_number {

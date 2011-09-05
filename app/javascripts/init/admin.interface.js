@@ -23,10 +23,6 @@ $(document).ready(function() {
   var stored_search = $.cookie($('input#search').attr('data-search_scope'));
   $('input#search').val(stored_search).keyup();
 
-  $('.gql_operator').click(function(ev) {
-    window.open(); // ? - PZ Wed 27 Jul 2011 11:10:13 CEST
-  });
-
   $('.gql_operator').mouseover(function(ev) {
     var statement = $(this).next().text();
     var query = $(this).text() + statement;
