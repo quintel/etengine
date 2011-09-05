@@ -1,10 +1,10 @@
 class Data::HistoricSeriesController < Data::BaseController
-
+  before_filter :find_model, :only => [:show, :edit]
+  
   def index
     @historic_series = HistoricSerie.all
     # @column_names = %w[id controller_name action_name name default_output_element_id order_by image sub_header complexity]
   end
-
 
   def new
     @historic_serie = HistoricSerie.new
@@ -42,13 +42,10 @@ class Data::HistoricSeriesController < Data::BaseController
     redirect_to data_historic_series_url
   end
 
-
   def show
-    find_model
   end
 
   def edit
-    find_model
   end
 
   private
