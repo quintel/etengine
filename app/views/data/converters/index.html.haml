@@ -4,6 +4,10 @@
   Converters for:
   = params[:blueprint_id]
   = params[:region_code]
+  
+= form_tag data_converters_path, :method => :get do
+  = select 'search', 'group_id', Group.all.map{|g| [g.key, g.id]}, {:include_blank => true, :selected => params[:search] && params[:search][:group_id]}
+  = submit_tag "Search"
 
 - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)
 %table
@@ -23,19 +27,23 @@
       - fields.each do |field|
         %th Present
         %th Future
-  - @blueprint.converter_records.each do |converter|
-    %tr
-      %td== ##{converter.id}
-      %td
-        = link_to converter.full_key, data_converter_path(:id => converter)
-      %td
-        %small
-          = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
-          |
-          = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
+  %tbody
+    - @converters.each do |converter|
+      %tr
+        %td== ##{converter.id}
+        %td
+          = link_to converter.full_key, data_converter_path(:id => converter)
+        %td
+          %small
+            = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
+            |
+            = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
 
-      - fields.each do |field|
-        - if converter.full_key.present? and query = "V(#{converter.full_key};#{field})"
-          - p, f = Current.gql.query(query).results
-          %td.tar{:title => title_tag_number(p)}=auto_number(p)
-          %td.tar{:title => title_tag_number(f)}= auto_number(f)
+        - fields.each do |field|
+          - if converter.full_key.present? and query = "V(#{converter.full_key};#{field})"
+            - p, f = Current.gql.query(query).results
+            %td.tar{:title => title_tag_number(p)}=auto_number(p)
+            %td.tar{:title => title_tag_number(f)}= auto_number(f)
+  %tfoot
+    %tr
+      %td{:colspan => 5}= paginate @converters
