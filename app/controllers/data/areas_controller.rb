@@ -14,7 +14,7 @@ class Data::AreasController < Data::BaseController
     @area = Area.new(params[:area])
     if @area.save
       flash[:notice] = "Successfully created area and carrier datas."
-      redirect_to [:data, @area]
+      redirect_to data_area_path(:id => @area.id)
     else
       render :action => 'new'
     end
@@ -23,7 +23,7 @@ class Data::AreasController < Data::BaseController
   def update
     if @area.update_attributes(params[:area])
       flash[:notice] = "Successfully updated area."
-      redirect_to [:data, @area]
+      redirect_to data_area_path(:id => @area.id)
     else
       render :action => 'edit'
     end
