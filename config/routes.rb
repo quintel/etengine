@@ -78,7 +78,7 @@ Etm::Application.routes.draw do
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
       resources :blueprints
-      resources :inputs
+      resources :inputs, :except => :show
       resources :blueprint_models
 
 
