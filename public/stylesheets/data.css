@@ -213,10 +213,10 @@ label.collection_check_boxes {
   line-height: 28px; }
 
 #subheader {
-  background-color: #d7d9da;
-  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#d7d9da"}, endColorstr="#eaeaea");
-  background-image: -moz-linear-gradient(center top, #d7d9da, #eaeaea);
-  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d7d9da), to(#eaeaea));
+  background-color: #c4c4c4;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#c4c4c4"}, endColorstr="#b0b1b2");
+  background-image: -moz-linear-gradient(center top, #c4c4c4, #b0b1b2);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#c4c4c4), to(#b0b1b2));
   height: 30px;
   line-height: 20px;
   border-bottom: 1px solid #dddddd; }
@@ -228,18 +228,26 @@ label.collection_check_boxes {
       #subheader nav ul li a {
         color: #5e6469;
         width: 100px;
-        text-decoration: none; }
-        #subheader nav ul li a:hover {
-          color: red; }
+        text-decoration: none;
+        font-weight: bold;
+        text-shadow: white 0 1px 0; }
+      #subheader nav ul li:hover {
+        background-color: white; }
 
 #content {
   clear: both; }
   #content .header {
     color: #5e6469;
-    background-color: #eeeeee;
-    font-size: 16px;
+    background-color: #efefef;
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#efefef"}, endColorstr="#dfe1e2");
+    background-image: -moz-linear-gradient(center top, #efefef, #dfe1e2);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#efefef), to(#dfe1e2));
+    border-bottom: 1px solid #ededed;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: white 0 1px 0;
     margin-bottom: 10px;
-    line-height: 26px;
+    line-height: 33px;
     height: 35px; }
   #content .main {
     float: left; }
