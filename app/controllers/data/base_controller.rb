@@ -6,7 +6,6 @@ class Data::BaseController < ApplicationController
   def kick
     Rails.cache.clear
     system("touch tmp/restart.txt")
-
     redirect_to data_root_path(
       :blueprint_id => params[:blueprint_id],
       :region_code  => params[:region_code])
