@@ -1,5 +1,10 @@
 class Data::ConvertersController < Data::BaseController
   def index
+    base = @blueprint.converter_records
+    if params[:search] && params[:search][:group_id]
+      base = base.in_group(params[:search][:group_id])
+    end
+    @converters = base.page(params[:page]).per(40)
   end
 
   def edit
