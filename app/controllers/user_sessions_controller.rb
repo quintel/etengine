@@ -1,6 +1,6 @@
 class UserSessionsController < ApplicationController
   layout 'pages'
-  
+
   before_filter :require_no_user, :only => :new
 
   def index
@@ -31,5 +31,5 @@ class UserSessionsController < ApplicationController
       format.html { redirect_to(root_url) }
       format.xml  { head :ok }
     end
-  end  
+  end
 end
