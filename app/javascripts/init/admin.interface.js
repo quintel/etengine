@@ -1,4 +1,7 @@
 $(document).ready(function() {
+  $("#panel").resizable({
+    handles: 'e'
+  });
 
   $('input#search').keyup(function(ev) {
     if(ev.keyCode == 27) { $(this).val(''); }
