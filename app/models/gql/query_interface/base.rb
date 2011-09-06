@@ -23,9 +23,9 @@ module Gql::QueryInterface::Base
       subquery(obj.key)
     elsif obj.is_a?(Input)
       self.input_value = "#{self.input_value}#{obj.v1_legacy_unit}" unless self.input_value.include?('%')
-      result_of_parsed_query(Gql::QueryInterface::Preparser.new(obj.query).parsed, false)
+      execute_update(Gql::QueryInterface::Preparser.new(obj.query).parsed)
     elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
-      result_of_parsed_query(parsed)
+      execute_query(parsed)
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
     end
@@ -58,7 +58,7 @@ module Gql::QueryInterface::Base
   #
   def subquery(gquery_key)
     if gquery = get_gquery(gquery_key)
-      result_of_parsed_query(gquery.parsed_query)
+      execute_query(gquery.parsed_query)
     else
       nil
     end
@@ -66,13 +66,17 @@ module Gql::QueryInterface::Base
 
 protected
 
-  def result_of_parsed_query(parsed_query, check_if_calculated = true)
+  def execute_update(parsed_query)
+    parsed_query.result(scope)
+  end
+
+  def execute_query(parsed_query)
     # DEBT: decouple from Current.gql
     #       maybe add a Observer to graph:
     #       in gql: present_graph.observe_calculate(Current.gql)
     #       here:   present_graph.notify_observers!
     #
-    Current.gql.prepare if check_if_calculated && !Current.gql.calculated?
+    Current.gql.prepare if !Current.gql.calculated?
     
     parsed_query.result(scope)
   end
