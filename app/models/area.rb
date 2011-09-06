@@ -55,6 +55,12 @@
 #  has_solar_csp                            :boolean(1)
 #  has_old_technologies                     :boolean(1)
 #  parent_id                                :integer(4)
+#  has_cold_network                         :boolean(1)
+#  cold_network_potential                   :float
+#  has_heat_import                          :boolean(1)
+#  has_industry                             :boolean(1)
+#  has_other                                :boolean(1)
+#  has_fce                                  :boolean(1)
 #
 
 class Area < ActiveRecord::Base

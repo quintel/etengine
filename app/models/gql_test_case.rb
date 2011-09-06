@@ -4,10 +4,12 @@
 #
 #  id          :integer(4)      not null, primary key
 #  name        :string(255)
-#  instruction :text
+#  instruction :text(2147483647
 #  description :text
 #  created_at  :datetime
 #  updated_at  :datetime
+#  settings    :text(2147483647
+#  inputs      :text(2147483647
 #
 
 # Simple Syntax for accessing the api
