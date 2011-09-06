@@ -20,7 +20,8 @@
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  api_session_key    :string(255)
-#  use_fce            :boolean
+#  use_fce            :boolean(1)
+#  present_updated_at :datetime
 #
 
 class ApiScenario < Scenario
