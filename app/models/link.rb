@@ -44,7 +44,7 @@ class Link < ActiveRecord::Base
 
   module Scopes
     def blueprint(blueprint)
-      where({:blueprint_id => blueprint.is_a?(Blueprint) ? blueprint.id : blueprint}) 
+      where({:blueprint_id => blueprint.is_a?(Blueprint) ? blueprint.id : blueprint})
     end
   end
   extend Scopes
@@ -88,5 +88,3 @@ class Link < ActiveRecord::Base
     parent_id
   end
 end
-
-

@@ -39,10 +39,10 @@ class ConverterPosition < ActiveRecord::Base
 
 
   FILL_COLORS_BALANCE_GROUP = {
-    
+
   }
 
-   FILL_COLORS = {
+  FILL_COLORS = {
     :households   => '#fcf',
     :industry     => '#ccc',
     :transport    => '#ffc',
@@ -51,7 +51,7 @@ class ConverterPosition < ActiveRecord::Base
     :other        => '#fff',
     :environment  => '#fcc',
     :buildings    => '#dee',
-    :neighbor     => '#ccc'  
+    :neighbor     => '#ccc'
   }.with_indifferent_access
 
   STROKE_COLORS = {
@@ -62,5 +62,3 @@ class ConverterPosition < ActiveRecord::Base
   }.with_indifferent_access
 
 end
-
-

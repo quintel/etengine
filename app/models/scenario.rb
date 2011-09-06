@@ -43,8 +43,8 @@ class Scenario < ActiveRecord::Base
   # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
 
-  # A scenario can have a preset. We use this 
-  # when it has to be reset to this scenario. 
+  # A scenario can have a preset. We use this
+  # when it has to be reset to this scenario.
   #
   # @tested 2010-12-21 jape
   #
@@ -91,12 +91,12 @@ class Scenario < ActiveRecord::Base
 
   ##
   # @tested 2010-11-30 seb
-  # 
+  #
   def self.default
     Scenario.new(default_attributes)
   end
 
-  
+
   ##
   # @tested 2010-11-30 seb through self.default
   #
@@ -111,14 +111,14 @@ class Scenario < ActiveRecord::Base
     }.with_indifferent_access
   end
 
-  
+
   ##############################
   # Scenario Attributes
   ##############################
 
   ##
   # @tested 2010-11-30 seb
-  # 
+  #
   def start_year
     2010
   end
@@ -126,7 +126,7 @@ class Scenario < ActiveRecord::Base
 
   ##
   # @tested 2010-11-30 seb
-  # 
+  #
   def years
     end_year - start_year
   end

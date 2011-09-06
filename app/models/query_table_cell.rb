@@ -33,4 +33,3 @@ class QueryTableCell < ActiveRecord::Base
     end
   end
 end
-

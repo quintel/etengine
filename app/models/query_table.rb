@@ -29,4 +29,3 @@ class QueryTable < ActiveRecord::Base
   end
 
 end
-

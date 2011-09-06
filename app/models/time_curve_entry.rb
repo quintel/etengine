@@ -21,6 +21,4 @@ class TimeCurveEntry < ActiveRecord::Base
   def preset_demand?
     true
   end
-
 end
-

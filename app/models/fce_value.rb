@@ -25,5 +25,4 @@ class FceValue < ActiveRecord::Base
       :using_country => using_country
     ).first
   end
-
 end

@@ -80,7 +80,6 @@ class Area < ActiveRecord::Base
     ordered_column_names - %w[id country created_at updated_at]
   end
 
-
   # TODO change country to region_code
   def region_code
     country
@@ -91,7 +90,7 @@ class Area < ActiveRecord::Base
       carrier_datas.create(:carrier_id => carrier.id)
     end
   end
-  
+
   def co2_emission_1990_billions
     co2_emission_1990 * BILLIONS
   end

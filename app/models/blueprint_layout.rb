@@ -8,11 +8,11 @@
 #  updated_at :datetime
 #
 
-# A BlueprintLayout is a visual layout of converters. 
+# A BlueprintLayout is a visual layout of converters.
 # It positions a Converter on a 2D map using ConverterPosition records.
-# The BlueprintLayout is not directly connected to a Blueprint. Thus 
+# The BlueprintLayout is not directly connected to a Blueprint. Thus
 # creating/editing/deleting blueprints and their converters have no impact
-# on the BlueprintLayout. But if you visualize a blueprint with a 
+# on the BlueprintLayout. But if you visualize a blueprint with a
 # BlueprintLayout that doesn't make sense, you just get a mess..
 #
 #

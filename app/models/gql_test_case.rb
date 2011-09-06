@@ -50,7 +50,7 @@ class GqlTestCase < ActiveRecord::Base
     params = lines.map do |line|
       line.scan(/[\w_]+=[a-z0-9_]+/)
     end.flatten
-    
+
     params_to_hash(params)
   end
 
@@ -68,7 +68,7 @@ class GqlTestCase < ActiveRecord::Base
   end
 
   def params_to_hash(params)
-    params.inject({}) do |hsh, setting| 
+    params.inject({}) do |hsh, setting|
       key, value = setting.split('=')
       hsh.merge key => value
     end
@@ -103,9 +103,9 @@ class GqlTestCase < ActiveRecord::Base
       range_number = '2%'.to_f
       strategy = :plus_minus
     end
-    
+
     if strategy == :plus_minus
-      delta = base_number * range_number / 100      
+      delta = base_number * range_number / 100
       [base_number - delta, base_number + delta]
     else
       [base_number, range_number]

@@ -5,7 +5,7 @@ module Opt
     # @param [Float] slider value
     #
     def value
-      unless @value 
+      unless @value
         value = calculate_value(step_value)
         @value = value_within_range(value)
       end
@@ -16,7 +16,7 @@ module Opt
     # Is setting higher then max value or lower then min value?
     #
     # @param [Float] step_size uses settings step_value per default
-    # @return [true,false] 
+    # @return [true,false]
     #
     def out_of_range?(step_size = step_value)
       value = calculate_value(step_size)
@@ -55,11 +55,11 @@ module Opt
     end
 
     ##
-    # Returns the value inside the min,max boundaries. 
+    # Returns the value inside the min,max boundaries.
     # Returns min,max if value is out of range.
     #
-    # @param [Float] 
-    # @return [Float] 
+    # @param [Float]
+    # @return [Float]
     #
     def value_within_range(value)
       if value > control.max_value
@@ -102,5 +102,4 @@ module Opt
       end
     end
   end
-
 end

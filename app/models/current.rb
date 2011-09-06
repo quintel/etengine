@@ -1,8 +1,8 @@
 ##
 # Wrapper for (user-) variables of a request that are accessible to all models.
 #
-# I created a new Setting class, which holds all the settings specific for a user session. Such as :show_municipality_introduction and so on. 
-# 
+# I created a new Setting class, which holds all the settings specific for a user session. Such as :show_municipality_introduction and so on.
+#
 # == Current.scenario
 #
 # At any point if you want to reset the scenario:
@@ -12,14 +12,14 @@
 #   Current.scenario = Scenario.default
 #
 # == Scenario vs Setting
-# 
+#
 # A big difference between Setting and Scenario is, that Scenario influences the GQL.
 # E.g. in scenario we set end_year, etc.
 #
 #
 # == Implementation details
 #
-# Current is a Singleton. Because it is used often throughout the model (and 
+# Current is a Singleton. Because it is used often throughout the model (and
 # because of legacy-reasons), Current is also the shortcut for Current.instance.
 # This is implemented by generating class methods calling the singleton methods.
 #
@@ -30,7 +30,7 @@
 #
 #
 class Current
-  
+
   attr_accessor :graph_id, :view
 
 
@@ -58,11 +58,11 @@ class Current
   def current_slide
     session[:current_slide]
   end
- 
+
   def subdomain
     session[:subdomain]
   end
-  
+
   # This is loaded in application_controller.
   def subdomain=(subdomain)
     session[:subdomain] = subdomain
@@ -84,7 +84,7 @@ class Current
   ##
   # Manually set the Graph that is active for the GQl
   #
-  # @param [Graph] graph 
+  # @param [Graph] graph
   #
   def graph=(graph)
     @graph = graph
@@ -103,7 +103,7 @@ class Current
 
   ##
   # is the GQL calculated? If true, prevent the programmers
-  # to add further update statements ({Scenario#add_update_statements}). 
+  # to add further update statements ({Scenario#add_update_statements}).
   # Because they won't affect the system anymore.
   #
   # @return [Boolean]
@@ -140,7 +140,7 @@ class Current
   #
   #   if Current.already_shown?("demand/intro")
   #     redirect_to :action => 'index'
-  #   else 
+  #   else
   #    render :action => 'show'
   #   end
   #
@@ -219,7 +219,7 @@ class Current
 
   def reset_gql
     self.scenario.reset!
-    
+
     self.gql = nil
     self.graph_id = nil
 
@@ -245,7 +245,7 @@ class Current
   ##
   # Forward methods to the (singleton)-instance methods.
   # So that we can type Current.foo instead of Current.instance.foo
-  # 
+  #
   class << self
     def method_missing(name, *args)
       self.instance.send(name, *args)
