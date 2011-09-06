@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110901150853) do
+ActiveRecord::Schema.define(:version => 20110902075847) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -284,7 +284,6 @@ ActiveRecord::Schema.define(:version => 20110901150853) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "carrier"
-    t.string   "unit",                       :default => "kg"
   end
 
   create_table "general_user_notifications", :force => true do |t|
