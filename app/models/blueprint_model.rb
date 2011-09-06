@@ -11,9 +11,9 @@
 ##
 # BlueprintModel is a basically a Meta Blueprint, that's sole purpose
 # is to group Blueprints with their various versions together. Add a new
-# BlueprintModel if you create a fundamentally different graph and not 
+# BlueprintModel if you create a fundamentally different graph and not
 # just an updated/improved version of an existing one.
-# 
+#
 #
 # == Developer notes:
 #
@@ -24,11 +24,11 @@
 #
 # But as I don't want to interfere with all the legacy code, I introduced
 # BlueprintModel. So
-# 
+#
 #   BlueprintModel (e.g. ETM Country Blueprint)
 #     has_many Blueprint (continuously improved versions of the blueprint)
 #
-# 
+#
 class BlueprintModel < ActiveRecord::Base
   has_many :blueprints
   validates_presence_of :title

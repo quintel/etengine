@@ -18,4 +18,3 @@ class YearValue < ActiveRecord::Base
   belongs_to :value_by_year, :polymorphic => true
   scope :select_year, lambda {|year| where(:year => year) }
 end
-

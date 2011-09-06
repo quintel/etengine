@@ -3,9 +3,9 @@ class Unit
     send("to_#{unit.downcase}", number)
   end
 
-#  def to_gbp(eur)
-#    eur * 1.3
-#  end
+  #  def to_gbp(eur)
+  #    eur * 1.3
+  #  end
 
   ##
   # Creates percentage out of a fraction

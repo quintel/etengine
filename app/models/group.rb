@@ -39,5 +39,3 @@ class Group < ActiveRecord::Base
     @qernel ||= key.to_sym
   end
 end
-
-

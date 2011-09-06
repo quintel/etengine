@@ -16,13 +16,10 @@
 ##
 # id = excel_id
 #
-#
-#
 class Converter < ActiveRecord::Base
   has_paper_trail
 
-
-#  belongs_to :blueprint
+  #  belongs_to :blueprint
   has_and_belongs_to_many :blueprints
   has_and_belongs_to_many :groups
 
@@ -32,17 +29,16 @@ class Converter < ActiveRecord::Base
   has_many :slots
 
   has_one :converter_position
-  
+
   scope :in_group, lambda{|*gid| includes(:groups).where(["groups.id IN (?)", gid])}
   # we hook up converters with slots in Blueprint. So the following association not
   # really needed.
-  # has_many :blueprint_slots 
+  # has_many :blueprint_slots
 
   # We don't check for excel_id, because we assign it usign assign_excel_id_to_id
   # validates_presence_of :excel_id, :on => :create, :message => "can't be blank"
 
   after_save :assign_converter_id_to_id
-
 
   ##
   # makes sure that id is always equals converter_id. As the auto increment can screw things up.
@@ -108,8 +104,4 @@ class Converter < ActiveRecord::Base
     end
     @qernel_obj
   end
-
 end
-
-
-

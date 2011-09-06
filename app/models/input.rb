@@ -37,23 +37,23 @@ class Input < ActiveRecord::Base
 
   scope :with_share_group, where('NOT(share_group IS NULL OR share_group = "")')
 
-  scope :contains, lambda{|search| 
+  scope :contains, lambda{|search|
     where([
-      "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q OR `keys` LIKE :q OR `attr_name` LIKE :q",
-      {:q => "%#{search}%"}
+            "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q OR `keys` LIKE :q OR `attr_name` LIKE :q",
+            {:q => "%#{search}%"}
     ])
   }
-  
+
   # quite useful on bulk updates
-  scope :embedded_gql_contains, lambda{|search| 
+  scope :embedded_gql_contains, lambda{|search|
     where([
-      "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q OR attr_name LIKE :q OR label_query LIKE :q",
-      {:q => "%#{search}%"}
+            "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q OR attr_name LIKE :q OR label_query LIKE :q",
+            {:q => "%#{search}%"}
     ])
   }
 
   validates :updateable_period, :presence => true,
-                                :inclusion => UPDATEABLE_PERIODS
+    :inclusion => UPDATEABLE_PERIODS
 
   after_create :reset_all_cached
 
@@ -73,11 +73,11 @@ class Input < ActiveRecord::Base
     unless @all_cached
       #@all_cached = nil
       #benchmark("** Loading Input.all_cached") do
-        @all_cached = Input.all.inject({}) do |hsh, input| 
-          hsh = hsh.merge input.id.to_s => input
-          hsh.merge input.key => input if input.key.present?
-          hsh
-        end
+      @all_cached = Input.all.inject({}) do |hsh, input|
+        hsh = hsh.merge input.id.to_s => input
+        hsh.merge input.key => input if input.key.present?
+        hsh
+      end
       #end
     end
     @all_cached
@@ -113,7 +113,7 @@ class Input < ActiveRecord::Base
   # @return [Hash]
   #
   def update_statement(value)
-    
+
     ##
     # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
     # The Gql::UpdateInterface::FceCommand takes care of this.
@@ -136,7 +136,7 @@ class Input < ActiveRecord::Base
 
   def self.static_values
     Input.all.inject({}) do |hsh, input|
-      begin 
+      begin
         hsh.merge input.id.to_s => {
           :max_value    => input.max_value,
           :min_value    => input.min_value,
@@ -148,7 +148,7 @@ class Input < ActiveRecord::Base
         Airbrake.notify(
           :error_message => "Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
           :backtrace => caller,
-          :parameters => {:input => input, :api_scenario => Current.scenario })
+        :parameters => {:input => input, :api_scenario => Current.scenario })
         hsh
       end
     end
@@ -165,7 +165,7 @@ class Input < ActiveRecord::Base
         Airbrake.notify(
           :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
           :backtrace => caller,
-          :parameters => {:input => input, :api_scenario => Current.scenario })
+        :parameters => {:input => input, :api_scenario => Current.scenario })
         hsh
       end
     end
@@ -189,7 +189,7 @@ class Input < ActiveRecord::Base
   end
 
   def dynamic_start_value?
-    self[:start_value_gql] && self[:start_value_gql].match(/^future:/) != nil 
+    self[:start_value_gql] && self[:start_value_gql].match(/^future:/) != nil
   end
 
   def min_value
@@ -240,4 +240,3 @@ class Input < ActiveRecord::Base
     Current.scenario.update_input(self, value)
   end
 end
-

@@ -1,8 +1,7 @@
 module Opt
   # This class controls the gquery stuff
   class GqueryControl
-    attr_accessor :target,
-                  :weight
+    attr_accessor :target, :weight
 
     attr_reader :gquery, :id
 
@@ -24,10 +23,10 @@ module Opt
     end
 
     ##
-    # the distance to the target value. 
+    # the distance to the target value.
     # depends if the lower_is_better or higher_is_better.
     #
-    # closer to 1 is better. 
+    # closer to 1 is better.
     # 0 is target_met?
     #
     # @return [Float]
@@ -38,10 +37,10 @@ module Opt
       elsif target == 0.0
         0.0
       else
-        t = future_value / target # 10.0 / 8.0 
+        t = future_value / target # 10.0 / 8.0
         t = 0.0 if t.nan? or t.infinite?
         t
-      end 
+      end
     end
 
     ##
@@ -60,9 +59,9 @@ module Opt
 
     def to_json(options = {})
       ActiveSupport::JSON.encode({:gquery_control => {
-          :id => self.gquery.id, 
-          :fitness => self.fitness}
-      }) 
+                                    :id => self.gquery.id,
+                                  :fitness => self.fitness}
+                                  })
     end
   end
 end

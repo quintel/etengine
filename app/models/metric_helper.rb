@@ -52,10 +52,10 @@ module MetricHelper
     # suffix (
     prefix ' ' + format_number(value, :precision => 1).to_s, options[:unit]  #,  I18n.t(scaling_in_words(scale).to_s)
   end
-  
-  
+
+
   ##
-  # Scales a value 
+  # Scales a value
   # Some examples:
   # if it is 20000 million, you want 20 billion.
   # if it is 4000 million, you want 4000 million.
@@ -72,7 +72,7 @@ module MetricHelper
     min_scale = 0 # min scale is units
     value = value.to_f
 
-    
+
     unless target
       # if value > 23000 e.g. make it 23.0
       # TODO: make 20000 optional, 10000 the default
@@ -104,30 +104,27 @@ module MetricHelper
   # @param scale [Float] The value that must be translated into a word
   def scaling_in_words(scale, options = {})
     unit = options[:unit]
-    
+
     scale_symbol = case scale
-      when 0
-        :unit
-      when 1
-        :thousands
-      when 2
-        :millions
-      when 3
-        :billions
-      when 4
-        :trillions
-      when 5
-        :quadrillions
-      when 6
-        :quintillions  
+    when 0
+      :unit
+    when 1
+      :thousands
+    when 2
+      :millions
+    when 3
+      :billions
+    when 4
+      :trillions
+    when 5
+      :quadrillions
+    when 6
+      :quintillions
     end
-    
+
     I18n.t("units.%s.%s" % [unit.to_s, scale_symbol.to_s])
   end
-  
-  
-  
-  
+
   #
   # formats x out of y e.g.
   # out_of(2,12) => 2 / 12
@@ -184,5 +181,4 @@ module MetricHelper
       "<small>#{prefix}</small>#{value}".html_safe
     end
   end
-
 end

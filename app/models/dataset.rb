@@ -49,17 +49,17 @@ class Dataset < ActiveRecord::Base
 
   def time_curves
     #marshal = Rails.cache.fetch("/dataset/#{id}/time_curves/#{updated_at.to_i}") do
-      entries = self.time_curve_entries
-      time_curves = entries.select(&:preset_demand?).group_by(&:converter_id)
-      time_curves.each do |key,arr|
-        hsh = {}
-        arr.each do |serie|
-          hsh[serie.value_type] ||= {}
-          hsh[serie.value_type][serie.year] = serie.value
-        end
-        time_curves[key] = hsh
+    entries = self.time_curve_entries
+    time_curves = entries.select(&:preset_demand?).group_by(&:converter_id)
+    time_curves.each do |key,arr|
+      hsh = {}
+      arr.each do |serie|
+        hsh[serie.value_type] ||= {}
+        hsh[serie.value_type][serie.year] = serie.value
       end
-      time_curves
+      time_curves[key] = hsh
+    end
+    time_curves
     #end
     #Marshal.load marshal
   end
@@ -68,7 +68,7 @@ class Dataset < ActiveRecord::Base
   # Create a new dataset based on this dataset.
   # Also connects datasets to blueprints by creating a Graph object.
   #
-  # @param [Integer] blueprint_id 
+  # @param [Integer] blueprint_id
   #     The blueprint to which the dataset belongs to
   # @return [Dataset] The created Dataset
   #
@@ -92,61 +92,61 @@ class Dataset < ActiveRecord::Base
     "#{blueprint_id} - #{created_at}"
   end
 
-private
+  private
 
-  def build_qernel
-    qernel = Qernel::Dataset.new(id)
+    def build_qernel
+      qernel = Qernel::Dataset.new(id)
 
-    # [converter_datas, carrier_area_datas, area, link_datas, slot_datas].each do |data|
-    #   qernel.add_data data
-    # end
-    qernel.add_dataset(converter_datas, carrier_area_datas, link_datas, slot_datas, area)
-    qernel.time_curves = time_curves
-    qernel
-  end
-
-  def copy_converter_datas_to!(dataset)
-    converter_datas.each do |converter_data|
-      dataset.converter_datas << converter_data.clone
+      # [converter_datas, carrier_area_datas, area, link_datas, slot_datas].each do |data|
+      #   qernel.add_data data
+      # end
+      qernel.add_dataset(converter_datas, carrier_area_datas, link_datas, slot_datas, area)
+      qernel.time_curves = time_curves
+      qernel
     end
-  end
 
-  def copy_link_datas_to!(dataset)
-    new_links = dataset.blueprint.links
-    link_datas.each do |link_data|
-      link = link_data.link
-      new_link = new_links.detect{|l| 
-        l.parent_id == link.parent_id && 
-        l.child_id == link.child_id && 
-        l.carrier_id == link.carrier_id && 
-        l.link_type == link.link_type
-      }
-      new_link_data = link_data.clone
-      new_link_data.link_id = new_link.id
-
-      dataset.link_datas << new_link_data
+    def copy_converter_datas_to!(dataset)
+      converter_datas.each do |converter_data|
+        dataset.converter_datas << converter_data.clone
+      end
     end
-  end
 
-  def copy_slot_datas_to!(dataset)
-    new_slots = dataset.blueprint.slots
-    slot_datas.each do |slot_data|
-      slot = slot_data.slot
-      new_slot = new_slots.detect{|l| 
-        l.converter_id == slot.converter_id && 
-        l.carrier_id == slot.carrier_id && 
-        l.direction == slot.direction
-      }
-      new_slot_data = slot_data.clone
-      new_slot_data.slot_id = new_slot.id
+    def copy_link_datas_to!(dataset)
+      new_links = dataset.blueprint.links
+      link_datas.each do |link_data|
+        link = link_data.link
+        new_link = new_links.detect{|l|
+          l.parent_id == link.parent_id &&
+          l.child_id == link.child_id &&
+          l.carrier_id == link.carrier_id &&
+          l.link_type == link.link_type
+        }
+        new_link_data = link_data.clone
+        new_link_data.link_id = new_link.id
 
-      dataset.slot_datas << new_slot_data      
+        dataset.link_datas << new_link_data
+      end
     end
-  end
 
-  def copy_time_curve_entries_to!(dataset)
-    time_curve_entries.each do |time_curve_entry|
-      dataset.time_curve_entries << time_curve_entry.clone
+    def copy_slot_datas_to!(dataset)
+      new_slots = dataset.blueprint.slots
+      slot_datas.each do |slot_data|
+        slot = slot_data.slot
+        new_slot = new_slots.detect{|l|
+          l.converter_id == slot.converter_id &&
+          l.carrier_id == slot.carrier_id &&
+          l.direction == slot.direction
+        }
+        new_slot_data = slot_data.clone
+        new_slot_data.slot_id = new_slot.id
+
+        dataset.slot_datas << new_slot_data
+      end
     end
-  end
+
+    def copy_time_curve_entries_to!(dataset)
+      time_curve_entries.each do |time_curve_entry|
+        dataset.time_curve_entries << time_curve_entry.clone
+      end
+    end
 end

@@ -65,7 +65,7 @@
 # TODO seb : rename preset_demand, remove hacked_attributes (2010-08-19)
 # Data for converters belonging to a specific graph instance
 #
-# 
+#
 #
 #
 # == Guide: How to add new attributes to ConverterData
@@ -79,7 +79,7 @@
 # add_column :converter_datas, :new_attr, ...
 #
 # * Annotate models
-# 
+#
 # So that we don't have to check schema.rb we annotate our models with
 # the table attributes. Check the bottom of this file.
 #
@@ -88,12 +88,12 @@
 # * Add attributes to {Qernel::ConverterApi::ATTRIBUTES_USED}
 #
 # Add them into the array ATTRIBUTES_USED so that they will be added to the attributes.
-# This will load the attributes into our Qernel Converter. Attributes that are not in 
+# This will load the attributes into our Qernel Converter. Attributes that are not in
 # ATTRIBUTES_USED will be ignored by the Qernel.
 #
 # * The attributes can now be accessed with the GQL
 #
-# 
+#
 #
 class Dataset::ConverterData < ActiveRecord::Base
   include Dataset::TouchOnUpdate
@@ -110,7 +110,7 @@ class Dataset::ConverterData < ActiveRecord::Base
   # to add {'demand' => preset_demand}
   #
   def dataset_attributes
-    attrs = Qernel::ConverterApi::ATTRIBUTES_USED.inject({}) do |hsh, key| 
+    attrs = Qernel::ConverterApi::ATTRIBUTES_USED.inject({}) do |hsh, key|
       hsh.merge(key => self[key])
     end
     attrs[:demand] = self.preset_demand

@@ -38,10 +38,8 @@ class Graph < ActiveRecord::Base
     blueprint.graph_version
   end
 
-
   @@future_qernels = {}
   @@present_qernels = {}
-
 
   # to be returned by Current.graph, Graph needs to provide the methods
   # latest_from_country, gql, create_gql
@@ -131,4 +129,3 @@ class Graph < ActiveRecord::Base
     qernel
   end
 end
-

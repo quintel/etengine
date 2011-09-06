@@ -1,5 +1,5 @@
 ##
-# 
+#
 #
 class Optimizer
   include ActiveSupport::Inflector
@@ -31,7 +31,7 @@ class Optimizer
   ##
   # This is more of a safety measure, run this at the end of a page
   #  prevents screwups. E.g. If you update the gql somewhere in your
-  #  view files. I don't think it's needed anymore. Or if, then move this 
+  #  view files. I don't think it's needed anymore. Or if, then move this
   #  #load or #initialize.
   #
   def load_last_step
@@ -44,7 +44,7 @@ class Optimizer
   end
 
   def next_step
-    unless @next_step 
+    unless @next_step
       @next_step = Opt::Step.new(mission)
       @next_step.calculate
       add_step(@next_step)
@@ -72,34 +72,34 @@ class Optimizer
 
   ## DEPRECATED this doesn't seem to be used anywhere anymore (seb 2011-02-01)
   #
-  # calculation is put here and not in Input#step_value_in_PJ 
+  # calculation is put here and not in Input#step_value_in_PJ
   # because like this we can calculate them in one batch.
   #
   # def step_values_in_pj
   #   @step_values_in_PJ ||= Rails.cache.fetch("optimizer.step_values_in_pj") do
   #     step_values_in_PJ = Hash.new
   #     primary_demand_normal = Current.gql.query('future:SUM(V(G(final_demand_cbs);primary_demand))')
-  # 
+  #
   #     inputs.shuffle.each do |input|
   #       value = input.start_value + input.step_value
   #       step_size_100 = (input.max_value - input.min_value) / 100
-  # 
+  #
   #       Current.teardown_after_request!
   #       input.update_current(value) # Current.user_updates(...)
-  # 
+  #
   #       primary_demand_after_step = Current.gql.query('future:SUM(V(G(final_demand_cbs);primary_demand))')
   #       difference = primary_demand_after_step - primary_demand_normal
   #       if difference.nil? or difference == 0.0
   #         difference = step_size_100.to_f
   #       end
-  # 
+  #
   #       step_values_in_PJ[input.id] = difference.abs
   #     end
-  # 
+  #
   #     step_values_in_PJ
   #   end
   # end
-  # 
+  #
   # def step_value_PJ(input)
   #   change = step_values_in_pj[input.id]
   #   if change.nil? or change == 0.0
@@ -110,10 +110,6 @@ class Optimizer
   # end
 
   def to_json
-    ActiveSupport::JSON.encode({:slider_controls => self.slider_controls.to_json}) 
+    ActiveSupport::JSON.encode({:slider_controls => self.slider_controls.to_json})
   end
-  
-private
-  
-
 end

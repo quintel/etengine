@@ -14,4 +14,3 @@ class HistoricSerieEntry < ActiveRecord::Base
   has_paper_trail
   belongs_to :historic_serie
 end
-

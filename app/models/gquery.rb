@@ -24,7 +24,6 @@ class Gquery < ActiveRecord::Base
   GQL_MODIFIERS = %(present future historic stored)
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
-
   has_paper_trail
   validates_presence_of :key
   validates_uniqueness_of :key
@@ -43,7 +42,7 @@ class Gquery < ActiveRecord::Base
 
   scope :contains, lambda{|search| where("query LIKE ?", "%#{search}%")}
   scope :name_or_query_contains, lambda{|q| where([
-    "`key` LIKE :q OR query LIKE :q", { :q => "%#{q}%" }
+                                                    "`key` LIKE :q OR query LIKE :q", { :q => "%#{q}%" }
   ])}
 
 
@@ -58,7 +57,7 @@ class Gquery < ActiveRecord::Base
     query
   end
 
-  
+
 
   ##
   # The GqlParser currently does not work with whitespace.
@@ -106,24 +105,20 @@ class Gquery < ActiveRecord::Base
     Gql::QueryInterface::Preparser.new(query).clean
   end
 
-private
-  ##
-  # Method to invalidate the memoized gquery_hash.
-  #
-  def reload_cache
-    @@gquery_hash = nil
-  end
-
-  def validate_query_parseable
-    if !Gql::QueryInterface::Preparser.new(self[:query]).valid?
-      errors.add(:query, "cannot be parsed")
-      false
-    else
-      true
+  private
+    ##
+    # Method to invalidate the memoized gquery_hash.
+    #
+    def reload_cache
+      @@gquery_hash = nil
     end
-  end
 
-
+    def validate_query_parseable
+      if !Gql::QueryInterface::Preparser.new(self[:query]).valid?
+        errors.add(:query, "cannot be parsed")
+        false
+      else
+        true
+      end
+    end
 end
-
-
