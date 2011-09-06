@@ -14,7 +14,7 @@ describe UserSessionsController do
       get :new
       response.should be_success
       response.should have_selector("form") do |form|
-        form.should have_selector("input", :type => "text", :name => "user_session[email]")
+        form.should have_selector("input", :type => "email", :name => "user_session[email]")
         form.should have_selector("input", :type => "password", :name => "user_session[password]")
       end
     end
@@ -29,14 +29,6 @@ describe UserSessionsController do
       post :create, :user_session => {:email => @user.email, :password => 'pssassword'} 
       controller.send(:current_user).should be_nil
       response.should be_success
-    end
-
-    it "should redirect to redirect_to after loggin in" do
-      redirect_to = "/demand"
-      get :new, {:redirect_to => redirect_to}
-      response.should have_selector("form") do |form|
-        form.should have_selector("input", :type => "hidden", :name => "redirect_to", :value => redirect_to)
-      end
     end
   end  
 end
