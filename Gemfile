@@ -19,8 +19,6 @@ gem 'acts_as_list'
 gem 'tabs_on_rails'
 gem 'kaminari'
 
-gem "strip_attributes", "~> 1.0.0"
-
 # javascript
 gem 'sprockets'
 gem 'sprockets-rails'
