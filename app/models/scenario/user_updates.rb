@@ -39,24 +39,24 @@ module Scenario::UserUpdates
     end
 
     def inputs_present
-      #unless @inputs_present
+      unless @inputs_present
         @inputs_present = {}
         user_values.each do |key, value|
           input = Input.get_cached(key)
           @inputs_present[input] = value if input.present? && input.v2? && input.updates_present?
         end
-      #end
+      end
       @inputs_present
     end
 
     def inputs_future
-      #unless @inputs_future
+      unless @inputs_future
         @inputs_future = {}
         user_values.each do |key, value|
           input = Input.get_cached(key)
           @inputs_future[input] = value if input.present? && input.v2? && input.updates_future?
         end
-      #end
+      end
       @inputs_future
     end
 
@@ -89,7 +89,9 @@ module Scenario::UserUpdates
     # 
     def update_input(input, value)
       store_user_value(input, value)
-      add_update_statements(input.update_statement(value), input.updateable_period)
+      unless input.v2?
+        add_update_statements(input.update_statement(value), input.updateable_period)
+      end
     end
 
     # add_update_statements does not persist the slider value.
@@ -104,6 +106,7 @@ module Scenario::UserUpdates
     # @tested 2010-12-06 seb
     #
     def add_update_statements(update_statement_hash, updateable_period = :future)
+
       if Current.gql_calculated?
         raise "Update statements are ignored after the GQL has finished calculating. \nStatement: \n#{update_statement_hash.inspect}" 
       end
