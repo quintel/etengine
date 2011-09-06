@@ -1,1 +1,17 @@
-%h1 Backend
+.header Backend
+
+%h3 Stats
+
+%table
+  %tr
+    %td Gquery Count
+    %td= Gquery.count
+
+%h3 System
+
+%table
+  %tr
+    %td Uptime
+    %td= %x{uptime}
+
+

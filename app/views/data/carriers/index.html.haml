@@ -1,1 +1,17 @@
 = render "list"
+
+.header Carriers
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Key
+  %tfoot
+    %tr
+      %th{:colspan => 2}= paginate @carriers
+  %tbody
+    - @carriers.each do |c|
+      %tr
+        %td= c.id
+        %td= link_to c.key, edit_data_carrier_carrier_data_path(:carrier_id => c.id)

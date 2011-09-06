@@ -21,10 +21,6 @@
 
 %h3 Description
 %p
-  = @gquery.description
-
-  %h3 Description
-  %p
-    = simple_format @gquery.description
+  = simple_format @gquery.description
 
 = render '/data/shared/revisions', :versioned => @gquery
