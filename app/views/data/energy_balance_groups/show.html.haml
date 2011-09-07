@@ -1,0 +1,15 @@
+.header
+  Energy balance group details
+
+%h3= @energy_balance_group.name
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Key
+  %tbody
+    - @energy_balance_group.converters.each do |c|
+      %tr
+        %td= c.id
+        %td= link_to c.key, data_converter_path(:id => c.id)

@@ -1,0 +1,15 @@
+.header
+  Energy Converter Groups
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Name
+      %th Converters
+  %tbody
+    - @energy_balance_groups.each do |e|
+      %tr
+        %td= e.id
+        %td= link_to e.name, data_energy_balance_group_path(:id => e.id)
+        %td= e.converters.count
