@@ -21,7 +21,7 @@
   - versioned.versions.reverse.each do |version|
     %tr
       %td
-        %small= User.find(version.whodunnit).name if version.whodunnit
+        %small= User.find(version.whodunnit).name if version.whodunnit rescue "#{version.whodunnit} [User Missing]"
         
       %td
         - if version == @version
