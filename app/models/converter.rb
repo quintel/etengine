@@ -22,6 +22,7 @@ class Converter < ActiveRecord::Base
   #  belongs_to :blueprint
   has_and_belongs_to_many :blueprints
   has_and_belongs_to_many :groups
+  belongs_to :energy_balance_group
 
   has_many :links, :foreign_key => 'child_id'
   has_many :input_links,  :class_name => 'Link', :foreign_key => 'parent_id'

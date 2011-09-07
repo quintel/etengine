@@ -80,6 +80,7 @@ Etm::Application.routes.draw do
       resources :blueprints
       resources :inputs, :except => :show
       resources :blueprint_models
+      resources :energy_balance_groups, :only => [:index, :show]
 
 
       match '/gql' => "gql#index"

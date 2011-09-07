@@ -15,7 +15,8 @@
 
 %h3
   Energy Balance Group:
-  = @converter.energy_balance_group
+  - if g = @converter.energy_balance_group
+    = link_to g.name, data_energy_balance_group_path(:id => g.id)
 %h3
   Groups:
   = @converter_present.groups.join(' | ')
