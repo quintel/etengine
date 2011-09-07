@@ -11,9 +11,9 @@
     = render 'result'
     %h2 Query Debug
     %h3 present
-    %pre= Current.gql.present.debug(@query).reverse.join("\n") 
+    %pre= Current.gql.present.debug(@query).reverse.join("\n") rescue "[Error]"
     %h3 future
-    %pre= Current.gql.future.debug(@query).reverse.join("\n") 
+    %pre= Current.gql.future.debug(@query).reverse.join("\n") rescue "[Error]"
   - else
     %em no query
   %p= submit_tag 'check'
