@@ -13,10 +13,10 @@
 - pre = @converter_present.query
 - fut = @converter_future.query
 
-%h2
+%h3
   Energy Balance Group:
   = @converter.energy_balance_group
-%h2
+%h3
   Groups:
   = @converter_present.groups.join(' | ')
 
@@ -27,7 +27,7 @@
 
 
 - c = @converter_future
-%h2 Future Outputs
+%h3 Future Outputs
 %table.outputs
   %thead
     %tr
@@ -48,7 +48,7 @@
           %td{:style => "vertical-align: middle; text-align: center", :rowspan => output_slot.links.length}= output_slot.carrier.key
           %td{:style => "vertical-align: middle; text-align: center", :rowspan => output_slot.links.length}= output_slot.conversion
 
-%h2 Future Inputs
+%h3 Future Inputs
 %table.inputs
   %thead
     %tr
@@ -122,7 +122,6 @@
       %th Total Losses
       - result_fields(pre.converter,fut.converter, :total_losses)
 
-
   %table
     %thead
       %tr
@@ -149,7 +148,6 @@
           %th== Primary Demand of #{carrier.key}
           - result_fields(pre,fut) do |converter|
             - converter.primary_demand_of_carrier(carrier.key.to_sym)
-
 
 %table
   %thead
@@ -178,12 +176,14 @@
         %th= attr_name
         - result_fields(pre,fut,attr_name)
 
-
-%br
-%br
-
 %h3 References
-%p This converter key is (explicitly) used here (most probably, just a simple CMD+F style search):
-%ul
-  - Gquery.contains(@converter_present.full_key).each do |gquery|
-    %li= link_to gquery.key, data_gquery_path(:id => gquery.id)
+    
+%table
+  - Gquery.name_or_query_contains(@converter_present.full_key).each do |gquery|
+    %tr
+      %td Gquery
+      %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
+  - Input.embedded_gql_contains(@converter_present.full_key).each do |input|
+    %tr
+      %td Input
+      %td= link_to input.key, data_input_path(:id => input.id)
