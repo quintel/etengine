@@ -20,7 +20,10 @@ class Api::ScenariosController < ApplicationController
   end
 
   def create
-    if api_session_id = params[:scenario].delete("api_session_key")
+    api_session_id = params[:scenario].delete("api_session_id")
+    api_session_id ||= params[:scenario].delete("api_session_key") # legacy remove after 2011-10
+
+    if api_session_id
       api_scenario = ApiScenario.find(api_session_id)
       @scenario = api_scenario.save_as_scenario(params[:scenario])
     else
