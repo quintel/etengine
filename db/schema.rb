@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110907124327) do
+ActiveRecord::Schema.define(:version => 20110908090211) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -119,6 +119,13 @@ ActiveRecord::Schema.define(:version => 20110907124327) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "gquery_id"
+  end
+
+  create_table "constraints_root_nodes", :id => false, :force => true do |t|
+    t.integer  "constraint_id"
+    t.integer  "root_node_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "converter_positions", :force => true do |t|
@@ -395,6 +402,20 @@ ActiveRecord::Schema.define(:version => 20110907124327) do
 
   add_index "inputs", ["key"], :name => "unique api key", :unique => true
 
+  create_table "lce_values", :force => true do |t|
+    t.string   "using_country"
+    t.string   "origin_country"
+    t.float    "co2_exploration_per_mj"
+    t.float    "co2_extraction_per_mj"
+    t.float    "co2_treatment_per_mj"
+    t.float    "co2_transportation_per_mj"
+    t.float    "co2_conversion_per_mj"
+    t.float    "co2_waste_treatment_per_mj"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "carrier"
+  end
+
   create_table "links", :force => true do |t|
     t.integer "blueprint_id"
     t.integer "parent_id"
@@ -447,6 +468,14 @@ ActiveRecord::Schema.define(:version => 20110907124327) do
   end
 
   add_index "output_elements", ["key"], :name => "index_output_elements_on_key"
+
+  create_table "page_titles", :force => true do |t|
+    t.string   "controller"
+    t.string   "action"
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "partners", :force => true do |t|
     t.string   "name"
@@ -532,7 +561,6 @@ ActiveRecord::Schema.define(:version => 20110907124327) do
     t.string   "scenario_type"
     t.integer  "preset_scenario_id"
     t.string   "type"
-    t.string   "api_session_key"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
   end
