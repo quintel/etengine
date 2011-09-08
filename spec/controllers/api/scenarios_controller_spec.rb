@@ -38,10 +38,9 @@ describe Api::ScenariosController do
     end
 
     it "should create a new scenario with values from api_scenario" do
-      put :create, 'scenario' => {'title' => 'foo bar', 'api_session_key' => @api_scenario.api_session_key}
+      put :create, 'scenario' => {'title' => 'foo bar', 'api_session_key' => @api_scenario.id.to_s }
 
       assigns(:scenario).title.should == 'foo bar'
-      assigns(:scenario).api_session_key.should be_nil
       assigns(:scenario).country.should == @api_scenario.country
     end
   end

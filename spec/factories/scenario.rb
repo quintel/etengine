@@ -1,6 +1,5 @@
 Factory.define :api_scenario do |f|
   f.title "API"
-  f.api_session_key 123456789
 end
 
 Factory.define :scenario do |f|

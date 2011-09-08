@@ -144,9 +144,9 @@ class Input < ActiveRecord::Base
           :full_label   => input.full_label
         }
       rescue => ex
-        Rails.logger.warn("Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}")
+        Rails.logger.warn("Input#static_values for input #{input.id} failed for api_session_id #{Current.scenario.id}")
         Airbrake.notify(
-          :error_message => "Input#static_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
+          :error_message => "Input#static_values for input #{input.id} failed for api_session_id #{Current.scenario.id}",
           :backtrace => caller,
         :parameters => {:input => input, :api_scenario => Current.scenario })
         hsh
@@ -161,9 +161,9 @@ class Input < ActiveRecord::Base
           :start_value => input.start_value
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}")
+        Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}")
         Airbrake.notify(
-          :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_key #{Current.scenario.api_session_key}",
+          :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}",
           :backtrace => caller,
         :parameters => {:input => input, :api_scenario => Current.scenario })
         hsh

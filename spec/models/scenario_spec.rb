@@ -68,22 +68,6 @@ describe Scenario do
     end
   end
 
-
-  describe "#municipality?" do
-    {
-      :municipality? => :is_municipality?
-    }.each do |scenario_method_name, area_method_name|
-      describe "##{scenario_method_name} should be true if area##{area_method_name} is true" do
-        before { @scenario.stub!(:area).and_return(mock_model(Area, area_method_name => true))}
-        specify { @scenario.send(scenario_method_name).should be_true}
-      end
-      describe "##{scenario_method_name} with no area should be false" do
-        before { @scenario.stub!(:area).and_return(nil)}
-        specify { @scenario.send(scenario_method_name).should be_false}
-      end
-    end
-  end
-
   describe "setting and retrieving user_values" do
     before do
       @input = Input.new

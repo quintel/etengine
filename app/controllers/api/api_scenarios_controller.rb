@@ -19,7 +19,7 @@ class Api::ApiScenariosController < ApplicationController
     @api_scenario = ApiScenario.create!(attributes)
 
     respond_to do |format|
-      format.html { redirect_to api_scenario_url(@api_scenario.api_session_key)}
+      format.html { redirect_to api_scenario_url(@api_scenario.id)}
       format.json { render :json => @api_scenario, :callback => params[:callback] }
     end
   end
@@ -69,7 +69,7 @@ class Api::ApiScenariosController < ApplicationController
   protected
 
     def find_model
-      @api_scenario = ApiScenario.find_by_api_session_key(params[:id])
+      @api_scenario = ApiScenario.find(params[:id])
     end
 
 end
