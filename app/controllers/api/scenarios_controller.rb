@@ -20,8 +20,8 @@ class Api::ScenariosController < ApplicationController
   end
 
   def create
-    if api_session_key = params[:scenario].delete("api_session_key")
-      api_scenario = ApiScenario.find_by_api_session_key(api_session_key)
+    if api_session_id = params[:scenario].delete("api_session_key")
+      api_scenario = ApiScenario.find(api_session_id)
       @scenario = api_scenario.save_as_scenario(params[:scenario])
     else
       #@scenario = Scenario.new(params[:scenario])
@@ -41,7 +41,6 @@ class Api::ScenariosController < ApplicationController
 
   private
     def find_scenario
-      # DEBT
-      @scenario = Scenario.find_by_api_session_key(params[:id]) || Scenario.find(params[:id])
+      @scenario = Scenario.find(params[:id])
     end
 end

@@ -14,13 +14,13 @@
       %th 
   - @api_scenarios.each do |api_scenario|
     %tr
-      %td= link_to api_scenario.api_session_key, api_scenario_path(api_scenario)
+      %td= link_to api_scenario.id, api_scenario_path(api_scenario)
       %td= link_to 'json', api_scenario_path(api_scenario, :format => 'json')
       %td= api_scenario.country
       %td= api_scenario.updated_at.to_s
       %td= button_to 'del', api_scenario_path(api_scenario), :method => 'delete'
       %td
-        == copy-paste to etmodel: /scenarios/#{api_scenario.api_session_key}/load
+        == copy-paste to etmodel: /scenarios/#{api_scenario.id}/load
 
 
 
@@ -30,10 +30,10 @@
 %p
   Default: 
   %pre /api/VERSION/api_scenarios/new
-  Create a new session with current timestamp as api_session_key
+  Create a new session with current timestamp as api_session_id
 %p
-  Custom api_session_key (must be unique!):
-  %pre /api/VERSION/api_scenarios/new?settings[api_session_key]=foo
+  Custom api_session_id (must be unique!):
+  %pre /api/VERSION/api_scenarios/new?settings[api_session_id]=foo
 %p
   Overwrite settings: 
   %pre /api/VERSION/api_scenarios/new?settings[country]=nl&settings[end_year]=2050

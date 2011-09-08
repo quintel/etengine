@@ -9,7 +9,7 @@
 #
 class ApiRequest
   GQUERY_KEY_SEPARATOR = ";".freeze
-  API_ATTRIBUTES = [:api_session_key, :user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]
+  API_ATTRIBUTES = [:user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]
 
   attr_accessor :settings, :input, :reset, :use_fce
 
@@ -57,7 +57,7 @@ class ApiRequest
     @scenario ||= if test_scenario?
       ApiScenario.new(new_attributes).tap{|s| s.test_scenario = true }
     else
-      ApiScenario.find_by_api_session_key(@api_scenario_id)
+      ApiScenario.find(@api_scenario_id)
     end
   end
 

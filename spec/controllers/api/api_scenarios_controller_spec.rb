@@ -22,13 +22,10 @@ describe Api::ApiScenariosController do
     end
 
     it "should create and assign params[:settings]" do
-      api_session_key = Time.now.to_i
-
       expect {
-        get :new, {:settings => {:country => 'uk', :api_session_key => api_session_key.to_s}}
+        get :new, {:settings => {:country => 'uk'}}
       }.to change(ApiScenario, :count).by(1)
 
-      ApiScenario.find_by_api_session_key(ApiScenario.last.id).should_not be_nil
       response.should be_redirect
     end
   end
@@ -46,12 +43,12 @@ describe Api::ApiScenariosController do
     end
 
     it "should assign @api_scenario" do
-      get :show, :id => @api_scenario.api_session_key.to_s
-      assigns(:api_scenario).api_session_key.to_s.should == @api_scenario.api_session_key.to_s
+      get :show, :id => @api_scenario.id.to_s
+      assigns(:api_scenario).should == @api_scenario
     end
 
     it "should get results" do
-      get :show, :id => @api_scenario.api_session_key, :result => ['foo', 'bar']
+      get :show, :id => @api_scenario.id.to_s, :result => ['foo', 'bar']
       assigns(:api_response)[:result].values.should have(2).items
     end
 
@@ -61,11 +58,11 @@ describe Api::ApiScenariosController do
       end
       
       it "should updated in the scenario when params[:use_fce] is different then the scenario value" do
-        get :show, :id => @api_scenario.api_session_key, :use_fce => false
-        ApiScenario.find_by_api_session_key(@api_scenario.api_session_key).use_fce.should be_false
+        get :show, :id => @api_scenario.id.to_s, :use_fce => false
+        ApiScenario.find(@api_scenario.id).use_fce.should be_false
 
-        get :show, :id => @api_scenario.api_session_key, :use_fce => true
-        ApiScenario.find_by_api_session_key(@api_scenario.api_session_key).use_fce.should be_true
+        get :show, :id => @api_scenario.id.to_s, :use_fce => true
+        ApiScenario.find(@api_scenario.id).use_fce.should be_true
       end
     end
   end

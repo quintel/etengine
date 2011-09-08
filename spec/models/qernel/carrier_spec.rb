@@ -15,7 +15,7 @@ describe Carrier do
      @dataset.<<(@carrier.dataset_key => attributes)
      @carrier.dataset = @dataset
      
-     @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo', :api_session_key => 'foo'))
+     @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo'))
    end
 
    pending it "should get co2_combustion_per_mj" do
@@ -32,12 +32,12 @@ describe Carrier do
    
    context "#co2_per_mj" do
      pending it "should return the co2_combustion_per_mj attr as co2_per_mj when fce not used" do
-       get :show, :id => @api_scenario.api_session_key, :use_fce => false       
+       get :show, :id => @api_scenario.id, :use_fce => false       
        @carrier.co2_per_mj.should be_near(9.6)
      end
 
      pending it "should sum all the co2 attrs when fce is used" do
-       get :show, :id => @api_scenario.api_session_key, :use_fce => true
+       get :show, :id => @api_scenario.id, :use_fce => true
        @carrier.co2_per_mj.should be_near(13.6) 
      end     
    end
