@@ -28,10 +28,133 @@ describe ApiRequest do
         :r => %w[baz moo].join(ApiRequest::GQUERY_KEY_SEPARATOR)
       ).gquery_keys.sort.should == %w[foo bar baz moo].sort
     end
+  end
 
+  describe "#response" do
+    before do
+      @input1 = Input.create(:query => "UPDATE(V(lft), demand, USER_INPUT())")
+      @gquery1 = Gquery.create(:key => 'lft_demand', :query => 'V(lft; demand)')
+      @gquery2 = Gquery.create(:key => 'rgt_demand', :query => 'V(rgt; demand)')
+      Current.gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
+    end
+
+    context "test" do
+      it "should" do
+        request = ApiRequest.response({:id => 'test'})
+        request.response['result'].should == nil
+      end
+    end
+
+    context "existing api_scenario" do
+      before do 
+        @api_scenario = Factory.create :api_scenario
+      end
+
+      it "should" do
+        request = ApiRequest.response({:id => @api_scenario.id.to_s})
+        request.response['result'].should == nil
+      end
+
+      it "should accept 1 gquery ID in :r" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :r => @gquery1.id.to_s
+        }).response['result']
+        result[@gquery1.id.to_s][0][1].should == 100.0
+        result[@gquery1.id.to_s][1][1].should == 100.0
+      end
+
+      it "should accept multiple gquery IDs in :r separated by GQUERY_KEY_SEPARATOR" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :r => [@gquery1.id,@gquery2.id].join(ApiRequest::GQUERY_KEY_SEPARATOR)
+        }).response['result']
+
+        result[@gquery1.id.to_s][0][1].should == 100.0
+        result[@gquery1.id.to_s][1][1].should == 100.0
+
+        result[@gquery2.id.to_s][0][1].should == 100.0
+        result[@gquery2.id.to_s][1][1].should == 100.0
+      end
+
+      it "should accept multiple gquery KEYs in :r separated by GQUERY_KEY_SEPARATOR" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :r => [@gquery1.key,@gquery2.key].join(ApiRequest::GQUERY_KEY_SEPARATOR)
+        }).response['result']
+
+        result[@gquery1.key][1][1].should == 100.0
+        result[@gquery2.key][1][1].should == 100.0
+      end
+
+      it "should accept an array of gquery keys in :result" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :result => [@gquery1.key,@gquery2.key]
+        }).response['result']
+
+        result[@gquery1.key][1][1].should == 100.0
+        result[@gquery2.key][1][1].should == 100.0
+      end
+
+      it "should accept an array of gquery IDs in :result" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :result => [@gquery1.id.to_s,@gquery2.id.to_s]
+        }).response['result']
+
+        result[@gquery1.id.to_s][1][1].should == 100.0
+        result[@gquery2.id.to_s][1][1].should == 100.0
+      end
+
+      it "should accept a GQL statement in :result" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :result => ["SUM(100,200)"]
+        }).response['result']
+
+        result['SUM(100,200)'][1][1].should == 300.0
+        result['SUM(100,200)'][1][1].should == 300.0
+      end
+
+      it "should accept input and update gql" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :input => {@input1.id.to_s => "5.0"},
+          :r => @gquery1.id.to_s
+        }).response['result']
+
+        result[@gquery1.id.to_s][0][1].should == 100.0
+        result[@gquery1.id.to_s][1][1].should == 5.0
+      end
+    end
+
+    context "existing api_scenario with existing user_values" do
+      before do 
+        @api_scenario = Factory.create :api_scenario, :user_values => {@input1.id => 13.0}.to_yaml
+      end
+
+
+      it "should work" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :r => @gquery1.id.to_s
+        }).response['result']
+
+        result[@gquery1.id.to_s][0][1].should == 100.0
+        result[@gquery1.id.to_s][1][1].should == 13.0
+      end
+
+      it "should update input with new value and update gql" do
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :input => {@input1.id.to_s => "5.0"},
+          :r => @gquery1.id.to_s
+        }).response['result']
+
+        result[@gquery1.id.to_s][0][1].should == 100.0
+        result[@gquery1.id.to_s][1][1].should == 5.0
+      end
+    end
   end
 end
-
-
-
-
