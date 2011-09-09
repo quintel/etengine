@@ -10,7 +10,6 @@
 #  created_at           :datetime
 #  updated_at           :datetime
 #  not_cacheable        :boolean(1)      default(FALSE)
-#  usable_for_optimizer :boolean(1)      default(FALSE)
 #  unit                 :string(255)
 #
 
