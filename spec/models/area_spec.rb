@@ -12,8 +12,9 @@ describe Area do
     end
 
     it "should create a CarrierData for every Carrier" do
-      Dataset::CarrierData.should_receive(:create).with(any_args).exactly(Carrier.count).times
+   #   require 'ruby-debug'; debugger
       @area.save
+      @area.carrier_datas.count.should == Carrier.count
     end
   end
 end
