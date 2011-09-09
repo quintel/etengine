@@ -61,7 +61,7 @@ module Qernel
         @rgt2.primary_demand.should == 20.0
       end
 
-      it "should calculate primary_demand_of_electricity" do
+      pending "should calculate primary_demand_of_electricity" do
         @lft.query.primary_demand_of_electricity.should == 80.0
         @mid.query.primary_demand_of_electricity.should == 80.0
         @rgt1.query.primary_demand_of_electricity.should == 80.0

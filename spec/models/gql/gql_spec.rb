@@ -233,7 +233,7 @@ describe Gql do
           @new_input =  Input.create!(:query => 'UPDATE(LINK(heatpump_cooling_households_energetic,cooling_demand_households_energetic), share, DIVIDE(USER_INPUT(),100))')
         end
 
-        it "should work with old" do
+        pending "should work with old" do
           @gql.scenario.user_values = {@old_input.id => 30.0}
           @gql.scenario.load!
           @gql.query("V(cooling_demand_households_energetic;demand)").future_value.should == 100.0
