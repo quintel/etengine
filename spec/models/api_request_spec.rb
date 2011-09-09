@@ -134,7 +134,6 @@ describe ApiRequest do
         @api_scenario = Factory.create :api_scenario, :user_values => {@input1.id => 13.0}.to_yaml
       end
 
-
       it "should work" do
         result = ApiRequest.response({
           :id => @api_scenario.id.to_s,
