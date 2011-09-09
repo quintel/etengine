@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110908090211) do
+ActiveRecord::Schema.define(:version => 20110909143128) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -318,8 +318,7 @@ ActiveRecord::Schema.define(:version => 20110908090211) do
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "not_cacheable",        :default => false
-    t.boolean  "usable_for_optimizer", :default => false
+    t.boolean  "not_cacheable", :default => false
     t.string   "unit"
   end
 
