@@ -14,7 +14,7 @@ class Data::GqueriesController < Data::BaseController
       @gqueries = GqueryGroup.where("`id` IN (#{params[:groups]})").map(&:gqueries) 
     else
       params[:groups] = ''
-      @gqueries = Gquery.find(:all, :order =>"#{sort} #{order}")
+      @gqueries = Gquery.order("#{sort} #{order}")
     end
     respond_to do |format|
       format.html { render }
