@@ -31,7 +31,7 @@
       %th.rensy Groups
 
   %tbody
-    = cache 'gquery_index_table' do
+    = cache "gquery_index_table_#{params[:groups]}" do
       - @gqueries.flatten.each do |gquery|
         %tr
           %td= link_to gquery.key, data_gquery_path(:id => gquery)
