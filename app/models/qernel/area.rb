@@ -51,6 +51,7 @@ class Area
     :insulation_level_new_houses,
     :insulation_level_existing_houses,
     :has_buildings,
+    :has_other
     :has_solar_csp,
     :has_old_technologies,
     :cold_network_potential,
