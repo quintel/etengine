@@ -49,7 +49,7 @@ namespace :deploy do
   end
 
   desc "Notify Airbrake of the deployment"
-  task :airbrake, :except => { :no_release => true } do
+  task :notify_airbrake, :except => { :no_release => true } do
     rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
     local_user = ENV['USER'] || ENV['USERNAME']
     notify_command = "bundle exec rake airbrake:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
@@ -66,5 +66,5 @@ namespace :deploy do
   end
 end
 
-after "deploy", "notify_airbrake"
+after "deploy", "deploy:notify_airbrake"
 after "deploy:update_code", "deploy:copy_configuration_files"
