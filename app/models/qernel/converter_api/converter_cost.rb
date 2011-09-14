@@ -61,11 +61,11 @@ class Qernel::ConverterApi
   def cost_of_capital_per_mw_input
     dataset_fetch_handle_nil(:cost_of_capital_per_mw_input) do
       # construction_time = 0 if construction_time.nil? 
-      average_investment_per_mw_input * wacc * ( construction_time + economic_lifetime) / economic_lifetime
+      average_investment_per_mw_input * wacc * ( construction_time + technical_lifetime) / technical_lifetime
     end
   end
   attributes_required_for :cost_of_capital_per_mw_input, [
-    :average_investment_per_mw_input, :wacc, :economic_lifetime,:construction_time
+    :average_investment_per_mw_input, :wacc, :technical_lifetime,:construction_time
   ]
 
   # The average investment is determined, to later determine the costs of financing this capital.
@@ -93,11 +93,11 @@ class Qernel::ConverterApi
   #
   def depreciation_per_mw_input
     dataset_fetch_handle_nil(:depreciation_per_mw_input) do
-      (initial_investment_costs_per_mw_input - end_of_life_value_per_mw_input) / economic_lifetime
+      (initial_investment_costs_per_mw_input - end_of_life_value_per_mw_input) / technical_lifetime
     end
   end
   attributes_required_for :depreciation_per_mw_input, [
-    :initial_investment_costs_per_mw_input, :end_of_life_value_per_mw_input, :economic_lifetime
+    :initial_investment_costs_per_mw_input, :end_of_life_value_per_mw_input, :technical_lifetime
   ]
 
   # Sums the various variable costs.
