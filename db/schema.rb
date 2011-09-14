@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110909143128) do
+ActiveRecord::Schema.define(:version => 20110914144453) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -73,6 +73,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.boolean  "has_fce"
   end
 
+  add_index "areas", ["parent_id"], :name => "index_areas_on_parent_id"
+
   create_table "blueprint_layouts", :force => true do |t|
     t.string   "key"
     t.datetime "created_at"
@@ -94,12 +96,15 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.integer  "blueprint_model_id"
   end
 
+  add_index "blueprints", ["blueprint_model_id"], :name => "index_blueprints_on_blueprint_model_id"
+
   create_table "blueprints_converters", :id => false, :force => true do |t|
     t.integer "converter_id"
     t.integer "blueprint_id"
   end
 
   add_index "blueprints_converters", ["blueprint_id"], :name => "index_blueprints_converters_on_blueprint_id"
+  add_index "blueprints_converters", ["converter_id", "blueprint_id"], :name => "index_blueprints_converters_on_converter_id_and_blueprint_id"
 
   create_table "carriers", :force => true do |t|
     t.integer  "carrier_id"
@@ -111,6 +116,9 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.string   "carrier_color"
   end
 
+  add_index "carriers", ["carrier_id"], :name => "index_carriers_on_carrier_id"
+  add_index "carriers", ["key"], :name => "index_carriers_on_key"
+
   create_table "constraints", :force => true do |t|
     t.string   "key"
     t.string   "name"
@@ -120,6 +128,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.datetime "updated_at"
     t.integer  "gquery_id"
   end
+
+  add_index "constraints", ["key"], :name => "index_constraints_on_key"
 
   create_table "converter_positions", :force => true do |t|
     t.integer  "converter_id"
@@ -132,6 +142,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.string   "stroke_color"
     t.integer  "blueprint_layout_id"
   end
+
+  add_index "converter_positions", ["converter_id"], :name => "index_converter_positions_on_converter_id"
 
   create_table "converters", :force => true do |t|
     t.integer  "converter_id"
@@ -148,6 +160,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.integer "converter_id"
     t.integer "group_id"
   end
+
+  add_index "converters_groups", ["converter_id", "group_id"], :name => "index_converters_groups_on_converter_id_and_group_id"
 
   create_table "dataset_carrier_data", :force => true do |t|
     t.datetime "created_at"
@@ -168,6 +182,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.float    "supply_chain_margin_per_mj"
     t.float    "oil_price_correlated_part_production_costs"
   end
+
+  add_index "dataset_carrier_data", ["carrier_id"], :name => "index_dataset_carrier_data_on_carrier_id"
 
   create_table "dataset_converter_data", :force => true do |t|
     t.string   "name"
@@ -229,6 +245,7 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.float    "decrease_in_nomimal_capacity_over_lifetime"
   end
 
+  add_index "dataset_converter_data", ["converter_id"], :name => "index_dataset_converter_data_on_converter_id"
   add_index "dataset_converter_data", ["dataset_id"], :name => "index_converter_datas_on_graph_data_id"
 
   create_table "dataset_link_data", :force => true do |t|
@@ -241,6 +258,7 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
   end
 
   add_index "dataset_link_data", ["dataset_id"], :name => "index_link_datas_on_graph_data_id"
+  add_index "dataset_link_data", ["link_id"], :name => "index_dataset_link_data_on_link_id"
 
   create_table "dataset_slot_data", :force => true do |t|
     t.integer "dataset_id"
@@ -250,6 +268,7 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
   end
 
   add_index "dataset_slot_data", ["dataset_id"], :name => "index_slot_datas_on_graph_data_id"
+  add_index "dataset_slot_data", ["slot_id"], :name => "index_dataset_slot_data_on_slot_id"
 
   create_table "datasets", :force => true do |t|
     t.integer  "blueprint_id"
@@ -322,10 +341,14 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.string   "unit"
   end
 
+  add_index "gqueries", ["key"], :name => "index_gqueries_on_key"
+
   create_table "gqueries_gquery_groups", :id => false, :force => true do |t|
     t.string "gquery_id"
     t.string "gquery_group_id"
   end
+
+  add_index "gqueries_gquery_groups", ["gquery_id", "gquery_group_id"], :name => "index_gqueries_gquery_groups_on_gquery_id_and_gquery_group_id"
 
   create_table "gquery_groups", :force => true do |t|
     t.string   "group_key"
@@ -341,6 +364,7 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.datetime "updated_at"
   end
 
+  add_index "graphs", ["blueprint_id"], :name => "index_graphs_on_blueprint_id"
   add_index "graphs", ["dataset_id"], :name => "index_user_graphs_on_graph_data_id"
 
   create_table "groups", :force => true do |t|
@@ -352,6 +376,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.integer  "group_id"
   end
 
+  add_index "groups", ["group_id"], :name => "index_groups_on_group_id"
+
   create_table "historic_serie_entries", :force => true do |t|
     t.integer  "historic_serie_id"
     t.integer  "year"
@@ -359,6 +385,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "historic_serie_entries", ["historic_serie_id"], :name => "index_historic_serie_entries_on_historic_serie_id"
 
   create_table "historic_series", :force => true do |t|
     t.string   "key"
@@ -403,6 +431,9 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
   end
 
   add_index "links", ["blueprint_id"], :name => "index_links_on_blueprint_id"
+  add_index "links", ["carrier_id"], :name => "index_links_on_carrier_id"
+  add_index "links", ["child_id"], :name => "index_links_on_child_id"
+  add_index "links", ["parent_id"], :name => "index_links_on_parent_id"
 
   create_table "output_element_series", :force => true do |t|
     t.integer  "output_element_id"
@@ -446,6 +477,7 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
   end
 
   add_index "output_elements", ["key"], :name => "index_output_elements_on_key"
+  add_index "output_elements", ["output_element_type_id"], :name => "index_output_elements_on_output_element_type_id"
 
   create_table "partners", :force => true do |t|
     t.string   "name"
@@ -471,6 +503,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.string   "display_format"
     t.string   "reached_query"
   end
+
+  add_index "policy_goals", ["key"], :name => "index_policy_goals_on_key"
 
   create_table "policy_goals_root_nodes", :id => false, :force => true do |t|
     t.integer  "policy_goal_id"
@@ -498,6 +532,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "query_table_cells", ["query_table_id"], :name => "index_query_table_cells_on_query_table_id"
 
   create_table "query_tables", :force => true do |t|
     t.string   "name"
@@ -534,6 +570,9 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
   end
+
+  add_index "scenarios", ["in_start_menu"], :name => "index_scenarios_on_in_start_menu"
+  add_index "scenarios", ["user_id"], :name => "index_scenarios_on_user_id"
 
   create_table "sidebar_items", :force => true do |t|
     t.string   "name"
@@ -573,6 +612,8 @@ ActiveRecord::Schema.define(:version => 20110909143128) do
   end
 
   add_index "slots", ["blueprint_id"], :name => "index_slots_on_blueprint_id"
+  add_index "slots", ["carrier_id"], :name => "index_slots_on_carrier_id"
+  add_index "slots", ["converter_id"], :name => "index_slots_on_converter_id"
 
   create_table "tabs", :force => true do |t|
     t.string "key"
