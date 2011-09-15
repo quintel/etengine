@@ -205,7 +205,7 @@ label.collection_check_boxes {
       text-shadow: black 0 1px 0; }
     #header nav ul li {
       float: right;
-      padding: 2px 5px; }
+      padding: 0px 5px; }
       #header nav ul li a {
         text-decoration: none; }
         #header nav ul li a:hover {
@@ -218,18 +218,17 @@ label.collection_check_boxes {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#c4c4c4), to(#b0b1b2));
   height: 30px;
   line-height: 20px;
-  border-bottom: 1px solid #dddddd; }
+  border-bottom: 1px solid #919191; }
   #subheader nav ul {
     list-style-type: none; }
     #subheader nav ul li {
-      padding: 5px;
-      float: left; }
+      padding: 5px 10px 5px 5px;
+      float: left;
+      border-right: 1px solid #919191; }
       #subheader nav ul li a {
-        color: #5e6469;
+        color: #3a3e41;
         width: 100px;
-        text-decoration: none;
-        font-weight: bold;
-        text-shadow: white 0 1px 0; }
+        text-decoration: none; }
       #subheader nav ul li:hover {
         background-color: white; }
 
