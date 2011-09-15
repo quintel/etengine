@@ -11,6 +11,7 @@ task :production do
   set :application_key, "#{application}"
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
   set :config_files, "/home/ubuntu/config_files/#{application_key}"
+  set :airbrake_api_key, "c7aceee5954aea78f93e7ca4b22439c7"
   
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
@@ -30,6 +31,7 @@ task :staging do
   set :application_key, "#{application}_staging" 
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
   set :config_files, "/home/ubuntu/config_files/#{application_key}"
+  set :airbrake_api_key, "e483e275c8425821ec21580e0ffefe9d"
 
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
