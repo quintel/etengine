@@ -1,49 +1,49 @@
 = render "list"
-
-.header
-  Converters for:
-  = params[:blueprint_id]
-  = params[:region_code]
+%section.main
+  .header
+    Converters for:
+    = params[:blueprint_id]
+    = params[:region_code]
   
-= form_tag data_converters_path, :method => :get do
-  = select 'search', 'group_id', Group.all.map{|g| [g.key, g.id]}, {:include_blank => true, :selected => params[:search] && params[:search][:group_id]}
-  = submit_tag "Search"
+  = form_tag data_converters_path, :method => :get do
+    = select 'search', 'group_id', Group.all.map{|g| [g.key, g.id]}, {:include_blank => true, :selected => params[:search] && params[:search][:group_id]}
+    = submit_tag "Search"
 
-- fields = (params[:fields] ||= 'demand').split(',').map(&:strip)
-%table
-  %thead
-    %tr
-      %th{:colspan => 3}
-        = form_tag( {}, {:method => 'get'}) do
-          Attributes:
-          = text_field_tag :fields, (params[:fields])
-          = submit_tag 'show'
-      - fields.each do |field|
-        %th{:colspan => 2}= field
-    %tr
-      %th id
-      %th Key
-      %th Graph
-      - fields.each do |field|
-        %th Present
-        %th Future
-  %tbody
-    - @converters.each do |converter|
+  - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)
+  %table
+    %thead
       %tr
-        %td== ##{converter.id}
-        %td
-          = link_to converter.full_key, data_converter_path(:id => converter)
-        %td
-          %small
-            = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
-            |
-            = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
-
+        %th{:colspan => 3}
+          = form_tag( {}, {:method => 'get'}) do
+            Attributes:
+            = text_field_tag :fields, (params[:fields])
+            = submit_tag 'show'
         - fields.each do |field|
-          - if converter.full_key.present? and query = "V(#{converter.full_key};#{field})"
-            - p, f = Current.gql.query(query).results
-            %td.tar{:title => title_tag_number(p)}=auto_number(p)
-            %td.tar{:title => title_tag_number(f)}= auto_number(f)
-  %tfoot
-    %tr
-      %td{:colspan => 5}= paginate @converters
+          %th{:colspan => 2}= field
+      %tr
+        %th id
+        %th Key
+        %th Graph
+        - fields.each do |field|
+          %th Present
+          %th Future
+    %tbody
+      - @converters.each do |converter|
+        %tr
+          %td== ##{converter.id}
+          %td
+            = link_to converter.full_key, data_converter_path(:id => converter)
+          %td
+            %small
+              = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
+              |
+              = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
+
+          - fields.each do |field|
+            - if converter.full_key.present? and query = "V(#{converter.full_key};#{field})"
+              - p, f = Current.gql.query(query).results
+              %td.tar{:title => title_tag_number(p)}=auto_number(p)
+              %td.tar{:title => title_tag_number(f)}= auto_number(f)
+    %tfoot
+      %tr
+        %td{:colspan => 5}= paginate @converters

@@ -1,19 +1,18 @@
 = render 'list'
+%section.main
+  .header Test Query
 
-.header
-  Test Query
+  = form_tag test_data_gqueries_path do |f|
+    %p= text_area_tag :query, params[:query], :style => "width: 500px; height: 200px"
 
-- form_tag test_data_gqueries_path do |f|
-  %p= text_area_tag :query, params[:query], :style => "width: 500px; height: 200px"
-
-  %h3 Result
-  - if @query
-    = render 'result'
-    %h2 Query Debug
-    %h3 present
-    %pre= Current.gql.present.debug(@query).reverse.join("\n") rescue "[Error]"
-    %h3 future
-    %pre= Current.gql.future.debug(@query).reverse.join("\n") rescue "[Error]"
-  - else
-    %em no query
-  %p= submit_tag 'check'
+    %h3 Result
+    - if @query
+      = render 'result'
+      %h2 Query Debug
+      %h3 present
+      %pre= Current.gql.present.debug(@query).reverse.join("\n") rescue "[Error]"
+      %h3 future
+      %pre= Current.gql.future.debug(@query).reverse.join("\n") rescue "[Error]"
+    - else
+      %em no query
+    %p= submit_tag 'check'
