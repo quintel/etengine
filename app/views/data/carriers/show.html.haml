@@ -1,8 +1,8 @@
 = render "list"
-
-= simple_form_for [:data, @carrier_data] do |f|
-  = f.input :cost_per_mj
-  = f.input :co2_per_mj
-  = f.input :sustainable
-  = f.input :typical_production_per_km2
-  = f.button :submit
+%section.main
+  = simple_form_for [:data, @carrier_data] do |f|
+    = f.input :cost_per_mj
+    = f.input :co2_per_mj
+    = f.input :sustainable
+    = f.input :typical_production_per_km2
+    = f.button :submit

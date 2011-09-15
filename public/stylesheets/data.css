@@ -53,7 +53,6 @@ table {
   height: 100%;
   overflow: auto;
   background-color: white;
-  margin-right: 10px;
   border-right: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd; }
   #panel input {
@@ -247,7 +246,8 @@ label.collection_check_boxes {
     margin-bottom: 10px;
     line-height: 33px;
     height: 35px; }
-  #content .main {
+  #content section.main {
+    width: 1000px;
     float: left; }
 
 #footer {

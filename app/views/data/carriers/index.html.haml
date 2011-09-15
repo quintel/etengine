@@ -1,14 +1,14 @@
 = render "list"
+%section.main
+  .header Carriers
 
-.header Carriers
-
-%table
-  %thead
-    %tr
-      %th Id
-      %th Key
-  %tbody
-    - @carriers.each do |c|
+  %table
+    %thead
       %tr
-        %td= c.id
-        %td= link_to c.key, edit_data_carrier_carrier_data_path(:carrier_id => c.id)
+        %th Id
+        %th Key
+    %tbody
+      - @carriers.each do |c|
+        %tr
+          %td= c.id
+          %td= link_to c.key, edit_data_carrier_carrier_data_path(:carrier_id => c.id)

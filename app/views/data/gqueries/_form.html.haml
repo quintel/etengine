@@ -4,6 +4,6 @@
   = f.input :unit
   = f.input :not_cacheable
   = f.input :description
-  = f.button :submit
   = f.association :gquery_groups, :collection => GqueryGroup.all.map{|g| [g.group_key, g.id]}#, options_from_collection_for_select(GqueryGroup.all, :id,:group_key, @gquery.gquery_groups.map(&:id)),:multiple => true
+  = f.button :submit
   = link_to "group descriptions", group_descriptions_data_gqueries_path, :target=>"_blank"
