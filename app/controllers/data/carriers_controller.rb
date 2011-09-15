@@ -1,6 +1,6 @@
 class Data::CarriersController < Data::BaseController
   def index
-    @carriers = Carrier.page(params[:page]).per(40)
+    @carriers = Carrier.all
   end
 
   def edit
