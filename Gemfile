@@ -2,9 +2,9 @@ source 'http://rubygems.org'
 source 'http://gems.github.com'
 
 gem 'rails', '3.0.9'
-gem 'jquery-rails'
-gem 'haml', '~>3.1.1'
-gem 'sass', '~>3.1.1'
+gem 'jquery-rails', '~> 1.0.14'
+gem 'haml', '~>3.1.3'
+gem 'sass', '~>3.1.7'
 gem 'rake', '0.9.2' # 0.9 breaks things
 
 gem 'authlogic', :git => 'git://github.com/odorcicd/authlogic.git', :branch => 'rails3'
@@ -23,7 +23,7 @@ gem 'sprockets-rails'
 gem 'rack-sprockets'
 
 # supporting gems
-gem 'airbrake', '3.0.3'
+gem 'airbrake', '3.0.4'
 
 # system gems
 # gem 'thinking-sphinx', '>=2.0.1'
@@ -57,5 +57,5 @@ group :test do
   gem 'factory_girl_rails', "1.1.rc1", :require => false
   gem 'shoulda-matchers'
   gem 'webrat'
-  gem 'simplecov', :require => false
+  gem 'simplecov', '~> 0.5.3', :require => false
 end
