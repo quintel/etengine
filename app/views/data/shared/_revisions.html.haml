@@ -1,36 +1,37 @@
 %h3 Revisions
 
-%table
-  %tr
-    %td
-      %small 
-        %strong Updated by
-    %td
-      - if @version
-        current
-      - else
-        %strong current
-    %td
-      %small 
-        %strong Updated @
+- if versioned.live?
+  You are currently seeing the current version of the object
+- else
+  You are currently seeing a previous version of the object
 
-    %td    
-      = link_to('show', :id => versioned, :action => :show)
-      = link_to('edit', :id => versioned, :action => :edit)
-    
-  - versioned.versions.reverse.each do |version|
+%table
+  %thead
     %tr
+      %th Version
+      %th Updated by
+      %th Type
+      %th Updated at
+      %th
+  %tbody
+    %tr
+      %td Current
       %td
-        %small= User.find(version.whodunnit).name if version.whodunnit rescue "#{version.whodunnit} [User Missing]"
-        
       %td
-        - if version == @version
-          %strong= version.event
-        - else
-          = version.event
       %td
-        %small= I18n.l(version.created_at, :format => :long)
-      %td
-        = link_to 'show', :action => 'show', :id => versioned, :version_id => version.id
-        = link_to 'edit', :action => 'edit', :id => versioned, :version_id => version.id
+      %td    
+        = link_to('show', :id => versioned, :action => :show)
+        = link_to('edit', :id => versioned, :action => :edit)
+      %td= '<==' unless @version
+    
+    - versioned.versions.reverse.each do |version|
+      %tr
+        %td= version.index
+        %td= User.find(version.whodunnit).name if version.whodunnit rescue "#{version.whodunnit} [User Missing]"
+        %td= version.event
+        %td= I18n.l(version.created_at, :format => :long)
+        %td
+          = link_to 'show', :action => 'show', :id => versioned, :version_id => version.id
+          = link_to 'edit', :action => 'edit', :id => versioned, :version_id => version.id
+        %td= '<==' if version == @version
         
