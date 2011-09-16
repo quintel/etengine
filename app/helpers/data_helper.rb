@@ -1,7 +1,11 @@
 module DataHelper
   def title_tag_number(value)
     if value.is_a?(Numeric)
-      number_with_delimiter value
+      if value.between?(-1, 1)
+        value.to_f # scientific notation
+      else
+        number_with_delimiter value        
+      end
     end
   end
 

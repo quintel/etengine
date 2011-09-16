@@ -274,5 +274,7 @@ table {
     font-weight: normal; }
   table tbody tr:nth-child(odd) {
     background-color: #eeeeee; }
+  table tbody td.tar {
+    text-align: right; }
   table tbody.numeric_rows td {
     text-align: right; }
