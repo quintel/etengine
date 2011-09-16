@@ -10,8 +10,12 @@ module NumbersHelper
       number_with_precision(value.to_f / 10**6, :precision => 2, :delimiter => ",") + " M"
     elsif value > 10**2
       number_with_precision(value.to_f / 10**3, :precision => 2, :delimiter => ",") + " K"
-    elsif value > 0 && value < 100
+    elsif value >= 1 && value < 100
       number_with_precision value, :precision => 2
+    elsif value > 0 && value < 1
+      number_with_precision value, :precision => 3
+    elsif value === 0
+      0
     else
       value
     end
