@@ -2,17 +2,19 @@
 = link_to "Create a new Graph", new_data_graph_path
 
 %h2 Upload Zipfile
-- form_tag '/data/graphs/import', :multipart => true do
+
+= form_tag import_data_graphs_path, :multipart => true do
 
   %p
-    version
+    = label_tag :version
     = text_field_tag :version
   %p
-    Description
+    = label_tag :description
     = text_area_tag :description
   %p
-    zip_file
+    = label_tag :zip_file
     = file_field_tag :zip_file
+    
   %p= submit_tag 'upload and import'
 
 %table
