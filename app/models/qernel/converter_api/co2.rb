@@ -59,20 +59,6 @@ class Qernel::ConverterApi
     primary_demand_co2_per_mj_of_carrier(carrier_key)
   end
 
-  def cost_co2_per_mj_output
-    dataset_fetch(:cost_co2_per_mj_output) do
-      return nil if [
-        co2_production_kg_per_mj_output, co2_percentage_free, co2_price
-      ].any?(&:nil?)
-
-      co2_production_kg_per_mj_output *
-      (1 - co2_percentage_free ) *
-      co2_price
-    end
-  end
-  attributes_required_for :cost_co2_per_mj_output, [:co2_production_kg_per_mj_output, :co2_percentage_free, :co2_price]
-
-
   # This returns the costs for co2 emission credits, based on the CO2_per mwh input.
   def cost_of_co2_emission_credits
     dataset_fetch_handle_nil(:cost_of_co2_emission_credits) do
