@@ -2,15 +2,15 @@
 #
 # Table name: converters
 #
-#  id                      :integer(4)      not null, primary key
-#  converter_id            :integer(4)
-#  key                     :string(255)
-#  name                    :string(255)
-#  use_id                  :integer(4)
-#  sector_id               :integer(4)
-#  created_at              :datetime
-#  updated_at              :datetime
-#  energy_balance_group_id :integer(4)
+#  id                   :integer(4)      not null, primary key
+#  converter_id         :integer(4)
+#  key                  :string(255)
+#  name                 :string(255)
+#  use_id               :integer(4)
+#  sector_id            :integer(4)
+#  created_at           :datetime
+#  updated_at           :datetime
+#  energy_balance_group :string(255)
 #
 
 ##
