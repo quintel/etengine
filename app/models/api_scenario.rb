@@ -50,7 +50,7 @@ class ApiScenario < Scenario
   end
 
   def identifier
-    "##{id} - #{country} (#{end_year}) "
+    "##{id} - #{country} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
   end
 
   def api_errors
