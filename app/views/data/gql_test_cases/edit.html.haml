@@ -1,4 +1,4 @@
-= form_for [:admin, @gql_test_case] do |f|
+= form_for @gql_test_case, :url => data_gql_test_case_path(:id => @gql_test_case) do |f|
   %p
     = f.label :name
     = f.text_field :name

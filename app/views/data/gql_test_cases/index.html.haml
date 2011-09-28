@@ -1,7 +1,13 @@
-// this is in index action, but eventually should be a show action
-= link_to "new test suite", new_data_gql_test_case_path
+%section.main
+  .header GQL Test Suites
 
-%ul
-  - @gql_test_cases.each do |gql_test_case|
-    %li
-      = link_to gql_test_case.name, [:data, gql_test_case]
+  %p
+    = link_to "Create test suite", new_data_gql_test_case_path
+
+
+  %table
+    - @gql_test_cases.each do |gql_test_case|
+      %tr
+        %td= link_to gql_test_case.name, data_gql_test_case_path(:id => gql_test_case.id)
+        %td= link_to 'edit', edit_data_gql_test_case_path(:id => gql_test_case.id)
+        %td= gql_test_case.updated_at

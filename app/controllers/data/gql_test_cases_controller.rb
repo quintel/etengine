@@ -5,6 +5,7 @@ class Data::GqlTestCasesController < Data::BaseController
 
   def index
     @gql_test_cases = GqlTestCase.all
+    render :layout => 'data'
   end
 
   def show
@@ -32,7 +33,7 @@ class Data::GqlTestCasesController < Data::BaseController
 
   def update
     if @gql_test_case.update_attributes(params[:gql_test_case])
-      redirect_to datagql_test_cases_url
+      redirect_to data_gql_test_cases_url
     end
   end
 
