@@ -24,7 +24,7 @@ class Data::BaseController < ApplicationController
       region_code  = params[:region_code] ||= 'nl'
 
       if blueprint_id != 'latest'
-        @api_scenario = Scenario.find(blueprint_id)
+        @api_scenario = ApiScenario.find(blueprint_id)
         Current.scenario = @api_scenario
         @graph = Current.graph
 
