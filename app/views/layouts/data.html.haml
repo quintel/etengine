@@ -23,7 +23,7 @@
               = link_to "Logout", logout_path
         = form_tag(data_redirect_path, {:method => 'get'}) do
           = label_tag 'Blueprint'
-          - opts = [["latest - ##{Current.scenario.id}", 'latest'], *ApiScenario.recent.map{|as| [as.identifier, as.id]}]
+          - opts = [["Current - ##{Current.scenario.id}", 'latest'], *ApiScenario.recent.map{|as| [as.identifier, as.id]}]
           = select_tag :blueprint_id, options_for_select(opts, params[:blueprint_id]), :onchange => 'submit()'
           = label_tag 'Region'
           = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code]), :onchange => 'submit()'
