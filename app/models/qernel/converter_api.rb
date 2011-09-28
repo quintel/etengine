@@ -170,34 +170,39 @@ class ConverterApi
     carrier_names.each do |carrier|
       carrier_key = carrier.to_sym
       define_method "demand_of_#{carrier}" do
-        self.output_of_carrier(carrier_key)
+        self.output_of_carrier(carrier_key) || 0.0
       end
       define_method "supply_of_#{carrier}" do
-        self.input_of_carrier(carrier_key)
+        self.input_of_carrier(carrier_key) || 0.0
       end
       define_method "input_of_#{carrier}" do
-        self.input_of_carrier(carrier_key)
+        self.input_of_carrier(carrier_key) || 0.0
       end
       define_method "output_of_#{carrier}" do
-        self.output_of_carrier(carrier_key)
+        self.output_of_carrier(carrier_key) || 0.0
       end
       define_method "primary_demand_of_#{carrier}" do
-        converter.primary_demand_of_carrier(carrier_key)
+        converter.primary_demand_of_carrier(carrier_key) || 0.0
       end
 
       ['input', 'output'].each do |side|
         define_method "#{carrier}_#{side}_link_share" do
           if slot = self.converter.send(side, carrier_key)
             if link = slot.links.first
-              link.send('share')
+              link.send('share') || 0.0
+            else
+              0.0
             end
+          else
+            0.0
           end
         end
 
         %w[conversion value share actual_conversion].each do |method|
           define_method "#{carrier}_#{side}_#{method}" do
             slot = self.converter.send(side, carrier_key)
-            slot and slot.send(method)
+            value = slot && slot.send(method)
+            value || 0.0
           end
         end
       end
