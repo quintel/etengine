@@ -1,4 +1,6 @@
 class Data::ConvertersController < Data::BaseController
+  before_filter :calculate_gql
+
   def index
     base = @blueprint.converter_records
     if params[:search] && params[:search][:group_id]
@@ -24,7 +26,12 @@ class Data::ConvertersController < Data::BaseController
     end
   end
 
-  private
+  protected
+
+    # calculate so values will be updated and assigned.
+    def calculate_gql
+      Current.gql.prepare
+    end
 
     def diagram
       depth = params[:depth].andand.to_i || 3
