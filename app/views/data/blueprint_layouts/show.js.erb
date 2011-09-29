@@ -3,7 +3,7 @@ var GRAPH = new Graph();
 
 <%
   @bp = @graph.blueprint
-  blueprint_converters = Converter.includes(:groups).all
+  blueprint_converters = @bp.converter_records.includes(:groups).all
   blueprint_converter_ids = blueprint_converters.map(&:id)
 
   blueprint_converters.each do |bc|

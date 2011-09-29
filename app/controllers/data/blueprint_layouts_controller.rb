@@ -8,15 +8,6 @@ class Data::BlueprintLayoutsController < Data::BaseController
   end
 
   def show
-    @last_modified_at = [
-      @graph.blueprint.updated_at,
-      @graph.blueprint.created_at,
-      Converter.order('updated_at DESC').first.updated_at,
-      Converter.order('created_at DESC').first.created_at,
-      ConverterPosition.order('created_at DESC').first.created_at,
-      ConverterPosition.order('updated_at DESC').first.updated_at
-    ].max
-
     respond_to do |format|
       format.html { render :layout => 'blueprint_layout' }
       format.json { render :json => result  }
