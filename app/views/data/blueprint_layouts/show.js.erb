@@ -3,17 +3,17 @@ var GRAPH = new Graph();
 
 <%
   @bp = @graph.blueprint
-  blueprint_converters = @bp.converter_records.includes(:groups).all
+  blueprint_converters = @bp.converter_records.includes(:groups, :energy_balance_group).all
   blueprint_converter_ids = blueprint_converters.map(&:id)
 
   blueprint_converters.each do |bc|
     position = @converter_positions[bc.id]
-    
+    position ||= ConverterPosition.new(bc)
 
-    params = [bc.id, bc.key, position.andand.x || 100, position.andand.y || 100, bc.sector_key.to_s, bc.use_key.to_s, bc.key]
-    params << (position.andand.hidden == true)
-    params << (position.andand.fill_color || '#eee')
-    params << (position.andand.stroke_color || '#000')
+    params = [bc.id, bc.key, position.x_or_default, position.y_or_default, bc.sector_key.to_s, bc.use_key.to_s, bc.key]
+    params << (position.hidden == true)
+    params << position.fill_color
+    params << position.stroke_color
   -%>
 <%= "new Converter(#{js_params(params)});".html_safe %>
 <% end %>      
