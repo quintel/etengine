@@ -92,7 +92,9 @@ var Graph = Class.extend({
   },
 
   deselect_all:function() {
-    _.each(this.selected, function(converter) {converter.converter.unselect();});
+    _.each(GRAPH.selected, function(converter) {
+      converter.converter.unselect();
+    });
     return false;
   }
 
