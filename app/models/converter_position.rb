@@ -19,46 +19,60 @@
 #
 #
 class ConverterPosition < ActiveRecord::Base
+
+  DEFAULT_Y_BY_SECTOR = {
+    :households   =>  100,
+    :industry     => 1000,
+    :transport    => 2000,
+    :agriculture  => 3000,
+    :energy       => 4000,
+    :other        => 5000,
+    :environment  => 6000,
+    :buildings    => 7000,
+    :neighbor     => 7500
+  }.with_indifferent_access
+
+  STROKE_COLORS_BY_SECTOR = {
+    :households   => '#0c0',
+    :industry     => '#ccc',
+    :transport    => '#00c',
+    :agriculture  => '#c0c',
+    :energy       => '#00c',
+    :other        => '#000',
+    :environment  => '#0cc',
+    :buildings    => '#d00',
+    :neighbor     => '#ccc'
+  }.with_indifferent_access
+
   belongs_to :converter
   belongs_to :blueprint_layout
 
   validates_presence_of :converter_id, :on => :create, :message => "can't be blank"
 
-  before_create :assign_colors
-
-  def assign_colors
-    return unless converter
-    STROKE_COLORS.each do |key, color|
-      if converter.groups.map(&:key).include?(key.to_s)
-        stroke_color = color
-      end
-    end
-    self[:stroke_color] ||= STROKE_COLORS[:undefined]
-    self[:fill_color] = FILL_COLORS[converter.sector_key.to_sym] if converter.sector_key
+  def self.default_position_for(converter)
+    position = new
+    position.tap{|p| p.converter = converter }
   end
 
+  def fill_color
+    converter.energy_balance_group.andand.graphviz_color || self[:fill_color] || '#eee'
+  end
 
-  FILL_COLORS_BALANCE_GROUP = {
+  def stroke_color
+    if converter.sector_key
+      STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym] 
+    else
+      '#000'
+    end
+  end
 
-  }
+  def x_or_default
+    self.x || 100
+  end
 
-  FILL_COLORS = {
-    :households   => '#fcf',
-    :industry     => '#ccc',
-    :transport    => '#ffc',
-    :agriculture  => '#cfc',
-    :energy       => '#ffc',
-    :other        => '#fff',
-    :environment  => '#fcc',
-    :buildings    => '#dee',
-    :neighbor     => '#ccc'
-  }.with_indifferent_access
+  def y_or_default
+    self.y || DEFAULT_Y_BY_SECTOR[converter.sector_key.to_s.to_sym] || 100
+  end
 
-  STROKE_COLORS = {
-    :primary_energy_demand => '#99f',
-    :final_demand_cbs => '#9f9',
-    :useful_demand => '#f99',
-    :undefined => '#333'
-  }.with_indifferent_access
 
 end
