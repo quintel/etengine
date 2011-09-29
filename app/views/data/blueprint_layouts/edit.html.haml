@@ -2,6 +2,8 @@
 = javascript_include_tag 'underscore.min' # underscore does not work with sprockets :(
 
 #blueprint_layout
+  %strong#graph_saving{:style => 'background: #f00; color: #fff; display: none'} Saving...
+    
   %ul
     %li
       = link_to 'save', '#', :onclick => 'update_positions()'
@@ -20,7 +22,14 @@
 
   :javascript
     function update_positions() {
-      $.post(update_converter_positions_path, {'converter_positions' : getUpdatedValues()});
+      $('#graph_saving').show();
+      $.ajax({
+        type: 'POST',
+        url: update_converter_positions_path, 
+        data: {'converter_positions' : getUpdatedValues()},
+        success: function(data) { $('#graph_saving').hide(); },
+        error: function(data) { $('#graph_saving').text('ERROR'); }
+      });
       updated_coordinates = {};
       return false;
     };

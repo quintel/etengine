@@ -16,11 +16,4 @@
     }
   })
   
-  
-  function update_positions() {
-    $.post(update_converter_positions_path, {'converter_positions' : getUpdatedValues()});
-    updated_coordinates = {};
-    return false;
-  };
-
 = javascript_include_tag data_blueprint_layout_path(:id => @blueprint_layout, :format => 'js')
