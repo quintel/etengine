@@ -22,12 +22,12 @@
 
   :javascript
     function update_positions() {
-      $('#graph_saving').show();
+      $('#graph_saving').text('Saving...').show();
       $.ajax({
         type: 'POST',
         url: update_converter_positions_path, 
         data: {'converter_positions' : getUpdatedValues()},
-        success: function(data) { $('#graph_saving').hide(); },
+        success: function(data) { $('#graph_saving').fadeOut(); },
         error: function(data) { $('#graph_saving').text('ERROR'); }
       });
       updated_coordinates = {};

@@ -1,7 +1,7 @@
 class Data::ConverterPositionsController < Data::BaseController
 
   def create
-    if params[:converter_positions]
+    if params[:converter_positions].present?
       params[:converter_positions].each do |converter_id,attributes|
         if bcp = ConverterPosition.find_by_converter_id(converter_id)
           bcp.update_attributes attributes
