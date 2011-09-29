@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110922143054) do
+ActiveRecord::Schema.define(:version => 20110929140244) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -266,6 +266,7 @@ ActiveRecord::Schema.define(:version => 20110922143054) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "graphviz_color"
   end
 
   create_table "expert_predictions", :force => true do |t|
