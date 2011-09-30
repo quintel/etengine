@@ -23,7 +23,6 @@ class Gquery < ActiveRecord::Base
   GQL_MODIFIERS = %(present future historic stored)
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
-  has_paper_trail
   validates_presence_of :key
   validates_uniqueness_of :key
   validates_presence_of :query
@@ -93,7 +92,7 @@ class Gquery < ActiveRecord::Base
   end
 
   def cacheable?
-    !not_cacheable && !converters?
+    !converters?
   end
 
   def gql_modifier
