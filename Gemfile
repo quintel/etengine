@@ -54,7 +54,7 @@ group :test, :development do
 end
 
 group :test do
-  gem 'factory_girl_rails', "1.1.rc1", :require => false
+  gem 'factory_girl_rails', "~> 1.2.0"
   gem 'shoulda-matchers'
   gem 'webrat'
   gem 'simplecov', '~> 0.5.3', :require => false
