@@ -259,6 +259,16 @@ label.collection_check_boxes {
   color: white;
   margin-bottom: 5px; }
 
+section#search_box {
+  background-color: #efefef;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#efefef"}, endColorstr="#dfe1e2");
+  background-image: -moz-linear-gradient(center top, #efefef, #dfe1e2);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#efefef), to(#dfe1e2));
+  padding: 5px;
+  border-bottom: 1px solid #919191; }
+  section#search_box input[type=search] {
+    width: 200px; }
+
 table {
   margin: 15px;
   border: 1px solid #cccccc; }
