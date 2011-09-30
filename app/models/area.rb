@@ -72,6 +72,8 @@ class Area < ActiveRecord::Base
 
   after_create :create_carrier_datas
 
+  scope :by_name, lambda {|q| where('country LIKE ?', "%#{q}%")}
+
   def self.ordered_column_names
     Qernel::Area::ATTRIBUTES_USED.map(&:to_s) & Area.column_names
   end
