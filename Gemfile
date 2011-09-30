@@ -17,6 +17,10 @@ gem 'default_value_for'
 gem 'tabs_on_rails'
 gem 'kaminari'
 
+# for etsource
+gem 'git'
+gem 'activerecord-import'
+
 # javascript
 gem 'sprockets'
 gem 'sprockets-rails'
