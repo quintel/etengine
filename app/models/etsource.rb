@@ -1,13 +1,14 @@
 module Etsource
-  ETSOURCE_DIR = '../etsource'
-
+  ETSOURCE_DIR = 'etsource'
+  
   class Gqueries
-
     def import!
       Gquery.transaction do
         Gquery.delete_all
         GqueryGroup.delete_all
         import
+        Rails.cache.clear
+        system("touch tmp/restart.txt")
       end
     end
 
@@ -39,6 +40,7 @@ module Etsource
       Gquery.import gqueries
     end
 
+  protected
     def to_file(gquery)
       commented_description = "# #{gquery.description.to_s.strip.gsub("\n", "\n# ")}\n"
       unit = gquery.unit.to_s.downcase.strip.gsub(' ', '_')
