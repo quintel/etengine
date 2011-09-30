@@ -1,0 +1,15 @@
+=# render 'list'
+%section.main
+  .header== Commits in #{params[:branch]}
+
+  %table
+    - @commits.each do |commit|
+      %tr
+        %td= commit.message
+        %td= link_to 'github', "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
+        
+        %td= link_to 'IMPORT', data_commit_path(:id => commit.to_s)
+        %td= commit.date.strftime("%m-%d-%y %H:%M")
+        %td= commit.author.name
+        %td
+          %small{:style => "color: #aaa"}= commit.to_s
