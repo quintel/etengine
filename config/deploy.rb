@@ -11,7 +11,6 @@ task :production do
   set :application_key, "#{application}"
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
   set :config_files, "/home/ubuntu/config_files/#{application_key}"
-  set :airbrake_api_key, "c7aceee5954aea78f93e7ca4b22439c7"
   
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
@@ -31,7 +30,6 @@ task :staging do
   set :application_key, "#{application}_staging" 
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
   set :config_files, "/home/ubuntu/config_files/#{application_key}"
-  set :airbrake_api_key, "e483e275c8425821ec21580e0ffefe9d"
 
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
@@ -43,6 +41,24 @@ task :staging do
   role :db,  domain, :primary => true # This is where Rails migrations will run
 end
 
+
+task :release do
+  set :domain, "ec2-46-137-47-160.eu-west-1.compute.amazonaws.com"
+  set :branch, "release"
+
+  set :application_key, "#{application}_rc"
+  set :deploy_to, "/home/ubuntu/apps/#{application}_staging"  ## this is a copy of staging, so serverconfig stays the same
+  set :config_files, "/home/ubuntu/config_files/#{application}_staging" ## this is a copy of staging, so serverconfig stays the same
+
+  set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
+  set :db_pass, "quintel"
+  set :db_name, application_key
+  set :db_user, 'root'
+
+  role :web, domain # Your HTTP server, Apache/etc
+  role :app, domain # This may be the same as your `Web` server
+  role :db,  domain, :primary => true # This is where Rails migrations will run
+end 
 
 set :user, 'ubuntu'
 
