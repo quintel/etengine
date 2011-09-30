@@ -58,7 +58,13 @@ namespace :deploy do
     rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
     local_user = ENV['USER'] || ENV['USERNAME']
     notify_command = "bundle exec rake airbrake:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
-    notify_command << " API_KEY=#{airbrake_api_key}"
+    if application_key == "etenging"
+      notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
+    elsif application_key == "etengine_staging"
+      notify_command << " API_KEY=e483e275c8425821ec21580e0ffefe9d"
+    elsif application_key == "etengine_rc"
+      notify_command << " API_KEY=c0323ccf9d5e2ac0b00772d0f4fb93c9"
+    end
     puts "Notifying Airbrake of Deploy of #{server_type} (#{notify_command})"
     run "cd #{release_path} && #{notify_command}"
     puts "Airbrake Notification Complete."
