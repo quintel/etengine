@@ -31,8 +31,8 @@ class Converter < ActiveRecord::Base
 
   has_one :converter_position
 
-  scope :in_group, lambda{|*gid| includes(:groups).where(["groups.id IN (?)", gid])}
-  scope :by_name, lambda{|q| where('`key` LIKE ?', "%#{q}%")}
+  scope :in_group, lambda{|*gid| includes(:groups).where(["groups.id IN (?)", gid]) unless gid.empty?}
+  scope :by_name, lambda{|q| where('`converters`.`key` LIKE ?', "%#{q}%")}
   # we hook up converters with slots in Blueprint. So the following association not
   # really needed.
   # has_many :blueprint_slots
