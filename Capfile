@@ -38,7 +38,7 @@ namespace :deploy do
   end
 
   task :symlink_etsource do
-    raise "etsource does not exist. check out github branch etsource into /home/ubuntu" unless remote_dir_exists?("/home/ubuntu/etsource")
+    # raise "etsource does not exist. check out github branch etsource into /home/ubuntu" unless remote_dir_exists?("/home/ubuntu/etsource")
     run "ln -s /home/ubuntu/etsource #{release_path}/etsource"
   end
 
