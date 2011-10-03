@@ -1,18 +1,13 @@
-.header
-  = @area.region_code
-  %small= link_to 'back', data_area_path(:id => @area.id)
-
+- breadcrumb link_to "Areas", data_areas_path
+- breadcrumb link_to @area.region_code, data_area_path(:id => @area.id)
+- breadcrumb 'edit'
 
 = notice_message
+
 %p
   %strong Attention:
   %em changing area data requires restarting the server.
 
 = render 'form'
-
-%p
-  = link_to "Show", data_area_path(@area)
-  |
-  = link_to "View All", data_areas_path
 
 = render "/data/shared/revisions", :versioned => @area

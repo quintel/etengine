@@ -1,8 +1,8 @@
-.header
-  = link_to "Areas", data_areas_path
-  = @area.region_code
-  %small= link_to 'edit', edit_data_area_path(:id => @area.id)
-= notice_message
+- breadcrumb link_to "Areas", data_areas_path
+- breadcrumb @area.region_code
+
+%section#actions
+  = link_to 'edit', edit_data_area_path(:id => @area.id)
 
 %table
   %thead

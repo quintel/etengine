@@ -231,6 +231,21 @@ label.collection_check_boxes {
       #subheader nav ul li:hover {
         background-color: white; }
 
+#breadcrumbs {
+  background-color: #dfdfdf;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#dfdfdf"}, endColorstr="#cccfd0");
+  background-image: -moz-linear-gradient(center top, #dfdfdf, #cccfd0);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#dfdfdf), to(#cccfd0));
+  padding: 5px;
+  border-bottom: 1px solid #989898; }
+  #breadcrumbs nav a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold; }
+
+section#actions {
+  padding: 10px; }
+
 #content {
   clear: both; }
   #content .header {

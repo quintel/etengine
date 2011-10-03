@@ -49,4 +49,13 @@ module DataHelper
       end
     end
   end
+  
+  def breadcrumb(x)
+    @_breadcrumbs ||= []
+    @_breadcrumbs << x
+  end
+  
+  def breadcrumbs
+    @_breadcrumbs ||= []
+  end
 end
