@@ -15,6 +15,8 @@ module Etsource
         GqlTestCases.new.import!
         Gqueries.new.import!
       end
+      # DEBT fix this properly
+      `curl http://beta.et-model.com/pages/refresh_gqueries > /dev/null`
     end
   end
   
