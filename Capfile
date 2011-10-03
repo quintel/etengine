@@ -37,6 +37,11 @@ namespace :deploy do
     memcached.flush
   end
 
+  task :symlink_etsource do
+    raise "etsource does not exist. check out github branch etsource into /home/ubuntu" unless remote_dir_exists?("/home/ubuntu/etsource")
+    run "ln -s /home/ubuntu/etsource #{release_path}/etsource"
+  end
+
   task :start do ; end
   task :stop do ; end
   task :restart, :roles => :app, :except => { :no_release => true } do
@@ -62,3 +67,4 @@ end
 
 after "deploy", "deploy:notify_airbrake"
 after "deploy:update_code", "deploy:copy_configuration_files"
+after "deploy:update_code", "deploy:symlink_etsource"
