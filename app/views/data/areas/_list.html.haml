@@ -1,9 +1,0 @@
-#panel
-  %input#search{:'data-search_scope' => 'areas', :type => 'search'}
-  .tree
-    = cache("data/#{params[:blueprint_id]}/#{params{:region_code}}/areas/_list/") do
-      %ul
-        - Area.all.each do |area|
-          %li{:'data-search' => area.region_code}
-            %a{:href => data_area_path(:id => area.id)}
-              %span.key= area.region_code

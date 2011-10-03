@@ -12,7 +12,7 @@ describe Data::AreasController do
   describe "GET index" do    
     it "should be successful" do
       get :index, :blueprint_id => 'latest', :region_code => 'nl'
-      response.should redirect_to(data_area_path(:id => area.id, :blueprint_id => 'latest', :region_code => 'nl'))
+      response.should render_template(:index)
     end
   end
   
