@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>gql</string>
+	</array>
+	<key>foldingStartMarker</key>
+	<string>\(\s*$</string>
+	<key>foldingStopMarker</key>
+	<string>^\s*\)</string>
+	<key>name</key>
+	<string>GQL</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>match</key>
+			<string>\b([A-Z_]+)\b</string>
+			<key>name</key>
+			<string>support.function</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>#.*$</string>
+			<key>name</key>
+			<string>comment.line</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\d+</string>
+			<key>name</key>
+			<string>constant.numeric</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\b(loss|hot_water|crude_oil|steam_hot_water|electricity|solar_radiation|ambient_heat|ambient_cold|natural_gas|useable_heat|biomass|biofuel|greengas|coal|gasoline|diesel|lpg|biodiesel|bio_ethanol|kerosine|waste|uranium|wind|bio_oil|water|low_caloric_gas|high_caloric_gas|lng|cooling|car_kms|truck_kms|light|algae_diesel|biogas|lignite|cng|imported_electricity|compressed_gas|overflow|gasmix|notdefined|savings|foreign_solar_power|foreign_waste_power|foreign_geothermal_power|foreign_oil_power|foreign_hydro_power|foreign_wind_power|foreign_biomass_power|foreign_gas_power|foreign_nuclear_power|foreign_coal_power|biocoal|imported_steam_hot_water|woodpellets|corn|manure|wood)\b</string>
+			<key>name</key>
+			<string>constant.string</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.gql</string>
+	<key>uuid</key>
+	<string>C6AB463D-D585-4B69-8F9D-3B0DDF6E28D1</string>
+</dict>
+</plist>

@@ -1,1 +1,17 @@
-= render 'list'
+- breadcrumb 'Areas'
+= render 'search_box'
+
+%table
+  %thead
+    %tr
+      %td Id
+      %td Area
+      %td Last update
+      %td
+  %tbody
+    - @areas.each do |a|
+      %tr
+        %td= a.id
+        %td= link_to highlight(a.region_code, params[:q]), data_area_path(:id => a.id)
+        %td= a.updated_at.to_s(:short)
+        %td= link_to 'edit', edit_data_area_path(:id => a.id)

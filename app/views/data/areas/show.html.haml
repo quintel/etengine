@@ -1,23 +1,22 @@
-= render "list"
-%section.main
-  .header
-    = @area.region_code
-    %small= link_to 'edit', edit_data_area_path(:id => @area.id)
-  = notice_message
+- breadcrumb link_to "Areas", data_areas_path
+- breadcrumb @area.region_code
 
-  %table
-    %thead
+%section#actions
+  = link_to 'edit', edit_data_area_path(:id => @area.id)
+
+%table
+  %thead
+    %tr
+      %th Attribute
+      %th= @area.region_code
+  %tbody
+    - Area.ordered_column_names.each do |column_name|
       %tr
-        %th Attribute
-        %th= @area.region_code
-    %tbody
-      - Area.ordered_column_names.each do |column_name|
-        %tr
-          %th= column_name
-          - v = @area.send(column_name)
-          %td{:title => v}
-            - if v.is_a?(Numeric)
-              = auto_number v
-            - else
-              = v
-  = render "/data/shared/revisions", :versioned => @area
+        %th= column_name
+        - v = @area.send(column_name)
+        %td{:title => v}
+          - if v.is_a?(Numeric)
+            = auto_number v
+          - else
+            = v
+= render "/data/shared/revisions", :versioned => @area

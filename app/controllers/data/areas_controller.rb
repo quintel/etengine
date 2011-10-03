@@ -2,8 +2,7 @@ class Data::AreasController < Data::BaseController
   before_filter :find_model, :only => [:update, :show, :edit]
 
   def index
-    @area = Area.find_by_country(params[:region_code])
-    redirect_to data_area_url(:id => @area.id)
+    @areas = Area.by_name(params[:q])
   end
 
   def new
