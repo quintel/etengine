@@ -1,6 +1,7 @@
 class Data::GqlTestCasesController < Data::BaseController
   layout 'gql_test_cases'
 
+  skip_before_filter :find_graph
   before_filter :find_model, :only => [:show, :edit, :update, :destroy]
 
   def index
@@ -16,6 +17,10 @@ class Data::GqlTestCasesController < Data::BaseController
 
   def new
     @gql_test_case = GqlTestCase.new
+    respond_to do |format|
+      format.html {}
+      format.text {}
+    end
   end
 
   def create
