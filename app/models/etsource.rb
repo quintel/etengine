@@ -25,7 +25,7 @@ module Etsource
     end
     
     def import
-      base_dir = "#{ETSOURCE_DIR}/test_suite"
+      base_dir = "#{ETSOURCE_DIR}/test_suites"
       Dir.glob("#{base_dir}/**/*.js").each do |f|
         key = f.split('/').last.split('.').first
         GqlTestCase.create(:name => key, :instruction => File.read(f))
