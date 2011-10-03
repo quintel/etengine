@@ -10,9 +10,9 @@ class Data::CommitsController < Data::BaseController
   end
 
   def show
-    @commit = @git.gcommit(params[:id])
-    @git.checkout(@commit)
-    Etsource::Gqueries.new.import!
+    @etsource = Etsource::Commit.new(params[:id])
+    @commit = @etsource.commit
+    @etsource.import!
   end
   
   def init_git
