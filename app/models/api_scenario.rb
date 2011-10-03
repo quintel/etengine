@@ -26,7 +26,7 @@
 class ApiScenario < Scenario
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
-  scope :recent, order("created_at DESC").limit(20)
+  scope :recent, order("created_at DESC").limit(30)
 
   def self.new_attributes(settings = {})
     settings ||= {}

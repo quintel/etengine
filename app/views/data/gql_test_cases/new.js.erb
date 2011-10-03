@@ -1,6 +1,8 @@
-<% if !@gql_test_case.instruction.include?("var settings") %>
-  // All the indivudual gquery test cases.
-  // This will be probably be from @gql_test_case.test_cases [text-column]
+var settings = <%= (@gql_test_case.settings || '').inspect.html_safe %>;
+
+describe("For country NL, end_year 2050", function() {
+  beforeEach(function() { this.addMatchers(customMatchers); });
+
   <%= @gql_test_case.instruction.html_safe %>
 });
 
@@ -11,6 +13,3 @@ function run_tests() {
 
 // Make an API call. When complete runs the test-suites
 load_queries(settings, run_tests);
-<% else %>
-<%= @gql_test_case.instruction.html_safe %>
-<% end %>
