@@ -24,7 +24,7 @@ class Gquery < ActiveRecord::Base
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
   validates_presence_of :key
-  validates_uniqueness_of :key
+  # validates_uniqueness_of :key
   validates_presence_of :query
   # DEBT: Add a validates_format_of :query (e.g. should have at least one a-z)
   validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
