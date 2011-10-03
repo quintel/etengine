@@ -1,26 +1,44 @@
 
-= form_for [:admin, @gql_test_case] do |f|
-  %p
-    = f.label :name
-    = f.text_field :name
-  %p
-    = f.label :settings
-    = f.text_area :settings
-    %p
-      %em e.g.: settings[country]=nl&settings[end_year]=2030
-  -#%p
-    = f.label :inputs
-    = f.text_area :inputs
-  %p
-    = f.label :instruction
-    = f.text_area :instruction
-    = link_to "Generate Test Suite", "#", :onclick => "load_queries($('#gql_test_case_settings').val(), create_tests)"
+= form_for [:data, @gql_test_case] do |f|
+  %table
+    %tr
+      %th
+        = f.label :name
+      %td= f.text_field :name, :style => "width: 600px"
+    %tr
+      %th= f.label :settings
+      %td
+        = f.text_area :settings, :style => "width: 600px; height: 100px"
+        %p
+          %em e.g.: settings[country]=nl&settings[end_year]=2030
 
-  %p
-    = f.label :description
-    = f.text_area :description
-  %p
-    = f.submit
+    %tr
+      %th= f.label :instruction
+      %td
+        = link_to "GENERATE Test Suite", "#", :onclick => "load_queries($('#gql_test_case_settings').val(), create_tests)"
+        %br
+      
+        = f.text_area :instruction, :style => "width: 600px; height: 400px"
+
+    %tr
+      %th
+      %td
+        = f.submit
+
+
+describe("For country NL, end_year 2050", function() {
+  beforeEach(function() { this.addMatchers(customMatchers); });
+  <%= @gql_test_case.instruction.html_safe %>
+});
+
+function run_tests() {
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().execute();
+}
+
+// Make an API call. When complete runs the test-suites
+load_queries(settings, run_tests);
+
 
 %script
   // create Gquery objects for the gqueries we will test later.
@@ -40,3 +58,5 @@
     $('#gql_test_case_instruction').val(test_suite);
   };
   // Make an API call. When complete runs the test-suites
+
+
