@@ -2,10 +2,6 @@
 = render 'search_box'
 = render "list"
 %section.main
-  = form_tag data_converters_path, :method => :get do
-    = select 'search', 'group_id', Group.all.map{|g| [g.key, g.id]}, {:include_blank => true, :selected => params[:search] && params[:search][:group_id]}
-    = submit_tag "Search"
-
   - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)
   %table
     %thead

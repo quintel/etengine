@@ -3,9 +3,7 @@ class Data::ConvertersController < Data::BaseController
 
   def index
     base = @blueprint.converter_records
-    if params[:search] && params[:search][:group_id]
-      base = base.in_group(params[:search][:group_id])
-    end
+    base = base.in_group(params[:group_id]) unless params[:group_id].blank?
     @converters = base.by_name(params[:q]).page(params[:page]).per(40)
   end
 
