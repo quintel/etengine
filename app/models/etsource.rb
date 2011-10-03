@@ -35,6 +35,7 @@ module Etsource
 
   class Gqueries
     VARIABLE_PREFIX = '-'
+    FILE_SUFFIX = 'gql'
     
     def import!
       Gquery.transaction do
@@ -53,7 +54,7 @@ module Etsource
         path = [base_dir, group].compact.join('/')
 
         FileUtils.mkdir_p(path)
-        File.open("#{path}/#{gquery.key}.txt", 'w') do |f|
+        File.open("#{path}/#{gquery.key}.#{FILE_SUFFIX}", 'w') do |f|
           f << to_file(gquery)
         end
       end
@@ -64,7 +65,7 @@ module Etsource
       groups = GqueryGroup.all.inject({}) {|hsh,g| hsh.merge group_key(g) => g}
       
       gqueries = []
-      Dir.glob("#{base_dir}/**/*.txt").each do |f|
+      Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
         group_key, rest = f.gsub(base_dir+"/", '').split('/')
         gquery = from_file(f)
         groups[group_key] ||= GqueryGroup.create(:group_key => group_key)
