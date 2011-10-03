@@ -14,12 +14,44 @@ module Etsource
       Gquery.transaction do 
         GqlTestCases.new.import!
         Gqueries.new.import!
+        Inputs.new.import!
       end
       # DEBT fix this properly
       `curl http://beta.et-model.com/pages/refresh_gqueries > /dev/null`
     end
   end
   
+  class Inputs
+    def import!
+      # Do not delete inputs because input ids are important and referenced by et-model
+      import
+    end
+    
+    def export
+      base_dir = "#{ETSOURCE_DIR}/inputs"
+
+      FileUtils.mkdir_p(base_dir)
+      Input.find_each do |input|
+        attrs = input.attributes
+        attrs.delete('created_at')
+        attrs.delete('updated_at')
+        File.open("#{base_dir}/#{input.key}.yml", 'w') do |f|
+          f << YAML::dump(attrs)
+        end
+      end
+    end
+    
+    def import
+      base_dir = "#{ETSOURCE_DIR}/inputs"
+      
+      Dir.glob("#{base_dir}/**/*.yml").each do |f|
+        attributes = YAML::load_file(f)
+        input = Input.find(attributes.delete('id'))
+        input.update_attributes(attributes)
+      end
+    end
+  end
+
   class GqlTestCases
     def import!
       GqlTestCase.delete_all
