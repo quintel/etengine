@@ -6,7 +6,7 @@
 
   = render 'form'
 
-  = render '/data/shared/revisions', :versioned => @gquery
+  =# render '/data/shared/revisions', :versioned => @gquery
 
   - @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
 
