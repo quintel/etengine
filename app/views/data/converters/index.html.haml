@@ -1,10 +1,7 @@
+- breadcrumb "Converters for #{params[:blueprint_id]} / #{params[:region_code]}"
+= render 'search_box'
 = render "list"
 %section.main
-  .header
-    Converters for:
-    = params[:blueprint_id]
-    = params[:region_code]
-  
   = form_tag data_converters_path, :method => :get do
     = select 'search', 'group_id', Group.all.map{|g| [g.key, g.id]}, {:include_blank => true, :selected => params[:search] && params[:search][:group_id]}
     = submit_tag "Search"
@@ -32,7 +29,7 @@
         %tr
           %td== ##{converter.id}
           %td
-            = link_to converter.full_key, data_converter_path(:id => converter)
+            = link_to highlight(converter.full_key.to_s, params[:q]), data_converter_path(:id => converter)
           %td
             %small
               = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
