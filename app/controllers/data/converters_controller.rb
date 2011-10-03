@@ -6,7 +6,7 @@ class Data::ConvertersController < Data::BaseController
     if params[:search] && params[:search][:group_id]
       base = base.in_group(params[:search][:group_id])
     end
-    @converters = base.page(params[:page]).per(40)
+    @converters = base.by_name(params[:q]).page(params[:page]).per(40)
   end
 
   def edit
