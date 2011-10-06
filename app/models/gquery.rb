@@ -40,7 +40,7 @@ class Gquery < ActiveRecord::Base
 
   scope :contains, lambda{|search| where("query LIKE ?", "%#{search}%")}
   scope :name_or_query_contains, lambda{|q| where([
-     "`key` LIKE :q OR query LIKE :q", { :q => "%#{q}%" }
+     "`key` LIKE :q OR query LIKE :q OR deprecated_key LIKE :q", { :q => "%#{q}%" }
   ])}
 
 
