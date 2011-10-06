@@ -13,27 +13,30 @@
   %h3
     Inputs: #{pluralize @inputs.size, 'item'},
     GQueries: #{pluralize @gqueries.size, 'item'}
+    QueryTableCells: #{pluralize @query_table_cells.size, 'item'}
 
 - if @gqueries.any?
   %table
     %thead
       %tr
-        %th{:colspan => 3} GQueries
+        %th{:colspan => 4} GQueries
       %tr
         %th Id
         %th Key
         %th Query
+        %th Deprecated key
     %tbody
       - @gqueries.each do |g|
         %tr
           %td= link_to g.id, data_gquery_path(:id => g.id)
           %td= highlight(g.key, @q)
           %td= highlight(g.query, @q)
+          %td= highlight(g.deprecated_key, @q)
 - if @inputs.any?
   %table
     %thead
       %tr
-        %th{:colspan => 7} Inputs
+        %th{:colspan => 8} Inputs
       %tr
         %th Id
         %th Key
@@ -42,6 +45,7 @@
         %th Max
         %th Attr_name
         %th Label Query
+        %th Query
     %tbody
       - @inputs.each do |g|
         %tr
@@ -52,3 +56,18 @@
           %td= highlight(g.max_value_gql, @q)
           %td= highlight(g.attr_name, @q)
           %td= highlight(g.label_query, @q)
+          %td= highlight(g.query, @q)
+
+- if @query_table_cells.any?
+  %table
+    %thead
+      %tr
+        %th{:colspan => 4} Query Table Cells
+      %tr
+        %th Id
+        %th Query
+    %tbody
+      - @query_table_cells.each do |q|
+        %tr
+          %td= link_to q.id, edit_data_query_table_cell_path(:id => q.id)
+          %td= highlight(q.gquery, @q)

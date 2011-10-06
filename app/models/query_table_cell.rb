@@ -15,7 +15,9 @@
 class QueryTableCell < ActiveRecord::Base
   belongs_to :query_table
   validates_uniqueness_of :column, :scope => [:row, :query_table_id]
-
+  
+  scope :embedded_gql_contains, lambda{|search| where("gquery LIKE :q", :q => "%#{search}%") }
+  
   def result
     if name.present?
       name
