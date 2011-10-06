@@ -1,7 +1,7 @@
+- breadcrumb "GQueries"
+= render 'search_box'
 = render 'list'
 %section.main
-  .header Gqueries
-
   %h2 Gqueries
   
   %p
@@ -31,10 +31,10 @@
         %th.rensy Groups
 
     %tbody
-      = cache "gquery_index_table_#{params[:groups]}" do
+      = cache "gquery_index_table_#{params[:groups]}_#{params[:q]}" do
         - @gqueries.flatten.each do |gquery|
           %tr
-            %td= link_to gquery.key, data_gquery_path(:id => gquery)
+            %td= link_to highlight(gquery.key, params[:q]), data_gquery_path(:id => gquery)
             %td= gquery.unit
             %td= link_to 'Edit', edit_data_gquery_url(:id => gquery)
             %td= link_to 'Delete', data_gquery_path(:id => gquery), :method => 'delete', :confirm => 'Are you sure?'
