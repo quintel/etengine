@@ -1,0 +1,5 @@
+%section#search_box
+  = form_tag data_gqueries_path, :method => :get do
+    = search_field_tag :q, params[:q]
+    
+    = submit_tag "search"

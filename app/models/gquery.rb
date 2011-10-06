@@ -43,6 +43,7 @@ class Gquery < ActiveRecord::Base
      "`key` LIKE :q OR query LIKE :q OR deprecated_key LIKE :q", { :q => "%#{q}%" }
   ])}
 
+  scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
 
   # Returns the cleaned query for any given key.
   #
