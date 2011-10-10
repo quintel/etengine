@@ -18,6 +18,8 @@ class Data::CommitsController < Data::BaseController
   def init_git
     @git = Git.open('etsource')
     @git.checkout(params[:branch], :force => true)
+    # DEBT solve properly
+    `cd etsource; git pull`
     @git.pull if params[:refresh]
   end
 
