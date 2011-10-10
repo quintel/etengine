@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111003073845) do
+ActiveRecord::Schema.define(:version => 20111010123150) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -118,18 +118,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
 
   add_index "carriers", ["carrier_id"], :name => "index_carriers_on_carrier_id"
   add_index "carriers", ["key"], :name => "index_carriers_on_key"
-
-  create_table "constraints", :force => true do |t|
-    t.string   "key"
-    t.string   "name"
-    t.string   "extended_title"
-    t.string   "query"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "gquery_id"
-  end
-
-  add_index "constraints", ["key"], :name => "index_constraints_on_key"
 
   create_table "converter_positions", :force => true do |t|
     t.integer  "converter_id"
@@ -270,17 +258,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
     t.integer  "graphviz_default_x"
   end
 
-  create_table "expert_predictions", :force => true do |t|
-    t.integer  "input_element_id"
-    t.string   "name"
-    t.string   "extra_key"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "key"
-  end
-
-  add_index "expert_predictions", ["input_element_id"], :name => "index_expert_predictions_on_input_element_id"
-
   create_table "fce_values", :force => true do |t|
     t.string   "using_country"
     t.string   "origin_country"
@@ -293,15 +270,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "carrier"
-  end
-
-  create_table "general_user_notifications", :force => true do |t|
-    t.string   "key"
-    t.string   "notification_nl"
-    t.string   "notification_en"
-    t.boolean  "active"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "gql_test_cases", :force => true do |t|
@@ -420,63 +388,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
   add_index "links", ["child_id"], :name => "index_links_on_child_id"
   add_index "links", ["parent_id"], :name => "index_links_on_parent_id"
 
-  create_table "output_element_series", :force => true do |t|
-    t.integer  "output_element_id"
-    t.string   "key"
-    t.string   "label"
-    t.string   "color"
-    t.integer  "order_by"
-    t.string   "group"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "short_label"
-    t.boolean  "show_at_first"
-    t.boolean  "is_target"
-    t.string   "position"
-    t.string   "historic_key"
-    t.string   "expert_key"
-  end
-
-  add_index "output_element_series", ["output_element_id"], :name => "index_output_element_series_on_output_element_id"
-
-  create_table "output_element_types", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "output_elements", :force => true do |t|
-    t.string   "name"
-    t.integer  "output_element_type_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "under_construction",     :default => false
-    t.integer  "legend_columns"
-    t.string   "legend_location"
-    t.string   "unit"
-    t.boolean  "percentage"
-    t.string   "group"
-    t.boolean  "show_point_label"
-    t.boolean  "growth_chart"
-    t.string   "key"
-  end
-
-  add_index "output_elements", ["key"], :name => "index_output_elements_on_key"
-  add_index "output_elements", ["output_element_type_id"], :name => "index_output_elements_on_output_element_type_id"
-
-  create_table "partners", :force => true do |t|
-    t.string   "name"
-    t.string   "url"
-    t.string   "country"
-    t.integer  "time"
-    t.boolean  "repeat_any_other", :default => false
-    t.string   "subheader"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "place",            :default => "right"
-    t.string   "long_name"
-  end
-
   create_table "policy_goals", :force => true do |t|
     t.string   "key"
     t.string   "name"
@@ -490,23 +401,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
   end
 
   add_index "policy_goals", ["key"], :name => "index_policy_goals_on_key"
-
-  create_table "policy_goals_root_nodes", :id => false, :force => true do |t|
-    t.integer  "policy_goal_id"
-    t.integer  "root_node_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "press_releases", :force => true do |t|
-    t.string   "medium"
-    t.string   "release_type"
-    t.datetime "release_date"
-    t.string   "link"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "title"
-  end
 
   create_table "query_table_cells", :force => true do |t|
     t.integer  "query_table_id"
@@ -559,36 +453,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
   add_index "scenarios", ["in_start_menu"], :name => "index_scenarios_on_in_start_menu"
   add_index "scenarios", ["user_id"], :name => "index_scenarios_on_user_id"
 
-  create_table "sidebar_items", :force => true do |t|
-    t.string   "name"
-    t.string   "key"
-    t.string   "section"
-    t.text     "percentage_bar_query"
-    t.integer  "order_by"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "nl_vimeo_id"
-    t.string   "en_vimeo_id"
-  end
-
-  create_table "slides", :force => true do |t|
-    t.string   "controller_name"
-    t.string   "action_name"
-    t.string   "name"
-    t.integer  "default_output_element_id"
-    t.integer  "order_by"
-    t.string   "image"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "sub_header"
-    t.integer  "complexity",                :default => 1
-    t.string   "sub_header2"
-    t.string   "subheader_image"
-    t.string   "key"
-  end
-
-  add_index "slides", ["key"], :name => "index_slides_on_key"
-
   create_table "slots", :force => true do |t|
     t.integer "blueprint_id"
     t.integer "converter_id"
@@ -599,12 +463,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
   add_index "slots", ["blueprint_id"], :name => "index_slots_on_blueprint_id"
   add_index "slots", ["carrier_id"], :name => "index_slots_on_carrier_id"
   add_index "slots", ["converter_id"], :name => "index_slots_on_converter_id"
-
-  create_table "tabs", :force => true do |t|
-    t.string "key"
-    t.string "nl_vimeo_id"
-    t.string "en_vimeo_id"
-  end
 
   create_table "time_curve_entries", :force => true do |t|
     t.integer  "graph_id"
@@ -617,14 +475,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
   end
 
   add_index "time_curve_entries", ["graph_id"], :name => "index_time_curve_entries_on_graph_id"
-
-  create_table "translations", :force => true do |t|
-    t.string   "key"
-    t.text     "content_en"
-    t.text     "content_nl"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "users", :force => true do |t|
     t.string   "name",                                  :null => false
@@ -666,16 +516,6 @@ ActiveRecord::Schema.define(:version => 20111003073845) do
   end
 
   add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
-
-  create_table "view_nodes", :force => true do |t|
-    t.string  "key"
-    t.integer "element_id"
-    t.string  "element_type"
-    t.string  "ancestry"
-    t.integer "position"
-    t.integer "ancestry_depth", :default => 0
-    t.string  "type"
-  end
 
   create_table "year_values", :force => true do |t|
     t.integer  "year"
