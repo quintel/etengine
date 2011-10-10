@@ -218,18 +218,15 @@ label.collection_check_boxes {
   height: 30px;
   line-height: 20px;
   border-bottom: 1px solid #919191; }
-  #subheader nav ul {
-    list-style-type: none; }
-    #subheader nav ul li {
-      padding: 5px 10px 5px 5px;
-      float: left;
-      border-right: 1px solid #919191; }
-      #subheader nav ul li a {
-        color: #3a3e41;
-        width: 100px;
-        text-decoration: none; }
-      #subheader nav ul li:hover {
-        background-color: white; }
+  #subheader nav a {
+    border-right: 1px solid #919191;
+    float: left;
+    padding: 5px 10px 5px 5px;
+    display: block;
+    color: #3a3e41;
+    text-decoration: none; }
+    #subheader nav a:hover {
+      background-color: white; }
 
 #breadcrumbs {
   background-color: #dfdfdf;
