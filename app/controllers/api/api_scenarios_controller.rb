@@ -48,6 +48,9 @@ class Api::ApiScenariosController < ApplicationController
   end
 
   def user_values
+    @api_request = ApiRequest.response(params)
+    Current.scenario = @api_request.scenario
+    
     values = Rails.cache.fetch("inputs.user_values.#{Current.graph.id}") do
       Input.static_values
     end
