@@ -47,7 +47,13 @@ class ApiRequest
   end
 
   def apply_inputs
-    scenario.reset! if reset
+    if reset
+      scenario.reset! 
+      scenario.save
+      scenario.reload
+      @scenario = nil;
+      scenario
+    end
     scenario.update_inputs_for_api(input) if input
     scenario.use_fce = use_fce if use_fce
     scenario.save unless test_scenario?
