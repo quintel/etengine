@@ -55,10 +55,10 @@ class CsvImport
     def create_time_series(dataset)
       parse_csv_file "timecurves" do |row|
         attrs = {
-          converter_id: row["converter_id"],
-          value_type: row["value_type"],
-          year: row["year"],
-          value: row["value"]
+          converter_id: row[:converter_id],
+          value_type: row[:value_type],
+          year: row[:year],
+          value: row[:value]
         }
         dataset.time_curve_entries.create!(attrs)
       end
@@ -67,42 +67,34 @@ class CsvImport
     def create_converter_data(dataset)
       converter_data_attributes = Dataset::ConverterData.column_names
       parse_csv_file "converters" do |row|
-        valid_attributes = row.headers & converter_data_attributes
-        attrs = {}
-        valid_attributes.each {|a| attrs[a] = row[a]}
+        attrs = strip_attributes(row, Dataset::ConverterData)
         dataset.converter_datas.create!(attrs)
       end
     end
 
     def create_slot_datas(dataset)
       blueprint = dataset.blueprint
-      slot_data_columns = Dataset::SlotData.column_names.map(&:to_sym)
       slot_attributes do |attrs|
         slot = blueprint.slots.where(
                 :converter_id => attrs[:converter_id], 
                 :carrier_id => attrs[:carrier_id],
                 :direction => attrs[:direction]
                 ).first
-        valid_attrs = attrs.keys & slot_data_columns
-        slot_attrs = {}
-        valid_attrs.each {|a| slot_attrs[a] = attrs[a]}
-        dataset.slot_datas.create!(slot_attrs.merge!(:slot_id => slot.id))
+        slot_attrs = strip_attributes(attrs, Dataset::SlotData)
+        dataset.slot_datas.create!(slot_attrs.merge(:slot_id => slot.id))
       end
     end
     
     def create_link_datas(dataset)
       blueprint = dataset.blueprint
-      link_data_columns = Dataset::LinkData.column_names.map(&:to_sym)
       parse_csv_file "links" do |row|
         blueprint_link = blueprint.links.where(
-          :parent_id  => row["parent_id"],
-          :child_id   => row["child_id"],
-          :carrier_id => row["carrier_id"]
+          :parent_id  => row[:parent_id],
+          :child_id   => row[:child_id],
+          :carrier_id => row[:carrier_id]
         ).first
-        valid_attrs = link_data_columns & row.headers
-        attrs = {}
-        valid_attrs.each {|a| attrs[a] = row[a]}
-        dataset.link_datas.create!(attrs.merge!(:link_id => blueprint_link.id))
+        link_attrs = strip_attributes(row, Dataset::LinkData)
+        dataset.link_datas.create!(link_attrs.merge(:link_id => blueprint_link.id))
       end
     end
     
@@ -114,11 +106,8 @@ class CsvImport
     def create_blueprint_converters(blueprint)
       blueprint_converter_attributes = Converter.column_names
       parse_csv_file "converters" do |row|
-        valid_attributes = row.headers & blueprint_converter_attributes
-        attrs = {}
-        valid_attributes.each {|a| attrs[a] = row[a]}
-
-        converter = if converter = Converter.find_by_converter_id(attrs["converter_id"])
+        attrs = strip_attributes(row, Converter)
+        converter = if converter = Converter.find_by_converter_id(attrs[:converter_id])
           converter.update_attributes(attrs)
           converter
         else
@@ -130,11 +119,8 @@ class CsvImport
     end
     
     def create_blueprint_slots(blueprint)
-      slot_column_names = Slot.column_names.map(&:to_sym)
       slot_attributes do |attrs|
-        valid_attrs = attrs.keys & slot_column_names
-        slot_attrs = {}
-        valid_attrs.each {|a| slot_attrs[a] = attrs[a]}
+        slot_attrs = strip_attributes(attrs, Slot)
         blueprint.slots.create!(slot_attrs)
       end      
     end
@@ -142,10 +128,10 @@ class CsvImport
     def create_blueprint_links(blueprint)
       parse_csv_file "links" do |row|
         attrs = {
-          parent_id: row["parent_id"],
-          child_id: row["child_id"],
-          carrier_id: row["carrier_id"],
-          link_type: row["link_type"]
+          parent_id: row[:parent_id],
+          child_id: row[:child_id],
+          carrier_id: row[:carrier_id],
+          link_type: row[:link_type]
           # TODO: add these fields with a migration
           # country_specific: row["country_specific"]
           # share: row["share"]
@@ -158,9 +144,9 @@ class CsvImport
       # the file was previously called definitions
       parse_csv_file "_groups" do |row|
         attrs = {
-          group_id: row["id"],
-          title: row["Definition"],
-          key: row["Definition_key"]
+          group_id: row[:id],
+          title: row[:Definition],
+          key: row[:Definition_key]
         }
         if group = Group.find_by_group_id(attrs[:group_id])
           group.update_attributes(attrs)
@@ -179,8 +165,8 @@ class CsvImport
 
       parse_csv_file "convertergroups" do |row|
         attrs = {
-          group_id: row["definition_id"].to_i,
-          converter_id: row["converter_id"].to_i
+          group_id: row[:definition_id].to_i,
+          converter_id: row[:converter_id].to_i
         }
         
         groups_blueprints[attrs[:group_id]] ||= []
@@ -193,26 +179,32 @@ class CsvImport
       end
     end
 
-    def fix_row(row)
-      row.map do |cell|
-        cell = cell.gsub(',','.')
-        cell = nil if cell.empty? or cell == 'NULL'
-        cell
-      end
-    end
-
     #
     # Common methods
     #
+    
+    # Removes the attributes not present in the db table
+    def strip_attributes(attributes, ar_object)
+      db_columns = ar_object.column_names.map(&:to_sym)
+      attributes.delete_if{|key, value| !db_columns.include?(key) }
+    end
     
     def parse_csv_file(file)
       import_path = "import/#{@path}"
       # DEBT: use a better way to select the file
       filename = Dir.entries(import_path).select{|e| e.include?(file.to_s)}.last
-      # Rails.logger.debug "*** OPENING: #{filename}"
       CSV.foreach "#{import_path}/#{filename}", :headers => true, :col_sep => ';', :skip_blanks => true do |row|
         next if row[0].nil? || row[0].empty?
-        yield row
+        hash = row.to_hash.symbolize_keys
+        # Fix rows
+        hash.each_pair do |k, v|
+          if v.blank? || v == 'NULL'
+            hash[k] = nil
+          else
+            hash[k] = v.gsub(',', '.')
+          end
+        end
+        yield hash
       end
     end
     
@@ -223,13 +215,13 @@ class CsvImport
     def slot_attributes
       parse_csv_file 'conversions' do |row|
         attrs = {
-          converter_id: row["converter_id"],
-          carrier_id: row["carrier_id"],
+          converter_id: row[:converter_id],
+          carrier_id: row[:carrier_id],
           # TODO: add migration
           # input_country_specific: row["input_country_specific"],
           # output_country_specific: row["output_country_specific"],
-          input: row["input"],
-          output: row["output"]          
+          input: row[:input],
+          output: row[:output]          
         }
         
         if attrs[:input].present?
