@@ -58,7 +58,7 @@ namespace :deploy do
     rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
     local_user = ENV['USER'] || ENV['USERNAME']
     notify_command = "bundle exec rake airbrake:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user}"
-    if application_key == "etenging"
+    if application_key == "etengine"
       notify_command << " API_KEY=c7aceee5954aea78f93e7ca4b22439c7"
     elsif application_key == "etengine_staging"
       notify_command << " API_KEY=e483e275c8425821ec21580e0ffefe9d"
