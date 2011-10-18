@@ -143,8 +143,8 @@ class CsvImport
       parse_csv_file "_groups" do |row|
         attrs = {
           group_id: row[:id],
-          title: row[:Definition],
-          key: row[:Definition_key]
+          title: row[:title],
+          key: row[:key]
         }
         if group = Group.find_by_group_id(attrs[:group_id])
           group.update_attributes(attrs)
