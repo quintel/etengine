@@ -214,12 +214,12 @@ class CsvImport
     #
     def slot_attributes
       parse_csv_file 'conversions' do |row|
+        # We can get rid of this 1-to-1 mapping as soon as the excel file format is final
         attrs = {
           converter_id: row[:converter_id],
           carrier_id: row[:carrier_id],
-          # TODO: add migration
-          # input_country_specific: row["input_country_specific"],
-          # output_country_specific: row["output_country_specific"],
+          input_country_specific: row[:input_country_specific],
+          output_country_specific: row[:output_country_specific],
           input: row[:input],
           output: row[:output]          
         }
@@ -227,12 +227,14 @@ class CsvImport
         if attrs[:input].present?
           attrs[:direction] = 0
           attrs[:conversion] = attrs[:input]
+          attrs[:country_specific] = attrs[:input_country_specific]
           yield attrs
         end
         
         if attrs[:output].present?
           attrs[:direction] = 1
           attrs[:conversion] = attrs[:output]
+          attrs[:country_specific] = attrs[:output_country_specific]
           yield attrs
         end
       end
