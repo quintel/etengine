@@ -64,13 +64,13 @@ class Data::GraphsController < Data::BaseController
 
   ##
   # Expects a zip file with a folder (folder name = region_code) for each country/region.
-  #
+  # TODO: refactor
   #
   def import
-    raise 'version not defined' if params[:version].blank?
+    raise 'version not defined' if params[:csv_import][:version].blank?
     require 'zip/zip'
-    version = params[:version]
-    file = params[:zip_file]
+    version = params[:csv_import][:version]
+    file = params[:csv_import][:zip_file]
     version_path = "import/#{version}"
 
     Zip::ZipFile.open(file.tempfile) do |zip_file|
@@ -88,7 +88,7 @@ class Data::GraphsController < Data::BaseController
 
     csv_import = CsvImport.new(version, countries.first)
     blueprint = csv_import.create_blueprint
-    blueprint.update_attribute :description, params[:description]
+    blueprint.update_attribute :description, params[:csv_import][:description]
 
     countries.each do |country|
       csv_import = CsvImport.new(version, country)
