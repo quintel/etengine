@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111010123150) do
+ActiveRecord::Schema.define(:version => 20111018115216) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -381,6 +381,7 @@ ActiveRecord::Schema.define(:version => 20111010123150) do
     t.integer "child_id"
     t.integer "carrier_id"
     t.integer "link_type"
+    t.integer "country_specific"
   end
 
   add_index "links", ["blueprint_id"], :name => "index_links_on_blueprint_id"
@@ -446,18 +447,17 @@ ActiveRecord::Schema.define(:version => 20111010123150) do
     t.string   "scenario_type"
     t.integer  "preset_scenario_id"
     t.string   "type"
+    t.string   "api_session_key"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
   end
-
-  add_index "scenarios", ["in_start_menu"], :name => "index_scenarios_on_in_start_menu"
-  add_index "scenarios", ["user_id"], :name => "index_scenarios_on_user_id"
 
   create_table "slots", :force => true do |t|
     t.integer "blueprint_id"
     t.integer "converter_id"
     t.integer "carrier_id"
     t.integer "direction"
+    t.integer "country_specific"
   end
 
   add_index "slots", ["blueprint_id"], :name => "index_slots_on_blueprint_id"
