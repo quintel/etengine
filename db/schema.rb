@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111018114137) do
+ActiveRecord::Schema.define(:version => 20111018115216) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -381,6 +381,7 @@ ActiveRecord::Schema.define(:version => 20111018114137) do
     t.integer "child_id"
     t.integer "carrier_id"
     t.integer "link_type"
+    t.integer "country_specific"
   end
 
   add_index "links", ["blueprint_id"], :name => "index_links_on_blueprint_id"
