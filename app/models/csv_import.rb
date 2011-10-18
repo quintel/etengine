@@ -131,10 +131,8 @@ class CsvImport
           parent_id: row[:parent_id],
           child_id: row[:child_id],
           carrier_id: row[:carrier_id],
-          link_type: row[:link_type]
-          # TODO: add these fields with a migration
-          # country_specific: row["country_specific"]
-          # share: row["share"]
+          link_type: row[:link_type],
+          country_specific: row[:country_specific]
         }
         blueprint.links.create!(attrs)
       end
