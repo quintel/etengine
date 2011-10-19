@@ -198,8 +198,8 @@ class CsvImport
         hash.each_pair do |k, v|
           if v.blank? || v == 'NULL'
             hash[k] = nil
-          else
-            hash[k] = v.gsub(',', '.')
+          elsif v.is_a?(String)
+            hash[k] = v.gsub(',', '.').strip
           end
         end
         yield hash
