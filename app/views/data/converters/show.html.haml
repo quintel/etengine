@@ -1,18 +1,20 @@
+:ruby
+  pre = @converter_present.query
+  fut = @converter_future.query
+
 = render "list"
 
 %section.main
   .header
-    \##{@converter_present.id} #{@converter_present.full_key}
-
-    %small
-      = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
-
-      GraphViz:
-      = link_to 'Present', {:format => 'svg'}, :target => :blank
-      = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
-
-  - pre = @converter_present.query
-  - fut = @converter_future.query
+    Converter ##{@converter_present.id}: #{@converter_present.full_key}
+  
+  %h3 Actions
+  %p
+    = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
+    GraphViz:
+    = link_to 'Present', {:format => 'svg'}, :target => :blank
+    = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
+  
 
   %h3
     Energy Balance Group:
@@ -29,47 +31,64 @@
 
 
   - c = @converter_future
-  %h3 Future Outputs
-  %table.outputs
-    %thead
-      %tr
-        %th Converter
-        %th Link Value
-        %th Type
-        %th Share
-        %th Carrier
-        %th Conversion
-    - c.outputs.each do |output_slot|
-      - output_slot.links.each_with_index do |output_link, i|
-        %tr.output_links
-          %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent.id)
-          %td{:title => output_link.value}= auto_number output_link.value
-          %td= output_link.link_type
-          %td= output_link.share.andand.round(4)
-          - if i == 0
-            %td{:style => "vertical-align: middle; text-align: center", :rowspan => output_slot.links.length}= output_slot.carrier.key
-            %td{:style => "vertical-align: middle; text-align: center", :rowspan => output_slot.links.length}= output_slot.conversion
 
-  %h3 Future Inputs
-  %table.inputs
+  %h3 Future Input / Outputs
+  %table.input_outputs
     %thead
       %tr
-        %th Conversion
-        %th Carrier
-        %th Type
-        %th Share
-        %th Link Value
-        %th Converter
-    - c.inputs.each do |input_slot|
-      - input_slot.links.each_with_index do |input_link, i|
-        %tr.input_links
-          - if i == 0
-            %td{:style => "vertical-align: middle; text-align: center", :rowspan => input_slot.links.length}= input_slot.conversion
-            %td{:style => "vertical-align: middle; text-align: center", :rowspan => input_slot.links.length}= input_slot.carrier.key
-          %td= input_link.link_type
-          %td= input_link.share.andand.round(4)
-          %td{:title => input_link.value}= auto_number input_link.value
-          %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
+        %th{:colspan => 2}= @converter_present.full_key
+      %tr
+        %th Outbound        
+        %th Inbound
+    %tbody
+      %tr
+        %td
+          %table.outputs
+            %thead
+              %tr
+                %th{:colspan => 4} Links
+                %th{:colspan => 2} Slots
+              %tr
+                %th Converter
+                %th Value
+                %th Type
+                %th Share
+                %th Carrier
+                %th Conversion
+            - c.outputs.each do |output_slot|
+              - output_slot.links.each_with_index do |output_link, i|
+                %tr.output_links
+                  %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent.id)
+                  %td{:title => output_link.value}= auto_number output_link.value
+                  %td= output_link.link_type
+                  %td{:class => output_link.ar_object.kind}= output_link.share.andand.round(4)
+                  - if i == 0
+                    %td.centered{:rowspan => output_slot.links.length}= output_slot.carrier.key
+                    %td.centered{:rowspan => output_slot.links.length, :class => output_slot.ar_object.kind}= output_slot.conversion
+        %td
+          %table.inputs
+            %thead
+              %tr
+                %th{:colspan => 2} Slots
+                %th{:colspan => 4} Links            
+              %tr
+                %th Conversion
+                %th Carrier
+                %th Type
+                %th Share
+                %th Value
+                %th Converter
+            - c.inputs.each do |input_slot|
+              - input_slot.links.each_with_index do |input_link, i|
+                %tr.input_links
+                  - if i == 0
+                    %td.centered{:rowspan => input_slot.links.length, :class => input_slot.ar_object.kind}= input_slot.conversion
+                    %td.centered{:rowspan => input_slot.links.length}= input_slot.carrier.key
+                  %td= input_link.link_type
+                  %td{:class => input_link.ar_object.kind}= input_link.share.andand.round(4)
+                  %td{:title => input_link.value}= auto_number input_link.value
+                  %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
+      
 
 
 

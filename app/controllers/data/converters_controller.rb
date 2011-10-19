@@ -13,7 +13,7 @@ class Data::ConvertersController < Data::BaseController
 
   def show
     @qernel_graph = @graph.gql.present_graph
-    @converter = Converter.find(params[:id]) # was is ment to be params{id}? it failed..
+    @converter = Converter.find(params[:id])
     @converter_present = @graph.gql.present_graph.graph.converter(params[:id].to_i)
     @converter_future  = @graph.gql.future_graph.graph.converter(params[:id].to_i)
 

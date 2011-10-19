@@ -50,6 +50,15 @@ class Slot < ActiveRecord::Base
       links = links.where(["child_id = ?", converter_id])
     end
   end
+  
+  # TODO: find better names and explanation
+  def kind
+    case country_specific
+    when 0 then :red
+    when 1 then :yellow
+    when 2 then :green
+    end
+  end
 end
 
 
