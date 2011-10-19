@@ -2,6 +2,7 @@
   pre = @converter_present.query
   fut = @converter_future.query
 
+= render "search_box"
 = render "list"
 
 %section.main
@@ -16,19 +17,21 @@
     = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
   
 
-  %h3
-    Energy Balance Group:
-    - if g = @converter.energy_balance_group
-      = link_to g.name, data_energy_balance_group_path(:id => g.id)
-  %h3
-    Groups:
-    = @converter_present.groups.join(' | ')
+  %h3 Info
+  
+  %h4 Energy Balance Group
+  - if g = @converter.energy_balance_group
+    = link_to g.name, data_energy_balance_group_path(:id => g.id)
+  
+  %h4 Groups
+  %ul
+    - @converter_present.groups.each do |g|
+      %li= g
 
-  %p
-    Sector: #{@converter_present.sector_key}
-    %br
-    Use: #{@converter_present.use_key}
-
+  %h4 Sector
+  = @converter_present.sector_key
+  %h4 Use
+  = @converter_present.use_key
 
   - c = @converter_future
 
@@ -90,7 +93,7 @@
                   %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
       
 
-
+  %h3 Attributes and calculations
 
   %table
     %thead
