@@ -1,5 +1,5 @@
 - breadcrumb "Converters for #{params[:blueprint_id]} / #{params[:region_code]}"
-= render 'search_box'
+= render "search_box"
 = render "list"
 %section.main
   - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)
