@@ -10,12 +10,10 @@
     %tr
       %th.tal year
       %th.tal value
-      %th.tal
   %tbody
     - @historic_serie.year_values.each do |entry|
       %tr
         %td= entry.year
         %td= entry.value
-        %td= link_to 'edit', edit_data_year_value_path(entry)
-= link_to 'New', new_data_year_value_path
+
 = render '/data/shared/revisions', :versioned => @historic_serie
