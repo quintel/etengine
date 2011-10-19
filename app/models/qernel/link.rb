@@ -244,7 +244,10 @@ public
     "<Link parent:#{@parent.id} child:#{@child.id} share:#{share} value:#{value} carrier:#{@carrier.key}>"
   end
 
-
+  # Helper method to get the associated active_record object.
+  def ar_object
+    @ar_object ||= ::Link.find(id)
+  end
 end
 
 

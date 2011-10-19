@@ -219,6 +219,11 @@ class Slot
   def inspect
     "slot_#{id}"
   end
+  
+  # Helper method to get the associated active_record object.
+  def ar_object
+    @ar_object ||= ::Slot.find(id)
+  end
 end
 
 end
