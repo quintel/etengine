@@ -223,17 +223,11 @@ class CsvImport
         }
         
         if attrs[:input].present?
-          attrs[:direction] = 0
-          attrs[:conversion] = attrs[:input]
-          attrs[:country_specific] = attrs[:input_country_specific]
-          yield attrs
+          yield attrs.merge(:direction => 0, :conversion => attrs[:input], :country_specific => attrs[:input_country_specific])
         end
         
         if attrs[:output].present?
-          attrs[:direction] = 1
-          attrs[:conversion] = attrs[:output]
-          attrs[:country_specific] = attrs[:output_country_specific]
-          yield attrs
+          yield attrs.merge(:direction => 1, :conversion => attrs[:output], :country_specific => attrs[:output_country_specific])
         end
       end
     end
