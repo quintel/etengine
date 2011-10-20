@@ -3,3 +3,16 @@
     = search_field_tag :q, params[:q]
     
     = submit_tag "search"
+
+
+
+- content_for :footer do
+  :ruby
+    autocomplete = Gquery.all.map {|a| {label: a.key, url: data_gquery_path(:id => a.id)} }
+  :javascript
+    $(function(){
+      $("input#q").autocomplete({
+        source: #{autocomplete.to_json},
+        select: function(event, ui) { window.location.href = ui.item.url }
+      });
+    });

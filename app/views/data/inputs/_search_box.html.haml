@@ -2,3 +2,14 @@
   = form_tag data_inputs_path, :method => :get do
     = search_field_tag :q, params[:q]
     = submit_tag "search"
+    
+- content_for :footer do
+  :ruby
+    autocomplete = Input.all.map {|a| {label: a.key, url: edit_data_input_path(:id => a.id)} }
+  :javascript
+    $(function(){
+      $("input#q").autocomplete({
+        source: #{autocomplete.to_json},
+        select: function(event, ui) { window.location.href = ui.item.url }
+      });
+    });
