@@ -39,10 +39,10 @@ Etm::Application.routes.draw do
         resources :converter_positions
       end
 
-      scope '/etsource/:branch' do
-        resources :commits
+      
+      scope "/etsource" do
+        resources :commits, :only => [:index, :show]
       end
-
 
       resources :gqueries do
         get :result, :on => :member
