@@ -51,3 +51,4 @@
             = breadcrumbs.map{|x| content_tag(:span, x)}.join(" &raquo; ").html_safe
       #content= yield
       #footer
+        = yield :footer
