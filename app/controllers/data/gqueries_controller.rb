@@ -1,8 +1,12 @@
 class Data::GqueriesController < Data::BaseController
   cache_sweeper Sweepers::Gquery
   sortable_attributes :key, :updated_at,:gquery_group => "`gquery_group`"
+  before_filter :find_model, :only => [:show, :edit]
 
   def index
+    # The :key parameter is only passed when the user clicks on the source of
+    # an existing gquery. I think we should move this code to a separate action
+    # PZ - Thu Oct 20 16:22:00 CEST 2011
     if params[:key] && q = Gquery.by_key_or_deprecated_key(params[:key]).first
       redirect_to data_gquery_path(:id => q.id) and return
     end
@@ -10,15 +14,7 @@ class Data::GqueriesController < Data::BaseController
     sort = params[:sort] ? "`#{params[:sort]}`" : "`key`"
     order = params[:order] == 'ascending' ? "asc" : "desc" 
 
-    unless params[:groups].blank?
-      @gqueries = GqueryGroup.where("`id` IN (#{params[:groups]})").map(&:gqueries) 
-    else
-      params[:groups] = ''
-      @gqueries = Gquery.by_name(params[:q]).order("#{sort} #{order}")
-    end
-    respond_to do |format|
-      format.html { render }
-    end
+    @gqueries = Gquery.by_name(params[:q]).order("#{sort} #{order}").page(params[:page]).per(50)
   end
 
   def dump
@@ -34,11 +30,9 @@ class Data::GqueriesController < Data::BaseController
   end
 
   def show
-    find_model
   end
 
   def edit
-    find_model
   end
 
   def result
