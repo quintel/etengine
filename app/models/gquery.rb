@@ -33,8 +33,7 @@ class Gquery < ActiveRecord::Base
 
   validate :validate_query_parseable
 
-  # TODO: remove
-  has_and_belongs_to_many :gquery_groups
+  belongs_to :gquery_group
   
   after_save :reload_cache
 

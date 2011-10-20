@@ -19,7 +19,7 @@
       %th
       = sortable_table_header :name => "Updated", :sort=>"updated_at"
       %th Created
-      %th.rensy Groups
+      %th Group
       %th Deprecated Key
 
   %tbody
@@ -31,7 +31,7 @@
         %td= link_to 'Delete', data_gquery_path(:id => gquery), :method => 'delete', :confirm => 'Are you sure?'
         %td= I18n.l(gquery.updated_at, :format => :long) if gquery.updated_at
         %td= I18n.l(gquery.created_at, :format => :long) if gquery.created_at
-        %td= gquery.gquery_groups.andand.map(&:group_key).join(" / ")
+        %td= gquery.gquery_group.try(:group_key)
         %td= gquery.deprecated_key
   %tfoot
     %tr
