@@ -81,10 +81,14 @@ class Gquery < ActiveRecord::Base
     @@gquery_hash ||= build_gquery_hash
   end
 
+  # DEBT: I added the deprecated key to the gquery hash, otherwise the lookup will fail.
+  # I think we should change the way we deal with deprecated keys by creating a
+  # brand new gquery with a deprecated flag and that calls the new gquery name.
+  # PZ - Thu Oct 20 14:37:53 CEST 2011
   def self.build_gquery_hash
     benchmark("** Loading Gquery.build_gquery_hash") do
       self.all.inject({}) do |hsh, gquery|
-        hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery)
+        hsh.merge(gquery.key => gquery, gquery.id.to_s => gquery, gquery.deprecated_key => gquery)
       end
     end
   end
