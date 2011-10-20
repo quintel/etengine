@@ -107,7 +107,7 @@ module Etsource
         group_key, rest = f.gsub(base_dir+"/", '').split('/')
         gquery = from_file(f)
         groups[group_key] ||= GqueryGroup.create(:group_key => group_key)
-        gquery.gquery_groups << groups[group_key]
+        gquery.gquery_group_id = groups[group_key].id
         gqueries << gquery
       end
       Gquery.import gqueries
