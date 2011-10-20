@@ -3,7 +3,7 @@ class Data::GqueriesController < Data::BaseController
   sortable_attributes :key, :updated_at,:gquery_group => "`gquery_group`"
 
   def index
-    if params[:key] && q = Gquery.find_by_key(params[:key])
+    if params[:key] && q = Gquery.by_key_or_deprecated_key(params[:key]).first
       redirect_to data_gquery_path(:id => q.id) and return
     end
     
