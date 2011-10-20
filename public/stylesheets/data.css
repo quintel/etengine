@@ -312,3 +312,14 @@ table {
   table.input_outputs table {
     margin: 0;
     border: 0; }
+
+dl {
+  padding: 10px; }
+  dl dt {
+    font-weight: bold; }
+  dl dd {
+    margin-left: 20px;
+    padding: 5px; }
+
+p {
+  padding: 10px; }

@@ -4,209 +4,209 @@
 
 = render "search_box"
 
-%section.main
-  .header
-    Converter ##{@converter_present.id}: #{@converter_present.full_key}
-  
-  %h3 Actions
-  %p
-    = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
-    GraphViz:
-    = link_to 'Present', {:format => 'svg'}, :target => :blank
-    = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
-  
+.header
+  Converter ##{@converter_present.id}: #{@converter_present.full_key}
 
-  %h3 Info
-  
-  %h4 Energy Balance Group
-  - if g = @converter.energy_balance_group
-    = link_to g.name, data_energy_balance_group_path(:id => g.id)
-  
-  %h4 Groups
-  %ul
-    - @converter_present.groups.each do |g|
-      %li= g
-
-  %h4 Sector
-  = @converter_present.sector_key
-  %h4 Use
-  = @converter_present.use_key
-
-  - c = @converter_future
-
-  %h3 Future Input / Outputs
-  %table.input_outputs
-    %thead
-      %tr
-        %th{:colspan => 2}= @converter_present.full_key
-      %tr
-        %th Outbound        
-        %th Inbound
-    %tbody
-      %tr
-        %td
-          %table.outputs
-            %thead
-              %tr
-                %th{:colspan => 4} Links
-                %th{:colspan => 2} Slots
-              %tr
-                %th Converter
-                %th Value
-                %th Type
-                %th Share
-                %th Carrier
-                %th Conversion
-            - c.outputs.each do |output_slot|
-              - output_slot.links.each_with_index do |output_link, i|
-                %tr.output_links
-                  %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent.id)
-                  %td{:title => output_link.value}= auto_number output_link.value
-                  %td= output_link.link_type
-                  %td{:class => output_link.ar_object.kind}= output_link.share.andand.round(4)
-                  - if i == 0
-                    %td.centered{:rowspan => output_slot.links.length}= output_slot.carrier.key
-                    %td.centered{:rowspan => output_slot.links.length, :class => output_slot.ar_object.kind}= output_slot.conversion
-        %td
-          %table.inputs
-            %thead
-              %tr
-                %th{:colspan => 2} Slots
-                %th{:colspan => 4} Links            
-              %tr
-                %th Conversion
-                %th Carrier
-                %th Type
-                %th Share
-                %th Value
-                %th Converter
-            - c.inputs.each do |input_slot|
-              - input_slot.links.each_with_index do |input_link, i|
-                %tr.input_links
-                  - if i == 0
-                    %td.centered{:rowspan => input_slot.links.length, :class => input_slot.ar_object.kind}= input_slot.conversion
-                    %td.centered{:rowspan => input_slot.links.length}= input_slot.carrier.key
-                  %td= input_link.link_type
-                  %td{:class => input_link.ar_object.kind}= input_link.share.andand.round(4)
-                  %td{:title => input_link.value}= auto_number input_link.value
-                  %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
-      
-
-  %h3 Attributes and calculations
-
-  %table
-    %thead
-      %tr
-        %th Calculations
-        %th Present
-        %th Future
-        %th Change
-    %tbody
-
-      %tr
-        %th Demand
-        - result_fields(pre,fut, :demand)
-      %tr
-        %th Demand Preset
-        - result_fields(pre,fut, :preset_demand)
-      %tr
-        %th Demand Municipality
-        - result_fields(pre,fut, :municipality_demand)
-
-      %tr
-        %th Demand Fossil
-        - result_fields(pre,fut, :demand)
-      %tr
-        %th Demand Sustainable
-        - result_fields(pre,fut, :demand_of_sustainable)
-
-      %tr
-        %th Weighted Carrier Cost Share
-        - result_fields(pre,fut, :weighted_carrier_cost_per_mj)
-      %tr
-        %th Weighted Carrier CO2 Share
-        - result_fields(pre,fut, :weighted_carrier_co2_per_mj)
-
-      %tr
-        %th Sustainabability Share
-        - result_fields(pre,fut, :sustainability_share)
-
-      - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
-        %tr
-          %th= attr_name
-          - result_fields(pre,fut,attr_name)
-      %tr
-        %th Total Cost Per MWhe
-        - result_fields(pre,fut) do |converter|
-          - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
+%h3 Actions
+%p
+  = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
+  GraphViz:
+  = link_to 'Present', {:format => 'svg'}, :target => :blank
+  = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
 
 
-      %tr
-        %th Total Losses
-        - result_fields(pre.converter,fut.converter, :total_losses)
+%h3 Info
 
-    %table
-      %thead
-        %tr
-          %th MECE Demands
-          %th Present
-          %th Future
-          %th Change
-      %tr
-        %th Final Demand
-        - result_fields(pre,fut, :final_demand)
-      %tr
-        %th Primary Demand
-        - result_fields(pre,fut, :primary_demand)
-      %tr
-        %th Primary Demand Fossil
-        - result_fields(pre,fut, :primary_demand_of_fossil)
-      %tr
-        %th Primary Demand Sustainable
-        - result_fields(pre,fut, :primary_demand_of_sustainable)
-
-      - @qernel_graph.carriers.each do |carrier|
-        - if primary_demand = pre.primary_demand_of_carrier(carrier.key.to_sym) and primary_demand > 0.0
-          %tr
-            %th== Primary Demand of #{carrier.key}
-            - result_fields(pre,fut) do |converter|
-              - converter.primary_demand_of_carrier(carrier.key.to_sym)
-
-  %table
-    %thead
-      %tr
-        %th Expected Values
-        %th Present
-        %th Future
-        %th Change
-    %tbody
-      - Qernel::ConverterApi::ATTRIBUTES_USED.select{|a| a.to_s.include?('expected')}.each do |attr_name|
-        %tr
-          %th= attr_name
-          - result_fields(pre,fut,attr_name)
+%dl
+  %dt Energy Balance Group
+  %dd
+    - if g = @converter.energy_balance_group
+      = link_to g.name, data_energy_balance_group_path(:id => g.id)
+  %dt Groups
+  %dd
+    %ul
+      - @converter_present.groups.each do |g|
+        %li= g
+  %dt Sector
+  %dd= @converter_present.sector_key
+  %dt Use
+  %dd= @converter_present.use_key
 
 
-  %table
-    %thead
-      %tr
-        %th Converter Data
-        %th Present
-        %th Future
-        %th Change
-    %tbody
-      - Qernel::ConverterApi::ATTRIBUTES_USED.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
-        %tr
-          %th= attr_name
-          - result_fields(pre,fut,attr_name)
-
-  %h3 References
+%h3 Future Input / Outputs
+- c = @converter_future
+%table.input_outputs
+  %thead
+    %tr
+      %th{:colspan => 2}= @converter_present.full_key
+    %tr
+      %th Outbound        
+      %th Inbound
+  %tbody
+    %tr
+      %td
+        %table.outputs
+          %thead
+            %tr
+              %th{:colspan => 4} Links
+              %th{:colspan => 2} Slots
+            %tr
+              %th Converter
+              %th Value
+              %th Type
+              %th Share
+              %th Carrier
+              %th Conversion
+          - c.outputs.each do |output_slot|
+            - output_slot.links.each_with_index do |output_link, i|
+              %tr.output_links
+                %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent.id)
+                %td{:title => output_link.value}= auto_number output_link.value
+                %td= output_link.link_type
+                %td{:class => output_link.ar_object.kind}= output_link.share.andand.round(4)
+                - if i == 0
+                  %td.centered{:rowspan => output_slot.links.length}= output_slot.carrier.key
+                  %td.centered{:rowspan => output_slot.links.length, :class => output_slot.ar_object.kind}= output_slot.conversion
+      %td
+        %table.inputs
+          %thead
+            %tr
+              %th{:colspan => 2} Slots
+              %th{:colspan => 4} Links            
+            %tr
+              %th Conversion
+              %th Carrier
+              %th Type
+              %th Share
+              %th Value
+              %th Converter
+          - c.inputs.each do |input_slot|
+            - input_slot.links.each_with_index do |input_link, i|
+              %tr.input_links
+                - if i == 0
+                  %td.centered{:rowspan => input_slot.links.length, :class => input_slot.ar_object.kind}= input_slot.conversion
+                  %td.centered{:rowspan => input_slot.links.length}= input_slot.carrier.key
+                %td= input_link.link_type
+                %td{:class => input_link.ar_object.kind}= input_link.share.andand.round(4)
+                %td{:title => input_link.value}= auto_number input_link.value
+                %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
     
+
+%h3 Attributes and calculations
+
+%table
+  %thead
+    %tr
+      %th Calculations
+      %th Present
+      %th Future
+      %th Change
+  %tbody
+
+    %tr
+      %th Demand
+      - result_fields(pre,fut, :demand)
+    %tr
+      %th Demand Preset
+      - result_fields(pre,fut, :preset_demand)
+    %tr
+      %th Demand Municipality
+      - result_fields(pre,fut, :municipality_demand)
+
+    %tr
+      %th Demand Fossil
+      - result_fields(pre,fut, :demand)
+    %tr
+      %th Demand Sustainable
+      - result_fields(pre,fut, :demand_of_sustainable)
+
+    %tr
+      %th Weighted Carrier Cost Share
+      - result_fields(pre,fut, :weighted_carrier_cost_per_mj)
+    %tr
+      %th Weighted Carrier CO2 Share
+      - result_fields(pre,fut, :weighted_carrier_co2_per_mj)
+
+    %tr
+      %th Sustainabability Share
+      - result_fields(pre,fut, :sustainability_share)
+
+    - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
+      %tr
+        %th= attr_name
+        - result_fields(pre,fut,attr_name)
+    %tr
+      %th Total Cost Per MWhe
+      - result_fields(pre,fut) do |converter|
+        - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
+
+
+    %tr
+      %th Total Losses
+      - result_fields(pre.converter,fut.converter, :total_losses)
+
   %table
-    - Gquery.name_or_query_contains(@converter_present.full_key).each do |gquery|
+    %thead
       %tr
-        %td Gquery
-        %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
-    - Input.embedded_gql_contains(@converter_present.full_key).each do |input|
+        %th MECE Demands
+        %th Present
+        %th Future
+        %th Change
+    %tr
+      %th Final Demand
+      - result_fields(pre,fut, :final_demand)
+    %tr
+      %th Primary Demand
+      - result_fields(pre,fut, :primary_demand)
+    %tr
+      %th Primary Demand Fossil
+      - result_fields(pre,fut, :primary_demand_of_fossil)
+    %tr
+      %th Primary Demand Sustainable
+      - result_fields(pre,fut, :primary_demand_of_sustainable)
+
+    - @qernel_graph.carriers.each do |carrier|
+      - if primary_demand = pre.primary_demand_of_carrier(carrier.key.to_sym) and primary_demand > 0.0
+        %tr
+          %th== Primary Demand of #{carrier.key}
+          - result_fields(pre,fut) do |converter|
+            - converter.primary_demand_of_carrier(carrier.key.to_sym)
+
+%table
+  %thead
+    %tr
+      %th Expected Values
+      %th Present
+      %th Future
+      %th Change
+  %tbody
+    - Qernel::ConverterApi::ATTRIBUTES_USED.select{|a| a.to_s.include?('expected')}.each do |attr_name|
       %tr
-        %td Input
-        %td= link_to input.key, data_input_path(:id => input.id)
+        %th= attr_name
+        - result_fields(pre,fut,attr_name)
+
+
+%table
+  %thead
+    %tr
+      %th Converter Data
+      %th Present
+      %th Future
+      %th Change
+  %tbody
+    - Qernel::ConverterApi::ATTRIBUTES_USED.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
+      %tr
+        %th= attr_name
+        - result_fields(pre,fut,attr_name)
+
+%h3 References
+  
+%table
+  - Gquery.name_or_query_contains(@converter_present.full_key).each do |gquery|
+    %tr
+      %td Gquery
+      %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
+  - Input.embedded_gql_contains(@converter_present.full_key).each do |input|
+    %tr
+      %td Input
+      %td= link_to input.key, data_input_path(:id => input.id)
