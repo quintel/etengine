@@ -8,7 +8,7 @@ class Data::CommitsController < Data::BaseController
     @commits = @git.log
   end
 
-  def show
+  def import
     @etsource = Etsource::Commit.new(params[:id])
     @commit = @etsource.commit
     @etsource.import!

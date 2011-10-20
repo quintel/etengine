@@ -46,8 +46,12 @@ module Etsource
       
       Dir.glob("#{base_dir}/**/*.yml").each do |f|
         attributes = YAML::load_file(f)
-        input = Input.find(attributes.delete('id'))
-        input.update_attributes(attributes)
+        begin
+          input = Input.find(attributes.delete('id'))
+          input.update_attributes(attributes)
+        rescue ActiveRecord::RecordNotFound
+          Rails.logger.debug "*** ETSource::Inputs#import: Input not found"
+        end
       end
     end
   end
