@@ -3,7 +3,7 @@ module Sweepers
     observe ::Input
     
     def after_save(record)
-      expire_fragment 'input_list'
+      expire_fragment 'inputs_autocomplete_map_cache'
     end
   end
 end

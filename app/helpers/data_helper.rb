@@ -58,4 +58,31 @@ module DataHelper
   def breadcrumbs
     @_breadcrumbs ||= []
   end
+  
+  # Autocomplete data caching
+  # The various _search_box partials make use of these methods
+  
+  def gqueries_autocomplete_map_cache
+    Rails.cache.fetch "gqueries_autocomplete_map_cache" do
+      Gquery.all.map {|a| {label: a.key, url: data_gquery_path(:id => a.id)} }.to_json
+    end
+  end
+  
+  def inputs_autocomplete_map_cache
+    Rails.cache.fetch "inputs_autocomplete_map_cache" do
+      Input.all.map {|a| {label: a.key, url: edit_data_input_path(:id => a.id)} }.to_json
+    end
+  end
+  
+  def converters_autocomplete_map_cache
+    Rails.cache.fetch "converters_autocomplete_map_cache" do
+      Converter.all.map {|a| {label: a.full_key, url: data_converter_path(:id => a.id)} }.to_json
+    end
+  end
+  
+  def carriers_autocomplete_map_cache
+    Rails.cache.fetch "carriers_autocomplete_map_cache" do
+      Carrier.all.map {|a| {label: a.key, url: edit_data_carrier_carrier_data_path(:carrier_id => a.id)} }.to_json
+    end
+  end
 end
