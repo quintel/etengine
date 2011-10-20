@@ -1,8 +1,6 @@
-= render "data/converters/list"
+= render "data/converters/search_box"
 
-.header
-  == ##{@converter.id}
-  = @converter.key
+.header ##{@converter.id} #{@converter.key}
 
 = simple_form_for @converter_data, :url => data_converter_converter_data_path(:converter_id => @converter.id, :id => @converter_data) do |f|
   - Qernel::ConverterApi::ATTRIBUTES_USED.sort.each do |key|
