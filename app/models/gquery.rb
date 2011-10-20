@@ -26,13 +26,16 @@ class Gquery < ActiveRecord::Base
 
   validates_presence_of :key
   # validates_uniqueness_of :key
+
   validates_presence_of :query
   # DEBT: Add a validates_format_of :query (e.g. should have at least one a-z)
   validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
 
   validate :validate_query_parseable
-  # belongs_to :gquery_group
+
+  # TODO: remove
   has_and_belongs_to_many :gquery_groups
+  
   after_save :reload_cache
 
   strip_attributes! :only => [:key]
@@ -46,6 +49,7 @@ class Gquery < ActiveRecord::Base
 
   scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
   scope :by_key_or_deprecated_key, lambda{|q| where("`key` = :q OR deprecated_key = :q", :q => q)}
+  
 
   # Returns the cleaned query for any given key.
   #
@@ -57,8 +61,6 @@ class Gquery < ActiveRecord::Base
     raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
     query
   end
-
-
 
   ##
   # The GqlParser currently does not work with whitespace.
