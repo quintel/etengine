@@ -1,9 +1,10 @@
 %h3 Revisions
 
-- if versioned.live?
-  You are currently seeing the current version of the object
-- else
-  You are currently seeing a previous version of the object
+%p
+  - if versioned.live?
+    You are currently seeing the current version of the object
+  - else
+    You are currently seeing a previous version of the object
 
 %table
   %thead

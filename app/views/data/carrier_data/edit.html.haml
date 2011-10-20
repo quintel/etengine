@@ -1,4 +1,6 @@
-= render :partial => "data/carriers/list"
+- breadcrumb link_to "Carriers", data_carriers_path
+- breadcrumb @carrier.key
+= render :partial => "data/carriers/search_box"
 
 .header
   == ##{@carrier.id}
