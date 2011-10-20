@@ -2,7 +2,8 @@
 = render 'search_box'
 
 .header
-  Key:
+  \##{@gquery.id}
+  \:
   = @gquery.key
   %small= link_to 'Edit', edit_data_gquery_path(:id => @gquery)
 
@@ -15,13 +16,15 @@
 - @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
 %p= render 'result'
 
-%h3 Group
-%p
-  = @gquery.gquery_groups.map(&:group_key)
+%h3 Info
 
-%h3 Description
-%p
-  = simple_format @gquery.description
+%dl
+  %dt Deprecated Key
+  %dd= @gquery.deprecated_key
+  %dt Groups
+  %dd= @gquery.gquery_groups.map(&:group_key)
+  %dt Description
+  %dd= simple_format @gquery.description
 
 %h3 References
 

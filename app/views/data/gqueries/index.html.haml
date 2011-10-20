@@ -28,6 +28,7 @@
       = sortable_table_header :name => "Updated", :sort=>"updated_at"
       %th Created
       %th.rensy Groups
+      %th Deprecated Key
 
   %tbody
     = cache "gquery_index_table_#{params[:groups]}_#{params[:q]}" do
@@ -40,3 +41,4 @@
           %td= I18n.l(gquery.updated_at, :format => :long) if gquery.updated_at
           %td= I18n.l(gquery.created_at, :format => :long) if gquery.created_at
           %td= gquery.gquery_groups.andand.map(&:group_key).join(" / ")
+          %td= gquery.deprecated_key
