@@ -3,7 +3,7 @@ class Data::InputsController < Data::BaseController
   cache_sweeper Sweepers::Input
   
   def index
-    @inputs = Input.all
+    @inputs = Input.by_name(params[:q])
   end
 
   def edit
