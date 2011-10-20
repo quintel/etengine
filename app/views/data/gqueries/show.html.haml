@@ -15,13 +15,14 @@
 
 %h3 Result
 - @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
-%p= render 'result'
+= render 'result'
 
 %h3 Info
 
 %dl
-  %dt Deprecated Key
-  %dd= @gquery.deprecated_key
+  - if @gquery.deprecated_key
+    %dt Deprecated Key
+    %dd= @gquery.deprecated_key
   %dt Groups
   %dd= @gquery.gquery_groups.map(&:group_key)
   %dt Description
@@ -30,7 +31,7 @@
 %h3 References
 
 %table
-  - Gquery.name_or_query_contains(@gquery.key).each do |gquery|
+  - Gquery.contains(@gquery.key).each do |gquery|
     %tr
       %td Gquery
       %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
@@ -38,5 +39,3 @@
     %tr
       %td Input
       %td= link_to input.key, data_input_path(:id => input.id)
-    
-=# render '/data/shared/revisions', :versioned => @gquery
