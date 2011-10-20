@@ -1,8 +1,7 @@
 class Data::CommitsController < Data::BaseController
   skip_before_filter :find_graph
-
   before_filter :init_git
-  
+
   set_tab :commits
 
   def index
@@ -14,13 +13,15 @@ class Data::CommitsController < Data::BaseController
     @commit = @etsource.commit
     @etsource.import!
   end
-  
-  def init_git
-    @git = Git.open('etsource')
-    @git.checkout(params[:branch], :force => true)
-    # DEBT solve properly
-    `cd etsource; git pull`
-    @git.pull if params[:refresh]
-  end
 
+  private
+
+    def init_git
+      @branch = params[:branch] || 'master'
+      @git = Git.open('etsource')
+      @git.checkout(@branch, :force => true)
+      # DEBT solve properly
+      `cd etsource; git pull`
+      @git.pull if params[:refresh]
+    end
 end
