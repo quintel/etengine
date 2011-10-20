@@ -1,19 +1,17 @@
-=# render 'list'
-%section.main
-  .header Commits in #{@branch}
-  
-  Branches
-  -# TODO: enable redirection when we'll have more branches
-  = select_tag :branch, options_for_select(@git.branches.local.map(&:name), @branch)
+.header Commits in #{@branch}
 
-  %table
-    - @commits.each do |commit|
-      %tr
-        %td= commit.message
-        %td= link_to 'github', "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
-        
-        %td= link_to 'IMPORT', data_commit_path(:id => commit.to_s)
-        %td= commit.date.strftime("%m-%d-%y %H:%M")
-        %td= commit.author.name
-        %td
-          %small{:style => "color: #aaa"}= commit.to_s
+Branches
+-# TODO: enable redirection when we'll have more branches
+= select_tag :branch, options_for_select(@git.branches.local.map(&:name), @branch)
+
+%table
+  - @commits.each do |commit|
+    %tr
+      %td= commit.message
+      %td= link_to 'github', "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
+      
+      %td= link_to 'IMPORT', import_data_commit_path(:id => commit.to_s)
+      %td= commit.date.strftime("%m-%d-%y %H:%M")
+      %td= commit.author.name
+      %td
+        %small{:style => "color: #aaa"}= commit.to_s
