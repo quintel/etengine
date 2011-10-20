@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111018115216) do
+ActiveRecord::Schema.define(:version => 20111020153313) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -289,19 +289,14 @@ ActiveRecord::Schema.define(:version => 20111018115216) do
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "not_cacheable",  :default => false
+    t.boolean  "not_cacheable",   :default => false
     t.string   "unit"
     t.string   "deprecated_key"
+    t.integer  "gquery_group_id"
   end
 
+  add_index "gqueries", ["gquery_group_id"], :name => "index_gqueries_on_gquery_group_id"
   add_index "gqueries", ["key"], :name => "index_gqueries_on_key"
-
-  create_table "gqueries_gquery_groups", :id => false, :force => true do |t|
-    t.string "gquery_id"
-    t.string "gquery_group_id"
-  end
-
-  add_index "gqueries_gquery_groups", ["gquery_id", "gquery_group_id"], :name => "index_gqueries_gquery_groups_on_gquery_id_and_gquery_group_id"
 
   create_table "gquery_groups", :force => true do |t|
     t.string   "group_key"
@@ -447,10 +442,12 @@ ActiveRecord::Schema.define(:version => 20111018115216) do
     t.string   "scenario_type"
     t.integer  "preset_scenario_id"
     t.string   "type"
-    t.string   "api_session_key"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
   end
+
+  add_index "scenarios", ["in_start_menu"], :name => "index_scenarios_on_in_start_menu"
+  add_index "scenarios", ["user_id"], :name => "index_scenarios_on_user_id"
 
   create_table "slots", :force => true do |t|
     t.integer "blueprint_id"
