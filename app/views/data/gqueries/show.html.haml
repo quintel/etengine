@@ -1,37 +1,38 @@
-= render 'list'
-%section.main
-  .header
-    Key:
-    = @gquery.key
-    %small= link_to 'Edit', edit_data_gquery_path(:id => @gquery)
+- breadcrumb "GQueries"
+= render 'search_box'
 
-  %h3 Query
+.header
+  Key:
+  = @gquery.key
+  %small= link_to 'Edit', edit_data_gquery_path(:id => @gquery)
 
-  %pre.gql
-    = color_syntaxed_gquery @gquery.query
+%h3 Query
 
-  %h3 Result
-  - @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
-  %p= render 'result'
+%pre.gql
+  = color_syntaxed_gquery @gquery.query
 
-  %h3 Group
-  %p
-    = @gquery.gquery_groups.map(&:group_key)
+%h3 Result
+- @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
+%p= render 'result'
 
-  %h3 Description
-  %p
-    = simple_format @gquery.description
+%h3 Group
+%p
+  = @gquery.gquery_groups.map(&:group_key)
 
-  %h3 References
+%h3 Description
+%p
+  = simple_format @gquery.description
 
-  %table
-    - Gquery.name_or_query_contains(@gquery.key).each do |gquery|
-      %tr
-        %td Gquery
-        %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
-    - Input.embedded_gql_contains(@gquery.key).each do |input|
-      %tr
-        %td Input
-        %td= link_to input.key, data_input_path(:id => input.id)
-      
-  =# render '/data/shared/revisions', :versioned => @gquery
+%h3 References
+
+%table
+  - Gquery.name_or_query_contains(@gquery.key).each do |gquery|
+    %tr
+      %td Gquery
+      %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
+  - Input.embedded_gql_contains(@gquery.key).each do |input|
+    %tr
+      %td Input
+      %td= link_to input.key, data_input_path(:id => input.id)
+    
+=# render '/data/shared/revisions', :versioned => @gquery
