@@ -24,7 +24,7 @@
     %dt Deprecated Key
     %dd= @gquery.deprecated_key
   %dt Groups
-  %dd= @gquery.gquery_groups.map(&:group_key)
+  %dd= @gquery.gquery_group.try(:group_key)
   %dt Description
   %dd= simple_format @gquery.description
 

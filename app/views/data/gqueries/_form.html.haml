@@ -4,7 +4,7 @@
   = f.input :unit
   = f.input :not_cacheable
   = f.input :description
-  = f.association :gquery_groups, :collection => GqueryGroup.all.map{|g| [g.group_key, g.id]}#, options_from_collection_for_select(GqueryGroup.all, :id,:group_key, @gquery.gquery_groups.map(&:id)),:multiple => true
+  = f.association :gquery_group, :collection => GqueryGroup.all.map{|g| [g.group_key, g.id]}
   =# f.button :submit
   %p
     %strong{:style => 'color:red'} You cannot update gqueries anymore. ask WvL for more info
