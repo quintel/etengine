@@ -1,14 +1,15 @@
-= render 'list'
-%section.main
-  .header
-    Edit:
-    = @gquery.key
+- breadcrumb "GQueries"
+= render 'search_box'
 
-  = render 'form'
+.header
+  Edit:
+  = @gquery.key
 
-  =# render '/data/shared/revisions', :versioned => @gquery
+= render 'form'
 
-  - @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
+=# render '/data/shared/revisions', :versioned => @gquery
 
-  %h3 Result
-  = render 'result' rescue 'ERROR in Calculation'
+- @query = Gql::QueryInterface::Preparser.new(@gquery.query).clean
+
+%h3 Result
+= render 'result' rescue 'ERROR in Calculation'
