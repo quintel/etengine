@@ -1,6 +1,15 @@
 %section#search_box
   = form_tag data_converters_path, :method => :get do
     = search_field_tag :q, params[:q]
-    = select_tag 'group_id', options_from_collection_for_select(Group.all, :id, :key, params[:group_id]), :include_blank => true
-    
+    = select_tag 'group_id', options_from_collection_for_select(Group.all, :id, :key, params[:group_id]), :include_blank => true    
     = submit_tag "search"
+- content_for :footer do
+  :ruby
+    autocomplete = Converter.all.map {|a| {label: a.full_key, url: data_converter_path(:id => a.id)} }
+  :javascript
+    $(function(){
+      $("input#q").autocomplete({
+        source: #{autocomplete.to_json},
+        select: function(event, ui) { window.location.href = ui.item.url }
+      });
+    });
