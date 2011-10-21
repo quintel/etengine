@@ -12,6 +12,7 @@ class Data::GraphsController < Data::BaseController
 
   def index
     @graphs = Graph.find(:all, :order=>'id desc')
+    @csv_importer = CsvImporter.new
   end
 
   def checks
@@ -62,41 +63,23 @@ class Data::GraphsController < Data::BaseController
     end
   end
 
-  ##
   # Expects a zip file with a folder (folder name = region_code) for each country/region.
-  # TODO: refactor
-  #
   def import
-    raise 'version not defined' if params[:csv_import][:version].blank?
-    require 'zip/zip'
-    version = params[:csv_import][:version]
-    file = params[:csv_import][:zip_file]
-    version_path = "import/#{version}"
-
-    Zip::ZipFile.open(file.tempfile) do |zip_file|
-      zip_file.each do |f|
-        f_path = File.join(version_path, f.name)
-        FileUtils.mkdir_p(File.dirname(f_path))
-        zip_file.extract(f, f_path) unless File.exist?(f_path)
-      end
+    @csv_importer = CsvImporter.new(params[:csv_importer])
+    if !@csv_importer.valid?
+      @graphs = []
+      render :index and return
     end
-
-    countries = Dir.entries(version_path).reject{|p| p.include?('MACOS')}.select{|country_dir|
-      # check that file is directory. excluding: "." and ".."
-      File.directory?("#{version_path}/#{country_dir}") and !country_dir.match(/^\./)
-    }
-
-    csv_import = CsvImport.new(version, countries.first)
-    blueprint = csv_import.create_blueprint
-    blueprint.update_attribute :description, params[:csv_import][:description]
-
-    countries.each do |country|
-      csv_import = CsvImport.new(version, country)
-      dataset = csv_import.create_dataset(blueprint.id, country)
-      Graph.create :blueprint_id => blueprint.id, :dataset_id => dataset.id
+    
+    begin
+      status = @csv_importer.process!
+      Rails.cache.clear
+      redirect_to data_graphs_url, :notice => "File Imported"
+    rescue Exception => e
+      flash.now[:alert] = "An error occurred: #{e.message}"
+      @graphs = []
+      render :index
     end
-    Rails.cache.clear
-    redirect_to data_graphs_url
   end
 
   protected
