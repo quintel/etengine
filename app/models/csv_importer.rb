@@ -50,6 +50,6 @@ class CsvImporter
       dataset = csv_import.create_dataset(blueprint.id, country)
       Graph.create :blueprint_id => blueprint.id, :dataset_id => dataset.id
     end
-    
+    true
   end
 end
