@@ -190,7 +190,7 @@ class CsvImport
     def parse_csv_file(file)
       import_path = "import/#{@path}"
       # DEBT: use a better way to select the file
-      filename = Dir.entries(import_path).select{|e| e.include?(file.to_s)}.last
+      filename = Dir.entries(import_path).sort.select{|e| e.include?(file.to_s)}.last
       CSV.foreach "#{import_path}/#{filename}", :headers => true, :col_sep => ';', :skip_blanks => true do |row|
         next if row[0].nil? || row[0].empty?
         hash = row.to_hash.symbolize_keys

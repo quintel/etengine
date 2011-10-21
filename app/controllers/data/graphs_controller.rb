@@ -95,6 +95,7 @@ class Data::GraphsController < Data::BaseController
       dataset = csv_import.create_dataset(blueprint.id, country)
       Graph.create :blueprint_id => blueprint.id, :dataset_id => dataset.id
     end
+    Rails.cache.clear
     redirect_to data_graphs_url
   end
 
