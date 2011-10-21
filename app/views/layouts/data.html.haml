@@ -21,12 +21,7 @@
               = current_user.email
               \-
               = link_to "Logout", logout_path
-        = form_tag(data_redirect_path, {:method => 'get'}) do
-          = label_tag 'Session'
-          - opts = [["Current - ##{Current.scenario.id}", 'latest'], *ApiScenario.recent.map{|as| [as.identifier, as.id]}]
-          = select_tag :blueprint_id, options_for_select(opts, params[:blueprint_id]), :onchange => 'submit()'
-          = label_tag 'Region'
-          = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code]), :onchange => 'submit()'
+        = render 'data/shared/graph_picker'
       #subheader
         %nav
           = link_to 'Dashboard', data_root_path

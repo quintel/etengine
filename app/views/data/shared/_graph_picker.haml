@@ -1,0 +1,18 @@
+= form_tag data_redirect_path, :method => :get, :id => 'graph_picker' do
+  = label_tag 'Session'
+  - opts = [["Current - ##{Current.scenario.id}", 'latest'], *ApiScenario.recent.map{|as| [as.identifier, as.id]}]
+  = select_tag :blueprint_id, options_for_select(opts, params[:blueprint_id])
+  = label_tag 'Region'
+  = select_tag :region_code, options_for_select(Area.region_codes, params[:region_code])
+
+- content_for :footer do
+  :javascript
+    $("#graph_picker select").change(function(e){
+      e.preventDefault();
+      var url = location.pathname;
+      var tokens = url.split('/');
+      tokens[2] = $("#blueprint_id").val();
+      tokens[3] = $("#region_code").val();
+      var new_url = tokens.join('/');
+      location.href = new_url;
+    });
