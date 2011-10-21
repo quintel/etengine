@@ -48,7 +48,10 @@ class Gquery < ActiveRecord::Base
 
   scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
   scope :by_key_or_deprecated_key, lambda{|q| where("`key` = :q OR deprecated_key = :q", :q => q)}
-  
+  scope :by_groups, lambda{|*gids|
+    gids = gids.compact.reject(&:blank?)
+    where(:gquery_group_id => gids.compact) unless gids.compact.empty?
+  }
 
   # Returns the cleaned query for any given key.
   #
