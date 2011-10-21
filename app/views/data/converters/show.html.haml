@@ -39,40 +39,42 @@
   %thead
     %tr
       %th{:colspan => 2}= @converter_present.full_key
-    %tr
-      %th Outbound        
-      %th Inbound
   %tbody
     %tr
       %td
         %table.outputs
           %thead
             %tr
-              %th{:colspan => 4} Links
-              %th{:colspan => 2} Slots
+              %th{:colspan => 4}
+                %strong Links
+              %th{:colspan => 2} Output Slots
             %tr
-              %th Converter
-              %th Value
-              %th Type
-              %th Share
-              %th Carrier
-              %th Conversion
+              %th{:rowspan => 2} Converter
+              %th{:rowspan => 2} Value
+              %th{:rowspan => 2} Share
+              %th{:rowspan => 2} Type
+              %th{:rowspan => 2} Carrier
+              %th{:rowspan => 2} Conversion
           - c.outputs.each do |output_slot|
             - output_slot.links.each_with_index do |output_link, i|
               %tr.output_links
                 %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent.id)
                 %td{:title => output_link.value}= auto_number output_link.value
+                %td{:class => output_link.ar_object.kind,
+                    :title => output_link.share}= output_link.share.andand.round(2)
                 %td= output_link.link_type
-                %td{:class => output_link.ar_object.kind}= output_link.share.andand.round(4)
                 - if i == 0
                   %td.centered{:rowspan => output_slot.links.length}= output_slot.carrier.key
-                  %td.centered{:rowspan => output_slot.links.length, :class => output_slot.ar_object.kind}= output_slot.conversion
+                  %td.centered{:rowspan => output_slot.links.length,
+                               :class => output_slot.ar_object.kind,
+                               :title => output_slot.conversion}= output_slot.conversion.round(2)
       %td
         %table.inputs
           %thead
             %tr
-              %th{:colspan => 2} Slots
-              %th{:colspan => 4} Links            
+              %th{:colspan => 2} Input Slots
+              %th{:colspan => 4}
+                %strong Links           
             %tr
               %th Conversion
               %th Carrier
@@ -84,10 +86,13 @@
             - input_slot.links.each_with_index do |input_link, i|
               %tr.input_links
                 - if i == 0
-                  %td.centered{:rowspan => input_slot.links.length, :class => input_slot.ar_object.kind}= input_slot.conversion
+                  %td.centered{:rowspan => input_slot.links.length,
+                               :title => input_slot.conversion,
+                               :class => input_slot.ar_object.kind}= input_slot.conversion.round(2)
                   %td.centered{:rowspan => input_slot.links.length}= input_slot.carrier.key
+                %td{:title => input_link.share,
+                    :class => input_link.ar_object.kind}= input_link.share.andand.round(2)
                 %td= input_link.link_type
-                %td{:class => input_link.ar_object.kind}= input_link.share.andand.round(4)
                 %td{:title => input_link.value}= auto_number input_link.value
                 %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
     
