@@ -12,6 +12,7 @@ class Data::GraphsController < Data::BaseController
 
   def index
     @graphs = Graph.find(:all, :order=>'id desc')
+    @csv_importer = CsvImporter.new
   end
 
   def checks
@@ -67,6 +68,11 @@ class Data::GraphsController < Data::BaseController
   # TODO: refactor
   #
   def import
+    @csv_importer = CsvImporter.new(params[:csv_importer])
+    if !@csv_importer.valid?
+      @graphs = []
+      render :index and return
+    end
     raise 'version not defined' if params[:csv_import][:version].blank?
     require 'zip/zip'
     version = params[:csv_import][:version]
