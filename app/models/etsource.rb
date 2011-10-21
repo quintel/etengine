@@ -104,7 +104,9 @@ module Etsource
       
       gqueries = []
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
-        group_key, rest = f.gsub(base_dir+"/", '').split('/')
+        tokens = f.gsub(base_dir+"/", '').split('/')
+        # the group name concatenates the directory names
+        group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
         gquery = from_file(f)
         groups[group_key] ||= GqueryGroup.create(:group_key => group_key)
         gquery.gquery_group_id = groups[group_key].id
