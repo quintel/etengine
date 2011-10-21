@@ -262,6 +262,18 @@ section#actions {
     width: 1000px;
     float: left; }
 
+#flash .flash {
+  text-align: center;
+  padding: 10px;
+  border: 1px solid;
+  margin: 5px; }
+#flash .notice {
+  color: green;
+  background-color: #baffb7; }
+#flash .alert {
+  color: red;
+  background-color: #fdbabc; }
+
 #footer {
   clear: both; }
 
