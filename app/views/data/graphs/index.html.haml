@@ -4,11 +4,11 @@
 
 %h2 Upload Zipfile
 
-= simple_form_for :csv_import, :url => import_data_graphs_path, :html => { :multipart => true } do |f|
+= simple_form_for @csv_importer, :url => import_data_graphs_path, :html => { :multipart => true} do |f|
   = f.input :version
   = f.input :description, :as => :text
   = f.input :zip_file, :as => :file
-  = f.button :submit
+  = f.button :submit, "Upload Zip"
 
 %table
   %thead
