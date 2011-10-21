@@ -52,9 +52,5 @@ end
 
 Spork.each_run do
   # This code will be run each time you run your specs.
-
-  # DEBT: why this?
-  Dir["#{Rails.root}/app/**/*.rb"].each { |f| load f }
-
   FactoryGirl.reload
 end
