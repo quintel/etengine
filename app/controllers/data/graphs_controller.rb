@@ -71,9 +71,15 @@ class Data::GraphsController < Data::BaseController
       render :index and return
     end
     
-    @csv_importer.process!
-    Rails.cache.clear
-    redirect_to data_graphs_url, :notice => "File Imported"
+    begin
+      status = @csv_importer.process!
+      Rails.cache.clear
+      redirect_to data_graphs_url, :notice => "File Imported"
+    rescue Exception => e
+      flash.now[:alert] = "An error occurred: #{e.message}"
+      @graphs = []
+      render :index
+    end
   end
 
   protected
