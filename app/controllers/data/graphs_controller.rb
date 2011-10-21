@@ -73,10 +73,9 @@ class Data::GraphsController < Data::BaseController
       @graphs = []
       render :index and return
     end
-    raise 'version not defined' if params[:csv_import][:version].blank?
     require 'zip/zip'
-    version = params[:csv_import][:version]
-    file = params[:csv_import][:zip_file]
+    version = @csv_importer.version
+    file = @csv_importer.zip_file
     version_path = "import/#{version}"
 
     Zip::ZipFile.open(file.tempfile) do |zip_file|
@@ -94,7 +93,7 @@ class Data::GraphsController < Data::BaseController
 
     csv_import = CsvImport.new(version, countries.first)
     blueprint = csv_import.create_blueprint
-    blueprint.update_attribute :description, params[:csv_import][:description]
+    blueprint.update_attribute :description, @csv_importer.description
 
     countries.each do |country|
       csv_import = CsvImport.new(version, country)
@@ -102,7 +101,7 @@ class Data::GraphsController < Data::BaseController
       Graph.create :blueprint_id => blueprint.id, :dataset_id => dataset.id
     end
     Rails.cache.clear
-    redirect_to data_graphs_url
+    redirect_to data_graphs_url, :notice => "File Imported"
   end
 
   protected
