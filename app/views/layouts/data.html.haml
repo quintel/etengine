@@ -49,6 +49,10 @@
         #breadcrumbs
           %nav
             = breadcrumbs.map{|x| content_tag(:span, x)}.join(" &raquo; ").html_safe
+      #flash
+        - flash.each do |k,msg|
+          .flash{:class => k}= msg
+      
       #content= yield
       #footer
         = yield :footer
