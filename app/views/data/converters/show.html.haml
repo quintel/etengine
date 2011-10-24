@@ -90,9 +90,9 @@
                                :title => input_slot.conversion,
                                :class => input_slot.ar_object.kind}= input_slot.conversion.round(2)
                   %td.centered{:rowspan => input_slot.links.length}= input_slot.carrier.key
+                %td= input_link.link_type
                 %td{:title => input_link.share,
                     :class => input_link.ar_object.kind}= input_link.share.andand.round(2)
-                %td= input_link.link_type
                 %td{:title => input_link.value}= auto_number input_link.value
                 %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
     
