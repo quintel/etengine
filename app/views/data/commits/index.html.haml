@@ -4,6 +4,8 @@ Branches
 -# TODO: enable redirection when we'll have more branches
 = select_tag :branch, options_for_select(@git.branches.local.map(&:name), @branch)
 
+%pre.git_output= @output
+
 %table
   - @commits.each do |commit|
     %tr

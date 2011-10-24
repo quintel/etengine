@@ -1,6 +1,6 @@
 class Data::CommitsController < Data::BaseController
   skip_before_filter :find_graph
-  before_filter :init_git
+  before_filter :init_git, :only => :index
 
   set_tab :commits
 
@@ -12,6 +12,7 @@ class Data::CommitsController < Data::BaseController
     @etsource = Etsource::Commit.new(params[:id])
     @commit = @etsource.commit
     @etsource.import!
+    flash.now[:notice] = "It is now a good idea to refresh the gquery cache on all clients (ETM, Mixer, ...)"
   end
 
   private
@@ -20,8 +21,6 @@ class Data::CommitsController < Data::BaseController
       @branch = params[:branch] || 'master'
       @git = Git.open('etsource')
       @git.checkout(@branch, :force => true)
-      # DEBT solve properly
-      `cd etsource; git pull`
-      @git.pull if params[:refresh]
+      @output = @git.pull
     end
 end
