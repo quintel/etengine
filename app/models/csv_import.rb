@@ -13,7 +13,7 @@ class CsvImport
   def initialize(version, region_code)
     @version = version
     @region_code = region_code
-    @path = @version + "/" + @region_code
+    @path = "#{@version}/#{@region_code}"
   end
 
   def create_blueprint
@@ -140,7 +140,7 @@ class CsvImport
     
     def create_blueprint_groups(blueprint)
       # the file was previously called definitions
-      parse_csv_file "_groups" do |row|
+      parse_csv_file "groups" do |row|
         attrs = {
           group_id: row[:id],
           title: row[:title],
@@ -182,33 +182,39 @@ class CsvImport
     #
     
     # Removes the attributes not present in the db table
+    #
     def strip_attributes(attributes, ar_object)
       db_columns = ar_object.column_names.map(&:to_sym)
       attributes.delete_if{|key, value| !db_columns.include?(key) }
     end
     
+    # Yields a block with a hash of the items for each CSV file row
+    #
     def parse_csv_file(file)
-      import_path = "import/#{@path}"
-      # DEBT: use a better way to select the file
-      filename = Dir.entries(import_path).sort.select{|e| e.include?(file.to_s)}.last
-      CSV.foreach "#{import_path}/#{filename}", :headers => true, :col_sep => ';', :skip_blanks => true do |row|
+      filename = "import/#{@path}/#{file}.csv"
+      CSV.foreach filename, :headers => true, :col_sep => ';', :skip_blanks => true do |row|
         next if row[0].nil? || row[0].empty?
         hash = row.to_hash.symbolize_keys
-        # Fix rows
-        hash.each_pair do |k, v|
-          if v.blank? || v == 'NULL'
-            hash[k] = nil
-          elsif v.is_a?(String)
-            hash[k] = v.gsub(',', '.').strip
-          end
-        end
+        hash.each_pair {|k, v| hash[k] = fix_csv_cell(v) }
         yield hash
       end
     end
     
-    ##
-    # Gets the information from conversion_attributes.
-    # Based on conversion data it yields once for an input slot and again if its also a output.
+    # Convert excel file export as needed
+    #
+    def fix_csv_cell(s)
+      if s.blank? || s == 'NULL'
+        s
+      elsif s.is_a?(String)
+        s.gsub(',', '.').strip
+      else
+        s
+      end
+    end
+    
+    # Gets the information from conversion_attributes. Unlike the other CSV files, sometimes
+    # we have to process the row twice because the a conversion might be bidirectional: once
+    # for an input slot and again if it's also an output.
     #
     def slot_attributes
       parse_csv_file 'conversions' do |row|
@@ -223,11 +229,15 @@ class CsvImport
         }
         
         if attrs[:input].present?
-          yield attrs.merge(:direction => 0, :conversion => attrs[:input], :country_specific => attrs[:input_country_specific])
+          yield attrs.merge(:direction => 0,
+                            :conversion => attrs[:input],
+                            :country_specific => attrs[:input_country_specific])
         end
         
         if attrs[:output].present?
-          yield attrs.merge(:direction => 1, :conversion => attrs[:output], :country_specific => attrs[:output_country_specific])
+          yield attrs.merge(:direction => 1,
+                            :conversion => attrs[:output],
+                            :country_specific => attrs[:output_country_specific])
         end
       end
     end
