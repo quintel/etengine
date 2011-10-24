@@ -16,7 +16,6 @@
 
 class PolicyGoal < ActiveRecord::Base
 
-  has_one :area_dependency, :as => :dependable
   has_paper_trail
 
   def to_gql
