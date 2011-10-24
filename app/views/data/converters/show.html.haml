@@ -68,6 +68,14 @@
                   %td.centered{:rowspan => output_slot.links.length,
                                :class => output_slot.ar_object.kind,
                                :title => output_slot.conversion}= output_slot.conversion.round(2)
+          - if loss = c.output(:loss)
+            %tr
+              %td
+              %td
+              %td
+              %td
+              %td= loss.carrier.key
+              %td.centered{:class => loss.ar_object.kind}= loss.conversion
       %td
         %table.inputs
           %thead
