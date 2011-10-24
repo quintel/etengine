@@ -204,7 +204,7 @@ class CsvImport
     #
     def fix_csv_cell(s)
       if s.blank? || s == 'NULL'
-        s
+        nil
       elsif s.is_a?(String)
         s.gsub(',', '.').strip
       else
