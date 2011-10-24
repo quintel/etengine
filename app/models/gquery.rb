@@ -52,6 +52,8 @@ class Gquery < ActiveRecord::Base
     gids = gids.compact.reject(&:blank?)
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
   }
+  
+  scope :with_deprecated_key, where("deprecated_key IS NOT NULL")
 
   # Returns the cleaned query for any given key.
   #
@@ -61,6 +63,8 @@ class Gquery < ActiveRecord::Base
   def self.get(key)
     query = gquery_hash[key]
     raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
+    # Check gql_metrics.rb initializer to see what we're doing with this notification
+    ActiveSupport::Notifications.instrument("gql.deprecated", key) if deprecated_gquery_hash[key]
     query
   end
 
@@ -78,14 +82,20 @@ class Gquery < ActiveRecord::Base
     @parsed_query ||= Gql::QueryInterface::Preparser.new(query).parsed
   end
 
-  @@gquery_hash = nil
   ##
-  # Memoize gquery_hash
+  # Memoized gquery hashes
   #
+  @@gquery_hash = nil
+  @@deprecated_gquery_hash = nil
+
   def self.gquery_hash
     @@gquery_hash ||= build_gquery_hash
   end
-
+  
+  def self.deprecated_gquery_hash
+    @@deprecated_gquery_hash ||= build_deprecated_gquery_hash
+  end
+  
   # DEBT: I added the deprecated key to the gquery hash, otherwise the lookup will fail.
   # I think we should change the way we deal with deprecated keys by creating a
   # brand new gquery with a deprecated flag and that calls the new gquery name.
@@ -97,6 +107,15 @@ class Gquery < ActiveRecord::Base
       end
     end
   end
+  
+  # Fast lookup hash to determine whether we're using a deprecated key
+  #
+  def self.build_deprecated_gquery_hash
+    h = {}
+    self.with_deprecated_key.each {|g| h[g.deprecated_key] = true}
+    h
+  end
+  
 
   def converters?
     unit == 'converters'
