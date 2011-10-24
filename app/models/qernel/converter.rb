@@ -309,8 +309,7 @@ public
     carrier = carrier.key if carrier.respond_to?(:key)
     output_hash[carrier]
   end
-
-
+  
 protected
 
   # Hash of input slots, with the carrier keys as keys and slots as values
