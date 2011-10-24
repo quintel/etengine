@@ -17,8 +17,6 @@
 class PolicyGoal < ActiveRecord::Base
 
   has_one :area_dependency, :as => :dependable
-  has_and_belongs_to_many :root_nodes
-  belongs_to :round
   has_paper_trail
 
   def to_gql
