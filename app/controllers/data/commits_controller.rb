@@ -20,7 +20,8 @@ class Data::CommitsController < Data::BaseController
     def init_git
       @branch = params[:branch] || 'master'
       @git = Git.open('etsource')
+      @output = `cd etsource; git pull`
       @git.checkout(@branch, :force => true)
-      @output = @git.pull
+      # @output = @git.pull # doesn't work
     end
 end
