@@ -16,6 +16,9 @@ class Dataset::LinkData < ActiveRecord::Base
 
   belongs_to :dataset
   belongs_to :link
+  
+  validates :dataset, :presence => true
+  validates :link,    :presence => true
 
   def dataset_key
     Qernel::Link.compute_dataset_key(link_id)

@@ -14,6 +14,9 @@ class Dataset::SlotData < ActiveRecord::Base
 
   belongs_to :dataset
   belongs_to :slot
+  
+  validates :dataset, :presence => true
+  validates :slot, :presence => true
 
   def dataset_key
     Qernel::Slot.compute_dataset_key(slot_id)

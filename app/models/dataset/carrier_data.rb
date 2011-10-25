@@ -27,6 +27,9 @@ class Dataset::CarrierData < ActiveRecord::Base
 
   belongs_to :area
   belongs_to :carrier
+  
+  validates :area, :presence => true
+  validates :carrier, :presence => true
 
   after_save :touch_dataset
 

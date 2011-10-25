@@ -35,8 +35,11 @@ class Slot < ActiveRecord::Base
   belongs_to :converter
   
   validates :blueprint, :presence => true
-  validates :converter, :presence => true
   validates :carrier,   :presence => true
+  
+  validates :converter, :presence => true
+
+  validate :converter_must_belong_to_blueprint
   
   def input?
     direction == INPUT_DIRECTION
@@ -47,12 +50,11 @@ class Slot < ActiveRecord::Base
   end
 
   def links
-    links = Link.blueprint(blueprint).
-      where({:carrier_id => carrier_id})
+    links = Link.blueprint(blueprint).where(:carrier_id => carrier_id)
     if input?
-      links = links.where(["parent_id = ?", converter_id])
+      links = links.where(:parent_id => converter_id)
     else
-      links = links.where(["child_id = ?", converter_id])
+      links = links.where(:child_id => converter_id)
     end
   end
   
@@ -64,6 +66,14 @@ class Slot < ActiveRecord::Base
     when 2 then :green
     end
   end
+  
+  private
+  
+    def converter_must_belong_to_blueprint
+      unless blueprint.converter_record_ids.include?(converter_id)
+        errors.add(:base, "Slot#converter_id ##{converter_id} doesn't belong to the blueprint")
+      end
+    end
 end
 
 

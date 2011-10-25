@@ -82,6 +82,9 @@ class Dataset::ConverterData < ActiveRecord::Base
 
   belongs_to :dataset
   belongs_to :converter
+  
+  validates :dataset, :presence => true
+  validates :converter, :presence => true
 
   def dataset_key
     Qernel::Converter.compute_dataset_key(converter_id)
