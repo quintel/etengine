@@ -1,4 +1,5 @@
 class Data::ConvertersController < Data::BaseController
+  before_filter :find_converter, :only => :show
   before_filter :calculate_gql
 
   def index
@@ -13,7 +14,6 @@ class Data::ConvertersController < Data::BaseController
 
   def show
     @qernel_graph = @graph.gql.present_graph
-    @converter = Converter.find(params[:id])
     @converter_present = @graph.gql.present_graph.graph.converter(params[:id].to_i)
     @converter_future  = @graph.gql.future_graph.graph.converter(params[:id].to_i)
 
@@ -25,6 +25,13 @@ class Data::ConvertersController < Data::BaseController
   end
 
   protected
+  
+    def find_converter
+      # Remember that a blueprint doesn't necessarily include all converters
+      @converter = @blueprint.converter_records.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to data_converters_path, :alert => "Converter not found" and return
+    end
 
     # calculate so values will be updated and assigned.
     def calculate_gql
