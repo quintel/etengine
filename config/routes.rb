@@ -38,7 +38,6 @@ Etm::Application.routes.draw do
       resources :blueprint_layouts, :except => [:edit, :udpate, :destroy] do
         resources :converter_positions, :only => :create
       end
-
       
       scope "/etsource" do
         resources :commits, :only => :index do
@@ -87,11 +86,8 @@ Etm::Application.routes.draw do
       resources :blueprint_models, :only => :index
       resources :energy_balance_groups, :only => [:index, :show]
 
-
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
     end
   end
-
-  match '/:controller(/:action(/:id))'
 end

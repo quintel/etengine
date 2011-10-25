@@ -38,7 +38,7 @@
           = link_to 'Graphs', data_graphs_path
           = link_to "Historic Series", data_historic_series_path
           = link_to "Inputs", data_inputs_path
-          = link_to "Kick", {:controller => "/data", :action => "kick"}, :confirm =>"This will drop the sessions for ALL users! Please be patient, server restarts takes 30secs. Are you sure?"
+          = link_to "Kick", data_kick_path, :confirm =>"This will drop the sessions for ALL users! Please be patient, server restarts takes 30secs. Are you sure?"
           = link_to "Query Tables", data_query_tables_path
       - if breadcrumbs.any?
         #breadcrumbs
