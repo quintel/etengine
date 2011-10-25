@@ -75,9 +75,7 @@ Etm::Application.routes.draw do
       end
 
       resources :graphs do
-        collection do
-          post :import
-        end
+        post :import, :on => :collection
       end
 
       resources :gql_test_cases

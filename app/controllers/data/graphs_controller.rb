@@ -1,22 +1,14 @@
 class Data::GraphsController < Data::BaseController
-  before_filter :load_graph, :only => [:show, :groups, :edit, :destroy, :updated]
+  before_filter :load_graph, :only => [:show, :edit, :destroy]
   set_tab :graphs
 
   def new
     @graph = Graph.new
   end
 
-  def chart
-    render :layout => false
-  end
-
   def index
     @graphs = Graph.find(:all, :order=>'id desc')
     @csv_importer = CsvImporter.new
-  end
-
-  def checks
-
   end
 
   def show
@@ -32,12 +24,6 @@ class Data::GraphsController < Data::BaseController
         render :json => Current.gql.present_graph.graph.converters.inject({}) {|hsh,c| hsh.merge c.id => {:demand => ((c.proxy.demand / 1000000).round(1) rescue nil)} }
       end
       format.html    { render }
-    end
-  end
-
-  def groups
-    if @graph
-      Current.gql = @graph.gql
     end
   end
 
