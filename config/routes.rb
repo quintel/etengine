@@ -35,8 +35,8 @@ Etm::Application.routes.draw do
 
     scope '/:blueprint_id/:region_code' do
       root :to => "pages#index"
-      resources :blueprint_layouts do
-        resources :converter_positions
+      resources :blueprint_layouts, :except => [:edit, :udpate, :destroy] do
+        resources :converter_positions, :only => :create
       end
 
       
@@ -61,12 +61,12 @@ Etm::Application.routes.draw do
       resources :fce_values
 
       resources :converters, :only => [:index, :edit, :show] do
-        resource :converter_data
+        resource :converter_data, :only => [:edit, :update]
       end
-      resources :converter_data
+      resources :converter_data, :only => [:edit, :update]
 
       resources :carriers, :only => [:index, :edit] do 
-        resource :carrier_data
+        resource :carrier_data, :only => [:edit, :update]
       end
       resources :carrier_data, :only => [:edit, :update]
 
@@ -82,9 +82,9 @@ Etm::Application.routes.draw do
       resources :historic_series
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
-      resources :blueprints
+      resources :blueprints, :except => [:edit, :update, :destroy]
       resources :inputs, :except => :show
-      resources :blueprint_models
+      resources :blueprint_models, :only => :index
       resources :energy_balance_groups, :only => [:index, :show]
 
 
