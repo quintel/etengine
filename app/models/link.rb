@@ -27,11 +27,11 @@ class Link < ActiveRecord::Base
 
   belongs_to :carrier
 
-  belongs_to :child, :class_name => 'Converter'
-  belongs_to :blueprint_parent, :class_name => 'Converter'
+  belongs_to :child,  :class_name => 'Converter'
+  belongs_to :parent, :class_name => 'Converter'
 
-  validates_presence_of :parent_id
-  validates_presence_of :child_id
+  validates :parent, :presence => true
+  validates :child,  :presence => true
 
   # TODO sebi please help with this validation
   # validates_uniqueness_of :child_id, :scope => [:graph_id, :parent_id, :carrier_id]
