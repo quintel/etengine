@@ -21,8 +21,8 @@
       %td
       %td
       %td    
-        = link_to('show', :id => versioned, :action => :show)
-        = link_to('edit', :id => versioned, :action => :edit)
+        = link_to 'show', :id => versioned, :action => :show rescue ActionController::RoutingError
+        = link_to 'edit', :id => versioned, :action => :edit rescue ActionController::RoutingError
       %td= '<==' unless @version
     
     - versioned.versions.reverse.each do |version|
