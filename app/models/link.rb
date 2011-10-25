@@ -30,17 +30,14 @@ class Link < ActiveRecord::Base
   belongs_to :child,  :class_name => 'Converter'
   belongs_to :parent, :class_name => 'Converter'
 
-  validates :parent, :presence => true
-  validates :child,  :presence => true
+  validates :parent,    :presence => true
+  validates :child,     :presence => true
+  validates :carrier,   :presence => true
+  validates :link_type, :presence => true
+  validates_inclusion_of :link_type, :in => LINK_TYPES.keys
 
   # TODO sebi please help with this validation
   # validates_uniqueness_of :child_id, :scope => [:graph_id, :parent_id, :carrier_id]
-
-  validates_presence_of :carrier_id
-
-  validates_presence_of :link_type
-  validates_inclusion_of :link_type, :in => LINK_TYPES.keys
-
   # validates_numericality_of :share, :if => Proc.new{|l| l.link_type == 1}
 
   module Scopes
