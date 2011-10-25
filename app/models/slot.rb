@@ -70,7 +70,8 @@ class Slot < ActiveRecord::Base
   private
   
     def converter_must_belong_to_blueprint
-      unless blueprint.converter_record_ids.include?(converter_id)
+      available_converter_ids = blueprint.try(:converter_record_ids) || []
+      unless available_converter_ids
         errors.add(:base, "Slot#converter_id ##{converter_id} doesn't belong to the blueprint")
       end
     end
