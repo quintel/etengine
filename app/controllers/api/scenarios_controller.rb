@@ -1,3 +1,5 @@
+# This controller is mostly used for ActiveResource requests
+#
 class Api::ScenariosController < ApplicationController
   respond_to :xml
   
@@ -8,6 +10,8 @@ class Api::ScenariosController < ApplicationController
     respond_with(@scenarios)
   end
   
+  # ETM makes use of this action
+  #
   def homepage
     respond_with(@scenarios = Scenario.where(:in_start_menu => true))
   end
