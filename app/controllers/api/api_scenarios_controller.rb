@@ -86,5 +86,4 @@ class Api::ApiScenariosController < ApplicationController
     def find_model
       @api_scenario = ApiScenario.find(params[:id])
     end
-
 end

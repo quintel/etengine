@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
     after_filter :assign_current_for_inspection_in_tests
   end
   after_filter :teardown_current
-  
+
 
   # if APP_CONFIG[:debug_qernel]
   #   rescue_from Qernel::QernelError, :with => :show_qernel_errors
@@ -53,65 +53,67 @@ class ApplicationController < ActionController::Base
     end
   end
 
-protected
-  def initialize_current
-    Current.session = session
-    Current.subdomain = request.subdomains.first
-  end
-
-  def teardown_current
-    Current.teardown_after_request!
-  end
-
-  def permission_denied
-    flash[:error] = I18n.t("flash.not_allowed")
-    store_location
-    redirect_to login_path
-  end
-
-  def restrict_to_admin
-    if current_user.try(:admin?)
-      true
-    else
-      permission_denied
-      false
+  protected
+  
+    def initialize_current
+      Current.session = session
+      Current.subdomain = request.subdomains.first
     end
-  end
 
-private
-  def store_location
-    session[:redirect_to] = request.url
-  end
-  
-  def clear_stored_location
-    session[:redirect_to] = nil
-  end
-  
-  def assign_current_for_inspection_in_tests
-    @current = Current
-  end
+    def teardown_current
+      Current.teardown_after_request!
+    end
 
-  def redirect_back_or_default(default = root_path)
-    redirect_to(session[:redirect_to] || default)
-    clear_stored_location
-  end
-
-  def current_user_session
-    return @current_user_session if defined?(@current_user_session)
-    @current_user_session = UserSession.find
-  end
-
-  def current_user
-    return @current_user if defined?(@current_user)
-    @current_user = current_user_session && current_user_session.user
-  end
-  
-  def require_no_user
-    if current_user
+    def permission_denied
+      flash[:error] = I18n.t("flash.not_allowed")
       store_location
-      flash[:notice] = "You must be logged out to access this page"
-      redirect_to root_path
-      return false
+      redirect_to login_path
     end
-  end
+
+    def restrict_to_admin
+      if current_user.try(:admin?)
+        true
+      else
+        permission_denied
+        false
+      end
+    end
+
+  private
+  
+    def store_location
+      session[:redirect_to] = request.url
+    end
+
+    def clear_stored_location
+      session[:redirect_to] = nil
+    end
+
+    def assign_current_for_inspection_in_tests
+      @current = Current
+    end
+
+    def redirect_back_or_default(default = root_path)
+      redirect_to(session[:redirect_to] || default)
+      clear_stored_location
+    end
+
+    def current_user_session
+      return @current_user_session if defined?(@current_user_session)
+      @current_user_session = UserSession.find
+    end
+
+    def current_user
+      return @current_user if defined?(@current_user)
+      @current_user = current_user_session && current_user_session.user
+    end
+
+    def require_no_user
+      if current_user
+        store_location
+        flash[:notice] = "You must be logged out to access this page"
+        redirect_to root_path
+        return false
+      end
+    end
 end
