@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::Base
-  include ApplicationController::ExceptionHandling unless Rails.env.development?
   # include ApplicationController::PerformanceProfiling
   include ApplicationController::GcDisabling
   include SortableTable::App::Controllers::ApplicationController
