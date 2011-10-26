@@ -14,6 +14,7 @@ class Api::AreasController < ApplicationController
   end
 
   private
+  
     def find_area
       @area = Area.find(params[:id])
     end

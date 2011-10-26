@@ -43,6 +43,7 @@ class Api::ScenariosController < ApplicationController
   end
 
   private
+  
     def find_scenario
       @scenario = Scenario.find(params[:id])
     end

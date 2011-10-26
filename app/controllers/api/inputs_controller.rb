@@ -12,6 +12,7 @@ class Api::InputsController < ApplicationController
   end
 
   private
+  
     def find_input
       @input = Input.find(params[:id])
     end

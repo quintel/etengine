@@ -7,8 +7,6 @@ module ApplicationController::PerformanceProfiling
     around_filter :profile
   end
 
-
-  
   # Profiles the current request, by adding ?profile=true after a request.
   # 
   # Makes use google-perftools, to do the profiling.
@@ -45,7 +43,5 @@ module ApplicationController::PerformanceProfiling
 
     response.body.replace html
     response.content_type = "text/html"
-  end
-  
+  end  
 end
-

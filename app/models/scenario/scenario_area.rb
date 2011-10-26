@@ -1,9 +1,7 @@
 # Area related methods for scenario
 #
 class Scenario < ActiveRecord::Base
-
   attr_writer :area
-
 
   ##
   # @tested 2010-11-30 seb
@@ -34,5 +32,4 @@ class Scenario < ActiveRecord::Base
   def area
     @area ||= Area.find_by_country(region_or_country)
   end
-
 end

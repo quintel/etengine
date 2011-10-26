@@ -52,7 +52,6 @@ class Scenario < ActiveRecord::Base
   #
   def used_groups
     groups = Input.inputs_grouped
-
     hsh = {}
 
     # remove groups that have no input in user_values
