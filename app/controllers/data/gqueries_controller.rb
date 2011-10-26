@@ -14,7 +14,7 @@ class Data::GqueriesController < Data::BaseController
     sort = params[:sort] ? "`#{params[:sort]}`" : "`key`"
     order = params[:order] == 'ascending' ? "asc" : "desc" 
 
-    @gqueries = Gquery.by_name(params[:q]).
+    @gqueries = Gquery.by_name_multi(params[:q]).
                   by_groups(params[:group_ids]).
                   order("#{sort} #{order}").
                   page(params[:page]).per(50)
