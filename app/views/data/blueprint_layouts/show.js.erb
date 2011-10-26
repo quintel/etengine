@@ -8,9 +8,15 @@ var GRAPH = new Graph();
 
   blueprint_converters.each do |bc|
     position = @converter_positions[bc.id]
-    position ||= ConverterPosition.new(bc)
+    position ||= ConverterPosition.new(:converter_id => bc.id)
 
-    params = [bc.id, bc.key, position.x_or_default, position.y_or_default, bc.sector_key.to_s, bc.use_key.to_s, bc.key]
+    params = [bc.id, 
+              bc.key,
+              position.x_or_default,
+              position.y_or_default,
+              bc.sector_key.to_s,
+              bc.use_key.to_s,
+              bc.key]
     params << (position.hidden == true)
     params << position.fill_color
     params << position.stroke_color
