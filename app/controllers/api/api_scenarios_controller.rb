@@ -54,6 +54,7 @@ class Api::ApiScenariosController < ApplicationController
   #
   def show
     @api_request = ApiRequest.response(params)
+    # We can probably get rid of this extra api_scenario assignment
     @api_scenario = @api_request.scenario
     @api_response = @api_request.response
 
