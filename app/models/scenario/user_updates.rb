@@ -60,21 +60,18 @@ module Scenario::UserUpdates
       @inputs_future
     end
 
-    # TODO fix
-    # @untested 2011-01-24 seb
+    # This will process an {:input_id => :value} hash and update the inputs as needed
     #
     def update_inputs_for_api(params)
-      input_ids = params.keys
-      input_ids.each do |key|
-        if input = Input.get_cached(key)
-          if params[key] == 'reset'
+      params.each_pair do |input_id, value|
+        if input = Input.get_cached(input_id)
+          if value == 'reset'
             delete_from_user_values(input.id)
-          elsif value = params[key].to_f
-            # touch(:present_updated_at) if input.updates_present?
-            update_input(input, value)
+          elsif typed_value = value.to_f
+            update_input(input, typed_value)
           end
         else
-          Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{key}")
+          Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{input_id}")
         end
       end
     end

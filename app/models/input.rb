@@ -69,16 +69,18 @@ class Input < ActiveRecord::Base
     @all_cached = nil
   end
 
+  # Creates a hash-based identity map to lookup inputs. With Rails 3.1 we could
+  # probably get rid of this.
+  # Note: I've removed the inject implementation - this way, according to the
+  # benchmarks, is faster. PZ Wed 26 Oct 2011 10:49:16 CEST
+  # 
   def self.all_cached
     unless @all_cached
-      #@all_cached = nil
-      #benchmark("** Loading Input.all_cached") do
-      @all_cached = Input.all.inject({}) do |hsh, input|
-        hsh = hsh.merge input.id.to_s => input
-        hsh.merge input.key => input if input.key.present?
-        hsh
+      @all_cached = {}
+      Input.all.each do |input|
+        @all_cached[input.id.to_s] = input
+        @all_cached[input.key] = input if input.key.present?
       end
-      #end
     end
     @all_cached
   end
@@ -88,11 +90,15 @@ class Input < ActiveRecord::Base
       with_share_group.select('id, share_group, `key`').
       group_by(&:share_group)
   end
-
+  
+  # Checks whether the inputs use the new update statements or the old
+  # key/attr_name based implementation
+  # 
   def v2?
     if Rails.env.test?
       query.present?
     else
+      # Why the decrease_total check? - PZ Wed 26 Oct 2011 11:01:31 CEST
       query.present? && !(attr_name == 'decrease_total')
     end
   end
