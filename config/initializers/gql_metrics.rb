@@ -5,3 +5,11 @@
 ActiveSupport::Notifications.subscribe 'gql.deprecated' do |name, start, finish, id, payload|
   Rails.logger.debug "Deprecated Gquery: #{payload}"
 end
+
+ActiveSupport::Notifications.subscribe 'gql.prepare_present' do |name, start, finish, id, payload|
+  Rails.logger.debug "Prepared present: (#{(finish - start) / 1000}ms)"
+end
+
+ActiveSupport::Notifications.subscribe 'gql.prepare_future' do |name, start, finish, id, payload|
+  Rails.logger.debug "Prepared present: (#{(finish - start) / 1000}ms)"
+end

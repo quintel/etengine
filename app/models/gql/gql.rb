@@ -193,7 +193,7 @@ class Gql
   end
 
   def prepare_present
-    benchmark("prepare_present") do
+    ActiveSupport::Notifications.instrument('gql.prepare_present') do
       # DEBT wrong. check for present_updated_at!!
       if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
         present_graph.dataset ||= graph_model.calculated_present_data
@@ -208,7 +208,7 @@ class Gql
   end
 
   def prepare_future
-    benchmark("prepare_future") do
+    ActiveSupport::Notifications.instrument('gql.prepare_future') do
       if Rails.env.test?
         future_graph.dataset ||= graph_model.dataset.to_qernel
       else
