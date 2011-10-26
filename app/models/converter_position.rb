@@ -73,6 +73,4 @@ class ConverterPosition < ActiveRecord::Base
   def y_or_default
     self.y || DEFAULT_Y_BY_SECTOR[converter.sector_key.to_s.to_sym] || 100
   end
-
-
 end
