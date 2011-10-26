@@ -192,7 +192,7 @@ class CsvImport
     #
     def parse_csv_file(file)
       filename = "import/#{@path}/#{file}.csv"
-      CSV.foreach filename, :headers => true, :col_sep => ';', :skip_blanks => true do |row|
+      CSV.foreach filename, :headers => true, :col_sep => ';', :skip_blanks => true, :row_sep => :auto do |row|
         next if row[0].nil? || row[0].empty?
         hash = row.to_hash.symbolize_keys
         hash.each_pair {|k, v| hash[k] = fix_csv_cell(v) }
