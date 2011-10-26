@@ -62,7 +62,7 @@ class Data::GraphsController < Data::BaseController
       Rails.cache.clear
       redirect_to data_graphs_url, :notice => "File Imported"
     rescue Exception => e
-      flash.now[:alert] = "An error occurred: #{e.message} => #{e.inspect}"
+      flash.now[:alert] = "An error occurred: #{e.message}"
       @graphs = []
       render :index
     end
