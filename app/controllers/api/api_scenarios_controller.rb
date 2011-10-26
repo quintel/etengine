@@ -27,8 +27,20 @@ class Api::ApiScenariosController < ApplicationController
   alias_method :create, :new
 
   ##
-  # GET result[]=gquery_key&result[]=gquery_key2
-  # 335=2.4&421=2.9
+  # This is the main API entry point. Most operations happen through this method.
+  # The ETM slider updates and gquery requests are processed here. See ApiRequest.
+  #
+  # Available parameters:
+  # * id: id of the scenario we're querying
+  # * input: a hash with input_id as key and value as value
+  # * r: a string that joins gquery ids with ApiRequest::GQUERY_KEY_SEPARATOR
+  # * result: array of gquery keys/ids
+  # * reset: will first clear the scenario attributes
+  #
+  # The purpose of the shorter r parameter is to have shorter URLs. IE will truncate
+  # too long JSONP requests. If we hadn't the cross-domain issue we could send
+  # everything with a simple JSON POST request.
+  #
   def show
     @api_request = ApiRequest.response(params)
     @api_scenario = @api_request.scenario

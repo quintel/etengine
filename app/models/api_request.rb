@@ -27,7 +27,8 @@ class ApiRequest
     end
   end
 
-  # Shortcut to {#response}
+  # Shortcut to {#response}. ApiScenariosController#show makes use of this method
+  # extensively.
   #
   # @param [Hash] params request parameters
   #
@@ -48,7 +49,7 @@ class ApiRequest
 
   def apply_inputs
     if reset
-      scenario.reset! 
+      scenario.reset!
       scenario.save
       scenario.reload
       @scenario = nil;
