@@ -47,6 +47,17 @@ class Gquery < ActiveRecord::Base
   ])}
 
   scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
+  
+  # This scope will stack the previous by_name scope to allow searching using multiple terms
+  scope :by_name_multi, lambda{|q|
+    base = self.scoped
+    if q.is_a?(String)
+      tokens = q.split(' ')
+      tokens.each{|t| base = base.by_name(t.strip)}
+    end
+    base
+  }
+
   scope :by_key_or_deprecated_key, lambda{|q| where("`key` = :q OR deprecated_key = :q", :q => q)}
   scope :by_groups, lambda{|*gids|
     gids = gids.compact.reject(&:blank?)
