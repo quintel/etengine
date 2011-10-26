@@ -35,7 +35,7 @@ Etm::Application.routes.draw do
 
     scope '/:blueprint_id/:region_code' do
       root :to => "pages#index"
-      resources :blueprint_layouts, :except => [:edit, :udpate, :destroy] do
+      resources :blueprint_layouts, :except => [:update, :destroy] do
         resources :converter_positions, :only => :create
       end
       
