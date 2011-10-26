@@ -26,20 +26,6 @@
         = f.submit
 
 
-describe("For country NL, end_year 2050", function() {
-  beforeEach(function() { this.addMatchers(customMatchers); });
-  <%= @gql_test_case.instruction.html_safe %>
-});
-
-function run_tests() {
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
-}
-
-// Make an API call. When complete runs the test-suites
-load_queries(settings, run_tests);
-
-
 %script
   // create Gquery objects for the gqueries we will test later.
   - Gquery.limit(1500).reject{|g| g.unit == 'converters'}.each do |gquery|
