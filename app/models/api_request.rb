@@ -96,6 +96,8 @@ class ApiRequest
       scenario.api_errors
     end
 
+    # Let's run the queries!
+    #
     def results
       gquery_keys.empty? ? nil : gql.query_multiple(gquery_keys)
     end

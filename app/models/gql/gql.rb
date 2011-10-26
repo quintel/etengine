@@ -221,6 +221,9 @@ class Gql
     end
   end
 
+  # Runs an array of gqueries. The gquery list might be expressed in all the formats accepted
+  # by Gquery#get, ie key or id
+  # 
   # @param [Array<String>]
   # @return [Hash<String => ResultSet>]
   #
