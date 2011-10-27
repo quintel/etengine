@@ -22,6 +22,6 @@ class Data::CommitsController < Data::BaseController
       @git = Git.open('etsource')
       @output = `cd etsource; git pull`
       @git.checkout(@branch, :force => true)
-      # @output = @git.pull # doesn't work
+      @git.pull # doesn't actually pull stuff
     end
 end
