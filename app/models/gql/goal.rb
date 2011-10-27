@@ -1,5 +1,4 @@
-# This is a very basic object
-# All it does is remembering his own key and store the various instances
+# This is a very dumb object. An array of them is store in Gql::Gql#goals
 #
 module Gql
   class Goal
@@ -7,28 +6,6 @@ module Gql
 
     def initialize(key)
       self.key = key
-    end
-
-    class << self
-      # Small identity map
-      #
-      def find(key)
-        @goals ||= {}
-        @goals[key] ||= new(key)
-      end
-
-      # Array containing all goals
-      #
-      def all
-        @goals ||= {}
-        @goals.values
-      end
-
-      # Clear the goals array
-      #
-      def clear
-        @goals = {}
-      end
     end
   end
 end
