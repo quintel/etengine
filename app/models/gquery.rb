@@ -2,16 +2,17 @@
 #
 # Table name: gqueries
 #
-#  id             :integer(4)      not null, primary key
-#  key            :string(255)
-#  query          :text
-#  name           :string(255)
-#  description    :text
-#  created_at     :datetime
-#  updated_at     :datetime
-#  not_cacheable  :boolean(1)      default(FALSE)
-#  unit           :string(255)
-#  deprecated_key :string(255)
+#  id              :integer(4)      not null, primary key
+#  key             :string(255)
+#  query           :text
+#  name            :string(255)
+#  description     :text
+#  created_at      :datetime
+#  updated_at      :datetime
+#  not_cacheable   :boolean(1)      default(FALSE)
+#  unit            :string(255)
+#  deprecated_key  :string(255)
+#  gquery_group_id :integer(4)
 #
 
 ##
