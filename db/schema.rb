@@ -1,3 +1,4 @@
+# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -10,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111020153313) do
+ActiveRecord::Schema.define(:version => 20111027134857) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -71,6 +72,7 @@ ActiveRecord::Schema.define(:version => 20111020153313) do
     t.boolean  "has_industry"
     t.boolean  "has_other"
     t.boolean  "has_fce"
+    t.text     "input_values"
   end
 
   add_index "areas", ["parent_id"], :name => "index_areas_on_parent_id"
