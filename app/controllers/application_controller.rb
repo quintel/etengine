@@ -10,27 +10,8 @@ class ApplicationController < ActionController::Base
   before_filter :initialize_current
   before_filter :locale
 
-  if Rails.env.test?
-    after_filter :assign_current_for_inspection_in_tests
-  end
+  after_filter :assign_current_for_inspection_in_tests if Rails.env.test?
   after_filter :teardown_current
-
-
-  # if APP_CONFIG[:debug_qernel]
-  #   rescue_from Qernel::QernelError, :with => :show_qernel_errors
-  #   rescue_from Qernel::CalculationError, :with => :show_qernel_errors
-  #   rescue_from Gql::GqlError, :with => :show_gql_errors
-  # end
-
-  def show_qernel_errors(exception)
-    @exception = exception
-    render :file => 'pages/qernel_error', :layout => 'pages'
-  end
-
-  def show_gql_errors(exception)
-    @exception = exception
-    render :file => 'pages/gql_error', :layout => 'pages'
-  end
 
   def locale
     # update session if passed
