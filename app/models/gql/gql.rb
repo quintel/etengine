@@ -129,12 +129,6 @@ class Gql
     @policy ||= Policy.new(present_graph, future_graph)
   end
 
-  def benchmark(title)
-    ::Graph.benchmark("** Gql::Benchmark #{title}") do
-      yield
-    end
-  end
-
   # Query the GQL, takes care of gql modifier strings.
   #
   # For performance reason it is suggested to pass a Gquery for 'query'
@@ -179,10 +173,10 @@ class Gql
 
     UpdateInterface::Policies.new(policy).update_with(scenario.update_statements)
 
-    benchmark("calculate #{present_graph.year}") do
+    ActiveSupport::Notifications.instrument("gql.graph.calculate #{present_graph.year}") do
       present_graph.calculate
     end
-    benchmark("calculate #{future_graph.year}") do
+    ActiveSupport::Notifications.instrument("gql.graph.calculate #{future_graph.year}") do
       future_graph.calculate
     end
 
@@ -193,7 +187,7 @@ class Gql
   end
 
   def prepare_present
-    ActiveSupport::Notifications.instrument('gql.prepare_present') do
+    ActiveSupport::Notifications.instrument('gql.graph.prepare_present') do
       # DEBT wrong. check for present_updated_at!!
       if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
         present_graph.dataset ||= graph_model.calculated_present_data
@@ -208,7 +202,7 @@ class Gql
   end
 
   def prepare_future
-    ActiveSupport::Notifications.instrument('gql.prepare_future') do
+    ActiveSupport::Notifications.instrument('gql.graph.prepare_future') do
       if Rails.env.test?
         future_graph.dataset ||= graph_model.dataset.to_qernel
       else
