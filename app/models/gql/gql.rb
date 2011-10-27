@@ -143,6 +143,16 @@ class Gql
     goals.find {|g| g.key == key}
   end
 
+  # finds or create goal as needed
+  #
+  def find_or_create_goal(key)
+    unless g = goal(key)
+      g = Goal.new(key)
+      goals << g
+    end
+    return g
+  end
+
   # Query the GQL, takes care of gql modifier strings.
   #
   # For performance reason it is suggested to pass a Gquery for 'query'

@@ -426,7 +426,7 @@ module Gql
         @gql.goals.should be_empty
       end
 
-      it "should add a goal as needed" do
+      it "should return all goals" do
         goal = Goal.new(:foo)
         @gql.goals << goal
         @gql.goals.should include(goal)
@@ -447,6 +447,18 @@ module Gql
       it "should return nil if a goal is missing" do
         @gql.goal(:bar).should be_nil
       end
+    end
+  end
+
+  describe "#find_or_create_goal" do
+    before do
+      @gql = Gql.new :testing
+    end
+
+    it "should create a goal object as needed" do
+      @gql.goals.should be_empty
+      @gql.find_or_create_goal(:foobar).should be_kind_of(Goal)
+      @gql.goals.size.should == 1
     end
   end
 end
