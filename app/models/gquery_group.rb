@@ -10,5 +10,5 @@
 #
 
 class GqueryGroup < ActiveRecord::Base
-  has_many :gqueries
+  has_many :gqueries, :dependent => :nullify
 end

@@ -13,17 +13,15 @@
 #  energy_balance_group_id :integer(4)
 #
 
-##
-# id = excel_id
-#
 class Converter < ActiveRecord::Base
   has_paper_trail
 
-  #  belongs_to :blueprint
   has_and_belongs_to_many :blueprints
   has_and_belongs_to_many :groups
   belongs_to :energy_balance_group
 
+  # Remember that most of these associations make sense only in the context of
+  # a blueprint
   has_many :links, :foreign_key => 'child_id'
   has_many :input_links,  :class_name => 'Link', :foreign_key => 'parent_id'
   has_many :output_links, :class_name => 'Link', :foreign_key => 'child_id'
@@ -33,17 +31,11 @@ class Converter < ActiveRecord::Base
 
   scope :in_group, lambda{|*gid| includes(:groups).where(["groups.id IN (?)", gid]) unless gid.empty?}
   scope :by_name, lambda{|q| where('`converters`.`key` LIKE ?', "%#{q}%")}
-  # we hook up converters with slots in Blueprint. So the following association not
-  # really needed.
-  # has_many :blueprint_slots
-
-  # We don't check for excel_id, because we assign it usign assign_excel_id_to_id
-  # validates_presence_of :excel_id, :on => :create, :message => "can't be blank"
 
   after_save :assign_converter_id_to_id
 
-  ##
-  # makes sure that id is always equals converter_id. As the auto increment can screw things up.
+  # makes sure that id is always equals converter_id, matching the ids of the
+  # excel file used to import the graph. The auto increment can screw things up.
   #
   def assign_converter_id_to_id
     Converter.update_all("id = converter_id", "id = #{self.id}")
