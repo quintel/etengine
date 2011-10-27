@@ -1,8 +1,6 @@
 ##
 # Wrapper for (user-) variables of a request that are accessible to all models.
 #
-# I created a new Setting class, which holds all the settings specific for a user session. Such as :show_municipality_introduction and so on.
-#
 # == Current.scenario
 #
 # At any point if you want to reset the scenario:
@@ -28,9 +26,8 @@
 # module won't let you do this.
 #
 #
-#
 class Current
-  attr_accessor :graph_id, :view
+  attr_accessor :graph_id
 
   def session
     @session ||= {}
@@ -64,7 +61,6 @@ class Current
   def graph
     unless @graph
       region_or_country = scenario.region_or_country
-
       @graph = self.user_graph
 
       raise "No graph for: #{region_or_country}" unless @graph
@@ -130,7 +126,6 @@ class Current
   #
   def reset_to_default!
     reset_to_default_scenario!
-    reset_to_default_setting!
   end
 
   ##
@@ -153,36 +148,16 @@ class Current
     scenario.reset
   end
 
-  ##
-  # Resets user values. Currently equivalent to resetting to default values
-  #
-  # @untested 2010-12-27 seb
-  #
-  def reset_setting!
-    setting.reset!
-
-    # TODO: move into either scenario or setting
-    session["house_label_new"] = nil
-    session["house_label_existing"] = nil
-    OutputElementSerie.block_charts.order('`group`').each do |block|
-      session["block_#{block.id}"] = nil
-    end
-  end
-  alias_method :reset_to_default_setting!, :reset_setting!
-
   def reset_user_session!
     self.reset_to_default!
   end
 
   def reset_gql
     self.scenario.reset!
-
     self.gql = nil
     self.graph_id = nil
-
     @graph = nil
   end
-
 
   ##
   # Singleton instance
@@ -208,5 +183,4 @@ class Current
       self.instance.send(name, *args)
     end
   end
-
 end
