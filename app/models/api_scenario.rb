@@ -67,7 +67,8 @@ class ApiScenario < Scenario
     end
   end
 
-  # used for api/v1/api_scenarios.json
+  # API requests make use of this. Check Api::ApiScenariosController#new
+  #
   def as_json(options={})
     super(
       :only => [:user_values, :country, :region, :end_year, :start_year, :id, :use_fce]

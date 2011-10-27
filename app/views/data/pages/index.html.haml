@@ -1,17 +1,18 @@
 - breadcrumb "Backend"
 
-%h3 Stats
-
-%table
-  %tr
-    %td Gquery Count
-    %td= Gquery.count
-
 %h3 System
 
 %table
   %tr
     %td Uptime
     %td= %x{uptime}
+  - @cache_stats.each_pair do |store, info|
+    %tr
+      %th{:colspan => 2} Memcache: #{store}
+    - info.each_pair do |k,v|
+      %tr
+        %td= k
+        %td= v
+      
 
 
