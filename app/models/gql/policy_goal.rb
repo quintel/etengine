@@ -1,13 +1,4 @@
 module Gql
-
-class PolicyGoal
-
-  attr_accessor :id, :key, :name, :query, :user_value
-
-  # TODO change to use @display_format instead of attr_reader
-  attr_reader :display_format, :unit
-  private :display_format, :unit
-
   # a PolicyGoal typically compares a future value with some user-defined target value to
   # determine if the goal has been reached. These values are computed by GQL queries.
   #
@@ -28,79 +19,74 @@ class PolicyGoal
   # @param start_value_query [String] GQL to compute the start value, which also serves as a default target when none is given
   # reached_query - GQL to determine if the goal has been met.
   #
-  def initialize(opts = {})
-    opts.reverse_merge!({
-      :display_format => :number
-    })
-    
-    self.id    = opts[:id]
-    self.key   = opts[:key].try(:to_sym)
-    self.name  = opts[:name]
-    self.query = opts[:query]
+  class PolicyGoal
+    attr_accessor :id, :key, :name, :query, :user_value
 
-    @display_format    = opts[:display_format].try(:to_sym)
-    @unit              = opts[:unit].try(:to_sym)
-    @start_value_query = opts[:start_value_query]
-    @reached_query     = opts[:reached_query] # not used yet
-  end
+    # TODO change to use @display_format instead of attr_reader
+    attr_reader :display_format, :unit
+    private :display_format, :unit
 
-  # returns an absolute value for the goal, even when the user specifies a factor to increase by
-  def target_value
-    case key
-      # For :co2_emission target is relative to 1990 levels
-      when :co2_emission
-        increase_factor(user_value) * Current.scenario.area.co2_emission_1990
-      # For :total_energy_cost and :electricity_cost target is relative to start_value
-      when :total_energy_cost, :electricity_cost
-        increase_factor(user_value) * start_value
-      else # target is a user-supplied value
-        (user_value || start_value).to_f
+    def initialize(opts = {})
+      opts.reverse_merge!({ :display_format => :number })
+
+      self.id    = opts[:id]
+      self.key   = opts[:key].try(:to_sym)
+      self.name  = opts[:name]
+      self.query = opts[:query]
+
+      @display_format    = opts[:display_format].try(:to_sym)
+      @unit              = opts[:unit].try(:to_sym)
+      @start_value_query = opts[:start_value_query]
+      @reached_query     = opts[:reached_query] # not used yet
     end
+
+    # returns an absolute value for the goal, even when the user specifies a factor to increase by
+    def target_value
+      case key
+      when :co2_emission
+        # For :co2_emission target is relative to 1990 levels
+        increase_factor(user_value) * Current.scenario.area.co2_emission_1990
+      when :total_energy_cost, :electricity_cost
+        # For :total_energy_cost and :electricity_cost target is relative to start_value
+        increase_factor(user_value) * start_value
+      else
+        # target is a user-supplied value
+        (user_value || start_value).to_f
+      end
+    end
+    alias_method :target, :target_value
+
+    # QUESTION ejp- can start_value be memoized? Callback to detect if the user moves a slider? What if user changes country?
+    def start_value
+      @start_value_query ? start_value_query_results.present_value : 0.0
+    end
+    alias_method :current, :start_value
+
+    def future_value
+      Current.gql.query(query).future_value
+    end
+
+    def reached?
+      return false if user_value.nil?
+      Current.gql.query(@reached_query).future_value
+    end
+
+    def inspect
+      "<Gql::PolicyGoal #{name} (#{key}) start=#{start_value} future=#{future_value} user=#{user_value ? user_value : 'nil'} target=#{target_value}>"
+    end
+
+    def to_s
+      inspect
+    end
+
+    private
+
+      def start_value_query_results
+        Current.gql.query(@start_value_query)
+      end
+
+      def increase_factor(value)
+        1 + (value || 0.0)
+      end
   end
-
-  alias target target_value
-
-  # QUESTION ejp- can start_value be memoized? Callback to detect if the user moves a slider? What if user changes country?
-  def start_value
-    @start_value_query ? start_value_query_results.present_value : 0.0
-  end
-
-  alias current start_value
-
-  def future_value
-    query_results.future_value
-  end
-  
-  def reached?
-    return false if user_value.nil?
-    Current.gql.query(@reached_query).future_value
-    # old comparison logic
-    # key == :renewable_percentage ? future_value >= target_value  : future_value <= target_value
-  end
-
-  def inspect
-    "<Gql::PolicyGoal #{name} (#{key}) start=#{start_value} future=#{future_value} user=#{user_value ? user_value : 'nil'} target=#{target_value}>"
-  end
-
-  def to_s
-    inspect
-  end
-
-private
-
-  # ejp- can query_results be memoized? (it was before)
-  def query_results
-    @query_results = Current.gql.query(query)
-  end
-
-  def start_value_query_results
-    Current.gql.query(@start_value_query)
-  end
-
-  def increase_factor(value)
-    (1+(value || 0.0))
-  end
-
-
-end
 end
