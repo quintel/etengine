@@ -41,6 +41,8 @@ class ApplicationController < ActionController::Base
 
   ##
   # Shortcut for benchmarking of controller stuff.
+  # 
+  # DEPRECATED: Use ActiveSupport notifications if possible.
   #
   # (is public, so we can call it within a render block)
   #

@@ -1,18 +1,17 @@
-%h2 Search for GQL
+- breadcrumb "GQL"
+- breadcrumb "Search"
 
-= form_tag data_gql_search_path, :method => :get do
-  = label_tag "query"
-  = text_field_tag :q, @q
-  = submit_tag "Search"
+%section#search_box
+  = form_tag data_gql_search_path, :method => :get do
+    = label_tag "query"
+    = search_field_tag :q, @q
+    = submit_tag "Search"
 
 - if @q
-  Searching for
-  %strong= @q
-  \: #{pluralize(@gqueries.size + @inputs.size, 'result')}
-
   %h3
-    Inputs: #{pluralize @inputs.size, 'item'},
-    GQueries: #{pluralize @gqueries.size, 'item'}
+    Total: #{pluralize(@gqueries.size + @inputs.size + @query_table_cells.size, 'result')} / 
+    Inputs: #{pluralize @inputs.size, 'item'} /
+    GQueries: #{pluralize @gqueries.size, 'item'} /
     QueryTableCells: #{pluralize @query_table_cells.size, 'item'}
 
 - if @gqueries.any?

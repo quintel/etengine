@@ -140,6 +140,9 @@ class Input < ActiveRecord::Base
     )
   end
 
+  # This creates a giant hash with all value-related attributes of the inputs. Some inputs
+  # require dynamic values, though. Check #dynamic_start_values
+  #
   def self.static_values
     Input.all.inject({}) do |hsh, input|
       begin
@@ -160,6 +163,8 @@ class Input < ActiveRecord::Base
     end
   end
 
+  # See #static_values
+  #
   def self.dynamic_start_values
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
       begin

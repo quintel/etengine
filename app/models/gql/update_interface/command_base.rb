@@ -11,8 +11,9 @@ class CommandBase
 
   def execute
     unless valid?
-      Rails.logger.warn(@errors.values.join('\n'))
-      return nil
+      ActiveSupport::Notifications.instrument("gql.debug", @errors.values.join('\n')) do
+        return nil
+      end
     end
     object[@attr_name] = value
   end

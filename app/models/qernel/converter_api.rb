@@ -245,7 +245,7 @@ class ConverterApi
   #
   #
   def method_missing(method_id, *arguments)
-    Rails.logger.info("ConverterApi:method_missing #{method_id}")
+    ActiveSupport::Notifications.instrument("gql.debug", "ConverterApi:method_missing #{method_id}")
 
     # electricity_      
     if m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
