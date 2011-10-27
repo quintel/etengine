@@ -41,6 +41,8 @@ module UpdateInterface
             next if attr_name.nil?
             if SlotConversionCommand.responsible?(attr_name)
               cmds << SlotConversionCommand.new(converter, attr_name, curve[Current.scenario.end_year])
+            elsif LinkShareCommand.responsible?(attr_name)
+              cmds << LinkShareCommand.new(converter, attr_name, curve[Current.scenario.end_year])
             else
               cmds << AttributeCommand.new(converter.proxy, attr_name, curve[Current.scenario.end_year], 'value')
             end
