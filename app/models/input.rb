@@ -204,7 +204,9 @@ class Input < ActiveRecord::Base
   end
 
   def min_value
-    if gql_query = self[:min_value_gql] and !gql_query.blank?
+    if min_value_for_current_area.present?
+      min_value_for_current_area * factor
+    elsif gql_query = self[:min_value_gql] and !gql_query.blank?
       Current.gql.query(gql_query)
     else
       self[:min_value] || 0
@@ -212,13 +214,40 @@ class Input < ActiveRecord::Base
   end
 
   def max_value
-    if gql_query = self[:max_value_gql] and !gql_query.blank?
+    if max_value_for_current_area.present?
+      max_value_for_current_area * factor
+    elsif
+      gql_query = self[:max_value_gql] and !gql_query.blank?
       Current.gql.query(gql_query)
     else
       self[:max_value] || 0
     end
   end
 
+
+  #############################################
+  # Area Dependent min / max / fixed settings
+  #############################################
+  
+  
+  def min_value_for_current_area
+    get_area_input_values.andand["min"]
+  end
+
+  def max_value_for_current_area
+    get_area_input_values.andand["max"]
+  end
+
+  # this loads the hash with area dependent settings for the current inputs object
+  def get_area_input_values
+    hash = Current.scenario.area.andand.input_values
+    if hash.present?
+      YAML::load(hash)[id]
+    else
+      false
+    end
+  end
+  
   #############################################
   # Methods that interact with a users values
   #############################################
