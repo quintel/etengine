@@ -103,7 +103,7 @@ class Graph
   # TODO refactor
   def calculate
     if calculated?
-      Rails.logger.warn('Graph already calculated') 
+      ActiveSupport::Notifications.instrument("gql.debug", "Graph already calculated")
       return
     end
 
@@ -123,7 +123,8 @@ class Graph
     dataset_set(:calculated, true)
 
     unless converter_stack.empty?
-      Rails.logger.warn "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}"
+      ActiveSupport::Notifications.instrument("gql.debug",
+        "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}")
     end
   end
 

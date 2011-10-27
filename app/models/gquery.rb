@@ -75,7 +75,7 @@ class Gquery < ActiveRecord::Base
     query = gquery_hash[key]
     raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
     # Check gql_metrics.rb initializer to see what we're doing with this notification
-    ActiveSupport::Notifications.instrument("gql.deprecated", key) if deprecated_gquery_hash[key]
+    ActiveSupport::Notifications.instrument("gql.gquery.deprecated", key) if deprecated_gquery_hash[key]
     query
   end
 
