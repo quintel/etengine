@@ -72,6 +72,7 @@ class Gql
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
   attr_reader :graph_model
+  attr_writer :goals
 
   def initialize(graph_model)
     # The if is a temporary solution.
@@ -127,6 +128,19 @@ class Gql
   #
   def policy
     @policy ||= Policy.new(present_graph, future_graph)
+  end
+
+  # Returns an array with all the defined goals. The value is not memoized because
+  # goals can be added dynamically
+  #
+  def goals
+    @goals ||= []
+  end
+
+  # Returns a goal by key
+  #
+  def goal(key)
+    goals.find {|g| g.key == key}
   end
 
   # Query the GQL, takes care of gql modifier strings.
