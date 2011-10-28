@@ -96,6 +96,18 @@ describe QueryInterface do
     query_should_be_close "GRAPH(foo)", 5.0
   end
 
+  describe "NORMCDF" do
+    query_should_be_close "NORMCDF(-0.2, 0, 1)", 0.42072
+    query_should_be_close "NORMCDF(0.2,  0,  1)", 0.57926
+    query_should_be_close "NORMCDF(8, 10,  2)", 0.15866
+    query_should_be_close "NORMCDF(500,450, 50)",  0.84134
+    query_should_be_close "NORMCDF(200,450, 50)",  0.00003 
+    query_should_be_close "NORMCDF(19.9, 22.9, 1)",  0.0013499
+    query_should_be_close "NORMCDF(0, 0, 1)",  0.5
+    #query_should_be_close "NORMCDF(0.5, 0, 0)", nil
+
+  end
+
   describe "QUERY" do
     describe "subqueries" do
       before {@query_interface.stub!(:subquery).with('foo').and_return(5.0)}
