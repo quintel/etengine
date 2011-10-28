@@ -56,6 +56,7 @@ class Area
     :has_old_technologies,
     :cold_network_potential,
     :has_cold_network,
+    :input_values,
     # Special attribute, does not exist in Area columns, has to be added extra in Area#dataset_attributes
     :number_of_existing_households 
   ]
