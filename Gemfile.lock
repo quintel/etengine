@@ -47,6 +47,7 @@ GEM
     dalli (1.0.5)
     default_value_for (1.0.1)
     diff-lcs (1.1.2)
+    distribution (0.6.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     factory_girl (2.1.2)
@@ -177,6 +178,7 @@ DEPENDENCIES
   awesome_print
   dalli
   default_value_for
+  distribution (~> 0.6)
   factory_girl_rails (~> 1.2.0)
   git
   guard
