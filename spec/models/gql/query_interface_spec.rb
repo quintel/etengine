@@ -97,8 +97,8 @@ describe QueryInterface do
   end
 
   describe "SQRT" do
-    query_should_eql "SQRT(2)", [4.0]
-    query_should_eql "SQRT(2,3)", [4.0,9.0]
+    query_should_eql "SQRT(4)", [2.0]
+    query_should_eql "SQRT(4,9)", [2.0,3.0]
   end
 
   describe "NORMCDF" do

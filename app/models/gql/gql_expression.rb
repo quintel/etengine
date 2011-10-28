@@ -525,7 +525,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @return [Float] 
   #
   def SQRT(values, arguments, scope = nil)
-    flatten_compact(values).map{|v| v * v }
+    flatten_compact(values).map{|v| Math.sqrt(v) }
   end
 
   ###################################
