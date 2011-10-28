@@ -96,6 +96,11 @@ describe QueryInterface do
     query_should_be_close "GRAPH(foo)", 5.0
   end
 
+  describe "SQRT" do
+    query_should_eql "SQRT(2)", [4.0]
+    query_should_eql "SQRT(2,3)", [4.0,9.0]
+  end
+
   describe "NORMCDF" do
     query_should_be_close "NORMCDF(-0.2, 0, 1)", 0.42072
     query_should_be_close "NORMCDF(0.2,  0,  1)", 0.57926
@@ -105,7 +110,6 @@ describe QueryInterface do
     query_should_be_close "NORMCDF(19.9, 22.9, 1)",  0.0013499
     query_should_be_close "NORMCDF(0, 0, 1)",  0.5
     #query_should_be_close "NORMCDF(0.5, 0, 0)", nil
-
   end
 
   describe "QUERY" do

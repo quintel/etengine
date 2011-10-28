@@ -517,6 +517,16 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     Distribution::Normal.cdf( (upper_boundary.to_f - mean.to_f) / std_dev.to_f )
   end
 
+  # SQRT(2) => [4]
+  # SQRT(2,3) => [4,9]
+  # SUM(SQRT(2,3)) => 13
+  #
+  # @param values [Array<Float>] upper_boundary, mean, std_dev
+  # @return [Float] 
+  #
+  def SQRT(values, arguments, scope = nil)
+    flatten_compact(values).map{|v| v * v }
+  end
 
   ###################################
   # Comparison Operators
