@@ -16,7 +16,9 @@ class Graph
   extend ActiveModel::Naming
   include DatasetAttributes
 
-  attr_reader   :converters
+  attr_reader :converters
+  attr_writer :goals
+  
   attr_accessor :dataset,
                 :finished_converters,
                 :area,
@@ -267,6 +269,33 @@ class Graph
     @groups = nil
     @primary_energy_carriers = nil
   end
+  
+  # Goal-related methods
+  #
+  
+  # Returns an array with all the defined goals. The value is not memoized because
+  # goals can be added dynamically
+  #
+  def goals
+    @goals ||= []
+  end
+
+  # Returns a goal by key
+  #
+  def goal(key)
+    goals.find {|g| g.key == key}
+  end
+
+  # finds or create goal as needed
+  #
+  def find_or_create_goal(key)
+    unless g = goal(key)
+      g = Goal.new(key)
+      goals << g
+    end
+    return g
+  end
+  
 
 private
 

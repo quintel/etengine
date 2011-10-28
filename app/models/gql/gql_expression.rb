@@ -311,11 +311,11 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.area(keys.first)
   end
 
-  # Returns a Gql::Goal object with the key passed as parameter.
+  # Returns a Qernel::Goal object with the key passed as parameter.
   # The object will be created if it doesn't exist
   #
   def GOAL(keys, arguments, scope)
-    Current.gql.find_or_create_goal(keys.first.to_sym)
+    scope.graph.find_or_create_goal(keys.first.to_sym)
   end
 
   ##
@@ -737,6 +737,10 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     end
   end
 
+  # Its syntax is:
+  # 
+  # UPDATE(object(s),attribute,value)
+  #
   def UPDATE(value_terms, arguments, scope = nil)
     update_statement = value_terms.pop
     attribute_name   = value_terms.pop.result(scope)
