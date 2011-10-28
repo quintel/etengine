@@ -21,5 +21,19 @@ module Gql
         g.is_set?.should be_true
       end
     end
+    
+    describe "#[]=" do
+      it "should assign an attribute using the [key]= value syntax" do
+        g = Goal.new(:foo)
+        g[:user_value] = 123
+        g.user_value.should == 123
+      end
+      
+      it "should not assign invalid attributes" do
+        g = Goal.new(:foo)
+        lambda { g[:bar] = 123 }.should_not raise_error
+        lambda { g.bar }.should raise_error
+      end
+    end
   end
 end
