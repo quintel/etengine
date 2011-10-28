@@ -36,7 +36,6 @@ gem 'memcache-client'
 gem 'term-ansicolor', :require => false
 gem 'highline', :require => false
 
-# Optional gems that were commented in environment.rb
 gem 'rubyzip', '0.9.4'
 
 group :development do
@@ -49,8 +48,8 @@ group :test, :development do
   gem "rspec-rails", "~> 2.6.0"
   gem 'ruby-prof'
   gem 'ruby-debug19'
-  gem 'watchr'
-  gem 'spork'
+  gem 'guard'
+  gem 'guard-rspec'
   gem 'hirb'
   gem 'wirble'
   gem 'awesome_print'
@@ -61,4 +60,10 @@ group :test do
   gem 'shoulda-matchers'
   gem 'webrat'
   gem 'simplecov', '~> 0.5.3', :require => false
+  gem 'spork', '~> 0.9.0.rc'
+  gem 'guard-spork'
+end
+
+group :darwin do
+  gem 'rb-fsevent'
 end
