@@ -12,6 +12,8 @@ module Gql::QueryInterface::Base
     self
   end
 
+  # Figures out the kind of query and executes it
+  #
   # @param [String, Gquery] query Escaped query_string
   # @param [String] input_value user value from param
   # @return [Float]
@@ -25,6 +27,7 @@ module Gql::QueryInterface::Base
       self.input_value = "#{self.input_value}#{obj.v1_legacy_unit}" unless self.input_value.include?('%')
       execute_update(Gql::QueryInterface::Preparser.new(obj.query).parsed)
     elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
+      # pure GQL string
       execute_query(parsed)
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
@@ -92,7 +95,4 @@ protected
   def clean(query_string)
     Gql::QueryInterface::Preparser.new(query_string).clean
   end
-
-
-
 end

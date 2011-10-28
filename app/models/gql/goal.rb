@@ -7,9 +7,17 @@ module Gql
     def initialize(key)
       self.key = key
     end
-    
+     
     def is_set?
       !user_value.nil?
+    end
+    
+    # GQL updates assign values using the array syntax
+    # See gql_expression.rb
+    # 
+    def []=(attr_name, value)
+      writer_method = "#{attr_name}="
+      send(writer_method, value) if respond_to?(writer_method)
     end
   end
 end
