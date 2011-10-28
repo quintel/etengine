@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Gql
+module Qernel
   describe Goal do
     describe "#new" do
       it "should have a key" do

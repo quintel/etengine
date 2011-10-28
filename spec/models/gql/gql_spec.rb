@@ -416,49 +416,5 @@ module Gql
         end
       end
     end
-
-    describe "#goals" do
-      before do
-        @gql = Gql.new :testing
-      end
-
-      it "should have no goals on initialize" do
-        @gql.goals.should be_empty
-      end
-
-      it "should return all goals" do
-        goal = Goal.new(:foo)
-        @gql.goals << goal
-        @gql.goals.should include(goal)
-      end
-    end
-
-    describe "#goal" do
-      before do
-        @gql = Gql.new :testing
-      end
-
-      it "should get a goal by key" do
-        goal = Goal.new(:foo)
-        @gql.goals << goal
-        @gql.goal(:foo).should == goal
-      end
-
-      it "should return nil if a goal is missing" do
-        @gql.goal(:bar).should be_nil
-      end
-    end
-  end
-
-  describe "#find_or_create_goal" do
-    before do
-      @gql = Gql.new :testing
-    end
-
-    it "should create a goal object as needed" do
-      @gql.goals.should be_empty
-      @gql.find_or_create_goal(:foobar).should be_kind_of(Goal)
-      @gql.goals.size.should == 1
-    end
   end
 end

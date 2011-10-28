@@ -1,6 +1,6 @@
 # This is a very dumb object. An array of them is store in Gql::Gql#goals
 #
-module Gql
+module Qernel
   class Goal
     attr_accessor :key, :user_value
 
