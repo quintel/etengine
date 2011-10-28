@@ -506,6 +506,18 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     values
   end
 
+  # NORMCDF(upper_boundary, mean, std_dev)
+  #
+  # @param values [Array<Float>] upper_boundary, mean, std_dev
+  # @return [Float] 
+  #
+  def NORMCDF(values, arguments, scope = nil)
+    # lower_Boundary is always -Infinity
+    upper_boundary, mean, std_dev = flatten_compact(values)
+    Distribution::Normal.cdf( (upper_boundary.to_f - mean.to_f) / std_dev.to_f )
+  end
+
+
   ###################################
   # Comparison Operators
   #
