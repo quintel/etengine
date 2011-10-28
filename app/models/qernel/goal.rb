@@ -5,7 +5,7 @@ module Qernel
     attr_accessor :key, :user_value
 
     def initialize(key)
-      self.key = key
+      self.key = key.to_sym
     end
      
     def is_set?
