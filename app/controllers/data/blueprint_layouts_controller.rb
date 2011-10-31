@@ -52,9 +52,15 @@ private
 
   def graph_to_json(graph)
     graph.converters.inject({}) do |hsh, c|
-      attr_hash = attributes_for_json.inject({}) {|h, key| h.merge key => self.class.helpers.auto_number(c.query.send(key)) }
+      attr_hash = attributes_for_json.inject({}) do |h, key| 
+        h.merge(key => (auto_number(c.query.send(key)) rescue nil))
+      end
       hsh.merge c.id => attr_hash
     end
+  end
+
+  def auto_number(n)
+    self.class.helpers.auto_number(n)
   end
 
 end
