@@ -7,11 +7,11 @@ Etm::Application.routes.draw do
   resources :user_sessions
 
   # DEBT: Is there anything still using the old API?
-  scope '/api/v1', :module => 'api',  do
+  scope '/api/v1', :module => 'api' do
     resources :api_scenarios
   end
 
-  scope '/api/v2', :module => 'api',  do
+  scope '/api/v2', :module => 'api' do
     resources :scenarios, :only => [:index, :show, :create, :update] do
       get :load, :on => :member
       collection do
