@@ -32,6 +32,7 @@ class Data::BlueprintLayoutsController < Data::BaseController
 
 private
   def result
+    Current.gql.prepare
     @result ||= {
       'future' => graph_to_json(Current.gql.future_graph),
       'present' => graph_to_json(Current.gql.present_graph)
@@ -53,7 +54,7 @@ private
   def graph_to_json(graph)
     graph.converters.inject({}) do |hsh, c|
       attr_hash = attributes_for_json.inject({}) do |h, key| 
-        h.merge(key => (auto_number(c.query.send(key)) rescue nil))
+        h.merge key => auto_number(c.query.send(key)
       end
       hsh.merge c.id => attr_hash
     end
