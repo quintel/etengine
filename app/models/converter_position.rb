@@ -58,7 +58,7 @@ class ConverterPosition < ActiveRecord::Base
     if converter.sector_key
       STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym] 
     else
-      '#000'
+      '#eee'
     end
   end
 
