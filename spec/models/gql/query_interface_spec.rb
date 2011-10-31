@@ -17,17 +17,17 @@ module Gql
         Current.instance.stub_chain(:gql, :calculated?).and_return(true)
         @q = QueryInterface.new(@graph)
       end
-
+    
       describe "VALUE" do
         it "should return uniq converter" do
           @q.query("VALUE(lft,lft,mid,mid,rgt)").should have(3).items
         end
       end
-
+    
       pending "BUG: LINKS" do
         @q.query("OUTPUT_LINKS(V(lft))").length.should == 0
       end
-
+    
       it "LINKS" do
         @q.query("INPUT_LINKS(V(lft))").length.should == 1
         @q.query("INPUT_LINKS(V(lft);constant)").length.should == 1
@@ -36,7 +36,7 @@ module Gql
         @q.query("INPUT_LINKS(V(lft,mid))").length.should == 2
         @q.query("OUTPUT_LINKS(V(rgt))").length.should == 2
       end
-
+    
       it "LINK(lft, rgt)" do
         @q.query("LINK(lft,rgt)").should be_constant
         @q.query("LINK(rgt,lft)").should == @q.query("LINK(lft,rgt)")
@@ -48,19 +48,19 @@ module Gql
       specify { @query_interface.check(@query).should be_true }
       specify { @query_interface.query(@query).should be_near(@result) }
     end
-
+    
     def self.query_should_be_close(query, result, optional_title = nil)
       title = optional_title || "#{query} is ~= #{result}"
-
+    
       describe optional_title do
         specify { @query_interface.check(query).should be_true }
         specify { @query_interface.query(query).should be_near(result) }
       end
     end
-
+    
     def self.query_should_eql(query, result, optional_title = nil)
       title = optional_title || "#{query} is ~= #{result}"
-
+    
       describe optional_title do
         specify { @query_interface.check(query).should be_true }
         specify { @query_interface.query(query).should eql(result) }
@@ -76,16 +76,33 @@ module Gql
         query_should_be_close "SUM(SUM(1))", 1.0, 'nested SUM'
         query_should_be_close "SUM(1,SUM(1))", 2.0, 'value and nested SUM'
       end
-
+    
       describe "PRODUCT" do
         query_should_be_close "PRODUCT(2,3)", 6.0
       end
-
+    
       describe "NEG" do
         query_should_be_close "NEG(1)", -1.0
         query_should_be_close "NEG(-1)", 1.0
       end
+    
+      describe "SQRT" do
+        query_should_eql "SQRT(4)", [2.0]
+        query_should_eql "SQRT(4,9)", [2.0,3.0]
+      end
+    
+      describe "NORMCDF" do
+        query_should_be_close "NORMCDF(-0.2, 0, 1)", 0.42072
+        query_should_be_close "NORMCDF(0.2,  0,  1)", 0.57926
+        query_should_be_close "NORMCDF(8, 10,  2)", 0.15866
+        query_should_be_close "NORMCDF(500,450, 50)",  0.84134
+        query_should_be_close "NORMCDF(200,450, 50)",  0.00003 
+        query_should_be_close "NORMCDF(19.9, 22.9, 1)",  0.0013499
+        query_should_be_close "NORMCDF(0, 0, 1)",  0.5
+        #query_should_be_close "NORMCDF(0.5, 0, 0)", nil
+      end
     end
+  
 
     describe "AREA" do
       before {@query_interface.stub!(:area).with('foo').and_return(5.0)}

@@ -15,6 +15,8 @@ gem 'treetop', '1.4.8'
 gem 'default_value_for'
 gem 'tabs_on_rails'
 gem 'kaminari'
+gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
+
 
 # for etsource
 gem 'git'
