@@ -67,7 +67,7 @@ class ConverterPosition < ActiveRecord::Base
   end
 
   def x_or_default
-    self.x || 100
+    self.x || converter.energy_balance_group.andand.graphviz_default_x || 100
   end
 
   def y_or_default
