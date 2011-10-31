@@ -55,15 +55,15 @@ class ConverterPosition < ActiveRecord::Base
   end
 
   def fill_color
-    converter.energy_balance_group.andand.graphviz_color || self[:fill_color] || '#eee'
-  end
-
-  def stroke_color
     if converter.sector_key
       STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym] 
     else
-      '#000'
+      '#eee'
     end
+  end
+
+  def stroke_color
+    converter.energy_balance_group.andand.graphviz_color || self[:fill_color] || '#eee'
   end
 
   def x_or_default
