@@ -32,11 +32,14 @@ class Data::BlueprintLayoutsController < Data::BaseController
 
 private
   def result
-    Current.gql.prepare
-    @result ||= {
-      'future' => graph_to_json(Current.gql.future_graph),
-      'present' => graph_to_json(Current.gql.present_graph)
-    }
+    unless @result
+      Current.gql.prepare
+      @result = {
+        'future' => graph_to_json(Current.gql.future_graph),
+        'present' => graph_to_json(Current.gql.present_graph)
+      }
+    end
+    @result
   end
 
   def attributes_for_json
