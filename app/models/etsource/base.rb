@@ -22,5 +22,14 @@ module Etsource
     def refresh
       @git.pull
     end
+
+    def checkout_commit(commit)
+      commit = @git.gcommit(commit)
+      @git.checkout(commit)
+    end
+
+    def base_dir
+      @etsource_dir
+    end
   end
 end
