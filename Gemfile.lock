@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/bradhe/ruby-git.git
+  revision: de8e04d4e37a54136d4c74d1eb07642cb4849bba
+  specs:
+    git (1.2.5)
+
 GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
@@ -55,7 +61,6 @@ GEM
     factory_girl_rails (1.2.0)
       factory_girl (~> 2.1.0)
       railties (>= 3.0.0)
-    git (1.2.5)
     guard (0.8.8)
       thor (~> 0.14.6)
     guard-rspec (0.5.1)
@@ -180,7 +185,7 @@ DEPENDENCIES
   default_value_for
   distribution (~> 0.6)
   factory_girl_rails (~> 1.2.0)
-  git
+  git!
   guard
   guard-rspec
   guard-spork

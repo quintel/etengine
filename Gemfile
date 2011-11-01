@@ -19,7 +19,7 @@ gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 
 
 # for etsource
-gem 'git'
+gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import'
 
 # javascript
