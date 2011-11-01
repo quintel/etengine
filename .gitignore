@@ -32,3 +32,5 @@ coverage/*
 spec/controllers/coverage/*
 spec/models/coverage/*
 etsource
+!app/models/etsource
+!spec/models/etsource

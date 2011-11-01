@@ -13,8 +13,10 @@
     %li ALT + Shift + click: hide converter
     %li Double-click on converter to open details in new converter
     %li
-      = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
-      (Shortcut: ALT+D)
+      = link_to 'deselect all (ALT+D)', 'javascript:GRAPH.deselect_all()'
+      |
+      = link_to 'highlight off (ALT+H)', 'javascript:GRAPH.highlight_off_all()'
+      
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
 
   = render 'graph_controls'
@@ -39,3 +41,4 @@
     GRAPH.enableDragging();
     $(document).bind('keydown', 'alt+d', GRAPH.deselect_all);
     $(document).bind('keydown', 'alt+s', update_positions);
+    $(document).bind('keydown', 'alt+h', GRAPH.highlight_off_all);
