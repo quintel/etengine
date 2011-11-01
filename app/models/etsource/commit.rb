@@ -1,10 +1,10 @@
 module Etsource
   class Commit
-    attr_reader :commit
+    attr_accessor :commit
 
     def initialize(commit)
       @etsource = Base.new
-      @etsource.checkout_commit(commit)
+      self.commit = @etsource.checkout_commit(commit)
     end
 
     def import!
@@ -15,6 +15,10 @@ module Etsource
       end
       # DEBT fix this properly
       `curl http://beta.et-model.com/pages/refresh_gqueries > /dev/null`
+    end
+
+    def message
+      commit.message
     end
   end
 end
