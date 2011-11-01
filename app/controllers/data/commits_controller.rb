@@ -12,7 +12,6 @@ class Data::CommitsController < Data::BaseController
     @branches = @etsource.branches
   end
 
-  # FIXME: importing leaves the working copy on a detached head!
   def import
     @commit = Etsource::Commit.new(params[:id])
     @commit.import!

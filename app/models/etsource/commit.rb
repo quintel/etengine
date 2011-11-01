@@ -4,6 +4,7 @@ module Etsource
 
     def initialize(commit)
       @etsource = Base.new
+      @branch = @etsource.current_branch
       self.commit = @etsource.checkout_commit(commit)
     end
 
@@ -13,6 +14,9 @@ module Etsource
         Gqueries.new(@etsource).import!
         Inputs.new(@etsource).import!
       end
+
+      # Prevent a detached HEAD
+      @etsource.checkout @branch
 
       update_client APP_CONFIG[:client_refresh_url]
     end
