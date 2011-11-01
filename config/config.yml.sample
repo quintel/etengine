@@ -1,6 +1,9 @@
 development: &DEV
     debug_qernel: true
+    # etsource folder. Default is APP/etsource (deprecated)
     etsource_dir:
+    # URL to be called after a clean etsource import
+		client_refresh_url:
 
 production:
     <<: *DEV

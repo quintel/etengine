@@ -13,12 +13,25 @@ module Etsource
         Gqueries.new(@etsource).import!
         Inputs.new(@etsource).import!
       end
-      # DEBT fix this properly
-      `curl http://beta.et-model.com/pages/refresh_gqueries > /dev/null`
+
+      update_client APP_CONFIG[:client_refresh_url]
     end
 
     def message
       commit.message
+    end
+
+    # makes a simple http request. Used to refresh remote caches
+    #
+    def update_client(url)
+      return unless url
+      require 'net/http'
+      require 'uri'
+
+      uri = URI.parse(url)
+      response = Net::HTTP.get_response(uri)
+    rescue
+      nil
     end
   end
 end
