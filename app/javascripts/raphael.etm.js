@@ -96,6 +96,13 @@ var Graph = Class.extend({
       converter.converter.unselect();
     });
     return false;
+  },
+  
+  highlight_off_all: function() {
+    _.each(GRAPH.converters, function(converter) {
+      converter.highlight_off();
+    });
+    return false;    
   }
 
 })
@@ -274,7 +281,7 @@ var Converter = Class.extend({
 
   highlight_off: function() {
     this.highlighted = false;
-    this.box.attr({'stroke' : '#000'});
+    this.box.attr({'stroke' : this.stroke_color});
     _.each(this.links, function(link) { link.highlight_off(); } );
   },
 
