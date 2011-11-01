@@ -11,7 +11,7 @@ module Etsource
     end
 
     def import!
-      Gquery.transaction do 
+      Gquery.transaction do
         GqlTestCases.new.import!
         Gqueries.new.import!
         Inputs.new.import!
@@ -20,13 +20,13 @@ module Etsource
       `curl http://beta.et-model.com/pages/refresh_gqueries > /dev/null`
     end
   end
-  
+
   class Inputs
     def import!
       # Do not delete inputs because input ids are important and referenced by et-model
       import
     end
-    
+
     def export
       base_dir = "#{ETSOURCE_DIR}/inputs"
 
@@ -40,10 +40,10 @@ module Etsource
         end
       end
     end
-    
+
     def import
       base_dir = "#{ETSOURCE_DIR}/inputs"
-      
+
       Dir.glob("#{base_dir}/**/*.yml").each do |f|
         attributes = YAML::load_file(f)
         begin
@@ -61,7 +61,7 @@ module Etsource
       GqlTestCase.delete_all
       import
     end
-    
+
     def import
       base_dir = "#{ETSOURCE_DIR}/test_suites"
       Dir.glob("#{base_dir}/**/*.js").each do |f|
@@ -74,7 +74,7 @@ module Etsource
   class Gqueries
     VARIABLE_PREFIX = '-'
     FILE_SUFFIX = 'gql'
-    
+
     def import!
       Gquery.transaction do
         Gquery.delete_all
@@ -101,7 +101,7 @@ module Etsource
     def import
       base_dir = "#{ETSOURCE_DIR}/gqueries"
       groups = GqueryGroup.all.inject({}) {|hsh,g| hsh.merge group_key(g) => g}
-      
+
       gqueries = []
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
         tokens = f.gsub(base_dir+"/", '').split('/')
@@ -120,22 +120,22 @@ module Etsource
       commented_description = "# #{gquery.description.to_s.strip.gsub("\n", "\n# ")}\n\n"
       unit = gquery.unit.to_s.downcase.strip.gsub(' ', '_')
       unit = 'boolean' if unit.include?('true')
-      
+
       out = commented_description
       out += "#{VARIABLE_PREFIX} deprecated_key = #{gquery.deprecated_key}\n" if gquery.deprecated_key.present?
       out += "#{VARIABLE_PREFIX} unit = #{unit}\n\n"
       out += gquery.query
       out
     end
-    
+
     def from_file(f)
       key = f.split('/').last.split('.').first
       txt = File.read(f)
-      
+
       comment_lines  = txt.lines.select{|l| l.match(/^#/)}
       variable_lines = txt.lines.select{|l| l.match(/^#{VARIABLE_PREFIX}/)}
       query_lines    = txt.lines.reject{|l| l.match(/^[#{VARIABLE_PREFIX}#]/)}
-      
+
       # the unit and deprecated_key (optional) is defined inside the comment-block:
       #   # deprecated_key: foo
       #   # unit: kg
@@ -149,16 +149,16 @@ module Etsource
       end
       description = comment_lines.map{|l| l[1..-1].strip }.join("\n")
       query = query_lines.join("").strip
-      
+
       Gquery.new(
-        :key => key, 
-        :description => description, 
-        :query => query, 
-        :unit => variables['unit'], 
+        :key => key,
+        :description => description,
+        :query => query,
+        :unit => variables['unit'],
         :deprecated_key => variables['deprecated_key']
       )
     end
-    
+
     def group_key(g)
       g.group_key.downcase.gsub(/\s/, '_') rescue 'other'
     end
