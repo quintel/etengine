@@ -13,9 +13,8 @@ class Data::CommitsController < Data::BaseController
   end
 
   def import
-    @etsource = Etsource::Commit.new(params[:id])
-    @commit = @etsource.commit
-    @etsource.import!
+    @commit = Etsource::Commit.new(params[:id])
+    @commit.import!
     flash.now[:notice] = "It is now a good idea to refresh the gquery cache on all clients (ETM, Mixer, ...)"
   end
 end

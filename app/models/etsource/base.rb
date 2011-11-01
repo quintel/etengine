@@ -26,6 +26,7 @@ module Etsource
     def checkout_commit(commit)
       commit = @git.gcommit(commit)
       @git.checkout(commit)
+      commit
     end
 
     def base_dir
