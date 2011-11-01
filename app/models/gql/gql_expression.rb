@@ -123,6 +123,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
 
       values = converters
 
+      
       # hmm. If we only have one value, return value instead of array with single value
       #   somehow weird behaviour...
       values.length <= 1 ? (values.first || 0.0) : values
@@ -316,6 +317,16 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def GOAL(keys, arguments, scope)
     scope.graph.find_or_create_goal(keys.first.to_sym)
+  end
+  
+  # returns a boolean whether the user has set a goal or not.
+  # I'd rather have the VALUE(GOAL(foo); user_value) return nil, but
+  # now falsy values are converted to 0.0 unfortunately.
+  #
+  def GOAL_IS_SET(keys, arguments, scope)
+    GOAL(keys, arguments, scope).is_set?
+  rescue
+    nil
   end
 
   ##
