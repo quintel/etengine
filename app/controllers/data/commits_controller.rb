@@ -8,6 +8,7 @@ class Data::CommitsController < Data::BaseController
     @etsource = Etsource::Base.new
     @branch = params[:branch] || 'master'
     @etsource.checkout @branch
+    @output = @etsource.refresh if params[:commit] == 'Refresh'
     @commits = @etsource.commits
     @branches = @etsource.branches
   end
