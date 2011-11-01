@@ -18,5 +18,9 @@ module Etsource
     def checkout(branch)
       @git.checkout branch
     end
+
+    def refresh
+      @git.pull
+    end
   end
 end

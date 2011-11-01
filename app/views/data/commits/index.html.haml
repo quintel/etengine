@@ -3,7 +3,8 @@
   = form_tag data_commits_path, :method => :get do
     Branches
     = select_tag :branch, options_for_select(@branches, @branch)
-    = submit_tag "Change branch"
+    = submit_tag "Checkout"
+    = submit_tag "Refresh"
 
 .header Commits in #{@branch}
 
