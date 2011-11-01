@@ -127,6 +127,16 @@ describe ApiRequest do
         result[@gquery1.id.to_s][0][1].should == 100.0
         result[@gquery1.id.to_s][1][1].should == 5.0
       end
+    
+      it "should set a goal" do
+        input = Input.create(:query => "UPDATE(GOAL(foo),user_value,USER_INPUT())")
+        result = ApiRequest.response({
+          :id => @api_scenario.id.to_s,
+          :input => {input.id.to_s => "123"},
+          :result => ['V(GOAL(foo);user_value)']
+        }).response['result']
+        result['V(GOAL(foo);user_value)'][1][1].should == 123
+      end
     end
 
     context "existing api_scenario with existing user_values" do
