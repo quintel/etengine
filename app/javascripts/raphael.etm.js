@@ -134,8 +134,8 @@ var Link = Class.extend({
   },
 
   highlight_off: function() {
-    this.shape.bg.attr({stroke : '#666'});
-    this.shape.line.attr({stroke : '#666'});
+    this.shape.bg.attr({stroke : this.color});
+    this.shape.line.attr({stroke : this.color});
   },
 
   /*
