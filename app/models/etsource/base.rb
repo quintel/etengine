@@ -32,5 +32,9 @@ module Etsource
     def base_dir
       @etsource_dir
     end
+    
+    def current_branch
+      @git.current_branch
+    end
   end
 end
