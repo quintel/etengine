@@ -1,8 +1,11 @@
-.header Commits in #{@branch}
+- breadcrumb "ETSource"
+%section#search_box
+  = form_tag data_commits_path, :method => :get do
+    Branches
+    = select_tag :branch, options_for_select(@git.branches.local.map(&:name), @branch)
+    = submit_tag "Change branch"
 
-Branches
--# TODO: enable redirection when we'll have more branches
-= select_tag :branch, options_for_select(@git.branches.local.map(&:name), @branch)
+.header Commits in #{@branch}
 
 %pre.git_output= @output
 
