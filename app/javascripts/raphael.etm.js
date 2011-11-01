@@ -96,6 +96,13 @@ var Graph = Class.extend({
       converter.converter.unselect();
     });
     return false;
+  },
+  
+  highlight_off_all: function() {
+    _.each(GRAPH.converters, function(converter) {
+      converter.highlight_off();
+    });
+    return false;    
   }
 
 })
@@ -134,8 +141,8 @@ var Link = Class.extend({
   },
 
   highlight_off: function() {
-    this.shape.bg.attr({stroke : '#666'});
-    this.shape.line.attr({stroke : '#666'});
+    this.shape.bg.attr({stroke : this.color});
+    this.shape.line.attr({stroke : this.color});
   },
 
   /*
@@ -274,7 +281,7 @@ var Converter = Class.extend({
 
   highlight_off: function() {
     this.highlighted = false;
-    this.box.attr({'stroke' : '#000'});
+    this.box.attr({'stroke' : this.stroke_color});
     _.each(this.links, function(link) { link.highlight_off(); } );
   },
 

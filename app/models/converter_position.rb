@@ -22,14 +22,14 @@ class ConverterPosition < ActiveRecord::Base
 
   DEFAULT_Y_BY_SECTOR = {
     :households   =>  100,
-    :industry     => 1000,
-    :transport    => 2000,
-    :agriculture  => 3000,
-    :energy       => 4000,
-    :other        => 5000,
-    :environment  => 6000,
-    :buildings    => 7000,
-    :neighbor     => 7500
+    :industry     => 9000,
+    :transport    => 3500,
+    :agriculture  => 5300,
+    :energy       => 3000,
+    :other        => 8300,
+    :environment  => 100,
+    :buildings    => 6100,
+    :neighbor     =>  100
   }.with_indifferent_access
 
   STROKE_COLORS_BY_SECTOR = {
@@ -55,19 +55,19 @@ class ConverterPosition < ActiveRecord::Base
   end
 
   def fill_color
-    converter.energy_balance_group.andand.graphviz_color || self[:fill_color] || '#eee'
-  end
-
-  def stroke_color
     if converter.sector_key
       STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym] 
     else
-      '#000'
+      '#eee'
     end
   end
 
+  def stroke_color
+    converter.energy_balance_group.andand.graphviz_color || '#999'
+  end
+
   def x_or_default
-    self.x || 100
+    self.x || converter.energy_balance_group.andand.graphviz_default_x || 100
   end
 
   def y_or_default
