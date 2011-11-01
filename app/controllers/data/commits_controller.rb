@@ -1,11 +1,15 @@
 class Data::CommitsController < Data::BaseController
   skip_before_filter :find_graph
-  before_filter :init_git, :only => :index
+  # before_filter :init_git, :only => :index
 
   set_tab :commits
 
   def index
-    @commits = @git.log
+    @etsource = Etsource::Base.new
+    @branch = params[:branch] || 'master'
+    @etsource.checkout @branch
+    @commits = @etsource.commits
+    @branches = @etsource.branches
   end
 
   def import
@@ -18,7 +22,7 @@ class Data::CommitsController < Data::BaseController
   private
 
     def init_git
-      @branch = params[:branch] || 'master'
+
       @git = Git.open('etsource')
       @output = @git.fetch
       @git.checkout(@branch)
