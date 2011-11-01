@@ -413,6 +413,47 @@ module Qernel
       # specify { @l.value.should == 100.0 }
     end
   end
+  
+  describe "Policy Goals" do
+    before do
+      @graph = Graph.new
+    end
+    
+    describe "#goals" do
+      it "should have no goals on initialize" do
+        @graph.goals.should be_empty
+      end
+
+      it "should return all goals" do
+        goal = Goal.new(:foo)
+        @graph.goals << goal
+        @graph.goals.should include(goal)
+      end
+    end
+
+    describe "#goal" do
+      it "should get a goal by key" do
+        goal = Goal.new(:foo)
+        @graph.goals << goal
+        @graph.goal(:foo).should == goal
+      end
+
+      it "should return nil if a goal is missing" do
+        @graph.goal(:bar).should be_nil
+      end
+    end
+    
+    describe "#find_or_create_goal" do
+      it "should create a goal object as needed" do
+        @graph.goals.should be_empty
+        @graph.find_or_create_goal(:foobar).should be_kind_of(Goal)
+        @graph.goals.size.should == 1
+      end
+    end
+    
+    # Check query_interface_spec.rb to see how we update goals through GQL
+  end
+  
 
 end
 

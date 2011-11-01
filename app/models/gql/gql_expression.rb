@@ -123,6 +123,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
 
       values = converters
 
+      
       # hmm. If we only have one value, return value instead of array with single value
       #   somehow weird behaviour...
       values.length <= 1 ? (values.first || 0.0) : values
@@ -311,31 +312,21 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.area(keys.first)
   end
 
-  ##
-  # Goal (or target) for some policy
-  # e.g.
-  #   GOAL(co2_emission)
-  # The target value might be calculated on top of the user_set value
-  # ie when the user sets a factor to increase/decrease something
-  #
-  # @param keys indentifies the policy goal to check
-  # @return [Float]
-  # @return [Array<Qernel::ConverterApi] All converters
+  # Returns a Qernel::Goal object with the key passed as parameter.
+  # The object will be created if it doesn't exist
   #
   def GOAL(keys, arguments, scope)
-    Current.gql.policy.goal(keys.first.to_sym).target_value
+    scope.graph.find_or_create_goal(keys.first.to_sym)
   end
-
+  
+  # returns a boolean whether the user has set a goal or not.
+  # I'd rather have the VALUE(GOAL(foo); user_value) return nil, but
+  # now falsy values are converted to 0.0 unfortunately.
   #
-  # @param keys name of the policy goal
-  # @return [Float]
-  #
-  # This is what the user has set. If he didn't set any value
-  # we'll get nil. Notice that the target value might be a
-  # different value
-  #
-  def GOAL_USER_VALUE(keys, arguments, scope)
-    Current.gql.policy.goal(keys.first.to_sym).user_value
+  def GOAL_IS_SET(keys, arguments, scope)
+    GOAL(keys, arguments, scope).is_set?
+  rescue
+    nil
   end
 
   ##
@@ -779,6 +770,10 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     end
   end
 
+  # Its syntax is:
+  # 
+  # UPDATE(object(s),attribute,value)
+  #
   def UPDATE(value_terms, arguments, scope = nil)
     update_statement = value_terms.pop
     attribute_name   = value_terms.pop.result(scope)
