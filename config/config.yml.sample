@@ -1,5 +1,6 @@
 development: &DEV
     debug_qernel: true
+    etsource_dir:
 
 production:
     <<: *DEV
