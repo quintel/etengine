@@ -3,17 +3,18 @@ require 'csv'
 # Import from Wouters CSV files to a Blueprint or Dataset
 #
 # == Use:
-#   csv_import = CsvImport.new(500, 'ch')
-#   # CsvImport expects that there is a folder import/500/ch with all the files
+#   csv_import = CsvImport.new(500, 'ch', 'import/v12345')
+#   # CsvImport expects that there is a folder import/v12345/500/ch with all the files
 #   blueprint = csv_import.create_blueprint
 #   csv_import.create_dataset(blueprint.id, 'ch')
 #   csv_import.create_dataset(blueprint.id, 'nl')
 #
 class CsvImport
-  def initialize(version, region_code)
+  def initialize(version, region_code, zip_root)
+    # debugger
     @version = version
     @region_code = region_code
-    @path = "#{@version}/#{@region_code}"
+    @path = "#{zip_root}/#{@region_code}"
   end
 
   def create_blueprint
@@ -191,7 +192,7 @@ class CsvImport
     # Yields a block with a hash of the items for each CSV file row
     #
     def parse_csv_file(file)
-      filename = "import/#{@path}/#{file}.csv"
+      filename = "#{@path}/#{file}.csv"
       lines = File.readlines filename
       # Excel CSV export sucks. Lots of empty records or, worse, empty lines with a trailing \r\r\n
       valid_lines = lines.map{|l| l.gsub /[\r\n]/, ''}.join("\n")
