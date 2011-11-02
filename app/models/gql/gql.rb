@@ -58,14 +58,6 @@ module Gql
 #
 # ResultSet of a Gquery.
 #
-# === Policy
-#
-# Policy now follows the convention that target values are always absolute values, whereas
-# user inputs can be, for example, a percent increase. The rules to transform user inputs
-# to absolute targets are encapsulated in PolicyGoal#target_value, so that GOAL(policy)
-# queries and stored procedures (to support OutputElement rendering) have a uniform interface.
-#
-#
 class Gql
   extend ActiveModel::Naming
 
@@ -123,12 +115,6 @@ class Gql
     @calculated == true
   end
 
-  # @return [Policy]
-  #
-  def policy
-    @policy ||= Policy.new(present_graph, future_graph)
-  end
-
   # Query the GQL, takes care of gql modifier strings.
   #
   # For performance reason it is suggested to pass a Gquery for 'query'
@@ -170,8 +156,6 @@ class Gql
 
     prepare_present
     prepare_future
-
-    UpdateInterface::Policies.new(policy).update_with(scenario.update_statements)
 
     ActiveSupport::Notifications.instrument("gql.graph.calculate #{present_graph.year}") do
       present_graph.calculate

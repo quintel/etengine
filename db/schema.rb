@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111031091620) do
+ActiveRecord::Schema.define(:version => 20111102095022) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -383,20 +383,6 @@ ActiveRecord::Schema.define(:version => 20111031091620) do
   add_index "links", ["carrier_id"], :name => "index_links_on_carrier_id"
   add_index "links", ["child_id"], :name => "index_links_on_child_id"
   add_index "links", ["parent_id"], :name => "index_links_on_parent_id"
-
-  create_table "policy_goals", :force => true do |t|
-    t.string   "key"
-    t.string   "name"
-    t.string   "query"
-    t.string   "start_value_query"
-    t.string   "unit"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "display_format"
-    t.string   "reached_query"
-  end
-
-  add_index "policy_goals", ["key"], :name => "index_policy_goals_on_key"
 
   create_table "query_table_cells", :force => true do |t|
     t.integer  "query_table_id"
