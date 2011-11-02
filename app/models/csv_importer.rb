@@ -25,9 +25,13 @@ class CsvImporter
   end
   
   # Do everything
+  # DEBT: cleanup the zip file extraction and content parsing
+  #
   def process!
     version_path = "import/#{version}"
 
+    # Expand the zip file into import/version
+    #
     Zip::ZipFile.open(zip_file.tempfile) do |zip_item|
       zip_item.each do |f|
         f_path = File.join(version_path, f.name)
@@ -36,17 +40,24 @@ class CsvImporter
       end
     end
 
-    countries = Dir.entries(version_path).reject{|p| p.include?('MACOS')}.select{|country_dir|
+    # The new zip format has an extra nested directory though!
+    # import/v12345/v12345/nl/*.csv
+    # => import/v12345/v12345
+    expanded_zip_file_root = "#{version_path}/" + Dir.entries(version_path).find{|x| !x.match /\./}
+
+    # Zip files created on the mac have the silly __MACOSX folder, that should
+    # better be ignored
+    countries = Dir.entries(expanded_zip_file_root).reject{|p| p.include?('MACOS')}.select{|country_dir|
       # check that file is directory. excluding: "." and ".."
-      File.directory?("#{version_path}/#{country_dir}") and !country_dir.match(/^\./)
+      File.directory?("#{expanded_zip_file_root}/#{country_dir}") and !country_dir.match(/^\./)
     }
 
-    csv_import = CsvImport.new(version, countries.first)
+    csv_import = CsvImport.new(version, countries.first, expanded_zip_file_root)
     blueprint = csv_import.create_blueprint
     blueprint.update_attribute :description, description
 
     countries.each do |country|
-      csv_import = CsvImport.new(version, country)
+      csv_import = CsvImport.new(version, country, expanded_zip_file_root)
       dataset = csv_import.create_dataset(blueprint.id, country)
       Graph.create :blueprint_id => blueprint.id, :dataset_id => dataset.id
     end
