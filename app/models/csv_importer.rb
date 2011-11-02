@@ -30,27 +30,8 @@ class CsvImporter
   def process!
     version_path = "import/#{version}"
 
-    # Expand the zip file into import/version
-    #
-    Zip::ZipFile.open(zip_file.tempfile) do |zip_item|
-      zip_item.each do |f|
-        f_path = File.join(version_path, f.name)
-        FileUtils.mkdir_p(File.dirname(f_path))
-        zip_item.extract(f, f_path) unless File.exist?(f_path)
-      end
-    end
-
-    # The new zip format has an extra nested directory though!
-    # import/v12345/v12345/nl/*.csv
-    # => import/v12345/v12345
-    expanded_zip_file_root = "#{version_path}/" + Dir.entries(version_path).find{|x| !x.match /\./}
-
-    # Zip files created on the mac have the silly __MACOSX folder, that should
-    # better be ignored
-    countries = Dir.entries(expanded_zip_file_root).reject{|p| p.include?('MACOS')}.select{|country_dir|
-      # check that file is directory. excluding: "." and ".."
-      File.directory?("#{expanded_zip_file_root}/#{country_dir}") and !country_dir.match(/^\./)
-    }
+    expanded_zip_file_root = expand_zip_file(version_path)
+    countries = get_countries_from_expanded_archive(expanded_zip_file_root)
 
     csv_import = CsvImport.new(version, countries.first, expanded_zip_file_root)
     blueprint = csv_import.create_blueprint
@@ -63,4 +44,33 @@ class CsvImporter
     end
     true
   end
+  
+  private
+    
+    # Expands the zip file in a folder
+    # Returns the path of the folder with the zip contents as a string
+    #
+    def expand_zip_file(to_folder)
+      Zip::ZipFile.open(zip_file.tempfile) do |zip_item|
+        zip_item.each do |f|
+          f_path = File.join(to_folder, f.name)
+          FileUtils.mkdir_p(File.dirname(f_path))
+          zip_item.extract(f, f_path) unless File.exist?(f_path)
+        end
+      end  
+      
+      # The new zip format has an extra nested directory though!
+      # import/v12345/v12345/nl/*.csv
+      # => import/v12345/v12345
+      expanded_zip_file_root = "#{to_folder}/" + Dir.entries(to_folder).find{|x| !x.match /\./}          
+    end
+    
+    # Returns an array with the countries defined in the zip folder
+    #
+    def get_countries_from_expanded_archive(folder)
+      # excludes dot directories and the silly __MACOSX folder
+      Dir.entries(folder).reject{|p| p.include?('MACOS')}.select{|dir|
+        File.directory?("#{folder}/#{dir}") and !dir.match(/^\./)
+      }
+    end
 end
