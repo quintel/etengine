@@ -39,6 +39,7 @@ gem 'term-ansicolor', :require => false
 gem 'highline', :require => false
 
 gem 'rubyzip', '0.9.4'
+gem 'fileutils'
 
 group :development do
   gem 'yard', '~> 0.7.2'
