@@ -111,9 +111,15 @@ class Converter
     3 => :undefined
   }
 
-  attr_reader :id, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key
+  attr_reader :id, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key, :energy_balance_group
   attr_accessor :calculator, :key, :graph
 
+  dataset_accessors [:demand, :preset_demand, :municipality_demand]
+
+  # --------- Micro-optimizing ------------------------------------------------
+  #
+  # This is really just for micro-optimizing code
+  # as attr_readers are faster then normal method calls.
   attr_reader :environment_converter, :sector_environment
   alias environment? environment_converter
   alias sector_environment? sector_environment
@@ -125,12 +131,9 @@ class Converter
   alias non_energetic_use? non_energetic_use
   alias energy_import_export? energy_import_export
 
-  dataset_accessors [:demand, :preset_demand, :municipality_demand]
-
-
   # --------- Initializing ----------------------------------------------------
 
-  def initialize(id, key, use_id = nil, sector_id = nil, groups = nil)
+  def initialize(id, key, use_id = nil, sector_id = nil, groups = nil, energy_balance_group = nil)
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}
 
@@ -139,7 +142,7 @@ class Converter
     @key = key
     @use_key = USES[use_id]
     @sector_key = SECTORS[sector_id]
-
+    @energy_balance_group = energy_balance_group
     @groups = groups || []
 
     custom_use_key = (@use_key === :undefined || @use_key.nil?) ? nil : @use_key.to_s

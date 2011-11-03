@@ -121,6 +121,10 @@ class ConverterApi
     @dataset_group = converter.dataset_group
   end
 
+  def energy_balance_group
+    converter.energy_balance_group
+  end
+
   # See {Qernel::Converter} for municipality_demand
   #
   def municipality_demand=(val)
