@@ -43,7 +43,7 @@ private
   end
 
   def attributes_for_json
-    attrs = ['demand', 'primary_demand']
+    attrs = ['demand', 'primary_demand', 'energy_balance_group']
     #attrs << Qernel::ConverterApi.calculation_methods.sort
     attrs << Qernel::ConverterApi::ATTRIBUTES_USED.sort
     attrs.flatten
@@ -57,7 +57,8 @@ private
   def graph_to_json(graph)
     graph.converters.inject({}) do |hsh, c|
       attr_hash = attributes_for_json.inject({}) do |h, key| 
-        h.merge key => auto_number(c.query.send(key))
+        v = c.query.send(key)
+        h.merge key => auto_number(v)
       end
       hsh.merge c.id => attr_hash
     end
