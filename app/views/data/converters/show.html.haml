@@ -5,19 +5,13 @@
 = render "search_box"
 
 .header
-  Converter ##{@converter_present.id}: #{@converter_present.full_key}
-
-%h3 Actions
-%p
-  = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
-  GraphViz:
-  = link_to 'Present', {:format => 'svg'}, :target => :blank
-  = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
-
+  #{@converter_present.to_s}
 
 %h3 Info
 
 %dl
+  %dt Key
+  %dd #{@converter_present.full_key}
   %dt Energy Balance Group
   %dd
     - if g = @converter.energy_balance_group
@@ -108,8 +102,29 @@
                 %td= link_to input_link.child.key, data_converter_path(:id => input_link.child.id)
     
 
+%h3 Actions
+%p
+  = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
+  GraphViz:
+  = link_to 'Present', {:format => 'svg'}, :target => :blank
+  = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
+
+
 %h3 Attributes and calculations
 
+%table
+  %thead
+    %tr
+      %th Converter Data
+      %th Present
+      %th Future
+      %th Change
+  %tbody
+    - Qernel::ConverterApi::ATTRIBUTES_USED.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
+      %tr
+        %th= attr_name
+        - result_fields(@pre,@fut,attr_name)
+        
 %table
   %thead
     %tr
@@ -202,18 +217,6 @@
         - result_fields(@pre,@fut,attr_name)
 
 
-%table
-  %thead
-    %tr
-      %th Converter Data
-      %th Present
-      %th Future
-      %th Change
-  %tbody
-    - Qernel::ConverterApi::ATTRIBUTES_USED.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
-      %tr
-        %th= attr_name
-        - result_fields(@pre,@fut,attr_name)
 
 %h3 References
   
