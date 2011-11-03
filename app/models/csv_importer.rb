@@ -2,15 +2,17 @@
 # It uses many ActiveModel mixins for convenience
 
 require 'zip/zip'
+require 'FileUtils'
 
 class CsvImporter
+  IMPORT_FOLDER = "import"
+
   extend ActiveModel::Naming
   include ActiveModel::Conversion
   include ActiveModel::Validations
 
   attr_accessor :version, :description, :zip_file
 
-  validates :version, :presence => true
   validates :zip_file, :presence => true
 
   def initialize(attributes = {})
@@ -25,44 +27,43 @@ class CsvImporter
   end
   
   # Do everything
-  # DEBT: cleanup the zip file extraction and content parsing
   #
   def process!
-    version_path = "import/#{version}"
+    # The top directory name will be used as version name
+    self.version = expand_zip_file_and_get_version_name
 
-    expanded_zip_file_root = expand_zip_file(version_path)
-    countries = get_countries_from_expanded_archive(expanded_zip_file_root)
+    countries = get_countries_from_expanded_archive(expanded_zip_root)
 
-    csv_import = CsvImport.new(version, countries.first, expanded_zip_file_root)
+    csv_import = CsvImport.new(version, countries.first, expanded_zip_root)
     blueprint = csv_import.create_blueprint
     blueprint.update_attribute :description, description
 
     countries.each do |country|
-      csv_import = CsvImport.new(version, country, expanded_zip_file_root)
+      csv_import = CsvImport.new(version, country, expanded_zip_root)
       dataset = csv_import.create_dataset(blueprint.id, country)
       Graph.create :blueprint_id => blueprint.id, :dataset_id => dataset.id
     end
     true
+  ensure
+    cleanup!
   end
   
   private
     
-    # Expands the zip file in a folder
-    # Returns the path of the folder with the zip contents as a string
+    # Expands the zip file and returns the name of the top folder
     #
-    def expand_zip_file(to_folder)
+    def expand_zip_file_and_get_version_name
       Zip::ZipFile.open(zip_file.tempfile) do |zip_item|
         zip_item.each do |f|
-          f_path = File.join(to_folder, f.name)
+          f_path = File.join(IMPORT_FOLDER, f.name)
           FileUtils.mkdir_p(File.dirname(f_path))
           zip_item.extract(f, f_path) unless File.exist?(f_path)
         end
       end  
       
-      # The new zip format has an extra nested directory though!
-      # import/v12345/v12345/nl/*.csv
-      # => import/v12345/v12345
-      expanded_zip_file_root = "#{to_folder}/" + Dir.entries(to_folder).find{|x| !x.match /\./}          
+      # The container folder (that should be used as version name) should be the only directory
+      # inside IMPORT_FOLDER
+      Dir.entries(IMPORT_FOLDER).find{|x| !x.match /\./}
     end
     
     # Returns an array with the countries defined in the zip folder
@@ -72,5 +73,19 @@ class CsvImporter
       Dir.entries(folder).reject{|p| p.include?('MACOS')}.select{|dir|
         File.directory?("#{folder}/#{dir}") and !dir.match(/^\./)
       }
+    end
+
+    # Returns the location of the expanded zip file
+    #
+    def expanded_zip_root
+      "#{IMPORT_FOLDER}/#{version}"
+    end
+
+    # Deletes the expanded zip
+    #
+    def cleanup!
+      if File.directory?(expanded_zip_root)
+        FileUtils.rmtree(expanded_zip_root)
+      end
     end
 end

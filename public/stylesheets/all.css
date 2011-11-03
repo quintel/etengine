@@ -203,7 +203,8 @@ h1 {
 .simple_form .hint {
   clear: left;
   margin-left: 220px;
-  font-size: 12px;
+  margin-top: 5px;
+  font-size: 11px;
   color: #555555;
   display: block;
   font-style: italic; }

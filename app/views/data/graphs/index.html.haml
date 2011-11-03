@@ -5,9 +5,8 @@
 %h2 Upload Zipfile
 
 = simple_form_for @csv_importer, :url => import_data_graphs_path, :html => { :multipart => true} do |f|
-  = f.input :version
   = f.input :description, :as => :text
-  = f.input :zip_file, :as => :file
+  = f.input :zip_file, :as => :file, :hint => "The graph version will be extracted from the zip file"
   = f.button :submit, "Upload Zip"
 
 %table
