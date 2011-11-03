@@ -52,17 +52,23 @@ class Data::GraphsController < Data::BaseController
   # Expects a zip file with a folder (folder name = region_code) for each country/region.
   def import
     @csv_importer = CsvImporter.new(params[:csv_importer])
+
     if !@csv_importer.valid?
       @graphs = []
       render :index and return
     end
     
     begin
-      status = @csv_importer.process!
-      Rails.cache.clear
-      redirect_to data_graphs_url, :notice => "File Imported"
+      exit_status = @csv_importer.process!
     rescue Exception => e
       flash.now[:alert] = "An error occurred: #{e.message}"
+      exit_status = false
+    end
+
+    if exit_status
+      Rails.cache.clear
+      redirect_to data_graphs_url, :notice => "File Imported"
+    else
       @graphs = []
       render :index
     end
