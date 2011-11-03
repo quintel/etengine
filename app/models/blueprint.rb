@@ -85,7 +85,7 @@ class Blueprint < ActiveRecord::Base
     end
 
     def converters_hash
-      @converters_hash ||= converter_records.includes(:groups).inject({}) do |hsh, c|
+      @converters_hash ||= converter_records.includes(:groups, :energy_balance_group).inject({}) do |hsh, c|
         hsh.merge c.converter_id => c.to_qernel
       end
     end
