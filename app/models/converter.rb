@@ -58,35 +58,6 @@ class Converter < ActiveRecord::Base
     Qernel::Converter::SECTORS[sector_id]
   end
 
-  ##
-  # @experimental 2010-08-27 seb experimental for sanquee
-  def chart_x
-    if converter_position.andand.x
-      return converter_position.andand.x
-    else
-      return 7100 if groups.map(&:key).include?('energy_import_export')
-      return 5200 if groups.map(&:key).include?('sustainable_production')
-      return 7200 if groups.map(&:key).include?('mining_and_extraction')
-      return 3000 if groups.map(&:key).include?('non_energetic_use')
-      return 7000 if groups.map(&:key).include?('primary_energy_demand')
-      return  100 if groups.map(&:key).include?('useful_demand')
-      return 4000 if groups.map(&:key).include?('final_demand_cbs')
-      return 6000 if groups.map(&:key).include?('electricity_production')
-      return 5000 if groups.map(&:key).include?('decentral_production')
-      return 5500 if groups.map(&:key).include?('heat_production')
-      return  1000
-    end
-  end
-
-  ##
-  # @experimental 2010-08-27 seb experimental for sanquee
-  def chart_y
-    if converter_position.andand.y
-      return converter_position.andand.y
-    else
-      (sector_id || 0) * 900
-    end
-  end
 
   ##
   #
