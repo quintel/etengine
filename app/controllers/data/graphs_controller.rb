@@ -60,6 +60,9 @@ class Data::GraphsController < Data::BaseController
     
     begin
       exit_status = @csv_importer.process!
+    rescue ActiveRecord::RecordInvalid => e
+      flash.now[:alert] = "Invalid object: #{e.message}, #{e.record.attributes.to_json}"
+      exit_status = false
     rescue Exception => e
       flash.now[:alert] = "An error occurred: #{e.message}"
       exit_status = false
