@@ -14,7 +14,14 @@ class Data::BlueprintLayoutsController < Data::BaseController
       format.js   { render :layout => false }
     end
   end
-  alias_method :edit, :show
+
+  def edit
+    respond_to do |format|
+      format.html { render :layout => 'blueprint_layout' }
+      format.json { render :json => result  }
+      format.js   { render :layout => false }
+    end
+  end
 
 
   def new
@@ -44,8 +51,7 @@ private
 
   def attributes_for_json
     attrs = ['demand', 'primary_demand', 'energy_balance_group']
-    #attrs << Qernel::ConverterApi.calculation_methods.sort
-    attrs << Qernel::ConverterApi::ATTRIBUTES_USED.sort
+    attrs << Qernel::ConverterApi::ATTRIBUTES_USED.sort if params[:action] == 'edit'
     attrs.flatten
   end
 
