@@ -1,6 +1,6 @@
 :ruby
-  pre = @converter_present.query
-  fut = @converter_future.query
+  @pre = @converter_present.query
+  @fut = @converter_future.query
 
 = render "search_box"
 
@@ -32,6 +32,9 @@
   %dt Use
   %dd= @converter_present.use_key
 
+- if @converter_present.groups.include?(:cost_electricity_production)
+  %h3 Converter details
+  = render "data/converters/group_details/electricity_production"
 
 %h3 Future Input / Outputs
 - c = @converter_future
@@ -118,45 +121,45 @@
 
     %tr
       %th Demand
-      - result_fields(pre,fut, :demand)
+      - result_fields(@pre,@fut, :demand)
     %tr
       %th Demand Preset
-      - result_fields(pre,fut, :preset_demand)
+      - result_fields(@pre,@fut, :preset_demand)
     %tr
       %th Demand Municipality
-      - result_fields(pre,fut, :municipality_demand)
+      - result_fields(@pre,@fut, :municipality_demand)
 
     %tr
       %th Demand Fossil
-      - result_fields(pre,fut, :demand)
+      - result_fields(@pre,@fut, :demand)
     %tr
       %th Demand Sustainable
-      - result_fields(pre,fut, :demand_of_sustainable)
+      - result_fields(@pre,@fut, :demand_of_sustainable)
 
     %tr
       %th Weighted Carrier Cost Share
-      - result_fields(pre,fut, :weighted_carrier_cost_per_mj)
+      - result_fields(@pre,@fut, :weighted_carrier_cost_per_mj)
     %tr
       %th Weighted Carrier CO2 Share
-      - result_fields(pre,fut, :weighted_carrier_co2_per_mj)
+      - result_fields(@pre,@fut, :weighted_carrier_co2_per_mj)
 
     %tr
       %th Sustainabability Share
-      - result_fields(pre,fut, :sustainability_share)
+      - result_fields(@pre,@fut, :sustainability_share)
 
     - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
       %tr
         %th= attr_name
-        - result_fields(pre,fut,attr_name)
+        - result_fields(@pre,@fut,attr_name)
     %tr
       %th Total Cost Per MWhe
-      - result_fields(pre,fut) do |converter|
+      - result_fields(@pre,@fut) do |converter|
         - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
 
 
     %tr
       %th Total Losses
-      - result_fields(pre.converter,fut.converter, :total_losses)
+      - result_fields(@pre.converter,@fut.converter, :total_losses)
 
   %table
     %thead
@@ -167,22 +170,22 @@
         %th Change
     %tr
       %th Final Demand
-      - result_fields(pre,fut, :final_demand)
+      - result_fields(@pre,@fut, :final_demand)
     %tr
       %th Primary Demand
-      - result_fields(pre,fut, :primary_demand)
+      - result_fields(@pre,@fut, :primary_demand)
     %tr
       %th Primary Demand Fossil
-      - result_fields(pre,fut, :primary_demand_of_fossil)
+      - result_fields(@pre,@fut, :primary_demand_of_fossil)
     %tr
       %th Primary Demand Sustainable
-      - result_fields(pre,fut, :primary_demand_of_sustainable)
+      - result_fields(@pre,@fut, :primary_demand_of_sustainable)
 
     - @qernel_graph.carriers.each do |carrier|
-      - if primary_demand = pre.primary_demand_of_carrier(carrier.key.to_sym) and primary_demand > 0.0
+      - if primary_demand = @pre.primary_demand_of_carrier(carrier.key.to_sym) and primary_demand > 0.0
         %tr
           %th== Primary Demand of #{carrier.key}
-          - result_fields(pre,fut) do |converter|
+          - result_fields(@pre,@fut) do |converter|
             - converter.primary_demand_of_carrier(carrier.key.to_sym)
 
 %table
@@ -196,7 +199,7 @@
     - Qernel::ConverterApi::ATTRIBUTES_USED.select{|a| a.to_s.include?('expected')}.each do |attr_name|
       %tr
         %th= attr_name
-        - result_fields(pre,fut,attr_name)
+        - result_fields(@pre,@fut,attr_name)
 
 
 %table
@@ -210,7 +213,7 @@
     - Qernel::ConverterApi::ATTRIBUTES_USED.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
       %tr
         %th= attr_name
-        - result_fields(pre,fut,attr_name)
+        - result_fields(@pre,@fut,attr_name)
 
 %h3 References
   
