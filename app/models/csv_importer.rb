@@ -63,7 +63,7 @@ class CsvImporter
       
       # The container folder (that should be used as version name) should be the only directory
       # inside IMPORT_FOLDER
-      Dir.entries(IMPORT_FOLDER).find{|x| !x.match /\./}
+      Dir.entries(IMPORT_FOLDER).reject{|p| p.include?('MACOS')}.find{|x| !x.match /\./}
     end
     
     # Returns an array with the countries defined in the zip folder
