@@ -1,0 +1,14 @@
+%table
+  %thead
+    %tr
+      %th Name
+      %th Value*
+      %th Unit
+  %tbody
+    - Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES.each do |key,value|
+      %tr
+        %td= value.first
+        %td{:title => title_tag_number(@fut.send(key))}= auto_number(@fut.send(key))
+        %td= value.last
+        
+* Value is future value        

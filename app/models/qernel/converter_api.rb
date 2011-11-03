@@ -81,6 +81,30 @@ class ConverterApi
     :typical_nominal_input_capacity,
     :wacc
   ]
+  
+  # For the data/converter/show page we need grouping of the attributes
+  # these atrribut groups should only be used to show the values in the data section
+  
+  ELECTRICITY_PRODUCTION_VALUES  =  {
+    :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
+    :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+    :full_load_hours  => ['Full load hours', 'hours per year'],
+    :electricity_output_conversion  => ['Electrical efficiency', 'hours per year'],
+    :steam_hot_water_output_conversion  => ['Heat efficiency', 'hours per year'],
+    :initial_investment_excl_ccs_per_mwe => ['Initial investment (excl CCS)', 'euro/MWe'],
+    :additional_investment_ccs_per_mwe => ['Additional inititial investment for CCS', 'euro/MWe'],
+    :cost_of_installing_per_mwe => ['Cost of installing','euro/MWe'],
+    :residual_value_per_mwe => ['Residual value after lifetime','euro/MWe'],
+    :decommissioning_costs_per_mwe => ['Decommissioning costs','euro/MWe'],
+    :fixed_yearly_operation_and_maintenance_costs_per_mwe => ['Fixed operation and maintenance costs','euro/MWe/year'],
+    :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro per full load hour'],
+    :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro per full load hour'],
+    :wacc  => ['Weighted average cost of capital', '%'],
+    :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1/no=0'],
+    :land_use_per_unit  => ['Land use per unit', 'km2'],
+    :construction_time  => ['Construction time', 'years'],
+    :technical_lifetime  => ['Technical lifetime', 'years']
+  }
 
   dataset_accessors ATTRIBUTES_USED
 

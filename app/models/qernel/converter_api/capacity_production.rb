@@ -12,14 +12,23 @@ class Qernel::ConverterApi
   #
   def typical_input_capacity_in_mw
     dataset_fetch_handle_nil(:typical_input_capacity_in_mw) do
-      typical_nominal_input_capacity * ( 1 - decrease_in_nomimal_capacity_over_lifetime / 2)
+      typical_nominal_input_capacity * average_effective_output_of_nomimal_capacity_over_lifetime
     end
   end
   attributes_required_for :typical_input_capacity_in_mw, [
-    :typical_nominal_input_capacity, :decrease_in_nomimal_capacity_over_lifetime
+    :typical_nominal_input_capacity, :average_effective_output_of_nomimal_capacity_over_lifetime
   ]
   # TODO: get rid of the alias
   alias typical_input_capacity typical_input_capacity_in_mw
+  
+  
+  def average_effective_output_of_nomimal_capacity_over_lifetime 
+    ( 1 - decrease_in_nomimal_capacity_over_lifetime / 2)
+  end
+  
+  attributes_required_for :average_effective_output_of_nomimal_capacity_over_lifetime, [
+    :decrease_in_nomimal_capacity_over_lifetime
+  ]
   
   ## Returns the nominal electrical capicity of one unit. 
   #
