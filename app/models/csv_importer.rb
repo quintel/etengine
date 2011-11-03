@@ -2,7 +2,7 @@
 # It uses many ActiveModel mixins for convenience
 
 require 'zip/zip'
-require 'FileUtils'
+require 'fileutils'
 
 class CsvImporter
   IMPORT_FOLDER = "import"
