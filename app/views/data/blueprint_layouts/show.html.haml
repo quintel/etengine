@@ -8,14 +8,11 @@
     %li Double-click on converter to open details in new converter
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
 
+    %li= graphviz_attribute_selector
+    %li= graphviz_toggle_sectors
 
-  %ul
-    %li
-      = select_tag 'selected', options_for_select([*Qernel::Converter::SECTORS.values, 'all'])
-      = link_to 'show', 'javascript:GRAPH.show_selected()'
-      = link_to 'hide', 'javascript:GRAPH.hide_selected()'
-      (to only show one sector, hide 'all' first, then show 'sector')
-
+  %script
+    == var data_json_url = "#{data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
 
   = render 'initialize_graph'
 

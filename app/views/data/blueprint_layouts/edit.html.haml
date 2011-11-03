@@ -19,7 +19,12 @@
       
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
 
-  = render 'graph_controls'
+    %li= graphviz_attribute_selector
+    %li= graphviz_toggle_sectors
+
+  %script
+    == var data_json_url = "#{edit_data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
+    
   = render 'initialize_graph'
 
   :javascript
