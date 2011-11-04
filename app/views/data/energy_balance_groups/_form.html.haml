@@ -1,0 +1,6 @@
+= simple_form_for [:data, @energy_balance_group],
+  :url => @energy_balance_group.new_record? ? data_energy_balance_groups_path : data_energy_balance_group_path(:id => @energy_balance_group) do |f|
+  = f.input :name
+  = f.input :graphviz_color
+  = f.input :graphviz_default_x
+  = f.button :submit

@@ -1,7 +1,13 @@
-.header
-  Energy balance group details
+- breadcrumb link_to "Energy Balance Groups", data_energy_balance_groups_path
+- breadcrumb @energy_balance_group.name
 
-%h3= @energy_balance_group.name
+%dl
+  %dt Name
+  %dd= @energy_balance_group.name
+  %dt Colour
+  %dd= @energy_balance_group.graphviz_color
+  %dt Default X
+  %dd= @energy_balance_group.graphviz_default_x
 
 %table
   %thead
