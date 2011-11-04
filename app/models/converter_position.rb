@@ -33,15 +33,15 @@ class ConverterPosition < ActiveRecord::Base
   }.with_indifferent_access
 
   STROKE_COLORS_BY_SECTOR = {
-    :households   => '#0c0',
-    :industry     => '#ccc',
-    :transport    => '#00c',
-    :agriculture  => '#c0c',
-    :energy       => '#00c',
-    :other        => '#000',
-    :environment  => '#0cc',
-    :buildings    => '#d00',
-    :neighbor     => '#ccc'
+    :households   => '#E69567',
+    :industry     => '#CCCCCC',
+    :transport    => '#FFD700',
+    :agriculture  => '#B3CF7B',
+    :energy       => '#ADD8E6',
+    :other        => '#FF6666',
+    :environment  => '#32CD32',
+    :buildings    => '#FF6666',
+    :neighbor     => '#87CEEB'
   }.with_indifferent_access
 
   belongs_to :converter
