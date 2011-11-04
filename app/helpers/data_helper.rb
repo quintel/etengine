@@ -37,7 +37,11 @@ module DataHelper
       haml_tag :td, auto_number(future_value), :title => title_tag_number(future_value)
 
       change_field(present_value, future_value)
-    end    
+    end
+  rescue => e
+    haml_tag :td, :colspan => 2 do
+      haml_concat "ERROR (#{e})"
+    end
   end
 
   def change_field(present_value, future_value)
