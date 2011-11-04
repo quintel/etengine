@@ -50,7 +50,7 @@ end
 group :test, :development do
   gem "rspec-rails", "~> 2.6.0"
   gem 'ruby-prof'
-  gem 'ruby-debug19'
+  gem 'pry'
   gem 'guard'
   gem 'guard-rspec'
   gem 'hirb'
