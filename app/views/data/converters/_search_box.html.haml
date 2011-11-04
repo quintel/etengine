@@ -1,7 +1,7 @@
 %section#search_box
   = form_tag data_converters_path, :method => :get do
-    = search_field_tag :q, params[:q]
-    = select_tag 'group_id', options_from_collection_for_select(Group.all, :id, :key, params[:group_id]), :include_blank => true    
+    = search_field_tag :q, params[:q], :placeholder => 'search'
+    = select_tag 'group_id', options_from_collection_for_select(Group.all, :id, :key, params[:group_id]), :include_blank => '-- group --'
     = submit_tag "search"
 - content_for :footer do
   :javascript
