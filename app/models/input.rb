@@ -57,6 +57,15 @@ class Input < ActiveRecord::Base
 
   after_create :reset_all_cached
 
+  def force_id(new_id)
+    Input.update_all("id = #{new_id}", "id = #{self.id}")
+    self.id = new_id
+  end
+
+  def self.before_inputs
+    @before_inputs ||= all_cached.values.select{|input| input.id >= 1000 }
+  end
+
   def self.get_cached(key)
     all_cached[key.to_s]
   end
@@ -67,6 +76,7 @@ class Input < ActiveRecord::Base
 
   def self.reset_all_cached
     @all_cached = nil
+    @before_inputs = nil
   end
 
   # Creates a hash-based identity map to lookup inputs. With Rails 3.1 we could

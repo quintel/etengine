@@ -38,6 +38,21 @@ module Scenario::UserUpdates
       @update_statements_present ||= {}
     end
 
+    # Inputs that run all the time and before the regular updates.
+    # These should not be stored in the user_values, because they
+    # will often change, by the researchers.
+    # The inputs get the end_year as value. 
+    #
+    def inputs_before
+      unless @inputs_before
+        @inputs_before = {}
+        Input.before_inputs.each do |input|
+          @inputs_before[input] = self.end_year
+        end
+      end
+      @inputs_before      
+    end
+
     def inputs_present
       unless @inputs_present
         @inputs_present = {}

@@ -229,12 +229,18 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     value_terms.flatten.compact.map(&:links)
   end
 
+  # OUTPUT_SLOTS(converter_key; carrier)
+  # OUTPUT_SLOTS(V(converter_key); carrier)
+  #
   def OUTPUT_SLOTS(value_terms, arguments, scope)
     converters = VALUE(value_terms, nil, scope)
     carrier = arguments.first
     flatten_uniq converters.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
   end
 
+  # INPUT_SLOTS(converter_key; carrier)
+  # INPUT_SLOTS(V(converter_key); carrier)
+  #
   def INPUT_SLOTS(value_terms, arguments, scope)
     converters = VALUE(value_terms, nil, scope)
     carrier = arguments.first
@@ -329,7 +335,6 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     nil
   end
 
-  ##
   # {Qernel::GraphApi Graph} attributes: *GRAPH(method)*
   #
   # @see Qernel::GraphApi
@@ -340,7 +345,19 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.graph_query(keys.first)
   end
 
-  ##
+  # Returns a time_serie value of a given year. 
+  # DEBT: eventually refactor this into a more general set of Hash lookup.
+  #
+  # @param converter_id [Numeric]
+  # @param value_type [String]
+  # @param year [Numeric]
+  # @return [Float] Value of time serie
+  #
+  def TIME_SERIE_VALUE(keys, arguments, scope)
+    converter_id, time_curve_key, year = keys.flatten
+    scope.graph.time_curves[converter_id.to_i][time_curve_key][year.to_i] rescue nil
+  end
+
   # Returns the intersection of two sets of converters.
   #
   # e.g.
