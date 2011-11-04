@@ -6,6 +6,7 @@ module Etsource
 
     def import!
       # Do not delete inputs because input ids are important and referenced by et-model
+      # seb: I will delete all the ids that are not present in etsource at the end of import.
       import
     end
 
@@ -26,9 +27,11 @@ module Etsource
     def import
       base_dir = "#{@etsource.base_dir}/inputs"
 
+      ids = []
       Dir.glob("#{base_dir}/**/*.yml").each do |f|
         attributes = YAML::load_file(f)
         id = attributes.delete('id')
+        ids << id
         begin
           input = Input.find(id)
           input.update_attributes(attributes)
@@ -40,6 +43,7 @@ module Etsource
           input.force_id(id)
         end
       end
+      Input.where(["id NOT IN (?)", ids]).each(&:destroy)
     end
   end
 end
