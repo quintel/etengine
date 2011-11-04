@@ -3,14 +3,6 @@ class Data::BaseController < ApplicationController
   before_filter :restrict_to_admin
   before_filter :find_graph
 
-  def kick
-    Rails.cache.clear
-    system("touch tmp/restart.txt")
-    redirect_to data_root_path(
-      :blueprint_id => params[:blueprint_id],
-      :region_code  => params[:region_code])
-  end
-
   def redirect
     redirect_to data_root_path(
       :blueprint_id => params[:blueprint_id],

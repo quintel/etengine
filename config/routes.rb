@@ -31,8 +31,9 @@ Etm::Application.routes.draw do
   namespace :data do
     root :to => "pages#index", :blueprint_id => 'latest', :region_code => 'nl'
     
-    match '/redirect' => "base#redirect", :as => 'redirect'
-    match '/kick' => 'base#kick', :as => 'kick'
+    match '/redirect'    => "base#redirect", :as => 'redirect'
+    match '/restart'     => 'pages#restart', :as => 'restart'
+    match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     scope '/:blueprint_id/:region_code' do
       root :to => "pages#index"
