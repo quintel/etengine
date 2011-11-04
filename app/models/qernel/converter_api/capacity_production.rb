@@ -46,13 +46,36 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_heat_output_per_unit
     dataset_fetch_handle_nil(:nominal_capacity_heat_output_per_unit) do
-      typical_nominal_input_capacity * (steam_hot_water_output_conversion + useable_heat_output_conversion)
+      typical_nominal_input_capacity * heat_output_conversion
     end
   end
   attributes_required_for :nominal_capacity_heat_output_per_unit, [
     :typical_nominal_input_capacity,
+    :heat_output_conversion
+  ]
+  
+  ## Returns the nominal heat capicity of one unit. This is both useable heat as steam_hot_water. 
+  #
+  def heat_output_conversion
+    dataset_fetch_handle_nil(:heat_output_conversion) do
+      (steam_hot_water_output_conversion + hot_water_output_conversion + useable_heat_output_conversion)
+    end
+  end
+  attributes_required_for :heat_output_conversion, [
     :steam_hot_water_output_conversion,
-    :useable_heat_output_conversion
+    :useable_heat_output_conversion,
+    :hot_water_output_conversion
+  ]
+  
+  
+  def coefficient_of_performance
+    dataset_fetch_handle_nil(:coefficient_of_performance) do
+      (1 / (1 - ambient_heat_input_conversion)) -1
+    end
+  end
+  
+  attributes_required_for :coefficient_of_performance, [
+    :ambient_heat_input_conversion
   ]
   
   # How many seconds a year the converters runs at full load. 
@@ -149,5 +172,5 @@ class Qernel::ConverterApi
       compact.sum * typical_input_capacity * full_load_seconds
   end
   attributes_required_for :typical_heat_production_per_unit, [:typical_input_capacity]
-  
+
 end

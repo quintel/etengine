@@ -30,6 +30,17 @@
   %h3 Converter details
   = render "data/converters/group_details/electricity_production"
 
+- if @converter_present.groups.include?(:cost_traditional_heat)
+  %h3 Converter details
+  = render "data/converters/group_details/traditional_heat"
+- if @converter_present.groups.include?(:cost_heat_pumps)
+  %h3 Converter details
+  = render "data/converters/group_details/heat_pumps"
+- if @converter_present.groups.include?(:cost_chps)
+  %h3 Converter details
+  = render "data/converters/group_details/chps"
+  
+
 %h3 Future Input / Outputs
 - c = @converter_future
 %table.input_outputs
