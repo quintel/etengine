@@ -21,35 +21,12 @@ module UpdateInterface
       Current.gql.future_graph.converter(id)
     end
 
-    def update_with(update_statements)
+    def update_with(update_statements, skip_time_curves = false)
       if update_statements
-        update_time_curves
         update_carriers(update_statements['carriers'])
         update_area_data(update_statements['area'])
         update_converters(update_statements['converters'])
       end
-    end
-
-    ##
-    # Update converters that have time_curves
-    #
-    def update_time_curves
-      cmds = []
-      graph.time_curves.andand.each do |converter_id, curve|
-        if converter = graph.converter(converter_id)
-          curve.each do |attr_name, curve|
-            next if attr_name.nil?
-            if SlotConversionCommand.responsible?(attr_name)
-              cmds << SlotConversionCommand.new(converter, attr_name, curve[Current.scenario.end_year])
-            elsif LinkShareCommand.responsible?(attr_name)
-              cmds << LinkShareCommand.new(converter, attr_name, curve[Current.scenario.end_year])
-            else
-              cmds << AttributeCommand.new(converter.proxy, attr_name, curve[Current.scenario.end_year], 'value')
-            end
-          end
-        end
-      end
-      execute_commands(cmds)
     end
 
     def update_area_data(area_data_updates)
