@@ -86,26 +86,106 @@ class ConverterApi
   # these atrribut groups should only be used to show the values in the data section
   
   ELECTRICITY_PRODUCTION_VALUES  =  {
-    :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
-    :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
-    :full_load_hours  => ['Full load hours', 'hours per year'],
-    :electricity_output_conversion  => ['Electrical efficiency', 'hours per year'],
-    :steam_hot_water_output_conversion  => ['Heat efficiency', 'hours per year'],
-    :initial_investment_excl_ccs_per_mwe => ['Initial investment (excl CCS)', 'euro/MWe'],
-    :additional_investment_ccs_per_mwe => ['Additional inititial investment for CCS', 'euro/MWe'],
-    :cost_of_installing_per_mwe => ['Cost of installing','euro/MWe'],
-    :residual_value_per_mwe => ['Residual value after lifetime','euro/MWe'],
-    :decommissioning_costs_per_mwe => ['Decommissioning costs','euro/MWe'],
-    :fixed_yearly_operation_and_maintenance_costs_per_mwe => ['Fixed operation and maintenance costs','euro/MWe/year'],
-    :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro per full load hour'],
-    :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro per full load hour'],
-    :wacc  => ['Weighted average cost of capital', '%'],
-    :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1/no=0'],
-    :land_use_per_unit  => ['Land use per unit', 'km2'],
-    :construction_time  => ['Construction time', 'years'],
-    :technical_lifetime  => ['Technical lifetime', 'years']
+    :technical => {
+      :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
+      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :full_load_hours  => ['Full load hours', 'hours / year'],
+      :electricity_output_conversion  => ['Electrical efficiency', '%'],
+      :heat_output_conversion  => ['Heat efficiency', '%']
+    },
+    :cost => {
+      :initial_investment_excl_ccs_per_mwe => ['Initial investment (excl CCS)', 'euro / MWe'],
+      :additional_investment_ccs_per_mwe => ['Additional inititial investment for CCS', 'euro / MWe'],
+      :cost_of_installing_per_mwe => ['Cost of installing','euro / MWe'],
+      :residual_value_per_mwe => ['Residual value after lifetime','euro / MWe'],
+      :decommissioning_costs_per_mwe => ['Decommissioning costs','euro / MWe'],
+      :fixed_yearly_operation_and_maintenance_costs_per_mwe => ['Fixed operation and maintenance costs','euro / MWe / year'],
+      :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro / full load hour'],
+      :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro / full load hour'],
+      :wacc  => ['Weighted average cost of capital', '%'],
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+    },
+    :other => {
+      :land_use_per_unit  => ['Land use per unit', 'km2'],
+      :construction_time  => ['Construction time', 'year'],
+      :technical_lifetime  => ['Technical lifetime', 'year']      
+    }
   }
 
+  HEAT_PRODUCTION_VALUES  =  {
+    :technical => {
+      :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
+      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :full_load_hours  => ['Full load hours', 'hour / year'],
+      :heat_output_conversion  => ['Heat efficiency', '%']
+    },
+    :cost => {
+      :purchase_price_per_unit => ['Initial purchase price', 'euro'],
+      :cost_of_installing_per_unit => ['Cost of installing','euro'],
+      :residual_value_per_unit => ['Residual value after lifetime','euro'],
+      :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
+      :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
+      :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour'],
+      :wacc  => ['Weighted average cost of capital', '%'],
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+    },
+    :other => {
+      :land_use_per_unit  => ['Land use per unit', 'km2'],
+      :technical_lifetime  => ['Technical lifetime', 'year']      
+    }
+  }
+  
+  HEAT_PUMP_VALUES  =  {
+    :technical => {
+      :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
+      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :full_load_hours  => ['Full load hours', 'hours per year'],
+      :coefficient_of_performance => ['Coefficient of performance', ''],
+      :heat_output_conversion  => ['Heat efficiency (after COP)', '%']
+    },
+    :cost => {
+      :purchase_price_per_unit => ['Initial purchase price', 'euro'],
+      :cost_of_installing_per_unit => ['Cost of installing','euro'],
+      :residual_value_per_unit => ['Residual value after lifetime','euro'],
+      :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
+      :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
+      :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour'],
+      :wacc  => ['Weighted average cost of capital', '%'],
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+    },
+    :other => {
+      :land_use_per_unit  => ['Land use per unit', 'km2'],
+      :technical_lifetime  => ['Technical lifetime', 'year']      
+    }
+  }
+  
+  CHP_VALUES  =  {
+    :technical => {
+      :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
+      :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
+      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :full_load_hours  => ['Full load hours', 'hours / year'],
+      :electricity_output_conversion  => ['Electrical efficiency', '%'],
+      :heat_output_conversion  => ['Heat efficiency', '%']
+    },
+    :cost => {
+      :initial_investment_excl_ccs_per_unit => ['Initial investment (excl CCS)', 'euro'],
+      :additional_investment_ccs_per_unit => ['Additional inititial investment for CCS', 'euro'],
+      :cost_of_installing_per_unit => ['Cost of installing','euro'],
+      :residual_value_per_unit => ['Residual value after lifetime','euro'],
+      :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
+      :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
+      :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro / full load hour'],
+      :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro / full load hour'],
+      :wacc  => ['Weighted average cost of capital', '%'],
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+    },
+    :other => {
+      :land_use_per_unit  => ['Land use per unit', 'km2'],
+      :construction_time  => ['Construction time', 'year'],
+      :technical_lifetime  => ['Technical lifetime', 'year']      
+    }
+  }
   dataset_accessors ATTRIBUTES_USED
 
   # attributes updated by #initialize

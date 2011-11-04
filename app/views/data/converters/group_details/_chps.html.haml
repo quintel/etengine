@@ -4,7 +4,7 @@
       %th Name
       %th Value*
       %th Unit
-  - Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES.each do |group,attrs|
+  - Qernel::ConverterApi::CHP_VALUES.each do |group,attrs|
     %thead
       %tr
         %th{:colspan=>3}= group.capitalize
@@ -15,4 +15,4 @@
           %td{:title => title_tag_number(@fut.send(key))}= auto_number(@fut.send(key))
           %td= value.last
         
-* Value is future value        
+* Value is future value
