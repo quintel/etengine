@@ -219,8 +219,11 @@ protected
   def min_demand
     # Default min_demand of flexible is 0.0 (no negative energy)
     # Exception being electricity import/export. where -energy = export
-    min = 0.0 if flexible? && !@carrier.electricity? && !@child.energy_import_export?
-    min
+    if flexible? && !@carrier.electricity? && !@child.energy_import_export?
+      0.0
+    else
+      nil
+    end
   end
 
   def output_external_demand
