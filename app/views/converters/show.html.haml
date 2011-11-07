@@ -1,5 +1,6 @@
-%h2 Converter detail
-
+:ruby
+  @pre = @converter_present.query
+  @fut = @converter_future.query
 
 - if @converter_present.groups.include?(:cost_traditional_heat)
   %h3 Converter details
