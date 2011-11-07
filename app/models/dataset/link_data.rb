@@ -33,7 +33,9 @@ class Dataset::LinkData < ActiveRecord::Base
     end
     {
       :share => share.andand.to_f,
-      :value => val
+      :value => val,
+      :min_demand => min_demand,
+      :max_demand => max_demand
     }
   end
 end
