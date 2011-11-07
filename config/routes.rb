@@ -1,10 +1,13 @@
 Etm::Application.routes.draw do  
   root :to => 'pages#index'
   
-  match 'login'  => 'user_sessions#new', :as => :login
+  match 'login'  => 'user_sessions#new',     :as => :login
   match 'logout' => 'user_sessions#destroy', :as => :logout
 
   resources :user_sessions
+  
+  # Frontend
+  resources :converters, :only => [:index, :show]
 
   # DEBT: Is there anything still using the old API?
   scope '/api/v1', :module => 'api' do
