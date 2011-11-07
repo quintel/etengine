@@ -31,7 +31,7 @@ class Input < ActiveRecord::Base
 
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
 
-  UPDATEABLE_PERIODS = %w[present future both].freeze
+  UPDATEABLE_PERIODS = %w[present future both before].freeze
 
   has_many :expert_predictions
 
@@ -63,7 +63,7 @@ class Input < ActiveRecord::Base
   end
 
   def self.before_inputs
-    @before_inputs ||= all_cached.values.select{|input| input.id >= 1000 }
+    @before_inputs ||= all_cached.values.select(&:before_update?)
   end
 
   def self.get_cached(key)
@@ -113,12 +113,16 @@ class Input < ActiveRecord::Base
     end
   end
 
+  def before_update?
+    updateable_period == 'before'
+  end
+
   def updates_present?
-    updateable_period != 'future'
+    updateable_period == 'present' || updateable_period == 'both'
   end
 
   def updates_future?
-    updateable_period != 'present'
+    updateable_period == 'future' || updateable_period == 'both'
   end
 
   ##
@@ -129,7 +133,6 @@ class Input < ActiveRecord::Base
   # @return [Hash]
   #
   def update_statement(value)
-
     ##
     # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
     # The Gql::UpdateInterface::FceCommand takes care of this.
