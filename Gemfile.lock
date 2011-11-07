@@ -48,6 +48,7 @@ GEM
       activerecord (>= 3.0.7)
     awesome_print (0.4.0)
     builder (2.1.2)
+    cancan (1.6.7)
     coderay (0.9.8)
     dalli (1.0.5)
     default_value_for (1.0.1)
@@ -182,6 +183,7 @@ DEPENDENCIES
   annotate
   authlogic
   awesome_print
+  cancan
   dalli
   default_value_for
   distribution (~> 0.6)

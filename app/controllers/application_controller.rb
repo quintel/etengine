@@ -13,6 +13,11 @@ class ApplicationController < ActionController::Base
   after_filter :assign_current_for_inspection_in_tests if Rails.env.test?
   after_filter :teardown_current
 
+  rescue_from CanCan::AccessDenied do |exception|
+    store_location
+    redirect_to root_url, :alert => I18n.t("flash.not_allowed")
+  end
+
   def locale
     # update session if passed
     session[:locale] = params[:locale] if params[:locale]
@@ -45,21 +50,6 @@ class ApplicationController < ActionController::Base
 
     def teardown_current
       Current.teardown_after_request!
-    end
-
-    def permission_denied
-      flash[:error] = I18n.t("flash.not_allowed")
-      store_location
-      redirect_to login_path
-    end
-
-    def restrict_to_admin
-      if current_user.try(:admin?)
-        true
-      else
-        permission_denied
-        false
-      end
     end
 
   private

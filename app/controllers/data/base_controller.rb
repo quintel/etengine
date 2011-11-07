@@ -1,7 +1,8 @@
 class Data::BaseController < ApplicationController
   layout 'data'
-  before_filter :restrict_to_admin
   before_filter :find_graph
+
+  authorize_resource :class => false
 
   def redirect
     redirect_to data_root_path(
