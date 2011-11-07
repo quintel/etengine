@@ -10,7 +10,11 @@ class Link
   include DatasetAttributes
 
   DATASET_ATTRIBUTES = [
-    :share, :value, :calculated
+    :share, 
+    :value, 
+    :min_demand, # is overwritten with a def min_demand method below.
+    :max_demand, 
+    :calculated
   ]
 
   dataset_accessors DATASET_ATTRIBUTES
@@ -105,6 +109,14 @@ public
     (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)) || reversed?
   end
 
+  # Does link have min-/max_demand? 
+  # Important to figure out for which flexible links to calculate first.
+  #
+  def min_max_boundaries?
+    flexible? && (min_demand || max_demand)
+  end
+
+
   # --------- Calculation ------------------------------------------------------
 
   def calculate
@@ -129,8 +141,10 @@ public
       self.share = 1.0 if flexible?
     end
   end
-
+  
 protected
+  # --------- Calculation -----------------------------------------------------
+
 
   # If share is set to NIL, take the parent converter demand
   #
@@ -172,25 +186,26 @@ protected
     return nil if total_demand.nil?
 
     inp = input
-    already_supplied_demand = (inp and inp.external_passive_link_value) || 0.0
+    already_supplied_demand = (inp and inp.external_value) || 0.0
     new_value = total_demand - already_supplied_demand
 
-    lower_boundary_for_flexible(new_value)
+    apply_boundaries(new_value)
   end
 
 
-  # Flexible links take the remainder, so it can also become negative.
-  # This is only allowed if the carrier is electricity 
-  # or for the energy_import_export converter.
+  # Make sure that the value is greater than the min_value and smaller
+  # than the max_value. 
   #
   # @param value [Float] value
   # @return [0.0,Float]
   #
-  def lower_boundary_for_flexible(new_value)
-    # 2010-06-14 changed back to not let heat carriers go below 0.0
-    # if new_value < 0.0 and !@carrier.electricity? and !@child.energy_import_export? and !@carrier.steam_hot_water?
-    if new_value < 0.0 and !@carrier.electricity? and !@child.energy_import_export?
-      0.0
+  def apply_boundaries(new_value)
+    min = min_demand
+    max = max_demand
+    if min.present? && new_value < min
+      min
+    elsif max.present? && new_value > max
+      max
     else
       new_value
     end
@@ -198,6 +213,17 @@ protected
 
 
   # --------- Demands ---------------------------------------------------------
+
+  # This method overwrites the min_demand dataset_accessor. min_demand is by default 0.0
+  # Except for electricity import/export, where it should be -Infinity. We use nil instead.
+  #
+  def min_demand
+    min = dataset_get(:min_demand)
+    # Default min_demand of flexible is 0.0 (no negative energy)
+    # Exception being electricity import/export. where -energy = export
+    min = 0.0 if flexible? && !@carrier.electricity? && !@child.energy_import_export?
+    min
+  end
 
   def output_external_demand
     output.expected_external_value || 0.0

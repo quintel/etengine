@@ -74,7 +74,11 @@ class Slot
     if input?
       active_links.select(&:constant?).each(&:calculate)
       active_links.select(&:share?).each(&:calculate)
-      active_links.select(&:flexible?).each(&:calculate)
+      flexible_links = active_links.select(&:flexible?)
+      # Calculate flexible links with boundaries first. Because
+      # without boundaries a link takes everything. 
+      flexible_links.select(&:min_max_boundaries?).each(&:calculate)
+      flexible_links.reject(&:min_max_boundaries?).each(&:calculate)
     end
     if output?
       links.select(&:reversed?).each(&:calculate)
