@@ -19,6 +19,7 @@ class Data::GraphsController < Data::BaseController
     if params[:compare_to] and @compare_graph = Graph.find(params[:compare_to])
       @compare_graph.to_qernel.calculate
     end
+    Current.gql.prepare
     respond_to do |format|
       format.json do
         render :json => Current.gql.present_graph.graph.converters.inject({}) {|hsh,c| hsh.merge c.id => {:demand => ((c.proxy.demand / 1000000).round(1) rescue nil)} }
