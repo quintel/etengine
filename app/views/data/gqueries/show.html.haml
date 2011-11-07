@@ -38,4 +38,4 @@
   - Input.embedded_gql_contains(@gquery.key).each do |input|
     %tr
       %td Input
-      %td= link_to input.key, data_input_path(:id => input.id)
+      %td= link_to input.key, edit_data_input_path(:id => input.id)
