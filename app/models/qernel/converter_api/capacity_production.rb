@@ -70,12 +70,13 @@ class Qernel::ConverterApi
   
   def coefficient_of_performance
     dataset_fetch_handle_nil(:coefficient_of_performance) do
-      (1 / (1 - ambient_heat_input_conversion)) -1
+      (1 / (1 - ( ambient_heat_input_conversion + ambient_cold_input_conversion)))
     end
   end
   
   attributes_required_for :coefficient_of_performance, [
-    :ambient_heat_input_conversion
+    :ambient_heat_input_conversion,
+    :ambient_cold_input_conversion
   ]
   
   # How many seconds a year the converters runs at full load. 

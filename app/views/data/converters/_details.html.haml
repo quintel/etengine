@@ -1,0 +1,19 @@
+%table
+  %thead
+    %tr
+      %th Name
+      %th Value*
+      %th Unit
+
+  - @values.each do |group,attrs|
+    %thead
+      %tr
+        %th{:colspan=>3}= group.capitalize
+    %tbody
+      - attrs.andand.each do |key,value|
+        %tr
+          %td= value.first
+          %td{:title => title_tag_number(@fut.send(key))}= simple_auto_number(@fut.send(key),value.last)
+          %td= value.last
+
+* Values are for one typical unit (future value)
