@@ -8,6 +8,7 @@ gem 'sass', '~>3.1.7'
 gem 'rake', '0.9.2' # 0.9 breaks things
 
 gem 'authlogic'
+gem 'cancan'
 gem 'simple_form'
 gem 'paper_trail', '>= 1.6.4'
 gem 'ruby-graphviz', :require => "graphviz"
