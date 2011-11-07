@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111102095022) do
+ActiveRecord::Schema.define(:version => 20111107082350) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -219,12 +219,14 @@ ActiveRecord::Schema.define(:version => 20111102095022) do
   add_index "dataset_converter_data", ["dataset_id"], :name => "index_converter_datas_on_graph_data_id"
 
   create_table "dataset_link_data", :force => true do |t|
-    t.integer  "link_type",  :default => 0
+    t.integer  "link_type",               :default => 0
     t.float    "share"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "dataset_id"
     t.integer  "link_id"
+    t.integer  "min_demand", :limit => 8
+    t.integer  "max_demand", :limit => 8
   end
 
   add_index "dataset_link_data", ["dataset_id"], :name => "index_link_datas_on_graph_data_id"
