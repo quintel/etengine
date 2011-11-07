@@ -1,1 +1,12 @@
 %h1 Converter Index
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Name
+  %tbody
+    - @converters.each do |c|
+      %tr
+        %td= c.id
+        %td= link_to c.key, c

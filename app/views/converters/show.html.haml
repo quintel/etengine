@@ -1,1 +1,19 @@
 %h2 Converter detail
+
+
+- if @converter_present.groups.include?(:cost_traditional_heat)
+  %h3 Converter details
+  - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
+  = render "data/converters/details"
+- if @converter_present.groups.include?(:cost_electricity_productions)
+  %h3 Converter details
+  - @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
+  = render "data/converters/details"
+- if @converter_present.groups.include?(:cost_heat_pumps)
+  %h3 Converter details
+  - @values = Qernel::ConverterApi::HEAT_PUMP_VALUES
+  = render "data/converters/details"
+- if @converter_present.groups.include?(:cost_chps)
+  %h3 Converter details
+  - @values = Qernel::ConverterApi::CHP_VALUES
+  = render "data/converters/details"
