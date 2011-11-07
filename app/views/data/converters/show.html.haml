@@ -9,36 +9,46 @@
 
 %h3 Info
 
-%dl
-  %dt Key
-  %dd #{@converter_present.full_key}
-  %dt Energy Balance Group
-  %dd
+%ul 
+  %li 
+    %b Sector:
+    = @converter_present.sector_key
+%ul
+  %li 
+    %b Energy Balance Group:
     - if g = @converter.energy_balance_group
       = link_to g.name, data_energy_balance_group_path(:id => g.id)
-  %dt Groups
-  %dd
+%ul
+  %li
+    %b Use:
+    = @converter_present.use_key
+%ul 
+  %li 
+    %b
+      Groups:
+  %li
     %ul
       - @converter_present.groups.each do |g|
         %li= g
-  %dt Sector
-  %dd= @converter_present.sector_key
-  %dt Use
-  %dd= @converter_present.use_key
 
-- if @converter_present.groups.include?(:cost_electricity_production)
-  %h3 Converter details
-  = render "data/converters/group_details/electricity_production"
 
 - if @converter_present.groups.include?(:cost_traditional_heat)
   %h3 Converter details
-  = render "data/converters/group_details/traditional_heat"
+  - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
+  = render "data/converters/details"
+- if @converter_present.groups.include?(:cost_electricity_productions)
+  %h3 Converter details
+  - @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
+  = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_heat_pumps)
   %h3 Converter details
-  = render "data/converters/group_details/heat_pumps"
+  - @values = Qernel::ConverterApi::HEAT_PUMP_VALUES
+  = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_chps)
   %h3 Converter details
-  = render "data/converters/group_details/chps"
+  - @values = Qernel::ConverterApi::CHP_VALUES
+  = render "data/converters/details"
+
   
 
 %h3 Future Input / Outputs

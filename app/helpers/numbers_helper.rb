@@ -21,4 +21,16 @@ module NumbersHelper
       value
     end
   end
+  
+  def simple_auto_number(value,unit)
+    return '-' if value.nil?
+    return value unless value.is_a?(Numeric)
+    return 'Infinity' if value.to_f.infinite?
+    if unit == '%'
+      number_with_precision(value*100,:precision => 1, :separator => ",")
+    else
+      number_with_precision(value,:precision => 4, :significant => true, :delimiter => ".", :separator => ",")
+    end
+  end
+  
 end
