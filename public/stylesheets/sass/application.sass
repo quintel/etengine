@@ -1,14 +1,31 @@
-html
-  height: 100%
-  background: #fff
+@import 'data_reset'
 
 body
   margin: 0
   height: 100%
-  font: 13px/20px Lucida Grande, Verdana, Arial, Helvetica, sans-serif
+  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif
 
-h1
-  line-height: 1em
+#header
+  background-color: #ccc
+  padding: 10px
+  border-bottom: 1px solid #bbb
+#menu
+  background-color: #ddd
+  padding: 10px
+  border-bottom: 1px solid #ccc
+#flash
+  .flash
+    text-align: center
+    padding: 10px
+    border: 1px solid
+    margin: 5px
+  .notice
+    color: green
+    background-color: #BAFFB7
+  .alert
+    color: red
+    background-color: #FDBABC
+
 img
   border-style: none
 
@@ -16,98 +33,23 @@ img, div
   behavior: url(/iepngfix/iepngfix.htc)
 a
   color: #63A0C9
-  &:hover
 
-input.button
-  cursor: pointer
-
-input, textarea, select
-  font: 100% arial,sans-serif
-  vertical-align: middle
-
-form, fieldset
-  margin: 0
-  padding: 0
-  border: none
-
-//separate model from pages
-body#model #wrapper
-  min-height: 100%  
-  
-#wrapper
-  min-width: 980px
-  width: 100%
-  position: relative
-//separate model from pages  
-* html body#model #wrapper
-  height: 100%
-  overflow: visible
-
-#content
-  position: relative
-  margin: 0 auto
-
-  #flash
-    background: #FFF1A8
-    width: 400px
-    -moz-border-radius: 8px
-    -webkit-border-radius: 8px
-    &.error
-      background: #ff9999
-    &.error a
-      color: white
-    p
-      padding: 1px 10px
-      margin: 0
-
-table.default
+table
   thead th
-    :background #5DA1CB
-    :border-bottom 1px solid #999
+    background: #5DA1CB
+    border-bottom: 1px solid #999
     a
       color: white
   td,th
     padding: 2px 4px 
   td
-    :vertical-align top
-    :border-right 1px solid #ddd
+    vertical-align: top
+    border-right: 1px solid #ddd
   tr.odd 
     td,th
-      :background-color #eee
-
-.tar
-  text-align: right
-.tal
-  text-align: left
-.tac
-  text-align: center
+      background-color: #eee
 
 .clear
   clear: both
 
-  p.button 
-    float: right
-    height: 22px
-    margin: 0px
-    background: #63a1c9
-    border: 1px solid black 
-    p.button a.button, p.button input.button 
-      background: none
-      border: 0px
-      text-decoration: none
-      color: white 
-
-  a.button, input.button 
-    border: 1px solid black
-    padding: 5px 10px
-    background: #63a1c9
-    text-decoration: none
-    color: white 
-
-  a.button:hover, input.button:hover 
-    background: #568cb0 
-
-  input 
-    font-family: inherit 
-  
 @import '_simple_form'
