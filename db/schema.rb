@@ -226,7 +226,6 @@ ActiveRecord::Schema.define(:version => 20111107082350) do
     t.integer  "dataset_id"
     t.integer  "link_id"
     t.integer  "min_demand", :limit => 8
-    t.integer  "max_demand", :limit => 8
   end
 
   add_index "dataset_link_data", ["dataset_id"], :name => "index_link_datas_on_graph_data_id"

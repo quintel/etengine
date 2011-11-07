@@ -12,7 +12,6 @@ class Link
   DATASET_ATTRIBUTES = [
     :share, 
     :value, 
-    :min_demand, # is overwritten with a def min_demand method below.
     :max_demand, 
     :calculated
   ]
@@ -112,8 +111,8 @@ public
   # Does link have min-/max_demand? 
   # Important to figure out for which flexible links to calculate first.
   #
-  def min_max_boundaries?
-    flexible? && (min_demand || max_demand)
+  def max_boundaries?
+    flexible? && max_demand
   end
 
 
@@ -218,7 +217,6 @@ protected
   # Except for electricity import/export, where it should be -Infinity. We use nil instead.
   #
   def min_demand
-    min = dataset_get(:min_demand)
     # Default min_demand of flexible is 0.0 (no negative energy)
     # Exception being electricity import/export. where -energy = export
     min = 0.0 if flexible? && !@carrier.electricity? && !@child.energy_import_export?
