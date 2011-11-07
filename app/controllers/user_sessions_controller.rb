@@ -1,6 +1,4 @@
 class UserSessionsController < ApplicationController
-  layout 'pages'
-
   before_filter :require_no_user, :only => :new
 
   def index
