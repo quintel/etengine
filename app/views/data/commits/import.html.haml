@@ -8,6 +8,6 @@
   - GqlTestCase.all.each do |gql_test_case|
     %tr
       %td= link_to gql_test_case.name, data_gql_test_case_path(:id => gql_test_case.id)
-      %td= link_to 'edit', edit_data_gql_test_case_path(:id => gql_test_case.id)
+      %td= link_to 'regenerate', edit_data_gql_test_case_path(:id => gql_test_case.id)
 
   
