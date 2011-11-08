@@ -22,13 +22,13 @@ module Gql::QueryInterface::Base
   def query(obj, input_value = nil)
     self.input_value = input_value.to_s
     if obj.is_a?(Gquery)
-      subquery(obj.key)
+      execute_gquery_key(obj.key)
     elsif obj.is_a?(Input)
       self.input_value = "#{self.input_value}#{obj.v1_legacy_unit}" unless self.input_value.include?('%')
-      execute_update(Gql::QueryInterface::Preparser.new(obj.query).parsed)
+      execute_input(Gql::QueryInterface::Preparser.new(obj.query).parsed)
     elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
       # pure GQL string
-      execute_query(parsed)
+      execute_parsed_query(parsed)
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
     end
@@ -61,19 +61,23 @@ module Gql::QueryInterface::Base
   #
   def subquery(gquery_key)
     if gquery = get_gquery(gquery_key)
-      execute_query(gquery.parsed_query)
+      execute_parsed_query(gquery.parsed_query)
     else
       nil
     end
   end
+  alias execute_gquery_key subquery
+
 
 protected
 
-  def execute_update(parsed_query)
+  def execute_input(parsed_query)
     parsed_query.result(scope)
+  rescue => e
+    raise Gql::GqlError.new("UPDATE: #{parsed_query.text_value}:\n #{e.inspect}")
   end
 
-  def execute_query(parsed_query)
+  def execute_parsed_query(parsed_query)
     # DEBT: decouple from Current.gql
     #       maybe add a Observer to graph:
     #       in gql: present_graph.observe_calculate(Current.gql)
@@ -82,6 +86,8 @@ protected
     Current.gql.prepare if !Current.gql.calculated?
     
     parsed_query.result(scope)
+  rescue => e
+    raise Gql::GqlError.new("Query: #{parsed_query.text_value}.\n #{e.inspect}")
   end
 
   def get_gquery(gquery_or_key)
