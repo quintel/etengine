@@ -1,4 +1,5 @@
-- if result = Current.gql.query(@query) rescue nil
+- begin
+  - result = Current.gql.query(@query) 
   %table{:border => 1}
     %tr
       %td= result.present_year
@@ -9,5 +10,5 @@
       %td.tar= result.future_value
       %td= @gquery.andand.unit
 
-- else
-  %pre Error 
+- rescue => e
+  %pre= e.inspect
