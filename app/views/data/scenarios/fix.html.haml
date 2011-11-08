@@ -1,0 +1,17 @@
+- breadcrumb link_to 'Scenarios', data_scenarios_path
+- breadcrumb link_to "##{@scenario.id} #{@scenario.title}", data_scenario_path(:id => @scenario.id)
+- breadcrumb 'fix'
+
+%h2 Fixing scenario
+
+- inputs = @scenario.user_values
+- sum = [344,341,343,242].map{|id| inputs[id]}.compact.sum
+%h3 Old values:
+
+%ul
+  %li 344: #{inputs[344]} -> #{inputs[344] / sum rescue nil}
+  %li 341: #{inputs[341]} -> #{inputs[341] / sum rescue nil}
+  %li 343: #{inputs[343]} -> #{inputs[343] / sum rescue nil}
+  %li 242: #{inputs[242]} -> #{inputs[242] / sum rescue nil}
+  %li 582: (new) -> #{sum} (sum)
+    
