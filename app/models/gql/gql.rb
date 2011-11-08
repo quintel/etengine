@@ -141,6 +141,9 @@ class Gql
   rescue => e
     if rescue_with == :debug
       ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
+    elsif rescue_with == :airbrake
+      Airbrake.notify(:error_message => e.message, :backtrace => caller)
+      ResultSet::INVALID
     elsif rescue_with.present?
       rescue_with
     else
@@ -211,7 +214,7 @@ class Gql
   def query_multiple(gquery_keys)
     gquery_keys = gquery_keys - ["null", "undefined"]
 
-    rescue_with = ResultSet::INVALID
+    rescue_with = :airbrake
     gquery_keys.inject({}) do |hsh, key|
       result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
         query(gquery, rescue_with)
