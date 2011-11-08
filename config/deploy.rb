@@ -17,9 +17,12 @@ task :production do
   set :db_name, application_key
   set :db_user, application_key
 
+  set :airbrake_key, "c7aceee5954aea78f93e7ca4b22439c7"
+
   role :web, domain # Your HTTP server, Apache/etc
   role :app, domain # This may be the same as your `Web` server
   role :db,  domain, :primary => true # This is where Rails migrations will run
+  
 end
 
 task :staging do
@@ -35,6 +38,8 @@ task :staging do
   set :db_pass, "Energy2.0"
   set :db_name, application_key
   set :db_user, application_key
+
+  set :airbrake_key, "e483e275c8425821ec21580e0ffefe9d"
 
   role :web, domain # Your HTTP server, Apache/etc
   role :app, domain # This may be the same as your `Web` server
@@ -54,6 +59,8 @@ task :release do
   set :db_pass, "quintel"
   set :db_name, application_key
   set :db_user, 'root'
+
+  set :airbrake_key, "c0323ccf9d5e2ac0b00772d0f4fb93c9"
 
   role :web, domain # Your HTTP server, Apache/etc
   role :app, domain # This may be the same as your `Web` server
