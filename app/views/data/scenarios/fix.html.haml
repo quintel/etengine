@@ -22,4 +22,6 @@
   %li 242: #{inputs[242]} -> #{i242_new}
   %li 582: (new) -> #{i582_new} (sum)
 
-- @scenario.update_hh_inputs!
+- unless params[:force]
+  = button_to 'update_record', fix_data_scenario_path(:id => @scenario.id, :force => true), :method => :put, :confirm => 'are you sure?'  
+  
