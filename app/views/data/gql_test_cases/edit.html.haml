@@ -1,46 +1,53 @@
-= form_for @gql_test_case, :url => data_gql_test_case_path(:id => @gql_test_case) do |f|
-  %p
-    = f.label :name
-    = f.text_field :name
-  %p
-    = f.label :settings
-    = f.text_area :settings
-    %p
-      %em e.g.: settings[country]=nl&settings[end_year]=2030
-  -#%p
-    = f.label :inputs
-    = f.text_area :inputs
-  %p
-    = f.label :instruction
-    = f.text_area :instruction
-    = link_to "Generate Test Suite", "#", :onclick => "load_queries($('#gql_test_case_settings').val(), create_tests)"
+%pre#before
+  = @gql_test_case.instruction.lines.detect{|l| l.include?("settings")}.html_safe
 
-  %p
-    = f.label :description
-    = f.text_area :description
-  %p
-    = f.submit
+  :erb
+    describe("Test Suite", function() {
+      beforeEach(function() { this.addMatchers(customMatchers); });
+
+%pre#output
+
+
+%pre#after
+  :erb
+    });
+
+    function run_tests() {
+      jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+      jasmine.getEnv().execute();
+    }
+
+    // Make an API call. When complete runs the test-suites
+    load_queries(settings, run_tests);
+
+  
 
 %script
+  = @gql_test_case.instruction.lines.detect{|l| l.include?("settings")}.html_safe
+  
   // create Gquery objects for the gqueries we will test later.
   - Gquery.limit(1500).reject{|g| g.unit == 'converters'}.each do |gquery|
-    == var #{gquery.key} = new Gquery({id : '#{gquery.id}', key: '#{gquery.key}'});
-
+    == new Gquery({id : '#{gquery.id}', key: '#{gquery.key}'});
 
 :javascript
   // This simply outputs the test cases for all the Gquery Objects
   // It is now called after the JSON request
   function create_tests() {
+    $('#output').text("Processing...");
     var test_suite = "";
     window.gqueries.each(function(gquery) {
       var f = gquery.get('future_value');
       var p = gquery.get('present_value');
       var future_value = _.isString(f) ? "'"+f+"'" : f;
       var present_value = _.isString(p) ? "'"+p+"'" : p;
-
+      
       var str = "matches('"+gquery.get('key')+"', "+present_value+", "+future_value+",1);\n"
       test_suite = test_suite + str
-    })
-    $('#gql_test_case_instruction').val(test_suite);
+    });
+    $('#output').text(test_suite);
   };
   // Make an API call. When complete runs the test-suites
+  
+  $('#output').text("Loading...");
+  load_queries($('#gql_test_case_settings').val(), create_tests);
+  
