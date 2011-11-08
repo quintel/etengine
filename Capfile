@@ -71,6 +71,7 @@ namespace :deploy do
   end
 end
 
-after "deploy", "deploy:notify_airbrake"
 after "deploy:update_code", "deploy:copy_configuration_files"
 after "deploy:update_code", "deploy:symlink_etsource"
+after "deploy", "deploy:notify_airbrake"
+after "deploy", "deploy:cleanup"
