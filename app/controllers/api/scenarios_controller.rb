@@ -17,10 +17,12 @@ class Api::ScenariosController < ApplicationController
   end
 
   def show
-    if params[:clone]
-      @scenario = @scenario.clone!
-    end    
-    respond_with(@scenario)
+    @scenario = @scenario.try(:clone!) if params[:clone]
+    if @scenario
+      respond_with(@scenario)
+    else
+      render :text => 'record missing', :status => 404
+    end
   end
 
   def create
@@ -50,5 +52,8 @@ class Api::ScenariosController < ApplicationController
   
     def find_scenario
       @scenario = Scenario.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      Rails.logger.warn "*** ActiveResource 404 Error"
+      nil
     end
 end
