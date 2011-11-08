@@ -1,0 +1,25 @@
+- breadcrumb 'Scenarios'
+
+%table
+  %thead
+    %tr
+      %th{:colspan => 6} Scenario count: #{Scenario.count}
+    %tr
+      %th Id
+      %th Title
+      %th End Year
+      %th Country
+      %th Region
+      %th In start menu
+  %tfoot
+    %tr
+      %td{:colspan => 6}= paginate @scenarios
+  %tbody
+    - @scenarios.each do |s|
+      %tr
+        %td= link_to s.id, data_scenario_path(:id => s.id)
+        %td= s.title
+        %td= s.end_year
+        %td= s.country
+        %td= s.region
+        %td= 'V' if s.in_start_menu

@@ -1,0 +1,30 @@
+- breadcrumb link_to 'Scenarios', data_scenarios_path
+- breadcrumb "##{@scenario.id} #{@scenario.title}"
+
+%dl
+  %dt Title
+  %dd= @scenario.title
+  %dt End Year
+  %dd= @scenario.end_year
+  %dt Country
+  %dd= @scenario.country
+  %dt Region
+  %dd= @scenario.region
+  %dt Inputs
+  %dd
+    %table
+      %thead
+        %tr
+          %th Id
+          %th Key
+          %th Value 
+      - @scenario.user_values.each_pair do |k, v|
+        - input = Input.find(k) rescue nil
+        %tr
+          %td= k
+          - if input
+            %td= link_to input.key, data_input_path(:id => input.id)
+          - else
+            %td.red missing!
+          %td= v
+  

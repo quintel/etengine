@@ -137,6 +137,9 @@ body {
     line-height: 1.2em;
     margin-bottom: 1.2em; }
 
+.red {
+  color: red; }
+
 .simple_form div.input {
   margin-bottom: 10px; }
 .simple_form label {
