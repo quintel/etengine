@@ -1,7 +1,7 @@
 - breadcrumb link_to 'Scenarios', data_scenarios_path
 - breadcrumb "##{@scenario.id} #{@scenario.title}"
 
-= button_to 'fix', fix_data_scenario_path(:id => @scenario.id), :method => :put
+= button_to 'fix', fix_data_scenario_path(:id => @scenario.id), :method => :put, :confirm => 'Are you sure?'
 %dl
   %dt Title
   %dd= @scenario.title

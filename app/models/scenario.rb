@@ -133,4 +133,25 @@ class Scenario < ActiveRecord::Base
   # add all the attributes and methods that are modularized in calculator/
   # loads all the "open classes" in calculator
   Dir["app/models/scenario/*.rb"].sort.each {|file| require_dependency file }
+  
+  # Temporary methods
+  #
+  # TODO: remove ASAP, See GH #185
+  def update_hh_inputs!
+    inputs = self.user_values
+    sum = [344,341,343,242].map{|id| inputs[id]}.compact.sum
+    i344_new = inputs[344] / sum * 100 rescue nil
+    i341_new = inputs[341] / sum * 100 rescue nil
+    i343_new = inputs[343] / sum * 100 rescue nil
+    i242_new = inputs[242] / sum * 100 rescue nil
+    i582_new = sum
+    store_user_value(Input.find(344), i344_new)
+    store_user_value(Input.find(341), i341_new)
+    store_user_value(Input.find(343), i343_new)
+    store_user_value(Input.find(242), i242_new)
+    store_user_value(Input.find(582), i582_new)
+    
+    save!    
+  end
+  
 end

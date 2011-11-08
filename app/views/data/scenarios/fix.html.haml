@@ -1,17 +1,25 @@
+-# This is a temporary view. Remove when the old scenarios have been updated
 - breadcrumb link_to 'Scenarios', data_scenarios_path
 - breadcrumb link_to "##{@scenario.id} #{@scenario.title}", data_scenario_path(:id => @scenario.id)
 - breadcrumb 'fix'
 
+:ruby
+  inputs = @scenario.user_values
+  sum = [344,341,343,242].map{|id| inputs[id]}.compact.sum
+  i344_new = inputs[344] / sum * 100 rescue nil
+  i341_new = inputs[341] / sum * 100 rescue nil
+  i343_new = inputs[343] / sum * 100 rescue nil
+  i242_new = inputs[242] / sum * 100 rescue nil
+  i582_new = sum
 %h2 Fixing scenario
 
-- inputs = @scenario.user_values
-- sum = [344,341,343,242].map{|id| inputs[id]}.compact.sum
 %h3 Old values:
 
 %ul
-  %li 344: #{inputs[344]} -> #{inputs[344] / sum rescue nil}
-  %li 341: #{inputs[341]} -> #{inputs[341] / sum rescue nil}
-  %li 343: #{inputs[343]} -> #{inputs[343] / sum rescue nil}
-  %li 242: #{inputs[242]} -> #{inputs[242] / sum rescue nil}
-  %li 582: (new) -> #{sum} (sum)
-    
+  %li 344: #{inputs[344]} -> #{i344_new}
+  %li 341: #{inputs[341]} -> #{i341_new}
+  %li 343: #{inputs[343]} -> #{i343_new}
+  %li 242: #{inputs[242]} -> #{i242_new}
+  %li 582: (new) -> #{i582_new} (sum)
+
+- @scenario.update_hh_inputs!
