@@ -1,9 +1,9 @@
 module Gql
 
-class GqlError < StandardError
-  def initialize(message = nil)
-    super(message)
+  class GqlError < StandardError
+    def initialize(message = nil)
+      super(message)
+    end
   end
-end
 
 end
