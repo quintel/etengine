@@ -166,9 +166,9 @@ class Input < ActiveRecord::Base
           :full_label   => input.full_label
         }
       rescue => ex
-        Rails.logger.warn("Input#static_values for input #{input.id} failed for api_session_id #{Current.scenario.id}")
+        Rails.logger.warn("Input#static_values for input #{input.id} failed.")
         Airbrake.notify(
-          :error_message => "Input#static_values for input #{input.id} failed for api_session_id #{Current.scenario.id}",
+          :error_message => "Input#static_values for input #{input.id} failed.",
           :backtrace => caller,
         :parameters => {:input => input, :api_scenario => Current.scenario })
         hsh
