@@ -9,6 +9,10 @@ class Data::ScenariosController < Data::BaseController
   end
   
   def fix
+    if params[:force]    
+      @scenario.update_hh_inputs!
+      flash.now[:notice] = "Scenario updated!"
+    end
   end
   
   private
