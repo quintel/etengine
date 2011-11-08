@@ -1,14 +1,21 @@
 - begin
   - result = Current.gql.query(@query) 
-  %table{:border => 1}
-    %tr
-      %td= result.present_year
-      %td.tar= result.present_value
-      %td= @gquery.andand.unit
-    %tr
-      %td= result.future_year
-      %td.tar= result.future_value
-      %td= @gquery.andand.unit
-
+  - if result.respond_to?(:present_year)
+    %table{:border => 1}
+      %tr
+        %td= result.present_year
+        %td.tar= result.present_value
+        %td= @gquery.andand.unit
+      %tr
+        %td= result.future_year
+        %td.tar= result.future_value
+        %td= @gquery.andand.unit
+  - else
+    %table{:border => 1}
+      %tr
+        %td No Year
+        %td.tar= result
+        %td No Unit
+    
 - rescue => e
   %pre= e.inspect
