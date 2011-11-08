@@ -170,7 +170,7 @@ class Input < ActiveRecord::Base
         Airbrake.notify(
           :error_message => "Input#static_values for input #{input.id} failed.",
           :backtrace => caller,
-        :parameters => {:input => input, :api_scenario => Current.scenario })
+          :parameters => {:input => input, :api_scenario => Current.scenario })
         hsh
       end
     end

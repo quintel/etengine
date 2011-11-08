@@ -800,19 +800,23 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     objects.each do |object|
       object = object.query if object.respond_to?(:query)
 
-      scope.update_object = object # for UPDATE_OBJECT()
+      if object
+        scope.update_object = object # for UPDATE_OBJECT()
 
-      input_value = update_statement.result(scope)
+        input_value = update_statement.result(scope)
 
-      object[attribute_name] = case update_strategy(scope)
-      when :absolute then input_value
-      when :relative_total
-        cur_value = BigDecimal(object[attribute_name].to_s)
-        cur_value + (cur_value * input_value)
-      when :relative_per_year
-        cur_value = BigDecimal(object[attribute_name].to_s)
-        cur_value * ((1.0 + input_value) ** Current.scenario.years)
-      end.to_f
+        object[attribute_name] = case update_strategy(scope)
+        when :absolute then input_value
+        when :relative_total
+          cur_value = BigDecimal(object[attribute_name].to_s)
+          cur_value + (cur_value * input_value)
+        when :relative_per_year
+          cur_value = BigDecimal(object[attribute_name].to_s)
+          cur_value * ((1.0 + input_value) ** Current.scenario.years)
+        end.to_f
+      else
+        raise "UPDATE: object not found."
+      end
     end
   ensure
     scope.update_collection = nil
