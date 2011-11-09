@@ -19,7 +19,8 @@
           %th Id
           %th Key
           %th Value 
-      - @scenario.user_values.each_pair do |k, v|
+      - @scenario.user_values.sort.each do |pair|
+        - k, v = pair
         - input = Input.find(k) rescue nil
         %tr
           %td= k
