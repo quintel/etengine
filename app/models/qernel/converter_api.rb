@@ -51,6 +51,8 @@ class ConverterApi
   # Access the following attributes with @. e.g
   #   @demand_expected_value *and not* demand_expected_value (or self.demand_expected_value)
   ATTRIBUTES_USED = [
+    :availability,
+    :variability,
     :capacity_factor,
     :ccs_investment_per_mw_input,
     :ccs_operation_and_maintenance_cost_per_full_load_hour,
