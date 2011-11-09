@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111107082350) do
+ActiveRecord::Schema.define(:version => 20111109105129) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -213,6 +213,8 @@ ActiveRecord::Schema.define(:version => 20111107082350) do
     t.float    "ccs_investment_per_mw_input"
     t.float    "ccs_operation_and_maintenance_cost_per_full_load_hour"
     t.float    "decrease_in_nomimal_capacity_over_lifetime"
+    t.float    "availability"
+    t.float    "variability"
   end
 
   add_index "dataset_converter_data", ["converter_id"], :name => "index_dataset_converter_data_on_converter_id"
@@ -225,7 +227,7 @@ ActiveRecord::Schema.define(:version => 20111107082350) do
     t.datetime "updated_at"
     t.integer  "dataset_id"
     t.integer  "link_id"
-    t.integer  "min_demand", :limit => 8
+    t.integer  "max_demand", :limit => 8
   end
 
   add_index "dataset_link_data", ["dataset_id"], :name => "index_link_datas_on_graph_data_id"
