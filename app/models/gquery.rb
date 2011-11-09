@@ -22,7 +22,7 @@
 #
 #
 class Gquery < ActiveRecord::Base
-  GQL_MODIFIERS = %(present future historic stored)
+  GQL_MODIFIERS = %(present future historic stored mixed)
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
   validates_presence_of :key
