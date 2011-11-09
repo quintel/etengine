@@ -36,7 +36,7 @@
   %h3 Converter details
   - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
   = render "data/converters/details"
-- if @converter_present.groups.include?(:cost_electricity_productions)
+- if @converter_present.groups.include?(:cost_electricity_production)
   %h3 Converter details
   - @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
   = render "data/converters/details"
