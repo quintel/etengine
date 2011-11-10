@@ -5,7 +5,7 @@
   = f.input :not_cacheable
   = f.input :description
   = f.association :gquery_group, :collection => GqueryGroup.all.map{|g| [g.group_key, g.id]}
-  =# f.button :submit
+  = f.button :submit
   %p
-    %strong{:style => 'color:red'} You cannot update gqueries anymore. ask WvL for more info
+    %strong.red Warning: all gqueries will be overwritten with an Etsource import. Modify locally only for testing.
   = link_to "group descriptions", group_descriptions_data_gqueries_path, :target=>"_blank"
