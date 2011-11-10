@@ -872,8 +872,14 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
       raise "GQL SELF() has to be inside UPDATE and a valid object has to be defined"
     end
   end
-
-
+  
+  # With this function you can run two different statements for present and future.
+  # 
+  def MIXED(value_terms, arguments, scope = nil)
+    present_term = value_terms[0]
+    future_term  = value_terms[1]
+    scope.graph.present? ? present_term : future_term
+  end
 end
 
 end
