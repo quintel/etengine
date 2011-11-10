@@ -275,21 +275,7 @@ protected
   #
   def query_stored(query)
     StoredProcedure.execute(query)
-  end
-  
-  # The mixed prefix lets the user use two different queries for present and future
-  # Ex: mixed:AREA(co2_price)|AREA(ventilation_rate)
-  # It's kinda ugly but this makes the policy goal charts work without too many modifications
-  #
-  def query_mixed(query)
-    query1, query2 = query.split "|"
-    ResultSet.create [
-      [scenario.start_year, query_present(query1)].flatten,
-      [scenario.end_year, query_future(query2)].flatten
-    ]    
-  end
-
-
+  end  
 end
 
 end
