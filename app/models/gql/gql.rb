@@ -284,8 +284,8 @@ protected
   def query_mixed(query)
     query1, query2 = query.split "|"
     ResultSet.create [
-      [scenario.start_year, query_present(query1)],
-      [scenario.end_year, query_future(query2)]
+      [scenario.start_year, query_present(query1)].flatten,
+      [scenario.end_year, query_future(query2)].flatten
     ]    
   end
 
