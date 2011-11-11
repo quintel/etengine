@@ -16,6 +16,7 @@ module Qernel
 #
 class Slot
   include DatasetAttributes
+  include Topology::SlotMethods
 
 
   # --------- Accessor ---------------------------------------------------------

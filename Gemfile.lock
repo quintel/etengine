@@ -63,6 +63,7 @@ GEM
       railties (>= 3.0.0)
     fileutils (0.7)
       rmagick (>= 2.13.1)
+    fnv (0.2.0)
     guard (0.8.8)
       thor (~> 0.14.6)
     guard-rspec (0.5.1)
@@ -189,6 +190,7 @@ DEPENDENCIES
   distribution (~> 0.6)
   factory_girl_rails (~> 1.2.0)
   fileutils
+  fnv
   git!
   guard
   guard-rspec
