@@ -140,6 +140,9 @@ body {
 .red {
   color: red; }
 
+.wordwrap {
+  word-wrap: break-word; }
+
 .simple_form div.input {
   margin-bottom: 10px; }
 .simple_form label {
