@@ -86,6 +86,7 @@ class Converter
 
   include PrimaryDemand
   include DatasetAttributes
+  include Topology::Converter
 
   # Following keys can be looked up by {Qernel::Graph#converter}.
   KEYS_FOR_LOOKUP = [
@@ -111,7 +112,7 @@ class Converter
     3 => :undefined
   }
 
-  attr_reader :id, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key, :energy_balance_group
+  attr_reader :id, :code, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key, :energy_balance_group
   attr_accessor :calculator, :key, :graph
 
   dataset_accessors [:demand, :preset_demand, :municipality_demand]
@@ -138,10 +139,12 @@ class Converter
     @output_hash, @input_hash = {}, {}
 
     # TODO check if @key is ever used somewhere
-    @id = id
+    @id = id.is_a?(Symbol) ? FNV.new.fnv1a_32(id.to_s) : id
+    @code = id
+    
     @key = key
-    @use_key = USES[use_id]
-    @sector_key = SECTORS[sector_id]
+    @use_key = use_id.is_a?(Symbol) ? use_id : USES[use_id]
+    @sector_key = sector_id.is_a?(Symbol) ? sector_id : SECTORS[sector_id]
     @energy_balance_group = energy_balance_group
     @groups = groups || []
 

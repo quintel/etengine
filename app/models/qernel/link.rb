@@ -4,6 +4,7 @@ module Qernel
 #
 class Link
   extend ActiveModel::Naming
+  include Topology::Link
 
   # --------- Dataset ---------------------------------------------------------
 
@@ -241,7 +242,6 @@ protected
   def output
     reversed? ? @parent.input(@carrier) : @child.output(@carrier)
   end
-
 
   # --------- Debug -----------------------------------------------------------
 
