@@ -5,22 +5,64 @@
 
 :ruby
   inputs = @scenario.user_values
-  sum = [344,341,343,242].map{|id| inputs[id]}.compact.sum.to_f
+  
+  input_ids = [344,341,343,242]  
+  number_of_inputs_set = input_ids.map{|id| inputs[id]}.compact.count
+  
+  if number_of_inputs_set == 0
+    msg = 'No inputs set, I\'m not changing anything'
+  elsif number_of_inputs_set == 4
+    msg = 'All inputs set, this is the new data'
+  else
+    inputs[344] ||= 0.0
+    inputs[341] ||= 4.4
+    inputs[343] ||= 0.0
+    inputs[242] ||= 0.0
+  
+    msg = 'Some inputs are set, I update the missing one with defaults and apply these values'
+  end
+  
+%h2 Fixing scenario
+
+%p= msg
+
+%h3 Old values:
+
+
+
+:ruby
+  sum = input_ids.map{|id| inputs[id]}.compact.sum.to_f
   i344_new = inputs[344] / sum * 100 rescue nil
   i341_new = inputs[341] / sum * 100 rescue nil
   i343_new = inputs[343] / sum * 100 rescue nil
   i242_new = inputs[242] / sum * 100 rescue nil
   i582_new = sum
-%h2 Fixing scenario
-
-%h3 Old values:
-
-%ul
-  %li 344: #{inputs[344]} -> #{i344_new}
-  %li 341: #{inputs[341]} -> #{i341_new}
-  %li 343: #{inputs[343]} -> #{i343_new}
-  %li 242: #{inputs[242]} -> #{i242_new}
-  %li 582: (new) -> #{i582_new} (sum)
+  
+%table
+  %tr
+    %td Input
+    %td Old
+    %td new
+  %tr
+    %td Geothermal (344):
+    %td= inputs[344]
+    %td= i344_new
+  %tr
+    %td District Heating (341)
+    %td= inputs[341]
+    %td= i341_new
+  %tr
+    %td Biomass CHP (343)
+    %td= inputs[343]
+    %td= i343_new
+  %tr
+    %td Gas CHP (242)
+    %td= inputs[242]
+    %td= i242_new
+  %tr
+    %td Space heating from district heating(582)
+    %td (new)
+    %td= i582_new
 
 - unless params[:force]
   = button_to 'update_record', fix_data_scenario_path(:id => @scenario.id, :force => true), :method => :put, :confirm => 'are you sure?'  
