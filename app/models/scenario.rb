@@ -139,7 +139,19 @@ class Scenario < ActiveRecord::Base
   # TODO: remove ASAP, See GH #185
   def update_hh_inputs!
     inputs = self.user_values
-    sum = [344,341,343,242].map{|id| inputs[id]}.compact.sum.to_f
+    
+    input_ids = [344,341,343,242]
+    
+    number_of_inputs_set = input_ids.map{|id| inputs[id]}.compact.count
+    
+    return if number_of_inputs_set == 0
+    
+    inputs[344] ||= 0.0
+    inputs[341] ||= 4.4
+    inputs[343] ||= 0.0
+    inputs[242] ||= 0.0
+    
+    sum = input_ids.map{|id| inputs[id]}.compact.sum.to_f
     i344_new = inputs[344] / sum * 100 rescue nil
     i341_new = inputs[341] / sum * 100 rescue nil
     i343_new = inputs[343] / sum * 100 rescue nil
