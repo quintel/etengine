@@ -16,7 +16,8 @@ class Data::GqlTestCasesController < Data::BaseController
   end
 
   def new
-    @gql_test_case = GqlTestCase.new
+    #
+    @gql_test_case = GqlTestCase.new(:instruction => "var settings = 'settings[scenario_id]=#{params[:scenario_id]}';")
     respond_to do |format|
       format.html {}
       format.text {}
