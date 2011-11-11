@@ -332,6 +332,13 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   rescue
     nil
   end
+  
+  # Shortcut for
+  # V(GOAL(foobar);user_value)
+  #
+  def GOAL_USER_VALUE(keys, arguments, scope)
+    GOAL(keys, arguments, scope).user_value
+  end
 
   # {Qernel::GraphApi Graph} attributes: *GRAPH(method)*
   #
