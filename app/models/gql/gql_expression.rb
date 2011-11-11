@@ -880,6 +880,14 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     future_term  = value_terms[1]
     scope.graph.present? ? present_term : future_term
   end
+
+  def PRESENT_ONLY(value_terms, arguments, scope = nil)
+    value_terms if scope.graph.present?
+  end
+
+  def FUTURE_ONLY(value_terms, arguments, scope = nil)
+    value_terms unless scope.graph.present?
+  end
 end
 
 end
