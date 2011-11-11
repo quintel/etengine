@@ -1,9 +1,22 @@
 %section.main
   .header GQL Test Suites
 
+
+  %form{:action => new_data_gql_test_case_path, :method => :get} 
+    %p
+      To update a TestSuite click regenerate and copy/paste the output into the corresponding test suite file in ETsource.
+
+    %p
+      %label 
+        Create a new test case for scenario: 
+        %input#scenario_id{:name => 'scenario_id', :placeholder => 'scenario id'}
+      = submit_tag :go
+
   %table
     - @gql_test_cases.each do |gql_test_case|
       %tr
         %td= link_to gql_test_case.name, data_gql_test_case_path(:id => gql_test_case.id)
         %td= link_to 'Regenerate', edit_data_gql_test_case_path(:id => gql_test_case.id)
         %td= gql_test_case.updated_at
+
+    
