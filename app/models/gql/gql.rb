@@ -65,9 +65,12 @@ class Gql
 
   attr_reader :graph_model, :dataset
 
+  # @param [Graph] graph_model
+  # @param [Dataset,String] dataset Dataset or String for country
+  #
   def initialize(graph_model, dataset)
     @graph_model = graph_model
-    @dataset = dataset
+    @dataset = dataset.is_a?(Dataset) ? dataset : Dataset.latest_from_country(dataset)
   end
 
   def scenario
@@ -184,6 +187,8 @@ class Gql
     @calculated = true
   end
 
+  # Assign datasets to graph without calculating them. So we can
+  #
   def assign_dataset
     present_graph.dataset ||= calculated_present_dataset
     future_graph.dataset = uncalculated_dataset
