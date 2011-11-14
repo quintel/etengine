@@ -6,7 +6,6 @@
 //= require <output_elements>
 //= require <lib/controllers/main_controller>
 //= require <jquery_plugins>
-//= require <old>
 
 
 
