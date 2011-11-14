@@ -15,7 +15,7 @@ module Gql
 # == Useage
 #
 #   graph = Graph.find( 1 )     # the graph we want to query
-#   gql = Gql::Gql.new( graph ) # Create Gql instance for 'graph'
+#   gql = Gql::Gql.new( graph, graph.dataset ) # Create Gql instance for 'graph'
 #   gql.prepare          # updates and calculates graphs based on user assumptions
 #
 #   res = gql.query("SUM(1.0,2.0)")
@@ -63,14 +63,11 @@ class Gql
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  attr_reader :graph_model
+  attr_reader :graph_model, :dataset
 
-  def initialize(graph_model)
-    # The if is a temporary solution.
-    # I added this so that testing/stubbing/mocking gets easier (seb 2010-10-11)
-    return if graph_model == :testing
-
+  def initialize(graph_model, dataset)
     @graph_model = graph_model
+    @dataset = dataset
   end
 
   def scenario
@@ -80,13 +77,27 @@ class Gql
   # @return [Qernel::Graph]
   #
   def present_graph
+    # DEBT end_year should be part of dataset
     @present_graph ||= graph_model.present.tap{|g| g.year = scenario.start_year}
   end
 
   # @return [Qernel::Graph]
   #
   def future_graph
+    # DEBT end_year should be part of dataset
     @future_graph ||= graph_model.future.tap{|g| g.year = scenario.end_year}
+  end
+
+  # @return [Qernel::Dataset] Dataset used for the present. Is calculated and cannot be updated anymore
+  #
+  def calculated_present_dataset
+    dataset.to_calculated_qernel
+  end
+
+  # @return [Qernel::Dataset] Dataset used for the future. Needs to be updated with user input and then calculated.
+  #
+  def uncalculated_dataset
+    graph_model.dataset.to_qernel
   end
 
   # @return [QueryInterface]
@@ -173,13 +184,19 @@ class Gql
     @calculated = true
   end
 
+  def assign_dataset
+    present_graph.dataset ||= calculated_present_dataset
+    future_graph.dataset = uncalculated_dataset
+  end
+
   def prepare_present
     ActiveSupport::Notifications.instrument('gql.graph.prepare_present') do
       # DEBT wrong. check for present_updated_at!!
       if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
-        present_graph.dataset ||= graph_model.calculated_present_data
+        present_graph.dataset ||= calculated_present_dataset
       else
-        present_graph.dataset ||= graph_model.dataset.to_qernel
+        # If present_graph has user inputs then we have to take a fresh dataset.
+        present_graph.dataset ||= uncalculated_dataset
         UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
         scenario.inputs_present.each do |input, value|
           present.query(input, value)
@@ -191,9 +208,9 @@ class Gql
   def prepare_future
     ActiveSupport::Notifications.instrument('gql.graph.prepare_future') do
       if Rails.env.test?
-        future_graph.dataset ||= graph_model.dataset.to_qernel
+        future_graph.dataset ||= calculated_present_dataset
       else
-        future_graph.dataset = graph_model.dataset.to_qernel
+        future_graph.dataset = uncalculated_dataset
       end
       scenario.inputs_before.each do |input, value|
         future.query(input, value)
