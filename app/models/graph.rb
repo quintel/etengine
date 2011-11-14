@@ -49,11 +49,11 @@ class Graph < ActiveRecord::Base
   end
 
   def gql
-    @gql ||= ::Gql::Gql.new(self)
+    @gql ||= ::Gql::Gql.new(self, self.dataset)
   end
 
   def present
-    @present_graph ||= calculated_present_qernel
+    @present_graph ||= present_qernel
   end
 
   def future
@@ -63,45 +63,20 @@ class Graph < ActiveRecord::Base
       @future_graph = self.class.future_qernel_for(self)
     end
 
-    # Graph.benchmark("Graph#future dataset") do
-    #   @future_graph.dataset = dataset.to_qernel
-    # end
-
     @future_graph
   end
 
   def present_qernel
-    self.class.present_qernel_for(self)
-  end
-
-  ##
-  #
-  #
-  def calculated_present_qernel
     qernel = nil
     ActiveSupport::Notifications.instrument("gql.graph.present_qernel") do
-      qernel = present_qernel
+      qernel = self.class.present_qernel_for(self)
     end
-    # Can this commented section be removed?
-    # Graph.benchmark("Graph#calculated_present_qernel dataset") do
-    #   qernel.dataset = calculated_present_data
-    # end
     qernel
-  end
-
-  def calculated_present_data
-    marshal = Rails.cache.fetch("/graph/#{dataset.id}/#{dataset.updated_at.to_i}/calculated_present_data") do
-      qernel = present_qernel
-      qernel.dataset = dataset.to_qernel
-      qernel.calculate
-      Marshal.dump(qernel.dataset)
-    end
-    Marshal.load marshal
   end
 
   def self.present_qernel_for(graph)
     # TODO seb: should probably be graph.blueprint_id
-    @@present_qernels[graph.id] ||= graph.to_qernel
+    @@present_qernels[graph.id] ||= graph.to_qernel.tap{|g| g.year = 2010 }
   end
 
   def self.future_qernel_for(graph)

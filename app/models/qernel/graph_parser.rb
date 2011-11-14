@@ -32,7 +32,7 @@ module Qernel
 
     def self.gql_stubbed(g)      
       raise "GraphParser.gql_stubbed only workds in test" unless Rails.env.test?
-      gql = Current.gql = Gql::Gql.new(nil)
+      gql = Current.gql = Gql::Gql.new(nil, nil)
       Current.scenario = Scenario.default
 
       p = new(g).build
