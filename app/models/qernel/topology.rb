@@ -11,9 +11,9 @@ module Qernel
           code = (self.code || self.full_key.to_s.split("_").map{|k| k[0]}.join('').upcase).to_s
           code = "00#{code}" if code.length == 1
           code = "0#{code}" if code.length == 2
-          "[#{code}]"
+          "#{code}"
         end
-      
+
         def to_topology
           [
             [topology_key, key, sector_key, use_key, energy_balance_group, groups.join(GROUPS_SEPARATOR)].join(";\t"),
