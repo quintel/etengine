@@ -26,7 +26,7 @@ class Graph
                 :year,
                 :graph_id
 
-  # ---- DatasetAttributes ----------------------------------------
+  # ---- DatasetAttributes ----------------------------------------------------
 
   def dataset_key
     :graph
@@ -295,7 +295,6 @@ class Graph
     end
     return g
   end
-  
 
 private
 
