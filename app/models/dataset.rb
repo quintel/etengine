@@ -47,6 +47,17 @@ class Dataset < ActiveRecord::Base
     Marshal.load marshal
   end
 
+  # @return [Qernel::Dataset] The calculated present dataset.
+  def to_calculated_qernel
+    marshal = Rails.cache.fetch("/datasets/#{self.id}/#{self.updated_at.to_i}/calculated_qernel") do
+      graph = self.graph.present_qernel
+      graph.dataset = to_qernel
+      graph.calculate
+      Marshal.dump(graph.dataset)
+    end
+    Marshal.load marshal
+  end
+
   def time_curves
     #marshal = Rails.cache.fetch("/dataset/#{id}/time_curves/#{updated_at.to_i}") do
     entries = self.time_curve_entries
