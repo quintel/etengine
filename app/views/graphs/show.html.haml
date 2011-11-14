@@ -3,3 +3,34 @@
   = sprocket_layout_init :senkey  
 
 %h2 Graph
+
+
+#blueprint_layout
+  %ul
+    %li Shift + click: highlight links
+    %li ALT + Shift + click: hide converter
+    %li Double-click on converter to open details in new converter
+    %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
+    %li= graphviz_attribute_selector
+    %li= graphviz_toggle_sectors
+
+#holder
+:javascript
+  var data_json_url = "#{data_blueprint_layout_path(:id => @blueprint_layout, :blueprint_id => 'latest', :region_code => 'nl', :format => 'json')}";  
+  var converter_url_prefix = "#{data_converters_path(:blueprint_id => 'latest', :region_code => 'nl')}";
+  var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout.id, :blueprint_id => 'latest', :region_code => 'nl')}";
+
+
+  var r = Raphael("holder", 8000, 10000).initZoom();
+  var data;
+
+  $.getJSON(data_json_url, function(json_data) {
+    data = json_data;
+    for (var key in data['present']['1']) {
+      $('#attribute').append($('<option></option>').val(key).html(key));
+    }
+  })
+
+= javascript_include_tag data_blueprint_layout_path(:id => @blueprint_layout.id, :format => 'js', :blueprint_id => 'latest', :region_code => 'nl')
+
+
