@@ -38,7 +38,7 @@ GEM
       activemodel (= 3.0.10)
       activesupport (= 3.0.10)
     activesupport (3.0.10)
-    airbrake (3.0.5)
+    airbrake (3.0.4)
       activesupport
       builder
     annotate (2.4.0)
@@ -179,7 +179,7 @@ PLATFORMS
 DEPENDENCIES
   active_reload
   activerecord-import
-  airbrake (~> 3.0.5)
+  airbrake (= 3.0.4)
   annotate
   authlogic
   awesome_print
