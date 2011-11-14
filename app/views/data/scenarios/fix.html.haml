@@ -9,26 +9,28 @@
   input_ids = [344,341,343,242]  
   number_of_inputs_set = input_ids.map{|id| inputs[id]}.compact.count
   
+  old_344 = inputs[344]
+  old_341 = inputs[341]
+  old_343 = inputs[343]
+  old_242 = inputs[242]
+  
   if number_of_inputs_set == 0
     msg = 'No inputs set, I\'m not changing anything'
   elsif number_of_inputs_set == 4
     msg = 'All inputs set, this is the new data'
   else
+    
     inputs[344] ||= 0.0
     inputs[341] ||= 4.4
     inputs[343] ||= 0.0
     inputs[242] ||= 0.0
   
-    msg = 'Some inputs are set, I update the missing one with defaults and apply these values'
+    msg = "Some inputs are set (#{number_of_inputs_set}), I update the missing one with defaults and apply these values"
   end
   
 %h2 Fixing scenario
 
 %p= msg
-
-%h3 Old values:
-
-
 
 :ruby
   sum = input_ids.map{|id| inputs[id]}.compact.sum.to_f
@@ -41,27 +43,33 @@
 %table
   %tr
     %td Input
-    %td Old
+    %td Was
+    %td After defaults
     %td new
   %tr
     %td Geothermal (344):
+    %td= old_344
     %td= inputs[344]
     %td= i344_new
   %tr
     %td District Heating (341)
+    %td= old_341
     %td= inputs[341]
     %td= i341_new
   %tr
     %td Biomass CHP (343)
+    %td= old_343
     %td= inputs[343]
     %td= i343_new
   %tr
     %td Gas CHP (242)
+    %td= old_242
     %td= inputs[242]
     %td= i242_new
   %tr
     %td Space heating from district heating(582)
     %td (new)
+    %td
     %td= i582_new
 
 - unless params[:force]
