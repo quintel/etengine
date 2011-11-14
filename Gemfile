@@ -5,7 +5,6 @@ gem 'rails', '3.0.10'
 gem 'jquery-rails', '~> 1.0.14'
 gem 'haml', '~>3.1.3'
 gem 'sass', '~>3.1.7'
-gem 'rake', '0.9.2' # 0.9 breaks things
 
 gem 'authlogic'
 gem 'cancan'
@@ -18,7 +17,6 @@ gem 'tabs_on_rails'
 gem 'kaminari'
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 
-
 # for etsource
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import'
@@ -29,7 +27,7 @@ gem 'sprockets-rails'
 gem 'rack-sprockets'
 
 # supporting gems
-gem 'airbrake', '3.0.4'
+gem 'airbrake', '~> 3.0.5'
 
 # system gems
 # gem 'thinking-sphinx', '>=2.0.1'
