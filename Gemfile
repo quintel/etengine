@@ -27,7 +27,7 @@ gem 'sprockets-rails'
 gem 'rack-sprockets'
 
 # supporting gems
-gem 'airbrake', '~> 3.0.5'
+gem 'airbrake', '3.0.4'
 
 # system gems
 # gem 'thinking-sphinx', '>=2.0.1'

@@ -142,6 +142,9 @@ class Gql
     if rescue_with == :debug
       ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
     elsif rescue_with == :airbrake
+      # TODO: something's broken here with airbrake 3.0.5:
+      # undefined method `backtrace' for #<Hash:0x007fda54900b88> ?!
+      # https://github.com/airbrake/airbrake/issues/19
       Airbrake.notify(:error_message => e.message, :backtrace => caller)
       ResultSet::INVALID
     elsif rescue_with.present?
