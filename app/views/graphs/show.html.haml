@@ -13,6 +13,9 @@
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
     %li= graphviz_attribute_selector
     %li= graphviz_toggle_sectors
+    %li
+      = link_to_function '+', 'zoomIn()'
+      = link_to_function '-', 'zoomOut()'
 
 #holder
 :javascript
@@ -30,6 +33,16 @@
       $('#attribute').append($('<option></option>').val(key).html(key));
     }
   })
+  
+  function zoomIn() {
+    var z = r.zoom;
+    r.setZoom(z * 1.1);
+  }
+
+  function zoomOut() {
+    var z = r.zoom;
+    r.setZoom(z * 0.9);
+  }
 
 = javascript_include_tag data_blueprint_layout_path(:id => @blueprint_layout.id, :format => 'js', :blueprint_id => 'latest', :region_code => 'nl')
 
