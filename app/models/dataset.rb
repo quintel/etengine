@@ -59,7 +59,6 @@ class Dataset < ActiveRecord::Base
   end
 
   def time_curves
-    #marshal = Rails.cache.fetch("/dataset/#{id}/time_curves/#{updated_at.to_i}") do
     entries = self.time_curve_entries
     time_curves = entries.select(&:preset_demand?).group_by(&:converter_id)
     time_curves.each do |key,arr|
@@ -71,8 +70,6 @@ class Dataset < ActiveRecord::Base
       time_curves[key] = hsh
     end
     time_curves
-    #end
-    #Marshal.load marshal
   end
 
 

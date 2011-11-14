@@ -17,6 +17,7 @@ module Etsource
       "#{base_dir}/#{country}/export.yml"
     end
 
+<<<<<<< HEAD
     # @return [Hash] {'nl' => {Qernel::Dataset}}
     #
     def import
@@ -52,6 +53,22 @@ module Etsource
     end
     
     def export(country = 'nl')
+=======
+    def import
+      country = 'nl'
+      yml = YAML::load(File.read(country_dir(country)))
+      fnv = FNV.new
+      dataset = {}
+      yml.each do |k,v|
+        dataset[fnv.fnv1a_32(k.to_s)] = v
+      end
+      dataset
+    end
+    
+    def export
+      country = 'nl'
+      
+>>>>>>> Etsource::Dataset#import / #export
       gql = Gql::Gql.new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
       FileUtils.mkdir_p country_dir(country)
       
