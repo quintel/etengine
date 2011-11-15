@@ -17,20 +17,41 @@ module Etsource
       "#{base_dir}/#{country}/export.yml"
     end
 
+    # @return [Hash] {'nl' => {Qernel::Dataset}}
+    #
     def import
-      country = 'nl'
-      yml = YAML::load(File.read(country_dir(country)))
-      fnv = FNV.new
-      dataset = {}
-      yml.each do |k,v|
-        dataset[fnv.fnv1a_32(k.to_s)] = v
+      countries = Dir.entries(base_dir).select{|dir| (dir =~ /\w+/) && File.directory?("#{base_dir}/#{dir}")}
+      countries.inject({}) do |hsh, dir|
+        hsh.merge dir => import_country(dir)
       end
+    end
+
+    # Importing dataset and convert into the Qernel::Dataset format.
+    # The yml file is a flat (no nested key => values) hash. We move it to a nested hash
+    # and also have to convert the keys into a numeric using a hashing function (FNV 1a),
+    # the additional nesting of the hash, and hashing ids as strings are mostly for 
+    # performance reasons.
+    # 
+    def import_country(country = 'nl')
+      fnv = FNV.new # Hashing method
+      
+      yml = YAML::load(File.read(country_dir(country)))
+      dataset = Qernel::Dataset.new(fnv.fnv1a_32(country))
+
+      yml.each do |key,attributes|
+        key = key.to_s
+        key_hashed = fnv.fnv1a_32(key)
+        group = if key.include?('-- ')  then :link
+                elsif key.include?('(') then :slot
+                else :converter
+                end
+        dataset.<<(group, key_hashed => attributes)
+      end
+
       dataset
     end
     
-    def export
-      country = 'nl'
-      
+    def export(country = 'nl')
       gql = Gql::Gql.new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
       FileUtils.mkdir_p country_dir(country)
       
