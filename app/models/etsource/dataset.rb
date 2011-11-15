@@ -19,6 +19,9 @@ module Etsource
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cf295c684ee2c6e9e2439a48f5c5c006e29bc547
     # @return [Hash] {'nl' => {Qernel::Dataset}}
     #
     def import
@@ -54,6 +57,7 @@ module Etsource
     end
     
     def export(country = 'nl')
+<<<<<<< HEAD
 =======
 =======
     # @return [Hash] {'nl' => {Qernel::Dataset}}
@@ -99,6 +103,8 @@ module Etsource
 =======
     def export(country = 'nl')
 >>>>>>> import multiple countries to Qernel::Dataset
+=======
+>>>>>>> cf295c684ee2c6e9e2439a48f5c5c006e29bc547
       gql = Gql::Gql.new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
       FileUtils.mkdir_p country_dir(country)
       
