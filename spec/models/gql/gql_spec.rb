@@ -5,6 +5,8 @@ module Gql
     describe "Integration Testing" do
       before do
         @gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
+        @gql.present_graph.year = 2010
+        @gql.future_graph.year = 2040
       end
 
       it "should properly calculate" do
@@ -67,6 +69,8 @@ module Gql
       end
 
 
+
+      # --------- Updating ----------------------------------------------------
 
       context "v1 to v2" do
         describe "attr_name = growth_rate" do

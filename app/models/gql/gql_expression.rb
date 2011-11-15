@@ -158,7 +158,6 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.all_converters
   end
 
-  ##
   # Executes a subquery with the given key (all stored Gqueries (see /admin/gqueries) can act as subquery): *QUERY( total_energy_cost )*
   #
   # @param keys [String] The key of the subquery (Gquery)
@@ -170,6 +169,23 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   alias Q QUERY
   # @deprecated
   alias SUBQUERY QUERY
+
+  #     gql.query("QUERY( foo )") # => [[2010, 10],[2040, 300]]
+  #     gql.query("PRESENT_QUERY( foo )") # => [[2010, 10],[2040, 10]]
+  #
+  # @param keys [String] Key of a subquery that is run in the present
+  # @return [Float] The return value of the subquery
+  #
+  def PRESENT_QUERY(keys, arguments, scope)
+    Current.gql.present.subquery(keys.first)
+  end
+
+  # @param keys [String] Key of a subquery that is run in the future
+  # @return [Float] The return value of the subquery
+  #
+  def FUTURE_QUERY(keys, arguments, scope)
+    Current.gql.future.subquery(keys.first)
+  end
 
   ##
   # Children of a converter(s).
