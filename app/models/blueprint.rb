@@ -48,6 +48,19 @@ class Blueprint < ActiveRecord::Base
   def to_label
     "##{id} #{description}"
   end
+  
+  # Checks the dependent data
+  # Returns a boolean and an optional array of error messages.
+  # It is used when importing a zip file
+  #
+  def validate_topology!
+    errors = []
+    converter_records.each do |c|
+      errors << "Converter #{c.full_key} has no slots" if c.slots.blueprint(self).empty?
+    end
+    
+    return errors.empty?, errors
+  end
 
   ##
   #
