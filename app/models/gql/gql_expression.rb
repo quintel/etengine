@@ -170,8 +170,26 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   # @deprecated
   alias SUBQUERY QUERY
 
-  #     gql.query("QUERY( foo )") # => [[2010, 10],[2040, 300]]
-  #     gql.query("QUERY_PRESENT( foo )") # => [[2010, 10],[2040, 10]]
+  
+
+  #     Gquery.create(:key => 'graph_year', :query => "GRAPH(year)")
+  #
+  #     Current.gql.query("Q(graph_year)")
+  #     # => 2010, 2040
+  # 
+  #     Current.gql.query("QUERY_PRESENT(graph_year)")
+  #     # => 2010, 2010
+  #   
+  #     Current.gql.query("QUERY_FUTURE(graph_year)")
+  #     # => 2040, 2040
+  #   
+  #     # 2040 - 2010
+  #     Current.gql.query("SUM(QUERY_FUTURE(graph_year),NEG(QUERY_PRESENT(graph_year)))")
+  #     # => 30, 30 
+  #   
+  #     # prefixing it with future/present has no influence
+  #     Current.gql.query("present:SUM(QUERY_FUTURE(graph_year),NEG(QUERY_PRESENT(graph_year)))")
+  #     # => 30, 30 
   #
   # @param keys [String] Key of a subquery that is run in the present
   # @return [Float] The return value of the subquery
