@@ -27,6 +27,9 @@ class CsvImport
       create_blueprint_converter_group_associations(blueprint)
       create_blueprint_slots(blueprint)
       create_blueprint_links(blueprint)
+      
+      valid, errors = blueprint.validate_topology!
+      raise errors.join(", ") unless valid
     end
     blueprint
   end
@@ -48,7 +51,7 @@ class CsvImport
   end
 
   private
-    
+  
     #
     # Dataset objects
     #

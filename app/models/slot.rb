@@ -36,10 +36,8 @@ class Slot < ActiveRecord::Base
   
   validates :blueprint, :presence => true
   validates :carrier,   :presence => true
-  
   validates :converter, :presence => true
-
-  validate :converter_must_belong_to_blueprint
+  validate  :converter_must_belong_to_blueprint
   
   def input?
     direction == INPUT_DIRECTION
