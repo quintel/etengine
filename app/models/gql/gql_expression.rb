@@ -171,19 +171,19 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   alias SUBQUERY QUERY
 
   #     gql.query("QUERY( foo )") # => [[2010, 10],[2040, 300]]
-  #     gql.query("PRESENT_QUERY( foo )") # => [[2010, 10],[2040, 10]]
+  #     gql.query("QUERY_PRESENT( foo )") # => [[2010, 10],[2040, 10]]
   #
   # @param keys [String] Key of a subquery that is run in the present
   # @return [Float] The return value of the subquery
   #
-  def PRESENT_QUERY(keys, arguments, scope)
+  def QUERY_PRESENT(keys, arguments, scope)
     Current.gql.present.subquery(keys.first)
   end
 
   # @param keys [String] Key of a subquery that is run in the future
   # @return [Float] The return value of the subquery
   #
-  def FUTURE_QUERY(keys, arguments, scope)
+  def QUERY_FUTURE(keys, arguments, scope)
     Current.gql.future.subquery(keys.first)
   end
 

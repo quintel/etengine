@@ -14,14 +14,14 @@ module Gql
       @gql.query("GRAPH(year)").future_value.should == 2040
     end
 
-    it "should return present graph when running PRESENT_QUERY(GRAPH(year))" do
+    it "should return present graph when running QUERY_PRESENT(GRAPH(year))" do
       Gquery.stub!('get').with('graph_year').and_return(Gquery.new(:key => 'graph_year', :query => "GRAPH(year)"))
       @gql.query("Q(graph_year)").present_value.should == 2010
       @gql.query("Q(graph_year)").future_value.should == 2040
-      @gql.query("PRESENT_QUERY(graph_year)").present_value.should == 2010
-      @gql.query("PRESENT_QUERY(graph_year)").future_value.should  == 2010
-      @gql.query("FUTURE_QUERY(graph_year)").present_value.should  == 2040
-      @gql.query("FUTURE_QUERY(graph_year)").future_value.should   == 2040
+      @gql.query("QUERY_PRESENT(graph_year)").present_value.should == 2010
+      @gql.query("QUERY_PRESENT(graph_year)").future_value.should  == 2010
+      @gql.query("QUERY_FUTURE(graph_year)").present_value.should  == 2040
+      @gql.query("QUERY_FUTURE(graph_year)").future_value.should   == 2040
     end
  end
 
@@ -144,8 +144,8 @@ module Gql
       end
     end
 
-    describe "PRESENT_QUERY" do
-      pending "PRESENT_QUERY( foo ) should return the result of gquery 'foo' of present graph" 
+    describe "QUERY_PRESENT" do
+      pending "QUERY_PRESENT( foo ) should return the result of gquery 'foo' of present graph" 
     end
 
     describe "INVALID_TO_ZERO" do
