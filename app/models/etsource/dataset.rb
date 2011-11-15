@@ -18,6 +18,7 @@ module Etsource
     end
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     # @return [Hash] {'nl' => {Qernel::Dataset}}
     #
     def import
@@ -54,21 +55,50 @@ module Etsource
     
     def export(country = 'nl')
 =======
+=======
+    # @return [Hash] {'nl' => {Qernel::Dataset}}
+    #
+>>>>>>> import multiple countries to Qernel::Dataset
     def import
-      country = 'nl'
-      yml = YAML::load(File.read(country_dir(country)))
-      fnv = FNV.new
-      dataset = {}
-      yml.each do |k,v|
-        dataset[fnv.fnv1a_32(k.to_s)] = v
+      countries = Dir.entries(base_dir).select{|dir| (dir =~ /\w+/) && File.directory?("#{base_dir}/#{dir}")}
+      countries.inject({}) do |hsh, dir|
+        hsh.merge dir => import_country(dir)
       end
+    end
+
+    # Importing dataset and convert into the Qernel::Dataset format.
+    # The yml file is a flat (no nested key => values) hash. We move it to a nested hash
+    # and also have to convert the keys into a numeric using a hashing function (FNV 1a),
+    # the additional nesting of the hash, and hashing ids as strings are mostly for 
+    # performance reasons.
+    # 
+    def import_country(country = 'nl')
+      fnv = FNV.new # Hashing method
+      
+      yml = YAML::load(File.read(country_dir(country)))
+      dataset = Qernel::Dataset.new(fnv.fnv1a_32(country))
+
+      yml.each do |key,attributes|
+        key = key.to_s
+        key_hashed = fnv.fnv1a_32(key)
+        group = if key.include?('-- ')  then :link
+                elsif key.include?('(') then :slot
+                else :converter
+                end
+        dataset.<<(group, key_hashed => attributes)
+      end
+
       dataset
     end
     
+<<<<<<< HEAD
     def export
       country = 'nl'
       
 >>>>>>> Etsource::Dataset#import / #export
+=======
+    def export(country = 'nl')
+>>>>>>> import multiple countries to Qernel::Dataset
       gql = Gql::Gql.new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
       FileUtils.mkdir_p country_dir(country)
       
