@@ -65,7 +65,6 @@ class Dataset
     end
   end
 
-  ##
   # adds a collection of things that respond_to :to_qernel.dataset_key
   # @param [Array<#dataset_key and #attributes>] data
   #
