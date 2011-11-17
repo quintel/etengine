@@ -53,10 +53,11 @@ class Link
 
   # --------- Initialize ------------------------------------------------------
 
-  def initialize(id, parent, child, carrier, link_type, reversed = false)
-    @id = id
+  def initialize(id, input, output, carrier, link_type, reversed = false)
+    @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
+
     @reversed = reversed
-    @parent, @child, @carrier = parent, child, carrier
+    @parent, @child, @carrier = input, output, carrier
     
     self.link_type = link_type
 
@@ -89,7 +90,6 @@ protected
 
   def after_assign_object_dataset
     # if self.dependent?
-    #   puts(self.graph_parser_expression)
     #   @reversed = true
     # end
   end
@@ -251,24 +251,12 @@ public
     carrier and carrier.key
   end
 
-  def graph_parser_expression
-    slot_data = [
-      "#{input.andand.conversion}",
-      "#{output.andand.conversion}"
-    ].join(';')
-    str = "#{@carrier.key}[#{slot_data}]: "
-    str += "#{@parent.andand.key}(#{@parent.andand.demand || nil})"
-    str += " == #{@link_type.to_s[0]}(#{self.share || nil}) ==> "
-    str += "#{@child.andand.key}(#{@child.andand.demand || nil})"
-    str
-  end
-
   def name
     "#{@parent.name} <- #{@child.name}"
   end
 
   def inspect
-    "<Link parent:#{@parent.id} child:#{@child.id} share:#{share} value:#{value} carrier:#{@carrier.key}>"
+    "<Qernel::Link>"
   end
 
   # Helper method to get the associated active_record object.

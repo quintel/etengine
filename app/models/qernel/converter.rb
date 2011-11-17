@@ -139,7 +139,7 @@ class Converter
     @output_hash, @input_hash = {}, {}
 
     # TODO check if @key is ever used somewhere
-    @id = id.is_a?(Symbol) ? FNV.new.fnv1a_32(id.to_s) : id
+    @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id.to_s)
     @code = id
     
     @key = key
@@ -241,13 +241,13 @@ public
   def add_slot(slot)
     slot.converter = self
 
+    # carrier_key can be either a {Symbol} or a {Qernel::Carrier}
+    carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
     if slot.input?
-      carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
       @input_hash.merge! carrier_key => slot
     end
 
     if slot.output?
-      carrier_key = slot.carrier.key if slot.carrier.respond_to?(:key)
       @output_hash.merge! carrier_key => slot
     end
     reset_memoized_slot_methods
@@ -487,7 +487,7 @@ public
   end
 
   def inspect
-    full_key
+    "<Qernel::Converter full_key: #{full_key}>"
   end
 
   def to_image(depth = 1, svg_path = nil)

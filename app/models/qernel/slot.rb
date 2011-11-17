@@ -16,17 +16,17 @@ module Qernel
 #
 class Slot
   include DatasetAttributes
-  include Topology::SlotMethods
+  include Topology::Slot
 
 
   # --------- Accessor ---------------------------------------------------------
 
-  attr_accessor :converter, 
+  attr_accessor :carrier, 
+                :converter, 
                 :converter_id, 
                 :graph
 
-  attr_reader :carrier, 
-              :direction, 
+  attr_reader :direction, 
               :id
 
 
@@ -39,7 +39,8 @@ class Slot
   # --------- Initialize ------------------------------------------------------
 
   def initialize(id, converter, carrier, direction = :input)
-    @id = id
+    @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
+
     @converter = converter
     @carrier = carrier
     @direction = direction
@@ -222,7 +223,7 @@ class Slot
   # --------- Debug -----------------------------------------------------------
 
   def inspect
-    "slot_#{id}"
+    "<Qernel::Slot id:#{id}>"
   end
   
   # Helper method to get the associated active_record object.

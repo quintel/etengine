@@ -1,20 +1,12 @@
 module Etsource
   class Dataset
-    def initialize(etsource)
-      @etsource = etsource || Etsource::Base.new
+    def initialize(etsource = Etsource::Base.new)
+      @etsource = etsource
     end
 
-    def import!
-    end
-
-    def base_dir
-      "#{@etsource.base_dir}/datasets"
-    end
-
-    # @param [String] country shortcut 'de', 'nl', etc
-    #
-    def country_dir(country)
-      "#{base_dir}/#{country}/export.yml"
+    def dataset(country)
+      @datasets ||= import
+      @datasets[country.to_sym]
     end
 
     # @return [Hash] {'nl' => {Qernel::Dataset}}
@@ -22,7 +14,7 @@ module Etsource
     def import
       countries = Dir.entries(base_dir).select{|dir| (dir =~ /\w+/) && File.directory?("#{base_dir}/#{dir}")}
       countries.inject({}) do |hsh, dir|
-        hsh.merge dir => import_country(dir)
+        hsh.merge dir.to_sym => import_country(dir)
       end
     end
 
@@ -33,45 +25,75 @@ module Etsource
     # performance reasons.
     # 
     def import_country(country = 'nl')
-      fnv = FNV.new # Hashing method
-      
-      yml = YAML::load(File.read(country_dir(country)))
-      dataset = Qernel::Dataset.new(fnv.fnv1a_32(country))
+      yml = YAML::load(File.read(country_file(country)))
+      dataset = Qernel::Dataset.new(Hashpipe.hash(country))
 
       yml.each do |key,attributes|
-        key = key.to_s
-        key_hashed = fnv.fnv1a_32(key)
-        group = if key.include?('-- ')  then :link
+        key = key.to_s.gsub(/\s/, '')
+        key_hashed = Hashpipe.hash(key)
+        group = if key.include?('-->')  then :link
                 elsif key.include?('(') then :slot
-                else :converter
                 end
-        dataset.<<(group, key_hashed => attributes)
-      end
+        group ||= :converter
 
+        attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
+        dataset.<<(group, key_hashed => attrs)
+      end
+      dataset.<<(:area, :area_data => {})
       dataset
     end
     
-    def export(country = 'nl')
-      gql = Gql::Gql.new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
-      FileUtils.mkdir_p country_dir(country)
+    def export(countries)
+      countries.each{|c| export_country(c)}
+    end
+
+    def export_country(country = 'nl')
+      gql = Gql::Gql.load(country)
       
-      File.open(country_dir(country), 'w') do |out|
+      FileUtils.mkdir_p base_dir+"/"+country
+      
+      File.open(country_file(country), 'w') do |out|
         out << '---'
-        g = gql.tap(&:assign_dataset).future_graph # the future graph is not calculated.
-        g.converters.each do |converter|
-          out << YAML::dump({converter.topology_key => converter.object_dataset}).gsub(/^\"/,'').gsub('":',':').gsub('---','')
+        
+        # Assign datasets w/o calculating. Use future graph (present is precalculated).
+        graph = gql.tap(&:assign_dataset).future_graph
+        graph.converters.each do |converter|
+          # Remove the "" from the keys, to make the file look prettier. 
+          #     "KEY": { values } => KEY: { values }
+          yml = YAML::dump({converter.topology_key => converter.object_dataset}) 
+          yml = yml.gsub(/^\"/,'').gsub('":',':').gsub('---','')
+          
+          out << yml
+
           converter.outputs.each do |slot|
-            out << "#{slot.topology_key}: #{slot.object_dataset.inspect}\n"
+            attrs = slot.object_dataset.map{|k,v| "#{k}: #{v.inspect}"}.join(', ')
+            out << "#{slot.topology_key}: {#{attrs}}\n"
           end
           converter.inputs.each do |slot|
-            out << "#{slot.topology_key}: #{slot.object_dataset.inspect}\n"
+            attrs = slot.object_dataset.map{|k,v| "#{k}: #{v.inspect}"}.join(', ')
+            out << "#{slot.topology_key}: {#{attrs}}\n"
             slot.links.each do |link|
-              out << "#{link.topology_key}: #{link.object_dataset.inspect}\n"
+              attrs = link.object_dataset.map{|k,v| "#{k}: #{v.inspect}"}.join(', ')
+              out << "#{link.topology_key}: {#{attrs}}\n"
             end
           end
         end
       end
     end
-    
+
+  #########
+  protected
+  #########
+
+    def base_dir
+      "#{@etsource.base_dir}/datasets"
+    end
+
+    # @param [String] country shortcut 'de', 'nl', etc
+    #
+    def country_file(country)
+      "#{base_dir}/#{country}/export.yml"
+    end
+ 
   end
 end

@@ -73,6 +73,13 @@ class Gql
     @dataset = dataset.is_a?(Dataset) ? dataset : Dataset.latest_from_country(dataset)
   end
 
+  # Loads the {Qernel::Graph} and {Qernel::Dataset} of given country
+  # @params [String] country
+  #
+  def self.load(country)
+    new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
+  end
+
   def scenario
     Current.scenario
   end

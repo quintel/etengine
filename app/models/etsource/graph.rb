@@ -1,63 +1,76 @@
 module Etsource
   class Graph
-    def initialize(etsource)
+
+    def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
     end
 
-    def import!
+    def graph(country = 'nl')
+      @graph ||= import
+      @graph.dataset = Etsource::Dataset.new.dataset(country)
+      @graph
     end
 
-    def base_dir
-      "#{@etsource.base_dir}/topology"
-    end
+
 
     def import
-      ids = []
+      converters = {}
 
-      converters, slot_lines, link_lines = [], [], []
-      
-      Dir.glob("#{base_dir}/*.topology").each do |f|
-        lines = File.read(f).lines
-        converters += lines.select{|l| l =~ /^\[\w+\];/ }.map{|l| Qernel::Converter.import(l) }.group_by(&:code)
-        slot_lines += lines.select{|l| l =~ /^\[\w+\]-\(\w+\)/ } # match [ABC0123]-(ADasdf2)
-        link_lines += lines.select{|l| l =~ /--\w-->/ } # 
+      each_file do |lines| # Initialize all converters first, before we map slots and links to them.
+        converters.merge! lines.select{|l| l =~ /^\w+;/ }.map{|l| Qernel::Converter.import(l) }.inject({}) {|h,k| h.merge k.code => k}
       end
       
+      each_file do |lines|
+        lines.map{|l| Qernel::Slot::Token.find(l) }.flatten.uniq(&:code).each do |token|
+          converter = converters[token.converter_key]
+          slot = Qernel::Slot.new(token.code, converter, carrier(token), token.direction)
+          converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
+        end
+
+        lines.map{|l| Qernel::Link::Token.find(l) }.flatten.each do |link|
+          Qernel::Link.new(link.code, converters[link.input_key], converters[link.output_key], carrier(link), link.link_type)
+        end
+      end
+
+      graph = Qernel::Graph.new(converters.values).tap{|g| g.connect_qernel }
+
     end
     
     def export
-    end
-    
-    def export_topology
-      
-      File.open("#{base_dir}/#{export.topology}", 'w') do |out|
-        Current.gql.tap(&:assign_dataset).present_graph.converters.each do |converter|
+      FileUtils.mkdir_p(base_dir)
+      File.open(topology_file, 'w') do |out|
+        Current.gql.prepare
+        Current.gql.present_graph.converters.each do |converter|
           out << converter.to_topology
           out << "\n\n"
         end
       end
     end
     
-    def export_dataset
-      #File.mkdir_p("#{base_dir}/dataset/")
+    def carrier(obj)
+      key = obj.respond_to?(:carrier_key) ? obj.carrier_key : obj
+      @carriers ||= {}
+      @carriers[key] ||= Qernel::Carrier.new(Hashpipe.hash(key), key, 0)
+    end
 
-      File.open("#{base_dir}/dataset/export.yml", 'w') do |out|
-        out << '---'
-        g = Current.gql.tap(&:assign_dataset).future_graph # the future graph is not calculated.
-        g.converters.each do |converter|
-          out << YAML::dump({converter.topology_key => converter.object_dataset}).gsub('"[','[').gsub(']"',']').gsub('---','')
-          converter.outputs.each do |slot|
-            out << "#{slot.topology_key}: #{slot.object_dataset.inspect}\n"
-          end
-          converter.inputs.each do |slot|
-            out << "#{slot.topology_key}: #{slot.object_dataset.inspect}\n"
-            slot.links.each do |link|
-              out << "#{link.topology_key}: #{link.object_dataset.inspect}\n"
-            end
-          end
-        end
+  #########
+  protected
+  #########
+
+    def each_file(&block)
+      Dir.glob("#{base_dir}/*.graph").each do |f|
+        lines = File.read(f).lines
+        yield lines if block_given?
       end
     end
     
+    def topology_file
+      "#{base_dir}/export.graph"
+    end
+
+    def base_dir
+      "#{@etsource.base_dir}/graph"
+    end
+
   end
 end
