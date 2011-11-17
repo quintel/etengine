@@ -1,4 +1,5 @@
 = simple_form_for [:data, @area], :url => data_area_path(:id => @area.id) do |f|
+  = f.association :parent, :collection => Area.all(:order => 'country').map{|a| [a.country, a.id]}
   - Area.editable_column_names.each do |key|
     = f.input key
   = f.button :submit
