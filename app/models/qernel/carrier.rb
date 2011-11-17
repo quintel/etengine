@@ -40,8 +40,8 @@ class Carrier
   # @param infinite [Float]
   #
   def initialize(id, key, infinite)
-    self.id = id
-
+    self.id = id.is_a?(Numeric) ? id : Hashpipe.hash(key)
+    
     self.key = key.andand.to_sym
     self.infinite = infinite
 

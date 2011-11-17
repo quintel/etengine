@@ -79,7 +79,6 @@ class Link < ActiveRecord::Base
     child_id
   end
 
-  ##
   # converter to the left
   #
   def id_of_output_converter

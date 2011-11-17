@@ -42,6 +42,15 @@ class Graph
     self.area = Qernel::Area.new(self)
   end
 
+  def connect_qernel
+    converters.each do |converter|
+      converter.graph = self
+      converter.slots.each {|s| s.graph = self}
+    end
+    links.each {|obj| obj.graph = self }
+    # carriers.each {|obj| obj.graph = self }
+  end
+
   def converters=(converters)
     @converters = converters
     @converters.each{|converter| converter.graph = self }
@@ -58,8 +67,6 @@ class Graph
 
   def each_dataset_object_item(method_name)
     self.send(method_name)
-    self.area.send(method_name)
-    self.carriers.each(&method_name)
     self.converters.each do |c|
       c.query.send(method_name)
       c.send(method_name)
@@ -67,6 +74,8 @@ class Graph
       c.inputs.each(&method_name)
       c.outputs.each(&method_name)
     end
+    self.area.send(method_name)
+    self.carriers.each(&method_name)
   end
 
   def reset_dataset_objects
@@ -78,7 +87,7 @@ class Graph
   end
 
   def calculated?
-    dataset_get(:calculated)
+    dataset_get(:calculated) == true
   end
 
   def time_curves
