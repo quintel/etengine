@@ -91,7 +91,7 @@ Etm::Application.routes.draw do
       resources :blueprints, :except => [:edit, :update, :destroy]
       resources :inputs, :except => :show
       resources :blueprint_models, :only => :index
-      resources :scenarios, :only => [:index, :show] do
+      resources :scenarios, :only => [:index, :show, :edit, :update] do
         put :fix, :on => :member
       end
       resources :energy_balance_groups

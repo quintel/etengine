@@ -1,11 +1,25 @@
 class Data::ScenariosController < Data::BaseController
-  before_filter :find_scenario, :only => [:show, :fix]
+  before_filter :find_scenario, :only => [:show, :fix, :edit, :update]
   
   def index
-    @scenarios = Scenario.page(params[:page]).per(35)
+    base = Scenario.scoped
+    base = base.by_name(params[:q]) if params[:q]
+    base = base.in_start_menu if params[:in_start_menu]
+    @scenarios = base.page(params[:page]).per(35)
   end
 
   def show
+  end
+  
+  def edit
+  end
+  
+  def update
+    if @scenario.update_attributes(params[:scenario])
+      redirect_to data_scenario_path(:id => @scenario.id), :notice => 'Scenario updated'
+    else
+      render :edit
+    end
   end
   
   def fix

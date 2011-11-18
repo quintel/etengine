@@ -1,9 +1,17 @@
 - breadcrumb 'Scenarios'
+%section#search_box
+  = form_tag data_scenarios_path, :method => :get do
+    = search_field_tag :q, params[:q], :placeholder => 'search'
+    = check_box_tag :in_start_menu, 1, params[:in_start_menu]
+    In start menu
+    = check_box_tag :protected, 1, params[:protected]
+    Protected
+    = submit_tag "search"
 
 %table
   %thead
     %tr
-      %th{:colspan => 6} Scenario count: #{Scenario.count}
+      %th{:colspan => 8} Scenario count: #{Scenario.count}
     %tr
       %th Id
       %th Title
@@ -11,9 +19,11 @@
       %th Country
       %th Region
       %th In start menu
+      %th Protected
+      %th
   %tfoot
     %tr
-      %td{:colspan => 6}= paginate @scenarios
+      %td{:colspan => 8}= paginate @scenarios
   %tbody
     - @scenarios.each do |s|
       %tr
@@ -23,3 +33,5 @@
         %td= s.country
         %td= s.region
         %td= 'V' if s.in_start_menu
+        %td= 'V' if s.protected
+        %td= link_to 'edit', edit_data_scenario_path(:id => s.id)

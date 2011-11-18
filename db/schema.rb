@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111109105129) do
+ActiveRecord::Schema.define(:version => 20111118105304) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -433,9 +433,11 @@ ActiveRecord::Schema.define(:version => 20111109105129) do
     t.string   "type"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
+    t.boolean  "protected"
   end
 
   add_index "scenarios", ["in_start_menu"], :name => "index_scenarios_on_in_start_menu"
+  add_index "scenarios", ["protected"], :name => "index_scenarios_on_protected"
   add_index "scenarios", ["user_id"], :name => "index_scenarios_on_user_id"
 
   create_table "slots", :force => true do |t|
