@@ -81,6 +81,16 @@ class Data::GqueriesController < Data::BaseController
     redirect_to data_gqueries_url
   end
   
+  # Like show, but finding the gquery by key. I keep the two actions separated
+  def key
+    @gquery = Gquery.find_by_key(params[:key])
+    if @gquery
+      render :show
+    else
+      redirect_to data_gqueries_path(:q => params[:key]), :alert => 'Gquery key not found!'
+    end
+  end
+  
   private
 
     def find_model
