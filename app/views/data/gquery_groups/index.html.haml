@@ -1,0 +1,15 @@
+- breadcrumb link_to "Gqueries", data_gqueries_path
+- breadcrumb 'Groups'
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Key
+      %th Gqueries
+  %tbody
+    - @gquery_groups.each do |g|
+      %tr
+        %td= g.id
+        %td= link_to g.group_key, data_gquery_group_path(:id => g.group_key)
+        %td= g.gqueries.count

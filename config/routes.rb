@@ -72,6 +72,7 @@ Etm::Application.routes.draw do
       resources :converter_data, :only => [:edit, :update]
       
       resources :groups, :only => [:index, :show]
+      resources :gquery_groups, :only => [:index, :show]
 
       resources :carriers, :only => [:index, :edit] do 
         resource :carrier_data, :only => [:edit, :update]

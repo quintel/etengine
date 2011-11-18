@@ -1,15 +1,6 @@
 - breadcrumb "GQueries"
 = render 'search_box'
-
-%h2 Gqueries
-
-%p
-  = link_to 'Query sandbox', test_data_gqueries_path
-  |
-  = link_to 'Create new Gquery', new_data_gquery_path
-  |
-  = link_to 'Query Dump', dump_data_gqueries_path
-
+= render 'subnav'
 %table
   %thead
     %tr
@@ -37,4 +28,4 @@
         %td= gquery.deprecated_key
   %tfoot
     %tr
-      %td{:colspan => 8}= paginate @gqueries
+      %td{:colspan => 9}= paginate @gqueries
