@@ -62,6 +62,7 @@ Etm::Application.routes.draw do
           get :group_descriptions
         end
       end
+      match "/gqueries/key/:key" => "gqueries#key", :as => :gquery_key
 
       resources :fce_values
 
