@@ -68,7 +68,7 @@ module DataHelper
   
   def gqueries_autocomplete_map_cache
     Rails.cache.fetch "gqueries_autocomplete_map_cache" do
-      Gquery.all.map {|a| {label: a.key, url: data_gquery_path(:id => a.id)} }.to_json
+      Gquery.all.map {|a| {label: a.key, url: data_gquery_key_path(:key => a.key)} }.to_json
     end
   end
   

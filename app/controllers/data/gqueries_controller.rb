@@ -4,13 +4,6 @@ class Data::GqueriesController < Data::BaseController
   before_filter :find_model, :only => [:show, :edit]
 
   def index
-    # The :key parameter is only passed when the user clicks on the source of
-    # an existing gquery. I think we should move this code to a separate action
-    # PZ - Thu Oct 20 16:22:00 CEST 2011
-    if params[:key] && q = Gquery.by_key_or_deprecated_key(params[:key]).first
-      redirect_to data_gquery_path(:id => q.id) and return
-    end
-    
     sort = params[:sort] ? "`#{params[:sort]}`" : "`key`"
     order = params[:order] == 'ascending' ? "asc" : "desc" 
 
@@ -81,7 +74,8 @@ class Data::GqueriesController < Data::BaseController
     redirect_to data_gqueries_url
   end
   
-  # Like show, but finding the gquery by key. I keep the two actions separated
+  # Similar to the show action, but finding the gquery by key. It makes sense to
+  # keep the two actions separated
   def key
     @gquery = Gquery.find_by_key(params[:key])
     if @gquery
