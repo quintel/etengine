@@ -56,6 +56,7 @@ class Scenario < ActiveRecord::Base
   # it's a national preset scenario when there is no region defined and it's defined in the start menu
   scope :by_region, lambda {|region| where(:region => region) }
   scope :by_type, lambda {|type| where(:scenario_type => type.to_s)}
+  scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   scope :recent_first, order('created_at DESC')
 
