@@ -1,0 +1,14 @@
+- breadcrumb 'Converter Groups'
+
+%table
+  %thead
+    %tr
+      %th id
+      %th Key
+      %th Converters
+  %tbody
+    - @groups.each do |g|
+      %tr
+        %td= g.id
+        %td= link_to g.key, data_group_path(:id => g.key)
+        %td= g.converters.count

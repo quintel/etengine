@@ -41,6 +41,8 @@
           = link_to "Inputs", data_inputs_path
           = link_to "Query Tables", data_query_tables_path
           = link_to "Scenarios", data_scenarios_path
+      #subnav
+        = yield :subnav
       - if breadcrumbs.any?
         #breadcrumbs
           %nav

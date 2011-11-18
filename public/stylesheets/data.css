@@ -237,7 +237,21 @@ body {
     #subheader nav a:hover {
       background-color: white; }
 
+#subnav nav {
+  border-bottom: 1px solid #afafaf;
+  background-color: #cacaca; }
+  #subnav nav a {
+    border-right: 1px solid #919191;
+    padding: 5px 10px 5px 5px;
+    display: inline-block;
+    color: #3a3e41;
+    text-decoration: none;
+    font-size: 0.8em; }
+    #subnav nav a:hover {
+      background-color: white; }
+
 #breadcrumbs {
+  clear: both;
   background-color: #dfdfdf;
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#dfdfdf"}, endColorstr="#cccfd0");
   background-image: -moz-linear-gradient(center top, #dfdfdf, #cccfd0);
