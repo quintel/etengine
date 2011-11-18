@@ -34,7 +34,7 @@
   - Gquery.contains(@gquery.key).each do |gquery|
     %tr
       %td Gquery
-      %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
+      %td= link_to gquery.key, data_gquery_key_path(:key => gquery.key)
   - Input.embedded_gql_contains(@gquery.key).each do |input|
     %tr
       %td Input
