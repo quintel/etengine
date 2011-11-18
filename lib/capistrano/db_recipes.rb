@@ -1,7 +1,7 @@
 namespace :db do
   desc "Move production db to staging db, overwriting everything"
-  task :prod2staging do    
-    warning("You know what you're doing, right? You will overwrite the staging db!")
+  task :prod2staging_all do    
+    warning("You know what you're doing, right? You will overwrite the entire staging db!")
     
     puts "Loading production environment"
       production
@@ -15,42 +15,53 @@ namespace :db do
     puts "And filling staging with production data"
       load_sql_into_db(file)
   end
+  
+  desc "Copy users, and scenarios from production to staging with the exception of protected and preset scenarios"
+  task :prod2staging_safe_tables do
+    warning "users and (partially) scenarios tables on staging will be overwritten with production data"
+    puts "Loading production environment"
+      production
+    puts "Dumping tables #{db_name} to /tmp"
+      tables = %w{
+        users
+      }
+      file = dump_db_to_tmp(tables)
+    puts "Loading staging environment"
+      staging
+      puts "target database: #{db_name}"
+    puts "And filling staging with production data"
+      load_sql_into_db(file)
+      
+    puts "Now let's make a dump of the scenarios we don't need"
 
-  desc "Move staging db to production db, overwriting only the safe tables"
-  task :staging2prod do
-    tables = %w{
-      areas
-      carriers
-      converter_positions
-      converters
-      converters_groups
-      dataset_carrier_data
-      dataset_converter_data
-      dataset_link_data
-      dataset_slot_data
-      gql_test_cases
-      gqueries
-      gquery_groups
-      graphs
-      groups
-      inputs
-      links
-      query_table_cells
-      query_tables
-      slots
-      versions
-    }
-    # We're not updating scenarios!
-    
-    warning("You know what you're doing, right? You will overwrite most production tables!")
+    puts "Loading production environment"
+      production
+    puts "Dumping tables #{db_name} to /tmp"
+      file = dump_db_to_tmp(['scenarios'], "--where='in_start_page != 1 AND protected != 1' --skip-add-drop-table")
+    puts "Loading staging environment"
+      staging
+      puts "target database: #{db_name}"
+    puts "remove useless scenarios"
+      run_mysql_query "DELETE FROM scenarios WHERE in_start_page != 1 AND protected != 1"
+    puts "And filling staging with production data"
+      load_sql_into_db(file)
+
+  end  
+
+  desc "Move staging db to production db, overwriting everything"
+  task :staging2prod_all do    
+    warning("You know what you're doing, right? You will overwrite the entire production db!")
     
     puts "Loading staging environment"
       staging
-      # partial dump of staging
-      file = dump_db_to_tmp(tables)
-      get file
+    puts "Dumping database #{db_name} to /tmp"
+      file = dump_db_to_tmp
     puts "Loading production environment"
       production
+      puts "target database: #{db_name}"
+    puts "I should now be emptying production"
+      db.empty
+    puts "And filling production with staging data"
       load_sql_into_db(file)
   end
   
@@ -92,10 +103,10 @@ end
 
 # dumps the entire db to the tmp folder and returns the full filename
 # the optional tables parameter should be an array of string
-def dump_db_to_tmp(tables = [])
+def dump_db_to_tmp(tables = [], options = nil)
   file = "/tmp/#{db_name}.sql"
   puts "Exporting db to sql file, filename: #{file}"
-  run "mysqldump -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} #{tables.join(' ')}> #{file}"
+  run "mysqldump -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} #{tables.join(' ')} #{options} > #{file}"
   file
 end
 
@@ -110,4 +121,8 @@ def warning(msg)
   unless Capistrano::CLI.ui.agree(msg)
     puts "Wise man"; exit
   end
+end
+
+def run_mysql_query(q)
+  run "mysql -u #{db_user} --password=#{db_pass} --host=#{db_host} #{db_name} -e '#{q}'"
 end
