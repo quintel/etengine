@@ -70,6 +70,8 @@ Etm::Application.routes.draw do
         resource :converter_data, :only => [:edit, :update]
       end
       resources :converter_data, :only => [:edit, :update]
+      
+      resources :groups, :only => [:index, :show]
 
       resources :carriers, :only => [:index, :edit] do 
         resource :carrier_data, :only => [:edit, :update]
