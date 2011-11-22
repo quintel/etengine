@@ -67,6 +67,12 @@ class Scenario < ActiveRecord::Base
       scenario.copy_scenario_state(preset)
     end
   end
+  
+  after_initialize do |scenario|
+    scenario.touch :present_updated_at
+  end
+  
+  
 
   before_save :serialize_user_values
 
