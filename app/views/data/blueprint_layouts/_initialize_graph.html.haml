@@ -1,10 +1,7 @@
 #holder
-%script
-  == var converter_url_prefix = "#{data_converters_path()}";
-  == var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout)}";
-
-
 :javascript
+  var converter_url_prefix = "#{data_converters_path()}";
+  var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout)}";
   var r = Raphael("holder", 8000, 10000).initZoom();
   var data;
   
