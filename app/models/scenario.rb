@@ -160,16 +160,16 @@ class Scenario < ActiveRecord::Base
     
     sum = input_ids.map{|id| inputs[id]}.compact.sum.to_f
     i344_new = inputs[344] / sum * 100 rescue nil
-    i344_new = nil if i344_new.nan?
+    i344_new = nil if i344_new.try :nan?
     
     i341_new = inputs[341] / sum * 100 rescue nil
-    i341_new = nil if i341_new.nan?
+    i341_new = nil if i341_new.try :nan?
     
     i343_new = inputs[343] / sum * 100 rescue nil
-    i343_new = nil if i343_new.nan?
+    i343_new = nil if i343_new.try :nan?
     
     i242_new = inputs[242] / sum * 100 rescue nil
-    i242_new = nil if i242_new.nan?
+    i242_new = nil if i242_new.try :nan?
     
     i582_new = sum
     store_user_value(Input.find(344), i344_new)
