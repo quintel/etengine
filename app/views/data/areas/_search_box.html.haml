@@ -4,7 +4,7 @@
     = submit_tag "search"
 - content_for :footer do
   :ruby
-    area_autocomplete = Area.all.map {|a| {label: a.country, url: data_area_path(:id => a.id)} }
+    area_autocomplete = Area.order('country').all.map {|a| {label: a.country, url: data_area_path(:id => a.id)} }
   :javascript
     $(function(){
       $("input#q").autocomplete({

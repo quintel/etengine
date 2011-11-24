@@ -1,6 +1,6 @@
 class Data::CarriersController < Data::BaseController
   def index
-    @carriers = Carrier.all
+    @carriers = Carrier.order('name').all
   end
 
   def edit

@@ -3,7 +3,7 @@ class Data::InputsController < Data::BaseController
   cache_sweeper Sweepers::Input
   
   def index
-    @inputs = Input.by_name(params[:q])
+    @inputs = Input.by_name(params[:q]).order('`key`')
   end
 
   def edit
