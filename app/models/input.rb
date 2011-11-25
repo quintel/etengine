@@ -141,7 +141,7 @@ class Input < ActiveRecord::Base
     else
       # sometimes value ends up being nil. TODO: figure out why
       final_value = value ? (value / factor) : nil      
-      ActiveSupport::Notifications.instrument("gql.inputs.error", "#{key} value is nil") if final_value.nil?
+      ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
       {
         update_type => {
           keys => {
