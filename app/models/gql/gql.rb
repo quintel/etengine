@@ -180,10 +180,10 @@ class Gql
     prepare_present
     prepare_future
 
-    ActiveSupport::Notifications.instrument("gql.graph.calculate #{present_graph.year}") do
+    ActiveSupport::Notifications.instrument("gql.performance.graph.calculate #{present_graph.year}") do
       present_graph.calculate
     end
-    ActiveSupport::Notifications.instrument("gql.graph.calculate #{future_graph.year}") do
+    ActiveSupport::Notifications.instrument("gql.performance.graph.calculate #{future_graph.year}") do
       future_graph.calculate
     end
 
@@ -201,7 +201,7 @@ class Gql
   end
 
   def prepare_present
-    ActiveSupport::Notifications.instrument('gql.graph.prepare_present') do
+    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_present') do
       # DEBT wrong. check for present_updated_at!!
       if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
         present_graph.dataset ||= calculated_present_dataset
@@ -217,7 +217,7 @@ class Gql
   end
 
   def prepare_future
-    ActiveSupport::Notifications.instrument('gql.graph.prepare_future') do
+    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
       if Rails.env.test?
         future_graph.dataset ||= calculated_present_dataset
       else

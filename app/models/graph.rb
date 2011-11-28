@@ -59,7 +59,7 @@ class Graph < ActiveRecord::Base
   def future
     @future_graph = nil
 
-    ActiveSupport::Notifications.instrument("gql.graph.future_qernel") do
+    ActiveSupport::Notifications.instrument("gql.performance.graph.future_qernel") do
       @future_graph = self.class.future_qernel_for(self)
     end
 
@@ -68,8 +68,8 @@ class Graph < ActiveRecord::Base
 
   def present_qernel
     qernel = nil
-    ActiveSupport::Notifications.instrument("gql.graph.present_qernel") do
-      qernel = self.class.present_qernel_for(self)
+    ActiveSupport::Notifications.instrument("gql.performance.graph.present_qernel") do
+      qernel = present_qernel
     end
     qernel
   end
