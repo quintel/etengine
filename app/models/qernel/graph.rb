@@ -84,6 +84,7 @@ class Graph
   end
 
   def refresh_dataset_objects
+    # See Qernel::Dataset#assign_object_dataset to understand what's going on:    
     each_dataset_object_item(:assign_object_dataset)
     reset_goals
   end

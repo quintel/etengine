@@ -1,8 +1,10 @@
-##
-#
-#
-#
-#
+# This mixin is included by the qernel objects that have attributes defined
+# in a dataset. See Qernel::Dataset for a general introduction about the 
+# object. The Dataset object contains a huge hash with all the attributes
+# of the area, carriers, converters etc of the graph. Those attributes are
+# stored in the database in the dataset_*_data tables. Qernel::Dataset takes
+# care of loading them into a single hash.
+# Most of the methods defined in this mixin were made to access this hash.
 module Qernel::DatasetAttributes
 
   def self.included(klass)
@@ -11,6 +13,10 @@ module Qernel::DatasetAttributes
   end
 
   module ClassMethods
+    # This creates a bunch of pseudo attr_reader / attr_writer methods
+    # that delegate the storage to the Qernel::Dataset#data hash.
+    # In most Qernel objects you will see this method called with a list
+    # of the attributes stored in the dataset.    
     def dataset_accessors(dataset_attributes)
       dataset_attributes.each do |attr_name|
         attr_name_sym = attr_name.to_sym
@@ -39,6 +45,10 @@ module Qernel::DatasetAttributes
       self
     end
   
+  # The dataset belongs to the graph and the Qernel object belongs to the graph:
+  # let's get the dataset then. This assumes that the Qernel object has already
+  # been assigned a graph and the graph has a dataset too. Don't forget this when
+  # you're working with the console.
   def dataset
     graph && graph.dataset
   end
@@ -63,6 +73,9 @@ module Qernel::DatasetAttributes
   def after_assign_object_dataset
   end
 
+  # Here we make the object attributes a member of the object itself.
+  # The dataset_get/fetch methods act on this variable (which, btw, is
+  # made accessible with the attr_accessor at the beginning of this mixin)
   def assign_object_dataset
     if dataset
       @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
@@ -70,6 +83,12 @@ module Qernel::DatasetAttributes
     after_assign_object_dataset
   end
 
+  # Why was this commented out and replaced with the attr_accessor above?
+  # Without this memoized attribute we must hope somebody else has initialized
+  # the @object_dataset. This currently happens with the +assign_object_dataset+
+  # method, called by Qernel::Graph#refresh_dataset_objects. It's easy to forget
+  # about it. - PZ Fri 25 Nov 2011 15:54:36 CET
+  #
   #def object_dataset
   #  @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
   #end
