@@ -53,9 +53,6 @@ group :test, :development do
   gem 'pry'
   gem 'guard'
   gem 'guard-rspec'
-  gem 'hirb'
-  gem 'wirble'
-  gem 'awesome_print'
 end
 
 group :test do
