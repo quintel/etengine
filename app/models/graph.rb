@@ -69,7 +69,7 @@ class Graph < ActiveRecord::Base
   def present_qernel
     qernel = nil
     ActiveSupport::Notifications.instrument("gql.performance.graph.present_qernel") do
-      qernel = present_qernel
+      qernel = self.class.present_qernel_for(self)
     end
     qernel
   end
