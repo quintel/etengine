@@ -23,7 +23,6 @@ module Qernel::DatasetAttributes
         define_method attr_name do
           dataset_get attr_name_sym
         end
-
         define_method "#{attr_name}=" do |value|
           dataset_set attr_name_sym, value
         end
@@ -69,10 +68,6 @@ module Qernel::DatasetAttributes
     @object_dataset = nil
   end
 
-  # overwritable method
-  def after_assign_object_dataset
-  end
-
   # Here we make the object attributes a member of the object itself.
   # The dataset_get/fetch methods act on this variable (which, btw, is
   # made accessible with the attr_accessor at the beginning of this mixin)
@@ -80,18 +75,7 @@ module Qernel::DatasetAttributes
     if dataset
       @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
     end
-    after_assign_object_dataset
   end
-
-  # Why was this commented out and replaced with the attr_accessor above?
-  # Without this memoized attribute we must hope somebody else has initialized
-  # the @object_dataset. This currently happens with the +assign_object_dataset+
-  # method, called by Qernel::Graph#refresh_dataset_objects. It's easy to forget
-  # about it. - PZ Fri 25 Nov 2011 15:54:36 CET
-  #
-  #def object_dataset
-  #  @object_dataset ||= (dataset.data[dataset_group][dataset_key] ||= {})
-  #end
 
   # HANDLE_NIL_SECURLY = true has better output for debugging
   # HANDLE_NIL_SECURLY = false is 50 ms faster. but harder to debug if problem occurs
