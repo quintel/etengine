@@ -39,11 +39,15 @@ class Api::ScenariosController < ApplicationController
     respond_with(@scenario)
   end
 
+  # Is this still used?
+  # PZ - Thu 17 Nov 2011 15:22:02 CET
   def update
     @scenario.update_attributes(params[:scenario])
     respond_with(@scenario)
   end
 
+  # Is this still used?
+  # PZ - Thu 17 Nov 2011 15:22:02 CET
   def load
     respond_with(@scenario.load!)
   end

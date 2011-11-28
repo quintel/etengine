@@ -2,7 +2,30 @@ require 'spec_helper'
 
 module Gql
 
-  describe QueryInterface do
+  describe "Full GQL" do
+    before do
+      @gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
+      @gql.present_graph.year = 2010
+      @gql.future_graph.year = 2040
+    end
+
+    it "should return GRAPH(year)" do
+      @gql.query("GRAPH(year)").present_value.should == 2010
+      @gql.query("GRAPH(year)").future_value.should == 2040
+    end
+
+    it "should return present graph when running QUERY_PRESENT(GRAPH(year))" do
+      Gquery.stub!('get').with('graph_year').and_return(Gquery.new(:key => 'graph_year', :query => "GRAPH(year)"))
+      @gql.query("Q(graph_year)").present_value.should == 2010
+      @gql.query("Q(graph_year)").future_value.should == 2040
+      @gql.query("QUERY_PRESENT(graph_year)").present_value.should == 2010
+      @gql.query("QUERY_PRESENT(graph_year)").future_value.should  == 2010
+      @gql.query("QUERY_FUTURE(graph_year)").present_value.should  == 2040
+      @gql.query("QUERY_FUTURE(graph_year)").future_value.should   == 2040
+    end
+ end
+
+  describe "Tests with one graph" do # No GQL needed
     before do
       @query_interface = QueryInterface.new(nil)
       Current.instance.stub_chain(:gql, :calculated?).and_return(true)
@@ -119,6 +142,10 @@ module Gql
         before {@query_interface.stub!(:subquery).with('foo').and_return(5.0)}
         query_should_be_close "QUERY(foo)", 5.0
       end
+    end
+
+    describe "QUERY_PRESENT" do
+      pending "QUERY_PRESENT( foo ) should return the result of gquery 'foo' of present graph" 
     end
 
     describe "INVALID_TO_ZERO" do

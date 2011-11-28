@@ -1,18 +1,10 @@
 - breadcrumb "GQueries"
 = render 'search_box'
-
-%h2 Gqueries
-
-%p
-  = link_to 'Query sandbox', test_data_gqueries_path
-  |
-  = link_to 'Create new Gquery', new_data_gquery_path
-  |
-  = link_to 'Query Dump', dump_data_gqueries_path
-
+= render 'subnav'
 %table
   %thead
     %tr
+      %th Id
       = sortable_table_header :name => "Key", :sort=>"key"
       %th Unit
       %th
@@ -25,7 +17,8 @@
   %tbody
     - @gqueries.flatten.each do |gquery|
       %tr
-        %td= link_to highlight(gquery.key, params[:q]), data_gquery_path(:id => gquery)
+        %td= link_to gquery.id, data_gquery_path(:id => gquery)
+        %td= link_to highlight(gquery.key, params[:q]), data_gquery_key_path(:key => gquery.key)
         %td= gquery.unit
         %td= link_to 'Edit', edit_data_gquery_url(:id => gquery)
         %td= link_to 'Delete', data_gquery_path(:id => gquery), :method => 'delete', :confirm => 'Are you sure?'
@@ -35,4 +28,4 @@
         %td= gquery.deprecated_key
   %tfoot
     %tr
-      %td{:colspan => 8}= paginate @gqueries
+      %td{:colspan => 9}= paginate @gqueries

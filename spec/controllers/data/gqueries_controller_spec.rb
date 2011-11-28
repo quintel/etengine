@@ -38,5 +38,17 @@ describe Data::GqueriesController do
       response.should render_template(:edit)
     end
   end
-
+  
+  describe "GET key" do
+    it "should be successful" do
+      get :key, :blueprint_id =>'latest', :region_code => 'nl', :key => gquery.key
+      assigns(:gquery).should == gquery
+      response.should render_template(:show)
+    end
+    
+    it "should redirect to the search page if the gquery can't be found" do
+      get :key, :blueprint_id =>'latest', :region_code => 'nl', :key => 'foobar'
+      response.should redirect_to data_gqueries_path(:blueprint_id =>'latest', :region_code => 'nl', :q => 'foobar')
+    end
+  end
 end

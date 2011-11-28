@@ -65,14 +65,17 @@
 
 class Area < ActiveRecord::Base
   has_paper_trail
-  scope :country, lambda {|country| where(:country => country) }
 
   has_many :datasets, :dependent => :destroy
   has_many :carrier_datas, :dependent => :delete_all, :class_name => 'Dataset::CarrierData'
+  belongs_to :parent, :class_name => 'Area'
+  has_many :children, :class_name => 'Area', :dependent => :nullify
+
+
+  scope :country, lambda {|country| where(:country => country) }
+  scope :by_name, lambda {|q| where('country LIKE ?', "%#{q}%")}
 
   after_create :create_carrier_datas
-
-  scope :by_name, lambda {|q| where('country LIKE ?', "%#{q}%")}
 
   def self.ordered_column_names
     Qernel::Area::ATTRIBUTES_USED.map(&:to_s) & Area.column_names

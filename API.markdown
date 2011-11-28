@@ -128,15 +128,21 @@ Returns an AR-XML with all the available gqueries. The only visible attributes a
 
     GET /api/v2/inputs.xml
 
+Returns a list of all available inputs.
+
 ### Input details
 
     GET /api/v2/inputs/:input_id.xml
+
+Input detail
 
 ## Areas
 
 ### Area list
 
     GET /api/v2/areas.xml
+
+Used by ETM to fill the area list on the start page.
 
 #### Parameters
 
