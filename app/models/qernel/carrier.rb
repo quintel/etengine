@@ -29,9 +29,9 @@ class Carrier
   dataset_accessors DATASET_ATTRIBUTES
 
   attr_reader :electricity, :steam_hot_water, :loss
-  alias electricity? electricity
-  alias steam_hot_water? steam_hot_water
-  alias loss? loss
+  alias electricity? electricity #for performance optimization
+  alias steam_hot_water? steam_hot_water #for performance optimization
+  alias loss? loss #for performance optimization
 
   alias name key # completely deprecate name at some time
 
