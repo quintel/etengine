@@ -22,6 +22,10 @@ class GraphApi
     @graph.area
   end
 
+  def year
+    @graph.year
+  end
+
   def carrier(key)
     @graph.carrier(key)
   end

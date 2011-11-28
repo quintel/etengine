@@ -11,6 +11,10 @@
   %dd= @scenario.country
   %dt Region
   %dd= @scenario.region
+  %dt In start menu
+  %dd= @scenario.in_start_menu
+  %dt Protected
+  %dd= @scenario.protected
   %dt Inputs
   %dd
     %table
@@ -30,3 +34,6 @@
             %td.red missing!
           %td= v
   
+
+%p
+  = link_to 'edit', edit_data_scenario_path(:id => @scenario)

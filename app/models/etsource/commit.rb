@@ -18,6 +18,7 @@ module Etsource
       # Prevent a detached HEAD
       @etsource.checkout @branch
 
+      Rails.cache.clear
       update_client APP_CONFIG[:client_refresh_url]
     end
 

@@ -158,7 +158,6 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     scope.all_converters
   end
 
-  ##
   # Executes a subquery with the given key (all stored Gqueries (see /admin/gqueries) can act as subquery): *QUERY( total_energy_cost )*
   #
   # @param keys [String] The key of the subquery (Gquery)
@@ -170,6 +169,41 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   alias Q QUERY
   # @deprecated
   alias SUBQUERY QUERY
+
+  
+
+  #     Gquery.create(:key => 'graph_year', :query => "GRAPH(year)")
+  #
+  #     Current.gql.query("Q(graph_year)")
+  #     # => 2010, 2040
+  # 
+  #     Current.gql.query("QUERY_PRESENT(graph_year)")
+  #     # => 2010, 2010
+  #   
+  #     Current.gql.query("QUERY_FUTURE(graph_year)")
+  #     # => 2040, 2040
+  #   
+  #     # 2040 - 2010
+  #     Current.gql.query("SUM(QUERY_FUTURE(graph_year),NEG(QUERY_PRESENT(graph_year)))")
+  #     # => 30, 30 
+  #   
+  #     # prefixing it with future/present has no influence
+  #     Current.gql.query("present:SUM(QUERY_FUTURE(graph_year),NEG(QUERY_PRESENT(graph_year)))")
+  #     # => 30, 30 
+  #
+  # @param keys [String] Key of a subquery that is run in the present
+  # @return [Float] The return value of the subquery
+  #
+  def QUERY_PRESENT(keys, arguments, scope)
+    Current.gql.present.subquery(keys.first)
+  end
+
+  # @param keys [String] Key of a subquery that is run in the future
+  # @return [Float] The return value of the subquery
+  #
+  def QUERY_FUTURE(keys, arguments, scope)
+    Current.gql.future.subquery(keys.first)
+  end
 
   ##
   # Children of a converter(s).

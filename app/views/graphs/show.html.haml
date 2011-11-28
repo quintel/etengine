@@ -4,7 +4,6 @@
 
 %h2 Graph
 
-
 #blueprint_layout
   %ul
     %li Shift + click: highlight links
@@ -22,8 +21,6 @@
   var data_json_url = "#{data_blueprint_layout_path(:id => @blueprint_layout, :blueprint_id => 'latest', :region_code => 'nl', :format => 'json')}";  
   var converter_url_prefix = "#{data_converters_path(:blueprint_id => 'latest', :region_code => 'nl')}";
   var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout.id, :blueprint_id => 'latest', :region_code => 'nl')}";
-
-
   var r = Raphael("holder", 8000, 10000).initZoom();
   var data;
 

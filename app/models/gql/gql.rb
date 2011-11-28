@@ -1,12 +1,4 @@
-# helper method for irb
-def gql(query)
-  Current.gql.query(query)
-end
-
-# DEBT: debug_present/future query_present/future and query_interface should be refactored.
-#
 module Gql
-##
 # GQL (Graph Query Language) is to a Graph/Qernel what SQL is to a database.
 #
 # It is responsible to update the future graph with user values/assumptions
@@ -141,6 +133,10 @@ class Gql
   # For performance reason it is suggested to pass a Gquery for 'query'
   # object rather than it's Gquery#query. Because parsing a gql statement
   # takes rather long time.
+  #
+  #     gql.query(Gquery.first) 
+  #     gql.query("SUM(1.0, 2.0)")         # => [[2010, 3.0],[2040,3.0]]
+  #     gql.query("present:SUM(1.0, 2.0)") # => 3.0
   #
   # @param query [String, Gquery] the single query.
   # @param rescue_resultset [ResultSet] A ResultSet that is return in case of errors.

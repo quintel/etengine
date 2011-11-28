@@ -29,7 +29,8 @@ end
 
 namespace :deploy do
   task :copy_configuration_files do
-    run "cp #{config_files}/* #{release_path}/config/"
+    run "ln -s #{shared_path}/config/config.yml #{release_path}/config/"
+    run "ln -s #{shared_path}/config/database.yml #{release_path}/config/"
     run "cd #{release_path}; chmod 777 public/images public/stylesheets tmp"
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
     run "cd #{release_path} && bundle install"

@@ -2,7 +2,7 @@ class Data::AreasController < Data::BaseController
   before_filter :find_model, :only => [:update, :show, :edit]
 
   def index
-    @areas = Area.by_name(params[:q])
+    @areas = Area.by_name(params[:q]).sort_by(&:country)
   end
 
   def new

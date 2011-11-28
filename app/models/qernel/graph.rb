@@ -80,10 +80,12 @@ class Graph
 
   def reset_dataset_objects
     each_dataset_object_item(:reset_object_dataset)
+    reset_goals
   end
 
   def refresh_dataset_objects
     each_dataset_object_item(:assign_object_dataset)
+    reset_goals
   end
 
   def calculated?
@@ -304,7 +306,11 @@ class Graph
     end
     return g
   end
-
+  
+  def reset_goals
+    @goals = []
+  end
+  
 private
 
   def reset_group_converters_and_memoize

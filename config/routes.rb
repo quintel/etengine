@@ -62,6 +62,7 @@ Etm::Application.routes.draw do
           get :group_descriptions
         end
       end
+      match "/gqueries/key/:key" => "gqueries#key", :as => :gquery_key
 
       resources :fce_values
 
@@ -69,6 +70,9 @@ Etm::Application.routes.draw do
         resource :converter_data, :only => [:edit, :update]
       end
       resources :converter_data, :only => [:edit, :update]
+      
+      resources :groups, :only => [:index, :show]
+      resources :gquery_groups, :only => [:index, :show]
 
       resources :carriers, :only => [:index, :edit] do 
         resource :carrier_data, :only => [:edit, :update]
@@ -90,7 +94,7 @@ Etm::Application.routes.draw do
       resources :blueprints, :except => [:edit, :update, :destroy]
       resources :inputs, :except => :show
       resources :blueprint_models, :only => :index
-      resources :scenarios, :only => [:index, :show] do
+      resources :scenarios, :only => [:index, :show, :edit, :update] do
         put :fix, :on => :member
       end
       resources :energy_balance_groups

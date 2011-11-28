@@ -56,6 +56,7 @@ class Scenario < ActiveRecord::Base
   # it's a national preset scenario when there is no region defined and it's defined in the start menu
   scope :by_region, lambda {|region| where(:region => region) }
   scope :by_type, lambda {|type| where(:scenario_type => type.to_s)}
+  scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   scope :recent_first, order('created_at DESC')
 
@@ -66,6 +67,12 @@ class Scenario < ActiveRecord::Base
       scenario.copy_scenario_state(preset)
     end
   end
+  
+  after_initialize do |scenario|
+    scenario.touch :present_updated_at
+  end
+  
+  
 
   before_save :serialize_user_values
 
@@ -153,16 +160,16 @@ class Scenario < ActiveRecord::Base
     
     sum = input_ids.map{|id| inputs[id]}.compact.sum.to_f
     i344_new = inputs[344] / sum * 100 rescue nil
-    i344_new = nil if i344_new.nan?
+    i344_new = nil if i344_new.try :nan?
     
     i341_new = inputs[341] / sum * 100 rescue nil
-    i341_new = nil if i341_new.nan?
+    i341_new = nil if i341_new.try :nan?
     
     i343_new = inputs[343] / sum * 100 rescue nil
-    i343_new = nil if i343_new.nan?
+    i343_new = nil if i343_new.try :nan?
     
     i242_new = inputs[242] / sum * 100 rescue nil
-    i242_new = nil if i242_new.nan?
+    i242_new = nil if i242_new.try :nan?
     
     i582_new = sum
     store_user_value(Input.find(344), i344_new)

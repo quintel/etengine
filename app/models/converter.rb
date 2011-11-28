@@ -26,7 +26,6 @@ class Converter < ActiveRecord::Base
   has_many :input_links,  :class_name => 'Link', :foreign_key => 'parent_id'
   has_many :output_links, :class_name => 'Link', :foreign_key => 'child_id'
   has_many :slots
-
   has_one :converter_position
 
   scope :in_group, lambda{|*gid| includes(:groups).where(["groups.id IN (?)", gid]) unless gid.empty?}
@@ -57,7 +56,6 @@ class Converter < ActiveRecord::Base
   def sector_key
     Qernel::Converter::SECTORS[sector_id]
   end
-
 
   ##
   #
