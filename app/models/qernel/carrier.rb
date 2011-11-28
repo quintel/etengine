@@ -42,7 +42,6 @@ class Carrier
 
   # ----- /Micro optimization -------------------------------------------------
 
-
   attr_accessor :id, :key, :graph
 
   # @param id [int]
