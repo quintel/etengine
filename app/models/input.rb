@@ -139,10 +139,13 @@ class Input < ActiveRecord::Base
     if update_type == 'fce'
       Gql::UpdateInterface::FceCommand.create(keys, attr_name, value / factor)
     else
+      # sometimes value ends up being nil. TODO: figure out why
+      final_value = value ? (value / factor) : nil      
+      ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
       {
         update_type => {
           keys => {
-            attr_name => value / factor
+            attr_name => final_value
       }}}
     end
   end
