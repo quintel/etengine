@@ -49,7 +49,7 @@ class Graph < ActiveRecord::Base
   end
 
   def gql
-    @gql ||= ::Gql::Gql.new(self, self.dataset)
+    @gql ||= ::Gql::Gql.new(self)
   end
 
   def present

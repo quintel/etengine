@@ -7,7 +7,7 @@ module Gql
 # == Useage
 #
 #   graph = Graph.find( 1 )     # the graph we want to query
-#   gql = Gql::Gql.new( graph, graph.dataset ) # Create Gql instance for 'graph'
+#   gql = Gql::Gql.new( graph ) # Create Gql instance for 'graph'
 #   gql.prepare          # updates and calculates graphs based on user assumptions
 #
 #   res = gql.query("SUM(1.0,2.0)")
@@ -40,12 +40,6 @@ module Gql
 # (by requiring it in environment.rb).
 # - GqlGquerySyntaxNode: Defines and implements all the functions of a Query.
 #
-# === StoredProcedure
-#
-# Queries that cannot be solved by using GQL queries.
-# To query a StoredProcedure#foo_bar use:
-# Current.gql.query('stored.foo_bar')
-#
 # === ResultSet
 #
 # ResultSet of a Gquery.
@@ -55,14 +49,28 @@ class Gql
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  attr_reader :graph_model, :dataset
+  attr_accessor :present_graph, :future_graph, :dataset
+  attr_reader :graph_model, :scenario
 
   # @param [Graph] graph_model
   # @param [Dataset,String] dataset Dataset or String for country
   #
-  def initialize(graph_model, dataset)
-    @graph_model = graph_model
-    @dataset = dataset.is_a?(Dataset) ? dataset : Dataset.latest_from_country(dataset)
+  def initialize(scenario_or_graph)
+    if scenario_or_graph.is_a?(Scenario)
+      @scenario = scenario_or_graph
+      loader = Etsource::Loader.instance
+      @present_graph = loader.graph_clone
+      @future_graph  = loader.graph_clone
+      @dataset = loader.dataset(@scenario.code)
+    elsif scenario_or_graph.is_a?(Graph)
+      # support old way of loading gql, so we can export graphs to etsource
+      @scenario = Current.scenario
+      @present_graph = scenario_or_graph.present
+      @future_graph = scenario_or_graph.future
+      @dataset = scenario_or_graph.dataset.to_qernel
+    end
+    @present_graph.tap{|g| g.year = @scenario.start_year}
+    @future_graph.tap{|g| g.year = @scenario.end_year }
   end
 
   # Loads the {Qernel::Graph} and {Qernel::Dataset} of given country
@@ -72,34 +80,22 @@ class Gql
     new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
   end
 
-  def scenario
-    Current.scenario
-  end
-
-  # @return [Qernel::Graph]
-  #
-  def present_graph
-    # DEBT end_year should be part of dataset
-    @present_graph ||= graph_model.present.tap{|g| g.year = scenario.start_year}
-  end
-
-  # @return [Qernel::Graph]
-  #
-  def future_graph
-    # DEBT end_year should be part of dataset
-    @future_graph ||= graph_model.future.tap{|g| g.year = scenario.end_year}
-  end
-
   # @return [Qernel::Dataset] Dataset used for the present. Is calculated and cannot be updated anymore
   #
   def calculated_present_dataset
-    dataset.to_calculated_qernel
+    marshal = Rails.cache.fetch("/datasets/#{scenario.id}/#{scenario.present_updated_at.to_i}/calculated_qernel") do
+      graph = present_graph
+      graph.dataset = dataset_clone
+      graph.calculate
+      Marshal.dump(graph.dataset)
+    end
+    Marshal.load marshal
   end
 
   # @return [Qernel::Dataset] Dataset used for the future. Needs to be updated with user input and then calculated.
   #
-  def uncalculated_dataset
-    graph_model.dataset.to_qernel
+  def dataset_clone
+    Marshal.load(Marshal.dump(@dataset))
   end
 
   # @return [QueryInterface]
@@ -171,7 +167,17 @@ class Gql
     end
   end
 
-  # Updates and calculates the graphs
+  # Connects datasets to a present and future graph.
+  # Updates them with user inputs and calculates. 
+  # After being prepared graphs are ready to be queried.
+  # This method can only be prepared once.
+  #
+  # This method is "lazy-" called from a {Gql::QueryInterface} object, 
+  # when there is no cached result for a Gquery. 
+  #
+  # When to prepare:
+  # - For querying
+  # - For working/inspecting the graph (e.g. from the command line)
   #
   def prepare
     # 2011-08-15: the present has to be prepared first. otherwise 
@@ -191,46 +197,6 @@ class Gql
     # should no longer be allowed, as they won't have an impact on the 
     # calculation (even though updating prices would work).
     @calculated = true
-  end
-
-  # Assign datasets to graph without calculating them. So we can
-  #
-  def assign_dataset
-    present_graph.dataset ||= calculated_present_dataset
-    future_graph.dataset = uncalculated_dataset
-  end
-
-  def prepare_present
-    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_present') do
-      # DEBT wrong. check for present_updated_at!!
-      if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
-        present_graph.dataset ||= calculated_present_dataset
-      else
-        # If present_graph has user inputs then we have to take a fresh dataset.
-        present_graph.dataset ||= uncalculated_dataset
-        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
-        scenario.inputs_present.each do |input, value|
-          present.query(input, value)
-        end
-      end
-    end
-  end
-
-  def prepare_future
-    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
-      if Rails.env.test?
-        future_graph.dataset ||= calculated_present_dataset
-      else
-        future_graph.dataset = uncalculated_dataset
-      end
-      scenario.inputs_before.each do |input, value|
-        future.query(input, value)
-      end
-      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
-      scenario.inputs_future.each do |input, value|
-        future.query(input, value)
-      end
-    end
   end
 
   # Runs an array of gqueries. The gquery list might be expressed in all the formats accepted
@@ -255,6 +221,39 @@ class Gql
   end
 
 protected
+
+  def prepare_present
+    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_present') do
+      # DEBT wrong. check for present_updated_at!!
+      if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
+        present_graph.dataset ||= calculated_present_dataset
+      else
+        # If present_graph has user inputs then we have to take a fresh dataset.
+        present_graph.dataset ||= dataset_clone
+        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
+        scenario.inputs_present.each do |input, value|
+          present.query(input, value)
+        end
+      end
+    end
+  end
+
+  def prepare_future
+    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
+      if Rails.env.test?
+        future_graph.dataset ||= calculated_present_dataset
+      else
+        future_graph.dataset = dataset_clone
+      end
+      scenario.inputs_before.each do |input, value|
+        future.query(input, value)
+      end
+      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
+      scenario.inputs_future.each do |input, value|
+        future.query(input, value)
+      end
+    end
+  end
 
   # Standard query without modifiers. Queries present and future graph.
   #

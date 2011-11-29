@@ -102,6 +102,9 @@ class Scenario < ActiveRecord::Base
     Scenario.new(default_attributes)
   end
 
+  def code
+    country
+  end
 
   ##
   # @tested 2010-11-30 seb through self.default
