@@ -73,29 +73,6 @@ class Dataset < ActiveRecord::Base
   end
 
 
-  # Create a new dataset based on this dataset.
-  # Also connects datasets to blueprints by creating a Graph object.
-  #
-  # @param [Integer] blueprint_id
-  #     The blueprint to which the dataset belongs to
-  # @return [Dataset] The created Dataset
-  #
-  def copy_dataset!(blueprint_id)
-    dataset = self.clone
-    dataset.created_at = nil
-    dataset.updated_at = nil
-    dataset.blueprint_id = blueprint_id
-    Dataset.transaction do
-      dataset.save!
-      copy_converter_datas_to!(dataset)
-      copy_link_datas_to!(dataset)
-      copy_slot_datas_to!(dataset)
-      copy_time_curve_entries_to!(dataset)
-      Graph.create(:dataset_id => dataset.id, :blueprint_id => blueprint_id)
-    end
-    dataset
-  end
-
   def to_label
     "#{blueprint_id} - #{created_at}"
   end

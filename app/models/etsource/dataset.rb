@@ -56,7 +56,10 @@ module Etsource
         out << '---'
         
         # Assign datasets w/o calculating. Use future graph (present is precalculated).
-        graph = gql.tap(&:assign_dataset).future_graph
+        
+        graph = gql.future_graph
+        graph.dataset = gql.dataset_clone
+        
         graph.converters.each do |converter|
           # Remove the "" from the keys, to make the file look prettier. 
           #     "KEY": { values } => KEY: { values }

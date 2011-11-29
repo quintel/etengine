@@ -20,12 +20,6 @@ class Data::BlueprintsController < Data::BaseController
 
       notice = 'Blueprint Created'
 
-      params[:copy_dataset_id].each do |copy_dataset_id|
-        dataset = Dataset.find(copy_dataset_id)
-        dataset.copy_dataset!(blueprint.id)
-        notice += ", #{dataset.region_code}"
-      end
-
       if blueprint.update_attributes(params[:blueprint])
         flash[:notice] = notice
         redirect_to construction_blueprints_url
