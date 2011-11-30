@@ -75,6 +75,16 @@ module Qernel
       "area"
     end
 
-  end
+    def co2_emission_1990_billions
+      co2_emission_1990 * BILLIONS      
+    end
 
+    def manure_available_in_pj=(param)
+      param
+    end
+
+    def manure_available_in_pj
+      0.0
+    end
+  end
 end
