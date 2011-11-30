@@ -193,7 +193,7 @@ module Qernel::Converter::PrimaryDemand
   #
   # It uses primary_energy_demand? to determine if primary or not.
   #
-  def primary_demand
+  def primary_demand    
     dataset_fetch(:primary_demand_memoized) do
       primary_demand_share = wouter_dance(:primary_demand_factor)
       (self.demand || 0.0) * (primary_demand_share)

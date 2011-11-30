@@ -59,9 +59,13 @@ module Etsource
       # Assign datasets w/o calculating. Use future graph (present is precalculated).
       graph.dataset = gql.dataset_clone
 
+      # ---- Export Time Curves -----------------------------------------------
+      
       File.open(country_file(country, 'time_curves'), 'w') do |out|
         out << YAML::dump(graph.dataset.time_curves)
       end
+
+      # ---- Export Carriers --------------------------------------------------
 
       File.open(country_file(country, 'carriers'), 'w') do |out|
         hsh = graph.carriers.inject({}) do |hsh, c|
@@ -70,9 +74,13 @@ module Etsource
         out << YAML::dump(hsh)
       end
 
+      # ---- Export Area ------------------------------------------------------
+
       File.open(country_file(country, 'area'), 'w') do |out|
         out << YAML::dump(graph.dataset.data[:area])
       end
+
+      # ---- Export Graph Structure -------------------------------------------
 
       File.open(country_file(country, 'export'), 'w') do |out|
         out << '---' # Fake YAML format
@@ -88,9 +96,11 @@ module Etsource
             attrs = slot.object_dataset.map{|k,v| "#{k}: #{v.inspect}"}.join(', ')
             out << "#{slot.topology_key}: {#{attrs}}\n"
           end
+
           converter.inputs.each do |slot|
             attrs = slot.object_dataset.map{|k,v| "#{k}: #{v.inspect}"}.join(', ')
             out << "#{slot.topology_key}: {#{attrs}}\n"
+            # only export links of inputs, so we don't export them twice.
             slot.links.each do |link|
               attrs = link.object_dataset.map{|k,v| "#{k}: #{v.inspect}"}.join(', ')
               out << "#{link.topology_key}: {#{attrs}}\n"
