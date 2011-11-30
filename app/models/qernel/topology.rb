@@ -8,7 +8,7 @@ module Qernel
 
       module InstanceMethods
         def topology_key
-          code = (self.code || self.full_key.to_s.split("_").map{|k| k[0]}.join('').upcase).to_s
+          code = self.code || self.full_key
           code = "00#{code}" if code.length == 1
           code = "0#{code}" if code.length == 2
           "#{code}"
@@ -29,7 +29,7 @@ module Qernel
           groups = groups.to_s.split(GROUPS_SEPARATOR).map(&:to_sym)
           code = code.to_s.scan(/\w+/).first.strip.gsub(/\s/,'').to_sym
           
-          Qernel::Converter.new(code, key, sector_key, use_key, groups, energy_balance_group)
+          Qernel::Converter.new(code: code, key: key, sector_id: sector_key, use_id: use_key, groups: groups, energy_balance_group: energy_balance_group)
         end
       end
     end
@@ -49,7 +49,8 @@ module Qernel
       end
 
       # Extract keys from a Slot Topology String
-      #    Token.new("FOO-(HW) -- s --> (HW)-FOO") 
+      #    Token.new("FOO-(HW) -- s --> (HW)-BAR") 
+      #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, link_type: :share>
       #
       class Token
         attr_reader :input_key, :carrier_key, :output_key, :code, :link_type
@@ -94,14 +95,10 @@ module Qernel
 
       module InstanceMethods
         def topology_key
-          first,second = carrier.key.to_s.split("_")
-          carrier_code = first[0]+(second.andand[0] || first[1])
-          carrier_code.upcase!
-          
           if direction == :input
-            "#{converter.topology_key}-(#{carrier_code})"
+            "#{converter.topology_key}-#{carrier.to_topology}"
           else
-            "(#{carrier_code})-#{converter.topology_key}"
+            "#{carrier.to_topology}-#{converter.topology_key}"
           end
         end
 
@@ -111,7 +108,7 @@ module Qernel
             arr << topology_key if links.empty? && input?
             arr += links.map(&:to_topology)
           elsif output?
-            arr << "#{topology_key} # #{links.length} links to: #{links.map{|l| l.child.topology_key}.join(', ')}"
+            arr << "#{topology_key} # #{links.length} links to: #{links.map{|l| l.parent.andand.topology_key}.join(', ')}"
           end
           arr.join("\n")
         end
@@ -136,6 +133,7 @@ module Qernel
             @direction = :input
             @code.split('-').map(&:to_sym)
           end
+          @carrier_key = @carrier_key.to_s.gsub(/[\(\)]/, '').to_sym
         end
         
         # @return [Array] all the slots in a given string.
@@ -145,7 +143,23 @@ module Qernel
       end
     end
     
-    module CarrierMethods
+    module Carrier
+      extend ActiveSupport::Concern
+
+      module InstanceMethods        
+        def topology_key
+          # Code to return first letters upcased (hot_water => HW)
+          # first,second = key.to_s.split("_")
+          # carrier_code = first[0]+(second.andand[0] || first[1])
+          # carrier_code.upcase
+          key
+        end
+
+        # @return "(HW)"
+        def to_topology
+          "(#{topology_key})"
+        end
+      end   
     end    
   end
 end

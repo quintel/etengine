@@ -73,13 +73,6 @@ class Gql
     @future_graph.tap{|g| g.year = @scenario.end_year }
   end
 
-  # Loads the {Qernel::Graph} and {Qernel::Dataset} of given country
-  # @params [String] country
-  #
-  def self.load(country)
-    new(::Graph.latest_from_country(country), ::Dataset.latest_from_country(country))
-  end
-
   # @return [Qernel::Dataset] Dataset used for the present. Is calculated and cannot be updated anymore
   #
   def calculated_present_dataset
@@ -238,7 +231,7 @@ protected
     end
   end
 
-  def prepare_future
+  def prepare_future    
     ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
       if Rails.env.test?
         future_graph.dataset ||= calculated_present_dataset
