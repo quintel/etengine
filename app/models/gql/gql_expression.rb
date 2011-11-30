@@ -616,7 +616,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def LESS_OR_EQUAL(values, arguments, scope = nil)
     a,b = values
-    a <= b
+    a <= b rescue nil
   end
 
   ##
@@ -628,6 +628,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def GREATER(values, arguments, scope = nil)
     a,b = values
     a > b rescue false # FIX to make certain gqueries run with municipalities
+    # nil would be better if the comparison fails
   end
 
   ##
