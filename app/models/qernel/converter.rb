@@ -112,8 +112,8 @@ class Converter
     3 => :undefined
   }
 
-  attr_reader :id, :code, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key, :energy_balance_group
-  attr_accessor :calculator, :key, :graph
+  attr_reader  :id, :code, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key, :energy_balance_group
+  attr_accessor :converter_api, :key, :graph
 
   dataset_accessors [:demand, :preset_demand, :municipality_demand]
 
@@ -134,26 +134,30 @@ class Converter
 
   # --------- Initializing ----------------------------------------------------
 
-  def initialize(id, key, use_id = nil, sector_id = nil, groups = nil, energy_balance_group = nil)
+  def initialize(opts)
+    if !(opts.include?(:id) || opts.include?(:code))
+      raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new") 
+    end
+    @id        = opts[:id] || Hashpipe.hash(opts[:code])
+    @key       = opts[:key]
+    @code      = opts[:code]
+    @groups    = opts[:groups] || []
+    @energy_balance_group = opts[:energy_balance_group]
+    
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}
 
-    # TODO check if @key is ever used somewhere
-    @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id.to_s)
-    @code = id
-    
-    @key = key
+    use_id    = opts[:use_id]
+    sector_id = opts[:sector_id]
+        
     @use_key = use_id.is_a?(Symbol) ? use_id : USES[use_id]
     @sector_key = sector_id.is_a?(Symbol) ? sector_id : SECTORS[sector_id]
-    @energy_balance_group = energy_balance_group
-    @groups = groups || []
-
     custom_use_key = (@use_key === :undefined || @use_key.nil?) ? nil : @use_key.to_s
-    @full_key = [@key, @sector_key, custom_use_key].compact.join("_").to_sym
+    @full_key = [@key, @sector_key, @custom_use_key].compact.join("_").to_sym
 
 
     memoize_for_cache
-    self.calculator = Qernel::ConverterApi.new(self)
+    self.converter_api = Qernel::ConverterApi.new(self)
   end
 
   def self.full_key(key,sector_id,use_id)
@@ -183,12 +187,12 @@ protected
 
 public
 
-  # Set the graph so that we can access other parts.
+  # Set the graph so that we can access other  parts.
   #
-  def graph=(graph)
+  def graph=(graph) 
     @graph = graph
-    self.calculator.graph = @graph
-    self.calculator.area = @graph.area
+    self.converter_api.graph = @graph
+    self.converter_api.area = @graph.area
     @graph
   end
 
@@ -458,11 +462,11 @@ public
 
   # --------- API -------------------------------------------------------------
 
-  def query(method_name = nil)
-    if method_name.nil?
-      calculator
+  def query( method_name = nil)
+     if method_name.nil?
+      converter_api
     else
-      calculator.send(method_name)
+      converter_api.send(method_name)
     end
   end
   alias_method :proxy, :query

@@ -14,7 +14,20 @@ module Qernel
 #
 class Graph
   extend ActiveModel::Naming
+ 
+  # ---- DatasetAttributes ----------------------------------------------------
   include DatasetAttributes
+
+  dataset_accessors [:calculated]
+
+  def dataset_key
+    :graph
+  end
+
+  def graph
+    self
+  end
+
 
   attr_reader :converters
   attr_writer :goals
@@ -26,15 +39,6 @@ class Graph
                 :year,
                 :graph_id
 
-  # ---- DatasetAttributes ----------------------------------------------------
-
-  def dataset_key
-    :graph
-  end
-
-  def graph
-    self
-  end
 
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
@@ -90,7 +94,7 @@ class Graph
   end
 
   def calculated?
-    dataset_get(:calculated) == true
+    self[:calculated] == true
   end
 
   def time_curves
@@ -134,7 +138,7 @@ class Graph
 
     self.finished_converters.map(&:input_links).flatten.each(&:update_share)
 
-    dataset_set(:calculated, true)
+    self[:calculated] = true
 
     unless converter_stack.empty?
       ActiveSupport::Notifications.instrument("gql.debug",
@@ -228,7 +232,7 @@ class Graph
   ##
   # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of converters.
   def inspect
-    "<Qernel::Graph graph_id:#{graph_id}>"
+    "<Qernel::Graph>"
   end
 
   ##
@@ -245,32 +249,6 @@ class Graph
       end
     end
   end
-
-  # ====== Methods only used for Testing =============================
-  
-  if Rails.env.test? || Rails.env.development?
-    # create slot if necessary.
-    # return link
-    def connect(lft, rgt, carrier, link_type = :share)
-      lft = converter(lft) if lft.is_a?(Symbol)
-      rgt = converter(rgt) if rgt.is_a?(Symbol)
-
-      unless lft.input(carrier)
-        lft.add_slot(Slot.new(lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
-      end
-      unless rgt.output(carrier)
-        rgt.add_slot(Slot.new(rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
-      end
-      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type)
-    end
-
-    def with_converters(key_dataset_hsh)
-      self.converters = key_dataset_hsh.map do |key, dataset|
-        Converter.new(self.converters.length+1, key).with(dataset)
-      end
-    end
-  end
-
 
   def reset_memoized_methods
     reset_group_converters_and_memoize

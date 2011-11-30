@@ -2,15 +2,17 @@ module Qernel
   class GraphParser
     attr_reader :lines
 
+    CARRIERS_FOR_SPECS = {
+      # Carriers used in the Specs
+      'foo'         => Carrier.new(id: 2, key: 'foo',  infinite: 1.0).with({}),
+      'bar'         => Carrier.new(id: 3, key: 'bar',  infinite: 1.0).with({}),
+      'loss'        => Carrier.new(id: 1, key: 'loss', infinite: 0.0),
+      'electricity' => Carrier.new(id: 5, key: 'electricity', infinite: 0.0)
+    }
+
     CARRIERS = ::Carrier.all.inject({}) {|hsh,c| 
       hsh.merge c.key => c.to_qernel.with({}) 
-    }.merge({
-      # Carriers used in the Specs
-      'foo' => Carrier.new(2, 'foo', 1.0).with({}),
-      'bar' => Carrier.new(3, 'bar', 1.0).with({}),
-      'loss' => Carrier.new(1, 'loss', 0.0),
-      'electricity' => Carrier.new(5, 'electricity', 0.0)
-    })
+    }.merge(CARRIERS_FOR_SPECS)
 
     LINK_TYPES = {
       's' => :share,
@@ -120,7 +122,7 @@ module Qernel
         id = @converters.keys.length+1
         demand = dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f
         dataset = {:demand => demand, :preset_demand => demand } # preset_demand needed to make old Input v1 updates working
-        @converters[key] = Converter.new(id, key).with(dataset)
+        @converters[key] = Converter.new(id: id, key: key).with(dataset)
       end
 
       @converters[key]

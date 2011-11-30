@@ -65,7 +65,7 @@ class Converter < ActiveRecord::Base
     unless @qernel_obj
       group_keys = self.groups.map(&:to_qernel).uniq
       eb_group_key = energy_balance_group.andand.name.andand.to_sym || :undefined
-      @qernel_obj = Qernel::Converter.new(id, key, use_id, sector_id, group_keys, eb_group_key)
+      @qernel_obj = Qernel::Converter.new(id: id, key: key, use_id: use_id, sector_id: sector_id, groups: group_keys, energy_balance_group: eb_group_key)
     end
     @qernel_obj
   end

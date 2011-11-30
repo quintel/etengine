@@ -25,12 +25,13 @@ module Etsource
     # performance reasons.
     # 
     def import_country(country = 'nl')
-      yml = YAML::load(File.read(country_file(country)))
+      yml = YAML::load(File.read(country_file(country, 'export')))
       dataset = Qernel::Dataset.new(Hashpipe.hash(country))
 
       yml.each do |key,attributes|
         key = key.to_s.gsub(/\s/, '')
         key_hashed = Hashpipe.hash(key)
+
         group = if key.include?('-->')  then :link
                 elsif key.include?('(') then :slot
                 end
@@ -39,7 +40,10 @@ module Etsource
         attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
         dataset.<<(group, key_hashed => attrs)
       end
-      dataset.<<(:area, :area_data => {})
+      dataset.<<(:area, YAML::load(File.read(country_file(country, 'area'))))
+      dataset.<<(:carrier, YAML::load(File.read(country_file(country, 'carriers'))))
+      dataset.time_curves = YAML::load(File.read(country_file(country, 'time_curves')))
+      dataset.data[:graph][:graph][:calculated] = false
       dataset
     end
     
@@ -48,18 +52,30 @@ module Etsource
     end
 
     def export_country(country = 'nl')
-      gql = Gql::Gql.load(country)
+      gql = Gql::Gql.new(::Graph.latest_from_country(country))
       
       FileUtils.mkdir_p base_dir+"/"+country
-      
-      File.open(country_file(country), 'w') do |out|
-        out << '---'
-        
-        # Assign datasets w/o calculating. Use future graph (present is precalculated).
-        
-        graph = gql.future_graph
-        graph.dataset = gql.dataset_clone
-        
+      graph = gql.future_graph   
+      # Assign datasets w/o calculating. Use future graph (present is precalculated).
+      graph.dataset = gql.dataset_clone
+
+      File.open(country_file(country, 'time_curves'), 'w') do |out|
+        out << YAML::dump(graph.dataset.time_curves)
+      end
+
+      File.open(country_file(country, 'carriers'), 'w') do |out|
+        hsh = graph.carriers.inject({}) do |hsh, c|
+          hsh.merge c.topology_key => c.object_dataset.merge(infinite: c.infinite)
+        end
+        out << YAML::dump(hsh)
+      end
+
+      File.open(country_file(country, 'area'), 'w') do |out|
+        out << YAML::dump(graph.dataset.data[:area])
+      end
+
+      File.open(country_file(country, 'export'), 'w') do |out|
+        out << '---' # Fake YAML format
         graph.converters.each do |converter|
           # Remove the "" from the keys, to make the file look prettier. 
           #     "KEY": { values } => KEY: { values }
@@ -94,8 +110,8 @@ module Etsource
 
     # @param [String] country shortcut 'de', 'nl', etc
     #
-    def country_file(country)
-      "#{base_dir}/#{country}/export.yml"
+    def country_file(country, file_name)
+      "#{base_dir}/#{country}/#{file_name}.yml"
     end
  
   end
