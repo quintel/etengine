@@ -153,8 +153,7 @@ class Converter
     @use_key = use_id.is_a?(Symbol) ? use_id : USES[use_id]
     @sector_key = sector_id.is_a?(Symbol) ? sector_id : SECTORS[sector_id]
     custom_use_key = (@use_key === :undefined || @use_key.nil?) ? nil : @use_key.to_s
-    @full_key = [@key, @sector_key, @custom_use_key].compact.join("_").to_sym
-
+    @full_key = [@key, @sector_key, custom_use_key].compact.join("_").to_sym
 
     memoize_for_cache
     self.converter_api = Qernel::ConverterApi.new(self)
