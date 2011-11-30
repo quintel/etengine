@@ -49,8 +49,8 @@ class Gql
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  attr_accessor :present_graph, :future_graph, :dataset
-  attr_reader :graph_model, :scenario
+  attr_accessor :present_graph, :future_graph, :dataset, :scenario
+  attr_reader :graph_model
 
   # @param [Graph] graph_model
   # @param [Dataset,String] dataset Dataset or String for country
@@ -59,26 +59,23 @@ class Gql
     if scenario_or_graph.is_a?(Scenario)
       @scenario = scenario_or_graph
       loader = Etsource::Loader.instance
-      @present_graph = loader.graph_clone
+      @present_graph = loader.graph_clone.tap{|g| g.year = @scenario.start_year}
       @future_graph  = loader.graph_clone
       @dataset = loader.dataset(@scenario.code)
     elsif scenario_or_graph.is_a?(Graph)
       # support old way of loading gql, so we can export graphs to etsource
       @scenario = Current.scenario
-      @present_graph = scenario_or_graph.present
-      @future_graph = scenario_or_graph.future
+      @present_graph = scenario_or_graph.present.tap{|g| g.year = @scenario.start_year}
+      @future_graph  = scenario_or_graph.future.tap{|g| g.year = @scenario.end_year }
       @dataset = scenario_or_graph.dataset.to_qernel
     end
-    @present_graph.tap{|g| g.year = @scenario.start_year}
-    @future_graph.tap{|g| g.year = @scenario.end_year }
   end
 
   # @return [Qernel::Dataset] Dataset used for the present. Is calculated and cannot be updated anymore
   #
   def calculated_present_dataset
     marshal = Rails.cache.fetch("/datasets/#{scenario.id}/#{scenario.present_updated_at.to_i}/calculated_qernel") do
-      graph = present_graph
-      graph.dataset = dataset_clone
+      graph = present_graph.tap{|g| g.dataset = dataset_clone }
       graph.calculate
       Marshal.dump(graph.dataset)
     end

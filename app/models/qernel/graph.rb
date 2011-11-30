@@ -309,6 +309,35 @@ private
   def graph_query
     @graph_query ||= GraphApi.new(self)
   end
+
+public
+  # ====== Methods only used for Testing =============================
+  
+  if Rails.env.test? || Rails.env.development?
+    # create slot if necessary.
+    # return link
+    def connect(lft, rgt, carrier, link_type = :share)
+      lft = converter(lft) if lft.is_a?(Symbol)
+      rgt = converter(rgt) if rgt.is_a?(Symbol)
+
+      unless lft.input(carrier)
+        lft.add_slot(Slot.new(lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
+      end
+      unless rgt.output(carrier)
+        rgt.add_slot(Slot.new(rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
+      end
+      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type)
+    end
+
+    def with_converters(key_dataset_hsh)
+      self.converters = key_dataset_hsh.map do |key, dataset|
+        Converter.new(id: self.converters.length+1, key: key).with(dataset)
+      end
+    end
+  end
+
+
+
 end
 
 end
