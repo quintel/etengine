@@ -8,10 +8,7 @@ module Qernel
 
       module InstanceMethods
         def topology_key
-          code = self.code || self.full_key
-          code = "00#{code}" if code.length == 1
-          code = "0#{code}" if code.length == 2
-          "#{code}"
+          self.code || self.full_key
         end
 
         def to_topology

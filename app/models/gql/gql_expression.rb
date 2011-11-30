@@ -855,7 +855,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
           cur_value * ((1.0 + input_value) ** Current.scenario.years)
         end.to_f
       else
-        raise "UPDATE: object not found."
+        raise "UPDATE: objects not found: #{value_terms.map(&:text_value)}"
       end
     end
   ensure
