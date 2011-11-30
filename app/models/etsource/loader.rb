@@ -21,9 +21,13 @@ module Etsource
     def datasets
       @datasets ||= Etsource::Dataset.new(@etsource).import.with_indifferent_access
     end
+
+    def unoptimized_graph
+      @graph ||= Etsource::Graph.new(@etsource).import
+    end
     
     def graph
-      @graph ||= Etsource::Graph.new(@etsource).import
+      unoptimized_graph
     end  
   end
 end
