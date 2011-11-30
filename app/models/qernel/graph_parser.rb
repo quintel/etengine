@@ -35,10 +35,11 @@ module Qernel
     def self.gql_stubbed(g)      
       raise "GraphParser.gql_stubbed only workds in test" unless Rails.env.test?
       gql = Current.gql = Gql::Gql.new(nil)
-      Current.scenario = Scenario.default
+      gql.scenario = Scenario.default
 
       p = new(g).build
       f = new(g).build
+
       p.stub!(:dataset).and_return(Dataset.new)
       f.stub!(:dataset).and_return(Dataset.new)
 

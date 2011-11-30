@@ -160,7 +160,6 @@ module Gql
             cooling_buildings_energetic(100) == s(0.0) ==> heatpump_ts_cooling_buildings_energetic(nil)
             cooling_buildings_energetic(100) == f(1.0) ==> airco_buildings_energetic(nil)
           ")
-
             @old_input =  Input.create!(:keys => 'gasheatpump_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
             @old_input2 = Input.create!(:keys => 'heatpump_ts_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
             @new_input =  Input.create!(:query => 'UPDATE(LINK(cooling_buildings_energetic,gasheatpump_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100))')

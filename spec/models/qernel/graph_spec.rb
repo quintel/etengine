@@ -7,7 +7,7 @@ module Qernel
     end
 
     it "should initialize with converters []" do
-      @g = Qernel::Graph.new([Qernel::Converter.new(1, 'foo')])
+      @g = Qernel::Graph.new([Qernel::Converter.new(id: 1, key: 'foo')])
     end
   end
 
@@ -24,7 +24,7 @@ module Qernel
       end
 
       it "should assign graph to converters" do
-        converter = Qernel::Converter.new(1, 'foo')
+        converter = Qernel::Converter.new(id: 1, key: 'foo')
         @g.converters = [converter]
         converter.graph.should == @g
       end
