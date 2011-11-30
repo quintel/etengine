@@ -59,7 +59,7 @@ class Link
     @reversed = reversed
     @parent, @child, @carrier = input, output, carrier
     
-    self.link_type = link_type
+    self.link_type = link_type.to_sym
 
     connect
     memoize_for_cache
@@ -251,12 +251,8 @@ public
     carrier and carrier.key
   end
 
-  def name
-    "#{@parent.name} <- #{@child.name}"
-  end
-
   def inspect
-    "<Qernel::Link>"
+    "<Qernel::Link #{topology_key}>"
   end
 
   # Helper method to get the associated active_record object.

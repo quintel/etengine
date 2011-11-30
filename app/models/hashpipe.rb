@@ -10,6 +10,6 @@ class Hashpipe
   end
 
   def self.hash(key)
-    Hashpipe.instance.hash(key).tap{|i| puts "#{key} : #{i}"}
+    Hashpipe.instance.hash(key)
   end
 end

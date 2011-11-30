@@ -64,7 +64,7 @@ class Carrier
   def infinite
     # temporarly check whether infinite comes from the qernel::carrier 
     # if not available it's inside the dataset.
-    @infinite || self[:infinite]
+    @infinite || dataset_get(:infinite)
   end
 
   # The effective total co2 emission that gets emitted from 
@@ -101,7 +101,7 @@ class Carrier
   end
 
   def inspect
-    "<Qernel::Carrier id:#{id} key:{key}>"
+    "<Qernel::Carrier id:#{id} key:#{key}>"
   end
 
 end

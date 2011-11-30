@@ -37,7 +37,9 @@ module Qernel
       module InstanceMethods
       
         def topology_key
-          "#{input.andand.topology_key} -- #{link_type.to_s[0]} --> #{output.andand.topology_key}"
+          o   = output.andand.topology_key
+          o ||= child.outputs.first.topology_key
+          "#{input.andand.topology_key} -- #{link_type.to_s[0]} --> #{o}"
         end
 
         def to_topology
@@ -69,12 +71,12 @@ module Qernel
           input, output = Qernel::Slot::Token.find(line)
 
           raise "No Slots '#{line}'" if input.nil? or output.nil?
-          raise "Carriers do not match in '#{line}'" if input.carrier_key != output.carrier_key
+          Rails.logger.warn("Carriers do not match in '#{line}'") if input.carrier_key != output.carrier_key
           @carrier_key = input.carrier_key
           @input_key   = input.converter_key
           @output_key  = output.converter_key
 
-          @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)-->/).flatten]
+          @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)-->/).flatten.first]
         end
 
         def self.find(line)
@@ -102,12 +104,12 @@ module Qernel
         def to_topology
           arr = []
           if input?
-            arr << topology_key if links.empty? && input?
-            arr += links.map(&:to_topology)
+            arr << topology_key if links.empty?
+            arr << links.map(&:to_topology)
           elsif output?
             arr << "#{topology_key} # #{links.length} links to: #{links.map{|l| l.parent.andand.topology_key}.join(', ')}"
           end
-          arr.join("\n")
+          arr.flatten.join("\n")
         end
       end
 

@@ -43,7 +43,7 @@ class Slot
 
     @converter = converter
     @carrier = carrier
-    @direction = direction
+    @direction = direction.to_sym
     self.dataset_key # memoize dataset_key
   end
 
@@ -223,7 +223,7 @@ class Slot
   # --------- Debug -----------------------------------------------------------
 
   def inspect
-    "<Qernel::Slot id:#{id}>"
+    "<Qernel::Slot id:#{id} carrier:#{carrier.key}>"
   end
   
   # Helper method to get the associated active_record object.
