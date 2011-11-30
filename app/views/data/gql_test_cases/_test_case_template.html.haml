@@ -6,23 +6,22 @@
       beforeEach(function() { this.addMatchers(customMatchers); });
 
 %pre#output
-
+  -# Place for the generated test cases
 
 %pre#after
   :erb
     });
-
     function run_tests() {
       jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
       jasmine.getEnv().execute();
     }
-
     // Make an API call. When complete runs the test-suites
     load_queries(settings, run_tests);
 
   
 
 %script
+  -# extract the settings strings. It will be used later for load_queries
   = @gql_test_case.instruction.lines.detect{|l| l.include?("settings")}.html_safe
   
   // create Gquery objects for the gqueries we will test later.
@@ -36,6 +35,7 @@
     $('#output').text("Processing...");
     var test_suite = "";
     window.gqueries.each(function(gquery) {
+      // Create a test case for every gquery: matches(KEY, PRESENT, FUTUER)
       var f = gquery.get('future_value');
       var p = gquery.get('present_value');
       var future_value = _.isString(f) ? "'"+f+"'" : f;
@@ -48,6 +48,6 @@
   };
   // Make an API call. When complete runs the test-suites
   
-  $('#output').text("Loading...");
-  load_queries($('#gql_test_case_settings').val(), create_tests);
+  $('#output').text("Loading..."); 
+  load_queries(settings, create_tests);
   
