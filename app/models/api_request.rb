@@ -84,6 +84,9 @@ class ApiRequest
     @gql
   end
 
+  # This method runs the requested gqueries
+  # Check ApiScenarioController#show
+  # 
   def response
     {
       :result   => results,

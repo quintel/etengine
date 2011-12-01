@@ -42,6 +42,8 @@
 #  ccs_investment_per_mw_input                                :float
 #  ccs_operation_and_maintenance_cost_per_full_load_hour      :float
 #  decrease_in_nomimal_capacity_over_lifetime                 :float
+#  availability                                               :float
+#  variability                                                :float
 #
 
 # TODO seb : rename preset_demand, remove hacked_attributes (2010-08-19)

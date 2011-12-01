@@ -9,8 +9,6 @@
 #  created_at          :datetime
 #  updated_at          :datetime
 #  hidden              :boolean(1)
-#  fill_color          :string(255)
-#  stroke_color        :string(255)
 #  blueprint_layout_id :integer(4)
 #
 

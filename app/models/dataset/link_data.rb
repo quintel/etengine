@@ -9,6 +9,7 @@
 #  updated_at :datetime
 #  dataset_id :integer(4)
 #  link_id    :integer(4)
+#  max_demand :integer(8)
 #
 
 class Dataset::LinkData < ActiveRecord::Base

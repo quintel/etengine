@@ -25,7 +25,10 @@
 # actually be able to reset the Current by setting the @@instance to nil. Singleton
 # module won't let you do this.
 #
-#
+# The three objects to keep track of are: scenario, graph and gql. Check how 
+# ApiRequest#response sets them up. It would be nice to have this initialization as
+# straightforward as possible.
+# 
 class Current
   attr_accessor :graph_id
 

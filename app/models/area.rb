@@ -61,6 +61,7 @@
 #  has_industry                             :boolean(1)
 #  has_other                                :boolean(1)
 #  has_fce                                  :boolean(1)
+#  input_values                             :text
 #
 
 class Area < ActiveRecord::Base

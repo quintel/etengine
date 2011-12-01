@@ -145,6 +145,7 @@ class Gql
     if rescue_with == :debug
       ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
     elsif rescue_with == :airbrake
+      # TODO: This fails on offline setups. Convert to a notification
       # TODO: something's broken here with airbrake 3.0.5:
       # undefined method `backtrace' for #<Hash:0x007fda54900b88> ?!
       # https://github.com/airbrake/airbrake/issues/19
@@ -203,6 +204,7 @@ class Gql
       result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
         query(gquery, rescue_with)
       else
+        # Why this?
         key.include?('(') ? query(key, rescue_with) : rescue_with
       end
       hsh.merge! key => result
