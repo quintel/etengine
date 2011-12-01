@@ -1,4 +1,5 @@
-# This controller is mostly used for ActiveResource requests
+# This controller is mostly used for ActiveResource requests. Check ApiScenariosController
+# to see how the API requests work.
 #
 class Api::ScenariosController < ApplicationController
   respond_to :xml
@@ -10,13 +11,14 @@ class Api::ScenariosController < ApplicationController
     respond_with(@scenarios)
   end
   
-  # ETM makes use of this action
+  # ETM makes use of this action to fill the preset scenarios select box
   #
   def homepage
     respond_with(@scenarios = Scenario.where(:in_start_menu => true))
   end
 
   def show
+    # Are we still using the :clone parameter? - PZ Thu 1 Dec 2011 15:41:08 CET
     @scenario = @scenario.try(:clone!) if params[:clone]
     if @scenario
       respond_with(@scenario)

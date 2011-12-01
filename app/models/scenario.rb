@@ -21,6 +21,7 @@
 #  type               :string(255)
 #  use_fce            :boolean(1)
 #  present_updated_at :datetime
+#  protected          :integer(1)
 #
 
 # Useage:
