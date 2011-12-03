@@ -75,11 +75,13 @@ module Qernel
       "area"
     end
 
+    # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
+
     def co2_emission_1990_billions
       co2_emission_1990 * BILLIONS      
     end
 
-    # ?!
+    # ?! 
     def manure_available_in_pj=(param)
       param
     end

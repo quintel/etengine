@@ -204,7 +204,9 @@ class Gql
       result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
         query(gquery, rescue_with)
       else
-        # Why this?
+        # Why this? Hmm. Seems like we only really want to execute if it's a Gql query
+        #  (every gql query contains a "(" and ")"). If it represents a non-existing
+        #  gquery key, then return rescue_with (which probably used to be a 'ERROR' earlier).
         key.include?('(') ? query(key, rescue_with) : rescue_with
       end
       hsh.merge! key => result
