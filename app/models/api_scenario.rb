@@ -50,6 +50,8 @@ class ApiScenario < Scenario
     end
   end
 
+  # a identifier for the scenario selector drop down in data.
+  # => "#32341 - nl 2040 (2011-01-11)"
   def identifier
     "##{id} - #{country} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
   end

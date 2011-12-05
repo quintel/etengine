@@ -7,6 +7,10 @@ module Etsource
       @git = Git.open @etsource_dir
     end
 
+    def current_commit_id
+      @git.gcommit("HEAD").sha
+    end
+
     def commits
       @git.log
     end

@@ -1,47 +1,55 @@
+# Loader is an interface to the ETsource. It takes care of loading and caching
+# of ETsource components. 
+#
+#     loader = Etsource::Loader.instance
+#     # load the (one&only) graph
+#     graph = loader.graph
+#     # next attach the dutch dataset to the graph
+#     graph.dataset = loader.dataset('nl')
+#
 module Etsource
   class Loader
     include Singleton
 
     def initialize
       @etsource = Etsource::Base.new
+      @datasets = {}.with_indifferent_access
     end
 
     # @return [Qernel::Graph] a deep clone of the graph.
-    def graph_clone
-      Marshal.load(Marshal.dump(graph))
+    #   It is important to work with clones, because present and future_graph should
+    #   be independent to reduce bugs.
+    def graph
+      Marshal.load(Marshal.dump(optimized_graph))
     end
 
+    # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
-      datasets[country]
+      ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
+        @datasets[country] ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/dataset/#{country}") do
+          Dataset.new.import(country)
+        end
+      end
     end
 
   protected
-
-    # @return {:nl => Qernel::Dataset, :uk => Qernel::Dataset} Hash of all datasets
-    def datasets
-      @datasets ||= Etsource::Dataset.new(@etsource).import.with_indifferent_access
-    end
-
     # A Qernel::Graph from ETsource where the converters are ordered in a way that
     #  is optimal for the calculation. 
     #
     def optimized_graph
-      unless @optimized_graph 
-        g = unoptimized_graph
-        g.dataset = dataset('nl')
-        g.optimize_calculation_order
-        g.reset_dataset!
-        @optimized_graph = g
+      ActiveSupport::Notifications.instrument("etsource.performance.optimized_graph") do
+        @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/optimized_graph") do
+          g = unoptimized_graph
+          g.dataset = dataset('nl')
+          g.optimize_calculation_order
+          g.reset_dataset!
+          g
+        end
       end
-      @optimized_graph
     end
 
     def unoptimized_graph
       @graph ||= Etsource::Graph.new(@etsource).import
     end
-    
-    def graph
-      optimized_graph
-    end  
   end
 end

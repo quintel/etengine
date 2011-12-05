@@ -85,7 +85,9 @@ class Gql
   # @return [Qernel::Dataset] Dataset used for the future. Needs to be updated with user input and then calculated.
   #
   def dataset_clone
-    Marshal.load(Marshal.dump(@dataset))
+    ActiveSupport::Notifications.instrument("gql.performance.dataset_clone") do
+      Marshal.load(Marshal.dump(@dataset))
+    end
   end
 
   # @return [QueryInterface]

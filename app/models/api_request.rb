@@ -47,7 +47,13 @@ class ApiRequest
     ApiScenario.new_attributes(opts)
   end
 
+  # Updates and stores the scenario with the new user values submitted in this request.
+  # This needs to be run before we call Current.gql.prepare otherwise they won't be applied.
+  #
   def apply_inputs
+    if @gql.andand.calculated? # access @gql directly to avoid initializing it in #gql
+      raise "Gql has already been calculated. apply_inputs won't take effect"
+    end
     if reset
       scenario.reset!
       scenario.save
@@ -60,6 +66,7 @@ class ApiRequest
     scenario.save unless test_scenario?
   end
 
+  # Initialize and return scenario. 
   def scenario
     @scenario ||= if test_scenario?
       ApiScenario.new(new_attributes).tap{|s| s.test_scenario = true }
@@ -68,7 +75,7 @@ class ApiRequest
     end
   end
 
-  # Shortcut for Gql.
+  # Access point for the GQL. 
   #
   def gql
     unless @gql
@@ -78,7 +85,7 @@ class ApiRequest
       # ---- New approach of accessing gql ---------------
       # This will load the graph and dataset from etsource
       # -> unoptimized and slow. It passed all test suites.
-      @gql = Gql::Gql.new(Current.scenario)
+      @gql = Current.gql = Gql::Gql.new(Current.scenario)
       # @gql.prepare
     end
     @gql
