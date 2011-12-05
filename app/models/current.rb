@@ -49,17 +49,6 @@ class Current
     session[:scenario] ||= Scenario.default
   end
 
-  # DEBT: Are we still using subdomains?
-  #
-  def subdomain
-    session[:subdomain]
-  end
-
-  # This is loaded in application_controller.
-  def subdomain=(subdomain)
-    session[:subdomain] = subdomain
-  end
-
   # TODO refactor or make a bit more clear&transparent
   def graph
     unless @graph
