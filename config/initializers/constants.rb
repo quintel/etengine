@@ -10,8 +10,5 @@ MJ_PER_MWH = 3600
 BILLIONS = 10.0**9
 MJ_TO_PJ = BILLIONS
 MILLIONS = 10.0**6
-# QUESTION: Why do we define here a 'shortcut' for nil?, DS
-# ANSWER: For the GQL. so we could write EQUALS(V(..); NIL)
-#         Will remove it, cause already defined by ruby... But want to test properly
-NIL = nil if !defined?(NIL)
+# NIL = nil # NIL is also used by GQL, but this constant is already defined by Ruby.
 EURO_SIGN = '&euro;'

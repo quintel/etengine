@@ -13,7 +13,6 @@
 
 
 class Blueprint < ActiveRecord::Base
-  belongs_to :blueprint_model
   has_many :datasets
   # I explicitly call the association *_records, because we currently also
   # have a method #converters that returns qernel_converters. After renaming
