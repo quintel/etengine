@@ -1,4 +1,4 @@
-class Api::InputsController < ApplicationController
+class Api::InputsController < Api::BaseController
   respond_to :xml
 
   before_filter :find_input, :only => [:show]

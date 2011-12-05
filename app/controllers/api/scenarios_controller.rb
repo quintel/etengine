@@ -1,7 +1,7 @@
 # This controller is mostly used for ActiveResource requests. Check ApiScenariosController
 # to see how the API requests work.
 #
-class Api::ScenariosController < ApplicationController
+class Api::ScenariosController < Api::BaseController
   respond_to :xml
   
   before_filter :find_scenario, :only => [:show, :load, :update]

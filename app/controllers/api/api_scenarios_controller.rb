@@ -1,12 +1,12 @@
 # We should consider merging this controller with Api::ScenariosController
 # PZ Wed 26 Oct 2011 15:11:12 CEST
 #
-class Api::ApiScenariosController < ApplicationController
+class Api::ApiScenariosController < Api::BaseController
   layout 'api'
 
   around_filter :disable_gc, :only => [:update, :show]
   before_filter :find_model, :only => [:destroy, :user_values]
-
+  
   # This action is still active but old. We should probably move it to a protected
   # namespace
   #
