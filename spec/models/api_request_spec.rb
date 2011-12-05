@@ -36,6 +36,7 @@ describe ApiRequest do
       @gquery1 = Gquery.create(:key => 'lft_demand', :query => 'V(lft; demand)')
       @gquery2 = Gquery.create(:key => 'rgt_demand', :query => 'V(rgt; demand)')
       Current.gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
+      ApiRequest.any_instance.stub(:gql).and_return(Current.gql)
     end
 
     context "test" do

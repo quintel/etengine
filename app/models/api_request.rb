@@ -73,6 +73,12 @@ class ApiRequest
     end
   end
 
+  # manually assign gql to this request. This is particularly
+  # useful for testing.
+  def gql=(gql)
+    @gql = gql
+  end
+
   # Access point for the GQL. 
   #
   def gql

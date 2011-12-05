@@ -12,7 +12,8 @@ module Etsource
     # performance reasons.
     # 
     def import(country = 'nl')
-      unless File.exists?(country_file(country, 'export'))
+      unless Rails.env.test? && File.exists?(country_file(country, 'export'))
+        # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
       end
       
