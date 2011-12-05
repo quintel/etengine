@@ -74,11 +74,11 @@ class ApiRequest
     unless @gql
       Current.scenario = scenario
       # ---- Old approach of accessing gql ---------------
-      @gql = Current.gql
+      # @gql = Current.gql
       # ---- New approach of accessing gql ---------------
       # This will load the graph and dataset from etsource
       # -> unoptimized and slow. It passed all test suites.
-      # @gql = Gql::Gql.new(Current.scenario)
+      @gql = Gql::Gql.new(Current.scenario)
       # @gql.prepare
     end
     @gql

@@ -6,6 +6,9 @@ module Etsource
 
     def dataset(country)
       @datasets ||= import
+      unless @datasets.has_key?(country.to_sym)
+        raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
+      end
       @datasets[country.to_sym]
     end
 
