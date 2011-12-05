@@ -45,7 +45,6 @@ class ApplicationController < ActionController::Base
   
     def initialize_current
       Current.session = session
-      Current.subdomain = request.subdomains.first
     end
 
     def teardown_current
