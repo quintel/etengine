@@ -60,7 +60,7 @@ class Gql
       @scenario = scenario_or_graph
       loader = Etsource::Loader.instance
       @present_graph = loader.graph_clone.tap{|g| g.year = @scenario.start_year}
-      @future_graph  = loader.graph_clone
+      @future_graph  = loader.graph_clone.tap{|g| g.year = @scenario.end_year}
       @dataset = loader.dataset(@scenario.code)
     elsif scenario_or_graph.is_a?(Graph)
       # support old way of loading gql, so we can export graphs to etsource

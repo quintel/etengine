@@ -69,6 +69,13 @@ class Graph
     self.refresh_dataset_objects if @dataset
   end
 
+  # Removes dataset from graph and all its objects.
+  #
+  def reset_dataset!
+    @dataset = nil
+    reset_dataset_objects
+  end
+
   def each_dataset_object_item(method_name)
     self.send(method_name)
     self.converters.each do |c|

@@ -49,6 +49,8 @@ class Current
     session[:scenario] ||= Scenario.default
   end
 
+  # ----- Obsolete after switch to ETsource -----------------------------------
+
   # TODO refactor or make a bit more clear&transparent
   def graph
     unless @graph
@@ -80,6 +82,8 @@ class Current
     end
   end
 
+  # ----- /Obsolete after switch to ETsource -----------------------------------
+
   ##
   # is the GQL calculated? If true, prevent the programmers
   # to add further update statements ({Scenario#add_update_statements}).
@@ -93,23 +97,30 @@ class Current
     @gql.andand.calculated? == true
   end
 
-  ##
-  # Access the GQL through Current.gql
-  # Lazy loads the latest graph if no gql has been manually assigned yet
-  # (for example if you want to show an older version)
+  # Initializes the GQL and makes it accessible through Current.gql
+  #
   def gql
-    @gql ||= graph.andand.gql
+    # ---- Old approach of accessing gql ---------------
+    # @gql ||= graph.andand.gql
+
+    # ---- New approach of accessing gql ---------------
+    # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
+    @gql ||= Gql::Gql.new(Current.scenario)
+    # At this point gql is not "prepared" see {Gql::Gql#prepare}. 
+    # We could force it here to always prepare, but that would slow things down
+    # when nothing has changed in a scenario. Uncommenting this would decrease performance
+    # but could get rid of bugs introduced by forgetting to prepare in some cases when we 
+    # access the graph through the gql (e.g. Current.gql.present_graph.converters.map(&:demand)).
+    # @gql.prepare
+    @gql
   end
 
   def gql=(gql)
     @gql = gql
   end
 
-  ##############################
-  # Resetting
-  ##############################
+  # ----- Resetting -----------------------------------------------------------
 
-  ##
   # Resets to all default values. Will also reset country and year!
   #
   # Do not use this method to reset slider values!
@@ -120,7 +131,6 @@ class Current
     reset_to_default_scenario!
   end
 
-  ##
   # Set to default scenario. Also overwrites year and country values!
   #
   # Do not use this method to reset slider values!
@@ -131,7 +141,6 @@ class Current
     scenario = Scenario.default
   end
 
-  ##
   # Resets the scenarios from user values. But not what country, year we're in.
   #
   # @untested 2010-12-27 seb
