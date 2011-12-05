@@ -27,6 +27,7 @@ module Etm
     # that belong together but where it didn't make sense to
     # put them in a module.
     config.autoload_paths += Dir["#{Rails.root}/app/controllers/application_controller"]
+    config.autoload_paths += Dir["#{Rails.root}/app/deprecated"]
 
     config.active_support.deprecation = :log
     config.time_zone = 'Europe/Amsterdam'
@@ -70,3 +71,5 @@ end
 ALLOWED_BROWSERS = %w[firefox ie9 ie8 ie7 chrome safari]
 AVAILABLE_LOCALES = %w[nl en]
 GC_DISABLING_HACK_ENABLED = true
+
+USE_ETSOURCE = true
