@@ -2,23 +2,7 @@ module Etsource
   class Dataset
     def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
-    end
-
-    def dataset(country)
-      @datasets ||= import
-      unless @datasets.has_key?(country.to_sym)
-        raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
-      end
-      @datasets[country.to_sym]
-    end
-
-    # @return [Hash] {'nl' => {Qernel::Dataset}}
-    #
-    def import
-      countries = Dir.entries(base_dir).select{|dir| (dir =~ /\w+/) && File.directory?("#{base_dir}/#{dir}")}
-      countries.inject({}) do |hsh, dir|
-        hsh.merge dir.to_sym => import_country(dir)
-      end
+      @datasets = {}
     end
 
     # Importing dataset and convert into the Qernel::Dataset format.
@@ -27,7 +11,11 @@ module Etsource
     # the additional nesting of the hash, and hashing ids as strings are mostly for 
     # performance reasons.
     # 
-    def import_country(country = 'nl')
+    def import(country = 'nl')
+      unless File.exists?(country_file(country, 'export'))
+        raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
+      end
+      
       yml = YAML::load(File.read(country_file(country, 'export')))
       dataset = Qernel::Dataset.new(Hashpipe.hash(country))
 
