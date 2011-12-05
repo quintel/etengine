@@ -1,5 +1,3 @@
-# DEBT Only access gql through the #gql method!
-#
 # Encapsulates and parses api requests.
 #
 #    api_request = ApiRequest.new(params)
