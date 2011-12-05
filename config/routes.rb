@@ -30,6 +30,8 @@ Etm::Application.routes.draw do
     resources :areas, :only => [:index, :show]
     resources :inputs, :only => [:index, :show]
     resources :gqueries, :only => [:index]
+    # catches all OPTIONS requests
+    match '*url', to: 'base#cross_site_sharing', via: :options
   end
 
   namespace :data do

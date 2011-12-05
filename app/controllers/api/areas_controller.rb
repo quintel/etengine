@@ -1,4 +1,4 @@
-class Api::AreasController < ApplicationController
+class Api::AreasController < Api::BaseController
   respond_to :xml
 
   before_filter :find_area, :only => [:show]

@@ -1,4 +1,4 @@
-class Api::GqueriesController < ApplicationController
+class Api::GqueriesController < Api::BaseController
   respond_to :xml
 
   def index
