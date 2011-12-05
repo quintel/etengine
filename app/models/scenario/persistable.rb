@@ -3,9 +3,6 @@
 module Scenario::Persistable
   extend ActiveSupport::Concern
 
-  def included(klass)
-  end
-
   # Reset all values that can be changed by a user and influences GQL
   # to the default/empty values.
   #

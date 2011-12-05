@@ -72,8 +72,6 @@ class Scenario < ActiveRecord::Base
   after_initialize do |scenario|
     scenario.touch :present_updated_at
   end
-  
-  
 
   before_save :serialize_user_values
 
@@ -103,6 +101,7 @@ class Scenario < ActiveRecord::Base
     Scenario.new(default_attributes)
   end
 
+  # Code is the new region_code/country. 
   def code
     country
   end
@@ -126,7 +125,6 @@ class Scenario < ActiveRecord::Base
   # Scenario Attributes
   ##############################
 
-  ##
   # @tested 2010-11-30 seb
   #
   def start_year
@@ -134,7 +132,6 @@ class Scenario < ActiveRecord::Base
   end
 
 
-  ##
   # @tested 2010-11-30 seb
   #
   def years
