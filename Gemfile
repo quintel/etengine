@@ -48,7 +48,7 @@ group :development do
 end
 
 group :test, :development do
-  gem "rspec-rails", "~> 2.6.0"
+  gem "rspec-rails", "~> 2.7.0"
   gem 'ruby-prof'
   gem 'pry'
   gem 'guard'
