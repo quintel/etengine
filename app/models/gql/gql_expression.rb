@@ -605,7 +605,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def LESS(values, arguments, scope = nil)
     a,b = values
-    a < b
+    a < b rescue nil
   end
 
   ##
@@ -637,7 +637,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def GREATER_OR_EQUAL(values, arguments, scope = nil)
     a,b = values
-    a >= b
+    a >= b rescue nil
   end
 
   ##
