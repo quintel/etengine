@@ -27,7 +27,7 @@ module Etsource
     def dataset(country)
       ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
         @datasets[country] ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/dataset/#{country}") do
-          Dataset.new.import(country)
+          ::Etsource::Dataset.new.import(country)
         end
       end
     end
