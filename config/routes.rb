@@ -6,10 +6,6 @@ Etm::Application.routes.draw do
 
   resources :user_sessions
   
-  # Frontend
-  resources :converters, :only => [:index, :show]
-  resource :graph, :only => :show
-
   # DEBT: Is there anything still using the old API?
   scope '/api/v1', :module => 'api' do
     resources :api_scenarios
