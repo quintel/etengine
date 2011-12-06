@@ -86,7 +86,7 @@ module DataHelper
   
   def carriers_autocomplete_map_cache
     Rails.cache.fetch "carriers_autocomplete_map_cache" do
-      Carrier.order(`key`).all.map {|a| {label: a.key, url: data_carrier_path(:carrier_id => a.id)} }.to_json
+      Carrier.order(`key`).all.map {|a| {label: a.key, url: data_carrier_path(:id => a.id)} }.to_json
     end
   end
 end
