@@ -1,6 +1,6 @@
 class Data::ConvertersController < Data::BaseController
   def index
-    base = @blueprint.converter_records
+    base = Converter
     base = base.in_group(params[:group_id]) unless params[:group_id].blank?
     @converters = base.by_name(params[:q]).order('converters.`key`').page(params[:page]).per(100)
   end

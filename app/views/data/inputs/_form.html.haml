@@ -1,3 +1,5 @@
+%strong{style: "color: red"} Inputs have to be edited through ETsource.
+
 = simple_form_for [:data, @input], :url => @input.new_record? ? data_inputs_path : data_input_path(:id => @input.id) do |f|
   = f.input :name
   = f.input :key
@@ -19,4 +21,4 @@
   = f.input :updateable_period
   = f.input :query
   = f.input :v1_legacy_unit
-  = f.button :submit
+  

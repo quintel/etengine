@@ -7,11 +7,7 @@
       %th Id
       = sortable_table_header :name => "Key", :sort=>"key"
       %th Unit
-      %th
-      %th
       = sortable_table_header :name => "Updated", :sort=>"updated_at"
-      %th Created
-      %th Group
       %th Deprecated Key
 
   %tbody
@@ -20,10 +16,6 @@
         %td= link_to gquery.id, data_gquery_path(:id => gquery)
         %td= link_to highlight(gquery.key, params[:q]), data_gquery_key_path(:key => gquery.key)
         %td= gquery.unit
-        %td= link_to 'Edit', edit_data_gquery_url(:id => gquery)
-        %td= link_to 'Delete', data_gquery_path(:id => gquery), :method => 'delete', :confirm => 'Are you sure?'
-        %td= I18n.l(gquery.updated_at, :format => :long) if gquery.updated_at
-        %td= I18n.l(gquery.created_at, :format => :long) if gquery.created_at
         %td= gquery.gquery_group.try(:group_key)
         %td= gquery.deprecated_key
   %tfoot

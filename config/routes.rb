@@ -37,7 +37,7 @@ Etm::Application.routes.draw do
     match '/restart'     => 'pages#restart', :as => 'restart'
     match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
-    scope '/:blueprint_id/:region_code' do
+    scope '/:api_scenario_id' do
       root :to => "pages#index"
       resources :blueprint_layouts, :except => [:update, :destroy] do
         resources :converter_positions, :only => :create
