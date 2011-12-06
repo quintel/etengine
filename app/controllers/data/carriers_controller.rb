@@ -1,10 +1,9 @@
 class Data::CarriersController < Data::BaseController
   def index
-    @carriers = Carrier.order('name').all
+    @carriers = @gql.present_graph.carriers
   end
 
-  def edit
-    @carrier = Carrier.find(params[:id])
-    @carrier_data = @dataset.carrier_area_datas.where(:carrier_id => params[:id]).first
+  def show
+    @carrier = @gql.present_graph.carrier(params[:id].to_sym)
   end
 end

@@ -16,8 +16,8 @@
 %ul
   %li 
     %b Energy Balance Group:
-    - if g = @converter.energy_balance_group
-      = link_to g.name, data_energy_balance_group_path(:id => g.id)
+    - if g = @converter_present.energy_balance_group
+      = link_to g, data_energy_balance_group_path(:id => g)
 %ul
   %li
     %b Use:
@@ -56,7 +56,7 @@
 
 %h3 Actions
 %p
-  = link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.id)
+  =# link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.full_key)
   GraphViz:
   = link_to 'Present', {:format => 'svg'}, :target => :blank
   = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank

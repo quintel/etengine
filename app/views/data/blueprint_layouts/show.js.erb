@@ -2,7 +2,7 @@
 var GRAPH = new Graph();
 
 <%
-  @bp = @graph.blueprint
+  @bp = @blueprint
   blueprint_converters = @bp.converter_records.includes(:groups, :energy_balance_group).all
   blueprint_converter_ids = blueprint_converters.map(&:id)
 

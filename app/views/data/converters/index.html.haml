@@ -23,12 +23,12 @@
     - @converters.each do |converter|
       %tr
         %td ##{converter.id}
-        %td= link_to highlight(converter.full_key.to_s, params[:q]), data_converter_path(:id => converter)
+        %td= link_to highlight(converter.full_key.to_s, params[:q]), data_converter_path(:id => converter.full_key)
         %td
           %small
-            = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
+            = link_to 'pres', data_converter_path(:id => converter.full_key, :format => 'svg'), :target => :blank
             |
-            = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
+            = link_to 'fut', data_converter_path(:id => converter.full_key, :format => 'svg', :graph => 'future'), :target => :blank
 
         - fields.each do |field|
           - if converter.full_key.present? and query = "V(#{converter.full_key};#{field})"

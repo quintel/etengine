@@ -20,13 +20,14 @@ class Data::BaseController < ApplicationController
         @api_scenario = ApiScenario.find(blueprint_id)
         Current.scenario = @api_scenario
         @graph = Current.graph
-
       else
         @graph = Graph.latest_from_country(region_code)
         # We have to assign the gql to manually Current
         # DEBT: this is probablye not needed anymore. instead assign Current.graph = @graph
         Current.gql    = @graph.gql
       end
+      @gql = Current.gql = Gql::Gql.new(Current.scenario)
+      @gql.prepare
       @blueprint = @graph.blueprint
       @dataset   = @graph.dataset
     end

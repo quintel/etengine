@@ -96,6 +96,11 @@ class Carrier
     end
   end
 
+  # used by url_for
+  def to_param
+    key.to_s
+  end
+
   def to_s
     inspect
   end

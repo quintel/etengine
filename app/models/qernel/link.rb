@@ -14,7 +14,8 @@ class Link
     :share, 
     :value, 
     :max_demand, 
-    :calculated
+    :calculated,
+    :country_specific
   ]
 
   dataset_accessors DATASET_ATTRIBUTES
@@ -255,10 +256,15 @@ public
     "<Qernel::Link #{topology_key}>"
   end
 
-  # Helper method to get the associated active_record object.
-  def ar_object
-    @ar_object ||= ::Link.find(id)
-  end
+  # TODO: find better names and explanation, this was added for the upcoming input module
+  # and this attribute is used on the converter page. Slot has a similar method
+  def kind
+    case country_specific
+    when 0 then :red
+    when 1 then :yellow
+    when 2 then :green
+    end
+  end  
 end
 
 

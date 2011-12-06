@@ -1,8 +1,16 @@
-= render 'search_box'
+- breadcrumb link_to "Carriers", data_carriers_path
+- breadcrumb @carrier.key
+= render :partial => "data/carriers/search_box"
 
-= simple_form_for [:data, @carrier_data] do |f|
-  = f.input :cost_per_mj
-  = f.input :co2_per_mj
-  = f.input :sustainable
-  = f.input :typical_production_per_km2
-  = f.button :submit
+.header
+  == ##{@carrier.id}
+  = @carrier.key
+
+
+= notice_message
+
+%table
+  - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+    %tr
+      %th= key
+      %td= @carrier[key]

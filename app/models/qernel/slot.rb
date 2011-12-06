@@ -32,7 +32,7 @@ class Slot
 
   # --------- Dataset ---------------------------------------------------------
 
-  DATASET_ATTRIBUTES = [:conversion]
+  DATASET_ATTRIBUTES = [:conversion, :country_specific]
   dataset_accessors DATASET_ATTRIBUTES
 
 
@@ -226,10 +226,16 @@ class Slot
     "<Qernel::Slot id:#{id} carrier:#{carrier.key}>"
   end
   
-  # Helper method to get the associated active_record object.
-  def ar_object
-    @ar_object ||= ::Slot.find(id)
+
+  # TODO: find better names and explanation
+  def kind
+    case country_specific
+    when 0 then :red
+    when 1 then :yellow
+    when 2 then :green
+    end
   end
+  
 end
 
 end
