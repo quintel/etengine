@@ -41,8 +41,8 @@ private
   def result
     unless @result
       @result = {
-        'future' => graph_to_json(Current.gql.future_graph),
-        'present' => graph_to_json(Current.gql.present_graph)
+        'future' => graph_to_json(@gql.future_graph),
+        'present' => graph_to_json(@gql.present_graph)
       }
     end
     @result
