@@ -5,30 +5,20 @@ class Data::BaseController < ApplicationController
   authorize_resource :class => false
 
   def redirect
-    redirect_to data_root_path(
-      :blueprint_id => params[:blueprint_id],
-      :region_code  => params[:region_code])
+    redirect_to data_root_path(:api_scenario_id => params[:api_scenario_id])
   end
 
   protected
 
     def find_graph
-      blueprint_id = params[:blueprint_id] ||= 'latest'
-      region_code  = params[:region_code] ||= 'nl'
+      api_scenario_id = params[:api_scenario_id] ||= 'latest'
 
-      if blueprint_id != 'latest'
-        @api_scenario = ApiScenario.find(blueprint_id)
-        Current.scenario = @api_scenario
-        @graph = Current.graph
+      Current.scenario = if api_scenario_id == 'latest'
+        @api_scenario = ApiScenario.last
       else
-        @graph = Graph.latest_from_country(region_code)
-        # We have to assign the gql to manually Current
-        # DEBT: this is probablye not needed anymore. instead assign Current.graph = @graph
-        Current.gql    = @graph.gql
+        @api_scenario = ApiScenario.find(params[:api_scenario_id])
       end
       @gql = Current.gql = Gql::Gql.new(Current.scenario)
       @gql.prepare
-      @blueprint = @graph.blueprint
-      @dataset   = @graph.dataset
     end
 end

@@ -1,4 +1,4 @@
-- breadcrumb "Converters for #{params[:blueprint_id]} / #{params[:region_code]}"
+- breadcrumb "Converters for #{Current.scenario.identifier}"
 = render 'subnav'
 = render "search_box"
 - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)

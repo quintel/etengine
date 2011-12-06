@@ -75,9 +75,10 @@ class Data::GqueriesController < Data::BaseController
   end
   
   # Similar to the show action, but finding the gquery by key. It makes sense to
-  # keep the two actions separated
+  # keep the two actions separated.
+  # SB (2011-12-06): Why does it make sense to keep the two actions separated?
   def key
-    @gquery = Gquery.find_by_key(params[:key])
+    @gquery = Gquery.get(params[:key])
     if @gquery
       render :show
     else

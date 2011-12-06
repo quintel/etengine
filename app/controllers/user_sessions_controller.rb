@@ -14,7 +14,7 @@ class UserSessionsController < ApplicationController
     @user_session = UserSession.new(params[:user_session])
     if @user_session.save
       flash[:notice] = I18n.t("flash.login")
-      redirect_back_or_default data_root_path(:blueprint_id => 'latest', :region_code => 'nl')
+      redirect_back_or_default data_root_path(:api_scenario_id => 'latest')
     else
       render :action => 'new'
     end
