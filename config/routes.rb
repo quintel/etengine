@@ -72,11 +72,7 @@ Etm::Application.routes.draw do
       resources :groups, :only => [:index, :show]
       resources :gquery_groups, :only => [:index, :show]
 
-      resources :carriers, :only => [:index, :edit] do 
-        resource :carrier_data, :only => [:edit, :update]
-      end
-      resources :carrier_data, :only => [:edit, :update]
-
+      resources :carriers, :only => [:index, :show]
       resources :areas do
         resources :carrier_data, :only => [:edit, :update]
       end
@@ -89,7 +85,6 @@ Etm::Application.routes.draw do
       resources :historic_series
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
-      resources :blueprints, :except => [:edit, :update, :destroy]
       resources :inputs, :except => :show
       resources :scenarios, :only => [:index, :show, :edit, :update] do
         put :fix, :on => :member

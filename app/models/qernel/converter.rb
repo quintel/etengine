@@ -478,6 +478,10 @@ public
     self
   end
 
+  # needed for url_for
+  def to_param
+    full_key.to_s
+  end
 
   # --------- Debug -----------------------------------------------------------
 

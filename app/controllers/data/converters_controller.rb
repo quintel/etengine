@@ -1,7 +1,4 @@
 class Data::ConvertersController < Data::BaseController
-  before_filter :find_converter, :only => :show
-  before_filter :calculate_gql
-
   def index
     base = @blueprint.converter_records
     base = base.in_group(params[:group_id]) unless params[:group_id].blank?
@@ -13,9 +10,9 @@ class Data::ConvertersController < Data::BaseController
   end
 
   def show
-    @qernel_graph = @graph.gql.present_graph
-    @converter_present = @graph.gql.present_graph.graph.converter(params[:id].to_i)
-    @converter_future  = @graph.gql.future_graph.graph.converter(params[:id].to_i)
+    @qernel_graph = @gql.present_graph
+    @converter_present = @gql.present_graph.graph.converter(params[:id].to_sym)
+    @converter_future  = @gql.future_graph.graph.converter(params[:id].to_sym)
 
     respond_to do |format|
       format.html { render :layout => true }
@@ -26,18 +23,6 @@ class Data::ConvertersController < Data::BaseController
 
   protected
   
-    def find_converter
-      # Remember that a blueprint doesn't necessarily include all converters
-      @converter = @blueprint.converter_records.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to data_converters_path, :alert => "Converter not found" and return
-    end
-
-    # calculate so values will be updated and assigned.
-    def calculate_gql
-      Current.gql.prepare
-    end
-
     def diagram
       depth = params[:depth].andand.to_i || 3
       base_url = "/data/latest/nl/converters/"

@@ -85,13 +85,4 @@ class Link < ActiveRecord::Base
     parent_id
   end
   
-  # TODO: find better names and explanation, this was added for the upcoming input module
-  # and this attribute is used on the converter page. Slot has a similar method
-  def kind
-    case country_specific
-    when 0 then :red
-    when 1 then :yellow
-    when 2 then :green
-    end
-  end  
 end
