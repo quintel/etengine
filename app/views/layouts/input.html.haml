@@ -1,0 +1,42 @@
+!!! Strict
+%html{ :xmlns => "http://www.w3.org/1999/xhtml" }
+  %head
+    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
+    %title EnergyTransitionModel
+      
+    = javascript_include_tag :defaults
+    = javascript_include_tag 'underscore.min'
+    = sprocket_layout_init :admin
+    = sprocket_layout_init :testcases
+
+    = stylesheet_link_tag 'data'
+    = stylesheet_link_tag 'vendor/smoothness/jquery-ui-1.8.16.custom'
+
+  %body#data
+    #container
+      #header
+        %nav
+          %ul
+            %li
+              = current_user.email
+              \-
+              = link_to "Logout", logout_path
+        =# render 'data/shared/graph_picker'
+      #subheader
+        %nav
+          = link_to 'Forms', input_tool_forms_path
+          
+      #subnav
+        = yield :subnav
+
+      - if breadcrumbs.any?
+        #breadcrumbs
+          %nav
+            = breadcrumbs.map{|x| content_tag(:span, x)}.join(" &raquo; ").html_safe
+      #flash
+        - flash.each do |k,msg|
+          .flash{:class => k}= msg
+      
+      #content= yield
+      #footer
+        = yield :footer

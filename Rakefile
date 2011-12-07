@@ -5,7 +5,7 @@ Etm::Application.load_tasks
 
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 #require 'yard'
 #

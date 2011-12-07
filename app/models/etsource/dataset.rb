@@ -32,13 +32,18 @@ module Etsource
         attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
         dataset.<<(group, key_hashed => attrs)
       end
-      dataset.<<(:area, YAML::load(File.read(country_file(country, 'area'))))
-      dataset.<<(:carrier, YAML::load(File.read(country_file(country, 'carriers'))))
-      dataset.time_curves = YAML::load(File.read(country_file(country, 'time_curves')))
+      dataset.<<(:area,     load_yaml(country, 'area'))
+      dataset.<<(:carrier,  load_yaml(country, 'carriers'))
+      dataset.time_curves = load_yaml(country, 'time_curves')
       dataset.data[:graph][:graph][:calculated] = false
       dataset
     end
     
+    def load_yaml(country, file)
+      @input_tool = InputTool::ValueBox.area(country)
+      YAML::load(ERB.new(File.read(country_file(country, file))).result(@input_tool.get_binding))
+    end
+
     def export(countries)
       countries.each{|c| export_country(c)}
     end

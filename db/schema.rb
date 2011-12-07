@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111124155441) do
+ActiveRecord::Schema.define(:version => 20111206100559) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -346,6 +346,12 @@ ActiveRecord::Schema.define(:version => 20111124155441) do
     t.datetime "updated_at"
   end
 
+  create_table "input_tool_forms", :force => true do |t|
+    t.string "area_code"
+    t.string "code"
+    t.text   "values"
+  end
+
   create_table "inputs", :force => true do |t|
     t.string   "name"
     t.string   "key"
@@ -422,23 +428,19 @@ ActiveRecord::Schema.define(:version => 20111124155441) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "user_values"
-    t.integer  "end_year",           :default => 2040
+    t.integer  "end_year",                        :default => 2040
     t.string   "country"
     t.boolean  "in_start_menu"
     t.string   "region"
     t.integer  "user_id"
-    t.integer  "complexity",         :default => 3
+    t.integer  "complexity",                      :default => 3
     t.string   "scenario_type"
     t.integer  "preset_scenario_id"
     t.string   "type"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
-    t.boolean  "protected"
+    t.integer  "protected",          :limit => 1
   end
-
-  add_index "scenarios", ["in_start_menu"], :name => "index_scenarios_on_in_start_menu"
-  add_index "scenarios", ["protected"], :name => "index_scenarios_on_protected"
-  add_index "scenarios", ["user_id"], :name => "index_scenarios_on_user_id"
 
   create_table "slots", :force => true do |t|
     t.integer "blueprint_id"
