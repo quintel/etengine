@@ -31,7 +31,7 @@ Etm::Application.routes.draw do
   end
 
   namespace :data do
-    root :to => "pages#index", :blueprint_id => 'latest', :region_code => 'nl'
+    root :to => "pages#index", :blueprint_id => 'latest'
     
     match '/redirect'    => "base#redirect", :as => 'redirect'
     match '/restart'     => 'pages#restart', :as => 'restart'
@@ -93,5 +93,10 @@ Etm::Application.routes.draw do
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
     end
+  end
+
+  namespace :input_tool do
+    root :to => "forms#index"
+    resources :forms
   end
 end

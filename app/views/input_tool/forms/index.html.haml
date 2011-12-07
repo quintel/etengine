@@ -1,0 +1,21 @@
+- breadcrumb "Forms"
+
+%h2 Unsaved forms
+%table
+  - @new_form_codes.each do |form_code|
+    %tr
+      %td= link_to form_code, new_input_tool_form_path(:code => form_code)
+
+%h2 Saved forms
+%table
+  - @forms.each do |form|
+    %tr
+      %td= link_to form.code, edit_input_tool_form_path(:id => form)
+      %td=# link_to 'del', input_tool_form_path(:id => form), :method => :delete
+
+
+%h2 Finalize & Commit changes
+%p
+  This will permanently store, backup the current state. A commit makes changes auditable and revertable (go back in time). Only commited changes can go into production. 
+  %br
+  %button COMMIT NOW
