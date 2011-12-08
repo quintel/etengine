@@ -12,7 +12,7 @@ module Etsource
     # performance reasons.
     # 
     def import(country = 'nl')
-      if !Rails.env.test? && !File.exists?(country_file(country, 'export'))
+      if !Rails.env.test? && !File.exists?(country_dir(country))
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
       end
@@ -20,11 +20,13 @@ module Etsource
       
       dataset = Qernel::Dataset.new(Hashpipe.hash(country))
       
-      topology_dataset_files = Dir.glob(country_dir(country)+"/*.graph.yml")
-      topology_dataset_files << country_file(country, 'export')
+      topology_dataset_files = Dir.glob(country_dir("{#{country},_defaults}")+"/graph/*.yml")
       
-      topology_dataset_files.each do |topology_dataset_file|
-        load_yaml_file(topology_dataset_file).each do |key,attributes|
+      topology_dataset_files.each do |file|
+        yml_hsh = load_yaml_with_defaults(country, 'graph/'+file.split("/").last) || {}
+        yml_hsh.delete(:defaults)
+        yml_hsh.delete(:globals)
+        yml_hsh.each do |key,attributes|
           key = key.to_s.gsub(/\s/, '')
           key_hashed = Hashpipe.hash(key)
 
@@ -38,19 +40,32 @@ module Etsource
         end
       end
 
-      dataset.<<(:area,     load_yaml(country, 'area'))
-      dataset.<<(:carrier,  load_yaml(country, 'carriers'))
+      dataset.<<(:area,     load_yaml_with_defaults(country, 'area')[:area])
+      dataset.<<(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
       dataset.time_curves = load_yaml(country, 'time_curves')
       dataset.data[:graph][:graph][:calculated] = false
       dataset
     end
     
+
+
+    def load_yaml_with_defaults(country, file)
+      default = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
+      country = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
+      content = [default, country].join("\n")
+      load_yaml_content(content)
+    end
+
+    def load_yaml_content(str)
+      YAML::load(ERB.new(str).result(@input_tool.get_binding))
+    end
+
     def load_yaml_file(file_path)
-      YAML::load(ERB.new(File.read(file_path)).result(@input_tool.get_binding))
+      load_yaml_content(File.read(file_path))
     end
 
     def load_yaml(country, file)
-      load_yaml_file(country_file(country, file))
+      load_yaml_content(File.read(country_file(country, file)))
     end
 
     def export(countries)
@@ -133,7 +148,9 @@ module Etsource
     # @param [String] country shortcut 'de', 'nl', etc
     #
     def country_file(country, file_name)
-      "#{base_dir}/#{country}/#{file_name}.yml"
+      f = "#{base_dir}/#{country}/#{file_name}"
+      f += ".yml" unless f.include?('.yml')
+      f
     end
  
   end
