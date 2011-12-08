@@ -7,4 +7,6 @@
 %div{style: "position:absolute; left: 60%; width:40%"}
   = render :file => Etsource::Forms.new.description_template_for(@form.code)
 
-  %pre= InputTool::Form.all.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}
+  - InputTool::Form.all.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}.each do |k,h|
+    %h4= k
+    %code= h

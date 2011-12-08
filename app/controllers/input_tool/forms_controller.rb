@@ -20,6 +20,7 @@ module InputTool
     def new
       @code = params[:code]
       @form = InputTool::Form.new(:code => @code, :area_code => 'nl')
+      @value_box = ValueBox.area('nl')
     end
 
     def create
@@ -46,6 +47,7 @@ module InputTool
 
     def edit
       @form = Form.find(params[:id])
+      @value_box = ValueBox.area('nl')
     end
   end
 end

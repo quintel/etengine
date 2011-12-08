@@ -16,22 +16,28 @@ module Etsource
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
       end
+      @input_tool = InputTool::ValueBox.area(country)
       
-      yml = YAML::load(File.read(country_file(country, 'export')))
       dataset = Qernel::Dataset.new(Hashpipe.hash(country))
+      
+      topology_dataset_files = Dir.glob(country_dir(country)+"/*.graph.yml")
+      topology_dataset_files << country_file(country, 'export')
+      
+      topology_dataset_files.each do |topology_dataset_file|
+        load_yaml_file(topology_dataset_file).each do |key,attributes|
+          key = key.to_s.gsub(/\s/, '')
+          key_hashed = Hashpipe.hash(key)
 
-      yml.each do |key,attributes|
-        key = key.to_s.gsub(/\s/, '')
-        key_hashed = Hashpipe.hash(key)
+          group = if key.include?('-->')  then :link
+                  elsif key.include?('(') then :slot
+                  end
+          group ||= :converter
 
-        group = if key.include?('-->')  then :link
-                elsif key.include?('(') then :slot
-                end
-        group ||= :converter
-
-        attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-        dataset.<<(group, key_hashed => attrs)
+          attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
+          dataset.<<(group, key_hashed => attrs)
+        end
       end
+
       dataset.<<(:area,     load_yaml(country, 'area'))
       dataset.<<(:carrier,  load_yaml(country, 'carriers'))
       dataset.time_curves = load_yaml(country, 'time_curves')
@@ -39,9 +45,12 @@ module Etsource
       dataset
     end
     
+    def load_yaml_file(file_path)
+      YAML::load(ERB.new(File.read(file_path)).result(@input_tool.get_binding))
+    end
+
     def load_yaml(country, file)
-      @input_tool = InputTool::ValueBox.area(country)
-      YAML::load(ERB.new(File.read(country_file(country, file))).result(@input_tool.get_binding))
+      load_yaml_file(country_file(country, file))
     end
 
     def export(countries)
@@ -115,6 +124,12 @@ module Etsource
       "#{@etsource.base_dir}/datasets"
     end
 
+    # @param [String] country shortcut 'de', 'nl', etc
+    #
+    def country_dir(country)
+      "#{base_dir}/#{country}"
+    end
+ 
     # @param [String] country shortcut 'de', 'nl', etc
     #
     def country_file(country, file_name)

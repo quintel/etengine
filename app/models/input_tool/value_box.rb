@@ -53,25 +53,56 @@ module InputTool
       new(InputTool::Form.where(:area_code => code).all)
     end
 
+    # Used to bind a ValueBox instance to a dataset yml.erb template.
+    #
     def get_binding
       binding
     end
 
-    def set(key, value)
+    # Sets a shortcut for a value. Typically used in conjunction with multiple #get.
+    #
+    #     set(:hh_demand_bln, (get(households, demand_total) / BILLIONS) )
+    #         `··· key ····´   `··· value ····························´
+    #
+    def shortcut(key, value)
       @values[key] = value
     end
+    alias_method :set, :shortcut
 
+    # Recursively retrieves a value from the input tool value hashes.
+    # 
+    #     {:foo => {:bar => {:baz => 3.0 }}}
+    #
+    #     get(:foo) # => nil
+    #     get(:foo, default : 23.0) # => 23.0
+    #
+    #     get(:foo, :bar, :baz) # => 3.0
+    #     get(:foo, :bar, :baz, default : 23.0) # => 3.0
+    #     
+    #
+    # @option args [Float] :default Value returned if lookup value is undefined or nil
+    # @option args [Float] :error   Value returned if exception happens
+    #
     def get(*args)
       options = args.extract_options!
 
       value = nil
+      hsh = @values.with_indifferent_access
+      # iterate with keys through nested hash.
+      # only assign value a number after iterating over *all* keys.
       args.each do |key|
-        value ||= @values
-        value = value.with_indifferent_access[key]
+        if hsh.has_key?(key)
+          hsh = hsh[key]
+          if args.last == key
+            value = hsh 
+          else
+            hsh = hsh.with_indifferent_access
+          end
+        end
       end
-      value.to_f
-    rescue
-      options[:default]
+      value.nil? ? options[:default] : value.to_f
+    rescue => e
+      options[:error] || raise(e)
     end
 
     # This is used to simplify the use in ETsource. So that researchers do not have
