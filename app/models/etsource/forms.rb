@@ -45,7 +45,7 @@ module Etsource
   #########
 
     def base_dir
-      "#{@etsource.base_dir}/datasets/forms"
+      "#{@etsource.base_dir}/datasets/_forms"
     end
   end
 end
