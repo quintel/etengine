@@ -25,12 +25,13 @@ module Etsource
 
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
-      ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
-        @datasets[country] ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/dataset/#{country}") do
+      #ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
+        #@datasets[country] ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/dataset/#{country}") do
           ::Etsource::Dataset.new.import(country)
-        end
-      end
+        #end
+      #end
     end
+
 
   protected
     # A Qernel::Graph from ETsource where the converters are ordered in a way that

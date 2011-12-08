@@ -217,11 +217,11 @@ class Gql
   end
 
 protected
-
+  ENABLE_PRESENT_DATASET_CACHE = false
   def prepare_present
     ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_present') do
       # DEBT wrong. check for present_updated_at!!
-      if scenario.update_statements_present.empty? && scenario.inputs_present.empty?
+      if ENABLE_PRESENT_DATASET_CACHE && scenario.update_statements_present.empty? && scenario.inputs_present.empty?
         present_graph.dataset ||= calculated_present_dataset
       else
         # If present_graph has user inputs then we have to take a fresh dataset.
