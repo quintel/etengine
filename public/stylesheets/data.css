@@ -196,6 +196,9 @@ body {
   width: 500px;
   height: 100px; }
 
+input[type=number] {
+  width: 40px; }
+
 #header {
   background-color: #6a7176;
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#6a7176"}, endColorstr="#4d5256");
