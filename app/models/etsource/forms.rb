@@ -16,7 +16,7 @@ module Etsource
     end
 
     def form_template_for(file_name)
-      [base_dir,file_name,"form.html.erb"].join('/')
+      Dir.glob([base_dir,file_name,'form.html.*'].join('/')).first
     end
 
 
