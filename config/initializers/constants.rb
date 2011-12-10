@@ -15,3 +15,13 @@ MILLIONS = 10.0**6
 #         Will remove it, cause already defined by ruby... But want to test properly
 NIL = nil if !defined?(NIL)
 EURO_SIGN = '&euro;'
+
+# 2011-12-09 GQL grammar does not allow "." inside V(...; ___ ). 
+# So it is impossible to use floats, e.g. V(...; demand * 2.5)
+# or V(...; demand ** 2/3). (2/3 would return 0, because they are ints)
+#
+# Until we properly extend the GQL grammar, we can use the following
+# work around:
+# V(...; demand * 2 + FLOAT_HACK/2)
+# V(...; demand ** 2*FLOAT_HACK/3)
+FLOAT_HACK = 1.0
