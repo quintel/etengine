@@ -13,33 +13,6 @@
 #     # Transform a percentage (50%) into a factor (0.5)
 #     set(hh_hot_water_heating_share, get(households,hot_water,share,heating) / 100)
 #     get(hh_hot_water_heating_share)
-#  
-#
-# ------ Binding to ETsource template -----------------------------------------
-#
-# A ETsource dataset yml file has a binding to a value box object. This means 
-# that inside a yml file calling any method will have the value box as scope.
-#
-#     ---
-#     heating: <%= get( 'foo', 'bar' ) %>
-#
-# Above yaml will call the ValueBox#get with 'foo' and 'bar' as arguments to the 
-# bound value box instance.
-# The binding happens in Etsource::Datasets#load_yaml (if it has disappeared search
-# for 'get_binding').
-#
-# ------ method_missing meta programming --------------------------------------
-#
-# To make life easier for researchers I (sb) decided to let them omit the '' or
-# symbol : for the get arguments.
-#
-#     ---
-#     heating: <%= get('foo', 'bar') %>
-#     heating: <%= get(foo, bar) %>
-#
-# I argue that the second example is rather prettier and less prone to type-bugs.
-# It works because the yaml file is bound to the value_box object, therefore foo
-# will trigger the ValueBox#method_missing and return :foo back.
 # 
 #
 module InputTool
@@ -51,12 +24,6 @@ module InputTool
 
     def self.area(code)
       new(InputTool::Form.where(:area_code => code).all)
-    end
-
-    # Used to bind a ValueBox instance to a dataset yml.erb template.
-    #
-    def get_binding
-      binding
     end
 
     # Sets a shortcut for a value. Typically used in conjunction with multiple #get.
@@ -93,27 +60,16 @@ module InputTool
       args.each do |key|
         if hsh.has_key?(key)
           hsh = hsh[key]
-          if args.last == key
-            value = hsh 
+          if args.last == key 
+            value = hsh unless hsh.is_a?(Hash)
           else
             hsh = hsh.with_indifferent_access
           end
         end
       end
-      value.nil? ? options[:default] : value.to_f
+      value.blank? ? options[:default] : value.to_f
     rescue => e
       options[:error] || raise(e)
-    end
-
-    # This is used to simplify the use in ETsource. So that researchers do not have
-    # to escape keys with '', or symbolize them.
-    #
-    #     get(households,hot_water,demand)
-    #
-    # See documentation section Binding above.
-    #
-    def method_missing(method, *args)
-      method
     end
   end
 end

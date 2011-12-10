@@ -49,25 +49,33 @@ class Dataset
   #
   # @param [Hash]
   #
-  def <<(group, hsh)
+  # def <<(group, hsh)
+  #   @data[group] ||= {}
+  #   hsh.each do |key, values|
+  #     @data[group][key] = values.inject(@data[group][key] || {}) do |hsh,arr| 
+  #       if arr.last.nil?
+  #         hsh
+  #       else
+  #         hsh.merge arr.first.to_sym => arr.last
+  #       end
+  #     end
+  #   end
+  # end
+
+  # this is the same as above, just more clear.
+  # but has to be tested with gql test suites.
+  def <<(group, key_hsh)
     @data[group] ||= {}
-    hsh.each do |key, values|
-      @data[group][key] = values.inject({}) do |hsh,arr| 
-        if arr.last.nil?
-          hsh
-        else
-          hsh.merge arr.first.to_sym => arr.last
-        end
-      end
+    key_hsh.each do |key, hsh|
+      @data[group][key] ||= {}
+      @data[group][key].merge!(hsh || {})
     end
   end
 
-  ##
-  #
-  #
   # @param [Array<Hash>]
   #
   def add(group, objects)
+    raise "deprecated"
     objects.each do |obj|
       self.<< group, obj
     end

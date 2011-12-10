@@ -1,3 +1,30 @@
+# ------ Binding to ETsource template -----------------------------------------
+#
+# A ETsource dataset yml file has a binding to the Etsource::Dataset object. Meaning 
+# that inside a yml file a method will have the Etsource::Dataset as scope.
+#
+#     ---
+#     heating: <%= get( 'foo', 'bar' ) %>
+#
+# Above yaml will call the Etsource::Dataset#get with 'foo' and 'bar' as arguments.
+# The binding happens in #load_yaml (if it has disappeared search for 'binding').
+#
+# ------ method_missing meta programming --------------------------------------
+#
+# @update I disabled this for now. Not critical to success and the research folks
+#  should have enough mental capabilities to prepend every string with a ":".
+#
+# To make life easier for researchers I (sb) decided to let them omit the '' or
+# symbol : for the get arguments.
+#
+#     ---
+#     heating: <%= get('foo', 'bar') %>
+#     heating: <%= get(foo, bar) %>
+#
+# I argue that the second example is rather prettier and less prone to typo-bugs.
+# It works because the yaml file is bound to the value_box object, therefore foo
+# will trigger the ValueBox#method_missing and return :foo back.
+#
 module Etsource
   class Dataset
     def initialize(etsource = Etsource::Base.new)
@@ -16,58 +43,70 @@ module Etsource
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
       end
-      @input_tool = InputTool::ValueBox.area(country)
+      @value_box = InputTool::ValueBox.area(country)
       
-      dataset = Qernel::Dataset.new(Hashpipe.hash(country))
-      
+      # Import static dataset (no value_box formulas)
+      @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
+      @dataset.<<(:area,     load_yaml_with_defaults(country, 'area')[:area])
+      @dataset.<<(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
+      @dataset.time_curves = load_yaml(country, 'time_curves')
+      @dataset.data[:graph][:graph][:calculated] = false
+
+      # Topology
       topology_dataset_files = Dir.glob(country_dir("{#{country},_defaults}")+"/graph/*.yml")
       
       topology_dataset_files.each do |file|
         yml_hsh = load_yaml_with_defaults(country, 'graph/'+file.split("/").last) || {}
-        yml_hsh.delete(:defaults)
-        yml_hsh.delete(:globals)
+        yml_hsh.delete(:defaults) # remove defaults and globals from hsh
+        yml_hsh.delete(:globals)  # otherwise a converter 'defaults' is created
         yml_hsh.each do |key,attributes|
-          key = key.to_s.gsub(/\s/, '')
-          key_hashed = Hashpipe.hash(key)
-
-          group = if key.include?('-->')  then :link
-                  elsif key.include?('(') then :slot
-                  end
-          group ||= :converter
-
           attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-          dataset.<<(group, key_hashed => attrs)
+          @dataset.<<(group_key(key), hash(key) => attrs)
         end
       end
 
-      dataset.<<(:area,     load_yaml_with_defaults(country, 'area')[:area])
-      dataset.<<(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
-      dataset.time_curves = load_yaml(country, 'time_curves')
-      dataset.data[:graph][:graph][:calculated] = false
-      dataset
+      # Import dynamic dataset (can reliably lookup information of static dataset)
+      # This allows to lookup values from the static dataset
+      dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
+      Rails.logger.warn(dynamic_forms)
+      dynamic_forms.each do |file|
+        hsh = load_yaml_file(file) || {}
+        hsh.delete(:defaults) # remove defaults and globals from hsh
+        hsh.delete(:globals)  # otherwise a converter 'defaults' is created
+        hsh.each do |key,attributes|
+          attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
+          @dataset.<<(group_key(key), hash(key) => attrs)
+        end
+      end
+      @dataset
     end
     
-
-
-    def load_yaml_with_defaults(country, file)
-      default = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
-      country = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
-      content = [default, country].join("\n")
-      load_yaml_content(content)
+    # Access values from the static dataset.
+    #
+    # @param key [String,Symbol] a key of a converter,link or slot "heating_demand-(hot_water)"
+    # @param attr_key [String,Symbol] the attribute name.
+    #
+    def val(key, attr_key)
+      @dataset.data[group_key(key)][hash(key)][attr_key.to_sym]
     end
 
-    def load_yaml_content(str)
-      YAML::load(ERB.new(str).result(@input_tool.get_binding))
+    # @see {InputTool::ValueBox#get}
+    #
+    def get(*args)
+      @value_box.get(*args)
     end
 
-    def load_yaml_file(file_path)
-      load_yaml_content(File.read(file_path))
+    # @see {InputTool::ValueBox#set}
+    #
+    def shortcut(key, value)
+      @value_box.set(key, value)
     end
+    alias_method :set, :shortcut
 
-    def load_yaml(country, file)
-      load_yaml_content(File.read(country_file(country, file)))
+    def hash(key)
+      Hashpipe.hash(key.to_s.gsub(/\s/, ''))
     end
-
+    
     def export(countries)
       countries.each{|c| export_country(c)}
     end
@@ -103,7 +142,7 @@ module Etsource
 
       # ---- Export Graph Structure -------------------------------------------
 
-      File.open(country_file(country, 'export'), 'w') do |out|
+      File.open(country_file(country, 'dump'), 'w') do |out|
         out << '---' # Fake YAML format
         graph.converters.each do |converter|
           # Remove the "" from the keys, to make the file look prettier. 
@@ -131,9 +170,49 @@ module Etsource
       end
     end
 
+
+    # @update disabled for now.
+    #
+    # This is used to simplify the use in ETsource. So that researchers do not have
+    # to escape keys with '', or symbolize them.
+    #
+    #     get(households,hot_water,demand)
+    #
+    # See documentation section Binding above.
+    #
+    # def method_missing(method, *args)
+    #   method
+    # end
+
   #########
   protected
   #########
+
+    def group_key(key)
+      key = key.to_s
+      if key.include?('-->')  then :link
+      elsif key.include?('(') then :slot
+      else                         :converter; end
+    end
+
+    def load_yaml_with_defaults(country, file)
+      default = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
+      country = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
+      content = [default, country].join("\n")
+      load_yaml_content(content)
+    end
+
+    def load_yaml_content(str)
+      YAML::load(ERB.new(str).result(binding))
+    end
+
+    def load_yaml_file(file_path)
+      load_yaml_content(File.read(file_path))
+    end
+
+    def load_yaml(country, file)
+      load_yaml_content(File.read(country_file(country, file)))
+    end
 
     def base_dir
       "#{@etsource.base_dir}/datasets"
