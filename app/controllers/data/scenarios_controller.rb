@@ -7,6 +7,10 @@ class Data::ScenariosController < Data::BaseController
     base = base.in_start_menu if params[:in_start_menu]
     @scenarios = base.page(params[:page]).per(35)
   end
+  
+  def new
+    @scenario = Scenario.new
+  end
 
   def show
   end
