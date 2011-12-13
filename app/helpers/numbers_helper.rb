@@ -27,9 +27,10 @@ module NumbersHelper
     return value unless value.is_a?(Numeric)
     return 'Infinity' if value.to_f.infinite?
     if unit == '%'
-      number_with_precision(value*100,:precision => 1, :separator => ",")
+      number_with_precision(value * 100, :precision => 1)
     else
-      number_with_precision(value,:precision => 4, :significant => true, :delimiter => ".", :separator => ",")
+      number_with_precision(value, :precision => 4, :significant => true,
+        :delimiter => ",", :separator => '.')
     end
   end
   
