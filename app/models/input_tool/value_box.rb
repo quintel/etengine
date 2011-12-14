@@ -18,6 +18,8 @@
 module InputTool
   class ValueBox
     
+    attr_reader :values
+    
     def initialize(forms)
       @values = forms.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}
     end
@@ -35,6 +37,7 @@ module InputTool
       @values[key] = value
     end
     alias_method :set, :shortcut
+
 
     # Recursively retrieves a value from the input tool value hashes.
     # 
@@ -61,13 +64,19 @@ module InputTool
         if hsh.has_key?(key)
           hsh = hsh[key]
           if args.last == key 
-            value = hsh unless hsh.is_a?(Hash)
+            value = hsh #unless hsh.is_a?(Hash)
           else
             hsh = hsh.with_indifferent_access
           end
         end
       end
-      value.blank? ? options[:default] : value.to_f
+      if value.blank?
+        options[:default] 
+      elsif value.respond_to?(:to_f)
+        value.to_f
+      else
+        value
+      end
     rescue => e
       options[:error] || raise(e)
     end

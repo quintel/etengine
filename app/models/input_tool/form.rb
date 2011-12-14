@@ -3,7 +3,7 @@ module InputTool
     set_table_name 'input_tool_forms'
 
     def value_box
-      @value_box = ValueBox.new([self])
+      @value_box ||= ValueBox.new([self])
     end
 
     def input_form
@@ -15,7 +15,8 @@ module InputTool
     end
 
     def dataset_values
-      YAML::load(values).with_indifferent_access
+      self[:values] ||= YAML::dump({})
+      YAML::load(self[:values]).with_indifferent_access
     end
   end
 end
