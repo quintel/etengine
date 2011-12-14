@@ -258,12 +258,6 @@ en:
     
   "or": "or"
   "go": "go"
-  
-  
-  http_status:
-    not_found: Not found
-    forbidden: Forbidden
-    
     
   # ----------- Constraints ----------- # 
   
