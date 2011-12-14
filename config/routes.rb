@@ -25,6 +25,7 @@ Etm::Application.routes.draw do
     resources :api_scenarios do
       member do 
         get :user_values
+        get :input_data
       end
     end
     resources :areas, :only => [:index, :show]
