@@ -19,7 +19,7 @@
         .container-fluid
           %a.brand{:href => "/input_tool"} InputTool
           %ul.nav
-            %li= link_to 'Data', '/data/latest'
+            
             %li.dropdown{'data-dropdown' => 'dropdown'}
               = link_to 'Forms', "#", :class => 'dropdown-toggle'
               %ul.dropdown-menu
@@ -31,6 +31,7 @@
                 - (Etsource::Forms.new.list - @forms.map(&:code)).each do |code|
                   %li= link_to code, new_input_tool_form_path(:code => code)
             
+            %li= link_to '/data', '/data/latest'
             %li= link_to "Logout", logout_path
           %p.pull-right== Logged in as #{current_user.email}
 
