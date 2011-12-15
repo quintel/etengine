@@ -1,4 +1,8 @@
 module EtsourceHelper
+  def households_hot_water_elements_hack
+    
+  end
+
   def number_field(*args)
     if !defined?(@form) && @form.is_a?(InputTool::Form)
       raise "Instance variable @form should be assigned a InputTool::Form object, but is: #{@form.inspect}" 
@@ -16,6 +20,9 @@ module EtsourceHelper
     
     capture_haml do
       haml_tag :'input.span2', opts
+      if opts[:disabled] == true
+        haml_tag :'input.span2', opts.merge(:type => 'hidden', :disabled => false)
+      end
     end
   end
 end
