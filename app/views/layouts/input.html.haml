@@ -24,10 +24,11 @@
               = link_to 'Forms', "#", :class => 'dropdown-toggle'
               %ul.dropdown-menu
                 %li= link_to 'Overview', input_tool_forms_path
+                %li.divider
                 - @forms = InputTool::Form.all
                 - @forms.each do |form|
                   %li= link_to form.code, edit_input_tool_form_path(:id => form)
-                %li.divider
+                
                 - (Etsource::Forms.new.list - @forms.map(&:code)).each do |code|
                   %li= link_to code, new_input_tool_form_path(:code => code)
             
