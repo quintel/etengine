@@ -1,12 +1,20 @@
-%div{style: "position:absolute; left: 0; width:60%"}
+.span13
   = form_for @form do |f|
     = f.hidden_field :code
     = render :file => Etsource::Forms.new.form_template_for(@form.code)
-    = submit_tag 'save this form'
+    .actions
+      = submit_tag 'Save changes', :class => 'btn primary'
 
-%div{style: "position:absolute; left: 60%; width:40%"}
+.span3
   = render :file => Etsource::Forms.new.description_template_for(@form.code)
 
-  - InputTool::Form.all.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}.each do |k,h|
-    %h4= k
-    %code= h
+
+  %a.btn{:data => {:'controls-modal' => "value_box_contents", :backdrop => "true"}} Debug Inputs
+  #value_box_contents.modal.hide
+    .modal-header
+      %a.close{:href => "#"} &times;
+      %h3 Debug 
+    .modal-body
+      - InputTool::Form.all.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}.each do |k,h|
+        %code= h
+    

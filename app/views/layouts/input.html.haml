@@ -6,36 +6,45 @@
       
     = javascript_include_tag :defaults
     = javascript_include_tag 'underscore.min'
+    = javascript_include_tag 'bootstrap-twipsy', 'bootstrap-alerts', 'bootstrap-modal', 'bootstrap-popover', 'bootstrap-buttons'
     = sprocket_layout_init :admin
     = sprocket_layout_init :testcases
 
-    = stylesheet_link_tag 'data'
+    = stylesheet_link_tag 'input'
     = stylesheet_link_tag 'vendor/smoothness/jquery-ui-1.8.16.custom'
 
   %body#data
-    #container
-      #header
-        %nav
-          %ul
-            %li
-              = current_user.email
-              \-
-              = link_to "Logout", logout_path
-        =# render 'data/shared/graph_picker'
-      #subheader
-        %nav
-          = link_to 'Forms', input_tool_forms_path
-          
+    .topbar
+      .topbar-inner
+        .container-fluid
+          %a.brand{:href => "/input_tool"} InputTool
+          %ul.nav
+            %li= link_to 'Data', '/data/latest'
+            %li.active= link_to 'Forms', input_tool_forms_path
+            
+            %li= link_to "Logout", logout_path
+          %p.pull-right== Logged in as #{current_user.email}
+
+
+    .container-fluid
       #subnav
         = yield :subnav
 
       - if breadcrumbs.any?
         #breadcrumbs
-          %nav
-            = breadcrumbs.map{|x| content_tag(:span, x)}.join(" &raquo; ").html_safe
+          %ul.breadcrumb
+            - breadcrumbs.each do |breadcrumb| 
+              %li
+                = link_to breadcrumb, '#'
+                %span.divider 
+      
       #flash
-        - flash.each do |k,msg|
-          .flash{:class => k}= msg
+        - flash.each do |type,msg|
+          .alert-message{:class => type}
+            %a.close x
+            %p= msg
+              
+
       
       #content= yield
       #footer
