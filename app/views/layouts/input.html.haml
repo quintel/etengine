@@ -23,6 +23,7 @@
             %li.dropdown{'data-dropdown' => 'dropdown'}
               = link_to 'Forms', "#", :class => 'dropdown-toggle'
               %ul.dropdown-menu
+                %li= link_to 'Overview', input_tool_forms_path
                 - @forms = InputTool::Form.all
                 - @forms.each do |form|
                   %li= link_to form.code, edit_input_tool_form_path(:id => form)
