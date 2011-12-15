@@ -1,6 +1,7 @@
 module InputTool
   class FormsController < BaseController
     def index
+      flash[:notice] = "hello"
       @forms = Form.all
       @existing_form_codes = @forms.map(&:code)
       @new_form_codes = Etsource::Forms.new.list - @existing_form_codes

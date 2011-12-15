@@ -15,7 +15,7 @@ module EtsourceHelper
     }.merge(opts)
     
     capture_haml do
-      haml_tag :input, opts
+      haml_tag :'input.span2', opts
     end
   end
 end
