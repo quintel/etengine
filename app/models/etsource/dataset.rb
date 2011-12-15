@@ -9,6 +9,22 @@
 # Above yaml will call the Etsource::Dataset#get with 'foo' and 'bar' as arguments.
 # The binding happens in #load_yaml (if it has disappeared search for 'binding').
 #
+# ------ method_missing meta programming --------------------------------------
+#
+# @update I disabled this for now. Not critical to success and the research folks
+#  should have enough mental capabilities to prepend every string with a ":".
+#
+# To make life easier for researchers I (sb) decided to let them omit the '' or
+# symbol : for the get arguments.
+#
+#     ---
+#     heating: <%= get('foo', 'bar') %>
+#     heating: <%= get(foo, bar) %>
+#
+# I argue that the second example is rather prettier and less prone to typo-bugs.
+# It works because the yaml file is bound to the value_box object, therefore foo
+# will trigger the ValueBox#method_missing and return :foo back.
+#
 module Etsource
   class Dataset
     def initialize(etsource = Etsource::Base.new)
