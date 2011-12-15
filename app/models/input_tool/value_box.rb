@@ -68,6 +68,8 @@ module InputTool
           else
             hsh = hsh.with_indifferent_access
           end
+        else
+          hsh = {} #prevents from going further down
         end
       end
       if value.blank?
