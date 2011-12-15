@@ -69,7 +69,11 @@ module InputTool
             hsh = hsh.with_indifferent_access
           end
         else
-          hsh = {} #prevents from going further down
+          # prevents from going further down, when a key was not found.
+          #  
+          #     values = {:foo => {:bar => 3}}
+          #     get(:xyz, :foo, :bar) # => will return nil and not 3.
+          hsh = {} 
         end
       end
       if value.blank?
