@@ -5,8 +5,8 @@ class Api::ApiScenariosController < Api::BaseController
   layout 'api'
 
   around_filter :disable_gc, :only => [:update, :show]
-  before_filter :find_model, :only => [:destroy, :user_values]
-  
+  before_filter :find_model, :only => [:destroy, :user_values, :input_data]
+
   # This action is still active but old. We should probably move it to a protected
   # namespace
   #
@@ -98,7 +98,10 @@ class Api::ApiScenariosController < Api::BaseController
     out = {}
     inputs.each do |key|
       input = Input.find_by_key(key) rescue nil
-      out[key] = input.client_values if input
+      if input
+        out[key] = input.client_values
+        out[key][:user_value] = @api_scenario.user_values[input.id] rescue nil
+      end
     end
     render :json => out, :callback => params[:callback]
   end
