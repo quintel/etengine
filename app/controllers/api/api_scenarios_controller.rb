@@ -94,6 +94,7 @@ class Api::ApiScenariosController < Api::BaseController
   # Similar to user_values, but returns only the subset of the inputs we need
   # and uses the input key as hash key
   def input_data
+    Current.scenario = @api_scenario
     inputs = params[:inputs] || []
     out = {}
     inputs.each do |key|
