@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111206100559) do
+ActiveRecord::Schema.define(:version => 20111220093224) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -347,9 +347,11 @@ ActiveRecord::Schema.define(:version => 20111206100559) do
   end
 
   create_table "input_tool_forms", :force => true do |t|
-    t.string "area_code"
-    t.string "code"
-    t.text   "values"
+    t.string   "area_code"
+    t.string   "code"
+    t.text     "values"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "inputs", :force => true do |t|
