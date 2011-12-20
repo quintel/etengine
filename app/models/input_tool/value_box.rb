@@ -24,8 +24,8 @@ module InputTool
       @values = forms.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}
     end
 
-    def self.area(code)
-      new(InputTool::Form.where(:area_code => code).all)
+    def self.area(area_code)
+      new(InputTool::Form.area_code(area_code).all)
     end
 
     # Sets a shortcut for a value. Typically used in conjunction with multiple #get.

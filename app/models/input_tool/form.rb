@@ -10,6 +10,8 @@ module InputTool
   class Form < ActiveRecord::Base
     set_table_name 'input_tool_forms'
 
+    # new lambda syntax: equivalent to: lambda{|area_code| ...}
+    scope :area_code, -> area_code { where(area_code: area_code) }
 
     # we can use this to easily invalidate cache data, by adding a timestamp to
     # the cache key.

@@ -1,10 +1,25 @@
 module InputTool
   class FormsController < BaseController
+    before_filter :assign_area_code
+    before_filter :assign_scenario
+
+    def assign_area_code
+      @area_code = params[:area_code] || 'nl'
+    end
+
+    # Assign a area_code to a scenario, so Current.gql properly loads
+    def assign_scenario
+      Current.scenario = Scenario.new(Scenario.default_attributes.merge :country => @area_code)
+    end
+
+    def default_url_options
+      {:area_code => @area_code}
+    end
 
     def index
-      @forms = Form.all
-      @existing_form_codes = @forms.map(&:code)
-      @new_form_codes = Etsource::Forms.new.list - @existing_form_codes
+      @forms = Form.area_code(@area_code)
+      @stored_form_codes = @forms.map(&:code)
+      @new_form_codes = Etsource::Forms.new.list - @stored_form_codes
     end
     
     def show
@@ -19,14 +34,12 @@ module InputTool
 
 
     def new
-      @code = params[:code]
-      @form = InputTool::Form.new(:code => @code, :area_code => 'nl')
-      @value_box = ValueBox.area('nl')
+      @form = InputTool::Form.new(:code => params[:code], :area_code => @area_code)
     end
 
     def create
       @code = params[:input_tool_form][:code]
-      @form = InputTool::Form.new(:code => @code, :area_code => 'nl')
+      @form = InputTool::Form.new(:code => @code, :area_code => @area_code)
       @form.values = params[@code]
       if @form.save
         redirect_to edit_input_tool_form_path(:id => @form.to_param)
@@ -48,7 +61,6 @@ module InputTool
 
     def edit
       @form = Form.find(params[:id])
-      @value_box = ValueBox.area('nl')
     end
   end
 end
