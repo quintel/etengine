@@ -70,44 +70,60 @@ module Etsource
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
       end
-      @value_box = InputTool::ValueBox.area(country)
-      
+
       # Import static dataset (no value_box formulas)
       @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
-      @dataset.<<(:area,     load_yaml_with_defaults(country, 'area')[:area])
-      @dataset.<<(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
+      @dataset.merge(:area,     load_yaml_with_defaults(country, 'area')[:area])
+      @dataset.merge(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
       @dataset.time_curves = load_yaml(country, 'time_curves')
       @dataset.data[:graph][:graph][:calculated] = false
 
-      # Topology
+      # Topology:
+      # Load each file, remove :defaults and :globals from hsh, so we don't mess with the rest.
+      # merge with dataset.
       topology_dataset_files = Dir.glob(country_dir("{#{country},_defaults}")+"/graph/*.yml")
-      
       topology_dataset_files.each do |file|
         yml_hsh = load_yaml_with_defaults(country, 'graph/'+file.split("/").last) || {}
-        yml_hsh.delete(:defaults) # remove defaults and globals from hsh
-        yml_hsh.delete(:globals)  # otherwise a converter 'defaults' is created
+        yml_hsh.delete(:defaults) 
+        yml_hsh.delete(:globals)
         yml_hsh.each do |key,attributes|
           attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-          @dataset.<<(group_key(key), hash(key) => attrs)
+          @dataset.merge(group_key(key), hash(key) => attrs)
         end
       end
 
-      # Import dynamic dataset (can reliably lookup information of static dataset)
-      # This allows to lookup values from the static dataset
-      dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
-      Rails.logger.warn(dynamic_forms)
-      dynamic_forms.each do |file|
-        hsh = load_yaml_file(file) || {}
-        hsh.delete(:defaults) # remove defaults and globals from hsh
-        hsh.delete(:globals)  # otherwise a converter 'defaults' is created
-        hsh.each do |key,attributes|
-          attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-          @dataset.<<(group_key(key), hash(key) => attrs)
+      @value_box = InputTool::ValueBox.area(country)
+      if value_box
+        # Forms:
+        # Import dynamic dataset (can reliably lookup information of static dataset)
+        # This allows to lookup values from the static dataset
+        dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
+        dynamic_forms.each do |file|
+          hsh = load_yaml_file(file) || {}
+          hsh.delete(:defaults) # remove defaults and globals from hsh
+          hsh.delete(:globals)  # otherwise a converter 'defaults' is created
+          hsh.each do |key,attributes|
+            if key == :area
+              @dataset.merge(key, attributes)  
+            else
+              attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
+              @dataset.merge(group_key(key), hash(key) => attrs)
+            end
+          end
         end
       end
       @dataset
     end
     
+    # Access value_box through this getter, so we can complain, when ppl use 
+    # this functionality inside the dynamic forms.
+    def value_box
+      unless @value_box
+        raise "Trying to access ValueBox/Research Form Data before it was assigned. You probably try to access it from outside the dataset/_forms/"
+      end
+      @value_box
+    end
+
     # Access values from the static dataset.
     #
     # @param key [String,Symbol] a key of a converter,link or slot "heating_demand-(hot_water)"
@@ -120,13 +136,13 @@ module Etsource
     # @see {InputTool::ValueBox#get}
     #
     def get(*args)
-      @value_box.get(*args)
+      value_box.get(*args)
     end
 
     # @see {InputTool::ValueBox#set}
     #
     def shortcut(key, value)
-      @value_box.set(key, value)
+      value_box.set(key, value)
     end
     alias_method :set, :shortcut
 
@@ -217,6 +233,7 @@ module Etsource
 
     def group_key(key)
       key = key.to_s
+      
       if key.include?('-->')  then :link
       elsif key.include?('(') then :slot
       else                         :converter; end
