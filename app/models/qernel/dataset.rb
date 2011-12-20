@@ -71,6 +71,7 @@ class Dataset
       @data[group][key].merge!(hsh || {})
     end
   end
+  alias_method :merge, :'<<'
 
   # @param [Array<Hash>]
   #
