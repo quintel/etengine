@@ -73,11 +73,38 @@ module Etsource
 
       # Import static dataset (no value_box formulas)
       @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
-      @dataset.merge(:area,     load_yaml_with_defaults(country, 'area')[:area])
-      @dataset.merge(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
-      @dataset.time_curves = load_yaml(country, 'time_curves')
+      load_area(@dataset, country)
+      load_carriers(@dataset, country)
+      load_time_curves(@dataset, country)
       @dataset.data[:graph][:graph][:calculated] = false
 
+      load_static_dataset(@dataset, country)
+      load_dataset_forms(@dataset, country)
+
+      @dataset
+    end
+
+  protected
+
+    def load_area(dataset, country)
+      dataset.merge(:area,     load_yaml_with_defaults(country, 'area')[:area])
+    rescue => e
+      raise "Error loading datasets/:country/area.yml: #{e}"
+    end
+
+    def load_carriers(dataset, country)
+      dataset.merge(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
+    rescue =>e
+      raise "Error loading datasets/:country/carriers.yml: #{e.inspect}"
+    end    
+
+    def load_time_curves(dataset, country)
+      dataset.time_curves = load_yaml(country, 'time_curves')
+    rescue =>e
+      raise "Error loading datasets/:country/time_curves.yml: #{e.inspect}"
+    end    
+
+    def load_static_dataset(dataset, country)
       # Topology:
       # Load each file, remove :defaults and :globals from hsh, so we don't mess with the rest.
       # merge with dataset.
@@ -88,33 +115,37 @@ module Etsource
         yml_hsh.delete(:globals)
         yml_hsh.each do |key,attributes|
           attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-          @dataset.merge(group_key(key), hash(key) => attrs)
+          dataset.merge(group_key(key), hash(key) => attrs)
         end
       end
+    rescue => e
+      raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
+    end
 
+    def load_dataset_forms(dataset, country)
       @value_box = InputTool::ValueBox.area(country)
-      if value_box
-        # Forms:
-        # Import dynamic dataset (can reliably lookup information of static dataset)
-        # This allows to lookup values from the static dataset
-        dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
-        dynamic_forms.each do |file|
-          hsh = load_yaml_file(file) || {}
-          hsh.delete(:defaults) # remove defaults and globals from hsh
-          hsh.delete(:globals)  # otherwise a converter 'defaults' is created
-          hsh.each do |key,attributes|
-            if key == :area
-              @dataset.merge(key, attributes)  
-            else
-              attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-              @dataset.merge(group_key(key), hash(key) => attrs)
-            end
+
+      # Forms:
+      # Import dynamic dataset (can reliably lookup information of static dataset)
+      # This allows to lookup values from the static dataset
+      dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
+      dynamic_forms.each do |file|
+        hsh = load_yaml_file(file) || {}
+        hsh.delete(:defaults) # remove defaults and globals from hsh
+        hsh.delete(:globals)  # otherwise a converter 'defaults' is created
+        hsh.each do |key,attributes|
+          if key == :area
+            dataset.merge(key, attributes)  
+          else
+            attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
+            dataset.merge(group_key(key), hash(key) => attrs)
           end
         end
       end
-      @dataset
     end
-    
+
+  public
+
     # Access value_box through this getter, so we can complain, when ppl use 
     # this functionality inside the dynamic forms.
     def value_box

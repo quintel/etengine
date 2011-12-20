@@ -3,6 +3,7 @@ class InputTool::BaseController < ApplicationController
 
   authorize_resource :class => false
 
+
   def redirect
     redirect_to input_root_path
   end
