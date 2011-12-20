@@ -11,8 +11,11 @@
 #
 # ------ method_missing meta programming --------------------------------------
 #
-# @update I disabled this for now. Not critical to success and the research folks
+# @deprecated
+#
+# @updated I disabled this for now. Not critical to success and the research folks
 #  should have enough mental capabilities to prepend every string with a ":".
+#
 #
 # To make life easier for researchers I (sb) decided to let them omit the '' or
 # symbol : for the get arguments.
@@ -25,8 +28,32 @@
 # It works because the yaml file is bound to the value_box object, therefore foo
 # will trigger the ValueBox#method_missing and return :foo back.
 #
+# ------ Static vs dynamic form yml  ------------------------------------------
+#
+# The ETsource dataset is split into static and dynamic ymls. The static ones
+# don't rely on others and are loaded first. The dynamic form ymls are loaded
+# after that, so it can access static dataset using #val and research input
+# with #get.
+#
+# ------ Importing ETsource Form YAML Files  ----------------------------------
+#
+# To make the ETsource dataset forms dynamic we pass the yml files through an
+# ERB handler, and load the output with YAML::load. 
+# So that the dynamic yml.erb form templates (the suffix .erb is not needed), can
+# access the values of the static datasets and the researchers form input, we 
+# add a binding to the yaml files to this Etsource::Dataset object. So calling 
+# #get within a yml will call Etsource::Dataset#get
+#
+#
+# ------ DEBT: Refactor this --------------------------------------------------
+#
+# The YML parsing and import methods really deserve an own class. Right now it's
+# a bit a mess.. This should be fixed soon.
+#
+
 module Etsource
   class Dataset
+
     def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
       @datasets = {}
