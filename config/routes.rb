@@ -78,7 +78,7 @@ Etm::Application.routes.draw do
       resources :gquery_groups, :only => [:index, :show]
 
       resources :carriers, :only => [:index, :show]
-      resource :area
+      resource :area, :as => :area
 
       resources :graphs do
         post :import, :on => :collection
