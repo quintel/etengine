@@ -7,7 +7,7 @@ Etm::Application.routes.draw do
   resources :user_sessions
   
   # Frontend
-  resources :converters, :only => [:index, :show]
+  resources :converters, :only => [:show]
   resource :graph, :only => :show
 
   scope '/api/v2', :module => 'api' do
