@@ -1,8 +1,4 @@
 class ConvertersController < ApplicationController
-  def index
-    @converters = Converter.all
-  end
-  
   def show
     @graph = Graph.latest_from_country('nl')
     @graph.gql.prepare
