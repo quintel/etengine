@@ -17,6 +17,7 @@
       %li
         %span.label.warning Saved
         %strong= link_to form.code, edit_input_tool_form_path(:id => form)
+        = link_to 'delete', input_tool_form_path(:id => form), :method => :delete
   %p
     The 3 stages of a form:
   %ul
