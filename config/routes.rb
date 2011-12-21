@@ -36,7 +36,7 @@ Etm::Application.routes.draw do
   end
 
   namespace :data do
-    root :to => "pages#index", :blueprint_id => 'latest'
+    root :to => "pages#index", :api_scenario_id => 'latest'
     
     match '/redirect'    => "base#redirect", :as => 'redirect'
     match '/restart'     => 'pages#restart', :as => 'restart'
