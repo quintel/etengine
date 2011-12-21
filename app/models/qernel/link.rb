@@ -5,6 +5,8 @@ module Qernel
 class Link
   extend ActiveModel::Naming
 
+  include Topology::Link
+
   # --------- Dataset ---------------------------------------------------------
 
   include DatasetAttributes
