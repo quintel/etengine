@@ -57,9 +57,11 @@ module Etsource
       graph_model = ::Graph.latest_from_country(country)
       future_dataset = graph_model.dataset.to_qernel
       gql = Gql::Gql.new(graph_model)
-      
-      
-      FileUtils.mkdir_p base_dir+"/"+country # +"/graph"
+
+      # EDGE/Staging conflict/diverge:
+      # Code below this line is more uptodate on staging
+
+      FileUtils.mkdir_p base_dir+"/"+country+"/graph"
       
       graph = gql.future_graph   
       # Assign datasets w/o calculating. Use future graph (present is precalculated).
@@ -77,20 +79,21 @@ module Etsource
         hsh = graph.carriers.inject({}) do |hsh, c|
           hsh.merge c.topology_key => c.object_dataset.merge(infinite: c.infinite)
         end
-        out << YAML::dump(hsh)
+        out << YAML::dump(hsh).gsub("--- \n", '') 
       end
 
       # ---- Export Area ------------------------------------------------------
 
       File.open(country_file(country, 'area'), 'w') do |out|
-        #out << YAML::dump({:area => graph.dataset.data[:area]})
-        out << YAML::dump(graph.dataset.data[:area])
+        # Remove first --- line
+        out << YAML::dump({:area => graph.dataset.data[:area]}).gsub("--- \n", '') 
       end
 
       # ---- Export Graph Structure -------------------------------------------
 
-      File.open(country_file(country, 'export'), 'w') do |out|
-        out << '---' # Fake YAML format
+      File.open(country_file(country, 'graph/export'), 'w') do |out|
+        # No longer fake yml format
+        # out << '---' # Fake YAML format
         graph.converters.each do |converter|
           # Remove the "" from the keys, to make the file look prettier. 
           #     "KEY": { values } => KEY: { values }
