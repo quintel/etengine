@@ -87,6 +87,11 @@ class Converter
   include PrimaryDemand
   include DatasetAttributes
 
+  # Edge/Staging Code diverge
+  include Topology::Converter
+  attr_reader :code # This is default nil when loaded from database, so does not have to be filled
+                    # Remove :code after merge, becasue it's already elsewhere defined
+
   # Following keys can be looked up by {Qernel::Graph#converter}.
   KEYS_FOR_LOOKUP = [
     :id,

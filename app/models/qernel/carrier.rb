@@ -2,6 +2,7 @@ module Qernel
 
 class Carrier
   include DatasetAttributes
+  include Topology::Carrier
 
   CO2_FCE_COMPONENTS = [
     :co2_conversion_per_mj,
