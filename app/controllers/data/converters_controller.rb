@@ -1,8 +1,16 @@
 class Data::ConvertersController < Data::BaseController
   def index
-    base = Converter
-    base = base.in_group(params[:group_id]) unless params[:group_id].blank?
-    @converters = base.by_name(params[:q]).order('converters.`key`').page(params[:page]).per(100)
+    @converters = @gql.present_graph.converters    
+    if params[:q]
+      @converters = @converters.select{|c| c.full_key.to_s.include?(params[:q])}
+    end
+    if params[:group_id]
+      group = Group.find(params[:group_id])
+      @converters = @converters.select{|c| c.groups.include?(group.key.to_sym) }
+    end
+    page, per_page = params[:page] || 1, 100
+    @num_pages = @converters.length / per_page
+    @converters = @converters[((page - 1) * per_page)...(page * per_page)]
   end
 
   def edit
