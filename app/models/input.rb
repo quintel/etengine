@@ -155,6 +155,17 @@ class Input < ActiveRecord::Base
       :only => [:id], :methods => [:max_value, :min_value, :start_value]
     )
   end
+  
+  # Returns the input attributes used by the clients
+  #
+  def client_values
+    {
+      :max_value   => max_value,
+      :min_value   => min_value,
+      :start_value => start_value,
+      :full_label  => full_label
+    }
+  end
 
   # This creates a giant hash with all value-related attributes of the inputs. Some inputs
   # require dynamic values, though. Check #dynamic_start_values
@@ -162,12 +173,7 @@ class Input < ActiveRecord::Base
   def self.static_values
     Input.all.inject({}) do |hsh, input|
       begin
-        hsh.merge input.id.to_s => {
-          :max_value    => input.max_value,
-          :min_value    => input.min_value,
-          :start_value  => input.start_value,
-          :full_label   => input.full_label
-        }
+        hsh.merge input.id.to_s => input.client_values
       rescue => ex
         Rails.logger.warn("Input#static_values for input #{input.id} failed.")
         Airbrake.notify(

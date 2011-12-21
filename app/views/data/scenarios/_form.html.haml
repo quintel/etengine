@@ -1,0 +1,10 @@
+= simple_form_for [:data, @scenario] do |f|
+  = f.input :title
+  = f.input :author
+  = f.input :description
+  = f.input :in_start_menu
+  = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
+  = f.input :end_year
+  = f.input :region, :hint => "make sure you got it right"
+  = f.input :user_values, :hint => "Position (values) of all the sliders"
+  = f.button :submit

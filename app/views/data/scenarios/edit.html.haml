@@ -2,8 +2,4 @@
 - breadcrumb link_to @scenario.title, data_scenario_path(:id => @scenario)
 - breadcrumb 'edit'
 
-= simple_form_for [:data, @scenario], :url => data_scenario_path(:id => @scenario) do |f|
-  = f.input :title
-  = f.input :in_start_menu
-  = f.input :protected, :hint => "A protected scenario won't be overwritten during a deploy"
-  = f.button :submit
+= render 'form'

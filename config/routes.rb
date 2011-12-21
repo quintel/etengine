@@ -6,6 +6,10 @@ Etm::Application.routes.draw do
 
   resources :user_sessions
   
+  # Frontend
+  resources :converters, :only => [:index, :show]
+  resource :graph, :only => :show
+
   # DEBT: Is there anything still using the old API?
   scope '/api/v1', :module => 'api' do
     resources :api_scenarios
@@ -21,6 +25,7 @@ Etm::Application.routes.draw do
     resources :api_scenarios do
       member do 
         get :user_values
+        get :input_data
       end
     end
     resources :areas, :only => [:index, :show]
@@ -84,7 +89,8 @@ Etm::Application.routes.draw do
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
       resources :inputs, :except => :show
-      resources :scenarios, :only => [:index, :show, :edit, :update] do
+      resources :blueprint_models, :only => :index
+      resources :scenarios, :only => [:index, :show, :edit, :update, :new] do
         put :fix, :on => :member
       end
       resources :energy_balance_groups
