@@ -80,10 +80,6 @@ Etm::Application.routes.draw do
       resources :carriers, :only => [:index, :show]
       resource :area, :as => :area
 
-      resources :graphs do
-        post :import, :on => :collection
-      end
-
       resources :gql_test_cases
       resources :historic_series
       resources :query_tables
