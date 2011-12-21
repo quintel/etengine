@@ -100,6 +100,18 @@ class Api::ApiScenariosController < Api::BaseController
       end
     end
   end
+  
+  # Similar to user_values, but returns only the subset of the inputs we need
+  # and uses the input key as hash key
+  def input_data
+    inputs = params[:inputs] || []
+    out = {}
+    inputs.each do |key|
+      input = Input.find_by_key(key) rescue nil
+      out[key] = input.client_values if input
+    end
+    render :json => out, :callback => params[:callback]
+  end
 
   protected
 

@@ -66,4 +66,16 @@ describe Api::ApiScenariosController do
       end
     end
   end
+  
+  describe 'input_data' do
+    before do
+      @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo'))
+      @input = FactoryGirl.create :input
+    end
+    
+    it "should return a valid response" do
+      get :input_data, :id => @api_scenario.id
+      response.should be_success
+    end
+  end
 end

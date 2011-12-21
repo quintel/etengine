@@ -53,10 +53,15 @@
 
 module Etsource
   class Dataset
+<<<<<<< HEAD
 
     def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
       @datasets = {}
+=======
+    def initialize(etsource = Etsource::Base.new)
+      @etsource = etsource
+>>>>>>> staging
     end
 
     # Importing dataset and convert into the Qernel::Dataset format.
@@ -181,17 +186,28 @@ module Etsource
       Hashpipe.hash(key.to_s.gsub(/\s/, ''))
     end
     
-    def export(countries)
-      countries.each{|c| export_country(c)}
+    def all_countries
+      Area.all.map(&:region_code)
+    end
+
+    def export
+      all_countries.each{|c| export_country(c)}
     end
 
     def export_country(country = 'nl')
-      gql = Gql::Gql.new(::Graph.latest_from_country(country))
-      
-      FileUtils.mkdir_p base_dir+"/"+country
-      graph = gql.future_graph   
+      gql = Gql::Gql.new(Scenario.new(Scenario.default_attributes :country => country))
       # Assign datasets w/o calculating. Use future graph (present is precalculated).
       graph.dataset = gql.dataset_clone
+
+
+      # EDGE/Staging conflict/diverge:
+      # Code below this line is more uptodate on staging
+
+      FileUtils.mkdir_p base_dir+"/"+country+"/graph"
+      
+      graph = gql.future_graph   
+      # Assign datasets w/o calculating. Use future graph (present is precalculated).
+      graph.dataset = future_dataset
 
       # ---- Export Time Curves -----------------------------------------------
       
@@ -205,19 +221,21 @@ module Etsource
         hsh = graph.carriers.inject({}) do |hsh, c|
           hsh.merge c.topology_key => c.object_dataset.merge(infinite: c.infinite)
         end
-        out << YAML::dump(hsh)
+        out << YAML::dump(hsh).gsub("--- \n", '') 
       end
 
       # ---- Export Area ------------------------------------------------------
 
       File.open(country_file(country, 'area'), 'w') do |out|
-        out << YAML::dump(graph.dataset.data[:area])
+        # Remove first --- line
+        out << YAML::dump({:area => graph.dataset.data[:area]}).gsub("--- \n", '') 
       end
 
       # ---- Export Graph Structure -------------------------------------------
 
-      File.open(country_file(country, 'dump'), 'w') do |out|
-        out << '---' # Fake YAML format
+      File.open(country_file(country, 'graph/export'), 'w') do |out|
+        # No longer fake yml format
+        # out << '---' # Fake YAML format
         graph.converters.each do |converter|
           # Remove the "" from the keys, to make the file look prettier. 
           #     "KEY": { values } => KEY: { values }
@@ -244,51 +262,8 @@ module Etsource
       end
     end
 
-
-    # @update disabled for now.
-    #
-    # This is used to simplify the use in ETsource. So that researchers do not have
-    # to escape keys with '', or symbolize them.
-    #
-    #     get(households,hot_water,demand)
-    #
-    # See documentation section Binding above.
-    #
-    # def method_missing(method, *args)
-    #   method
-    # end
-
-  #########
+ 
   protected
-  #########
-
-    def group_key(key)
-      key = key.to_s
-      
-      if key.include?('-->')  then :link
-      elsif key.include?('(') then :slot
-      else                         :converter; end
-    end
-
-    def load_yaml_with_defaults(country, file)
-      default = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
-      country = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
-      content = [default, country].join("\n")
-      load_yaml_content(content)
-    end
-
-    def load_yaml_content(str)
-      YAML::load(ERB.new(str).result(binding))
-    end
-
-    def load_yaml_file(file_path)
-      load_yaml_content(File.read(file_path))
-    end
-
-    def load_yaml(country, file)
-      load_yaml_content(File.read(country_file(country, file)))
-    end
-
     def base_dir
       "#{@etsource.base_dir}/datasets"
     end
@@ -306,6 +281,6 @@ module Etsource
       f += ".yml" unless f.include?('.yml')
       f
     end
- 
+
   end
 end
