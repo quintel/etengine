@@ -50,7 +50,7 @@ class Carrier
   #
   def initialize(opts)
     @key      = opts[:key].andand.to_sym
-    @id       = opts[:id] || self.key
+    @id       = opts[:id] || @key
     @infinite = opts[:infinite]
 
     # ----- Micro optimization --------------------

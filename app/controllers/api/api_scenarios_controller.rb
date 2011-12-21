@@ -11,7 +11,7 @@ class Api::ApiScenariosController < Api::BaseController
   # namespace
   #
   def index
-    @api_scenarios = ApiScenario.order('updated_at DESC')
+    @api_scenarios = ApiScenario.order('id DESC').limit(500)
 
     respond_to do |format|
       format.html {  }

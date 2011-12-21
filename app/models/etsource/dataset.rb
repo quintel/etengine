@@ -53,15 +53,8 @@
 
 module Etsource
   class Dataset
-<<<<<<< HEAD
-
     def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
-      @datasets = {}
-=======
-    def initialize(etsource = Etsource::Base.new)
-      @etsource = etsource
->>>>>>> staging
     end
 
     # Importing dataset and convert into the Qernel::Dataset format.
@@ -91,17 +84,23 @@ module Etsource
 
   protected
 
+    # ---- Import Area ------------------------------------------------------
+
     def load_area(dataset, country)
       dataset.merge(:area,     load_yaml_with_defaults(country, 'area')[:area])
     rescue => e
       raise "Error loading datasets/:country/area.yml: #{e}"
     end
 
+    # ---- Import Carriers --------------------------------------------------
+
     def load_carriers(dataset, country)
       dataset.merge(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
     rescue =>e
       raise "Error loading datasets/:country/carriers.yml: #{e.inspect}"
     end    
+
+    # ---- Import Time Curves -----------------------------------------------
 
     def load_time_curves(dataset, country)
       dataset.time_curves = load_yaml(country, 'time_curves')
@@ -123,21 +122,21 @@ module Etsource
           dataset.merge(group_key(key), hash(key) => attrs)
         end
       end
-    rescue => e
-      raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
+    # rescue => e
+    #   raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
     end
 
     def load_dataset_forms(dataset, country)
       @value_box = InputTool::ValueBox.area(country)
-
       # Forms:
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
       dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
       dynamic_forms.each do |file|
         hsh = load_yaml_file(file) || {}
-        hsh.delete(:defaults) # remove defaults and globals from hsh
-        hsh.delete(:globals)  # otherwise a converter 'defaults' is created
+        # Dont make converters with keys :defaults and :globals 
+        hsh.delete(:defaults)
+        hsh.delete(:globals)  
         hsh.each do |key,attributes|
           if key == :area
             dataset.merge(key, attributes)  
@@ -264,6 +263,33 @@ module Etsource
 
  
   protected
+
+    def group_key(key)
+      key = key.to_s
+      if key.include?('-->')  then :link
+      elsif key.include?('(') then :slot
+      else                         :converter; end
+    end
+
+    def load_yaml_with_defaults(country, file)
+      default = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
+      country = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
+      content = [default, country].join("\n")
+      load_yaml_content(content)
+    end
+
+    def load_yaml_content(str)
+      YAML::load(ERB.new(str).result(binding))
+    end
+
+    def load_yaml_file(file_path)
+      load_yaml_content(File.read(file_path))
+    end
+
+    def load_yaml(country, file)
+      load_yaml_content(File.read(country_file(country, file)))
+    end
+
     def base_dir
       "#{@etsource.base_dir}/datasets"
     end
@@ -281,6 +307,6 @@ module Etsource
       f += ".yml" unless f.include?('.yml')
       f
     end
-
+ 
   end
 end
