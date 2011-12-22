@@ -7,7 +7,7 @@ module Etsource
 
     def graph(country = 'nl')
       @graph ||= import
-      @graph.dataset = Etsource::Dataset.new.dataset(country)
+      @graph.dataset = Etsource::Dataset.new(country).import
       @graph
     end
 
