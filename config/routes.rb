@@ -10,11 +10,6 @@ Etm::Application.routes.draw do
   resources :converters, :only => [:index, :show]
   resource :graph, :only => :show
 
-  # DEBT: Is there anything still using the old API?
-  scope '/api/v1', :module => 'api' do
-    resources :api_scenarios
-  end
-
   scope '/api/v2', :module => 'api' do
     resources :scenarios, :only => [:index, :show, :create, :update] do
       get :load, :on => :member
@@ -69,14 +64,8 @@ Etm::Application.routes.draw do
 
       resources :fce_values
 
-      resources :converters, :only => [:index, :edit, :show] do
-        resource :converter_data, :only => [:edit, :update]
-      end
-      resources :converter_data, :only => [:edit, :update]
-      
-      resources :groups, :only => [:index, :show]
+      resources :converters, :only => [:index, :edit, :show] 
       resources :gquery_groups, :only => [:index, :show]
-
       resources :carriers, :only => [:index, :show]
       resource :area, :as => :area
 
@@ -85,7 +74,7 @@ Etm::Application.routes.draw do
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
       resources :inputs, :except => :show
-      resources :blueprint_models, :only => :index
+
       resources :scenarios, :only => [:index, :show, :edit, :update, :new] do
         put :fix, :on => :member
       end
