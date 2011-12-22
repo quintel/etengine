@@ -10,7 +10,6 @@ task :production do
 
   set :application_key, "#{application}"
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
-  set :config_files, "/home/ubuntu/config_files/#{application_key}"
   
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
@@ -32,8 +31,7 @@ task :staging do
   # change this to #{application}_staging when you want it in a different directory
   set :application_key, "#{application}_staging" 
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
-  set :config_files, "/home/ubuntu/config_files/#{application_key}"
-
+  
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "r8ZPP7pQTDTBha"
   set :db_name, application_key
@@ -46,6 +44,25 @@ task :staging do
   role :db,  domain, :primary => true # This is where Rails migrations will run
 end
 
+task :edge do
+  set :domain, "edge.et-engine.com"
+  set :branch, "edge"
+
+  # change this to #{application}_staging when you want it in a different directory
+  set :application_key, "#{application}_edge" 
+  set :deploy_to, "/home/ubuntu/apps/#{application_key}"
+
+  set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
+  set :db_pass, "lVtSsSv43KooQE"
+  set :db_name, application_key
+  set :db_user, application_key
+
+  set :airbrake_key, "e483e275c8425821ec21580e0ffefe9d"
+
+  role :web, domain # Your HTTP server, Apache/etc
+  role :app, domain # This may be the same as your `Web` server
+  role :db,  domain, :primary => true # This is where Rails migrations will run
+end
 
 task :release do
   set :domain, "ec2-46-137-63-176.eu-west-1.compute.amazonaws.com"
@@ -53,7 +70,6 @@ task :release do
 
   set :application_key, "#{application}_rc"
   set :deploy_to, "/home/ubuntu/apps/#{application}"  ## this is a copy of production, so serverconfig stays the same
-  set :config_files, "/home/ubuntu/config_files/#{application}" ## this is a copy of production, so serverconfig stays the same
 
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "quintel"
