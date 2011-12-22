@@ -6,7 +6,7 @@ class Hashpipe
   end
 
   def hash(key)
-    @fnv.fnv1a_32(key.to_s)
+    @fnv.fnv1a_32(key.to_s.gsub(/\s/, ''))
   end
 
   def self.hash(key)

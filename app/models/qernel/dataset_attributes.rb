@@ -75,6 +75,8 @@ module Qernel::DatasetAttributes
     if dataset
       @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
     end
+  rescue => e
+    raise "Qernel::Dataset: missing dataset item for #{dataset_group.inspect} #{dataset_key}. #{e.inspect}"
   end
 
   # HANDLE_NIL_SECURLY = true has better output for debugging
