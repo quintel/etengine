@@ -11,7 +11,10 @@ module Etsource
       Gquery.transaction do
         Gquery.delete_all
         GqueryGroup.delete_all
-        import
+        
+        gquery_groups.values.each(&:save!)
+        Gquery.import gqueries
+        
         Rails.cache.clear
         system("touch tmp/restart.txt")
       end
@@ -31,20 +34,36 @@ module Etsource
     end
 
     def import
-      base_dir = "#{@etsource.base_dir}/gqueries"
-      groups = GqueryGroup.all.inject({}) {|hsh,g| hsh.merge group_key(g) => g}
+      gqueries
+    end
 
+    def gqueries
       gqueries = []
+      groups = gquery_groups
+      
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
         tokens = f.gsub(base_dir+"/", '').split('/')
         # the group name concatenates the directory names
         group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
         gquery = from_file(f)
-        groups[group_key] ||= GqueryGroup.create(:group_key => group_key)
-        gquery.gquery_group_id = groups[group_key].id
+        
+        gquery.gquery_group = groups[group_key]
         gqueries << gquery
       end
-      Gquery.import gqueries
+      gqueries
+    end
+
+    def gquery_groups
+      return @gquery_groups if @gquery_groups
+      
+      @gquery_groups = {}
+      Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
+        tokens = f.gsub(base_dir+"/", '').split('/')
+        # the group name concatenates the directory names
+        group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
+        @gquery_groups[group_key] ||= GqueryGroup.new(:group_key => group_key)
+      end
+      @gquery_groups
     end
 
   #protected
@@ -94,5 +113,10 @@ module Etsource
     def group_key(g)
       g.group_key.downcase.gsub(/\s/, '_') rescue 'other'
     end
+    
+    def base_dir
+     "#{@etsource.base_dir}/gqueries"
+    end
+      
   end
 end

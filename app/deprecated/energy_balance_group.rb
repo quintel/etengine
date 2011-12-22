@@ -11,7 +11,5 @@
 #
 
 class EnergyBalanceGroup < ActiveRecord::Base
-  has_many :converters, :dependent => :nullify
-  
   validates :name, :presence => true
 end

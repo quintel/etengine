@@ -4,7 +4,7 @@
   = f.input :unit
   = f.input :not_cacheable
   = f.input :description
-  = f.association :gquery_group, :collection => GqueryGroup.all.map{|g| [g.group_key, g.id]}
+  =# f.association :gquery_group, :collection => GqueryGroup.all.map{|g| [g.group_key, g.id]}
   = f.button :submit
   %p
     %strong.red Warning: all gqueries will be overwritten with an Etsource import. Modify locally only for testing.
