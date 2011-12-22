@@ -53,8 +53,13 @@
 
 module Etsource
   class Dataset
-    def initialize(etsource = Etsource::Base.new)
-      @etsource = etsource
+    attr_reader :country
+    
+    def initialize(country)
+      # DEBT: @etsource is only used for the base_dir, can be solved better.
+      @etsource = Etsource::Base.new
+      @country  = country
+      @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
     end
 
     # Importing dataset and convert into the Qernel::Dataset format.
@@ -63,21 +68,21 @@ module Etsource
     # the additional nesting of the hash, and hashing ids as strings are mostly for 
     # performance reasons.
     # 
-    def import(country = 'nl')
+    def import
       if !Rails.env.test? && !File.exists?(country_dir(country))
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
       end
 
       # Import static dataset (no value_box formulas)
-      @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
-      load_area(@dataset, country)
-      load_carriers(@dataset, country)
-      load_time_curves(@dataset, country)
+      
+      load_area
+      load_carriers
+      load_time_curves
       @dataset.data[:graph][:graph][:calculated] = false
 
-      load_static_dataset(@dataset, country)
-      load_dataset_forms(@dataset, country)
+      load_static_dataset
+      load_dataset_forms
 
       @dataset
     end
@@ -86,32 +91,32 @@ module Etsource
 
     # ---- Import Area ------------------------------------------------------
 
-    def load_area(dataset, country)
-      dataset.merge(:area,     load_yaml_with_defaults(country, 'area')[:area])
+    def load_area
+      @dataset.merge(:area,     load_yaml_with_defaults(country, 'area')[:area])
     rescue => e
       raise "Error loading datasets/:country/area.yml: #{e}"
     end
 
     # ---- Import Carriers --------------------------------------------------
 
-    def load_carriers(dataset, country)
-      dataset.merge(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
+    def load_carriers
+      @dataset.merge(:carrier,  load_yaml_with_defaults(country, 'carriers')[:carriers])
     rescue =>e
       raise "Error loading datasets/:country/carriers.yml: #{e.inspect}"
     end    
 
     # ---- Import Time Curves -----------------------------------------------
 
-    def load_time_curves(dataset, country)
-      dataset.time_curves = load_yaml(country, 'time_curves')
+    def load_time_curves
+      @dataset.time_curves = load_yaml(country, 'time_curves')
     rescue =>e
       raise "Error loading datasets/:country/time_curves.yml: #{e.inspect}"
     end    
 
-    def load_static_dataset(dataset, country)
+    def load_static_dataset
       # Topology:
       # Load each file, remove :defaults and :globals from hsh, so we don't mess with the rest.
-      # merge with dataset.
+      # merge with @dataset.
       topology_dataset_files = Dir.glob(country_dir("{#{country},_defaults}")+"/graph/*.yml")
       topology_dataset_files.each do |file|
         yml_hsh = load_yaml_with_defaults(country, 'graph/'+file.split("/").last) || {}
@@ -119,14 +124,14 @@ module Etsource
         yml_hsh.delete(:globals)
         yml_hsh.each do |key,attributes|
           attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-          dataset.merge(group_key(key), hash(key) => attrs)
+          @dataset.merge(group_key(key), hash(key) => attrs)
         end
       end
-    # rescue => e
-    #   raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
+    rescue => e
+      raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
     end
 
-    def load_dataset_forms(dataset, country)
+    def load_dataset_forms
       @value_box = InputTool::ValueBox.area(country)
       # Forms:
       # Import dynamic dataset (can reliably lookup information of static dataset)
@@ -138,10 +143,10 @@ module Etsource
         hsh.delete(:globals)  
         hsh.each do |key,attributes|
           if key == :area
-            dataset.merge(key, attributes)  
+            @dataset.merge(key, attributes)  
           else
             attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-            dataset.merge(group_key(key), hash(key) => attrs)
+            @dataset.merge(group_key(key), hash(key) => attrs)
           end
         end
       end
