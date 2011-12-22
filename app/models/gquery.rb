@@ -134,7 +134,7 @@ class Gquery < ActiveRecord::Base
     h
   end
 
-  def etsource_gqueries
+  def self.etsource_gqueries
     Etsource::Loader.instance.gqueries
   end
 
