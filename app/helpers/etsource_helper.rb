@@ -1,4 +1,8 @@
 module EtsourceHelper
+  def loader
+    Etsource::Loader.instance
+  end
+
   def households_hot_water_elements_hack
     
   end

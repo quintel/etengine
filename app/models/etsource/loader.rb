@@ -14,6 +14,7 @@ module Etsource
     def initialize
       @etsource = Etsource::Base.new
       @datasets = {}.with_indifferent_access
+      @gquery = Gqueries.new(@etsource)
     end
 
     # @return [Qernel::Graph] a deep clone of the graph.
@@ -27,17 +28,41 @@ module Etsource
     def dataset(country)
       ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
         # @datasets[country] ||= 
-        Rails.cache.fetch(dataset_cache_key(country)) do
+        cache("datasets/#{country}/#{InputTool::Form.last_updated(country).to_i}") do
           ::Etsource::Dataset.new(country).import
         end
       end
     end
 
+    def gqueries
+      cache("gqueries") do
+        @gquery.gqueries
+      end
+    end
+
+    def gquery_groups
+      cache("gqueries") do
+        @gquery.gquery_groups
+      end
+    end
+
+    def inputs
+      cache("inputs") do
+
+      end
+    end
 
   protected
-    def dataset_cache_key(country)
+
+    def cache(key, &block)
+      Rails.cache.fetch(cache_key+key) do
+        yield
+      end
+    end
+
+    def cache_key
       etsource_tmp_restart_touched_at = File.ctime(@etsource.base_dir + '/tmp/restart.txt').to_i
-      k = "#{etsource_tmp_restart_touched_at}/etsource/#{@etsource.current_commit_id}/datasets/#{country}/#{InputTool::Form.last_updated(country).to_i}"
+      k = "#{etsource_tmp_restart_touched_at}/etsource/#{@etsource.current_commit_id}/"
       Rails.logger.warn(k)
       k
     end

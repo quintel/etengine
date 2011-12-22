@@ -48,6 +48,12 @@ module Etsource
       @dataset
     end
    
+    # Return all the carrier keys we have defined in the dataset.
+    # (used to dynamically generate some methods)
+    def carrier_keys
+      load_yaml_with_defaults('carriers')[:carriers].keys
+    end
+
   #########
   protected
   #########

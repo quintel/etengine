@@ -68,25 +68,25 @@ module DataHelper
   
   def gqueries_autocomplete_map_cache
     Rails.cache.fetch "gqueries_autocomplete_map_cache" do
-      Gquery.order(`key`).all.map {|a| {label: a.key, url: data_gquery_key_path(:key => a.key)} }.to_json
+      loader.gqueries.sort_by(&:key).map {|a| {label: a.key, url: data_gquery_key_path(:key => a.key)} }.to_json
     end
   end
   
   def inputs_autocomplete_map_cache
     Rails.cache.fetch "inputs_autocomplete_map_cache" do
-      Input.order(`key`).all.map {|a| {label: a.key, url: edit_data_input_path(:id => a.id)} }.to_json
+      Input.all_cached.values.map {|a| {label: a.key, url: edit_data_input_path(:id => a.id)} }.to_json
     end
   end
   
   def converters_autocomplete_map_cache
     Rails.cache.fetch "converters_autocomplete_map_cache" do
-      Converter.order(`key`).all.map {|a| {label: a.full_key, url: data_converter_path(:id => a.id)} }.to_json
+      converters.sort_by(&:full_key).map {|a| {label: a.full_key.to_s, url: data_converter_path(:id => a)} }.to_json
     end
   end
   
   def carriers_autocomplete_map_cache
     Rails.cache.fetch "carriers_autocomplete_map_cache" do
-      Carrier.order(`key`).all.map {|a| {label: a.key, url: data_carrier_path(:id => a.id)} }.to_json
+      carriers.sort_by(&:key).map {|a| {label: a.key, url: data_carrier_path(:id => a)} }.to_json
     end
   end
 end

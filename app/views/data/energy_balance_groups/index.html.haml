@@ -17,7 +17,7 @@
         %td= e.id
         %td= link_to e.name, data_energy_balance_group_path(:id => e.id)
         %td{:style => "background-color: #{e.graphviz_color}"}= e.graphviz_color
-        %td= e.converters.count
+        %td=# e.converters.count
         %td= link_to 'edit', edit_data_energy_balance_group_path(:id => e.id)
 %p
   = link_to 'New Energy Balance Group', new_data_energy_balance_group_path
