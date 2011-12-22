@@ -36,8 +36,8 @@ module Etsource
 
   protected
     def dataset_cache_key(country)
-
-      k = "etsource/#{@etsource.current_commit_id}/datasets/#{country}/#{InputTool::Form.last_updated(country).to_i}"
+      etsource_tmp_restart_touched_at = File.ctime(@etsource.base_dir + '/tmp/restart.txt').to_i
+      k = "#{etsource_tmp_restart_touched_at}/etsource/#{@etsource.current_commit_id}/datasets/#{country}/#{InputTool::Form.last_updated(country).to_i}"
       Rails.logger.warn(k)
       k
     end
@@ -58,7 +58,7 @@ module Etsource
     end
 
     def unoptimized_graph
-      @graph ||= Etsource::Graph.new(@etsource).import
+      @graph ||= Etsource::Topology.new(@etsource).import
     end
   end
 end
