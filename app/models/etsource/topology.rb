@@ -1,5 +1,5 @@
 module Etsource
-  class Graph
+  class Topology
 
     def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
@@ -10,8 +10,6 @@ module Etsource
       @graph.dataset = Etsource::Dataset.new(country).import
       @graph
     end
-
-
 
     def import
       converters = {}
@@ -78,7 +76,7 @@ module Etsource
     end
 
     def base_dir
-      "#{@etsource.base_dir}/graph"
+      "#{@etsource.base_dir}/topology"
     end
 
   end
