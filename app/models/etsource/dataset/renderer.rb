@@ -40,7 +40,7 @@ module Etsource
   # will trigger the ValueBox#method_missing and return :foo back.
   #
   class Dataset::Renderer
-    attr_reader :country, :value_box
+    attr_reader :country, :value_box, :file_path
     
     def initialize(value_box, file_path)
       @value_box = value_box
