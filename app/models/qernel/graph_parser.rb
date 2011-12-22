@@ -10,9 +10,10 @@ module Qernel
       'electricity' => Carrier.new(id: 5, key: 'electricity', infinite: 0.0)
     }
 
-    CARRIERS = ::Carrier.all.inject({}) {|hsh,c| 
-      hsh.merge c.key => c.to_qernel.with({}) 
-    }.merge(CARRIERS_FOR_SPECS)
+    CARRIERS = {}
+    # ::Carrier.all.inject({}) {|hsh,c| 
+    #   hsh.merge c.key => c.to_qernel.with({}) 
+    # }.merge(CARRIERS_FOR_SPECS)
 
     LINK_TYPES = {
       's' => :share,
