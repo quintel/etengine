@@ -131,8 +131,7 @@ module Etsource
       # Forms:
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
-      dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
-      dynamic_forms.each do |file|
+      form_files_with_research_data.each do |file|
         hsh = load_yaml_file(file) || {}
         # Dont make converters with keys :defaults and :globals 
         hsh.delete(:defaults)
@@ -145,6 +144,17 @@ module Etsource
             dataset.merge(group_key(key), hash(key) => attrs)
           end
         end
+      end
+    end
+
+    # Returns only the forms where we have research data
+    # Do so by checking if the form_code matches the path (they have to).
+    #
+    # Prerequisite: @value_box is assigned.
+    def form_files_with_research_data
+      dynamic_forms = Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/'))
+      dynamic_forms.select do |file| 
+        value_box.form_codes.any?{|c| file.include?("_forms/#{c}/") }
       end
     end
 
