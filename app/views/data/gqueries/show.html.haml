@@ -6,8 +6,7 @@
   \##{@gquery.id}
   \:
   = @gquery.key
-  %small= link_to 'Edit', edit_data_gquery_path(:id => @gquery)
-
+  
 %h3 Query
 
 %pre.gql
@@ -35,6 +34,7 @@
     %tr
       %td Gquery
       %td= link_to gquery.key, data_gquery_key_path(:key => gquery.key)
+
   - Input.embedded_gql_contains(@gquery.key).each do |input|
     %tr
       %td Input
