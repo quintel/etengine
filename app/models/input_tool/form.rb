@@ -31,7 +31,7 @@ module InputTool
       Etsource::Wizard.new.description_for(code)
     end
 
-    def dataset_values
+    def research_data_bucket
       self[:values] ||= YAML::dump({})
       YAML::load(self[:values]).with_indifferent_access
     end
