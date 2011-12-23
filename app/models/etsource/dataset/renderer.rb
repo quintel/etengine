@@ -1,11 +1,11 @@
 module Etsource
-  # Renderer for datasets/_forms/*/dataset.yml
+  # Renderer for datasets/_wizards/*/dataset.yml
   # Makes sure yaml files have binding and can access ValueBox.
   #
   # ------ Examples -------------------------------------------------------------
   # 
   #     value_box = InputTool::ValueBox.area('nl')
-  #     renderer = Etsource::Dataset::Renderer.new(value_box, "etsource/datasets/_forms/households/dataset.yml")
+  #     renderer = Etsource::Dataset::Renderer.new(value_box, "etsource/datasets/_wizards/households/dataset.yml")
   #     renderer.result # => Hash 
   #
   #

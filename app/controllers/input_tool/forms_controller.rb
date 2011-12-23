@@ -19,7 +19,11 @@ module InputTool
     def index
       @forms = Form.area_code(@area_code)
       @stored_form_codes = @forms.map(&:code)
-      @new_form_codes = Etsource::Forms.new.list - @stored_form_codes
+      @new_form_codes = Etsource::Wizard.new.list - @stored_form_codes
+    end
+
+    def debug
+      
     end
     
     def show
