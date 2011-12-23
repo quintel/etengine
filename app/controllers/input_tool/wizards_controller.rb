@@ -39,7 +39,7 @@ module InputTool
     def create
       @code = params[:input_tool_saved_wizard][:code]
       @form = InputTool::SavedWizard.new(:code => @code, :area_code => @area_code)
-      @form.values = params[@code]
+      @form.values = (params[@code] || {}).with_indifferent_access
       if @form.save
         redirect_to edit_input_tool_wizard_path(:id => @form.to_param)
       else
@@ -49,7 +49,7 @@ module InputTool
 
     def update
       @form = SavedWizard.find(params[:id])
-      if @form.update_attributes(:values => params[@form.code])
+      if @form.update_attributes(:values => params[@form.code].with_indifferent_access)
         flash[:notice] = 'success'
         redirect_to edit_input_tool_wizard_path(id: @form)
       else
