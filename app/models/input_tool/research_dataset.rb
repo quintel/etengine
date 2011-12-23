@@ -22,7 +22,7 @@ module InputTool
     
     def initialize(forms)
       @form_codes = forms.map(&:code)
-      @values = forms.inject({}) {|hsh,f| hsh.merge f.code => f.dataset_values}
+      @values = forms.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}
     end
 
     def self.area(area_code)
