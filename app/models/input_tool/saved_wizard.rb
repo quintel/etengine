@@ -10,6 +10,7 @@ module InputTool
   class SavedWizard < ActiveRecord::Base
     set_table_name 'input_tool_forms'
 
+    # DEBT rename :values to :research_data_bucket and add default: {}
     serialize :values
 
     # new lambda syntax: equivalent to: lambda{|area_code| ...}
@@ -33,10 +34,9 @@ module InputTool
       Etsource::Wizard.new.description_for(code)
     end
 
+    # DEBT rename :values to :research_data_bucket and add default: {}
     def research_data_bucket
       (values || {})
-      # self[:values] ||= YAML::dump({})
-      # YAML::load(self[:values]).with_indifferent_access
     end
   end
 end
