@@ -42,8 +42,8 @@ module Etsource
       load_time_curves
       @dataset.data[:graph][:graph][:calculated] = false
 
-      load_static_dataset
-      load_dataset_forms
+      load_country_dataset
+      load_dataset_wizards
 
       @dataset
     end
@@ -84,7 +84,7 @@ module Etsource
 
     # ---- Import Static -----------------------------------------------
 
-    def load_static_dataset
+    def load_country_dataset
       # Topology:
       # Load each file, remove :defaults and :globals from hsh, so we don't mess with the rest.
       # merge with @dataset.
@@ -94,17 +94,17 @@ module Etsource
         hsh = load_yaml_with_defaults('graph/'+file.split("/").last) || {}
         merge_hash_with_dataset!(hsh)
       end
-    #rescue => e
-    #  raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
+    rescue => e
+      raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
     end
 
     # ---- Import Dynamic with Research Data ----------------------------------
 
-    def load_dataset_forms
+    def load_dataset_wizards
       value_box = InputTool::ValueBox.area(country)
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
-      Dir.glob([base_dir, '_forms', '*', "dataset.yml"].join('/')).each do |file|
+      Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
         hsh = ::Etsource::Dataset::Renderer.new(value_box, file).result
         merge_hash_with_dataset!(hsh)
       end

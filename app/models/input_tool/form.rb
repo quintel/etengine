@@ -1,6 +1,6 @@
 module InputTool
   # Forms keep the input data of researchers temporarly in the database.
-  # They are assigned country and the code of a etsource/datasets/_forms/
+  # They are assigned country and the code of a etsource/datasets/_wizards/
   # folder.
   #
   # By combining values of multiple forms we get a value box, which makes
@@ -24,11 +24,11 @@ module InputTool
     end
 
     def input_form
-      Etsource::Forms.new.form_for(code)
+      Etsource::Wizard.new.form_for(code)
     end
 
     def description
-      Etsource::Forms.new.description_for(code)
+      Etsource::Wizard.new.description_for(code)
     end
 
     def dataset_values

@@ -1,13 +1,13 @@
 .span14
   = form_for @form do |f|
     = f.hidden_field :code
-    = render :file => Etsource::Forms.new.form_template_for(@form.code)
+    = render :file => Etsource::Wizard.new.form_template_for(@form.code)
     .actions
       = submit_tag 'Save changes', :class => 'btn primary'
       (will save all tabs)
 
 .span2
-  = render :file => Etsource::Forms.new.description_template_for(@form.code)
+  = render :file => Etsource::Wizard.new.description_template_for(@form.code)
 
 
   %a.btn{:data => {:'controls-modal' => "value_box_contents", :backdrop => "true"}} Debug

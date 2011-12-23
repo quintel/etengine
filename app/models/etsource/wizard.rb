@@ -1,16 +1,15 @@
-# Forms are used for the input module. 
-# The forms itself is not area-specific. But the values that researchers enter into
+# Wizards are used for the input module. 
+# The wizards itself are not area-specific. But the values that researchers enter into
 # forms are country-specific. With the values entered into the forms we can update
-# the dataset.
-# It is not yet clear where we want to store the data entered into Forms.
+# the dataset. It is not yet clear where we want to store the data entered into the Wizards.
 #
-#    forms = Etsource::Forms.new
-#    forms.list # => [car_technology_shares, ...]
-#    forms.form_for(forms.list.first) # => some html
+#    wizards = Etsource::Wizard.new
+#    wizards.list # => [car_technology_shares, ...]
+#    wizards.form_for(wizards.list.first) # => some html
 #
 #
 module Etsource
-  class Forms
+  class Wizard
     def initialize(etsource = Etsource::Base.new)
       @etsource = etsource
     end
@@ -37,7 +36,7 @@ module Etsource
     end
 
     def list
-      @forms ||= Dir.glob("#{base_dir}/*").select{|d| File.directory?(d)}.map{|d| d.split("/").last }
+      @wizards ||= Dir.glob("#{base_dir}/*").select{|d| File.directory?(d)}.map{|d| d.split("/").last }
     end
 
   #########
@@ -45,7 +44,7 @@ module Etsource
   #########
 
     def base_dir
-      "#{@etsource.base_dir}/datasets/_forms"
+      "#{@etsource.base_dir}/datasets/_wizards"
     end
   end
 end
