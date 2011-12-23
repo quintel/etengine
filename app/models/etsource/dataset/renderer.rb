@@ -40,9 +40,10 @@ module Etsource
   # will trigger the ResearchDataset#method_missing and return :foo back.
   #
   class Dataset::Renderer
-    attr_reader :country, :research_dataset, :file_path
+    attr_reader :research_dataset, :file_path, :country_dataset
     
-    def initialize(research_dataset, file_path)
+    def initialize(file_path, research_dataset, country_dataset)
+      @country_dataset = country_dataset
       @research_dataset = research_dataset
       @file_path = file_path
     end
@@ -63,7 +64,7 @@ module Etsource
     # @param attr_key [String,Symbol] the attribute name.
     #
     def val(key, attr_key)
-      @dataset.data[group_key(key)][Hashpipe.hash(key)][attr_key.to_sym]
+      country_dataset.data[group_key(key)][Hashpipe.hash(key)][attr_key.to_sym]
     end
 
     # @see {InputTool::ResearchDataset#get}
@@ -84,7 +85,7 @@ module Etsource
     # Returns true if we have research data for this file/form.
     # Do so by checking if the form_code matches the path (they have to).
     def has_research_data?
-      research_dataset.form_codes.any?{|c| file_path.include?("/#{c}/") }
+      research_dataset.wizard_codes.any?{|c| file_path.include?("/#{c}/") }
     end
 
     def group_key(key)

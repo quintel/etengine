@@ -18,15 +18,15 @@
 module InputTool
   class ResearchDataset
     
-    attr_reader :values, :form_codes
+    attr_reader :values, :wizard_codes
     
-    def initialize(forms)
-      @form_codes = forms.map(&:code)
-      @values = forms.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}
+    def initialize(saved_wizards)
+      @wizard_codes = saved_wizards.map(&:code)
+      @values = saved_wizards.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}
     end
 
     def self.area(area_code)
-      new(InputTool::Form.area_code(area_code).all)
+      new(InputTool::SavedWizard.area_code(area_code).all)
     end
 
     # Sets a shortcut for a value. Typically used in conjunction with multiple #get.

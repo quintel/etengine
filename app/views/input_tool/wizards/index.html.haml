@@ -1,23 +1,23 @@
-- breadcrumb link_to("Forms", input_tool_forms_path)
+- breadcrumb link_to("Forms", input_tool_wizards_path)
 - breadcrumb @area_code
 
 .row
 
 .hero-unit
-  %h2 Forms
+  %h2 Saved Wizards
   %p
     Forms you can edit. At the moment only the sheet "households" from Marks input database is available. 
   %ul
-    - @new_form_codes.each do |form_code|
+    - @new_wizard_codes.each do |form_code|
       %li
         %span.label New
-        %strong= link_to form_code, new_input_tool_form_path(:code => form_code)
+        %strong= link_to form_code, new_input_tool_wizard_path(:code => form_code)
 
-    - @forms.each do |form|
+    - @saved_wizards.each do |form|
       %li
         %span.label.warning Saved
-        %strong= link_to form.code, edit_input_tool_form_path(:id => form)
-        = link_to 'delete', input_tool_form_path(:id => form), :method => :delete
+        %strong= link_to form.code, edit_input_tool_wizard_path(:id => form)
+        = link_to 'delete', input_tool_wizard_path(:id => form), :method => :delete
   %p
     The 3 stages of a form:
   %ul

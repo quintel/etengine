@@ -1,5 +1,6 @@
 .span14
-  = form_for @form do |f|
+  - url = @form.new_record? ? input_tool_wizards_path : input_tool_wizard_path(@form)
+  = form_for @form, :url => url do |f|
     = f.hidden_field :code
     = render :file => Etsource::Wizard.new.form_template_for(@form.code)
     .actions
@@ -16,6 +17,6 @@
       %a.close{:href => "#"} &times;
       %h3 Debug 
     .modal-body
-      - InputTool::Form.all.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}.each do |k,h|
+      - InputTool::SavedWizard.all.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}.each do |k,h|
         %code= h
     

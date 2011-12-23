@@ -28,7 +28,7 @@ module Etsource
     def dataset(country)
       ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
         # @datasets[country] ||= 
-        cache("datasets/#{country}/#{InputTool::Form.last_updated(country).to_i}") do
+        cache("datasets/#{country}/#{InputTool::SavedWizard.last_updated(country).to_i}") do
           ::Etsource::Dataset.new(country).import
         end
       end
