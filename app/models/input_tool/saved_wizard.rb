@@ -10,6 +10,8 @@ module InputTool
   class SavedWizard < ActiveRecord::Base
     set_table_name 'input_tool_forms'
 
+    serialize :values
+
     # new lambda syntax: equivalent to: lambda{|area_code| ...}
     scope :area_code, -> area_code { where(area_code: area_code) }
 
@@ -32,8 +34,9 @@ module InputTool
     end
 
     def research_data_bucket
-      self[:values] ||= YAML::dump({})
-      YAML::load(self[:values]).with_indifferent_access
+      (values || {})
+      # self[:values] ||= YAML::dump({})
+      # YAML::load(self[:values]).with_indifferent_access
     end
   end
 end
