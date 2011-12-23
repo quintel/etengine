@@ -19,8 +19,8 @@ module InputTool
       InputTool::Form.where(:area_code => code).maximum('updated_at')
     end
 
-    def value_box
-      @value_box ||= ValueBox.new([self])
+    def research_dataset
+      @research_dataset ||= ResearchDataset.new([self])
     end
 
     def input_form

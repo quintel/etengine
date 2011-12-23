@@ -101,11 +101,11 @@ module Etsource
     # ---- Import Dynamic with Research Data ----------------------------------
 
     def load_dataset_wizards
-      value_box = InputTool::ValueBox.area(country)
+      research_dataset = InputTool::ResearchDataset.area(country)
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
       Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
-        hsh = ::Etsource::Dataset::Renderer.new(value_box, file).result
+        hsh = ::Etsource::Dataset::Renderer.new(research_dataset, file).result
         merge_hash_with_dataset!(hsh)
       end
     end

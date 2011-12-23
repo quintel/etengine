@@ -18,7 +18,7 @@ module EtsourceHelper
     opts = {
       :type  => "number", 
       :name  => name, 
-      :value => @form.value_box.get(@form.code, *keys), 
+      :value => @form.research_dataset.get(@form.code, *keys), 
       :step  => 0.1
     }.merge(opts)
     
