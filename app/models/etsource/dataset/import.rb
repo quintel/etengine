@@ -6,7 +6,7 @@ module Etsource
   # after that, so it can access static dataset using #val and research input
   # with #get.
   #
-  # ------ Importing ETsource Form YAML Files  ----------------------------------
+  # ------ Importing ETsource Transformer Files  ---------------------------------
   #
   # To make the ETsource dataset forms dynamic we pass the yml files through an
   # ERB handler, and load the output with YAML::load. 
@@ -105,7 +105,7 @@ module Etsource
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
       Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
-        hsh = ::Etsource::Dataset::Renderer.new(research_dataset, file).result
+        hsh = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset).result
         merge_hash_with_dataset!(hsh)
       end
     end

@@ -1,5 +1,5 @@
 module InputTool
-  # Forms keep the input data of researchers temporarly in the database.
+  # SavedWizard keep the input data of researchers temporarly in the database.
   # They are assigned country and the code of a etsource/datasets/_wizards/
   # folder.
   #
@@ -7,7 +7,7 @@ module InputTool
   # the form data accessible to the ETsource dataset form yml files.
   #
   #
-  class Form < ActiveRecord::Base
+  class SavedWizard < ActiveRecord::Base
     set_table_name 'input_tool_forms'
 
     # new lambda syntax: equivalent to: lambda{|area_code| ...}
@@ -16,7 +16,7 @@ module InputTool
     # we can use this to easily invalidate cache data, by adding a timestamp to
     # the cache key.
     def self.last_updated(code)
-      InputTool::Form.where(:area_code => code).maximum('updated_at')
+      where(:area_code => code).maximum('updated_at')
     end
 
     def research_dataset

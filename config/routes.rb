@@ -88,6 +88,6 @@ Etm::Application.routes.draw do
 
   namespace :input_tool do
     root :to => "forms#index"
-    resources :forms
+    resources :wizards
   end
 end
