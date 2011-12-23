@@ -1,11 +1,11 @@
 module Etsource
   # Renderer for datasets/_wizards/*/dataset.yml
-  # Makes sure yaml files have binding and can access ValueBox.
+  # Makes sure yaml files have binding and can access ResearchDataset.
   #
   # ------ Examples -------------------------------------------------------------
   # 
-  #     value_box = InputTool::ValueBox.area('nl')
-  #     renderer = Etsource::Dataset::Renderer.new(value_box, "etsource/datasets/_wizards/households/dataset.yml")
+  #     research_dataset = InputTool::ResearchDataset.area('nl')
+  #     renderer = Etsource::Dataset::Renderer.new(research_dataset, "etsource/datasets/_wizards/households/dataset.yml")
   #     renderer.result # => Hash 
   #
   #
@@ -36,14 +36,14 @@ module Etsource
   #     heating: <%= get(foo, bar) %>
   #
   # I argue that the second example is rather prettier and less prone to typo-bugs.
-  # It works because the yaml file is bound to the value_box object, therefore foo
-  # will trigger the ValueBox#method_missing and return :foo back.
+  # It works because the yaml file is bound to the research_dataset object, therefore foo
+  # will trigger the ResearchDataset#method_missing and return :foo back.
   #
   class Dataset::Renderer
-    attr_reader :country, :value_box, :file_path
+    attr_reader :country, :research_dataset, :file_path
     
-    def initialize(value_box, file_path)
-      @value_box = value_box
+    def initialize(research_dataset, file_path)
+      @research_dataset = research_dataset
       @file_path = file_path
     end
 
@@ -66,16 +66,16 @@ module Etsource
       @dataset.data[group_key(key)][Hashpipe.hash(key)][attr_key.to_sym]
     end
 
-    # @see {InputTool::ValueBox#get}
+    # @see {InputTool::ResearchDataset#get}
     #
     def get(*args)
-      value_box.get(*args)
+      research_dataset.get(*args)
     end
 
-    # @see {InputTool::ValueBox#set}
+    # @see {InputTool::ResearchDataset#set}
     #
     def shortcut(key, value)
-      value_box.set(key, value)
+      research_dataset.set(key, value)
     end
     alias_method :set, :shortcut
 
@@ -84,7 +84,7 @@ module Etsource
     # Returns true if we have research data for this file/form.
     # Do so by checking if the form_code matches the path (they have to).
     def has_research_data?
-      value_box.form_codes.any?{|c| file_path.include?("/#{c}/") }
+      research_dataset.form_codes.any?{|c| file_path.include?("/#{c}/") }
     end
 
     def group_key(key)

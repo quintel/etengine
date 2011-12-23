@@ -1,4 +1,4 @@
-# ValueBox holds all the values entered by researchers into the input tool.
+# ResearchDataset holds all the values entered by researchers into the input tool.
 # They can be accessed systematically by ETsource templates using "get".
 #
 #     get(households,hot_water,demand) # => 32.0
@@ -16,7 +16,7 @@
 # 
 #
 module InputTool
-  class ValueBox
+  class ResearchDataset
     
     attr_reader :values, :form_codes
     
