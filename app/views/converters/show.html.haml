@@ -5,7 +5,7 @@
   %head
     = stylesheet_link_tag 'converter_details'
   %body#converter_detail
-    %h1= @converter.name
+    %h1= t "converters.#{@converter.full_key}"
     - if @converter_present.groups.include?(:cost_traditional_heat)
       - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
       = render "data/converters/details"
