@@ -100,6 +100,8 @@ GEM
       ruby_parser (>= 2.3.1)
       slop (~> 2.1.0)
     rack (1.2.4)
+    rack-cors (0.2.4)
+      rack
     rack-mount (0.6.14)
       rack (>= 1.0.0)
     rack-sprockets (1.1.0)
@@ -199,6 +201,7 @@ DEPENDENCIES
   mysql2 (~> 0.2.6)
   paper_trail (>= 1.6.4)
   pry
+  rack-cors
   rack-sprockets
   rails (= 3.0.11)
   rb-fsevent

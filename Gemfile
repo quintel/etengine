@@ -26,6 +26,7 @@ gem 'fnv'
 gem 'sprockets'
 gem 'sprockets-rails'
 gem 'rack-sprockets'
+gem 'rack-cors', :require => 'rack/cors'
 
 # supporting gems
 gem 'airbrake', '3.0.4'
