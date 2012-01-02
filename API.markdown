@@ -1,6 +1,4 @@
-http://developer.github.com/v3/
-
-# API
+# API Documentation
 
 API access is over HTTP and data is sent and received in various formats. Following the Rails' conventions, the format is usually appended to the URL:
   
@@ -9,9 +7,20 @@ API access is over HTTP and data is sent and received in various formats. Follow
 
 The preferred format is JSON and the documentation will use it as default format.
 
-## JSONP Callbacks
+## Cross-Domain policy issues
 
-Most API requests are actually called with JSONP since the Cross-Domain Policy forbids an XmlHttpRequest to an external domain. Unless you setup a web proxy to handle this issue, pass a `callback` parameter to any GET call to have the results wrapped in a JSON function.
+You have three ways to get around the cross-domain restrictions:
+
+### AJAX Proxy
+
+Use a local AJAX proxy
+
+### CORS
+
+CORS is supported. Modern browsers can make use of it and query the engine with optional pre-flight requests.
+
+### JSONP Callbacks
+If you pass a `callback` parameter to any GET call you'll have the results wrapped in a JSON function.
 
 Example:
 
@@ -20,6 +29,8 @@ Example:
   
     curl http://etengine.dev/api/v2/api_scenarios/new.json\?callback\=foobar
     foobar({"api_scenario":{"country":"nl","end_year":2040,"id":7807,"region":null,"use_fce":false,"user_values":{}}})
+
+# API Reference
 
 ## Create a new session
 
@@ -109,62 +120,80 @@ This action is only used on the ETM to setup the sliders with the proper attribu
 
 The hash index is the input id.
 
-# ActiveResource Controllers
+## Input data
+
+If you need information about a subset of inputs you can call the `input_data` action to get a filtered, key-indexed version of `user_values`. This is useful in applications with a limited number of sliders, such as the EIB.
+
+    GET /api/v2/api_scenarios/123/input_data.json?inputs[]=number_of_coal_iggc
+
+### Response
+
+    {
+        "number_of_coal_iggc":{
+           "max_value":45.69029813051847,
+           "min_value":0.0,
+           "start_value":0.322704922682272,
+           "full_label":null,
+           "user_value":null
+         }
+    }
+
+## ActiveResource Controllers
 
 The ETE also has some controllers that respond with ActiveResource objects. They follow the common rails conventions and RESTful actions.
 At the moment they respond in XML format, but as soon as we'll upgrade to Rails 3.1 JSON will be the default format.
 
-## Gqueries
+### Gqueries
 
-### Gquery list
+#### Gquery list
 
     GET /api/v2/gqueries.xml
 
 Returns an AR-XML with all the available gqueries. The only visible attributes are `id`, `key` and `deprecated_key`.
 
-## Inputs
+### Inputs
 
-### Input list
+#### Input list
 
     GET /api/v2/inputs.xml
 
 Returns a list of all available inputs.
 
-### Input details
+#### Input details
 
     GET /api/v2/inputs/:input_id.xml
 
 Input detail
 
-## Areas
+### Areas
 
-### Area list
+#### Area list
 
     GET /api/v2/areas.xml
 
 Used by ETM to fill the area list on the start page.
 
-#### Parameters
+##### Parameters
 
 * `country`: to get only the areas that belong to a specific country
 
-### Area details
+#### Area details
 
     GET /api/v2/areas/:area_id.xml
 
-## Scenarios
+### Scenarios
 
-### Scenario Index
+#### Scenario Index
 
     GET /api/v2/scenarios/index.xml
 
 Returns the predefined scenarios, ie those that have not been created through the API. Paginates per 20 items.
 
-#### Parameters
+##### Parameters
 
 * `page`: pagination offset
 
-### Homepage scenarios
+#### Homepage scenarios
 
     GET /api/v2/scenarios/homepage.xml
 
@@ -173,22 +202,21 @@ Returns the scenarios that should be shown on the ETM homepage.
 
 Other ActiveResource actions. Check if they're still used.
 
-### Show
+#### Show
 
     GET /api/v2/scenarios/:id.xml
 
-### Create
+#### Create
 
     POST /api/v2/scenarios.xml
 
-### Update
+#### Update
 
     PUT /api/v2/scenarios/:id.xml
 
-### Load
+#### Load
 
     GET /api/v2/scenarios/:id/load.xml
-
 
 
 # TODO
@@ -196,3 +224,4 @@ Other ActiveResource actions. Check if they're still used.
 * Disable non-JSON format. Since Rails 3.1 has replaces XML with JSON for ActiveResource, it makes sense to use JSON eclusively
 * Make the API more REST-ful; better use of HTTP actions
 * Error handling is still very limited
+* http://developer.github.com/v3/
