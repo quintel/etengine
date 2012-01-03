@@ -78,6 +78,7 @@ module Scenario::UserUpdates
     # This will process an {:input_id => :value} hash and update the inputs as needed
     #
     def update_inputs_for_api(params)
+      sanitize_input_groups!(params)
       params.each_pair do |input_id, value|
         if input = Input.get_cached(input_id)
           if value == 'reset'
@@ -89,6 +90,36 @@ module Scenario::UserUpdates
           Rails.logger.warn("Scenario#update_inputs_for_api: Trying to update an input that doesn't exist. id: #{input_id}")
         end
       end
+    end
+    
+    # ETFlex and other applications might use only a subset of a slider group.
+    # To prevent errors let's fill the gaps providing the values for the missing
+    # elements
+    # 
+    def sanitize_input_groups!(params)
+      user_input_keys = params.keys.map(&:to_i)
+      # You can't add items to a hash during an iteration, so I store the new
+      # items apart and add them later
+      missing_items = {}
+      params.each_pair do |input_id, value|
+        input = Input.get_cached(input_id)
+        # standalone sliders shouldn't care about this
+        next if input.share_group.blank?
+        # let's get the other sliders belonging to the group
+        siblings = Input.in_share_group(input.share_group)
+        siblings.each do |brother|
+          # If the inputs include the brother then let's move on
+          if user_input_keys.include?(brother.id)
+            next
+          end
+          # Otherwise let's assign a plausible value
+          pseudo_value = (100 - value.to_f) / (siblings.size - 1)
+          missing_items[brother.id.to_s] = pseudo_value
+          ActiveSupport::Notifications.instrument("gql.debug",
+            "Missing slider group item, auto-assigning #{brother.key} #{pseudo_value}")
+        end
+      end
+      params.merge!(missing_items)
     end
 
     # This method sends the key values to the gql using the input element attr. 
