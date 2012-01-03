@@ -36,6 +36,7 @@ class Input < ActiveRecord::Base
   has_many :expert_predictions
 
   scope :with_share_group, where('NOT(share_group IS NULL OR share_group = "")')
+  scope :in_share_group, lambda{|q| where(:share_group => q)}
   scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
   scope :contains, lambda{|search|
     where([
