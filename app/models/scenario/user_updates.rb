@@ -109,14 +109,17 @@ module Scenario::UserUpdates
         siblings = Input.in_share_group(input.share_group)
         siblings.each do |brother|
           # If the inputs include the brother then let's move on
-          if user_input_keys.include?(brother.id)
-            next
-          end
+          next if user_input_keys.include?(brother.id)
+          # On the ETM a slider belonging to a group on the edge might not be
+          # marked as dirty. In this case let's just check if the others sum up
+          # to ~100:
+          current_group_sum = siblings.map{|s| params[s.id.to_s].to_f}.sum rescue 0
+          next if current_group_sum.between?(99.5,100.5)
           # Otherwise let's assign a plausible value
           pseudo_value = (100 - value.to_f) / (siblings.size - 1)
           missing_items[brother.id.to_s] = pseudo_value
           ActiveSupport::Notifications.instrument("gql.debug",
-            "Missing slider group item, auto-assigning #{brother.key} #{pseudo_value}")
+            "Missing slider group item, auto-assigning #{brother.id}-#{brother.key} #{pseudo_value}")
         end
       end
       params.merge!(missing_items)
