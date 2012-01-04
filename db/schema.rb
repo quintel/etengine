@@ -12,7 +12,6 @@
 # It's strongly recommended to check this file into your version control system.
 
 ActiveRecord::Schema.define(:version => 20120106055413) do
-
   create_table "areas", :force => true do |t|
     t.string   "country"
     t.float    "co2_price"
@@ -212,7 +211,7 @@ ActiveRecord::Schema.define(:version => 20120106055413) do
     t.float    "part_ets"
     t.float    "ccs_investment_per_mw_input"
     t.float    "ccs_operation_and_maintenance_cost_per_full_load_hour"
-    t.float    "decrease_in_nomimal_capacity_over_lifetime"
+    t.float    "decrease_in_nominal_capacity_over_lifetime"
     t.float    "availability"
     t.float    "variability"
   end
