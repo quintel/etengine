@@ -60,7 +60,7 @@ class ConverterApi
     :construction_time,
     :costs_per_mj,
     :decommissioning_costs_per_mw_input,
-    :decrease_in_nomimal_capacity_over_lifetime,
+    :decrease_in_nominal_capacity_over_lifetime,
     :demand_expected_value,
     :full_load_hours,
     :installing_costs_per_mw_input,
@@ -90,7 +90,7 @@ class ConverterApi
   ELECTRICITY_PRODUCTION_VALUES  =  {
     :technical => {
       :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
-      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
       :full_load_hours  => ['Full load hours', 'hour / year'],
       :electricity_output_conversion  => ['Electrical efficiency', '%'],
       :heat_output_conversion  => ['Heat efficiency', '%']
@@ -117,7 +117,7 @@ class ConverterApi
   HEAT_PRODUCTION_VALUES  =  {
     :technical => {
       :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
-      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
       :full_load_hours  => ['Full load hours', 'hour / year'],
       :heat_output_conversion  => ['Heat efficiency', '%']
     },
@@ -140,7 +140,7 @@ class ConverterApi
   HEAT_PUMP_VALUES  =  {
     :technical => {
       :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
-      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
       :full_load_hours  => ['Full load hours', 'hour / year'],
       :coefficient_of_performance => ['Coefficient of performance', ''],
       :heat_output_conversion  => ['Heat efficiency (after COP)', '%']
@@ -165,7 +165,7 @@ class ConverterApi
     :technical => {
       :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
       :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
-      :average_effective_output_of_nomimal_capacity_over_lifetime => ['Average effective output of nomimal capacity over lifetime', '%'],
+      :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
       :full_load_hours  => ['Full load hours', 'hour / year'],
       :electricity_output_conversion  => ['Electrical efficiency', '%'],
       :heat_output_conversion  => ['Heat efficiency', '%']
