@@ -46,6 +46,7 @@ group :development do
   gem 'yard', '~> 0.7.2'
   gem 'annotate', :require => false
   gem 'active_reload'
+  gem 'pry-remote'
 end
 
 group :test, :development do
