@@ -9,7 +9,7 @@ class ApiRequest
   GQUERY_KEY_SEPARATOR = ";".freeze
   API_ATTRIBUTES = [:user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]
 
-  attr_accessor :settings, :input, :reset, :use_fce
+  attr_accessor :settings, :input, :reset, :use_fce, :sanitize_groups
 
   # gquery_keys is populated by {#r=} and {#result=}
   attr_reader :gquery_keys
@@ -59,7 +59,7 @@ class ApiRequest
       @scenario = nil;
       scenario
     end
-    scenario.update_inputs_for_api(input) if input
+    scenario.update_inputs_for_api(input, :sanitize_groups => sanitize_groups) if input
     scenario.use_fce = use_fce if use_fce
     scenario.save unless test_scenario?
   end
