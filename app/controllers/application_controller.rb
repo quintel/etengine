@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   # include ApplicationController::PerformanceProfiling
   include ApplicationController::GcDisabling
+  include ApplicationController::ClientIdentification
   include SortableTable::App::Controllers::ApplicationController
 
   helper :all
@@ -50,7 +51,7 @@ class ApplicationController < ActionController::Base
     def teardown_current
       Current.teardown_after_request!
     end
-
+    
   private
   
     def store_location

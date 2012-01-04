@@ -77,8 +77,8 @@ module Scenario::UserUpdates
 
     # This will process an {:input_id => :value} hash and update the inputs as needed
     #
-    def update_inputs_for_api(params)
-      sanitize_input_groups!(params)
+    def update_inputs_for_api(params, opts = {})
+      sanitize_input_groups!(params) if opts[:sanitize_groups]
       params.each_pair do |input_id, value|
         if input = Input.get_cached(input_id)
           if value == 'reset'
@@ -94,7 +94,9 @@ module Scenario::UserUpdates
     
     # ETFlex and other applications might use only a subset of a slider group.
     # To prevent errors let's fill the gaps providing the values for the missing
-    # elements
+    # elements.
+    # DEBT: clean up, remove in-place editing. Let's do this when merging 
+    # Scenario and ApiScenario classes.
     # 
     def sanitize_input_groups!(params)
       user_input_keys = params.keys.map(&:to_i)

@@ -21,7 +21,7 @@ class Api::ApiScenariosController < Api::BaseController
 
   # This action is used by the ETE clients to create a new scenario.
   # The response is a simple JSON object like this:
-  # 
+  #
   # {"api_scenario":{"country":"nl","end_year":2030,"id":7554,"region":null,"use_fce":false,"user_values":{}}}
   #
   # The important field is the id, that the clients will have to use on the following #show requests
@@ -53,6 +53,7 @@ class Api::ApiScenariosController < Api::BaseController
   # everything with a simple JSON POST request.
   #
   def show
+    params[:sanitize_groups] = true if etflex_client?
     @api_request = ApiRequest.response(params)
     # We can probably get rid of this extra api_scenario assignment
     @api_scenario = @api_request.scenario
@@ -76,21 +77,21 @@ class Api::ApiScenariosController < Api::BaseController
 
   # This action is called by the ETM backbone application on every page request. It responds
   # with a JSON hash with the various values of the sliders
-  # 
+  #
   # TODO: it would be nice to move as much code as possible into a separate model
   #
   def user_values
     @api_request = ApiRequest.response(params)
     Current.scenario = @api_request.scenario
     values = @api_request.scenario.input_values
-    
+
     respond_to do |format|
       format.json do
-        render :json => values, :callback => params[:callback] 
+        render :json => values, :callback => params[:callback]
       end
     end
   end
-  
+
   # Similar to user_values, but returns only the subset of the inputs we need
   # and uses the input key as hash key
   def input_data
@@ -109,7 +110,7 @@ class Api::ApiScenariosController < Api::BaseController
 
   protected
 
-    def find_model
-      @api_scenario = ApiScenario.find(params[:id])
-    end
+  def find_model
+    @api_scenario = ApiScenario.find(params[:id])
+  end
 end
