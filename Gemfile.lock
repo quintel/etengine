@@ -99,6 +99,9 @@ GEM
       method_source (~> 0.6.7)
       ruby_parser (>= 2.3.1)
       slop (~> 2.1.0)
+    pry-remote (0.1.0)
+      pry (~> 0.9.6)
+      slop (~> 2.1)
     rack (1.2.4)
     rack-cors (0.2.4)
       rack
@@ -201,6 +204,7 @@ DEPENDENCIES
   mysql2 (~> 0.2.6)
   paper_trail (>= 1.6.4)
   pry
+  pry-remote
   rack-cors
   rack-sprockets
   rails (= 3.0.11)
