@@ -39,6 +39,17 @@ module InputTool
     end
     alias_method :set, :shortcut
 
+    def keys_that_contain(*args)
+      needle = args.pop
+      haystack = get(*args)
+
+      haystack.map do |possible_needle, hash|
+        if hash.with_indifferent_access.has_key?(needle)
+          possible_needle
+        end
+      end.compact
+    end
+
 
     # Recursively retrieves a value from the input tool value hashes.
     # 
