@@ -80,6 +80,10 @@ module Etsource
     end
     alias_method :set, :shortcut
 
+    def keys_that_contain(*args)
+      research_dataset.keys_that_contain(*args)
+    end
+
   protected
     
     # Returns true if we have research data for this file/form.
