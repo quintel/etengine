@@ -1,3 +1,4 @@
+
 module Etsource
   # ------ Static vs dynamic form yml  ------------------------------------------
   #
@@ -105,7 +106,9 @@ module Etsource
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
       Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
-        hsh = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset).result
+        renderer = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset)
+        hsh = renderer.result
+        renderer.save_compiled_yaml(file.gsub('datasets', "compiled/#{country}"))
         merge_hash_with_dataset!(hsh)
       end
     end
