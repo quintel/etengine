@@ -56,6 +56,11 @@ module Etsource
       end      
     end
 
+    def save_compiled_yaml(path)
+      FileUtils.mkdir_p(path.split('/')[0...-1].join('/'))
+      File.open(path, 'w') { |f| f << render_erb(file_contents) }
+    end
+
     # ----- Methods for within YAML -------------------------------------------
 
     # Access values from the static dataset.
@@ -100,7 +105,11 @@ module Etsource
     end
 
     def load_yaml
-      load_yaml_with_erb(File.read(file_path))
+      load_yaml_with_erb(file_contents)
+    end
+
+    def file_contents
+      File.read(file_path)
     end
 
     # ---- ERB MAGIC ----------------------------------------------------------
@@ -108,7 +117,11 @@ module Etsource
     # Run yaml contents through ERB renderer and attaches itself as a binding.
     #
     def load_yaml_with_erb(str)
-      YAML::load(ERB.new(str).result(  binding  ))
+      YAML::load(render_erb(str))
+    end
+
+    def render_erb(str)
+      ERB.new(str).result(  binding  )
     end
   end
 end
