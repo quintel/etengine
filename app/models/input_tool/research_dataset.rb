@@ -43,11 +43,13 @@ module InputTool
       needle = args.pop
       haystack = get(*args)
 
-      haystack.andand.map do |possible_needle, hash|
+      return [] if haystack.nil?
+      
+      haystack.map do |possible_needle, hash|
         if hash.with_indifferent_access.has_key?(needle)
           possible_needle
         end
-      end.compact || []
+      end.compact
     end
 
 
