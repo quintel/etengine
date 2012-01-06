@@ -18,7 +18,6 @@
   - @api_response['result'].andand.each do |key, result|
     %tr
       %td= key
-      -# TODO make it possible to write Current.gql.query(gquery)
       %td= result.present_value
       %td= result.future_value
 

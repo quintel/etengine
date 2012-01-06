@@ -46,7 +46,7 @@ class ApiRequest
   end
 
   # Updates and stores the scenario with the new user values submitted in this request.
-  # This needs to be run before we call Current.gql.prepare otherwise they won't be applied.
+  # This needs to be run before we call gql.prepare otherwise they won't be applied.
   #
   def apply_inputs
     if @gql.andand.calculated? # access @gql directly to avoid initializing it in #gql
@@ -81,16 +81,12 @@ class ApiRequest
 
   # Access point for the GQL. 
   #
-  def gql
+  def gql(options = {})
     unless @gql
       Current.scenario = scenario
-      # ---- Old approach of accessing gql ---------------
-      # @gql = Current.gql
-      # ---- New approach of accessing gql ---------------
       # This will load the graph and dataset from etsource
       # -> unoptimized and slow. It passed all test suites.
-      @gql = Current.gql = Gql::Gql.new(Current.scenario)
-      # @gql.prepare
+      @gql = scenario.gql(options)
     end
     @gql
   end

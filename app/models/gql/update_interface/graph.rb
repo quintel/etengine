@@ -5,20 +5,21 @@ module UpdateInterface
   class Graph
     include Selecting
 
-    attr_reader :graph
+    attr_reader :graph, :gql
 
-    def initialize(graph)
+    def initialize(gql, graph)
+      @gql = gql
       @graph = graph
     end
 
     # DEBT legacy because of update_replacement_of_households_rate
     def present_converter(id)
-      Current.gql.present_graph.converter(id)
+      gql.present_graph.converter(id)
     end
 
     # DEBT legacy because of update_replacement_of_households_rate
     def future_converter(id)
-      Current.gql.future_graph.converter(id)
+      gql.future_graph.converter(id)
     end
 
     def update_with(update_statements, skip_time_curves = false)

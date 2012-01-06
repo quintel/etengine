@@ -20,8 +20,9 @@ class QueryInterface
   include GraphApi
 
   attr_accessor :graph
-  attr_reader :options
+  attr_reader :options, :gql
 
+  # @param [Gql::Gql]
   # @param [Hash] options 
   # @option options [Boolean] :cache_prefix (nil) 
   #   Set a prefix for the cache key. Changing the prefix will invalidate the caches.
@@ -29,8 +30,9 @@ class QueryInterface
   #   scenario.id (as present graphs are the same in all scenarios).
   #   If set to nil, false or not at all defined, query_cache will not be used.
   #
-  def initialize(graph, options = {})
+  def initialize(gql, graph, options = {})
     @graph = graph
+    @gql = gql
     @options = options
   end
 

@@ -27,8 +27,8 @@ module Gql
 
   describe "Tests with one graph" do # No GQL needed
     before do
-      @query_interface = QueryInterface.new(nil)
-      Current.instance.stub_chain(:gql, :calculated?).and_return(true)
+      # @gql = Gql::Gql.new
+      @query_interface = QueryInterface.new(nil, nil)
     end
 
     describe "traversing" do
@@ -38,7 +38,7 @@ module Gql
         mid(100) == s(1.0) ==> rgt
       ").build
         Current.instance.stub_chain(:gql, :calculated?).and_return(true)
-        @q = QueryInterface.new(@graph)
+        @q = QueryInterface.new(nil, @graph)
       end
     
       describe "VALUE" do
@@ -282,7 +282,7 @@ module Gql
           mid(100) == s(1.0) ==> rgt
         ").build
         Current.instance.stub_chain(:gql, :calculated?).and_return(true)
-        @q = QueryInterface.new(@graph)        
+        @q = QueryInterface.new(nil, @graph)        
       end
       
       describe "updating goals with GQL" do

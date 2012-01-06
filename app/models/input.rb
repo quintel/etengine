@@ -155,25 +155,27 @@ class Input < ActiveRecord::Base
       :only => [:id], :methods => [:max_value, :min_value, :start_value]
     )
   end
-  
-  # Returns the input attributes used by the clients
-  #
-  def client_values
+
+  def client_values(gql)
     {
-      :max_value   => max_value,
-      :min_value   => min_value,
-      :start_value => start_value,
-      :full_label  => full_label
+      id.to_s => {
+        :max_value   => max_value(gql),
+        :min_value   => min_value(gql),
+        :start_value => start_value(gql),
+        :full_label  => full_label(gql)
+      }
     }
   end
 
   # This creates a giant hash with all value-related attributes of the inputs. Some inputs
   # require dynamic values, though. Check #dynamic_start_values
   #
-  def self.static_values
+  # @param [Gql::Gql the gql the query should run against]
+  #
+  def self.static_values(gql)
     Input.all.inject({}) do |hsh, input|
       begin
-        hsh.merge input.id.to_s => input.client_values
+        hsh.merge input.client_values(gql)
       rescue => ex
         Rails.logger.warn("Input#static_values for input #{input.id} failed.")
         Airbrake.notify(
@@ -187,14 +189,14 @@ class Input < ActiveRecord::Base
 
   # See #static_values
   #
-  def self.dynamic_start_values
+  def self.dynamic_start_values(gql)
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
       begin
         hsh.merge input.id.to_s => {
-          :start_value => input.start_value
+          :start_value => input.start_value(gql)
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}")
+        Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}. #{ex}")
         Airbrake.notify(
           :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}",
           :backtrace => caller,
@@ -208,44 +210,42 @@ class Input < ActiveRecord::Base
     Current.scenario.user_value_for(self)
   end
 
-  def full_label
-    "#{Current.gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
+  def full_label(gql)
+    "#{gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
   end
 
-  # TODO refactor (seb 2010-10-11)
-  def start_value
-    if gql_query = self[:start_value_gql] and !gql_query.blank? and result = Current.gql.query(gql_query)
+  def start_value(gql)
+    if gql_query = self[:start_value_gql] and !gql_query.blank? and result = gql.query(gql_query)
       result * factor
     else
       self[:start_value]
     end
   end
 
-  def dynamic_start_value?
-    self[:start_value_gql] && self[:start_value_gql].match(/^future:/) != nil
-  end
-
-  def min_value
+  def min_value(gql)
     if min_value_for_current_area.present?
       min_value_for_current_area * factor
     elsif gql_query = self[:min_value_gql] and !gql_query.blank?
-      Current.gql.query(gql_query)
+      gql.query(gql_query)
     else
       self[:min_value] || 0
     end
   end
 
-  def max_value
+  def max_value(gql)
     if max_value_for_current_area.present?
       max_value_for_current_area * factor
     elsif
       gql_query = self[:max_value_gql] and !gql_query.blank?
-      Current.gql.query(gql_query)
+      gql.query(gql_query)
     else
       self[:max_value] || 0
     end
   end
 
+  def dynamic_start_value?
+    self[:start_value_gql] && self[:start_value_gql].match(/^future:/) != nil
+  end
 
   #############################################
   # Area Dependent min / max / fixed settings

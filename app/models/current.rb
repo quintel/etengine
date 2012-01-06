@@ -47,24 +47,6 @@ class Current
     session[:scenario] ||= Scenario.default
   end
 
-  # Initializes the GQL and makes it accessible through Current.gql
-  #
-  def gql
-    # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
-    @gql ||= Gql::Gql.new(Current.scenario)
-    # At this point gql is not "prepared" see {Gql::Gql#prepare}. 
-    # We could force it here to always prepare, but that would slow things down
-    # when nothing has changed in a scenario. Uncommenting this would decrease performance
-    # but could get rid of bugs introduced by forgetting to prepare in some cases when we 
-    # access the graph through the gql (e.g. Current.gql.present_graph.converters.map(&:demand)).
-    # @gql.prepare
-    @gql
-  end
-
-  def gql=(gql)
-    @gql = gql
-  end
-
   # ----- Resetting -----------------------------------------------------------
 
   # Resets to all default values. Will also reset country and year!
@@ -101,7 +83,6 @@ class Current
 
   def reset_gql
     self.scenario.reset!
-    self.gql = nil
     @graph = nil
   end
 

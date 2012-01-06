@@ -18,12 +18,13 @@ class QueryTableCell < ActiveRecord::Base
   
   scope :embedded_gql_contains, lambda{|search| where("gquery LIKE :q", :q => "%#{search}%") }
   
-  def result
+  # @param gql Gql::Gql
+  def result(gql)
     if name.present?
       name
     else
       begin
-        result = Current.gql.query(Gql::QueryInterface::Preparser.new(gquery).clean)
+        result = gql.query(Gql::QueryInterface::Preparser.new(gquery).clean)
         if result.is_a?(Numeric)
           result
         else

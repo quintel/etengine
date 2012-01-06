@@ -13,7 +13,7 @@
     %tr
       - 1.upto(@query_table.column_count) do |col|
         - if cell = @query_table.cell(row,col)
-          - result = cell.result
+          - result = cell.result(@gql)
           - url = edit_data_query_table_cell_path(:id => cell.id)
           %td.result= link_to result, url, :class => 'fancybox'
           - if result.is_a?(Numeric)

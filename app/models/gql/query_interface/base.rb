@@ -78,12 +78,7 @@ protected
   end
 
   def execute_parsed_query(parsed_query)
-    # DEBT: decouple from Current.gql
-    #       maybe add a Observer to graph:
-    #       in gql: present_graph.observe_calculate(Current.gql)
-    #       here:   present_graph.notify_observers!
-    #
-    Current.gql.prepare if !Current.gql.calculated?
+    gql.prepare if !gql.calculated?
     
     parsed_query.result(scope)
   rescue => e

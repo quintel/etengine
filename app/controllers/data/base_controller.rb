@@ -13,12 +13,12 @@ class Data::BaseController < ApplicationController
     def find_graph
       api_scenario_id = params[:api_scenario_id] ||= 'latest'
 
-      Current.scenario = if api_scenario_id == 'latest'
+      if api_scenario_id == 'latest'
         @api_scenario = ApiScenario.last
       else
         @api_scenario = ApiScenario.find(params[:api_scenario_id])
       end
-      @gql = Current.gql = Gql::Gql.new(Current.scenario)
-      @gql.prepare
+      Current.scenario = @api_scenario
+      @gql = @api_scenario.gql(prepare: true)
     end
 end

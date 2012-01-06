@@ -35,6 +35,44 @@ class ApiScenario < Scenario
     attributes.merge(settings)
   end
 
+  def gql(options = {})
+    # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
+    @gql ||= Gql::Gql.new(self)
+    # At this point gql is not "prepared" see {Gql::Gql#prepare}. 
+    # We could force it here to always prepare, but that would slow things down
+    # when nothing has changed in a scenario. Uncommenting this would decrease performance
+    # but could get rid of bugs introduced by forgetting to prepare in some cases when we 
+    # access the graph through the gql (e.g. @gql.present_graph.converters.map(&:demand)).
+
+    prepare_gql if options[:calculate] == true
+    @gql
+  end
+
+  def prepare_gql
+    gql.prepare
+    gql
+  end
+
+  # The values for the sliders for this api_scenario
+  #
+  def input_values
+    prepare_gql
+
+    values = Rails.cache.fetch("inputs.user_values.#{region}") do
+      Input.static_values(gql)
+    end
+    
+    Input.dynamic_start_values(gql).each do |id, dynamic_values|
+      values[id.to_s][:start_value] = dynamic_values[:start_value] if values[id.to_s]
+    end
+
+    self.user_values.each do |id, user_value|
+      values[id.to_s][:user_value] = user_value if values[id.to_s]
+    end
+
+    values
+  end
+
   def save_as_scenario(params = {})
     params ||= {}
     attributes = self.attributes.merge(params)
