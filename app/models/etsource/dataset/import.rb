@@ -44,7 +44,7 @@ module Etsource
       @dataset.data[:graph][:graph][:calculated] = false
 
       load_country_dataset
-      load_dataset_wizards
+      load_dataset_wizards if Etsource::Config::LOAD_WIZARDS
 
       @dataset
     end
