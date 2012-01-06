@@ -9,7 +9,6 @@ class Qernel::ConverterApi
   end
   attributes_required_for :number_of_units, [:mw_input_capacity, :typical_input_capacity]
 
-  ##
   # RD: This method is used by the number_of_units_update in multicommand factory
   # I dont think this belongs here!
   def number_of_units=(val)

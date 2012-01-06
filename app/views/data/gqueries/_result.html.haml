@@ -1,5 +1,5 @@
 - begin
-  - result = Current.gql.query(@query) 
+  - result = @gql.query(@query) 
   - if result.respond_to?(:present_year)
     %table{:border => 1}
       %tr

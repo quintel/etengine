@@ -18,7 +18,7 @@ module Gql
 
       it "should properly calculate when running manually" do
         @input = Input.new(:query => "UPDATE(V(lft),demand,USER_INPUT())")
-        Current.gql.future.query(@input, 300)
+        @gql.future.query(@input, 300)
 
         @gql.query("future:V(lft; demand)").should  == 300.0
         @gql.query("present:V(lft; demand)").should == 100.0
@@ -324,7 +324,7 @@ module Gql
       before do
         @graph = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt(120)").build
         Current.instance.stub_chain(:gql, :calculated?).and_return(true)
-        @q = QueryInterface.new(@graph)
+        @q = QueryInterface.new(nil, @graph)
       end
 
       describe "update statement: UPDATE(V(lft),demand,USER_INPUT())" do

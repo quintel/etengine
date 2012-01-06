@@ -20,7 +20,7 @@ module Gql
 #
 # Within the project you can simply use:
 #
-#   Current.gql.query(...)
+#   gql.query(...)
 #
 # == Components
 #
@@ -95,8 +95,8 @@ class Gql
   def present
     # Disable Caching of Gqueries until a smart solution has been found
     #
-    #@present ||= QueryInterface.new(present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.present_updated_at}")
-    @present ||= QueryInterface.new(present_graph)
+    #@present ||= QueryInterface.new(self, present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.present_updated_at}")
+    @present ||= QueryInterface.new(self, present_graph)
   end
 
   # @return [QueryInterface]
@@ -105,9 +105,9 @@ class Gql
     # Disable Caching of Gqueries until a smart solution has been found
     #
     # @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE && !scenario.test_scenario?
-    #   QueryInterface.new(future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
+    #   QueryInterface.new(self, future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
     # else
-      QueryInterface.new(future_graph)
+      QueryInterface.new(self, future_graph)
     # end
   end
 
@@ -231,7 +231,7 @@ protected
       else
         # If present_graph has user inputs then we have to take a fresh dataset.
         present_graph.dataset ||= dataset_clone
-        UpdateInterface::Graph.new(present_graph).update_with(scenario.update_statements_present)
+        UpdateInterface::Graph.new(self, present_graph).update_with(scenario.update_statements_present)
         scenario.inputs_present.each do |input, value|
           present.query(input, value)
         end
@@ -249,7 +249,7 @@ protected
       scenario.inputs_before.each do |input, value|
         future.query(input, value)
       end
-      UpdateInterface::Graph.new(future_graph).update_with(scenario.update_statements)
+      UpdateInterface::Graph.new(self, future_graph).update_with(scenario.update_statements)
       scenario.inputs_future.each do |input, value|
         future.query(input, value)
       end

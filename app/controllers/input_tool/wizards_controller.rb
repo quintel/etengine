@@ -7,9 +7,10 @@ module InputTool
       @area_code = params[:area_code] || 'nl'
     end
 
-    # Assign a area_code to a scenario, so Current.gql properly loads
+    # Assign a area_code to a scenario, so @gql properly loads
     def assign_scenario
-      Current.scenario = Scenario.new(Scenario.default_attributes.merge :country => @area_code)
+      Current.scenario = ApiScenario.new(ApiScenario.default_attributes.merge :country => @area_code)
+      @gql = Current.scenario.gql
     end
 
     def default_url_options

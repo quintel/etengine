@@ -12,7 +12,7 @@ describe "api_scenario life cycle" do
   def refresh_gql
     sleep(1)
 
-    Current.gql = Qernel::GraphParser.gql_stubbed("
+    @gql = Qernel::GraphParser.gql_stubbed("
       lft(100) == s(1.0) ==> rgt()
       mid( 50) == s(1.0) ==> rgt()
     ")

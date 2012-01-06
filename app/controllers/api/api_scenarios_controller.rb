@@ -82,18 +82,7 @@ class Api::ApiScenariosController < Api::BaseController
   def user_values
     @api_request = ApiRequest.response(params)
     Current.scenario = @api_request.scenario
-
-    values = Rails.cache.fetch("inputs.user_values.#{@api_request.scenario.region}") do
-      Input.static_values
-    end
-
-    Input.dynamic_start_values.each do |id, dynamic_values|
-      values[id.to_s][:start_value] = dynamic_values[:start_value] if values[id.to_s]
-    end
-
-    @api_scenario.user_values.each do |id, user_value|
-      values[id.to_s][:user_value] = user_value if values[id.to_s]
-    end
+    values = @api_request.scenario.input_values
     
     respond_to do |format|
       format.json do

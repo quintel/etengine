@@ -98,7 +98,7 @@ class Scenario < ActiveRecord::Base
   # @tested 2010-11-30 seb
   #
   def self.default
-    Scenario.new(default_attributes)
+    new(default_attributes)
   end
 
   # Code is the new region_code/country. 
