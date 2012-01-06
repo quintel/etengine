@@ -41,8 +41,6 @@ Spork.prefork do
     # instead of true.
     config.use_transactional_fixtures = true
 
-    config.include(EtmHelper)
-    config.include(EtmFixtures)
     config.include(Webrat::Matchers)
     config.include(Authlogic::TestCase)
     config.include(EtmAuthHelper)
