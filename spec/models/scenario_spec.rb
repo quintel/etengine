@@ -111,51 +111,34 @@ describe Scenario do
       }}      
     end
 
-    context "with calculated gql" do
+    describe "update existing" do
       before do
-        Current.stub!(:gql_calculated?).and_return(true)
+        @scenario.add_update_statements({'converters' => {
+          'hot_water_demand_households_energetic' => {'growth_rate' => '0.2'}
+        }})
       end
-      it "should raise an exception" do
-        lambda {
-          @scenario.update_statements['converters']['hot_water_demand_households_energetic']['growth_rate'].should eql("0.2")
-        }.should raise_exception(Exception)
+      it "should update metric" do
+        @scenario.update_statements['converters']['hot_water_demand_households_energetic']['growth_rate'].should eql("0.2")
+      end
+      it "should keep other metrics" do
+        @scenario.update_statements['converters']['hot_water_demand_households_energetic']['other_metric'].should eql("1000")
       end
     end
 
-    context "with uncalculated gql" do
+    describe "creating new" do
       before do
-        Current.stub!(:gql_calculated?).and_return(false)
+        @scenario.add_update_statements({'converters' => {
+          'hot_water_demand_industry_energetic' => {'growth_rate' => '0.2'}
+        }})
       end
 
-      describe "update existing" do
-        before do
-          @scenario.add_update_statements({'converters' => {
-            'hot_water_demand_households_energetic' => {'growth_rate' => '0.2'}
-          }})
-        end
-        it "should update metric" do
-          @scenario.update_statements['converters']['hot_water_demand_households_energetic']['growth_rate'].should eql("0.2")
-        end
-        it "should keep other metrics" do
-          @scenario.update_statements['converters']['hot_water_demand_households_energetic']['other_metric'].should eql("1000")
-        end
+      it "creates new values" do
+        @scenario.update_statements['converters']['hot_water_demand_industry_energetic']['growth_rate'].should eql("0.2")
       end
 
-      describe "creating new" do
-        before do
-          @scenario.add_update_statements({'converters' => {
-            'hot_water_demand_industry_energetic' => {'growth_rate' => '0.2'}
-          }})
-        end
-
-        it "creates new values" do
-          @scenario.update_statements['converters']['hot_water_demand_industry_energetic']['growth_rate'].should eql("0.2")
-        end
-
-        it "does not change other items" do
-          @scenario.update_statements['converters'].should have(2).items
-        end
-      end    
+      it "does not change other items" do
+        @scenario.update_statements['converters'].should have(2).items
+      end
     end
   end
 
@@ -165,7 +148,6 @@ describe Scenario do
       @value = 13.3
       @input = Input.new
       @input.stub!(:update_statement).with(@value).and_return({})
-      Current.stub!(:gql_calculated?).and_return(false)
     end
     it "should store the user value" do
       @scenario.should_receive(:store_user_value).with(@input, @value)

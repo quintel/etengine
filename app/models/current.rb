@@ -47,19 +47,6 @@ class Current
     session[:scenario] ||= Scenario.default
   end
 
-  ##
-  # is the GQL calculated? If true, prevent the programmers
-  # to add further update statements ({Scenario#add_update_statements}).
-  # Because they won't affect the system anymore.
-  #
-  # @return [Boolean]
-  #
-  def gql_calculated?
-    # We have to access the gql with @gql, because accessing it with self.gql
-    # would initialize it. If gql is not initialized it is also not calculated.
-    @gql.andand.calculated? == true
-  end
-
   # Initializes the GQL and makes it accessible through Current.gql
   #
   def gql

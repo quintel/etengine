@@ -118,10 +118,6 @@ module Scenario::UserUpdates
     # @tested 2010-12-06 seb
     #
     def add_update_statements(update_statement_hash, updateable_period = :future)
-
-      if Current.gql_calculated?
-        raise "Update statements are ignored after the GQL has finished calculating. \nStatement: \n#{update_statement_hash.inspect}" 
-      end
       # This has to be self.update_statements otherwise it doesn't work
       # use deep_merge!
       case updateable_period.to_sym
