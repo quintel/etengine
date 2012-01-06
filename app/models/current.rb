@@ -1,4 +1,3 @@
-##
 # Wrapper for (user-) variables of a request that are accessible to all models.
 #
 # == Current.scenario
@@ -13,7 +12,6 @@
 #
 # A big difference between Setting and Scenario is, that Scenario influences the GQL.
 # E.g. in scenario we set end_year, etc.
-#
 #
 # == Implementation details
 #
@@ -49,41 +47,6 @@ class Current
     session[:scenario] ||= Scenario.default
   end
 
-  # ----- Obsolete after switch to ETsource -----------------------------------
-
-  # TODO refactor or make a bit more clear&transparent
-  def graph
-    unless @graph
-      region_or_country = scenario.region_or_country
-      @graph = self.user_graph
-
-      raise "No graph for: #{region_or_country}" unless @graph
-      raise "No Area data for: #{region_or_country}" unless Area.find_by_country(region_or_country)
-    end
-    @graph
-  end
-
-  ##
-  # Manually set the Graph that is active for the GQl
-  #
-  # @param [Graph] graph
-  #
-  def graph=(graph)
-    @graph = graph
-  end
-
-  # TODO renmae user_graph to graph... but we have def graph already :(
-  def user_graph
-    if self.graph_id
-      Graph.find(self.graph_id)
-    else
-      region_or_country = scenario.region_or_country
-      Graph.latest_from_country(region_or_country)
-    end
-  end
-
-  # ----- /Obsolete after switch to ETsource -----------------------------------
-
   ##
   # is the GQL calculated? If true, prevent the programmers
   # to add further update statements ({Scenario#add_update_statements}).
@@ -100,10 +63,6 @@ class Current
   # Initializes the GQL and makes it accessible through Current.gql
   #
   def gql
-    # ---- Old approach of accessing gql ---------------
-    # @gql ||= graph.andand.gql
-
-    # ---- New approach of accessing gql ---------------
     # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
     @gql ||= Gql::Gql.new(Current.scenario)
     # At this point gql is not "prepared" see {Gql::Gql#prepare}. 
@@ -156,7 +115,6 @@ class Current
   def reset_gql
     self.scenario.reset!
     self.gql = nil
-    self.graph_id = nil
     @graph = nil
   end
 

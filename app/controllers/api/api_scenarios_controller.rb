@@ -82,8 +82,8 @@ class Api::ApiScenariosController < Api::BaseController
   def user_values
     @api_request = ApiRequest.response(params)
     Current.scenario = @api_request.scenario
-    
-    values = Rails.cache.fetch("inputs.user_values.#{Current.graph.id}") do
+
+    values = Rails.cache.fetch("inputs.user_values.#{@api_request.scenario.region}") do
       Input.static_values
     end
 
@@ -94,6 +94,7 @@ class Api::ApiScenariosController < Api::BaseController
     @api_scenario.user_values.each do |id, user_value|
       values[id.to_s][:user_value] = user_value if values[id.to_s]
     end
+    
     respond_to do |format|
       format.json do
         render :json => values, :callback => params[:callback] 
