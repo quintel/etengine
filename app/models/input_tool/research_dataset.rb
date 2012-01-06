@@ -20,9 +20,13 @@ module InputTool
     
     attr_reader :values, :wizard_codes
     
-    def initialize(saved_wizards)
-      @wizard_codes = saved_wizards.map(&:code)
-      @values = saved_wizards.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}
+    def initialize(saved_wizards_or_hash)
+      if saved_wizards_or_hash.is_a?(Hash)
+        @values = saved_wizards_or_hash
+      else
+        @wizard_codes = saved_wizards_or_hash.map(&:code)
+        @values = saved_wizards_or_hash.inject({}) {|hsh,f| hsh.merge f.code => f.research_data_bucket}
+      end
     end
 
     def self.area(area_code)
@@ -39,12 +43,24 @@ module InputTool
     end
     alias_method :set, :shortcut
 
+
+    #     {:hh => 
+    #       {:sector => {
+    #         :coal  => {:needle => 1.0}, 
+    #         :water => {:needle => 1.0}, 
+    #         :gas   => {:something => {:needle => 3.0}}, ...
+    #
+    #     keys_that_contain(:hh, :sector, :needle)
+    #     # => [:coal, :gas]
+    #     keys_that_contain(:hh, :needle)
+    #     # => [] 
+    #
     def keys_that_contain(*args)
       needle = args.pop
       haystack = get(*args)
 
       return [] if haystack.nil?
-      
+
       haystack.map do |possible_needle, hash|
         if hash.with_indifferent_access.has_key?(needle)
           possible_needle
