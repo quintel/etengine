@@ -67,10 +67,9 @@ Etm::Application.routes.draw do
       resources :converters, :only => [:index, :edit, :show] 
       resources :gquery_groups, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
-      resource :area, :as => :area
+      resource  :area, :as => :area
 
       resources :gql_test_cases
-      resources :historic_series
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
       resources :inputs, :except => :show

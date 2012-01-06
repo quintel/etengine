@@ -282,18 +282,6 @@ protected
     future.query(query)
   end
 
-  # @param query [String] The query
-  # @return [Float] The result of a historic serie, this values are db values not qernel.
-  #
-  def query_historic(query)
-    historic_serie = HistoricSerie.find_by_key_and_area_code(query, scenario.region)
-    if historic_serie
-      historic_serie.year_values.map{|h| [h.year,h.value]}
-    else
-      false
-    end
-  end
-
   # Not called directly. Use #query instead, e.g.:
   #
   #   gql.query("stored.foo_bar")

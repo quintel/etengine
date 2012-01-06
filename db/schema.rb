@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111220093224) do
+ActiveRecord::Schema.define(:version => 20120106055413) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -329,23 +329,6 @@ ActiveRecord::Schema.define(:version => 20111220093224) do
 
   add_index "groups", ["group_id"], :name => "index_groups_on_group_id"
 
-  create_table "historic_serie_entries", :force => true do |t|
-    t.integer  "historic_serie_id"
-    t.integer  "year"
-    t.float    "value"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "historic_serie_entries", ["historic_serie_id"], :name => "index_historic_serie_entries_on_historic_serie_id"
-
-  create_table "historic_series", :force => true do |t|
-    t.string   "key"
-    t.string   "area_code"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "input_tool_forms", :force => true do |t|
     t.string   "area_code"
     t.string   "code"
@@ -508,17 +491,5 @@ ActiveRecord::Schema.define(:version => 20111220093224) do
   end
 
   add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
-
-  create_table "year_values", :force => true do |t|
-    t.integer  "year"
-    t.float    "value"
-    t.text     "description"
-    t.integer  "value_by_year_id"
-    t.string   "value_by_year_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "year_values", ["value_by_year_id", "value_by_year_type"], :name => "index_year_values_on_value_by_year_id_and_value_by_year_type"
 
 end
