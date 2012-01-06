@@ -32,9 +32,11 @@ describe ApiRequest do
 
   describe "#response" do
     before do
-      @input1 = Input.create(:query => "UPDATE(V(lft), demand, USER_INPUT())")
+      @input1 =  Input.create(:query => "UPDATE(V(lft), demand, USER_INPUT())")
       @gquery1 = Gquery.create(:key => 'lft_demand', :query => 'V(lft; demand)')
       @gquery2 = Gquery.create(:key => 'rgt_demand', :query => 'V(rgt; demand)')
+      Gquery.stub!(:load_gqueries).and_return([@gquery1, @gquery2])
+      
       @gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
       ApiRequest.any_instance.stub(:gql).and_return(@gql)
     end
@@ -61,6 +63,7 @@ describe ApiRequest do
           :id => @api_scenario.id.to_s,
           :r => @gquery1.id.to_s
         }).response['result']
+
         result[@gquery1.id.to_s][0][1].should == 100.0
         result[@gquery1.id.to_s][1][1].should == 100.0
       end
