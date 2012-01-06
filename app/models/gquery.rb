@@ -118,7 +118,7 @@ class Gquery < ActiveRecord::Base
     # form db
     # self.all
     # from etsource
-    etsource_gqueries.each do |gquery| 
+    load_gqueries.each do |gquery| 
       h[gquery.key] = gquery
       h[gquery.id.to_s] = gquery
       h[gquery.deprecated_key] = gquery
@@ -130,12 +130,20 @@ class Gquery < ActiveRecord::Base
   #
   def self.build_deprecated_gquery_hash
     h = {}
-    etsource_gqueries.select{|g| g.deprecated_key.present? }.each {|g| h[g.deprecated_key] = true}
+    load_gqueries.select{|g| g.deprecated_key.present? }.each {|g| h[g.deprecated_key] = true}
     h
+  end
+
+  def self.load_gqueries
+    etsource_gqueries
   end
 
   def self.etsource_gqueries
     Etsource::Loader.instance.gqueries
+  end
+
+  def self.db_gqueries
+    all
   end
 
   def converters?

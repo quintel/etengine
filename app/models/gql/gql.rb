@@ -62,12 +62,6 @@ class Gql
       @present_graph = loader.graph.tap{|g| g.year = @scenario.start_year}
       @future_graph  = loader.graph.tap{|g| g.year = @scenario.end_year}
       @dataset = loader.dataset(@scenario.code)
-    elsif scenario_or_graph.is_a?(Graph)
-      # support old way of loading gql, so we can export graphs to etsource
-      @scenario = Current.scenario
-      @present_graph = scenario_or_graph.present.tap{|g| g.year = @scenario.start_year}
-      @future_graph  = scenario_or_graph.future.tap{|g| g.year = @scenario.end_year }
-      @dataset = scenario_or_graph.dataset.to_qernel
     end
   end
 
@@ -206,7 +200,7 @@ class Gql
   def query_multiple(gquery_keys)
     gquery_keys = gquery_keys - ["null", "undefined"]
 
-    rescue_with = :airbrake
+    rescue_with = :debug
     gquery_keys.inject({}) do |hsh, key|
       result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
         query(gquery, rescue_with)

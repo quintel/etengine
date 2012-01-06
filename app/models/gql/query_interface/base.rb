@@ -78,7 +78,9 @@ protected
   end
 
   def execute_parsed_query(parsed_query)
-    gql.prepare if !gql.calculated?
+    # HACK: In case no gql was assigned (this happens often in old specs)
+    # do not prepare. Thus gql &&.
+    gql.prepare if gql && !gql.calculated?
     
     parsed_query.result(scope)
   rescue => e

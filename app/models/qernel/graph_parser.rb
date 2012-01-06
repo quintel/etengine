@@ -7,10 +7,11 @@ module Qernel
       'foo'         => Carrier.new(id: 2, key: 'foo',  infinite: 1.0).with({}),
       'bar'         => Carrier.new(id: 3, key: 'bar',  infinite: 1.0).with({}),
       'loss'        => Carrier.new(id: 1, key: 'loss', infinite: 0.0),
-      'electricity' => Carrier.new(id: 5, key: 'electricity', infinite: 0.0)
+      'electricity' => Carrier.new(id: 5, key: 'electricity', infinite: 0.0),
+      'cooling' => Carrier.new(id: 6, key: 'cooling', infinite: 0.0)
     }
 
-    CARRIERS = {}
+    CARRIERS = {}.merge(CARRIERS_FOR_SPECS)
     # ::Carrier.all.inject({}) {|hsh,c| 
     #   hsh.merge c.key => c.to_qernel.with({}) 
     # }.merge(CARRIERS_FOR_SPECS)
@@ -69,11 +70,13 @@ module Qernel
         link_type, link_share, reversed = link(link_str)
         c_lft = build_converter(lft)
         c_rgt = build_converter(rgt)
-        carrier = carrier(carrier_key)
+        carrier = carrier(carrier_key) 
+
         link = graph.
           connect(c_lft, c_rgt, carrier, link_type ).
           with(:share => link_share)
         link.reversed = reversed
+
         s_lft, s_rgt = slot(carrier_key)
         c_lft.input(carrier.key).with(s_lft) if s_lft
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt
