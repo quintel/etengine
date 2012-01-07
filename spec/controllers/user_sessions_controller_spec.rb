@@ -4,7 +4,6 @@ describe UserSessionsController do
   render_views
   
   before(:each) do
-    stub_etm_layout_methods!    
     @user = Factory(:user)
     @password = "password"
   end
@@ -22,7 +21,7 @@ describe UserSessionsController do
     it "should redirect to admin after succesfull loggin in" do
       post :create, :user_session => {:email => @user.email, :password => @user.password}
       assigns(:user_session).user.should == @user
-      response.should redirect_to('/data/latest/nl')
+      response.should redirect_to('/data/latest')
     end
 
     it "should render the same page t to admin after unsuccessfull login." do

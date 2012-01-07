@@ -5,7 +5,6 @@ describe Data::GqueriesController do
   
   let!(:admin) { FactoryGirl.create :admin }
   let!(:gquery) { FactoryGirl.create :gquery }
-  let!(:graph) { FactoryGirl.create :graph }
   
   before do
     login_as(admin)
@@ -13,42 +12,42 @@ describe Data::GqueriesController do
   
   describe "GET index" do
     it "should be successful" do
-      get :index, :blueprint_id =>'latest', :region_code => 'nl'
+      get :index, :api_scenario_id =>'latest'
       response.should render_template(:index)
     end
   end
 
   describe "GET new" do
     it "should be successful" do
-      get :new, :blueprint_id =>'latest', :region_code => 'nl'
+      get :new, :api_scenario_id =>'latest'
       response.should render_template(:new)
     end
   end
 
   describe "GET show" do
     it "should be successful" do
-      get :show, :id => gquery.id, :blueprint_id =>'latest', :region_code => 'nl'
+      get :show, :id => gquery.id, :api_scenario_id =>'latest'
       response.should render_template(:show)
     end
   end
 
   describe "GET edit" do
     it "should be successful" do
-      get :edit, :id => gquery.id, :blueprint_id =>'latest', :region_code => 'nl'
+      get :edit, :id => gquery.id, :api_scenario_id =>'latest'
       response.should render_template(:edit)
     end
   end
   
   describe "GET key" do
     it "should be successful" do
-      get :key, :blueprint_id =>'latest', :region_code => 'nl', :key => gquery.key
+      get :key, :api_scenario_id =>'latest', :key => gquery.key
       assigns(:gquery).should == gquery
       response.should render_template(:show)
     end
     
     it "should redirect to the search page if the gquery can't be found" do
-      get :key, :blueprint_id =>'latest', :region_code => 'nl', :key => 'foobar'
-      response.should redirect_to data_gqueries_path(:blueprint_id =>'latest', :region_code => 'nl', :q => 'foobar')
+      get :key, :api_scenario_id =>'latest', :key => 'foobar'
+      response.should redirect_to data_gqueries_path(:api_scenario_id =>'latest', :q => 'foobar')
     end
   end
 end
