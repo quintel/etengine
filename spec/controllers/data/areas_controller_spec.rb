@@ -11,14 +11,14 @@ describe Data::AreasController do
   
   describe "GET index" do    
     it "should be successful" do
-      get :index, :blueprint_id => 'latest', :region_code => 'nl'
+      get :index, :api_scenario_id => 'latest'
       response.should render_template(:index)
     end
   end
   
   describe "GET show" do    
     it "should be successful" do
-      get :show, :blueprint_id => 'latest', :region_code => 'nl', :id => area.id
+      get :show, :api_scenario_id => 'latest', :id => area.id
       response.should render_template(:show)
     end
   end

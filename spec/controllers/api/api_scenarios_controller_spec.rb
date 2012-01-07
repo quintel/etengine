@@ -3,7 +3,6 @@ require 'spec_helper'
 describe Api::ApiScenariosController do
 
   before(:each) do
-    stub_etm_layout_methods!
     Current.instance.stub_chain(:gql, :query_multiple).and_return({'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]) })
   end
 

@@ -10,7 +10,7 @@ describe Data::ConvertersController do
   
   describe "GET index" do
     it "should be successful" do
-      get :index, :blueprint_id => 'latest', :region_code => 'nl'
+      get :index, :api_scenario_id => 'latest'
       response.should render_template(:index)
     end
   end
