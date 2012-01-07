@@ -154,6 +154,12 @@ class Gquery < ActiveRecord::Base
     !converters?
   end
 
+  def output_element?
+    gquery_group.group_key.include?("output_elements") 
+  rescue => e
+    false
+  end
+
   def gql_modifier
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
   end
@@ -162,12 +168,15 @@ class Gquery < ActiveRecord::Base
     Gql::QueryInterface::Preparser.new(query).clean
   end
 
+  # Method to invalidate the memoized gquery_hash.
+  #
+  def self.reload_cache
+    @@gquery_hash = nil
+  end
+
   private
-    ##
-    # Method to invalidate the memoized gquery_hash.
-    #
     def reload_cache
-      @@gquery_hash = nil
+      self.class.reload_cache
     end
 
     def validate_query_parseable
