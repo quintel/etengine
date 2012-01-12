@@ -36,4 +36,6 @@
         %td= s.region
         %td= 'V' if s.in_start_menu
         %td= 'V' if s.protected
-        %td= link_to 'edit', edit_data_scenario_path(:id => s.id)
+        %td
+          = link_to 'edit', edit_data_scenario_path(:id => s.id)
+          = link_to 'export', data_scenario_path(:id => s.id, :format => :yml)
