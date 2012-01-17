@@ -29,7 +29,7 @@
 
 class Input < ActiveRecord::Base
 
-  strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :start_value, :min_value, :max_value]
+  strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :max_value, :min_value, :start_value]
 
   UPDATEABLE_PERIODS = %w[present future both before].freeze
 
@@ -160,10 +160,10 @@ class Input < ActiveRecord::Base
   def client_values(gql)
     {
       id.to_s => {
-        :max_value   => max_value(gql),
-        :min_value   => min_value(gql),
-        :start_value => start_value(gql),
-        :full_label  => full_label(gql)
+        :max_value   => max_value_for(gql),
+        :min_value   => min_value_for(gql),
+        :start_value => start_value_for(gql),
+        :full_label  => full_label_for(gql)
       }
     }
   end
@@ -211,13 +211,11 @@ class Input < ActiveRecord::Base
     Current.scenario.user_value_for(self)
   end
 
-  def full_label(gql = nil)
-    return unless gql
+  def full_label_for(gql)
     "#{gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
   end
 
-  def start_value(gql = nil)
-    return unless gql
+  def start_value_for(gql)
     if gql_query = self[:start_value_gql] and !gql_query.blank? and result = gql.query(gql_query)
       result * factor
     else
@@ -225,8 +223,7 @@ class Input < ActiveRecord::Base
     end
   end
 
-  def min_value(gql = nil)
-    return unless gql
+  def min_value_for(gql)
     if min_value_for_current_area.present?
       min_value_for_current_area * factor
     elsif gql_query = self[:min_value_gql] and !gql_query.blank?
@@ -236,8 +233,7 @@ class Input < ActiveRecord::Base
     end
   end
 
-  def max_value(gql = nil)
-    return unless gql
+  def max_value_for(gql)
     if max_value_for_current_area.present?
       max_value_for_current_area * factor
     elsif
