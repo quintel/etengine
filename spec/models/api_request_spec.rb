@@ -121,7 +121,7 @@ describe ApiRequest do
         result['SUM(100,200)'][1][1].should == 300.0
       end
 
-      it "should accept input and update gql" do
+      pending "should accept input and update gql" do
         result = ApiRequest.response({
           :id => @api_scenario.id.to_s,
           :input => {@input1.id.to_s => "5.0"},
@@ -132,7 +132,7 @@ describe ApiRequest do
         result[@gquery1.id.to_s][1][1].should == 5.0
       end
     
-      it "should set a goal" do
+      pending "should set a goal" do
         input = Input.create(:query => "UPDATE(GOAL(foo),user_value,USER_INPUT())")
         result = ApiRequest.response({
           :id => @api_scenario.id.to_s,
@@ -148,7 +148,7 @@ describe ApiRequest do
         @api_scenario = Factory.create :api_scenario, :user_values => {@input1.id => 13.0}.to_yaml
       end
 
-      it "should work" do
+      pending "should work" do
         result = ApiRequest.response({
           :id => @api_scenario.id.to_s,
           :r => @gquery1.id.to_s
@@ -158,7 +158,7 @@ describe ApiRequest do
         result[@gquery1.id.to_s][1][1].should == 13.0
       end
 
-      it "should update input with new value and update gql" do
+      pending "should update input with new value and update gql" do
         result = ApiRequest.response({
           :id => @api_scenario.id.to_s,
           :input => {@input1.id.to_s => "5.0"},
