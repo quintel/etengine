@@ -5,6 +5,7 @@ class Data::CommitsController < Data::BaseController
 
   def index
     @etsource = Etsource::Base.new
+    # @etsource.current_branch is sometimes (no branch) catch this
     @branch = params[:branch] || @etsource.current_branch || 'master'
     @etsource.checkout @branch
     @output = @etsource.refresh if params[:commit] == 'Refresh'
