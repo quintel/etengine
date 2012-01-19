@@ -91,13 +91,13 @@ module Scenario::UserUpdates
         end
       end
     end
-
+    
     # ETFlex and other applications might use only a subset of a slider group.
     # To prevent errors let's fill the gaps providing the values for the missing
     # elements.
-    # DEBT: clean up, remove in-place editing. Let's do this when merging
+    # DEBT: clean up, remove in-place editing. Let's do this when merging 
     # Scenario and ApiScenario classes.
-    #
+    # 
     def sanitize_input_groups!(params)
       user_input_keys = params.keys.map(&:to_i)
       # You can't add items to a hash during an iteration, so I store the new
@@ -116,12 +116,7 @@ module Scenario::UserUpdates
           # marked as dirty. In this case let's just check if the others sum up
           # to ~100:
           current_group_sum = siblings.map{|s| params[s.id.to_s].to_f}.sum rescue 0
-          if current_group_sum.between?(99.5,100.5)
-            # let's assign 0 to the missing items, otherwise we might get a
-            # "group not adding up to 100" error if a single slider is set to 100
-            missing_items[brother.id.to_s] ||= 0.0
-            next
-          end
+          next if current_group_sum.between?(99.5,100.5)
           # Otherwise let's assign a plausible value
           pseudo_value = (100 - value.to_f) / (siblings.size - 1)
           missing_items[brother.id.to_s] = pseudo_value
