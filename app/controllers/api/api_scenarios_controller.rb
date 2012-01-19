@@ -53,7 +53,6 @@ class Api::ApiScenariosController < Api::BaseController
   # everything with a simple JSON POST request.
   #
   def show
-    params[:sanitize_groups] = true if etflex_client?
     @api_request = ApiRequest.response(params)
     # We can probably get rid of this extra api_scenario assignment
     @api_scenario = @api_request.scenario
