@@ -3,7 +3,10 @@ development: &DEV
     # etsource folder. Default is APP/etsource (deprecated)
     etsource_dir:
     # URL to be called after a clean etsource import
-		client_refresh_url:
+    client_refresh_url:
+    # set to true if the server won't have online access. this disables google
+    # analytics, airbrake etc.
+    standalone: false
 
 production:
     <<: *DEV

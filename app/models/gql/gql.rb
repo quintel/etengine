@@ -150,7 +150,8 @@ class Gql
       # TODO: something's broken here with airbrake 3.0.5:
       # undefined method `backtrace' for #<Hash:0x007fda54900b88> ?!
       # https://github.com/airbrake/airbrake/issues/19
-      Airbrake.notify(:error_message => e.message, :backtrace => caller)
+      Airbrake.notify(:error_message => e.message, :backtrace => caller) unless
+        APP_CONFIG[:standalone]
       ResultSet::INVALID
     elsif rescue_with.present?
       rescue_with

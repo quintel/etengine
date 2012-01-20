@@ -182,7 +182,9 @@ class Input < ActiveRecord::Base
         Airbrake.notify(
           :error_message => "Input#static_values for input #{input.id} failed.",
           :backtrace => caller,
-          :parameters => {:input => input, :api_scenario => Current.scenario })
+          :parameters => {:input => input, :api_scenario => Current.scenario }) unless
+           APP_CONFIG[:standalone]
+          
         hsh
       end
     end
@@ -201,7 +203,8 @@ class Input < ActiveRecord::Base
         Airbrake.notify(
           :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}",
           :backtrace => caller,
-        :parameters => {:input => input, :api_scenario => Current.scenario })
+        :parameters => {:input => input, :api_scenario => Current.scenario }) unless
+          APP_CONFIG[:standalone]
         hsh
       end
     end
