@@ -29,7 +29,7 @@
                 - @saved_wizards.each do |form|
                   %li= link_to form.code, edit_input_tool_wizard_path(:id => form)
                 
-                - (Etsource::Wizard.new.list - @saved_wizards.map(&:code)).each do |code|
+                - (Etsource::Wizard.codes - @saved_wizards.map(&:code)).each do |code|
                   %li= link_to code, new_input_tool_wizard_path(:code => code)
             
             %li= link_to '/data', '/data/latest'

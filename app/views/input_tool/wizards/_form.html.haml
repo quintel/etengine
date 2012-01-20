@@ -2,13 +2,13 @@
   - url = @form.new_record? ? input_tool_wizards_path : input_tool_wizard_path(@form)
   = form_for @form, :url => url do |f|
     = f.hidden_field :code
-    = render :file => Etsource::Wizard.new.form_template_for(@form.code)
+    = render :file => @wizard.form_template_file
     .actions
       = submit_tag 'Save changes', :class => 'btn primary'
       (will save all tabs)
 
 .span2
-  = render :file => Etsource::Wizard.new.description_template_for(@form.code)
+  = render :file => @wizard.description_template_file
 
 
   %a.btn{:data => {:'controls-modal' => "research_dataset_contents", :backdrop => "true"}} Debug

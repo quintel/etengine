@@ -3,8 +3,9 @@ module EtsourceHelper
     Etsource::Loader.instance
   end
 
-  def households_hot_water_elements_hack
-    
+  def wizard_config
+    raise "Trying to access wizard_config. But @wizard is not defined." unless @wizard
+    @wizard.config
   end
 
   def number_field(*args)

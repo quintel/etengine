@@ -20,7 +20,7 @@ module InputTool
     def index
       @saved_wizards = SavedWizard.area_code(@area_code)
       @stored_wizard_codes = @saved_wizards.map(&:code)
-      @new_wizard_codes = Etsource::Wizard.new.list - @stored_wizard_codes
+      @new_wizard_codes = Etsource::Wizard.codes - @stored_wizard_codes
     end
 
     def show
@@ -34,7 +34,8 @@ module InputTool
 
 
     def new
-      @form = InputTool::SavedWizard.new(:code => params[:code], :area_code => @area_code)
+      @form   = InputTool::SavedWizard.new(:code => params[:code], :area_code => @area_code)
+      @wizard = Etsource::Wizard.new(@form.code)
     end
 
     def create
@@ -60,7 +61,8 @@ module InputTool
     end
 
     def edit
-      @form = SavedWizard.find(params[:id])
+      @form   = SavedWizard.find(params[:id])
+      @wizard = Etsource::Wizard.new(@form.code)
     end
   end
 end

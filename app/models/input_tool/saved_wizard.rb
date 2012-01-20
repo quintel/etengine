@@ -26,12 +26,8 @@ module InputTool
       @research_dataset ||= ResearchDataset.new([self])
     end
 
-    def input_form
-      Etsource::Wizard.new.form_for(code)
-    end
-
     def description
-      Etsource::Wizard.new.description_for(code)
+      Etsource::Wizard.new(code).description_html
     end
 
     # DEBT rename :values to :research_data_bucket and add default: {}
