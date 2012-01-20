@@ -40,12 +40,16 @@ module Etsource
   # will trigger the ResearchDataset#method_missing and return :foo back.
   #
   class Dataset::Renderer
-    attr_reader :research_dataset, :file_path, :country_dataset
+    attr_reader :research_dataset, 
+                :file_path, 
+                :country_dataset, 
+                :wizard_config
     
-    def initialize(file_path, research_dataset, country_dataset)
+    def initialize(file_path, research_dataset, country_dataset, config = {})
       @country_dataset = country_dataset
       @research_dataset = research_dataset
       @file_path = file_path
+      @wizard_config = config
     end
 
     def result

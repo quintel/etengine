@@ -22,6 +22,10 @@ describe Etsource do
           @gql.query(gquery)
         end
         
+        pending "has to verify that results are unchanged" do
+          # 
+        end
+        
       end 
     end
   end

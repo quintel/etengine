@@ -106,7 +106,8 @@ module Etsource
       # Import dynamic dataset (can reliably lookup information of static dataset)
       # This allows to lookup values from the static dataset
       Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
-        renderer = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset)
+        wizard   = ::Etsource::Wizard.new(file.split("/")[-2])
+        renderer = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset, wizard.config)
         hsh = renderer.result
         renderer.save_compiled_yaml(file.gsub('datasets', "compiled/#{country}"))
         merge_hash_with_dataset!(hsh)

@@ -3,48 +3,65 @@
 # forms are country-specific. With the values entered into the forms we can update
 # the dataset. It is not yet clear where we want to store the data entered into the Wizards.
 #
-#    wizards = Etsource::Wizard.new
-#    wizards.list # => [car_technology_shares, ...]
-#    wizards.form_for(wizards.list.first) # => some html
+#    Etsource::Wizard.codes
+#    => ['area_data', 'households']
+#
+#    wizard = Etsource::Wizard.new('households')
+#    wizard.list # => [car_technology_shares, ...]
+#    wizard.form_template_file # => template for etengine to render
+#    wizard.config # config.yml of wizard that runs both in form and transformer
 #
 #
 module Etsource
   class Wizard
-    def initialize(etsource = Etsource::Base.new)
+    attr_accessor :file_name
+
+    def initialize(file_name, etsource = Etsource::Base.new)
+      @file_name = file_name
       @etsource = etsource
     end
 
-    def form_template_for(file_name)
+    def form_template_file
       Dir.glob([base_dir,file_name,'form.html.*'].join('/')).first
     end
 
-
-    def description_template_for(file_name)
+    def description_template_file
       [base_dir,file_name,"description.html.erb"].join('/')
     end
 
-    def form_for(file_name)
-      # prevents param hacking
-      raise "No form found for #{file_name}!" unless list.include?(file_name)
-      File.read(form_template_for(file_name)).html_safe
+    def config
+      if config_file
+        @config ||= YAML::load(ERB.new(File.read(config_file)).result).with_indifferent_access
+      else
+        @config ||= {}
+      end
     end
 
-    def description_for(file_name)
-      # prevents param hacking
-      raise "No form found for #{file_name}!" unless list.include?(file_name)
-      File.read(description_template_for(file_name)).html_safe rescue ''
+    def config_file
+      Dir.glob([base_dir,file_name,'config.yml'].join('/')).first
     end
 
-    def list
-      @wizards ||= Dir.glob("#{base_dir}/*").select{|d| File.directory?(d)}.map{|d| d.split("/").last }
+    def description_html
+      # prevents param hacking
+      raise "No form found for #{file_name}!" unless list.include?(file_name)
+      File.read(description_template_file).html_safe rescue ''
+    end
+
+    def self.codes
+      Dir.glob("#{base_dir}/*").select{|d| File.directory?(d)}.map{|d| d.split("/").last }
     end
 
   #########
   protected
   #########
 
+    # DEBT: refactor this two methods
     def base_dir
       "#{@etsource.base_dir}/datasets/_wizards"
+    end
+    
+    def self.base_dir
+      "#{Etsource::Base.new.base_dir}/datasets/_wizards"
     end
   end
 end
