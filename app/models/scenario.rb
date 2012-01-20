@@ -137,6 +137,27 @@ class Scenario < ActiveRecord::Base
   def years
     end_year - start_year
   end
+  
+  # returns a hash with the user_values pairs that reference missing inputs
+  #
+  def invalid_user_values
+    out = {}
+    user_values.each_pair do |input_id, value|
+      out[input_id] = value unless Input.find_by_id(input_id)
+    end
+    out
+  end
+  
+  # removes invalid inputs from the user_values hash
+  #
+  def cleanup_user_values!
+    cleaned_up = user_values
+    invalid_user_values.keys.each do |input_id|
+      cleaned_up.delete(input_id)
+    end
+    self.user_values = cleaned_up
+    save!
+  end
 
   # add all the attributes and methods that are modularized in calculator/
   # loads all the "open classes" in calculator
