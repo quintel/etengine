@@ -3,29 +3,30 @@ var GRAPH = new Graph();
 
 <%
   @bp = @blueprint
-  blueprint_converters = @bp.converter_records.includes(:groups, :energy_balance_group).all
-  blueprint_converter_ids = blueprint_converters.map(&:id)
+  converters = @gql.present_graph.converters
+  converter_ids = converters.map(&:id)
 
-  blueprint_converters.each do |bc|
-    position = @converter_positions[bc.id]
-    position ||= ConverterPosition.new(:converter_id => bc.id)
-
-    params = [bc.id, 
-              bc.key,
-              position.x_or_default,
-              position.y_or_default,
-              bc.sector_key.to_s,
-              bc.use_key.to_s,
-              bc.key]
-    params << (position.hidden == true)
-    params << position.fill_color
-    params << position.stroke_color
+  converters.each do |converter|
+    position = @converter_positions[converter.full_key]
+    position ||= ConverterPosition.new(:converter_key => converter.full_key)
+    if converter
+      params = [converter.full_key, 
+                converter.key,
+                position.x || 100,
+                position.y || 100,
+                converter.sector_key.to_s,
+                converter.use_key.to_s,
+                converter.key]
+      params << (position.hidden == true)
+      params << position.fill_color
+      params << position.stroke_color
+    end
   -%>
 <%= "new Converter(#{js_params(params)});".html_safe %>
 <% end %>      
 
 <% @bp.links.includes(:carrier).each do |bl| 
-  if blueprint_converter_ids.include?(bl.parent_id) and blueprint_converter_ids.include?(bl.child_id)
+  if converter_ids.include?(bl.parent_id) and converter_ids.include?(bl.child_id)
     params = [bl.child_id, bl.parent_id, "#{bl.carrier.carrier_color || '#999'}", "1|#{bl.link_style}"]
     -%>
 <%= "new Link(#{js_params(params)});".html_safe %>
