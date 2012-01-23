@@ -124,7 +124,7 @@ module Qernel::DatasetAttributes
   def dataset_get(attr_name)
     object_dataset[attr_name]
   rescue => e
-    raise "#{dataset_key} #{attr_name} not found" 
+    raise "#{dataset_key} #{attr_name} not found: #{e.message}" 
   end
 
   def [](attr_name)
