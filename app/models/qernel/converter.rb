@@ -112,7 +112,16 @@ class Converter
     3 => :undefined
   }
 
-  attr_reader  :id, :code, :output_links, :input_links, :groups, :full_key, :sector_key, :use_key, :energy_balance_group
+  attr_reader  :id, 
+               :code, 
+               :output_links, 
+               :input_links, 
+               :groups, 
+               :full_key, 
+               :sector_key, 
+               :use_key, 
+               :energy_balance_group
+
   attr_accessor :converter_api, :key, :graph
 
   dataset_accessors [:demand, :preset_demand, :municipality_demand]

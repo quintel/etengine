@@ -81,7 +81,10 @@ class ConverterApi
     :simult_we,
     :technical_lifetime,
     :typical_nominal_input_capacity,
-    :wacc
+    :wacc,
+    
+    :merit_order_start,
+    :merit_order_end
   ]
   
   # For the data/converter/show page we need grouping of the attributes
