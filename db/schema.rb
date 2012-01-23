@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120106055413) do
+ActiveRecord::Schema.define(:version => 20120118111249) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -129,6 +129,7 @@ ActiveRecord::Schema.define(:version => 20120106055413) do
     t.datetime "updated_at"
     t.boolean  "hidden"
     t.integer  "blueprint_layout_id"
+    t.string   "converter_key"
   end
 
   add_index "converter_positions", ["converter_id"], :name => "index_converter_positions_on_converter_id"
