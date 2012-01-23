@@ -44,7 +44,7 @@ class ApiScenario < Scenario
     # but could get rid of bugs introduced by forgetting to prepare in some cases when we 
     # access the graph through the gql (e.g. @gql.present_graph.converters.map(&:demand)).
 
-    prepare_gql if options[:calculate] == true
+    prepare_gql if options[:prepare] == true
     @gql
   end
 
