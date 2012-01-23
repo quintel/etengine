@@ -1,5 +1,5 @@
 class Data::ScenariosController < Data::BaseController
-  before_filter :find_scenario, :only => [:show, :fix, :edit, :update]
+  before_filter :find_scenario, :only => [:show, :edit, :update]
 
   def index
     base = Scenario.scoped
@@ -27,13 +27,6 @@ class Data::ScenariosController < Data::BaseController
       redirect_to data_scenario_path(:id => @scenario.id), :notice => 'Scenario updated'
     else
       render :edit
-    end
-  end
-
-  def fix
-    if params[:force]
-      @scenario.update_hh_inputs!
-      flash.now[:notice] = "Scenario updated!"
     end
   end
 
