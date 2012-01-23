@@ -2,35 +2,46 @@
 var GRAPH = new Graph();
 
 <%
-  @bp = @blueprint
-  converters = @gql.present_graph.converters
-  converter_ids = converters.map(&:id)
+@bp = @blueprint
+@gql.prepare
+converters = @gql.present_graph.converters
+converter_keys = converters.map(&:full_key)
 
-  converters.each do |converter|
-    position = @converter_positions[converter.full_key]
-    position ||= ConverterPosition.new(:converter_key => converter.full_key)
-    if converter
-      params = [converter.full_key, 
-                converter.key,
-                position.x || 100,
-                position.y || 100,
-                converter.sector_key.to_s,
-                converter.use_key.to_s,
-                converter.key]
-      params << (position.hidden == true)
-      params << position.fill_color
-      params << position.stroke_color
-    end
-  -%>
+converters.each do |converter|
+  position = @converter_positions[converter.full_key]
+  position ||= ConverterPosition.new(:converter_key => converter.full_key)
+  if converter
+    params = [converter.full_key.to_s, 
+              converter.key.to_s,
+              position.x || 100,
+              position.y || 100,
+              converter.sector_key.to_s,
+              converter.use_key.to_s,
+              converter.key]
+    params << (position.hidden == true)
+    params << position.fill_color
+    params << position.stroke_color
+  end
+-%>
 <%= "new Converter(#{js_params(params)});".html_safe %>
 <% end %>      
 
-<% @bp.links.includes(:carrier).each do |bl| 
-  if converter_ids.include?(bl.parent_id) and converter_ids.include?(bl.child_id)
-    params = [bl.child_id, bl.parent_id, "#{bl.carrier.carrier_color || '#999'}", "1|#{bl.link_style}"]
+
+<% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link| 
+  if converter_keys.include?(link.parent.full_key) and converter_keys.include?(link.child.full_key)
+    params = [
+      link.child .full_key.to_s, 
+      link.parent.full_key.to_s, 
+
+      '#999', #"#{link.carrier.carrier_color || '#999'}", 
+      '1|-'   #"1|#{link.link_style}"
+    ]
     -%>
-<%= "new Link(#{js_params(params)});".html_safe %>
+    <%= "new Link(#{js_params(params)});".html_safe %>
   <% end %>
 <% end %>
+
+
+
 
 GRAPH.draw();

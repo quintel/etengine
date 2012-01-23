@@ -65,7 +65,7 @@ private
         v = c.query.send(key)
         h.merge key => auto_number(v)
       end
-      hsh.merge c.id => attr_hash
+      hsh.merge c.full_key.to_s => attr_hash
     end
   end
 
