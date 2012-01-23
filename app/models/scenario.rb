@@ -141,45 +141,4 @@ class Scenario < ActiveRecord::Base
   # add all the attributes and methods that are modularized in calculator/
   # loads all the "open classes" in calculator
   Dir["app/models/scenario/*.rb"].sort.each {|file| require_dependency file }
-  
-  # Temporary methods
-  #
-  # TODO: remove ASAP, See GH #185
-  def update_hh_inputs!
-    inputs = self.user_values
-    
-    input_ids = [344,341,343,242]
-    
-    number_of_inputs_set = input_ids.map{|id| inputs[id]}.compact.count
-    
-    return if number_of_inputs_set == 0
-    
-    inputs[344] ||= 0.0
-    inputs[341] ||= 4.4
-    inputs[343] ||= 0.0
-    inputs[242] ||= 0.0
-    
-    sum = input_ids.map{|id| inputs[id]}.compact.sum.to_f
-    i344_new = inputs[344] / sum * 100 rescue nil
-    i344_new = nil if i344_new.try :nan?
-    
-    i341_new = inputs[341] / sum * 100 rescue nil
-    i341_new = nil if i341_new.try :nan?
-    
-    i343_new = inputs[343] / sum * 100 rescue nil
-    i343_new = nil if i343_new.try :nan?
-    
-    i242_new = inputs[242] / sum * 100 rescue nil
-    i242_new = nil if i242_new.try :nan?
-    
-    i582_new = sum
-    store_user_value(Input.find(344), i344_new)
-    store_user_value(Input.find(341), i341_new)
-    store_user_value(Input.find(343), i343_new)
-    store_user_value(Input.find(242), i242_new)
-    store_user_value(Input.find(582), i582_new)
-    
-    save!    
-  end
-  
 end
