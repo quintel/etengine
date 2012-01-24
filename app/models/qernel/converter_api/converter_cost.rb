@@ -72,6 +72,7 @@ class Qernel::ConverterApi
   #
   def average_investment_per_mw_input
     dataset_fetch_handle_nil(:average_investment_per_mw_input) do
+      end_of_life_value_per_mw_input = 0 if end_of_life_value_per_mw_input < 0
       (initial_investment_costs_per_mw_input + end_of_life_value_per_mw_input) / 2
     end
   end
