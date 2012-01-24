@@ -54,7 +54,19 @@ class Qernel::ConverterApi
     :heat_output_conversion
   ]
   
-  ## Returns the nominal heat capicity of one unit. This is both useable heat as steam_hot_water. 
+  ## Returns the nominal cooling capacity of one unit
+  #
+  def nominal_capacity_cooling_output_per_unit
+    dataset_fetch_handle_nil(:nominal_capacity_cooling_output_per_unit) do
+      typical_nominal_input_capacity * cooling_output_conversion
+    end
+  end
+  attributes_required_for :nominal_capacity_cooling_output_per_unit, [
+    :typical_nominal_input_capacity,
+    :cooling_output_conversion
+  ]
+  
+  ## Returns the total heat output conversion of one unit. This is useable heat, steam_hot_water and hot_water. 
   #
   def heat_output_conversion
     dataset_fetch_handle_nil(:heat_output_conversion) do
@@ -65,6 +77,20 @@ class Qernel::ConverterApi
     :steam_hot_water_output_conversion,
     :useable_heat_output_conversion,
     :hot_water_output_conversion
+  ]
+  
+  ## Returns the total heat and cold output conversion of one unit. This is useable heat, steam_hot_water, hot_water and cooling. 
+  #
+  def heat_and_cold_output_conversion
+    dataset_fetch_handle_nil(:heat_and_cold_output_conversion) do
+      (steam_hot_water_output_conversion + hot_water_output_conversion + useable_heat_output_conversion + cooling_output_conversion)
+    end
+  end
+  attributes_required_for :heat_and_cold_output_conversion, [
+    :steam_hot_water_output_conversion,
+    :useable_heat_output_conversion,
+    :hot_water_output_conversion,
+    :cooling_output_conversion
   ]
   
   

@@ -145,8 +145,8 @@ class ConverterApi
       :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
       :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
       :full_load_hours  => ['Full load hours', 'hour / year'],
-      :coefficient_of_performance => ['Coefficient of performance', ''],
-      :heat_output_conversion  => ['Heat efficiency (after COP)', '%']
+      :coefficient_of_performance => ['Coefficient of Performance', ''],
+      :heat_and_cold_output_conversion  => ['Efficiency (after COP)', '%']
     },
     :cost => {
       :purchase_price_per_unit => ['Initial purchase price', 'euro'],
