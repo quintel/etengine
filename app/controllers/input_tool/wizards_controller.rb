@@ -11,6 +11,7 @@ module InputTool
     def assign_scenario
       Current.scenario = ApiScenario.new(ApiScenario.default_attributes.merge :country => @area_code)
       @gql = Current.scenario.gql
+      @gql.prepare
     end
 
     def default_url_options
@@ -36,6 +37,7 @@ module InputTool
     def new
       @form   = InputTool::SavedWizard.new(:code => params[:code], :area_code => @area_code)
       @wizard = Etsource::Wizard.new(@form.code)
+
     end
 
     def create
