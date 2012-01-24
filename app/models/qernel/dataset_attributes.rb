@@ -5,6 +5,56 @@
 # stored in the database in the dataset_*_data tables. Qernel::Dataset takes
 # care of loading them into a single hash.
 # Most of the methods defined in this mixin were made to access this hash.
+#
+# == Example:
+#
+#     class Qernel::Converter
+#       include Qernel::DatasetAttributes
+#
+#       dataset_accessor :demand
+#    
+#       # above dataset_accessor generates the following methods:
+#       def demand
+#         dataset_get[:demand]
+#       end
+#    
+#       def demand=(val)
+#         dataset_set :demand, val
+#       end
+#     end
+#
+# So then you can access attributes like:
+#
+#     c = Qernel::Converter.new
+#     c.demand 
+#     c.dataset_get(:demand)
+#
+# == Careful: 
+#
+#     c[:demand]
+# 
+# will execute self.send(:demand), and not as you might assume
+# dataset_get(:demand).
+#
+#
+# == Overwriting dataset_accessors
+#
+#     class Qernel::Converter
+#       include Qernel::DatasetAttributes
+#
+#       dataset_accessor :demand
+#       
+#       def demand; "hello world"; end
+#     end
+#
+#     c = Qernel::Converter.new
+#     c.dataset_set :demand, 300
+#     c.dataset_get(:demand) # => 300
+#     # But:
+#     c.demand   # => "hello world"
+#     c[:demand] # => "hello world"
+#
+
 module Qernel::DatasetAttributes
 
   def self.included(klass)
