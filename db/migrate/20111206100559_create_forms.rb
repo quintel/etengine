@@ -1,6 +1,6 @@
 class CreateForms < ActiveRecord::Migration
   def self.up
-    create_table "input_tool_forms" do |t|
+    create_table "input_tool_forms", :force => true do |t|
       t.string :area_code
       t.string :code
       t.text   :values
