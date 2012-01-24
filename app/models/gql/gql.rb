@@ -201,7 +201,7 @@ class Gql
   def query_multiple(gquery_keys)
     gquery_keys = gquery_keys - ["null", "undefined"]
 
-    rescue_with = :debug
+    rescue_with = Rails.env.production? ? :airbrake : :debug
     gquery_keys.inject({}) do |hsh, key|
       result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
         query(gquery, rescue_with)
