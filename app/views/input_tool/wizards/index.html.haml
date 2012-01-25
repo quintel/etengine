@@ -33,7 +33,7 @@
 
   %h4 Switch Country
   %p
-    - Etsource::Dataset.region_codes.each do |region_code|
+    - Etsource::Dataset.region_codes.sort.each do |region_code|
       %small= link_to(region_code, input_tool_wizards_path(area_code: region_code))+", "
 
 
