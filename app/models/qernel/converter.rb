@@ -176,9 +176,13 @@ class Converter
     [key, sector_key, custom_use_key].compact.join("_").to_sym
   end
 
+  # return the excel id as a symbol for the graph#converter_lookup_hash
+  # return the full_key if no excel_id defined.
+  #
   def excel_id_to_sym
-    excel_id.to_s.to_sym
+    (excel_id || full_key).to_s.to_sym
   end
+
 protected
 
   # Memoize here, so it doesn't have to at runtime
