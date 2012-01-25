@@ -66,7 +66,10 @@ class Graph
 
   def dataset=(dataset)
     @dataset = dataset
-    self.refresh_dataset_objects if @dataset
+    refresh_dataset_objects if @dataset
+    # lookup hash for #converter( ) method uses :excel_id from dataset
+    # so we have to reset the lookup
+    reset_converter_lookup_and_memoize if @dataset
   end
 
   # Removes dataset from graph and all its objects.

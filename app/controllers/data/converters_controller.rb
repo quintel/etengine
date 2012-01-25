@@ -1,6 +1,6 @@
 class Data::ConvertersController < Data::BaseController
   def index
-    @converters = @gql.present_graph.converters    
+    @converters = @gql.present_graph.converters
     if params[:q]
       @converters = @converters.select{|c| c.full_key.to_s.include?(params[:q])}
     end
