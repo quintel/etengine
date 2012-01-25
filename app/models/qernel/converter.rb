@@ -90,7 +90,7 @@ class Converter
 
   # Following keys can be looked up by {Qernel::Graph#converter}.
   KEYS_FOR_LOOKUP = [
-    :id,
+    :excel_id_to_sym,
     :full_key
   ]
 
@@ -124,7 +124,7 @@ class Converter
 
   attr_accessor :converter_api, :key, :graph
 
-  dataset_accessors [:demand, :preset_demand, :municipality_demand]
+  dataset_accessors [:demand, :preset_demand, :municipality_demand, :excel_id]
 
   # --------- Micro-optimizing ------------------------------------------------
   #
@@ -176,6 +176,9 @@ class Converter
     [key, sector_key, custom_use_key].compact.join("_").to_sym
   end
 
+  def excel_id_to_sym
+    excel_id.to_s.to_sym
+  end
 protected
 
   # Memoize here, so it doesn't have to at runtime
@@ -499,7 +502,7 @@ public
   end
 
   def to_s
-    "#{name} #{[@id]}" || 'untitled'
+    "#{name} #{[self.excel_id]} (hash: #{@id})" || 'untitled'
   end
 
   def inspect

@@ -38,6 +38,10 @@ Etm::Application.routes.draw do
     match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     scope '/:api_scenario_id' do
+      scope "/(de|nl|uk|ame|)" do
+        match "*path" => "pages#url_changed"
+      end
+
       root :to => "pages#index"
       resources :blueprint_layouts, :except => [:update, :destroy] do
         resources :converter_positions, :only => :create
