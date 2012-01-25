@@ -23,7 +23,7 @@
   %tbody
     - @converters.each do |converter|
       %tr
-        %td=# ##{converter.id}
+        %td= ##{converter.excel_id}
         %td= link_to highlight(converter.full_key.to_s, params[:q]), data_converter_path(:id => converter)
         %td
           %small
