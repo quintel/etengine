@@ -38,7 +38,7 @@ Etm::Application.routes.draw do
     match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     scope '/:api_scenario_id' do
-      scope "/(de|nl|uk|ame|)" do
+      scope "/nl" do
         match "*path" => "pages#url_changed"
       end
 
