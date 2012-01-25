@@ -31,6 +31,12 @@
       %span.label.success Commited
       Commited to Git. At any point we can revert back to any point in time.
 
+  %h4 Switch Country
+  %p
+    - Etsource::Dataset.region_codes.each do |region_code|
+      %small= link_to(region_code, input_tool_wizards_path(area_code: region_code))+", "
+
+
 .row
   .span16
     .actions
