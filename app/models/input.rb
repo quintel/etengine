@@ -196,7 +196,7 @@ class Input < ActiveRecord::Base
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
       begin
         hsh.merge input.id.to_s => {
-          :start_value => input.start_value(gql)
+          :start_value => input.start_value_for(gql)
         }
       rescue => ex
         Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}. #{ex}")
