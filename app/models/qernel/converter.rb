@@ -177,10 +177,14 @@ class Converter
   end
 
   # return the excel id as a symbol for the graph#converter_lookup_hash
-  # return the full_key if no excel_id defined.
+  # return the full_key if no excel_id defined or dataset not initialised yet.
   #
   def excel_id_to_sym
-    (excel_id || full_key).to_s.to_sym
+    if object_dataset
+      (excel_id || full_key).to_s.to_sym
+    else
+      full_key
+    end
   end
 
 protected
