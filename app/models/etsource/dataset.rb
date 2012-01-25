@@ -35,5 +35,10 @@ module Etsource
       all_countries = Area.all.map(&:region_code)
       all_countries.each{|c| ::Etsource::Dataset::Export.new(c).export }
     end
+
+    def self.region_codes
+      Dir.glob(Etsource::Base.new.base_dir+"/datasets/[a-z]*").map{|folders| folders.split("/").last }
+    end
+
   end
 end
