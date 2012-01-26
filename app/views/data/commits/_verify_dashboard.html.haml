@@ -1,8 +1,8 @@
 
 - scenarios = []
 - scenarios << ApiScenario.default.tap{|s| s.title = 'default'}
-- scenarios << ApiScenario.new(:scenario_id => 23954)
-- scenarios << ApiScenario.new(:scenario_id =>  2998)
+- scenarios << ApiScenario.new(:scenario_id => 23954, :title => 'Test Scenario')
+- scenarios << ApiScenario.new(:scenario_id =>  2998, :title => 'Dursame Energy 99%')
 - dashboard_gqueries = Gquery.all.select(&:dashboard?)
 
 - scenarios.each do |scenario|
