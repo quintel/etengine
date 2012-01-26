@@ -48,7 +48,7 @@ Etm::Application.routes.draw do
       end
       
       scope "/etsource" do
-        resources :commits, :only => :index do
+        resources :commits, :only => [:index, :show] do
           get :import, :on => :member
         end
       end

@@ -1,0 +1,28 @@
+
+- scenarios = []
+- scenarios << ApiScenario.default.tap{|s| s.title = 'default'}
+- scenarios << ApiScenario.new(:scenario_id => 23954)
+- scenarios << ApiScenario.new(:scenario_id =>  2998)
+- dashboard_gqueries = Gquery.all.select(&:dashboard?)
+
+- scenarios.each do |scenario|
+  - gql = scenario.gql(prepare: false)
+  - gql.prepare rescue ''
+
+
+  %h4= scenario.title || scenario.preset_scenario_id
+  %table
+    %thead
+      %tr
+        %th Gquery
+        %th Present
+        %th Future
+    %tbody
+      - dashboard_gqueries.each do |gquery|
+        - result = gql.query(gquery, :debug)
+        %tr
+          %th= gquery.key
+          %th= auto_number result.present_value
+          %th= auto_number result.future_value
+    	
+      

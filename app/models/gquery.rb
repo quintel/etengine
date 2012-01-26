@@ -154,6 +154,10 @@ class Gquery < ActiveRecord::Base
     !converters?
   end
 
+  def dashboard?
+    key.include?('dashboard_')
+  end
+
   def output_element?
     gquery_group.group_key.include?("output_elements") 
   rescue => e
