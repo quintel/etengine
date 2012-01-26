@@ -2,9 +2,12 @@
 
 %h2 Commit imported, cache cleared, server kicked.
 
-%h4
-  NOW GO HERE 
-  = link_to "verify if dashboard is working", data_commit_path(id: 'current')
+%p 
+  %h4{style: "color: red"}
+    NOW GO HERE:
+    = link_to "verify if dashboard is working", data_commit_path(id: 'current')
+
+  It might take 30 seconds until the server is properly kicked and updated values show up. 
 
   
 
