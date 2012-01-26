@@ -3,6 +3,10 @@ class Data::CommitsController < Data::BaseController
 
   set_tab :commits
 
+  # data/latest/etsource/commits/current
+  def show
+  end
+
   def index
     @etsource = Etsource::Base.new
     # @etsource.current_branch is sometimes (no branch) catch this
