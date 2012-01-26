@@ -7,7 +7,7 @@
     = select_tag :branch, options_for_select(@branches, @branch)
     = submit_tag "Checkout"
     = submit_tag "Refresh"
-    = link_to("Current Commit", data_commit_path(id: 'current'))
+    = link_to "verify if dashboard is working", data_commit_path(id: 'current')
     
 .header Commits in #{@branch}
 
