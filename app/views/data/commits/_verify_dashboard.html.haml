@@ -6,23 +6,37 @@
 - dashboard_gqueries = Gquery.all.select(&:dashboard?)
 
 - scenarios.each do |scenario|
+  - gql_initialize_time = Time.now
   - gql = scenario.gql(prepare: false)
+  - gql_initialize_time = Time.now - gql_initialize_time
+  - gql_prepare_time = Time.now
   - gql.prepare rescue ''
-
-
+  - gql_prepare_time = Time.now - gql_prepare_time
+  
   %h4= scenario.title || scenario.preset_scenario_id
+  %p
+    == initializing: #{gql_initialize_time.round(3)} secs
+    == preparing: #{gql_prepare_time.round(3)} secs
+
+
+  - query_time = Time.now
   %table
     %thead
       %tr
         %th Gquery
         %th Present
         %th Future
+        %th Time
     %tbody
       - dashboard_gqueries.each do |gquery|
+        - result_time = Time.now
         - result = gql.query(gquery, :debug)
+        - result_time = Time.now - result_time
         %tr
-          %th= gquery.key
+          %th= link_to gquery.key, data_gquery_key_path(:key => gquery.key)
           %th= auto_number result.present_value
           %th= auto_number result.future_value
-    	
+          %th== #{result_time.round(3)} secs
+  - query_time = Time.now - query_time
+  %p== preparing: #{query_time.round(3)} secs
       
