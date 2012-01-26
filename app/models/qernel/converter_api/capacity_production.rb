@@ -159,7 +159,11 @@ class Qernel::ConverterApi
   # The MW input capacity that is required to provide the demand.
   def mw_input_capacity
     dataset_fetch_handle_nil(:mw_input_capacity) do
-      demand / full_load_seconds
+      if full_load_seconds == 0.0
+        0.0
+      else
+        demand / full_load_seconds
+      end
     end
   end
   attributes_required_for :mw_input_capacity, [:demand, :full_load_seconds]
