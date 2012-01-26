@@ -74,6 +74,8 @@ module Etsource
     #
     def val(key, attr_key)
       country_dataset.data[group_key(key)][Hashpipe.hash(key)][attr_key.to_sym]
+    rescue => e
+      raise "Dataset#val for key `#{key}`, attr_key `#{attr_key}`. \n #{e.message}"
     end
 
     # @see {InputTool::ResearchDataset#get}

@@ -173,7 +173,7 @@ class Graph
       converter[:merit_order_start] = converters[i][:merit_order_end]
       
       e  = converter[:merit_order_start]
-      e += converter.installed_production_capacity_in_mw_electricity * converter.availability
+      e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
       converter[:merit_order_end] = e
     end
   end
