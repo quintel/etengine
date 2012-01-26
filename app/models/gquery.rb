@@ -135,10 +135,12 @@ class Gquery < ActiveRecord::Base
   end
 
   def self.load_gqueries
-    etsource_gqueries
+    # choose here which way you want to load gqueries. from db or from etsource.
+    db_gqueries
   end
 
   def self.etsource_gqueries
+    # need a way to assign id, to make this work.
     Etsource::Loader.instance.gqueries
   end
 
