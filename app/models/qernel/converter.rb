@@ -26,10 +26,6 @@ module Qernel
 # Also note that some update statements modify preset_demand, rather then
 # demand.
 #
-# == municipality_demand
-#
-# municipality_demand is added to preset_demand. 
-#
 # === Description
 # 
 # The trouble is that municipalities can decide to build wind mills, but
@@ -124,7 +120,7 @@ class Converter
 
   attr_accessor :converter_api, :key, :graph
 
-  dataset_accessors [:demand, :preset_demand, :municipality_demand, :excel_id]
+  dataset_accessors [:demand, :preset_demand, :excel_id]
 
   # --------- Micro-optimizing ------------------------------------------------
   #
@@ -213,13 +209,6 @@ public
     self.converter_api.graph = @graph
     self.converter_api.area = @graph.area
     @graph
-  end
-
-  # See {Qernel::Converter} for explanation of municipality_demand
-  #
-  def municipality_demand=(val)
-    dataset_set(:municipality_demand, safe_to_f(val))
-    update_initial_demand
   end
 
   # See {Qernel::Converter} for difference of demand/preset_demand
@@ -430,9 +419,9 @@ protected
     end
   end
 
-  # Updates the {demand} with the sum of preset_demand and
-  # municipality_demand. It is needed to call this method everytime
-  # we update either preset_demand or municipality_demand, because
+  # Updates the {demand} with the sum of preset_demand
+  # It is needed to call this method everytime
+  # we update either preset_demand, because
   # both attributes can be updated through GQL, we have to make
   # sure to always sum both values. 
   #
@@ -440,7 +429,6 @@ protected
   #
   def update_initial_demand
     preset = dataset_get(:preset_demand)
-    municipality = dataset_get(:municipality_demand)
 
     if preset.nil? && municipality.nil?
       nil

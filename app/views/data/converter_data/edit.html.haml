@@ -5,6 +5,5 @@
 = simple_form_for @converter_data, :url => data_converter_converter_data_path(:converter_id => @converter.id, :id => @converter_data) do |f|
   - Qernel::ConverterApi::ATTRIBUTES_USED.sort.each do |key|
     = f.input key
-  = f.input :municipality_demand
   = f.input :preset_demand
   = f.button :submit
