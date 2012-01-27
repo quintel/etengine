@@ -53,7 +53,6 @@ class ConverterApi
   ATTRIBUTES_USED = [
     :availability,
     :variability,
-    :capacity_factor,
     :ccs_investment_per_mw_input,
     :ccs_operation_and_maintenance_cost_per_full_load_hour,
     :co2_free,
