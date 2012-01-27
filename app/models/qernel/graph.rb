@@ -129,7 +129,7 @@ class Graph
   # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
   #
   # TODO refactor
-  def calculate
+  def calculate(options = {})
     if calculated?
       ActiveSupport::Notifications.instrument("gql.debug", "Graph already calculated")
       return
@@ -155,7 +155,7 @@ class Graph
         "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}")
     end
 
-    calculate_merit_order
+    calculate_merit_order if options[:merit_order] != false
   end
 
 
@@ -166,15 +166,17 @@ class Graph
       c.variable_costs_per_mwh_input * c.electricity_output_conversion
     end
 
-    converters.first[:merit_order_end]   = 0.0
-    converters.first[:merit_order_start] = 0.0
-    converters[1..-1].each_with_index do |converter, i|
-      # i points now to the previous one, not the current index! (because we start from [1..-1])
-      converter[:merit_order_start] = converters[i][:merit_order_end]
-      
-      e  = converter[:merit_order_start]
-      e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
-      converter[:merit_order_end] = e
+    if converters.first
+      converters.first[:merit_order_end]   = 0.0
+      converters.first[:merit_order_start] = 0.0
+      converters[1..-1].each_with_index do |converter, i|
+        # i points now to the previous one, not the current index! (because we start from [1..-1])
+        converter[:merit_order_start] = converters[i][:merit_order_end]
+        
+        e  = converter[:merit_order_start]
+        e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
+        converter[:merit_order_end] = e
+      end
     end
   end
 
