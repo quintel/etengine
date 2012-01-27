@@ -63,7 +63,7 @@ module Gql::UpdateInterface
       converter = converter_proxy.converter
       converter.outputs.each do |slot|
         slot.links.select(&:constant?).each do |link|
-          link.share = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
+          link.share = converter.query.full_load_seconds * value.to_f
         end
       end
       nil
