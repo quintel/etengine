@@ -16,7 +16,7 @@
 %ul
   %li 
     %b Energy Balance Group:
-    - if g = @converter_present.energy_balance_group
+    - if g = @converter_present.energy_balance_group && g.to_s.present?
       = link_to g, data_energy_balance_group_path(:id => g)
 %ul
   %li
