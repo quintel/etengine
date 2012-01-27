@@ -174,10 +174,13 @@ protected
   # inversed_flexible links are dynamic. So they do cannot have
   # fixed conversions (and thus no valid internal_link_values).
   #
-  #
+  # Inversed Flexible shouldn't become negative.
+  # https://github.com/dennisschoenmakers/etengine/issues/194
+  # 
   def calculate_inversed_flexible
     #raise "#{@child.full_key} has no demand" if @child.demand.nil?
-    @child.demand - @child.outputs.map(&:external_link_value).compact.sum
+    result = @child.demand - @child.outputs.map(&:external_link_value).compact.sum
+    (result < 0.0) ? 0.0 : result
   end
 
   #
