@@ -91,8 +91,6 @@ GEM
     multi_json (1.0.4)
     mysql2 (0.2.11)
     nokogiri (1.5.0)
-    paper_trail (2.2.5)
-      rails (~> 3)
     polyglot (0.3.3)
     pry (0.9.7.3)
       coderay (~> 0.9.8)
@@ -202,7 +200,6 @@ DEPENDENCIES
   kaminari
   memcache-client
   mysql2 (~> 0.2.6)
-  paper_trail (>= 1.6.4)
   pry
   pry-remote
   rack-cors
