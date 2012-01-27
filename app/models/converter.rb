@@ -14,8 +14,6 @@
 #
 
 class Converter < ActiveRecord::Base
-  has_paper_trail
-
   has_and_belongs_to_many :blueprints
   has_and_belongs_to_many :groups
   belongs_to :energy_balance_group
