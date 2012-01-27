@@ -9,7 +9,6 @@ gem 'sass', '~>3.1.7'
 gem 'authlogic'
 gem 'cancan'
 gem 'simple_form'
-gem 'paper_trail', '>= 1.6.4'
 gem 'ruby-graphviz', :require => "graphviz"
 gem 'treetop', '1.4.8'
 gem 'default_value_for'
