@@ -139,6 +139,8 @@ public
       # if the value is 0.0, we have to set rules what links
       # get what shares. In order to have wouter_dances work properly.
       self.share = 0.0 if constant?
+      # To fix https://github.com/dennisschoenmakers/etengine/issues/178
+      # we have to change the following line:
       self.share = 1.0 if flexible?
     end
   end
