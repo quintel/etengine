@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120118111249) do
+ActiveRecord::Schema.define(:version => 20120127062850) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -89,25 +89,6 @@ ActiveRecord::Schema.define(:version => 20120118111249) do
     t.datetime "updated_at"
   end
 
-  create_table "blueprints", :force => true do |t|
-    t.string   "name"
-    t.string   "graph_version"
-    t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "blueprint_model_id"
-  end
-
-  add_index "blueprints", ["blueprint_model_id"], :name => "index_blueprints_on_blueprint_model_id"
-
-  create_table "blueprints_converters", :id => false, :force => true do |t|
-    t.integer "converter_id"
-    t.integer "blueprint_id"
-  end
-
-  add_index "blueprints_converters", ["blueprint_id"], :name => "index_blueprints_converters_on_blueprint_id"
-  add_index "blueprints_converters", ["converter_id", "blueprint_id"], :name => "index_blueprints_converters_on_converter_id_and_blueprint_id"
-
   create_table "carriers", :force => true do |t|
     t.integer  "carrier_id"
     t.string   "key"
@@ -151,108 +132,6 @@ ActiveRecord::Schema.define(:version => 20120118111249) do
   end
 
   add_index "converters_groups", ["converter_id", "group_id"], :name => "index_converters_groups_on_converter_id_and_group_id"
-
-  create_table "dataset_carrier_data", :force => true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "carrier_id"
-    t.float    "cost_per_mj"
-    t.float    "co2_conversion_per_mj"
-    t.float    "sustainable"
-    t.float    "typical_production_per_km2"
-    t.integer  "area_id"
-    t.float    "kg_per_liter"
-    t.float    "mj_per_kg"
-    t.float    "co2_exploration_per_mj",                     :default => 0.0
-    t.float    "co2_extraction_per_mj",                      :default => 0.0
-    t.float    "co2_treatment_per_mj",                       :default => 0.0
-    t.float    "co2_transportation_per_mj",                  :default => 0.0
-    t.float    "co2_waste_treatment_per_mj",                 :default => 0.0
-    t.float    "supply_chain_margin_per_mj"
-    t.float    "oil_price_correlated_part_production_costs"
-  end
-
-  add_index "dataset_carrier_data", ["carrier_id"], :name => "index_dataset_carrier_data_on_carrier_id"
-
-  create_table "dataset_converter_data", :force => true do |t|
-    t.string   "name"
-    t.integer  "preset_demand",                                              :limit => 8
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "dataset_id"
-    t.integer  "converter_id"
-    t.integer  "demand_expected_value",                                      :limit => 8
-    t.float    "network_capacity_available_in_mw"
-    t.float    "network_capacity_used_in_mw"
-    t.float    "land_use_per_unit"
-    t.float    "technical_lifetime"
-    t.float    "lead_time"
-    t.float    "construction_time"
-    t.float    "costs_per_mj"
-    t.float    "network_expansion_costs_in_euro_per_mw"
-    t.integer  "use_id"
-    t.integer  "sector_id"
-    t.string   "key"
-    t.float    "wacc"
-    t.float    "capacity_factor"
-    t.float    "co2_free"
-    t.float    "simult_wd"
-    t.float    "simult_sd"
-    t.float    "simult_we"
-    t.float    "simult_se"
-    t.float    "peak_load_units_present"
-    t.float    "full_load_hours"
-    t.float    "operation_and_maintenance_cost_fixed_per_mw_input"
-    t.float    "operation_and_maintenance_cost_variable_per_full_load_hour"
-    t.integer  "municipality_demand",                                        :limit => 8
-    t.float    "typical_nominal_input_capacity"
-    t.float    "residual_value_per_mw_input"
-    t.float    "decommissioning_costs_per_mw_input"
-    t.float    "purchase_price_per_mw_input"
-    t.float    "installing_costs_per_mw_input"
-    t.float    "part_ets"
-    t.float    "ccs_investment_per_mw_input"
-    t.float    "ccs_operation_and_maintenance_cost_per_full_load_hour"
-    t.float    "decrease_in_nominal_capacity_over_lifetime"
-    t.float    "availability"
-    t.float    "variability"
-  end
-
-  add_index "dataset_converter_data", ["converter_id"], :name => "index_dataset_converter_data_on_converter_id"
-  add_index "dataset_converter_data", ["dataset_id"], :name => "index_converter_datas_on_graph_data_id"
-
-  create_table "dataset_link_data", :force => true do |t|
-    t.integer  "link_type",               :default => 0
-    t.float    "share"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "dataset_id"
-    t.integer  "link_id"
-    t.integer  "max_demand", :limit => 8
-  end
-
-  add_index "dataset_link_data", ["dataset_id"], :name => "index_link_datas_on_graph_data_id"
-  add_index "dataset_link_data", ["link_id"], :name => "index_dataset_link_data_on_link_id"
-
-  create_table "dataset_slot_data", :force => true do |t|
-    t.integer "dataset_id"
-    t.integer "slot_id"
-    t.float   "conversion"
-    t.boolean "dynamic"
-  end
-
-  add_index "dataset_slot_data", ["dataset_id"], :name => "index_slot_datas_on_graph_data_id"
-  add_index "dataset_slot_data", ["slot_id"], :name => "index_dataset_slot_data_on_slot_id"
-
-  create_table "datasets", :force => true do |t|
-    t.integer  "blueprint_id"
-    t.string   "region_code"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "area_id"
-  end
-
-  add_index "datasets", ["region_code"], :name => "index_graph_datas_on_region_code"
 
   create_table "energy_balance_groups", :force => true do |t|
     t.string   "name"
@@ -365,20 +244,6 @@ ActiveRecord::Schema.define(:version => 20120118111249) do
 
   add_index "inputs", ["key"], :name => "unique api key", :unique => true
 
-  create_table "links", :force => true do |t|
-    t.integer "blueprint_id"
-    t.integer "parent_id"
-    t.integer "child_id"
-    t.integer "carrier_id"
-    t.integer "link_type"
-    t.integer "country_specific"
-  end
-
-  add_index "links", ["blueprint_id"], :name => "index_links_on_blueprint_id"
-  add_index "links", ["carrier_id"], :name => "index_links_on_carrier_id"
-  add_index "links", ["child_id"], :name => "index_links_on_child_id"
-  add_index "links", ["parent_id"], :name => "index_links_on_parent_id"
-
   create_table "query_table_cells", :force => true do |t|
     t.integer  "query_table_id"
     t.integer  "row"
@@ -427,30 +292,6 @@ ActiveRecord::Schema.define(:version => 20120118111249) do
     t.datetime "present_updated_at"
     t.integer  "protected",          :limit => 1
   end
-
-  create_table "slots", :force => true do |t|
-    t.integer "blueprint_id"
-    t.integer "converter_id"
-    t.integer "carrier_id"
-    t.integer "direction"
-    t.integer "country_specific"
-  end
-
-  add_index "slots", ["blueprint_id"], :name => "index_slots_on_blueprint_id"
-  add_index "slots", ["carrier_id"], :name => "index_slots_on_carrier_id"
-  add_index "slots", ["converter_id"], :name => "index_slots_on_converter_id"
-
-  create_table "time_curve_entries", :force => true do |t|
-    t.integer  "graph_id"
-    t.integer  "converter_id"
-    t.integer  "year"
-    t.float    "value"
-    t.string   "value_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "time_curve_entries", ["graph_id"], :name => "index_time_curve_entries_on_graph_id"
 
   create_table "users", :force => true do |t|
     t.string   "name",                                  :null => false
