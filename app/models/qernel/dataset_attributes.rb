@@ -186,7 +186,7 @@ module Qernel::DatasetAttributes
     # calculation. so we can stack multiple demands together
     #
     # attr_name_sym = attr_name.to_sym
-    # if attr_name_sym === :preset_demand || attr_name_sym === :municipality_demand
+    # if attr_name_sym === :preset_demand
     #  send("#{attr_name}=", value)
     # else
       self.send("#{attr_name}=", value)

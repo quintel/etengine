@@ -68,30 +68,6 @@ module Gql::UpdateInterface
       end
       nil
     end
-    
-    ##
-    # experimental
-    def national_production_in_mw
-      converter = converter_proxy.converter
-      converter.preset_demand = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
-      converter.outputs.each do |slot|
-        slot.links.select(&:constant?).each do |link|
-          link.share = converter.preset_demand + (converter.municipality_demand || 0)
-        end
-      end
-      nil
-    end
-    
-    def municipality_production_in_mw
-      converter = converter_proxy.converter
-      converter.municipality_demand = converter.query.capacity_factor * value.to_f * SECS_PER_YEAR
-      converter.outputs.each do |slot|
-        slot.links.select(&:constant?).each do |link|
-          link.share = converter.municipality_demand + (converter.preset_demand || 0)
-        end
-      end
-      nil
-    end
 
     def om_growth_total
       [
@@ -144,8 +120,6 @@ module Gql::UpdateInterface
         number_of_heat_units
         ventilation_rate_buildings
         production_in_mw
-        municipality_production_in_mw
-        national_production_in_mw
         constant_output_link_value
       ].include?(key.to_s)
     end

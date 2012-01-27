@@ -198,7 +198,7 @@ class ConverterApi
   # attributes updated by Converter#graph=
   attr_accessor :area, :graph
   # dataset attributes of converter
-  dataset_accessors [:municipality_demand, :preset_demand, :demand]
+  dataset_accessors [:preset_demand, :demand]
 
   # ConverterApi has same accessor as it's converter
   def self.dataset_group
@@ -233,13 +233,6 @@ class ConverterApi
   def energy_balance_group
     converter.energy_balance_group
   end
-
-  # See {Qernel::Converter} for municipality_demand
-  #
-  def municipality_demand=(val)
-    converter.municipality_demand = val
-  end
-
 
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
