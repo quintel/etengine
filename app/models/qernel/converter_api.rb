@@ -64,7 +64,6 @@ class ConverterApi
     :full_load_hours,
     :installing_costs_per_mw_input,
     :land_use_per_unit,
-    :lead_time,
     :network_capacity_available_in_mw,
     :network_capacity_used_in_mw,
     :network_expansion_costs_in_euro_per_mw,
