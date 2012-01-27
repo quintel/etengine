@@ -430,12 +430,11 @@ protected
   def update_initial_demand
     preset = dataset_get(:preset_demand)
 
-    if preset.nil? && municipality.nil?
+    if preset.nil?
       nil
     else
       total = 0.0
       total += preset if preset
-      total += municipality if municipality
 
       self.demand = total
     end
