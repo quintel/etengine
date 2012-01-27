@@ -42,7 +42,7 @@ class ConverterPosition < ActiveRecord::Base
     :neighbor     => '#87CEEB'
   }.with_indifferent_access
 
-  belongs_to :converter
+  #belongs_to :converter
   belongs_to :blueprint_layout
 
   validates_presence_of :converter_id, :on => :create, :message => "can't be blank"
@@ -52,7 +52,7 @@ class ConverterPosition < ActiveRecord::Base
     position.tap{|p| p.converter = converter }
   end
 
-  def fill_color
+  def fill_color(converter)
     if converter && converter.sector_key
       STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym] 
     else
@@ -60,15 +60,15 @@ class ConverterPosition < ActiveRecord::Base
     end
   end
 
-  def stroke_color
-    (converter && converter.energy_balance_group.andand.graphviz_color) || '#999'
+  def stroke_color(converter)
+    (converter && EnergyBalanceGroup.find_by_name(converter.energy_balance_group).andand.graphviz_color) || '#999'
   end
 
-  def x_or_default
-    self.x || converter.energy_balance_group.andand.graphviz_default_x || 100
+  def x_or_default(converter)
+    self.x || EnergyBalanceGroup.find_by_name(converter.energy_balance_group).andand.graphviz_default_x || 100
   end
 
-  def y_or_default
+  def y_or_default(converter)
     self.y || DEFAULT_Y_BY_SECTOR[converter.sector_key.to_s.to_sym] || 100
   end
 end

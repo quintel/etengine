@@ -56,7 +56,7 @@ private
 
   def find_models
     @blueprint_layout = BlueprintLayout.find(params[:id])
-    @converter_positions = @blueprint_layout.converter_positions.inject({}) {|hsh, cp| hsh.merge cp.converter_key => cp}
+    @converter_positions = ConverterPosition.all.inject({}) {|hsh, cp| hsh.merge cp.converter_id => cp}
   end
 
   def graph_to_json(graph)
@@ -65,7 +65,7 @@ private
         v = c.query.send(key)
         h.merge key => auto_number(v)
       end
-      hsh.merge c.full_key.to_s => attr_hash
+      hsh.merge c.excel_id => attr_hash
     end
   end
 
