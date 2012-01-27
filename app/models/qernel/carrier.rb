@@ -22,8 +22,6 @@ class Carrier
     :typical_production_per_km2,
     :kg_per_liter,
     :mj_per_kg,
-    :supply_chain_margin_per_mj,
-    :oil_price_correlated_part_production_costs,
     :infinite, # infinite getter is overwritten below for legacy reason. 
     *CO2_FCE_COMPONENTS
   ]
