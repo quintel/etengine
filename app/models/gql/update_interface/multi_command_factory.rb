@@ -100,17 +100,6 @@ module Gql::UpdateInterface
       ]
     end
     
-    def cost_per_mj_oil_related_growth_total
-      carrier = converter_proxy
-      new_cost_per_mj = (1 + value) * 
-        (carrier.cost_per_mj - carrier.supply_chain_margin_per_mj) * 
-        carrier.oil_price_correlated_part_production_costs + 
-        ( 1 - carrier.oil_price_correlated_part_production_costs) * 
-        ( carrier.cost_per_mj - carrier.supply_chain_margin_per_mj ) + 
-        carrier.supply_chain_margin_per_mj     
-      AttributeCommand.new(carrier, :cost_per_mj, new_cost_per_mj, :value)
-    end
-    
     def ventilation_rate_buildings
       calculated_value = value / graph.query.area.ventilation_rate
       new_demand = calculated_value * converter_proxy.demand
@@ -158,7 +147,6 @@ module Gql::UpdateInterface
         municipality_production_in_mw
         national_production_in_mw
         constant_output_link_value
-        cost_per_mj_oil_related_growth_total
       ].include?(key.to_s)
     end
 
