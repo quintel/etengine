@@ -1,7 +1,7 @@
-class Etsource::CommitsController < Etsource::BaseController
+class Etsource::CommitsController < ApplicationController
+  layout 'etsource'
   
-  
-
+  authorize_resource :class => false
 
   # data/latest/etsource/commits/current
   def show
