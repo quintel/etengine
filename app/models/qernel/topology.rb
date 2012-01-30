@@ -70,7 +70,7 @@ module Qernel
 
           input, output = Qernel::Slot::Token.find(line)
 
-          raise "No Slots '#{line}'" if input.nil? or output.nil?
+          Rails.logger.warn("No Slots '#{line}'") if input.nil? or output.nil?
           Rails.logger.warn("Carriers do not match in '#{line}'") if input.carrier_key != output.carrier_key
           @carrier_key = input.carrier_key
           @input_key   = input.converter_key
