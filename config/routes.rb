@@ -46,12 +46,6 @@ Etm::Application.routes.draw do
       resources :blueprint_layouts, :except => [:update, :destroy] do
         resources :converter_positions, :only => :create
       end
-      
-      scope "/etsource" do
-        resources :commits, :only => [:index, :show] do
-          get :import, :on => :member
-        end
-      end
 
       resources :gqueries do
         get :result, :on => :member
@@ -86,6 +80,14 @@ Etm::Application.routes.draw do
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
+    end
+  end
+
+  namespace :etsource do
+    root :to => 'commits#index'
+
+    resources :commits, :only => [:index, :show] do
+      get :import, :on => :member
     end
   end
 

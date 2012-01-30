@@ -1,0 +1,51 @@
+!!! Strict
+%html{ :xmlns => "http://www.w3.org/1999/xhtml" }
+  %head
+    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
+    %title EnergyTransitionModel
+      
+    = javascript_include_tag :defaults
+    = javascript_include_tag 'underscore.min'
+    = javascript_include_tag 'bootstrap-twipsy', 'bootstrap-alerts', 'bootstrap-modal', 'bootstrap-popover', 'bootstrap-buttons', 'bootstrap-dropdown', 'bootstrap-tabs'
+    = sprocket_layout_init :admin
+    = sprocket_layout_init :testcases
+
+    = stylesheet_link_tag 'input'
+    = stylesheet_link_tag 'vendor/smoothness/jquery-ui-1.8.16.custom'
+
+  %body#data
+    .topbar
+      .topbar-inner
+        .container-fluid
+          %a.brand{:href => etsource_root_path} Etsource
+          %ul.nav
+            %li= link_to 'Commits', etsource_commits_path
+            %li= link_to 'Current', etsource_commit_path('current')
+            
+            %li= link_to '/data', data_root_path(api_scenario_id: 'latest')
+          %p.pull-right== Logged in as #{current_user.email}
+
+
+    .container-fluid
+      #subnav
+        = yield :subnav
+
+      - if breadcrumbs.any?
+        #breadcrumbs
+          %ul.breadcrumb
+            - breadcrumbs.each do |breadcrumb| 
+              %li
+                = link_to breadcrumb, '#'
+                %span.divider 
+      
+      #flash
+        - flash.each do |type,msg|
+          .alert-message{:class => type}
+            %a.close x
+            %p= msg
+              
+
+      
+      #content= yield
+      #footer
+        = yield :footer

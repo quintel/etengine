@@ -1,7 +1,7 @@
-class Data::CommitsController < Data::BaseController
-  skip_before_filter :find_graph
+class Etsource::CommitsController < Etsource::BaseController
+  
+  
 
-  set_tab :commits
 
   # data/latest/etsource/commits/current
   def show
