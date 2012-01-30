@@ -1,0 +1,51 @@
+
+- scenarios = []
+- scenarios << ApiScenario.default.tap{|s| s.title = 'default'}
+- scenarios << ApiScenario.new(:scenario_id => 23954, :title => 'Test Scenario')
+- scenarios << ApiScenario.new(:scenario_id =>  2998, :title => 'Dursame Energy 99%')
+- dashboard_gqueries = Gquery.all.select(&:dashboard?)
+
+.row
+  - scenarios.each do |scenario|
+    - gql_initialize_time = Time.now
+    - gql = scenario.gql(prepare: false)
+    - gql_initialize_time = Time.now - gql_initialize_time
+    - gql_prepare_time = Time.now
+    - gql.prepare rescue ''
+    - gql_prepare_time = Time.now - gql_prepare_time
+  
+    .span10
+      %h4
+        = scenario.title || scenario.preset_scenario_id
+        %small
+          == initializing: #{gql_initialize_time.round(3)}s
+          == preparing: #{gql_prepare_time.round(3)}s
+
+
+      - query_time = Time.now
+      %table.condensed-table.zebra-striped
+        %thead
+          %tr
+            %th.span5 Gquery
+            %th.span1 Present
+            %th.span1 Future
+            %th.span1 Time
+        %tbody
+          - dashboard_gqueries.each do |gquery|
+            - result_time = Time.now
+            - result = gql.query(gquery, :debug)
+            - result_time = Time.now - result_time
+            %tr
+              %td
+                %small= link_to gquery.key, data_gquery_key_path(:key => gquery.key, :api_scenario_id => 'latest')
+              %td= auto_number result.present_value
+              %td= auto_number result.future_value
+              %td== #{result_time.round(3)}s
+        %tfoot
+          - query_time = Time.now - query_time
+          %tr
+            %td
+            %td(colspan=2) All gqueries:
+            %td
+              %small== #{query_time.round(3)}s
+          

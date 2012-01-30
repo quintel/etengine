@@ -1,0 +1,32 @@
+- breadcrumb link_to("ETSource", etsource_root_path)
+
+
+%section#search_box
+  .row
+    .span16
+  
+      = form_tag etsource_commits_path, :method => :get do
+        Branches
+        = select_tag :branch, options_for_select(@branches, @branch)
+        = submit_tag "Checkout", :class => 'btn primary'
+        = submit_tag "Refresh", :class => 'btn'
+        = link_to "verify if dashboard is working", etsource_commit_path(id: 'current')
+  
+- if @output
+  %pre.git_output= @output
+
+
+.row
+  .span16
+    %h3 Commits in #{@branch}
+    %table.zebra-striped.condensed-table
+      %tbody  
+        - @commits.each do |commit|
+          %tr
+            %td.span9= commit.message
+            %td.span1= link_to commit.to_s[0..6], "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
+            %td.span1= link_to 'IMPORT', import_etsource_commit_path(:id => commit.to_s)
+            %td.span2= commit.date.strftime("%m-%d %H:%M")
+            %td.span3= commit.author.name
+            
+              
