@@ -11,7 +11,6 @@ class Data::ConvertersController < Data::BaseController
     page, per_page = params[:page] || 1, 100
     @num_pages = @converters.length / per_page
     @converters = @converters.sort_by(&:full_key)[((page - 1) * per_page)...(page * per_page)]
-
   end
 
   def edit
