@@ -4,7 +4,7 @@ load 'lib/capistrano/db_recipes'
 
 load 'config/deploy' # remove this line to skip loading any of the default tasks
 
-namespace :memcached do 
+namespace :memcached do
   desc "Start memcached"
   task :start, :roles => [:app] do
     sudo "/etc/init.d/memcached start"
@@ -18,12 +18,12 @@ namespace :memcached do
   desc "Restart memcached"
   task :restart, :roles => [:app] do
     sudo "/etc/init.d/memcached restart"
-  end        
+  end
 
   desc "Flush memcached - this assumes memcached is on port 11211"
   task :flush, :roles => [:app] do
     sudo "echo 'flush_all' | nc -q 1 localhost 11211"
-  end     
+  end
 end
 
 
@@ -31,6 +31,7 @@ namespace :deploy do
   task :copy_configuration_files do
     run "ln -s #{shared_path}/config/config.yml #{release_path}/config/"
     run "ln -s #{shared_path}/config/database.yml #{release_path}/config/"
+    run "ln -s #{shared_path}/config/latest_etsource_import_sha #{release_path}/config/"
     run "cd #{release_path}; chmod 777 public/images public/stylesheets tmp"
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
     run "cd #{release_path} && bundle install"
@@ -48,7 +49,7 @@ namespace :deploy do
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
   end
-  
+
   task :wipe_cache do
     memcached.restart
     restart
