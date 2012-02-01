@@ -1,6 +1,9 @@
 class ConvertersController < ApplicationController
   before_filter :find_graph, :only => :show
 
+  # GET /converters/foobar?api_scenario_id=12345
+  # This action is nearly identical to /data/123456/converters/foobar
+  # It's kept separate to simplify authorization and views
   def show
     key = params[:id].to_sym
     converter_id = Converter.full_keys[key]
@@ -13,8 +16,6 @@ class ConvertersController < ApplicationController
   private
 
   def find_graph
-    # TODO: ETM should pass the right scenario id or, at least, the country
-    # DEBT: Data::BaseController has an identical method
     api_scenario_id = params[:api_scenario_id] ||= 'latest'
     if api_scenario_id == 'latest'
       @api_scenario = ApiScenario.last
