@@ -1,11 +1,11 @@
-Etm::Application.routes.draw do  
+Etm::Application.routes.draw do
   root :to => 'pages#index'
-  
+
   match 'login'  => 'user_sessions#new',     :as => :login
   match 'logout' => 'user_sessions#destroy', :as => :logout
 
   resources :user_sessions
-  
+
   # Frontend
   resources :converters, :only => [:show]
   resource :graph, :only => :show
@@ -16,14 +16,14 @@ Etm::Application.routes.draw do
       collection do
         get :homepage
       end
-    end    
+    end
     resources :api_scenarios do
-      member do 
+      member do
         get :user_values
         get :input_data
       end
     end
-    resources :areas, :only => [:index, :show]
+    resources :areas, :only => [:show, :index]
     resources :inputs, :only => [:index, :show]
     resources :gqueries, :only => [:index]
     # catches all OPTIONS requests
@@ -32,7 +32,7 @@ Etm::Application.routes.draw do
 
   namespace :data do
     root :to => "pages#index", :api_scenario_id => 'latest'
-    
+
     match '/redirect'    => "base#redirect", :as => 'redirect'
     match '/restart'     => 'pages#restart', :as => 'restart'
     match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
@@ -62,10 +62,10 @@ Etm::Application.routes.draw do
 
       resources :fce_values
 
-      resources :converters, :only => [:index, :edit, :show] 
+      resources :converters, :only => [:index, :edit, :show]
       resources :gquery_groups, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
-      resource  :area, :as => :area
+      resource  :area, :as => :area, :only => :show
 
       resources :gql_test_cases
       resources :query_tables

@@ -5,7 +5,7 @@ class Data::GqueriesController < Data::BaseController
 
   def index
     sort = params[:sort] ? "`#{params[:sort]}`" : "`key`"
-    order = params[:order] == 'ascending' ? "asc" : "desc" 
+    order = params[:order] == 'ascending' ? "asc" : "desc"
 
     @gqueries = Gquery.by_name_multi(params[:q]).
                   by_groups(params[:group_ids]).
@@ -15,9 +15,9 @@ class Data::GqueriesController < Data::BaseController
 
   def dump
     sort = params[:sort] ? "`#{params[:sort]}`" : "`gquery_group_id`"
-    order = params[:order] == 'ascending' ? "asc" : "desc" 
-    
-    @gqueries = Gquery.order("#{sort} #{order}")    
+    order = params[:order] == 'ascending' ? "asc" : "desc"
+
+    @gqueries = Gquery.order("#{sort} #{order}")
     @gqueries = @gqueries.contains(params[:search]) if params[:search]
   end
 
@@ -73,19 +73,19 @@ class Data::GqueriesController < Data::BaseController
     end
     redirect_to data_gqueries_url
   end
-  
+
   # Similar to the show action, but finding the gquery by key. It makes sense to
   # keep the two actions separated.
   # SB (2011-12-06): Why does it make sense to keep the two actions separated?
   def key
-    @gquery = Gquery.get(params[:key])
+    @gquery = Gquery.get(params[:key]) rescue nil
     if @gquery
       render :show
     else
       redirect_to data_gqueries_path(:q => params[:key]), :alert => 'Gquery key not found!'
     end
   end
-  
+
   private
 
     def find_model
@@ -97,7 +97,7 @@ class Data::GqueriesController < Data::BaseController
         @gquery = Gquery.find(params[:id])
       end
     end
-  
+
     def assign_query_groups(gquery,groups)
       return unless groups.kind_of?(Array)
       groups.each do |group|
