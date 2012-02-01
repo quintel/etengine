@@ -4,7 +4,7 @@ class Data::ConvertersController < Data::BaseController
     if params[:q]
       @converters = @converters.select{|c| c.full_key.to_s.include?(params[:q])}
     end
-    if params[:group_id]
+    unless params[:group_id].blank?
       group = Group.find(params[:group_id])
       @converters = @converters.select{|c| c.groups.include?(group.key.to_sym) }
     end
@@ -31,7 +31,7 @@ class Data::ConvertersController < Data::BaseController
   end
 
   protected
-  
+
     def diagram
       depth = params[:depth].andand.to_i || 3
       base_url = "/data/latest/nl/converters/"
