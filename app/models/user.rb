@@ -35,15 +35,15 @@ class User < ActiveRecord::Base
   belongs_to :role
   attr_protected :role_id #To refrain Hackers from using mass assignment when creating new account
 
-  validates_format_of   :phone_number, 
+  validates_format_of   :phone_number,
                         :message => " is niet goed ingevuld.",
                         :with => /^[\(\)0-9\- \+\.]{10,20}$/,
                         :if => Proc.new { |o| !o.phone_number.nil? }
 
   validates_presence_of :name
-  
+
   acts_as_authentic
-  
+
   def admin?
     self.role.try(:name) == "admin"
   end

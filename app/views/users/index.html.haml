@@ -1,0 +1,17 @@
+%h1 User Index
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Email
+      %th
+  %tbody
+    - @users.each do |u|
+      %tr{:class => cycle('even', 'odd')}
+        %td= u.id
+        %td= u.email
+        %td
+          = link_to 'edit', edit_user_path(u)
+
+= link_to 'New user', new_user_path
