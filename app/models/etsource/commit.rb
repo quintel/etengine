@@ -20,6 +20,9 @@ module Etsource
 
       Rails.cache.clear
       update_client APP_CONFIG[:client_refresh_url]
+      true
+    rescue
+      false
     end
 
     def message

@@ -36,9 +36,14 @@ module Etsource
     def base_dir
       @etsource_dir
     end
-    
+
     def current_branch
       @git.current_branch
+    end
+
+    # Returns the SHA of the current checked-out revision
+    def current_rev
+      @git.revparse 'HEAD'
     end
   end
 end
