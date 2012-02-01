@@ -9,6 +9,7 @@ Etm::Application.routes.draw do
   # Frontend
   resources :converters, :only => [:show]
   resource :graph, :only => :show
+  resources :users
 
   scope '/api/v2', :module => 'api' do
     resources :scenarios, :only => [:index, :show, :create, :update] do
