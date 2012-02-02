@@ -46,7 +46,7 @@ end
 
 task :edge do
   set :domain, "edge.et-engine.com"
-  set :branch, "master"
+  set :branch, "staging"
 
   # change this to #{application}_staging when you want it in a different directory
   set :application_key, "#{application}_edge" 
