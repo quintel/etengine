@@ -2,7 +2,7 @@
 %table.input_outputs
   %thead
     %tr
-      %th{:colspan => 2}= @converter_present.full_key
+      %th{:colspan => 3}= @converter_present.full_key
   %tbody
     %tr
       %td
@@ -14,7 +14,7 @@
             %tr
               %th
               %th Carrier
-              %th Conversion
+              %th Carrier conversion efficiency
           %tbody
             - c.outputs.each do |output_slot|
               %tr
@@ -24,8 +24,8 @@
                       %thead
                         %tr
                           %th Converter
-                          %th Value
-                          %th Share
+                          %th Energy flow (MJ)
+                          %th Share of input
                           %th Type
                       %tbody
                         - output_slot.links.each_with_index do |output_link, i|
@@ -34,18 +34,19 @@
                             %td{:title => output_link.value}= auto_number output_link.value
                             %td{:class => output_link.kind,
                                 :title => output_link.share}= output_link.share.andand.round(2)
-                            %td= output_link.link_type                  
+                            %td= output_link.link_type
                   %td.centered= output_slot.carrier.key
                   %td.centered{:class => output_slot.kind,
                                :title => output_slot.conversion}= output_slot.conversion.round(2)
+      %td
       %td
         %table
           %thead
             %tr
               %th{:colspan => 2} Input Slots
-              %th Links           
+              %th Links
             %tr
-              %th Conversion
+              %th Carrier conversion efficiency
               %th Carrier
               %th
           %tbody
@@ -60,8 +61,8 @@
                       %thead
                         %tr
                           %th Type
-                          %th Share
-                          %th Value
+                          %th Share of input
+                          %th Energy flow (MJ)
                           %th Converter
                       %tbody
                         - input_slot.links.each_with_index do |input_link, i|
