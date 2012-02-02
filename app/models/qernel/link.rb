@@ -182,7 +182,7 @@ protected
   def calculate_inversed_flexible
     #raise "#{@child.full_key} has no demand" if @child.demand.nil?
     result = @child.demand - @child.outputs.map(&:external_link_value).compact.sum
-    (result < 0.0) ? 0.0 : result
+    # (result < 0.0) ? 0.0 : result
   end
 
   #
