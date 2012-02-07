@@ -32,16 +32,19 @@ class ApiScenario < Scenario
   def self.new_attributes(settings = {})
     settings ||= {}
     attributes = Scenario.default_attributes.merge(:title => "API")
-    attributes.merge(settings)
+    out = attributes.merge(settings)
+    # strip invalid attributes
+    out.delete_if{|k,v| !column_names.include?(k.to_s)}
+    out
   end
 
   def gql(options = {})
     # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
     @gql ||= Gql::Gql.new(self)
-    # At this point gql is not "prepared" see {Gql::Gql#prepare}. 
+    # At this point gql is not "prepared" see {Gql::Gql#prepare}.
     # We could force it here to always prepare, but that would slow things down
     # when nothing has changed in a scenario. Uncommenting this would decrease performance
-    # but could get rid of bugs introduced by forgetting to prepare in some cases when we 
+    # but could get rid of bugs introduced by forgetting to prepare in some cases when we
     # access the graph through the gql (e.g. @gql.present_graph.converters.map(&:demand)).
 
     prepare_gql if options[:prepare] == true
@@ -61,7 +64,7 @@ class ApiScenario < Scenario
     values = Rails.cache.fetch("inputs.user_values.#{region}") do
       Input.static_values(gql)
     end
-    
+
     Input.dynamic_start_values(gql).each do |id, dynamic_values|
       values[id.to_s][:start_value] = dynamic_values[:start_value] if values[id.to_s]
     end
