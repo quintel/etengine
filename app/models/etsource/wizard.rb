@@ -16,6 +16,7 @@ module Etsource
   class Wizard
     attr_accessor :file_name
 
+    # file_name is really just the path _wizards/.../
     def initialize(file_name, etsource = Etsource::Base.new)
       @file_name = file_name
       @etsource = etsource
@@ -27,6 +28,15 @@ module Etsource
 
     def description_template_file
       [base_dir,file_name,"description.html.erb"].join('/')
+    end
+
+    def compiled_transformer_file_content(country)
+      f = compiled_transformer_file(country)
+      if File.exists?(f)
+        File.read(f)
+      else
+        '(no file)'
+      end
     end
 
     def config
@@ -55,6 +65,10 @@ module Etsource
   protected
   #########
 
+    def compiled_transformer_file(country)
+      "#{@etsource.base_dir}/compiled/#{country}/_wizards/#{file_name}/transformer.yml"
+    end
+    
     # DEBT: refactor this two methods
     def base_dir
       "#{@etsource.base_dir}/datasets/_wizards"

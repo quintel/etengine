@@ -4,5 +4,10 @@
 
 .row
   .span16
-    %h1= @form.code
+    .page-header
+      %h2
+        = @form.code
+    %p
+      = link_to 'compiled transformer.yml', compiled_input_tool_wizard_path(@form.id), :class => 'btn'
+
   = render 'form'

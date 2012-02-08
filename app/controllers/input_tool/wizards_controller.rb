@@ -3,21 +3,6 @@ module InputTool
     before_filter :assign_area_code
     before_filter :assign_scenario
 
-    def assign_area_code
-      @area_code = params[:area_code] || 'nl'
-    end
-
-    # Assign a area_code to a scenario, so @gql properly loads
-    def assign_scenario
-      Current.scenario = ApiScenario.new(ApiScenario.default_attributes.merge :country => @area_code)
-      @gql = Current.scenario.gql
-      @gql.prepare
-    end
-
-    def default_url_options
-      {:area_code => @area_code}
-    end
-
     def index
       @saved_wizards = SavedWizard.area_code(@area_code)
       @stored_wizard_codes = @saved_wizards.map(&:code)
@@ -27,17 +12,20 @@ module InputTool
     def show
     end
 
+    def compiled
+      @form   = SavedWizard.find(params[:id])
+      @wizard = Etsource::Wizard.new(@form.code)
+    end
+
     def destroy
       @form = SavedWizard.find(params[:id])
       @form.destroy
       redirect_to input_tool_wizards_url
     end
 
-
     def new
       @form   = InputTool::SavedWizard.new(:code => params[:code], :area_code => @area_code)
       @wizard = Etsource::Wizard.new(@form.code)
-
     end
 
     def create
@@ -66,5 +54,23 @@ module InputTool
       @form   = SavedWizard.find(params[:id])
       @wizard = Etsource::Wizard.new(@form.code)
     end
+  
+  protected
+
+    def assign_area_code
+      @area_code = params[:area_code] || 'nl'
+    end
+
+    # Assign a area_code to a scenario, so @gql properly loads
+    def assign_scenario
+      Current.scenario = ApiScenario.new(ApiScenario.default_attributes.merge :country => @area_code)
+      @gql = Current.scenario.gql
+      @gql.prepare
+    end
+
+    def default_url_options
+      {:area_code => @area_code}
+    end
+
   end
 end
