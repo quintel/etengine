@@ -20,8 +20,16 @@ class ApiRequest
 
     Input.reset_all_cached if self.test_scenario?
 
+    # DEBT SECURITY: we probably should whitelist attributes.
+    # this assigns params[:r], params[:result], and other attr_accessors
     attributes.each do |key, value|
       send("#{key}=", value) if respond_to?("#{key}=")
+    end
+
+    # if params[:settings] are passed, update the scenario.
+    if attributes.has_key?(:settings) && !scenario.new_record?
+       # only update if scenario already exists
+      scenario.update_attributes(attributes[:settings])
     end
   end
 
