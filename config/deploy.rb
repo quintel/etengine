@@ -25,6 +25,11 @@ task :production do
 end
 
 task :staging do
+  warn "\n\n# DEPRECATED *staging* \n#\n# cap staging deploy is now cap *beta* deploy\n\n"
+  exit
+end
+
+task :beta do
   set :domain, "beta.et-engine.com"
   set :branch, "staging"
 
