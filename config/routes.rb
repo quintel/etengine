@@ -94,6 +94,8 @@ Etm::Application.routes.draw do
 
   namespace :input_tool do
     root :to => "wizards#index"
-    resources :wizards
+    resources :wizards do
+      get :compiled, :on => :member
+    end
   end
 end
