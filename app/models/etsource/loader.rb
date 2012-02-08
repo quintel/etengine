@@ -27,12 +27,12 @@ module Etsource
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
       ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
-        if Etsource::Config::FORCE_DATASET_RELOAD
-          ::Etsource::Dataset.new(country).import
-        else
+        if Etsource::Config::CACHE_DATASET
           cache("datasets/#{country}/#{InputTool::SavedWizard.last_updated(country).to_i}") do
             ::Etsource::Dataset.new(country).import
           end
+        else
+          ::Etsource::Dataset.new(country).import
         end
       end
     end
