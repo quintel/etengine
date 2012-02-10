@@ -10,16 +10,16 @@ module Qernel
 # attributes like cost, co2, etc. It is more like a node in a graph.
 #
 # === ConverterApi
-# 
+#
 # A ConverterApi instance includes (static) attributes (stored in the
-# ::Converter table) and dynamic attributes that are calculated based 
+# ::Converter table) and dynamic attributes that are calculated based
 # on the static ones. It doesn't (really) know about links, slots, etc
 # but can access them through #converter. It's more like a data-model.
 #
 #
 # === Reasons for separation
 #
-# Converter is relatively simple, ConverterApi has a lot of code. Like 
+# Converter is relatively simple, ConverterApi has a lot of code. Like
 # this we can keep the calculation part simple. Also regarding that in
 # the future it might be easier to implement the graph for instance in
 # another language (C, Java, Scala).
@@ -29,10 +29,10 @@ module Qernel
 # on an array of objects that implement method_missing degrades performance
 # a lot.
 #
-# 
 #
 #
-# You can use all the methods directly in the GQL. *Do not miss* the 
+#
+# You can use all the methods directly in the GQL. *Do not miss* the
 # *Dynamic Method Handling* section.
 #
 #
@@ -80,14 +80,14 @@ class ConverterApi
     :technical_lifetime,
     :typical_nominal_input_capacity,
     :wacc,
-    
     :merit_order_start,
-    :merit_order_end
+    :merit_order_end,
+    :average_effective_output_of_nominal_capacity_over_lifetime
   ]
-  
+
   # For the data/converter/show page we need grouping of the attributes
   # these atrribut groups should only be used to show the values in the data section
-  
+
   ELECTRICITY_PRODUCTION_VALUES  =  {
     :technical => {
       :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
@@ -106,12 +106,12 @@ class ConverterApi
       :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro / full load hour'],
       :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro / full load hour'],
       :wacc  => ['Weighted average cost of capital', '%'],
-      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']
     },
     :other => {
       :land_use_per_unit  => ['Land use per unit', 'km2'],
       :construction_time  => ['Construction time', 'year'],
-      :technical_lifetime  => ['Technical lifetime', 'year']      
+      :technical_lifetime  => ['Technical lifetime', 'year']
     }
   }
 
@@ -130,14 +130,14 @@ class ConverterApi
       :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
       :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour'],
       :wacc  => ['Weighted average cost of capital', '%'],
-      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']
     },
     :other => {
       :land_use_per_unit  => ['Land use per unit', 'km2'],
-      :technical_lifetime  => ['Technical lifetime', 'year']      
+      :technical_lifetime  => ['Technical lifetime', 'year']
     }
   }
-  
+
   HEAT_PUMP_VALUES  =  {
     :technical => {
       :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
@@ -154,14 +154,14 @@ class ConverterApi
       :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
       :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour'],
       :wacc  => ['Weighted average cost of capital', '%'],
-      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']
     },
     :other => {
       :land_use_per_unit  => ['Land use per unit', 'km2'],
-      :technical_lifetime  => ['Technical lifetime', 'year']      
+      :technical_lifetime  => ['Technical lifetime', 'year']
     }
   }
-  
+
   CHP_VALUES  =  {
     :technical => {
       :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
@@ -181,12 +181,12 @@ class ConverterApi
       :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro / full load hour'],
       :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro / full load hour'],
       :wacc  => ['Weighted average cost of capital', '%'],
-      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']      
+      :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0']
     },
     :other => {
       :land_use_per_unit  => ['Land use per unit', 'km2'],
       :construction_time  => ['Construction time', 'year'],
-      :technical_lifetime  => ['Technical lifetime', 'year']      
+      :technical_lifetime  => ['Technical lifetime', 'year']
     }
   }
   dataset_accessors ATTRIBUTES_USED
@@ -299,7 +299,7 @@ class ConverterApi
   create_methods_for_each_carrier(Etsource::Dataset::Import.new('nl').carrier_keys)
 
   # creates a method during run time if method_missing
-  # 
+  #
   def self.create_share_of_converter_method(converter_key)
     key = converter_key.to_sym
     define_method "share_of_#{key}" do
@@ -307,16 +307,16 @@ class ConverterApi
       ol and ol.share
     end
   end
-  
+
   # creates a method during run time if method_missing and returns the value
-  # 
+  #
   def self.create_share_of_converter_method_and_execute(caller, converter_key)
     create_share_of_converter_method(converter_key)
     caller.send("share_of_#{converter_key}")
   end
 
   # creates a method during run time if method_missing
-  # 
+  #
   def self.create_input_link_method(method_id, carrier_name, side, method)
     if carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/)
       carrier_name, link_type = carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
@@ -332,7 +332,7 @@ class ConverterApi
   end
 
   # creates a method during run time if method_missing and returns the value
-  # 
+  #
   def self.create_input_link_method_and_execute(caller, method_id, carrier_name, side, method)
     create_input_link_method(method_id, carrier_name, side, method)
     caller.send(method_id)
@@ -351,7 +351,7 @@ class ConverterApi
   def method_missing(method_id, *arguments)
     ActiveSupport::Notifications.instrument("gql.debug", "ConverterApi:method_missing #{method_id}")
 
-    # electricity_      
+    # electricity_
     if m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
       carrier_name, side, method = m.captures
       self.class.create_input_link_method_and_execute(self, method_id, carrier_name, side, method)
