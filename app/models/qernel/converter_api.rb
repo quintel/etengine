@@ -59,7 +59,6 @@ class ConverterApi
     :construction_time,
     :costs_per_mj,
     :decommissioning_costs_per_mw_input,
-    :decrease_in_nominal_capacity_over_lifetime,
     :demand_expected_value,
     :full_load_hours,
     :installing_costs_per_mw_input,
