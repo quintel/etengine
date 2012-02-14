@@ -1,6 +1,6 @@
 class Data::BaseController < ApplicationController
   layout 'data'
-  before_filter :find_graph
+  before_filter :initialize_gql
 
   authorize_resource :class => false
 
@@ -21,4 +21,5 @@ class Data::BaseController < ApplicationController
       Current.scenario = @api_scenario
       @gql = @api_scenario.gql(prepare: true)
     end
+    alias initialize_gql find_graph
 end

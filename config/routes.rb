@@ -38,11 +38,14 @@ Etm::Application.routes.draw do
     match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     scope '/:api_scenario_id' do
+      # Hanlde paths from previous routes.
       scope "/nl" do
         match "*path" => "pages#url_changed"
       end
 
       root :to => "pages#index"
+
+      # The Graphviz
       resources :blueprint_layouts, :except => [:update, :destroy] do
         resources :converter_positions, :only => :create
       end
@@ -76,6 +79,8 @@ Etm::Application.routes.draw do
         put :fix, :on => :member
       end
       resources :energy_balance_groups
+
+      match '/checks/:action' => 'checks'
 
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
