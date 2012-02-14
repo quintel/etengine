@@ -41,6 +41,10 @@ module Etsource
       @git.current_branch
     end
 
+    def detached_branch?
+      current_branch =~ /no branch/
+    end
+
     # Returns the SHA of the current checked-out revision
     def current_rev
       @git.revparse 'HEAD'

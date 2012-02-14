@@ -92,7 +92,10 @@ Etm::Application.routes.draw do
     root :to => 'commits#index'
 
     resources :commits, :only => [:index, :show] do
-      get :import, :on => :member
+      member do
+        get :import
+        get :checkout
+      end
     end
   end
 
