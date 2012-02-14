@@ -81,7 +81,9 @@ class ConverterApi
     :wacc,
     :merit_order_start,
     :merit_order_end,
-    :average_effective_output_of_nominal_capacity_over_lifetime
+    :average_effective_output_of_nominal_capacity_over_lifetime,
+
+    :excel_id # temporary fix to still support excel_ids. used now for graphviz
   ]
 
   # For the data/converter/show page we need grouping of the attributes
@@ -202,6 +204,10 @@ class ConverterApi
     @dataset_group ||= Qernel::Converter.dataset_group
   end
 
+  def full_key
+    converter.full_key
+  end
+
   def to_s
     converter && converter.full_key.to_s
   end
@@ -244,6 +250,7 @@ class ConverterApi
   #
   def demand_expected?
     expected = demand_expected_value
+
     return nil if demand.nil? or expected.nil?
 
     return true if demand.to_f == 0 and expected.to_f == 0.0

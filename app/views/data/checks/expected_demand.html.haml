@@ -1,0 +1,34 @@
+
+= render 'subnav'
+
+.header Check if present demand matches demand_expected_value.
+
+- @converters = @gql.present_graph.converters
+
+%p
+  %strong
+    = @converters.select{ |c| c.query.demand_expected? == false }.length
+    converters are unhappy. :-( 
+
+%table
+  %thead
+    %tr
+      %th Id
+      %th Key
+
+      %th Demand
+      %th Expected
+      %th
+  %tbody
+    - @converters.map(&:query).each do |converter|
+      %tr
+        %td
+          %a{:id => converter.full_key}= converter.dataset_get(:excel_id)
+        %td= converter.full_key
+        %td.align-right= auto_number converter.demand
+        %td.align-right= auto_number converter.demand_expected_value
+        %td
+          &nbsp;
+          - if converter.demand_expected? == false
+            \:-(
+          &nbsp; 
