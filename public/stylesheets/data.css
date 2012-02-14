@@ -199,6 +199,15 @@ body {
 input[type=number] {
   width: 40px; }
 
+.align-right {
+  text-align: right; }
+
+.align-center {
+  text-align: center; }
+
+.align-left {
+  text-align: left; }
+
 #header {
   background-color: #6a7176;
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#6a7176"}, endColorstr="#4d5256");
