@@ -163,7 +163,7 @@ module Qernel::Converter::PrimaryDemand
           input = input(link.carrier)
           child_conversion = (input and input.conversion) || 1.0
 
-          right_value = protect_from_loop(link, strategy_method, true) do
+          right_value = protect_from_loop(link, strategy_method, true, *args) do
             child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
           end
 
@@ -178,11 +178,11 @@ protected
   # Protects a wouter_dance from loops in the graph.
   # It does so by setting a flag on the link with the strategy_method
   # as key. It also supports memoization of values.
-  def protect_from_loop(link, strategy_method, memoize_values = true)
+  def protect_from_loop(link, strategy_method, memoize_values = true, args)
     cached = link.dataset_get(strategy_method)
 
     if cached == :loop_alert # We have a loop now. Define what should happen here.
-      send(strategy_method, link) || 1.0
+      send(strategy_method, link, *args) || 1.0
     elsif memoize_values && cached.present? # this is simple memoization.
       cached
     else
@@ -321,7 +321,7 @@ public
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
           0.0
         else
-          right_value = protect_from_loop(link, strategy_method, true) do
+          right_value = protect_from_loop(link, strategy_method, true, *args) do
             right_converter.wouter_dance(strategy_method, converter_share_method, link, *args)
           end
 
