@@ -127,9 +127,8 @@ module Qernel::Converter::PrimaryDemand
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
-      valid_links = self.input_links.reject{|l| l.child.environment? }
+      valid_links = self.input_links.reject(&:to_environment?)
       val = valid_links.map do |link|
-        child = link.child
         # Exception 1:
         # when import and local production of a carrier is 0 we still need a share of 1, 
         # otherwise the costs for fuel will always be 0.
@@ -194,8 +193,12 @@ module Qernel::Converter::PrimaryDemand
   #
   def primary_demand    
     dataset_fetch(:primary_demand_memoized) do
-      primary_demand_share = wouter_dance(:primary_demand_factor)
-      (self.demand || 0.0) * (primary_demand_share)
+      demand = self.demand
+      if demand.nil? || demand == 0.0
+        0.0
+      else
+        demand * wouter_dance(:primary_demand_factor)
+      end
     end
   end
 
@@ -227,7 +230,12 @@ module Qernel::Converter::PrimaryDemand
 
   def primary_co2_emission
     dataset_fetch(:primary_co2_emission_memoized) do
-      primary_demand_with(:co2_per_mj, :co2_free)
+      demand = self.demand
+      if demand.nil? || demand == 0.0
+        0.0
+      else
+        demand * wouter_dance(:co2_per_mj_factor, :co2_free_factor)
+      end
     end
   end
 
@@ -255,19 +263,6 @@ module Qernel::Converter::PrimaryDemand
     (self.demand || 0.0) * factor
   end
 
-
-  ##
-  #
-  #
-  def primary_demand_with(factor_method, converter_share_method = nil)
-    if converter_share_method
-      w = wouter_dance("#{factor_method}_factor", "#{converter_share_method}_factor")
-    else
-      w = wouter_dance("#{factor_method}_factor")
-    end
-    d = (self.demand || 0.0)
-    w * d
-  end
 
   ##
   # The wouter_dance recursively traverses the graph from "self" (this converter) to the right.
@@ -384,15 +379,6 @@ module Qernel::Converter::PrimaryDemand
   end
 
   def final_demand_factor_of_carrier(link, carrier_key, ruby18fix = nil)
-#    link ||= output_links.first
-#
-#    return nil if !right_dead_end? or !primary_energy_demand?
-#
-#    if carrier = link.andand.carrier and carrier.key == carrier_key
-#      return 1.0 if final_demand_cbs?
-#    end
-#
-#    return 0.0
   end
 
   def infinite?
@@ -405,11 +391,17 @@ module Qernel::Converter::PrimaryDemand
     (infinite? and primary_energy_demand?) ? (1 - loss_output_conversion) : 0.0
   end
 
+  # We return nil when we want to continue traversing. So typically this is until
+  # we hit a dead end. Alternatively (for final_demand) we could stop when we hit
+  # a converter that is final_demand_cbs?
   def primary_demand_factor(link,ruby18fix = nil)
-    return nil if !right_dead_end? # or !primary_energy_demand?
-    # We return nil when we want to continue traversing. So typically this is until
-    # we hit a dead end. Alternatively (for final_demand) we could stop when we hit
-    # a converter that is final_demand_cbs?
+    return nil if !right_dead_end?
+    # Example of a case when a link is not assigned (and therefore needs to be assigned
+    # in order to check if its imported_electricity):
+    # When you get the primary_demand of the group primary_energy_demand, you already
+    # start at the right dead end and don't jump throught links.
+    link ||= output_links.first
+
     factor_for_primary_demand(link)
   end
 
@@ -425,13 +417,7 @@ module Qernel::Converter::PrimaryDemand
     end
   end
 
-  def factor_for_primary_demand(link)
-    # Example of a case when a link is not assigned (and therefore needs to be assigned
-    # in order to check if its imported_electricity):
-    # When you get the primary_demand of the group primary_energy_demand, you already
-    # start at the right dead end and don't jump throught links.
-    link ||= output_links.first
-
+  def factor_for_primary_demand(link)    
     # If a converter has infinite ressources (such as wind, solar/sun), we
     # take the output of energy (1 - losses).
     if infinite? and primary_energy_demand?

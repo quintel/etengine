@@ -249,6 +249,13 @@ protected
     reversed? ? @parent.input(@carrier) : @child.output(@carrier)
   end
 
+public
+
+  # used by primary_demand
+  def to_environment?
+    child.environment?
+  end
+
   # --------- Debug -----------------------------------------------------------
 
 public
