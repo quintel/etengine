@@ -91,7 +91,7 @@ module Qernel::WouterDance::Base
           input = input(link.carrier)
           child_conversion = (input and input.conversion) || 1.0
 
-          right_value = protect_from_loop(link, strategy_method, true, *args) do
+          right_value = protect_from_loop(link, strategy_method, *args) do
             child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
           end
 
@@ -107,7 +107,7 @@ module Qernel::WouterDance::Base
   # It does so by setting a flag on the link with the strategy_method
   # as key. It also supports memoization of values.
   #
-  def protect_from_loop(link, strategy_method, memoize_values = true, *args)
+  def protect_from_loop(link, strategy_method, *args)
     # primary_demand_of_gas and primary_demand_of_oil have primary_demand_of
     # as strategy_method and "oil"/"gas" in args. Join the keys, to have unique
     # caching key for link. 
@@ -116,15 +116,11 @@ module Qernel::WouterDance::Base
 
     if cached == :loop_alert # We have a loop now. Define what should happen here.
       send(strategy_method, link, *args) || 1.0
-    elsif memoize_values && cached.present? # this is simple memoization.
-      cached
     else
       # flag this link with a :loop_alert, before we actually continue the recursion.
       link.dataset_set(cached_key, :loop_alert)
       # Start the recursion. if a loop happens, it will be caught in above if clause.
       val = yield
-      # the following simply memoizes the result.
-      link.dataset_set(cached_key, val) if memoize_values
       val
     end
   end
@@ -173,7 +169,7 @@ module Qernel::WouterDance::Base
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
           0.0
         else
-          right_value = protect_from_loop(link, strategy_method, true, *args) do
+          right_value = protect_from_loop(link, strategy_method, *args) do
             right_converter.wouter_dance(strategy_method, converter_share_method, link, *args)
           end
 

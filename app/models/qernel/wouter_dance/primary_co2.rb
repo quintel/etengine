@@ -41,7 +41,7 @@ module Qernel::WouterDance::PrimaryCo2
   # @return [nil] until dead end or primary_energy_demand
   # @return [Float] co2_per_mj of primary_energy_demand carrier
   #
-  def co2_per_mj_factor(link,*args)
+  def co2_per_mj_factor(link, *args)
     #return 0.0 if query.co2_free == 1.0
     return nil if !right_dead_end? or !primary_energy_demand?
     link ||= output_links.first
