@@ -123,12 +123,11 @@ module Qernel::Converter::PrimaryDemand
   # WARNING: This method should only be used for attributes unrelated to demand
   # See the exceptions in the code for why.
   #
-  def wouter_dance_without_losses(strategy_method, converter_share_method = nil, link = nil, *args)
-    if (return_value = send(strategy_method, link, *args)) != nil
+  def wouter_dance_without_losses(strategy_method, converter_share_method = nil, start_link = nil, *args)
+    if (return_value = send(strategy_method, start_link, *args)) != nil
       return_value
     else
-      valid_links = self.input_links.reject(&:to_environment?)
-      val = valid_links.map do |link|
+      val = input_links.reject(&:to_environment?).map do |link|
         # Exception 1:
         # when import and local production of a carrier is 0 we still need a share of 1, 
         # otherwise the costs for fuel will always be 0.
@@ -304,10 +303,10 @@ public
   # @param args Additional arguments
   # @return [Float] The factor with which we have to multiply. (E.g. demand * primary_demand_factor = primary_demand)
   #
-  def wouter_dance(strategy_method, converter_share_method = nil, link = nil, *args)
+  def wouter_dance(strategy_method, converter_share_method = nil, start_link = nil, *args)
     # if the strategy_method returns a number, it means wouter_dance has
     # already been there. if nil, it has not been there: so calculate.
-    if (return_value = send(strategy_method, link, *args)) != nil
+    if (return_value = send(strategy_method, start_link, *args)) != nil
       return_value
     else
       # Protect from loops:
