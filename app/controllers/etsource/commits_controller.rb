@@ -15,7 +15,7 @@ class Etsource::CommitsController < ApplicationController
     @etsource.checkout @branch
     @output = @etsource.refresh if params[:commit] == 'Refresh'
     @commits = @etsource.commits
-    @branches = @etsource.branches
+    @branches = @etsource.branches - ['(no branch)']
     @latest_import = get_latest_import_sha
     @current_revision = @etsource.current_rev
   end
