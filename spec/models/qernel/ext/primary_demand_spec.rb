@@ -68,6 +68,77 @@ module Qernel
         @rgt2.query.primary_demand_of_electricity.should == 0.0
       end
     end
-  end
 
+    pending " # Graph with loop
+              abc(80)  == s(1.0) ==> lft
+              lft      == f(1.0) ==> mid
+              lft      == c(200) ==> rgt(200)" do
+
+      before do
+        @rgt.stub!(:primary_energy_demand?).and_return(true)
+      end
+
+      
+      specify { @lft.demand.should == 200.0 }
+      specify { @mid.demand.should == 120.0 }
+      specify { @rgt.demand.should == 200.0 }
+      
+
+      it "if rgt,rgt2 are primary" do
+        @lft.primary_demand.should == 200.0
+        @mid.primary_demand.should == 200.0
+        @rgt.primary_demand.should == 80.0
+      end
+    end
+
+    context "# with loop
+             # 
+             electricity: lft(90) == s(1) ==> mid
+             electricity:                     mid == f(1.0) ==> loop
+             electricity:                                       loop == i(nil) ==> mid
+             electricity[1.0;0.4]:            mid == d(nil) ==> rgt
+             loss[1.0;0.6]:               hlp(60) == f(1.0) ==> rgt" do
+      
+      before do
+        @rgt.stub!(:primary_energy_demand?).and_return(true)
+      end
+
+      
+      specify { @lft.demand.should ==  90.0 }
+      specify { @rgt.demand.should == 100.0 }
+      specify { @mid.demand.should ==  90.0 }
+      # d(nil) gets 30 demand
+      # => f(1.0) gets 90 - 40 => 50
+      specify { @loop.demand.should == 50.0 }
+      #specify { @innerloop.demand.should == 100.0 }
+      
+
+      specify { @lft.primary_demand.should == 100.0 }
+    end
+
+    context "# with inner loop
+             # 
+             electricity: lft(90) == s(1) ==> mid
+             electricity:                     mid == f(1.0) ==> loop
+             electricity:                                       loop == i(nil) ==> mid
+             electricity[1.0;0.4]:            mid == d(nil) ==> rgt
+             loss[1.0;0.6]:               hlp(60) == f(1.0) ==> rgt
+
+             electricity[1.0;0.4]:                              loop == d(nil) ==> innerloop
+             electricity[1.0;0.6]:                    outer_loop(60) == s(1.0) ==> innerloop
+             " do
+      
+      before do
+        @rgt.stub!(:primary_energy_demand?).and_return(true)
+      end
+
+      specify { @lft.demand.should ==  90.0 }
+      specify { @rgt.demand.should == 100.0 }
+      specify { @mid.demand.should ==  90.0 }
+      specify { @loop.demand.should == 50.0 }
+      specify { @innerloop.demand.should == 100.0 }
+      
+      specify { @lft.primary_demand.should == 100.0 }
+    end
+  end
 end
