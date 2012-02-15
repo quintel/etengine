@@ -3,11 +3,12 @@
 
 .header Check if present demand matches demand_expected_value.
 
-- @converters = @gql.present_graph.converters
+- @converters = @gql.present_graph.converters.map(&:query).sort_by{|c| c.excel_id || 0}
 
 %p
-  %strong
-    = @converters.select{ |c| c.query.demand_expected? == false }.length
+  %h2
+    Demand not expected: 
+    = @converters.select{ |c| c.demand_expected? == false }.length
     converters are unhappy. :-( 
 
 %table
@@ -15,16 +16,40 @@
     %tr
       %th Id
       %th Key
-
       %th Demand
       %th Expected
       %th
   %tbody
-    - @converters.map(&:query).each do |converter|
+    - @converters.select{ |c| c.demand_expected? == false }.each do |converter|
+      - full_key = converter.full_key
       %tr
         %td
-          %a{:id => converter.full_key}= converter.dataset_get(:excel_id)
-        %td= converter.full_key
+          %a{:id => full_key}= converter.dataset_get(:excel_id)
+        %td= link_to full_key, data_converter_path(:id => full_key)
+        %td.align-right= auto_number converter.demand
+        %td.align-right= auto_number converter.demand_expected_value
+        %td
+          &nbsp;
+          - if converter.demand_expected? == false
+            \:-(
+          &nbsp; 
+
+%h2 All converters
+%table
+  %thead
+    %tr
+      %th Id
+      %th Key
+      %th Demand
+      %th Expected
+      %th
+  %tbody
+    - @converters.each do |converter|
+      - full_key = converter.full_key
+      %tr
+        %td
+          %a{:id => full_key}= converter.dataset_get(:excel_id)
+        %td= link_to full_key, data_converter_path(:id => full_key)
         %td.align-right= auto_number converter.demand
         %td.align-right= auto_number converter.demand_expected_value
         %td
