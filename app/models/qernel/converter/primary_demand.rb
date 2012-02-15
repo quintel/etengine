@@ -139,9 +139,8 @@ module Qernel::Converter::PrimaryDemand
         # up to 1.0 (and not 2.0, if we just did link.share || 1.0, to fix exception 1).
         # Therefore we assign averages, just to make this calculation work.
         #
-        #                         --- link (constant: share nil) --- c_2 (method: 1.0)
-        # slot(conversin: 1.0) <
-        #                         --- link (flexible: share nil) --- c_3 (method: 1.0)
+        #                        + --- link (constant: share nil) --- c_2 (method: 1.0)
+        # slot(conversin: 1.0) - + --- link (flexible: share nil) --- c_3 (method: 1.0)
         # 
         # (1.0 * 1.0 * 1.0) + (1.0 * 1.0 * 1.0)  # (conversion * link_share * value)
         # => 2.0!
@@ -149,40 +148,56 @@ module Qernel::Converter::PrimaryDemand
         # => This has been changed in Link:
         #      - flexible are assigned share of 1.0 if nil
         #      - constant are assigned share of 0.0 if nil
-        #
-        link_share = link.share
-        if link_share.nil?
-          # Following code would make sure that combined link_shares would not 
-          # be higher than 1.0:
-          # total_link_shares = valid_links.map(&:share).compact.sum
-          # link_share = (1.0 - total_link_shares) / valid_links.length
-          link_share = 1.0
-        end
+        child      = link.child
+        link_share = link.share || 1.0
+        
         if link_share == 0.0 # or link_share.nil? # uncomment if not already checked above.
           0.0
         else
           # we have to multiply the share with the conversion of the corresponding slot
           # to deal with following scenario:
           #
-          #       o slot(conversin: 0.9) --- link (share 1.0) --- c_2 (method: 100)
-          # c_1 < 
-          #       o slot(conversin: 0.1) --- link (share 1.0) --- c_3 (method: 80)
+          #       +--o slot(conversin: 0.9) --- link (share 1.0) --- c_2 (method: 100)
+          # c_1 --+--o slot(conversin: 0.1) --- link (share 1.0) --- c_3 (method: 80)
           # 
           # c_1 should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
-          #
-          inp = self.input(link.carrier)
-          child_conversion = (inp and inp.conversion) || 1.0
-          child_value = child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
+          input = input(link.carrier)
+          child_conversion = (input and input.conversion) || 1.0
 
-          # puts("#{self.id}) val: #{child_value}, conv: #{child_conversion}, share: #{link_share}")
+          right_value = protect_from_loop(link, strategy_method, true) do
+            child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
+          end
 
-          link_share * child_value * child_conversion
+          link_share * right_value * child_conversion
         end
       end
       val.sum
     end
   end
 
+protected
+  # Protects a wouter_dance from loops in the graph.
+  # It does so by setting a flag on the link with the strategy_method
+  # as key. It also supports memoization of values.
+  def protect_from_loop(link, strategy_method, memoize_values = true)
+    cached = link.dataset_get(strategy_method)
+
+    if cached == :loop_alert # We have a loop now. Define what should happen here.
+      send(strategy_method, link) || 1.0
+    elsif memoize_values && cached.present? # this is simple memoization.
+      cached
+    else
+      # flag this link with a :loop_alert, before we actually continue the recursion.
+      link.dataset_set(strategy_method, :loop_alert)
+      # Start the recursion. if a loop happens, it will be caught in above if clause.
+      val = yield
+      # the following simply memoizes the result.
+      link.dataset_set(strategy_method, val) if memoize_values
+      val
+    end
+  end
+
+public
 
   ##
   # Calculates the primary energy demand. It recursively iterates through all the child links.
@@ -290,21 +305,28 @@ module Qernel::Converter::PrimaryDemand
   # @return [Float] The factor with which we have to multiply. (E.g. demand * primary_demand_factor = primary_demand)
   #
   def wouter_dance(strategy_method, converter_share_method = nil, link = nil, *args)
+    # if the strategy_method returns a number, it means wouter_dance has
+    # already been there. if nil, it has not been there: so calculate.
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
-      val = self.input_links.reject{|l| l.child.environment? }.map do |link|
-        child = link.child
+      # Protect from loops:
+      # 
+      val = input_links.reject(&:to_environment?).map do |link|
+        right_converter = link.child
 
         demanding_share = demanding_share(link)
-        loss_share = child.loss_share
+        loss_share      = right_converter.loss_share
         converter_share = converter_share_method.nil? ? 1.0 : (self.send(converter_share_method) || 0.0)
 
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
           0.0
         else
-          child_value = child.wouter_dance(strategy_method, converter_share_method, link, *args)
-          demanding_share * loss_share * converter_share * child_value
+          right_value = protect_from_loop(link, strategy_method, true) do
+            right_converter.wouter_dance(strategy_method, converter_share_method, link, *args)
+          end
+
+          demanding_share * loss_share * converter_share * right_value
         end
       end
       val.sum
