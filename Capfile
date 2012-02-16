@@ -1,3 +1,5 @@
+require 'bundler/capistrano'
+
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 load 'lib/capistrano/db_recipes'
 
@@ -33,8 +35,6 @@ namespace :deploy do
     run "ln -s #{shared_path}/config/latest_etsource_import_sha #{release_path}/config/"
     run "cd #{release_path}; chmod 777 public/images public/stylesheets tmp"
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
-    run "cd #{release_path} && bundle install"
-
     memcached.flush
   end
 
