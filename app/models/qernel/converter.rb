@@ -273,6 +273,13 @@ public
 
 
   # --------- Traversal -------------------------------------------------------
+  
+  # typically loops contain an inversed_flexible (left) and a flexible (rgt) to
+  # the same converter, and helps to only have positive energy flows.
+  def has_loop?
+    # if parents and children have one converter in common it is a loop
+    (parents & children).length > 0
+  end
 
   # @return [Array<Converter>] Converters to the right
   #

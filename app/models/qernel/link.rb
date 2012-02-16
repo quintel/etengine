@@ -228,6 +228,16 @@ protected
     # Exception being electricity import/export. where -energy = export
     if flexible? && !@carrier.electricity? && !@child.energy_import_export?
       0.0
+    elsif flexible? && @parent.has_loop?
+      # typically a loop contains an inversed_flexible (left) and a flexible 
+      # (right) to the same converter. When too much energy overflow into
+      # inversed, when too little flow into flexible. 
+      # Sometimes this construct does not work properly, so we manually make
+      # sure a flexible can go below 0.0.
+      # If you remove that you will get *stackoverflow problems for primary_demand*, 
+      # when both links have a non 0.0 value (because of the == check in wouter_dance).
+      # causing a loop in the wouter_dance. Forcing a 0.0 on the flex link closes the loop.
+      0.0
     else
       nil
     end

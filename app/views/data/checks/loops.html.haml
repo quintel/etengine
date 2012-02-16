@@ -1,0 +1,7 @@
+= render 'subnav'
+
+.header Check if present demand matches demand_expected_value.
+
+%ul
+  - @gql.present_graph.converters.select(&:has_loop?).each do |converter|
+    %li= link_to converter.full_key, data_converter_path(:id => converter.full_key)
