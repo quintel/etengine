@@ -1,5 +1,3 @@
-require 'bundler/capistrano'
-
 set :application, "etengine"
 set :stage, :production
 set :server_type, 'production'
@@ -58,3 +56,5 @@ set :chmod755, "app config db lib public vendor script script/* public/disp*"  	
 ssh_options[:forward_agent] = true
 set :use_sudo,     false
 set :local_db_name, 'etengine_dev'
+set :bundle_flags, '--deployment --quiet --binstubs --shebang ruby-local-exec'
+
