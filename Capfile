@@ -2,31 +2,10 @@ require 'bundler/capistrano'
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 load 'lib/capistrano/db_recipes'
+load 'lib/capistrano/memcached'
+load 'lib/capistrano/unicorn'
 
 load 'config/deploy' # remove this line to skip loading any of the default tasks
-
-namespace :memcached do
-  desc "Start memcached"
-  task :start, :roles => [:app] do
-    sudo "/etc/init.d/memcached start"
-  end
-
-  desc "Stop memcached"
-  task :stop, :roles => [:app] do
-    sudo "/etc/init.d/memcached stop"
-  end
-
-  desc "Restart memcached"
-  task :restart, :roles => [:app] do
-    sudo "/etc/init.d/memcached restart"
-  end
-
-  desc "Flush memcached - this assumes memcached is on port 11211"
-  task :flush, :roles => [:app] do
-    sudo "echo 'flush_all' | nc -q 1 localhost 11211"
-  end
-end
-
 
 namespace :deploy do
   task :copy_configuration_files do
@@ -41,12 +20,6 @@ namespace :deploy do
   task :symlink_etsource do
     # raise "etsource does not exist. check out github branch etsource into /home/ubuntu" unless remote_dir_exists?("/home/ubuntu/etsource")
     run "ln -s /home/ubuntu/etsource #{release_path}/etsource"
-  end
-
-  task :start do ; end
-  task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
   end
 
   task :wipe_cache do

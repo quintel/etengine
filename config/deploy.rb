@@ -5,7 +5,7 @@ set :server_type, 'production'
 task :production do
   set :domain, "et-engine.com"
   set :branch, "production"
-  set :application_key, "#{application}"
+  set :application_key, "etengine"
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
@@ -25,7 +25,7 @@ task :beta do
   set :domain, "ec2-176-34-196-168.eu-west-1.compute.amazonaws.com"
   set :branch, "unicorn"
   set :application_key, "etengine"
-  set :deploy_to, "/u/apps/#{application_key}"
+  set :deploy_to, "/u/apps/etengine"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "r8ZPP7pQTDTBha"
   set :db_name, 'etengine_staging'
