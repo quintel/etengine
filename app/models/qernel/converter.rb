@@ -80,11 +80,12 @@ module Qernel
 class Converter
   extend ActiveModel::Naming
 
-  include Qernel::WouterDance::Base
-  include Qernel::WouterDance::PrimaryDemand
-  include Qernel::WouterDance::FinalDemand
-  include Qernel::WouterDance::PrimaryCo2
-  include Qernel::WouterDance::WeightedCarrier
+  include PrimaryDemand
+  # include Qernel::WouterDance::Base
+  # include Qernel::WouterDance::PrimaryDemand
+  # include Qernel::WouterDance::FinalDemand
+  # include Qernel::WouterDance::PrimaryCo2
+  # include Qernel::WouterDance::WeightedCarrier
 
   include DatasetAttributes
   include Topology::Converter
