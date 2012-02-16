@@ -243,6 +243,31 @@ module Qernel
         @loss.demand.should == 10.0
       end
 
+      # ----- Loops  --------------------------------------
+
+      it "# If right side is lower, fill up flexible link
+          loss(nil) == i(nil) ==> mid(nil)
+          lft1(100) == s(1)   ==> mid 
+                                  mid == f(nil) ==> loss
+                                  mid == c(nil) ==> rgt1(40)" do
+        @lft1.demand.should == 100.0
+        @mid.demand.should ==  100.0
+        @rgt1.demand.should == 40.0
+        @loss.demand.should == 60.0
+      end
+
+      it "# If right side is higher, fill up inversed_flexible link
+          loss(nil) == i(nil) ==> mid(nil)
+          lft1(100) == s(1)   ==> mid 
+                                  mid == f(nil) ==> loss
+                                  mid == c(nil) ==> rgt1(140)" do
+
+        @lft1.demand.should == 100.0
+        @mid.demand.should ==  140.0
+        @rgt1.demand.should == 140.0
+        @loss.demand.should == 40.0
+      end
+
       # ----- Dependent  --------------------------------------
 
       it "bar[1.0;0.7]: hw_demand(70) == s(1) ==> chp(nil)
