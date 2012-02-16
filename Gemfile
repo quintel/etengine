@@ -68,3 +68,7 @@ end
 group :darwin do
   gem 'rb-fsevent'
 end
+
+group :production do
+  gem 'unicorn'
+end
