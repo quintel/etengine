@@ -137,11 +137,8 @@ class Gql
       query, modifier = gquery_or_string.split(':').reverse
     end
     
-    if modifier.nil?
-      query_standard(query)
-    elsif Gquery::GQL_MODIFIERS.include?(modifier.strip)
-      send("query_#{modifier}", query)
-    end
+    query_with_modifier(query, modifier)
+
   rescue => e
     if rescue_with == :debug
       ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
@@ -157,6 +154,19 @@ class Gql
       rescue_with
     else
       raise e unless rescue_with
+    end
+  end
+
+
+  # Run a query with the strategy defined in the parameter
+  def query_with_modifier(query, strategy)
+    key = query.respond_to?(:key) ? query.key : 'custom'
+    ActiveSupport::Notifications.instrument("gql.query.#{key}.#{strategy}") do
+      if strategy.nil?
+        query_standard(query)
+      elsif Gquery::GQL_MODIFIERS.include?(strategy.strip)
+        send("query_#{strategy}", query)
+      end
     end
   end
 
