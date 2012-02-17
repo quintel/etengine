@@ -394,6 +394,10 @@ public
     # Constant links are treated differently.
     # They can overwrite the preset_demand of this converter
     output_links.select(&:constant?).each(&:calculate)
+    
+    # this is an attempt to solve this issue
+    # https://github.com/dennisschoenmakers/etengine/issues/258
+    input_links.select(&:constant?).each(&:calculate) if output_links.any?(&:inversed_flexible?)      
 
     # If the demand is already set (is not nil), do not overwrite it. 
     if self.demand.nil?

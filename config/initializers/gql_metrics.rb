@@ -17,6 +17,10 @@ ActiveSupport::Notifications.subscribe /\.performance/ do |name, start, finish, 
   GqlLogger.debug "#{name}: (#{(finish - start)}ms)"
 end
 
+ActiveSupport::Notifications.subscribe /gql\.query/ do |name, start, finish, id, payload|
+  GqlLogger.debug "#{name}: (#{(finish - start)}ms)"
+end
+
 ActiveSupport::Notifications.subscribe /gql\.inputs/ do |name, start, finish, id, payload|
   GqlLogger.debug "#{name}: #{payload}"
 end
