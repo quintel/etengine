@@ -28,7 +28,7 @@ gem 'rack-sprockets'
 gem 'rack-cors', :require => 'rack/cors'
 
 # supporting gems
-gem 'airbrake', '3.0.4'
+gem 'airbrake'
 
 # system gems
 # gem 'thinking-sphinx', '>=2.0.1'
