@@ -21,9 +21,8 @@ task :staging do
 end
 
 task :beta do
-  # set :domain, "beta.et-engine.com"
-  set :domain, "ec2-176-34-196-168.eu-west-1.compute.amazonaws.com"
-  set :branch, "unicorn"
+  set :domain, "beta.et-engine.com"
+  set :branch, "staging"
   set :application_key, "etengine"
   set :deploy_to, "/u/apps/etengine"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
