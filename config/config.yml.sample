@@ -1,5 +1,4 @@
 development: &DEV
-    debug_qernel: true
     # etsource folder. Default is APP/etsource (deprecated)
     etsource_dir:
     
@@ -13,14 +12,16 @@ development: &DEV
     etsource_cache_dataset: false # set true for 'live' releases    
 
     # URL to be called after a clean etsource import
+    # Usually you would set something like
+    # http://beta.et-model.com/pages/refresh_gqueries
     client_refresh_url:
+
     # set to true if the server won't have online access. this disables google
     # analytics, airbrake etc.
     standalone: false
 
 production:
     <<: *DEV
-    debug_qernel: false
     airbrake_api_key: '3ea5a72aad48a32d7bb486bc71ad4fd5'
 
 test:
