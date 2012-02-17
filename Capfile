@@ -1,4 +1,5 @@
 require 'bundler/capistrano'
+require 'airbrake/capistrano'
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 load 'lib/capistrano/db_recipes'
@@ -26,19 +27,8 @@ namespace :deploy do
     memcached.restart
     restart
   end
-
-  desc "Notify Airbrake of the deployment"
-  task :notify_airbrake, :except => { :no_release => true } do
-    rails_env = fetch(:hoptoad_env, fetch(:rails_env, "production"))
-    local_user = ENV['USER'] || ENV['USERNAME']
-    notify_command = "bundle exec rake airbrake:deploy TO=#{rails_env} REVISION=#{current_revision} REPO=#{repository} USER=#{local_user} API_KEY=#{airbrake_key}"
-    puts "Notifying Airbrake of Deploy of #{server_type} (#{notify_command})"
-    run "cd #{release_path} && #{notify_command}"
-    puts "Airbrake Notification Complete."
-  end
 end
 
 after "deploy:update_code", "deploy:copy_configuration_files"
 after "deploy:update_code", "deploy:symlink_etsource"
-after "deploy", "deploy:notify_airbrake"
 after "deploy", "deploy:cleanup"
