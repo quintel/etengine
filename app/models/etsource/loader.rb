@@ -12,7 +12,7 @@ module Etsource
     include Singleton
 
     def initialize
-      @etsource = Etsource::Base.new
+      @etsource = Etsource::Base.instance
       @datasets = {}.with_indifferent_access
       @gquery = Gqueries.new(@etsource)
     end

@@ -3,7 +3,7 @@ module Etsource
     VARIABLE_PREFIX = '-'
     FILE_SUFFIX = 'gql'
 
-    def initialize(etsource = Base.new)
+    def initialize(etsource = Etsource::Base.instance)
       @etsource = etsource
     end
 

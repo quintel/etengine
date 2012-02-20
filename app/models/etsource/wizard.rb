@@ -17,7 +17,7 @@ module Etsource
     attr_accessor :file_name
 
     # file_name is really just the path _wizards/.../
-    def initialize(file_name, etsource = Etsource::Base.new)
+    def initialize(file_name, etsource = Etsource::Base.instance)
       @file_name = file_name
       @etsource = etsource
     end
@@ -75,7 +75,7 @@ module Etsource
     end
     
     def self.base_dir
-      "#{Etsource::Base.new.base_dir}/datasets/_wizards"
+      "#{Etsource::Base.instance.base_dir}/datasets/_wizards"
     end
   end
 end
