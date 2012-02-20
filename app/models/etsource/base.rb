@@ -2,6 +2,8 @@ module Etsource
   # Proxy to the git operations
   #
   class Base
+    include Singleton
+
     def initialize
       @etsource_dir = APP_CONFIG[:etsource_dir] || 'etsource'
       @git = Git.open @etsource_dir

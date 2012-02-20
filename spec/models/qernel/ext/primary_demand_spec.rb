@@ -123,7 +123,6 @@ module Qernel
              electricity:                                       loop == i(nil) ==> mid
              electricity[1.0;0.4]:            mid == d(nil) ==> rgt
              loss[1.0;0.6]:               hlp(60) == f(1.0) ==> rgt
-
              electricity[1.0;0.4]:                              loop == d(nil) ==> innerloop
              electricity[1.0;0.6]:                    outer_loop(60) == s(1.0) ==> innerloop
              " do

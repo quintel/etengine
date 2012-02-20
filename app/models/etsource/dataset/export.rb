@@ -9,7 +9,7 @@ module Etsource
     
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
-      @etsource = Etsource::Base.new
+      @etsource = Etsource::Base.instance
       @country  = country
     end
 
