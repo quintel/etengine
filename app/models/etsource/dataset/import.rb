@@ -22,6 +22,7 @@ module Etsource
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
       @etsource = Etsource::Base.instance
+
       @country  = country
       @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
     end
@@ -44,7 +45,7 @@ module Etsource
       @dataset.data[:graph][:graph][:calculated] = false
 
       load_country_dataset
-      load_dataset_wizards if Etsource::Config::LOAD_WIZARDS
+      load_dataset_wizards if @etsource.load_wizards?
 
       @dataset
     end

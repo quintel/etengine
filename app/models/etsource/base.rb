@@ -6,7 +6,24 @@ module Etsource
 
     def initialize
       @etsource_dir = APP_CONFIG[:etsource_dir] || 'etsource'
+
+      @load_wizards = APP_CONFIG.fetch(:etsource_load_wizards, false)
+      @cache_dataset = APP_CONFIG.fetch(:etsource_cache_dataset, true)
+
       @git = Git.open @etsource_dir
+    end
+
+    # Should ETsource::Wizards be included? 
+    # true:  this makes the input_module work. 
+    # false: turn off to make sure the ETengine is not affected by the input_module
+    def load_wizards?
+      @load_wizards
+    end
+
+    # If you work on the input module, this disables caching and will
+    # always reload the Etsource from scratch.
+    def cache_dataset?
+      @cache_dataset
     end
 
     def current_commit_id
