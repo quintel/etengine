@@ -17,7 +17,7 @@ module Etsource
     
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
-      @etsource = Etsource::Base.new
+      @etsource = Etsource::Base.instance
       @country  = country
     end
 
@@ -37,7 +37,7 @@ module Etsource
     end
 
     def self.region_codes
-      Dir.glob(Etsource::Base.new.base_dir+"/datasets/[a-z]*").map{|folders| folders.split("/").last }
+      Dir.glob(Etsource::Base.instance.base_dir+"/datasets/[a-z]*").map{|folders| folders.split("/").last }
     end
 
   end

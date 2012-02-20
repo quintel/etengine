@@ -3,7 +3,7 @@ module Etsource
     attr_accessor :commit
 
     def initialize(commit)
-      @etsource = Base.new
+      @etsource = Etsource::Base.instance
       @branch = @etsource.current_branch
       self.commit = @etsource.checkout_commit(commit)
     end

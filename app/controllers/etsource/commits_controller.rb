@@ -9,7 +9,7 @@ class Etsource::CommitsController < ApplicationController
   end
 
   def index
-    @etsource = Etsource::Base.new
+    @etsource = Etsource::Base.instance
     # @etsource.current_branch is sometimes (no branch) catch this
     @branch = params[:branch] || @etsource.current_rev || @etsource.current_branch || 'master'
     @etsource.checkout @branch
@@ -26,7 +26,7 @@ class Etsource::CommitsController < ApplicationController
   end
 
   def checkout
-    @etsource = Etsource::Base.new
+    @etsource = Etsource::Base.instance
     sha_id = params[:id]
     @etsource.checkout sha_id
     redirect_to etsource_commits_path, :notice => "Checked out rev: #{sha_id}"
