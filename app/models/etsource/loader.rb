@@ -27,7 +27,7 @@ module Etsource
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
       ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
-        if Etsource::Config::CACHE_DATASET
+        if @etsource.cache_dataset?
           # DEBT Limitations of this cache:
           # if experimenting with input tool, you change a transformer.yml or config.yml will not
           # take effect, because cache only invalidates when a research dataset has been changed 
