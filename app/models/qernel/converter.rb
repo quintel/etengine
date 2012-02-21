@@ -80,7 +80,7 @@ module Qernel
 class Converter
   extend ActiveModel::Naming
 
-  include PrimaryDemand
+  include Converter::PrimaryDemand
   # include Qernel::WouterDance::Base
   # include Qernel::WouterDance::PrimaryDemand
   # include Qernel::WouterDance::FinalDemand
