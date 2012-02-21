@@ -34,7 +34,8 @@ class ApiScenario < Scenario
     attributes = Scenario.default_attributes.merge(:title => "API")
     out = attributes.merge(settings)
     # strip invalid attributes
-    out.delete_if{|k,v| !column_names.include?(k.to_s)}
+    valid_attributes = [column_names, 'scenario_id'].flatten
+    out.delete_if{|key,v| !valid_attributes.include?(key.to_s)}
     out
   end
 
