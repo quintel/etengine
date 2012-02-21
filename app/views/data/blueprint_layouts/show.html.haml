@@ -5,6 +5,8 @@
   %ul
     %li Shift + click: highlight links
     %li ALT + Shift + click: hide converter
+    %li= link_to 'highlight off (ALT+H)', 'javascript:GRAPH.highlight_off_all()'
+
     %li Double-click on converter to open details in new converter
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
     %li= graphviz_attribute_selector
@@ -14,5 +16,8 @@
     var data_json_url = "#{data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
 
   = render 'initialize_graph'
+
+  :javascript
+    $(document).bind('keydown', 'alt+h', GRAPH.highlight_off_all);
 
 
