@@ -67,8 +67,8 @@ module Qernel::DatasetAttributes
     # that delegate the storage to the Qernel::Dataset#data hash.
     # In most Qernel objects you will see this method called with a list
     # of the attributes stored in the dataset.    
-    def dataset_accessors(dataset_attributes)
-      dataset_attributes.each do |attr_name|
+    def dataset_accessors(*dataset_attributes)
+      dataset_attributes.flatten.each do |attr_name|
         attr_name_sym = attr_name.to_sym
         define_method attr_name do
           dataset_get attr_name_sym
