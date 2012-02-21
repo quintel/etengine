@@ -36,7 +36,7 @@ module Etsource
     def import
       if !Rails.env.test? && !File.exists?(country_dir(country))
         # don't check for
-        raise "Trying to load a dataset with region code '#{country}' but it does not exist in ETsource."
+        raise "Trying to load a dataset with region code '#{country}' but it does not exist. Should be: #{country_dir(country)}"
       end
 
       load_area
@@ -63,7 +63,7 @@ module Etsource
     # ---- Import Area ------------------------------------------------------
 
     def load_area
-      @dataset.merge(:area,     load_yaml_with_defaults('area')[:area])
+      @dataset.merge(:area,     load_yaml_with_defaults('area')[:area] || {})
     rescue => e
       raise "Error loading datasets/:country/area.yml: #{e}"
     end
@@ -152,7 +152,7 @@ module Etsource
       default_data = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
       country_data = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
       content = [default_data, country_data].join("\n")
-      load_yaml_content(content)
+      (load_yaml_content(content) || {})
     end
 
     def load_yaml_content(str)
@@ -160,7 +160,8 @@ module Etsource
     end
 
     def load_yaml_file(file_path)
-      load_yaml_content(File.read(file_path))
+      content = File.exists?(file_path) ? File.read(file_path) : ''
+      load_yaml_content(content)
     end
 
     def load_yaml(file)

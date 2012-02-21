@@ -68,10 +68,9 @@ module Etsource
     end
 
     def cache_key
-      etsource_tmp_restart_touched_at = File.ctime(@etsource.base_dir + '/tmp/restart.txt').to_i
-      k = "#{etsource_tmp_restart_touched_at}/etsource/#{@etsource.current_commit_id}/"
-      Rails.logger.warn(k)
-      k
+      filename = @etsource.base_dir + '/tmp/restart.txt'
+      restart_touched_at = File.exists?(filename) ? File.ctime(filename).to_i : 'none'
+      "#{restart_touched_at}/etsource/#{@etsource.current_commit_id}/"
     end
 
     # A Qernel::Graph from ETsource where the converters are ordered in a way that
@@ -90,7 +89,7 @@ module Etsource
     end
 
     def unoptimized_graph
-      @graph ||= Etsource::Topology.new(@etsource).import
+      @graph ||= Etsource::Topology.new.import
     end
   end
 end

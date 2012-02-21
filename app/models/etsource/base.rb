@@ -1,16 +1,30 @@
 module Etsource
+  # anti-rsi: method to quickly access Etsource::Base.instance in console
+  def self.base(base_dir = nil)
+    Base.instance.base_dir = base_dir if base_dir
+    Base.instance
+  end
+
+  # anti-rsi: method to quickly access Etsource::Loader.instance
+  def self.loader(base_dir = nil)
+    base(base_dir) if base_dir
+    Loader.instance
+  end
+
+
   # Proxy to the git operations
   #
   class Base
     include Singleton
 
-    def initialize
-      @etsource_dir = APP_CONFIG[:etsource_dir] || 'etsource'
+    attr_accessor :base_dir
 
-      @load_wizards = APP_CONFIG.fetch(:etsource_load_wizards, false)
+    def initialize
+      @base_dir      = APP_CONFIG.fetch(:etsource_dir, 'etsource')
+      @load_wizards  = APP_CONFIG.fetch(:etsource_load_wizards, false)
       @cache_dataset = APP_CONFIG.fetch(:etsource_cache_dataset, true)
 
-      @git = Git.open @etsource_dir
+      @git = Git.open @base_dir
     end
 
     # Should ETsource::Wizards be included? 
@@ -50,10 +64,6 @@ module Etsource
       commit = @git.gcommit(commit)
       @git.checkout(commit)
       commit
-    end
-
-    def base_dir
-      @etsource_dir
     end
 
     def current_branch
