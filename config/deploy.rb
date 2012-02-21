@@ -1,11 +1,11 @@
 set :application, "etengine"
+set :application_key, "etengine"
 set :stage, :production
 set :server_type, 'production'
 
 task :production do
   set :domain, "et-engine.com"
   set :branch, "production"
-  set :application_key, "etengine"
   set :deploy_to, "/home/ubuntu/apps/#{application_key}"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "Energy2.0"
@@ -23,7 +23,6 @@ end
 task :beta do
   set :domain, "beta.et-engine.com"
   set :branch, "staging"
-  set :application_key, "etengine"
   set :deploy_to, "/u/apps/etengine"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "r8ZPP7pQTDTBha"
@@ -36,12 +35,11 @@ end
 task :edge do
   set :domain, "edge.et-engine.com"
   set :branch, "staging"
-  set :application_key, "#{application}_edge"
-  set :deploy_to, "/home/ubuntu/apps/#{application_key}"
+  set :deploy_to, "/u/apps/etengine"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "lVtSsSv43KooQE"
-  set :db_name, application_key
-  set :db_user, application_key
+  set :db_name, "etengine_edge"
+  set :db_user, "etengine_edge"
   set :airbrake_key, "e483e275c8425821ec21580e0ffefe9d"
   server domain, :web, :app, :db, :primary => true
 end
