@@ -32,9 +32,9 @@ var Graph = Class.extend({
    * Draws the graph
    */
   draw:function() {    
-    this.drawGrid(8000, 10000);
+    this.drawGrid(10000, 10000);
 
-    _.each(this.links, function(link) { link.draw();} );
+    _.each(this.links,  function(link) { link.draw();} );
     _.each(this.converters, function(converter) { converter.draw();} );
     _.each(this.links, function(link) { link.adjust_to_converter();} );
   },
