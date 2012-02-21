@@ -141,7 +141,9 @@ public
       self.share = 0.0 if constant?
       # To fix https://github.com/dennisschoenmakers/etengine/issues/178
       # we have to change the following line:
-      self.share = 1.0 if flexible?
+      if flexible?
+        self.share = 1.0 - input.links.map(&:share).compact.sum.to_f
+      end
     end
   end
   
