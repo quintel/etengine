@@ -33,8 +33,9 @@ task :beta do
 end
 
 task :edge do
-  set :domain, "edge.et-engine.com"
-  set :branch, "staging"
+  # set :domain, "edge.et-engine.com"
+  set :domain, "ec2-176-34-77-157.eu-west-1.compute.amazonaws.com"
+  set :branch, "edge"
   set :deploy_to, "/u/apps/etengine"
   set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
   set :db_pass, "lVtSsSv43KooQE"
