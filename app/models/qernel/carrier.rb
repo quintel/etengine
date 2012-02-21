@@ -23,6 +23,7 @@ class Carrier
     :kg_per_liter,
     :mj_per_kg,
     :infinite, # infinite getter is overwritten below for legacy reason. 
+    :graphviz_color,
     *CO2_FCE_COMPONENTS
   ]
 

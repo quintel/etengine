@@ -32,8 +32,7 @@ converters.each do |converter|
     params = [
       link.child .excel_id, 
       link.parent.excel_id, 
-
-      '#999', #"#{link.carrier.carrier_color || '#999'}", 
+      (link.carrier.graphviz_color || '#999'), 
       '1|-'   #"1|#{link.link_style}"
     ]
     -%>
