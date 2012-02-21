@@ -81,6 +81,9 @@ class Converter
   extend ActiveModel::Naming
 
   include Converter::PrimaryDemand
+  # I refactored the large PrimaryDemand into separate modules
+  # Unfortunately that introduced a bug somewhere...
+  #
   # include Qernel::WouterDance::Base
   # include Qernel::WouterDance::PrimaryDemand
   # include Qernel::WouterDance::FinalDemand
