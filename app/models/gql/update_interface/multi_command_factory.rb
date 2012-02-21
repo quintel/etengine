@@ -130,8 +130,8 @@ module Gql::UpdateInterface
 
   private
 
-    ##
-    #
+    # useable_heat_input_link_share
+    # useable_heat_output_link_share
     #
     def rc_value_link_name
       direction = case converter_proxy.to_s

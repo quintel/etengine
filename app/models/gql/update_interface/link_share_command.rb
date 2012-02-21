@@ -22,10 +22,11 @@ class LinkShareCommand < CommandBase
     carrier_name, inout, is_growth_rate = match.captures
 
     if carrier_name and slot = converter.send(inout, carrier_name.to_sym)
-      if link = slot.links.first
+      links = slot.links.select(&:share?)
+      if link = links.first
         link.share = value #(1.0 - (1.0 - value)**Current.scenario.years)
       end
-      if slot.links.length > 1
+      if links.length > 1
         Rails.logger.warn("LinkShareCommand: multiple links exist for '#{@attr_name}'. But only one link share can be updated. Possible Error")
       end
     end
