@@ -168,6 +168,10 @@ protected
 
   def calculate_share
     share * input_external_demand
+  rescue => e
+    raise "Share is nil for the following link:\n#{inspect}" if share.nil?
+    raise "input_external_demand is nil for the following link:\n#{inspect}" if input_external_demand.nil?
+    raise e
   end
 
 
