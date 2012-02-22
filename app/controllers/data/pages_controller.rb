@@ -5,7 +5,7 @@ class Data::PagesController < Data::BaseController
 
   def restart
     Rails.cache.clear
-    system("touch tmp/restart.txt")
+    system("kill -s USR2 `cat #{Rails.root}/tmp/pids/unicorn.pid`")
     redirect_to data_root_path(:api_scenario_id => params[:api_scenario_id])
   end
 
