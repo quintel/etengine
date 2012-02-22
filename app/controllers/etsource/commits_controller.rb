@@ -22,6 +22,7 @@ class Etsource::CommitsController < ApplicationController
 
   def import
     @commit.import! and update_latest_import_sha(params[:id])
+    restart_unicorn
     flash.now[:notice] = "It is now a good idea to refresh the gquery cache on all clients (ETM, Mixer, ...)"
   end
 
@@ -29,6 +30,7 @@ class Etsource::CommitsController < ApplicationController
     @etsource = Etsource::Base.instance
     sha_id = params[:id]
     @etsource.checkout sha_id
+    restart_unicorn
     redirect_to etsource_commits_path, :notice => "Checked out rev: #{sha_id}"
   end
 
@@ -48,5 +50,9 @@ class Etsource::CommitsController < ApplicationController
 
   def find_commit
     @commit = Etsource::Commit.new(params[:id])
+  end
+
+  def restart_unicorn
+    system("kill -s USR2 `cat #{Rails.root}/tmp/pids/unicorn.pid`") rescue nil
   end
 end
