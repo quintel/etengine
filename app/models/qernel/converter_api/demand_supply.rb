@@ -60,7 +60,7 @@ class Qernel::ConverterApi
 
   def input_of_biomass_group
     dataset_fetch(:input_of_biomass_group) do
-      input_of_biomass + input_of_biofuel + input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol
+      input_of_biomass + input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol
     end
   end
   
