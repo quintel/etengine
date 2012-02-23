@@ -66,7 +66,7 @@ class GraphApi
   attributes_required_for :potential_roof_pv_production_buildings, []
 
   def area_footprint
-    graph.group_converters(:biofuel_distribution).map do |c|
+    graph.group_converters(:bio_footprint_calculation).map do |c|
       slot = c.outputs.reject(&:loss?).first
       demand = c.demand || 0.0
       if prod = slot.carrier.typical_production_per_km2
