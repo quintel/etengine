@@ -31,7 +31,7 @@
             %th.span1 Future
             %th.span1 Time
         %tbody
-          - dashboard_gqueries.each do |gquery|
+          - dashboard_gqueries.sort_by(&:key).each do |gquery|
             - result_time = Time.now
             - result = gql.query(gquery, :debug)
             - result_time = Time.now - result_time

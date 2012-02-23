@@ -73,7 +73,7 @@ module Etsource
     # @param attr_key [String,Symbol] the attribute name.
     #
     def val(key, attr_key)
-      country_dataset.data[group_key(key)][Hashpipe.hash(key)][attr_key.to_sym]
+      country_dataset.data[:graph][Hashpipe.hash(key)][attr_key.to_sym]
     rescue => e
       raise "Dataset#val for key `#{key}`, attr_key `#{attr_key}`. \n #{e.message}"
     end
@@ -101,13 +101,6 @@ module Etsource
     # Do so by checking if the form_code matches the path (they have to).
     def has_research_data?
       research_dataset.wizard_codes.any?{|c| file_path.include?("/#{c}/") }
-    end
-
-    def group_key(key)
-      key = key.to_s
-      if key.include?('-->')  then :link
-      elsif key.include?('(') then :slot
-      else                         :converter; end
     end
 
     def load_yaml

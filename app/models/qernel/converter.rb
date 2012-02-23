@@ -210,6 +210,7 @@ protected
   end
 
 public
+  def self.dataset_group; :graph; end
 
   # Set the graph so that we can access other  parts.
   #
