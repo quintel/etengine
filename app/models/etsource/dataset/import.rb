@@ -41,7 +41,8 @@ module Etsource
       end
       
       dataset_hash = load_dataset_hash
-      dataset_hash.delete(:defaults) 
+      dataset_hash.delete(:defaults)
+      dataset_hash.delete(:mixins)
 
       @dataset.data = dataset_hash
       @dataset.data[:graph][:graph] = {:calculated => false}
@@ -54,8 +55,7 @@ module Etsource
     # Return all the carrier keys we have defined in the dataset.
     # (used to dynamically generate some methods)
     def carrier_keys
-      box = YamlPack.new(country_dir+"/carriers.yml", yaml_box_opts)
-      hsh = box.load_deep_merged
+      hsh = load_dataset_hash
       hsh[:carriers].keys
     end
 
