@@ -76,7 +76,7 @@ module Etsource
 
     # Returns the SHA of the current checked-out revision
     def current_rev
-      @git.revparse 'HEAD'
+      @git.revparse 'HEAD' rescue "ERROR parsing HEAD"
     end
   end
 end
