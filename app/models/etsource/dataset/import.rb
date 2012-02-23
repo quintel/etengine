@@ -98,7 +98,7 @@ module Etsource
     def yaml_box_opts(base_dir = nil)
       { 
         key_converter: KEY_CONVERTER, 
-        header_file: country_dir('_includes')+"/header.yml",
+        # header_file: country_dir('_includes')+"/header.yml",
         base_dir: base_dir
       }
     end
