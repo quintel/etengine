@@ -41,6 +41,8 @@ class ConverterApi
   include MethodMetaData
   include DatasetAttributes
 
+  def self.dataset_group; :graph; end
+
   ##
   # :method: primary_demand_of_fossil
   # Primary demand of fossil energy

@@ -20,7 +20,8 @@ class Link
 
   dataset_accessors DATASET_ATTRIBUTES
 
-
+  def self.dataset_group; :graph; end
+  
   # --------- Accessor ---------------------------------------------------------
 
   attr_accessor :graph, # needed for dataset

@@ -35,7 +35,8 @@ class Slot
   DATASET_ATTRIBUTES = [:conversion, :country_specific]
   dataset_accessors DATASET_ATTRIBUTES
 
-
+  def self.dataset_group; :graph; end
+  
   # --------- Initialize ------------------------------------------------------
 
   def initialize(id, converter, carrier, direction = :input)

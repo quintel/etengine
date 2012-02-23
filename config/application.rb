@@ -55,21 +55,10 @@ module Etm
   require 'app/models/gql/gql_query' # parses and loads treetop file
   
   # see ApplicationController#browser for list of browser types
- 
-# TODO rails3 fix 
-#  ActionController::Base.session_options[:expire_after] = 4.weeks
+  # TODO rails3 fix 
+  #  ActionController::Base.session_options[:expire_after] = 4.weeks
   
-  
-  LOCALES_DIRECTORY = "#{Rails.root}/config/locales"
-  LOCALES_AVAILABLE = Dir["#{LOCALES_DIRECTORY}/*.{rb,yml}"].collect do |locale_file|
-    I18n.load_path << locale_file
-    File.basename(File.basename(locale_file, ".rb"), ".yml")
-  end
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end
 
-ALLOWED_BROWSERS = %w[firefox ie9 ie8 ie7 chrome safari]
-AVAILABLE_LOCALES = %w[nl en]
 GC_DISABLING_HACK_ENABLED = true
-
-USE_ETSOURCE = true

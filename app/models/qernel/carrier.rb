@@ -60,6 +60,8 @@ class Carrier
     self.dataset_key # memoize dataset_key 
   end
 
+  def self.dataset_group; :carriers; end
+
   def infinite
     # temporarly check whether infinite comes from the qernel::carrier 
     # if not available it's inside the dataset.

@@ -25,6 +25,7 @@ module Etsource
 
       @country  = country
       @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
+      @hsh = {}
     end
 
     # Importing dataset and convert into the Qernel::Dataset format.
@@ -38,14 +39,14 @@ module Etsource
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist. Should be: #{country_dir(country)}"
       end
+      
+      dataset_hash = load_dataset_hash
+      dataset_hash.delete(:defaults) 
 
-      load_area
-      load_carriers
-      load_time_curves
-      @dataset.data[:graph][:graph][:calculated] = false
+      @dataset.data = dataset_hash
+      @dataset.data[:graph][:graph] = {:calculated => false}
 
-      load_country_dataset
-      load_dataset_wizards if @etsource.load_wizards?
+      # load_dataset_wizards if @etsource.load_wizards?
 
       @dataset
     end
@@ -53,51 +54,53 @@ module Etsource
     # Return all the carrier keys we have defined in the dataset.
     # (used to dynamically generate some methods)
     def carrier_keys
-      load_yaml_with_defaults('carriers')[:carriers].keys
+      box = YamlPack.new(country_dir+"/carriers.yml", yaml_box_opts)
+      hsh = box.load_deep_merged
+      hsh[:carriers].keys
     end
 
   #########
   protected
   #########
 
-    # ---- Import Area ------------------------------------------------------
+    def load_dataset_hash
+      default_files   = Dir.glob(country_dir('_defaults')+"/**/*.yml")
+      default_dataset = YamlPack.new(default_files, yaml_box_opts(country_dir('_defaults'))).load_deep_merged 
 
-    def load_area
-      @dataset.merge(:area,     load_yaml_with_defaults('area')[:area] || {})
-    rescue => e
-      raise "Error loading datasets/:country/area.yml: #{e}"
+      country_files   = Dir.glob(country_dir+"/**/*.yml")
+      country_dataset = YamlPack.new(country_files, yaml_box_opts(country_dir)).load_deep_merged
+
+      default_dataset.deep_merge(country_dataset)
     end
 
-    # ---- Import Carriers --------------------------------------------------
-
-    def load_carriers
-      @dataset.merge(:carrier,  load_yaml_with_defaults('carriers')[:carriers])
-    rescue =>e
-      raise "Error loading datasets/:country/carriers.yml: #{e.inspect}"
-    end    
-
-    # ---- Import Time Curves -----------------------------------------------
-
-    def load_time_curves
-      @dataset.time_curves = load_yaml('time_curves')
-    rescue =>e
-      raise "Error loading datasets/:country/time_curves.yml: #{e.inspect}"
-    end    
-
-    # ---- Import Static -----------------------------------------------
-
-    def load_country_dataset
-      # Topology:
-      # Load each file, remove :defaults and :globals from hsh, so we don't mess with the rest.
-      # merge with @dataset.
-      
-      topology_dataset_files = Dir.glob([base_dir, "{#{country},_defaults}", "graph/*.yml"].join('/'))
-      topology_dataset_files.each do |file|
-        hsh = load_yaml_with_defaults('graph/'+file.split("/").last) || {}
-        merge_hash_with_dataset!(hsh)
+    # The following Proc transforms the keys of the dataset. It converts
+    # strings into symbols. For the special converter,slot and link keys
+    # it calculates a hash, for quicker hash lookups.
+    #
+    # :graph
+    #   :converter_xyz # <--- special rule for these keys
+    #      :demand
+    KEY_CONVERTER = Proc.new do |key, converter_keys|
+      # check that we are at the 2nd level in the 'graph' tree. Without the
+      # length check we would make hashes out of attribute names.
+      if converter_keys.first == 'graph' && converter_keys.length == 1
+        Hashpipe.hash(key)
+      else
+        key.respond_to?(:to_sym) ? key.to_sym : key
       end
-    rescue => e
-      raise "Error loading datasets/:country/graph/*.yml: #{e.inspect}"
+    end
+
+    # options for yaml_pack loader
+    # - Always attach datasets/_includes/header.yml. There we can define mixins.
+    # - folders after base_dir, will get corresponding nested keys in the hash
+    #   e.g.: /graph/export.yml => {:graph => {...contents of file...}}
+    #
+    def yaml_box_opts(base_dir = nil)
+      { 
+        key_converter: KEY_CONVERTER, 
+        header_file: country_dir('_includes')+"/header.yml",
+        base_dir: base_dir
+      }
     end
 
     # ---- Import Dynamic with Research Data ----------------------------------
@@ -112,11 +115,11 @@ module Etsource
         
         hsh = renderer.result
         renderer.save_compiled_yaml(file.gsub('datasets', "compiled/#{country}"))
-        merge_hash_with_dataset!(hsh)
+        merge_hash_into_dataset!(hsh)
       end
     end
  
-    def merge_hash_with_dataset!(hsh)
+    def merge_hash_into_dataset!(hsh)
       # Dont make converters with keys :defaults and :globals 
       hsh.delete(:defaults) 
       hsh.delete(:globals)
@@ -141,31 +144,6 @@ module Etsource
       if key.include?('-->')  then :link
       elsif key.include?('(') then :slot
       else                         :converter; end
-    end
-
-    # If there is a corresponding file in _defaults (has the same name), prepend
-    # the _defaults file to the actual, so that we can work with << &default_attrs
-    # This is solely needed to make << &foo_bar work, otherwise we could just as
-    # well only load the default file first.
-    #
-    def load_yaml_with_defaults(file)
-      default_data = File.exists?(country_file('_defaults', file)) ? File.read(country_file('_defaults', file)) : ""
-      country_data = File.exists?(country_file(country, file)) ? File.read(country_file(country, file)) : ""
-      content = [default_data, country_data].join("\n")
-      (load_yaml_content(content) || {})
-    end
-
-    def load_yaml_content(str)
-      YAML::load(ERB.new(str).result(binding))
-    end
-
-    def load_yaml_file(file_path)
-      content = File.exists?(file_path) ? File.read(file_path) : ''
-      load_yaml_content(content)
-    end
-
-    def load_yaml(file)
-      load_yaml_file(country_file(country, file))
     end
 
     def base_dir
