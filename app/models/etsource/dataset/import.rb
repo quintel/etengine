@@ -10,15 +10,15 @@ module Etsource
   # ------ Importing ETsource Transformer Files  ---------------------------------
   #
   # To make the ETsource dataset forms dynamic we pass the yml files through an
-  # ERB handler, and load the output with YAML::load. 
+  # ERB handler, and load the output with YAML::load.
   # So that the dynamic yml.erb form templates (the suffix .erb is not needed), can
-  # access the values of the static datasets and the researchers form input, we 
-  # add a binding to the yaml files to this Etsource::Dataset object. So calling 
+  # access the values of the static datasets and the researchers form input, we
+  # add a binding to the yaml files to this Etsource::Dataset object. So calling
   # #get within a yml will call Etsource::Dataset#get
   #
   class Dataset::Import
     attr_reader :country
-    
+
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
       @etsource = Etsource::Base.instance
@@ -31,15 +31,15 @@ module Etsource
     # Importing dataset and convert into the Qernel::Dataset format.
     # The yml file is a flat (no nested key => values) hash. We move it to a nested hash
     # and also have to convert the keys into a numeric using a hashing function (FNV 1a),
-    # the additional nesting of the hash, and hashing ids as strings are mostly for 
+    # the additional nesting of the hash, and hashing ids as strings are mostly for
     # performance reasons.
-    # 
+    #
     def import
       if !Rails.env.test? && !File.exists?(country_dir(country))
         # don't check for
         raise "Trying to load a dataset with region code '#{country}' but it does not exist. Should be: #{country_dir(country)}"
       end
-      
+
       dataset_hash = load_dataset_hash
       dataset_hash.delete(:defaults)
       dataset_hash.delete(:mixins)
@@ -51,7 +51,7 @@ module Etsource
 
       @dataset
     end
-   
+
     # Return all the carrier keys we have defined in the dataset.
     # (used to dynamically generate some methods)
     def carrier_keys
@@ -65,7 +65,7 @@ module Etsource
 
     def load_dataset_hash
       default_files   = Dir.glob(country_dir('_defaults')+"/**/*.yml")
-      default_dataset = YamlPack.new(default_files, yaml_box_opts(country_dir('_defaults'))).load_deep_merged 
+      default_dataset = YamlPack.new(default_files, yaml_box_opts(country_dir('_defaults'))).load_deep_merged
 
       country_files   = Dir.glob(country_dir+"/**/*.yml")
       country_dataset = YamlPack.new(country_files, yaml_box_opts(country_dir)).load_deep_merged
@@ -96,8 +96,8 @@ module Etsource
     #   e.g.: /graph/export.yml => {:graph => {...contents of file...}}
     #
     def yaml_box_opts(base_dir = nil)
-      { 
-        key_converter: KEY_CONVERTER, 
+      {
+        key_converter: KEY_CONVERTER,
         # base_dir makes a) nesting hashes into folders possible
         # and b) allows for including other files.
         base_dir: base_dir
@@ -113,22 +113,22 @@ module Etsource
       Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
         wizard   = ::Etsource::Wizard.new(file.split("/")[-2])
         renderer = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset, wizard.config)
-        
+
         hsh = renderer.result
         renderer.save_compiled_yaml(file.gsub('datasets', "compiled/#{country}"))
         merge_hash_into_dataset!(hsh)
       end
     end
- 
+
     def merge_hash_into_dataset!(hsh)
-      # Dont make converters with keys :defaults and :globals 
-      hsh.delete(:defaults) 
+      # Dont make converters with keys :defaults and :globals
+      hsh.delete(:defaults)
       hsh.delete(:globals)
-      
+
       hsh.each do |key,attributes|
         if key == :area
           # area is a special kid for now. dont hash keys or groups
-          @dataset.merge(key, attributes)  
+          @dataset.merge(key, attributes)
         else
           raise "No attributes/hashing defined for key `#{key}` in following data bucket. Check the dataset. \n `#{hsh.inspect}`" if attributes.nil?
           attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
@@ -138,7 +138,7 @@ module Etsource
     end
 
   protected
-    
+
     # Messy legacy hack. Have no words for it right now.
     def group_key(key)
       key = key.to_s
@@ -148,7 +148,7 @@ module Etsource
     end
 
     def base_dir
-      "#{@etsource.base_dir}/datasets"
+      "#{@etsource.export_dir}/datasets"
     end
 
     # @param [String] country shortcut 'de', 'nl', etc
@@ -156,7 +156,7 @@ module Etsource
     def country_dir(c = country)
       "#{base_dir}/#{c}"
     end
- 
+
     # @param [String] country shortcut 'de', 'nl', etc
     #
     def country_file(country, file_name)
@@ -164,7 +164,7 @@ module Etsource
       f += ".yml" unless f.include?('.yml')
       f
     end
- 
+
   end
 end
 
