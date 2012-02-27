@@ -10,6 +10,12 @@
         = submit_tag "Checkout", :class => 'btn'
         = submit_tag "Refresh", :class => 'btn'
         = link_to "verify if dashboard is working", etsource_commit_path(id: 'current')
+      %p
+        Click "Checkout" to move to a different branch.
+      %p
+        Click "IMPORT" if you changes gqueries and/or inputs: this will update the database
+      %p
+        Click "USE" for any other change (graph and/or dataset): this will update the directory read by the engine
 
 - if @output
   %pre.git_output= @output
