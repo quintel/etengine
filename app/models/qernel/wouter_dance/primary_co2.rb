@@ -1,20 +1,16 @@
 module Qernel::WouterDance::PrimaryCo2
 
-  def primary_co2_emission
-    dataset_fetch(:primary_co2_emission_memoized) do
-      demand = self.demand
-      if demand.nil? || demand == 0.0
-        0.0
-      else
-        demand * wouter_dance(:co2_per_mj_factor, :co2_free_factor)
-      end
-    end
-  end
- 
   def primary_demand_co2_per_mj_of_carrier(carrier_key)
     factor = wouter_dance(:co2_per_mj_of_carrier_factor, nil, nil, carrier_key)
     (self.demand || 0.0) * factor
   end
+
+  def primary_co2_emission
+    dataset_fetch(:primary_co2_emission_memoized) do
+      primary_demand_with(:co2_per_mj, :co2_free)
+    end
+  end
+
 
   def co2_free_factor
     (1.0 - (query.co2_free || 0.0))
@@ -24,7 +20,7 @@ module Qernel::WouterDance::PrimaryCo2
   # @return [nil] until dead end or primary_energy_demand
   # @return [Float] co2_per_mj of primary_energy_demand carrier
   #
-  def co2_per_mj_of_carrier_factor(link, carrier_key, *args)
+  def co2_per_mj_of_carrier_factor(link, carrier_key, ruby18fix = nil)
     return 0.0 if query.co2_free == 1.0
     return nil if !right_dead_end? or !primary_energy_demand?
     link ||= output_links.first
@@ -41,8 +37,7 @@ module Qernel::WouterDance::PrimaryCo2
   # @return [nil] until dead end or primary_energy_demand
   # @return [Float] co2_per_mj of primary_energy_demand carrier
   #
-  def co2_per_mj_factor(link, *args)
-    #return 0.0 if query.co2_free == 1.0
+  def co2_per_mj_factor(link,ruby18fix = nil)
     return nil if !right_dead_end? or !primary_energy_demand?
     link ||= output_links.first
 
