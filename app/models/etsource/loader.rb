@@ -1,5 +1,5 @@
 # Loader is an interface to the ETsource. It takes care of loading and caching
-# of ETsource components. 
+# of ETsource components.
 #
 #     loader = Etsource::Loader.instance
 #     # load the (one&only) graph
@@ -30,7 +30,7 @@ module Etsource
         if @etsource.cache_dataset?
           # DEBT Limitations of this cache:
           # if experimenting with input tool, you change a transformer.yml or config.yml will not
-          # take effect, because cache only invalidates when a research dataset has been changed 
+          # take effect, because cache only invalidates when a research dataset has been changed
           # or updated.
           cache("datasets/#{country}/#{InputTool::SavedWizard.last_updated(country).to_i}") do
             ::Etsource::Dataset.new(country).import
@@ -68,18 +68,16 @@ module Etsource
     end
 
     def cache_key
-      filename = @etsource.base_dir + '/tmp/restart.txt'
-      restart_touched_at = File.exists?(filename) ? File.ctime(filename).to_i : 'none'
-      "#{restart_touched_at}/etsource/#{@etsource.current_commit_id}/"
+      "etsource/#{@etsource.get_latest_export_sha}/"
     end
 
     # A Qernel::Graph from ETsource where the converters are ordered in a way that
-    #  is optimal for the calculation. 
+    #  is optimal for the calculation.
     #
     def optimized_graph
       ActiveSupport::Notifications.instrument("etsource.performance.optimized_graph") do
         if @etsource.cache_topology?
-          @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/optimized_graph") do
+          @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.get_latest_export_sha}/optimized_graph") do
             g = unoptimized_graph
             g.dataset = dataset('nl')
             g.optimize_calculation_order
