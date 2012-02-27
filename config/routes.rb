@@ -94,7 +94,7 @@ Etm::Application.routes.draw do
     resources :commits, :only => [:index, :show] do
       member do
         get :import
-        get :checkout
+        get :export
       end
     end
   end

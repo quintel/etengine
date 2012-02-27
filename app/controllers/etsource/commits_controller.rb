@@ -10,14 +10,13 @@ class Etsource::CommitsController < ApplicationController
 
   def index
     @etsource = Etsource::Base.instance
-    # @etsource.current_branch is sometimes (no branch) catch this
-    @branch = params[:branch] || @etsource.current_rev || @etsource.current_branch || 'master'
+    @branch = params[:branch] || @etsource.current_branch || 'master'
+    @branch = 'master' if @etsource.detached_branch?
+    @branches = @etsource.branches
     @etsource.checkout @branch
     @output = @etsource.refresh if params[:commit] == 'Refresh'
     @commits = @etsource.commits
-    @branches = @etsource.branches - ['(no branch)']
     @latest_import = get_latest_import_sha
-    @current_revision = @etsource.current_rev
   end
 
   def import
@@ -26,10 +25,11 @@ class Etsource::CommitsController < ApplicationController
     flash.now[:notice] = "It is now a good idea to refresh the gquery cache on all clients (ETM, Mixer, ...)"
   end
 
-  def checkout
+  # This will export a revision into APP_CONFIG[:etsource_working_copy]
+  def export
     @etsource = Etsource::Base.instance
     sha_id = params[:id]
-    @etsource.checkout sha_id
+    @etsource.export sha_id
     restart_unicorn
     redirect_to etsource_commits_path, :notice => "Checked out rev: #{sha_id}"
   end
