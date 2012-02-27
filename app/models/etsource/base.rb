@@ -20,7 +20,7 @@ module Etsource
     attr_accessor :base_dir
 
     def initialize
-      @base_dir      = APP_CONFIG.fetch(:etsource_dir, 'etsource')
+      @base_dir      = ETSOURCE_DIR
       @load_wizards  = APP_CONFIG.fetch(:etsource_load_wizards, false)
       @cache_dataset = APP_CONFIG.fetch(:etsource_cache_dataset, true)
 

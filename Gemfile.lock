@@ -178,7 +178,7 @@ GEM
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
-    yaml_pack (0.0.1.alpha)
+    yaml_pack (0.0.2.alpha)
     yard (0.7.2)
 
 PLATFORMS
@@ -229,5 +229,5 @@ DEPENDENCIES
   treetop (= 1.4.8)
   unicorn
   webrat
-  yaml_pack
+  yaml_pack (~> 0.0.2.alpha)
   yard (~> 0.7.2)

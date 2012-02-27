@@ -98,7 +98,8 @@ module Etsource
     def yaml_box_opts(base_dir = nil)
       { 
         key_converter: KEY_CONVERTER, 
-        # header_file: country_dir('_includes')+"/header.yml",
+        # base_dir makes a) nesting hashes into folders possible
+        # and b) allows for including other files.
         base_dir: base_dir
       }
     end
