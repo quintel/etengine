@@ -47,10 +47,6 @@ module Etsource
       @cache_topology
     end
 
-    def current_commit_id
-      @git.gcommit("HEAD").sha
-    end
-
     def commits
       @git.log
     end
@@ -63,20 +59,16 @@ module Etsource
       @git.checkout branch
     end
 
+    # exports a revision
     def export(branch)
       FileUtils.rm_rf(@export_dir)
       FileUtils.mkdir(@export_dir)
       system "cd #{@base_dir} && git archive #{branch} | tar -x -C #{@export_dir}"
+      update_latest_export_sha(branch)
     end
 
     def refresh
       @git.pull
-    end
-
-    def checkout_commit(commit)
-      commit = @git.gcommit(commit)
-      @git.checkout(commit)
-      commit
     end
 
     # just import what currently is checked out.
@@ -103,5 +95,30 @@ module Etsource
     def current_rev
       @git.revparse 'HEAD' rescue "ERROR parsing HEAD"
     end
+
+    def update_latest_export_sha(sha)
+      File.open(export_sha_file, 'w') {|f| f.write(sha)} rescue nil
+    end
+
+    def get_latest_export_sha
+      File.read(export_sha_file) rescue nil
+    end
+
+    def update_latest_import_sha(sha)
+      File.open(import_sha_file, 'w') {|f| f.write(sha)} rescue nil
+    end
+
+    def get_latest_import_sha
+      File.read(import_sha_file) rescue nil
+    end
+
+    def export_sha_file
+      "#{Rails.root}/config/latest_etsource_export_sha"
+    end
+
+    def import_sha_file
+      "#{Rails.root}/config/latest_etsource_import_sha"
+    end
+
   end
 end
