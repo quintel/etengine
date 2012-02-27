@@ -51,14 +51,6 @@ module Etsource
       @git.log
     end
 
-    def branches
-      @git.branches.local.map(&:name)
-    end
-
-    def checkout(branch)
-      @git.checkout branch
-    end
-
     # exports a revision
     def export(branch)
       FileUtils.rm_rf(@export_dir)
@@ -83,6 +75,8 @@ module Etsource
       end
     end
 
+    # branch operations
+    #
     def current_branch
       @git.current_branch
     end
@@ -91,11 +85,17 @@ module Etsource
       current_branch =~ /no branch/
     end
 
-    # Returns the SHA of the current checked-out revision
-    def current_rev
-      @git.revparse 'HEAD' rescue "ERROR parsing HEAD"
+    def branches
+      @git.branches.local.map(&:name)
     end
 
+    def checkout(branch)
+      @git.checkout branch
+    end
+
+    # import: gqueries and inputs are saved to db
+    # export: ~svn-export
+    #
     def update_latest_export_sha(sha)
       File.open(export_sha_file, 'w') {|f| f.write(sha)} rescue nil
     end
@@ -112,6 +112,8 @@ module Etsource
       File.read(import_sha_file) rescue nil
     end
 
+    private
+
     def export_sha_file
       "#{Rails.root}/config/latest_etsource_export_sha"
     end
@@ -119,6 +121,5 @@ module Etsource
     def import_sha_file
       "#{Rails.root}/config/latest_etsource_import_sha"
     end
-
   end
 end

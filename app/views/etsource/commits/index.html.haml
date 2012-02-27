@@ -25,8 +25,8 @@
   .span16
     %h3
       Commits in #{@branch} #{'(detached)' if @etsource.detached_branch?}
-    %h5 Latest import: #{@latest_import || 'N/A'}
-    %h5 Checked out revision: #{@current_revision || 'N/A'}
+    %h5 Latest import: #{@etsource.get_latest_import_sha || 'N/A'}
+    %h5 Checked out revision: #{@etsource.get_latest_export_sha || 'N/A'}
     %table.zebra-striped.condensed-table
       %tbody
         - @commits.each do |commit|
