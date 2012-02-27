@@ -58,6 +58,8 @@ module Etsource
     end
 
     def export(branch)
+      FileUtils.rm_rf(@export_dir)
+      FileUtils.mkdir(@export_dir)
       system "cd #{@base_dir} && git archive #{branch} | tar -x -C #{@export_dir}"
     end
 
