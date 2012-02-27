@@ -54,13 +54,13 @@ class Qernel::ConverterApi
 
   def input_of_fossil_carriers
     dataset_fetch(:input_of_fossil_carriers) do
-      input_of_coal + input_of_crude_oil + input_of_natural_gas + input_of_diesel + input_of_gasoline + input_of_steam_hot_water + input_of_gasmix
+      input_of_coal + input_of_crude_oil + input_of_natural_gas + input_of_diesel + input_of_gasoline + input_of_steam_hot_water + input_of_gas_power_fuelmix
     end
   end
 
   def input_of_biomass_group
     dataset_fetch(:input_of_biomass_group) do
-      input_of_biomass + input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol
+      input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol + input_of_wood_pellets + input_of_wood + input_of_torrified_biomass_pellets 
     end
   end
   
