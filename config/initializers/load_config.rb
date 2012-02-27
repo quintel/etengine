@@ -9,5 +9,6 @@ end
 
 # Put ETSOURCE_DIR in here, so that it is accessible when loading
 # with yaml box.
-ETSOURCE_DIR = APP_CONFIG.fetch(:etsource_dir, 'etsource')
+ETSOURCE_DIR = APP_CONFIG.fetch(:etsource_working_copy, 'etsource')
+ETSOURCE_EXPORT_DIR = APP_CONFIG.fetch(:etsource_export, 'etsource')
 
