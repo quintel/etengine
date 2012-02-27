@@ -11,10 +11,10 @@ module Etsource
       Gquery.transaction do
         Gquery.delete_all
         GqueryGroup.delete_all
-        
+
         gquery_groups.values.each(&:save!)
         Gquery.import gqueries
-        
+
         Rails.cache.clear
         system("touch tmp/restart.txt")
       end
@@ -40,13 +40,13 @@ module Etsource
     def gqueries
       gqueries = []
       groups = gquery_groups
-      
+
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
         tokens = f.gsub(base_dir+"/", '').split('/')
         # the group name concatenates the directory names
         group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
         gquery = from_file(f)
-        
+
         gquery.gquery_group = groups[group_key]
         gqueries << gquery
       end
@@ -55,7 +55,7 @@ module Etsource
 
     def gquery_groups
       return @gquery_groups if @gquery_groups
-      
+
       @gquery_groups = {}
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
         tokens = f.gsub(base_dir+"/", '').split('/')
@@ -113,10 +113,10 @@ module Etsource
     def group_key(g)
       g.group_key.downcase.gsub(/\s/, '_') rescue 'other'
     end
-    
+
     def base_dir
-     "#{@etsource.base_dir}/gqueries"
+     "#{@etsource.export_dir}/gqueries"
     end
-      
+
   end
 end

@@ -1,6 +1,6 @@
 class Etsource::CommitsController < ApplicationController
   layout 'etsource'
-  before_filter :find_commit, :only => [:import, :checkout]
+  before_filter :find_commit, :only => [:import, :export]
 
   authorize_resource :class => false
 
@@ -21,7 +21,10 @@ class Etsource::CommitsController < ApplicationController
   end
 
   def import
-    @commit.import! and update_latest_import_sha(params[:id])
+    @etsource = Etsource::Base.instance
+    sha = params[:id]
+    @etsource.checkout sha
+    @commit.import! and update_latest_import_sha(sha) and update_latest_export_sha(sha)
     restart_unicorn
     flash.now[:notice] = "It is now a good idea to refresh the gquery cache on all clients (ETM, Mixer, ...)"
   end

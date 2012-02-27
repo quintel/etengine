@@ -30,7 +30,7 @@ module Etsource
     # and import a few times, until the mysql auto_increment ID is high enough
     #
     def import
-      base_dir = "#{@etsource.base_dir}/inputs"
+      base_dir = "#{@etsource.export_dir}/inputs"
 
       ids = []
       Dir.glob("#{base_dir}/**/*.yml").each do |f|
