@@ -112,8 +112,12 @@ class Scenario < ActiveRecord::Base
   ##
   # @tested 2010-11-30 seb
   #
-  def self.default
-    new(default_attributes)
+  def self.default(opts = {})
+    new(default_attributes.merge(opts))
+  end
+
+  def code=(code)
+    country = code
   end
 
   # Code is the new region_code/country.

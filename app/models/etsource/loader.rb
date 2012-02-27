@@ -78,18 +78,26 @@ module Etsource
     #
     def optimized_graph
       ActiveSupport::Notifications.instrument("etsource.performance.optimized_graph") do
-        @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/optimized_graph") do
-          g = unoptimized_graph
-          g.dataset = dataset('nl')
-          g.optimize_calculation_order
-          g.reset_dataset!
-          g
+        if @etsource.cache_topology?
+          @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.current_commit_id}/optimized_graph") do
+            g = unoptimized_graph
+            g.dataset = dataset('nl')
+            g.optimize_calculation_order
+            g.reset_dataset!
+            g
+          end
+        else
+          unoptimized_graph
         end
       end
     end
 
     def unoptimized_graph
-      @graph ||= Etsource::Topology.new.import
+      if @etsource.cache_topology?
+        @graph ||= Etsource::Topology.new.import
+      else
+        Etsource::Topology.new.import
+      end
     end
   end
 end
