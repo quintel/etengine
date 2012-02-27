@@ -12,6 +12,12 @@ class Qernel::ConverterApi
     converter.sustainability_share
   end
 
+  # Inverse of sustainability_share
+  # https://github.com/dennisschoenmakers/etengine/issues/272
+  def non_renewable_share
+    1.0 - (sustainability_share || 0.0)
+  end
+
   def weighted_carrier_cost_per_mj
     converter.weighted_carrier_cost_per_mj
   end
