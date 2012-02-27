@@ -24,6 +24,11 @@ module Etsource
       end
     end
 
+    # ATTENTION bug hunters:
+    # If you get  Mysql2::Error: Duplicate entry '549' for key 'PRIMARY':
+    # upon importing inputs, you might want to comment #input.force_id()
+    # and import a few times, until the mysql auto_increment ID is high enough
+    #
     def import
       base_dir = "#{@etsource.base_dir}/inputs"
 

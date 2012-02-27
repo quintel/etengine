@@ -17,14 +17,14 @@ module Etsource
   class Base
     include Singleton
 
-    attr_accessor :base_dir
+    attr_accessor :base_dir, :cache_dataset, :load_wizards, :cache_topology
 
     def initialize
-      @base_dir      = ETSOURCE_DIR
-      @export_dir    = ETSOURCE_EXPORT_DIR
-      @load_wizards  = APP_CONFIG.fetch(:etsource_load_wizards, false)
-      @cache_dataset = APP_CONFIG.fetch(:etsource_cache_dataset, true)
-
+      @base_dir       = ETSOURCE_DIR
+      @export_dir     = ETSOURCE_EXPORT_DIR
+      @load_wizards   = APP_CONFIG.fetch(:etsource_load_wizards,  false)
+      @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
+      @cache_dataset  = APP_CONFIG.fetch(:etsource_cache_dataset, true)
       @git = Git.open @base_dir
     end
 
@@ -39,6 +39,11 @@ module Etsource
     # always reload the Etsource from scratch.
     def cache_dataset?
       @cache_dataset
+    end
+
+    # set to true to force reloading the topology
+    def cache_topology?
+      @cache_topology
     end
 
     def current_commit_id
@@ -71,6 +76,18 @@ module Etsource
       commit = @git.gcommit(commit)
       @git.checkout(commit)
       commit
+    end
+
+    # just import what currently is checked out.
+    # used for testing.
+    def import_current!
+      Gquery.transaction do
+        Gquery.delete_all
+        Input.delete_all
+
+        Gqueries.new(self).import!
+        Inputs.new(self).import!
+      end
     end
 
     def current_branch
