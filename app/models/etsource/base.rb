@@ -21,14 +21,15 @@ module Etsource
 
     def initialize
       @base_dir      = ETSOURCE_DIR
+      @export_dir    = ETSOURCE_EXPORT_DIR
       @load_wizards  = APP_CONFIG.fetch(:etsource_load_wizards, false)
       @cache_dataset = APP_CONFIG.fetch(:etsource_cache_dataset, true)
 
       @git = Git.open @base_dir
     end
 
-    # Should ETsource::Wizards be included? 
-    # true:  this makes the input_module work. 
+    # Should ETsource::Wizards be included?
+    # true:  this makes the input_module work.
     # false: turn off to make sure the ETengine is not affected by the input_module
     def load_wizards?
       @load_wizards
@@ -54,6 +55,10 @@ module Etsource
 
     def checkout(branch)
       @git.checkout branch
+    end
+
+    def export(branch)
+      system "cd #{@base_dir} && git archive #{branch} | tar -x -C #{@export_dir}"
     end
 
     def refresh
