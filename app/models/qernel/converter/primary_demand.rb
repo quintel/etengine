@@ -50,13 +50,10 @@
 #
 #
 module Qernel::Converter::PrimaryDemand
-  ##
   # The share of sustainable energy. It is the (recursive) sum of the
   #  sustainable shares of its parents (nodes to the right).
   #
   # A.sustainability_share == 0.4*0.85 + 0.6 * 1.0
-  #
-  #
   #
   def sustainability_share
     dataset_fetch(:sustainability_share_factor_memoized) do
