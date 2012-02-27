@@ -80,15 +80,12 @@ module Qernel
 class Converter
   extend ActiveModel::Naming
 
-  include Converter::PrimaryDemand
-  # I refactored the large PrimaryDemand into separate modules
-  # Unfortunately that introduced a bug somewhere...
-  #
-  # include Qernel::WouterDance::Base
-  # include Qernel::WouterDance::PrimaryDemand
-  # include Qernel::WouterDance::FinalDemand
-  # include Qernel::WouterDance::PrimaryCo2
-  # include Qernel::WouterDance::WeightedCarrier
+  include Qernel::WouterDance::Base
+  include Qernel::WouterDance::PrimaryDemand
+  include Qernel::WouterDance::FinalDemand
+  include Qernel::WouterDance::PrimaryCo2
+  include Qernel::WouterDance::WeightedCarrier
+  include Qernel::WouterDance::Sustainable
 
   include DatasetAttributes
   include Topology::Converter
