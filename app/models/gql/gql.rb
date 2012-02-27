@@ -55,9 +55,9 @@ class Gql
   # @param [Graph] graph_model
   # @param [Dataset,String] dataset Dataset or String for country
   #
-  def initialize(scenario_or_graph)
-    if scenario_or_graph.is_a?(Scenario)
-      @scenario = scenario_or_graph
+  def initialize(scenario)
+    if scenario.is_a?(Scenario)
+      @scenario = scenario
       loader = Etsource::Loader.instance
       @present_graph = loader.graph.tap{|g| g.year = @scenario.start_year}
       @future_graph  = loader.graph.tap{|g| g.year = @scenario.end_year}
