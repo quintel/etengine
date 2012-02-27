@@ -17,7 +17,8 @@ module Etsource
   class Base
     include Singleton
 
-    attr_accessor :base_dir, :cache_dataset, :load_wizards, :cache_topology
+    attr_accessor :base_dir, :cache_dataset, :load_wizards, :cache_topology,
+                  :export_dir
 
     def initialize
       @base_dir       = ETSOURCE_DIR
