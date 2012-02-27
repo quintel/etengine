@@ -19,11 +19,6 @@ namespace :deploy do
     memcached.flush
   end
 
-  task :symlink_etsource do
-    # raise "etsource does not exist. check out github branch etsource into /home/ubuntu" unless remote_dir_exists?("/home/ubuntu/etsource")
-    run "ln -s /home/ubuntu/etsource #{release_path}/etsource"
-  end
-
   task :wipe_cache do
     memcached.restart
     restart
@@ -31,5 +26,4 @@ namespace :deploy do
 end
 
 after "deploy:update_code", "deploy:copy_configuration_files"
-after "deploy:update_code", "deploy:symlink_etsource"
 after "deploy", "deploy:cleanup"
