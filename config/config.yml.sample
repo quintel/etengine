@@ -1,15 +1,19 @@
 development: &DEV
     # etsource folder. Default is APP/etsource (deprecated)
-    etsource_dir:
-    
+    # this is where the working revisions will be exported to
+    etsource_export: /u/apps/etengine/etsource
+
+    # etsource working copy - directory you've git cloned to
+    etsource_working_copy: /u/apps/etsource
+
     # include etsource wizards from input tool. This is still experimental. This will default to false if not set. It is dangerous
-    # because people can input research datasets which will screw up the normal flow of 
+    # because people can input research datasets which will screw up the normal flow of
     # calculations.
     etsource_load_wizards: true # set false for 'live' servers
-    
-    # Setting this to true caches the dataset in between requests. set to false 
-    # makes working with etsource easier. 
-    etsource_cache_dataset: false # set true for 'live' releases    
+
+    # Setting this to true caches the dataset in between requests. set to false
+    # makes working with etsource easier.
+    etsource_cache_dataset: false # set true for 'live' releases
 
     # URL to be called after a clean etsource import
     # Usually you would set something like
