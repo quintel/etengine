@@ -6,6 +6,7 @@ log/*
 config/database.yml
 config/config.yml
 config/latest_etsource_import_sha
+config/latest_etsource_export_sha
 .yardoc
 doc/*
 public/tmp/*

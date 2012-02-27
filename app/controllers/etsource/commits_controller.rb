@@ -17,6 +17,7 @@ class Etsource::CommitsController < ApplicationController
     @output = @etsource.refresh if params[:commit] == 'Refresh'
     @commits = @etsource.commits
     @latest_import = get_latest_import_sha
+    @current_revision = get_latest_export_sha
   end
 
   def import
@@ -29,22 +30,34 @@ class Etsource::CommitsController < ApplicationController
   def export
     @etsource = Etsource::Base.instance
     sha_id = params[:id]
-    @etsource.export sha_id
+    @etsource.export(sha_id) and update_latest_export_sha(sha_id)
     restart_unicorn
     redirect_to etsource_commits_path, :notice => "Checked out rev: #{sha_id}"
   end
 
   private
 
+  def update_latest_export_sha(sha)
+    File.open(export_sha_file, 'w') {|f| f.write(sha)} rescue nil
+  end
+
+  def get_latest_export_sha
+    File.read(export_sha_file) rescue nil
+  end
+
   def update_latest_import_sha(sha)
-    File.open(sha_file, 'w') {|f| f.write(sha)} rescue nil
+    File.open(import_sha_file, 'w') {|f| f.write(sha)} rescue nil
   end
 
   def get_latest_import_sha
-    File.read(sha_file) rescue nil
+    File.read(import_sha_file) rescue nil
   end
 
-  def sha_file
+  def export_sha_file
+    "#{Rails.root}/config/latest_etsource_export_sha"
+  end
+
+  def import_sha_file
     "#{Rails.root}/config/latest_etsource_import_sha"
   end
 
