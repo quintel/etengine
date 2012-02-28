@@ -24,7 +24,10 @@ class Etsource::CommitsController < ApplicationController
     sha = params[:id]
     @etsource.checkout sha
     @commit.import! and @etsource.update_latest_import_sha(sha) and @etsource.update_latest_export_sha(sha)
-    flash.now[:notice] = "It is now a good idea to refresh the gquery cache on all clients (ETM, Mixer, ...)"
+    flash.now[:notice] = "Flushing ETM client cache"
+    Rails.cache.clear
+    # clients might need to flush their cache
+    update_remote_client APP_CONFIG[:client_refresh_url]
     restart_unicorn
   end
 
@@ -50,5 +53,17 @@ class Etsource::CommitsController < ApplicationController
 
   def setup_etsource
     @etsource = Etsource::Base.instance
+  end
+
+  # simple http request
+  def update_remote_client(url)
+    return unless url
+    require 'net/http'
+    require 'uri'
+
+    uri = URI.parse(url)
+    response = Net::HTTP.get_response(uri)
+  rescue
+    nil
   end
 end
