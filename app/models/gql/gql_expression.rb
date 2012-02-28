@@ -394,7 +394,7 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   #
   def TIME_SERIE_VALUE(keys, arguments, scope)
     converter_id, time_curve_key, year = keys.flatten
-    scope.graph.time_curves[converter_id.to_i][time_curve_key][year.to_i] rescue nil
+    scope.graph.time_curves[converter_id.to_i][time_curve_key.to_sym][year.to_i] rescue nil
   end
 
   # Returns the intersection of two sets of converters.
