@@ -48,11 +48,13 @@ module Etsource
     end
 
     def gquery_groups
+      # ?!
       cache("gqueries") do
         @gquery.gquery_groups
       end
     end
 
+    # ?!
     def inputs
       cache("inputs") do
 
