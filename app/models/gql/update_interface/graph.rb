@@ -140,20 +140,24 @@ module UpdateInterface
       old_houses_demand = proxy.preset_demand
 
 
-      demand_per_old_house = old_houses_demand / ((1 - (percentage_new/100)) * households)
+      demand_per_old_house = old_houses_demand / ((1 - (percentage_new/100.0)) * households)
       # calculate the diff in demand for old_houses
       households_to_replace = (old_houses_demand - old_houses_demand_cmd.value) / demand_per_old_house
 
       households_existing = households - households_to_replace
 
       new_house_converter = graph.converter("heating_new_houses_current_insulation_households_energetic")
-      demand_per_new_house = new_house_converter.query.preset_demand / (percentage_new * households)
+      demand_per_new_house = new_house_converter.query.preset_demand / (percentage_new/100.0 * households)
 
       # the nr of extrahouses multiplied with their demand is added to the original demand
       new_houses_future_demand_value = new_house_converter.query.demand + (demand_per_new_house * households_to_replace)
 
       cmds << AttributeCommand.new(graph.area, :number_of_existing_households, households_existing, :value)
+
       cmds << old_houses_demand_cmd
+
+      # Ugly Hack for an Ugly existing solution, DS Tue Feb 28 17:34:15 CET 2012
+      cmds << AttributeCommand.new(new_house_converter, :preset_demand, new_houses_future_demand_value, :value)
 
       cmds
     end
