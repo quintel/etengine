@@ -4,7 +4,7 @@ describe ApiRequest do
 
   describe "#new" do
     it "should assign settings" do
-      ApiRequest.new(:settings => :foo).settings.should == :foo
+      ApiRequest.new(:id => 'test', :settings => {:foo => :bar}).settings[:foo].should == :bar
     end
 
     it ":id => 'test' => test_scenario?" do
@@ -36,7 +36,7 @@ describe ApiRequest do
       @gquery1 = Gquery.create(:key => 'lft_demand', :query => 'V(lft; demand)')
       @gquery2 = Gquery.create(:key => 'rgt_demand', :query => 'V(rgt; demand)')
       Gquery.stub!(:load_gqueries).and_return([@gquery1, @gquery2])
-      
+
       @gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
       ApiRequest.any_instance.stub(:gql).and_return(@gql)
     end
@@ -49,7 +49,7 @@ describe ApiRequest do
     end
 
     context "existing api_scenario" do
-      before do 
+      before do
         @api_scenario = Factory.create :api_scenario
       end
 
@@ -131,7 +131,7 @@ describe ApiRequest do
         result[@gquery1.id.to_s][0][1].should == 100.0
         result[@gquery1.id.to_s][1][1].should == 5.0
       end
-    
+
       pending "should set a goal" do
         input = Input.create(:query => "UPDATE(GOAL(foo),user_value,USER_INPUT())")
         result = ApiRequest.response({
@@ -144,7 +144,7 @@ describe ApiRequest do
     end
 
     context "existing api_scenario with existing user_values" do
-      before do 
+      before do
         @api_scenario = Factory.create :api_scenario, :user_values => {@input1.id => 13.0}.to_yaml
       end
 
