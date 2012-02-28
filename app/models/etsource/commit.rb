@@ -25,7 +25,7 @@ module Etsource
     end
 
     # makes a simple http request. Used to refresh remote caches
-    #
+    # Latest releases of ETM use gquery keys, so this isn't needed anymore
     def update_client(url)
       return unless url
       require 'net/http'

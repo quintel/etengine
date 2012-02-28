@@ -51,13 +51,16 @@ module Etsource
       @git.log
     end
 
-    # exports a revision
-    def export(branch)
+    # Exports a revision. Git doesn't have a command similar to `svn export`, so this
+    # emulates it. The revision passed as parameter will be exported to the
+    # APP_CONFIG[:etsource_export_dir]. The directory will first be deleted (to get rid
+    # of stale files) unless you disable this in your config.yml.
+    def export(sha_id)
       return false if APP_CONFIG[:etsource_disable_export]
       FileUtils.rm_rf(@export_dir)
       FileUtils.mkdir(@export_dir)
-      system "cd #{@base_dir} && git archive #{branch} | tar -x -C #{@export_dir}"
-      update_latest_export_sha(branch)
+      system "cd #{@base_dir} && git archive #{sha_id} | tar -x -C #{@export_dir}"
+      update_latest_export_sha(sha_id)
     end
 
     def refresh
@@ -97,6 +100,8 @@ module Etsource
     # import: gqueries and inputs are saved to db
     # export: ~svn-export
     #
+    # To keep track of which revisions we're using we store the SHA-ID
+    # in two files.
     def update_latest_export_sha(sha)
       File.open(export_sha_file, 'w') {|f| f.write(sha)} rescue nil
     end
