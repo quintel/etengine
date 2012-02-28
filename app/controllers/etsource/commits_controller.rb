@@ -22,7 +22,7 @@ class Etsource::CommitsController < ApplicationController
   #
   def import
     sha = params[:id]
-    @etsource.checkout sha
+    @etsource.export sha
     @commit.import! and @etsource.update_latest_import_sha(sha) and @etsource.update_latest_export_sha(sha)
     flash.now[:notice] = "Flushing ETM client cache"
     Rails.cache.clear
