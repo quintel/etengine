@@ -53,6 +53,7 @@ module Etsource
 
     # exports a revision
     def export(branch)
+      return false if APP_CONFIG[:etsource_disable_export]
       FileUtils.rm_rf(@export_dir)
       FileUtils.mkdir(@export_dir)
       system "cd #{@base_dir} && git archive #{branch} | tar -x -C #{@export_dir}"
