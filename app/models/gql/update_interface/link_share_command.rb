@@ -22,7 +22,7 @@ class LinkShareCommand < CommandBase
     carrier_name, inout, is_growth_rate = match.captures
 
     if carrier_name and slot = converter.send(inout, carrier_name.to_sym)
-      links = slot.links.select(&:share?)
+      links = slot.links.reject(&:flexible?)
       if link = links.first
         link.share = value #(1.0 - (1.0 - value)**Current.scenario.years)
       end
