@@ -15,6 +15,7 @@ gem 'default_value_for'
 gem 'tabs_on_rails'
 gem 'kaminari'
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
+gem 'text-table'
 
 # for etsource
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'

@@ -930,6 +930,38 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
   def FUTURE_ONLY(value_terms, arguments, scope = nil)
     value_terms unless scope.graph.present?
   end
+
+
+  # SORT_BY( converters ; attribute_1)
+  #
+  def SORT_BY(objects, arguments, scope = nil)
+    flatten_uniq(objects).sort_by{|o| o.query(arguments.first) || -1.0}
+  end
+
+
+  # TXT_TABLE( converters ; attribute_1 ; attribute_2 ; ... )
+  #
+  # TXT_TABLE(
+  #   SORT_BY(V(G(electricity_production));merit_order_end); 
+  #   full_key; merit_order_start; merit_order_end; full_load_hours
+  # )
+  #
+  def TXT_TABLE(objects, arguments, scope = nil)
+    rows  = [arguments]
+    rows += flatten_uniq(objects).map do |obj| 
+      arguments.map{|a| obj.query.instance_eval(a) } 
+    end
+    rows.to_table(:first_row_is_head => true).to_s
+  end
+
+  # def XLS_TABLE(objects, arguments, scope = nil)
+  #   rows  = [arguments.join("\t")]
+  #   rows += flatten_uniq(objects).map do |obj| 
+  #     arguments.map{|a| obj.query.instance_eval(a) }.join("\t")
+  #   end
+  #   rows.join("\n")
+  # end
+
 end
 
 end
