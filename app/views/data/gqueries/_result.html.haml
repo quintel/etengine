@@ -4,11 +4,19 @@
     %table{:border => 1}
       %tr
         %td= result.present_year
-        %td.tar= result.present_value
+        %td.tal
+          - if result.present_value.is_a?(String)
+            %pre= result.present_value
+          - else
+            = result.present_value
         %td= @gquery.andand.unit
       %tr
         %td= result.future_year
-        %td.tar= result.future_value
+        %td.tal
+          - if result.future_value.is_a?(String)
+            %pre= result.future_value
+          - else
+            = result.future_value
         %td= @gquery.andand.unit
   - else
     %table{:border => 1}
