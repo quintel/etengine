@@ -166,6 +166,7 @@ GEM
       sprockets (>= 1.0.2)
     tabs_on_rails (2.0.2)
     term-ansicolor (1.0.6)
+    text-table (1.2.2)
     thor (0.14.6)
     treetop (1.4.8)
       polyglot (>= 0.3.1)
@@ -226,6 +227,7 @@ DEPENDENCIES
   sprockets-rails
   tabs_on_rails
   term-ansicolor
+  text-table
   treetop (= 1.4.8)
   unicorn
   webrat
