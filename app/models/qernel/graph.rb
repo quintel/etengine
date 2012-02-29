@@ -13,9 +13,15 @@ module Qernel
 #
 #
 class Graph
-  extend ActiveModel::Naming
- 
+  extend  ActiveModel::Naming
+  include ActiveSupport::Callbacks
+
+  define_callbacks :calculate
+
+  include Plugins::MeritOrder
+
   # ---- DatasetAttributes ----------------------------------------------------
+
   include DatasetAttributes
 
   dataset_accessors [:calculated]
@@ -130,56 +136,34 @@ class Graph
   #
   # TODO refactor
   def calculate(options = {})
-    if calculated?
-      ActiveSupport::Notifications.instrument("gql.debug", "Graph already calculated")
-      return
-    end
+    run_callbacks :calculate do
 
-    # FIFO stack of all the converters. Converters are removed from the stack after calculation.
-    converter_stack = converters.clone
-    self.finished_converters = []
+      if calculated?
+        ActiveSupport::Notifications.instrument("gql.debug", "Graph already calculated")
+        return
+      end
 
-    # delete_at is much faster as delete, that's why use #index rather than #detect
-    while index = converter_stack.index(&:ready?)
-      converter = converter_stack[index]
-      converter.calculate
-      self.finished_converters << converter_stack.delete_at(index)
-    end
+      # FIFO stack of all the converters. Converters are removed from the stack after calculation.
+      converter_stack = converters.clone
+      self.finished_converters = []
 
-    self.finished_converters.map(&:input_links).flatten.each(&:update_share)
+      # delete_at is much faster as delete, that's why use #index rather than #detect
+      while index = converter_stack.index(&:ready?)
+        converter = converter_stack[index]
+        converter.calculate
+        self.finished_converters << converter_stack.delete_at(index)
+      end
 
-    self[:calculated] = true
+      self.finished_converters.map(&:input_links).flatten.each(&:update_share)
 
-    unless converter_stack.empty?
-      ActiveSupport::Notifications.instrument("gql.debug",
-        "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}")
-    end
+      self[:calculated] = true
 
-    calculate_merit_order if options[:merit_order] != false
-  end
-
-
-  def calculate_merit_order
-    # Converters to include in the sorting: G(electricity_production)
-    converters = group_converters(:electricity_production).map(&:query)
-    converters.sort_by! do |c| 
-      c.variable_costs_per_mwh_input * c.electricity_output_conversion
-    end
-
-    if converters.first
-      converters.first[:merit_order_end]   = 0.0
-      converters.first[:merit_order_start] = 0.0
-      converters[1..-1].each_with_index do |converter, i|
-        # i points now to the previous one, not the current index! (because we start from [1..-1])
-        converter[:merit_order_start] = converters[i][:merit_order_end]
-        
-        e  = converter[:merit_order_start]
-        e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
-        converter[:merit_order_end] = e
+      unless converter_stack.empty?
+        ActiveSupport::Notifications.instrument("gql.debug",
+          "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}")
       end
     end
   end
-
 
   def links
     @links ||= converters.map(&:input_links).flatten.uniq
