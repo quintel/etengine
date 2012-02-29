@@ -56,7 +56,7 @@ module Etsource
     # (used to dynamically generate some methods)
     def carrier_keys
       hsh = load_dataset_hash
-      hsh[:carriers].keys
+      hsh[:carriers].andand.keys || []
     end
 
   #########
