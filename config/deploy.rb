@@ -9,7 +9,7 @@ set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
 task :production do
   set :domain, "et-engine.com"
   set :branch, "production"
-  set :db_pass, "Energy2.0"
+  set :db_pass, "HaLjXwRWmu60DK"
   set :db_name, application_key
   set :db_user, application_key
   set :airbrake_key, "c7aceee5954aea78f93e7ca4b22439c7"
