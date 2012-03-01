@@ -81,10 +81,13 @@ class ConverterApi
     :technical_lifetime,
     :typical_nominal_input_capacity,
     :wacc,
+
     :merit_order_start,
     :merit_order_end,
+    
     :average_effective_output_of_nominal_capacity_over_lifetime,
 
+    :capacity_factor,
     :excel_id # temporary fix to still support excel_ids. used now for graphviz
   ]
 

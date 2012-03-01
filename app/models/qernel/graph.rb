@@ -253,7 +253,6 @@ class Graph
     "<Qernel::Graph>"
   end
 
-  ##
   # optimizes calculation speed of graph by rearranging order of converters array
   #
   # @todo Calculate graph, and order converters array according to finished_converters
