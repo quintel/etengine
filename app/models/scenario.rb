@@ -122,7 +122,7 @@ class Scenario < ActiveRecord::Base
 
   # Code is the new region_code/country.
   def code
-    region || country
+    region.present? ? region : country
   end
 
   ##
