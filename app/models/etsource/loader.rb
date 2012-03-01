@@ -10,23 +10,34 @@
 module Etsource
   class Loader
     include Singleton
-
+    include Instrumentable
+  
     def initialize
       @etsource = Etsource::Base.instance
       @datasets = {}.with_indifferent_access
       @gquery = Gqueries.new(@etsource)
     end
 
+    def globals(file_name)
+      instrument("etsource.loader: globals #{file_name.inspect}") do
+        cache("globals/#{file_name}") do
+          YAML::load_file("#{@etsource.base_dir}/datasets/_globals/#{file_name}.yml")
+        end
+      end
+    end
+
     # @return [Qernel::Graph] a deep clone of the graph.
     #   It is important to work with clones, because present and future_graph should
     #   be independent to reduce bugs.
     def graph
-      Marshal.load(Marshal.dump(optimized_graph))
+      instrument("etsource.loader: graph") do
+        Marshal.load(Marshal.dump(optimized_graph))
+      end
     end
 
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
-      ActiveSupport::Notifications.instrument("etsource.performance.dataset(#{country.inspect}") do
+      instrument("etsource.loader: dataset(#{country.inspect})") do
         if @etsource.cache_dataset?
           # DEBT Limitations of this cache:
           # if experimenting with input tool, you change a transformer.yml or config.yml will not
@@ -42,21 +53,37 @@ module Etsource
     end
 
     def gqueries
-      cache("gqueries") do
-        @gquery.gqueries
+      instrument("etsource.loader: gqueries") do
+        cache("gqueries") do
+          @gquery.gqueries
+        end
       end
     end
 
     def gquery_groups
-      # ?!
-      cache("gqueries") do
-        @gquery.gquery_groups
+      instrument("etsource.loader: gquery_groups") do
+        cache("gqueries") do
+          @gquery.gquery_groups
+        end
       end
     end
 
-    # ?!
     def inputs
       cache("inputs") do
+        # at some point we'd like to load inputs directly. Skipping the import 
+        # to database. 
+      end
+    end
+
+    def merit_order_table
+      # make sure we don't accidentally overwrite values, so we freeze everything.
+      instrument("etsource.loader: merit_order_table") do
+
+        cache("merit_order_rows") do
+          rows = CSV.read("#{@etsource.base_dir}/datasets/_globals/merit_order.csv", :converters => :numeric)
+          rows.map! { |row| [row.delete_at(0), row.freeze].freeze }
+          rows
+        end
 
       end
     end
@@ -77,7 +104,7 @@ module Etsource
     #  is optimal for the calculation.
     #
     def optimized_graph
-      ActiveSupport::Notifications.instrument("etsource.performance.optimized_graph") do
+      instrument("etsource.loader: optimized_graph") do
         if @etsource.cache_topology?
           @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.get_latest_export_sha}/optimized_graph") do
             g = unoptimized_graph
