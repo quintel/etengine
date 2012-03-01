@@ -1,3 +1,5 @@
+# I THINK THIS CAN BE REMOVED NOW:
+#
 #
 # Marshal.load is a C-method built into Ruby; because it's so low-level, it
 # bypasses the full classloading chain in Ruby, in particular the #const_missing
@@ -26,7 +28,15 @@ class <<Marshal
   alias_method_chain :load, :rails_classloader
 end
 
+# I THINK THIS SHOULD BE REMOVED NOW:
 class Numeric
+  # rescue from 0.0/0.0 or 0.0/1.0 calculation errors
+  # (0.0 / 0.0).rescue_nan
+  # => 0.0
+  def rescue_nan(with = 0.0)
+    finite? ? self : with
+  end
+
   def per_mj_to_per_mwh; self * 3600.0; end
 end
 
@@ -75,9 +85,6 @@ end
 module Kernel
 # http://www.ruby-forum.com/topic/75258
 private
-  def this_method
-    caller[0] =~ /`([^']*)'/ and $1
-  end
   def caller_method
     caller[1] =~ /`([^']*)'/ and $1
   end

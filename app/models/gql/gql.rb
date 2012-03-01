@@ -58,7 +58,7 @@ class Gql
   def initialize(scenario)
     if scenario.is_a?(Scenario)
       @scenario = scenario
-      loader = Etsource::Loader.instance
+      loader    = Etsource::Loader.instance
       @present_graph = loader.graph.tap{|g| g.year = @scenario.start_year}
       @future_graph  = loader.graph.tap{|g| g.year = @scenario.end_year}
       @dataset = loader.dataset(@scenario.code)
