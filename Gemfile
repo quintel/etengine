@@ -21,7 +21,7 @@ gem 'text-table'
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import'
 gem 'fnv'
-gem "yaml_pack", '~>0.0.2.alpha'
+gem "yaml_pack", '~>0.0.3.alpha'
 
 # javascript
 gem 'sprockets'
