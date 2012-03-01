@@ -95,12 +95,13 @@ class Api::ApiScenariosController < Api::BaseController
   # and uses the input key as hash key
   def input_data
     Current.scenario = @api_scenario
+    gql = @api_scenario.gql(prepare: true)
     inputs = params[:inputs] || []
     out = {}
     inputs.each do |key|
       input = Input.find_by_key(key) rescue nil
       if input
-        out[key] = input.client_values
+        out[key] = input.client_values(gql)
         out[key][:user_value] = @api_scenario.user_values[input.id] rescue nil
       end
     end
