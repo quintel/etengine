@@ -14,11 +14,19 @@ end
 
 # Show all 'performance' related outputs
 ActiveSupport::Notifications.subscribe /\.performance/ do |name, start, finish, id, payload|
-  GqlLogger.debug "#{name}: (#{(finish - start)}ms)"
+  GqlLogger.debug "#{(name+":").ljust(80)} #{(finish - start).round(3).to_s.ljust(5)} s"
+end
+
+ActiveSupport::Notifications.subscribe /etsource.loader/ do |name, start, finish, id, payload|
+  GqlLogger.debug "#{(name+":").ljust(80)} #{(finish - start).round(3).to_s.ljust(5)} s"
+end
+
+ActiveSupport::Notifications.subscribe /qernel.merit_order/ do |name, start, finish, id, payload|
+  GqlLogger.debug "#{(name+":").ljust(80)} #{(finish - start).round(3).to_s.ljust(5)} s"
 end
 
 ActiveSupport::Notifications.subscribe /gql\.query/ do |name, start, finish, id, payload|
-  GqlLogger.debug "#{name}: (#{(finish - start)}ms)"
+  GqlLogger.debug "#{(name+":").ljust(80)} #{(finish - start).round(3).to_s.ljust(5)} s"
 end
 
 ActiveSupport::Notifications.subscribe /gql\.inputs/ do |name, start, finish, id, payload|
