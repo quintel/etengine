@@ -51,6 +51,8 @@ module Etm
     end
   end
 
+  require 'csv' # used for importing merit_order_table
+  require 'lib/instrumentable'
   require 'lib/session_accessor'
   require 'app/models/gql/gql_query' # parses and loads treetop file
   

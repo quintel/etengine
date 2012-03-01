@@ -15,6 +15,7 @@ module Qernel
 class Graph
   extend  ActiveModel::Naming
   include ActiveSupport::Callbacks
+  include Instrumentable
 
   define_callbacks :calculate
 
