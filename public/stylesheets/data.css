@@ -208,6 +208,13 @@ input[type=number] {
 .align-left {
   text-align: left; }
 
+.live_server_notice {
+  background: red;
+  color: white;
+  text-align: center;
+  padding: 2px;
+  font-weight: bold; }
+
 #header {
   background-color: #6a7176;
   filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#6a7176"}, endColorstr="#4d5256");

@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
   ##
   # Shortcut for benchmarking of controller stuff.
-  # 
+  #
   # DEPRECATED: Use ActiveSupport notifications if possible.
   #
   # (is public, so we can call it within a render block)
@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   protected
-  
+
     def initialize_current
       Current.session = session
     end
@@ -51,9 +51,9 @@ class ApplicationController < ActionController::Base
     def teardown_current
       Current.teardown_after_request!
     end
-    
+
   private
-  
+
     def store_location
       session[:redirect_to] = request.url
     end
