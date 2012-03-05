@@ -14,6 +14,8 @@
 
   %body#data
     #container
+      - if live_server?
+        .live_server_notice This is the production server!
       #header
         %nav
           %ul

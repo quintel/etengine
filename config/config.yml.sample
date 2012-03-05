@@ -9,9 +9,9 @@ development: &DEV
     # if for some reason you don't want to clear the etsource_export directory
     etsource_disable_export: false
 
-    # include etsource wizards from input tool. This is still experimental. This will default to false if not set. It is dangerous
-    # because people can input research datasets which will screw up the normal flow of
-    # calculations.
+    # include etsource wizards from input tool. This is still experimental. This
+    # will default to false if not set. It is dangerous because people can input
+    # research datasets which will screw up the normal flow of calculations.
     etsource_load_wizards: true # set false for 'live' servers
 
     # Setting this to true caches the dataset in between requests. set to false
@@ -26,6 +26,9 @@ development: &DEV
     # set to true if the server won't have online access. this disables google
     # analytics, airbrake etc.
     standalone: false
+
+    # set to true if you want the admin section to show a "production server" warning
+    live_server: false
 
 production:
     <<: *DEV
