@@ -64,7 +64,7 @@ module Etsource
     end
 
     def refresh
-      @git.pull
+      system "cd #{@base_dir} && git pull"
     end
 
     # just import what currently is checked out.
