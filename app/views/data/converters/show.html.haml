@@ -92,29 +92,32 @@
     %tr
       %th Demand Preset
       - result_fields(@pre,@fut, :preset_demand)
-
-    %tr
-      %th Demand Fossil
-      - result_fields(@pre,@fut, :demand)
     %tr
       %th Demand Sustainable
       - result_fields(@pre,@fut, :demand_of_sustainable)
-
     %tr
       %th Weighted Carrier Cost Share
       - result_fields(@pre,@fut, :weighted_carrier_cost_per_mj)
     %tr
       %th Weighted Carrier CO2 Share
       - result_fields(@pre,@fut, :weighted_carrier_co2_per_mj)
-
     %tr
       %th Sustainabability Share
       - result_fields(@pre,@fut, :sustainability_share)
 
     - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
+      :ruby
+        present_value = @pre.send attr_name
+        future_value  = @fut.send attr_name
+        next if present_value.nil? && future_value.nil?
+        next if present_value.to_f.nan? && future_value.to_f.nan?
+        difference = (future_value / present_value - 1) * 100 rescue nil
+        difference = nil if difference.try :nan?
       %tr
         %th= attr_name
-        - result_fields(@pre,@fut,attr_name)
+        %td{:title => present_value}= auto_number present_value
+        %td{:title => future_value}= auto_number future_value
+        %td= "#{difference}%" if difference
     %tr
       %th Total Cost Per MWhe
       - result_fields(@pre,@fut) do |converter|
