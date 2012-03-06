@@ -8,28 +8,26 @@
 
 %h3 Info
 
-%ul 
-  %li 
-    %b Sector:
-    = @converter_present.sector_key
-%ul
-  %li 
-    %b Energy Balance Group:
-    - if g = @converter_present.energy_balance_group && g.to_s.present?
-      = link_to g, data_energy_balance_group_path(:id => g)
-%ul
-  %li
-    %b Use:
-    = @converter_present.use_key
-%ul 
-  %li 
-    %b
-      Groups:
-  %li
-    %ul
-      - @converter_present.groups.each do |g|
-        %li= g
-
+%table
+  %tr
+    %td Sector
+    %td= @converter_present.sector_key
+  %tr
+    %td Energy Balance Group
+    %td
+      - if g = @converter_present.energy_balance_group && g.to_s.present?
+        = link_to g, data_energy_balance_group_path(:id => g)
+  %tr
+    %td Use
+    %td= @converter_present.use_key
+  %tr
+    %td Groups
+    %td= @converter_present.groups.join(' - ')
+  %tr
+    %td Graphviz
+    %td
+      = link_to 'Present', {:format => 'svg'}, :target => :blank
+      = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
 
 %h3 Future Input / Outputs
 = render 'converter_links'
@@ -51,15 +49,6 @@
   - @values = Qernel::ConverterApi::CHP_VALUES
   = render "data/converters/details"
 
-
-%h3 Actions
-%p
-  =# link_to 'edit', edit_data_converter_converter_data_path(:converter_id => @converter_present.full_key)
-  GraphViz:
-  = link_to 'Present', {:format => 'svg'}, :target => :blank
-  = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
-
-
 %h3 Attributes and calculations
 
 %table
@@ -77,7 +66,7 @@
         %tr
           %th= attr_name
           - result_fields(@pre,@fut,attr_name)
-        
+
 %table
   %thead
     %tr
@@ -122,8 +111,6 @@
       %th Total Cost Per MWhe
       - result_fields(@pre,@fut) do |converter|
         - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
-
-
     %tr
       %th Total Losses
       - result_fields(@pre.converter,@fut.converter, :total_losses)
@@ -131,7 +118,7 @@
   %table
     %thead
       %tr
-        %th MECE Demands
+        %th Final and primary demand
         %th Present
         %th Future
         %th Change
@@ -168,10 +155,8 @@
         %th= attr_name
         - result_fields(@pre,@fut,attr_name)
 
-
-
 %h3 References
-  
+
 %table
   - Gquery.name_or_query_contains(@converter_present.full_key).each do |gquery|
     %tr
