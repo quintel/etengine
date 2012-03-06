@@ -87,7 +87,8 @@ class ConverterApi
     
     :average_effective_output_of_nominal_capacity_over_lifetime,
 
-    :capacity_factor,
+    :merit_order_full_load_hours,
+    :merit_order_capacity_factor,
     :excel_id # temporary fix to still support excel_ids. used now for graphviz
   ]
 
