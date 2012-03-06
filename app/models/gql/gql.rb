@@ -101,7 +101,7 @@ class Gql
     # @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE && !scenario.test_scenario?
     #   QueryInterface.new(self, future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
     # else
-      QueryInterface.new(self, future_graph)
+    @future ||= QueryInterface.new(self, future_graph)
     # end
   end
 
