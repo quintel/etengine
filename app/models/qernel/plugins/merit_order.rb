@@ -5,7 +5,7 @@ module Qernel::Plugins
 
     included do |variable|
       set_callback :calculate, :after, :calculate_merit_order
-      # set_callback :calculate, :after, :calculate_full_load_hours 
+      set_callback :calculate, :after, :calculate_full_load_hours 
     end
 
     module ClassMethods
@@ -54,7 +54,11 @@ module Qernel::Plugins
       
       def merit_order_demands
         self.class.merit_order_converters.map do |_ignore, converter_keys|
-          converter_keys.map{|key| converter(key).query.mw_input_capacity}.sum.round(1).tap{|s| puts "#{_ignore}: #{s}"}
+          converter_keys.map do |key| 
+            converter = converter(key)
+            raise "merit_order: no converter found with key: #{key.inspect}" unless converter
+            converter.query.mw_input_capacity
+          end.sum.round(1).tap{|s| puts "#{_ignore}: #{s}"}
         end
       end
 
