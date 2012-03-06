@@ -32,6 +32,10 @@ class GraphApi
 
   # NON GQL-able
 
+  def residual_ldc
+    @graph.residual_ldc
+  end
+
   ##
   # Still needed here, for updating converters
   #
