@@ -5,7 +5,7 @@ module Qernel::Plugins
 
     included do |variable|
       set_callback :calculate, :after, :calculate_merit_order
-      set_callback :calculate, :after, :calculate_full_load_hours
+      # set_callback :calculate, :after, :calculate_full_load_hours 
     end
 
     module ClassMethods
