@@ -84,13 +84,53 @@ class ConverterApi
 
     :merit_order_start,
     :merit_order_end,
-    
+
     :average_effective_output_of_nominal_capacity_over_lifetime,
 
     :merit_order_full_load_hours,
     :merit_order_capacity_factor,
     :excel_id # temporary fix to still support excel_ids. used now for graphviz
   ]
+
+  # this hash is used to group converter attributes in converters#show
+  ATTRIBUTE_GROUPS = {
+    :operational => [
+      :typical_nominal_input_capacity,
+      :full_load_hours,
+      :average_effective_output_of_nominal_capacity_over_lifetime,
+      :technical_lifetime,
+      :construction_time,
+      :land_use_per_unit,
+      :part_ets,
+      :co2_free
+    ],
+
+    :cost => [
+      :purchase_price_per_mw_input,
+      :installing_costs_per_mw_input,
+      :operation_and_maintenance_cost_fixed_per_mw_input,
+      :operation_and_maintenance_cost_variable_per_full_load_hour,
+      :residual_value_per_mw_input,
+      :decommissioning_costs_per_mw_input,
+      :ccs_investment_per_mw_input,
+      :ccs_operation_and_maintenance_cost_per_full_load_hour,
+      :wacc
+    ],
+
+    :network => [
+      :network_capacity_available_in_mw,
+      :network_capacity_used_in_mw,
+      :network_expansion_costs_in_euro_per_mw,
+      :availability,
+      :variability,
+      :simult_sd,
+      :simult_se,
+      :simult_wd,
+      :simult_we,
+      :merit_order_start,
+      :merit_order_end
+    ]
+  }
 
   # For the data/converter/show page we need grouping of the attributes
   # these atrribut groups should only be used to show the values in the data section

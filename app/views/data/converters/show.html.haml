@@ -4,8 +4,7 @@
 
 = render "search_box"
 
-.header
-  #{@converter_present.to_s}
+.header= @converter_present
 
 %h3 Info
 
@@ -32,6 +31,9 @@
         %li= g
 
 
+%h3 Future Input / Outputs
+= render 'converter_links'
+
 - if @converter_present.groups.include?(:cost_traditional_heat)
   %h3 Converter details
   - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
@@ -49,10 +51,6 @@
   - @values = Qernel::ConverterApi::CHP_VALUES
   = render "data/converters/details"
 
-  
-
-%h3 Future Input / Outputs
-= render 'converter_links'
 
 %h3 Actions
 %p
@@ -67,15 +65,18 @@
 %table
   %thead
     %tr
-      %th Converter Data
+      %th Converter Attributes
       %th Present
       %th Future
       %th Change
   %tbody
-    - Qernel::ConverterApi::ATTRIBUTES_USED.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
+    - Qernel::ConverterApi::ATTRIBUTE_GROUPS.each do |group, attributes|
       %tr
-        %th= attr_name
-        - result_fields(@pre,@fut,attr_name)
+        %th.attribute_group{:colspan => 4}= group
+      - attributes.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
+        %tr
+          %th= attr_name
+          - result_fields(@pre,@fut,attr_name)
         
 %table
   %thead
