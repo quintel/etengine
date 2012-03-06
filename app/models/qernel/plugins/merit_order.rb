@@ -57,7 +57,8 @@ module Qernel::Plugins
           converter_keys.map do |key| 
             converter = converter(key)
             raise "merit_order: no converter found with key: #{key.inspect}" unless converter
-            converter.query.mw_input_capacity
+
+            converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
           end.sum.round(1).tap{|s| puts "#{_ignore}: #{s}"}
         end
       end
