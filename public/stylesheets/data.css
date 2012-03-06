@@ -105,6 +105,12 @@ pre.gql span.gql_group_key {
 #blueprint_layout {
   margin-top: 30px; }
 
+th.attribute_group {
+  font-weight: bold;
+  text-align: center;
+  background: #666666;
+  color: white; }
+
 body {
   font-family: "Helvetica Neue", "Arial", sans-serif;
   font-size: 10pt; }
