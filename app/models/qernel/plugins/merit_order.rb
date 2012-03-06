@@ -68,7 +68,7 @@ module Qernel::Plugins
         instrument("qernel.merit_order: normalized_residual_loads") do
           demands = merit_order_demands
           residual_load_profiles = self.class.merit_order_table.map do |load, wewp|
-            wewp_x_demands = wewp.zip(demands)
+            wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,3]]
             wewp_x_demands.map!{|wewp, demand| wewp * demand }
             [0, load - wewp_x_demands.sum].max
           end
@@ -130,8 +130,8 @@ module Qernel::Plugins
             capacity_factor = (area_size / diff).rescue_nan
             full_load_hours = capacity_factor * 8760
 
-            converter.capacity_factor = capacity_factor.round(3)
-            converter.full_load_hours = full_load_hours.round(1)
+            converter.merit_order_capacity_factor = capacity_factor.round(3)
+            converter.merit_order_full_load_hours = full_load_hours.round(1)
           end
         end
 
