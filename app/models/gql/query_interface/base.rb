@@ -1,4 +1,5 @@
 module Gql::QueryInterface::Base
+  GQL3 = true
 
   def input_value
     @input_value
@@ -26,9 +27,9 @@ module Gql::QueryInterface::Base
     elsif obj.is_a?(Input)
       self.input_value = "#{self.input_value}#{obj.v1_legacy_unit}" unless self.input_value.include?('%')
       execute_input(Gql::QueryInterface::Preparser.new(obj.query).parsed)
-    elsif parsed = Gql::QueryInterface::Preparser.new(obj).parsed
+    elsif obj.is_a?(String) 
       # pure GQL string
-      execute_parsed_query(parsed)
+      GQL3 ? @rubel.query(obj) : execute_parsed_query(Gql::QueryInterface::Preparser.new(obj).parsed)
     else
       raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
     end
@@ -61,15 +62,15 @@ module Gql::QueryInterface::Base
   #
   def subquery(gquery_key)
     if gquery = get_gquery(gquery_key)
-      execute_parsed_query(gquery.parsed_query)
+      #ActiveSupport::Notifications.instrument("gql.query.custom: #{gquery_key}") do
+        GQL3 ? @rubel.query(gquery.query_sanitized) : execute_parsed_query(gquery.parsed_query)
+      #end
     else
       nil
     end
   end
   alias execute_gquery_key subquery
 
-
-protected
 
   def execute_input(parsed_query)
     parsed_query.result(scope)

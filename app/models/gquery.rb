@@ -93,6 +93,21 @@ class Gquery < ActiveRecord::Base
   def parsed_query
     @parsed_query ||= Gql::QueryInterface::Preparser.new(query).parsed
   end
+  
+  def query_sanitized
+    @query_sanitized ||= eval("lambda { #{convert_legacy!(query.dup)} }")
+  end
+
+  def convert_legacy!(string)
+    string.gsub!("\n", '')
+    string.gsub!(/;([^\)]*)\)/, ';"\1")')
+    string.gsub!("[", "(")
+    string.gsub!("]", ")")
+    string.gsub!(';', ',')
+    string.gsub!("\s", '')
+    string.gsub!("\t", '')
+    string
+  end
 
   ##
   # Memoized gquery hashes
