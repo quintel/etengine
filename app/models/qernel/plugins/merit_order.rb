@@ -5,7 +5,7 @@ module Qernel::Plugins
 
     included do |variable|
       set_callback :calculate, :after, :calculate_merit_order
-      set_callback :calculate, :after, :calculate_full_load_hours 
+      set_callback :calculate, :after, :calculate_full_load_hours
     end
 
     module ClassMethods
@@ -31,17 +31,18 @@ module Qernel::Plugins
         instrument("qernel.merit_order: calculate_merit_order") do
           # Converters to include in the sorting: G(electricity_production)
           converters = converters_for_merit_order
-          converters.sort_by! do |c| 
+          converters.sort_by! do |c|
             c.variable_costs_per_mwh_input / c.electricity_output_conversion
           end
 
           if first = converters.first
-            first[:merit_order_end]   = 0.0
+            # was first[:merit_order_end]   = 0.0
+            first[:merit_order_end]   = (first.installed_production_capacity_in_mw_electricity || 0.0) * first.availability
             first[:merit_order_start] = 0.0
             converters[1..-1].each_with_index do |converter, i|
               # i points now to the previous one, not the current index! (because we start from [1..-1])
               converter[:merit_order_start] = converters[i][:merit_order_end]
-              
+
               e  = converter[:merit_order_start]
               e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
               converter[:merit_order_end] = e.round(3)
@@ -51,10 +52,10 @@ module Qernel::Plugins
         end
       end # calculate_merit_order
 
-      
+
       def merit_order_demands
         self.class.merit_order_converters.map do |_ignore, converter_keys|
-          converter_keys.map do |key| 
+          converter_keys.map do |key|
             converter = converter(key)
             raise "merit_order: no converter found with key: #{key.inspect}" unless converter
 
@@ -75,7 +76,7 @@ module Qernel::Plugins
           end
           max = residual_load_profiles.max
 
-          # only interested in the normalized loads. so map! 
+          # only interested in the normalized loads. so map!
           residual_load_profiles.map!{|l| l / max}
         end
       end
@@ -88,7 +89,7 @@ module Qernel::Plugins
 
           precision = 10
 
-          (0..precision).to_a.each do |i| 
+          (0..precision).to_a.each do |i|
             q = i / precision.to_f
             y = nrl.count{|n| n >= q} / nrl_length
             loads << [q, y.to_f]
@@ -107,15 +108,15 @@ module Qernel::Plugins
 
         converters = converters_for_merit_order
         converters.sort_by!{|c| c[:merit_order_end]}
-        
+
         max_merit  = converters.last[:merit_order_end] || 0.0
 
-        instrument("qernel.merit_order: calculate_full_load_hours") do        
+        instrument("qernel.merit_order: calculate_full_load_hours") do
           converters.each do |converter|
 
             lft  = (converter.merit_order_start) / max_merit
             rgt  = (converter.merit_order_end  ) / max_merit
-            
+
             # polygon_area expects the points passed in clock-wise order.
             points  = [
               [lft, 0],                                       # bottom left
@@ -126,7 +127,7 @@ module Qernel::Plugins
             ]
 
             area_size       = polygon_area(points.map(&:first), points.map(&:second))
-            diff            = [rgt - lft, 0.0].max 
+            diff            = [rgt - lft, 0.0].max
 
             capacity_factor = (area_size / diff).rescue_nan
             full_load_hours = capacity_factor * 8760
@@ -139,7 +140,7 @@ module Qernel::Plugins
         nil
       end
 
-      # this function is probably not so precise. 
+      # this function is probably not so precise.
       # it's supposed to interpolate the y value for a given x.
       # It uses the formulas i've learned at school and wikipedia
       def interpolate_y(points, x)
