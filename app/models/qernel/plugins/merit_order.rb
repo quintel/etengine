@@ -23,7 +23,7 @@ module Qernel::Plugins
     module InstanceMethods
 
       def converters_for_merit_order
-        group_converters(:electricity_production).map(&:query)
+        group_converters(:merit_order_converters).map(&:query)
       end
 
       # assign merit_order_start and merit_order_end
