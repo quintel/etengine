@@ -1,28 +1,44 @@
 !!! Strict
-%html{ :xmlns => "http://www.w3.org/1999/xhtml"}
+%html{ :xmlns => "http://www.w3.org/1999/xhtml" }
   %head
-    %meta{ :name => "ROBOTS", :content => "NOINDEX, NOFOLLOW" }/
     %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
-    %meta{:description => "#{t('meta.description')}" }
-    %title= t("meta.title")
-    = stylesheet_link_tag 'application'
-    /[if lt IE 8]
-      = stylesheet_link_tag 'ie'
-    = yield :head
-  %body
-    #header
-      %h1 ET-Engine
-    #menu
-      - if current_user
-        = link_to 'data', '/data'
-        = link_to 'etsource', etsource_root_path
-        = link_to 'input_tool', input_tool_root_path
-        = link_to 'logout', logout_path
-        = link_to 'users', users_path
-      - else
-        = link_to 'login', login_path
-    #flash
-      - flash.each do |k,msg|
-        .flash{:class => k}= msg
-    #content
-      = yield
+    %title EnergyTransitionModel
+    = javascript_include_tag :defaults
+    = javascript_include_tag 'bootstrap-twipsy', 'bootstrap-alerts', 'bootstrap-modal', 'bootstrap-popover', 'bootstrap-buttons', 'bootstrap-dropdown', 'bootstrap-tabs'
+    = stylesheet_link_tag 'input'
+  %body#data
+    .topbar
+      .topbar-inner
+        .container-fluid
+          %a.brand{:href => etsource_root_path} ET-Engine
+          %ul.nav
+            - if current_user
+              %li= link_to 'data', data_root_path(api_scenario_id: 'latest')
+              %li= link_to 'etsource', etsource_root_path
+              %li= link_to 'input_tool', input_tool_root_path
+              %li= link_to 'logout', logout_path
+              %li= link_to 'users', users_path
+            - else
+              %li= link_to 'login', login_path
+          - if current_user
+            %p.pull-right== Logged in as #{current_user.email}
+    .container-fluid
+      #subnav
+        = yield :subnav
+      - if breadcrumbs.any?
+        #breadcrumbs
+          %ul.breadcrumb
+            - breadcrumbs.each do |breadcrumb| 
+              %li
+                = link_to breadcrumb, '#'
+                %span.divider 
+      #flash
+        - flash.each do |type,msg|
+          .alert-message{:class => type}
+            %a.close x
+            %p= msg
+        - if live_server?
+          .alert-message.error This is the production server!
+      #content= yield
+      #footer
+        = yield :footer

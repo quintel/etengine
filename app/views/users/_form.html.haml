@@ -1,4 +1,4 @@
-= simple_form_for @user do |f|
+= simple_form_for @user, :html => {:class => 'form-stacked'} do |f|
   = f.input :name
   = f.input :email
   = f.input :password
