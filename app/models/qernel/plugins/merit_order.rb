@@ -32,7 +32,7 @@ module Qernel::Plugins
           # Converters to include in the sorting: G(electricity_production)
           converters = converters_for_merit_order
           converters.sort_by! do |c| 
-            c.variable_costs_per_mwh_input * c.electricity_output_conversion
+            c.variable_costs_per_mwh_input / c.electricity_output_conversion
           end
 
           if first = converters.first
