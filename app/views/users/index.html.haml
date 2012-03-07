@@ -1,6 +1,6 @@
 %h1 User Index
 
-%table
+%table.table.zebra-striped.bordered-table.condensed-table
   %thead
     %tr
       %th Id
@@ -11,7 +11,6 @@
       %tr{:class => cycle('even', 'odd')}
         %td= u.id
         %td= u.email
-        %td
-          = link_to 'edit', edit_user_path(u)
+        %td= link_to "Edit", edit_user_path(u)
 
 = link_to 'New user', new_user_path
