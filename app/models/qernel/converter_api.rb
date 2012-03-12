@@ -84,6 +84,7 @@ class ConverterApi
 
     :merit_order_start,
     :merit_order_end,
+    :merit_order_position,
 
     :average_effective_output_of_nominal_capacity_over_lifetime,
 
