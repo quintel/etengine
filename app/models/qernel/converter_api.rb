@@ -89,7 +89,10 @@ class ConverterApi
 
     :merit_order_full_load_hours,
     :merit_order_capacity_factor,
-    :excel_id # temporary fix to still support excel_ids. used now for graphviz
+    :excel_id, # temporary fix to still support excel_ids. used now for graphviz
+    :part_load_operating_point,
+    :part_load_efficiency_penalty,
+    :forecasting_error
   ]
 
   # this hash is used to group converter attributes in converters#show
@@ -121,14 +124,25 @@ class ConverterApi
       :network_capacity_available_in_mw,
       :network_capacity_used_in_mw,
       :network_expansion_costs_in_euro_per_mw,
-      :availability,
-      :variability,
       :simult_sd,
       :simult_se,
       :simult_wd,
-      :simult_we,
+      :simult_we
+    ],
+
+    :merit_order => [
       :merit_order_start,
-      :merit_order_end
+      :merit_order_end,
+      :merit_order_full_load_hours,
+      :merit_order_capacity_factor
+    ],
+
+    :security_of_supply => [
+      :availability,
+      :variability,
+      :part_load_operating_point,
+      :part_load_efficiency_penalty,
+      :forecasting_error
     ]
   }
 
