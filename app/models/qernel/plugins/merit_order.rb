@@ -39,6 +39,7 @@ module Qernel::Plugins
             # was first[:merit_order_end]   = 0.0
             first[:merit_order_end]   = (first.installed_production_capacity_in_mw_electricity || 0.0) * first.availability
             first[:merit_order_start] = 0.0
+            first[:merit_order_position] = 1
             converters[1..-1].each_with_index do |converter, i|
               # i points now to the previous one, not the current index! (because we start from [1..-1])
               converter[:merit_order_start] = converters[i][:merit_order_end]
@@ -46,6 +47,7 @@ module Qernel::Plugins
               e  = converter[:merit_order_start]
               e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
               converter[:merit_order_end] = e.round(3)
+              converter[:merit_order_position] = i + 2
             end
           end # if
           dataset_set(:calculate_merit_order_finished, true)
