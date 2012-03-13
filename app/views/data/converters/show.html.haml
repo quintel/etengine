@@ -76,22 +76,22 @@
       %th Change
   %tbody
     %tr
-      %th Demand
+      %th demand
       - result_fields(@pre,@fut, :demand)
     %tr
-      %th Demand Preset
+      %th preset_demand
       - result_fields(@pre,@fut, :preset_demand)
     %tr
-      %th Demand Sustainable
+      %th demand_of_sustainable
       - result_fields(@pre,@fut, :demand_of_sustainable)
     %tr
-      %th Weighted Carrier Cost Share
+      %th weighted_carrier_cost_per_mj
       - result_fields(@pre,@fut, :weighted_carrier_cost_per_mj)
     %tr
-      %th Weighted Carrier CO2 Share
+      %th weighted_carrier_co2_per_mj
       - result_fields(@pre,@fut, :weighted_carrier_co2_per_mj)
     %tr
-      %th Sustainabability Share
+      %th sustainability_share
       - result_fields(@pre,@fut, :sustainability_share)
 
     - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
@@ -112,7 +112,7 @@
       - result_fields(@pre,@fut) do |converter|
         - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
     %tr
-      %th Total Losses
+      %th total_losses
       - result_fields(@pre.converter,@fut.converter, :total_losses)
 
   %table
@@ -123,16 +123,16 @@
         %th Future
         %th Change
     %tr
-      %th Final Demand
+      %th final_demand
       - result_fields(@pre,@fut, :final_demand)
     %tr
-      %th Primary Demand
+      %th primary_demand
       - result_fields(@pre,@fut, :primary_demand)
     %tr
-      %th Primary Demand Fossil
+      %th primary_demand_of_fossil
       - result_fields(@pre,@fut, :primary_demand_of_fossil)
     %tr
-      %th Primary Demand Sustainable
+      %th primary_demand_of_sustainable
       - result_fields(@pre,@fut, :primary_demand_of_sustainable)
 
     - @qernel_graph.carriers.each do |carrier|
