@@ -23,7 +23,9 @@ module Qernel::Plugins
     module InstanceMethods
 
       def converters_for_merit_order
-        group_converters(:merit_order_converters).map(&:query)
+        group_converters(:merit_order_converters).map(&:query).tap do |arr|
+          raise "MeritOrder: no converters in group: merit_order_converters. Update ETsource." if arr.empty?
+        end
       end
 
       # assign merit_order_start and merit_order_end
@@ -36,18 +38,20 @@ module Qernel::Plugins
           end
 
           if first = converters.first
-            # was first[:merit_order_end]   = 0.0
-            first[:merit_order_end]   = (first.installed_production_capacity_in_mw_electricity || 0.0) * first.availability
-            first[:merit_order_start] = 0.0
+            first[:merit_order_end]      = (first.installed_production_capacity_in_mw_electricity || 0.0) * first.availability
+            first[:merit_order_start]    = 0.0
             first[:merit_order_position] = 1
+
             converters[1..-1].each_with_index do |converter, i|
               # i points now to the previous one, not the current index! (because we start from [1..-1])
+              # the merit_order_start of this 'converter' is the merit_order_end of the previous at 'i'.
               converter[:merit_order_start] = converters[i][:merit_order_end]
-
-              e  = converter[:merit_order_start]
-              e += (converter.installed_production_capacity_in_mw_electricity || 0.0) * converter.availability
-              converter[:merit_order_end] = e.round(3)
-              converter[:merit_order_position] = i + 2
+              installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
+              
+              merit_order_end = converter[:merit_order_start] + installed_capacity * converter.availability
+              converter[:merit_order_end] = merit_order_end.round(3)
+              # Assign a position at the end if installed_capacity is 0. Issue #293
+              converter[:merit_order_position] = (installed_capacity > 0.0) ? i + 2 : 1000
             end
           end # if
           dataset_set(:calculate_merit_order_finished, true)
@@ -111,7 +115,7 @@ module Qernel::Plugins
         converters = converters_for_merit_order
         converters.sort_by!{|c| c[:merit_order_end]}
 
-        max_merit  = converters.last[:merit_order_end] || 0.0
+        max_merit  = converters.last.andand[:merit_order_end] || 0.0
 
         instrument("qernel.merit_order: calculate_full_load_hours") do
           converters.each do |converter|
