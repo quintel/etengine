@@ -58,7 +58,9 @@ module Qernel
       :has_cold_network,
       :input_values,
       # Special attribute, does not exist in Area columns, has to be added extra in Area#dataset_attributes
-      :number_of_existing_households
+      :number_of_existing_households,
+      :economic_multiplier,
+      :employment_local_fraction
     ]
 
     dataset_accessors ATTRIBUTES_USED
@@ -78,14 +80,14 @@ module Qernel
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
 
     def co2_emission_1990_billions
-      co2_emission_1990 * BILLIONS      
+      co2_emission_1990 * BILLIONS
     end
 
-    # ?! 
+    # ?!
     def manure_available_in_pj=(param)
       param
     end
-    
+
     # ?!
     def manure_available_in_pj
       0.0
