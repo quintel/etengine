@@ -242,6 +242,16 @@ class GqlExpression < Treetop::Runtime::SyntaxNode
     flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
   end
 
+  # ELEMENT_AT( SORT_BY(GROUP(electricity); demand), 0) => converter with smallest demand
+  def ELEMENT_AT(converters, arguments, scope)
+    index = converters.last.to_i
+    converters.flatten[index]
+  end
+
+  def LAST(value_terms, arguments, scope)
+    value_terms.flatten.last
+  end
+
   def FIRST(value_terms, arguments, scope)
     value_terms.flatten.first
   end
