@@ -13,6 +13,11 @@ module Gql::QueryInterface::Base
     self
   end
 
+  # required by rubel
+  def lookup(key)
+    converters(key)
+  end
+
   # Figures out the kind of query and executes it
   #
   # @param [String, Gquery] query Escaped query_string
