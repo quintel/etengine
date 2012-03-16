@@ -40,7 +40,7 @@ module Qernel::Plugins
           if first = converters.first
             first[:merit_order_end]      = (first.installed_production_capacity_in_mw_electricity || 0.0) * first.availability
             first[:merit_order_start]    = 0.0
-            first[:merit_order_position] = 1
+            first[:merit_order_position] = counter = 1
 
             converters[1..-1].each_with_index do |converter, i|
               # i points now to the previous one, not the current index! (because we start from [1..-1])
@@ -50,8 +50,9 @@ module Qernel::Plugins
               
               merit_order_end = converter[:merit_order_start] + installed_capacity * converter.availability
               converter[:merit_order_end] = merit_order_end.round(3)
+
               # Assign a position at the end if installed_capacity is 0. Issue #293
-              converter[:merit_order_position] = (installed_capacity > 0.0) ? i + 2 : 1000
+              converter[:merit_order_position] = (installed_capacity > 0.0) ? (counter += 1) : 1000
             end
           end # if
           dataset_set(:calculate_merit_order_finished, true)
