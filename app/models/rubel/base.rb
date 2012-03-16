@@ -5,7 +5,19 @@ module Rubel
     end
   end
 
+
+  # Base is the runtime with builtin sandbox to make it hard to run malicious or undefined code.
+  #
+  # The sandbox is created by making Base a subclass from BasicObject which has two effects:
+  # - BasicObject does not include Kernel (no methods like puts, system, ``, open, etc)
+  # - BasicObject is outside of the standard namespace, so classes are only found with the :: prefix.
+  #
+  # Base overwrites method_missing and const_missing to simply return the name as a Symbol. 
+  # This allows the query language to not require "", '' or : for things like lookup keys.
+  # VALUE(foo, sqrt) vs VALUE("foo", "sqrt")
+  # 
   class Base < BasicObject
+
     include ::Rubel::Functions::Legacy
     # now override with freshened up gql functions
     include ::Rubel::Functions::Lookup
@@ -42,7 +54,8 @@ module Rubel
       name
     end
 
-    # Returns method name as a Symbol if args are empty or a Proc otherwise.
+    # Returns method name as a Symbol if args are empty 
+    # or a Proc calling method_name with (evaluated) args [1].
     def method_missing(name, *args)
       if args.present?
         ::Proc.new { self.send(name, *args) }
@@ -52,3 +65,7 @@ module Rubel
     end
   end
 end
+
+# [1] this allows embedding GQL into attribute names, e.g.: 
+#   V(foo, primary_demand_of(CARRIER(gas)))
+
