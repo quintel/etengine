@@ -6,44 +6,46 @@ module Rubel
   end
 
   class Base < BasicObject
-    include ::Rubel::Functions::Aggregate
-    include ::Rubel::Functions::Lookup
     include ::Rubel::Functions::Legacy
+    # now override with freshened up gql functions
+    include ::Rubel::Functions::Lookup
+    include ::Rubel::Functions::Control
+    include ::Rubel::Functions::Aggregate
     include ::Rubel::Functions::Core
 
+    # The object through which GQL functions can access your application data.
     attr_reader :scope
 
     def initialize(scope = nil)
       @scope = scope
     end
 
-    def query(string = nil)
-      sanitize!(string)
-      
-      if string.is_a?(::String)
-        instance_eval(string)
+    # rubel - The String or Proc to be executed
+    def query(query = nil)
+      if query.is_a?(::String)
+        sanitize!(query)
+        instance_eval(query)
       else
-        instance_exec(&string)
+        instance_exec(&query)
       end
       
     rescue => e
-      ErrorReporter.new(e, string)
+      ErrorReporter.new(e, query)
     end
 
+    # Protect from Ruby injection.
     def sanitize!(string)
       string.gsub!('::', '')
     end
 
-    # Same as method_missing but for constants, like class names.
     def self.const_missing(name)
       name
     end
 
-    # returns name as Symbol if args are empty
-    # if args are present, return a Proc
+    # Returns method name as a Symbol if args are empty or a Proc otherwise.
     def method_missing(name, *args)
       if args.present?
-        ::Proc.new { self.send(name, *args)}
+        ::Proc.new { self.send(name, *args) }
       else
         name.to_sym
       end
