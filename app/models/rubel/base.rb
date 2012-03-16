@@ -20,7 +20,7 @@ module Rubel
       @scope = scope
     end
 
-    # rubel - The String or Proc to be executed
+    # query - The String or Proc to be executed
     def query(query = nil)
       if query.is_a?(::String)
         sanitize!(query)
