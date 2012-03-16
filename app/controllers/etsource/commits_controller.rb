@@ -14,7 +14,10 @@ class Etsource::CommitsController < ApplicationController
     @branch = 'master' if @etsource.detached_branch?
     @branches = @etsource.branches
     @etsource.checkout @branch
-    @output = @etsource.refresh if params[:commit] == 'Refresh'
+    if params[:commit] == 'Refresh'
+      @output = @etsource.refresh
+      log "Refresh branch #{@branch}"
+    end
     @commits = @etsource.commits
   end
 
@@ -24,6 +27,7 @@ class Etsource::CommitsController < ApplicationController
     sha = params[:id]
     @etsource.export sha
     @commit.import! and @etsource.update_latest_import_sha(sha) and @etsource.update_latest_export_sha(sha)
+    log("Import #{sha}")
     flash.now[:notice] = "Flushing ETM client cache"
     Rails.cache.clear
     # clients might need to flush their cache
@@ -37,6 +41,7 @@ class Etsource::CommitsController < ApplicationController
   def export
     sha_id = params[:id]
     @etsource.export(sha_id)
+    log("Use #{sha_id}")
     restart_unicorn
     redirect_to etsource_commits_path, :notice => "Checked out rev: #{sha_id}"
   end
@@ -65,5 +70,10 @@ class Etsource::CommitsController < ApplicationController
     response = Net::HTTP.get_response(uri)
   rescue
     nil
+  end
+
+  def log(msg)
+    @logger ||= Logger.new(Rails.root.join('log/etsource.log'))
+    @logger.info "#{Time.new} #{current_user.email}: #{msg}"
   end
 end
