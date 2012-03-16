@@ -22,7 +22,6 @@ module Rubel
         flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
       end
 
-
       def QUERY_PRESENT(*args)
         scope.gql.present.subquery(args.first)
       end

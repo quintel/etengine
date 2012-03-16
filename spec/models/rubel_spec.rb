@@ -29,7 +29,7 @@ describe Rubel do
   it "should" do
     @rubel.query('ATTR("foo", "length")').should == 3
     @rubel.query('ATTR("foo", length)').should == 3
-    @rubel.query('ATTR(1, "inspect")').should == "1"
+    @rubel.query('ATTR(1,     "inspect")').should == "1"
   end
 
   it "should use ruby powers" do
@@ -38,7 +38,7 @@ describe Rubel do
 
   it "should accept parameters for ATTR" do
     @rubel.query('ATTR(0.12345, "round(1)")').should == 0.1
-    @rubel.query('ATTR(0.12345, round(1))').should == 0.1
+    @rubel.query('ATTR(0.12345,  round(1) )').should == 0.1
   end
 
   it "should accept GQL within parameters" do
