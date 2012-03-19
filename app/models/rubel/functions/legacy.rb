@@ -30,8 +30,7 @@ module Rubel
       #
       # Examples
       #
-      #   QUERY_PRESENT(graph_year)
-      #   # => 2010
+      #   QUERY_PRESENT(graph_year)   # => 2010
       #
       def QUERY_PRESENT(gquery_key)
         scope.gql.present.subquery(gquery_key.to_s)
@@ -45,8 +44,7 @@ module Rubel
       #
       # Examples
       #
-      #   QUERY_FUTURE(graph_year) 
-      #   # => 2050
+      #   QUERY_FUTURE(graph_year)    # => 2050
       #
       def QUERY_FUTURE(gquery_key)
         scope.gql.future.subquery(gquery_key.to_s)
