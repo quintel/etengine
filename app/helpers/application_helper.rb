@@ -14,7 +14,7 @@ module ApplicationHelper
   end
 
   def asset_cache_name(name)
-    if Rails.env.development? || Rails.env.builded?
+    if Rails.env.development?
       # we set config.perform_caching to true in development (to cache the Graph-qernel)
       # so we have to return false, otherwise changes won't be dodated
       false
