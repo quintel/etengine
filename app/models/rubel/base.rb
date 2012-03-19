@@ -17,12 +17,13 @@ module Rubel
   # VALUE(foo, sqrt) vs VALUE("foo", "sqrt")
   # 
   class Base < BasicObject
-
+    include ::Rubel::Functions::Constants
+    
     # now override with freshened up gql functions
-    include ::Rubel::Functions::Lookup
-    include ::Rubel::Functions::Control
-    include ::Rubel::Functions::Aggregate
     include ::Rubel::Functions::Legacy
+    include ::Rubel::Functions::Aggregate
+    include ::Rubel::Functions::Control
+    include ::Rubel::Functions::Lookup
     include ::Rubel::Functions::Core
 
     # The object through which GQL functions can access your application data.
