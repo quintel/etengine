@@ -1,7 +1,7 @@
 module Rubel
   class ErrorReporter
     def initialize(error, string)
-      raise string + " " + error.message
+      raise  "#{string.inspect}: " + error.message
     end
   end
 
@@ -18,11 +18,11 @@ module Rubel
   # 
   class Base < BasicObject
 
-    include ::Rubel::Functions::Legacy
     # now override with freshened up gql functions
     include ::Rubel::Functions::Lookup
     include ::Rubel::Functions::Control
     include ::Rubel::Functions::Aggregate
+    include ::Rubel::Functions::Legacy
     include ::Rubel::Functions::Core
 
     # The object through which GQL functions can access your application data.

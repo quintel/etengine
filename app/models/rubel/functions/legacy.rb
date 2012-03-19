@@ -22,12 +22,34 @@ module Rubel
         flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
       end
 
+      # Runs the gquery with given key for the present year only.
+      #
+      # gquery_key - The gquery lookup key. 
+      #
+      # Returns the result of the gquery for only the present year. 
+      #
+      # Examples
+      #
+      #   QUERY_PRESENT(graph_year)
+      #   # => 2010
+      #
       def QUERY_PRESENT(gquery_key)
-        scope.gql.present.subquery(args.first.to_s)
+        scope.gql.present.subquery(gquery_key.to_s)
       end
 
+      # Runs the gquery with given key for the future year only.
+      #
+      # gquery_key - The gquery lookup key. 
+      #
+      # Returns the result of the gquery for only the future year. 
+      #
+      # Examples
+      #
+      #   QUERY_FUTURE(graph_year) 
+      #   # => 2050
+      #
       def QUERY_FUTURE(gquery_key)
-        scope.gql.future.subquery(args.first.to_s)
+        scope.gql.future.subquery(gquery_key.to_s)
       end
 
       def CHILDREN(*converters)
