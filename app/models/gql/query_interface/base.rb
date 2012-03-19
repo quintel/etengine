@@ -1,6 +1,4 @@
 module Gql::QueryInterface::Base
-  GQL3 = true
-
   def input_value
     @input_value
   end
@@ -31,12 +29,12 @@ module Gql::QueryInterface::Base
       execute_gquery_key(obj.key)
     elsif obj.is_a?(Input)
       self.input_value = "#{self.input_value}#{obj.v1_legacy_unit}" unless self.input_value.include?('%')
-      execute_input(Gql::QueryInterface::Preparser.new(obj.query).parsed)
-    elsif obj.is_a?(String) 
-      # pure GQL string
-      GQL3 ? @rubel.query(obj) : execute_parsed_query(Gql::QueryInterface::Preparser.new(obj).parsed)
+      puts "#{obj.key}: #{self.input_value.inspect}"
+      execute_input(obj.query)
+    elsif obj.is_a?(String)
+      @rubel.query(Gquery.make_gql3_proc(obj))
     else
-      raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{clean(obj)}.")
+      raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{obj.inspect}.")
     end
   ensure
     self.input_value = nil
@@ -67,30 +65,19 @@ module Gql::QueryInterface::Base
   #
   def subquery(gquery_key)
     if gquery = get_gquery(gquery_key)
-      #ActiveSupport::Notifications.instrument("gql.query.custom: #{gquery_key}") do
-        GQL3 ? @rubel.query(gquery.query_sanitized) : execute_parsed_query(gquery.parsed_query)
-      #end
+      ActiveSupport::Notifications.instrument("gql.query.custom: #{gquery_key}") do
+        @rubel.query(gquery.gql3)
+      end
     else
       nil
     end
   end
   alias execute_gquery_key subquery
 
-
-  def execute_input(parsed_query)
-    parsed_query.result(scope)
+  def execute_input(query)
+    @rubel.query(Gquery.make_gql3_proc(query))
   rescue => e
-    raise Gql::GqlError.new("UPDATE: #{parsed_query.text_value}:\n #{e.inspect}")
-  end
-
-  def execute_parsed_query(parsed_query)
-    # HACK: In case no gql was assigned (this happens often in old specs)
-    # do not prepare. Thus gql &&.
-    gql.prepare if gql && !gql.calculated?
-    
-    parsed_query.result(scope)
-  rescue => e
-    raise Gql::GqlError.new("Query: #{parsed_query.text_value}.\n #{e.inspect}")
+    raise Gql::GqlError.new("UPDATE: #{query}:\n #{e.inspect}")
   end
 
   def get_gquery(gquery_or_key)
