@@ -1,4 +1,4 @@
-module Rubel
+module Gql::Grammar
   module Functions
     module Legacy
 

@@ -31,7 +31,7 @@ class QueryInterface
   #   If set to nil, false or not at all defined, query_cache will not be used.
   #
   def initialize(gql, graph, options = {})
-    @rubel = Rubel::Base.new(self)
+    @rubel = Grammar::Base.new(self)
     @graph = graph
     @gql = gql
     @options = options
