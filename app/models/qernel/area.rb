@@ -60,7 +60,8 @@ module Qernel
       # Special attribute, does not exist in Area columns, has to be added extra in Area#dataset_attributes
       :number_of_existing_households,
       :economic_multiplier,
-      :employment_local_fraction
+      :employment_local_fraction,
+      :employment_fraction_production
     ]
 
     dataset_accessors ATTRIBUTES_USED
