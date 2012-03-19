@@ -95,10 +95,14 @@ class Gquery < ActiveRecord::Base
   end
   
   def query_sanitized
-    @query_sanitized ||= eval("lambda { #{convert_legacy!(query.dup)} }")
+    @query_sanitized ||= eval("lambda { #{self.class.convert_legacy!(query.dup)} }")
   end
 
-  def convert_legacy!(string)
+  def self.query3_converted(str)
+    convert_legacy!(str.dup)
+  end
+
+  def self.convert_legacy!(string)
     string.gsub!("\n", '')
     string.gsub!(/;([^\)]*)\)/, ';"\1")')
     string.gsub!("[", "(")

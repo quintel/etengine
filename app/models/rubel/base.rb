@@ -18,9 +18,8 @@ module Rubel
   # 
   class Base < BasicObject
     include ::Rubel::Functions::Constants
-    
-    # now override with freshened up gql functions
     include ::Rubel::Functions::Legacy
+    # now override with freshened up gql functions
     include ::Rubel::Functions::Aggregate
     include ::Rubel::Functions::Control
     include ::Rubel::Functions::Lookup
