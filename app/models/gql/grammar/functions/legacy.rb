@@ -62,8 +62,8 @@ module Gql::Grammar
         keys.first.flatten & keys.last.flatten
       end
 
-      def EXCLUDE(*keys)
-        keys.first.flatten - keys.last.flatten
+      def EXCLUDE(first, last)
+        first.flatten - last.flatten
       end
 
       def INVALID_TO_ZERO(*keys)
