@@ -22,12 +22,12 @@ module Rubel
         flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
       end
 
-      def QUERY_PRESENT(*args)
-        scope.gql.present.subquery(args.first)
+      def QUERY_PRESENT(gquery_key)
+        scope.gql.present.subquery(args.first.to_s)
       end
 
-      def QUERY_FUTURE(*args)
-        scope.gql.future.subquery(args.first)
+      def QUERY_FUTURE(gquery_key)
+        scope.gql.future.subquery(args.first.to_s)
       end
 
       def CHILDREN(*converters)
