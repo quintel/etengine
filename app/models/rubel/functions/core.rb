@@ -38,10 +38,10 @@ module Rubel
       # Returns an array of objects (or the key if no object found).
       #
       # Examples
-      # 
-      #   LOOKUP(foo)       => [ Converter<foo>]
-      #   LOOKUP(foo, bar)  => [ Converter<foo>, Converter<bar>]
-      #   LOOKUP(foo, not_available)  => [ Converter<foo>, "not_available"]
+      #
+      #   LOOKUP(foo)       => [Converter<foo>]
+      #   LOOKUP(foo, bar)  => [Converter<foo>, Converter<bar>]
+      #   LOOKUP(foo, not_available)  => [Converter<foo>, "not_available"]
       #
       def LOOKUP(*keys)
         keys.flatten!

@@ -46,6 +46,8 @@ gem 'fileutils'
 
 group :development do
   gem 'yard', '~> 0.7.2'
+  gem 'yard-tomdoc'
+  gem 'rdiscount'
   gem 'annotate', :require => false
   gem 'active_reload'
   gem 'pry-remote'
