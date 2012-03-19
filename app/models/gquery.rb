@@ -94,12 +94,13 @@ class Gquery < ActiveRecord::Base
     @parsed_query ||= Gql::QueryInterface::Preparser.new(query).parsed
   end
   
-  def query_sanitized
-    @query_sanitized ||= eval("lambda { #{self.class.convert_legacy!(query.dup)} }")
+  def gql3
+    @gql3_proc ||= self.class.make_gql3_proc(query)
   end
 
-  def self.query3_converted(str)
-    convert_legacy!(str.dup)
+  def self.make_gql3_proc(str)
+    convert_legacy!(str)
+    eval("lambda { #{str} }")
   end
 
   def self.convert_legacy!(string)
