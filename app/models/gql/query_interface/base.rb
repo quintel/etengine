@@ -75,7 +75,7 @@ module Gql::QueryInterface::Base
   alias execute_gquery_key subquery
 
   def execute_input(query)
-    @rubel.query(Gquery.make_gql3_proc(query))
+    @rubel.query(Gquery.make_gql3_proc(query), query)
   rescue => e
     raise Gql::GqlError.new("UPDATE: #{query}:\n #{e.inspect}")
   end

@@ -13,6 +13,7 @@ module Gql::Grammar
 
       def SUM(*args)
         args.flatten!
+        args.compact!
         args.inject(0) {|h,v| h + v }
       end
       

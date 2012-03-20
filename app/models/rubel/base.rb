@@ -1,7 +1,7 @@
 module Rubel
   class ErrorReporter
     def initialize(error, string)
-      raise  "#{string.inspect}: " + error.message
+      raise "error: #{error.message}"
     end
   end
 
@@ -16,7 +16,7 @@ module Rubel
   # This allows the query language to not require "", '' or : for things like lookup keys.
   # VALUE(foo, sqrt) vs VALUE("foo", "sqrt")
   # 
-  class Base < BasicObject
+  class Base# < BasicObject
     # The object through which GQL functions can access your application data.
     attr_reader :scope
 
@@ -25,7 +25,7 @@ module Rubel
     end
 
     # query - The String or Proc to be executed
-    def query(query = nil)
+    def query(query = nil, raw = nil)
       if query.is_a?(::String)
         sanitize!(query)
         instance_eval(query)
@@ -34,7 +34,8 @@ module Rubel
       end
       
     rescue => e
-      ErrorReporter.new(e, query)
+      binding.pry
+      ::Rubel::ErrorReporter.new(e, query)
     end
 
     # Protect from Ruby injection.
@@ -50,7 +51,7 @@ module Rubel
     # or a Proc calling method_name with (evaluated) args [1].
     def method_missing(name, *args)
       if args.present?
-        ::Proc.new { self.send(name, *args) }
+        ::Proc.new { self.send(name, *args)  }
       else
         name.to_sym
       end

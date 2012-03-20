@@ -51,8 +51,8 @@ module Gql::Grammar
 
       def INPUT_LINKS(value_terms, arguments = [])
         links = flatten_uniq(value_terms.tap(&:flatten!).map(&:input_links))
-        if arguments.first
-          inst_eval = replace_gql_with_ruby_brackets(arguments.first)
+        if arguments.present?
+          inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
           links.select!{|link| link.instance_eval(inst_eval) } 
         end
         links
@@ -60,8 +60,8 @@ module Gql::Grammar
 
       def OUTPUT_LINKS(value_terms, arguments = [])
         links = flatten_uniq(value_terms.tap(&:flatten!).map(&:output_links))
-        if arguments.first
-          inst_eval = replace_gql_with_ruby_brackets(arguments.first)
+        if arguments.present?
+          inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
           links.select!{|link| link.instance_eval(inst_eval) } 
         end
         links

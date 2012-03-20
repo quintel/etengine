@@ -8,9 +8,9 @@ module Gql::Grammar
       end
 
       def EACH(*value_terms)
-        # value_terms.each do |value_term|
-        #   value_term
-        # end
+        value_terms.each do |value_term|
+          value_term
+        end
       end
 
       # Its syntax is:
@@ -19,8 +19,9 @@ module Gql::Grammar
       #
       def UPDATE(*value_terms)
         input_value    = value_terms.pop
+        input_value    = input_value.first if input_value.is_a?(::Array)
         attribute_name = value_terms.pop
-        objects = value_terms.compact
+        objects = value_terms.flatten.compact
 
         scope.update_collection = objects # for UPDATE_COLLECTION()
         objects.each do |object|
@@ -29,16 +30,17 @@ module Gql::Grammar
           if object
             scope.update_object = object # for UPDATE_OBJECT()
 
-            object[attribute_name] = case update_strategy(scope)
+            object[attribute_name] = case update_strategy
             when :absolute then input_value
             when :relative_total
               cur_value = big_decimal(object[attribute_name].to_s)
               cur_value + (cur_value * input_value)
             when :relative_per_year
               cur_value = big_decimal(object[attribute_name].to_s)
-              cur_value * ((1.0 + input_value) ** ::Current.scenario.years)
+              cur_value * ((1.0 + input_value) ** scope.scenario.years)
             end.to_f
           else
+            # this will not execute...
             raise "UPDATE: objects not found: #{value_terms}"
           end
         end
@@ -49,7 +51,7 @@ module Gql::Grammar
 
       # at the moment only takes care of percentages and absolute numbers.
       #
-      def input_factor(scope)
+      def input_factor
         if scope.input_value.andand.include?('%')
           100.0
         else 
@@ -58,12 +60,10 @@ module Gql::Grammar
       end
 
       def big_decimal(n)
-        # DEBT: Revert this back
-        # BigDecimal(input)
-        n.to_f
+        scope.big_decimal(n)
       end
 
-      def update_strategy(scope)
+      def update_strategy
         input = scope.input_value
         if input.is_a?(::String)
           if input.include?('%y') 
@@ -86,7 +86,7 @@ module Gql::Grammar
         else
           input
         end
-        input_float / input_factor(scope)
+        input_float / input_factor
       end
 
       def UPDATE_OBJECT()

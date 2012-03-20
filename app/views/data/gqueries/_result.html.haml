@@ -1,4 +1,5 @@
 - begin
+  - Rails.logger.warn "got to here 1"
   - result = @gql.query(@query)
   - if result.respond_to?(:present_year)
     %table{:border => 1}
@@ -26,4 +27,6 @@
         %td No Unit
     
 - rescue => e
+  - Rails.logger.warn "got to here 2"
   %pre= e.inspect
+  - Rails.logger.warn "got to here 3"
