@@ -1,9 +1,3 @@
-##
-# GqueryGraphApi is the access point for the currently evaluated graph.
-# It is used by the GqlQueryGrammar.
-#
-#
-#
 module Gql::QueryInterface::Lookup
 
   def update_object

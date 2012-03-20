@@ -26,21 +26,14 @@ class Gquery < ActiveRecord::Base
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
   validates_presence_of :key
-  # validates_uniqueness_of :key
-
   validates_presence_of :query
-  # DEBT: Add a validates_format_of :query (e.g. should have at least one a-z)
   validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
-
-  validate :validate_query_parseable
 
   belongs_to :gquery_group
   
   after_save :reload_cache
 
   strip_attributes! :only => [:key]
-
-  scope :containing_converter_key, lambda{|key| where("query LIKE ?", "%#{key.to_s}%") }
 
   scope :contains, lambda{|search| where("query LIKE ?", "%#{search}%")}
   scope :name_or_query_contains, lambda{|q| where([
@@ -59,14 +52,11 @@ class Gquery < ActiveRecord::Base
     base
   }
 
-  scope :by_key_or_deprecated_key, lambda{|q| where("`key` = :q OR deprecated_key = :q", :q => q)}
   scope :by_groups, lambda{|*gids|
     gids = gids.compact.reject(&:blank?)
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
   }
   
-  scope :with_deprecated_key, where("deprecated_key IS NOT NULL")
-
   # Returns the cleaned query for any given key.
   #
   # @param key [String] Gquery key (see Gquery#key)
@@ -80,30 +70,19 @@ class Gquery < ActiveRecord::Base
     query
   end
 
-  ##
-  # The GqlParser currently does not work with whitespace.
-  # So we remove all whitespace before running the query
-  #
-  # Note: (sb) Alternatively we could also clean the query
-  # in the GQL engine. But then it would run for every (sub)query.
-  # Instead we memoize (see self.gquery_hash) the clean queries
-  # once and for all, saving us a few milliseconds per request.
-  #
+  # As a tribute to Ed Posnak I leave the following comment where it is.
   # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
-  def parsed_query
-    @parsed_query ||= Gql::QueryInterface::Preparser.new(query).parsed
-  end
   
   def gql3
-    @gql3_proc ||= self.class.make_gql3_proc(query)
+    @gql3_proc ||= self.class.gql3_proc(query)
   end
 
-  def self.make_gql3_proc(str)
-    convert_legacy!(str)
+  def self.gql3_proc(str)
+    convert_to_gql3!(str)
     eval("lambda { #{str} }")
   end
 
-  def self.convert_legacy!(string)
+  def self.convert_to_gql3!(string)
     string.gsub!("\n", '')
     string.gsub!(/;([^\)]*)\)/, ';"\1")')
     string.gsub!("[", "(")
@@ -114,9 +93,7 @@ class Gquery < ActiveRecord::Base
     string
   end
 
-  ##
   # Memoized gquery hashes
-  #
   @@gquery_hash = nil
   @@deprecated_gquery_hash = nil
 
@@ -135,9 +112,6 @@ class Gquery < ActiveRecord::Base
   #
   def self.build_gquery_hash
     h = {}
-    # form db
-    # self.all
-    # from etsource
     load_gqueries.each do |gquery| 
       h[gquery.key] = gquery
       h[gquery.id.to_s] = gquery
@@ -150,7 +124,9 @@ class Gquery < ActiveRecord::Base
   #
   def self.build_deprecated_gquery_hash
     h = {}
-    load_gqueries.select{|g| g.deprecated_key.present? }.each {|g| h[g.deprecated_key] = true}
+    load_gqueries.select{|g| g.deprecated_key.present? }.each do |g| 
+      h[g.deprecated_key] = g
+    end
     h
   end
 
@@ -190,10 +166,6 @@ class Gquery < ActiveRecord::Base
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
   end
 
-  def query_cleaned
-    Gql::QueryInterface::Preparser.new(query).clean
-  end
-
   # Method to invalidate the memoized gquery_hash.
   #
   def self.reload_cache
@@ -203,14 +175,5 @@ class Gquery < ActiveRecord::Base
   private
     def reload_cache
       self.class.reload_cache
-    end
-
-    def validate_query_parseable
-      if !Gql::QueryInterface::Preparser.new(self[:query]).valid?
-        errors.add(:query, "cannot be parsed")
-        false
-      else
-        true
-      end
     end
 end
