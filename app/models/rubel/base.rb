@@ -1,7 +1,7 @@
 module Rubel
   class ErrorReporter
     def initialize(error, string)
-      raise "error: #{error.message}"
+      raise "error: #{error.message}\n#{error.backtrace}"
     end
   end
 
@@ -22,6 +22,11 @@ module Rubel
 
     def initialize(scope = nil)
       @scope = scope
+    end
+
+    # make -> and lambda work
+    def lambda(&block)
+      ::Kernel.lambda(&block)
     end
 
     # query - The String or Proc to be executed
