@@ -289,16 +289,6 @@ protected
     future.query(query)
   end
 
-  # Not called directly. Use #query instead, e.g.:
-  #
-  #   gql.query("stored.foo_bar")
-  #
-  # @param query [String] Calls a stored procedure
-  # @return [ResultSet] The result of the stored procedure
-  #
-  def query_stored(query)
-    StoredProcedure.execute(query)
-  end  
 end
 
 end
