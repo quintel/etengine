@@ -4,7 +4,7 @@
 #
 #
 #
-module Gql::QueryInterface::GraphApi
+module Gql::QueryInterface::Lookup
 
   def update_object
     @update_object

@@ -17,7 +17,7 @@ class QueryInterface
   # so that we can extend it with caching strategies defined in
   # e.g. QueryCache and GqueryMemoizedSubqueries.
   include Base
-  include GraphApi
+  include Lookup
 
   attr_accessor :graph
   attr_reader :options, :gql
