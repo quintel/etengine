@@ -48,7 +48,7 @@ module Gql::Grammar
         keys.map! do |key| 
           if key.respond_to?(:to_sym)
             # prevents lookup for strings from V(.., "demand*2") or Procs V(.., foo(1))
-            @scope.lookup(key)
+            @scope.converters(key)
           else
             key
           end

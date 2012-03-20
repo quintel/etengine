@@ -13,6 +13,7 @@ module Gql::Grammar
     include ::Gql::Grammar::Functions::Lookup
     include ::Gql::Grammar::Functions::Policy
     include ::Gql::Grammar::Functions::Update
+    include ::Gql::Grammar::Functions::Helper
     include ::Gql::Grammar::Functions::Core
     
   end

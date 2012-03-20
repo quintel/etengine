@@ -135,6 +135,8 @@ class Gql
       query = gquery_or_string
     elsif gquery_or_string.is_a?(String)
       query, modifier = gquery_or_string.split(':').reverse
+    elsif gquery_or_string.respond_to?(:call)
+      query, modifier = gquery_or_string, nil
     end
     
     query_with_modifier(query, modifier)

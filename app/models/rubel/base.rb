@@ -16,7 +16,7 @@ module Rubel
   # This allows the query language to not require "", '' or : for things like lookup keys.
   # VALUE(foo, sqrt) vs VALUE("foo", "sqrt")
   # 
-  class Base# < BasicObject
+  class Base < BasicObject
     # The object through which GQL functions can access your application data.
     attr_reader :scope
 
@@ -34,8 +34,7 @@ module Rubel
       end
       
     rescue => e
-      binding.pry
-      ::Rubel::ErrorReporter.new(e, query)
+      ErrorReporter.new(e, query)
     end
 
     # Protect from Ruby injection.
