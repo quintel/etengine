@@ -22,6 +22,13 @@ module Gql::QueryInterface::GraphApi
     @update_collection = col
   end
 
+  def big_decimal(n)
+    BigDecimal(n)
+  end
+  
+  def scenario
+    Current.scenario
+  end
 
   # @param [String] Graph API Method.
   # @return [Float]
