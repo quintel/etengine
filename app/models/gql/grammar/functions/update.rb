@@ -18,10 +18,9 @@ module Gql::Grammar
       # UPDATE(object(s),attribute,value)
       #
       def UPDATE(*value_terms)
-        input_value    = value_terms.pop
-        input_value    = input_value.first if input_value.is_a?(::Array)
-        attribute_name = value_terms.pop
-        objects = value_terms.flatten.compact
+        input_value_proc = value_terms.pop
+        attribute_name   = value_terms.pop
+        objects          = value_terms.flatten.compact
 
         scope.update_collection = objects # for UPDATE_COLLECTION()
         objects.each do |object|
@@ -29,6 +28,9 @@ module Gql::Grammar
 
           if object
             scope.update_object = object # for UPDATE_OBJECT()
+
+            input_value = input_value_proc.respond_to?(:call) ? input_value_proc.call : input_value_proc
+            input_value = input_value.first      if input_value.is_a?(::Array)
 
             object[attribute_name] = case update_strategy
             when :absolute then input_value
