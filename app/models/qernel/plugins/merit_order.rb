@@ -71,34 +71,29 @@ module Qernel::Plugins
         end
       end
 
-      #
-      #
-      def normalized_residual_loads # Excel N
-        instrument("qernel.merit_order: normalized_residual_loads") do
+      def residual_load_profiles # Excel N
+        instrument("qernel.merit_order: residual_load_profiles") do
           demands = merit_order_demands
-          residual_load_profiles = self.class.merit_order_table.map do |load, wewp|
+          
+          self.class.merit_order_table.map do |load, wewp|
             wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,3]]
             wewp_x_demands.map!{|wewp, demand| wewp * demand }
             [0, load - wewp_x_demands.sum].max
           end
-          max = residual_load_profiles.max
-
-          # only interested in the normalized loads. so map!
-          residual_load_profiles.map!{|l| l / max}
         end
       end
 
       def residual_ldc
         instrument("qernel.merit_order: residual_ldc") do
           loads      = []
-          nrl        = normalized_residual_loads
-          nrl_length = nrl.length.to_f
+          load_profiles        = residual_load_profiles
+          load_profiles_length = load_profiles.length.to_f
 
           precision = 10
 
           (0..precision).to_a.each do |i|
-            q = i / precision.to_f
-            y = nrl.count{|n| n >= q} / nrl_length
+            q = i / precision.to_f  * load_profiles.max
+            y = load_profiles.count{|n| n >= q} / load_profiles_length
             loads << [q, y.to_f]
           end
 
@@ -112,6 +107,7 @@ module Qernel::Plugins
         end
 
         ldc_points = residual_ldc
+        y_max = residual_load_profiles.max
 
         converters = converters_for_merit_order
         converters.sort_by!{|c| c[:merit_order_end]}
@@ -120,23 +116,22 @@ module Qernel::Plugins
 
         instrument("qernel.merit_order: calculate_full_load_hours") do
           converters.each do |converter|
-
-            lft  = (converter.merit_order_start) / max_merit
-            rgt  = (converter.merit_order_end  ) / max_merit
-
-            # polygon_area expects the points passed in clock-wise order.
-            points  = [
+            lft = converter.merit_order_start
+            rgt = converter.merit_order_end  
+            
+            points = [ # polygon_area expects the points passed in clock-wise order.
               [lft, 0],                                       # bottom left
-              [lft, interpolate_y(ldc_points, lft)],          # top left (y interpolated)
+              [lft, interpolate_y(ldc_points, lft, y_max)],   # top left (y interpolated)
               *ldc_points.select{|x,y| x > lft && x < rgt },  # points on residual_ldc curve
-              [rgt, interpolate_y(ldc_points, rgt)],          # top right (y interpolated)
+              [rgt, interpolate_y(ldc_points, rgt, y_max)],   # top right (y interpolated)
               [rgt, 0]                                        # bottom right
             ]
 
             area_size       = polygon_area(points.map(&:first), points.map(&:second))
             diff            = [rgt - lft, 0.0].max
+            availability    = converter.availability
 
-            capacity_factor = (area_size / diff).rescue_nan
+            capacity_factor = [availability * (area_size / diff).rescue_nan, availability].min
             full_load_hours = capacity_factor * 8760
 
             converter.merit_order_capacity_factor = capacity_factor.round(3)
@@ -150,9 +145,9 @@ module Qernel::Plugins
       # this function is probably not so precise.
       # it's supposed to interpolate the y value for a given x.
       # It uses the formulas i've learned at school and wikipedia
-      def interpolate_y(points, x)
+      def interpolate_y(points, x, y_max)
         return 1.0 if x == 0.0
-        return 0.0 if x >= 1.0
+        return 0.0 if x >= y_max
 
         index = points.index{|px,y| px >= x } - 1
         index = 0 if index < 0
