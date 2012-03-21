@@ -208,11 +208,8 @@ protected
 
   def prepare_future    
     ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
-      if Rails.env.test?
-        future_graph.dataset ||= calculated_present_dataset
-      else
-        future_graph.dataset = dataset_clone
-      end
+      future_graph.dataset = dataset_clone
+      
       scenario.inputs_before.each do |input, value|
         future.query(input, value)
       end
