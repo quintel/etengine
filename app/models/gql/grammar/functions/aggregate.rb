@@ -1,10 +1,17 @@
 module Gql::Grammar
   module Functions
     module Aggregate
+      # How many (non-nil) values are there?
+      def COUNT(*values)
+        flatten_compact(values).length
+      end
 
       def NEG(*args)
         args.flatten!
         args.map!{|a| -a }
+        # args.length == 1 ? args.first : args
+        # above is what i'd expect, below is legacy behaviour.
+        args.first
       end
 
       def AVG(values, arguments, scope = nil)

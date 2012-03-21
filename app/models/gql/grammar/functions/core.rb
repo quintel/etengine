@@ -54,6 +54,7 @@ module Gql::Grammar
           end
         end
         keys.compact!
+        keys.uniq!
         keys
       end
 

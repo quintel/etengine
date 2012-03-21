@@ -78,8 +78,7 @@ class Gquery < ActiveRecord::Base
   end
 
   def self.gql3_proc(str)
-    convert_to_gql3!(str)
-    eval("lambda { #{str} }")
+    eval("lambda { #{convert_to_gql3!(str.dup)} }")
   end
 
   def self.convert_to_gql3!(string)
@@ -90,6 +89,7 @@ class Gquery < ActiveRecord::Base
     string.gsub!(';', ',')
     string.gsub!("\s", '')
     string.gsub!("\t", '')
+    string.gsub!(/[a-z]+\:/,'')
     string
   end
 
