@@ -61,13 +61,15 @@ module Qernel::Plugins
 
 
       def merit_order_demands
-        self.class.merit_order_converters.map do |_ignore, converter_keys|
-          converter_keys.map do |key|
-            converter = converter(key)
-            raise "merit_order: no converter found with key: #{key.inspect}" unless converter
+        instrument("qernel.merit_order: merit_order_demands") do
+          self.class.merit_order_converters.map do |_ignore, converter_keys|
+            converter_keys.map do |key|
+              converter = converter(key)
+              raise "merit_order: no converter found with key: #{key.inspect}" unless converter
 
-            converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
-          end.sum.round(1).tap{|s| puts "#{_ignore}: #{s}"}
+              converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
+            end.sum.round(1)
+          end
         end
       end
 
