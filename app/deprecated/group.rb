@@ -34,8 +34,4 @@ class Group < ActiveRecord::Base
     Group.update_all("id = group_id", "id = #{self.id}")
     self.id = self.group_id
   end
-
-  def to_qernel
-    @qernel ||= key.to_sym
-  end
 end
