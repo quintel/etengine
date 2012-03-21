@@ -25,7 +25,7 @@ module Gql
     #
     def subquery(gquery_key)
       if gquery = get_gquery(gquery_key)
-        ActiveSupport::Notifications.instrument("gql.query.custom: #{gquery_key}") do
+        ActiveSupport::Notifications.instrument("gql.query.subquery: #{gquery_key}") do
           @rubel.query(gquery.gql3)
         end
       else
