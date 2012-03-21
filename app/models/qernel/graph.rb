@@ -25,7 +25,7 @@ class Graph
 
   include DatasetAttributes
 
-  dataset_accessors [:calculated]
+  dataset_accessors :calculated
 
   def dataset_key
     :graph
@@ -34,7 +34,6 @@ class Graph
   def graph
     self
   end
-
 
   attr_reader :converters
   attr_writer :goals
@@ -112,6 +111,10 @@ class Graph
 
   def calculated?
     self[:calculated] == true
+  end
+
+  def enable_merit_order?
+    query(:enable_merit_order?)
   end
 
   def time_curves

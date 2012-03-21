@@ -1,6 +1,4 @@
 module Qernel
-
-##
 # Interface for a Qernel::Graph object to the outside world (GQL).
 # The purpose was to proxy the access to the Qernel objects, so
 #  that in future it might be easier to implement the graph for
@@ -11,11 +9,26 @@ module Qernel
 #
 class GraphApi
   include MethodMetaData
+  include DatasetAttributes
 
+  dataset_accessors :enable_merit_order
+  
   ##
   # @param graph [Qernel::Graph]
   def initialize(graph)
     @graph = graph
+  end
+
+  def object_dataset
+    @graph.object_dataset
+  end
+
+  def dataset_key
+    :graph
+  end
+
+  def enable_merit_order?
+    enable_merit_order == 1.0
   end
 
   def area
@@ -83,7 +96,7 @@ class GraphApi
 
 
   def electricity_produced_from_gas
-    @electricity_produced_from_gas = graph.group_converters(:electricity_production).select do |c|
+    electricity_produced_from_gas = graph.group_converters(:electricity_production).select do |c|
       c.input(:gasmix) || c.input(:natural_gas)
     end.map{|c| 
       gasmix = c.input(:gasmix)
@@ -144,10 +157,6 @@ class GraphApi
     (co2_now - co2_1990) / co2_1990
   end
 
-
-
-
-private
   def converter(key)
     graph.converter(key).query
   end

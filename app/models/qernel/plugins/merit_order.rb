@@ -1,12 +1,12 @@
 module Qernel::Plugins
-
+  # TXT_TABLE(SORT_BY(G(merit_order_converters),merit_order_position),full_key,merit_order_full_load_hours)
   module MeritOrder
     extend ActiveSupport::Concern
 
     included do |variable|
       if merit_order_converters
-        set_callback :calculate, :after, :calculate_merit_order
-        set_callback :calculate, :after, :calculate_full_load_hours
+        set_callback :calculate, :after, :calculate_merit_order,     :if => :enable_merit_order?
+        set_callback :calculate, :after, :calculate_full_load_hours, :if => :enable_merit_order?
       end
     end
 
