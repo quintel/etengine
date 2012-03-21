@@ -152,7 +152,7 @@ module Qernel::Plugins
             full_load_hours = capacity_factor * 8760
 
             converter.merit_order_capacity_factor = capacity_factor.round(3)
-            converter.merit_order_full_load_hours = full_load_hours.round(1)
+            converter.full_load_hours = full_load_hours.round(1)
           end
         end
 
