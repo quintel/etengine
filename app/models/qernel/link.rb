@@ -83,11 +83,11 @@ protected
   def link_type=(link_type)
     @link_type = link_type
 
-    @is_share = @link_type === :share
-    @flexible = @link_type === :flexible
+    @is_share          = @link_type === :share
+    @flexible          = @link_type === :flexible
     @inversed_flexible = @link_type === :inversed_flexible
-    @dependent = @link_type === :dependent
-    @constant = @link_type === :constant
+    @dependent         = @link_type === :dependent
+    @constant          = @link_type === :constant
   end
 
   def after_assign_object_dataset
