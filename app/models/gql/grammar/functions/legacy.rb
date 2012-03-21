@@ -13,42 +13,11 @@ module Gql::Grammar
         end
       end
 
-      def ALL(*keys)
-        scope.all_converters
-      end
-
-      def FILTER(converters, filter_name, scope)
-        inst_eval = replace_gql_with_ruby_brackets(filter_name.first)
+      def FILTER(converters, filter_name)
+        inst_eval = replace_gql_with_ruby_brackets(filter_name)
         flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
       end
 
-      # Runs the gquery with given key for the present year only.
-      #
-      # gquery_key - The gquery lookup key. 
-      #
-      # Returns the result of the gquery for only the present year. 
-      #
-      # Examples
-      #
-      #   QUERY_PRESENT(graph_year)   # => 2010
-      #
-      def QUERY_PRESENT(gquery_key)
-        scope.gql.present.subquery(gquery_key.to_s)
-      end
-
-      # Runs the gquery with given key for the future year only.
-      #
-      # gquery_key - The gquery lookup key. 
-      #
-      # Returns the result of the gquery for only the future year. 
-      #
-      # Examples
-      #
-      #   QUERY_FUTURE(graph_year)    # => 2050
-      #
-      def QUERY_FUTURE(gquery_key)
-        scope.gql.future.subquery(gquery_key.to_s)
-      end
 
       def CHILDREN(*converters)
         flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.children})
