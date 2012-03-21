@@ -30,6 +30,7 @@ module Qernel::Plugins
 
       # assign merit_order_start and merit_order_end
       def calculate_merit_order
+        return if group_converters(:merit_order_converters).empty?
         instrument("qernel.merit_order: calculate_merit_order") do
           # Converters to include in the sorting: G(electricity_production)
           converters = converters_for_merit_order
@@ -104,6 +105,8 @@ module Qernel::Plugins
       end
 
       def calculate_full_load_hours
+        return if group_converters(:merit_order_converters).empty?
+        
         if dataset_get(:calculate_merit_order_finished) != true
           calculate_merit_order
         end
