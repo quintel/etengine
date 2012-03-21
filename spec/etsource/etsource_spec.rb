@@ -12,7 +12,7 @@ describe "Etsource" do
   end
 
   # Find all the folders that contain a tests folder.
-  Dir.glob("#{Etsource::Base.instance.export_dir}/**/tests/".gsub('//', '/')).each do |tests_dir|
+  Dir.glob("#{Etsource::Base.instance.export_dir}/tests/".gsub('//', '/')).each do |tests_dir|
     base_dir = tests_dir.gsub(/\/tests\/$/, '')      
     initialize_etsource(base_dir)
 
