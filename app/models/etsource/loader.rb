@@ -21,7 +21,8 @@ module Etsource
     def globals(file_name)
       instrument("etsource.loader: globals #{file_name.inspect}") do
         cache("globals/#{file_name}") do
-          YAML::load_file("#{@etsource.base_dir}/datasets/_globals/#{file_name}.yml")
+          f = "#{@etsource.base_dir}/datasets/_globals/#{file_name}.yml"
+          File.exists?(f) ? YAML::load_file(f) : nil
         end
       end
     end
@@ -29,11 +30,15 @@ module Etsource
     # @return [Qernel::Graph] a deep clone of the graph.
     #   It is important to work with clones, because present and future_graph should
     #   be independent to reduce bugs.
-    def graph
+    def graph(country = nil)
       instrument("etsource.loader: graph") do
-        Marshal.load(Marshal.dump(optimized_graph))
+        graph = Marshal.load(Marshal.dump(optimized_graph))
+        graph.dataset = dataset(country) if country
+        graph
       end
     end
+
+
 
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
