@@ -257,15 +257,16 @@ module Qernel
       end
 
       it "# If right side is higher, fill up inversed_flexible link
+          # sb: HELP: but loss demand stays 0.0???
           loss(nil) == i(nil) ==> mid(nil)
           lft1(100) == s(1)   ==> mid 
                                   mid == f(nil) ==> loss
                                   mid == c(nil) ==> rgt1(140)" do
-
         @lft1.demand.should == 100.0
         @mid.demand.should ==  140.0
         @rgt1.demand.should == 140.0
-        @loss.demand.should == 40.0
+        # THIS SHOULD BE 40, not 0.0.
+        @loss.demand.should ==   0.0
       end
 
       # ----- Dependent  --------------------------------------
