@@ -1,6 +1,8 @@
 RSpec::Matchers.define :be_within_a_percent do |expected|
   match do |actual|
-    if !actual.respond_to?(:to_f)
+    if actual.respond_to?(:finite?) && !actual.finite?
+      expected.respond_to?(:finite?) && !expected.finite?
+    elsif !actual.respond_to?(:to_f)
       actual == expected
     elsif actual.to_f == 0.0 && expected.to_f == 0.0
       true

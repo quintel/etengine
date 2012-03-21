@@ -89,7 +89,7 @@ class Gquery < ActiveRecord::Base
     string.gsub!(';', ',')
     string.gsub!("\s", '')
     string.gsub!("\t", '')
-    string.gsub!(/[a-z]+\:/,'')
+    string.gsub!(/^[a-z]+\:/,'')
     string
   end
 
