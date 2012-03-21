@@ -4,8 +4,10 @@ module Qernel::Plugins
     extend ActiveSupport::Concern
 
     included do |variable|
-      set_callback :calculate, :after, :calculate_merit_order
-      set_callback :calculate, :after, :calculate_full_load_hours
+      if merit_order_converters
+        set_callback :calculate, :after, :calculate_merit_order
+        set_callback :calculate, :after, :calculate_full_load_hours
+      end
     end
 
     module ClassMethods
@@ -30,6 +32,8 @@ module Qernel::Plugins
 
       # assign merit_order_start and merit_order_end
       def calculate_merit_order
+        return if group_converters(:merit_order_converters).empty?
+        
         instrument("qernel.merit_order: calculate_merit_order") do
           # Converters to include in the sorting: G(electricity_production)
           converters = converters_for_merit_order
@@ -59,23 +63,34 @@ module Qernel::Plugins
         end
       end # calculate_merit_order
 
-
+      # 
+      #
       def merit_order_demands
-        self.class.merit_order_converters.map do |_ignore, converter_keys|
-          converter_keys.map do |key|
-            converter = converter(key)
-            raise "merit_order: no converter found with key: #{key.inspect}" unless converter
-
-            converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
-          end.sum.round(1).tap{|s| puts "#{_ignore}: #{s}"}
+        instrument("qernel.merit_order: merit_order_demands") do
+          self.class.merit_order_converters.map do |_ignore, converter_keys|
+            converter_keys.map do |key|
+              converter = converter(key)
+              raise "merit_order: no converter found with key: #{key.inspect}" unless converter
+              converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
+            end.sum.round(1)
+          end
         end
       end
 
+      # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
+      # It uses the tabular data merit_order.csv
+      #
+      # Returns an Array of x,y
+      #
       def residual_load_profiles # Excel N
         instrument("qernel.merit_order: residual_load_profiles") do
-          demands = merit_order_demands
-          
-          self.class.merit_order_table.map do |load, wewp|
+          demands     = merit_order_demands
+          peak_demand = group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.sum
+
+          self.class.merit_order_table.map do |normalized_load, wewp|
+            load = peak_demand *  normalized_load
+            # take one column from the table and multiply it with the demands
+            # defined in the merit_order_converters.yml
             wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,3]]
             wewp_x_demands.map!{|wewp, demand| wewp * demand }
             [0, load - wewp_x_demands.sum].max
@@ -102,6 +117,8 @@ module Qernel::Plugins
       end
 
       def calculate_full_load_hours
+        return if group_converters(:merit_order_converters).empty?
+        
         if dataset_get(:calculate_merit_order_finished) != true
           calculate_merit_order
         end
