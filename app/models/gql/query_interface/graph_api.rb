@@ -27,7 +27,7 @@ module Gql::QueryInterface::GraphApi
   # @return [Float]
   #
   def graph_query(key)
-    graph.query(key)
+    key.nil? ? graph : graph.query(key)
   end
 
   # @param [String] Area attribute. E.g. areable_land
