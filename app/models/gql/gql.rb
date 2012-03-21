@@ -4,46 +4,6 @@ module Gql
 # It is responsible to update the future graph with user values/assumptions
 # and to query the present and future graph using GQL Queries (Gquery).
 #
-# == Useage
-#
-#   graph = Graph.find( 1 )     # the graph we want to query
-#   gql = Gql::Gql.new( graph ) # Create Gql instance for 'graph'
-#   gql.prepare          # updates and calculates graphs based on user assumptions
-#
-#   res = gql.query("SUM(1.0,2.0)")
-#   # => <Gql::ResultSet present_value:3.0 future_value:3.0 present_year:2010 future_year:2040>
-#
-#   gql.query_present("SUM(1,0,2.0)") # only get the present value
-#   # => 3.0
-#   gql.query_future("SUM(1,0,2.0)") # only get the future value
-#   # => 3.0
-#
-# Within the project you can simply use:
-#
-#   gql.query(...)
-#
-# == Components
-#
-# === Updating
-#
-# Updates the future graph with user assumptions. Uses the command pattern
-# for specific update actions. Needs some smart thinking to clean up further.
-#
-# === Gquery
-#
-# Executes a (GQL 2) query and takes care of caching and subquery lookups.
-#
-# === GqlQueryParser
-#
-# The grammar of a GQL Query, defined using treetop gem.
-# - gql_query.treetop which generates the GqlQueryParser during runtime
-# (by requiring it in environment.rb).
-# - GqlGquerySyntaxNode: Defines and implements all the functions of a Query.
-#
-# === ResultSet
-#
-# ResultSet of a Gquery.
-#
 class Gql
   extend ActiveModel::Naming
 
