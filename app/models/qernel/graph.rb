@@ -160,13 +160,12 @@ class Graph
 
       self.finished_converters.map(&:input_links).flatten.each(&:update_share)
 
-      self[:calculated] = true
-
       unless converter_stack.empty?
         ActiveSupport::Notifications.instrument("gql.debug",
           "Following converters have not finished: #{converter_stack.map(&:full_key).join(', ')}")
       end
     end
+    self[:calculated] = true
   end
 
   def links
