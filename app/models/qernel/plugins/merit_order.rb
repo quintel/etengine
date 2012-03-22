@@ -6,7 +6,7 @@ module Qernel::Plugins
     included do |variable|
       if merit_order_converters
         set_callback :calculate, :after, :calculate_merit_order
-        set_callback :calculate, :after, :calculate_full_load_hours, :if => :enable_merit_order?
+        set_callback :calculate, :after, :calculate_full_load_hours
       end
     end
 
@@ -89,7 +89,7 @@ module Qernel::Plugins
 
           self.class.merit_order_table.map do |normalized_load, wewp|
             load = peak_demand * normalized_load
-l
+
             # take one column from the table and multiply it with the demands
             # defined in the merit_order_converters.yml
             wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,3]]
@@ -153,7 +153,8 @@ l
             full_load_hours = capacity_factor * 8760
 
             converter.merit_order_capacity_factor = capacity_factor.round(3)
-            converter.full_load_hours = full_load_hours.round(1)
+            converter.merit_order_full_load_hours = full_load_hours.round(1)
+            converter.full_load_hours = full_load_hours.round(1) if enable_merit_order?
           end
         end
 
