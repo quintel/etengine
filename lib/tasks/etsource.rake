@@ -51,10 +51,9 @@ namespace :etsource do
       end
 
       # Overwrite existing file
-
       File.open(test_suite_file, 'w') do |f|
         f << YAML::dump({ 
-          'settings' => {'country' => scenario.code},
+          'settings' => {country: scenario.code, scenario_id: scenario.preset_scenario_id, end_year: scenario.end_year},
           'tests'    => tests
         })
       end
