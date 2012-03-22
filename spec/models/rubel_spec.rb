@@ -4,6 +4,8 @@ class Rubel::Base
   def RAISE()
     raise "ERROR"
   end
+  include ::Gql::Grammar::Functions::Core
+  include ::Gql::Grammar::Functions::Aggregate
 end
 
 class RubelLookup
@@ -13,7 +15,18 @@ end
 
 describe Rubel do
   before { @rubel = Rubel::Base.new(RubelLookup.new(foo: 3, bar: 2)) }
-  
+
+  it "should accept parameters for ATTR" do
+    @rubel.query('ATTR(0.12345, "round(1)")').should == 0.1
+    @rubel.query('ATTR(0.12345,  round(1) )').should == 0.1
+  end
+
+  it "should accept GQL within parameters" do
+    @rubel.query('ATTR(0.12345, round(SUM(1,2)))').should == 0.123
+    # Following is not supported:
+    # @rubel.query('ATTR(0.12345, "round(SUM(1,2))")').should == 0.123
+  end
+
   pending do 
     it "should LOOKUP" do
       @rubel.query('LOOKUP(foo)').should == [3]
