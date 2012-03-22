@@ -93,7 +93,9 @@ class ConverterApi
     :excel_id, # temporary fix to still support excel_ids. used now for graphviz
     :part_load_operating_point,
     :part_load_efficiency_penalty,
-    :forecasting_error
+    :forecasting_error,
+
+    :max_demand # I would like to see this attribute in Converter, as it influences calculation
   ]
 
   # this hash is used to group converter attributes in converters#show
