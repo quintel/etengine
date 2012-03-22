@@ -13,7 +13,8 @@ class Link
   DATASET_ATTRIBUTES = [
     :share, 
     :value, 
-    :max_demand, 
+    :max_demand,
+    :priority,
     :calculated,
     :country_specific
   ]
@@ -67,6 +68,14 @@ class Link
     memoize_for_cache
   end
 
+  def lft_converter
+    @parent
+  end
+
+  def rgt_converter
+    @child
+  end
+
 protected
 
   def connect
@@ -101,8 +110,6 @@ protected
 
 public
 
-  # TODO: Rename to calculated_by_input and calculated_by_output
-  #
   def calculated_by_left?
     !calculated_by_right?
   end
@@ -111,13 +118,19 @@ public
     (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)) || reversed?
   end
 
+  def max_demand
+    dataset_get(:max_demand) || rgt_converter.query.max_demand
+  end
+
+  def priority
+    dataset_get(:priority) || 1_000_000
+  end
+
   # Does link have min-/max_demand? 
   # Important to figure out for which flexible links to calculate first.
-  #
   def max_boundaries?
     flexible? && max_demand
   end
-
 
   # --------- Calculation ------------------------------------------------------
 
@@ -150,7 +163,6 @@ public
   
 protected
   # --------- Calculation -----------------------------------------------------
-
 
   # If share is set to NIL, take the parent converter demand
   #
