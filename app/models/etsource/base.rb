@@ -9,7 +9,7 @@ module Etsource
 
     def initialize
       @base_dir       = ETSOURCE_DIR
-      @export_dir     = ETSOURCE_EXPORT_DIR
+      @export_dir     = ETSOURCE_EXPORT_DIR.gsub(/\/$/, '')
       @load_wizards   = APP_CONFIG.fetch(:etsource_load_wizards,  false)
       @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
       @cache_dataset  = APP_CONFIG.fetch(:etsource_cache_dataset, true)
