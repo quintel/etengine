@@ -4,46 +4,6 @@ module Gql
 # It is responsible to update the future graph with user values/assumptions
 # and to query the present and future graph using GQL Queries (Gquery).
 #
-# == Useage
-#
-#   graph = Graph.find( 1 )     # the graph we want to query
-#   gql = Gql::Gql.new( graph ) # Create Gql instance for 'graph'
-#   gql.prepare          # updates and calculates graphs based on user assumptions
-#
-#   res = gql.query("SUM(1.0,2.0)")
-#   # => <Gql::ResultSet present_value:3.0 future_value:3.0 present_year:2010 future_year:2040>
-#
-#   gql.query_present("SUM(1,0,2.0)") # only get the present value
-#   # => 3.0
-#   gql.query_future("SUM(1,0,2.0)") # only get the future value
-#   # => 3.0
-#
-# Within the project you can simply use:
-#
-#   gql.query(...)
-#
-# == Components
-#
-# === Updating
-#
-# Updates the future graph with user assumptions. Uses the command pattern
-# for specific update actions. Needs some smart thinking to clean up further.
-#
-# === Gquery
-#
-# Executes a (GQL 2) query and takes care of caching and subquery lookups.
-#
-# === GqlQueryParser
-#
-# The grammar of a GQL Query, defined using treetop gem.
-# - gql_query.treetop which generates the GqlQueryParser during runtime
-# (by requiring it in environment.rb).
-# - GqlGquerySyntaxNode: Defines and implements all the functions of a Query.
-#
-# === ResultSet
-#
-# ResultSet of a Gquery.
-#
 class Gql
   extend ActiveModel::Naming
 
@@ -101,7 +61,7 @@ class Gql
     # @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE && !scenario.test_scenario?
     #   QueryInterface.new(self, future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
     # else
-      QueryInterface.new(self, future_graph)
+    @future ||= QueryInterface.new(self, future_graph)
     # end
   end
 
@@ -135,6 +95,8 @@ class Gql
       query = gquery_or_string
     elsif gquery_or_string.is_a?(String)
       query, modifier = gquery_or_string.split(':').reverse
+    elsif gquery_or_string.respond_to?(:call)
+      query, modifier = gquery_or_string, nil
     end
     
     query_with_modifier(query, modifier)
@@ -246,11 +208,8 @@ protected
 
   def prepare_future    
     ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
-      if Rails.env.test?
-        future_graph.dataset ||= calculated_present_dataset
-      else
-        future_graph.dataset = dataset_clone
-      end
+      future_graph.dataset = dataset_clone
+      
       scenario.inputs_before.each do |input, value|
         future.query(input, value)
       end
@@ -287,16 +246,6 @@ protected
     future.query(query)
   end
 
-  # Not called directly. Use #query instead, e.g.:
-  #
-  #   gql.query("stored.foo_bar")
-  #
-  # @param query [String] Calls a stored procedure
-  # @return [ResultSet] The result of the stored procedure
-  #
-  def query_stored(query)
-    StoredProcedure.execute(query)
-  end  
 end
 
 end

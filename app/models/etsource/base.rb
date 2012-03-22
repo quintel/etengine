@@ -1,17 +1,4 @@
 module Etsource
-  # anti-rsi: method to quickly access Etsource::Base.instance in console
-  def self.base(base_dir = nil)
-    Base.instance.base_dir = base_dir if base_dir
-    Base.instance
-  end
-
-  # anti-rsi: method to quickly access Etsource::Loader.instance
-  def self.loader(base_dir = nil)
-    base(base_dir) if base_dir
-    Loader.instance
-  end
-
-
   # Proxy to the git operations
   #
   class Base
@@ -27,6 +14,12 @@ module Etsource
       @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
       @cache_dataset  = APP_CONFIG.fetch(:etsource_cache_dataset, true)
       @git = Git.open @base_dir
+    end
+
+    def self.loader(base_dir = nil)
+      instance.base_dir   = base_dir if base_dir
+      instance.export_dir = base_dir if base_dir
+      Loader.instance
     end
 
     # Should ETsource::Wizards be included?

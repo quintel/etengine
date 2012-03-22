@@ -30,13 +30,6 @@ describe Data::GqueriesController do
       response.should render_template(:show)
     end
   end
-
-  describe "GET edit" do
-    it "should be successful" do
-      get :edit, :id => gquery.id, :api_scenario_id =>'latest'
-      response.should render_template(:edit)
-    end
-  end
   
   describe "GET key" do
     it "should be successful" do

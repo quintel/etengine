@@ -6,7 +6,8 @@
 - dashboard_gqueries = Gquery.all.select(&:dashboard?)
 
 .row
-  - scenarios.each do |scenario|
+  - scenarios.each_with_index do |scenario, i|
+    - Rails.logger.warn "got to here #{i}"
     - gql_initialize_time = Time.now
     - gql = scenario.gql(prepare: false)
     - gql_initialize_time = Time.now - gql_initialize_time
@@ -32,8 +33,11 @@
             %th.span1 Time
         %tbody
           - dashboard_gqueries.sort_by(&:key).each do |gquery|
+            - Rails.logger.warn "got to here #{gquery.key}"
+
             - result_time = Time.now
             - result = gql.query(gquery, :debug)
+            - Rails.logger.warn "got to here #{gquery.key} after"
             - result_time = Time.now - result_time
             %tr
               %td

@@ -55,18 +55,6 @@ class Converter < ActiveRecord::Base
     Qernel::Converter::SECTORS[sector_id]
   end
 
-  ##
-  #
-  # Build a Qernel::Converter from a blueprint
-  #
-  def to_qernel
-    unless @qernel_obj
-      group_keys = self.groups.map(&:to_qernel).uniq
-      eb_group_key = energy_balance_group.andand.name.andand.to_sym || :undefined
-      @qernel_obj = Qernel::Converter.new(id, key, use_id, sector_id, group_keys, eb_group_key)
-    end
-    @qernel_obj
-  end
   
   # Hash that maps converter fullkeys to ids. Used to lookup a converter by
   # full_key, which is made up of the concatenation of different strings

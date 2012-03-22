@@ -24,7 +24,7 @@ module Etsource
       end
     end
 
-    # ATTENTION bug hunters:
+    # ATTENTION BUG HUNTERS: Mysql2::Error: Duplicate entry 'xyz' for key 'PRIMARY':
     # If you get  Mysql2::Error: Duplicate entry '549' for key 'PRIMARY':
     # upon importing inputs, you might want to comment #input.force_id()
     # and import a few times, until the mysql auto_increment ID is high enough

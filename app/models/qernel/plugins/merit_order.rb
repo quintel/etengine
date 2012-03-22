@@ -5,7 +5,7 @@ module Qernel::Plugins
 
     included do |variable|
       if merit_order_converters
-        set_callback :calculate, :after, :calculate_merit_order#,     :if => :enable_merit_order?
+        set_callback :calculate, :after, :calculate_merit_order
         set_callback :calculate, :after, :calculate_full_load_hours, :if => :enable_merit_order?
       end
     end
@@ -33,7 +33,7 @@ module Qernel::Plugins
       # assign merit_order_start and merit_order_end
       def calculate_merit_order
         return if group_converters(:merit_order_converters).empty?
-        
+
         instrument("qernel.merit_order: calculate_merit_order") do
           # Converters to include in the sorting: G(electricity_production)
           converters = converters_for_merit_order
@@ -88,7 +88,8 @@ module Qernel::Plugins
           peak_demand = group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.sum
 
           self.class.merit_order_table.map do |normalized_load, wewp|
-            load = peak_demand *  normalized_load
+            load = peak_demand * normalized_load
+l
             # take one column from the table and multiply it with the demands
             # defined in the merit_order_converters.yml
             wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,3]]

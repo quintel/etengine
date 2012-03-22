@@ -1,3 +1,6 @@
+# CONSTANTS THAT ARE ACCESSED BY GQUERIES HAVE TO BE PUT IN:
+# app/models/rubel/functions/constants.rb
+
 MWH_TO_GJ = 3.6
 HOURS_PER_YEAR = 8760.0
 MAN_HOURS_PER_MAN_YEAR = 1800.0
@@ -23,3 +26,4 @@ EURO_SIGN = '&euro;'
 # V(...; demand * 2 + FLOAT_HACK/2)
 # V(...; demand ** 2*FLOAT_HACK/3)
 FLOAT_HACK = 1.0
+

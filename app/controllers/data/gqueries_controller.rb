@@ -32,8 +32,8 @@ class Data::GqueriesController < Data::BaseController
   end
 
   def result
-    raw_query = params[:id] ? Gquery.find(params[:id]) : (params[:query] ? params[:query] : '')
-    @query = Gql::QueryInterface::Preparser.new(raw_query).clean
+    raw_query = params[:id] ? Gquery.find(params[:id]).query : (params[:query] ? params[:query] : '')
+    @query = Gquery.convert_to_gql3!(raw_query)
     render 'result'
   end
 

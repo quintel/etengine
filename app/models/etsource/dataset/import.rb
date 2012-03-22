@@ -45,6 +45,7 @@ module Etsource
       dataset_hash.delete(:mixins)
 
       @dataset.data = dataset_hash
+      @dataset.data[:area] ||= {:area_data => {}}
       @dataset.data[:graph][:graph] = {:calculated => false}
 
       # load_dataset_wizards if @etsource.load_wizards?

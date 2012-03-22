@@ -93,7 +93,7 @@ class Converter
   # Following keys can be looked up by {Qernel::Graph#converter}.
   KEYS_FOR_LOOKUP = [
     :excel_id_to_sym,
-    :full_key
+    :code
   ]
 
   SECTORS = {
@@ -149,43 +149,32 @@ class Converter
     if !(opts.include?(:id) || opts.include?(:code))
       raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new") 
     end
-    @id        = opts[:id] || Hashpipe.hash(opts[:code])
-    @key       = opts[:key]
-    @code      = opts[:code]
-    @groups    = opts[:groups] || []
+    @id         = opts[:id] || Hashpipe.hash(opts[:code])
+    @key        = opts[:key]
+    @code       = opts[:code]
+    @full_key   = @code
+    @groups     = opts[:groups] || []
+    @use_key    = opts[:use_id]
+    @sector_key = opts[:sector_id]
     @energy_balance_group = opts[:energy_balance_group]
     
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}
 
-    use_id    = opts[:use_id]
-    sector_id = opts[:sector_id]
-        
-    @use_key = use_id.is_a?(Symbol) ? use_id : USES[use_id]
-    @sector_key = sector_id.is_a?(Symbol) ? sector_id : SECTORS[sector_id]
-    custom_use_key = (@use_key === :undefined || @use_key.nil?) ? nil : @use_key.to_s
-    @full_key = [@key, @sector_key, custom_use_key].compact.join("_").to_sym
 
     memoize_for_cache
     self.converter_api = Qernel::ConverterApi.new(self)
   end
 
-  def self.full_key(key,sector_id,use_id)
-    use_key = USES[use_id]
-    sector_key = SECTORS[sector_id]
-
-    custom_use_key = (use_key === :undefined || use_key.nil?) ? nil : use_key.to_s
-    [key, sector_key, custom_use_key].compact.join("_").to_sym
-  end
 
   # return the excel id as a symbol for the graph#converter_lookup_hash
-  # return the full_key if no excel_id defined or dataset not initialised yet.
+  # return the code if no excel_id defined or dataset not initialised yet.
   #
   def excel_id_to_sym
     if object_dataset
-      (excel_id || full_key).to_s.to_sym
+      (excel_id || code).to_s.to_sym
     else
-      full_key
+      code
     end
   end
 
@@ -194,7 +183,7 @@ protected
   # Memoize here, so it doesn't have to at runtime
   #
   def memoize_for_cache
-    @environment_converter = full_key === :environment_environment
+    @environment_converter = code === :environment_environment
     @sector_environment = sector_key === :environment
 
     @primary_energy_demand = @groups.include? :primary_energy_demand
@@ -505,13 +494,13 @@ public
 
   # needed for url_for
   def to_param
-    full_key.to_s
+    code.to_s
   end
 
   # --------- Debug -----------------------------------------------------------
 
   def name
-    full_key
+    code
   end
 
   def to_s
@@ -519,7 +508,7 @@ public
   end
 
   def inspect
-    "<Qernel::Converter full_key: #{full_key}>"
+    "<Converter #{code}>"
   end
 
   def to_image(depth = 1, svg_path = nil)
