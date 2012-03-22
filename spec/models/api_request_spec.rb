@@ -37,7 +37,9 @@ describe ApiRequest do
       @gquery2 = Gquery.create(:key => 'rgt_demand', :query => 'V(rgt; demand)')
       Gquery.stub!(:load_gqueries).and_return([@gquery1, @gquery2])
 
+      # replace with a separate folder from etsource/examples
       @gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")
+      @gql.prepare
       ApiRequest.any_instance.stub(:gql).and_return(@gql)
     end
 

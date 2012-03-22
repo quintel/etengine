@@ -17,6 +17,7 @@ gem 'kaminari'
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
 
+
 # for etsource
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import'
@@ -45,9 +46,12 @@ gem 'fileutils'
 
 group :development do
   gem 'yard', '~> 0.7.2'
+  gem 'yard-tomdoc'
+  gem 'rdiscount'
   gem 'annotate', :require => false
   gem 'active_reload'
   gem 'pry-remote'
+  gem 'ruby-prof'
 end
 
 group :test, :development do

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module Gql
-  describe Gql do
+describe Gql do
+  pending do
     describe "Integration Testing" do
       before do
         @gql = Qernel::GraphParser.gql_stubbed("lft(100) == s(1.0) ==> rgt()")

@@ -1,10 +1,4 @@
-##
-# GqueryGraphApi is the access point for the currently evaluated graph.
-# It is used by the GqlQueryGrammar.
-#
-#
-#
-module Gql::QueryInterface::GraphApi
+module Gql::QueryInterface::Lookup
 
   def update_object
     @update_object
@@ -22,6 +16,13 @@ module Gql::QueryInterface::GraphApi
     @update_collection = col
   end
 
+  def big_decimal(n)
+    BigDecimal(n)
+  end
+  
+  def scenario
+    Current.scenario
+  end
 
   # @param [String] Graph API Method.
   # @return [Float]
