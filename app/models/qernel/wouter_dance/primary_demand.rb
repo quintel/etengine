@@ -14,6 +14,10 @@ module Qernel::WouterDance::PrimaryDemand
     end
   end
 
+  def primary_demand_of(*carriers)
+    carriers.flatten.map{|c| primary_demand_of_carrier(c.key) }.sum
+  end
+
   # Primary demand of only a specific carrier.
   #
   def primary_demand_of_carrier(carrier_key)
