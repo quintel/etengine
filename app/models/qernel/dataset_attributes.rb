@@ -133,9 +133,7 @@ module Qernel::DatasetAttributes
   # HANDLE_NIL_SECURLY = false is 50 ms faster. but harder to debug if problem occurs
   HANDLE_NIL_SECURLY = true 
   def dataset_fetch_handle_nil(attr_name, handle_nil_securly = false, &block)
-    if !graph.calculated? # do not memoize when graph has not finished calculating.
-      yield rescue nil
-    elsif object_dataset.has_key?(attr_name)
+    if object_dataset.has_key?(attr_name)
       object_dataset[attr_name]
     elsif HANDLE_NIL_SECURLY || handle_nil_securly
       object_dataset[attr_name] = handle_nil(attr_name, &block)
@@ -155,9 +153,7 @@ module Qernel::DatasetAttributes
   # Memoization
   #
   def dataset_fetch(attr_name, &block)
-    if !graph.calculated? # do not memoize when graph has not finished calculating.
-      yield
-    elsif object_dataset.has_key?(attr_name)
+    if object_dataset.has_key?(attr_name)
       object_dataset[attr_name]
     else
       object_dataset[attr_name] = yield
