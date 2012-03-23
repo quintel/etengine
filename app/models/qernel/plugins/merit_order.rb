@@ -33,7 +33,7 @@ module Qernel::Plugins
       # assign merit_order_start and merit_order_end
       def calculate_merit_order
         return if group_converters(:merit_order_converters).empty?
-        
+
         instrument("qernel.merit_order: calculate_merit_order") do
           # Converters to include in the sorting: G(electricity_production)
           converters = converters_for_merit_order
@@ -51,7 +51,7 @@ module Qernel::Plugins
               # the merit_order_start of this 'converter' is the merit_order_end of the previous at 'i'.
               converter[:merit_order_start] = converters[i][:merit_order_end]
               installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
-              
+
               merit_order_end = converter[:merit_order_start] + installed_capacity * converter.availability
               converter[:merit_order_end] = merit_order_end.round(3)
 
@@ -63,7 +63,7 @@ module Qernel::Plugins
         end
       end # calculate_merit_order
 
-      # 
+      #
       #
       def merit_order_demands
         instrument("qernel.merit_order: merit_order_demands") do
@@ -85,7 +85,7 @@ module Qernel::Plugins
       def residual_load_profiles # Excel N
         instrument("qernel.merit_order: residual_load_profiles") do
           demands     = merit_order_demands
-          peak_demand = group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.sum
+          peak_demand = group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
 
           self.class.merit_order_table.map do |normalized_load, wewp|
             load = peak_demand * normalized_load
@@ -119,7 +119,7 @@ module Qernel::Plugins
 
       def calculate_full_load_hours
         return if group_converters(:merit_order_converters).empty?
-        
+
         if dataset_get(:calculate_merit_order_finished) != true
           calculate_merit_order
         end
@@ -135,8 +135,8 @@ module Qernel::Plugins
         instrument("qernel.merit_order: calculate_full_load_hours") do
           converters.each do |converter|
             lft = converter.merit_order_start
-            rgt = converter.merit_order_end  
-            
+            rgt = converter.merit_order_end
+
             points = [ # polygon_area expects the points passed in clock-wise order.
               [lft, 0],                                       # bottom left
               [lft, interpolate_y(ldc_points, lft, y_max)],   # top left (y interpolated)
