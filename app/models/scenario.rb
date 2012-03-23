@@ -139,6 +139,15 @@ class Scenario < ActiveRecord::Base
     }.with_indifferent_access
   end
 
+  def force_id(new_id)
+    if new_id
+      self.class.update_all("id = #{new_id}", "id = #{self.id}")
+      self.id = new_id
+    else
+      raise "force_id no id given. #{new_id.inspect}"
+    end
+  end
+
 
   ##############################
   # Scenario Attributes
