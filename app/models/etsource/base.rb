@@ -69,6 +69,7 @@ module Etsource
 
         Gqueries.new(self).import!
         Inputs.new(self).import!
+        Scenario.new.import! if Rails.env.test?
       end
     end
 
