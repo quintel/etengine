@@ -13,10 +13,6 @@ class Data::ConvertersController < Data::BaseController
     @converters = @converters.sort_by(&:full_key)[((page - 1) * per_page)...(page * per_page)]
   end
 
-  def edit
-    redirect_to edit_data_converter_converter_data_url(:converter_id => params[:id])
-  end
-
   def show
     @qernel_graph = @gql.present_graph
     @converter_present = @gql.present_graph.graph.converter(params[:id].to_sym)
