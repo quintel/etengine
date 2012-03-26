@@ -12,3 +12,7 @@ end
 ETSOURCE_DIR = APP_CONFIG.fetch(:etsource_working_copy, 'etsource')
 ETSOURCE_EXPORT_DIR = APP_CONFIG.fetch(:etsource_export, 'etsource')
 
+# On staging we might want to see the backtrace
+if Rails.env.production? && APP_CONFIG[:show_backtrace]
+  Etm::Application.config.consider_all_requests_local = true
+end
