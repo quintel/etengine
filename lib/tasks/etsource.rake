@@ -53,7 +53,7 @@ namespace :etsource do
       # Overwrite existing file
       File.open(test_suite_file, 'w') do |f|
         f << YAML::dump({ 
-          'settings' => suite.fetch('settings', {})
+          'settings' => suite.fetch('settings', {}),
           'tests'    => tests
         })
       end
