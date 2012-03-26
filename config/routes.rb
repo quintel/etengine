@@ -65,7 +65,7 @@ Etm::Application.routes.draw do
 
       resources :fce_values
 
-      resources :converters, :only => [:index, :edit, :show]
+      resources :converters, :only => [:index, :show]
       resources :gquery_groups, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
       resource  :area, :as => :area, :only => :show
