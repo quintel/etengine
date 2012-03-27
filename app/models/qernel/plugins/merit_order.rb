@@ -42,9 +42,16 @@ module Qernel::Plugins
           end
 
           if first = converters.first
-            first[:merit_order_end]      = (first.installed_production_capacity_in_mw_electricity || 0.0) * first.availability
-            first[:merit_order_start]    = 0.0
-            first[:merit_order_position] = counter = 1
+            safe_inst_prod_cap = first.installed_production_capacity_in_mw_electricity || 0.0
+            first[:merit_order_end] = safe_inst_prod_cap * first.availability
+            first[:merit_order_start] = 0.0
+
+            if safe_inst_prod_cap > 0.0
+              first[:merit_order_position] = counter = 1
+            else
+              counter = 0
+              first[:merit_order_position] = 1000
+            end
 
             converters[1..-1].each_with_index do |converter, i|
               # i points now to the previous one, not the current index! (because we start from [1..-1])
