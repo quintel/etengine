@@ -1,10 +1,7 @@
 module Gql::UpdateInterface
   
   COMMAND_TYPES = [
-    #SlotConversionCommand, 
-    ConverterSlotsCommand,
-    AttributeCommand,
-    LinkShareCommand    
+    AttributeCommand  
   ]
 
   ## 
