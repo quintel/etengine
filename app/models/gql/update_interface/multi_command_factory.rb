@@ -63,19 +63,6 @@ module Gql::UpdateInterface
       end
       nil
     end
-
-    def om_growth_total
-      [
-        AttributeCommand.new(converter_proxy, :operation_and_maintenance_cost_fixed_per_mw_input, value, :growth_total),
-        AttributeCommand.new(converter_proxy, :operation_and_maintenance_cost_variable_per_full_load_hour, value, :growth_total)
-      ]
-    end
-    
-    def ventilation_rate_buildings
-      calculated_value = value / graph.query.area.ventilation_rate
-      new_demand = calculated_value * converter_proxy.demand
-      AttributeCommand.new(converter_proxy, :preset_demand, new_demand, :value)
-    end
     
     def constant_output_link_value
       converter = converter_proxy.converter
@@ -109,10 +96,8 @@ module Gql::UpdateInterface
       %w[
         solarpanel_market_penetration
         buildings_solarpanel_market_penetration
-        om_growth_total
         number_of_units
         number_of_heat_units
-        ventilation_rate_buildings
         production_in_mw
         constant_output_link_value
       ].include?(key.to_s)
