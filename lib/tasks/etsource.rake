@@ -33,6 +33,7 @@ namespace :etsource do
 
       suite    = YAML::load(File.read(test_suite_file))
       scenario = ApiScenario.default(suite.fetch('settings', {}))
+      scenario.build_update_statements
       gql      = scenario.gql(prepare: true)
 
       tests = {}

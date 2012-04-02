@@ -26,6 +26,7 @@ describe "Etsource" do
 
         before(:all) do
           @scenario = ApiScenario.default(suite.fetch('settings', {}))
+          @scenario.build_update_statements
           @gql = @scenario.gql(prepare: true)
         end
 

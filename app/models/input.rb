@@ -26,6 +26,9 @@
 #  query             :text
 #  v1_legacy_unit    :string(255)
 #
+# v1_legacy_unit is appended to the value provided by the user, and defines whether it 
+# is growth_rate (%y) or total growth (%) or absolute value ("")
+#
 
 class Input < ActiveRecord::Base
 
@@ -106,12 +109,8 @@ class Input < ActiveRecord::Base
   # key/attr_name based implementation
   # 
   def v2?
-    if Rails.env.test?
-      query.present?
-    else
-      # Why the decrease_total check? - PZ Wed 26 Oct 2011 11:01:31 CEST
-      query.present? && !(attr_name == 'decrease_total')
-    end
+    # these four queries only work with v1.
+    query.present? && ![368,412,361,371].include?(id)
   end
 
   def before_update?
