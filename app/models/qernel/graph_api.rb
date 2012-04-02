@@ -49,24 +49,6 @@ class GraphApi
     @graph.residual_ldc
   end
 
-  ##
-  # Still needed here, for updating converters
-  #
-  def potential_roof_pv_production
-    c = graph.converter(:local_solar_pv_grid_connected_energy_energetic).query
-    
-    roof_surface        = area.roof_surface_available_pv
-    land_use_per_unit   = c.land_use_per_unit
-    production_per_unit = c.typical_electricity_production_per_unit
-    
-    if land_use_per_unit.nil?   || roof_surface.nil? || 
-       production_per_unit.nil? || land_use_per_unit.zero?
-      return nil 
-    end
-    (roof_surface / land_use_per_unit) * production_per_unit
-  end
-  attributes_required_for :potential_roof_pv_production, []
-
   def potential_roof_pv_production_buildings
     c = graph.converter(:solar_panels_buildings_energetic).query
     
