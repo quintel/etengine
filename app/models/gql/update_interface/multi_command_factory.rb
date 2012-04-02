@@ -51,36 +51,13 @@ module Gql::UpdateInterface
       nil
     end
     alias number_of_heat_units number_of_heat_units_update 
-    
-    ##
-    # experimental
-    def production_in_mw
-      converter = converter_proxy.converter
-      converter.outputs.each do |slot|
-        slot.links.select(&:constant?).each do |link|
-          link.share = converter.query.full_load_seconds * value.to_f
-        end
-      end
-      nil
-    end
-    
-    def constant_output_link_value
-      converter = converter_proxy.converter
-      converter.outputs.each do |slot|
-       slot.links.select(&:constant?).each do |link|
-         link.share = value.to_f
-       end
-      end
-      AttributeCommand.new(converter_proxy, :preset_demand, value.to_f, :value)
-    end
+
 
     def self.responsible?(key)
       # TODO automate
       %w[
         number_of_units
         number_of_heat_units
-        production_in_mw
-        constant_output_link_value
       ].include?(key.to_s)
     end
 
