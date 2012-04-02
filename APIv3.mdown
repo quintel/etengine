@@ -1,0 +1,270 @@
+# API v3 Ideas
+
+## Principles
+
+* We should make use of the HTTP verbs
+* use JSON as much as possible.
+
+### Weak points
+
+We must find a nice way to identify the scenarios that should be saved and those that can be pruned. Now we have ~25k scenarios. But we hardly need more than 1k - most of them are leftovers. The API should include a way to mark the scenarios to be stored and those that can be dropped.
+
+Another issue is the scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
+
+### DB changes
+
+It would be nice to add a source column, to store the ETE client name and track which applications are creating the scenarios.
+
+Country and region should be merged into a single `area_code` column.
+
+#### ETE Scenarios:
+
+* drop column `user_updates` (are we using it?)
+* drop columns `country`, `region` and replace with `area_code`
+* decide what to do with `author` and `user_id` columns
+* drop column `complexity`
+* drop column `scenario_type` - what's this for?
+* drop column `type` - this involves merging the Scenario and ApiScenario classes
+* drop column `present_updated_at` or `updated_at`- one is enough
+* user_values: store values as json - it is more readable and way faster. Only downside is that hash keys are now strings rather than integers. Rails 3.2 ActiveRecord store would make this even more convenient.
+  
+```
+    Benchmark.bm do |b|
+      b.report('json'){n.times do; JSON.parse(json); end}  
+      b.report('yaml'){n.times do; YAML.load(yaml); end}  
+    end  
+           user     system      total        real
+    json  0.170000   0.010000   0.180000 (  0.186136)
+    yaml  0.490000   0.010000   0.500000 (  0.503646)
+````
+
+
+## Scenarios
+
+### Get a single scenario
+
+#### Request
+
+    GET /scenarios/:id
+
+#### Response
+
+    Status: 200 OK
+
+    {
+      "url": "http://et-engine.com/scenarios/999",
+      "id": 999,
+      "area_code": "nl",
+      "end_year": 2040,
+      "template": 12345,
+      "source": "ETM"
+      "created_at": "2012-01-01 00:00:00",
+      "updated_at": "2012-01-01 00:00:00"
+    }
+
+### Create a new scenario
+
+#### Request
+
+    POST /scenarios
+
+* `title`: optional string
+* `area_code`: optional string, the default is nl. It's the unique area  identifier - no more region/country duplication
+* `end_year`: optional integer, default is 2040
+* `source`: optional (but highly recommended) required string, the application that makes the request
+* `template`: optional id of the scenario used as template / preset_scenario_id
+
+##### Example
+
+    {
+      "title": "My scenario",
+      "area_code": "nl",
+      "end_year": 2040,
+      "template": 12345,
+      "source": "ETM"
+    }
+
+#### Response
+
+    Status: 201 Created
+
+    {
+      "url": "http://et-engine.com/scenarios/999",
+      "id": 999,
+      "title": "My scenario",
+      "area_code": "nl",
+      "end_year": 2040,
+      "template": 12345,
+      "source": "ETM"
+      "created_at": "2012-01-01 00:00:00",
+      "updated_at": "2012-01-01 00:00:00"
+    }
+
+### Updating querying a scenario
+
+The two operations should better be separated, but that would probably make the applications trigger too many requests. Since gqueries are basically read, safe operations, the right HTTP verb should be GET, but then we'd have the annoying URL length limit issues with IE.
+The slider update is a proper PATCH request instead.
+
+#### Request
+
+    PATCH /scenarios/:id
+
+* `inputs`: optional hash {:input_key => :value }
+* `reset`: optional boolean (default: false). If true the scenario inputs will first be reset. This means that the scenario will use only the inputs we're passing with the current request. Used by the energymixer
+* `gqueries`: optional array of gqueries to run
+
+##### Example
+
+    {
+      "inputs": {
+        "input_key_1": 123,
+        "input_key_2": 10.0,
+        "input_key_3": null, # resets the single input
+      },
+      "reset": true,
+      "gqueries": [
+        "gquery_1",
+        "gquery_2"
+      ]
+    }
+
+#### Response
+
+The gquery result is a hash rather than an array.
+
+    Status: 200 OK
+    
+    {
+      "url": "http://et-engine.com/scenarios/999",
+      "id": 999,
+      "title": "My scenario",
+      "area_code": "nl",
+      "end_year": 2040,
+      "template": 12345,
+      "created_at": "2012-01-01 00:00:00",
+      "updated_at": "2012-01-01 00:00:00",
+      "gqueries": {
+        "gquery_1": {
+          "present": 123,
+          "future": 456,
+          "unit": "MJ"
+        },
+        "gquery_2": {
+          "present": 123,
+          "future": 456,
+          "unit": "euro"
+        },
+      }
+    }    
+
+About gquery results with errors: to make the client applications more robust the single gquery should carry its errors, using something like:
+
+    "foo" : {
+      "error": "unknown gquery. Please check gquery list on http://et-engine.com."
+      "unit": "MJ"
+    }
+
+Other things to consider: deal with gqueries that return strings or array of strings (hello merit_order).
+
+## Inputs
+
+Input values are scenario-dependent, so we should pass a scenario id. We should decide whether identifying inputs by key exclusively or by id, too.
+
+### Get all inputs details
+
+#### Request
+
+    GET /scenarios/:scenario_id/inputs
+
+#### Response
+
+    Status: 200 OK
+    
+    [
+      {
+        "key": "input_foobar",
+        "id": 123
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      },
+      {
+        "key": "input_foobar_2",
+        "id": 123
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      }
+    ]
+
+### Get a single input details
+
+#### Request
+
+    GET /scenarios/:input_id/inputs/:key
+
+#### Response
+
+    Status: 200 OK
+    
+    {
+      "key": "input_foobar",
+      "id": 123
+      "start_value": 1000,
+      "end_value": 2000,
+      "label": "1€/Kg",
+      "current_value": 1500
+    }
+
+### Get a subset of input details
+
+#### Request
+
+    GET /scenarios/:input_id/inputs/:keys
+    GET /scenarios/:input_id/inputs/1,2,3,4,5,10,11,12,13
+
+#### Response
+
+    Status: 200 OK
+    
+    [
+      {
+        "key": "input_foobar",
+        "id": 1
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      },
+    [...]
+      {
+        "key": "input_foobar_2",
+        "id": 13
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      }
+    ]
+
+## Converters
+
+### Get a converter details
+
+This information should be seen on the graph diagram (maybe when the user clicks on a node and wants to see the details) and on the ETM, when the user clicks on the converter info link (now we're loading an iframe).
+
+#### Request
+
+    GET /converters/:code/specs
+
+#### Response
+
+    Status: 200 OK
+
+    {
+      code: "foobar"
+    euro_per_mw: 123
+    [...]
+    }
