@@ -5,7 +5,6 @@ module Gql::UpdateInterface
     ConverterSlotsCommand,
     AttributeCommand,
     MarketShareCarrierCommand, # has to be before MarketShareCommand, as it is a more specific case.
-    MarketShareCommand,
     LinkShareCommand    
   ]
 
