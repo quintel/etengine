@@ -3,7 +3,6 @@ module Gql::UpdateInterface
   COMMAND_TYPES = [
     #SlotConversionCommand, 
     ConverterSlotsCommand,
-    MultiCommandFactory,
     AttributeCommand,
     MarketShareCarrierCommand, # has to be before MarketShareCommand, as it is a more specific case.
     MarketShareCommand,
