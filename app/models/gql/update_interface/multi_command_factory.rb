@@ -74,19 +74,9 @@ module Gql::UpdateInterface
       AttributeCommand.new(converter_proxy, :preset_demand, value.to_f, :value)
     end
 
-    def buildings_solarpanel_market_penetration
-      return [] unless graph.query.potential_roof_pv_production_buildings
-
-      c = graph.converter('solar_panels_buildings_energetic')
-      constant_value = value.to_f * graph.query.potential_roof_pv_production_buildings
-      [LinkShareCommand.create(graph, c, "electricity_output_link_share", constant_value)]
-    end
-
-
     def self.responsible?(key)
       # TODO automate
       %w[
-        buildings_solarpanel_market_penetration
         number_of_units
         number_of_heat_units
         production_in_mw
