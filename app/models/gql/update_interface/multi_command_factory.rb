@@ -25,11 +25,6 @@ module Gql::UpdateInterface
       [send(key)].flatten.compact
     end
 
-    def rc_value
-      min_level = 0.2
-      saving_percentage = saving_percentage_for_rc_value(rc_value_present_value, min_level)
-      LinkShareCommand.new(converter_proxy.converter, rc_value_link_name, saving_percentage)
-    end
 
     def number_of_units_update
       converter = converter_proxy.converter
@@ -114,7 +109,6 @@ module Gql::UpdateInterface
       %w[
         solarpanel_market_penetration
         buildings_solarpanel_market_penetration
-        rc_value
         om_growth_total
         number_of_units
         number_of_heat_units
@@ -128,38 +122,5 @@ module Gql::UpdateInterface
       new(graph, converter_proxy, key, value)
     end
 
-  private
-
-    # useable_heat_input_link_share
-    # useable_heat_output_link_share
-    #
-    def rc_value_link_name
-      direction = case converter_proxy.to_s
-        when "extra_insulation_savings_households_energetic", "heating_savings_insulation_new_households_energetic"
-          "output"
-        when "heating_schools_current_insulation_buildings_energetic", "heating_offices_current_insulation_buildings_energetic"
-          "input"
-      end
-      "useable_heat_#{direction}_link_share"
-    end
-
-    ##
-    #
-    #
-    def rc_value_present_value
-      graph_area_key = {
-        'extra_insulation_savings_households_energetic' => :insulation_level_existing_houses,
-        'heating_savings_insulation_new_households_energetic' => :insulation_level_new_houses,
-        'heating_schools_current_insulation_buildings_energetic' => :insulation_level_schools,
-        'heating_offices_current_insulation_buildings_energetic' => :insulation_level_offices
-      }[converter_proxy.to_s]
-      graph.area.send(graph_area_key)
-    end
-
-    def saving_percentage_for_rc_value(present_rc, min_level)
-      # TOOD rob add brackets to clarify what behaviour ( / self.value + min_level or / (self.value + min_level))
-      # (1 - ((1 - min_level) * present_rc / value + min_level))
-      (1 - ((1 - min_level) * present_rc / @value + min_level))
-    end
   end
 end
