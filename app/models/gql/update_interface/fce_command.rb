@@ -19,6 +19,8 @@ private
     # defined by the slider and the using country is the current country 
     fce_values = FceValue.values(@carrier,origin_country,Current.scenario.country)
 
+    return {} unless fce_values
+    
     # The co2_emission attributes are calculated in this hash and stored by country
     # E.g. Coal from Russia has a share (@value) of 0.2. Then all the emission attributes are 0.2 * the value found in FceValue
     hsh = 
