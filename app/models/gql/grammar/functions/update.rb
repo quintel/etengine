@@ -97,11 +97,6 @@ module Gql::Grammar
 
       def UPDATE_COLLECTION()
         scope.update_collection || []
-        # if scope.update_collection
-        #   scope.update_collection
-        # else
-        #   raise "GQL SELF() has to be inside UPDATE and a valid object has to be defined"
-        # end
       end
     end
 
