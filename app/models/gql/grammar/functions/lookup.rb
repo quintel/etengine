@@ -62,7 +62,7 @@ module Gql::Grammar
       end
 
       def AREA(*keys)
-        keys.empty? ? scope.area : scope.area(keys.first)
+        keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
     end
   end
