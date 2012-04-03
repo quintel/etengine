@@ -38,7 +38,7 @@ module Gql
       self.input_value = "#{self.input_value}#{input.v1_legacy_unit}" unless self.input_value.include?('%')  
       @rubel.query(Gquery.gql3_proc(input.query))
     rescue => e
-      raise Gql::GqlError.new("UPDATE: #{input.key}:\n #{e.inspect}")
+      raise "UPDATE: #{input.key}:\n #{e.inspect}"
     ensure
       self.input_value = nil
     end
