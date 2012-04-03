@@ -14,22 +14,9 @@ module UpdateInterface
 
     def update_with(update_statements, skip_time_curves = false)
       if update_statements
-        update_area_data(update_statements['area'])
         update_converters(update_statements['converters'])
       end
     end
-
-    def update_area_data(area_data_updates)
-      cmds = []
-      area = graph.query.area
-      area_data_updates.andand.each do |id, updates|
-        updates.each do |key, value|
-          cmds << CommandFactory.create(graph, area, key, value)
-        end
-      end
-      execute_commands(cmds)
-    end
-
 
     def update_converters(converter_updates)
       converter_updates.andand.each do |select_query, updates|
