@@ -43,7 +43,7 @@ module UpdateInterface
             cmds = []
 
             # TODO seb migrate those keys into preset_demand in db
-            if type = key[/^(decrease_total|decrease_rate|growth_rate|decrease_rate|growth_total)(.*)$/,1]
+            if type = key[/^(decrease_total)(.*)$/,1]
               key = "preset_demand_#{key}"
             end
 
