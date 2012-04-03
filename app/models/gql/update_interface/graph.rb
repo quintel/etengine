@@ -49,8 +49,9 @@ module UpdateInterface
 
             if "replacement_of_households_rate" == key
               cmds << update_replacement_of_households_rate(proxy, value)
-            elsif c = CommandFactory.create(graph, proxy, key, value)
-              cmds << c
+            elsif AttributeCommand.responsible?( key )
+              cmds << AttributeCommand.create(graph, proxy, key, value)
+            else # do nothing when combined_input_link_share_to_
             end
             execute_commands(cmds)
           end
