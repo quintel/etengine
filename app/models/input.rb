@@ -141,18 +141,14 @@ class Input < ActiveRecord::Base
     ##
     # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
     # The Gql::UpdateInterface::FceCommand takes care of this.
-    if update_type == 'fce'
-      Gql::UpdateInterface::FceCommand.create(keys, attr_name, value / factor)
-    else
-      # sometimes value ends up being nil. TODO: figure out why
-      final_value = value ? (value / factor) : nil      
-      ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
-      {
-        update_type => {
-          keys => {
-            attr_name => final_value
-      }}}
-    end
+    # sometimes value ends up being nil. TODO: figure out why
+    final_value = value ? (value / factor) : nil      
+    ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
+    {
+      update_type => {
+        keys => {
+          attr_name => final_value
+    }}}
   end
 
   def as_json(options={})

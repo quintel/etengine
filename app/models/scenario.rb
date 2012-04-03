@@ -37,8 +37,6 @@
 class Scenario < ActiveRecord::Base
   include Scenario::UserUpdates
   include Scenario::Persistable
-  include Scenario::FceSettings
-
 
   # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
@@ -94,6 +92,10 @@ class Scenario < ActiveRecord::Base
     if @user_values_hash
       self[:user_values] = @user_values_hash.to_yaml
     end
+  end
+
+  def fce_settings=(fce_settings)
+    Rails.logger.warn("fce_settings is deprecated")
   end
 
   ##############################

@@ -14,7 +14,7 @@ class Carrier
     :co2_treatment_per_mj,
     :co2_transportation_per_mj,
     :co2_waste_treatment_per_mj
-  ]
+  ].freeze
 
   DATASET_ATTRIBUTES = [
     :cost_per_mj,
@@ -77,15 +77,10 @@ class Carrier
   #   The sum of CO2_FCE_COMPONENTS.
   #
   def co2_per_mj
+    # can be overwritten by Fce plugin
     dataset_fetch(:co2_per_mj) do
       # DEBT remove call to Current.scenario. add use_fce variable to graph dataset
-      if Current.scenario.use_fce
-        CO2_FCE_COMPONENTS.map do |key|
-          self.send(key)
-        end.compact.sum
-      else
-        co2_conversion_per_mj
-      end
+      co2_conversion_per_mj
     end
   end
 
