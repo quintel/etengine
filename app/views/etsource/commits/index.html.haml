@@ -25,15 +25,22 @@
   .span16
     %h3
       Commits in #{@branch} #{'(detached)' if @etsource.detached_branch?}
-    %h5 Latest import: #{@etsource.get_latest_import_sha || 'N/A'}
-    %h5 Checked out revision: #{@etsource.get_latest_export_sha || 'N/A'}
     %table.zebra-striped.condensed-table
       %tbody
         - @commits.each do |commit|
           %tr
-            %td.span9= commit.message
+            %td.span9
+              - if @etsource.get_latest_import_sha == commit.to_s
+                %span.label Imported
+              - if @etsource.get_latest_export_sha == commit.to_s
+                %span.label In use
+              =commit.message
             %td.span1= link_to commit.to_s[0..6], "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
             %td.span1= link_to 'IMPORT', import_etsource_commit_path(:id => commit.to_s)
             %td.span1= link_to 'USE', export_etsource_commit_path(:id => commit.to_s), :confirm => 'This will take a while'
             %td.span2= commit.date.strftime("%m-%d %H:%M")
             %td.span3= commit.author.name
+    %h5
+      Latest import: #{@etsource.get_latest_import_sha || 'N/A'}
+      %br
+      Checked out revision: #{@etsource.get_latest_export_sha || 'N/A'}

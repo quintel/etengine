@@ -44,4 +44,7 @@ end
 after_fork do |server, worker|
   # Here we are establishing the connection after forking worker processes
   defined?(ActiveRecord::Base) and ActiveRecord::Base.establish_connection
+  # Let's write to file the child pid, so monit can kill it as needed
+  child_pid = server.config[:pid].sub('.pid', ".#{worker.nr}.pid")
+  system("echo #{Process.pid} > #{child_pid}")
 end
