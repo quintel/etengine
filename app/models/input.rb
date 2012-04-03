@@ -105,12 +105,17 @@ class Input < ActiveRecord::Base
       group_by(&:share_group)
   end
   
+
+  def bad_query?(*args)
+    [368,412,361,371].include?(self.id)
+  end
+
   # Checks whether the inputs use the new update statements or the old
   # key/attr_name based implementation
   # 
   def v2?
     # these four queries only work with v1.
-    query.present? && ![368,412,361,371].include?(id)
+    query.present? && !bad_query?
   end
 
   def before_update?

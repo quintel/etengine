@@ -199,9 +199,7 @@ protected
         # If present_graph has user inputs then we have to take a fresh dataset.
         present_graph.dataset ||= dataset_clone
         UpdateInterface::Graph.new(self, present_graph).update_with(scenario.update_statements_present)
-        scenario.inputs_present.each do |input, value|
-          present.query(input, value)
-        end
+        scenario.inputs_present.each { |input, value| present.query(input, value) }
       end
     end
   end
@@ -210,13 +208,9 @@ protected
     ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
       future_graph.dataset = dataset_clone
       
-      scenario.inputs_before.each do |input, value|
-        future.query(input, value)
-      end
+      scenario.inputs_before.each { |input, value| future.query(input, value) }
       UpdateInterface::Graph.new(self, future_graph).update_with(scenario.update_statements)
-      scenario.inputs_future.each do |input, value|
-        future.query(input, value)
-      end
+      scenario.inputs_future.each { |input, value| future.query(input, value) }
     end
   end
 
