@@ -1,10 +1,13 @@
 module Gql::UpdateInterface
 
-class AttributeCommand < CommandBase
-  MATCHER = /^(.*)_(decrease_total|decrease_rate|growth_rate|growth_total|value)$/
+class AttributeCommand
+  MATCHER = /^(.*)_(decrease_total)$/
+  attr_reader :object
 
   def initialize(object, attr_name, command_value, type)
-    super(object, attr_name, command_value)
+    @object = object
+    @attr_name = attr_name
+    @command_value = command_value.to_f
     @type = type
   end
 
@@ -29,6 +32,15 @@ class AttributeCommand < CommandBase
   def self.create(graph, converter_proxy, key, value)
     attr_name, type = attr_name_and_type(key)
     new(converter_proxy, attr_name, value, type)
+  end
+
+  def execute
+    unless valid?
+      ActiveSupport::Notifications.instrument("gql.debug", @errors.values.join('\n')) do
+        return nil
+      end
+    end
+    object[@attr_name] = value
   end
 
 private
@@ -61,6 +73,27 @@ private
   def value_value
     @command_value
   end
+
+  def previous_value
+    # introducted for backwards support for old blackboxes
+    if object.respond_to?(@attr_name)
+      object.send(@attr_name) 
+    else
+      nil
+    end
+  end
+
+  def valid?
+    return true unless respond_to?(:validate)
+    validate
+    @errors.nil? or @errors.empty?
+  end
+
+  def add_error(key, msg)
+    @errors ||= {}
+    @errors[key] = msg
+  end
+
 end
 
 end
