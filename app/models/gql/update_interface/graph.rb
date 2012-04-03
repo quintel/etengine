@@ -12,16 +12,6 @@ module UpdateInterface
       @graph = graph
     end
 
-    # DEBT legacy because of update_replacement_of_households_rate
-    def present_converter(id)
-      gql.present_graph.converter(id)
-    end
-
-    # DEBT legacy because of update_replacement_of_households_rate
-    def future_converter(id)
-      gql.future_graph.converter(id)
-    end
-
     def update_with(update_statements, skip_time_curves = false)
       if update_statements
         update_carriers(update_statements['carriers'])
@@ -56,26 +46,6 @@ module UpdateInterface
       execute_commands(cmds)
     end
 
-    # Update:
-    #   - converter_keys
-    #   - attribute
-    #   - value
-    #   - value_type (:decrease, :total_growth, :growth_year, :value, ? really needed, could be interface responsibility)
-    #   - scope (:general_growth, :efficiency)
-    #   - factor (100, 1, 0.001)
-    #
-    #
-    # {'id' => {
-    #   'growth_rate' => '0.01',
-    #   'decrease_rate' => '0.01',
-    #   'lighting_market_share' => '0.01',
-    #   'heating_market_share' => '0.01',
-    #   '<carrier_key>_input_conversion_growth_rate => '0.01',
-    #   '<carrier_key>_output_conversion_growth_rate => '0.01',
-    #   '<calculator_attribute>_growth_rate => '0.01',
-    #   '<calculator_attribute>_value => '100'
-    # }}
-    #
     def update_converters(converter_updates)
       converter_updates.andand.each do |select_query, updates|
         next if select_query.blank?
@@ -107,12 +77,6 @@ module UpdateInterface
 
             if "replacement_of_households_rate" == key
               cmds << update_replacement_of_households_rate(proxy, value)
-            elsif key == "useable_heat_output_link_share" # key.match(UpdateInterface::LinkShareCommand::MATCHER)
-              # TODO: move to custom commands
-              cmds << CommandFactory.create(graph, proxy, key, value)
-              if reverse_converter = future_converter(converter.full_key.to_s.gsub("heat_", "cold_"))
-                cmds << CommandFactory.create(graph, reverse_converter, "cooling_output_link_share", value)
-              end
             elsif c = CommandFactory.create(graph, proxy, key, value)
               cmds << c
             end
@@ -131,8 +95,8 @@ module UpdateInterface
       #   heating_demand_with_current_insulation_households_energetic_AND_heating_new_houses_current_insulation_households_energetic
       return cmds if proxy.to_s != "heating_demand_with_current_insulation_households_energetic"
 
-      households = graph.area.number_households
-      percentage_new = graph.area.percentage_of_new_houses
+      households = graph.area.number_households # AREA(number_households)
+      percentage_new = graph.area.percentage_of_new_houses # AREA(percentage_of_new_houses)
 
       # get the future demand, this is needed for the calculation to determin the total number of houses to be replaced
 
