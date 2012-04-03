@@ -20,6 +20,7 @@ class Graph
   define_callbacks :calculate
 
   include Plugins::MeritOrder
+  include Plugins::Fce
 
   # ---- DatasetAttributes ----------------------------------------------------
 

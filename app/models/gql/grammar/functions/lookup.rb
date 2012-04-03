@@ -41,7 +41,7 @@ module Gql::Grammar
       end
 
       def GRAPH(*keys)
-        scope.graph_query(keys.first)
+        keys.empty? ? scope.graph : scope.graph_query(keys.first)
       end
   
       def GROUP(*keys)
@@ -62,7 +62,7 @@ module Gql::Grammar
       end
 
       def AREA(*keys)
-        scope.area(keys.first)
+        keys.empty? ? scope.area : scope.area(keys.first)
       end
     end
   end
