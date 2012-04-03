@@ -35,6 +35,7 @@ coverage/*
 spec/controllers/coverage/*
 spec/models/coverage/*
 ./etsource
+./etsource_export
 !app/models/etsource
 !spec/models/etsource
 .sass-cache
