@@ -2,15 +2,7 @@ module Qernel::Plugins
   module Fce
     extend ActiveSupport::Concern
 
-    FCE_ATTRIBUTES = [
-      :co2_extraction_per_mj,
-      :co2_transportation_per_mj,
-      :co2_conversion_per_mj,
-      :co2_exploration_per_mj,
-      :co2_treatment_per_mj,
-      :co2_waste_treatment_per_mj
-    ].freeze
-
+    FCE_ATTRIBUTES = ::Qernel::Carrier::CO2_FCE_COMPONENTS
 
     included do |variable|
       set_callback :calculate, :after,  :calculate_fce
@@ -36,10 +28,14 @@ module Qernel::Plugins
       end
 
       def calculate_fce
+        # DEBT remove call to Current.scenario. add use_fce variable to graph dataset
+        #return unless Current.scenario.use_fce
+
         @fce_update_values.andand.each do |carrier, values|
           values.each do |key, sum|
             carrier[key] = sum
           end
+          carrier.dataset_set(:co2_per_mj, values.map(&:last).sum)
         end
         # reset fce_update_values so it is not accidentally used in another request
         # (graph is memoized over requests)

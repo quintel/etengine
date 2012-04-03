@@ -12,11 +12,9 @@ module Scenario::Persistable
     self.user_values = {}
     self.update_statements = {}
     self.update_statements_present = {}
-    self.fce_settings = {}
     @user_values_hash = {}
     @inputs_present = {}
     @inputs_future = {}
-    @fce_settings = {}
     self.use_fce = false
   end
 
