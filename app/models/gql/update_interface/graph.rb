@@ -14,7 +14,6 @@ module UpdateInterface
 
     def update_with(update_statements, skip_time_curves = false)
       if update_statements
-        update_carriers(update_statements['carriers'])
         update_area_data(update_statements['area'])
         update_converters(update_statements['converters'])
       end
@@ -31,20 +30,6 @@ module UpdateInterface
       execute_commands(cmds)
     end
 
-    def update_carriers(carrier_updates)
-      cmds = []
-      carrier_updates.andand.each do |ids, updates|
-        ids.split('_AND_').reject(&:blank?).each do |id|
-          future = graph.carrier(id)
-          next unless future 
-
-          updates.each do |key,value|
-            cmds << CommandFactory.create(graph, future, key, value)
-          end
-        end
-      end
-      execute_commands(cmds)
-    end
 
     def update_converters(converter_updates)
       converter_updates.andand.each do |select_query, updates|
