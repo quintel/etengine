@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120127090628) do
+ActiveRecord::Schema.define(:version => 20120404082938) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -126,13 +126,6 @@ ActiveRecord::Schema.define(:version => 20120127090628) do
     t.integer  "energy_balance_group_id"
   end
 
-  create_table "converters_groups", :id => false, :force => true do |t|
-    t.integer "converter_id"
-    t.integer "group_id"
-  end
-
-  add_index "converters_groups", ["converter_id", "group_id"], :name => "index_converters_groups_on_converter_id_and_group_id"
-
   create_table "energy_balance_groups", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -153,16 +146,6 @@ ActiveRecord::Schema.define(:version => 20120127090628) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "carrier"
-  end
-
-  create_table "gql_test_cases", :force => true do |t|
-    t.string   "name"
-    t.text     "instruction", :limit => 2147483647
-    t.text     "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "settings",    :limit => 2147483647
-    t.text     "inputs",      :limit => 2147483647
   end
 
   create_table "gqueries", :force => true do |t|

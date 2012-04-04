@@ -70,7 +70,6 @@ Etm::Application.routes.draw do
       resources :carriers, :only => [:index, :show]
       resource  :area, :as => :area, :only => :show
 
-      resources :gql_test_cases
       resources :query_tables
       resources :query_table_cells, :except => [:show, :index]
       resources :inputs, :except => :show
