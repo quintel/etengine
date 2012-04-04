@@ -30,8 +30,6 @@ class Gquery < ActiveRecord::Base
   validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
 
   belongs_to :gquery_group
-  
-  after_save :reload_cache
 
   strip_attributes! :only => [:key]
 
@@ -126,7 +124,7 @@ class Gquery < ActiveRecord::Base
 
   def self.load_gqueries
     # choose here which way you want to load gqueries. from db or from etsource.
-    db_gqueries
+    etsource_gqueries
   end
 
   def self.etsource_gqueries
@@ -160,14 +158,4 @@ class Gquery < ActiveRecord::Base
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
   end
 
-  # Method to invalidate the memoized gquery_hash.
-  #
-  def self.reload_cache
-    @@gquery_hash = nil
-  end
-
-  private
-    def reload_cache
-      self.class.reload_cache
-    end
 end

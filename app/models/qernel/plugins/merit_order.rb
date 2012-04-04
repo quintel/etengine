@@ -6,7 +6,7 @@ module Qernel::Plugins
     included do |variable|
       if merit_order_converters
         set_callback :calculate, :after, :calculate_merit_order
-        set_callback :calculate, :after, :calculate_full_load_hours
+        # set_callback :calculate, :after, :calculate_full_load_hours
       end
     end
 
