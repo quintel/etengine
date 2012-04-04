@@ -63,8 +63,6 @@ Etm::Application.routes.draw do
       end
       match "/gqueries/key/:key" => "gqueries#key", :as => :gquery_key
 
-      resources :fce_values
-
       resources :converters, :only => [:index, :show]
       resources :gquery_groups, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
