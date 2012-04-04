@@ -111,6 +111,22 @@ class Input < ActiveRecord::Base
     query.present? && !bad_query?
   end
 
+  # i had to resort to a class method for "caching" procs
+  # as somewhere inputs are marshaled (where??)
+  def self.memoized_gql3_proc_for(input)
+    @gql3_proc ||= {}
+    @gql3_proc[input.lookup_id] ||= (input.gql3_proc)
+  end
+
+  def gql3
+    gql3_proc
+    #self.class.memoized_gql3_proc_for(self)
+  end
+
+  def gql3_proc
+    query and Gquery.gql3_proc(query)
+  end
+
   def before_update?
     updateable_period == 'before'
   end

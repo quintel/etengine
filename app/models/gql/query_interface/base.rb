@@ -25,9 +25,9 @@ module Gql
     #
     def subquery(gquery_key)
       if gquery = get_gquery(gquery_key)
-        ActiveSupport::Notifications.instrument("gql.query.subquery: #{gquery.key}") do
+        #ActiveSupport::Notifications.instrument("gql.query.subquery: #{gquery.key}") do
           @rubel.query(gquery.gql3)
-        end
+        #end
       else
         nil
       end
@@ -36,7 +36,7 @@ module Gql
     def execute_input(input, value = nil)
       self.input_value = value.to_s
       self.input_value = "#{self.input_value}#{input.v1_legacy_unit}" unless self.input_value.include?('%')  
-      @rubel.query(Gquery.gql3_proc(input.query))
+      @rubel.query(input.gql3) if input.gql3
     rescue => e
       raise "UPDATE: #{input.key}:\n #{e.inspect}"
     ensure
