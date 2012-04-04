@@ -100,14 +100,13 @@ class Input < ActiveRecord::Base
   end
   
   def bad_query?(*args)
+    # these four queries only work with v1.
     [368,412,361,371].include?(self.lookup_id)
   end
 
   # Checks whether the inputs use the new update statements or the old
   # key/attr_name based implementation
-  # 
   def v2?
-    # these four queries only work with v1.
     query.present? && !bad_query?
   end
 
@@ -119,8 +118,9 @@ class Input < ActiveRecord::Base
   end
 
   def gql3
-    gql3_proc
-    #self.class.memoized_gql3_proc_for(self)
+    # use memoized_gql3_proc_for for faster updates (50% increase)
+    #gql3_proc
+    self.class.memoized_gql3_proc_for(self)
   end
 
   def gql3_proc
