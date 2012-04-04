@@ -31,83 +31,76 @@
 #
 
 class Input < ActiveRecord::Base
+  module MemoizedRecord
+    extend ActiveSupport::Concern
+    
+    included do |variable|
+    end
+
+    module ClassMethods
+      def load_records
+        h = {}
+        Etsource::Loader.instance.inputs.each do |input| 
+          h[input.lookup_id] = input
+        end
+        h
+      end
+
+      def all
+        records.values
+      end
+
+      def records
+        @records ||= load_records
+      end
+
+      def get(key)
+        records[key.to_i]
+      end
+
+      def add(obj)
+        records[obj.lookup_id] = obj
+        obj
+      end
+    end
+  end
+
+  attr_accessor :lookup_id
+
+  extend MemoizedRecord::ClassMethods
+  
+  validates :updateable_period, :presence => true,
+                                :inclusion => %w[present future both before]
 
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :max_value, :min_value, :start_value]
 
-  UPDATEABLE_PERIODS = %w[present future both before].freeze
-
-  has_many :expert_predictions
-
-  scope :with_share_group, where('NOT(share_group IS NULL OR share_group = "")')
-  scope :in_share_group, lambda{|q| where(:share_group => q)}
-  scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
-  scope :contains, lambda{|search|
-    where([
-            "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q OR `keys` LIKE :q OR `attr_name` LIKE :q",
-            {:q => "%#{search}%"}
-    ])
-  }
-
-  # quite useful on bulk updates
-  scope :embedded_gql_contains, lambda{|search|
-    where([
-            "start_value_gql LIKE :q OR min_value_gql LIKE :q OR max_value_gql LIKE :q OR attr_name LIKE :q OR label_query LIKE :q OR query LIKE :q",
-            {:q => "%#{search}%"}
-    ])
-  }
-
-  validates :updateable_period, :presence => true,
-    :inclusion => UPDATEABLE_PERIODS
-
-  after_create :reset_all_cached
+  def self.with_share_group
+    all.select{|input| input.share_group.present?}
+  end
+  
+  def self.in_share_group(q)
+    all.select{|input| input.share_group == q}
+  end
+  
+  def self.by_name(q)
+    q.present? ? all.select{|input| input.key.include?(q)} : all
+  end
 
   def force_id(new_id)
-    Input.update_all("id = #{new_id}", "id = #{self.id}")
-    self.id = new_id
+    # Input.update_all("id = #{new_id}", "id = #{self.id}")
+    self.lookup_id = new_id
   end
 
   def self.before_inputs
-    @before_inputs ||= all_cached.values.select(&:before_update?)
-  end
-
-  def self.get_cached(key)
-    all_cached[key.to_s]
-  end
-
-  def reset_all_cached
-    self.class.reset_all_cached
-  end
-
-  def self.reset_all_cached
-    @all_cached = nil
-    @before_inputs = nil
-  end
-
-  # Creates a hash-based identity map to lookup inputs. With Rails 3.1 we could
-  # probably get rid of this.
-  # Note: I've removed the inject implementation - this way, according to the
-  # benchmarks, is faster. PZ Wed 26 Oct 2011 10:49:16 CEST
-  # 
-  def self.all_cached
-    unless @all_cached
-      @all_cached = {}
-      Input.all.each do |input|
-        @all_cached[input.id.to_s] = input
-        @all_cached[input.key] = input if input.key.present?
-      end
-    end
-    @all_cached
+    @before_inputs ||= all.select(&:before_update?)
   end
 
   def self.inputs_grouped
-    @inputs_grouped ||= Input.
-      with_share_group.select('id, share_group, `key`').
-      group_by(&:share_group)
+    @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
   
-
   def bad_query?(*args)
-    [368,412,361,371].include?(self.id)
+    [368,412,361,371].include?(self.lookup_id)
   end
 
   # Checks whether the inputs use the new update statements or the old
@@ -130,7 +123,6 @@ class Input < ActiveRecord::Base
     updateable_period == 'future' || updateable_period == 'both'
   end
 
-  ##
   # update hash for this input with the given value.
   # {'converters' => {'converter_keys' => {'demand_growth' => 2.4}}}
   #
@@ -138,9 +130,6 @@ class Input < ActiveRecord::Base
   # @return [Hash]
   #
   def update_statement(value)
-    ##
-    # When a fce slider is touched it should not generate an update_statement by itself. It needs the values of the other sliders as well
-    # The Gql::UpdateInterface::FceCommand takes care of this.
     # sometimes value ends up being nil. TODO: figure out why
     final_value = value ? (value / factor) : nil      
     ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
@@ -148,18 +137,25 @@ class Input < ActiveRecord::Base
       update_type => {
         keys => {
           attr_name => final_value
-    }}}
+        }
+      }
+    }
+  end
+
+  # make as_json work
+  def id
+    self.lookup_id
   end
 
   def as_json(options={})
     super(
-      :only => [:id], :methods => [:max_value, :min_value, :start_value]
+      :methods => [:id, :max_value, :min_value, :start_value]
     )
   end
 
   def client_values(gql)
     {
-      id.to_s => {
+      lookup_id => {
         :max_value   => max_value_for(gql),
         :min_value   => min_value_for(gql),
         :start_value => start_value_for(gql),
@@ -179,9 +175,9 @@ class Input < ActiveRecord::Base
       begin
         hsh.merge input.client_values(gql)
       rescue => ex
-        Rails.logger.warn("Input#static_values for input #{input.id} failed.")
+        Rails.logger.warn("Input#static_values for input #{input.lookup_id} failed.")
         Airbrake.notify(
-          :error_message => "Input#static_values for input #{input.id} failed.",
+          :error_message => "Input#static_values for input #{input.lookup_id} failed.",
           :backtrace => caller,
           :parameters => {:input => input, :api_scenario => Current.scenario }) unless
            APP_CONFIG[:standalone]
@@ -196,13 +192,13 @@ class Input < ActiveRecord::Base
   def self.dynamic_start_values(gql)
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
       begin
-        hsh.merge input.id.to_s => {
+        hsh.merge input.lookup_id.to_s => {
           :start_value => input.start_value_for(gql)
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}. #{ex}")
+        Rails.logger.warn("Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{Current.scenario.id}. #{ex}")
         Airbrake.notify(
-          :error_message => "Input#dynamic_start_values for input #{input.id} failed for api_session_id #{Current.scenario.id}",
+          :error_message => "Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{Current.scenario.id}",
           :backtrace => caller,
         :parameters => {:input => input, :api_scenario => Current.scenario }) unless
           APP_CONFIG[:standalone]
@@ -299,7 +295,7 @@ class Input < ActiveRecord::Base
   # @todo Probably this should be moved into a Scenario class
   #
   def reset
-    val = Current.scenario.user_values.delete(self.id)
+    val = Current.scenario.user_values.delete(self.lookup_id)
     if updates = Current.scenario.update_statements[update_type]
       if keys = updates[keys]
         val = keys.delete(attr_name)

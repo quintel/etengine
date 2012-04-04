@@ -17,6 +17,7 @@ namespace :etsource do
 
     hsh['name'] = %w[present future present future]
     apis.each do |api|
+      puts api+'?'+params
       json = JSON.parse(open(api+'?'+params).string)
       json['result'].each do |key, result|
         hsh[key] ||= []

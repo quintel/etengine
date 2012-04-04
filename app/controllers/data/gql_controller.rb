@@ -13,7 +13,6 @@ class Data::GqlController < Data::BaseController
 
     unless @q.blank?
       @gqueries          = Gquery.name_or_query_contains(@q)
-      @inputs            = Input.embedded_gql_contains(@q)
       @query_table_cells = QueryTableCell.embedded_gql_contains(@q)
     end
   end

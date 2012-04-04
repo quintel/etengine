@@ -162,7 +162,3 @@
     %tr
       %td Gquery
       %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
-  - Input.embedded_gql_contains(@converter_present.full_key).each do |input|
-    %tr
-      %td Input
-      %td= link_to input.key, data_input_path(:id => input.id)

@@ -9,7 +9,6 @@ module Etsource
     def import!
       Gquery.transaction do
         Gqueries.new(@etsource).import!
-        Inputs.new(@etsource).import!
       end
     end
 

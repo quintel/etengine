@@ -57,7 +57,7 @@ module Scenario::UserUpdates
       unless @inputs_present
         @inputs_present = {}
         user_values.each do |key, value|
-          input = Input.get_cached(key)
+          input = Input.get(key)
           @inputs_present[input] = value if input.present? && input.v2? && input.updates_present?
         end
       end
@@ -68,7 +68,7 @@ module Scenario::UserUpdates
       unless @inputs_future
         @inputs_future = {}
         user_values.each do |key, value|
-          input = Input.get_cached(key)
+          input = Input.get(key)
           @inputs_future[input] = value if input.present? && input.v2? && input.updates_future?
         end
       end
@@ -80,9 +80,9 @@ module Scenario::UserUpdates
     def update_inputs_for_api(params, opts = {})
       sanitize_input_groups!(params) if opts[:sanitize_groups]
       params.each_pair do |input_id, value|
-        if input = Input.get_cached(input_id)
+        if input = Input.get(input_id)
           if value == 'reset'
-            delete_from_user_values(input.id)
+            delete_from_user_values(input.lookup_id)
           elsif typed_value = value.to_f
             update_input(input, typed_value)
           end
@@ -104,29 +104,29 @@ module Scenario::UserUpdates
       # items apart and add them later
       missing_items = {}
       params.each_pair do |input_id, value|
-        input = Input.get_cached(input_id)
+        input = Input.get(input_id)
         # standalone sliders shouldn't care about this
         next if input.share_group.blank?
         # let's get the other sliders belonging to the group
         siblings = Input.in_share_group(input.share_group)
         siblings.each do |brother|
           # If the inputs include the brother then let's move on
-          next if user_input_keys.include?(brother.id)
+          next if user_input_keys.include?(brother.lookup_id)
           # On the ETM a slider belonging to a group on the edge might not be
           # marked as dirty. In this case let's just check if the others sum up
           # to ~100:
-          current_group_sum = siblings.map{|s| params[s.id.to_s].to_f}.sum rescue 0
+          current_group_sum = siblings.map{|s| params[s.lookup_id].to_f}.sum rescue 0
           if current_group_sum.between?(99.5,100.5)
             # let's assign 0 to the missing items, otherwise we might get a
             # "group not adding up to 100" error if a single slider is set to 100
-            missing_items[brother.id.to_s] ||= 0.0
+            missing_items[brother.lookup_id] ||= 0.0
             next
           end
           # Otherwise let's assign a plausible value
           pseudo_value = (100 - value.to_f) / (siblings.size - 1)
-          missing_items[brother.id.to_s] = pseudo_value
+          missing_items[brother.lookup_id] = pseudo_value
           ActiveSupport::Notifications.instrument("gql.debug",
-            "Missing slider group item, auto-assigning #{brother.id}-#{brother.key} #{pseudo_value}")
+            "Missing slider group item, auto-assigning #{brother.lookup_id}-#{brother.key} #{pseudo_value}")
         end
       end
       params.merge!(missing_items)
@@ -181,7 +181,7 @@ module Scenario::UserUpdates
     # @tested 2010-11-30 seb
     #
     def store_user_value(input, value)
-      key = input.id
+      key = input.lookup_id
       self.user_values.merge! key => value
       touch(:present_updated_at) if input.updates_present?
       value
@@ -190,7 +190,7 @@ module Scenario::UserUpdates
     # @tested 2010-11-30 seb
     #
     def user_value_for(input)
-      user_values[input.id]
+      user_values[input.lookup_id]
     end
 
     # TODO fix this, it's weird
@@ -256,7 +256,7 @@ module Scenario::UserUpdates
     # @tested 2010-12-06 seb
     #
     def build_update_statements_for_element(id, value)
-      if input = Input.get_cached(id)
+      if input = Input.get(id)
         update_input(input, value) unless input.v2?
       else
         Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")    
