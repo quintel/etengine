@@ -8,7 +8,6 @@ module Etsource
 
     def import!
       Gquery.transaction do
-        GqlTestCases.new(@etsource).import!
         Gqueries.new(@etsource).import!
         Inputs.new(@etsource).import!
       end
