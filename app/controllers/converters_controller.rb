@@ -6,8 +6,6 @@ class ConvertersController < ApplicationController
   # It's kept separate to simplify authorization and views
   def show
     key = params[:id].to_sym
-    converter_id = Converter.full_keys[key]
-    @converter = Converter.find converter_id
     @converter_present = @gql.present_graph.graph.converter(key)
     @converter_future  = @gql.future_graph.graph.converter(key)
     render :layout => false

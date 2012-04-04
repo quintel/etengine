@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120404082938) do
+ActiveRecord::Schema.define(:version => 20120404100419) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -114,17 +114,6 @@ ActiveRecord::Schema.define(:version => 20120404082938) do
   end
 
   add_index "converter_positions", ["converter_id"], :name => "index_converter_positions_on_converter_id"
-
-  create_table "converters", :force => true do |t|
-    t.integer  "converter_id"
-    t.string   "key"
-    t.string   "name"
-    t.integer  "use_id"
-    t.integer  "sector_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "energy_balance_group_id"
-  end
 
   create_table "energy_balance_groups", :force => true do |t|
     t.string   "name"
