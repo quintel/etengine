@@ -48,8 +48,7 @@ class Gql
   #
   def present
     # Disable Caching of Gqueries until a smart solution has been found
-    #
-    #@present ||= QueryInterface.new(self, present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.present_updated_at}")
+    # @present ||= QueryInterface.new(self, present_graph, :cache_prefix => "#{scenario.id}-present-#{scenario.present_updated_at}")
     @present ||= QueryInterface.new(self, present_graph)
   end
 

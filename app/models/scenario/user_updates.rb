@@ -183,7 +183,7 @@ module Scenario::UserUpdates
     def store_user_value(input, value)
       key = input.lookup_id
       self.user_values.merge! key => value
-      touch(:present_updated_at) if input.updates_present?
+      # touch(:present_updated_at) if input.updates_present?
       value
     end
 

@@ -125,7 +125,6 @@ module Qernel::WouterDance::Base
 
 
   def loss_share
-    # TODO optimize by using dataset_fetch
     dataset_fetch(:loss_share) do
       v = self.share_of_losses
       (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
@@ -155,9 +154,11 @@ module Qernel::WouterDance::Base
   def demanding_share(link)
     # TODO optimize by using dataset_fetch
     return 0.0 if link.loss?
-    demanding_share = (link.value || 0.0) / (self.demand || 0.0)
-    demanding_share = 0.0 if demanding_share.nan? or demanding_share.infinite?
-    demanding_share
+    # link.dataset_fetch(:demanding_share) do
+      demanding_share = (link.value || 0.0) / (self.demand || 0.0)
+      demanding_share = 0.0 if demanding_share.nan? or demanding_share.infinite?
+      demanding_share
+    # end
   end
 
 
