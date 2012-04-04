@@ -18,7 +18,9 @@ class ApiRequest
     @gquery_keys = []
     @api_scenario_id = attributes.delete(:id)
 
-    Input.reset_all_cached if self.test_scenario?
+    # sb 2012-04-03: not sure why this is here. doesnt really make sense. 
+    # uncommented for now, remove later.
+    # Input.reset_all_cached if self.test_scenario?
 
     # DEBT SECURITY: we probably should whitelist attributes.
     # this assigns params[:r], params[:result], and other attr_accessors

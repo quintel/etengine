@@ -74,22 +74,21 @@ module Etsource
     end
 
     def inputs
-      cache("inputs") do
-        # at some point we'd like to load inputs directly. Skipping the import 
-        # to database. 
+      instrument("etsource.loader: inputs") do
+        cache("inputs") do
+          Inputs.new(@etsource).import
+        end
       end
     end
 
     def merit_order_table
       # make sure we don't accidentally overwrite values, so we freeze everything.
       instrument("etsource.loader: merit_order_table") do
-
         cache("merit_order_rows") do
           rows = CSV.read("#{@etsource.base_dir}/datasets/_globals/merit_order.csv", :converters => :numeric)
           rows.map! { |row| [row.delete_at(0), row.freeze].freeze }
           rows
         end
-
       end
     end
 

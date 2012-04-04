@@ -74,7 +74,7 @@ module DataHelper
   
   def inputs_autocomplete_map_cache
     Rails.cache.fetch "inputs_autocomplete_map_cache" do
-      Input.all_cached.values.map {|a| {label: a.key, url: edit_data_input_path(:id => a.id)} }.to_json
+      Input.all.map {|a| {label: a.key, url: edit_data_input_path(:id => a.id)} }.to_json
     end
   end
   
