@@ -1,4 +1,33 @@
 namespace :etsource do
+  task :diff do
+    require 'open-uri'
+    params = ""
+    params = "settings[scenario_id]=#{ENV['SCENARIO']}&" if ENV["SCENARIO"]
+    if ENV["GQUERIES"]
+      gqueries = Dir.glob("../etsource/gqueries/**/*.gql").
+        select{|f| f.match ENV['GQUERIES'] }.
+        map{|f| f.split('/').last.split('.').first}
+      params += "r=#{CGI::escape gqueries.join(';')}&"
+    end
+    hsh  = {}
+    
+    apis = ['localhost:3000', 'beta.ete.io'].map do |u| 
+      "http://#{u}/api/v2/api_scenarios/test.json"
+    end
+
+    hsh['name'] = %w[present future present future]
+    apis.each do |api|
+      json = JSON.parse(open(api+'?'+params).string)
+      json['result'].each do |key, result|
+        hsh[key] ||= []
+        hsh[key] << result.map{|arr| arr.last.round(2)}
+        hsh[key].flatten!
+      end
+    end
+    
+    puts hsh.to_table.to_s
+  end
+
   def initialize_etsource(path)
     etsource = Etsource::Base.instance
     
