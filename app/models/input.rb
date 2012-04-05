@@ -163,7 +163,8 @@ class Input < ActiveRecord::Base
         :max_value   => max_value_for(gql),
         :min_value   => min_value_for(gql),
         :start_value => start_value_for(gql),
-        :full_label  => full_label_for(gql)
+        :full_label  => full_label_for(gql),
+        :disabled    => disabled_in_current_area?
       }
     }
   end
@@ -262,6 +263,10 @@ class Input < ActiveRecord::Base
 
   def max_value_for_current_area
     get_area_input_values.andand["max"]
+  end
+
+  def disabled_in_current_area?
+    get_area_input_values.andand['disabled'] || false
   end
 
   # this loads the hash with area dependent settings for the current inputs object
