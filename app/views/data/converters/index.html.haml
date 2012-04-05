@@ -32,7 +32,7 @@
             = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
 
         - fields.each do |field|
-          - if converter.full_key.present? and query = "V(#{converter.full_key.to_s.downcase};#{field})"
+          - if converter.full_key.present? and query = "V(#{converter.full_key.to_s.downcase},#{field})"
             - p, f = gql_query(query).results
             %td.tar{:title => title_tag_number(p)}= auto_number(p)
             %td.tar{:title => title_tag_number(f)}= auto_number(f)
