@@ -82,13 +82,7 @@ class Gquery < ActiveRecord::Base
   end
 
   def self.convert_to_gql3!(string)
-    string.gsub!("\n", '')
-    string.gsub!(/;([^\)]*)\)/, ';"\1")')
-    string.gsub!("[", "(")
-    string.gsub!("]", ")")
-    string.gsub!(';', ',')
-    string.gsub!("\s", '')
-    string.gsub!("\t", '')
+    string.gsub!(/[\n\s\t]/, '')
     string.gsub!(/^[a-z]+\:/,'')
     string
   end
