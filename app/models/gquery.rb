@@ -22,6 +22,18 @@
 #
 #
 class Gquery < ActiveRecord::Base
+  include InMemoryRecord
+  
+  def self.load_records
+    h = {}
+    Etsource::Loader.instance.gqueries.each do |gquery| 
+      h[gquery.key] = gquery
+      h[gquery.lookup_id.to_s] = gquery
+      h[gquery.deprecated_key] = gquery
+    end
+    h
+  end
+
   GQL_MODIFIERS = %(present future historic stored)
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
@@ -60,12 +72,20 @@ class Gquery < ActiveRecord::Base
   # @param key [String] Gquery key (see Gquery#key)
   # @return [String] Cleaned Gquery
   #
-  def self.get(key)
-    query = gquery_hash[key]
-    raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
-    # Check gql_metrics.rb initializer to see what we're doing with this notification
-    ActiveSupport::Notifications.instrument("gql.gquery.deprecated", key) if deprecated_gquery_hash[key]
-    query
+  # def self.get(key)
+  #   query = gquery_hash[key]
+  #   raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
+  #   # Check gql_metrics.rb initializer to see what we're doing with this notification
+  #   ActiveSupport::Notifications.instrument("gql.gquery.deprecated", key) if deprecated_gquery_hash[key]
+  #   query
+  # end
+
+  def id
+    lookup_id
+  end
+
+  def lookup_id
+    @lookup_id ||= Hashpipe.hash(key)
   end
 
   # As a tribute to Ed Posnak I leave the following comment where it is.
@@ -83,57 +103,6 @@ class Gquery < ActiveRecord::Base
     string.gsub!(/[\n\s\t]/, '')
     string.gsub!(/^[a-z]+\:/,'')
     string
-  end
-
-  # Memoized gquery hashes
-  @@gquery_hash = nil
-  @@deprecated_gquery_hash = nil
-
-  def self.gquery_hash
-    @@gquery_hash ||= build_gquery_hash
-  end
-  
-  def self.deprecated_gquery_hash
-    @@deprecated_gquery_hash ||= build_deprecated_gquery_hash
-  end
-  
-  # DEBT: I added the deprecated key to the gquery hash, otherwise the lookup will fail.
-  # I think we should change the way we deal with deprecated keys by creating a
-  # brand new gquery with a deprecated flag and that calls the new gquery name.
-  # PZ - Thu Oct 20 14:37:53 CEST 2011
-  #
-  def self.build_gquery_hash
-    h = {}
-    load_gqueries.each do |gquery| 
-      h[gquery.key] = gquery
-      h[gquery.id.to_s] = gquery
-      h[gquery.deprecated_key] = gquery
-    end
-    h
-  end
-  
-  # Fast lookup hash to determine whether we're using a deprecated key
-  #
-  def self.build_deprecated_gquery_hash
-    h = {}
-    load_gqueries.select{|g| g.deprecated_key.present? }.each do |g| 
-      h[g.deprecated_key] = g
-    end
-    h
-  end
-
-  def self.load_gqueries
-    # choose here which way you want to load gqueries. from db or from etsource.
-    etsource_gqueries
-  end
-
-  def self.etsource_gqueries
-    # need a way to assign id, to make this work.
-    Etsource::Loader.instance.gqueries
-  end
-
-  def self.db_gqueries
-    all
   end
 
   def converters?

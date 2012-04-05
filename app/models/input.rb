@@ -31,48 +31,23 @@
 #
 
 class Input < ActiveRecord::Base
-  module MemoizedRecord
-    extend ActiveSupport::Concern
-    
-    included do |variable|
-    end
-
-    module ClassMethods
-      def load_records
-        h = {}
-        Etsource::Loader.instance.inputs.each do |input| 
-          h[input.lookup_id] = input
-        end
-        h
-      end
-
-      def all
-        records.values
-      end
-
-      def records
-        @records ||= load_records
-      end
-
-      def get(key)
-        records[key.to_i]
-      end
-
-      def add(obj)
-        records[obj.lookup_id] = obj
-        obj
-      end
-    end
-  end
-
   attr_accessor :lookup_id
 
-  extend MemoizedRecord::ClassMethods
-  
+  include InMemoryRecord
+
   validates :updateable_period, :presence => true,
                                 :inclusion => %w[present future both before]
 
   strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :max_value, :min_value, :start_value]
+
+  def self.load_records
+    h = {}
+    Etsource::Loader.instance.inputs.each do |input| 
+      h[input.lookup_id] = input
+      h[input.lookup_id.to_s] = input
+    end
+    h
+  end
 
   def self.with_share_group
     all.select{|input| input.share_group.present?}

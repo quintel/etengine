@@ -7,9 +7,7 @@ module Etsource
     end
 
     def import!
-      Gquery.transaction do
-        Gqueries.new(@etsource).import!
-      end
+      
     end
 
     def message
