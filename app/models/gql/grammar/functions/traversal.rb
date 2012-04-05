@@ -53,7 +53,7 @@ module Gql::Grammar
         links = flatten_uniq(value_terms.tap(&:flatten!).map(&:input_links))
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
-          links.select!{|link| link.instance_eval(inst_eval) } 
+          links.select!{|link| link.instance_eval(inst_eval.to_s) } 
         end
         links
       end
@@ -62,7 +62,7 @@ module Gql::Grammar
         links = flatten_uniq(value_terms.tap(&:flatten!).map(&:output_links))
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
-          links.select!{|link| link.instance_eval(inst_eval) } 
+          links.select!{|link| link.instance_eval(inst_eval.to_s) } 
         end
         links
       end
