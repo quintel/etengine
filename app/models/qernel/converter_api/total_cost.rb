@@ -168,7 +168,7 @@ class Qernel::ConverterApi
   
   def additional_investment_ccs_per_mwe
     dataset_fetch_handle_nil(:additional_investment_ccs_per_mwe) do
-      ccs_investment_per_mw_input / nominal_capacity_electricity_output_per_unit
+      additional_investment_ccs_per_unit / nominal_capacity_electricity_output_per_unit
     end
   end
   attributes_required_for :additional_investment_ccs_per_mwe, [
