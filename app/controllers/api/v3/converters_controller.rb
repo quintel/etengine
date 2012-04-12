@@ -1,6 +1,7 @@
 module Api
   module V3
-    class ConvertersController < ApplicationController
+    class ConvertersController < BaseController
+      before_filter :set_current_scenario, :only => :show
       before_filter :find_converter, :only => :show
 
       # GET /api/v3/converters/:id
@@ -11,7 +12,7 @@ module Api
       # the id
       #
       def show
-        render :json => @converter
+        render :json => @converter_present.class
       end
 
       private
@@ -20,9 +21,13 @@ module Api
         # the current converters_controller implementation pulls is
         # all the graphs, current and future. Let's find a clean way
         # to fetch it. This action is currently broken
-        @converter = Converter.find params[:id]
-      rescue ActiveRecord::RecordNotFound
-        render :json => {}, :status => 404 and return
+        key = params[:id].to_sym rescue nil
+        # ugly!
+        @converter_present = @gql.present_graph.graph.converter(key) rescue nil
+        @converter_future  = @gql.future_graph.graph.converter(key) rescue nil
+        if @converter_present.nil? || @converter_future.nil?
+          render :json => {:errors => ["Converter not found"]}, :status => 404 and return
+        end
       end
     end
   end
