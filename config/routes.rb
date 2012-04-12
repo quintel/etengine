@@ -32,7 +32,9 @@ Etm::Application.routes.draw do
 
   namespace :api do
     namespace :v3 do
-      resources :scenarios, :only => :show
+      resources :scenarios, :only => :show do
+        get :templates, :on => :collection
+      end
     end
   end
 
