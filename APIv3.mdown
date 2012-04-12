@@ -27,12 +27,12 @@ Country and region should be merged into a single `area_code` column.
 * drop column `type` - this involves merging the Scenario and ApiScenario classes
 * drop column `present_updated_at` or `updated_at`- one is enough
 * user_values: store values as json - it is more readable and way faster. Only downside is that hash keys are now strings rather than integers. Rails 3.2 ActiveRecord store would make this even more convenient.
-  
+
 ```
     Benchmark.bm do |b|
-      b.report('json'){n.times do; JSON.parse(json); end}  
-      b.report('yaml'){n.times do; YAML.load(yaml); end}  
-    end  
+      b.report('json'){n.times do; JSON.parse(json); end}
+      b.report('yaml'){n.times do; YAML.load(yaml); end}
+    end
            user     system      total        real
     json  0.170000   0.010000   0.180000 (  0.186136)
     yaml  0.490000   0.010000   0.500000 (  0.503646)
@@ -41,7 +41,7 @@ Country and region should be merged into a single `area_code` column.
 
 ## Scenarios
 
-### Get a single scenario
+### Get a single scenario [IMPLEMENTED, but the output is the old scenario#to_json]
 
 #### Request
 
@@ -61,6 +61,24 @@ Country and region should be merged into a single `area_code` column.
       "created_at": "2012-01-01 00:00:00",
       "updated_at": "2012-01-01 00:00:00"
     }
+
+If the scenario is missing then the action returns an empty hash with a 404 HTTP status code.
+
+### Get predefined scenarios [IMPLEMENTED]
+
+#### Request
+
+    GET /scenarios/templates
+
+#### Response
+
+    Status: 200 OK
+
+    [
+    {<scenario>},
+    {<scenario>},
+    ...
+    ]
 
 ### Create a new scenario
 
@@ -133,7 +151,7 @@ The slider update is a proper PATCH request instead.
 The gquery result is a hash rather than an array.
 
     Status: 200 OK
-    
+
     {
       "url": "http://et-engine.com/scenarios/999",
       "id": 999,
@@ -155,7 +173,7 @@ The gquery result is a hash rather than an array.
           "unit": "euro"
         },
       }
-    }    
+    }
 
 About gquery results with errors: to make the client applications more robust the single gquery should carry its errors, using something like:
 
@@ -179,7 +197,7 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 #### Response
 
     Status: 200 OK
-    
+
     [
       {
         "key": "input_foobar",
@@ -208,7 +226,7 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 #### Response
 
     Status: 200 OK
-    
+
     {
       "key": "input_foobar",
       "id": 123
@@ -228,7 +246,7 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 #### Response
 
     Status: 200 OK
-    
+
     [
       {
         "key": "input_foobar",
