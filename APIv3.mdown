@@ -271,11 +271,11 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
 ### Get a converter details
 
-This information should be seen on the graph diagram (maybe when the user clicks on a node and wants to see the details) and on the ETM, when the user clicks on the converter info link (now we're loading an iframe).
+This information should be seen on the graph diagram (maybe when the user clicks on a node and wants to see the details) and on the ETM, when the user clicks on the converter info link (now we're loading an iframe). Do we ever need converter info outside the scope of a scenario? We could use the `/converters/:code` URL to get the generic converter attributes (those that don't require an active scenario) and `/scenarios/:scenario_id/converters/:code` to get the attributes for a specific scenario.
 
 #### Request
 
-    GET /converters/:code/specs
+    GET /converters/:code
 
 #### Response
 
@@ -283,6 +283,26 @@ This information should be seen on the graph diagram (maybe when the user clicks
 
     {
       code: "foobar"
-    euro_per_mw: 123
-    [...]
+      euro_per_mw: 123
+      [...]
+    }
+
+### Converter details for a specific scenario
+
+
+#### Request
+
+    GET /scenarios/:scenario_id/converters/:key
+
+#### Response
+
+    Status: 200 OK
+
+    {
+      code: "foobar"
+      euro_per_mw: {
+        present: 123,
+        future: 456
+      }
+      [...]
     }
