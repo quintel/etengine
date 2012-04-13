@@ -21,17 +21,31 @@ module Api
           json.use @present.use_key
           json.groups @present.groups
           json.energy_balance_group @present.energy_balance_group
-          json.attributes Qernel::ConverterApi::ATTRIBUTE_GROUPS.keys do |json, group|
-            json.set! group do |json|
-              Qernel::ConverterApi::ATTRIBUTE_GROUPS[group].each do |attr|
-                json.set! attr do |json|
-                  json.present @present.send(attr) rescue nil
-                  json.future @future.send(attr) rescue nil
+          json.attributes do |json|
+            Qernel::ConverterApi::ATTRIBUTE_GROUPS.each_pair do |group, attrs|
+              json.set! group do |json|
+                attrs.each do |attr|
+                  json.set! attr do |json|
+                    json.present format_value(@present, attr)
+                    json.future format_value(@future, attr)
+                  end
                 end
               end
             end
           end
+          json.calculations do |json|
+            Qernel::ConverterApi.calculation_methods.sort.each do |name|
+              json.set!(name) do |json|
+                json.present format_value(@present, name)
+                json.future format_value(@future, name)
+              end
+            end
+          end
         end
+      end
+
+      def format_value(graph, attribute)
+        graph.query.send(attribute) #rescue nil
       end
     end
   end
