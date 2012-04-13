@@ -23,10 +23,10 @@
 #
 class Gquery < ActiveRecord::Base
   include InMemoryRecord
-  
+
   def self.load_records
     h = {}
-    Etsource::Loader.instance.gqueries.each do |gquery| 
+    Etsource::Loader.instance.gqueries.each do |gquery|
       h[gquery.key] = gquery
       h[gquery.lookup_id.to_s] = gquery
       h[gquery.deprecated_key] = gquery
@@ -51,7 +51,7 @@ class Gquery < ActiveRecord::Base
   ])}
 
   scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
-  
+
   # This scope will stack the previous by_name scope to allow searching using multiple terms
   scope :by_name_multi, lambda{|q|
     base = self.scoped
@@ -66,7 +66,7 @@ class Gquery < ActiveRecord::Base
     gids = gids.compact.reject(&:blank?)
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
   }
-  
+
   # Returns the cleaned query for any given key.
   #
   # @param key [String] Gquery key (see Gquery#key)
@@ -90,7 +90,7 @@ class Gquery < ActiveRecord::Base
 
   # As a tribute to Ed Posnak I leave the following comment where it is.
   # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
-  
+
   def gql3
     @gql3_proc ||= self.class.gql3_proc(query)
   end
@@ -118,13 +118,20 @@ class Gquery < ActiveRecord::Base
   end
 
   def output_element?
-    gquery_group.group_key.include?("output_elements") 
+    gquery_group.group_key.include?("output_elements")
   rescue => e
     false
   end
 
   def gql_modifier
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
+  end
+
+  # GQL syntax highlighting uses this array
+  def self.cached_keys
+    Rails.cache.fetch('gquery_keys') do
+      self.all.map(&:key)
+    end
   end
 
 end
