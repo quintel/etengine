@@ -9,7 +9,7 @@ module Api
       #
       def set_current_scenario
         if params[:scenario_id]
-          @scenario = ApiScenario.find(params[:scenario])
+          @scenario = ApiScenario.find(params[:scenario_id])
         else
           @scenario = ApiScenario.last
         end
