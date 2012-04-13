@@ -25,19 +25,25 @@ module Api
             Qernel::ConverterApi::ATTRIBUTE_GROUPS.each_pair do |group, attrs|
               json.set! group do |json|
                 attrs.each do |attr|
+                  pres = format_value(@present, attr)
+                  fut = format_value(@future, attr)
+                  next unless (pres || fut)
                   json.set! attr do |json|
-                    json.present format_value(@present, attr)
-                    json.future format_value(@future, attr)
+                    json.present pres
+                    json.future fut
                   end
                 end
               end
             end
           end
           json.calculations do |json|
-            Qernel::ConverterApi.calculation_methods.sort.each do |name|
-              json.set!(name) do |json|
-                json.present format_value(@present, name)
-                json.future format_value(@future, name)
+            Qernel::ConverterApi.calculation_methods.sort.each do |attr|
+              pres = format_value(@present, attr)
+              fut = format_value(@future, attr)
+              next unless (pres || fut)
+              json.set!(attr) do |json|
+                json.present pres
+                json.future fut
               end
             end
           end
