@@ -6,7 +6,6 @@
 #  author             :string(255)
 #  title              :string(255)
 #  description        :text
-#  user_updates       :text
 #  created_at         :datetime
 #  updated_at         :datetime
 #  user_values        :text
@@ -15,8 +14,6 @@
 #  in_start_menu      :boolean(1)
 #  region             :string(255)
 #  user_id            :integer(4)
-#  complexity         :integer(4)      default(3)
-#  scenario_type      :string(255)
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  use_fce            :boolean(1)
@@ -51,10 +48,8 @@ class Scenario < ActiveRecord::Base
   validates_presence_of :title, :on => :create, :message => I18n.t("scenario.provide_title")
 
   scope :in_start_menu, where(:in_start_menu => true)
-
   # it's a national preset scenario when there is no region defined and it's defined in the start menu
   scope :by_region, lambda {|region| where(:region => region) }
-  scope :by_type, lambda {|type| where(:scenario_type => type.to_s)}
   scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   scope :recent_first, order('created_at DESC')
@@ -132,7 +127,6 @@ class Scenario < ActiveRecord::Base
   #
   def self.default_attributes
     {
-      :complexity => 3,
       :country => 'nl',
       :user_values => {},
       :use_fce => false,

@@ -6,7 +6,6 @@ describe Scenario do
 
   describe "#default" do
     subject { Scenario.default }
-    its(:complexity) { should == 3}
     its(:country) { should == 'nl'}
     its(:region) { should == nil}
     its(:user_values) { should == {} }
@@ -53,7 +52,7 @@ describe Scenario do
   end
 
   describe "#area" do
-    before { 
+    before {
       @scenario = Scenario.default
       @area = Area.new
       Area.should_receive(:find_by_country).with(@scenario.region_or_country).and_return(@area)
@@ -92,7 +91,7 @@ describe Scenario do
         @scenario.user_values.should == {:foo => :bar}
         @scenario.user_values[:foo].should == :bar
       end
-     
+
     end
     context ":user_values = nil" do
       before {@scenario = Scenario.new(:user_values => {})}
@@ -108,7 +107,7 @@ describe Scenario do
     before do
       @scenario.update_statements = {'converters' => {
         'hot_water_demand_households_energetic' => {'growth_rate' => '0.1', 'other_metric' => '1000'}
-      }}      
+      }}
     end
 
     describe "update existing" do
@@ -183,13 +182,13 @@ describe Scenario do
     its(:user_values) { should == {}}
     its(:update_statements) { should == {}}
   end
-  
+
   describe "Scenario preset" do
     before(:each) do
       @preset_scenario = Scenario.create!(:title => "Preset scenario")
       @preset_scenario.user_values = {}
     end
-    
+
     it "should be able to have preset" do
       @scenario = Scenario.create!(:preset_scenario => @preset_scenario, :title => "Scenario that was built from a preset")
       @scenario.reload.preset_scenario.should == @preset_scenario
@@ -244,13 +243,13 @@ describe Scenario do
       end
     end
   end
-  
+
   describe "#clone"do
     before do
       @s = Factory :scenario
       @t = @s.clone!
     end
-    
+
     subject { @t }
     its(:user_values) { should == @s.user_values}
     its(:end_year) { should == @s.end_year}
