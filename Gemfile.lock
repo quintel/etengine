@@ -4,6 +4,14 @@ GIT
   specs:
     git (1.2.5)
 
+GIT
+  remote: git://github.com/rails/jbuilder.git
+  revision: e2a66168bfa38d6536944680815d417538ef7000
+  specs:
+    jbuilder (0.4.1)
+      activesupport (>= 3.0.0)
+      blankslate (>= 2.1.2.4)
+
 GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
@@ -74,9 +82,6 @@ GEM
     haml (3.1.3)
     highline (1.6.2)
     i18n (0.5.0)
-    jbuilder (0.4.0)
-      activesupport (>= 3.0.0)
-      blankslate (>= 2.1.2.4)
     jquery-rails (1.0.14)
       railties (~> 3.0)
       thor (~> 0.14)
@@ -213,7 +218,7 @@ DEPENDENCIES
   guard-spork
   haml (~> 3.1.3)
   highline
-  jbuilder
+  jbuilder!
   jquery-rails (~> 1.0.14)
   kaminari
   memcache-client
