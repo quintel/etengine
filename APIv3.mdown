@@ -183,12 +183,13 @@ Other things to consider: deal with gqueries that return strings or array of str
 
 ## Inputs
 
-Input values are scenario-dependent, so we should pass a scenario id. We should decide whether identifying inputs by key exclusively or by id, too.
+Input values are scenario-dependent, so we should pass a scenario id. We should decide whether identifying inputs by key exclusively or by id, too. If the `scenario_id` parameter is missing then the engine will use the latest scenario.
 
 ### Get all inputs details
 
 #### Request
 
+    GET /inputs
     GET /scenarios/:scenario_id/inputs
 
 #### Response
@@ -197,7 +198,7 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
     [
       {
-        "key": "input_foobar",
+        "code": "input_foobar",
         "id": 123
         "start_value": 1000,
         "end_value": 2000,
@@ -205,7 +206,7 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
         "current_value": 1500
       },
       {
-        "key": "input_foobar_2",
+        "code": "input_foobar_2",
         "id": 123
         "start_value": 1000,
         "end_value": 2000,
@@ -218,14 +219,15 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
 #### Request
 
-    GET /scenarios/:input_id/inputs/:key
+    GET /inputs/:code
+    GET /scenarios/:scenario_id/inputs/:code
 
 #### Response
 
     Status: 200 OK
 
     {
-      "key": "input_foobar",
+      "code": "input_foobar",
       "id": 123
       "start_value": 1000,
       "end_value": 2000,
