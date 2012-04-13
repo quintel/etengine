@@ -16,7 +16,7 @@ gem 'tabs_on_rails'
 gem 'kaminari'
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
-
+gem 'jbuilder', :git => 'git://github.com/rails/jbuilder.git'
 
 # for etsource
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'

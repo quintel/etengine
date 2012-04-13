@@ -30,6 +30,15 @@ Etm::Application.routes.draw do
     match '*url', to: 'base#cross_site_sharing', via: :options
   end
 
+  namespace :api do
+    namespace :v3 do
+      resources :scenarios, :only => :show do
+        get :templates, :on => :collection
+      end
+      resources :converters, :only => :show
+    end
+  end
+
   namespace :data do
     root :to => "pages#index", :api_scenario_id => 'latest'
 
