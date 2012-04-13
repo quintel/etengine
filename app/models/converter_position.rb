@@ -10,6 +10,7 @@
 #  updated_at          :datetime
 #  hidden              :boolean(1)
 #  blueprint_layout_id :integer(4)
+#  converter_key       :string(255)
 #
 
 ##

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120404100419) do
+ActiveRecord::Schema.define(:version => 20120413121453) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -247,7 +247,6 @@ ActiveRecord::Schema.define(:version => 20120404100419) do
     t.string   "author"
     t.string   "title"
     t.text     "description"
-    t.text     "user_updates"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "user_values"
@@ -256,8 +255,6 @@ ActiveRecord::Schema.define(:version => 20120404100419) do
     t.boolean  "in_start_menu"
     t.string   "region"
     t.integer  "user_id"
-    t.integer  "complexity",                      :default => 3
-    t.string   "scenario_type"
     t.integer  "preset_scenario_id"
     t.string   "type"
     t.boolean  "use_fce"

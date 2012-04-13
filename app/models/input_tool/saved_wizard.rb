@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: input_tool_forms
+#
+#  id         :integer(4)      not null, primary key
+#  area_code  :string(255)
+#  code       :string(255)
+#  values     :text
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 module InputTool
   # SavedWizard keep the input data of researchers temporarly in the database.
   # They are assigned country and the code of a etsource/datasets/_wizards/
