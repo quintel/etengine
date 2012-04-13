@@ -19,11 +19,8 @@ Country and region should be merged into a single `area_code` column.
 
 #### ETE Scenarios:
 
-* drop column `user_updates` (are we using it?)
 * drop columns `country`, `region` and replace with `area_code`
 * decide what to do with `author` and `user_id` columns
-* drop column `complexity`
-* drop column `scenario_type` - what's this for?
 * drop column `type` - this involves merging the Scenario and ApiScenario classes
 * drop column `present_updated_at` or `updated_at`- one is enough
 * user_values: store values as json - it is more readable and way faster. Only downside is that hash keys are now strings rather than integers. Rails 3.2 ActiveRecord store would make this even more convenient.
@@ -79,7 +76,7 @@ If the scenario is missing then the action returns an empty hash with a 404 HTTP
     {<scenario>},
     ...
     ]
-
+]
 ### Create a new scenario
 
 #### Request
@@ -269,7 +266,7 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
 ## Converters
 
-### Get a converter details
+### Get a converter details [IMPLEMENTED]
 
 This information should be seen on the graph diagram (maybe when the user clicks on a node and wants to see the details) and on the ETM, when the user clicks on the converter info link (now we're loading an iframe). Do we ever need converter info outside the scope of a scenario? We could use the `/converters/:code` URL to get the generic converter attributes (those that don't require an active scenario) and `/scenarios/:scenario_id/converters/:code` to get the attributes for a specific scenario.
 
@@ -277,17 +274,55 @@ This information should be seen on the graph diagram (maybe when the user clicks
 
     GET /converters/:code
 
+If the scenario_id is missing then the controller will use the latest scenario.
+
 #### Response
 
     Status: 200 OK
 
     {
-      code: "foobar"
-      euro_per_mw: 123
-      [...]
+        "code": "biomass_chp_industry_energetic",
+        "sector": "industry",
+        "use": "energetic",
+        "groups": ["electricity_production", "central_production"],
+        "energy_balance_group": "central CHPs",
+        "attributes": {
+            "operational": {
+                "typical_nominal_input_capacity": {
+                    "present": 162.60162601626,
+                    "future": 162.60162601626
+                },
+                "full_load_hours": {
+                    "present": 5394.19087136929,
+                    "future": 5394.19087136929
+                },
+                ...
+            },
+            "cost": {
+                "purchase_price_per_mw_input": {
+                    "present": 412050.0,
+                    "future": 412050.0
+                },
+                "installing_costs_per_mw_input": {
+                    "present": 0.0,
+                    "future": 0.0
+                },
+                ...
+        },
+        "calculations": {
+            "additional_investment_ccs_per_mwe": {
+                "present": 0.0,
+                "future": 0.0
+            },
+            "cost_of_capital_per_mw_input": {
+                "present": 23898.9,
+                "future": 23898.9
+            },
+            ...
+       }
     }
 
-### Converter details for a specific scenario
+### Converter details for a specific scenario [IMPLEMENTED]
 
 
 #### Request
@@ -296,13 +331,4 @@ This information should be seen on the graph diagram (maybe when the user clicks
 
 #### Response
 
-    Status: 200 OK
-
-    {
-      code: "foobar"
-      euro_per_mw: {
-        present: 123,
-        future: 456
-      }
-      [...]
-    }
+See above, the response is identical.
