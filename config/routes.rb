@@ -35,8 +35,10 @@ Etm::Application.routes.draw do
       resources :scenarios, :only => :show do
         get :templates, :on => :collection
         resources :converters, :only => :show
+        resources :inputs, :only => [:index, :show]
       end
       resources :converters, :only => :show
+      resources :inputs, :only => [:index, :show]
     end
   end
 
