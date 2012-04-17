@@ -7,11 +7,12 @@ require 'rake'
 require 'rake/testtask'
 require 'rdoc/task'
 
-#require 'yard'
-#
-#YARD::Rake::YardocTask.new do |t|
-#  t.files   = ['lib/**/*.rb', 'app/**/*.rb']   # optional
-#end
+require 'yard'
+
+YARD::Config.load_plugin('yard-tomdoc')
+YARD::Rake::YardocTask.new do |t|
+  t.files   = ['app/models/gql/**/*.rb', 'app/models/qernel/**/*.rb']   # optional
+end
 
 desc "Runs annotate on all models, incl. app/pkg"
 task :annotate do

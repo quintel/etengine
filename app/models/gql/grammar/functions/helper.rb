@@ -2,7 +2,7 @@ module Gql::Grammar
   module Functions
     module Helper
 
-      # SORT_BY( converters ; attribute_1)
+      # SORT_BY( converters , attribute_1)
       #
       def SORT_BY(*objects, arguments)
         flatten_uniq(objects).sort_by{|o| o.query(arguments) || -1.0}
