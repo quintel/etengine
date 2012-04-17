@@ -13,8 +13,8 @@ class Scenario < ActiveRecord::Base
   # @untested 2011-01-22 seb
   #
   def remove_groups_and_elements_not_adding_up!
-    used_groups_not_adding_up.each do |group, elements| 
-      elements.each do |element| 
+    used_groups_not_adding_up.each do |group, elements|
+      elements.each do |element|
         # DISABLE TO TEST
         # delete_from_user_values(element.id)
       end
@@ -56,8 +56,8 @@ class Scenario < ActiveRecord::Base
     hsh = {}
 
     # remove groups that have no input in user_values
-    groups.each do |group, elements| 
-      if (elements.map(&:id) & user_values.keys).present?
+    groups.each do |group, elements|
+      if (elements.map(&:id) & user_values_hash.keys).present?
         hsh[group] = elements
       end
     end
