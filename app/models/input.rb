@@ -26,7 +26,7 @@
 #  query             :text
 #  v1_legacy_unit    :string(255)
 #
-# v1_legacy_unit is appended to the value provided by the user, and defines whether it 
+# v1_legacy_unit is appended to the value provided by the user, and defines whether it
 # is growth_rate (%y) or total growth (%) or absolute value ("")
 #
 
@@ -38,11 +38,9 @@ class Input < ActiveRecord::Base
   validates :updateable_period, :presence => true,
                                 :inclusion => %w[present future both before]
 
-  strip_attributes! :only => [:start_value_gql, :min_value_gql, :max_value_gql, :max_value, :min_value, :start_value]
-
   def self.load_records
     h = {}
-    Etsource::Loader.instance.inputs.each do |input| 
+    Etsource::Loader.instance.inputs.each do |input|
       h[input.lookup_id] = input
       h[input.lookup_id.to_s] = input
     end
@@ -52,11 +50,11 @@ class Input < ActiveRecord::Base
   def self.with_share_group
     all.select{|input| input.share_group.present?}
   end
-  
+
   def self.in_share_group(q)
     all.select{|input| input.share_group == q}
   end
-  
+
   def self.by_name(q)
     q.present? ? all.select{|input| input.key.include?(q)} : all
   end
@@ -73,7 +71,7 @@ class Input < ActiveRecord::Base
   def self.inputs_grouped
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
-  
+
   def bad_query?(*args)
     # these four queries only work with v1.
     [368,412,361,371].include?(self.lookup_id)
@@ -122,7 +120,7 @@ class Input < ActiveRecord::Base
   #
   def update_statement(value)
     # sometimes value ends up being nil. TODO: figure out why
-    final_value = value ? (value / factor) : nil      
+    final_value = value ? (value / factor) : nil
     ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
     {
       update_type => {
@@ -172,7 +170,7 @@ class Input < ActiveRecord::Base
           :backtrace => caller,
           :parameters => {:input => input, :api_scenario => Current.scenario }) unless
            APP_CONFIG[:standalone]
-          
+
         hsh
       end
     end
@@ -242,8 +240,8 @@ class Input < ActiveRecord::Base
   #############################################
   # Area Dependent min / max / fixed settings
   #############################################
-  
-  
+
+
   def min_value_for_current_area
     get_area_input_values.andand["min"]
   end
@@ -265,7 +263,7 @@ class Input < ActiveRecord::Base
       false
     end
   end
-  
+
   #############################################
   # Methods that interact with a users values
   #############################################

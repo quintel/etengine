@@ -67,7 +67,7 @@ class ApiScenario < Scenario
       values[id.to_s][:start_value] = dynamic_values[:start_value] if values[id.to_s]
     end
 
-    self.user_values.each do |id, user_value|
+    self.user_values_hash.each do |id, user_value|
       values[id.to_s][:user_value] = user_value if values[id.to_s]
     end
 

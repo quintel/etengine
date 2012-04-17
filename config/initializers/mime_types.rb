@@ -5,6 +5,5 @@
 # Mime::Type.register_alias "text/html", :iphone
 
 # We use SVG for the GraphViz
-Mime::Type.register_alias "image/png", :png
 Mime::Type.register "image/svg+xml", :svg
 Mime::Type.register "application/x-yaml", :yml

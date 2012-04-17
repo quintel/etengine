@@ -1,10 +1,9 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-gem 'rails', '3.0.11'
-gem 'jquery-rails', '~> 1.0.14'
-gem 'haml', '~>3.1.3'
-gem 'sass', '~>3.1.7'
+gem 'rails', '3.2.3'
+gem 'jquery-rails', '~> 1.0.19'
+gem 'haml', '~>3.1.4'
 
 gem 'authlogic'
 gem 'cancan'
@@ -12,35 +11,26 @@ gem 'simple_form'
 gem 'ruby-graphviz', :require => "graphviz"
 gem 'treetop', '1.4.8'
 gem 'default_value_for'
-gem 'tabs_on_rails'
-gem 'kaminari'
+gem 'kaminari', "~> 0.13.0"
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
 gem 'jbuilder', :git => 'git://github.com/rails/jbuilder.git'
 
 # for etsource
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
-gem 'activerecord-import'
+gem 'activerecord-import', '~> 0.2.9'
 gem 'fnv'
 gem "yaml_pack", '~>0.0.3.alpha'
 
-# javascript
-gem 'sprockets'
-gem 'sprockets-rails'
-gem 'rack-sprockets'
 gem 'rack-cors', :require => 'rack/cors'
-
-# supporting gems
 gem 'airbrake'
 
 # system gems
-# gem 'thinking-sphinx', '>=2.0.1'
-gem 'mysql2', '~>0.2.6'
+gem 'mysql2', '~>0.3.11'
 gem 'dalli'
 gem 'memcache-client'
 gem 'term-ansicolor', :require => false
 gem 'highline', :require => false
-
 gem 'rubyzip', '0.9.4'
 gem 'fileutils'
 
@@ -53,17 +43,18 @@ end
 
 group :development do
   gem 'annotate', :require => false
-  gem 'active_reload'
-  gem 'pry-remote'
   gem 'ruby-prof'
 end
 
 group :test, :development do
   gem "rspec-rails", "~> 2.8.0"
   gem 'ruby-prof'
-  gem 'pry'
+  gem 'pry-rails'
+  gem 'pry-remote'
   gem 'guard'
   gem 'guard-rspec'
+  gem 'spork', '~> 0.9.0.rc'
+  gem 'guard-spork'
 end
 
 group :test do
@@ -71,8 +62,6 @@ group :test do
   gem 'shoulda-matchers'
   gem 'webrat'
   gem 'simplecov', '~> 0.5.3', :require => false
-  gem 'spork', '~> 0.9.0.rc'
-  gem 'guard-spork'
 end
 
 group :darwin do
@@ -81,4 +70,8 @@ end
 
 group :production do
   gem 'unicorn'
+end
+
+group :assets do
+  gem 'sass-rails', '~>3.2.3'
 end
