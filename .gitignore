@@ -9,6 +9,7 @@ config/latest_etsource_import_sha
 config/latest_etsource_export_sha
 .yardoc
 doc/*
+public/doc/*
 public/tmp/*
 public/packages/*
 public/javascripts/all.js
