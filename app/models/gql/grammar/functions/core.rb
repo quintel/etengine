@@ -3,6 +3,15 @@ module Gql::Grammar
     module Core
 
       # Shortcut for the LOOKUP and ATTR function.
+      # 
+      # It checks whether the last argument is a converter or carrier (to be 
+      # precise: it checks if a LOOKUP with that argument finds a converter).
+      # If it finds an converter, the V statement behaves exactly like LOOOKUP.
+      # Otherwise the last argument is treated as an attribute and V will become
+      # ATTR(LOOKUP(...), last_argument)
+      #   
+      #   V(foo, bar)         => LOOKUP(foo, bar)
+      #   V(foo, bar, demand) => ATTR(LOOKUP(foo, bar), demand)
       #
       # Examples
       #
@@ -26,6 +35,13 @@ module Gql::Grammar
       end
       alias VALUE V
 
+
+      # QUERY() or Q() returns the result of another gquery with given key.
+      #
+      # key - The key of the gquery.
+      #
+      # Returns the result of that gquery. Can be a number, list of converters, etc.
+      # 
       def QUERY(key)
         scope.subquery(key.to_s)
       end
@@ -41,6 +57,13 @@ module Gql::Grammar
       #
       #   LOOKUP(foo)       => [Converter<foo>]
       #   LOOKUP(foo, bar)  => [Converter<foo>, Converter<bar>]
+      #   LOOKUP(foo, not_available)  => [Converter<foo>, "not_available"]
+      #
+      # Change request:
+      #
+      # If LOOKUP finds no converter for a key it should return something else
+      # then the name of that key. This will cause problems down the road.
+      #
       #   LOOKUP(foo, not_available)  => [Converter<foo>, "not_available"]
       #
       def LOOKUP(*keys)
