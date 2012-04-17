@@ -29,7 +29,6 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.1.2)
-    active_reload (0.1.0)
     activemodel (3.2.3)
       activesupport (= 3.2.3)
       builder (~> 3.0.0)
@@ -108,6 +107,8 @@ GEM
       method_source (~> 0.6.7)
       ruby_parser (>= 2.3.1)
       slop (~> 2.1.0)
+    pry-rails (0.1.6)
+      pry
     pry-remote (0.1.0)
       pry (~> 0.9.6)
       slop (~> 2.1)
@@ -207,7 +208,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_reload
   activerecord-import (~> 0.2.9)
   airbrake
   annotate
@@ -230,7 +230,7 @@ DEPENDENCIES
   kaminari
   memcache-client
   mysql2 (~> 0.3.11)
-  pry
+  pry-rails
   pry-remote
   rack-cors
   rails (= 3.2.3)
