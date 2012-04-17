@@ -1,6 +1,4 @@
 class Data::GqlController < Data::BaseController
-  set_tab :gql
-
   def index
   end
 
@@ -16,7 +14,7 @@ class Data::GqlController < Data::BaseController
       @query_table_cells = QueryTableCell.embedded_gql_contains(@q)
     end
   end
-  
+
   def log
     file = Rails.root.join('log/gql.log')
     File.truncate(file, 0) if params[:reset]
