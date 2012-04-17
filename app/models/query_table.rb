@@ -14,9 +14,6 @@
 class QueryTable < ActiveRecord::Base
   has_many :query_table_cells, :dependent => :delete_all
 
-  default_value_for :column_count, 1
-  default_value_for :row_count, 1
-
   validates_presence_of :column_count
   validates_numericality_of :column_count
 
