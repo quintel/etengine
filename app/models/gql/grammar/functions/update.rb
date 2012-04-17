@@ -7,6 +7,15 @@ module Gql::Grammar
         scope.graph.time_curves[converter_id.to_i][time_curve_key.to_sym][year.to_i] rescue nil
       end
 
+      # Run multiple (update) queries.
+      #
+      # Examples
+      #
+      #   EACH( 
+      #     UPDATE( foo, ... ),
+      #     UPDATE( bar, ... )
+      #   )
+      #
       def EACH(*value_terms)
         value_terms.each do |value_term|
           value_term
@@ -51,7 +60,7 @@ module Gql::Grammar
         scope.update_object = nil
       end
 
-      # at the moment only takes care of percentages and absolute numbers.
+      # Private: at the moment only takes care of percentages and absolute numbers.
       #
       def input_factor
         if scope.input_value.andand.include?('%')
@@ -61,10 +70,12 @@ module Gql::Grammar
         end
       end
 
+      # Private: 
       def big_decimal(n)
         scope.big_decimal(n)
       end
 
+      # Private: 
       def update_strategy
         input = scope.input_value
         if input.is_a?(::String)

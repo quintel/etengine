@@ -8,14 +8,38 @@ module Gql::Grammar
         converters.flatten[index]
       end
 
+      # Returns the first element of the array.
+      #
+      # Examples
+      #
+      #   LAST(V(1,2,3)) # => 3
+      #   LAST(LOOKUP(foo, bar)) # => :bar
+      #
       def LAST(*value_terms)
         value_terms.flatten.last
       end
 
+      # Returns the last element of the array.
+      #
+      # Examples
+      #
+      #   LAST(V(1,2,3)) # => 1
+      #   LAST(LOOKUP(foo, bar)) # => :foo
+      #
       def FIRST(*value_terms)
         value_terms.flatten.first
       end
 
+      # Returns the {Qernel::Link} that goes from the first to the second converter.
+      #
+      # LINK() performs a LOOKUP on the two keys.
+      #
+      # Examples
+      #
+      #   LINK( foo, bar ) => Qernel::Link
+      #   # works in the other direction too
+      #   LINK( bar, foo ) => Qernel::Link
+      #
       def LINK(lft, rgt)
         lft,rgt = LOOKUP(lft, rgt).flatten
         if lft.nil? || rgt.nil?
@@ -31,8 +55,12 @@ module Gql::Grammar
         value_terms.flatten.compact.map(&:links).flatten
       end
 
-      # OUTPUT_SLOTS(converter_key; carrier)
-      # OUTPUT_SLOTS(V(converter_key); carrier)
+      #
+      #
+      # Examples
+      #
+      #   OUTPUT_SLOTS(converter_key, carrier)
+      #   OUTPUT_SLOTS(LOOKUP(converter_key), carrier)
       #
       def OUTPUT_SLOTS(*args)
         carrier = args.pop
