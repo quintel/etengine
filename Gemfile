@@ -44,15 +44,14 @@ end
 
 group :development do
   gem 'annotate', :require => false
-  gem 'active_reload'
-  gem 'pry-remote'
   gem 'ruby-prof'
 end
 
 group :test, :development do
   gem "rspec-rails", "~> 2.8.0"
   gem 'ruby-prof'
-  gem 'pry'
+  gem 'pry-rails'
+  gem 'pry-remote'
   gem 'guard'
   gem 'guard-rspec'
   gem 'spork', '~> 0.9.0.rc'
