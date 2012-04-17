@@ -43,11 +43,12 @@ module Etm
 
     config.filter_parameters << :password
 
-
     config.generators do |g|
       g.template_engine :haml
       g.test_framework  :rspec, :fixture => false
     end
+
+    config.assets.enabled = true
 
     # Add this for Spork
     if Rails.env.test?
@@ -59,10 +60,6 @@ module Etm
 
   require 'csv' # used for importing merit_order_table
   require 'lib/instrumentable'
-
-  # see ApplicationController#browser for list of browser types
-  # TODO rails3 fix
-  #  ActionController::Base.session_options[:expire_after] = 4.weeks
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end
