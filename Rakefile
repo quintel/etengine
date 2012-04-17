@@ -11,6 +11,9 @@ require 'yard'
 
 YARD::Config.load_plugin('yard-tomdoc')
 YARD::Rake::YardocTask.new do |t|
+  # overwriting default output is used by capistrano, so we can generate
+  # documentation in a shared directory.
+  t.options = ["-o #{ENV['YARD_OUTPUT']}"] if ENV['YARD_OUTPUT'] 
   t.files   = ['app/models/gql/**/*.rb', 'app/models/qernel/**/*.rb']   # optional
 end
 
