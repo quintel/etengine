@@ -65,7 +65,7 @@ class Gql
   end
 
   # Are the graphs calculated? If true, prevent the programmers
-  # to add further update statements ({Scenario#add_update_statements}). 
+  # to add further update statements ({Scenario#add_update_statements}).
   # Because they won't affect the system anymore.
   #
   # @return [Boolean]
@@ -80,7 +80,7 @@ class Gql
   # object rather than it's Gquery#query. Because parsing a gql statement
   # takes rather long time.
   #
-  #     gql.query(Gquery.first) 
+  #     gql.query(Gquery.first)
   #     gql.query("SUM(1.0, 2.0)")         # => [[2010, 3.0],[2040,3.0]]
   #     gql.query("present:SUM(1.0, 2.0)") # => 3.0
   #
@@ -97,7 +97,7 @@ class Gql
     elsif gquery_or_string.respond_to?(:call)
       query, modifier = gquery_or_string, nil
     end
-    
+
     query_with_modifier(query, modifier)
 
   rescue => e
@@ -129,22 +129,24 @@ class Gql
         send("query_#{strategy}", query)
       end
     end
+  rescue Exception => e
+    raise "Error running #{key}: #{e.inspect}"
   end
 
   # Connects datasets to a present and future graph.
-  # Updates them with user inputs and calculates. 
+  # Updates them with user inputs and calculates.
   # After being prepared graphs are ready to be queried.
   # This method can only be prepared once.
   #
-  # This method is "lazy-" called from a {Gql::QueryInterface} object, 
-  # when there is no cached result for a Gquery. 
+  # This method is "lazy-" called from a {Gql::QueryInterface} object,
+  # when there is no cached result for a Gquery.
   #
   # When to prepare:
   # - For querying
   # - For working/inspecting the graph (e.g. from the command line)
   #
   def prepare
-    # 2011-08-15: the present has to be prepared first. otherwise 
+    # 2011-08-15: the present has to be prepared first. otherwise
     # updating the future won't work (we need the present values)
 
     prepare_present
@@ -158,14 +160,14 @@ class Gql
     end
 
     # At this point the gql is calculated. Changes through update statements
-    # should no longer be allowed, as they won't have an impact on the 
+    # should no longer be allowed, as they won't have an impact on the
     # calculation (even though updating prices would work).
     @calculated = true
   end
 
   # Runs an array of gqueries. The gquery list might be expressed in all the formats accepted
   # by Gquery#get, ie key or id
-  # 
+  #
   # @param [Array<String>]
   # @return [Hash<String => ResultSet>]
   #
@@ -203,10 +205,10 @@ protected
     end
   end
 
-  def prepare_future    
+  def prepare_future
     ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
       future_graph.dataset = dataset_clone
-      
+
       scenario.inputs_before.each { |input, value| future.query(input, value) }
       UpdateInterface::Graph.new(self, future_graph).update_with(scenario.update_statements)
       scenario.inputs_future.each { |input, value| future.query(input, value) }
