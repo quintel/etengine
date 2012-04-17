@@ -2,7 +2,6 @@ class ApplicationController < ActionController::Base
   # include ApplicationController::PerformanceProfiling
   include ApplicationController::GcDisabling
   include ApplicationController::ClientIdentification
-  include SortableTable::App::Controllers::ApplicationController
 
   helper :all
   helper_method :current_user_session, :current_user

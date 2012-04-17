@@ -5,11 +5,10 @@
   %thead
     %tr
       %th Id
-      = sortable_table_header :name => "Key", :sort=>"key"
+      %th Key
       %th Unit
-      = sortable_table_header :name => "Updated", :sort=>"updated_at"
+      %th Updated at
       %th Deprecated Key
-
   %tbody
     - @gqueries.flatten.each do |gquery|
       %tr

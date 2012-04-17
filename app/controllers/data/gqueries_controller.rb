@@ -1,6 +1,5 @@
 class Data::GqueriesController < Data::BaseController
   cache_sweeper Sweepers::Gquery
-  sortable_attributes :key, :updated_at,:gquery_group => "`gquery_group`"
   before_filter :find_model, :only => [:show, :edit]
 
   def index
