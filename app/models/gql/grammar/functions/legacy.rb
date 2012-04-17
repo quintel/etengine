@@ -27,10 +27,24 @@ module Gql::Grammar
         flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.parents})
       end
   
+      # Returns the elements that are present in both the first and second arrays.
+      #
+      # Examples
+      #
+      #   INTERSECTION( V(1,2,3) , V(2,3,4) )
+      #   # => [2, 3]  
+      #
       def INTERSECTION(*keys)
         keys.first.flatten & keys.last.flatten
       end
 
+      # Returns an Array of elements of the first array excluding the second array.
+      #
+      # Examples
+      #
+      #   EXCLUDE( V(1,2,3) , V(2,3,4) )
+      #   # => [1]  
+      #
       def EXCLUDE(first, last)
         first.flatten - last.flatten
       end
