@@ -1,6 +1,4 @@
 module ApplicationHelper
-  include SortableTable::App::Helpers::ApplicationHelper
-
   def color_syntaxed_gquery(q)
     str = q
     str = str.gsub(/([A-Z]+)/, '<span class="gql_operator">\1</span>')
