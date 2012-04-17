@@ -20,7 +20,7 @@ module InputTool
   #
   #
   class SavedWizard < ActiveRecord::Base
-    set_table_name 'input_tool_forms'
+    self.table_name = 'input_tool_forms'
 
     # DEBT rename :values to :research_data_bucket and add default: {}
     serialize :values
