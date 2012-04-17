@@ -25,7 +25,7 @@
   .span16
     %h3
       Commits in #{@branch} #{'(detached)' if @etsource.detached_branch?}
-    %table.zebra-striped.condensed-table
+    %table.table-striped.table-condensed.table
       %tbody
         - @commits.each do |commit|
           %tr
