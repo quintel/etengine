@@ -44,10 +44,14 @@ gem 'highline', :require => false
 gem 'rubyzip', '0.9.4'
 gem 'fileutils'
 
-group :development do
+# documentation gems. Needed on production too for dynamically generated docs.
+group :development, :production do
   gem 'yard', '~> 0.7.2'
   gem 'yard-tomdoc'
   gem 'rdiscount'
+end
+
+group :development do
   gem 'annotate', :require => false
   gem 'active_reload'
   gem 'pry-remote'
