@@ -49,7 +49,7 @@ module Etm
     end
 
     config.assets.enabled = true
-    config.assets.precompile += ['graph.js']
+    config.assets.precompile += ['graph.js', 'bootstrap_setup.css']
 
     # Add this for Spork
     if Rails.env.test?
