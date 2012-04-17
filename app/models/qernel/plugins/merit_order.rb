@@ -6,7 +6,7 @@ module Qernel::Plugins
     included do |variable|
       if merit_order_converters
         set_callback :calculate, :after, :calculate_merit_order
-        # set_callback :calculate, :after, :calculate_full_load_hours
+        set_callback :calculate, :after, :calculate_full_load_hours 
       end
     end
 
@@ -125,7 +125,8 @@ module Qernel::Plugins
       end
 
       def calculate_full_load_hours
-        return if group_converters(:merit_order_converters).empty?
+        return unless enable_merit_order?
+        return unless group_converters(:merit_order_converters).present?
 
         if dataset_get(:calculate_merit_order_finished) != true
           calculate_merit_order
@@ -161,7 +162,6 @@ module Qernel::Plugins
 
             converter.merit_order_capacity_factor = capacity_factor.round(3)
             converter.merit_order_full_load_hours = full_load_hours.round(1)
-            converter.merit_order_full_load_hours = full_load_hours.round(1) if enable_merit_order?
           end
         end
 
