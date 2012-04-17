@@ -1,6 +1,4 @@
 class Data::QueryTablesController < Data::BaseController
-  set_tab :query_tables
-
   def index
     @query_tables = QueryTable.all
   end

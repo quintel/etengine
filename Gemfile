@@ -11,7 +11,6 @@ gem 'simple_form'
 gem 'ruby-graphviz', :require => "graphviz"
 gem 'treetop', '1.4.8'
 gem 'default_value_for'
-gem 'tabs_on_rails'
 gem 'kaminari', "~> 0.13.0"
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
