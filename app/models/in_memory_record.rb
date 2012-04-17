@@ -1,17 +1,9 @@
 module InMemoryRecord
   extend ActiveSupport::Concern
-  
-  included do |variable|
-  end
 
-  module InstanceMethods
-    
-    def save(*args)
-      raise "InMemoryRecord: Object#save not allowed"
-    end
-    
+  def save(*args)
+    raise "InMemoryRecord: Object#save not allowed"
   end
-
 
   module ClassMethods
     def create(*args)

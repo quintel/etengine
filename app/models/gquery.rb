@@ -43,8 +43,6 @@ class Gquery < ActiveRecord::Base
 
   belongs_to :gquery_group
 
-  strip_attributes! :only => [:key]
-
   scope :contains, lambda{|search| where("query LIKE ?", "%#{search}%")}
   scope :name_or_query_contains, lambda{|q| where([
      "`key` LIKE :q OR query LIKE :q OR deprecated_key LIKE :q", { :q => "%#{q}%" }

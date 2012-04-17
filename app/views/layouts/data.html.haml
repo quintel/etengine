@@ -3,15 +3,8 @@
   %head
     %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
     %title EnergyTransitionModel
-      
-    = javascript_include_tag :defaults
-    = javascript_include_tag 'underscore.min'
-    = sprocket_layout_init :admin
-    = sprocket_layout_init :testcases
-
-    = stylesheet_link_tag 'data'
-    = stylesheet_link_tag 'vendor/smoothness/jquery-ui-1.8.16.custom'
-
+    = javascript_include_tag 'application'
+    = stylesheet_link_tag 'application'
   %body#data
     #container
       - if live_server?
