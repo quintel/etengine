@@ -1,42 +1,8 @@
-!!! Strict
-%html{ :xmlns => "http://www.w3.org/1999/xhtml" }
-  %head
-    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
-    %title EnergyTransitionModel
-
-    = javascript_include_tag 'application'
-    = stylesheet_link_tag 'bootstrap_setup'
-
-  %body#data
-    .navbar
-      .navbar-inner
-        .container-fluid
-          %a.brand{:href => etsource_root_path} Etsource
-          %ul.nav
-            %li= link_to 'Commits', etsource_commits_path
-            %li= link_to 'Current', etsource_commit_path('current')
-            %li= link_to '/data', data_root_path(api_scenario_id: 'latest')
-          %p.pull-right== Logged in as #{current_user.email}
-
-    .container-fluid
-      #subnav
-        = yield :subnav
-
-      - if breadcrumbs.any?
-        #breadcrumbs
-          %ul.breadcrumb
-            - breadcrumbs.each do |breadcrumb|
-              %li
-                = link_to breadcrumb, '#'
-                %span.divider
-
-      #flash
-        - flash.each do |type,msg|
-          .alert-message{:class => type}
-            %a.close x
-            %p= msg
-        - if live_server?
-          .alert-message.error This is the production server!
-      #content= yield
-      #footer
-        = yield :footer
+- content_for :navbar do
+  %a.brand{:href => etsource_root_path} Etsource
+  %ul.nav
+    %li= link_to 'Commits', etsource_commits_path
+    %li= link_to 'Current', etsource_commit_path('current')
+    %li= link_to '/data', data_root_path(api_scenario_id: 'latest')
+  %p.pull-right== Logged in as #{current_user.email}
+= render :template => 'layouts/application'
