@@ -61,6 +61,16 @@ module Gql::Grammar
         scope.carriers(keys)
       end
 
+      # Returns an area attribute or for advanced use cases the area object
+      # itself when no key is defined (AREA())
+      #
+      # keys - The name of the attribute. 
+      #
+      # Examples
+      #
+      #   AREA(number_of_households) => ...
+      #   AREA() => Qernel::Area
+      #
       def AREA(*keys)
         keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
