@@ -1,0 +1,6 @@
+--plugin yard-tomdoc
+--output-dir public/doc
+*.markdown
+*.mdown
+app/models/gql/**/*.rb
+app/models/qernel/**/*.rb
