@@ -102,7 +102,7 @@ class Api::ApiScenariosController < Api::BaseController
       input = Input.find_by_key(key) rescue nil
       if input
         out[key] = input.client_values(gql)
-        out[key][:user_value] = @api_scenario.user_values[input.lookup_id] rescue nil
+        out[key][:user_value] = @api_scenario.user_values_hash[input.lookup_id] rescue nil
       end
     end
     render :json => out, :callback => params[:callback]
