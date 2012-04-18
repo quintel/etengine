@@ -4,7 +4,7 @@ module Gql::Grammar
   # access to the default namespace, so prepend classes and modules
   # with ::.
   class Sandbox < BasicObject
-    include Rubel::Core
+    include ::Rubel::Core
     
     include ::Gql::Grammar::Functions::Legacy
     include ::Gql::Grammar::Functions::Constants
