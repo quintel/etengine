@@ -50,7 +50,7 @@ class Scenario < ActiveRecord::Base
 
   scope :in_start_menu, where(:in_start_menu => true)
   # it's a national preset scenario when there is no region defined and it's defined in the start menu
-  scope :by_region, lambda {|region| where(:region => region) }
+  scope :by_region, lambda {|region| where(:area_code => region) }
   scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   scope :recent_first, order('created_at DESC')
@@ -105,24 +105,11 @@ class Scenario < ActiveRecord::Base
     new(default_attributes.merge(opts))
   end
 
-  def code=(code)
-    country = code
-  end
-
-  # Code is the new region_code/country.
-  def code
-    region.present? ? region : country
-  end
-
-  ##
-  # @tested 2010-11-30 seb through self.default
-  #
   def self.default_attributes
     {
-      :country => 'nl',
+      :area_code => 'nl',
       :user_values => {},
       :use_fce => false,
-      :region => nil,
       :end_year => 2040
     }.with_indifferent_access
   end

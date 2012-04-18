@@ -24,7 +24,7 @@
 
     $("#area_code_selector select").change(function(e){
       e.preventDefault();
-      var url = "/api/v2/api_scenarios/new.json?settings[country]="+$("#area_code_selector select").val();
+      var url = "/api/v2/api_scenarios/new.json?settings[area_code]="+$("#area_code_selector select").val();
       
       $.getJSON(url, function(data) {
         location.href = "/data/"+data.api_scenario.id;
