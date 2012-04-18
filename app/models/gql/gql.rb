@@ -10,7 +10,7 @@ class Gql
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
   attr_accessor :present_graph, :future_graph, :dataset, :scenario
-  attr_reader :graph_model
+  attr_reader :graph_model, :sandbox_mode
 
   # @param [Graph] graph_model
   # @param [Dataset,String] dataset Dataset or String for country
@@ -23,6 +23,13 @@ class Gql
       @future_graph  = loader.graph.tap{|g| g.year = @scenario.end_year}
       @dataset = loader.dataset(@scenario.code)
     end
+  end
+
+  # @param [:console, :sandbox] mode The GQL sandbox mode.
+  def sandbox_mode=(mode)
+    @sandbox_mode = mode
+    @present = QueryInterface.new(self, present_graph, sandbox_mode: mode)
+    @future  = QueryInterface.new(self, future_graph,  sandbox_mode: mode)
   end
 
   # @return [Qernel::Dataset] Dataset used for the present. Is calculated and cannot be updated anymore
