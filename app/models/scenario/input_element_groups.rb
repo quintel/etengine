@@ -57,7 +57,7 @@ class Scenario < ActiveRecord::Base
 
     # remove groups that have no input in user_values
     groups.each do |group, elements|
-      if (elements.map(&:id) & user_values_hash.keys).present?
+      if (elements.map(&:id) & user_values.keys).present?
         hsh[group] = elements
       end
     end

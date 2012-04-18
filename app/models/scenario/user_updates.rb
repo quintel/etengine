@@ -50,7 +50,7 @@ module Scenario::UserUpdates
   def inputs_present
     unless @inputs_present
       @inputs_present = {}
-      user_values_hash.each do |key, value|
+      user_values.each do |key, value|
         input = Input.get(key)
         @inputs_present[input] = value if input.present? && input.v2? && input.updates_present?
       end
@@ -61,7 +61,7 @@ module Scenario::UserUpdates
   def inputs_future
     unless @inputs_future
       @inputs_future = {}
-      user_values_hash.each do |key, value|
+      user_values.each do |key, value|
         input = Input.get(key)
         @inputs_future[input] = value if input.present? && input.v2? && input.updates_future?
       end
@@ -176,7 +176,7 @@ module Scenario::UserUpdates
   #
   def store_user_value(input, value)
     key = input.lookup_id
-    self.user_values_hash.merge! key => value
+    self.user_values.merge! key => value
     # touch(:present_updated_at) if input.updates_present?
     value
   end
@@ -184,50 +184,14 @@ module Scenario::UserUpdates
   # @tested 2010-11-30 seb
   #
   def user_value_for(input)
-    user_values_hash[input.lookup_id]
+    user_values[input.lookup_id]
   end
 
-  # TODO fix this, it's weird
-  #
-  # DEBT: This has had it's fair share of refactorings behind.
-  #       Make the serialization of user_values more straightforward
-  #
-  # Holds all values chosen by the user for a given slider.
-  # Hash {input.id => Float}, e.g.
-  # {3=>-1.1, 4=>-1.1, 5=>-1.1, 6=>-1.1, 203=>1.1, 204=>0.0}
-  #
-  # @tested 2010-11-30 seb
-  #
-  def user_values_hash
-    unless @user_values_hash
-      self[:user_values] ||= {}.to_yaml
-      @user_values_hash = YAML::load(self[:user_values])
-    end
-    @user_values_hash
-  end
-
-  # Sets the user_values.
-  #
-  # @untested 2010-12-22 jape
-  #
-  def user_values_hash=(values)
-    values ||= {}
-    if values.is_a?(Hash)
-      @user_values_hash = values
-    elsif values.is_a?(String)
-      @user_values_hash = YAML::load(values)
-    else
-      raise ArgumentError.new("You must set either a hash or a string: " + values.inspect)
-    end
-  end
-
-
-  # Deletes a uesr_value completely
   #
   # @untested 2010-12-22 seb
   #
   def delete_from_user_values(id)
-    user_values_hash.delete(id)
+    user_values.delete(id)
   end
 
   # Builds update_statements from user_values that are readable by the GQl.
@@ -236,7 +200,7 @@ module Scenario::UserUpdates
   # @untested 2010-12-06 seb
   #
   def build_update_statements
-    user_values_hash.each_pair do |id, value|
+    user_values.each_pair do |id, value|
       build_update_statements_for_element(id, value)
     end
   end

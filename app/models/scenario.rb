@@ -34,6 +34,7 @@
 class Scenario < ActiveRecord::Base
   include Scenario::UserUpdates
   include Scenario::Persistable
+  store :user_values
 
   # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
@@ -181,6 +182,12 @@ class Scenario < ActiveRecord::Base
     end
     self.user_values = cleaned_up
     save!
+  end
+
+  # this is used by the active resource serialization
+  def to_xml(options = {})
+    options.merge!(:except => [:user_values])
+    super(options)
   end
 
   # add all the attributes and methods that are modularized in calculator/
