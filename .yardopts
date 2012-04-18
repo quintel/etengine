@@ -1,4 +1,3 @@
---plugin yard-tomdoc
 --output-dir public/doc
 *.markdown
 *.mdown

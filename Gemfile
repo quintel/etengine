@@ -37,7 +37,8 @@ gem 'fileutils'
 # documentation gems. Needed on production too for dynamically generated docs.
 group :development, :production do
   gem 'yard', '~> 0.7.2'
-  gem 'yard-tomdoc'
+  # tomdoc to buggy right now
+  # gem 'yard-tomdoc'
   gem 'rdiscount'
 end
 
