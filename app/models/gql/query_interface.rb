@@ -26,9 +26,14 @@ module Gql
     #   Use this wisely. E.g. for the present graph, the graph.id is recommended over 
     #   scenario.id (as present graphs are the same in all scenarios).
     #   If set to nil, false or not at all defined, query_cache will not be used.
+    # @option options [:sandbox,:console] :sandbox_mode (:sandbox) 
+    #   The sandbox mode. :sandbox for production environment, :console for the GQL console
     #
     def initialize(gql, graph, options = {})
-      @rubel = Grammar::Sandbox.new(self)
+      @rubel = case options.fetch(:sandbox_mode, :sandbox)
+               when :sandbox then Grammar::Sandbox.new(self)
+               when :console then Grammar::Console.new(self)
+               end
       @graph = graph
       @gql = gql
       @options = options
