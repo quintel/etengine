@@ -110,7 +110,7 @@
     %tr
       %th Total Cost Per MWhe
       - result_fields(@pre,@fut) do |converter|
-        - converter.total_cost_per_mje.andand.per_mj_to_per_mwh
+        - converter.total_cost_per_mwh
     %tr
       %th total_losses
       - result_fields(@pre.converter,@fut.converter, :total_losses)

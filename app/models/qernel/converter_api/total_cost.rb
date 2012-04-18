@@ -10,6 +10,10 @@ class Qernel::ConverterApi
     :output_of_electricity
   ]
 
+  def total_cost_per_mwh
+    total_cost_per_mje and total_cost_per_mje * SECS_PER_HOUR
+  end
+
   def total_cost_per_mj
     dataset_fetch_handle_nil(:total_cost_per_mj) do
       # prevent division by zero
