@@ -31,8 +31,7 @@ module Scenario::Persistable
   def copy_scenario_state(scenario)
     self.user_values = scenario.user_values.clone
     self.end_year    = scenario.end_year
-    self.country     = scenario.country ? scenario.country.clone : nil
-    self.region      = scenario.region ? scenario.region.clone : nil
+    self.area_code   = scenario.area_code
     self.use_fce     = scenario.use_fce
   end
 

@@ -57,7 +57,7 @@
     %tr
       %td= link_to api_scenario.id, api_scenario_path(api_scenario)
       %td= link_to 'json', api_scenario_path(api_scenario, :format => 'json')
-      %td= api_scenario.country
+      %td= api_scenario.area_code
       %td= api_scenario.updated_at.to_s
       %td
         == copy-paste to etmodel: /scenarios/#{api_scenario.id}/load

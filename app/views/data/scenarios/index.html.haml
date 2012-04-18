@@ -18,8 +18,7 @@
       %th Id
       %th Title
       %th End Year
-      %th Country
-      %th Region
+      %th Area
       %th In start menu
       %th Protected
       %th
@@ -32,8 +31,7 @@
         %td= link_to s.id, data_scenario_path(:id => s.id)
         %td= s.title
         %td= s.end_year
-        %td= s.country
-        %td= s.region
+        %td= s.area_code
         %td= 'V' if s.in_start_menu
         %td= 'V' if s.protected
         %td

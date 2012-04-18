@@ -59,7 +59,7 @@ class ApiScenario < Scenario
   def input_values
     prepare_gql
 
-    values = Rails.cache.fetch("inputs.user_values.#{region}") do
+    values = Rails.cache.fetch("inputs.user_values.#{area_code}") do
       Input.static_values(gql)
     end
 
@@ -92,7 +92,7 @@ class ApiScenario < Scenario
   # a identifier for the scenario selector drop down in data.
   # => "#32341 - nl 2040 (2011-01-11)"
   def identifier
-    "##{id} - #{country} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
+    "##{id} - #{area_code} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
   end
 
   def api_errors
@@ -112,7 +112,7 @@ class ApiScenario < Scenario
   #
   def as_json(options={})
     super(
-      :only => [:user_values, :country, :region, :end_year, :start_year, :id, :use_fce]
+      :only => [:user_values, :area_code, :end_year, :start_year, :id, :use_fce]
     )
   end
 end

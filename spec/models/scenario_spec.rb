@@ -6,48 +6,13 @@ describe Scenario do
 
   describe "#default" do
     subject { Scenario.default }
-    its(:country) { should == 'nl'}
-    its(:region) { should == nil}
+    its(:area_code) { should == 'nl'}
     its(:user_values) { should == {} }
     its(:end_year) { should == 2040 }
     its(:start_year) { should == 2010 }
 
     describe "#years" do
       its(:years) { should == 30 }
-    end
-  end
-
-  describe "set_country_and_region" do
-    before { @scenario = Scenario.new }
-    context "region = nil" do
-      before { @scenario.set_country_and_region('nl', nil)}
-      subject { @scenario }
-      its(:country) { should == 'nl' }
-      its(:region) { should == nil }
-      its(:region_or_country) { should == 'nl' }
-    end
-    context "region = ''" do
-      before { @scenario.set_country_and_region('nl', '')}
-      subject { @scenario }
-      its(:country) { should == 'nl' }
-      its(:region) { should == nil }
-      its(:region_or_country) { should == 'nl' }
-    end
-    context "region = 'flevaland'" do
-      before { @scenario.set_country_and_region('nl', 'flevaland')}
-      subject { @scenario }
-      its(:region) { should == 'flevaland' }
-      its(:region_or_country) { should == 'flevaland' }
-    end
-    context "region = {'nl' => 'flevaland'}" do
-      before { @scenario.set_country_and_region('nl', {'nl' => 'flevaland'}) }
-      subject { @scenario }
-      its(:region) { should == 'flevaland' }
-    end
-    context "unmatched country ('ch') in region = {'nl' => 'flevaland'}" do
-      before { @scenario.set_country_and_region('ch', {'nl' => 'flevaland'}) }
-      subject { @scenario }
-      its(:region) { should be_nil }
     end
   end
 
@@ -253,8 +218,6 @@ describe Scenario do
     subject { @t }
     its(:user_values) { should == @s.user_values}
     its(:end_year) { should == @s.end_year}
-    its(:country) { should == @s.country}
-    its(:region) { should == @s.region}
-    #its(:use_fce) { should == @s.fce}
+    its(:area_code) { should == @s.area_code}
   end
 end

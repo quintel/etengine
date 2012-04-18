@@ -4,8 +4,7 @@ end
 
 Factory.define :scenario do |f|
   f.title "Some scenario"
-  f.region "abc"
-  f.country "nl"
+  f.area_code "nl"
   f.end_year 2040
   f.use_fce false
 end

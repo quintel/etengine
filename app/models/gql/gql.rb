@@ -21,7 +21,7 @@ class Gql
       loader    = Etsource::Loader.instance
       @present_graph = loader.graph.tap{|g| g.year = @scenario.start_year}
       @future_graph  = loader.graph.tap{|g| g.year = @scenario.end_year}
-      @dataset = loader.dataset(@scenario.code)
+      @dataset = loader.dataset(@scenario.area_code)
     end
   end
 

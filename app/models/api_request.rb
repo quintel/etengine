@@ -7,7 +7,7 @@
 #
 class ApiRequest
   GQUERY_KEY_SEPARATOR = ";".freeze
-  API_ATTRIBUTES = [:user_values, :country, :region, :start_year, :end_year, :use_fce, :preset_scenario_id]
+  API_ATTRIBUTES = [:user_values, :area_code, :start_year, :end_year, :use_fce, :preset_scenario_id]
 
   attr_accessor :settings, :input, :reset, :use_fce, :sanitize_groups
 
@@ -18,7 +18,7 @@ class ApiRequest
     @gquery_keys = []
     @api_scenario_id = attributes.delete(:id)
 
-    # sb 2012-04-03: not sure why this is here. doesnt really make sense. 
+    # sb 2012-04-03: not sure why this is here. doesnt really make sense.
     # uncommented for now, remove later.
     # Input.reset_all_cached if self.test_scenario?
 
@@ -74,7 +74,7 @@ class ApiRequest
     scenario.save unless test_scenario?
   end
 
-  # Initialize and return scenario. 
+  # Initialize and return scenario.
   def scenario
     @scenario ||= if test_scenario?
       ApiScenario.new(new_attributes).tap{|s| s.test_scenario = true }
@@ -89,7 +89,7 @@ class ApiRequest
     @gql = gql
   end
 
-  # Access point for the GQL. 
+  # Access point for the GQL.
   #
   def gql(options = {})
     unless @gql
@@ -105,7 +105,7 @@ class ApiRequest
 
   # This method runs the requested gqueries
   # Check ApiScenarioController#show
-  # 
+  #
   def response
     {
       :result   => results,

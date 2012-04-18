@@ -22,7 +22,7 @@ class Api::ApiScenariosController < Api::BaseController
   # This action is used by the ETE clients to create a new scenario.
   # The response is a simple JSON object like this:
   #
-  # {"api_scenario":{"country":"nl","end_year":2030,"id":7554,"region":null,"use_fce":false,"user_values":{}}}
+  # {"api_scenario":{"area_code":"nl","end_year":2030,"id":7554,"use_fce":false,"user_values":{}}}
   #
   # The important field is the id, that the clients will have to use on the following #show requests
   #
