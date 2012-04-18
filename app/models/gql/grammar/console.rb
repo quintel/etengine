@@ -1,8 +1,8 @@
 module Gql::Grammar
   # Used for GQL console
   class Console
-    include Rubel::Core
-
+    include ::Rubel::Core
+    
     include ::Gql::Grammar::Functions::Legacy
     include ::Gql::Grammar::Functions::Constants
     include ::Gql::Grammar::Functions::Traversal
