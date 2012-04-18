@@ -2,23 +2,24 @@ module Gql::Grammar
   module Functions
     module Core
 
-      # Shortcut for the LOOKUP and ATTR function.
-      # 
-      # It checks whether the last argument is a converter or carrier (to be 
-      # precise: it checks if a LOOKUP with that argument finds a converter).
-      # If it finds an converter, the V statement behaves exactly like LOOOKUP.
-      # Otherwise the last argument is treated as an attribute and V will become
-      # ATTR(LOOKUP(...), last_argument)
+      # Shortcut for the LOOKUP and ATTR function. Also see {#LOOKUP} and {#ATTR}. 
+      #
+      # == Examples
+      #
+      #   V(foo)               # => LOOKUP(foo)
+      #   V(foo, demand)       # => ATTR(LOOKUP(foo), demand)
+      #   V(foo, bar)          # => LOOKUP(foo, bar)
+      #   V(foo, bar, demand)  # => ATTR(LOOKUP(foo, bar), demand)
+      #
+      # Instead of converter keys you can pass anything inside V(). This 
+      # works because if LOOKUP does not find a converter for an argument
+      # it returns that argument itself.
       #   
-      #   V(foo, bar)         => LOOKUP(foo, bar)
-      #   V(foo, bar, demand) => ATTR(LOOKUP(foo, bar), demand)
+      #   V(CARRIER(electricity), cost_per_mj) # => Number
+      #   # => ATTR( LOOKUP(CARRIER(electricity)), cost_per_mj )
       #
-      # Examples
-      #
-      #   V(foo)               => LOOKUP(foo)
-      #   V(foo, demand)       => ATTR(LOOKUP(foo), demand)
-      #   V(foo, bar)          => LOOKUP(foo, bar) 
-      #   V(foo, bar, demand)  => ATTR(LOOKUP(foo, bar), demand)
+      # @return [Object] the result of LOOKUP If the last argument is a converter key.
+      # @return [Object] the result of {ATTR}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a converter key.
       #
       def V(*args)
         last_key = LOOKUP(args.last)
@@ -38,9 +39,8 @@ module Gql::Grammar
 
       # QUERY() or Q() returns the result of another gquery with given key.
       #
-      # key - The key of the gquery.
-      #
-      # Returns the result of that gquery. Can be a number, list of converters, etc.
+      # @param  key The key of the gquery.
+      # @return The result of that gquery. Can be a number, list of converters, etc.
       # 
       def QUERY(key)
         scope.subquery(key.to_s)
@@ -62,7 +62,7 @@ module Gql::Grammar
       # Change request:
       #
       # If LOOKUP finds no converter for a key it should return something else
-      # then the name of that key. This will cause problems down the road.
+      # then the name of that key. This will cause problems down the road. 
       #
       #   LOOKUP(foo, not_available)  => [Converter<foo>, "not_available"]
       #
@@ -83,9 +83,6 @@ module Gql::Grammar
 
       # Access attributes of one or more objects.
       # 
-      # objects   - an object or an array of objects. 
-      # attr_name - The String to lookup. 
-      #
       # Examples
       #
       # With a single attribute:
@@ -104,6 +101,9 @@ module Gql::Grammar
       #
       # Attributes dervied from GQL functions cannot be inside "" or ''.
       # 
+      # @param [] objects - an object or an array of objects. 
+      # @param [Symbol, String, Proc] attr_name The String to lookup. 
+      #
       def ATTR(objects, attr_name)
         objects = [objects] unless objects.is_a?(::Array) 
         

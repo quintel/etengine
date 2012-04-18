@@ -201,7 +201,7 @@ module Scenario::UserUpdates
   def user_values_hash
     unless @user_values_hash
       self[:user_values] ||= {}.to_yaml
-      @user_values_hash = YAML::load(self[:user_values])
+      self.user_values_hash = self[:user_values]
     end
     @user_values_hash
   end
