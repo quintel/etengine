@@ -9,14 +9,13 @@ module Gql
     end
 
     def query(obj, input_value = nil)
-      if obj.is_a?(Gquery)
-        subquery(obj.key)
-      elsif obj.is_a?(Input)
-        execute_input(obj, input_value)
-      elsif obj.is_a?(String)
-        @rubel.query(Gquery.gql3_proc(obj))
+      case obj
+      when Gquery then subquery(obj.key)
+      when Input  then execute_input(obj, input_value)
+      when String then @rubel.query(Gquery.gql3_proc(obj))
+      when Proc   then @rubel.query(obj)
       else
-        raise Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{obj.inspect}.")
+        raise ::Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{obj.inspect}.")
       end
     end
 
