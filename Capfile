@@ -15,7 +15,7 @@ namespace :deploy do
     run "ln -sf #{shared_path}/config/database.yml #{release_path}/config/"
     run "ln -sf #{shared_path}/config/latest_etsource_import_sha #{release_path}/config/"
     run "ln -sf #{shared_path}/config/latest_etsource_export_sha #{release_path}/config/"
-    run "cd #{release_path}; chmod 777 public/images public/stylesheets tmp"
+    run "cd #{release_path}; chmod 777 tmp"
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
     # Symlink to dynamically generated rdocs if they exist.
     # Regenerate docs manually With: cap ... deploy:doc
