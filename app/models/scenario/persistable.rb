@@ -12,13 +12,12 @@ module Scenario::Persistable
     self.user_values = {}
     self.update_statements = {}
     self.update_statements_present = {}
-    @user_values_hash = {}
     @inputs_present = {}
     @inputs_future = {}
     self.use_fce = false
   end
 
-  # Called from current. 
+  # Called from current.
   #
   def load!
     build_update_statements
@@ -36,7 +35,7 @@ module Scenario::Persistable
     self.region      = scenario.region ? scenario.region.clone : nil
     self.use_fce     = scenario.use_fce
   end
-  
+
   # Returns a copy of a scenario. Used
   def clone!
     fresh = Scenario.new
