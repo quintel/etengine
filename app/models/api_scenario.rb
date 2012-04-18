@@ -64,11 +64,11 @@ class ApiScenario < Scenario
     end
 
     Input.dynamic_start_values(gql).each do |id, dynamic_values|
-      values[id.to_s][:start_value] = dynamic_values[:start_value] if values[id.to_s]
+      values[id][:start_value] = dynamic_values[:start_value] if values[id]
     end
 
     self.user_values_hash.each do |id, user_value|
-      values[id.to_s][:user_value] = user_value if values[id.to_s]
+      values[id][:user_value] = user_value if values[id]
     end
 
     values
