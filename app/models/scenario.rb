@@ -82,14 +82,6 @@ class Scenario < ActiveRecord::Base
     scenario.touch :present_updated_at
   end
 
-  before_save :serialize_user_values
-
-  def serialize_user_values
-    if @user_values_hash
-      self[:user_values] = @user_values_hash.to_yaml
-    end
-  end
-
   def fce_settings=(fce_settings)
     Rails.logger.warn("fce_settings is deprecated")
   end
@@ -105,7 +97,6 @@ class Scenario < ActiveRecord::Base
   def test_scenario?
     @test_scenario == true
   end
-
 
   ##
   # @tested 2010-11-30 seb
