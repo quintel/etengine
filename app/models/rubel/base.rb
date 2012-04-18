@@ -1,11 +1,4 @@
 module Rubel
-  class ErrorReporter
-    def initialize(error, string)
-      raise "error: #{error.message}\n#{error.backtrace[0..5]*"\n"}"
-    end
-  end
-
-
   # Base is the runtime with builtin sandbox to make it hard to run malicious or undefined code.
   #
   # The sandbox is created by making Base a subclass from BasicObject which has two effects:
