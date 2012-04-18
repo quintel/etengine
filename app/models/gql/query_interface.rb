@@ -17,7 +17,7 @@ module Gql
     include Lookup
 
     attr_accessor :graph
-    attr_reader :options, :gql
+    attr_reader :options, :gql, :rubel
 
     # @param [Gql::Gql]
     # @param [Hash] options 
@@ -28,7 +28,7 @@ module Gql
     #   If set to nil, false or not at all defined, query_cache will not be used.
     #
     def initialize(gql, graph, options = {})
-      @rubel = Grammar::Base.new(self)
+      @rubel = Grammar::Sandbox.new(self)
       @graph = graph
       @gql = gql
       @options = options

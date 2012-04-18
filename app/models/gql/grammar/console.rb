@@ -1,11 +1,9 @@
 module Gql::Grammar
-  # ATTENTION: use :: namespace
-  # Rubel::Base inherits from BasicObject. This means we don't have
-  # access to the default namespace, so prepend classes and modules
-  # with ::.
-  class Base < Rubel::Base
+  # Used for GQL console
+  class Console
+    include Rubel::Core
+
     include ::Gql::Grammar::Functions::Legacy
-    # now override with freshened up gql functions
     include ::Gql::Grammar::Functions::Constants
     include ::Gql::Grammar::Functions::Traversal
     include ::Gql::Grammar::Functions::Aggregate
