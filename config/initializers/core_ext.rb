@@ -36,8 +36,6 @@ class Numeric
   def rescue_nan(with = 0.0)
     finite? ? self : with
   end
-
-  def per_mj_to_per_mwh; self * 3600.0; end
 end
 
 class Float
