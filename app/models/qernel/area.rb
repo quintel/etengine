@@ -74,8 +74,13 @@ module Qernel
       @dataset_key = :area_data
     end
 
+    # Remove when we replace :area with :area_code
+    def area_code
+      area
+    end
+
     def inspect
-      "area"
+      "<Area #{area_code}>"
     end
 
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
