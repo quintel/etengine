@@ -10,27 +10,27 @@ module Gql::Grammar
       # it returns that argument itself.
       #
       # @example Lookup a converter by key
-      #   V(foo)               == LOOKUP(foo)
+      #   V(foo)               # = LOOKUP(foo)
       #   # => [<foo>]
       #
       # @example Lookup multiple converters by their keys
-      #   V(foo, bar)          == LOOKUP(foo, bar)
+      #   V(foo, bar)          # = LOOKUP(foo, bar)
       #   # => [<foo>, <bar>]
       #
       # @example Lookup a converter attribute
-      #   V(foo, demand)       == ATTR(LOOKUP(foo), demand)
+      #   V(foo, demand)       # = ATTR(LOOKUP(foo), demand)
       #   # => 100
       #
       # @example Lookup multiple converter attributes
-      #   V(foo, bar, demand)  == ATTR(LOOKUP(foo, bar), demand)
+      #   V(foo, bar, demand)  # = ATTR(LOOKUP(foo, bar), demand)
       #   # => [100, 200]
       #  
       # @example Nesting of LOOKUPs
-      #   V(V(foo), V(bar), demand)  == ATTR(LOOKUP(foo, LOOKUP(bar)), demand)
+      #   V(V(foo), V(bar), demand)  # = ATTR(LOOKUP(foo, LOOKUP(bar)), demand)
       #   # => [100, 200]
       #
       # @example Pass arbitrary objects to V()
-      #   V(CARRIER(electricity), cost_per_mj) == ATTR( LOOKUP(CARRIER(electricity)), cost_per_mj )
+      #   V(CARRIER(electricity), cost_per_mj) # = ATTR( LOOKUP(CARRIER(electricity)), cost_per_mj )
       #   # => 23.3
       #
       # @see #LOOKUP
