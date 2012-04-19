@@ -14,5 +14,30 @@ module Gql::Grammar
     include ::Gql::Grammar::Functions::Helper
     include ::Gql::Grammar::Functions::Core
     
+
+    # code completion is for the gql console.
+    # it adds converter and gquery keys as methods,
+    # so that PRY code completion picks it up. 
+    #
+    # The methods return the key as a symbol, which is
+    # the same behaviour as with method_missing.
+    #
+    def enable_code_completion
+      self.class.enable_code_completion(self)
+    end
+
+    def self.enable_code_completion(rubel_base)
+      keys = [
+        rubel_base.ALL().map(&:full_key),
+        Gquery.all.map(&:key),
+      ].flatten.
+        map(&:to_sym) # really make sure keys are symbols
+
+      keys.each do |converter_key|
+        define_method converter_key do
+          converter_key
+        end
+      end
+    end
   end
 end

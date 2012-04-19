@@ -2,11 +2,15 @@ require 'open-uri'
 
 namespace :gql do
   task :future => :environment do
-    gql.future.rubel.pry
+    rubel = gql.future.rubel
+    rubel.enable_code_completion
+    rubel.pry
   end
 
   task :present => :environment do
-    gql.present.rubel.pry
+    rubel = gql.present.rubel
+    rubel.enable_code_completion
+    rubel.pry
   end
 
   def gql
@@ -21,7 +25,9 @@ namespace :gql do
       scenario = ApiScenario.default
     end
 
-    scenario.gql(prepare: true).tap{|gql| gql.sandbox_mode = :console}
+    gql = scenario.gql(prepare: true)
+    gql.sandbox_mode = :console
+    gql
   end
 
   def load_settings
