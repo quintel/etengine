@@ -63,10 +63,10 @@ module Gql::Grammar
       #
       # @return [Numeric,Array] The result of that gquery. Can be a number, list of converters, etc.
       # 
-      def QUERY(key)
+      def Q(key)
         scope.subquery(key.to_s)
       end
-      alias Q QUERY
+      alias QUERY Q
 
       # Lookup objects by their corresponding key(s). 
       #
@@ -95,7 +95,7 @@ module Gql::Grammar
       # @return [Array] An array of the elements of the query. 
       #                 Duplicates and nil values are removed.
       #
-      def LOOKUP(*keys)
+      def L(*keys)
         keys.flatten!
         keys.map! do |key| 
           # Given LOOKUP( key_1 ) key_1 will respond_to to_sym because
@@ -111,6 +111,7 @@ module Gql::Grammar
         keys.uniq!
         keys
       end
+      alias LOOKUP L
 
       # Access attributes of one or more objects.
       #
@@ -152,7 +153,7 @@ module Gql::Grammar
       # @return [Array] An array of the results if multiple elements given
       # @return [Numeric] The resulting number if only one element is given
       #
-      def ATTR(elements, attr_name)
+      def A(elements, attr_name)
         elements = [elements] unless elements.is_a?(::Array) 
         
         elements.tap(&:flatten!).map! do |a| 
@@ -167,6 +168,7 @@ module Gql::Grammar
         end
         elements.length <= 1 ? (elements.first || 0.0) : elements
       end
+      alias ATTR A
 
     end
   end
