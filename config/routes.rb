@@ -101,10 +101,7 @@ Etm::Application.routes.draw do
     root :to => 'commits#index'
 
     resources :commits, :only => [:index, :show] do
-      member do
-        get :import
-        get :export
-      end
+      get :import, :on => :member
     end
   end
 

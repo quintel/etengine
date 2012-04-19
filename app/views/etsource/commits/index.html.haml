@@ -10,16 +10,10 @@
         = submit_tag "Checkout", :class => 'btn'
         = submit_tag "Refresh", :class => 'btn'
         = link_to "verify if dashboard is working", etsource_commit_path(id: 'current')
-      %p
-        Click "Checkout" to move to a different branch.
-      %p
-        Click "IMPORT" if you changes gqueries and/or inputs: this will update the database
-      %p
-        Click "USE" for any other change (graph and/or dataset): this will update the directory read by the engine
+      %p Click "Checkout" to move to a different branch.
 
 - if @output
   %pre.git_output= @output
-
 
 .row
   .span16
@@ -31,16 +25,11 @@
           %tr
             %td.span9
               - if @etsource.get_latest_import_sha == commit.to_s
-                %span.label Imported
-              - if @etsource.get_latest_export_sha == commit.to_s
-                %span.label In use
+                %span.label.label-info Current
               =commit.message
             %td.span1= link_to commit.to_s[0..6], "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
-            %td.span1= link_to 'IMPORT', import_etsource_commit_path(:id => commit.to_s)
-            %td.span1= link_to 'USE', export_etsource_commit_path(:id => commit.to_s), :confirm => 'This will take a while'
+            %td.span1= link_to 'Import', import_etsource_commit_path(:id => commit.to_s), :confirm => 'This will take a while', :class => 'btn btn-mini'
             %td.span2= commit.date.strftime("%m-%d %H:%M")
             %td.span3= commit.author.name
     %h5
       Latest import: #{@etsource.get_latest_import_sha || 'N/A'}
-      %br
-      Checked out revision: #{@etsource.get_latest_export_sha || 'N/A'}

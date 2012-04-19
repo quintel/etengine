@@ -53,7 +53,7 @@ module Etsource
       FileUtils.rm_rf(@export_dir)
       FileUtils.mkdir(@export_dir)
       system "cd #{@base_dir} && git archive #{sha_id} | tar -x -C #{@export_dir}"
-      update_latest_export_sha(sha_id)
+      update_latest_import_sha(sha_id)
     end
 
     def refresh
@@ -91,19 +91,6 @@ module Etsource
       @git.checkout branch
     end
 
-    # import: gqueries and inputs are saved to db
-    # export: ~svn-export
-    #
-    # To keep track of which revisions we're using we store the SHA-ID
-    # in two files.
-    def update_latest_export_sha(sha)
-      File.open(export_sha_file, 'w') {|f| f.write(sha)} rescue nil
-    end
-
-    def get_latest_export_sha
-      File.read(export_sha_file) rescue nil
-    end
-
     def update_latest_import_sha(sha)
       File.open(import_sha_file, 'w') {|f| f.write(sha)} rescue nil
     end
@@ -113,10 +100,6 @@ module Etsource
     end
 
     private
-
-    def export_sha_file
-      "#{Rails.root}/config/latest_etsource_export_sha"
-    end
 
     def import_sha_file
       "#{Rails.root}/config/latest_etsource_import_sha"
