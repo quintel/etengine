@@ -49,6 +49,8 @@ class ApiRequest
   # DEBT merge with ApiScenario.new_attributes
   def self.new_attributes(settings)
     opts = settings.present? ? settings : {}
+    # Old applications might still use the old country attribute
+    opts[:area_code] = opts[:country] unless opts[:country].blank?
     opts.each do |key,value|
       opts[key] = nil if value == 'null' or key == 'undefined'
     end
