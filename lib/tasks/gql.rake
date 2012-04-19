@@ -1,5 +1,10 @@
 require 'open-uri'
 
+namespace :g do
+  task :f do Rake::Task["gql:future"].invoke; end
+  task :p do Rake::Task["gql:present"].invoke; end
+end
+
 namespace :gql do
   task :future => :environment do
     console(gql.future.rubel)
@@ -18,11 +23,9 @@ namespace :gql do
     Rails.cache.clear
 
     if settings = load_settings
-      puts "** Using settings defined in #{json_file}"
-      puts "** #{settings['settings']}"
-      scenario = ApiScenario.new(settings['settings'])
+      settings = settings[:settings].with_indifferent_access
+      scenario = ApiScenario.new(ApiScenario.new_attributes(settings))
     else
-      puts "** Using default scenario"
       scenario = ApiScenario.default
     end
 
@@ -34,6 +37,13 @@ namespace :gql do
   def load_settings
     json_file = ENV['JSON'] || "gqlconsole/default.json"
     settings = JSON.parse(open(json_file).read) rescue nil
-    settings and settings['settings']
+    if settings
+      puts "** Using settings defined in #{json_file}"
+      puts "** #{settings['settings']}"
+      settings and settings.with_indifferent_access
+    else
+      puts "** Using default scenario"
+      nil
+    end  
   end
 end
