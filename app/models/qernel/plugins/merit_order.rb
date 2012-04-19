@@ -123,9 +123,11 @@ module Qernel::Plugins
     end
 
     def calculate_full_load_hours
-      return unless enable_merit_order?
+      return unless area.area_code == 'nl'
+      #return unless enable_merit_order?
       return unless group_converters(:merit_order_converters).present?
 
+      puts 'calculate_merit_order'
       if dataset_get(:calculate_merit_order_finished) != true
         calculate_merit_order
       end
