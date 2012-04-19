@@ -44,6 +44,10 @@ module Etsource
       @git.log
     end
 
+    def get_latest_export_sha
+      import_sha_file
+    end
+
     # Exports a revision. Git doesn't have a command similar to `svn export`, so this
     # emulates it. The revision passed as parameter will be exported to the
     # APP_CONFIG[:etsource_export_dir]. The directory will first be deleted (to get rid
