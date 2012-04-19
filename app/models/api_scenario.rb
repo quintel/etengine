@@ -83,11 +83,10 @@ class ApiScenario < Scenario
   end
 
   def scenario_id=(scenario_id)
-    unless scenario_id.blank?
-      if scenario = Scenario.find(scenario_id)
-        copy_scenario_state(scenario)
-        self[:preset_scenario_id] = scenario_id
-      end
+    return if scenario_id.blank?
+    if scenario = Scenario.find_by_id(scenario_id)
+      copy_scenario_state(scenario)
+      self.preset_scenario_id = scenario_id
     end
   end
 
