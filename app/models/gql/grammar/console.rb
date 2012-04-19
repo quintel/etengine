@@ -38,6 +38,14 @@ module Gql::Grammar
           converter_key
         end
       end
+
+      define_method :foo do
+        rubel_base.ALL().first
+      end
+
+      define_method :bar do
+        rubel_base.ALL().second
+      end
     end
   end
 end
