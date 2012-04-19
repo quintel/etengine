@@ -19,7 +19,7 @@ namespace :deploy do
     run "ln -nfs #{shared_path}/vendor_bundle #{release_path}/vendor/bundle"
     # Symlink to dynamically generated rdocs if they exist.
     # Regenerate docs manually With: cap ... deploy:doc
-    run "if [ -d #{shared_path}/doc ]; then ln -s #{shared_path}/doc #{release_path}/public/; fi"
+    run "if [ -d #{shared_path}/doc ]; then ln -sf #{shared_path}/doc #{release_path}/public/; fi"
 
     memcached.flush
   end
