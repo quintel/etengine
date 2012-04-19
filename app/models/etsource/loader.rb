@@ -11,7 +11,7 @@ module Etsource
   class Loader
     include Singleton
     include Instrumentable
-  
+
     def initialize
       @etsource = Etsource::Base.instance
       @datasets = {}.with_indifferent_access
@@ -101,7 +101,7 @@ module Etsource
     end
 
     def cache_key
-      "etsource/#{@etsource.get_latest_export_sha}/"
+      "etsource/#{@etsource.get_latest_import_sha}/"
     end
 
     # A Qernel::Graph from ETsource where the converters are ordered in a way that
@@ -110,7 +110,7 @@ module Etsource
     def optimized_graph
       instrument("etsource.loader: optimized_graph") do
         if @etsource.cache_topology?
-          @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.get_latest_export_sha}/optimized_graph") do
+          @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.get_latest_import_sha}/optimized_graph") do
             g = unoptimized_graph
             g.dataset = dataset('nl')
             g.optimize_calculation_order
