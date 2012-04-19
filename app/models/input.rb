@@ -164,9 +164,9 @@ class Input < ActiveRecord::Base
       begin
         hsh.merge input.client_values(gql)
       rescue => ex
-        Rails.logger.warn("Input#static_values for input #{input.lookup_id} failed.")
+        Rails.logger.warn("Input#static_values for input #{input.lookup_id} failed: #{ex}")
         Airbrake.notify(
-          :error_message => "Input#static_values for input #{input.lookup_id} failed.",
+          :error_message => "Input#static_values for input #{input.lookup_id} failed: #{ex}",
           :backtrace => caller,
           :parameters => {:input => input, :api_scenario => Current.scenario }) unless
            APP_CONFIG[:standalone]
