@@ -107,6 +107,7 @@ module Gql::Grammar
             key
           end
         end
+        keys.flatten!
         keys.compact!
         keys.uniq!
         keys
