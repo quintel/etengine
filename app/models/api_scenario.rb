@@ -26,6 +26,8 @@ class ApiScenario < Scenario
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
   scope :recent, order("created_at DESC").limit(30)
 
+  attr_accessible :scenario_id
+
   def self.new_attributes(settings = {})
     settings ||= {}
     attributes = Scenario.default_attributes.merge(:title => "API")

@@ -36,28 +36,22 @@ class Scenario < ActiveRecord::Base
   include Scenario::Persistable
   store :user_values
 
-  # has_paper_trail will break saving and laoding scenarios
   belongs_to :user
 
   # A scenario can have a preset. We use this
   # when it has to be reset to this scenario.
-  #
-  # @tested 2010-12-21 jape
-  #
   has_one :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
 
   validates_presence_of :title, :on => :create, :message => I18n.t("scenario.provide_title")
 
   scope :in_start_menu, where(:in_start_menu => true)
   # it's a national preset scenario when there is no region defined and it's defined in the start menu
-  scope :by_region, lambda {|region| where(:area_code => region) }
   scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   scope :recent_first, order('created_at DESC')
 
   # let's define the conditions that make a scenario deletable. The table has
-  # thousands of stale records. The user_values check is very ugly, I'm looking
-  # forward to use Rails 3.2 and its ActiveRecord store - PZ 2012-02-02
+  # thousands of stale records.
   scope :deletable, where(%q[
     in_start_menu IS NULL
     AND protected IS NULL
@@ -70,7 +64,10 @@ class Scenario < ActiveRecord::Base
     )
   ])
 
-  # before_validation :copy_scenario_state
+  attr_accessible :author, :title, :description, :user_values, :end_year,
+    :area_code, :country, :region, :in_start_menu, :user_id, :preset_scenario_id,
+    :use_fce, :protected
+
 
   before_create do |scenario|
     if preset = scenario.preset_scenario
