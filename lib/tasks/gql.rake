@@ -1,15 +1,32 @@
+require 'open-uri'
+
 namespace :gql do
   task :future => :environment do
-    default_gql.future.rubel.pry
+    gql.future.rubel.pry
   end
 
   task :present => :environment do
-    default_gql.present.rubel.pry
+    gql.present.rubel.pry
   end
 
-  def default_gql
+  def gql
     Rails.cache.clear
-    ApiScenario.default.gql(prepare: true).
-      tap{|gql| gql.sandbox_mode = :console}
+
+    if settings = load_settings
+      puts "** Using settings defined in #{json_file}"
+      puts "** #{settings['settings']}"
+      scenario = ApiScenario.new(settings['settings'])
+    else
+      puts "** Using default scenario"
+      scenario = ApiScenario.default
+    end
+
+    scenario.gql(prepare: true).tap{|gql| gql.sandbox_mode = :console}
+  end
+
+  def load_settings
+    json_file = ENV['JSON'] || "gqlconsole/default.json"
+    settings = JSON.parse(open(json_file).read) rescue nil
+    settings and settings['settings']
   end
 end
