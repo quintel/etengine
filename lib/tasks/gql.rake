@@ -2,15 +2,16 @@ require 'open-uri'
 
 namespace :gql do
   task :future => :environment do
-    rubel = gql.future.rubel
-    rubel.enable_code_completion
-    rubel.pry
+    console(gql.future.rubel)
   end
 
   task :present => :environment do
-    rubel = gql.present.rubel
+    console(gql.present.rubel)
+  end
+
+  def console(rubel)
     rubel.enable_code_completion
-    rubel.pry
+    Pry.start(rubel, prompt: [proc { "GQL: " }])
   end
 
   def gql
