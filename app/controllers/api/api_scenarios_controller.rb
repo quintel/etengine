@@ -28,8 +28,9 @@ class Api::ApiScenariosController < Api::BaseController
   #
   def new
     attributes = ApiRequest.new_attributes(params[:settings])
-    @api_scenario = ApiScenario.create!(attributes)
-
+    @api_scenario = ApiScenario.new(attributes)
+    @api_scenario.scenario_id = params[:settings][:scenario_id]
+    @api_scenario.save!
     respond_to do |format|
       format.html { redirect_to api_scenario_url(@api_scenario.id)}
       format.json { render :json => @api_scenario, :callback => params[:callback] }
