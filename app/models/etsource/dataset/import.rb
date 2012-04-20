@@ -60,16 +60,24 @@ module Etsource
       hsh[:carriers].andand.keys || []
     end
 
+    def raw_hash
+      load_dataset_hash({})
+    end
+
   #########
   protected
   #########
 
-    def load_dataset_hash
-      default_files   = Dir.glob(country_dir('_defaults')+"/**/*.yml")
-      default_dataset = YamlPack.new(default_files, yaml_box_opts(country_dir('_defaults'))).load_deep_merged
+    def load_dataset_hash(yaml_pack_options = nil)
+      yaml_pack_options ||= yaml_box_opts
+      yaml_pack_options[:base_dir] = country_dir('_defaults')
 
+      default_files   = Dir.glob(country_dir('_defaults')+"/**/*.yml")
+      default_dataset = YamlPack.new(default_files, yaml_pack_options).load_deep_merged
+
+      yaml_pack_options[:base_dir] = country_dir
       country_files   = Dir.glob(country_dir+"/**/*.yml")
-      country_dataset = YamlPack.new(country_files, yaml_box_opts(country_dir)).load_deep_merged
+      country_dataset = YamlPack.new(country_files, yaml_pack_options).load_deep_merged
 
       default_dataset.deep_merge(country_dataset)
     end

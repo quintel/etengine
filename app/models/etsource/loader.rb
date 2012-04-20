@@ -57,6 +57,11 @@ module Etsource
       end
     end
 
+    # Only used for the gql console dataset output
+    def raw_hash(country)
+      ::Etsource::Dataset::Import.new(country).raw_hash
+    end
+
     def gqueries
       instrument("etsource.loader: gqueries") do
         cache("gqueries") do
