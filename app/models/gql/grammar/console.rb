@@ -69,19 +69,14 @@ module Gql::Grammar
       ].flatten.
         map(&:to_sym) # really make sure keys are symbols
 
-      keys.each do |converter_key|
-        define_method converter_key do
-          converter_key
+      keys.each do |key|
+        define_method key do
+          key
         end
       end
 
-      define_method :foo do
-        rubel_base.ALL().first
-      end
-
-      define_method :bar do
-        rubel_base.ALL().second
-      end
+      define_method :foo do rubel_base.ALL().first; end
+      define_method :bar do rubel_base.ALL().second; end
     end
   end
 end
