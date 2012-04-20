@@ -240,7 +240,6 @@ DEPENDENCIES
   spork (~> 0.9.0.rc)
   term-ansicolor
   text-table
-  treetop (= 1.4.8)
   unicorn
   webrat
   yaml_pack (~> 0.0.3.alpha)
