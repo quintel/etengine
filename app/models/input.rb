@@ -181,7 +181,7 @@ class Input < ActiveRecord::Base
   def self.dynamic_start_values(gql)
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
       begin
-        hsh.merge input.lookup_id.to_s => {
+        hsh.merge input.lookup_id => {
           :start_value => input.start_value_for(gql)
         }
       rescue => ex
