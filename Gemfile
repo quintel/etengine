@@ -50,6 +50,7 @@ end
 group :test, :development do
   gem "rspec-rails", "~> 2.8.0"
   gem 'ruby-prof'
+  gem 'pry', '~> 0.9.9.3'
   gem 'pry-rails'
   gem 'pry-remote'
   gem 'guard'
