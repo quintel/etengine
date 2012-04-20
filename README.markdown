@@ -22,7 +22,7 @@ How to use this documentation.
 
 How to work with different etsource directories, make changes and load them in the gql console.
 
-### (ETsource: Create a new basic etmodel)[http://vimeo.com/40709640]
+#### (ETsource: Create a new basic etmodel)[http://vimeo.com/40709640]
 
 We build a new etmodel with 3 converters from scratch. This helps you understand how the etsource works.
 The result you can find in: etsource/models/sample
