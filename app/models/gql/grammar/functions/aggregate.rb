@@ -111,12 +111,13 @@ module Gql::Grammar
       #   DIVIDE([1],[2])  # => 0.5
       #   DIVIDE(1,2)      # => 0.5
       #
-      # @example compare with normal arithmetics
-      #   DIVIDE(1,2)      # => 0.5
-      #   # if you divide integers you get a different outcome
-      #   1 / 2            # => 0  
-      #   # One number has to be a float
-      #   1.0 / 2          # => 0.5
+      # @example Watch out doing normal arithmetics (outside DIVIDE)
+      #   DIVIDE(2,3)      # => 0.66
+      #   # (divideing integers gets you elimentary school output. 2 / 3 = 0 with remainder 2)
+      #   2 / 3            # => 0
+      #   2 % 3            # => 2 # % = modulo (what is the remainder)
+      #   2.0 / 3          # => 0.66 If one number is a float it works as expected
+      #   2 / 3.0          # => 0.66 If one number is a float it works as expected
       #
       # @example Exceptions
       #   DIVIDE(nil, 1)   # => 0.0
