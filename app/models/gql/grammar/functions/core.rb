@@ -2,7 +2,7 @@ module Gql::Grammar
   module Functions
     module Core
 
-      # Shortcut for the LOOKUP and ATTR function. Also see {#LOOKUP} and {#ATTR}. 
+      # Shortcut for the LOOKUP and MAP function. Also see {#LOOKUP} and {#MAP}. 
       #
       #
       # Instead of converter keys you can pass anything inside V(). This 
@@ -18,25 +18,25 @@ module Gql::Grammar
       #   # => [<foo>, <bar>]
       #
       # @example Lookup a converter attribute
-      #   V(foo, demand)       # = ATTR(LOOKUP(foo), demand)
+      #   V(foo, demand)       # = MAP(LOOKUP(foo), demand)
       #   # => 100
       #
       # @example Lookup multiple converter attributes
-      #   V(foo, bar, demand)  # = ATTR(LOOKUP(foo, bar), demand)
+      #   V(foo, bar, demand)  # = MAP(LOOKUP(foo, bar), demand)
       #   # => [100, 200]
       #  
       # @example Nesting of LOOKUPs
-      #   V(V(foo), V(bar), demand)  # = ATTR(LOOKUP(foo, LOOKUP(bar)), demand)
+      #   V(V(foo), V(bar), demand)  # = MAP(LOOKUP(foo, LOOKUP(bar)), demand)
       #   # => [100, 200]
       #
       # @example Pass arbitrary objects to V()
-      #   V(CARRIER(electricity), cost_per_mj) # = ATTR( LOOKUP(CARRIER(electricity)), cost_per_mj )
+      #   V(CARRIER(electricity), cost_per_mj) # = MAP( LOOKUP(CARRIER(electricity)), cost_per_mj )
       #   # => 23.3
       #
       # @see #LOOKUP
-      # @see #ATTR
+      # @see #MAP
       # @return [Array] the result of {LOOKUP} if the last argument is a converter key.
-      # @return [Numeric,Array] the result of {ATTR}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a converter key.
+      # @return [Numeric,Array] the result of {MAP}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a converter key.
       #
       def V(*args)
         last_key = LOOKUP(args.last)
@@ -48,7 +48,7 @@ module Gql::Grammar
           LOOKUP(*args)
         else
           attr_name = args.pop
-          ATTR(LOOKUP(*args), attr_name)
+          MAP(LOOKUP(*args), attr_name)
         end
       end
       alias VALUE V
@@ -131,22 +131,22 @@ module Gql::Grammar
       # Attributes dervied from GQL functions cannot be inside "" or ''.
       #
       # @example With a single attribute:
-      #   ATTR(L(foo), demand)      # => 100
-      #   ATTR(L(foo), "demand")    # => 100
-      #   ATTR(L(foo, bar), demand) # => [100, 200]
+      #   MAP(L(foo), demand)      # => 100
+      #   MAP(L(foo), "demand")    # => 100
+      #   MAP(L(foo, bar), demand) # => [100, 200]
       #
       # @example Composed attributes add "" or ''
-      #   ATTR(L(foo), 'demand * (3.0 + co2_free)')
-      #   ATTR(L(foo), "demand * (3.0 + co2_free)")
+      #   MAP(L(foo), 'demand * (3.0 + co2_free)')
+      #   MAP(L(foo), "demand * (3.0 + co2_free)")
       #
       # @example GQL functions as arguments
-      #   ATTR(L(foo), primary_demand_of(CARRIER(electricity)))
-      #   ATTR(L(foo), "primary_demand_of(CARRIER(electricity))")
-      #   ATTR(L(foo), demand * AREA(number_of_households))
-      #   ATTR(L(foo), "demand * AREA(number_of_households)"))))
+      #   MAP(L(foo), primary_demand_of(CARRIER(electricity)))
+      #   MAP(L(foo), "primary_demand_of(CARRIER(electricity))")
+      #   MAP(L(foo), demand * AREA(number_of_households))
+      #   MAP(L(foo), "demand * AREA(number_of_households)"))))
       #
       # @example Access other Qernel objects
-      #   ATTR(L(foo), 'demand * area.number_of_households')
+      #   MAP(L(foo), 'demand * area.number_of_households')
       #
       # @param [Array] elements The elements to query the attributes.
       #                E.g. LOOKUP(...), SECTOR(...)
@@ -154,7 +154,7 @@ module Gql::Grammar
       # @return [Array] An array of the results if multiple elements given
       # @return [Numeric] The resulting number if only one element is given
       #
-      def A(elements, attr_name)
+      def M(elements, attr_name)
         elements = [elements] unless elements.is_a?(::Array) 
         
         elements.tap(&:flatten!).map! do |a| 
@@ -163,13 +163,17 @@ module Gql::Grammar
           if attr_name.respond_to?(:call)
              a.instance_exec(&attr_name)
           else
-            # to_s imported, for when ATTR(..., demand) demand comes through method_missing (as a symbol)
+            # to_s imported, for when MAP(..., demand) demand comes through method_missing (as a symbol)
             a.instance_eval(attr_name.to_s)
           end
         end
         elements.length <= 1 ? (elements.first || 0.0) : elements
       end
-      alias ATTR A
+      alias MAP M
+      # @deprecated
+      alias ATTR M
+      # @deprecated
+      alias A M
 
     end
   end
