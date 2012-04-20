@@ -63,6 +63,10 @@ module Gql::Grammar
     end
 
     def self.enable_code_completion(rubel_base)
+      # first create the foo, bar methods
+      define_method :foo do rubel_base.ALL().first; end
+      define_method :bar do rubel_base.ALL().second; end
+
       keys = [
         rubel_base.ALL().map(&:full_key),
         Gquery.all.map(&:key),
@@ -74,9 +78,6 @@ module Gql::Grammar
           key
         end
       end
-
-      define_method :foo do rubel_base.ALL().first; end
-      define_method :bar do rubel_base.ALL().second; end
     end
   end
 end
