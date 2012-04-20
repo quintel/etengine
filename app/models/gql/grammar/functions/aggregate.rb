@@ -43,6 +43,9 @@ module Gql::Grammar
       #   NEG(2)            # => -2
       #   NEG(1,2,3)        # => [-1, -2, -3]
       #
+      # @param [Numeric,Array] *values one or multiple values or arrays
+      # @return [Numeric] The average of the *first* value
+      #
       def NEG(*args)
         args.flatten!
         args.map!{|a| -a }
