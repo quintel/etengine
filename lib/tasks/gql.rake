@@ -1,5 +1,7 @@
 require 'open-uri'
 
+
+
 namespace :g do
   task :f do Rake::Task["gql:future"].invoke; end
   task :p do Rake::Task["gql:present"].invoke; end
@@ -7,18 +9,14 @@ end
 
 namespace :gql do
   task :future => :environment do
-    console(gql.future.rubel)
+    gql.future.rubel.console
   end
 
   task :present => :environment do
-    console(gql.present.rubel)
+    gql.present.rubel.console
   end
 
-  def console(rubel)
-    rubel.enable_code_completion
-    Pry.start(rubel, prompt: [proc { "GQL: " }])
-  end
-
+  # Loads the gql.
   def gql
     Rails.cache.clear
 
