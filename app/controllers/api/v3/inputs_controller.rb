@@ -13,7 +13,22 @@ module Api
       # format.
       #
       def index
-        render :json => @scenario.input_values
+        @inputs = Input.all
+        gql = @scenario.gql
+        out = Jbuilder.encode do |json|
+          @inputs.each do |i|
+            json.set! i.id do |json|
+              json.code i.key
+              json.share_group i.share_group
+              json.max i.max_value_for(gql) rescue nil
+              json.min i.min_value_for(gql) rescue nil
+              json.default i.start_value_for(gql) rescue nil
+              json.disabled true if i.disabled_in_current_area?
+              json.label label if label = i.full_label_for(gql) rescue nil
+            end
+          end
+        end
+        render :json => out
       end
 
       # GET /api/v3/inputs/:id
@@ -31,7 +46,7 @@ module Api
       private
 
       def find_input
-        @input = Api::V3::Input.new(params[:id], @scenario)
+        @input = Api::V3::Input.find(params[:id])
       rescue Exception => e
         render :json => {:errors => [e.message]}, :status => 404 and return
       end
