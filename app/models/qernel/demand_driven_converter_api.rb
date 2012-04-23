@@ -44,8 +44,12 @@ module Qernel
     #
     def number_of_units
       dataset_fetch_handle_nil :number_of_units do
-        tech_share = sum_unless_empty(converter.output_links.map(&:share))
-        tech_share * (converter.graph.area.number_households || 0)
+        heat_links = converter.output_links.select do |link|
+          link.carrier && link.carrier.key == :useable_heat
+        end
+
+        technology_share = sum_unless_empty(heat_links.map(&:share))
+        technology_share * (converter.graph.area.number_households || 0)
       end
     end
 
