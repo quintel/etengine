@@ -262,6 +262,25 @@ class ConverterApi
   # dataset attributes of converter
   dataset_accessors [:preset_demand, :demand]
 
+  # Returns a ConverterApi instance based on the given Converter.
+  #
+  # Most converters will get a ConverterApi, but for some it makes sense to
+  # get a DemandDriven API instead.
+  #
+  # @param [Qernel::Converter] converter
+  #   A converter instance for which you want a ConverterApi.
+  #
+  # @return [Qernel::ConverterApi]
+  #   The appropriate ConverterApi subclass for the converter.
+  #
+  def self.for_converter(converter)
+    if converter.type == :demand_driven
+      DemandDrivenConverterApi.new(converter)
+    else
+      ConverterApi.new(converter)
+    end
+  end
+
   # ConverterApi has same accessor as it's converter
   def self.dataset_group
     @dataset_group ||= Qernel::Converter.dataset_group
