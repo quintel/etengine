@@ -14,7 +14,8 @@ module Qernel
     # depending on the demand.
     def full_load_seconds
       dataset_fetch_handle_nil :full_load_seconds do
-        demand / (nominal_capacity_heat_output_per_unit * number_of_units)
+        supply = nominal_capacity_heat_output_per_unit * number_of_units
+        supply.zero? ? 0.0 : demand / supply
       end
     end
 
