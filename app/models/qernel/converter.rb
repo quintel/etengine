@@ -187,10 +187,10 @@ protected
     @sector_environment = sector_key === :environment
 
     @primary_energy_demand = @groups.include? :primary_energy_demand
-    @useful_demand = @groups.include? :useful_demand
-    @final_demand_cbs = @groups.include? :final_demand_cbs
-    @non_energetic_use = @groups.include? :non_energetic_use
-    @energy_import_export = @groups.include? :energy_import_export
+    @useful_demand         = @groups.include? :useful_demand
+    @final_demand_cbs      = @groups.include? :final_demand_cbs
+    @non_energetic_use     = @groups.include? :non_energetic_use
+    @energy_import_export  = @groups.include? :energy_import_export
 
     self.dataset_key # memoize dataset_key
   end
