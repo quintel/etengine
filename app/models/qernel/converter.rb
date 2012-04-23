@@ -126,6 +126,14 @@ class Converter
 
   attr_accessor :converter_api, :key, :graph
 
+  # The API type used by the converter.
+  #
+  # @return [Symbol]
+  #   Returns which API type is used when performing calculations. Either
+  #   :default or :demand_driven
+  #
+  attr_reader :type
+
   dataset_accessors [:demand, :preset_demand, :excel_id]
 
   # --------- Micro-optimizing ------------------------------------------------
@@ -149,6 +157,7 @@ class Converter
     if !(opts.include?(:id) || opts.include?(:code))
       raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new") 
     end
+
     @id         = opts[:id] || Hashpipe.hash(opts[:code])
     @key        = opts[:key]
     @code       = opts[:code]
@@ -156,16 +165,16 @@ class Converter
     @groups     = opts[:groups] || []
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
+    @type       = (opts[:type] || :default).to_sym
     @energy_balance_group = opts[:energy_balance_group]
-    
+
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}
 
-
     memoize_for_cache
-    self.converter_api = Qernel::ConverterApi.new(self)
-  end
 
+    self.converter_api = Qernel::ConverterApi.for_converter(self)
+  end
 
   # return the excel id as a symbol for the graph#converter_lookup_hash
   # return the code if no excel_id defined or dataset not initialised yet.

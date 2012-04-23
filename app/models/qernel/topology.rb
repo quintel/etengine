@@ -20,11 +20,19 @@ module Qernel
 
       module ClassMethods
         def import(line)
-          code, key, sector_key, use_key, energy_balance_group, groups = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
+          code, key, sector_key, use_key, energy_balance_group, groups, type = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
           groups = groups.to_s.split(GROUPS_SEPARATOR).map(&:to_sym)
           code = code.to_s.scan(/\w+/).first.strip.gsub(/\s/,'').to_sym
 
-          Qernel::Converter.new(code: code, key: key, sector_id: sector_key, use_id: use_key, groups: groups, energy_balance_group: energy_balance_group)
+          Qernel::Converter.new(
+            code:      code,
+            key:       key,
+            sector_id: sector_key,
+            use_id:    use_key,
+            groups:    groups,
+            type:      type,
+            energy_balance_group: energy_balance_group
+          )
         end
       end
     end
