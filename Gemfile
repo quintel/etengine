@@ -15,6 +15,9 @@ gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
 gem 'jbuilder', :git => 'git://github.com/rails/jbuilder.git'
 
+# pry is needed in production for the gql:console
+gem 'pry', '~> 0.9.9.3'
+
 # for etsource
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import', '~> 0.2.9'
@@ -46,10 +49,11 @@ group :development do
   gem 'ruby-prof'
 end
 
+
+
 group :test, :development do
   gem "rspec-rails", "~> 2.8.0"
   gem 'ruby-prof'
-  gem 'pry', '~> 0.9.9.3'
   gem 'pry-rails'
   gem 'pry-remote'
   gem 'guard'
