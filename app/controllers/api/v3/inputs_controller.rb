@@ -8,23 +8,23 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/inputs
       #
       # Returns the details for all available inputs. If the scenario_id isn't
-      # passed then the action will use the latest scenario. The action is now
-      # using the existing user_values action, so the response is in the old
-      # format.
-      #
+      # passed then the action will use the latest scenario. There is no caching
+      # yet.
       def index
         @inputs = Input.all
         gql = @scenario.gql
         out = Jbuilder.encode do |json|
           @inputs.each do |i|
-            json.set! i.id do |json|
-              json.code i.key
+            json.set! i.key do |json|
               json.share_group i.share_group
               json.max i.max_value_for(gql) rescue nil
               json.min i.min_value_for(gql) rescue nil
               json.default i.start_value_for(gql) rescue nil
               json.disabled true if i.disabled_in_current_area?
-              json.label label if label = i.full_label_for(gql) rescue nil
+              json.label i.full_label_for(gql) rescue nil
+              if user_value = @scenario.user_values[i.id]
+                json.user_value user_value
+              end
             end
           end
         end
