@@ -19,7 +19,7 @@ module Api
       # page.
       #
       def templates
-        @scenarios = Scenario.in_start_menu
+        @scenarios = ApiScenario.in_start_menu
         render :json => @scenarios
       end
 
@@ -28,11 +28,12 @@ module Api
       # Creates a new scenario
       # TODO: not finished!
       def create
-        @scenario = Scenario.new(params[:scenario])
+        @scenario = ApiScenario.new(params[:scenario])
+        @scenario.title ||= 'API'
         if @scenario.save
           render :json => @scenario
         else
-          render :json => {:errors => @scenario.errors}, :status => 403
+          render :json => {:errors => @scenario.errors}, :status => 422
         end
       end
 
