@@ -12,18 +12,20 @@ module Api
       # yet.
       def index
         @inputs = Input.all
-        gql = @scenario.gql
+        gql = @scenario.gql(:prepare => true)
         out = Jbuilder.encode do |json|
           @inputs.each do |i|
             json.set! i.key do |json|
               json.share_group i.share_group
-              json.max i.max_value_for(gql) rescue nil
-              json.min i.min_value_for(gql) rescue nil
-              json.default i.start_value_for(gql) rescue nil
+              json.max i.max_value_for(gql)
+              json.min i.min_value_for(gql)
+              json.default i.start_value_for(gql)
               json.disabled true if i.disabled_in_current_area?
-              json.label i.full_label_for(gql) rescue nil
+              if label = i.full_label_for(gql)
+                json.label label
+              end
               if user_value = @scenario.user_values[i.id]
-                json.user_value user_value
+                json.useruser_value
               end
             end
           end
