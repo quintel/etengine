@@ -1,0 +1,14 @@
+- breadcrumb link_to "Inputs", data_inputs_path
+- breadcrumb @input.key
+= render 'search_box'
+.header
+  input #{@input.key}
+
+%strong{style: "color: red"} Inputs have to be edited through ETsource.
+
+%table
+  - @input.attributes.each do |attr|
+    - key, value = attr
+    %tr
+      %td= key
+      %td= value
