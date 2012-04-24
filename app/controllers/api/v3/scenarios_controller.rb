@@ -43,8 +43,19 @@ module Api
       # Parameters:
       #
       # - gqueries: array of gquery keys
-      # - inputs: hash {input_key: input_value}
+      # - scenario: scenario attributes
       # - reset: boolean (default: false)
+      #
+      # Example request parameters:
+      #
+      # {
+      #   scenario: {
+      #     user_values: {
+      #       123: 1.34
+      #     }
+      #   },
+      #   gqueries: ['gquery_a', 'gquery_b']
+      # }
       #
       # Response:
       # {
@@ -62,7 +73,13 @@ module Api
       # }
       #
       def update
-        gql = Gql::Gql.new(@scenario)
+        # TODO: move parameter logic to a separate object
+        attrs = params[:scenario]
+        # TODO: handle int/string keys
+        attrs[:user_values].reverse_merge!(@scenario.user_values)
+        # TODO: handle scenario ownership!
+        @scenario.update_attributes(attrs)
+        gql = @scenario.gql(:prepare => true)
         gquery_keys = params[:gqueries] || []
         out = Jbuilder.encode do |json|
           json.scenario @scenario
@@ -86,7 +103,7 @@ module Api
       private
 
       def find_scenario
-        @scenario = Scenario.find params[:id]
+        @scenario = ApiScenario.find params[:id]
       rescue ActiveRecord::RecordNotFound
         render :json => {}, :status => 404 and return
       end
