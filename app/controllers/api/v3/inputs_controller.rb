@@ -25,7 +25,7 @@ module Api
                 json.label label
               end
               if user_value = @scenario.user_values[i.id]
-                json.useruser_value
+                json.user user_value
               end
             end
           end
