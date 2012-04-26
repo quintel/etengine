@@ -10,15 +10,14 @@
 #  updated_at         :datetime
 #  user_values        :text
 #  end_year           :integer(4)      default(2040)
-#  country            :string(255)
 #  in_start_menu      :boolean(1)
-#  region             :string(255)
 #  user_id            :integer(4)
 #  preset_scenario_id :integer(4)
 #  type               :string(255)
 #  use_fce            :boolean(1)
 #  present_updated_at :datetime
 #  protected          :integer(1)
+#  area_code          :string(255)
 #
 
 # Useage:
@@ -28,10 +27,8 @@
 # A user updates a slider:
 #   scenario.update_input(input, 4.5)
 #
-#
-#
-#
 class Scenario < ActiveRecord::Base
+  # this can be deleted when we remove the type column
   self.inheritance_column = nil
   include Scenario::UserUpdates
   include Scenario::Persistable
@@ -47,13 +44,12 @@ class Scenario < ActiveRecord::Base
   validates :area_code, :presence => true
 
   scope :in_start_menu, where(:in_start_menu => true)
-  # it's a national preset scenario when there is no region defined and it's defined in the start menu
   scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
-  scope :recent_first, order('created_at DESC')
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
   scope :recent, order("created_at DESC").limit(30)
+  scope :recent_first, order('created_at DESC')
 
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
@@ -87,10 +83,6 @@ class Scenario < ActiveRecord::Base
     Rails.logger.warn("fce_settings is deprecated")
   end
 
-  ##############################
-  # Default Scenario
-  ##############################
-
   def test_scenario=(flag)
     @test_scenario = flag
   end
@@ -99,9 +91,6 @@ class Scenario < ActiveRecord::Base
     @test_scenario == true
   end
 
-  ##
-  # @tested 2010-11-30 seb
-  #
   def self.default(opts = {})
     new(default_attributes.merge(opts))
   end
@@ -124,20 +113,10 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-
-  ##############################
-  # Scenario Attributes
-  ##############################
-
-  # @tested 2010-11-30 seb
-  #
   def start_year
     2010
   end
 
-
-  # @tested 2010-11-30 seb
-  #
   def years
     end_year - start_year
   end
@@ -163,15 +142,6 @@ class Scenario < ActiveRecord::Base
     save!
   end
 
-  # this is used by the active resource serialization
-  def to_xml(options = {})
-    options.merge!(:except => [:user_values])
-    super(options)
-  end
-
-  # add all the attributes and methods that are modularized in calculator/
-  # loads all the "open classes" in calculator
-  Dir["app/models/scenario/*.rb"].sort.each {|file| require_dependency file }
 
   def self.new_attributes(settings = {})
     settings ||= {}
@@ -262,4 +232,13 @@ class Scenario < ActiveRecord::Base
     )
   end
 
+  # this is used by the active resource serialization
+  def to_xml(options = {})
+    options.merge!(:except => [:user_values])
+    super(options)
+  end
+
+  # add all the attributes and methods that are modularized in calculator/
+  # loads all the "open classes" in calculator
+  Dir["app/models/scenario/*.rb"].each {|file| require_dependency file }
 end
