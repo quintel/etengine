@@ -72,15 +72,10 @@ class Input < ActiveRecord::Base
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  def bad_query?(*args)
-    # these four queries only work with v1.
-    [368,412,361,371].include?(self.lookup_id)
-  end
-
   # Checks whether the inputs use the new update statements or the old
   # key/attr_name based implementation
   def v2?
-    query.present? && !bad_query?
+    query.present?
   end
 
   # i had to resort to a class method for "caching" procs
