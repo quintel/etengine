@@ -64,19 +64,6 @@ module Etsource
       system "cd #{@base_dir} && git pull"
     end
 
-    # just import what currently is checked out.
-    # used for testing.
-    def import_current!
-      Gquery.transaction do
-        Gquery.delete_all
-        Input.delete_all
-
-        Gqueries.new(self).import!
-        Inputs.new(self).import!
-        Scenario.new.import! if Rails.env.test?
-      end
-    end
-
     # branch operations
     #
     def current_branch

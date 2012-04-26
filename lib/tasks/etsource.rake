@@ -35,7 +35,6 @@ namespace :etsource do
     etsource.base_dir       = path
     etsource.cache_dataset  = false
     etsource.cache_topology = false
-    etsource.import_current!
     etsource
   end
 

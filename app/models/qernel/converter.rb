@@ -145,6 +145,9 @@ class Converter
 
   # --------- Initializing ----------------------------------------------------
 
+  # @example Initialize a new converter
+  #   Qernel::Converter.new(code: 'foo')
+  #
   def initialize(opts)
     if !(opts.include?(:id) || opts.include?(:code))
       raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new") 
