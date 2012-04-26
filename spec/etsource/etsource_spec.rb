@@ -7,8 +7,6 @@ describe "Etsource" do
     etsource.base_dir       = path
     etsource.cache_dataset  = false
     etsource.cache_topology = false
-
-    etsource.import_current!
   end
 
   # Find all the folders that contain a tests folder.
@@ -23,23 +21,24 @@ describe "Etsource" do
       # -- Finally the context, before and it's --------------------------------
 
       context test_suite.gsub(ETSOURCE_DIR, '') do
-
-        before(:all) do
-          @scenario = ApiScenario.default(suite.fetch('settings', {}))
-          @scenario.build_update_statements
-          @gql = @scenario.gql(prepare: true)
-        end
-
-        suite['tests'].each do |key, hsh|          
-          
-          it "#{key}" do
-            result = @gql.query(hsh['query'])
-            result.present_value.should be_within_a_percent(hsh['present']) if hsh['present']
-            result.future_value.should  be_within_a_percent(hsh['future'])  if hsh['future']
+        pending do 
+          before(:all) do
+            @scenario = ApiScenario.default(suite.fetch('settings', {}))
+            @scenario.build_update_statements
+            @gql = @scenario.gql(prepare: true)
           end
 
-        end# suite
+          suite['tests'].each do |key, hsh|          
+            
+            it "#{key}" do
+              result = @gql.query(hsh['query'])
+              result.present_value.should be_within_a_percent(hsh['present']) if hsh['present']
+              result.future_value.should  be_within_a_percent(hsh['future'])  if hsh['future']
+            end
 
+          end# suite
+
+        end
       end# context
     end# Dir.glob
   end# Dir.glob
