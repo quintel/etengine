@@ -63,6 +63,7 @@ class ConverterApi
     :decommissioning_costs_per_mw_input,
     :demand_expected_value,
     :full_load_hours,
+    :households_supplied_per_unit,
     :installing_costs_per_mw_input,
     :land_use_per_unit,
     :network_capacity_available_in_mw,
