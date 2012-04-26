@@ -100,7 +100,7 @@ class Api::ApiScenariosController < Api::BaseController
     inputs = params[:inputs] || []
     out = {}
     inputs.each do |key|
-      input = Input.find_by_key(key) rescue nil
+      input = Input.get(key) rescue nil
       if input
         out[key] = input.client_values(gql)
         out[key][:user_value] = @api_scenario.user_values[input.lookup_id] rescue nil
