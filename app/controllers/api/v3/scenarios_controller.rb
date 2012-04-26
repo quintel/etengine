@@ -104,9 +104,26 @@ module Api
             gquery_keys.each do |k|
               json.set! k do |json|
                 if gquery = Gquery.get(k)
+                  # this logic should be moved to a separate object. Will do as
+                  # soon as we decide the final output format
                   json.unit gquery.unit
-                  json.present(gql.send :query_present, gquery)
-                  json.future(gql.send :query_future, gquery)
+                  errors = []
+                  begin
+                    pres_result = gql.send(:query_present, gquery)
+                    json.present pres_result
+                  rescue Exception => e
+                    json.present nil
+                    errors << e.to_s
+                  end
+                  # TODO: DRY
+                  begin
+                    fut_result = gql.send(:query_future, gquery)
+                    json.future fut_result
+                  rescue Exception => e
+                    json.future nil
+                    errors << e.to_s
+                  end
+                  json.errors errors unless errors.empty?
                 else
                   json.errors ["Missing gquery"]
                 end
@@ -125,6 +142,7 @@ module Api
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
 
+      # TODO: move to model
       def scenario_to_jbuilder(s, json)
           json.title     s.title
           json.url       api_v3_scenario_url(s)
