@@ -65,18 +65,10 @@ class Gquery < ActiveRecord::Base
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
   }
 
-  # Returns the cleaned query for any given key.
-  #
-  # @param key [String] Gquery key (see Gquery#key)
-  # @return [String] Cleaned Gquery
-  #
-  # def self.get(key)
-  #   query = gquery_hash[key]
-  #   raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
-  #   # Check gql_metrics.rb initializer to see what we're doing with this notification
-  #   ActiveSupport::Notifications.instrument("gql.gquery.deprecated", key) if deprecated_gquery_hash[key]
-  #   query
-  # end
+  def initialize(attrs = {})
+    super(attrs)
+    self.key = self.key.strip if self.key
+  end
 
   def id
     lookup_id
