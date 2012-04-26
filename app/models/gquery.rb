@@ -65,11 +65,10 @@ class Gquery < ActiveRecord::Base
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
   }
 
-  def initialize(attrs = {})
-    super(attrs)
+  after_initialize do |gquery|
     self.key = self.key.strip if self.key
   end
-
+  
   def id
     lookup_id
   end

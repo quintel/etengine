@@ -41,7 +41,7 @@ class Input < ActiveRecord::Base
   def self.load_records
     h = {}
     Etsource::Loader.instance.inputs.each do |input|
-      h[input.lookup_id] = input
+      h[input.lookup_id]      = input
       h[input.lookup_id.to_s] = input
     end
     h

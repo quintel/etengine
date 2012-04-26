@@ -2,6 +2,6 @@
 
 - unit = kg
 
-FOO(
-  BAR(x,y)
+SUM(
+  SUM(1,2)
 )

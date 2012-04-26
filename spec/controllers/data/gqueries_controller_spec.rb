@@ -4,7 +4,7 @@ describe Data::GqueriesController do
   render_views
   
   let!(:admin) { FactoryGirl.create :admin }
-  let!(:gquery) { FactoryGirl.create :gquery }
+  let!(:gquery) { Gquery.all.first }
   
   before do
     login_as(admin)
@@ -26,7 +26,7 @@ describe Data::GqueriesController do
 
   describe "GET show" do
     it "should be successful" do
-      get :show, :id => gquery.id, :api_scenario_id =>'latest'
+      get :show, :id => gquery.lookup_id, :api_scenario_id =>'latest'
       response.should render_template(:show)
     end
   end
