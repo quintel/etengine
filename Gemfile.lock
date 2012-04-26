@@ -189,6 +189,7 @@ GEM
       kgio (~> 2.4)
       rack
       raindrops (~> 0.6)
+    watchr (0.7)
     webrat (0.7.3)
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
@@ -241,6 +242,7 @@ DEPENDENCIES
   term-ansicolor
   text-table
   unicorn
+  watchr
   webrat
   yaml_pack (~> 0.0.3.alpha)
   yard (~> 0.7.2)
