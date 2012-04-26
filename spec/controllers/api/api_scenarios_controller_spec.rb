@@ -13,17 +13,17 @@ describe Api::ApiScenariosController do
   end
 
   describe "new" do
-    it "should create a new ApiScenario" do
+    it "should create a new Scenario" do
       expect {
         get 'new'
-      }.to change(ApiScenario, :count).by(1)
+      }.to change(Scenario, :count).by(1)
       response.should be_redirect
     end
 
     it "should create and assign params[:settings]" do
       expect {
         get :new, {:settings => {:country => 'uk'}}
-      }.to change(ApiScenario, :count).by(1)
+      }.to change(Scenario, :count).by(1)
 
       response.should be_redirect
     end
@@ -31,7 +31,7 @@ describe Api::ApiScenariosController do
 
   describe "show" do
     before(:all) do
-      @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo'))
+      @api_scenario = Scenario.create(Scenario.default_attributes.merge(:title => 'foo'))
     end
 
     before(:each) do
@@ -55,23 +55,23 @@ describe Api::ApiScenariosController do
       it "should be false when created" do
         @api_scenario.use_fce.should be_false
       end
-      
+
       it "should updated in the scenario when params[:use_fce] is different then the scenario value" do
         get :show, :id => @api_scenario.id.to_s, :use_fce => false
-        ApiScenario.find(@api_scenario.id).use_fce.should be_false
+        Scenario.find(@api_scenario.id).use_fce.should be_false
 
         get :show, :id => @api_scenario.id.to_s, :use_fce => true
-        ApiScenario.find(@api_scenario.id).use_fce.should be_true
+        Scenario.find(@api_scenario.id).use_fce.should be_true
       end
     end
   end
-  
+
   describe 'input_data' do
     before do
-      @api_scenario = ApiScenario.create(Scenario.default_attributes.merge(:title => 'foo'))
+      @api_scenario = Scenario.create(Scenario.default_attributes.merge(:title => 'foo'))
       @input = FactoryGirl.create :input
     end
-    
+
     it "should return a valid response" do
       get :input_data, :id => @api_scenario.id
       response.should be_success

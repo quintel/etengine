@@ -32,6 +32,7 @@
 #
 #
 class Scenario < ActiveRecord::Base
+  self.inheritance_column = nil
   include Scenario::UserUpdates
   include Scenario::Persistable
   store :user_values
@@ -49,6 +50,9 @@ class Scenario < ActiveRecord::Base
   scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   scope :recent_first, order('created_at DESC')
+  # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
+  scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
+  scope :recent, order("created_at DESC").limit(30)
 
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
@@ -66,8 +70,7 @@ class Scenario < ActiveRecord::Base
 
   attr_accessible :author, :title, :description, :user_values, :end_year,
     :area_code, :country, :region, :in_start_menu, :user_id, :preset_scenario_id,
-    :use_fce, :protected
-
+    :use_fce, :protected, :scenario_id
 
   before_create do |scenario|
     if preset = scenario.preset_scenario
@@ -168,4 +171,94 @@ class Scenario < ActiveRecord::Base
   # add all the attributes and methods that are modularized in calculator/
   # loads all the "open classes" in calculator
   Dir["app/models/scenario/*.rb"].sort.each {|file| require_dependency file }
+
+  def self.new_attributes(settings = {})
+    settings ||= {}
+    attributes = Scenario.default_attributes.merge(:title => "API")
+    out = attributes.merge(settings)
+    # strip invalid attributes
+    valid_attributes = [column_names, 'scenario_id'].flatten
+    out.delete_if{|key,v| !valid_attributes.include?(key.to_s)}
+    out
+  end
+
+  def gql(options = {})
+    # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
+    @gql ||= Gql::Gql.new(self)
+    # At this point gql is not "prepared" see {Gql::Gql#prepare}.
+    # We could force it here to always prepare, but that would slow things down
+    # when nothing has changed in a scenario. Uncommenting this would decrease performance
+    # but could get rid of bugs introduced by forgetting to prepare in some cases when we
+    # access the graph through the gql (e.g. @gql.present_graph.converters.map(&:demand)).
+
+    prepare_gql if options[:prepare] == true
+    @gql
+  end
+
+  def prepare_gql
+    gql.prepare
+    gql
+  end
+
+  # The values for the sliders for this api_scenario
+  #
+  def input_values
+    prepare_gql
+
+    values = Rails.cache.fetch("inputs.user_values.#{area_code}") do
+      Input.static_values(gql)
+    end
+
+    Input.dynamic_start_values(gql).each do |id, dynamic_values|
+      values[id][:start_value] = dynamic_values[:start_value] if values[id]
+    end
+
+    self.user_values.each do |id, user_value|
+      values[id][:user_value] = user_value if values[id]
+    end
+
+    values
+  end
+
+  def save_as_scenario(params = {})
+    params ||= {}
+    attributes = self.attributes.merge(params)
+    Scenario.create!(attributes)
+  end
+
+  def scenario_id=(scenario_id)
+    return if scenario_id.blank?
+    if scenario = Scenario.find_by_id(scenario_id)
+      copy_scenario_state(scenario)
+      self.preset_scenario_id = scenario_id
+    end
+  end
+
+  # a identifier for the scenario selector drop down in data.
+  # => "#32341 - nl 2040 (2011-01-11)"
+  def identifier
+    "##{id} - #{area_code} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
+  end
+
+  def api_errors
+    if used_groups_add_up?
+       []
+    else
+      groups = used_groups_not_adding_up
+      remove_groups_and_elements_not_adding_up!
+      groups.map do |group, elements|
+        element_ids = elements.map{|e| "#{e.id} [#{e.key || 'no_key'}]" }.join(', ')
+        "Group '#{group}' does not add up to 100. Elements (#{element_ids}) "
+      end
+    end
+  end
+
+  # API requests make use of this. Check Api::ApiScenariosController#new
+  #
+  def as_json(options={})
+    super(
+      :only => [:user_values, :area_code, :end_year, :start_year, :id, :use_fce]
+    )
+  end
+
 end
