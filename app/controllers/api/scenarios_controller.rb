@@ -18,8 +18,6 @@ class Api::ScenariosController < Api::BaseController
   end
 
   def show
-    # Are we still using the :clone parameter? - PZ Thu 1 Dec 2011 15:41:08 CET
-    @scenario = @scenario.try(:clone!) if params[:clone]
     if @scenario
       respond_with(@scenario)
     else

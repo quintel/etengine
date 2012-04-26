@@ -34,13 +34,4 @@ module Scenario::Persistable
     self.area_code   = scenario.area_code
     self.use_fce     = scenario.use_fce
   end
-
-  # Returns a copy of a scenario. Used
-  def clone!
-    fresh = Scenario.new
-    fresh.copy_scenario_state(self)
-    fresh.title = self.title
-    fresh.save
-    fresh
-  end
 end
