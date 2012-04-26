@@ -4,8 +4,8 @@ module Qernel
   describe DemandDrivenConverterApi do
     let(:graph) do
       layout = <<-LAYOUT.strip_heredoc
-        foo: network(100) == s(0.25) ==> supply_one
-        foo: network      == s(0.75) ==> supply_two
+        useable_heat: network(100) == s(0.25) ==> supply_one
+        useable_heat: network      == s(0.75) ==> supply_two
       LAYOUT
 
       GraphParser.new(layout).build
@@ -30,12 +30,30 @@ module Qernel
     # ------------------------------------------------------------------------
 
     describe '#number_of_units' do
-      it 'should be 50.0 when the converter has a 25% share' do
-        supply_one.converter_api.number_of_units.should eql(50.0)
+      describe 'when households_supplied_per_unit is 1' do
+        it 'should be 50.0 when the converter has a 25% share' do
+          supply_one.converter_api.number_of_units.should eql(50.0)
+        end
+
+        it 'should be 150.0 when the converter has a 75% share' do
+          supply_two.converter_api.number_of_units.should eql(150.0)
+        end
       end
 
-      it 'should be 150.0 when the converter has a 75% share' do
-        supply_two.converter_api.number_of_units.should eql(150.0)
+      describe 'when households_supplied_per_unit is 25' do
+        before do
+          [ supply_one, supply_two ].each do |converter|
+            converter.dataset_set(:households_supplied_per_unit, 25)
+          end
+        end
+
+        it 'should be 50.0 when the converter has a 25% share' do
+          supply_one.converter_api.number_of_units.should eql(2.0)
+        end
+
+        it 'should be 150.0 when the converter has a 75% share' do
+          supply_two.converter_api.number_of_units.should eql(6.0)
+        end
       end
     end # number_of_units
 
@@ -44,14 +62,30 @@ module Qernel
     describe '#full_load_seconds' do
       let(:api) { supply_one.converter_api }
 
-      it 'should calculate' do
-        api.stub!(:demand).and_return(50)
-        api.full_load_seconds.should eql(0.05)
+      context 'when households_supplied_per_unit is 1' do
+        it 'should calculate' do
+          api.stub!(:demand).and_return(50)
+          api.full_load_seconds.should eql(0.05)
+        end
+
+        it 'should scale with demand' do
+          api.stub!(:demand).and_return(500)
+          api.full_load_seconds.should eql(0.5)
+        end
       end
 
-      it 'should scale with demand' do
-        api.stub!(:demand).and_return(500)
-        api.full_load_seconds.should eql(0.5)
+      context 'when households_supplied_per_unit is 25' do
+        before { supply_one.dataset_set(:households_supplied_per_unit, 25) }
+
+        it 'should calculate' do
+          api.stub!(:demand).and_return(50)
+          api.full_load_seconds.should eql(1.25)
+        end
+
+        it 'should scale with demand' do
+          api.stub!(:demand).and_return(500)
+          api.full_load_seconds.should eql(12.5)
+        end
       end
     end # full_load_seconds
 

@@ -42,14 +42,22 @@ module Qernel
     # example, if the sum of output share links is 0.2, it is assumed that
     # this converter accounts for 20% of the "technology share".
     #
+    # Finally, the number of units is adjusted according to how many
+    # households are supplied with heat. For example, if 50% of households are
+    # supplied with energy from the converter, but each unit provides energy
+    # for 100 homes, the number_of_units will equal 50% of number_households
+    # divided by 100.
+    #
     def number_of_units
       dataset_fetch_handle_nil :number_of_units do
         heat_links = converter.output_links.select do |link|
           link.carrier && link.carrier.key == :useable_heat
         end
 
-        technology_share = sum_unless_empty(heat_links.map(&:share))
-        technology_share * (converter.graph.area.number_households || 0)
+        tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
+        units = tech_share * (converter.graph.area.number_households || 0)
+
+        units / households_supplied_per_unit
       end
     end
 
