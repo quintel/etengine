@@ -49,14 +49,13 @@ Country and region should be merged into a single `area_code` column.
     Status: 200 OK
 
     {
+      "title": "My scenario"
       "url": "http://et-engine.com/scenarios/999",
       "id": 999,
       "area_code": "nl",
       "end_year": 2040,
       "template": 12345,
       "source": "ETM"
-      "created_at": "2012-01-01 00:00:00",
-      "updated_at": "2012-01-01 00:00:00"
     }
 
 If the scenario is missing then the action returns an empty hash with a 404 HTTP status code.
@@ -113,8 +112,6 @@ Implemented, but the attributes are still using the old names.
       "end_year": 2040,
       "template": 12345,
       "source": "ETM"
-      "created_at": "2012-01-01 00:00:00",
-      "updated_at": "2012-01-01 00:00:00"
     }
 
 ### Updating querying a scenario
@@ -157,14 +154,7 @@ The gquery result is a hash rather than an array.
     Status: 200 OK
 
     {
-      "url": "http://et-engine.com/scenarios/999",
-      "id": 999,
-      "title": "My scenario",
-      "area_code": "nl",
-      "end_year": 2040,
-      "template": 12345,
-      "created_at": "2012-01-01 00:00:00",
-      "updated_at": "2012-01-01 00:00:00",
+      "scenario": <scenario>,
       "gqueries": {
         "gquery_1": {
           "present": 123,
@@ -205,14 +195,13 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
     {
       "agriculture_electricity_demand": {
-        "share_group": "",
+        "share_group": "foobar",
         "max": 5,
         "min": -5,
         "default": 0,
         "user": 3
       },-
       "agriculture_heat_demand": {
-        "share_group": "",
         "max": 5,
         "min": -5,
         "default": 0,
@@ -222,7 +211,10 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
     }
 
 * `default`: input start value
-* `user`: user-set value
+* `user`: user-set value. Not available if null
+* `max`
+* `min`
+* `share_group`: Not available if null or empty
 
 ### Get a single input details
 
@@ -241,6 +233,18 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
       "max": 5,
       "min": 0,
       "default": 0
+    }
+
+Just like the entire inputs list, but not indexed by input code. The attribute code is added to the output.
+
+#### Errors
+
+If the input doesn't exist the server returns an HTTP 404 error and a message:
+
+    Status: 404
+
+    {
+      "errors": ["Input not found"]
     }
 
 ### Get a subset of input details

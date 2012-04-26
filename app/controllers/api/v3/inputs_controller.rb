@@ -12,16 +12,17 @@ module Api
       # yet.
       def index
         @inputs = Input.all
-        gql = @scenario.gql(:prepare => true)
         out = Jbuilder.encode do |json|
           @inputs.each do |i|
             json.set! i.key do |json|
-              json.share_group i.share_group
-              json.max i.max_value_for(gql)
-              json.min i.min_value_for(gql)
-              json.default i.start_value_for(gql)
+              unless i.share_group.blank?
+                json.share_group i.share_group
+              end
+              json.max i.max_value_for(@gql)
+              json.min i.min_value_for(@gql)
+              json.default i.start_value_for(@gql)
               json.disabled true if i.disabled_in_current_area?
-              if label = i.full_label_for(gql)
+              if label = i.full_label_for(@gql)
                 json.label label
               end
               if user_value = @scenario.user_values[i.id]
@@ -42,13 +43,30 @@ module Api
       # uses the DB records. To be updated.
       #
       def show
-        render :json => @input
+        out = Jbuilder.encode do |json|
+          json.code @input.key
+          unless @input.share_group.blank?
+            json.share_group @input.share_group
+          end
+          json.max @input.max_value_for(@gql)
+          json.min @input.min_value_for(@gql)
+          json.default @input.start_value_for(@gql)
+          json.disabled true if @input.disabled_in_current_area?
+          if label = @input.full_label_for(@gql)
+            json.label label
+          end
+          if user_value = @scenario.user_values[@input.id]
+            json.user user_value
+          end
+
+        end
+        render :json => out
       end
 
       private
 
       def find_input
-        @input = Api::V3::Input.find(params[:id])
+        @input = Input.find(params[:id])
       rescue Exception => e
         render :json => {:errors => [e.message]}, :status => 404 and return
       end

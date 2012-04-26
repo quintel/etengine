@@ -19,6 +19,7 @@ module Api
         # object, too.
         #
         Current.scenario = @scenario
+        @gql = @scenario.gql(:prepare => true)
       rescue ActiveRecord::RecordNotFound
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
