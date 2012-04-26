@@ -9,16 +9,16 @@ describe Etsource do
 
     pending "loads gql" do
       before(:all) do
-        @gql = ApiScenario.default.gql(prepare: true)
+        @gql = Scenario.default.gql(prepare: true)
       end
 
-      
+
       Gquery.all.select(&:output_element?).each do |gquery|
         # only run output_elements
         it "runs all gquery #{gquery.key}" do
           @gql.query(gquery)
         end
-      end 
+      end
     end
   end
 end

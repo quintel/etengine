@@ -3,14 +3,14 @@
 #
 class Api::ScenariosController < Api::BaseController
   respond_to :xml
-  
+
   before_filter :find_scenario, :only => [:show, :load, :update]
 
   def index
     @scenarios = Scenario.exclude_api.recent_first.page(params[:page]).per(20)
     respond_with(@scenarios)
   end
-  
+
   # ETM makes use of this action to fill the preset scenarios select box
   #
   def homepage
@@ -32,7 +32,7 @@ class Api::ScenariosController < Api::BaseController
     api_session_id ||= params[:scenario].delete("api_session_key") # legacy remove after 2011-10
 
     if api_session_id
-      api_scenario = ApiScenario.find(api_session_id)
+      api_scenario = Scenario.find(api_session_id)
       @scenario = api_scenario.save_as_scenario(params[:scenario])
     else
       #@scenario = Scenario.new(params[:scenario])
@@ -55,7 +55,7 @@ class Api::ScenariosController < Api::BaseController
   end
 
   private
-  
+
     def find_scenario
       @scenario = Scenario.find(params[:id])
     rescue ActiveRecord::RecordNotFound

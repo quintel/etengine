@@ -1,7 +1,3 @@
-Factory.define :api_scenario do |f|
-  f.title "API"
-end
-
 Factory.define :scenario do |f|
   f.title "Some scenario"
   f.area_code "nl"

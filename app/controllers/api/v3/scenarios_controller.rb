@@ -37,7 +37,7 @@ module Api
       # Creates a new scenario
       # TODO: not finished!
       def create
-        @scenario = ApiScenario.new(params[:scenario])
+        @scenario = Scenario.new(params[:scenario])
         @scenario.title ||= 'API'
         if @scenario.save
           out = Jbuilder.encode do |json|
@@ -120,7 +120,7 @@ module Api
       private
 
       def find_scenario
-        @scenario = ApiScenario.find params[:id]
+        @scenario = Scenario.find params[:id]
       rescue ActiveRecord::RecordNotFound
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end

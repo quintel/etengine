@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe "Etsource" do  
+describe "Etsource" do
   def self.initialize_etsource(path)
     etsource = Etsource::Base.instance
-    
+
     etsource.base_dir       = path
     etsource.cache_dataset  = false
     etsource.cache_topology = false
@@ -11,7 +11,7 @@ describe "Etsource" do
 
   # Find all the folders that contain a tests folder.
   Dir.glob("#{Etsource::Base.instance.export_dir}/tests/".gsub('//', '/')).each do |tests_dir|
-    base_dir = tests_dir.gsub(/\/tests\/$/, '')      
+    base_dir = tests_dir.gsub(/\/tests\/$/, '')
     initialize_etsource(base_dir)
 
     # iterate over every test suite yml file within tests
@@ -21,15 +21,15 @@ describe "Etsource" do
       # -- Finally the context, before and it's --------------------------------
 
       context test_suite.gsub(ETSOURCE_DIR, '') do
-        pending do 
+        pending do
           before(:all) do
-            @scenario = ApiScenario.default(suite.fetch('settings', {}))
+            @scenario = Scenario.default(suite.fetch('settings', {}))
             @scenario.build_update_statements
             @gql = @scenario.gql(prepare: true)
           end
 
-          suite['tests'].each do |key, hsh|          
-            
+          suite['tests'].each do |key, hsh|
+
             it "#{key}" do
               result = @gql.query(hsh['query'])
               result.present_value.should be_within_a_percent(hsh['present']) if hsh['present']
