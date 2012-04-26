@@ -16,22 +16,6 @@ describe Scenario do
     end
   end
 
-  describe "#area" do
-    before {
-      @scenario = Scenario.default
-      @area = Area.new
-      Area.should_receive(:find_by_country).with(@scenario.region_or_country).and_return(@area)
-    }
-    it "should return area" do
-      @scenario.area.should == @area
-    end
-    it "should memoize area" do
-      @scenario.area
-      # if it Area is called twice the should_receive would raise an exception
-      @scenario.area
-    end
-  end
-
   describe "setting and retrieving user_values" do
     before do
       @input = Input.new
@@ -147,20 +131,6 @@ describe Scenario do
     its(:user_values) { should == {}}
     its(:update_statements) { should == {}}
   end
-
-  describe "Scenario preset" do
-    before(:each) do
-      @preset_scenario = Scenario.create!(:title => "Preset scenario")
-      @preset_scenario.user_values = {}
-    end
-
-    it "should be able to have preset" do
-      @scenario = Scenario.create!(:preset_scenario => @preset_scenario, :title => "Scenario that was built from a preset")
-      @scenario.reload.preset_scenario.should == @preset_scenario
-      @scenario.user_values.should == {}
-    end
-  end
-
 
   describe "#used_groups_add_up?" do
     before do

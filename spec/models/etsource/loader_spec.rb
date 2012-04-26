@@ -7,15 +7,13 @@ describe Etsource do
       dataset = Etsource::Loader.instance.dataset('nl')
     end
 
-    context "loads gql" do
+    pending "loads gql" do
       before(:all) do
         @gql = ApiScenario.default.gql(prepare: true)
-        Gquery.reload_cache
-        Gquery.gquery_hash
       end
 
       
-      Gquery.gquery_hash.values.select(&:output_element?).each do |gquery|
+      Gquery.all.select(&:output_element?).each do |gquery|
         # only run output_elements
         it "runs all gquery #{gquery.key}" do
           @gql.query(gquery)
