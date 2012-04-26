@@ -7,19 +7,6 @@ module Etsource
       @etsource = etsource
     end
 
-    def import!
-      Gquery.transaction do
-        Gquery.delete_all
-        GqueryGroup.delete_all
-
-        gquery_groups.values.each(&:save!)
-        Gquery.import gqueries
-
-        Rails.cache.clear
-        system("touch tmp/restart.txt")
-      end
-    end
-
     def export
       base_dir = "#{@etsource.base_dir}/gqueries"
       Gquery.includes(:gquery_groups).all.each do |gquery|

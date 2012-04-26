@@ -49,14 +49,13 @@ Country and region should be merged into a single `area_code` column.
     Status: 200 OK
 
     {
+      "title": "My scenario"
       "url": "http://et-engine.com/scenarios/999",
       "id": 999,
       "area_code": "nl",
       "end_year": 2040,
       "template": 12345,
       "source": "ETM"
-      "created_at": "2012-01-01 00:00:00",
-      "updated_at": "2012-01-01 00:00:00"
     }
 
 If the scenario is missing then the action returns an empty hash with a 404 HTTP status code.
@@ -84,10 +83,12 @@ If the scenario is missing then the action returns an empty hash with a 404 HTTP
     POST /scenarios
 
 * `title`: optional string
-* `area_code`: optional string, the default is nl. It's the unique area  identifier - no more region/country duplication
+* `area_code`: optional string, the default is nl. It's the unique area identifier - no more region/country duplication
 * `end_year`: optional integer, default is 2040
 * `source`: optional (but highly recommended) required string, the application that makes the request
 * `template`: optional id of the scenario used as template / preset_scenario_id
+
+Implemented, but the attributes are still using the old names.
 
 ##### Example
 
@@ -111,8 +112,6 @@ If the scenario is missing then the action returns an empty hash with a 404 HTTP
       "end_year": 2040,
       "template": 12345,
       "source": "ETM"
-      "created_at": "2012-01-01 00:00:00",
-      "updated_at": "2012-01-01 00:00:00"
     }
 
 ### Updating querying a scenario
@@ -122,25 +121,30 @@ The slider update is a proper PATCH request instead.
 
 #### Request
 
-    PATCH /scenarios/:id
+    PUT /scenarios/:id
 
 * `inputs`: optional hash {:input_key => :value }
 * `reset`: optional boolean (default: false). If true the scenario inputs will first be reset. This means that the scenario will use only the inputs we're passing with the current request. Used by the energymixer
 * `gqueries`: optional array of gqueries to run
+* `scenario`: hash with the scenario attributes. Its `user_values` are merged with the existing values, because otherwise we should send the entire input sets with every request.
+
+Partially implemented: the `gqueries` and `reset` attributes are still ignored.
 
 ##### Example
 
     {
-      "inputs": {
-        "input_key_1": 123,
-        "input_key_2": 10.0,
-        "input_key_3": null, # resets the single input
-      },
       "reset": true,
       "gqueries": [
         "gquery_1",
         "gquery_2"
-      ]
+      ],
+      "scenario": {
+        "title": "New title",
+        "user_values": {
+          "123": 4.56,
+          "124": 5.67
+        }
+      }
     }
 
 #### Response
@@ -150,14 +154,7 @@ The gquery result is a hash rather than an array.
     Status: 200 OK
 
     {
-      "url": "http://et-engine.com/scenarios/999",
-      "id": 999,
-      "title": "My scenario",
-      "area_code": "nl",
-      "end_year": 2040,
-      "template": 12345,
-      "created_at": "2012-01-01 00:00:00",
-      "updated_at": "2012-01-01 00:00:00",
+      "scenario": <scenario>,
       "gqueries": {
         "gquery_1": {
           "present": 123,
@@ -196,24 +193,28 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
     Status: 200 OK
 
-    [
-      {
-        "code": "input_foobar",
-        "id": 123
-        "start_value": 1000,
-        "end_value": 2000,
-        "label": "1€/Kg",
-        "current_value": 1500
+    {
+      "agriculture_electricity_demand": {
+        "share_group": "foobar",
+        "max": 5,
+        "min": -5,
+        "default": 0,
+        "user": 3
+      },-
+      "agriculture_heat_demand": {
+        "max": 5,
+        "min": -5,
+        "default": 0,
+        "user": 2.3
       },
-      {
-        "code": "input_foobar_2",
-        "id": 123
-        "start_value": 1000,
-        "end_value": 2000,
-        "label": "1€/Kg",
-        "current_value": 1500
-      }
-    ]
+      ...
+    }
+
+* `default`: input start value
+* `user`: user-set value. Not available if null
+* `max`
+* `min`
+* `share_group`: Not available if null or empty
 
 ### Get a single input details
 
@@ -227,15 +228,28 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
     Status: 200 OK
 
     {
-      "code": "input_foobar",
-      "id": 123
-      "start_value": 1000,
-      "end_value": 2000,
-      "label": "1€/Kg",
-      "current_value": 1500
+      "code": "households_replacement_of_existing_houses",
+      "share_group": "",
+      "max": 5,
+      "min": 0,
+      "default": 0
+    }
+
+Just like the entire inputs list, but not indexed by input code. The attribute code is added to the output.
+
+#### Errors
+
+If the input doesn't exist the server returns an HTTP 404 error and a message:
+
+    Status: 404
+
+    {
+      "errors": ["Input not found"]
     }
 
 ### Get a subset of input details
+
+Not implemented yet.
 
 #### Request
 
@@ -268,9 +282,11 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
 
 ## Converters
 
-### Get a converter details [IMPLEMENTED]
+### Get a converter details
 
 This information should be seen on the graph diagram (maybe when the user clicks on a node and wants to see the details) and on the ETM, when the user clicks on the converter info link (now we're loading an iframe). Do we ever need converter info outside the scope of a scenario? We could use the `/converters/:code` URL to get the generic converter attributes (those that don't require an active scenario) and `/scenarios/:scenario_id/converters/:code` to get the attributes for a specific scenario.
+
+Implemented.
 
 #### Request
 
@@ -324,8 +340,9 @@ If the scenario_id is missing then the controller will use the latest scenario.
        }
     }
 
-### Converter details for a specific scenario [IMPLEMENTED]
+### Converter details for a specific scenario
 
+Implemented
 
 #### Request
 
