@@ -1,3 +1,5 @@
+ENV['ETSOURCE_DIR'] ||= 'spec/fixtures/etsource'
+
 if ENV["COVERAGE"]
   require 'simplecov'
   SimpleCov.start do

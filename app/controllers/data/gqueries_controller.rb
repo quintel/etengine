@@ -93,7 +93,7 @@ class Data::GqueriesController < Data::BaseController
         @gquery = @version.reify
         flash[:notice] = "Revision"
       else
-        @gquery = Gquery.find(params[:id])
+        @gquery = Gquery.get(params[:id])
       end
     end
 
