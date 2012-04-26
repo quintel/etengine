@@ -44,6 +44,7 @@ class Scenario < ActiveRecord::Base
   has_one :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
 
   validates_presence_of :title, :on => :create, :message => I18n.t("scenario.provide_title")
+  validates :area_code, :presence => true
 
   scope :in_start_menu, where(:in_start_menu => true)
   # it's a national preset scenario when there is no region defined and it's defined in the start menu

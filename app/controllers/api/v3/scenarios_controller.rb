@@ -94,7 +94,12 @@ module Api
         end
         # TODO: handle scenario ownership!
         @scenario.update_attributes(attrs)
-        gql = @scenario.gql(:prepare => true)
+        begin
+          gql = @scenario.gql(:prepare => true)
+        rescue Exception => e
+          # TODO: Scenario#gql should raise helpful exceptions.
+          render :json => {:errors => [e.to_s]}, :status => 500 and return
+        end
         gquery_keys = params[:gqueries] || []
         out = Jbuilder.encode do |json|
           json.scenario do |json|
