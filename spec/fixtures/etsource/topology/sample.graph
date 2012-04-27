@@ -1,0 +1,5 @@
+foo;
+bar;
+baz;
+foo-(electricity) -- s --> (electricity)-bar
+foo-(electricity) -- s --> (electricity)-baz

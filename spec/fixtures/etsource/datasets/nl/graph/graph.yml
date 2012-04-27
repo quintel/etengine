@@ -1,0 +1,9 @@
+foo: {demand: 100}
+# bar: 
+# baz:
+foo-(electricity): {conversion: 1.0}
+(electricity)-bar: {conversion: 1.0}
+(electricity)-baz: {conversion: 1.0}
+
+foo-(electricity) -- s --> (electricity)-bar: {share: 0.6}
+foo-(electricity) -- s --> (electricity)-baz: {share: 0.4}
