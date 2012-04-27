@@ -16,6 +16,10 @@ class Preset
     end
   end
 
+  def attributes
+    COLUMNS.inject({}) {|hsh, key| hsh.merge key.to_s, self.send(key) }
+  end
+
   # needed by InMemoryRecord
   def self.load_records
     h = {}
@@ -26,4 +30,19 @@ class Preset
     h
   end
 
+  def to_xml(options = {})
+    options[:indent] ||= 2
+    xml = options[:builder] ||= Builder::XmlMarkup.new(:indent => options[:indent])
+    
+    xml.instruct! unless options[:skip_instruct]
+    xml.scenario do
+      xml.id = id
+      xml.title = title
+    end
+  end
+
+
+  def to_param
+    id.to_s
+  end
 end
