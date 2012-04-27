@@ -12,4 +12,13 @@ describe Preset do
   it "should load_records" do
     Preset.all.map(&:id).include?(2999).should be_true
   end
+
+
+  it "#to_scenario should a scenario" do
+    scenario = Preset.all.first.to_scenario
+    binding.pry
+    scenario.id.should == 2999
+    scenario.class.should == Scenario
+  end
+
 end

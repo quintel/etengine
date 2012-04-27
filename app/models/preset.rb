@@ -3,6 +3,10 @@
 #
 class Preset 
   include InMemoryRecord
+  include ActiveModel::Serialization
+  include ActiveModel::Serializers::JSON
+  include ActiveModel::Serializers::Xml
+
 
   COLUMNS = [:id, :user_values, :end_year, :area_code, :use_fce, :title, :description]
 
@@ -16,8 +20,22 @@ class Preset
     end
   end
 
-  def attributes
-    COLUMNS.inject({}) {|hsh, key| hsh.merge key.to_s, self.send(key) }
+  # provide legacy support by pretending to be a scenario
+  def to_scenario
+    attrs = attributes
+    id = attrs.delete(:id)
+    
+    Scenario.new(attrs).tap{|scenario| scenario.id = id }
+  end
+
+  def attributes(attrs = {})
+    COLUMNS.inject({}.with_indifferent_access) {|hsh, key| hsh.merge key.to_s => self.send(key) }
+  end
+
+  def serializable_hash(options = {})
+    hsh = super(options)
+    hsh.delete('user_values')
+    hsh
   end
 
   # needed by InMemoryRecord
@@ -29,18 +47,6 @@ class Preset
     end
     h
   end
-
-  def to_xml(options = {})
-    options[:indent] ||= 2
-    xml = options[:builder] ||= Builder::XmlMarkup.new(:indent => options[:indent])
-    
-    xml.instruct! unless options[:skip_instruct]
-    xml.scenario do
-      xml.id = id
-      xml.title = title
-    end
-  end
-
 
   def to_param
     id.to_s
