@@ -197,11 +197,10 @@ class Scenario < ActiveRecord::Base
     Scenario.create!(attributes)
   end
 
-  def scenario_id=(scenario_id)
-    return if scenario_id.blank?
-    if scenario = Scenario.find_by_id(scenario_id)
-      copy_scenario_state(scenario)
-      self.preset_scenario_id = scenario_id
+  def scenario_id=(preset_id)
+    if preset = Preset.get(preset_id)
+      copy_scenario_state(preset)
+      self.preset_scenario_id = preset_id
     end
   end
 
