@@ -23,10 +23,10 @@ module Api
       # page.
       #
       def templates
-        @scenarios = Scenario.in_start_menu
+        @presets = Preset.all
         out = Jbuilder.encode do |json|
-          json.array!(@scenarios) do |json, s|
-            scenario_to_jbuilder(s, json)
+          json.array!(@presets) do |json, preset|
+            preset_to_jbuilder(preset, json)
           end
         end
         render :json => out
@@ -149,13 +149,24 @@ module Api
 
       # TODO: move to model
       def scenario_to_jbuilder(s, json)
-          json.title     s.title
-          json.url       api_v3_scenario_url(s)
-          json.id        s.id
-          json.area_code s.area_code
-          json.end_year  s.end_year
-          json.template  s.preset_scenario_id
-          json.source    nil
+        json.title     s.title
+        json.url       api_v3_scenario_url(s)
+        json.id        s.id
+        json.area_code s.area_code
+        json.end_year  s.end_year
+        json.template  s.preset_scenario_id
+        json.source    nil
+      end
+
+
+      def preset_to_jbuilder(preset, json)
+        json.id        preset.id
+        json.title     preset.title
+        json.url       api_v3_scenario_url(preset)
+        json.area_code preset.area_code
+        json.end_year  preset.end_year
+        json.template  nil
+        json.source    nil
       end
     end
   end

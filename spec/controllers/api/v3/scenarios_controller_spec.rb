@@ -15,10 +15,9 @@ describe Api::V3::ScenariosController do
 
   describe "GET templates" do
     it "should return the homepage scenarios" do
-      home_scenario = Factory :scenario_visible_in_homepage
       get :templates
       response.should be_success
-      assigns(:scenarios).should == [home_scenario]
+      assigns(:presets).should == Preset.all
     end
   end
 end

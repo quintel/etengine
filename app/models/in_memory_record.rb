@@ -11,7 +11,7 @@ module InMemoryRecord
     end
 
     def all
-      records.values
+      records.values.uniq
     end
 
     # records is a hash of key => object
