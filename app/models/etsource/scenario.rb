@@ -4,13 +4,24 @@ module Etsource
       @etsource = Etsource::Base.instance
     end
 
+    def presets
+      base_dir = "#{@etsource.export_dir}/presets"
+
+      presets = []
+      Dir.glob("#{base_dir}/*.yml").each do |f|
+        attributes = YAML::load_file(f).with_indifferent_access
+        presets << Preset.new(attributes)
+      end
+      presets
+    end
+
     def import!
-      # Do not delete scenarios because scenario ids are important and referenced by et-model
+      # Do not delete presets because scenario ids are important and referenced by et-model
       import
     end
 
     def import
-      base_dir = "#{@etsource.export_dir}/scenarios"
+      base_dir = "#{@etsource.export_dir}/presets"
 
       ids = []
       Dir.glob("#{base_dir}/*.yml").each do |f|
