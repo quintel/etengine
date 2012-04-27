@@ -41,7 +41,7 @@ class Preset
   # needed by InMemoryRecord
   def self.load_records
     h = {}
-    Etsource::Loader.instance.presets.each do |preset|
+    Etsource::Loader.instance.presets.sort_by(&:id).each do |preset|
       h[preset.id]      = preset
       h[preset.id.to_s] = preset
     end
