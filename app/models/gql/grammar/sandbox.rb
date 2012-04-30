@@ -11,18 +11,6 @@ module Gql::Grammar
       @scope = scope
     end
 
-    def execute(query = nil)
-
-      if query.is_a?(::String)
-        query = sanitized_proc(query)
-      end
-      
-      instance_exec(&query)
-    rescue => e
-      ::Rubel::ErrorReporter.new(e, query)
-    end
-    alias query execute
-
     include ::Gql::Grammar::Functions::Legacy
     include ::Gql::Grammar::Functions::Constants
     include ::Gql::Grammar::Functions::Traversal

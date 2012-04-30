@@ -16,7 +16,6 @@ describe Preset do
 
   it "#to_scenario should a scenario" do
     scenario = Preset.all.first.to_scenario
-    binding.pry
     scenario.id.should == 2999
     scenario.class.should == Scenario
   end
