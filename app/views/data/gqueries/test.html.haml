@@ -10,10 +10,5 @@
   %h3 Result
   - if @query
     = render 'result'
-    %h2 Query Debug
-    %h3 present
-    %pre.wordwrap= @gql.present.debug(@query).reverse.join("\n") rescue "[Error]"
-    %h3 future
-    %pre.wordwrap= @gql.future.debug(@query).reverse.join("\n") rescue "[Error]"
   - else
     %em no query
