@@ -178,16 +178,4 @@ describe Scenario do
       end
     end
   end
-
-  describe "#clone"do
-    before do
-      @s = Factory :scenario
-      @t = @s.clone!
-    end
-
-    subject { @t }
-    its(:user_values) { should == @s.user_values}
-    its(:end_year) { should == @s.end_year}
-    its(:area_code) { should == @s.area_code}
-  end
 end
