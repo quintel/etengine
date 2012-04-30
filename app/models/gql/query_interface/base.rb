@@ -51,7 +51,7 @@ module Gql
     end
 
     def rubel_execute(obj)
-      @rubel.execute
+      @rubel.execute(obj)
     end
   end
 

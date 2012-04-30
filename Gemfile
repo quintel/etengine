@@ -25,7 +25,7 @@ gem 'fnv'
 
 # own gems
 gem "yaml_pack", '~>0.0.3.alpha'
-gem 'rubel'
+gem 'rubel', '0.0.3'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'

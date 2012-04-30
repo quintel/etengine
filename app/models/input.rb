@@ -200,7 +200,8 @@ class Input < ActiveRecord::Base
   end
 
   def start_value_for(gql)
-    if gql_query = self[:start_value_gql] and !gql_query.blank? and result = gql.query(gql_query)
+    gql_query = self[:start_value_gql]
+    if !gql_query.blank? and result = gql.query(gql_query)
       result * factor
     else
       self[:start_value]

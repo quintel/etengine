@@ -156,7 +156,7 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.8.0)
-    rubel (0.0.2)
+    rubel (0.0.3)
     ruby-graphviz (1.0.0)
     ruby-prof (0.10.7)
     rubyzip (0.9.4)
@@ -232,7 +232,7 @@ DEPENDENCIES
   rb-fsevent
   rdiscount
   rspec-rails (~> 2.8.0)
-  rubel
+  rubel (= 0.0.3)
   ruby-graphviz
   ruby-prof
   rubyzip (= 0.9.4)
