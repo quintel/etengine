@@ -80,19 +80,19 @@ class Input < ActiveRecord::Base
 
   # i had to resort to a class method for "caching" procs
   # as somewhere inputs are marshaled (where??)
-  def self.memoized_gql3_proc_for(input)
-    @gql3_proc ||= {}
-    @gql3_proc[input.lookup_id] ||= (input.gql3_proc)
+  def self.memoized_rubel_proc_for(input)
+    @rubel_proc ||= {}
+    @rubel_proc[input.lookup_id] ||= (input.rubel_proc)
   end
 
-  def gql3
-    # use memoized_gql3_proc_for for faster updates (50% increase)
-    #gql3_proc
-    self.class.memoized_gql3_proc_for(self)
+  def rubel
+    # use memoized_rubel_proc_for for faster updates (50% increase)
+    #rubel_proc
+    self.class.memoized_rubel_proc_for(self)
   end
 
-  def gql3_proc
-    query and Gquery.gql3_proc(query)
+  def rubel_proc
+    query and Gquery.rubel_proc(query)
   end
 
   def before_update?

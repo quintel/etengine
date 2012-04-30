@@ -80,15 +80,16 @@ class Gquery < ActiveRecord::Base
   # As a tribute to Ed Posnak I leave the following comment where it is.
   # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
 
-  def gql3
-    @gql3_proc ||= self.class.gql3_proc(query)
+  def rubel
+    @rubel_proc ||= self.class.rubel_proc(query)
   end
 
-  def self.gql3_proc(str)
-    eval("lambda { #{convert_to_gql3!(str.dup)} }")
+  def self.rubel_proc(str)
+    @rubel ||= Gql::Grammar::Sandbox.new
+    @rubel.sanitized_proc(convert_to_rubel!(str.dup))
   end
 
-  def self.convert_to_gql3!(string)
+  def self.convert_to_rubel!(string)
     string.gsub!(/[\n\s\t]/, '')
     string.gsub!(/^[a-z]+\:/,'')
     string

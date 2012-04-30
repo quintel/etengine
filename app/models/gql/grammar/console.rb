@@ -1,8 +1,12 @@
 module Gql::Grammar
   # Used for GQL console
-  class Console
-    include ::Rubel::Core
-    
+  class Console < Rubel::Runtime::Console
+    attr_reader :scope
+
+    def initialize(scope = nil)
+      @scope = scope
+    end
+
     include ::Gql::Grammar::Functions::Legacy
     include ::Gql::Grammar::Functions::Constants
     include ::Gql::Grammar::Functions::Traversal
@@ -18,16 +22,16 @@ module Gql::Grammar
     # so it can easily be copy pasted by users.
     #
     # DOES NOT WORK :( couldn't make it work 
-    class LoggingPrompt
-      include Readline
-
-      def readline(prompt = "GQL: ", add_hist = true)
-        @logger ||= Logger.new('gqlconsole/prompt.log', 'daily')
-        super(prompt, add_hist).tap do |line| 
-          @logger.info(line)
-        end
-      end
-    end
+    # class LoggingPrompt
+    #   include Readline
+    #
+    #   def readline(prompt = "GQL: ", add_hist = true)
+    #     @logger ||= Logger.new('gqlconsole/prompt.log', 'daily')
+    #     super(prompt, add_hist).tap do |line| 
+    #       @logger.info(line)
+    #     end
+    #   end
+    # end
 
     # Prints string directly
     RESULT_PRINTER = proc do |output, value|
