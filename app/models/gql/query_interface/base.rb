@@ -10,23 +10,23 @@ module Gql
 
     def query(obj, input_value = nil)
       case obj
-      when Gquery then subquery(obj.key)
+      when Gquery then subquery(obj.key) # sending it to subquery allows for caching of gqueries
       when Input  then execute_input(obj, input_value)
-      when String then @rubel.query(Gquery.gql3_proc(obj))
-      when Proc   then @rubel.query(obj)
+      when String then rubel_execute(Gquery.rubel_proc(obj))
+      when Proc   then rubel_execute(obj)
       else
         raise ::Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{obj.inspect}.")
       end
     end
 
-    # A subquery is a call to another query.
-    # e.g. "SUM(QUERY(foo))"
+    # Returns the results of another gquery.
+    #
+    # Calling it through subquery allows for caching and memoizing. This is 
+    # implemented inside submodules/mixins.
     #
     def subquery(gquery_key)
       if gquery = get_gquery(gquery_key)
-        #ActiveSupport::Notifications.instrument("gql.query.subquery: #{gquery.key}") do
-          @rubel.query(gquery.gql3)
-        #end
+        rubel_execute(gquery.rubel)
       else
         nil
       end
@@ -35,7 +35,7 @@ module Gql
     def execute_input(input, value = nil)
       self.input_value = value.to_s
       self.input_value = "#{self.input_value}#{input.v1_legacy_unit}" unless self.input_value.include?('%')  
-      @rubel.query(input.gql3) if input.gql3
+      rubel_execute(input.rubel) if input.rubel
     rescue => e
       raise "UPDATE: #{input.key}:\n #{e.inspect}"
     ensure
@@ -48,6 +48,10 @@ module Gql
       else
         ::Gquery.get(gquery_or_key)
       end
+    end
+
+    def rubel_execute(obj)
+      @rubel.execute
     end
   end
 
