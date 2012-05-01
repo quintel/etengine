@@ -7,7 +7,7 @@ class Api::ScenariosController < Api::BaseController
   before_filter :find_scenario, :only => [:show, :load, :update]
 
   def index
-    @scenarios = Scenario.exclude_api.recent_first.page(params[:page]).per(20)
+    @scenarios = Scenario.recent_first.page(params[:page]).per(20)
     respond_with(@scenarios)
   end
 

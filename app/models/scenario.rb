@@ -43,7 +43,6 @@ class Scenario < ActiveRecord::Base
 
   scope :in_start_menu, where(:in_start_menu => true)
   scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
-  scope :exclude_api, where("`type` IS NULL OR `type` = 'Scenario'")
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
   scope :recent, order("created_at DESC").limit(30)
@@ -61,7 +60,8 @@ class Scenario < ActiveRecord::Base
       user_values IS NULL
       OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
     )
-  ])
+    AND updated_at < ?
+  ], Date.today - 5)
 
   attr_accessible :author, :title, :description, :user_values, :end_year,
     :area_code, :country, :region, :in_start_menu, :user_id, :preset_scenario_id,
