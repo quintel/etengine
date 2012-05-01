@@ -28,8 +28,6 @@
 #   scenario.update_input(input, 4.5)
 #
 class Scenario < ActiveRecord::Base
-  # this can be deleted when we remove the type column
-  self.inheritance_column = nil
   include Scenario::UserUpdates
   include Scenario::Persistable
   store :user_values
