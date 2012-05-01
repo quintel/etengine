@@ -163,9 +163,6 @@ class ConverterApi
     :cost => {
       :initial_investment_excl_ccs_per_mwe => ['Initial investment (excl CCS)', 'euro / MWe'],
       :additional_investment_ccs_per_mwe => ['Additional inititial investment for CCS', 'euro / MWe'],
-      :cost_of_installing_per_mwe => ['Cost of installing','euro / MWe'],
-      :residual_value_per_mwe => ['Residual value after lifetime','euro / MWe'],
-      :decommissioning_costs_per_mwe => ['Decommissioning costs','euro / MWe'],
       :fixed_yearly_operation_and_maintenance_costs_per_mwe => ['Fixed operation and maintenance costs','euro / MWe / year'],
       :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro / full load hour'],
       :ccs_operation_and_maintenance_cost_per_full_load_hour  => ['Additional variable operation and maintenance costs for CCS', 'euro / full load hour'],
