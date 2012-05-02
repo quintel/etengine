@@ -7,7 +7,8 @@
 #
 class ApiRequest
   GQUERY_KEY_SEPARATOR = ";".freeze
-  API_ATTRIBUTES = [:user_values, :area_code, :start_year, :end_year, :use_fce, :preset_scenario_id]
+  API_ATTRIBUTES = [:user_values, :area_code, :start_year, :end_year, :use_fce,
+    :preset_scenario_id, :source]
 
   attr_accessor :settings, :input, :reset, :use_fce, :sanitize_groups
 
