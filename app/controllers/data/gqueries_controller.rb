@@ -2,7 +2,7 @@ class Data::GqueriesController < Data::BaseController
   before_filter :find_model, :only => [:show, :edit]
 
   def index
-    @gqueries = Kaminari.paginate_array(Gquery.all).page(params[:page]).per(50)
+    @gqueries = Kaminari.paginate_array(Gquery.all.sort_by(&:key)).page(params[:page]).per(50)
   end
 
   def dump
