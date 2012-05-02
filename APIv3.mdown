@@ -1,31 +1,14 @@
-# API v3 Ideas
+# API v3
 
-## Principles
+### Weak points and open issues
 
-* We should make use of the HTTP verbs
-* use JSON as much as possible.
-
-### Weak points
-
-We must find a nice way to identify the scenarios that should be saved and those that can be pruned. Now we have ~25k scenarios. But we hardly need more than 1k - most of them are leftovers. The API should include a way to mark the scenarios to be stored and those that can be dropped.
-
-Another issue is the scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
-
-### DB changes
-
-It would be nice to add a source column, to store the ETE client name and track which applications are creating the scenarios.
-
-Country and region should be merged into a single `area_code` column.
-
-#### ETE Scenarios:
-
-* decide what to do with `author` and `user_id` columns
+* We must find a nice way to identify the scenarios that should be saved and those that can be pruned. Now we have ~25k scenarios. But we hardly need more than 1k - most of them are leftovers. The API should include a way to mark the scenarios to be stored and those that can be dropped. The best way is to set the existing `protected` field to `true`. The ETM now does it, the other apps not yet.
+* Another issue is the scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
 * drop column `present_updated_at` or `updated_at`- one is enough
-* user_values: store values as json - it is more readable and way faster. Only downside is that hash keys are now strings rather than integers. Rails 3.2 ActiveRecord store would make this even more convenient.
 
 ## Scenarios
 
-### Get a single scenario [IMPLEMENTED, but the output is the old scenario#to_json]
+### Get a single scenario
 
 #### Request
 
@@ -47,7 +30,9 @@ Country and region should be merged into a single `area_code` column.
 
 If the scenario is missing then the action returns an empty hash with a 404 HTTP status code.
 
-### Get predefined scenarios [IMPLEMENTED]
+### Get predefined scenarios
+
+This action returns an array with the predefined scenarios. This list is used on the ETM intro page to build the select box.
 
 #### Request
 
@@ -75,8 +60,6 @@ If the scenario is missing then the action returns an empty hash with a 404 HTTP
 * `source`: optional (but highly recommended) required string, the application that makes the request
 * `template`: optional id of the scenario used as template / preset_scenario_id
 
-Implemented, but the attributes are still using the old names.
-
 ##### Example
 
     {
@@ -101,19 +84,18 @@ Implemented, but the attributes are still using the old names.
       "source": "ETM"
     }
 
-### Updating querying a scenario
+### Updating  and querying a scenario
 
 The two operations should better be separated, but that would probably make the applications trigger too many requests. Since gqueries are basically read, safe operations, the right HTTP verb should be GET, but then we'd have the annoying URL length limit issues with IE.
-The slider update is a proper PATCH request instead.
+The slider update is a proper PUT/PATCH request instead.
 
 #### Request
 
     PUT /scenarios/:id
 
-* `inputs`: optional hash {:input_key => :value }
 * `reset`: optional boolean (default: false). If true the scenario inputs will first be reset. This means that the scenario will use only the inputs we're passing with the current request. Used by the energymixer
 * `gqueries`: optional array of gqueries to run
-* `scenario`: hash with the scenario attributes. Its `user_values` are merged with the existing values, because otherwise we should send the entire input sets with every request.
+* `scenario`: hash with the scenario attributes. Its `user_values` are merged with the existing values, because otherwise we should send the entire input sets with every request. We could otherwise implement a different solution: the `user_values` hash could behave like a standard ActiveRecord attribute (replacing the values every time), and the optional `inputs` hash would be merged with the existing user_values.
 
 Partially implemented: the `gqueries` and `reset` attributes are still ignored.
 
