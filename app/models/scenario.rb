@@ -13,11 +13,11 @@
 #  in_start_menu      :boolean(1)
 #  user_id            :integer(4)
 #  preset_scenario_id :integer(4)
-#  type               :string(255)
 #  use_fce            :boolean(1)
 #  present_updated_at :datetime
 #  protected          :integer(1)
 #  area_code          :string(255)
+#  source             :string(255)
 #
 
 # Useage:
@@ -65,7 +65,7 @@ class Scenario < ActiveRecord::Base
 
   attr_accessible :author, :title, :description, :user_values, :end_year,
     :area_code, :country, :region, :in_start_menu, :user_id, :preset_scenario_id,
-    :use_fce, :protected, :scenario_id
+    :use_fce, :protected, :scenario_id, :source
 
   before_create do |scenario|
     if preset = scenario.preset_scenario

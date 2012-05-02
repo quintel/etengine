@@ -19,22 +19,9 @@ Country and region should be merged into a single `area_code` column.
 
 #### ETE Scenarios:
 
-* drop columns `country`, `region` and replace with `area_code`
 * decide what to do with `author` and `user_id` columns
-* drop column `type` - this involves merging the Scenario and ApiScenario classes
 * drop column `present_updated_at` or `updated_at`- one is enough
 * user_values: store values as json - it is more readable and way faster. Only downside is that hash keys are now strings rather than integers. Rails 3.2 ActiveRecord store would make this even more convenient.
-
-```
-    Benchmark.bm do |b|
-      b.report('json'){n.times do; JSON.parse(json); end}
-      b.report('yaml'){n.times do; YAML.load(yaml); end}
-    end
-           user     system      total        real
-    json  0.170000   0.010000   0.180000 (  0.186136)
-    yaml  0.490000   0.010000   0.500000 (  0.503646)
-````
-
 
 ## Scenarios
 
