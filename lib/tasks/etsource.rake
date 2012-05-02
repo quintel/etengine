@@ -35,7 +35,6 @@ namespace :etsource do
     etsource.base_dir       = path
     etsource.cache_dataset  = false
     etsource.cache_topology = false
-    etsource.import_current!
     etsource
   end
 
@@ -43,7 +42,7 @@ namespace :etsource do
     DEBUG_REPORT = true
 
     initialize_etsource(ENV['ETSOURCE_DIR'])
-    scenario = ApiScenario.default.tap{|a| a.code = 'nl'}
+    scenario = Scenario.default.tap{|a| a.code = 'nl'}
     scenario.gql(prepare: true)
   end
 
@@ -62,7 +61,7 @@ namespace :etsource do
       puts "- #{test_suite_file}"
 
       suite    = YAML::load(File.read(test_suite_file))
-      scenario = ApiScenario.default(suite.fetch('settings', {}))
+      scenario = Scenario.default(suite.fetch('settings', {}))
       scenario.build_update_statements
       gql      = scenario.gql(prepare: true)
 

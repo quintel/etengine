@@ -7,7 +7,8 @@
 #
 class ApiRequest
   GQUERY_KEY_SEPARATOR = ";".freeze
-  API_ATTRIBUTES = [:user_values, :area_code, :start_year, :end_year, :use_fce, :preset_scenario_id]
+  API_ATTRIBUTES = [:user_values, :area_code, :start_year, :end_year, :use_fce,
+    :preset_scenario_id, :source]
 
   attr_accessor :settings, :input, :reset, :use_fce, :sanitize_groups
 
@@ -54,7 +55,7 @@ class ApiRequest
     opts.each do |key,value|
       opts[key] = nil if value == 'null' or key == 'undefined'
     end
-    ApiScenario.new_attributes(opts)
+    Scenario.new_attributes(opts)
   end
 
   # Updates and stores the scenario with the new user values submitted in this request.
@@ -79,9 +80,9 @@ class ApiRequest
   # Initialize and return scenario.
   def scenario
     @scenario ||= if test_scenario?
-      ApiScenario.new(new_attributes).tap{|s| s.test_scenario = true }
+      Scenario.new(new_attributes).tap{|s| s.test_scenario = true }
     else
-      ApiScenario.find(@api_scenario_id)
+      Scenario.find(@api_scenario_id)
     end
   end
 

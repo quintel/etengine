@@ -6,12 +6,38 @@ module Gql
 #
 class Gql
   extend ActiveModel::Naming
+  include Instrumentable
+
 
   ENABLE_QUERY_CACHE_FOR_FUTURE = true
 
-  attr_accessor :present_graph, :future_graph, :dataset, :scenario
+  attr_accessor :present_graph, :future_graph, :dataset, :scenario, :calculated
   attr_reader :graph_model, :sandbox_mode
 
+  # Initialize a Gql instance by passing a (api) scenario
+  #
+  #
+  #   
+  # @example Initialize with scenario
+  #   gql = ApiScenario.default.gql(prepare: true)
+  #   gql.query(...)
+  #
+  # @example Initialize manually:
+  #   gql = Gql::Gql.new(ApiScenario.default)
+  #   gql.prepare
+  #   gql.query(...)
+  #
+  # @example Initialize with scenario and individually prepare the gql
+  #   gql = ApiScenario.default.gql(prepare: false)
+  #   gql.init_datasets
+  #   gql.update_present
+  #   gql.update_future
+  #   gql.present_graph.calculate   
+  #   gql.future_graph.calculate
+  #   gql.calculated = true
+  #   gql.query(...)
+  #
+  #
   # @param [Graph] graph_model
   # @param [Dataset,String] dataset Dataset or String for country
   #
@@ -46,7 +72,7 @@ class Gql
   # @return [Qernel::Dataset] Dataset used for the future. Needs to be updated with user input and then calculated.
   #
   def dataset_clone
-    ActiveSupport::Notifications.instrument("gql.performance.dataset_clone") do
+    instrument("gql.performance.dataset_clone") do
       Marshal.load(Marshal.dump(@dataset))
     end
   end
@@ -63,17 +89,19 @@ class Gql
   #
   def future
     # Disable Caching of Gqueries until a smart solution has been found
-    #
     # @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE && !scenario.test_scenario?
     #   QueryInterface.new(self, future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
     # else
     @future ||= QueryInterface.new(self, future_graph)
-    # end
   end
 
   # Are the graphs calculated? If true, prevent the programmers
   # to add further update statements ({Scenario#add_update_statements}).
   # Because they won't affect the system anymore.
+  #
+  # When calculated changes through update statements
+  # should no longer be allowed, as they won't have an impact on the
+  # calculation (even though updating prices would work).
   #
   # @return [Boolean]
   #
@@ -87,11 +115,16 @@ class Gql
   # object rather than it's Gquery#query. Because parsing a gql statement
   # takes rather long time.
   #
-  #     gql.query(Gquery.first)
-  #     gql.query("SUM(1.0, 2.0)")         # => [[2010, 3.0],[2040,3.0]]
-  #     gql.query("present:SUM(1.0, 2.0)") # => 3.0
+  # @example Query with a Gquery instance
+  #   gql.query(Gquery.first)
+  # @example Query with a string
+  #   gql.query("SUM(1.0, 2.0)")         # => [[2010, 3.0],[2040,3.0]]
+  # @example Query with a string that includes a query modifier (present/future)
+  #   gql.query("present:SUM(1.0, 2.0)") # => 3.0
+  # @example Query with a proc/lambda
+  #   gql.query(-> { SUM(1,2) })         # => 3
   #
-  # @param query [String, Gquery] the single query.
+  # @param query [String, Gquery, Proc] A query object
   # @param rescue_resultset [ResultSet] A ResultSet that is return in case of errors.
   # @return [ResultSet] Result query, depending on its gql_modifier
   #
@@ -129,7 +162,8 @@ class Gql
   # Run a query with the strategy defined in the parameter
   def query_with_modifier(query, strategy)
     key = query.respond_to?(:key) ? query.key : 'custom'
-    ActiveSupport::Notifications.instrument("gql.query.#{key}.#{strategy}") do
+    
+    instrument("gql.query.#{key}.#{strategy}") do
       if strategy.nil?
         query_standard(query)
       elsif Gquery::GQL_MODIFIERS.include?(strategy.strip)
@@ -153,23 +187,10 @@ class Gql
   # - For working/inspecting the graph (e.g. from the command line)
   #
   def prepare
-    # 2011-08-15: the present has to be prepared first. otherwise
-    # updating the future won't work (we need the present values)
-
-    prepare_present
-    prepare_future
-
-    ActiveSupport::Notifications.instrument("gql.performance.graph.calculate #{present_graph.year}") do
-      present_graph.calculate
-    end
-    ActiveSupport::Notifications.instrument("gql.performance.graph.calculate #{future_graph.year}") do
-      future_graph.calculate
-    end
-
-    # At this point the gql is calculated. Changes through update statements
-    # should no longer be allowed, as they won't have an impact on the
-    # calculation (even though updating prices would work).
-    @calculated = true
+    log = 'gql.performance.'
+    instrument(log+'init_datasets')    { init_datasets }
+    instrument(log+'update_graphs')    { update_graphs }
+    instrument(log+'calculate_graphs') { calculate_graphs }
   end
 
   # Runs an array of gqueries. The gquery list might be expressed in all the formats accepted
@@ -196,26 +217,33 @@ class Gql
     end
   end
 
-protected
-  ENABLE_PRESENT_DATASET_CACHE = false
-  def prepare_present
-    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_present') do
-      # DEBT wrong. check for present_updated_at!!
-      if ENABLE_PRESENT_DATASET_CACHE && scenario.update_statements_present.empty? && scenario.inputs_present.empty?
-        present_graph.dataset ||= calculated_present_dataset
-      else
-        # If present_graph has user inputs then we have to take a fresh dataset.
-        present_graph.dataset ||= dataset_clone
-        UpdateInterface::Graph.new(self, present_graph).update_with(scenario.update_statements_present)
-        scenario.inputs_present.each { |input, value| present.query(input, value) }
-      end
+  def init_datasets
+    present_graph.dataset ||= dataset_clone
+    future_graph.dataset = dataset_clone
+  end
+
+  def update_graphs
+    # 2011-08-15: the present has to be prepared first. otherwise
+    # updating the future won't work (we need the present values)
+    update_present
+    update_future
+  end
+
+  def calculate_graphs
+    present_graph.calculate
+    future_graph.calculate
+    @calculated = true
+  end
+
+  def update_present
+    instrument('gql.performance.present.update_present') do
+      UpdateInterface::Graph.new(self, present_graph).update_with(scenario.update_statements_present)
+      scenario.inputs_present.each { |input, value| present.query(input, value) }
     end
   end
 
-  def prepare_future
-    ActiveSupport::Notifications.instrument('gql.performance.graph.prepare_future') do
-      future_graph.dataset = dataset_clone
-
+  def update_future
+    instrument('gql.performance.future.update_future') do
       scenario.inputs_before.each { |input, value| future.query(input, value) }
       UpdateInterface::Graph.new(self, future_graph).update_with(scenario.update_statements)
       scenario.inputs_future.each { |input, value| future.query(input, value) }

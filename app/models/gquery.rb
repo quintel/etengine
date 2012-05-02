@@ -65,19 +65,10 @@ class Gquery < ActiveRecord::Base
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
   }
 
-  # Returns the cleaned query for any given key.
-  #
-  # @param key [String] Gquery key (see Gquery#key)
-  # @return [String] Cleaned Gquery
-  #
-  # def self.get(key)
-  #   query = gquery_hash[key]
-  #   raise Gql::GqlError.new("Gquery.get: no query found with key: #{key}") if query.nil?
-  #   # Check gql_metrics.rb initializer to see what we're doing with this notification
-  #   ActiveSupport::Notifications.instrument("gql.gquery.deprecated", key) if deprecated_gquery_hash[key]
-  #   query
-  # end
-
+  after_initialize do |gquery|
+    self.key = self.key.strip if self.key
+  end
+  
   def id
     lookup_id
   end
@@ -89,15 +80,39 @@ class Gquery < ActiveRecord::Base
   # As a tribute to Ed Posnak I leave the following comment where it is.
   # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
 
-  def gql3
-    @gql3_proc ||= self.class.gql3_proc(query)
+
+  # Returns the sanitized query string as a lambda.
+  #
+  # @example
+  #   q = Gquery.all.first.rubel
+  #   gql.present.query( q )
+  #
+  # @return [lambda]
+  #
+  def rubel
+    @rubel_proc ||= self.class.rubel_proc(query)
   end
 
-  def self.gql3_proc(str)
-    eval("lambda { #{convert_to_gql3!(str.dup)} }")
+  # Returns the sanitized gql query string as a lambda.
+  # It passes it through the Rubel sandbox for another security 
+  # layer (make it harder to access classes and modules).
+  #
+  # @example 
+  #   q = Gquery.rubel_proc("SUM(1,2)") 
+  #   # => lambda { SUM(1,2) }
+  #   gql.present.query( q )
+  #   # => 3
+  #
+  # @return [lambda]
+  #
+  def self.rubel_proc(str)
+    @rubel ||= Gql::Grammar::Sandbox.new
+    @rubel.sanitized_proc(convert_to_rubel!(str.dup))
   end
 
-  def self.convert_to_gql3!(string)
+  # sanitize query string. removes gquery related stuff
+  # like future/present: gql modifier strings.
+  def self.convert_to_rubel!(string)
     string.gsub!(/[\n\s\t]/, '')
     string.gsub!(/^[a-z]+\:/,'')
     string

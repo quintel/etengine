@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120418141406) do
+ActiveRecord::Schema.define(:version => 20120502132916) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -251,17 +251,17 @@ ActiveRecord::Schema.define(:version => 20120418141406) do
     t.datetime "updated_at"
     t.text     "user_values"
     t.integer  "end_year",                        :default => 2040
-    t.string   "country"
     t.boolean  "in_start_menu"
-    t.string   "region"
     t.integer  "user_id"
     t.integer  "preset_scenario_id"
-    t.string   "type"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
     t.integer  "protected",          :limit => 1
     t.string   "area_code"
+    t.string   "source"
   end
+
+  add_index "scenarios", ["source"], :name => "index_scenarios_on_source"
 
   create_table "users", :force => true do |t|
     t.string   "name",                                  :null => false

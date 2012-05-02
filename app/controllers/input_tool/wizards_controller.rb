@@ -63,7 +63,7 @@ module InputTool
 
     # Assign a area_code to a scenario, so @gql properly loads
     def assign_scenario
-      Current.scenario = ApiScenario.new(ApiScenario.default_attributes.merge :area_code => @area_code)
+      Current.scenario = Scenario.new(Scenario.default_attributes.merge :area_code => @area_code)
       @gql = Current.scenario.gql
       @gql.prepare
     end

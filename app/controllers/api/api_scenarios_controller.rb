@@ -11,7 +11,7 @@ class Api::ApiScenariosController < Api::BaseController
   # namespace
   #
   def index
-    @api_scenarios = ApiScenario.order('id DESC').limit(100)
+    @api_scenarios = Scenario.order('id DESC').limit(100)
 
     respond_to do |format|
       format.html {  }
@@ -28,7 +28,7 @@ class Api::ApiScenariosController < Api::BaseController
   #
   def new
     attributes = ApiRequest.new_attributes(params[:settings])
-    @api_scenario = ApiScenario.new(attributes)
+    @api_scenario = Scenario.new(attributes)
     @api_scenario.scenario_id = params[:settings][:scenario_id] rescue nil
     @api_scenario.save!
     respond_to do |format|
@@ -100,7 +100,7 @@ class Api::ApiScenariosController < Api::BaseController
     inputs = params[:inputs] || []
     out = {}
     inputs.each do |key|
-      input = Input.find_by_key(key) rescue nil
+      input = Input.get(key) rescue nil
       if input
         out[key] = input.client_values(gql)
         out[key][:user_value] = @api_scenario.user_values[input.lookup_id] rescue nil
@@ -112,6 +112,6 @@ class Api::ApiScenariosController < Api::BaseController
   protected
 
   def find_model
-    @api_scenario = ApiScenario.find(params[:id])
+    @api_scenario = Scenario.find(params[:id])
   end
 end

@@ -3,9 +3,14 @@ module Gql::Grammar
   # Rubel::Base inherits from BasicObject. This means we don't have
   # access to the default namespace, so prepend classes and modules
   # with ::.
-  class Sandbox < BasicObject
-    include ::Rubel::Core
-    
+  class Sandbox < Rubel::Runtime::Sandbox
+
+    attr_reader :scope
+
+    def initialize(scope = nil)
+      @scope = scope
+    end
+
     include ::Gql::Grammar::Functions::Legacy
     include ::Gql::Grammar::Functions::Constants
     include ::Gql::Grammar::Functions::Traversal

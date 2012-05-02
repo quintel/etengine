@@ -40,7 +40,11 @@ module Etsource
         raise "Trying to load a dataset with region code '#{country}' but it does not exist. Should be: #{country_dir(country)}"
       end
 
-      dataset_hash = load_dataset_hash
+      begin
+        dataset_hash = load_dataset_hash
+      rescue Exception => e
+        raise "Error loading dataset: #{e}"
+      end
       dataset_hash.delete(:defaults)
       dataset_hash.delete(:mixins)
 

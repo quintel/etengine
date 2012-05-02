@@ -156,6 +156,7 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.8.0)
+    rubel (0.0.3)
     ruby-graphviz (1.0.0)
     ruby-prof (0.10.7)
     rubyzip (0.9.4)
@@ -189,6 +190,7 @@ GEM
       kgio (~> 2.4)
       rack
       raindrops (~> 0.6)
+    watchr (0.7)
     webrat (0.7.3)
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
@@ -230,6 +232,7 @@ DEPENDENCIES
   rb-fsevent
   rdiscount
   rspec-rails (~> 2.8.0)
+  rubel (= 0.0.3)
   ruby-graphviz
   ruby-prof
   rubyzip (= 0.9.4)
@@ -241,6 +244,7 @@ DEPENDENCIES
   term-ansicolor
   text-table
   unicorn
+  watchr
   webrat
   yaml_pack (~> 0.0.3.alpha)
   yard (~> 0.7.2)

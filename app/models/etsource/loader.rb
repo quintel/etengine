@@ -38,7 +38,10 @@ module Etsource
       end
     end
 
-
+    # @return [Array<Preset>] Scenario Presets
+    def presets
+      Etsource::Scenario.new.presets
+    end
 
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
