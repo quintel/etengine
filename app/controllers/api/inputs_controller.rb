@@ -14,6 +14,6 @@ class Api::InputsController < Api::BaseController
   private
   
     def find_input
-      @input = Input.find(params[:id])
+      @input = Input.get(params[:id])
     end
 end

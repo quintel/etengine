@@ -47,9 +47,9 @@ namespace :gql do
 
     if settings = load_settings
       settings = settings[:settings].with_indifferent_access
-      scenario = ApiScenario.new(ApiScenario.new_attributes(settings))
+      scenario = Scenario.new(Scenario.new_attributes(settings))
     else
-      scenario = ApiScenario.default
+      scenario = Scenario.default
     end
 
     gql = scenario.gql(prepare: false)

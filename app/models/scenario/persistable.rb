@@ -28,19 +28,10 @@ module Scenario::Persistable
   #
   # @untested 2010-12-06 seb
   #
-  def copy_scenario_state(scenario)
-    self.user_values = scenario.user_values.clone
-    self.end_year    = scenario.end_year
-    self.area_code   = scenario.area_code
-    self.use_fce     = scenario.use_fce
-  end
-
-  # Returns a copy of a scenario. Used
-  def clone!
-    fresh = Scenario.new
-    fresh.copy_scenario_state(self)
-    fresh.title = self.title
-    fresh.save
-    fresh
+  def copy_scenario_state(preset)
+    self.user_values = preset.user_values.clone
+    self.end_year    = preset.end_year
+    self.area_code   = preset.area_code
+    self.use_fce     = preset.use_fce
   end
 end

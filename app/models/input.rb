@@ -41,7 +41,7 @@ class Input < ActiveRecord::Base
   def self.load_records
     h = {}
     Etsource::Loader.instance.inputs.each do |input|
-      h[input.lookup_id] = input
+      h[input.lookup_id]      = input
       h[input.lookup_id.to_s] = input
     end
     h
@@ -72,32 +72,27 @@ class Input < ActiveRecord::Base
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  def bad_query?(*args)
-    # these four queries only work with v1.
-    [368,412,361,371].include?(self.lookup_id)
-  end
-
   # Checks whether the inputs use the new update statements or the old
   # key/attr_name based implementation
   def v2?
-    query.present? && !bad_query?
+    query.present?
   end
 
   # i had to resort to a class method for "caching" procs
   # as somewhere inputs are marshaled (where??)
-  def self.memoized_gql3_proc_for(input)
-    @gql3_proc ||= {}
-    @gql3_proc[input.lookup_id] ||= (input.gql3_proc)
+  def self.memoized_rubel_proc_for(input)
+    @rubel_proc ||= {}
+    @rubel_proc[input.lookup_id] ||= (input.rubel_proc)
   end
 
-  def gql3
-    # use memoized_gql3_proc_for for faster updates (50% increase)
-    #gql3_proc
-    self.class.memoized_gql3_proc_for(self)
+  def rubel
+    # use memoized_rubel_proc_for for faster updates (50% increase)
+    #rubel_proc
+    self.class.memoized_rubel_proc_for(self)
   end
 
-  def gql3_proc
-    query and Gquery.gql3_proc(query)
+  def rubel_proc
+    query and Gquery.rubel_proc(query)
   end
 
   def before_update?
@@ -205,7 +200,8 @@ class Input < ActiveRecord::Base
   end
 
   def start_value_for(gql)
-    if gql_query = self[:start_value_gql] and !gql_query.blank? and result = gql.query(gql_query)
+    gql_query = self[:start_value_gql]
+    if !gql_query.blank? and result = gql.query(gql_query)
       result * factor
     else
       self[:start_value]

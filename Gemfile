@@ -22,7 +22,10 @@ gem 'pry', '~> 0.9.9.3'
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import', '~> 0.2.9'
 gem 'fnv'
+
+# own gems
 gem "yaml_pack", '~>0.0.3.alpha'
+gem 'rubel', '0.0.3'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
@@ -60,6 +63,7 @@ group :test, :development do
   gem 'guard-rspec'
   gem 'spork', '~> 0.9.0.rc'
   gem 'guard-spork'
+  gem 'watchr'
 end
 
 group :test do

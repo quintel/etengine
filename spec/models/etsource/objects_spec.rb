@@ -25,7 +25,7 @@ describe Etsource do
     before do
       @import = Etsource::Gqueries.new(Etsource::Base.instance)
       @txt = File.read('spec/fixtures/etsource/gqueries/category/gquery2.txt')
-      @gq = Gquery.new(:key => 'gquery2', :unit => 'kg', :query => "FOO(\n  BAR(x,y)\n)", :deprecated_key => nil,
+      @gq = Gquery.new(:key => 'gquery2', :unit => 'kg', :query => "SUM(\n  SUM(1,2)\n)", :deprecated_key => nil,
         :description => "It has a comment and no deprecated_key"
       )
     end

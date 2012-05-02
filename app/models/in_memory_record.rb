@@ -11,14 +11,14 @@ module InMemoryRecord
     end
 
     def all
-      records.values
+      @records ||= records.values.uniq
     end
 
     # records is a hash of key => object
     # there can be multiple keys for one object. 
     # The following keys are removed: nil, ""
     def records
-      @records ||= load_records.tap do |records| 
+      @records_hash ||= load_records.tap do |records| 
         records.delete(nil)
         records.delete("")
       end

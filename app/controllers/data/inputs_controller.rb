@@ -1,17 +1,16 @@
 class Data::InputsController < Data::BaseController
-  before_filter :find_input, :only => [:edit, :update, :destroy]
-  cache_sweeper Sweepers::Input
-  
+  before_filter :find_input, :only => [:show]
+
   def index
-    @inputs = Input.by_name(params[:q]).sort_by(&:key)
+    @inputs = Input.all.sort_by(&:key)
   end
 
-  def edit
+  def show
   end
 
   private
-  
+
     def find_input
-      @input = Input.find params[:id]
+      @input = Input.get(params[:id])
     end
 end

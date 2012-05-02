@@ -35,9 +35,9 @@ class Carrier
   # attr_readers on instance variables are faster then anything else
   #  workaround we alias later, because it's easier to set the "?"s
   attr_reader :electricity, :steam_hot_water, :loss
-  alias electricity? electricity #for performance optimization
-  alias steam_hot_water? steam_hot_water #for performance optimization
-  alias loss? loss #for performance optimization
+  alias electricity? electricity
+  alias steam_hot_water? steam_hot_water
+  alias loss? loss
 
   # ----- /Micro optimization -------------------------------------------------
 
@@ -53,6 +53,7 @@ class Carrier
     @infinite = opts[:infinite]
 
     # ----- Micro optimization --------------------
+    
     @loss            = @key === :loss
     @electricity     = @key === :electricity
     @steam_hot_water = @key === :steam_hot_water

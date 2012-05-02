@@ -1,0 +1,11 @@
+--- 
+# updates lft converter with the negative user value 
+id: 1
+key: input_1.yml
+query: UPDATE(V(foo), preset_demand, NEG(USER_INPUT()))
+unit: "%"
+update_type: converters
+updateable_period: future
+v1_legacy_unit: "%"
+attr_name: decrease_total
+factor: 100
