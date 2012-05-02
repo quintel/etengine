@@ -155,7 +155,7 @@ module Api
         json.area_code s.area_code
         json.end_year  s.end_year
         json.template  s.preset_scenario_id
-        json.source    nil
+        json.source    s.source
       end
 
 
