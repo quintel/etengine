@@ -5,16 +5,15 @@
     
   %ul
     %li
-      = link_to 'save', '#', :onclick => 'update_positions()'
-      (Shortcut: ALT+S)
+      = link_to 'Save', 'javascript:update_positions()'
     %li ALT + click to select/deselect multiple converters
     %li Shift + click: highlight links
     %li ALT + Shift + click: hide converter
     %li Double-click on converter to open details in new converter
     %li
-      = link_to 'deselect all (ALT+D)', 'javascript:GRAPH.deselect_all()'
+      = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
       |
-      = link_to 'highlight off (ALT+H)', 'javascript:GRAPH.highlight_off_all()'
+      = link_to 'highlight off', 'javascript:GRAPH.highlight_off_all()'
       
     %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
 
@@ -27,8 +26,7 @@
   = render 'initialize_graph'
 
   :javascript
-    function update_positions(evt) {
-      evt.preventDefault();
+    function update_positions() {
       $('#graph_saving').text('Saving...').show();
       $.ajax({
         type: 'POST',
@@ -43,6 +41,11 @@
     
     
     GRAPH.enableDragging();
-    $(document).bind('keydown', 'alt+d', GRAPH.deselect_all);
-    $(document).bind('keydown', 'alt+s', update_positions);
-    $(document).bind('keydown', 'alt+h', GRAPH.highlight_off_all);
+  
+  #options{:style => 'position: fixed; height: 25px; width: 250px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
+    = link_to 'Save', 'javascript:update_positions()'
+    |
+    = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
+    |
+    = link_to 'highlight off', 'javascript:GRAPH.highlight_off_all()'
+    
