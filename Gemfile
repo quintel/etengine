@@ -29,6 +29,7 @@ gem 'rubel', '0.0.3'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
+gem 'hipchat'
 
 # system gems
 gem 'mysql2', '~>0.3.11'

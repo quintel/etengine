@@ -81,6 +81,11 @@ GEM
     haml (3.1.4)
     highline (1.6.2)
     hike (1.2.1)
+    hipchat (0.4.1)
+      httparty
+    httparty (0.8.3)
+      multi_json (~> 1.0)
+      multi_xml
     i18n (0.6.0)
     journey (1.0.3)
     jquery-rails (1.0.19)
@@ -100,6 +105,7 @@ GEM
     method_source (0.7.1)
     mime-types (1.18)
     multi_json (1.0.4)
+    multi_xml (0.4.4)
     mysql2 (0.3.11)
     nokogiri (1.5.0)
     polyglot (0.3.3)
@@ -219,6 +225,7 @@ DEPENDENCIES
   guard-spork
   haml (~> 3.1.4)
   highline
+  hipchat
   jbuilder!
   jquery-rails (~> 1.0.19)
   kaminari (~> 0.13.0)
