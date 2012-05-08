@@ -101,7 +101,6 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    memcache-client (1.8.5)
     method_source (0.7.1)
     mime-types (1.18)
     multi_json (1.0.4)
@@ -229,7 +228,6 @@ DEPENDENCIES
   jbuilder!
   jquery-rails (~> 1.0.19)
   kaminari (~> 0.13.0)
-  memcache-client
   mysql2 (~> 0.3.11)
   pry (~> 0.9.9.3)
   pry-rails
