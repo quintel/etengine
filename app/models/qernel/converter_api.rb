@@ -61,7 +61,8 @@ class ConverterApi
       :construction_time,
       :land_use_per_unit,
       :part_ets,
-      :co2_free
+      :co2_free,
+      :peak_load_units_present
     ],
 
     :cost => [
@@ -73,6 +74,7 @@ class ConverterApi
       :decommissioning_costs_per_mw_input,
       :ccs_investment_per_mw_input,
       :ccs_operation_and_maintenance_cost_per_full_load_hour,
+      :costs_per_mj,
       :wacc
     ],
 
@@ -90,7 +92,8 @@ class ConverterApi
       :merit_order_start,
       :merit_order_end,
       :merit_order_full_load_hours,
-      :merit_order_capacity_factor
+      :merit_order_capacity_factor,
+      :merit_order_position
     ],
 
     :security_of_supply => [
@@ -101,11 +104,8 @@ class ConverterApi
       :forecasting_error
     ],
 
-    :other => [
-      :costs_per_mj,
+    :misc => [
       :demand_expected_value,
-      :peak_load_units_present,
-      :merit_order_position,
       :excel_id, # temporary fix to still support excel_ids. used now for graphviz
       :max_demand # I would like to see this attribute in Converter, as it influences calculation
     ]
