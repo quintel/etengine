@@ -1,8 +1,8 @@
-#holder
+#canvas
 :javascript
   var converter_url_prefix = "#{data_converters_path()}";
   var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout)}";
-  var r = Raphael("holder", 8000, 10000).initZoom();
+  var r = Raphael("canvas", 8000, 10000).initZoom();
   var data;
   
   $.getJSON(data_json_url, function(json_data) {
@@ -11,5 +11,8 @@
       $('#attribute').append($('<option></option>').val(key).html(key));
     }
   })
+  $(function(){
+    $("#instructions").draggable(); 
+  });
   
 = javascript_include_tag data_blueprint_layout_path(:id => @blueprint_layout, :format => 'js')

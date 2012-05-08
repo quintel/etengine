@@ -1,8 +1,5 @@
-= javascript_include_tag 'graph'
-
-#blueprint_layout
-  %strong#graph_saving{:style => 'background: #f00; color: #fff; display: none'} Saving...
-    
+%strong#graph_saving{:style => 'background: #f00; color: #fff; display: none'} Saving...
+#instructions
   %ul
     %li
       = link_to 'Save', 'javascript:update_positions()'
@@ -23,29 +20,29 @@
   %script
     == var data_json_url = "#{edit_data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
     
-  = render 'initialize_graph'
+= render 'initialize_graph'
 
-  :javascript
-    function update_positions() {
-      $('#graph_saving').text('Saving...').show();
-      $.ajax({
-        type: 'POST',
-        url: update_converter_positions_path, 
-        data: {'converter_positions' : getUpdatedValues()},
-        success: function(data) { $('#graph_saving').fadeOut(); },
-        error: function(data) { $('#graph_saving').text('ERROR'); }
-      });
-      updated_coordinates = {};
-      return false;
-    };
-    
-    
-    GRAPH.enableDragging();
+:javascript
+  function update_positions() {
+    $('#graph_saving').text('Saving...').show();
+    $.ajax({
+      type: 'POST',
+      url: update_converter_positions_path, 
+      data: {'converter_positions' : getUpdatedValues()},
+      success: function(data) { $('#graph_saving').fadeOut(); },
+      error: function(data) { $('#graph_saving').text('ERROR'); }
+    });
+    updated_coordinates = {};
+    return false;
+  };
   
-  #options{:style => 'position: fixed; height: 25px; width: 250px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
-    = link_to 'Save', 'javascript:update_positions()'
-    |
-    = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
-    |
-    = link_to 'highlight off', 'javascript:GRAPH.highlight_off_all()'
-    
+  
+  GRAPH.enableDragging();
+
+#options{:style => 'position: fixed; height: 25px; width: 250px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
+  = link_to 'Save', 'javascript:update_positions()'
+  |
+  = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
+  |
+  = link_to 'highlight off', 'javascript:GRAPH.highlight_off_all()'
+
