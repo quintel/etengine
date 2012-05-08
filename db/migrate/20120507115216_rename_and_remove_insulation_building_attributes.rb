@@ -1,4 +1,4 @@
-class Renameandremoveinsulationbuildingattributes < ActiveRecord::Migration
+class RenameAndRemoveInsulationBuildingAttributes < ActiveRecord::Migration
   def self.up
     remove_column :areas, :buildings_heating_share_offices
     remove_column :areas, :buildings_heating_share_other
