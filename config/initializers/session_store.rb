@@ -1,1 +1,2 @@
-Rails.application.config.session_store :mem_cache_store, :key => "_etengine"
+require 'action_dispatch/middleware/session/dalli_store'
+Etm::Application.config.session_store :dalli_store, :key => "_etengine"
