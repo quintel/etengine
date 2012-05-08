@@ -22,6 +22,7 @@ module Etm
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     # config.time_zone = 'Central Time (US & Canada)'
+    config.time_zone = 'Europe/Amsterdam'
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
@@ -36,7 +37,6 @@ module Etm
     config.autoload_paths += Dir["#{Rails.root}/app/deprecated"]
 
     config.active_support.deprecation = :log
-    config.time_zone = 'Europe/Amsterdam'
 
     config.secret_token = '237f87e1e992eae492e8eb3de2157da4d3141c74f3918060cba89e8fdd39a145990041ced83ffb5a96212399ff12b853157a4df9a0bdc71833130'
     config.encoding = "utf-8"
@@ -49,7 +49,8 @@ module Etm
     end
 
     config.assets.enabled = true
-    config.assets.precompile += ['graph.js', 'bootstrap_setup.css', 'converter_details.css']
+    config.assets.precompile += ['graph.js', 'bootstrap_setup.css',
+     'graph.css', 'converter_details.css']
 
     # Add this for Spork
     if Rails.env.test?
