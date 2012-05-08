@@ -1,6 +1,4 @@
-= javascript_include_tag 'graph'
-
-#blueprint_layout
+#instructions
   %ul
     %li Shift + click: highlight links
     %li ALT + Shift + click: hide converter
@@ -14,9 +12,8 @@
   :javascript
     var data_json_url = "#{data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
 
-  = render 'initialize_graph'
+= render 'initialize_graph'
 
-  :javascript
-    $(document).bind('keydown', 'alt+h', GRAPH.highlight_off_all);
-
+:javascript
+  $(document).bind('keydown', 'alt+h', GRAPH.highlight_off_all);
 
