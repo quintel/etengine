@@ -74,7 +74,7 @@ class Scenario < ActiveRecord::Base
   end
 
   after_initialize do |scenario|
-    scenario.touch :present_updated_at if id
+    # scenario.touch :present_updated_at if id
   end
 
   def fce_settings=(fce_settings)
