@@ -58,17 +58,6 @@ class Gql
     @future  = QueryInterface.new(self, future_graph,  sandbox_mode: mode)
   end
 
-  # @return [Qernel::Dataset] Dataset used for the present. Is calculated and cannot be updated anymore
-  #
-  def calculated_present_dataset
-    marshal = Rails.cache.fetch("/datasets/#{scenario.id}/#{scenario.present_updated_at.to_i}/calculated_qernel") do
-      graph = present_graph.tap{|g| g.dataset = dataset_clone }
-      graph.calculate
-      Marshal.dump(graph.dataset)
-    end
-    Marshal.load marshal
-  end
-
   # @return [Qernel::Dataset] Dataset used for the future. Needs to be updated with user input and then calculated.
   #
   def dataset_clone
