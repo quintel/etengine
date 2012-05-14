@@ -11,16 +11,20 @@ module InMemoryRecord
     end
 
     def all
-      @records ||= records.values.uniq
+      EtCache.instance.fetch("#{self.class.name}#all") do
+        records.values.uniq
+      end
     end
 
     # records is a hash of key => object
     # there can be multiple keys for one object. 
     # The following keys are removed: nil, ""
     def records
-      @records_hash ||= load_records.tap do |records| 
-        records.delete(nil)
-        records.delete("")
+      EtCache.instance.fetch("#{self.class.name}#records") do
+        load_records.tap do |records| 
+          records.delete(nil)
+          records.delete("")
+        end
       end
     end
 

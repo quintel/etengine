@@ -51,7 +51,7 @@ module Etsource
           # if experimenting with input tool, you change a transformer.yml or config.yml will not
           # take effect, because cache only invalidates when a research dataset has been changed
           # or updated.
-          cache("datasets/#{country}/#{InputTool::SavedWizard.last_updated(country).to_i}") do
+          cache("datasets/#{country}") do
             ::Etsource::Dataset.new(country).import
           end
         else
