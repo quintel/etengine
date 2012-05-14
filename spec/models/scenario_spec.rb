@@ -55,21 +55,21 @@ describe Scenario do
   describe "#add_update_statements" do
     before do
       @scenario.update_statements = {'converters' => {
-        'hot_water_demand_households_energetic' => {'growth_rate' => '0.1', 'other_metric' => '1000'}
+        'households_useful_demand_hot_water' => {'growth_rate' => '0.1', 'other_metric' => '1000'}
       }}
     end
 
     describe "update existing" do
       before do
         @scenario.add_update_statements({'converters' => {
-          'hot_water_demand_households_energetic' => {'growth_rate' => '0.2'}
+          'households_useful_demand_hot_water' => {'growth_rate' => '0.2'}
         }})
       end
       it "should update metric" do
-        @scenario.update_statements['converters']['hot_water_demand_households_energetic']['growth_rate'].should eql("0.2")
+        @scenario.update_statements['converters']['households_useful_demand_hot_water']['growth_rate'].should eql("0.2")
       end
       it "should keep other metrics" do
-        @scenario.update_statements['converters']['hot_water_demand_households_energetic']['other_metric'].should eql("1000")
+        @scenario.update_statements['converters']['households_useful_demand_hot_water']['other_metric'].should eql("1000")
       end
     end
 
