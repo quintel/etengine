@@ -11,7 +11,8 @@ module InMemoryRecord
     end
 
     def all
-      EtCache.instance.fetch("#{self.class.name}#all") do
+      # self.name => self.class.name 
+      EtCache.instance.fetch("#{self.name}#all") do
         records.values.uniq
       end
     end
@@ -20,7 +21,7 @@ module InMemoryRecord
     # there can be multiple keys for one object. 
     # The following keys are removed: nil, ""
     def records
-      EtCache.instance.fetch("#{self.class.name}#records") do
+      EtCache.instance.fetch("#{self.name}#records") do
         load_records.tap do |records| 
           records.delete(nil)
           records.delete("")
