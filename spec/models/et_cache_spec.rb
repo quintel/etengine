@@ -2,7 +2,7 @@ require 'spec_helper'
 
 class EtCache
   # used to simulate two different server process
-  def self.second_process
+  def self.new_process
     new
   end
 end
@@ -42,8 +42,21 @@ describe EtCache do
     before {
       @cache_1 = EtCache.instance
       @cache_1.set("foo", "bar")
-      @cache_2 = EtCache.second_process
+      @cache_2 = EtCache.new_process
     }
+
+    it "both process should not be expired" do
+      @cache_1.expired?.should be_false
+      @cache_2.expired?.should be_false
+    end
+
+    it "both process should not be expired" do
+      @cache_3 = EtCache.new_process
+      @cache_3.mark_expired!
+      @cache_3.expired?.should be_true
+      @cache_1.expired?.should be_true
+      @cache_2.expired?.should be_true
+    end
 
     it "should cache separately" do
       @cache_1.get("foo").should_not == @cache_2.get('foo')
@@ -53,7 +66,7 @@ describe EtCache do
       @cache_2.set('baz', 1)
       @cache_2.expire!
       @cache_1.expired?.should be_true
-      @cache_1.reset_if_expired
+      @cache_1.initialize_request
       @cache_1.get("foo").should be_nil
       @cache_2.get("baz").should be_nil
     end

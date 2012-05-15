@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   end
 
   def initialize_memory_cache
-    EtCache.instance.reset_if_expired
+    EtCache.instance.initialize_request
   end
 
   def locale

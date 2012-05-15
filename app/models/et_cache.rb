@@ -1,71 +1,106 @@
 # Caches and persists an object across requests in the memory of the
 # server process. Use it when caching with memcached is too slow. 
 #
-# @example in your application controller
+# Caveats: Using EtCache local store with the Qernel Graph 
+#          makes the app NO LONGER THREADSAFE
+#
+# @example Add this to your application_controller.rb
 #
 #   before_filter :initialize_memory_cache
 #
 #   def initialize_memory_cache
-#     EtCache.instance.reset_if_expired
+#     EtCache.instance.initialize_request
 #   end
 #    
-# @example:
+# @example setting and getting
 #
 #   EtCache.instance.set("large_blob", "foo")
 #   EtCache.instance.get("large_blob")
+#
+# @example fetching
+#
 #   EtCache.instance.fetch("large_blob") do
 #     # ...
 #   end
+#
+# @example fetching with :cache => true will also cache it
+#
+#   EtCache.instance.fetch_cached("large_blob") { 'foo' }
+#   # equivalent to:
+#   EtCache.instance.fetch("large_blob", :cache => true) { 'foo' }
+#   # translates to:
+#   EtCache.instance.fetch("large_blob") do
+#     Rails.cache.fetch("EtCache/local_timestamp/large_blob") do
+#       # ...
+#     end
+#   end 
 #
 # @example expiring cache across server instances
 # 
 #   EtCache.instances.expire!
 #   # => This will expire all instances across server instances
-#   #    the next time they call #reset_if_expired.
-#
-# @example Use together with Rails.cache
-# 
-#   EtCache.instance.fetch("large_blob") do
-#     Rails.cache.fetch("large_blob") do
-#       # ...
-#     end
-#   end 
-#
+#   #    the next time they call #initialize_request.
+#   #    This should be equivalent of restarting the server.
 #
 class EtCache
   include Singleton
 
-  MEMORY_CACHE_KEY = "EtCache#cache_timestamp"
+  MEMORY_CACHE_KEY = "EtCache#timestamp"
 
-  attr_accessor :local_cache_timestamp
+  attr_accessor :local_timestamp
 
   def initialize
-    @local_cache_timestamp = nil
-    @cache_store = {} 
+    @local_timestamp = init_timestamp
+    @cache_store = {}
   end
 
-  def global_cache_timestamp
+  def initialize_request
+    if expired?
+      expire_local!
+    else
+      Rails.logger.info("EtCache#cached: keys: #{@cache_store.keys.join(", ")}")
+    end
+  end
+
+  def init_timestamp
+    Rails.cache.fetch(MEMORY_CACHE_KEY) { DateTime.now }
+  end
+
+  def global_timestamp
     Rails.cache.read(MEMORY_CACHE_KEY)
   end
 
+  # Expires both local (@cache_store) and Rails.cache 
+  # this is equivalent of a server restart.
   def expire!
-    Rails.cache.clear
-    Rails.cache.write(MEMORY_CACHE_KEY, DateTime.now.to_i)
     Rails.logger.info("EtCache#expire!")
-    reset_if_expired
+    expire_cache!
+    mark_expired!
+    expire_local!
+  end
+
+  # Expires Rails.cache. Easiest way is to Rails.cache.clear
+  # Otherwise you could track the keys cached by MemoryCache in an
+  # instance variable (e.g. @cached_keys), and delete them here:
+  #    @cached_keys.each{|k| Rails.cache.delete(k) }
+  def expire_cache!
+    Rails.cache.clear
+  end
+
+  # 'broadcasts' that the cache has expired.
+  def mark_expired!
+    Rails.cache.write(MEMORY_CACHE_KEY, DateTime.now)
+  end
+
+  def expire_local!
+    Rails.logger.info("EtCache#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
+    @local_timestamp = global_timestamp
+    Rails.logger.info("EtCache#expire: keys #{@cache_store.keys.join(", ")}")
+    @cache_store = {}
   end
 
   def expired?
-    local_cache_timestamp != global_cache_timestamp
-  end
-
-  def reset_if_expired
-    if expired?
-      local_cache_timestamp = global_cache_timestamp
-      @cache_store = {}
-    else
-      Rails.logger.info("EtCache#keys: #{@cache_store.keys.join(", ")}")
-    end
+    local_timestamp != global_timestamp
   end
 
   def fetch(key, opts = {})
@@ -87,7 +122,7 @@ class EtCache
   end
 
   def rails_cache_key(key)
-    ["EtCache", global_cache_timestamp, key].join('/')
+    ["EtCache", local_timestamp, key].join('/')
   end
 
   def get(key, opts = {})
