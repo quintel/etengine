@@ -62,14 +62,6 @@ class EtCache
     end
   end
 
-  def init_timestamp
-    Rails.cache.fetch(MEMORY_CACHE_KEY) { DateTime.now }
-  end
-
-  def global_timestamp
-    Rails.cache.read(MEMORY_CACHE_KEY)
-  end
-
   # Expires both local (@cache_store) and Rails.cache 
   # this is equivalent of a server restart.
   def expire!
@@ -78,6 +70,40 @@ class EtCache
     mark_expired!
     expire_local!
   end
+
+  def fetch(key, opts = {})
+    if @cache_store.has_key?(key)
+      get(key, opts)
+    else
+      value = if opts[:cache] == true
+        Rails.cache.fetch(rails_cache_key(key)) { yield }
+      else
+        yield
+      end
+      set(key, value)
+    end
+  end 
+
+  # alias to fetch(key, cache: true)
+  def fetch_cached(key, &block)
+    fetch(key, :cache => true, &block)
+  end
+
+  def get(key, opts = {})
+    if opts[:cache] == true
+      @cache_store[key] || Rails.cache.read(rails_cache_key(key))
+    else
+      @cache_store[key]
+    end
+  end
+
+  def set(key, value)
+    @cache_store[key] = value
+  end
+
+##############
+# protected
+##############
 
   # Expires Rails.cache. Easiest way is to Rails.cache.clear
   # Otherwise you could track the keys cached by MemoryCache in an
@@ -103,37 +129,15 @@ class EtCache
     local_timestamp != global_timestamp
   end
 
-  def fetch(key, opts = {})
-    if @cache_store.has_key?(key)
-      get(key, opts)
-    else
-      value = if opts[:cache] == true
-        Rails.cache.fetch(rails_cache_key(key)) { yield }
-      else
-        yield
-      end
-      set(key, value)
-    end
-  end 
+  def init_timestamp
+    Rails.cache.fetch(MEMORY_CACHE_KEY) { DateTime.now }
+  end
 
-  # alias to fetch(key, cache: true)
-  def fetch_cached(key, &block)
-    fetch(key, :cache => true, &block)
+  def global_timestamp
+    Rails.cache.read(MEMORY_CACHE_KEY)
   end
 
   def rails_cache_key(key)
     ["EtCache", local_timestamp, key].join('/')
-  end
-
-  def get(key, opts = {})
-    if opts[:cache] == true
-      @cache_store[key] || Rails.cache.read(rails_cache_key(key))
-    else
-      @cache_store[key]
-    end
-  end
-
-  def set(key, value)
-    @cache_store[key] = value
   end
 end
