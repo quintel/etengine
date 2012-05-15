@@ -1,3 +1,24 @@
+# InMemoryRecord adds a few helper methods for models that you want to persist
+# in memory, but not necessarly in a database. 
+#
+# @example
+#   class Foo
+#      include InMemoryRecord
+#
+#     def lookup_id
+#       self.key
+#     end
+#
+#      def self.load_records
+#        # code that loads and returns an array of Foo records
+#      end
+#   end
+#
+#   Foo.records     # => {"id_1": <Foo>, "id_2": <Foo>}
+#   Foo.all         # => [<Foo>, <Foo>]
+#   Foo.get("id_1") # => <Foo>
+# 
+#
 module InMemoryRecord
   extend ActiveSupport::Concern
 
