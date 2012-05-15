@@ -58,7 +58,7 @@ class EtCache
     if expired?
       expire_local!
     else
-      Rails.logger.info("EtCache#cached: keys: #{@cache_store.keys.join(", ")}")
+      Rails.logger.info("EtCache(#{Process.pid})#cached: keys: #{@cache_store.keys.join(", ")}")
     end
   end
 
@@ -73,7 +73,7 @@ class EtCache
   # Expires both local (@cache_store) and Rails.cache 
   # this is equivalent of a server restart.
   def expire!
-    Rails.logger.info("EtCache#expire!")
+    Rails.logger.info("EtCache(#{Process.pid})#expire!")
     expire_cache!
     mark_expired!
     expire_local!
@@ -93,7 +93,7 @@ class EtCache
   end
 
   def expire_local!
-    Rails.logger.info("EtCache#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
+    Rails.logger.info("EtCache(#{Process.pid})#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
     @local_timestamp = global_timestamp
     Rails.logger.info("EtCache#expire: keys #{@cache_store.keys.join(", ")}")
     @cache_store = {}
@@ -117,8 +117,8 @@ class EtCache
   end 
 
   # alias to fetch(key, cache: true)
-  def fetch_cached(key)
-    fetch(key, :cache => true)
+  def fetch_cached(key, &block)
+    fetch(key, :cache => true, &block)
   end
 
   def rails_cache_key(key)

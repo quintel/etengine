@@ -38,6 +38,10 @@ describe EtCache do
     @cache.get("to_be_expired").should be_nil
   end
 
+  it "should cache with Rails.cache" do
+    @cache.fetch_cached('cache_1_baz') { "bar" }.should == "bar"
+  end
+
   context "two processes" do
     before {
       @cache_1 = EtCache.instance
