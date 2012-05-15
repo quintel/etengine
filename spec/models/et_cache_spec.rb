@@ -39,7 +39,7 @@ describe EtCache do
   end
 
   it "should cache with Rails.cache" do
-    @cache.fetch_cached('cache_1_baz') { "bar" }.should == "bar"
+    @cache_1.fetch_cached('cache_1_baz') { "bar" }.should == "bar"
   end
 
   context "two processes" do
