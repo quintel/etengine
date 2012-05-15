@@ -29,10 +29,10 @@ class Etsource::CommitsController < ApplicationController
     @commit.import! and @etsource.update_latest_import_sha(sha)
     log("Import #{sha}")
     flash.now[:notice] = "Flushing ETM client cache"
-    Rails.cache.clear
+    EtCache.instance.expire!
+
     # clients might need to flush their cache
     update_remote_client APP_CONFIG[:client_refresh_url]
-    restart_web_server
   end
 
   private
@@ -42,6 +42,7 @@ class Etsource::CommitsController < ApplicationController
   end
 
   def restart_web_server
+    # @deprecated as of 2012-05. use EtCache.expire!
     if Rails.env.production?
       system("kill -s USR2 `cat #{Rails.root}/tmp/pids/unicorn.pid`") rescue nil
     else
