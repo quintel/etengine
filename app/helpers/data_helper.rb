@@ -65,10 +65,12 @@ module DataHelper
   
   # Autocomplete data caching
   # The various _search_box partials make use of these methods
-  
+
   def gqueries_autocomplete_map_cache
     Rails.cache.fetch "gqueries_autocomplete_map_cache" do
-      loader.gqueries.sort_by(&:key).map {|a| {label: a.key, url: data_gquery_key_path(:key => a.key)} }.to_json
+      loader.gqueries.sort_by(&:key).map do |gquery|
+        {label: gquery.key, url: data_gquery_path(:id => gquery.key)}
+      end.to_json
     end
   end
   

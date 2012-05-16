@@ -1,8 +1,10 @@
 class Data::GqueriesController < Data::BaseController
-  before_filter :find_model, :only => [:show, :edit]
+  before_filter :find_model, :only => :show
 
   def index
-    @gqueries = Kaminari.paginate_array(Gquery.all.sort_by(&:key)).page(params[:page]).per(50)
+    all = Gquery.all
+    all = all.select{|g| g.key.include?(params[:q])} if params[:q]
+    @gqueries = Kaminari.paginate_array(all.sort_by(&:key)).page(params[:page]).per(50)
   end
 
   def dump
@@ -27,18 +29,6 @@ class Data::GqueriesController < Data::BaseController
     raw_query = params[:id] ? Gquery.find(params[:id]).query : (params[:query] ? params[:query] : '')
     @query = Gquery.convert_to_rubel!(raw_query)
     render 'result'
-  end
-
-  # Similar to the show action, but finding the gquery by key. It makes sense to
-  # keep the two actions separated.
-  # SB (2011-12-06): Why does it make sense to keep the two actions separated?
-  def key
-    @gquery = Gquery.get(params[:key]) rescue nil
-    if @gquery
-      render :show
-    else
-      redirect_to data_gqueries_path(:q => params[:key]), :alert => 'Gquery key not found!'
-    end
   end
 
   private
