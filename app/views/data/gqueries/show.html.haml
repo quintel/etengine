@@ -35,5 +35,5 @@
   - Gquery.contains(@gquery.key).each do |gquery|
     %tr
       %td Gquery
-      %td= link_to gquery.key, data_gquery_key_path(:key => gquery.key)
+      %td= link_to gquery.key, data_gquery_path(:id => gquery.key)
 
