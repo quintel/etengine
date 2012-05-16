@@ -41,7 +41,7 @@
             - result_time = Time.now - result_time
             %tr
               %td
-                %small= link_to gquery.key, data_gquery_key_path(:key => gquery.key, :api_scenario_id => 'latest')
+                %small= link_to gquery.key, data_gquery_path(:id => gquery.key, :api_scenario_id => 'latest')
               %td= auto_number result.present_value
               %td= auto_number result.future_value
               %td== #{result_time.round(3)}s
