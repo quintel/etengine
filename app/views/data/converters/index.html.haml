@@ -19,23 +19,27 @@
       - fields.each do |field|
         %th Present
         %th Future
-        
   %tbody
     - @converters.each do |converter|
       %tr
-        %td= ##{converter.excel_id}
-        %td= link_to highlight(converter.full_key.to_s, params[:q]), data_converter_path(:id => converter)
+        %td= converter.excel_id
+        %td= link_to highlight(converter.key.to_s, params[:q]),
+              data_converter_path(:id => converter)
         %td
           %small
-            = link_to 'pres', data_converter_path(:id => converter, :format => 'svg'), :target => :blank
+            = link_to 'pres',
+              data_converter_path(:id => converter, :format => 'svg'),
+              :target => :blank
             |
-            = link_to 'fut', data_converter_path(:id => converter, :format => 'svg', :graph => 'future'), :target => :blank
+            = link_to 'fut',
+              data_converter_path(:id => converter, :format => 'svg', :graph => 'future'),
+              :target => :blank
 
         - fields.each do |field|
-          - if converter.full_key.present? and query = "V(#{converter.full_key.to_s.downcase},#{field})"
+          - if converter.key.present? and query = "V(#{converter.key.to_s.downcase},#{field})"
             - p, f = gql_query(query).results
             %td.tar{:title => title_tag_number(p)}= auto_number(p)
             %td.tar{:title => title_tag_number(f)}= auto_number(f)
   %tfoot
     %tr
-      %td{:colspan => 5}=# paginate @converters
+      %td{:colspan => 5}= paginate @converters
