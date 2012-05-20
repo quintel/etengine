@@ -155,50 +155,50 @@ describe Gql do
         describe "MarketShare 'market_share' with flexible link" do
           before do
             @gql = Qernel::GraphParser.gql_stubbed("
-            cooling_buildings_energetic(100) == s(0.0) ==> city_cooling_network_buildings_energetic(nil)
-            cooling_buildings_energetic(100) == s(0.0) ==> gasheatpump_cooling_buildings_energetic(nil)
-            cooling_buildings_energetic(100) == s(0.0) ==> heatpump_ts_cooling_buildings_energetic(nil)
-            cooling_buildings_energetic(100) == f(1.0) ==> airco_buildings_energetic(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(0.0) ==> buildings_city_cooling_network_ambient_cold(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(0.0) ==> buildings_cooling_heatpump_air_water_network_gas(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(0.0) ==> buildings_collective_cooling_heatpump_water_water_ts_electricity(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == f(1.0) ==> buildings_airconditioning(nil)
           ")
-            @old_input =  Input.create!(:keys => 'gasheatpump_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
-            @old_input2 = Input.create!(:keys => 'heatpump_ts_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
-            @new_input =  Input.create!(:query => 'UPDATE(LINK(cooling_buildings_energetic,gasheatpump_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100))')
-            @new_input2 = Input.create!(:query => 'UPDATE(LINK(cooling_buildings_energetic,heatpump_ts_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100))')
+            @old_input =  Input.create!(:keys => 'buildings_cooling_heatpump_air_water_network_gas', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
+            @old_input2 = Input.create!(:keys => 'buildings_collective_cooling_heatpump_water_water_ts_electricity', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
+            @new_input =  Input.create!(:query => 'UPDATE(LINK(buildings_useful_demand_after_insulation_recirculation_recovery_cooling,buildings_cooling_heatpump_air_water_network_gas), share, DIVIDE(USER_INPUT(),100))')
+            @new_input2 = Input.create!(:query => 'UPDATE(LINK(buildings_useful_demand_after_insulation_recirculation_recovery_cooling,buildings_collective_cooling_heatpump_water_water_ts_electricity), share, DIVIDE(USER_INPUT(),100))')
           end
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 30.0, @old_input2.id => 30.0}
             @gql.scenario.load!
-            @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
-            @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(heatpump_ts_cooling_buildings_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 40.0
+            @gql.query("V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling;demand)").future_value.should == 100.0
+            @gql.query("V(buildings_cooling_heatpump_air_water_network_gas;demand)").future_value.should == 30.0
+            @gql.query("V(buildings_collective_cooling_heatpump_water_water_ts_electricity;demand)").future_value.should == 30.0
+            @gql.query("V(buildings_airconditioning;demand)").future_value.should == 40.0
           end
 
           it "should work with new" do
             @gql.scenario.user_values = {@new_input.id => "30", @new_input2.id => "30"}
-            @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
-            @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(heatpump_ts_cooling_buildings_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 40.0
+            @gql.query("V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling;demand)").future_value.should == 100.0
+            @gql.query("V(buildings_cooling_heatpump_air_water_network_gas;demand)").future_value.should == 30.0
+            @gql.query("V(buildings_collective_cooling_heatpump_water_water_ts_electricity;demand)").future_value.should == 30.0
+            @gql.query("V(buildings_airconditioning;demand)").future_value.should == 40.0
           end
         end
 
         describe "MarketShare 'market_share' without flexible" do
           before do
             @gql = Qernel::GraphParser.gql_stubbed("
-            cooling_buildings_energetic(100) == s(0.0) ==> city_cooling_network_buildings_energetic(nil)
-            cooling_buildings_energetic(100) == s(0.0) ==> gasheatpump_cooling_buildings_energetic(nil)
-            cooling_buildings_energetic(100) == s(0.0) ==> heatpump_ts_cooling_buildings_energetic(nil)
-            cooling_buildings_energetic(100) == s(1.0) ==> airco_buildings_energetic(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(0.0) ==> buildings_city_cooling_network_ambient_cold(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(0.0) ==> buildings_cooling_heatpump_air_water_network_gas(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(0.0) ==> buildings_collective_cooling_heatpump_water_water_ts_electricity(nil)
+            buildings_useful_demand_after_insulation_recirculation_recovery_cooling(100) == s(1.0) ==> buildings_airconditioning(nil)
           ")
 
-            @old_input =  Input.create!(:keys => 'gasheatpump_cooling_buildings_energetic', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
+            @old_input =  Input.create!(:keys => 'buildings_cooling_heatpump_air_water_network_gas', :attr_name => 'cooling_buildings_market_share', :update_type => 'converters', :factor => 100)
             @new_input =  Input.create!(:query => '
             EACH(
-              UPDATE(LINK(cooling_buildings_energetic,gasheatpump_cooling_buildings_energetic), share, DIVIDE(USER_INPUT(),100)),
-              UPDATE(LINK(cooling_buildings_energetic,airco_buildings_energetic), share, 
-                SUM(NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(cooling_buildings_energetic)),UPDATE_COLLECTION()); share))), 1)
+              UPDATE(LINK(buildings_useful_demand_after_insulation_recirculation_recovery_cooling,buildings_cooling_heatpump_air_water_network_gas), share, DIVIDE(USER_INPUT(),100)),
+              UPDATE(LINK(buildings_useful_demand_after_insulation_recirculation_recovery_cooling,buildings_airconditioning), share, 
+                SUM(NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling)),UPDATE_COLLECTION()); share))), 1)
               )
             )')
           end
@@ -206,17 +206,17 @@ describe Gql do
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 30.0}
             @gql.scenario.load!
-            @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
-            @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 70.0
+            @gql.query("V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling;demand)").future_value.should == 100.0
+            @gql.query("V(buildings_cooling_heatpump_air_water_network_gas;demand)").future_value.should == 30.0
+            @gql.query("V(buildings_airconditioning;demand)").future_value.should == 70.0
           end
 
           it "should work with new" do
             @gql.scenario.user_values = {@new_input.id => "30.0"}
-            @gql.query("V(cooling_buildings_energetic;demand)").future_value.should == 100.0
-            @gql.query("V(gasheatpump_cooling_buildings_energetic;demand)").future_value.should == 30.0
-            @gql.query("SUM(1.0, NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(cooling_buildings_energetic)),V(LINK(cooling_buildings_energetic,airco_buildings_energetic))); share))))").future_value.should == 0.7
-            @gql.query("V(airco_buildings_energetic;demand)").future_value.should == 70.0
+            @gql.query("V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling;demand)").future_value.should == 100.0
+            @gql.query("V(buildings_cooling_heatpump_air_water_network_gas;demand)").future_value.should == 30.0
+            @gql.query("SUM(1.0, NEG(SUM(V(EXCLUDE(INPUT_LINKS(V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling)),V(LINK(buildings_useful_demand_after_insulation_recirculation_recovery_cooling,buildings_airconditioning))); share))))").future_value.should == 0.7
+            @gql.query("V(buildings_airconditioning;demand)").future_value.should == 70.0
           end
         end
 
@@ -224,29 +224,29 @@ describe Gql do
         describe "MarketShareCarrier cooling_market_share" do
           before do
             @gql = Qernel::GraphParser.gql_stubbed("
-            cooling: cooling_demand_households_energetic(100) == s(0.0) ==> heatpump_cooling_households_energetic(nil)
-            cooling: cooling_demand_households_energetic(100) == s(0.0) ==> gasheatpump_cooling_households_energetic(nil)
-            cooling: cooling_demand_households_energetic(100) == s(0.0) ==> heatpump_ts_cooling_households_energetic(nil)
-            cooling: cooling_demand_households_energetic(100) == f(1.0) ==> airco_households_energetic(nil)
+            cooling: households_useful_demand_for_cooling_after_insulation(100) == s(0.0) ==> households_cooling_heatpump_ground_water_electricity(nil)
+            cooling: households_useful_demand_for_cooling_after_insulation(100) == s(0.0) ==> households_cooling_heatpump_air_water_network_gas(nil)
+            cooling: households_useful_demand_for_cooling_after_insulation(100) == s(0.0) ==> households_collective_cooling_heatpump_water_water_ts_electricity(nil)
+            cooling: households_useful_demand_for_cooling_after_insulation(100) == f(1.0) ==> households_airconditioning_electricity(nil)
           ")
 
-            @old_input =  Input.create!(:keys => 'heatpump_cooling_households_energetic', :attr_name => 'cooling_market_share', :update_type => 'converters', :factor => 100)
-            @new_input =  Input.create!(:query => 'UPDATE(LINK(heatpump_cooling_households_energetic,cooling_demand_households_energetic), share, DIVIDE(USER_INPUT(),100))')
+            @old_input =  Input.create!(:keys => 'households_cooling_heatpump_ground_water_electricity', :attr_name => 'cooling_market_share', :update_type => 'converters', :factor => 100)
+            @new_input =  Input.create!(:query => 'UPDATE(LINK(households_cooling_heatpump_ground_water_electricity,households_useful_demand_for_cooling_after_insulation), share, DIVIDE(USER_INPUT(),100))')
           end
 
           pending "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 30.0}
             @gql.scenario.load!
-            @gql.query("V(cooling_demand_households_energetic;demand)").future_value.should == 100.0
-            @gql.query("V(heatpump_cooling_households_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(airco_households_energetic;demand)").future_value.should == 70.0
+            @gql.query("V(households_useful_demand_for_cooling_after_insulation;demand)").future_value.should == 100.0
+            @gql.query("V(households_cooling_heatpump_ground_water_electricity;demand)").future_value.should == 30.0
+            @gql.query("V(households_airconditioning_electricity;demand)").future_value.should == 70.0
           end
 
           it "should work with new" do
             @gql.scenario.user_values = {@new_input.id => "30.0"}
-            @gql.query("V(cooling_demand_households_energetic;demand)").future_value.should == 100.0
-            @gql.query("V(heatpump_cooling_households_energetic;demand)").future_value.should == 30.0
-            @gql.query("V(airco_households_energetic;demand)").future_value.should == 70.0
+            @gql.query("V(households_useful_demand_for_cooling_after_insulation;demand)").future_value.should == 100.0
+            @gql.query("V(households_cooling_heatpump_ground_water_electricity;demand)").future_value.should == 30.0
+            @gql.query("V(households_airconditioning_electricity;demand)").future_value.should == 70.0
           end
         end
 

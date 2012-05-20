@@ -66,7 +66,7 @@ module UpdateInterface
       cmds = []
       # DEBT: input keys has following. which is weird with the following line.
       #   heating_demand_with_current_insulation_households_energetic_AND_heating_new_houses_current_insulation_households_energetic
-      return cmds if proxy.to_s != "heating_demand_with_current_insulation_households_energetic"
+      return cmds if proxy.to_s != "households_old_houses_useful_demand_for_heating"
 
       households = graph.area.number_households # AREA(number_households)
       percentage_new = graph.area.percentage_of_new_houses # AREA(percentage_of_new_houses)
@@ -83,7 +83,7 @@ module UpdateInterface
 
       households_existing = households - households_to_replace
 
-      new_house_converter = graph.converter("heating_new_houses_current_insulation_households_energetic")
+      new_house_converter = graph.converter("households_new_houses_useful_demand_for_heating")
       demand_per_new_house = new_house_converter.query.preset_demand / (percentage_new/100.0 * households)
 
       # the nr of extrahouses multiplied with their demand is added to the original demand

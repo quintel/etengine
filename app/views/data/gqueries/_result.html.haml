@@ -24,7 +24,7 @@
       %tr
         %td No Year
         %td.tar= result
-        %td No Unit
+        %td= @gquery.try :unit
     
 - rescue => e
   - Rails.logger.warn "got to here 2"

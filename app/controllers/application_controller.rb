@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user_session, :current_user
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
+  before_filter :initialize_memory_cache
   before_filter :initialize_current
   before_filter :locale
 
@@ -16,6 +17,10 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     store_location
     redirect_to root_url, :alert => I18n.t("flash.not_allowed")
+  end
+
+  def initialize_memory_cache
+    EtCache.instance.initialize_request
   end
 
   def locale

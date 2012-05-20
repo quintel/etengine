@@ -74,7 +74,7 @@ class Scenario < ActiveRecord::Base
   end
 
   after_initialize do |scenario|
-    scenario.touch :present_updated_at if id
+    # scenario.touch :present_updated_at if id
   end
 
   def fce_settings=(fce_settings)
@@ -195,8 +195,9 @@ class Scenario < ActiveRecord::Base
     Scenario.create!(attributes)
   end
 
+  # used when loading an existing scenario, preset or user-created
   def scenario_id=(preset_id)
-    if preset = Preset.get(preset_id)
+    if preset = Preset.get(preset_id) || Scenario.find_by_id(preset_id)
       copy_scenario_state(preset)
       self.preset_scenario_id = preset_id
     end

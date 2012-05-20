@@ -6,6 +6,7 @@ Etm::Application.configure do
   config.cache_classes = true
 
   # Enable threaded mode
+  # ETENGINE is NOT THREADSAFE because of EtCache
   # config.threadsafe!
 
 #  config.action_controller.session = {

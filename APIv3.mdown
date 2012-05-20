@@ -268,7 +268,7 @@ If the scenario_id is missing then the controller will use the latest scenario.
     Status: 200 OK
 
     {
-        "code": "biomass_chp_industry_energetic",
+        "code": "industry_chp_supercritical_wood_pellets",
         "sector": "industry",
         "use": "energetic",
         "groups": ["electricity_production", "central_production"],

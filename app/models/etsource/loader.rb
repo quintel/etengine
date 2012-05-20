@@ -51,7 +51,7 @@ module Etsource
           # if experimenting with input tool, you change a transformer.yml or config.yml will not
           # take effect, because cache only invalidates when a research dataset has been changed
           # or updated.
-          cache("datasets/#{country}/#{InputTool::SavedWizard.last_updated(country).to_i}") do
+          cache("datasets/#{country}") do
             ::Etsource::Dataset.new(country).import
           end
         else
@@ -109,7 +109,7 @@ module Etsource
     end
 
     def cache_key
-      "etsource/#{@etsource.get_latest_import_sha}/"
+      "etsource/#{EtCache.instance.local_timestamp}/"
     end
 
     # A Qernel::Graph from ETsource where the converters are ordered in a way that
@@ -118,7 +118,7 @@ module Etsource
     def optimized_graph
       instrument("etsource.loader: optimized_graph") do
         if @etsource.cache_topology?
-          @optimized_graph ||= Rails.cache.fetch("etsource/#{@etsource.get_latest_import_sha}/optimized_graph") do
+          EtCache.instance.fetch_cached("optimized_graph") do
             g = unoptimized_graph
             g.dataset = dataset('nl')
             g.optimize_calculation_order
@@ -133,7 +133,9 @@ module Etsource
 
     def unoptimized_graph
       if @etsource.cache_topology?
-        @graph ||= Etsource::Topology.new.import
+        EtCache.instance.fetch_cached("unoptimized_graph") do
+          Etsource::Topology.new.import
+        end
       else
         Etsource::Topology.new.import
       end
