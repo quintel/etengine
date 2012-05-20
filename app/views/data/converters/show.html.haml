@@ -49,7 +49,7 @@
   - @values = Qernel::ConverterApi::CHP_VALUES
   = render "data/converters/details"
 
-%h3 Attributes and calculations
+%h3 Attributes
 
 %table
   %thead
@@ -62,10 +62,12 @@
     - Qernel::ConverterApi::ATTRIBUTE_GROUPS.each do |group, attributes|
       %tr
         %th.attribute_group{:colspan => 4}= group
-      - attributes.reject{|a| a.to_s.include?('expected')}.each do |attr_name|
+      - attributes.each do |attr_name|
         %tr
           %th= attr_name
           - result_fields(@pre,@fut,attr_name)
+
+%h3 Calculations
 
 %table
   %thead
@@ -141,19 +143,6 @@
           %th== Primary Demand of #{carrier.key}
           - result_fields(@pre,@fut) do |converter|
             - converter.primary_demand_of_carrier(carrier.key.to_sym)
-
-%table
-  %thead
-    %tr
-      %th Expected Values
-      %th Present
-      %th Future
-      %th Change
-  %tbody
-    - Qernel::ConverterApi::ATTRIBUTES_USED.select{|a| a.to_s.include?('expected')}.each do |attr_name|
-      %tr
-        %th= attr_name
-        - result_fields(@pre,@fut,attr_name)
 
 %h3 References
 

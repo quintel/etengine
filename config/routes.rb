@@ -62,7 +62,7 @@ Etm::Application.routes.draw do
         resources :converter_positions, :only => :create
       end
 
-      resources :gqueries do
+      resources :gqueries, :only => [:index, :show] do
         get :result, :on => :member
         collection do
           get :dump
@@ -70,10 +70,8 @@ Etm::Application.routes.draw do
           get :test
           post :test
           get :result
-          get :group_descriptions
         end
       end
-      match "/gqueries/key/:key" => "gqueries#key", :as => :gquery_key
 
       resources :converters, :only => [:index, :show]
       resources :gquery_groups, :only => [:index, :show]

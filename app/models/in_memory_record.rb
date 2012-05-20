@@ -1,3 +1,24 @@
+# InMemoryRecord adds a few helper methods for models that you want to persist
+# in memory, but not necessarly in a database. 
+#
+# @example
+#   class Foo
+#      include InMemoryRecord
+#
+#     def lookup_id
+#       self.key
+#     end
+#
+#      def self.load_records
+#        # code that loads and returns an array of Foo records
+#      end
+#   end
+#
+#   Foo.records     # => {"id_1": <Foo>, "id_2": <Foo>}
+#   Foo.all         # => [<Foo>, <Foo>]
+#   Foo.get("id_1") # => <Foo>
+# 
+#
 module InMemoryRecord
   extend ActiveSupport::Concern
 
@@ -11,16 +32,21 @@ module InMemoryRecord
     end
 
     def all
-      @records ||= records.values.uniq
+      # self.name => self.class.name 
+      EtCache.instance.fetch("#{self.name}#all") do
+        records.values.uniq
+      end
     end
 
     # records is a hash of key => object
     # there can be multiple keys for one object. 
     # The following keys are removed: nil, ""
     def records
-      @records_hash ||= load_records.tap do |records| 
-        records.delete(nil)
-        records.delete("")
+      EtCache.instance.fetch("#{self.name}#records") do
+        load_records.tap do |records| 
+          records.delete(nil)
+          records.delete("")
+        end
       end
     end
 

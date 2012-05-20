@@ -10,7 +10,7 @@ class Data::PagesController < Data::BaseController
   end
 
   def clear_cache
-    Rails.cache.clear
+    EtCache.instance.expire!
     redirect_to data_root_path(:api_scenario_id => params[:api_scenario_id])
   end
 end

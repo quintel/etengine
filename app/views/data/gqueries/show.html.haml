@@ -24,6 +24,8 @@
     %dd= @gquery.deprecated_key
   %dt Groups
   %dd= @gquery.gquery_group.try(:group_key)
+  %dt Unit
+  %dd= @gquery.unit
   %dt Description
   %dd= simple_format @gquery.description
 
@@ -33,5 +35,5 @@
   - Gquery.contains(@gquery.key).each do |gquery|
     %tr
       %td Gquery
-      %td= link_to gquery.key, data_gquery_key_path(:key => gquery.key)
+      %td= link_to gquery.key, data_gquery_path(:id => gquery.key)
 

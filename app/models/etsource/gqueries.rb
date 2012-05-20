@@ -41,16 +41,19 @@ module Etsource
     end
 
     def gquery_groups
-      return @gquery_groups if @gquery_groups
+      # make something like an identity map, so that there can be no duplicates
+      # of groups around.
+      @gquery_groups_identity_map ||= {}
+      gquery_groups = {}
 
-      @gquery_groups = {}
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
         tokens = f.gsub(base_dir+"/", '').split('/')
         # the group name concatenates the directory names
         group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
-        @gquery_groups[group_key] ||= GqueryGroup.new(:group_key => group_key)
+        @gquery_groups_identity_map[group_key] ||= GqueryGroup.new(:group_key => group_key)
+        gquery_groups[group_key] = @gquery_groups_identity_map[group_key]
       end
-      @gquery_groups
+      gquery_groups
     end
 
   #protected

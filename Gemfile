@@ -29,11 +29,11 @@ gem 'rubel', '0.0.3'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
+gem 'hipchat'
 
 # system gems
 gem 'mysql2', '~>0.3.11'
 gem 'dalli'
-gem 'memcache-client'
 gem 'term-ansicolor', :require => false
 gem 'highline', :require => false
 gem 'rubyzip', '0.9.4'
@@ -51,8 +51,6 @@ group :development do
   gem 'annotate', :require => false
   gem 'ruby-prof'
 end
-
-
 
 group :test, :development do
   gem "rspec-rails", "~> 2.8.0"

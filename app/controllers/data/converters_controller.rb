@@ -1,16 +1,13 @@
 class Data::ConvertersController < Data::BaseController
   def index
-    @converters = @gql.present_graph.converters
-    if params[:q]
-      @converters = @converters.select{|c| c.full_key.to_s.include?(params[:q])}
-    end
-    unless params[:group_id].blank?
+    all = @gql.present_graph.converters
+    all.select!{|c| c.key.to_s.include?(params[:q])} if params[:q]
+    if params[:group_id].present?
       group = Group.find(params[:group_id])
-      @converters = @converters.select{|c| c.groups.include?(group.key.to_sym) }
+      all.select!{|c| c.groups.include?(group.key.to_sym) }
     end
-    page, per_page = params[:page] || 1, 100
-    @num_pages = @converters.length / per_page
-    @converters = @converters.sort_by(&:full_key)[((page - 1) * per_page)...(page * per_page)]
+    @converters = Kaminari.paginate_array(all.sort_by(&:key)).
+      page(params[:page]).per(50)
   end
 
   def show

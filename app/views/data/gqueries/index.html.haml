@@ -1,5 +1,5 @@
 - breadcrumb "GQueries"
-=# render 'search_box'
+= render 'search_box'
 = render 'subnav'
 %table
   %thead
@@ -11,7 +11,7 @@
   %tbody
     - @gqueries.flatten.each do |gquery|
       %tr
-        %td= link_to highlight(gquery.key, params[:q]), data_gquery_key_path(:key => gquery.key)
+        %td= link_to highlight(gquery.key, params[:q]), data_gquery_path(:id => gquery.key)
         %td= gquery.unit
         %td= gquery.gquery_group.try(:group_key)
         %td= gquery.deprecated_key

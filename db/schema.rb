@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120502132916) do
+ActiveRecord::Schema.define(:version => 20120507115216) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -52,14 +52,10 @@ ActiveRecord::Schema.define(:version => 20120502132916) do
     t.float    "ventilation_rate"
     t.float    "market_share_daylight_control"
     t.float    "market_share_motion_detection"
-    t.float    "buildings_heating_share_offices"
-    t.float    "buildings_heating_share_schools"
-    t.float    "buildings_heating_share_other"
     t.float    "roof_surface_available_pv_buildings"
     t.float    "insulation_level_existing_houses"
     t.float    "insulation_level_new_houses"
-    t.float    "insulation_level_schools"
-    t.float    "insulation_level_offices"
+    t.float    "insulation_level_buildings"
     t.boolean  "has_buildings"
     t.boolean  "has_agriculture",                                       :default => true
     t.integer  "current_electricity_demand_in_mj",         :limit => 8, :default => 1
