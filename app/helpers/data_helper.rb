@@ -4,7 +4,7 @@ module DataHelper
       if value.between?(-1, 1)
         value.to_f # scientific notation
       else
-        number_with_delimiter value        
+        number_with_delimiter value
       end
     end
   end
@@ -47,22 +47,22 @@ module DataHelper
   def change_field(present_value, future_value)
     haml_tag :'td.change' do
       if future_value == 0.0 and present_value == 0.0
-        haml_concat '' 
+        haml_concat ''
       else
         haml_concat "#{(((future_value / present_value) - 1) * 100).to_i}%" rescue '-'
       end
     end
   end
-  
+
   def breadcrumb(x)
     @_breadcrumbs ||= []
     @_breadcrumbs << x
   end
-  
+
   def breadcrumbs
     @_breadcrumbs ||= []
   end
-  
+
   # Autocomplete data caching
   # The various _search_box partials make use of these methods
 
@@ -73,19 +73,21 @@ module DataHelper
       end.to_json
     end
   end
-  
+
   def inputs_autocomplete_map_cache
     Rails.cache.fetch "inputs_autocomplete_map_cache" do
       Input.all.map {|a| {label: a.key, url: data_input_path(:id => a.id)} }.to_json
     end
   end
-  
+
   def converters_autocomplete_map_cache
     Rails.cache.fetch "converters_autocomplete_map_cache" do
-      converters.sort_by(&:full_key).map {|a| {label: a.full_key.to_s, url: data_converter_path(:id => a)} }.to_json
+      converters.sort_by(&:key).map do |a|
+        {label: a.key, url: data_converter_path(:id => a)}
+      end.to_json
     end
   end
-  
+
   def carriers_autocomplete_map_cache
     Rails.cache.fetch "carriers_autocomplete_map_cache" do
       carriers.sort_by(&:key).map {|a| {label: a.key, url: data_carrier_path(:id => a)} }.to_json
