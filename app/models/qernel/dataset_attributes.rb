@@ -153,7 +153,7 @@ module Qernel::DatasetAttributes
   def dataset_observe(*keys)
     @observe = true
     @observe_keys ||= []
-    @observe_keys += keys.map(&:to_sym)
+    @observe_keys += keys.flatten.map(&:to_sym)
   end
 
   # Memoization
