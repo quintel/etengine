@@ -1,7 +1,7 @@
 # Caches and persists an object across requests in the memory of the
 # server process. Use it when caching with memcached is too slow. 
 #
-# Caveats: Using EtCache local store with the Qernel Graph 
+# Caveats: Using NastyCache local store with the Qernel Graph 
 #          makes the app NO LONGER THREADSAFE
 #
 # @example Add this to your application_controller.rb
@@ -9,43 +9,43 @@
 #   before_filter :initialize_memory_cache
 #
 #   def initialize_memory_cache
-#     EtCache.instance.initialize_request
+#     NastyCache.instance.initialize_request
 #   end
 #    
 # @example setting and getting
 #
-#   EtCache.instance.set("large_blob", "foo")
-#   EtCache.instance.get("large_blob")
+#   NastyCache.instance.set("large_blob", "foo")
+#   NastyCache.instance.get("large_blob")
 #
 # @example fetching
 #
-#   EtCache.instance.fetch("large_blob") do
+#   NastyCache.instance.fetch("large_blob") do
 #     # ...
 #   end
 #
 # @example fetching with :cache => true will also cache it
 #
-#   EtCache.instance.fetch_cached("large_blob") { 'foo' }
+#   NastyCache.instance.fetch_cached("large_blob") { 'foo' }
 #   # equivalent to:
-#   EtCache.instance.fetch("large_blob", :cache => true) { 'foo' }
+#   NastyCache.instance.fetch("large_blob", :cache => true) { 'foo' }
 #   # translates to:
-#   EtCache.instance.fetch("large_blob") do
-#     Rails.cache.fetch("EtCache/local_timestamp/large_blob") do
+#   NastyCache.instance.fetch("large_blob") do
+#     Rails.cache.fetch("NastyCache/local_timestamp/large_blob") do
 #       # ...
 #     end
 #   end 
 #
 # @example expiring cache across server instances
 # 
-#   EtCache.instances.expire!
+#   NastyCache.instances.expire!
 #   # => This will expire all instances across server instances
 #   #    the next time they call #initialize_request.
 #   #    This should be equivalent of restarting the server.
 #
-class EtCache
+class NastyCache
   include Singleton
 
-  MEMORY_CACHE_KEY = "EtCache#timestamp"
+  MEMORY_CACHE_KEY = "NastyCache#timestamp"
 
   attr_accessor :local_timestamp
 
@@ -58,14 +58,14 @@ class EtCache
     if expired?
       expire_local!
     else
-      Rails.logger.info("EtCache(#{Process.pid})#cached: keys: #{@cache_store.keys.join(", ")}")
+      Rails.logger.info("NastyCache(#{Process.pid})#cached: keys: #{@cache_store.keys.join(", ")}")
     end
   end
 
   # Expires both local (@cache_store) and Rails.cache 
   # this is equivalent of a server restart.
   def expire!
-    Rails.logger.info("EtCache(#{Process.pid})#expire!")
+    Rails.logger.info("NastyCache(#{Process.pid})#expire!")
     expire_cache!
     mark_expired!
     expire_local!
@@ -119,9 +119,9 @@ class EtCache
   end
 
   def expire_local!
-    Rails.logger.info("EtCache(#{Process.pid})#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
+    Rails.logger.info("NastyCache(#{Process.pid})#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
     @local_timestamp = global_timestamp
-    Rails.logger.info("EtCache#expire: keys #{@cache_store.keys.join(", ")}")
+    Rails.logger.info("NastyCache#expire: keys #{@cache_store.keys.join(", ")}")
     @cache_store = {}
   end
 
@@ -138,6 +138,6 @@ class EtCache
   end
 
   def rails_cache_key(key)
-    ["EtCache", local_timestamp, key].join('/')
+    ["NastyCache", local_timestamp, key].join('/')
   end
 end

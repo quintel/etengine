@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   end
 
   def initialize_memory_cache
-    EtCache.instance.initialize_request
+    NastyCache.instance.initialize_request
   end
 
   def locale
