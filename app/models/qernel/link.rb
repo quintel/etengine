@@ -99,13 +99,6 @@ protected
     @constant          = @link_type === :constant
   end
 
-  def after_assign_object_dataset
-    # if self.dependent?
-    #   @reversed = true
-    # end
-  end
-
-
   # --------- Calculation Flow -------------------------------------------------
 
 public
