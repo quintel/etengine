@@ -173,10 +173,11 @@ module Qernel::DatasetAttributes
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
     if @observe && @observe_keys.include?(attr_name)
-      str = code.to_s.ljust(50)
-      str += " #{attr_name}: "
-      str += value.inspect.ljust(30)
-      str += "# #{object_dataset[attr_name].inspect}"
+      str = self.is_a?(Qernel::Converter) ? "#{'-'*200}\n" : ""
+      str += topology_key.to_s.ljust(150)
+      str += " #{attr_name}: ".rjust(10)
+      str += value.round(9).inspect.cjust('.', 20, 10)
+      str += "   # by #{@calculation_state} / #{object_dataset[attr_name].inspect}"
       puts str
     end
     object_dataset[attr_name] = value

@@ -108,12 +108,6 @@ class Converter
     9 => :neighbor
   }
 
-  USES = {
-    1 => :energetic,
-    2 => :non_energetic,
-    3 => :undefined
-  }
-
   attr_reader  :id, 
                :code, 
                :output_links, 
@@ -167,8 +161,9 @@ class Converter
 
     memoize_for_cache
     self.converter_api = Qernel::ConverterApi.new(self)
-  end
 
+    @calculation_state = :initialized
+  end
 
   # return the excel id as a symbol for the graph#converter_lookup_hash
   # return the code if no excel_id defined or dataset not initialised yet.
@@ -384,6 +379,8 @@ public
   # @pre converter must be #ready?
   #
   def calculate
+    @calculation_state = :calculate
+
     # Constant links are treated differently.
     # They can overwrite the preset_demand of this converter
     output_links.select(&:constant?).each(&:calculate)
@@ -396,8 +393,9 @@ public
     if self.demand.nil?
       self.demand ||= update_demand
     end # Demand is set
+    @calculation_state = :calculating_after_update_demand
 
-    # Now calculate the slots of this controller
+    # Now calculate the slots of this converter
     slots.each(&:calculate)
 
     # inversed_flexible fills up the difference of the calculated input/output slot.
@@ -417,12 +415,15 @@ protected
   #
   def update_demand
     if output_links.any?(&:inversed_flexible?) or output_links.any?(&:reversed?)
+      @calculation_state = :update_demand_if_inversed_flexible_or_reversed
       slots.map(&:internal_value).compact.sort_by(&:abs).last
     elsif output_links.empty?
+      @calculation_state = :update_demand_if_no_output_links
       # 2010-06-23: If there is no output links we take the highest value from input.
       # otherwise left dead end converters don't get values
       inputs.map(&:internal_value).compact.sort_by(&:abs).last
     else
+      @calculation_state = :update_demand
       # 2010-06-23: The normal case. Just take the highest value from outputs.
       # We did this to make the gas_extraction gas_import_export thing work
       outputs.map(&:internal_value).compact.sort_by(&:abs).last
@@ -438,6 +439,7 @@ protected
   # @return [Float] demand 
   #
   def update_initial_demand
+    @calculation_state = :update_initial_demand
     preset = dataset_get(:preset_demand)
 
     if preset.nil?
