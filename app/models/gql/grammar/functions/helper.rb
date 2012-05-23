@@ -2,6 +2,12 @@ module Gql::Grammar
   module Functions
     module Helper
 
+      def OBSERVE(*objects, arguments)
+        flatten_uniq(objects).each do |obj|
+          obj.dataset_observe arguments
+        end
+      end
+
       # SORT_BY( converters , attribute_1)
       #
       def SORT_BY(*objects, arguments)

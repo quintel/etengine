@@ -150,6 +150,12 @@ module Qernel::DatasetAttributes
     end
   end
 
+  def dataset_observe(*keys)
+    @observe = true
+    @observe_keys ||= []
+    @observe_keys += keys.map(&:to_sym)
+  end
+
   # Memoization
   #
   def dataset_fetch(attr_name, &block)
@@ -166,8 +172,14 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
+    if @observe && @observe_keys.include?(attr_name)
+      str = code.to_s.ljust(50)
+      str += " #{attr_name}: "
+      str += value.inspect.ljust(30)
+      str += "# #{object_dataset[attr_name].inspect}"
+      puts str
+    end
     object_dataset[attr_name] = value
-    # dataset.set(dataset_group, dataset_key, attr_name, value)
   end
 
   # @param attr_name [Symbol]
