@@ -1,21 +1,21 @@
 require 'spec_helper'
 
-class EtCache
+class NastyCache
   # used to simulate two different server process
   def self.new_process
     new
   end
 end
 
-describe EtCache do
+describe NastyCache do
   before {
-    @cache = EtCache.instance
+    @cache = NastyCache.instance
     @cache.set("to_be_expired", "foo")
   }
     
   describe "SingleTon" do
-    a = EtCache.instance
-    b = EtCache.instance
+    a = NastyCache.instance
+    b = NastyCache.instance
     a.should == b
   end
 
@@ -44,9 +44,9 @@ describe EtCache do
 
   context "two processes" do
     before {
-      @cache_1 = EtCache.instance
+      @cache_1 = NastyCache.instance
       @cache_1.set("foo", "bar")
-      @cache_2 = EtCache.new_process
+      @cache_2 = NastyCache.new_process
     }
 
     it "both process should not be expired" do
@@ -55,7 +55,7 @@ describe EtCache do
     end
 
     it "both process should not be expired" do
-      @cache_3 = EtCache.new_process
+      @cache_3 = NastyCache.new_process
       @cache_3.mark_expired!
       @cache_3.expired?.should be_true
       @cache_1.expired?.should be_true
