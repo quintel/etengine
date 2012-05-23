@@ -41,6 +41,17 @@ class Float
 end
 
 
+class String
+  def cjust(string, lft, rgt)
+    a,b = self.split(string)
+    if b
+      a.rjust(lft) + string + b.ljust(rgt)
+    else
+      self
+    end
+  end
+end
+
 # Extend Hash with recursive merging abilities
 class Hash
   # Merges self with another hash, recursively.
