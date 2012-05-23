@@ -137,4 +137,8 @@ class Gquery < ActiveRecord::Base
       end
     end
   end
+
+  def self.contains(q)
+    all.select {|g| g.query.to_s.include? q }
+  end
 end
