@@ -88,7 +88,7 @@ class Qernel::ConverterApi
 
   def coefficient_of_performance
     dataset_fetch_handle_nil(:coefficient_of_performance) do
-      (1 / (1 - ( ambient_heat_input_conversion + ambient_cold_input_conversion)))
+      (1 / (1 - ( ambient_heat_input_conversion + ambient_cold_input_conversion + geothermal_input_conversion)))
     end
   end
 
