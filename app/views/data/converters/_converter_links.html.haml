@@ -62,13 +62,22 @@
                         %tr
                           %th Type
                           %th Carrier supply
+                          %th
                           %th Energy flow (MJ)
                           %th Converter
                       %tbody
-                        - input_slot.links.each_with_index do |input_link, i|
+                        - input_slot.links.sort_by(&:priority).each_with_index do |input_link, i|
                           %tr
                             %td= input_link.link_type
                             %td{:title => input_link.share,
                                 :class => input_link.kind}= "#{(100 * input_link.share).round(2)} %" unless input_link.share.nil?
+                            %td
+                              - if input_link.flexible?
+                                Priority:
+                                %strong= input_link.priority
+                                - if input_link.max_demand
+                                  %br
+                                  Max Demand:
+                                  %strong= auto_number input_link.max_demand
                             %td{:title => input_link.value}= auto_number input_link.value
                             %td= link_to input_link.child.key, data_converter_path(:id => input_link.child)
