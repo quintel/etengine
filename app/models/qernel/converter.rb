@@ -298,7 +298,7 @@ public
   # @return [Array<Slot>] input *and* output slots
   #
   def slots
-    @_slots ||= [inputs, outputs].flatten
+    @_slots ||= [*inputs, *outputs]
   end
 
   # Returns the input slot for the given carrier (key or object).
