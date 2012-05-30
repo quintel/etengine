@@ -74,7 +74,7 @@ class Slot
     # I assume it must be because of inversed_flexible?
     # and [constant with undefined value].
 
-    if input?
+    if lft_of_converter?
       active_links.select(&:constant?).each(&:calculate)
       active_links.select(&:share?).each(&:calculate)
 
@@ -84,7 +84,7 @@ class Slot
       flexible_links.select(&:max_boundaries?).sort_by(&:priority).each(&:calculate)
       flexible_links.reject(&:max_boundaries?).sort_by(&:priority).each(&:calculate)
     end
-    if output?
+    if rgt_of_converter?
       links.select(&:reversed?).each(&:calculate)
       links.select(&:dependent?).each(&:calculate)
     end
@@ -99,12 +99,15 @@ class Slot
   def input?
     (direction === :input)
   end
+  alias lft_of_converter? input?
+
 
   # @return [Boolean] is it an output (on the left side of converter)
   #
   def output?
     !input?
   end
+  alias rgt_of_converter? input?
 
   def environment?
     converter.environment?
@@ -120,7 +123,7 @@ class Slot
   # @return [Array<Link>] Links that are calculated by this Slot
   #
   def active_links
-    @active_links ||= if input? 
+    @active_links ||= if lft_of_converter?
       links.select(&:calculated_by_left?)
     else
       links.select(&:calculated_by_right?)
@@ -131,7 +134,7 @@ class Slot
   # @return [Array<Link>] Links calculated by the converter on the other end.
   #
   def passive_links
-    @passive_links ||= if input? 
+    @passive_links ||= if lft_of_converter?
       links.select(&:calculated_by_right?) 
     else 
       links.select(&:calculated_by_left?)
@@ -142,7 +145,7 @@ class Slot
   #
   def links
     # For legacy reasons, we still access links through the converter.
-    @links ||= if input? 
+    @links ||= if lft_of_converter?
       converter.input_links.select{|l| l.carrier == @carrier} 
     else
       converter.output_links.select{|l| l.carrier == @carrier}
