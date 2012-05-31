@@ -43,23 +43,6 @@ class Gquery < ActiveRecord::Base
 
   belongs_to :gquery_group
 
-  scope :contains, lambda{|search| where("query LIKE ?", "%#{search}%")}
-  scope :name_or_query_contains, lambda{|q| where([
-     "`key` LIKE :q OR query LIKE :q OR deprecated_key LIKE :q", { :q => "%#{q}%" }
-  ])}
-
-  scope :by_name, lambda{|q| where("`key` LIKE ?", "%#{q}%")}
-
-  # This scope will stack the previous by_name scope to allow searching using multiple terms
-  scope :by_name_multi, lambda{|q|
-    base = self.scoped
-    if q.is_a?(String)
-      tokens = q.split(' ')
-      tokens.each{|t| base = base.by_name(t.strip)}
-    end
-    base
-  }
-
   scope :by_groups, lambda{|*gids|
     gids = gids.compact.reject(&:blank?)
     where(:gquery_group_id => gids.compact) unless gids.compact.empty?
@@ -68,7 +51,7 @@ class Gquery < ActiveRecord::Base
   after_initialize do |gquery|
     self.key = self.key.strip if self.key
   end
-  
+
   def id
     lookup_id
   end
@@ -94,11 +77,11 @@ class Gquery < ActiveRecord::Base
   end
 
   # Returns the sanitized gql query string as a lambda.
-  # It passes it through the Rubel sandbox for another security 
+  # It passes it through the Rubel sandbox for another security
   # layer (make it harder to access classes and modules).
   #
-  # @example 
-  #   q = Gquery.rubel_proc("SUM(1,2)") 
+  # @example
+  #   q = Gquery.rubel_proc("SUM(1,2)")
   #   # => lambda { SUM(1,2) }
   #   gql.present.query( q )
   #   # => 3
@@ -147,4 +130,15 @@ class Gquery < ActiveRecord::Base
     end
   end
 
+  def self.name_or_query_contains(q)
+    all.select do |g|
+      [:name, :query, :deprecated_key].any? do |attr|
+        g.send(attr).to_s.include? q
+      end
+    end
+  end
+
+  def self.contains(q)
+    all.select {|g| g.query.to_s.include? q }
+  end
 end

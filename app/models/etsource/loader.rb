@@ -109,7 +109,7 @@ module Etsource
     end
 
     def cache_key
-      "etsource/#{EtCache.instance.local_timestamp}/"
+      "etsource/#{NastyCache.instance.local_timestamp}/"
     end
 
     # A Qernel::Graph from ETsource where the converters are ordered in a way that
@@ -118,7 +118,7 @@ module Etsource
     def optimized_graph
       instrument("etsource.loader: optimized_graph") do
         if @etsource.cache_topology?
-          EtCache.instance.fetch_cached("optimized_graph") do
+          NastyCache.instance.fetch_cached("optimized_graph") do
             g = unoptimized_graph
             g.dataset = dataset('nl')
             g.optimize_calculation_order
@@ -133,7 +133,7 @@ module Etsource
 
     def unoptimized_graph
       if @etsource.cache_topology?
-        EtCache.instance.fetch_cached("unoptimized_graph") do
+        NastyCache.instance.fetch_cached("unoptimized_graph") do
           Etsource::Topology.new.import
         end
       else

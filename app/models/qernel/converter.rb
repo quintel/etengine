@@ -87,6 +87,8 @@ class Converter
   include Qernel::WouterDance::WeightedCarrier
   include Qernel::WouterDance::Sustainable
 
+  include Qernel::WouterDance::MaxDemand
+
   include DatasetAttributes
   include Topology::Converter
 
@@ -108,12 +110,6 @@ class Converter
     9 => :neighbor
   }
 
-  USES = {
-    1 => :energetic,
-    2 => :non_energetic,
-    3 => :undefined
-  }
-
   attr_reader  :id, 
                :code, 
                :output_links, 
@@ -133,6 +129,9 @@ class Converter
   #   :default or :demand_driven
   #
   attr_reader :type
+
+  alias_method :lft_links, :output_links
+  alias_method :rgt_links, :input_links
 
   dataset_accessors [:demand, :preset_demand, :excel_id]
 
@@ -177,6 +176,8 @@ class Converter
     memoize_for_cache
 
     self.converter_api = Qernel::ConverterApi.for_converter(self)
+
+    @calculation_state = :initialized
   end
 
   # return the excel id as a symbol for the graph#converter_lookup_hash
@@ -289,13 +290,14 @@ public
   def children
     @children ||= input_links.map(&:child)
   end
+  alias_method :rgt_converters, :children
 
   # @return [Array<Converter>] Converters to the left
   #
   def parents
     @parents ||= output_links.map(&:parent)
   end
-
+  alias_method :lft_converters, :parents
 
   # @return [Array<Slot>] all input slots
   #
@@ -312,7 +314,7 @@ public
   # @return [Array<Slot>] input *and* output slots
   #
   def slots
-    @_slots ||= [inputs, outputs].flatten
+    @_slots ||= [*inputs, *outputs]
   end
 
   # Returns the input slot for the given carrier (key or object).
@@ -393,6 +395,8 @@ public
   # @pre converter must be #ready?
   #
   def calculate
+    @calculation_state = :calculate
+
     # Constant links are treated differently.
     # They can overwrite the preset_demand of this converter
     output_links.select(&:constant?).each(&:calculate)
@@ -405,8 +409,9 @@ public
     if self.demand.nil?
       self.demand ||= update_demand
     end # Demand is set
+    @calculation_state = :calculating_after_update_demand
 
-    # Now calculate the slots of this controller
+    # Now calculate the slots of this converter
     slots.each(&:calculate)
 
     # inversed_flexible fills up the difference of the calculated input/output slot.
@@ -426,12 +431,15 @@ protected
   #
   def update_demand
     if output_links.any?(&:inversed_flexible?) or output_links.any?(&:reversed?)
+      @calculation_state = :update_demand_if_inversed_flexible_or_reversed
       slots.map(&:internal_value).compact.sort_by(&:abs).last
     elsif output_links.empty?
+      @calculation_state = :update_demand_if_no_output_links
       # 2010-06-23: If there is no output links we take the highest value from input.
       # otherwise left dead end converters don't get values
       inputs.map(&:internal_value).compact.sort_by(&:abs).last
     else
+      @calculation_state = :update_demand
       # 2010-06-23: The normal case. Just take the highest value from outputs.
       # We did this to make the gas_extraction gas_import_export thing work
       outputs.map(&:internal_value).compact.sort_by(&:abs).last
@@ -447,6 +455,7 @@ protected
   # @return [Float] demand 
   #
   def update_initial_demand
+    @calculation_state = :update_initial_demand
     preset = dataset_get(:preset_demand)
 
     if preset.nil?

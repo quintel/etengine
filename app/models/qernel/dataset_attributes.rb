@@ -70,21 +70,27 @@ module Qernel::DatasetAttributes
     def dataset_accessors(*dataset_attributes)
       dataset_attributes.flatten.each do |attr_name|
         attr_name_sym = attr_name.to_sym
-        define_method attr_name do
-          dataset_get attr_name_sym
-        end
-        define_method "#{attr_name}=" do |value|
-          dataset_set attr_name_sym, value
-        end
+        #   def attr_name
+        #     dataset_get :attr_name
+        #   end
+        #
+        #   def attr_name=(value)
+        #     dataset_set :attr_name, value
+        #   end
+        self.class_eval <<-EOF,__FILE__,__LINE__ +1
+          def #{attr_name_sym}
+            dataset_get #{attr_name_sym.inspect}
+          end
+        
+          def #{attr_name_sym}=(value)
+            dataset_set #{attr_name_sym.inspect}, value
+          end
+        EOF
       end
     end
 
     def dataset_group
       @dataset_group ||= self.name.split("::").last.downcase.to_sym
-    end
-
-    def compute_dataset_key(id)
-      id
     end
   end
 
@@ -111,7 +117,7 @@ module Qernel::DatasetAttributes
   end
 
   def dataset_key
-    @dataset_key ||= self.class.compute_dataset_key(id)
+    @dataset_key ||= id
   end
 
   def reset_object_dataset
@@ -150,6 +156,13 @@ module Qernel::DatasetAttributes
     end
   end
 
+  # observe and log changes to an attribute
+  def dataset_observe(*keys)
+    @observe = true
+    @observe_keys ||= []
+    @observe_keys += keys.flatten.map(&:to_sym)
+  end
+
   # Memoization
   #
   def dataset_fetch(attr_name, &block)
@@ -166,8 +179,14 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
+    if @observe && @observe_keys.include?(attr_name)
+      str = self.is_a?(Qernel::Converter) ? "#{'-'*200}\n" : ""
+      str += topology_key.to_s.ljust(150) + " #{attr_name}: ".rjust(10)
+      str += value.round(9).inspect.cjust('.', 20, 10)
+      str += "   # by #{@calculation_state} / #{object_dataset[attr_name].inspect}"
+      puts str
+    end
     object_dataset[attr_name] = value
-    # dataset.set(dataset_group, dataset_key, attr_name, value)
   end
 
   # @param attr_name [Symbol]
