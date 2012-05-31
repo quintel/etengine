@@ -54,6 +54,8 @@ module Qernel
           link.carrier && link.carrier.key == :useable_heat
         end
 
+        return 0.0 if heat_links.empty?
+
         tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
         units = tech_share * (converter.graph.area.number_households || 0)
 
