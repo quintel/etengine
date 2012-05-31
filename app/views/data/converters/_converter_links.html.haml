@@ -73,8 +73,10 @@
                                 :class => input_link.kind}= "#{(100 * input_link.share).round(2)} %" unless input_link.share.nil?
                             %td
                               - if input_link.flexible?
-                                Priority:
-                                %strong= input_link.priority
+                                -# 1_000_000 is the default value
+                                - if input_link.priority != 1_000_000
+                                  Priority:
+                                  %strong= input_link.priority
                                 - if input_link.max_demand
                                   %br
                                   Max Demand:
