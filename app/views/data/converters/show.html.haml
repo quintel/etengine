@@ -147,7 +147,7 @@
 %h3 References
 
 %table
-  - Gquery.name_or_query_contains(@converter_present.full_key).each do |gquery|
+  - Gquery.name_or_query_contains(@converter_present.key.to_s).each do |gquery|
     %tr
       %td Gquery
       %td= link_to gquery.key, data_gquery_path(:id => gquery.id)

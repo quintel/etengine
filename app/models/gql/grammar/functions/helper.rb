@@ -2,6 +2,23 @@ module Gql::Grammar
   module Functions
     module Helper
 
+      def OBSERVE(*objects, arguments)
+        keys = arguments # OBSERVE(..., :demand)
+        if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:links])
+          keys     = arguments[:keys]
+          includes = [arguments[:include]].flatten
+          
+          if includes.include?(:links)
+            objects += flatten_uniq(objects).map{|o| [o.input_links, o.output_links]}
+          end
+        end
+        keys ||= [:demand, :value]
+
+        flatten_uniq(objects).each do |obj|
+          obj.dataset_observe keys
+        end
+      end
+
       # SORT_BY( converters , attribute_1)
       #
       def SORT_BY(*objects, arguments)

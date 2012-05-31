@@ -21,12 +21,12 @@ class Slot
 
   # --------- Accessor ---------------------------------------------------------
 
-  attr_accessor :carrier, 
-                :converter, 
-                :converter_id, 
+  attr_accessor :carrier,
+                :converter,
+                :converter_id,
                 :graph
 
-  attr_reader :direction, 
+  attr_reader :direction,
               :id
 
 
@@ -36,7 +36,7 @@ class Slot
   dataset_accessors DATASET_ATTRIBUTES
 
   def self.dataset_group; :graph; end
-  
+
   # --------- Initialize ------------------------------------------------------
 
   def initialize(id, converter, carrier, direction = :input)
@@ -74,17 +74,17 @@ class Slot
     # I assume it must be because of inversed_flexible?
     # and [constant with undefined value].
 
-    if input?
+    if lft_of_converter?
       active_links.select(&:constant?).each(&:calculate)
       active_links.select(&:share?).each(&:calculate)
 
       # Calculate flexible links with boundaries first. Because
-      # without boundaries a link takes everything. 
+      # without boundaries a link takes everything.
       flexible_links = active_links.select(&:flexible?)
       flexible_links.select(&:max_boundaries?).sort_by(&:priority).each(&:calculate)
       flexible_links.reject(&:max_boundaries?).sort_by(&:priority).each(&:calculate)
     end
-    if output?
+    if rgt_of_converter?
       links.select(&:reversed?).each(&:calculate)
       links.select(&:dependent?).each(&:calculate)
     end
@@ -99,12 +99,15 @@ class Slot
   def input?
     (direction === :input)
   end
+  alias_method :lft_of_converter?, :input?
+
 
   # @return [Boolean] is it an output (on the left side of converter)
   #
   def output?
     !input?
   end
+  alias_method :rgt_of_converter?, :output?
 
   def environment?
     converter.environment?
@@ -120,7 +123,7 @@ class Slot
   # @return [Array<Link>] Links that are calculated by this Slot
   #
   def active_links
-    @active_links ||= if input? 
+    @active_links ||= if lft_of_converter?
       links.select(&:calculated_by_left?)
     else
       links.select(&:calculated_by_right?)
@@ -131,9 +134,9 @@ class Slot
   # @return [Array<Link>] Links calculated by the converter on the other end.
   #
   def passive_links
-    @passive_links ||= if input? 
-      links.select(&:calculated_by_right?) 
-    else 
+    @passive_links ||= if lft_of_converter?
+      links.select(&:calculated_by_right?)
+    else
       links.select(&:calculated_by_left?)
     end
   end
@@ -142,8 +145,8 @@ class Slot
   #
   def links
     # For legacy reasons, we still access links through the converter.
-    @links ||= if input? 
-      converter.input_links.select{|l| l.carrier == @carrier} 
+    @links ||= if lft_of_converter?
+      converter.input_links.select{|l| l.carrier == @carrier}
     else
       converter.output_links.select{|l| l.carrier == @carrier}
     end
@@ -227,7 +230,7 @@ class Slot
   def inspect
     "<Qernel::Slot id:#{id} carrier:#{carrier.key}>"
   end
-  
+
 
   # TODO: find better names and explanation
   def kind
@@ -237,7 +240,7 @@ class Slot
     when 2 then :green
     end
   end
-  
+
 end
 
 end

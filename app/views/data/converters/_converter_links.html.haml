@@ -9,12 +9,12 @@
         %table
           %thead
             %tr
-              %th Links
-              %th{:colspan => 2} Output Slots
+              %th.centered Links
+              %th.centered{:colspan => 2}Outputs
             %tr
               %th
-              %th Carrier
-              %th Carrier conversion efficiency
+              %th Energy carrier
+              %th Conversion efficiency
           %tbody
             - c.outputs.each do |output_slot|
               %tr
@@ -25,7 +25,7 @@
                         %tr
                           %th Converter
                           %th Energy flow (MJ)
-                          %th Share of input
+                          %th Carrier supply
                           %th Type
                       %tbody
                         - output_slot.links.each_with_index do |output_link, i|
@@ -33,27 +33,27 @@
                             %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent)
                             %td{:title => output_link.value}= auto_number output_link.value
                             %td{:class => output_link.kind,
-                                :title => output_link.share}= output_link.share.andand.round(2)
+                                :title => output_link.share}= "#{(100.0 * output_link.share).andand.round(2)} %" unless output_link.share.nil?
                             %td= output_link.link_type
                   %td.centered= output_slot.carrier.key
                   %td.centered{:class => output_slot.kind,
-                               :title => output_slot.conversion}= output_slot.conversion.round(2)
+                               :title => output_slot.conversion}= "#{(100.0 * output_slot.conversion).round(2)} %" unless output_slot.conversion.nil?
       %td
       %td
         %table
           %thead
             %tr
-              %th{:colspan => 2} Input Slots
-              %th Links
+              %th.centered{:colspan => 2} Inputs
+              %th.centered Links
             %tr
-              %th Carrier conversion efficiency
-              %th Carrier
+              %th Input share
+              %th Energy carrier
               %th
           %tbody
             - c.inputs.each do |input_slot|
               %tr
                 %td.centered{:title => input_slot.conversion,
-                             :class => input_slot.kind}= input_slot.conversion.round(2)
+                             :class => input_slot.kind}= "#{(100 * input_slot.conversion).round(2)} %"  unless input_slot.conversion.nil?
                 %td.centered= input_slot.carrier.key
                 %td
                   - if input_slot.links.any?
@@ -61,14 +61,25 @@
                       %thead
                         %tr
                           %th Type
-                          %th Share of input
+                          %th Carrier supply
+                          %th
                           %th Energy flow (MJ)
                           %th Converter
                       %tbody
-                        - input_slot.links.each_with_index do |input_link, i|
+                        - input_slot.links.sort_by(&:priority).each_with_index do |input_link, i|
                           %tr
                             %td= input_link.link_type
                             %td{:title => input_link.share,
-                                :class => input_link.kind}= input_link.share.andand.round(2)
+                                :class => input_link.kind}= "#{(100 * input_link.share).round(2)} %" unless input_link.share.nil?
+                            %td
+                              - if input_link.flexible?
+                                -# 1_000_000 is the default value
+                                - if input_link.priority != 1_000_000
+                                  Priority:
+                                  %strong= input_link.priority
+                                - if input_link.max_demand
+                                  %br
+                                  Max Demand:
+                                  %strong= auto_number input_link.max_demand
                             %td{:title => input_link.value}= auto_number input_link.value
                             %td= link_to input_link.child.key, data_converter_path(:id => input_link.child)

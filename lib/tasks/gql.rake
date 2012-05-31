@@ -17,6 +17,11 @@ namespace :gql do
     gql.present.rubel.console
   end
 
+  task :debug => :environment do
+    init_environment
+    gql(:debug => true).future.rubel.console
+  end
+
   task :dataset => :environment do
     gql = unprepared_gql
     hsh = Etsource::Loader.instance.raw_hash(gql.scenario.area_code)
@@ -34,8 +39,9 @@ namespace :gql do
     puts "** Using: #{Etsource::Base.instance.export_dir}"
   end
 
-  def gql
+  def gql(options = {})
     gql = unprepared_gql
+    gql.future.rubel.pry if options[:debug] == true
     gql.prepare
     gql.sandbox_mode = :console
     gql
@@ -53,8 +59,8 @@ namespace :gql do
     end
 
     gql = scenario.gql(prepare: false)
-    gql.prepare
     gql.sandbox_mode = :console
+    gql.init_datasets
     gql
   end
 
