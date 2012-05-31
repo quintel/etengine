@@ -21,7 +21,7 @@ describe "Etsource" do
       # -- Finally the context, before and it's --------------------------------
 
       context test_suite.gsub(ETSOURCE_DIR, '') do
-        pending do
+        describe do
           before(:all) do
             @scenario = Scenario.default(suite.fetch('settings', {}))
             @scenario.build_update_statements
