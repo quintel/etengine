@@ -87,6 +87,8 @@ class Converter
   include Qernel::WouterDance::WeightedCarrier
   include Qernel::WouterDance::Sustainable
 
+  include Qernel::WouterDance::MaxDemand
+
   include DatasetAttributes
   include Topology::Converter
 
@@ -119,6 +121,9 @@ class Converter
                :energy_balance_group
 
   attr_accessor :converter_api, :key, :graph
+
+  alias_method :lft_links, :output_links
+  alias_method :rgt_links, :input_links
 
   dataset_accessors [:demand, :preset_demand, :excel_id]
 
@@ -275,13 +280,14 @@ public
   def children
     @children ||= input_links.map(&:child)
   end
+  alias_method :rgt_converters, :children
 
   # @return [Array<Converter>] Converters to the left
   #
   def parents
     @parents ||= output_links.map(&:parent)
   end
-
+  alias_method :lft_converters, :parents
 
   # @return [Array<Slot>] all input slots
   #
