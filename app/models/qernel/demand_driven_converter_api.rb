@@ -59,7 +59,14 @@ module Qernel
         tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
         units = tech_share * (converter.graph.area.number_households || 0)
 
-        units / households_supplied_per_unit
+        supplied = households_supplied_per_unit
+
+        # Sanity check; if households_supplied_per_unit is zero, it may simply
+        # be that a value wasn't set, so we instead assume that it should be
+        # set to 1.
+        supplied = 1.0 if supplied.zero?
+
+        units / supplied
       end
     end
 
