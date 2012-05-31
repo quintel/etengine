@@ -237,7 +237,7 @@ class ConverterApi
   #   The appropriate ConverterApi subclass for the converter.
   #
   def self.for_converter(converter)
-    if converter.type == :demand_driven
+    if converter.groups.include?(:demand_driven)
       DemandDrivenConverterApi.new(converter)
     else
       ConverterApi.new(converter)

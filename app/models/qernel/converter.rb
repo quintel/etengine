@@ -167,7 +167,6 @@ class Converter
     @groups     = opts[:groups] || []
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
-    @type       = (opts[:type] || :default).to_sym
     @energy_balance_group = opts[:energy_balance_group]
 
     @output_links, @input_links = [], []
