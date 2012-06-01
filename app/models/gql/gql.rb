@@ -227,16 +227,20 @@ class Gql
   def update_present
     instrument('gql.performance.present.update_present') do
       UpdateInterface::Graph.new(self, present_graph).update_with(scenario.update_statements_present)
-      scenario.inputs_present.each { |input, value| present.query(input, value) }
+      scenario.inputs_present.each { |input, value| update_graph(present, input, value) }
     end
   end
 
   def update_future
     instrument('gql.performance.future.update_future') do
-      scenario.inputs_before.each { |input, value| future.query(input, value) }
+      scenario.inputs_before.each { |input, value| update_graph(future, input, value) }
       UpdateInterface::Graph.new(self, future_graph).update_with(scenario.update_statements)
-      scenario.inputs_future.each { |input, value| future.query(input, value) }
+      scenario.inputs_future.each { |input, value| update_graph(future, input, value) }
     end
+  end
+
+  def update_graph(graph, input, value)
+    graph.query(input, value)
   end
 
   # Standard query without modifiers. Queries present and future graph.
