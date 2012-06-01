@@ -7,6 +7,64 @@ end
 
 namespace :gql do
 
+  namespace :check do
+    desc 'Check if inputs run.'
+    task :inputs => :environment do
+      init_environment
+      exceptions = {}
+      
+      gql = unprepared_gql
+      Input.all.each do |input|
+        begin
+          gql.update_graph(gql.future, input, 3.0)
+        rescue => e
+          exceptions[input] = e
+        end
+      end
+      
+      puts "=" * 20
+      if exceptions.empty?
+        puts "All inputs completed" 
+      else
+        exceptions.each do |input, e|
+          puts "# #{input.key}"
+          puts e.message
+          puts "-" * 20
+        end
+        puts "=" * 20
+        puts "Failed: #{exceptions.keys.map(&:key).join(', ')}"
+      end
+    end
+
+    desc 'Check if gqueries run.'
+    task :gqueries => :environment do
+      init_environment
+      exceptions = {}
+      
+      gql = prepared_gql
+      Gquery.all.each do |gquery|
+        begin
+          gql.query(gquery)
+        rescue => e
+          exceptions[gquery] = e
+        end
+      end
+      
+      puts "=" * 20
+      if exceptions.empty?
+        puts "All inputs completed" 
+      else
+        exceptions.each do |gquery, e|
+          puts "# #{gquery.key}"
+          puts e.message
+          puts "-" * 20
+        end
+        puts "=" * 20
+        puts "Failed: #{exceptions.keys.map(&:key).join(', ')}"
+      end
+    end
+  end
+
   task :future => :environment do
     init_environment
     gql.future.rubel.console
@@ -22,6 +80,20 @@ namespace :gql do
     gql(:debug => true).future.rubel.console
   end
 
+  task :performance => :environment do
+    init_environment
+    g = gql
+    Gquery.all.each do |gquery|
+      begin
+        puts gquery.key
+        g.query(gquery)
+      rescue => e
+        puts 'rescue'
+        #binding.pry
+      end
+    end
+  end
+
   task :dataset => :environment do
     gql = unprepared_gql
     hsh = Etsource::Loader.instance.raw_hash(gql.scenario.area_code)
@@ -30,6 +102,7 @@ namespace :gql do
 
   def init_environment
     GC.disable
+    Rails.cache.clear
     # Use etsource git repository per default
     # Use different directory by passing ETSOURCE_DIR=...
     unless ENV['ETSOURCE_DIR']
@@ -46,6 +119,7 @@ namespace :gql do
     gql.sandbox_mode = :console
     gql
   end
+  alias prepared_gql gql
 
   # Loads the gql.
   def unprepared_gql
