@@ -222,6 +222,9 @@ class ConverterApi
   # dataset attributes of converter
   dataset_accessors [:preset_demand, :demand]
 
+  # optimization for flatten
+  attr_reader :to_ary
+
   # ConverterApi has same accessor as it's converter
   def self.dataset_group
     @dataset_group ||= Qernel::Converter.dataset_group
