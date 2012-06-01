@@ -40,8 +40,9 @@ module Qernel::WouterDance::Base
           # link_share = (1.0 - total_link_shares) / valid_links.length
           link_share = 1.0
         end
-        if link_share == 0.0 # or link_share.nil? # uncomment if not already checked above.
-          0.0
+
+        if link_share == 0.0
+          0.0 # just return 0.0 without doing complicated stuff below
         else
           # we have to multiply the share with the conversion of the corresponding slot
           # to deal with following scenario:
