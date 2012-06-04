@@ -4,14 +4,14 @@ class Qernel::ConverterApi
       simult_we *
       electricity_input_conversion *
       typical_electricity_production_capacity *
-      share_of_households_useful_demand_for_space_heating_after_insulation
+      number_of_units
     end
   end
   attributes_required_for :heating_peak_load_delta, [  
     :simult_we,
     :electricity_input_conversion,
     :typical_electricity_production_capacity,
-    :share_of_households_useful_demand_for_space_heating_after_insulation
+    :number_of_units
   ]
 
   ##
