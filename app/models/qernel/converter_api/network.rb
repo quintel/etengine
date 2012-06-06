@@ -1,20 +1,4 @@
 class Qernel::ConverterApi
-  def heating_peak_load_delta
-    dataset_fetch_handle_nil(:heating_peak_load_delta) do
-      simult_we *
-      electricity_input_conversion *
-      typical_electricity_production_capacity *
-      number_of_units
-    end
-  end
-  attributes_required_for :heating_peak_load_delta, [  
-    :simult_we,
-    :electricity_input_conversion,
-    :typical_electricity_production_capacity,
-    :number_of_units
-  ]
-
-  ##
   # TODO: change delta_in_capacity_in_mj_s to delta_in_capacity_in_mw in queries
   def delta_in_capacity_in_mw
     dataset_fetch_handle_nil(:delta_in_capacity_in_mw) do
