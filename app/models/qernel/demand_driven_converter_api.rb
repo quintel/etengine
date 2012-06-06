@@ -51,7 +51,8 @@ module Qernel
     def number_of_units
       dataset_fetch_handle_nil :number_of_units do
         heat_links = converter.output_links.select do |link|
-          link.carrier && link.carrier.key == :useable_heat
+          link.carrier && ( link.carrier.key == :useable_heat ||
+                            link.carrier.key == :steam_hot_water )
         end
 
         return 0.0 if heat_links.empty?
