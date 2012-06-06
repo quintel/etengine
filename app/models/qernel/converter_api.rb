@@ -201,8 +201,6 @@ class ConverterApi
     :cost => {
       :initial_investment_excl_ccs_per_unit => ['Initial investment (excl CCS)', 'euro'],
       :additional_investment_ccs_per_unit => ['Additional inititial investment for CCS', 'euro'],
-      :cost_of_installing_per_unit => ['Cost of installing','euro'],
-      :residual_value_per_unit => ['Residual value after lifetime','euro'],
       :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
       :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
       :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs (excl CCS)', 'euro / full load hour'],
@@ -243,6 +241,9 @@ class ConverterApi
       ConverterApi.new(converter)
     end
   end
+
+  # optimization for flatten
+  attr_reader :to_ary
 
   # ConverterApi has same accessor as it's converter
   def self.dataset_group
