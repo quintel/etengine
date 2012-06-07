@@ -65,19 +65,64 @@ namespace :gql do
     end
   end
 
+  desc 'GQL Console for future (alias g:f)'
   task :future => :environment do
     init_environment
-    gql.future.rubel.console
+    prepared_gql.future.rubel.console
   end
 
+  desc 'GQL Console for present (alias g:p)'
   task :present => :environment do
     init_environment
-    gql.present.rubel.console
+    prepared_gql.present.rubel.console
   end
 
+  desc 'GQL Console that allows to run update statements.'
   task :debug => :environment do
     init_environment
-    gql(:debug => true).future.rubel.console
+    prepared_gql(:debug => true).future.rubel.console
+  end
+
+  desc 'Run all turk files'
+  task :test => :environment do
+    base_dir = Etsource::Base.instance.base_dir
+    puts "* looking for turks in: #{base_dir}"
+    Dir.glob(base_dir+"/**/mechanical_turk").each do |turk_dir|
+      base_dir = Pathname.new(turk_dir).parent
+      puts ""
+      puts "* testing #{turk_dir} in #{base_dir}\n"
+      system "ETSOURCE_DIR='#{base_dir}' bin/rspec #{turk_dir}"
+    end
+  end
+  
+  namespace :test do
+    desc 'Update turk files (for other areas use AREA_CODE=nl)'
+    task :update => :environment do
+      init_environment
+      
+      turk_dir        = Etsource::Base.instance.base_dir+"/mechanical_turk"
+      output_path     = turk_dir+"/generated"
+      included_groups = %w[output_elements_dashboard mechanical_turk]
+      
+      # instance variables (@) are used in the ERB
+      @gqueries  = Gquery.all.select{|g| included_groups.include?(g.gquery_group.andand.group_key) }
+      
+      Dir.glob(output_path+"/scenario_definitions/*.yml").each do |yml_file|
+        path     = Pathname.new(yml_file)
+        
+        scenario   = Scenario.create_from_file(yml_file)
+        @gql       = scenario.gql(prepare: true)
+        @area_code = scenario.area_code
+
+        template_path = 'lib/templates/mechanical_turk_spec.erb'
+        file_path     = output_path+"/#{path.basename.to_s.split('.').first}_spec.rb"
+        
+        File.open(file_path, 'w') do |f|
+          f.write ERB.new(File.read(template_path)).result( binding )
+        end
+      end
+      
+    end
   end
 
   task :performance => :environment do
@@ -89,11 +134,11 @@ namespace :gql do
         g.query(gquery)
       rescue => e
         puts 'rescue'
-        #binding.pry
       end
     end
   end
 
+  desc 'Dump a dataset for debugging datasets.'
   task :dataset => :environment do
     gql = unprepared_gql
     hsh = Etsource::Loader.instance.raw_hash(gql.scenario.area_code)
@@ -112,30 +157,33 @@ namespace :gql do
     puts "** Using: #{Etsource::Base.instance.export_dir}"
   end
 
-  def gql(options = {})
+  def prepared_gql(options = {})
     gql = unprepared_gql
     gql.future.rubel.pry if options[:debug] == true
     gql.prepare
     gql.sandbox_mode = :console
     gql
   end
-  alias prepared_gql gql
 
   # Loads the gql.
   def unprepared_gql
-    Rails.cache.clear
+    NastyCache.instance.expire!
 
+    gql = load_scenario.gql(prepare: false)
+    gql.sandbox_mode = :console
+    gql.init_datasets
+    # omit gql.prepare
+    # omit gql.calculate
+    gql
+  end
+
+  def load_scenario
     if settings = load_settings
       settings = settings[:settings].with_indifferent_access
       scenario = Scenario.new(Scenario.new_attributes(settings))
     else
       scenario = Scenario.default
     end
-
-    gql = scenario.gql(prepare: false)
-    gql.sandbox_mode = :console
-    gql.init_datasets
-    gql
   end
 
   def load_settings

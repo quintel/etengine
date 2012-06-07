@@ -52,6 +52,7 @@ Spork.prefork do
     config.include(Webrat::Matchers)
     config.include(Authlogic::TestCase)
     config.include(EtmAuthHelper)
+    config.include(MechanicalTurkHelper)
   end
 
 end
