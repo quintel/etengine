@@ -1,0 +1,31 @@
+# This is an auto-generated files.
+# You can overwrite by running in the etengine path:
+#   $ rake gql:test:generate
+#
+# You can overwrite the tolerance percentage:
+#   $ rake gql:test TOLERANCE=1 
+# A test will pass if the result is within 1 percent (default 3).
+#
+# The template resides in:
+#   lib/templates/mechanical_turk_spec.erb
+
+require 'spec_helper'
+
+describe "<%= @area_code %>" do
+  context "without any updates" do
+    TOLERANCE = ENV.fetch('TOLERANCE', 3.0) # 3%
+    
+    before :all do
+      load_gql
+    end
+
+    <% @gqueries.each do |gquery| 
+      present = @gql.query(gquery).present_value.inspect
+      future = @gql.query(gquery).future_value.inspect %>
+    it "check <%= gquery.key %>" do
+      @present.<%= gquery.key %>.should be_within(<%= present %>, TOLERANCE)
+      @future.<%= gquery.key %>.should be_within(<%= future %>, TOLERANCE)
+    end
+    <% end %>
+  end
+end
