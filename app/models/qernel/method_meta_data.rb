@@ -48,23 +48,6 @@ module MethodMetaData
 
 
   module ClassMethods
-      # Tree of all the methods and attributes used for a specific attribute/mathod method_name
-    #
-    # @param method_name [Symbol] the attribute/method to inspect
-    # @return [<attr_name,[attr_name]>]
-    #
-    def involved_attributes(method_name)
-      if instance_methods.include?("#{method_name}=")
-        method_name
-      else
-        arr = required_attributes_for_method(method_name.to_sym).map do |involved_method_name|
-          involved_attributes(involved_method_name)
-        end
-        arr.unshift(method_name)
-        arr
-      end
-    end
-
     def register_calculation_method(keys)
       registered_calculation_methods = [registered_calculation_methods, keys].flatten
     end

@@ -71,12 +71,14 @@ module Gql::Grammar
       define_method :foo do rubel_base.ALL().first; end
       define_method :bar do rubel_base.ALL().second; end
 
+      # add gquery and converter keys
       keys = [
         rubel_base.ALL().map(&:full_key),
         Gquery.all.map(&:key),
       ].flatten.
         map(&:to_sym) # really make sure keys are symbols
 
+      # create methods so pry autocompletes
       keys.each do |key|
         define_method key do
           key
