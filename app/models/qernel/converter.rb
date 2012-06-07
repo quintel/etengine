@@ -7,12 +7,12 @@ module Qernel
 # the calculation. This way we can access if a converter is assigned
 # a demand or not.
 #
-# Assigning preset_demand will also assign the same value to demand.
+# Assigning preset_demand will also assign the same value to demand. 
 # BUT as values are lazy-requested through dataset_attribute we have
-# to make sure that in the dataset the :preset_demand is also copied
-# to :demand
-#
-# e.g.
+# to make sure that in the dataset the :preset_demand is also copied 
+# to :demand 
+# 
+# e.g. 
 #   {:preset_demand => 1}
 #   dataset_get(:preset_demand) # => 1
 #   dataset_get(:demand) # => nil
@@ -20,23 +20,23 @@ module Qernel
 #   {:preset_demand => 1, :demand => 1}
 #   dataset_get(:preset_demand) # => 1
 #   dataset_get(:demand) # => 1
-#
+# 
 # We do this in ConverterData < ActiveRecord::Base
 #
 # Also note that some update statements modify preset_demand, rather then
 # demand.
 #
 # === Description
-#
+# 
 # The trouble is that municipalities can decide to build wind mills, but
-# the national scenario can have a certain amount of wind mills as well.
+# the national scenario can have a certain amount of wind mills as well. 
 #
-# E.g. Municipality of Amsterdam wants to build 200 windmills, but The
-# Netherlands also has 2.000 windmills. Total is 2.200 windmills, but they
-# can only adjust the 200. Furthermore, sometimes you want to adjust the
-# national scenario (you wanna change the 2.000), and sometimes you wanna
-# change the 200. So, in fact sometimes you wanna use two sliders for the
-# same converter, one that keeps track of the 'national' windmills, and
+# E.g. Municipality of Amsterdam wants to build 200 windmills, but The 
+# Netherlands also has 2.000 windmills. Total is 2.200 windmills, but they 
+# can only adjust the 200. Furthermore, sometimes you want to adjust the 
+# national scenario (you wanna change the 2.000), and sometimes you wanna 
+# change the 200. So, in fact sometimes you wanna use two sliders for the 
+# same converter, one that keeps track of the 'national' windmills, and 
 # another that keeps track of the 'municipality' windmills.
 #
 #
@@ -110,14 +110,14 @@ class Converter
     9 => :neighbor
   }
 
-  attr_reader  :id,
-               :code,
-               :output_links,
-               :input_links,
-               :groups,
-               :full_key,
-               :sector_key,
-               :use_key,
+  attr_reader  :id, 
+               :code, 
+               :output_links, 
+               :input_links, 
+               :groups, 
+               :full_key, 
+               :sector_key, 
+               :use_key, 
                :energy_balance_group
 
   attr_accessor :converter_api, :key, :graph
@@ -157,7 +157,7 @@ class Converter
   #
   def initialize(opts)
     if !(opts.include?(:id) || opts.include?(:code))
-      raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new")
+      raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new") 
     end
 
     @id         = opts[:id] || Hashpipe.hash(opts[:code])
@@ -212,7 +212,7 @@ public
 
   # Set the graph so that we can access other  parts.
   #
-  def graph=(graph)
+  def graph=(graph) 
     @graph = graph
     self.converter_api.graph = @graph
     self.converter_api.area = @graph.area
@@ -222,7 +222,7 @@ public
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
-    dataset_set(:preset_demand, safe_to_f(val))
+    dataset_set(:preset_demand, safe_to_f(val)) 
     update_initial_demand
   end
 
@@ -233,8 +233,8 @@ public
   # Just calling to_f, would give wrong results nil.to_f => 0.0
   # But we also want to convert it to a float in case its an int.
   #
-  # @param [Float, nil]
-  # @return [Float, nil]
+  # @param [Float, nil] 
+  # @return [Float, nil] 
   #
   def safe_to_f(val)
     val.nil? ? nil : val.to_f
@@ -276,7 +276,7 @@ public
 
 
   # --------- Traversal -------------------------------------------------------
-
+  
   # typically loops contain an inversed_flexible (left) and a flexible (rgt) to
   # the same converter, and helps to only have positive energy flows.
   def has_loop?
@@ -343,7 +343,7 @@ public
     carrier = carrier.key if carrier.respond_to?(:key)
     output_hash[carrier]
   end
-
+  
 protected
 
   # Hash of input slots, with the carrier keys as keys and slots as values
@@ -399,12 +399,12 @@ public
     # Constant links are treated differently.
     # They can overwrite the preset_demand of this converter
     output_links.select(&:constant?).each(&:calculate)
-
+    
     # this is an attempt to solve this issue
     # https://github.com/dennisschoenmakers/etengine/issues/258
-    input_links.select(&:constant?).each(&:calculate) if output_links.any?(&:inversed_flexible?)
+    input_links.select(&:constant?).each(&:calculate) if output_links.any?(&:inversed_flexible?)      
 
-    # If the demand is already set (is not nil), do not overwrite it.
+    # If the demand is already set (is not nil), do not overwrite it. 
     if self.demand.nil?
       self.demand ||= update_demand
     end # Demand is set
@@ -449,9 +449,9 @@ protected
   # It is needed to call this method everytime
   # we update either preset_demand, because
   # both attributes can be updated through GQL, we have to make
-  # sure to always sum both values.
+  # sure to always sum both values. 
   #
-  # @return [Float] demand
+  # @return [Float] demand 
   #
   def update_initial_demand
     @calculation_state = :update_initial_demand
@@ -504,8 +504,8 @@ public
   end
   alias_method :proxy, :query
 
-  # Sort of a hack, because we sometimes call converter on a
-  # converter_api object, to get the converter.
+  # Sort of a hack, because we sometimes call converter on a 
+  # converter_api object, to get the converter. 
   # Should actually be removed and made proper when we have time.
   #
   def converter
@@ -521,10 +521,6 @@ public
 
   def name
     code
-  end
-
-  def label_for_layout_chart
-    code.to_s.split('_', 2).last #rescue code
   end
 
   def to_s
