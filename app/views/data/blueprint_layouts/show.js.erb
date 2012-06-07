@@ -11,28 +11,28 @@ converters.each do |converter|
   position = @converter_positions[converter.excel_id]
   position ||= ConverterPosition.new(:converter_id => converter.excel_id)
   if converter
-    params = [converter.excel_id,
+    params = [converter.excel_id, 
               converter.key.to_s,
               position[:x] || 100,
               position.y_or_default(converter),
               converter.sector_key.to_s,
               converter.use_key.to_s,
-              converter.label_for_layout_chart]
+              converter.key.to_s]
     params << (position.hidden == true)
     params << position.fill_color(converter)
     params << position.stroke_color(converter)
   end
 -%>
 <%= "new Converter(#{js_params(params)});".html_safe %>
-<% end %>
+<% end %>      
 
 
-<% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link|
+<% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link| 
   if converter_keys.include?(link.parent.excel_id) and converter_keys.include?(link.child.excel_id)
     params = [
-      link.child .excel_id,
-      link.parent.excel_id,
-      (link.carrier.graphviz_color || '#999'),
+      link.child .excel_id, 
+      link.parent.excel_id, 
+      (link.carrier.graphviz_color || '#999'), 
       '1|-'   #"1|#{link.link_style}"
     ]
     -%>
