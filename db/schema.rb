@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120507115216) do
+ActiveRecord::Schema.define(:version => 20120608085304) do
 
   create_table "areas", :force => true do |t|
     t.string   "country"
@@ -176,14 +176,6 @@ ActiveRecord::Schema.define(:version => 20120507115216) do
   end
 
   add_index "groups", ["group_id"], :name => "index_groups_on_group_id"
-
-  create_table "input_tool_forms", :force => true do |t|
-    t.string   "area_code"
-    t.string   "code"
-    t.text     "values"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "inputs", :force => true do |t|
     t.string   "name"
