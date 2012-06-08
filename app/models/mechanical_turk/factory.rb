@@ -5,7 +5,7 @@ module MechanicalTurk
     end
 
     def settings_for_load_gql
-      settings.slice(:area_code, :end_year).map do |key, value|
+      settings.slice(:area_code, :end_year, :use_fce).map do |key, value|
         "#{key}: #{value.inspect}"
       end.join(", ")
     end
