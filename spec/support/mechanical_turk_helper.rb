@@ -3,6 +3,7 @@ module MechanicalTurkHelper
     attr_reader :query_interface
 
     def initialize(query_interface)
+      @_memo = {}
       @query_interface = query_interface
     end
     
@@ -11,7 +12,7 @@ module MechanicalTurkHelper
     end
 
     def custom(query)
-      query_interface.query(query)
+      @_memo[query] ||= query_interface.query(query)
     end
 
     def custom_update(query, value)
@@ -19,9 +20,37 @@ module MechanicalTurkHelper
       move_slider(input, value)
     end
     
+    def execute(query)
+      if query.include?("(")
+        custom(query)
+      else
+        custom("Q(#{query})")
+      end
+    end
+
     def method_missing(name, *args)
       custom("Q(#{name})")
     end
+  end
+
+  def some_tolerance
+    @some_tolerance ||= ENV.fetch('TOLERANCE', 3.0)
+  end
+
+  def the_present
+    @present.execute(example.description)
+  end
+
+  def the_future
+    @future.execute(example.description)
+  end
+
+  def the_relative_increase
+    ((the_future / the_present) - 1.0) * 100.0
+  end
+
+  def the_absolute_increase
+    the_future - the_present
   end
 
   def load_gql(options = {}, &block)

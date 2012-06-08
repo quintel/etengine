@@ -42,6 +42,10 @@ Etm::Application.routes.draw do
     end
   end
 
+  namespace :mechanical_turk do
+    resource :factory, :only => [:new, :create, :show]
+  end
+
   namespace :data do
     root :to => "pages#index", :api_scenario_id => 'latest'
 

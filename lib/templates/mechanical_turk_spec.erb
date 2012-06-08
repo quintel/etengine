@@ -13,8 +13,6 @@ require 'spec_helper'
 
 describe "<%= @area_code %>" do
   context "without any updates" do
-    TOLERANCE = ENV.fetch('TOLERANCE', 3.0) # 3%
-    
     before :all do
       load_gql
     end
@@ -22,9 +20,9 @@ describe "<%= @area_code %>" do
     <% @gqueries.each do |gquery| 
       present = @gql.query(gquery).present_value.inspect
       future = @gql.query(gquery).future_value.inspect %>
-    it "check <%= gquery.key %>" do
-      @present.<%= gquery.key %>.should be_within(<%= present %>, TOLERANCE)
-      @future.<%= gquery.key %>.should be_within(<%= future %>, TOLERANCE)
+    it "<%= gquery.key %>" do
+      the_present.should be_within(<%= present %>, some_tolerance)
+      the_future.should be_within(<%= future %>,   some_tolerance)
     end
     <% end %>
   end
