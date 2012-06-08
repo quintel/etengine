@@ -6,7 +6,6 @@ if ENV["COVERAGE"]
     add_group "ETsource", "app/models/etsource"
     add_group "Qernel", "app/models/qernel"
     add_group "GQL", "app/models/gql"
-    #add_group "InputTool", "app/models/input_tool"
     #add_group "Controllers", "app/controllers"
   end  
 end

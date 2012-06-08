@@ -4,13 +4,11 @@ module Etsource
   class Base
     include Singleton
 
-    attr_accessor :base_dir, :cache_dataset, :load_wizards, :cache_topology,
-                  :export_dir
+    attr_accessor :base_dir, :cache_dataset, :cache_topology, :export_dir
 
     def initialize
       @base_dir       = ETSOURCE_DIR
       @export_dir     = ETSOURCE_EXPORT_DIR.gsub(/\/$/, '')
-      @load_wizards   = APP_CONFIG.fetch(:etsource_load_wizards,  false)
       @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
       @cache_dataset  = APP_CONFIG.fetch(:etsource_cache_dataset, true)
       @git = Git.open @base_dir
@@ -20,13 +18,6 @@ module Etsource
       instance.base_dir   = base_dir if base_dir
       instance.export_dir = base_dir if base_dir
       Loader.instance
-    end
-
-    # Should ETsource::Wizards be included?
-    # true:  this makes the input_module work.
-    # false: turn off to make sure the ETengine is not affected by the input_module
-    def load_wizards?
-      @load_wizards
     end
 
     # If you work on the input module, this disables caching and will
