@@ -4,7 +4,7 @@ module MechanicalTurk
       @data = JSON.parse(json)
     end
 
-    def settings_for_load_gql
+    def settings_for_load_scenario
       settings.slice(:area_code, :end_year, :use_fce).map do |key, value|
         "#{key}: #{value.inspect}"
       end.join(", ")
