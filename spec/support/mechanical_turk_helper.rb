@@ -46,14 +46,14 @@ module MechanicalTurkHelper
   end
 
   def the_relative_increase
-    (((the_future / the_present) - 1.0) * 100.0).round(0)
+    (((the_future / the_present) - 1.0) * 100.0).round(1)
   end
 
   def the_absolute_increase
     (the_future - the_present).round(1)
   end
 
-  def load_gql(options = {}, &block)
+  def load_scenario(options = {}, &block)
     NastyCache.instance.expire!
     @scenario = Scenario.new(Scenario.default_attributes.merge options)
     @scenario.build_update_statements
@@ -69,7 +69,7 @@ module MechanicalTurkHelper
   def move_slider(id, value)
     if input = Input.get(id)
       @gql.update_graph(@gql.future, input, value) if input.updates_future?
-      #@scenario.inputs_present[input] = value.to_s if input.updates_present?
+      @gql.update_graph(@gql.present, input, value) if input.updates_present?
     else
       puts "No input found with id #{id.inspect}"
     end
