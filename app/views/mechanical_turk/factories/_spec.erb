@@ -4,7 +4,7 @@ describe "untitled" do
   before :all do
     load_gql(<%= @turkey_factory.settings_for_load_gql %>) do
     <% @turkey_factory.settings['user_values'].andand.each do |id, value| %>
-      move_slider <%= id %>, <%= value %>
+      move_slider <%= id %>, <%= value %>       # <%= Input.get(id).key %>
     <% end %>
     end
   end
