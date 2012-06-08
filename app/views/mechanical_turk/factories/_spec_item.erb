@@ -3,7 +3,7 @@
   result  ||= @result
   present = result.first.last.round(3)
   future  = result.last.last.round(3)
-  delta   = (future - present).round(3)
+  delta   = (future - present).round(1)
   change  = (((future / present) - 1.0) * 100.0).round(1)
   # WHITESPACE is significant to have nice output
 %>

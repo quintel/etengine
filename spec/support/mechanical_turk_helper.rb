@@ -46,11 +46,11 @@ module MechanicalTurkHelper
   end
 
   def the_relative_increase
-    ((the_future / the_present) - 1.0) * 100.0
+    (((the_future / the_present) - 1.0) * 100.0).round(1)
   end
 
   def the_absolute_increase
-    the_future - the_present
+    (the_future - the_present).round(1)
   end
 
   def load_gql(options = {}, &block)
