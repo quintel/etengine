@@ -21,7 +21,7 @@ module Gql::QueryInterface::Lookup
   end
   
   def scenario
-    Current.scenario
+    @gql.scenario
   end
 
   # @param [String] Graph API Method.
