@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe Api::V3::ConvertersController do
   before do
-    @converter = Converter.new(:key => 'foobar')
+    scenario = Scenario.new
+    @converter = Api::V3::Converter.new('foobar', scenario)
   end
 
   describe "GET show.json" do
