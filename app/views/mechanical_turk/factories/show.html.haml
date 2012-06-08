@@ -1,2 +1,5 @@
 
-%pre.prettyprint= render :partial => 'spec'
+%p
+  = link_to_function 'Copy to Clipboard', '$("#spec_clipboard").val($("#spec").text()); $("#spec_clipboard")[0].select(); alert("Now click OK, then press Cmd+C");'
+  %textarea#spec_clipboard{:style => "position:absolute; left: -500px"}
+%pre#spec.prettyprint= render :partial => 'spec'
