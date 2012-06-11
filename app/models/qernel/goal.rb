@@ -7,17 +7,21 @@ module Qernel
     def initialize(key)
       self.key = key.to_sym
     end
-     
+
     def is_set?
       !user_value.nil?
     end
-    
+
     # GQL updates assign values using the array syntax
     # See gql_expression.rb
-    # 
+    #
     def []=(attr_name, value)
       writer_method = "#{attr_name}="
       send(writer_method, value) if respond_to?(writer_method)
+    end
+
+    def [](attr_name)
+      send(attr_name) if respond_to?(attr_name)
     end
   end
 end
