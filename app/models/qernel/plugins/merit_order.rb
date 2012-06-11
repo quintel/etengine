@@ -76,7 +76,15 @@ module Qernel::Plugins
           converter_keys.map do |key|
             converter = converter(key)
             raise "merit_order: no converter found with key: #{key.inspect}" unless converter
-            converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
+            begin
+              converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
+            rescue
+              # We've been getting errors with nil attributes. Debug info
+              debug = [:mw_input_capacity, :electricity_output_conversion, :availability].map do |a|
+                "#{a}: #{converter.query.send a}"
+              end.join "\n"
+              raise "Error with converter #{key}: #{debug}"
+            end
           end.sum.round(1)
         end
       end
