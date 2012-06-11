@@ -56,8 +56,10 @@ module MechanicalTurkHelper
   def load_scenario(options = {}, &block)
     NastyCache.instance.expire!
     @scenario = Scenario.new(Scenario.default_attributes.merge options)
+    Current.scenario = @scenario
     @scenario.build_update_statements
     @gql = @scenario.gql(prepare: false)
+    # @gql.sandbox_mode = :console
     @gql.init_datasets
     @future  = GqlTester.new(@gql.future)
     @present = GqlTester.new(@gql.present)
@@ -66,12 +68,16 @@ module MechanicalTurkHelper
     @gql.calculate_graphs
   end
 
-  def move_slider(id, value)
-    if input = Input.get(id)
-      @gql.update_graph(@gql.future, input, value) if input.updates_future?
-      @gql.update_graph(@gql.present, input, value) if input.updates_present?
-    else
-      puts "No input found with id #{id.inspect}"
-    end
+  # when passing a dynamically created input, make sure
+  # to assign lookup_id and update_period.
+  def move_slider(input, value)
+    input = case input
+            when Input then input
+            when Numeric then Input.get(id)
+            end
+
+    @gql.update_graph(@gql.future,  input, value) if input.updates_future?
+    @gql.update_graph(@gql.present, input, value) if input.updates_present?
+    
   end
 end
