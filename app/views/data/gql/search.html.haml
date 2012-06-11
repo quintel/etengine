@@ -9,7 +9,7 @@
 
 - if @q
   %h3
-    Total: #{pluralize(@gqueries.size + @inputs.size + @query_table_cells.size, 'result')} / 
+    Total: #{pluralize(@gqueries.size + @inputs.size + @query_table_cells.size, 'result')} /
     Inputs: #{pluralize @inputs.size, 'item'} /
     GQueries: #{pluralize @gqueries.size, 'item'} /
     QueryTableCells: #{pluralize @query_table_cells.size, 'item'}
@@ -20,17 +20,15 @@
       %tr
         %th{:colspan => 4} GQueries
       %tr
-        %th Id
         %th Key
         %th Query
         %th Deprecated key
     %tbody
       - @gqueries.each do |g|
         %tr
-          %td= link_to g.id, data_gquery_path(:id => g.id)
-          %td= highlight(g.key, @q)
+          %td= link_to highlight(g.key, @q), data_gquery_path(:id => g.key)
           %td= highlight(g.query, @q)
-          %td= highlight(g.deprecated_key, @q)
+          %td= highlight(g.deprecated_key, @q) if g.deprecated_key
 - if @inputs.any?
   %table
     %thead
