@@ -37,18 +37,16 @@ module Gql::Grammar
 
           if object
             scope.update_object = object # for UPDATE_OBJECT()
-
-            input_value = input_value_proc.respond_to?(:call) ? input_value_proc.call : input_value_proc
-            input_value = input_value.first      if input_value.is_a?(::Array)
+            input_value    = input_value_proc.respond_to?(:call) ? input_value_proc.call : input_value_proc
+            input_value    = input_value.first if input_value.is_a?(::Array)
+            original_value = big_decimal(object[attribute_name].to_s)
 
             object[attribute_name] = case update_strategy
             when :absolute then input_value
             when :relative_total
-              cur_value = big_decimal(object[attribute_name].to_s)
-              cur_value + (cur_value * input_value)
+              original_value + (original_value * input_value)
             when :relative_per_year
-              cur_value = big_decimal(object[attribute_name].to_s)
-              cur_value * ((1.0 + input_value) ** scope.scenario.years)
+              original_value * ((1.0 + input_value) ** scope.scenario.years)
             end.to_f
           else
             # this will not execute...
