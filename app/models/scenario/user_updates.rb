@@ -177,7 +177,6 @@ module Scenario::UserUpdates
   def store_user_value(input, value)
     key = input.lookup_id
     self.user_values.merge! key => value
-    # touch(:present_updated_at) if input.updates_present?
     value
   end
 
@@ -195,12 +194,9 @@ module Scenario::UserUpdates
   end
 
   # Builds update_statements from user_values that are readable by the GQl.
-  #
-  #
-  # @untested 2010-12-06 seb
-  #
   def build_update_statements
-    user_values.each_pair do |id, value|
+    # Work on a clone of user_values, because we will merge into it again...
+    user_values.dup.each_pair do |id, value|
       build_update_statements_for_element(id, value)
     end
   end
