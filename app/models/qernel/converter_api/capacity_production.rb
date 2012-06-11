@@ -149,14 +149,20 @@ class Qernel::ConverterApi
   alias_method :electricity_production_in_mw, :installed_production_capacity_in_mw_electricity
 
   # The MW input capacity that is required to provide the demand.
+  #
+  # TODO:
+  # 11.6.2012: issues with some scenarios (beta 28291), for some reason this method
+  # returns nil. Temp fix to force-convert it to 0. CL+SB: please take a look at
+  # this ASAP - PZ
   def mw_input_capacity
-    dataset_fetch_handle_nil(:mw_input_capacity) do
+    out = dataset_fetch_handle_nil(:mw_input_capacity) do
       if full_load_seconds == 0.0
         0.0
       else
         demand / full_load_seconds
       end
     end
+    out || 0.0 # FIXME!
   end
   attributes_required_for :mw_input_capacity, [:demand, :full_load_seconds]
 
