@@ -1,0 +1,1 @@
+require 'mechanical_turk'

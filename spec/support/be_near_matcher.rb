@@ -30,10 +30,10 @@ RSpec::Matchers.define :be_within do |expected, percent|
       expected.respond_to?(:finite?) && !expected.finite?
     elsif !actual.respond_to?(:to_f)
       actual == expected
-    elsif actual.to_f == 0.0 && expected.to_f == 0.0
+    elsif actual.to_f == 0.0 && expected.to_f.abs < 0.001
       true
     else
-      ((1.0 - actual.to_f / expected) * 100.0).abs < percent
+      (((actual.to_f / expected) - 1.0) * 100.0).abs < percent
     end
   end
 

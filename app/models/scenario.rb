@@ -148,6 +148,14 @@ class Scenario < ActiveRecord::Base
     scenario
   end
 
+  # Creates a scenario from a yml_file. Used by mech turk.
+  def self.create_from_json(json_data)
+    settings = JSON.parse(json_data)['settings']
+    scenario = Scenario.default(settings)
+    scenario.build_update_statements
+    scenario
+  end
+
   def self.new_attributes(settings = {})
     settings ||= {}
     attributes = Scenario.default_attributes.merge(:title => "API")

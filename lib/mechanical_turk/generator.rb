@@ -1,17 +1,31 @@
 module MechanicalTurk
   class Generator
-    def initialize(json)
+    def initialize(json, custom_sections = nil)
       @data = JSON.parse(json)
+      if custom_sections == :all
+        @sections = {gqueries: results}
+      else
+        @sections = {charts: charts, dashboard: dashboard}
+      end
     end
 
     def settings_for_load_scenario
-      settings.slice(:area_code, :end_year, :use_fce).map do |key, value|
+      settings.slice(:area_code, :end_year, :use_fce, :scenario_id).map do |key, value|
         "#{key}: #{value.inspect}"
       end.join(", ")
     end
 
+    def render
+      av = ActionView::Base.new("#{Rails.root}/lib/mechanical_turk/templates")
+      av.render 'spec', generator: self
+    end
+
+    def sections
+      @sections
+    end
+
     def results
-      @data['result']
+      @data['result'] || {}
     end
 
     def custom

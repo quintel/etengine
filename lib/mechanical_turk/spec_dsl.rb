@@ -30,19 +30,21 @@ module MechanicalTurk
     end
 
     def the_relative_increase(cmd)
-      execute(cmd).relative_increase_percent
+      execute(cmd).relative_increase_percent.round(1)
     end
 
     def the_absolute_increase(cmd)
-      execute(cmd).absolute_increase
+      execute(cmd).absolute_increase.round(1)
     end
 
     def load_scenario(options = {}, &block)
       NastyCache.instance.expire!
-      @scenario = Scenario.new(Scenario.default_attributes.merge options)
-      Current.scenario = @scenario # DEBT. REMOVE Current.scenario!!
-      @scenario.build_update_statements
-      @gql = @scenario.gql(prepare: false)
+      
+      # DEBT. REMOVE Current.scenario!!
+      Current.scenario = scenario = Scenario.new(Scenario.default_attributes.merge options)
+      scenario.build_update_statements
+      @gql = scenario.gql(prepare: false)
+      
       @gql.init_datasets
       @gql.update_graphs
       instance_eval(&block) if block_given?
