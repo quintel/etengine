@@ -2,24 +2,22 @@ require 'spec_helper'
 
 describe "untitled" do
   before :all do
-    load_scenario(<%= @turkey_factory.settings_for_load_scenario %>) do
-    <% @turkey_factory.settings['user_values'].andand.each do |id, value| %>
+    load_scenario(<%= @generator.settings_for_load_scenario %>) do
+    <% @generator.settings['user_values'].andand.each do |id, value| %>
       move_slider <%= id %>, <%= value %>       # <%= Input.get(id).key %>
     <% end %>
     end
   end
 
   describe "charts" do
-    <% @turkey_factory.charts.each do |key, result| %>
+    <% @generator.charts.each do |key, result| %>
       <%= render :partial => 'spec_item', :locals => {key: key, result: result} %>
     <% end %>
   end  
 
   describe "dashboard" do
-    <% @turkey_factory.dashboard.each do |key, result| %>
+    <% @generator.dashboard.each do |key, result| %>
       <%= render :partial => 'spec_item', :locals => {key: key, result: result} %>
     <% end %>
-  end  
-  
-  
+  end
 end

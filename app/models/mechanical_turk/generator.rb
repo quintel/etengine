@@ -1,5 +1,5 @@
 module MechanicalTurk
-  class Factory
+  class Generator
     def initialize(json)
       @data = JSON.parse(json)
     end
