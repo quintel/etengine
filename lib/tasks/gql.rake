@@ -97,25 +97,22 @@ namespace :gql do
     task :update => :environment do
       init_environment
       
-      turk_dir        = Etsource::Base.instance.base_dir+"/mechanical_turk"
-      output_path     = turk_dir+"/generated"
+      output_path     = Etsource::Base.instance.base_dir+"/mechanical_turk/generated"
       included_groups = %w[output_elements_dashboard mechanical_turk]
       
       # instance variables (@) are used in the ERB
       @gqueries  = Gquery.all.select{|g| included_groups.include?(g.gquery_group.andand.group_key) }
       
       Dir.glob(output_path+"/scenario_definitions/*.yml").each do |yml_file|
-        path     = Pathname.new(yml_file)
-        
-        scenario   = Scenario.create_from_file(yml_file)
-        @gql       = scenario.gql(prepare: true)
-        @area_code = scenario.area_code
-
-        template_path = 'lib/templates/mechanical_turk_spec.erb'
+        path          = Pathname.new(yml_file)
+        settings      = YAML::load_file(yml_file).with_indifferent_access
+        settings[:id] = 'test'
+        api_response  = ApiRequest.response(settings).response
+        puts api_response.to_json
         file_path     = output_path+"/#{path.basename.to_s.split('.').first}_spec.rb"
         
         File.open(file_path, 'w') do |f|
-          f.write ERB.new(File.read(template_path)).result( binding )
+          f.write MechanicalTurk::Generator.new(api_response.to_json, :all).render
         end
       end
       
