@@ -31,6 +31,18 @@ class ResultSet < Array
     future.first
   end
 
+  def relative_increase_percent
+    ((future_value / present_value) - 1.0) * 100.0 rescue nil
+  end
+
+  def relative_increase
+    (future_value / present_value) - 1.0 rescue nil
+  end
+
+  def absolute_increase
+    future_value - present_value
+  end
+
   def results
     [present_value, future_value]
   end
