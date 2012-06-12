@@ -85,13 +85,10 @@ namespace :gql do
 
   desc 'Run all turk files'
   task :test => :environment do
-    base_dir = Etsource::Base.instance.base_dir
-    puts "* looking for turks in: #{base_dir}"
-    Dir.glob(base_dir+"/**/mechanical_turk").each do |turk_dir|
-      base_dir = Pathname.new(turk_dir).parent
-      puts ""
-      puts "* testing #{turk_dir} in #{base_dir}\n"
-      system "ETSOURCE_DIR='#{base_dir}' bin/rspec #{turk_dir}"
+    if filepath = ENV['FILE']
+      MechanicalTurk::Turk.new(filepath).run
+    else
+      MechanicalTurk::Turk.all.each(&:run)
     end
   end
   
