@@ -11,16 +11,7 @@ module MechanicalTurk
     end
 
     def run
-      puts "** #{rspec_command}"
-      system(rspec_command)
-    end
-
-    def rspec_command
-      "ETSOURCE_DIR='#{@etsource_dir}' #{rspec_binary} #{@filepath}"
-    end
-
-    def rspec_binary
-      File.exists?("bin/rspec") ? 'bin/rspec' : 'rspec'
+      Runner.new(self).run
     end
 
     def self.all
