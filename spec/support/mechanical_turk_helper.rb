@@ -38,10 +38,12 @@ module MechanicalTurkHelper
   end
 
   def the_present
+    lazy_load_calculate
     @present.execute(example.description)
   end
 
   def the_future
+    lazy_load_calculate
     @future.execute(example.description)
   end
 
@@ -51,6 +53,10 @@ module MechanicalTurkHelper
 
   def the_absolute_increase
     (the_future - the_present).round(1)
+  end
+
+  def lazy_load_calculate
+    @gql.calculate_graphs unless @gql.calculated?
   end
 
   def load_scenario(options = {}, &block)
@@ -65,7 +71,10 @@ module MechanicalTurkHelper
     @present = GqlTester.new(@gql.present)
     @gql.update_graphs
     instance_eval(&block) if block_given?
-    @gql.calculate_graphs
+    # lazy_load_calculate 
+    # Above is called when the first numbers are requested through the_future.
+    # this allows us to have custom sliders inside "should" do (This works
+    # when we initialize load_scenario inside before(:each) and not before(:all)
   end
 
   # when passing a dynamically created input, make sure
@@ -73,7 +82,7 @@ module MechanicalTurkHelper
   def move_slider(input, value)
     input = case input
             when Input then input
-            when Numeric then Input.get(id)
+            when Numeric then Input.get(input)
             end
 
     @gql.update_graph(@gql.future,  input, value) if input.updates_future?
