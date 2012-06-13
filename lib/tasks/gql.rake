@@ -106,8 +106,7 @@ namespace :gql do
         settings  = YAML::load_file(yml_file).with_indifferent_access
         response  = ApiRequest.response(settings.merge(id: 'test').dup).response
 
-        file_path = output_path+"/#{path.basename.to_s.split('.').first}_spec.rb"
-        
+        file_path = output_path+"/#{path.basename.to_s.split('.').first}_spec.rb"        
         File.open(file_path, 'w') do |f|
           f.write MechanicalTurk::Generator.new(response.to_json, :all).render
         end

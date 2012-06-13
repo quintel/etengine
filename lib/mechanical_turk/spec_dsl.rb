@@ -65,8 +65,8 @@ module MechanicalTurk
       @gql = scenario.gql(prepare: false)
       
       @gql.init_datasets
-      @gql.update_graphs
       instance_eval(&block) if block_given?
+      @gql.update_graphs
       # self.lazy_load_calculate 
       # Above is called when the first numbers are requested through the_future.
       # this allows us to have custom sliders inside "should" do (This works
@@ -83,8 +83,7 @@ module MechanicalTurk
 
       if input
         @user_values_log[input.id] = value
-        @gql.update_graph(@gql.future,  input, value) if input.updates_future?
-        @gql.update_graph(@gql.present, input, value) if input.updates_present?
+        scenario.update_input(input, value)
       else
         puts "no input found with id #{id.inspect}" 
       end
