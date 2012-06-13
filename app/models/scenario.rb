@@ -119,27 +119,6 @@ class Scenario < ActiveRecord::Base
     end_year - start_year
   end
 
-  # returns a hash with the user_values pairs that reference missing inputs
-  #
-  def invalid_user_values
-    out = {}
-    user_values.each_pair do |input_id, value|
-      out[input_id] = value unless Input.find_by_id(input_id)
-    end
-    out
-  end
-
-  # removes invalid inputs from the user_values hash
-  #
-  def cleanup_user_values!
-    cleaned_up = user_values
-    invalid_user_values.keys.each do |input_id|
-      cleaned_up.delete(input_id)
-    end
-    self.user_values = cleaned_up
-    save!
-  end
-
   # Creates a scenario from a yml_file. Used by mech turk.
   def self.create_from_file(yml_file)
     settings = YAML::load(File.read(yml_file))['settings']
