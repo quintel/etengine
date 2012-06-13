@@ -15,6 +15,8 @@ gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
 gem 'jbuilder', :git => 'git://github.com/rails/jbuilder.git'
 
+gem 'rest-client'
+
 # pry is needed in production for the gql:console
 gem 'pry', '~> 0.9.9.3'
 
