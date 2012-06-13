@@ -8,16 +8,14 @@
   - opts = Etsource::Dataset.region_codes
   = select_tag 'area_code', options_for_select(opts), :include_blank => true
 
-
-  
 - content_for :footer do
   :javascript
     $("#api_scenario_selector select").change(function(e){
       e.preventDefault();
       var url = location.pathname;
       var tokens = url.split('/');
-      tokens[2] = $("#blueprint_id").val();
-      
+      tokens[2] = $("#api_scenario_id").val();
+
       var new_url = tokens.join('/');
       location.href = new_url;
     });
@@ -25,7 +23,7 @@
     $("#area_code_selector select").change(function(e){
       e.preventDefault();
       var url = "/api/v2/api_scenarios/new.json?settings[area_code]="+$("#area_code_selector select").val();
-      
+
       $.getJSON(url, function(data) {
         location.href = "/data/"+data.api_scenario.id;
       });
