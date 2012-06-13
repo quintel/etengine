@@ -38,11 +38,11 @@ RSpec::Matchers.define :be_within do |expected, percent|
   end
 
   failure_message_for_should do |actual|
-    "got: #{actual}. But should be near #{expected}"
+    "Currently: #{actual}, but used to be #{expected}"
   end
 
   failure_message_for_should_not do |actual|
-    "got: #{actual}. But should not to be near #{expected}"
+    "Currently: #{actual} But should not to be near #{expected}"
   end
 
   description do

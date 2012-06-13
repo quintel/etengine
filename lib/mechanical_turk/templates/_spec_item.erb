@@ -1,14 +1,14 @@
 <%
   present = result.first.last #.round(3) rescue nil
   future  = result.last.last #.round(3) rescue nil
-  delta   = (future - present).round(1) rescue nil
-  change  = (((future / present) - 1.0) * 100.0).round(1) rescue nil
+  delta   = (future - present).round(1).rescue_nan rescue nil
+  change  = (((future / present) - 1.0) * 100.0).round(1).rescue_nan rescue nil
   # WHITESPACE is significant for nice output
 %>
 
     it "<%= key %>" do
-      the_present.should be_within(<%= present.round(3) rescue nil %>, some_tolerance)
-      the_future.should  be_within(<%= future.round(3) rescue nil %>, some_tolerance)
-      the_relative_increase.should be_within(<%= change %>, some_tolerance)
-      the_absolute_increase.should be_within(<%= delta  %>, some_tolerance)
+      the_present.should be_within(<%= present.round(3) rescue 'nil' %>, some_tolerance)
+      the_future.should  be_within(<%= future.round(3) rescue 'nil' %>, some_tolerance)
+      the_relative_increase.should be_within(<%= change.inspect %>, some_tolerance)
+      the_absolute_increase.should be_within(<%= delta.inspect  %>, some_tolerance)
     end
