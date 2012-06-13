@@ -9,6 +9,11 @@ describe "untitled" do
     end
   end
 
+  after :all do
+    print_comparison('localhost') if ENV["LOCALHOST"]
+    print_comparison('beta') if ENV["BETA"]
+  end
+
   <% generator.sections.each do |section, results| %>
   describe "<%= section %>" do
     <% results.each do |key, result| %>

@@ -4,6 +4,10 @@ module MechanicalTurkHelper
     @some_tolerance ||= ENV.fetch('TOLERANCE', 3.0)
   end
 
+  def print_comparison(endpoints)
+    @proxy.print_comparison(endpoints)
+  end
+
   def the_present(cmd = example.description)
     @proxy.the_present(cmd)
   end
