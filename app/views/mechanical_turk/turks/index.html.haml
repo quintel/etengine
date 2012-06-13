@@ -1,0 +1,11 @@
+%p
+  = link_to "Create from JSON", new_mechanical_turk_factory_path, :class => 'btn btn-success'
+%table.table
+  %thead
+    %tr
+      %th Existing turks
+      %th
+  - @turks.each do |turk|
+    %tr
+      %td= turk.short_path
+      %td= link_to "Run", turk

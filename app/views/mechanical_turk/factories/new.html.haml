@@ -1,3 +1,8 @@
+%p
+  = link_to 'Back', mechanical_turk_turks_path
 %form{:action => '/mechanical_turk/factory', :method => 'post'}
-  %textarea{:name => 'json_data'}
-  = submit_tag('Create Turkey', :class => 'btn-success')
+  %h4 Copy/paste JSON
+  %p
+    %textarea.span10{:name => 'json_data', :rows => 20}
+  %p
+    = submit_tag('Create Turkey', :class => 'btn-success')
