@@ -10,13 +10,17 @@ module MechanicalTurk
       @turk = turk
     end
 
-    def run
+    def run(type = :system)
       puts "** #{rspec_command}"
-      system(rspec_command)
+      case type
+      when :system then system(rspec_command)
+      when :ticks  then `#{rspec_command}`
+      when :x      then %x[#{rspec_command}]      
+      end
     end
 
     def rspec_command
-      "ETSOURCE_DIR='#{turk.etsource_dir}' #{rspec_binary} #{turk.filepath}"
+      "RAILS_ENV=test ETSOURCE_DIR='#{turk.etsource_dir}' #{rspec_binary} #{turk.filepath}"
     end
 
     def rspec_binary

@@ -16,6 +16,7 @@
               - if current_user
                 %li= link_to 'data', data_root_path(api_scenario_id: 'latest')
                 %li= link_to 'etsource', etsource_root_path
+                %li= link_to 'mech.turk', mechanical_turk_root_path
                 %li= link_to 'logout', logout_path
                 %li= link_to 'users', users_path
               - else

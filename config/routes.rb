@@ -43,7 +43,9 @@ Etm::Application.routes.draw do
   end
 
   namespace :mechanical_turk do
+    root :to => 'turks#index'
     resource :factory, :only => [:new, :create, :show]
+    resources :turks, :only => [:index, :show]
   end
 
   namespace :data do
