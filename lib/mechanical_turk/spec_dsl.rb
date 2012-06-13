@@ -35,8 +35,7 @@ module MechanicalTurk
         arr << [key, the_present(key), result_set.first.last] if year == :present
       end
 
-      puts ''
-      puts arr.to_table(:first_row_is_head => true)
+      arr.to_table(:first_row_is_head => true).to_s.tap{ |out| puts out }
     end
 
     def the_present(cmd)
@@ -44,7 +43,6 @@ module MechanicalTurk
     end
 
     def the_future(cmd)
-      lazy_load_calculate
       execute(cmd).future_value
     end
 
