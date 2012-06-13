@@ -147,6 +147,8 @@ GEM
     rdiscount (1.6.8)
     rdoc (3.12)
       json (~> 1.4)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     rmagick (2.13.1)
     rspec (2.8.0)
       rspec-core (~> 2.8.0)
@@ -236,6 +238,7 @@ DEPENDENCIES
   rails (= 3.2.3)
   rb-fsevent
   rdiscount
+  rest-client
   rspec-rails (~> 2.8.0)
   rubel (= 0.0.3)
   ruby-graphviz
