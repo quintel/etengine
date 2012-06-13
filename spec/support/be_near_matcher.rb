@@ -28,21 +28,21 @@ RSpec::Matchers.define :be_within do |expected, percent|
   match do |actual|
     if actual.respond_to?(:finite?) && !actual.finite?
       expected.respond_to?(:finite?) && !expected.finite?
-    elsif !actual.respond_to?(:to_f)
+    elsif !actual.respond_to?(:to_f)      
       actual == expected
     elsif expected.to_f == 0.0 && actual.to_f.abs < 0.001
       true
     else
-      (((actual.to_f / expected) - 1.0) * 100.0).abs < percent
+      (((actual.to_f.round(3) / expected) - 1.0) * 100.0).abs < percent
     end
   end
 
   failure_message_for_should do |actual|
-    "Currently: #{actual}, but used to be #{expected}"
+    "Currently: #{actual.round(3)}, but used to be #{expected}"
   end
 
   failure_message_for_should_not do |actual|
-    "Currently: #{actual} But should not to be near #{expected}"
+    "Currently: #{actual.round(3)} But should not to be near #{expected}"
   end
 
   description do
