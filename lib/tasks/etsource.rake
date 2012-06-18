@@ -10,17 +10,21 @@ namespace :etsource do
     task :hashes => :environment do
       puts "** Using: #{Etsource::Base.instance.base_dir}"
       
-      hashes = []
+      hashes = {}
       Etsource::Topology.new.each_file do |lines|
-        lines.each do |line|
+        lines.reject(&:empty?).each do |line|
           # extract converter keys for converter lines (;-separated lines)
           line = line.split(";").first.strip
-          hashes << Hashpipe.hash(line) if line.present?
+          if line.present?
+            if existing_key = hashes[Hashpipe.hash(line)]
+              raise "FATAL: The keys #{line.inspect} and #{existing_key.inspect} produce the same hash: #{Hashpipe.hash(line)}"
+            end
+            hashes[Hashpipe.hash(line)] = line
+          end
         end
       end
 
-      raise "" if hashes.length != hashes.uniq.length
-      puts "** validate:hashes. OK. No conflicts found for #{hashes.length} hashed keys."
+      puts "** validate:hashes. OK. No conflicts found for #{hashes.keys.length} hashed keys."
     end
 
     desc "Check for gquery duplicates"
