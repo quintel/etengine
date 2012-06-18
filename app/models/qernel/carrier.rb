@@ -34,10 +34,17 @@ class Carrier
 
   # attr_readers on instance variables are faster then anything else
   #  workaround we alias later, because it's easier to set the "?"s
+  #
+  # So create some getter/setters for the most commonly used carriers.
+  # they are set in #initialize
+  # For the others we create a method_missing.
   attr_reader :electricity, :steam_hot_water, :loss
   alias electricity? electricity
   alias steam_hot_water? steam_hot_water
   alias loss? loss
+
+  # make Array#flatten fast
+  attr_reader :to_ary 
 
   # ----- /Micro optimization -------------------------------------------------
 
@@ -104,6 +111,22 @@ class Carrier
 
   def inspect
     "<Qernel::Carrier id:#{id} key:#{key}>"
+  end
+
+  def method_missing(name, args = nil)
+    if name.to_s.include? "?"
+      #   def biogas?
+      #     carrier.key === :biogas
+      #   end
+      self.class_eval <<-EOF,__FILE__,__LINE__ +1
+        def #{name}
+          @key == #{name.to_s[0...-1].to_sym.inspect}
+        end
+      EOF
+      self.send(name) # dont forget to return the value
+    else
+      super
+    end
   end
 
 end

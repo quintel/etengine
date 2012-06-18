@@ -3,9 +3,17 @@ require 'spec_helper'
 module Qernel
 
 describe Carrier do
+  describe "#method_missing" do
+    it "should create dynamic carrier key boolean methods" do
+      Carrier.new(:key => 'foo').foo?.should be_true
+      Carrier.new(:key => 'baz').foo?.should be_false
+    end
+  end
+
  before do
-   @carrier = Carrier.new(1, 'carrier-1')
+   @carrier = Carrier.new(key: 'carrier-1', id: 1)
  end
+
 
 
  describe "using graph data" do

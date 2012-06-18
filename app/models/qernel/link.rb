@@ -42,6 +42,10 @@ class Link
   alias reversed? reversed
   alias loss? is_loss
 
+  # ----- Micro optimization -------------------------------------------------
+
+  # make Array#flatten fast
+  attr_reader :to_ary 
 
   # --------- Link Types ------------------------------------------------------
 
@@ -74,6 +78,24 @@ class Link
 
   def rgt_converter
     @child
+  end
+
+  # Creates methods to check for carrier.
+  # E.g.: #biogas? 
+  def method_missing(name, args = nil)
+    if name.to_s.last == "?"
+      #   def biogas?
+      #     carrier.key === :biogas
+      #   end
+      self.class_eval <<-EOF,__FILE__,__LINE__ +1
+        def #{name}
+          carrier.#{name}
+        end
+      EOF
+      self.send(name) # dont forget to return the value
+    else
+      super
+    end
   end
 
 protected
@@ -277,6 +299,7 @@ public
   def to_environment?
     child.environment?
   end
+
 
   # --------- Debug -----------------------------------------------------------
 
