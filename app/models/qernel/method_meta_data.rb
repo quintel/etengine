@@ -52,18 +52,18 @@ module MethodMetaData
       registered_calculation_methods = [registered_calculation_methods, keys].flatten
     end
 
-    def registered_calculation_methods
-      @registered_calculation_methods ||= []
-    end
+      def registered_calculation_methods
+        @@registered_calculation_methods ||= []
+      end
+
+      # Hash of :method_name => required_attributes_for_method
+      #
+      def required_attributes
+        @@required_attributes ||= {}
+      end    
 
     def calculation_methods
       required_attributes.keys + registered_calculation_methods
-    end
-
-    # Hash of :method_name => required_attributes_for_method
-    #
-    def required_attributes
-      @required_attributes ||= {}
     end
 
     # @param method_name [String,Symbol]
