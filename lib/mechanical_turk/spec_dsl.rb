@@ -64,7 +64,7 @@ module MechanicalTurk
       
       @gql.init_datasets
       instance_eval(&block) if block_given?
-      @gql.update_graphs
+      # @gql.update_graphs
       # self.lazy_load_calculate 
       # Above is called when the first numbers are requested through the_future.
       # this allows us to have custom sliders inside "should" do (This works
@@ -116,7 +116,10 @@ module MechanicalTurk
     end
 
     def lazy_load_calculate
-      @gql.calculate_graphs unless @gql.calculated?
+      unless @gql.calculated?
+        @gql.update_graphs
+        @gql.calculate_graphs 
+      end
     end
 
     # --- Query -------------------------------------------------------------
