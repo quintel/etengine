@@ -65,20 +65,38 @@ namespace :bulk_update do
 
   task :update_scenarios => :environment do
     @update_records = HighLine.agree("You want to update records, right? [y/n]")
+    # counter = 0
     Scenario.order('id').find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
-      inputs = s.user_values
+      begin
+        inputs = s.user_values
+      rescue
+        puts "Error!"
+        exit
+      end
       # ...
       # ...
-      # puts inputs.to_yaml
-      # inputs = {123 => 456}
+      # to add or change a new input value:
+      # inputs[123] = 567.789789
+      #
+      # to remove a slider values
       # inputs.delete(123)
+      #
+      # to get a value
+      # inputs[123]
+      #
+      # Important: slider ids must be integers!
+      # inputs["123"] != inputs[123]
+      #
+      # To see what's going on
+      # inputs.to_yaml
 
       if @update_records
         puts "saving"
         s.update_attributes!(:user_values => inputs)
       end
-      exit
+      # counter += 1
+      # exit if counter ==  1000
     end
   end
 
