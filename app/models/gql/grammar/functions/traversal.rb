@@ -84,7 +84,8 @@ module Gql::Grammar
       #   OUTPUT_SLOTS(foo, loss) #=> [(loss)-foo]
       #
       def OUTPUT_SLOTS(*args)
-        carrier = args.pop if args.length > 1
+        carrier = args.pop
+        # carrier = args.pop if args.length > 1
         converters = LOOKUP(args).flatten
         flatten_uniq converters.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
       end
@@ -98,7 +99,8 @@ module Gql::Grammar
       #   INPUT_SLOTS(foo, gas) #=> [foo-(gas)]
       #
       def INPUT_SLOTS(*args)
-        carrier = args.pop if args.length > 1
+        carrier = args.pop
+        # carrier = args.pop if args.length > 1
         converters = LOOKUP(args).flatten
         flatten_uniq converters.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.outputs}
       end
@@ -118,14 +120,15 @@ module Gql::Grammar
       #   INPUT_LINKS(L(foo, bar))
       #
       def INPUT_LINKS(value_terms, arguments = [])
-        links = flatten_uniq(value_terms.tap(&:flatten!)).map do |obj|
-          if obj.respond_to?(:input_links) # it's a converter
-            obj.input_links
-          elsif obj.respond_to?(:links) # it's a slot
-            obj.links
-          end
-        end
-        links.flatten!
+        links = flatten_uniq(value_terms.tap(&:flatten!).map(&:input_links))
+        # links = flatten_uniq(value_terms.tap(&:flatten!)).map do |obj|
+        #   if obj.respond_to?(:input_links) # it's a converter
+        #     obj.input_links
+        #   elsif obj.respond_to?(:links) # it's a slot
+        #     obj.links
+        #   end
+        # end
+        # links.flatten!
 
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
@@ -149,14 +152,15 @@ module Gql::Grammar
       #   OUTPUT_LINKS(L(foo, bar))
       #
       def OUTPUT_LINKS(value_terms, arguments = [])
-        links = flatten_uniq(value_terms.tap(&:flatten!)).map do |obj|
-          if obj.respond_to?(:output_links) # it's a converter
-            obj.input_links
-          elsif obj.respond_to?(:links) # it's a slot
-            obj.links
-          end
-        end
-        links.flatten!
+        links = flatten_uniq(value_terms.tap(&:flatten!).map(&:output_links))
+        # links = flatten_uniq(value_terms.tap(&:flatten!)).map do |obj|
+        #   if obj.respond_to?(:output_links) # it's a converter
+        #     obj.input_links
+        #   elsif obj.respond_to?(:links) # it's a slot
+        #     obj.links
+        #   end
+        # end
+        # links.flatten!
 
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
