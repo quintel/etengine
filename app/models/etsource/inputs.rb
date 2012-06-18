@@ -1,6 +1,6 @@
 module Etsource
   class Inputs
-    def initialize(etsource)
+    def initialize(etsource = Etsource::Base.instance)
       @etsource = etsource
     end
 
