@@ -75,13 +75,15 @@ module Gql::Grammar
       # Get the output (to the left) slots of converter(s). 
       #
       # @example All input slots
-      #   OUTPUT_SLOTS(foo) #=> [(loss)-foo, (heat)-foo]
+      #   OUTPUT_SLOTS(foo)           #=> [(loss)-foo, (heat)-foo]
+      #   OUTPUT_SLOTS(L(foo))        #=> [(loss)-foo, (heat)-foo]
+      #   OUTPUT_SLOTS(L(foo,bar))    #=> [(loss)-foo, (heat)-foo, ...]
       #
       # @example All input slots
       #   OUTPUT_SLOTS(foo, loss) #=> [(loss)-foo]
       #
       def OUTPUT_SLOTS(*args)
-        carrier = args.pop
+        carrier = args.pop if args.length > 1
         converters = LOOKUP(args).flatten
         flatten_uniq converters.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
       end
@@ -95,7 +97,7 @@ module Gql::Grammar
       #   INPUT_SLOTS(foo, gas) #=> [foo-(gas)]
       #
       def INPUT_SLOTS(*args)
-        carrier = args.pop
+        carrier = args.pop if args.length > 1
         converters = LOOKUP(args).flatten
         flatten_uniq converters.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.outputs}
       end
@@ -154,7 +156,7 @@ module Gql::Grammar
           end
         end
         links.flatten!
-        
+
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
           links.select!{|link| link.instance_eval(inst_eval.to_s) } 
