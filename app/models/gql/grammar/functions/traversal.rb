@@ -3,6 +3,7 @@ module Gql::Grammar
   module Functions
     # @example Example used in description
     #
+    #   Example Graph
     #                   +---------------+        +--> gas_1
     #                   |               |        |
     #   loss1 <- (loss)-|   foo         |- (gas)-+--> gas_2
