@@ -11,6 +11,7 @@ namespace :etsource do
     desc "Check there is no collision when hashing the keys of graph elements"
     task :hashes => :environment do
       hashes = {}
+      Etsource::Base.loader(ETSOURCE_DIR) unless ENV['ETSOURCE_DIR']
       Etsource::Topology.new.each_file do |lines|
         lines.reject(&:empty?).each do |line|
           # extract converter keys for converter lines (;-separated lines)
