@@ -6,7 +6,7 @@ namespace :bulk_update do
   desc "This shows the changes that would be applied to gqueries. Pass FORCE=TRUE to update records"
   task :gquery_replace => :environment do
     bootstrap
-    
+
     @gqueries = Gquery.contains(@from)
     @gqueries.each do |g|
       puts "GQuery #{g.id}".yellow.bold
@@ -23,7 +23,7 @@ namespace :bulk_update do
 
   desc "This shows the changes that would be applied to inputs. Pass FORCE=TRUE to update records"
   task :input_replace => :environment do
-    bootstrap    
+    bootstrap
     @inputs = Input.embedded_gql_contains(@from)
     @inputs.each do |i|
       puts "Input #{i.id}".yellow.bold
@@ -42,7 +42,7 @@ namespace :bulk_update do
       end
     end
   end
-  
+
   def bootstrap
     @from  = ENV["FROM"]
     @to    = ENV["TO"]
@@ -58,8 +58,29 @@ namespace :bulk_update do
       puts "Missing FROM/TO attribute"; exit
     end
   end
-  
+
   def highlight(text, token)
     text.gsub(token, token.red)
   end
-end  
+
+  task :update_scenarios => :environment do
+    @update_records = HighLine.agree("You want to update records, right? [y/n]")
+    Scenario.order('id').find_each(:batch_size => 100) do |s|
+      puts "Scenario ##{s.id}"
+      inputs = s.user_values
+      # ...
+      # ...
+      # puts inputs.to_yaml
+      # inputs = {123 => 456}
+      # inputs.delete(123)
+
+      if @update_records
+        puts "saving"
+        s.update_attributes!(:user_values => inputs)
+      end
+      exit
+    end
+  end
+
+
+end
