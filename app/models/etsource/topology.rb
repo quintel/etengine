@@ -61,14 +61,14 @@ module Etsource
       @carriers[key] ||= Qernel::Carrier.new(key: key)
     end
 
-  protected
-
     def each_file(&block)
       Dir.glob("#{export_dir}/*.graph").each do |f|
         lines = File.read(f).lines
         yield lines if block_given?
       end
     end
+
+  protected
 
     def topology_file
       "#{base_dir}/export.graph"
