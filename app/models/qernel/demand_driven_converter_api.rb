@@ -13,14 +13,18 @@ module Qernel
     # How many seconds a year the converter runs at full load. Varies
     # depending on the demand.
     def full_load_seconds
-      dataset_fetch_handle_nil :full_load_seconds do
-        supply = nominal_capacity_heat_output_per_unit * number_of_units
-        supply.zero? ? 0.0 : demand / supply
+      dataset_fetch :full_load_seconds do
+        begin 
+          supply = nominal_capacity_heat_output_per_unit * number_of_units
+          supply.zero? ? 0.0 : demand / supply
+        rescue
+          nil
+        end
       end
     end
+#    attributes_required_for :full_load_seconds,
+#      [ :demand, :nominal_capacity_heat_output_per_unit, :number_of_units ]
 
-    attributes_required_for :full_load_seconds,
-      [ :demand, :nominal_capacity_heat_output_per_unit, :number_of_units ]
 
     # How many hours a year the converter runs at full load. Varies depending
     # on the demand.
@@ -49,24 +53,28 @@ module Qernel
     # divided by 100.
     #
     def number_of_units
-      dataset_fetch_handle_nil :number_of_units do
-        heat_links = converter.output_links.select do |link|
-          link.carrier && ( link.carrier.key == :useable_heat || link.carrier.key == :hot_water || link.carrier.key == :steam_hot_water )
+      dataset_fetch :number_of_units do
+        begin
+          heat_links = converter.output_links.select do |link|
+            link.carrier && ( link.carrier.key == :useable_heat || link.carrier.key == :hot_water || link.carrier.key == :steam_hot_water )
+          end
+
+          return 0.0 if heat_links.empty?
+
+          tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
+          units = tech_share * (converter.graph.area.number_households || 0)
+
+          supplied = households_supplied_per_unit
+
+          # Sanity check; if households_supplied_per_unit is zero, it may simply
+          # be that a value wasn't set, so we instead assume that it should be
+          # set to 1.
+          supplied = 1.0 if supplied.zero?
+
+          units / supplied
+        rescue
+          nil
         end
-
-        return 0.0 if heat_links.empty?
-
-        tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
-        units = tech_share * (converter.graph.area.number_households || 0)
-
-        supplied = households_supplied_per_unit
-
-        # Sanity check; if households_supplied_per_unit is zero, it may simply
-        # be that a value wasn't set, so we instead assume that it should be
-        # set to 1.
-        supplied = 1.0 if supplied.zero?
-
-        units / supplied
       end
     end
 
