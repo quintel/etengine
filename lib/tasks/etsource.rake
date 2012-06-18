@@ -3,13 +3,13 @@ namespace :etsource do
   task :validate do
     Rake::Task["etsource:validate:hashes"].invoke
     Rake::Task["etsource:validate:duplicate_keys"].invoke
+    Rake::Task["etsource:validate:duplicate_input_ids"].invoke
+    
   end
 
   namespace :validate do
     desc "Check there is no collision when hashing the keys of graph elements"
     task :hashes => :environment do
-      puts "** Using: #{Etsource::Base.instance.base_dir}"
-      
       hashes = {}
       Etsource::Topology.new.each_file do |lines|
         lines.reject(&:empty?).each do |line|
@@ -44,6 +44,19 @@ namespace :etsource do
           puts "WARNING: Deprecated gquery key #{key.inspect} already exists as non-deprecated" 
         end
       end
+    end
+
+    desc "Check for gquery duplicates"
+    task :duplicate_input_ids => :environment do
+      Etsource::Base.loader(ETSOURCE_DIR) unless ENV['ETSOURCE_DIR']
+      inputs = Etsource::Inputs.new.import
+      
+      inputs.group_by(&:lookup_id).each do |id, inputs|
+        if inputs.length > 1
+          puts "FATAL: #{inputs.map(&:key)} have the same id: #{id}"
+        end
+      end
+      puts "** validate:duplicate_input_ids. OK"
     end
   end
 
