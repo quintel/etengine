@@ -9,8 +9,7 @@ module Gql::Grammar
 
       # Run multiple (update) queries.
       #
-      # Examples
-      #
+      # @example Multiple UPDATE statements inside one input
       #   EACH( 
       #     UPDATE( foo, ... ),
       #     UPDATE( bar, ... )
@@ -22,9 +21,82 @@ module Gql::Grammar
         end
       end
 
-      # Its syntax is:
-      # 
-      # UPDATE(object(s),attribute,value)
+
+
+
+      # == Remark about v1_legacy_unit
+      #
+      # Because ETmodel/flex return only numbers when pulling a slider, we can
+      # define a default suffix for an input with the v1_legacy_unit
+      # attribute.
+      #
+      # So if you define inside an inputs/my_special_input.yml
+      # v1_legacy_unit: "%"
+      #
+      # A number 5 from an etmodel slider will be converted to "5%". So the
+      # etmodel frontend displays a slider where you can update the growth
+      # rate. When the user chooses 7% the slider actually only sends the
+      # number  7 to the etengine. The ETengine/API if there is no suffix for
+      # that slider, the api will append the one defined in  v1_legacy_unit
+      # and send the "7%" to the GQL. The UPDATE function then derives from
+      # that "7%" that it should increase the demand by 7% and not set the
+      # demand to 7. Why: we once wanted the sliders to be flexible, so that
+      # you can choose to use the slider with absolute, growth_rate and growth
+      # per year. But simply got forgotten (either that we can, or that we
+      # want to).
+      #
+      #
+      # @example Basic syntax for update 
+      #   UPDATE( query_to_get_object, attr_name, new_value )
+      #   UPDATE( L( foo ), demand, 100)
+      #   UPDATE( L( foo ), demand, USER_INPUT() )
+      #   UPDATE( L( foo ), demand, 100 - USER_INPUT() )
+      #
+      # @example absolute numbers
+      #   UPDATE( L( foo ), demand,  5 ) # => demand becomes 5
+      #   UPDATE( L( foo ), demand, "5") # => demand becomes 5
+      #
+      # @example with growth_rate
+      #   UPDATE( L( foo ), demand, "5%") 
+      #   # => demand increases by 5% 
+      #
+      # @example with growth_rate per year
+      #   UPDATE( L( foo ), demand, "5%y") 
+      #   # => demand increases by 5% for every year
+      #
+      # @example multiple objects with the same number
+      #   UPDATE( L( foo, bar, baz ), demand,  5 ) 
+      #   # => demand of all converter becomes 5
+      #
+      # @example multiple objects with a different number
+      #   EACH(
+      #    UPDATE( L( foo ), demand,   5 ),
+      #    UPDATE( L( bar ), demand,  15 )
+      #   )
+      #
+      # @example multiple objects based on USER_INPUT()
+      #   EACH(
+      #    UPDATE( L( foo ), demand, USER_INPUT() ),
+      #    UPDATE( L( bar ), demand, 123 - USER_INPUT() )
+      #   )
+      #
+      # @example multiple objects based on USER_INPUT() and other V()
+      #   EACH(
+      #    UPDATE( L( foo ), demand, USER_INPUT() ),
+      #    UPDATE( L( bar ), demand, V(foo,demand) - USER_INPUT() )
+      #   )
+      #
+      # @example WARNING: Updates run before the calculation
+      #   # V(foo, demand) # => nil (no demand defined)
+      #   UPDATE( L(foo), demand, "500" ) 
+      #   # => 500. OK to assign an absolute value.
+      #   UPDATE( L(foo), demand, "5%" ) 
+      #   # => undefined behaviour. cannot increase nil
+      #
+      # @example WARNING: 2 inputs updating same attribute with absolute numbers
+      #   input_1: UPDATE( L(foo), demand, "500" ) 
+      #   input_2: UPDATE( L(foo), demand, "100" ) 
+      #   # => foo gets value 100. but order of inputs can be reversed in another scenario. (pulling input_2 first).
       #
       def UPDATE(*value_terms)
         input_value_proc = value_terms.pop
@@ -73,7 +145,12 @@ module Gql::Grammar
         scope.big_decimal(n)
       end
 
-      # Private: 
+      # The update strategy derived from the input value passed to GQL
+      #
+      #   "3"   # => :absolute
+      #   "3%"  # => :relative_total
+      #   "3%y" # => :relative_per_year
+      #
       def update_strategy
         input = scope.input_value
         if input.is_a?(::String)
@@ -89,6 +166,31 @@ module Gql::Grammar
         end
       end
 
+
+      # The numeric value of the slider. 
+      # 
+      # The input value that is passed to the gql might be "3", "3%" or
+      # "3%y". USER_INPUT() returns different numbers for different update
+      # types, see examples.
+      #
+      # @example Absolute value "3"
+      #   USER_INPUT() # => 3.0
+      #
+      # @example Growth rate "3%"
+      #   USER_INPUT() # => 0.03
+      #
+      # @example Growth rate "3%y"
+      #   USER_INPUT() # => 0.03
+      #
+      # @example To get the value of the input:
+      #   USER_INPUT()
+      #
+      # @example To get the remainder:
+      #   100 - USER_INPUT()
+      #
+      # @example Combining with values of another qernel object:
+      #   V(foo, demand) - USER_INPUT()
+      #
       def USER_INPUT()
         input = scope.input_value
         input_float = if input.is_a?(::String)
@@ -100,10 +202,45 @@ module Gql::Grammar
         input_float / input_factor
       end
 
+      # UPDATE_OBJECT() Access currently updated object. It refers to the
+      # object that is updated. 
+      #
+      # Because the value that is retrieved is dynamically retrieved we have
+      # to wrap it inside a block: -> {}.  
+      #
+      # Remember that GQL goes from inside out, UPDATE_OBJECT() is
+      # evaluated before UPDATE(...). UPDATE_OBJECT() would be nil. By
+      # wrapping it inside -> {} we tell UPDATE that it should evaluate that
+      # block after everything is assigned.
+      #
+      # @example Incrementing demands of multiple objects
+      #   UPDATE( L( foo, bar, baz ), demand, -> {V(UPDATE_OBJECT(), demand) + USER_INPUT() })
+      #   # equivalent to:
+      #   EACH(
+      #     UPDATE( L( foo ), demand, -> {V(foo, demand) + USER_INPUT()}),
+      #     UPDATE( L( bar ), demand, -> {V(bar, demand) + USER_INPUT()}),
+      #     ...
+      #   )
+      #
       def UPDATE_OBJECT()
         scope.update_object
       end
 
+      # All objects in the UPDATE statement (the first part of UPDATE()). 
+      #
+      # Example
+      #
+      #   UPDATE( L( foo, bar, baz ), demand, -> {
+      #     SUM(V(UPDATE_COLLECTION(),demand)) - V(UPDATE_OBJECT(), demand)
+      #   })
+      #
+      # Above statement updates the demand of foo, bar, baz with the remainder. Doesnt make sense but that's what would happen:
+      #
+      #   1. start: foo: 200, bar: 300, baz: 500
+      #   2. updating foo: (200 + 300 + 500) - 200 => foo: 800
+      #   3. updating bar: (800 + 300 + 500) - 300 => bar: 1300
+      #   4. updating baz: (800 + 1300 + 500) - 500 => baz: 2100
+      #
       def UPDATE_COLLECTION()
         scope.update_collection || []
       end
