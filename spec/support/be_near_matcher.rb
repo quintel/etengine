@@ -38,7 +38,7 @@ RSpec::Matchers.define :be_within do |expected, percent|
   end
 
   failure_message_for_should do |actual|
-    "Currently: #{actual.round(3)}, but used to be #{expected}"
+    "Currently: #{actual.andand.round(3).inspect}, but used to be #{expected}"
   end
 
   failure_message_for_should_not do |actual|
