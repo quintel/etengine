@@ -1,13 +1,5 @@
 # Wrapper for (user-) variables of a request that are accessible to all models.
 #
-# == Current.scenario
-#
-# At any point if you want to reset the scenario:
-#
-#   Current.reset_to_default_scenario!
-#   # which is the same as:
-#   Current.scenario = Scenario.default
-#
 # == Scenario vs Setting
 #
 # A big difference between Setting and Scenario is, that Scenario influences the GQL.
@@ -48,42 +40,6 @@ class Current
 
   # ----- Resetting -----------------------------------------------------------
 
-  # Resets to all default values. Will also reset country and year!
-  #
-  # Do not use this method to reset slider values!
-  #
-  # @untested 2010-12-27 seb
-  #
-  def reset_to_default!
-    reset_to_default_scenario!
-  end
-
-  # Set to default scenario. Also overwrites year and country values!
-  #
-  # Do not use this method to reset slider values!
-  #
-  # @untested 2010-12-27 seb
-  #
-  def reset_to_default_scenario!
-    scenario = Scenario.default
-  end
-
-  # Resets the scenarios from user values. But not what country, year we're in.
-  #
-  # @untested 2010-12-27 seb
-  #
-  def reset_scenario!
-    scenario.reset
-  end
-
-  def reset_user_session!
-    self.reset_to_default!
-  end
-
-  def reset_gql
-    self.scenario.reset!
-    @graph = nil
-  end
 
   ##
   # Singleton instance
