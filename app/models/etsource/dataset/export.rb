@@ -84,10 +84,6 @@ module Etsource
 
    protected
 
-    def all_countries
-      Area.all.map(&:region_code)
-    end
-
     def base_dir
       "#{@etsource.base_dir}/datasets"
     end
