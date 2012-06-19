@@ -8,11 +8,7 @@ class ApplicationController < ActionController::Base
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
   before_filter :initialize_memory_cache
-  before_filter :initialize_current
   before_filter :locale
-
-  after_filter :assign_current_for_inspection_in_tests if Rails.env.test?
-  after_filter :teardown_current
 
   rescue_from CanCan::AccessDenied do |exception|
     store_location
@@ -46,16 +42,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  protected
-
-    def initialize_current
-      Current.session = session
-    end
-
-    def teardown_current
-      Current.teardown_after_request!
-    end
-
   private
 
     def store_location
@@ -64,10 +50,6 @@ class ApplicationController < ActionController::Base
 
     def clear_stored_location
       session[:redirect_to] = nil
-    end
-
-    def assign_current_for_inspection_in_tests
-      @current = Current
     end
 
     def redirect_back_or_default(default = root_path)
