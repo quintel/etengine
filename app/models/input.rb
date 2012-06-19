@@ -85,7 +85,6 @@ class Input < ActiveRecord::Base
   end
 
   def force_id(new_id)
-    # Input.update_all("id = #{new_id}", "id = #{self.id}")
     self.lookup_id = new_id
   end
 
@@ -112,7 +111,7 @@ class Input < ActiveRecord::Base
 
   def rubel
     # use memoized_rubel_proc_for for faster updates (50% increase)
-    #rubel_proc
+    # rubel_proc
     self.class.memoized_rubel_proc_for(self)
   end
 
@@ -150,7 +149,7 @@ class Input < ActiveRecord::Base
         :min_value   => min_value_for(gql),
         :start_value => start_value_for(gql),
         :full_label  => full_label_for(gql),
-        :disabled    => disabled_in_current_area?
+        :disabled    => disabled_in_current_area?(gql)
       }
     }
   end
@@ -196,10 +195,6 @@ class Input < ActiveRecord::Base
     end
   end
 
-  def user_value
-    Current.scenario.user_value_for(self)
-  end
-
   def full_label_for(gql)
     "#{gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
   end
@@ -214,8 +209,9 @@ class Input < ActiveRecord::Base
   end
 
   def min_value_for(gql)
-    if min_value_for_current_area.present?
-      min_value_for_current_area * factor
+    min_value = min_value_for_current_area(gql)
+    if min_value.present?
+      min_value * factor
     elsif gql_query = self[:min_value_gql] and !gql_query.blank?
       gql.query(gql_query)
     else
@@ -224,8 +220,9 @@ class Input < ActiveRecord::Base
   end
 
   def max_value_for(gql)
-    if max_value_for_current_area.present?
-      max_value_for_current_area * factor
+    max_value = max_value_for_current_area(gql)
+    if max_value.present?
+      max_value * factor
     elsif
       gql_query = self[:max_value_gql] and !gql_query.blank?
       gql.query(gql_query)
@@ -243,37 +240,32 @@ class Input < ActiveRecord::Base
   #############################################
 
 
-  def min_value_for_current_area
-    get_area_input_values.andand["min"]
+  def min_value_for_current_area(gql = nil)
+    area_input_values(gql).andand["min"]
   end
 
-  def max_value_for_current_area
-    get_area_input_values.andand["max"]
+  def max_value_for_current_area(gql = nil)
+    area_input_values(gql).andand["max"]
   end
 
-  def disabled_in_current_area?
-    return true if get_area_input_values.andand['disabled']
-    if dependent_on.present?
-      return true if !Current.scenario.area.send(dependent_on)
+  def disabled_in_current_area?(gql = nil)
+    if gql.scenario.area_input_values['disabled']
+      true
+    elsif dependent_on.present?
+      return true if !gql.scenario.area.send(dependent_on)
     end
     false
   end
 
   # this loads the hash with area dependent settings for the current inputs object
-  def get_area_input_values
-    hash = Current.scenario.area.andand.input_values
-    if hash.present?
-      YAML::load(hash)[id]
-    else
-      false
-    end
+  def area_input_values(gql)
+    gql.scenario.area_input_values[id]
   end
 
   #############################################
   # Methods that interact with a users values
   #############################################
 
-  ##
   # The current value of this slider for the current user. If the user hasn't touched
   # the slider, its start value is return.
   #
@@ -290,9 +282,5 @@ class Input < ActiveRecord::Base
   #
   def reset
     val = Current.scenario.delete_from_user_values(self.lookup_id)
-  end
-
-  def update_current(value)
-    Current.scenario.update_input(self, value)
   end
 end

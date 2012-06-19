@@ -1,9 +1,14 @@
 # Area related methods for scenario
 #
 class Scenario < ActiveRecord::Base
-  attr_writer :area
-
-  def area
-    @area ||= Area.find_by_country(area_code)
+  def area_input_values
+    area = Area.get(area_code)
+    binding.pry
+    hash = area[:input_values]
+    if hash.present?
+      YAML::load(hash)
+    else
+      nil
+    end
   end
 end
