@@ -7,8 +7,7 @@
 %strong{style: "color: red"} Inputs have to be edited through ETsource.
 
 %table
-  - @input.attributes.each do |attr|
-    - key, value = attr
+  - Input::ATTRIBUTES.each do |attr|
     %tr
-      %td= key
-      %td= value
+      %td= attr
+      %td= @input.send attr

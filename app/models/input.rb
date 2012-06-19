@@ -31,12 +31,37 @@
 #
 
 class Input < ActiveRecord::Base
-  attr_accessor :lookup_id
+  attr_accessor :lookup_id, :dependent_on
 
   include InMemoryRecord
 
   validates :updateable_period, :presence => true,
                                 :inclusion => %w[present future both before]
+
+  ATTRIBUTES = [
+    :id,
+    :key,
+    :attr_name,
+    :comments,
+    :factor,
+    :keys,
+    :label,
+    :label_query,
+    :max_value,
+    :max_value_gql,
+    :min_value,
+    :min_value_gql,
+    :name,
+    :query,
+    :share_group,
+    :start_value,
+    :start_value_gql,
+    :unit,
+    :update_type,
+    :updateable_period,
+    :v1_legacy_unit,
+    :dependent_on
+  ]
 
   def self.load_records
     h = {}
