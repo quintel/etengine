@@ -96,12 +96,6 @@ class Input < ActiveRecord::Base
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  # Checks whether the inputs use the new update statements or the old
-  # key/attr_name based implementation
-  def v2?
-    query.present?
-  end
-
   # i had to resort to a class method for "caching" procs
   # as somewhere inputs are marshaled (where??)
   def self.memoized_rubel_proc_for(input)
