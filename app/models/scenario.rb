@@ -122,17 +122,13 @@ class Scenario < ActiveRecord::Base
   # Creates a scenario from a yml_file. Used by mech turk.
   def self.create_from_file(yml_file)
     settings = YAML::load(File.read(yml_file))['settings']
-    scenario = Scenario.default(settings)
-    scenario.build_update_statements
-    scenario
+    Scenario.default(settings)
   end
 
   # Creates a scenario from a yml_file. Used by mech turk.
   def self.create_from_json(json_data)
     settings = JSON.parse(json_data)['settings']
-    scenario = Scenario.default(settings)
-    scenario.build_update_statements
-    scenario
+    Scenario.default(settings)
   end
 
   def self.new_attributes(settings = {})

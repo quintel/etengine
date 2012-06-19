@@ -97,7 +97,6 @@ class ApiRequest
   def gql(options = {})
     unless @gql
       Current.scenario = scenario
-      scenario.build_update_statements
       # This will load the graph and dataset from etsource
       # -> unoptimized and slow. It passed all test suites.
       options[:prepare] = true unless options.has_key?(:prepare)
