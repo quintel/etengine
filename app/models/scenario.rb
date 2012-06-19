@@ -189,18 +189,6 @@ class Scenario < ActiveRecord::Base
     Scenario.create!(attributes)
   end
 
-  def user_values=(v)
-    if self.user_values.nil?
-      self.user_values = v
-    else
-      self.user_values.merge!(v)
-    end
-    # uncomment to allow user_values to be passed as strings.
-    # self.user_values.each do |k,v|
-    #   self.user_values[k] = v.to_f
-    # end
-  end
-
   # used when loading an existing scenario, preset or user-created
   def scenario_id=(preset_id)
     if preset = Preset.get(preset_id) || Scenario.find_by_id(preset_id)
