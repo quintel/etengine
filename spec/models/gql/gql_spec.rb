@@ -314,7 +314,6 @@ describe Gql do
     context "basic graph" do
       before do
         @graph = Qernel::GraphParser.new("lft(100) == s(1.0) ==> rgt(120)").build
-        Current.instance.stub_chain(:gql, :calculated?).and_return(true)
         @q = QueryInterface.new(nil, @graph)
       end
 
@@ -331,24 +330,6 @@ describe Gql do
             @q.query(Input.new(:query => "UPDATE(V(lft),demand,USER_INPUT())"), input)
             @q.query("V(lft; demand)").should == expected_demand
           end
-        end
-      end
-
-      pending "more update statements" do
-        it "should update 5%y as growth_rate per year (easy example)" do
-          Current.instance.stub_chain(:scenario, :years).and_return(2)
-          @q.query("UPDATE(V(lft),demand,USER_INPUT())", "5%y")
-          @q.query("V(lft; demand)").should == 100 * 1.05 * 1.05
-        end
-
-        it "should update 10 + USER_INPUT as absolute value" do
-          @q.query("UPDATE(V(lft),demand,SUM(10, USER_INPUT()))", "5")
-          @q.query("V(lft; demand)").should == 15.0
-        end
-
-        it "should update 10 + 5% as relative value" do
-          @q.query("UPDATE(V(lft),demand,SUM(10, USER_INPUT()))", "5%")
-          @q.query("V(lft; demand)").should == 115.0
         end
       end
 

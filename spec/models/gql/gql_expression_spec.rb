@@ -30,41 +30,6 @@ describe Gql do
       @query_interface = QueryInterface.new(nil, nil)
     end
 
-    describe "traversing" do
-      before do
-        @graph = Qernel::GraphParser.new("
-        lft(100) == c(1.0) ==> rgt
-        mid(100) == s(1.0) ==> rgt
-      ").build
-        Current.instance.stub_chain(:gql, :calculated?).and_return(true)
-        @q = QueryInterface.new(nil, @graph)
-      end
-    
-      describe "VALUE" do
-        it "should return uniq converter" do
-          @q.query("VALUE(lft,lft,mid,mid,rgt)").should have(3).items
-        end
-      end
-    
-      pending "BUG: LINKS" do
-        @q.query("OUTPUT_LINKS(V(lft))").length.should == 0
-      end
-    
-      it "LINKS" do
-        @q.query("INPUT_LINKS(V(lft))").length.should == 1
-        @q.query("INPUT_LINKS(V(lft);constant)").length.should == 1
-        @q.query("INPUT_LINKS(V(lft);is_share)").length.should == 0
-        @q.query("INPUT_LINKS(V(lft,mid);is_share)").length.should == 1
-        @q.query("INPUT_LINKS(V(lft,mid))").length.should == 2
-        @q.query("OUTPUT_LINKS(V(rgt))").length.should == 2
-      end
-    
-      it "LINK(lft, rgt)" do
-        @q.query("LINK(lft,rgt)").should be_constant
-        @q.query("LINK(rgt,lft)").should == @q.query("LINK(lft,rgt)")
-      end
-    end
-
     describe "constants" do
       before { @query = "SUM(BILLIONS)"; @result = 10.0**9 }
       specify { @query_interface.check(@query).should be_true }

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Api::ApiScenariosController do
 
   before(:each) do
-    Current.instance.stub_chain(:gql, :query_multiple).and_return({'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]) })
+    # Current.instance.stub_chain(:gql, :query_multiple).and_return({'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]) })
   end
 
   describe "index" do
@@ -29,16 +29,16 @@ describe Api::ApiScenariosController do
     end
   end
 
-  describe "show" do
+  pending "show" do
     before(:all) do
       @api_scenario = Scenario.create(Scenario.default_attributes.merge(:title => 'foo'))
     end
 
     before(:each) do
-      Current.instance.stub_chain(:gql, :query_multiple).and_return({
-        'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]),
-        'bar' => Gql::ResultSet.create([[2010,1],[2010,2]])
-      })
+      # Current.instance.stub_chain(:gql, :query_multiple).and_return({
+      #   'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]),
+      #   'bar' => Gql::ResultSet.create([[2010,1],[2010,2]])
+      # })
     end
 
     it "should assign @api_scenario" do
