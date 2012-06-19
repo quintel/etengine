@@ -18,7 +18,6 @@ class Data::BaseController < ApplicationController
       else
         @api_scenario = Scenario.find(params[:api_scenario_id])
       end
-      Current.scenario = @api_scenario
       @gql = @api_scenario.gql(prepare: true)
     end
     alias initialize_gql find_graph

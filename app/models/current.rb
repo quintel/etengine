@@ -30,14 +30,6 @@ class Current
     @session = session
   end
 
-  def scenario=(scenario)
-    session[:scenario] = scenario
-  end
-
-  def scenario
-    session[:scenario] ||= Scenario.default
-  end
-
   # ----- Resetting -----------------------------------------------------------
 
 

@@ -62,8 +62,7 @@ module MechanicalTurk
     def load_scenario(options = {}, &block)
       NastyCache.instance.expire!
       
-      # DEBT. REMOVE Current.scenario!!
-      Current.scenario = scenario = Scenario.new(Scenario.default_attributes.merge options)
+      scenario = Scenario.new(Scenario.default_attributes.merge options)
       @gql = scenario.gql(prepare: false)
       
       @gql.init_datasets
