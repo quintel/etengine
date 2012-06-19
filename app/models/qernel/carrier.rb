@@ -87,7 +87,6 @@ class Carrier
   def co2_per_mj
     # can be overwritten by Fce plugin
     dataset_fetch(:co2_per_mj) do
-      # DEBT remove call to Current.scenario. add use_fce variable to graph dataset
       co2_conversion_per_mj
     end
   end

@@ -169,7 +169,7 @@ class Input < ActiveRecord::Base
         Airbrake.notify(
           :error_message => "Input#static_values for input #{input.lookup_id} failed: #{ex}",
           :backtrace => caller,
-          :parameters => {:input => input, :api_scenario => Current.scenario }) unless
+          :parameters => {:input => input, :api_scenario => gql.scenario }) unless
            APP_CONFIG[:standalone]
 
         hsh
@@ -186,12 +186,11 @@ class Input < ActiveRecord::Base
           :start_value => input.start_value_for(gql)
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{Current.scenario.id}. #{ex}")
+        Rails.logger.warn("Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}. #{ex}")
         Airbrake.notify(
-          :error_message => "Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{Current.scenario.id}",
+          :error_message => "Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}",
           :backtrace => caller,
-        :parameters => {:input => input, :api_scenario => Current.scenario }) unless
-          APP_CONFIG[:standalone]
+        :parameters => {:input => input, :api_scenario => gql.scenario }) unless APP_CONFIG[:standalone]
         hsh
       end
     end
