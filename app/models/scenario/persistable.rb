@@ -29,7 +29,7 @@ module Scenario::Persistable
   # @untested 2010-12-06 seb
   #
   def copy_scenario_state(preset)
-    self.user_values = preset.user_values.clone
+    self.user_values.reverse_merge!(preset.user_values.clone)
     self.end_year    = preset.end_year
     self.area_code   = preset.area_code
     self.use_fce     = preset.use_fce
