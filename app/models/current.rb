@@ -40,7 +40,6 @@ class Current
 
   def scenario=(scenario)
     session[:scenario] = scenario
-    scenario.load!
   end
 
   def scenario

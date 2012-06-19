@@ -15,11 +15,6 @@ module Scenario::Persistable
     self.use_fce = false
   end
 
-  # Called from current.
-  #
-  def load!
-  end
-
   # Stores the current settings into the attributes. For when we want to save
   # the scenario in the db.
   #

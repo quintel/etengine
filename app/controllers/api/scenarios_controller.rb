@@ -49,7 +49,7 @@ class Api::ScenariosController < Api::BaseController
   # Is this still used?
   # PZ - Thu 17 Nov 2011 15:22:02 CET
   def load
-    respond_with(@scenario.load!)
+    respond_with(@scenario)
   end
 
   private
