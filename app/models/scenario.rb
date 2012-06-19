@@ -112,7 +112,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def start_year
-    2010
+    START_YEAR
   end
 
   def years

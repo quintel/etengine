@@ -1,6 +1,6 @@
 = form_tag data_redirect_path, :method => :get, :id => 'api_scenario_selector', :style => 'width: 280px; float: left' do
   = label_tag 'Session'
-  - opts = [["Current - ##{Current.scenario.id}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
+  - opts = [["Current - ##{@gql.scenario.id rescue 'error'}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
   = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id])
 
 = form_tag '#', :method => :get, :id => 'area_code_selector', :style => 'width: 200px; float: left' do
