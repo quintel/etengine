@@ -83,7 +83,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 5.0}
-            @gql.scenario.load!
             @gql.query("V(lft;demand)").future_value.should == 100.0 * (1.05**30)
           end
 
@@ -103,7 +102,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 5.0}
-            @gql.scenario.load!
             @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.95**30)
           end
 
@@ -123,7 +121,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 5.0}
-            @gql.scenario.load!
             @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.95)
           end
 
@@ -143,7 +140,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 5.0}
-            @gql.scenario.load!
             @gql.query("V(lft;demand)").future_value.should == 100.0 * (0.98)
           end
 
@@ -168,7 +164,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 30.0, @old_input2.id => 30.0}
-            @gql.scenario.load!
             @gql.query("V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling;demand)").future_value.should == 100.0
             @gql.query("V(buildings_cooling_heatpump_air_water_network_gas;demand)").future_value.should == 30.0
             @gql.query("V(buildings_cooling_collective_heatpump_water_water_ts_electricity;demand)").future_value.should == 30.0
@@ -205,7 +200,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 30.0}
-            @gql.scenario.load!
             @gql.query("V(buildings_useful_demand_after_insulation_recirculation_recovery_cooling;demand)").future_value.should == 100.0
             @gql.query("V(buildings_cooling_heatpump_air_water_network_gas;demand)").future_value.should == 30.0
             @gql.query("V(buildings_cooling_airconditioning;demand)").future_value.should == 70.0
@@ -236,7 +230,6 @@ describe Gql do
 
           pending "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 30.0}
-            @gql.scenario.load!
             @gql.query("V(households_useful_demand_for_cooling_after_insulation;demand)").future_value.should == 100.0
             @gql.query("V(households_cooling_heatpump_ground_water_electricity;demand)").future_value.should == 30.0
             @gql.query("V(households_cooling_airconditioning_electricity;demand)").future_value.should == 70.0
@@ -277,7 +270,6 @@ describe Gql do
 
           pending "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 5.0}
-            @gql.scenario.load!
 
             @gql.query("V(rgt;number_of_units)").future_value.should == 5.0
             @gql.query("V(OUTPUT_LINKS(V(rgt);constant);value)").future_value.should == 40.0
@@ -308,7 +300,6 @@ describe Gql do
 
           it "should work with old" do
             @gql.scenario.user_values = {@old_input.id => 5.0}
-            @gql.scenario.load!
             @gql.query("V(CARRIER(foo);cost_per_mj)").future_value.should == 100.0 * 1.05
           end
 
