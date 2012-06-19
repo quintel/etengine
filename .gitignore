@@ -36,6 +36,7 @@ public/sprockets
 coverage/*
 spec/controllers/coverage/*
 spec/models/coverage/*
+spec/mechanical_turk
 etsource
 etsource_export
 ./etsource
