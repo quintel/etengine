@@ -19,16 +19,16 @@ describe Scenario do
   describe "setting and retrieving user_values" do
     before do
       @input = Input.new
-      @scenario.store_user_value(@input, 10)
+      @scenario.update_input(@input, 10)
     end
     specify { @scenario.user_value_for(@input).should == 10}
 
-    it "should return the value when store_user_value" do
-      @scenario.store_user_value(@input, 10).should == 10
+    it "should return the value when update_input" do
+      @scenario.update_input(@input, 10).should == 10
     end
 
     describe "overwriting user_value" do
-      before { @scenario.store_user_value(@input, 20) }
+      before { @scenario.update_input(@input, 20) }
       specify { @scenario.user_value_for(@input).should == 20}
     end
   end
