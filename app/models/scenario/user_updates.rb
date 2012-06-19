@@ -116,22 +116,11 @@ module Scenario::UserUpdates
   # @tested 2010-12-06 seb
   #
   def update_input(input, value)
-    store_user_value(input, value)
-  end
-
-  # Stores the user value in the session.
-  #
-  # @param [Input] input
-  # @param [Flaot] value
-  # @return [Float] the value
-  #
-  # @tested 2010-11-30 seb
-  #
-  def store_user_value(input, value)
     key = input.lookup_id
     self.user_values.merge! key => value
     value
   end
+
 
   # @tested 2010-11-30 seb
   #
