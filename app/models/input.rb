@@ -132,25 +132,6 @@ class Input < ActiveRecord::Base
     updateable_period == 'future' || updateable_period == 'both'
   end
 
-  # update hash for this input with the given value.
-  # {'converters' => {'converter_keys' => {'demand_growth' => 2.4}}}
-  #
-  # @param [Float] value the (user) value of that input
-  # @return [Hash]
-  #
-  def update_statement(value)
-    # sometimes value ends up being nil. TODO: figure out why
-    final_value = value ? (value / factor) : nil
-    ActiveSupport::Notifications.instrument("gql.inputs.error", "#{keys} -> #{attr_name} value is nil") if final_value.nil?
-    {
-      update_type => {
-        keys => {
-          attr_name => final_value
-        }
-      }
-    }
-  end
-
   # make as_json work
   def id
     self.lookup_id
@@ -309,12 +290,7 @@ class Input < ActiveRecord::Base
   # @todo Probably this should be moved into a Scenario class
   #
   def reset
-    val = Current.scenario.user_values.delete(self.lookup_id)
-    if updates = Current.scenario.update_statements[update_type]
-      if keys = updates[keys]
-        val = keys.delete(attr_name)
-      end
-    end
+    val = Current.scenario.delete_from_user_values(self.lookup_id)
   end
 
   def update_current(value)
