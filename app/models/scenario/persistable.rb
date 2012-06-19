@@ -10,8 +10,6 @@ module Scenario::Persistable
   #
   def reset!
     self.user_values = {}
-    self.update_statements = {}
-    self.update_statements_present = {}
     @inputs_present = {}
     @inputs_future = {}
     self.use_fce = false

@@ -9,28 +9,9 @@
 # Based on Input#updateable_period a update_statement is added to either
 # update_statements, update_statements_present or both.
 #
-# {#update_statements} updates for the future graph.
-# {#update_statements_present} updates for the present graph.
-#
 #
 module Scenario::UserUpdates
   extend ActiveSupport::Concern
-
-  def update_statements=(stmts)
-    @update_statements = stmts
-  end
-
-  def update_statements
-    @update_statements ||= {}
-  end
-
-  def update_statements_present=(stmts)
-    @update_statements_present = stmts
-  end
-
-  def update_statements_present
-    @update_statements_present ||= {}
-  end
 
   # Inputs that run all the time and before the regular updates.
   # These should not be stored in the user_values, because they
@@ -136,34 +117,6 @@ module Scenario::UserUpdates
   #
   def update_input(input, value)
     store_user_value(input, value)
-    unless input.v2?
-      add_update_statements(input.update_statement(value), input.updateable_period)
-    end
-  end
-
-  # add_update_statements does not persist the slider value.
-  # ie. if you update a scenario with add_update_statements the changes
-  # are made (and persist), but it does not affect a slider in the UI.
-  #
-  # Use this method only if there are some sort of "hidden" updates.
-  #
-  # @param [Hash] update_statement_hash
-  #   {'converters' => {'converter_key' => {'update' => value}}}
-  #
-  # @tested 2010-12-06 seb
-  #
-  def add_update_statements(update_statement_hash, updateable_period = :future)
-    # This has to be self.update_statements otherwise it doesn't work
-    # use deep_merge!
-    case updateable_period.to_sym
-    when :future  then self.update_statements.deep_merge!(update_statement_hash)
-    when :present then self.update_statements_present.deep_merge!(update_statement_hash)
-    when :both
-      self.update_statements.deep_merge!(update_statement_hash)
-      self.update_statements_present.deep_merge!(update_statement_hash)
-    else
-      Rails.logger.warn("***** No updateable_period")
-    end
   end
 
   # Stores the user value in the session.
