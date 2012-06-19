@@ -84,9 +84,8 @@ class Gql
     @future ||= QueryInterface.new(self, future_graph)
   end
 
-  # Are the graphs calculated? If true, prevent the programmers
-  # to add further update statements ({Scenario#add_update_statements}).
-  # Because they won't affect the system anymore.
+  # Are the graphs calculated? If true, prevent the programmers to add further
+  # update statements. Because they won't affect the system anymore.
   #
   # When calculated changes through update statements
   # should no longer be allowed, as they won't have an impact on the
@@ -226,7 +225,6 @@ class Gql
 
   def update_present
     instrument('gql.performance.present.update_present') do
-      UpdateInterface::Graph.new(self, present_graph).update_with(scenario.update_statements_present)
       scenario.inputs_present.each { |input, value| update_graph(present, input, value) }
     end
   end
@@ -234,7 +232,6 @@ class Gql
   def update_future
     instrument('gql.performance.future.update_future') do
       scenario.inputs_before.each { |input, value| update_graph(future, input, value) }
-      UpdateInterface::Graph.new(self, future_graph).update_with(scenario.update_statements)
       scenario.inputs_future.each { |input, value| update_graph(future, input, value) }
     end
   end
