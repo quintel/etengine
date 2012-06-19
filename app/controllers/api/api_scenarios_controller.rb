@@ -82,7 +82,6 @@ class Api::ApiScenariosController < Api::BaseController
   #
   def user_values
     @api_request = ApiRequest.response(params)
-    Current.scenario = @api_request.scenario
     values = @api_request.scenario.input_values
 
     respond_to do |format|
@@ -95,7 +94,6 @@ class Api::ApiScenariosController < Api::BaseController
   # Similar to user_values, but returns only the subset of the inputs we need
   # and uses the input key as hash key
   def input_data
-    Current.scenario = @api_scenario
     gql = @api_scenario.gql(prepare: true)
     inputs = params[:inputs] || []
     out = {}

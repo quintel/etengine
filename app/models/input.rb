@@ -262,25 +262,4 @@ class Input < ActiveRecord::Base
     gql.scenario.area_input_values[id]
   end
 
-  #############################################
-  # Methods that interact with a users values
-  #############################################
-
-  # The current value of this slider for the current user. If the user hasn't touched
-  # the slider, its start value is return.
-  #
-  # @return [Float] Users value
-  #
-  def user_value
-    Current.scenario.store_user_value(self, value || start_value || 0).round(2)
-  end
-
-  ##
-  # Resets the user values
-  #
-  # @todo Probably this should be moved into a Scenario class
-  #
-  def reset
-    val = Current.scenario.delete_from_user_values(self.lookup_id)
-  end
 end

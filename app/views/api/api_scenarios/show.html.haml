@@ -12,8 +12,8 @@
   %thead
     %tr
       %th Query
-      %th= Current.scenario.start_year
-      %th= Current.scenario.end_year
+      %th= @api_scenario.start_year
+      %th= @api_scenario.end_year
 
   - @api_response['result'].andand.each do |key, result|
     %tr
