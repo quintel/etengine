@@ -33,7 +33,7 @@
                             %td= link_to output_link.parent.key, data_converter_path(:id => output_link.parent)
                             %td{:title => output_link.value}= auto_number output_link.value
                             %td{:class => output_link.kind,
-                                :title => output_link.share}= "#{(100.0 * (output_link.value / output_slot.external_value)).round(2)} %" unless output_slot.external_value.nil?
+                                :title => output_link.share}= "#{(100.0 * (output_link.value / output_slot.external_value)).round(2)} %" unless output_slot.external_value == 0
                             %td= output_link.link_type
                   %td.centered= output_slot.carrier.key
                   %td.centered{:class => output_slot.kind,
