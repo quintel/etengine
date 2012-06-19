@@ -121,13 +121,6 @@ module Scenario::UserUpdates
     value
   end
 
-
-  # @tested 2010-11-30 seb
-  #
-  def user_value_for(input)
-    user_values[input.lookup_id]
-  end
-
   #
   # @untested 2010-12-22 seb
   #
