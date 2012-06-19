@@ -72,12 +72,10 @@ class GraphApi
     }.compact.sum
   end
 
-  #
   # @return [Integer] Difference between start_year and end_year
   #
   def number_of_years
-    # DEBT remove call to Current.scenario. add variable to graph dataset
-    Current.scenario.years
+    graph.number_of_years
   end
 
   def sustainability_of_production_group(group_key)
