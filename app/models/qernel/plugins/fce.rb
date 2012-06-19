@@ -24,8 +24,7 @@ module Qernel::Plugins
     end
 
     def calculate_fce
-      # DEBT remove call to Current.scenario. add use_fce variable to graph dataset
-      #return unless Current.scenario.use_fce
+      return unless self.use_fce
 
       @fce_update_values.andand.each do |carrier, values|
         values.each do |key, sum|

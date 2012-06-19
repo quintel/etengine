@@ -26,7 +26,12 @@ class Graph
 
   include DatasetAttributes
 
-  dataset_accessors :calculated
+  dataset_accessors :calculated,
+                    :year,
+                    :use_fce,
+                    # graphs do not know the number of years, which is defined in 
+                    # scenario.
+                    :number_of_years 
 
   def dataset_key
     :graph
@@ -42,8 +47,6 @@ class Graph
   attr_accessor :dataset,
                 :finished_converters,
                 :area,
-                :region_code,
-                :year,
                 :graph_id
 
 

@@ -45,11 +45,12 @@ class Gql
     if scenario.is_a?(Scenario)
       @scenario = scenario
       loader    = Etsource::Loader.instance
-      @present_graph = loader.graph.tap{|g| g.year = @scenario.start_year}
-      @future_graph  = loader.graph.tap{|g| g.year = @scenario.end_year}
+      @present_graph = loader.graph
+      @future_graph  = loader.graph
       @dataset = loader.dataset(@scenario.area_code)
     end
   end
+
 
   # @param [:console, :sandbox] mode The GQL sandbox mode.
   def sandbox_mode=(mode)
@@ -208,6 +209,21 @@ class Gql
   def init_datasets
     present_graph.dataset ||= dataset_clone
     future_graph.dataset = dataset_clone
+    assign_attributes_from_scenario
+  end
+
+  # Inside GQL, functions and Gqueries we had some references to
+  # Current.scenario. The aim of this method is to assign all the needed
+  # attributes. Ideally they will be replaced with a different way.
+  def assign_attributes_from_scenario
+    @present_graph.year = @scenario.start_year
+    @future_graph.year = @scenario.end_year
+
+    @present_graph.number_of_years = @scenario.years
+    @future_graph.number_of_years = @scenario.years
+
+    @present_graph.use_fce = @scenario.use_fce
+    @future_graph.use_fce = @scenario.use_fce
   end
 
   def update_graphs
