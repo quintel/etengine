@@ -272,7 +272,11 @@ class Input < ActiveRecord::Base
   end
 
   def disabled_in_current_area?
-    get_area_input_values.andand['disabled'] || false
+    return true if get_area_input_values.andand['disabled']
+    if dependent_on.present?
+      return true if !Current.scenario.area.send(dependent_on)
+    end
+    false
   end
 
   # this loads the hash with area dependent settings for the current inputs object
