@@ -64,7 +64,6 @@ module MechanicalTurk
       
       # DEBT. REMOVE Current.scenario!!
       Current.scenario = scenario = Scenario.new(Scenario.default_attributes.merge options)
-      scenario.build_update_statements
       @gql = scenario.gql(prepare: false)
       
       @gql.init_datasets

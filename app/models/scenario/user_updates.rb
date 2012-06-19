@@ -193,28 +193,4 @@ module Scenario::UserUpdates
     user_values.delete(id)
   end
 
-  # Builds update_statements from user_values that are readable by the GQl.
-  def build_update_statements
-    # Work on a clone of user_values, because we will merge into it again...
-    user_values.dup.each_pair do |id, value|
-      build_update_statements_for_element(id, value)
-    end
-  end
-
-  # Called from build_update_statements
-  #
-  # @param [Boolean] load_as_municipality
-  # @param [Integer] id Input#id
-  # @param [Float] value user value
-  #
-  # @tested 2010-12-06 seb
-  #
-  def build_update_statements_for_element(id, value)
-    if input = Input.get(id)
-      update_input(input, value) unless input.v2?
-    else
-      Rails.logger.warn("WARNING: Scenario loaded, but Input nr.#{id} was not found")
-    end
-  end
-
 end
