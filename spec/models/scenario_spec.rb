@@ -16,23 +16,6 @@ describe Scenario do
     end
   end
 
-  describe "setting and retrieving user_values" do
-    before do
-      @input = Input.new
-      @scenario.update_input(@input, 10)
-    end
-    specify { @scenario.user_value_for(@input).should == 10}
-
-    it "should return the value when update_input" do
-      @scenario.update_input(@input, 10).should == 10
-    end
-
-    describe "overwriting user_value" do
-      before { @scenario.update_input(@input, 20) }
-      specify { @scenario.user_value_for(@input).should == 20}
-    end
-  end
-
   describe "#user_values" do
     context ":user_values = YAMLized object (when coming from db)" do
       before {@scenario = Scenario.new(:user_values => {:foo => :bar})}
