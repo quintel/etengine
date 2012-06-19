@@ -35,7 +35,6 @@ module Qernel
     def full_load_hours
       handle_nil(:full_load_hours) { full_load_seconds / 3600 }
     end
-
     attributes_required_for :full_load_hours, [ :full_load_seconds ]
 
     # Demand-driven converters have a semi-fixed number of units which changes
@@ -56,7 +55,7 @@ module Qernel
       dataset_fetch :number_of_units do
         begin
           heat_links = converter.output_links.select do |link|
-            link.carrier && ( link.carrier.key == :useable_heat || link.carrier.key == :hot_water || link.carrier.key == :steam_hot_water )
+            link.carrier && ( link.useable_heat? || link.hot_water? || link.steam_hot_water? )
           end
 
           return 0.0 if heat_links.empty?
