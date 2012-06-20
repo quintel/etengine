@@ -246,7 +246,7 @@ class Input < ActiveRecord::Base
     if gql.scenario.area_input_values['disabled']
       true
     elsif dependent_on.present?
-      return true if !gql.scenario.area.send(dependent_on)
+      return true if !gql.scenario.area[dependent_on]
     end
     false
   end
