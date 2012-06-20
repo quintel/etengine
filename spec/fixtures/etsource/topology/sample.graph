@@ -1,5 +1,7 @@
+lft;
 foo;
 bar;
 baz;
+lft-(electricity) -- s --> (electricity)-bar
 foo-(electricity) -- s --> (electricity)-bar
 foo-(electricity) -- s --> (electricity)-baz
