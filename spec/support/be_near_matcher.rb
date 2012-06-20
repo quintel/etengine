@@ -56,7 +56,7 @@ RSpec::Matchers.define :be_within do |expected, percent|
     else
       # mechanical turk spec creator rounds to 3. Do the same
       # otherwise 0.00045 != 0.004.
-      actual = actual.round(MechanicalTurk::ROUNDING) 
+      actual = actual.andand.round(MechanicalTurk::ROUNDING) 
       factor = percent / 100.0
 
       if expected == 0.0 # allow for some rounding errors
