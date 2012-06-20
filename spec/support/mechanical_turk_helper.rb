@@ -8,6 +8,10 @@ module MechanicalTurkHelper
     @proxy.print_comparison(endpoints)
   end
 
+  def the_value(cmd = example.description)
+    @proxy.the_value(cmd)
+  end
+
   def the_present(cmd = example.description)
     @proxy.the_present(cmd)
   end

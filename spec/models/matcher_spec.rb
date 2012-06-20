@@ -36,5 +36,8 @@ describe "be_within" do
   specify { 101.1.should_not be_within(nil, 1.0)}
   specify { nil.should be_within(nil, 1.0)}
 
+  specify { 0.0014.should be_within(0.001, 0.0)}
+  specify { 0.0014.should be_within(0.001, 1.0)}
+
 end
 

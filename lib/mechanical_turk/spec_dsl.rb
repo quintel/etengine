@@ -15,6 +15,7 @@
 #
 module MechanicalTurk
   class SpecDSL
+
     ENDPOINTS = {
       'beta' => "http://beta.ete.io/api/v2/api_scenarios/test.json",
       'localhost' => "http://localhost:3000/api/v2/api_scenarios/test.json"
@@ -36,6 +37,10 @@ module MechanicalTurk
       end
 
       arr.to_table(:first_row_is_head => true).to_s.tap{ |out| puts out }
+    end
+
+    def the_value(cmd)
+      execute(cmd)
     end
 
     def the_present(cmd)
@@ -139,7 +144,7 @@ module MechanicalTurk
         custom(query)
       else
         @gqueries << query
-        custom("Q(#{query})")
+        custom(Gquery.get(query))
       end
     end
   end
