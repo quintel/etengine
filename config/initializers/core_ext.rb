@@ -29,15 +29,19 @@ end
 
 class Numeric
   # rescue from 0.0/0.0 or 0.0/1.0 calculation errors
+  def rescue_nan(with = 0.0)
+    self
+  end
+end
+
+class Float
+  # rescue from 0.0/0.0 or 0.0/1.0 calculation errors
   # (0.0 / 0.0).rescue_nan
   # => 0.0
   def rescue_nan(with = 0.0)
     finite? ? self : with
   end
-end
-
-class Float
-  def as_json(options = nil) finite? ? self : NilClass::AS_JSON end #:nodoc:
+  def as_json(options = nil) finite? ? self : 'null' end #:nodoc:
 end
 
 
