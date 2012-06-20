@@ -50,10 +50,14 @@ end
 
 RSpec::Matchers.define :be_within do |expected, percent|
   match do |actual|
+    actual = actual.andand.rescue_nan(nil)
     if expected.nil? 
       actual.nil?
     else
-      factor   = percent / 100.0
+      # mechanical turk spec creator rounds to 3. Do the same
+      # otherwise 0.00045 != 0.004.
+      actual = actual.round(MechanicalTurk::ROUNDING) 
+      factor = percent / 100.0
 
       if expected == 0.0 # allow for some rounding errors
         min_max = [-0.0001, 0.0001]
@@ -64,17 +68,17 @@ RSpec::Matchers.define :be_within do |expected, percent|
         ].sort
       end
       
-      range = Range.new *min_max
+      range  = Range.new *min_max
       range.include?(actual)
     end
   end
 
   failure_message_for_should do |actual|
-    "Got: #{actual.andand.round(3).inspect}. But should be near #{expected}"
+    "Got: #{actual.andand.inspect}. But should be near #{expected.inspect}"
   end
 
   failure_message_for_should_not do |actual|
-    "Got: #{actual.round(3)}. But should not to be near #{expected}"
+    "Got: #{actual.andand.inspect}. But should not to be near #{expected.inspect}"
   end
 
   description do
