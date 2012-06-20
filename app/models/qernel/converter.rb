@@ -115,7 +115,6 @@ class Converter
                :output_links, 
                :input_links, 
                :groups, 
-               :full_key, 
                :sector_key, 
                :use_key, 
                :energy_balance_group
@@ -163,7 +162,6 @@ class Converter
     @id         = opts[:id] || Hashpipe.hash(opts[:code])
     @key        = opts[:key]
     @code       = opts[:code]
-    @full_key   = @code
     @groups     = opts[:groups] || []
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]

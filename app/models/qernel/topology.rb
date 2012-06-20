@@ -7,7 +7,7 @@ module Qernel
       GROUPS_SEPARATOR = ','
 
       def topology_key
-        self.code || self.full_key
+        self.code
       end
 
       def to_topology

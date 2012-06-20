@@ -1,5 +1,5 @@
 module Qernel::Plugins
-  # TXT_TABLE(SORT_BY(G(merit_order_converters),merit_order_position),full_key,merit_order_full_load_hours)
+  # TXT_TABLE(SORT_BY(G(merit_order_converters),merit_order_position),code,merit_order_full_load_hours)
   module MeritOrder
     extend ActiveSupport::Concern
 

@@ -30,7 +30,7 @@ module Gql::Grammar
       #
       # TXT_TABLE(
       #   SORT_BY(V(G(electricity_production));merit_order_end); 
-      #   full_key; merit_order_start; merit_order_end; full_load_hours
+      #   code; merit_order_start; merit_order_end; full_load_hours
       # )
       #
       def TXT_TABLE(objects, *arguments)
