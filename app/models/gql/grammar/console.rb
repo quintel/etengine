@@ -73,7 +73,7 @@ module Gql::Grammar
 
       # add gquery and converter keys
       keys = [
-        rubel_base.ALL().map(&:code),
+        rubel_base.ALL().map(&:key),
         Gquery.all.map(&:key),
       ].flatten.
         map(&:to_sym) # really make sure keys are symbols

@@ -18,22 +18,22 @@ module Etsource
         # Initialize all converters first, before we map slots and links to them.
         hsh = lines.select{|l| l =~ /^\w+;/ }. # only match converter lines
                     map{|l| Qernel::Converter.import(l) }.
-                    inject({}) {|h,k| h.merge k.code => k}
+                    inject({}) {|h,k| h.merge k.key => k}
         converters.merge!(hsh)
       end
 
       graph = Qernel::Graph.new(converters.values).tap{|g| g.connect_qernel }
 
       each_file do |lines|
-        lines.map{|l| Qernel::Slot::Token.find(l) }.flatten.uniq(&:code).each do |token|
+        lines.map{|l| Qernel::Slot::Token.find(l) }.flatten.uniq(&:key).each do |token|
           converter = converters[token.converter_key]
-          slot = Qernel::Slot.new(token.code, converter, carrier(token), token.direction)
+          slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
           slot.graph = graph
           converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
         end
 
         lines.map{|l| Qernel::Link::Token.find(l) }.flatten.each do |link|
-          link = Qernel::Link.new(link.code, converters[link.input_key], converters[link.output_key], carrier(link), link.link_type)
+          link = Qernel::Link.new(link.key, converters[link.input_key], converters[link.output_key], carrier(link), link.link_type)
           link.graph = graph
         end
       end

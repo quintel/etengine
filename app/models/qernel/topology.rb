@@ -7,7 +7,7 @@ module Qernel
       GROUPS_SEPARATOR = ','
 
       def topology_key
-        self.code
+        self.key
       end
 
       def to_topology
@@ -20,12 +20,11 @@ module Qernel
 
       module ClassMethods
         def import(line)
-          code, key, sector_key, use_key, energy_balance_group, groups = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
+          key, _key, sector_key, use_key, energy_balance_group, groups = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
           groups = groups.to_s.split(GROUPS_SEPARATOR).map(&:to_sym)
-          code = code.to_s.scan(/\w+/).first.strip.gsub(/\s/,'').to_sym
+          key = key.to_s.scan(/\w+/).first.strip.gsub(/\s/,'').to_sym
 
           Qernel::Converter.new(
-            code:      code,
             key:       key,
             sector_id: sector_key,
             use_id:    use_key,
@@ -54,7 +53,7 @@ module Qernel
       #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, link_type: :share>
       #
       class Token
-        attr_reader :input_key, :carrier_key, :output_key, :code, :link_type
+        attr_reader :input_key, :carrier_key, :output_key, :key, :link_type
 
         LINK_TYPES = {
           's' => :share,
@@ -68,7 +67,7 @@ module Qernel
           line.gsub!(/#.+/, '')
           line.strip!
           line.gsub!(/\s+/,'')
-          @code = line
+          @key = line
 
           input, output = Qernel::Slot::Token.find(line)
 
@@ -118,19 +117,19 @@ module Qernel
       #    t.converter_key # => :FOO
       #    t.carrier_key # => :HW
       #    t.direction # => :output
-      #    t.code # => HW-FOO
+      #    t.key # => HW-FOO
       #
       class Token
-        attr_reader :converter_key, :carrier_key, :direction, :code
+        attr_reader :converter_key, :carrier_key, :direction, :key
 
         def initialize(line)
-          @code = line.gsub(/#.+/, '').strip
+          @key = line.gsub(/#.+/, '').strip
           @converter_key, @carrier_key = if line.include?(')-')
             @direction = :output
-            @code.split('-').reverse.map(&:to_sym)
+            @key.split('-').reverse.map(&:to_sym)
           else
             @direction = :input
-            @code.split('-').map(&:to_sym)
+            @key.split('-').map(&:to_sym)
           end
           @carrier_key = @carrier_key.to_s.gsub(/[\(\)]/, '').to_sym
         end
@@ -148,7 +147,7 @@ module Qernel
       def topology_key
         # Code to return first letters upcased (hot_water => HW)
         # first,second = key.to_s.split("_")
-        # carrier_code = first[0]+(second.andand[0] || first[1])
+        # carrier_key = first[0]+(second.andand[0] || first[1])
         # carrier_code.upcase
         key
       end

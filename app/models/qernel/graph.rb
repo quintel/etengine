@@ -165,7 +165,7 @@ class Graph
 
       unless converter_stack.empty?
         ActiveSupport::Notifications.instrument("gql.debug",
-          "Following converters have not finished: #{converter_stack.map(&:code).join(', ')}")
+          "Following converters have not finished: #{converter_stack.map(&:key).join(', ')}")
       end
     end
     self[:calculated] = true
