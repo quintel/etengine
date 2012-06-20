@@ -63,7 +63,8 @@ class ConverterApi
       :households_supplied_per_unit,
       :part_ets,
       :co2_free,
-      :peak_load_units_present
+      :peak_load_units_present,
+      :electrical_efficiency_when_using_wood_pellets
     ],
 
     :cost => [
