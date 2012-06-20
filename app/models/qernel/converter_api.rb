@@ -54,29 +54,30 @@ class ConverterApi
   #   @demand_expected_value *and not* demand_expected_value (or self.demand_expected_value)
   ATTRIBUTE_GROUPS = {
     :operational => [
-      :typical_nominal_input_capacity,
-      :full_load_hours,
       :average_effective_output_of_nominal_capacity_over_lifetime,
-      :technical_lifetime,
-      :construction_time,
-      :land_use_per_unit,
-      :households_supplied_per_unit,
-      :part_ets,
       :co2_free,
+      :construction_time,
+      :electrical_efficiency_when_using_coal,
+      :electrical_efficiency_when_using_wood_pellets,
+      :full_load_hours,
+      :households_supplied_per_unit,
+      :land_use_per_unit,
+      :part_ets,
       :peak_load_units_present,
-      :electrical_efficiency_when_using_wood_pellets
+      :technical_lifetime,
+      :typical_nominal_input_capacity
     ],
 
     :cost => [
-      :purchase_price_per_mw_input,
-      :installing_costs_per_mw_input,
-      :operation_and_maintenance_cost_fixed_per_mw_input,
-      :operation_and_maintenance_cost_variable_per_full_load_hour,
-      :residual_value_per_mw_input,
-      :decommissioning_costs_per_mw_input,
       :ccs_investment_per_mw_input,
       :ccs_operation_and_maintenance_cost_per_full_load_hour,
       :costs_per_mj,
+      :decommissioning_costs_per_mw_input,
+      :installing_costs_per_mw_input,
+      :operation_and_maintenance_cost_fixed_per_mw_input,
+      :operation_and_maintenance_cost_variable_per_full_load_hour,
+      :purchase_price_per_mw_input,
+      :residual_value_per_mw_input,
       :wacc
     ],
 
