@@ -7,7 +7,7 @@ class Scenario < ActiveRecord::Base
     if hash.present?
       YAML::load(hash)
     else
-      nil
+      {}
     end
   end
 end

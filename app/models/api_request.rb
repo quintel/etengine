@@ -69,6 +69,7 @@ class ApiRequest
       scenario.reset!
       scenario.save
       scenario.reload
+      # DEBT: this shouldnt be needed:
       @scenario = nil;
       scenario
     end

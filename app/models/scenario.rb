@@ -73,10 +73,6 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  after_initialize do |scenario|
-    # scenario.touch :present_updated_at if id
-  end
-
   def fce_settings=(fce_settings)
     Rails.logger.warn("fce_settings is deprecated")
   end
