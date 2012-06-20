@@ -23,7 +23,7 @@ Etm::Application.routes.draw do
         get :input_data
       end
     end
-    resources :areas, :only => [:show, :index]
+    resources :areas, :only => :show
     resources :inputs, :only => [:index, :show]
     resources :gqueries, :only => [:index]
     # catches all OPTIONS requests
