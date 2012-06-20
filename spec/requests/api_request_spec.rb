@@ -1,78 +1,105 @@
 require "spec_helper"
 
 describe "api_scenario life cycle" do
-  before do 
-    @input1 = Input.create(:query => "UPDATE(V(lft), demand, USER_INPUT())")
-    @input2 = Input.create(:query => "UPDATE(V(mid), demand, USER_INPUT())")
-    @gquery1 = Gquery.create(:key => 'lft_demand', :query => 'V(lft; demand)')
-    @gquery2 = Gquery.create(:key => 'rgt_demand', :query => 'V(rgt; demand)')
-    refresh_gql
+  before(:all) do 
+    NastyCache.instance.expire!
+    Etsource::Base.loader('spec/fixtures/etsource')
   end
 
-  def refresh_gql
-    sleep(1)
-
-    @gql = Qernel::GraphParser.gql_stubbed("
-      lft(100) == s(1.0) ==> rgt(nil)
-      mid( 50) == s(1.0) ==> rgt(nil)
-    ")
-  end
-
-  # the way gql is loaded has changed...
-  pending "should create, update, persist" do
+  it "should create, update, persist" do
     post 'api/v2/api_scenarios.json'
-    scenario = JSON.parse(response.body)['api_scenario']
+    
+    scenario = JSON.parse(response.body)['scenario']
     id = scenario['id']
     url = "api/v2/api_scenarios/#{id}.json"
 
     scenario['id'].should_not be_blank
-    scenario['country'].should == 'nl'
+    scenario['area_code'].should == 'nl'
     scenario['end_year'].should == 2040
-    scenario['region'].should == nil
     scenario['use_fce'].should == false
     scenario['user_values'].should be_empty
 
-    refresh_gql
-
     # ----- no updates --------------------------------------------------------
 
-    get url, :r => 'rgt_demand'
+    get url, :r => 'bar_demand'
 
     result = JSON.parse(response.body)['result']
-    result['rgt_demand'][0][1].should == 150.0
-    result['rgt_demand'][1][1].should == 150.0
+    result['bar_demand'][0][1].should == 60.0
+    result['bar_demand'][1][1].should == 60.0
 
     # ----- update ------------------------------------------------------------
 
-    refresh_gql
-
-    get url, :input => {@input1.id.to_s => '120'}, :result => %w[lft_demand rgt_demand]
+    get url, :input => {'3' => '120'}, :result => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['result']
-    result['lft_demand'][1][1].should == 120.0
-    result['rgt_demand'][1][1].should == 170.0
+    result['foo_demand'][1][1].should == 120.0
+    result['bar_demand'][1][1].should == 120.0*0.6
 
     # ----- updating another --------------------------------------------------
 
-    refresh_gql
-
-    get url, :input => {@input2.id.to_s => '80'}, :result => %w[lft_demand rgt_demand]
+    get url, :input => {'2' => '20'}, :result => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['result']
-    result['lft_demand'][1][1].should == 120.0
-    result['rgt_demand'][1][1].should == 200.0
+    result['foo_demand'][1][1].should == 120.0
+    result['bar_demand'][1][1].should == 120.0*0.6 + 20
 
-    # ----- updating 1 again --------------------------------------------------
+    # ----- updating 3 again --------------------------------------------------
 
-    refresh_gql
-
-    get url, :input => {@input1.id.to_s => '180'}, :r => 'lft_demand'
+    get url, :input => {'3' => '180'}, :result => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['result']
-    result['lft_demand'][0][1].should == 100.0
-    result['lft_demand'][1][1].should == 180.0
-
-
+    result['foo_demand'][0][1].should == 100.0
+    result['foo_demand'][1][1].should == 180.0
+    result['bar_demand'][1][1].should == 180.0*0.6 + 20
   end
+
+
+  it "should reset" do
+    post 'api/v2/api_scenarios.json'
+    
+    scenario = JSON.parse(response.body)['scenario']
+    id       = scenario['id']
+    url      = "api/v2/api_scenarios/#{id}.json"
+
+    # ----- update ------------------------------------------------------------
+
+    get url, :input => {'3' => '120'}, :result => %w[foo_demand bar_demand]
+
+    result = JSON.parse(response.body)['result']
+    result['foo_demand'][1][1].should == 120.0
+    result['bar_demand'][1][1].should == 120.0*0.6
+
+    # ----- reset --------------------------------------------------
+
+    get url, :reset => true, :result => %w[foo_demand bar_demand]
+
+    result = JSON.parse(response.body)['result']
+    result['foo_demand'][1][1].should == 100.0
+  end
+
+
+  it "should load from scenario" do
+    post 'api/v2/api_scenarios.json', settings: {scenario_id: 2999}
+    
+    scenario = JSON.parse(response.body)['scenario']
+    id       = scenario['id']
+    url      = "api/v2/api_scenarios/#{id}.json"
+
+    # ----- no updates ------------------------------------------------------------
+
+    get url, :result => %w[foo_demand bar_demand]
+    result = JSON.parse(response.body)['result']
+    result['foo_demand'][1][1].should == 250
+
+    # ----- reset --------------------------------------------------
+
+    get url, :reset => true, :result => %w[foo_demand bar_demand]
+    result = JSON.parse(response.body)['result']
+    result['foo_demand'][1][1].should == 100.0
+  end
+
+
+
+
 
 end
