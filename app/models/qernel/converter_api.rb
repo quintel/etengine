@@ -250,12 +250,8 @@ class ConverterApi
     @dataset_group ||= Qernel::Converter.dataset_group
   end
 
-  def full_key
-    converter.full_key
-  end
-
   def to_s
-    converter && converter.full_key.to_s
+    converter && converter.code.to_s
   end
 
   def inspect
@@ -355,7 +351,7 @@ class ConverterApi
   def self.create_share_of_converter_method(converter_key)
     key = converter_key.to_sym
     define_method "share_of_#{key}" do
-      ol = self.converter.output_links.detect{|l| l.parent.full_key == key}
+      ol = self.converter.output_links.detect{|l| l.parent.code == key}
       ol and ol.share
     end
   end

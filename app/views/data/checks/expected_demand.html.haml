@@ -21,11 +21,11 @@
       %th
   %tbody
     - @converters.select{ |c| c.demand_expected? == false }.each do |converter|
-      - full_key = converter.full_key
+      - code = converter.code
       %tr
         %td
-          %a{:id => full_key}= converter.dataset_get(:excel_id)
-        %td= link_to full_key, data_converter_path(:id => full_key)
+          %a{:id => code}= converter.dataset_get(:excel_id)
+        %td= link_to code, data_converter_path(:id => code)
         %td.align-right= auto_number converter.demand
         %td.align-right= auto_number converter.demand_expected_value
         %td
@@ -45,11 +45,11 @@
       %th
   %tbody
     - @converters.each do |converter|
-      - full_key = converter.full_key
+      - code = converter.code
       %tr
         %td
-          %a{:id => full_key}= converter.dataset_get(:excel_id)
-        %td= link_to full_key, data_converter_path(:id => full_key)
+          %a{:id => code}= converter.dataset_get(:excel_id)
+        %td= link_to code, data_converter_path(:id => code)
         %td.align-right= auto_number converter.demand
         %td.align-right= auto_number converter.demand_expected_value
         %td
