@@ -184,7 +184,7 @@ protected
   def calculate_constant
     if self.share.nil?
       val = output_external_demand
-      raise "Constant Link with share = nil expects a demand of child converter #{@child.code}" if val.nil?
+      raise "Constant Link with share = nil expects a demand of child converter #{@child.key}" if val.nil?
       val
     else
       self.share
@@ -214,7 +214,7 @@ protected
   # https://github.com/dennisschoenmakers/etengine/issues/194
   # 
   def calculate_inversed_flexible
-    #raise "#{@child.code} has no demand" if @child.demand.nil?
+    #raise "#{@child.key} has no demand" if @child.demand.nil?
     result = @child.demand - @child.outputs.map(&:external_link_value).compact.sum
     (result < 0.0) ? 0.0 : result
   end

@@ -1,22 +1,24 @@
 module Api
   module V3
     class Converter
-      def initialize(code = nil, scenario = nil)
-        raise "Missing Converter Key" unless code
+      def initialize(key = nil, scenario = nil)
+        raise "Missing Converter Key" unless key
         raise "Missing Scenario" unless scenario
-        @code = code
+        @code     = key
+        @key      = key
         @scenario = scenario
-        @gql = @scenario.gql(:prepare => true)
-        @present = @gql.present_graph.graph.converter(@code) rescue nil
-        @future  = @gql.future_graph.graph.converter(@code) rescue nil
+        @gql      = @scenario.gql(:prepare => true)
+        @present  = @gql.present_graph.graph.converter(@key) rescue nil
+        @future   = @gql.future_graph.graph.converter(@key) rescue nil
         if @present.nil? || @future.nil?
-          raise "Converter not found! (#{@code})"
+          raise "Converter not found! (#{@key})"
         end
       end
 
       def to_json(options = {})
         Jbuilder.encode do |json|
-          json.code @code
+          json.key  @key
+          json.code @key
           json.sector @present.sector_key
           json.use @present.use_key
           json.groups @present.groups

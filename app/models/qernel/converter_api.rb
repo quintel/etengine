@@ -251,7 +251,7 @@ class ConverterApi
   end
 
   def to_s
-    converter && converter.code.to_s
+    converter && converter.key.to_s
   end
 
   def inspect
@@ -351,7 +351,7 @@ class ConverterApi
   def self.create_share_of_converter_method(converter_key)
     key = converter_key.to_sym
     define_method "share_of_#{key}" do
-      ol = self.converter.output_links.detect{|l| l.parent.code == key}
+      ol = self.converter.output_links.detect{|l| l.parent.key == key}
       ol and ol.share
     end
   end

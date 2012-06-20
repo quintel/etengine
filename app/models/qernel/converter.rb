@@ -95,7 +95,7 @@ class Converter
   # Following keys can be looked up by {Qernel::Graph#converter}.
   KEYS_FOR_LOOKUP = [
     :excel_id_to_sym,
-    :code
+    :key
   ]
 
   SECTORS = {
@@ -111,7 +111,6 @@ class Converter
   }
 
   attr_reader  :id, 
-               :code, 
                :output_links, 
                :input_links, 
                :groups, 
@@ -152,16 +151,15 @@ class Converter
   # --------- Initializing ----------------------------------------------------
 
   # @example Initialize a new converter
-  #   Qernel::Converter.new(code: 'foo')
+  #   Qernel::Converter.new(key: 'foo')
   #
   def initialize(opts)
-    if !(opts.include?(:id) || opts.include?(:code))
-      raise ArgumentError.new("Either :id or :code has to be passed to Qernel::Converter.new") 
+    if !(opts.include?(:id) || opts.include?(:key))
+      raise ArgumentError.new("Either :id or :key has to be passed to Qernel::Converter.new") 
     end
 
-    @id         = opts[:id] || Hashpipe.hash(opts[:code])
+    @id         = opts[:id] || Hashpipe.hash(opts[:key])
     @key        = opts[:key]
-    @code       = opts[:code]
     @groups     = opts[:groups] || []
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
@@ -178,13 +176,13 @@ class Converter
   end
 
   # return the excel id as a symbol for the graph#converter_lookup_hash
-  # return the code if no excel_id defined or dataset not initialised yet.
+  # return the key if no excel_id defined or dataset not initialised yet.
   #
   def excel_id_to_sym
     if object_dataset
-      (excel_id || code).to_s.to_sym
+      (excel_id || key).to_s.to_sym
     else
-      code
+      key
     end
   end
 
@@ -193,7 +191,7 @@ protected
   # Memoize here, so it doesn't have to at runtime
   #
   def memoize_for_cache
-    @environment_converter = code === :environment_environment
+    @environment_converter = key === :environment_environment
     @sector_environment = sector_key === :environment
 
     @primary_energy_demand = @groups.include? :primary_energy_demand
@@ -512,13 +510,13 @@ public
 
   # needed for url_for
   def to_param
-    code.to_s
+    key.to_s
   end
 
   # --------- Debug -----------------------------------------------------------
 
   def name
-    code
+    key
   end
 
   def to_s
@@ -526,7 +524,7 @@ public
   end
 
   def inspect
-    "<Converter #{code}>"
+    "<Converter #{key}>"
   end
 
   def to_image(depth = 1, svg_path = nil)
