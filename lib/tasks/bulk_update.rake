@@ -65,7 +65,7 @@ namespace :bulk_update do
 
   task :update_scenarios => :environment do
     @update_records = HighLine.agree("You want to update records, right? [y/n]")
-    #counter = 0
+    counter = 0
     Scenario.order('id').find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
@@ -101,14 +101,6 @@ namespace :bulk_update do
       # Following lines describe the changes of scenarios in the
       # deploy of July 10 2012
 
-      share_group_inputs = [333, 338, 51, 582, 340, 375, 317, 52, 441, 248, 411, 421, 420,
-        444, 445, 446, 347, 439, 346, 435, 443, 585,
-        386, 388, 385, 593, 381, 382, 588]
-      
-      share_group_inputs.each do |element|
-        inputs[element] = 0.0 if inputs[element].nil?
-        #puts "inputs[" + element.to_s + "] = " + inputs[element].to_s
-      end
 
       # HHs heatpump add-on
       inputs[339] = (inputs[339] / 0.6).round(1) unless inputs[339].nil?
@@ -120,20 +112,17 @@ namespace :bulk_update do
       inputs[348] = (( inputs[348] * demand_hot_water + inputs[48] * demand_space_heating ) / ( 0.5 * demand_hot_water + 0.15 * demand_space_heating )).round(1)  unless inputs[348].nil?
 
       # Sliders in HHs space heating should add up to 100%
-      sum = 
-      inputs[333]+
-      inputs[338]+
-      inputs[51 ]+
-      inputs[582]+
-      inputs[340]+
-      inputs[375]+
-      inputs[317]+
-      inputs[52 ]+
-      inputs[441]+
-      inputs[248]+
-      inputs[411]
+      share_group_inputs = [333, 338, 51, 582, 340, 375, 317, 52, 441, 248, 411]
+      sum = 0
+      share_group_inputs.each do |element|
+        sum = sum + inputs[element] unless inputs[element].nil?
+      end
       
       if sum>0.0
+      
+        share_group_inputs.each do |element|
+          inputs[element] = 0.0 if inputs[element].nil?
+        end
       
         factor = sum/100.0
         inputs[333] = (inputs[333]/factor).round(1)
@@ -151,20 +140,19 @@ namespace :bulk_update do
       end
       
       # Sliders in HHs hot water should add up to 100%
-      sum = 
-      inputs[446]+
-      inputs[421]+
-      inputs[420]+
-      inputs[444]+
-      inputs[445]+
-      inputs[347]+
-      inputs[439]+
-      inputs[346]+
-      inputs[435]+
-      inputs[443]
+      # Sliders in HHs space heating should add up to 100%
+      share_group_inputs = [421, 420, 444, 445, 446, 347, 439, 346, 435, 443]
+      sum = 0
+      share_group_inputs.each do |element|
+        sum = sum + inputs[element] unless inputs[element].nil?
+      end
       
       if sum>0.0 
         
+        share_group_inputs.each do |element|
+          inputs[element] = 0.0 if inputs[element].nil?
+        end
+
         factor = sum/100.0
         inputs[446]=(inputs[446]/factor).round(1)
         inputs[421]=(inputs[421]/factor).round(1)
@@ -179,16 +167,21 @@ namespace :bulk_update do
       end
       
       # Sliders in Buildings district heating should add up to 100%
-      sum =
-      inputs[386]+
-      inputs[388]+
-      inputs[385]+
-      inputs[593]
-      
+      share_group_inputs = [386, 388, 385, 593]
+      sum = 0
+      share_group_inputs.each do |element|
+        sum = sum + inputs[element] unless inputs[element].nil?
+      end
+
       # This is the new district heating input
       inputs[585] = sum.round(1)
       
       if sum>0.0
+
+        share_group_inputs.each do |element|
+          inputs[element] = 0.0 if inputs[element].nil?
+        end
+
         factor = sum/100.0        
         inputs[386]=(inputs[386]/factor).round(1)
         inputs[388]=(inputs[388]/factor).round(1)
@@ -197,8 +190,12 @@ namespace :bulk_update do
       end
       
       # Buildings insulation
-      inputs[381]=([inputs[381], inputs[382]].min).round(1)
-      
+      if inputs[381].nil?
+        inputs[381]= inputs[382] unless inputs[382].nil?
+      else
+        inputs[381]=([inputs[381], inputs[382]].min).round(1) unless inputs[382].nil?
+      end
+
       # Transport fuels should have gasoline - > 0 (new slider)
       inputs[588]=0.0
       
@@ -208,22 +205,37 @@ namespace :bulk_update do
       # Delete old inputs
       inputs.delete(48)
       inputs.delete(382)
-      
+
+      # Cost slider for fuel cell should be initialized at the correct 
+      # cost (depends on start-year of scenario)
+      if s.end_year == 2012
+        inputs[595] = -16.7
+      elsif s.end_year == 2013
+        inputs[595] = -33.3
+      elsif s.end_year == 2014
+        inputs[595] = -50
+      elsif s.end_year == 2015
+        inputs[595] = -66.7
+      elsif s.end_year.between?(2016,2019)
+        inputs[595] = -71.7
+      elsif s.end_year.between?(2020,2029)
+        inputs[595] = -75
+      elsif s.end_year.between?(2030,2039)
+        inputs[595] = -78.3
+      elsif s.end_year.between?(2040,2050)
+        inputs[595] = -81.7
+      end
       #puts inputs
-      
-      #inputs.each do |element|
-        #puts element[0].to_s + "," + element[1].to_s
-      #end
-      
+
       ################ END ####################################
       
       if @update_records
         puts "saving"
-        s.update_attributes!(:user_values => inputs) #if counter !=0
+        s.update_attributes!(:user_values => inputs) if counter !=0
       end
       
-      #counter += 1
-      #exit if counter ==  1
+      counter += 1
+      exit if counter == 100
     end
   end
 end
