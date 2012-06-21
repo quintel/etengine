@@ -68,6 +68,12 @@ namespace :bulk_update do
     #counter = 0
     Scenario.order('id').find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
+
+      if s.area_code.blank?
+        puts "skipping Scenario"
+        next
+      end
+
       begin
         inputs = s.user_values
       rescue
@@ -213,7 +219,7 @@ namespace :bulk_update do
       
       if @update_records
         puts "saving"
-        s.update_attributes!(:user_values => inputs)
+        s.update_attributes!(:user_values => inputs) #if counter !=0
       end
       
       #counter += 1
