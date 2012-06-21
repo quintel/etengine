@@ -17,7 +17,7 @@ class Gql
   # Initialize a Gql instance by passing a (api) scenario
   #
   #
-  #   
+  #
   # @example Initialize with scenario
   #   gql = ApiScenario.default.gql(prepare: true)
   #   gql.query(...)
@@ -32,7 +32,7 @@ class Gql
   #   gql.init_datasets
   #   gql.update_present
   #   gql.update_future
-  #   gql.present_graph.calculate   
+  #   gql.present_graph.calculate
   #   gql.future_graph.calculate
   #   gql.calculated = true
   #   gql.query(...)
@@ -151,7 +151,7 @@ class Gql
   # Run a query with the strategy defined in the parameter
   def query_with_modifier(query, strategy)
     key = query.respond_to?(:key) ? query.key : 'custom'
-    
+
     instrument("gql.query.#{key}.#{strategy}") do
       if strategy.nil?
         query_standard(query)
@@ -253,7 +253,8 @@ class Gql
   end
 
   def update_graph(graph, input, value)
-    graph.query(input, value)
+    # TODO: the disabled_in_current_area check should be moved somewhere else
+    graph.query(input, value) unless input.disabled_in_current_area?(self)
   end
 
   # Standard query without modifiers. Queries present and future graph.
