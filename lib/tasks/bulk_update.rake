@@ -225,17 +225,61 @@ namespace :bulk_update do
       elsif s.end_year.between?(2040,2050)
         inputs[595] = -81.7
       end
-      #puts inputs
+      
+      # Input for the new co-firing wood pellets slider based
+      # Values are determined based on user input of number of co-firing plants and coal plants
+      # Set to defaults if nil (not touched)
+      inputs[250] = 3.4 if inputs[250].nil?  # number_of_pulverized_coal
+      inputs[251] = 0.0 if inputs[251].nil?  # number_of_pulverized_coal CCS
+      inputs[551] = 2.1 if inputs[551].nil?  # central cola CHP
+      inputs[261] = 0.6 if inputs[261].nil?  # co-firing wood pellets
+      inputs[559] = 0.0 if inputs[559].nil?  # bio-coal share
+
+
+      sum_coal_plants = inputs[250]+inputs[251]+inputs[551]+inputs[261]
+      sum_co_firing_plants = inputs[261]
+      
+      if sum_coal_plants == 0.0
+        inputs[596] = 0.0 # co-firing share
+        inputs[559] = 0.0 # bio-coal
+        inputs[560] = 100.0 # coal share
+      elsif sum_co_firing_plants >= 0.5*sum_coal_plants
+        inputs[596] = 50.0 # Co-firing wood pellets slider is capped at 50%
+        if inputs[559] >= 50.0 
+          inputs[559] = 50.0
+          inputs[560] = 0.0
+        else
+          inputs[560] = (50.0 - inputs[559]).round(1)
+        end
+      else
+        inputs[596] = (100.0*sum_co_firing_plants/sum_coal_plants).round(1)
+        if  100.0 - inputs[559] - inputs[596] < 0.0
+          inputs[559] = (100.0 - inputs[596]).round(1)
+          inputs[560] = 0.0
+        else
+          inputs[560] = (100.0 - inputs[559] - inputs[596]).round(1)
+        end
+      end
+
+      puts inputs
+
+      if (inputs[559] + inputs[596] + inputs[560]).round(1) != 100.0
+        puts "Error! Sum of 559, 596 and 560 = " + (inputs[559] + inputs[596] + inputs[560]).to_s
+        exit 
+      end
+
+
+
 
       ################ END ####################################
       
       if @update_records
         puts "saving"
-        s.update_attributes!(:user_values => inputs) if counter !=0
+        #s.update_attributes!(:user_values => inputs) if counter !=0
       end
       
       counter += 1
-      exit if counter == 100
+      #exit if counter == 100
     end
   end
 end
