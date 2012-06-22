@@ -222,6 +222,7 @@ class ConverterApi
   attr_reader :converter, :dataset_key, :dataset_group
   # attributes updated by Converter#graph=
   attr_accessor :area, :graph
+  
   # dataset attributes of converter
   dataset_accessors [:preset_demand, :demand]
 
@@ -277,6 +278,15 @@ class ConverterApi
     @dataset_group = converter.dataset_group
   end
 
+  # ---- Access Qernel::Converter attributes ----------------------------
+  #
+  # MAP( .. ) and V( .. ) access ConverterApi objects and not Converter
+  # objects. So we need add methods refering converter variables.
+
+  def key
+    converter.key
+  end
+
   def energy_balance_group
     converter.energy_balance_group
   end
@@ -285,6 +295,14 @@ class ConverterApi
   #
   def preset_demand=(val)
     converter.preset_demand = val
+  end
+
+  def primary_demand
+    self.converter.primary_demand
+  end
+
+  def final_demand
+    self.converter.final_demand
   end
 
   # Is the calculated near the demand_expected_value?
@@ -386,14 +404,6 @@ class ConverterApi
   def self.create_input_link_method_and_execute(caller, method_id, carrier_name, side, method)
     create_input_link_method(method_id, carrier_name, side, method)
     caller.send(method_id)
-  end
-
-  def primary_demand
-    self.converter.primary_demand
-  end
-
-  def final_demand
-    self.converter.final_demand
   end
 
   #
