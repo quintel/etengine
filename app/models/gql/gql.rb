@@ -8,9 +8,6 @@ class Gql
   extend ActiveModel::Naming
   include Instrumentable
 
-
-  ENABLE_QUERY_CACHE_FOR_FUTURE = true
-
   attr_accessor :present_graph, :future_graph, :dataset, :scenario, :calculated
   attr_reader :graph_model, :sandbox_mode
 
@@ -19,16 +16,16 @@ class Gql
   #
   #
   # @example Initialize with scenario
-  #   gql = ApiScenario.default.gql(prepare: true)
+  #   gql = Scenario.default.gql(prepare: true)
   #   gql.query(...)
   #
   # @example Initialize manually:
-  #   gql = Gql::Gql.new(ApiScenario.default)
+  #   gql = Gql::Gql.new(Scenario.default)
   #   gql.prepare
   #   gql.query(...)
   #
   # @example Initialize with scenario and individually prepare the gql
-  #   gql = ApiScenario.default.gql(prepare: false)
+  #   gql = Scenario.default.gql(prepare: false)
   #   gql.init_datasets
   #   gql.update_present
   #   gql.update_future
@@ -79,9 +76,7 @@ class Gql
   #
   def future
     # Disable Caching of Gqueries until a smart solution has been found
-    # @future ||= if ENABLE_QUERY_CACHE_FOR_FUTURE && !scenario.test_scenario?
     #   QueryInterface.new(self, future_graph, :cache_prefix => "#{scenario.id}-#{scenario.updated_at}")
-    # else
     @future ||= QueryInterface.new(self, future_graph)
   end
 
