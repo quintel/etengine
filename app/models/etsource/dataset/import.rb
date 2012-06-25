@@ -122,39 +122,6 @@ module Etsource
       }
     end
 
-    # ---- Import Dynamic with Research Data ----------------------------------
-
-    def load_dataset_wizards
-      research_dataset = InputTool::ResearchDataset.area(country)
-      # Import dynamic dataset (can reliably lookup information of static dataset)
-      # This allows to lookup values from the static dataset
-      Dir.glob([base_dir, '_wizards', '*', "transformer.yml"].join('/')).each do |file|
-        wizard   = ::Etsource::Wizard.new(file.split("/")[-2])
-        renderer = ::Etsource::Dataset::Renderer.new(file, research_dataset, @dataset, wizard.config)
-
-        hsh = renderer.result
-        renderer.save_compiled_yaml(file.gsub('datasets', "compiled/#{country}"))
-        merge_hash_into_dataset!(hsh)
-      end
-    end
-
-    def merge_hash_into_dataset!(hsh)
-      # Dont make converters with keys :defaults and :globals
-      hsh.delete(:defaults)
-      hsh.delete(:globals)
-
-      hsh.each do |key,attributes|
-        if key == :area
-          # area is a special kid for now. dont hash keys or groups
-          @dataset.merge(key, attributes)
-        else
-          raise "No attributes/hashing defined for key `#{key}` in following data bucket. Check the dataset. \n `#{hsh.inspect}`" if attributes.nil?
-          attrs = {}; attributes.each{|k,v| attrs[k.to_sym] = v}
-          @dataset.merge(group_key(key), Hashpipe.hash(key) => attrs)
-        end
-      end
-    end
-
   protected
 
     # Messy legacy hack. Have no words for it right now.
