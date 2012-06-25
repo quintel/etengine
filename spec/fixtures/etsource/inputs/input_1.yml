@@ -9,3 +9,6 @@ updateable_period: future
 v1_legacy_unit: "%"
 attr_name: decrease_total
 factor: 100
+max_value: 100
+min_value: 0
+start_value: 50
