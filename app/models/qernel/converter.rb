@@ -218,12 +218,16 @@ public
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)
-    dataset_set(:preset_demand, safe_to_f(val)) 
-    update_initial_demand
+    dataset_set(:preset_demand, safe_to_f(val))
+    # this has to be set explicitly for now.
+    dataset_set(:demand, safe_to_f(val))
   end
 
+  # if demand is not set, use preset_demand.
   def demand
-    dataset_get(:demand) || update_initial_demand
+    dataset_fetch(:demand) { preset_demand }
+    # equivalent to:
+    # dataset_get(:demand) or dataset_set(:demand, preset_demand)
   end
 
   # Just calling to_f, would give wrong results nil.to_f => 0.0
@@ -438,28 +442,6 @@ protected
       # 2010-06-23: The normal case. Just take the highest value from outputs.
       # We did this to make the gas_extraction gas_import_export thing work
       outputs.map(&:internal_value).compact.sort_by(&:abs).last
-    end
-  end
-
-  # Updates the {demand} with the sum of preset_demand
-  # It is needed to call this method everytime
-  # we update either preset_demand, because
-  # both attributes can be updated through GQL, we have to make
-  # sure to always sum both values. 
-  #
-  # @return [Float] demand 
-  #
-  def update_initial_demand
-    @calculation_state = :update_initial_demand
-    preset = dataset_get(:preset_demand)
-
-    if preset.nil?
-      nil
-    else
-      total = 0.0
-      total += preset if preset
-
-      self.demand = total
     end
   end
 
