@@ -18,7 +18,7 @@ module Api
         # gql, future/present stuff. I'd like to get rid of the Current
         # object, too.
         #
-        @gql = @scenario.gql(:prepare => true)
+        @gql = @scenario.gql(prepare: true)
       rescue ActiveRecord::RecordNotFound
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
