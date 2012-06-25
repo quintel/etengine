@@ -31,7 +31,7 @@ class Scenario < ActiveRecord::Base
   include Scenario::UserUpdates
   include Scenario::Persistable
   include Scenario::InputGroups
-  
+
   store :user_values
 
   belongs_to :user
@@ -94,15 +94,6 @@ class Scenario < ActiveRecord::Base
       :use_fce => false,
       :end_year => 2040
     }.with_indifferent_access
-  end
-
-  def force_id(new_id)
-    if new_id
-      self.class.update_all("id = #{new_id}", "id = #{self.id}")
-      self.id = new_id
-    else
-      raise "force_id no id given. #{new_id.inspect}"
-    end
   end
 
   def area
@@ -169,7 +160,7 @@ class Scenario < ActiveRecord::Base
       values[id][:start_value] = dynamic_values[:start_value] if values[id]
     end
 
-    self.user_values.each do |id, user_value|
+    user_values.each do |id, user_value|
       values[id][:user_value] = user_value if values[id]
     end
 
