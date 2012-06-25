@@ -96,6 +96,16 @@ class Scenario < ActiveRecord::Base
     }.with_indifferent_access
   end
 
+  def self.new_attributes(settings = {})
+    settings ||= {}
+    attributes = Scenario.default_attributes.merge(:title => "API")
+    out = attributes.merge(settings)
+    # strip invalid attributes
+    valid_attributes = [column_names, 'scenario_id'].flatten
+    out.delete_if{|key,v| !valid_attributes.include?(key.to_s)}
+    out
+  end
+
   def area
     Area.get(area_code)
   end
@@ -127,16 +137,6 @@ class Scenario < ActiveRecord::Base
   def self.create_from_json(json_data)
     settings = JSON.parse(json_data)['settings']
     Scenario.default(settings)
-  end
-
-  def self.new_attributes(settings = {})
-    settings ||= {}
-    attributes = Scenario.default_attributes.merge(:title => "API")
-    out = attributes.merge(settings)
-    # strip invalid attributes
-    valid_attributes = [column_names, 'scenario_id'].flatten
-    out.delete_if{|key,v| !valid_attributes.include?(key.to_s)}
-    out
   end
 
   # If you want to "prepare" the gql in a different way (hook into methods, etc)
