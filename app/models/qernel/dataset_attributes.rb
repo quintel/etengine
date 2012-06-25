@@ -197,18 +197,10 @@ module Qernel::DatasetAttributes
   end
 
   def [](attr_name)
-    send(attr_name)
+    dataset_get(attr_name)
   end
 
   def []=(attr_name, value)
-    # Converter overrides the normal dataset_accessors with custom stuff for demand
-    # calculation. so we can stack multiple demands together
-    #
-    # attr_name_sym = attr_name.to_sym
-    # if attr_name_sym === :preset_demand
-    #  send("#{attr_name}=", value)
-    # else
-      self.send("#{attr_name}=", value)
-    # end
+    dataset_set(attr_name.to_sym, value)
   end
 end
