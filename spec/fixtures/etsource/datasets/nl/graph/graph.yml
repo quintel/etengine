@@ -1,5 +1,5 @@
-lft: {demand:   0}
-foo: {demand: 100}
+lft: {preset_demand:   0}
+foo: {preset_demand: 100}
 # bar: 
 # baz:
 lft-(electricity): {conversion: 1.0}
