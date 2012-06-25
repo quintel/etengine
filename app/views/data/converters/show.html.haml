@@ -76,27 +76,15 @@
       %th Present
       %th Future
       %th Change
+      %th Unit
   %tbody
-    %tr
-      %th demand
-      - result_fields(@pre,@fut, :demand)
-    %tr
-      %th preset_demand
-      - result_fields(@pre,@fut, :preset_demand)
-    %tr
-      %th demand_of_sustainable
-      - result_fields(@pre,@fut, :demand_of_sustainable)
-    %tr
-      %th weighted_carrier_cost_per_mj
-      - result_fields(@pre,@fut, :weighted_carrier_cost_per_mj)
-    %tr
-      %th weighted_carrier_co2_per_mj
-      - result_fields(@pre,@fut, :weighted_carrier_co2_per_mj)
-    %tr
-      %th sustainability_share
-      - result_fields(@pre,@fut, :sustainability_share)
+    :ruby
+      methods = [:demand, :preset_demand, :demand_of_sustainable,
+        :weighted_carrier_cost_per_mj, :weighted_carrier_co2_per_mj,
+        :sustainability_share]
+      methods += Qernel::ConverterApi.calculation_methods.sort
 
-    - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
+    - methods.each do |attr_name|
       :ruby
         present_value = @pre.send attr_name
         future_value  = @fut.send attr_name
@@ -109,6 +97,7 @@
         %td{:title => present_value}= auto_number present_value
         %td{:title => future_value}= auto_number future_value
         %td= "#{difference}%" if difference
+        %td= Qernel::ConverterApi.unit_for_calculation attr_name
     %tr
       %th Total Cost Per MWhe
       - result_fields(@pre,@fut) do |converter|
