@@ -39,7 +39,9 @@ module Gql::Grammar
       # @return [Numeric,Array] the result of {MAP}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a converter key.
       #
       def V(*args)
-        last_key = LOOKUP(args.last)
+        # Given: V(..., primary_demand_of( CARRIER(...) )) 
+        # args.last would be a Proc. Do not call a LOOKUP for Procs.
+        last_key = args.last.is_a?(Proc) ? [] : LOOKUP(args.last)
         last_key.flatten!
         
         if args.length == 1
