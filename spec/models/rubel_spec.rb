@@ -7,7 +7,7 @@ class RubelLookup
 end
 
 describe Rubel do
-  before { @rubel = Gql::Grammar::Sandbox.new(RubelLookup.new(foo: 3, bar: 2)) }
+  before { @rubel = Gql::Runtime::Sandbox.new(RubelLookup.new(foo: 3, bar: 2)) }
 
   it "should accept parameters for MAP" do
     @rubel.execute('MAP(0.12345, "round(1)")').should == 0.1

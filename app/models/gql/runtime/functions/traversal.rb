@@ -1,5 +1,5 @@
 
-module Gql::Grammar
+module Gql::Runtime
   module Functions
     # @example Example used in description
     #
