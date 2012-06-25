@@ -69,9 +69,6 @@ class ApiRequest
       scenario.reset!
       scenario.save
       scenario.reload
-      # DEBT: this shouldnt be needed:
-      @scenario = nil;
-      scenario
     end
     scenario.update_inputs_for_api(input, :sanitize_groups => sanitize_groups) if input
     scenario.use_fce = use_fce if use_fce
@@ -87,22 +84,10 @@ class ApiRequest
     end
   end
 
-  # manually assign gql to this request. This is particularly
-  # useful for testing.
-  def gql=(gql)
-    @gql = gql
-  end
-
   # Access point for the GQL.
   #
   def gql(options = {})
-    unless @gql
-      # This will load the graph and dataset from etsource
-      # -> unoptimized and slow. It passed all test suites.
-      options[:prepare] = true unless options.has_key?(:prepare)
-      @gql = scenario.gql(options)
-    end
-    @gql
+    @gql ||= scenario.gql(options)
   end
 
   # This method runs the requested gqueries
