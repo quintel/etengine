@@ -215,14 +215,6 @@ public
     @graph
   end
 
-  # See {Qernel::Converter} for difference of demand/preset_demand
-  #
-  def preset_demand=(val)
-    dataset_set(:preset_demand, safe_to_f(val))
-    # this has to be set explicitly for now.
-    dataset_set(:demand, safe_to_f(val))
-  end
-
   # if demand is not set, use preset_demand.
   def demand
     dataset_fetch(:demand) { preset_demand }
