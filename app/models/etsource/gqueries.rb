@@ -70,7 +70,7 @@ module Etsource
     end
 
     def from_file(f)
-      key = f.split('/').last.split('.').first
+      key = f.split('/').last.split('.').first.strip
       txt = File.read(f)
 
       comment_lines  = txt.lines.select{|l| l.match(/^#/)}

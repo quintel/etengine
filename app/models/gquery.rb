@@ -1,28 +1,23 @@
-# == Schema Information
-#
-# Table name: gqueries
-#
-#  id              :integer(4)      not null, primary key
-#  key             :string(255)
-#  query           :text
-#  name            :string(255)
-#  description     :text
-#  created_at      :datetime
-#  updated_at      :datetime
-#  not_cacheable   :boolean(1)      default(FALSE)
-#  unit            :string(255)
-#  deprecated_key  :string(255)
-#  gquery_group_id :integer(4)
-#
-
 ##
 # A Gquery holds a specific GQL query. It mainly consists of:
 # - key: other gqueries can embed this query using the key. E.g. SUM(QUERY(foo),QUERY(bar))
 # - query: the GQL query in a human readable plain text format.
 #
-#
-class Gquery < ActiveRecord::Base
+class Gquery
   include InMemoryRecord
+  extend ActiveModel::Naming
+
+  attr_accessor :key, :description, :query, :unit, :deprecated_key, :gquery_group
+
+  def initialize(attributes={})
+    attributes && attributes.each do |name, value|
+      send("#{name}=", value) if respond_to? name.to_sym
+    end
+  end
+
+  def persisted?
+    false
+  end
 
   def self.load_records
     h = {}
@@ -36,21 +31,6 @@ class Gquery < ActiveRecord::Base
 
   GQL_MODIFIERS = %(present future historic stored)
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
-
-  validates_presence_of :key
-  validates_presence_of :query
-  validates_exclusion_of :key, :in => %w( null undefined ), :on => :create, :message => "extension %s is not allowed"
-
-  belongs_to :gquery_group
-
-  scope :by_groups, lambda{|*gids|
-    gids = gids.compact.reject(&:blank?)
-    where(:gquery_group_id => gids.compact) unless gids.compact.empty?
-  }
-
-  after_initialize do |gquery|
-    self.key = self.key.strip if self.key
-  end
 
   def id
     lookup_id
