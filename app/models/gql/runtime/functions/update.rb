@@ -113,13 +113,14 @@ module Gql::Runtime
             input_value    = input_value.first if input_value.is_a?(::Array)
             original_value = big_decimal(object[attribute_name].to_s)
 
-            object[attribute_name] = case update_strategy
-            when :absolute then input_value
-            when :relative_total
-              original_value + (original_value * input_value)
-            when :relative_per_year
-              original_value * ((1.0 + input_value) ** scope.scenario.years)
-            end.to_f
+            updated_value = case update_strategy
+              when :absolute then input_value
+              when :relative_total
+                original_value + (original_value * input_value)
+              when :relative_per_year
+                original_value * ((1.0 + input_value) ** scope.scenario.years)
+              end
+            object.send "#{attribute_name}=", updated_value.to_f
           else
             # this will not execute...
             raise "UPDATE: objects not found: #{value_terms}"
