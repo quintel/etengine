@@ -47,7 +47,7 @@ module Etsource
     def export
       FileUtils.mkdir_p(base_dir)
       File.open(topology_file, 'w') do |out|
-        gql = Scenario.default.gql
+        gql = Scenario.default.gql(prepare: false)
         gql.present_graph.converters.each do |converter|
           out << converter.to_topology
           out << "\n\n"
