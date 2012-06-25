@@ -73,10 +73,6 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  def fce_settings=(fce_settings)
-    Rails.logger.warn("fce_settings is deprecated")
-  end
-
   def test_scenario=(flag)
     @test_scenario = flag
   end
