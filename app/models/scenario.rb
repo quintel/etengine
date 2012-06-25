@@ -133,29 +133,19 @@ class Scenario < ActiveRecord::Base
     out
   end
 
+  # If you want to "prepare" the gql in a different way (hook into methods, etc)
+  #   scenario.gql(prepare: false)
   def gql(options = {})
-    # Passing a scenario as an argument to the gql will load the graph and dataset from ETsource.
-    @gql ||= Gql::Gql.new(self)
-    # At this point gql is not "prepared" see {Gql::Gql#prepare}.
-    # We could force it here to always prepare, but that would slow things down
-    # when nothing has changed in a scenario. Uncommenting this would decrease performance
-    # but could get rid of bugs introduced by forgetting to prepare in some cases when we
-    # access the graph through the gql (e.g. @gql.present_graph.converters.map(&:demand)).
-
-    prepare_gql if options[:prepare] == true
-    @gql
-  end
-
-  def prepare_gql
-    gql.prepare
-    gql
+    unless @gql
+      @gql = Gql::Gql.new(self)
+      @gql.prepare if options.fetch(:prepare, true)
+    end
+   @gql
   end
 
   # The values for the sliders for this api_scenario
   #
   def input_values
-    prepare_gql
-
     values = Rails.cache.fetch("inputs.user_values.#{area_code}") do
       Input.static_values(gql)
     end
