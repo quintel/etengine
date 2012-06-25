@@ -103,6 +103,19 @@ class Scenario < ActiveRecord::Base
     end
   end
 
+  def area
+    Area.get(area_code)
+  end
+
+  def area_input_values
+    hash = area[:input_values]
+    if hash.present?
+      YAML::load(hash).with_indifferent_access
+    else
+      {}
+    end
+  end
+
   def start_year
     START_YEAR
   end
