@@ -30,6 +30,8 @@
 class Scenario < ActiveRecord::Base
   include Scenario::UserUpdates
   include Scenario::Persistable
+  include Scenario::InputGroups
+  
   store :user_values
 
   belongs_to :user
@@ -220,8 +222,4 @@ class Scenario < ActiveRecord::Base
     options.merge!(:except => [:user_values])
     super(options)
   end
-
-  # add all the attributes and methods that are modularized in calculator/
-  # loads all the "open classes" in calculator
-  Dir["app/models/scenario/*.rb"].each {|file| require_dependency file }
 end

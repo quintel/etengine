@@ -1,10 +1,7 @@
-class Scenario < ActiveRecord::Base
+# Methods to deal with groups of sliders.
+module Scenario::InputGroups
+  extend ActiveSupport::Concern
 
-  ##############################
-  # Methods to deal with groups of sliders.
-  ##############################
-
-  ##
   # If a user attempts to update a share group and the group does not
   # add up to 100% we should remove all the user_updates of any input
   # in that group. Otherwise this scenario will be have errors for the
@@ -23,19 +20,13 @@ class Scenario < ActiveRecord::Base
     save unless test_scenario?
   end
 
-  ##
   # @return [Boolean] true if there is a share_group that doesn't add up to 100%
-  #
-  # @tested 2011-01-22 seb
   #
   def used_groups_add_up?
     used_groups_not_adding_up.empty?
   end
 
-  ##
   # Only #used_groups where elements do not add up to 100%
-  #
-  # @tested 2011-01-22 seb
   #
   def used_groups_not_adding_up
     used_groups.reject do |group, elements|
@@ -44,12 +35,9 @@ class Scenario < ActiveRecord::Base
     end
   end
 
-  ##
   # A hash of input (share-) groups and their inputs.
   #
   # @return [Hash] group name => [Array<Input>]
-  #
-  # @tested 2011-01-22 seb
   #
   def used_groups
     groups = Input.inputs_grouped
