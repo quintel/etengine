@@ -1,4 +1,4 @@
-module Gql::Grammar
+module Gql::Runtime
   module Functions
     module Lookup
 
