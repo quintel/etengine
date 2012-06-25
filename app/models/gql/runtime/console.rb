@@ -1,4 +1,4 @@
-module Gql::Grammar
+module Gql::Runtime
   # Used for GQL console
   class Console < Rubel::Runtime::Console
     attr_reader :scope
@@ -7,16 +7,16 @@ module Gql::Grammar
       @scope = scope
     end
 
-    include ::Gql::Grammar::Functions::Legacy
-    include ::Gql::Grammar::Functions::Constants
-    include ::Gql::Grammar::Functions::Traversal
-    include ::Gql::Grammar::Functions::Aggregate
-    include ::Gql::Grammar::Functions::Control
-    include ::Gql::Grammar::Functions::Lookup
-    include ::Gql::Grammar::Functions::Policy
-    include ::Gql::Grammar::Functions::Update
-    include ::Gql::Grammar::Functions::Helper
-    include ::Gql::Grammar::Functions::Core
+    include ::Gql::Runtime::Functions::Legacy
+    include ::Gql::Runtime::Functions::Constants
+    include ::Gql::Runtime::Functions::Traversal
+    include ::Gql::Runtime::Functions::Aggregate
+    include ::Gql::Runtime::Functions::Control
+    include ::Gql::Runtime::Functions::Lookup
+    include ::Gql::Runtime::Functions::Policy
+    include ::Gql::Runtime::Functions::Update
+    include ::Gql::Runtime::Functions::Helper
+    include ::Gql::Runtime::Functions::Core
     
     # A Pry prompt that logs what user enters to a log file
     # so it can easily be copy pasted by users.
