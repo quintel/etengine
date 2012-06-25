@@ -95,7 +95,7 @@ module Api
         # TODO: handle scenario ownership!
         @scenario.update_attributes(attrs)
         begin
-          gql = @scenario.gql(:prepare => true)
+          gql = @scenario.gql(prepare: true)
         rescue Exception => e
           # TODO: Scenario#gql should raise helpful exceptions.
           render :json => {:errors => [e.to_s]}, :status => 500 and return

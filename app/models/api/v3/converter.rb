@@ -7,7 +7,7 @@ module Api
         @code     = key
         @key      = key
         @scenario = scenario
-        @gql      = @scenario.gql(:prepare => true)
+        @gql      = @scenario.gql(prepare: true)
         @present  = @gql.present_graph.graph.converter(@key) rescue nil
         @future   = @gql.future_graph.graph.converter(@key) rescue nil
         if @present.nil? || @future.nil?
