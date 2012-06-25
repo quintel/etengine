@@ -9,6 +9,7 @@ class Qernel::ConverterApi
     end
   end
   attributes_required_for :fuel_cost_raw_material_per_mje, [:electricity_output]
+  unit_for_calculation :fuel_cost_raw_material_per_mje, 'euro'
 
 
   def fuel_cost_raw_material_per_mj
@@ -17,6 +18,7 @@ class Qernel::ConverterApi
     end
   end
   attributes_required_for :fuel_cost_raw_material_per_mj, [:useful_output]
+  unit_for_calculation :fuel_cost_raw_material_per_mj, 'euro'
 
 
   def electricity_output
@@ -75,7 +77,7 @@ class Qernel::ConverterApi
     end
   end
   attributes_required_for :fuel_costs_total, [
-    :demand, :weighted_carrier_cost_per_mj  
+    :demand, :weighted_carrier_cost_per_mj
   ]
 
   # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.

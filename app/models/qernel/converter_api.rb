@@ -40,6 +40,7 @@ module Qernel
 class ConverterApi
   include MethodMetaData
   include DatasetAttributes
+  include CalculationUnits
 
   def self.dataset_group; :graph; end
 
@@ -222,7 +223,7 @@ class ConverterApi
   attr_reader :converter, :dataset_key, :dataset_group
   # attributes updated by Converter#graph=
   attr_accessor :area, :graph
-  
+
   # dataset attributes of converter
   dataset_accessors [:preset_demand, :demand]
 
