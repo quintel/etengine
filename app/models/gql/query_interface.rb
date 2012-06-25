@@ -19,8 +19,8 @@ module Gql
     attr_accessor :graph
     attr_reader :options, :gql, :rubel
 
-    # @param [Gql::Gql]
-    # @param [Hash] options 
+    # @param [Gql::Gql] gql The gql instance, to make QUERY_PRESENT/FUTURE possible
+    # @param [Qernel::Graph] graph 
     # @option options [Boolean] :cache_prefix (nil) 
     #   Set a prefix for the cache key. Changing the prefix will invalidate the caches.
     #   Use this wisely. E.g. for the present graph, the graph.id is recommended over 
