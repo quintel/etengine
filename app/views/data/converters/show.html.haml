@@ -6,9 +6,7 @@
 
 .header= @converter_present
 
-%h3 Info
-
-%table
+%table.floating
   %tr
     %td Sector
     %td= @converter_present.sector_key
@@ -29,29 +27,29 @@
       = link_to 'Present', {:format => 'svg'}, :target => :blank
       = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
 
-%h3 Future Input / Outputs
-= render 'converter_links'
 
 - if @converter_present.groups.include?(:cost_traditional_heat)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
   = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_electricity_production)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
   = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_heat_pumps)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::HEAT_PUMP_VALUES
   = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_chps)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::CHP_VALUES
   = render "data/converters/details"
 
-%h3 Attributes
 
-%table
+.clear
+
+%h3 Future Input / Outputs
+= render 'converter_links'
+
+%h3 Attributes and Calculations
+
+%table.floating
   %thead
     %tr
       %th Converter Attributes
@@ -67,12 +65,10 @@
           %th= attr_name
           - result_fields(@pre,@fut,attr_name)
 
-%h3 Calculations
-
-%table
+%table.floating
   %thead
     %tr
-      %th Calculations
+      %th Converter Calculations
       %th Present
       %th Future
       %th Change
@@ -106,7 +102,7 @@
       %th total_losses
       - result_fields(@pre.converter,@fut.converter, :total_losses)
 
-  %table
+  %table.floating
     %thead
       %tr
         %th Final and primary demand
@@ -132,6 +128,8 @@
           %th== Primary Demand of #{carrier.key}
           - result_fields(@pre,@fut) do |converter|
             - converter.primary_demand_of_carrier(carrier.key.to_sym)
+
+.clear
 
 %h3 References
 
