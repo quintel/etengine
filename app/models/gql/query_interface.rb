@@ -31,8 +31,8 @@ module Gql
     #
     def initialize(gql, graph, options = {})
       @rubel = case options.fetch(:sandbox_mode, :sandbox)
-               when :sandbox then Grammar::Sandbox.new(self)
-               when :console then Grammar::Console.new(self)
+               when :sandbox then Runtime::Sandbox.new(self)
+               when :console then Runtime::Console.new(self)
                end
       @graph = graph
       @gql = gql

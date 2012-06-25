@@ -89,7 +89,7 @@ class Gquery < ActiveRecord::Base
   # @return [lambda]
   #
   def self.rubel_proc(str)
-    @rubel ||= Gql::Grammar::Sandbox.new
+    @rubel ||= Gql::Runtime::Sandbox.new
     @rubel.sanitized_proc(convert_to_rubel!(str.dup))
   end
 
