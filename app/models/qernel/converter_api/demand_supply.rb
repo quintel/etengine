@@ -22,13 +22,19 @@ class Qernel::ConverterApi
   end
   alias_method :output_of_sustainable, :demand_of_sustainable
 
+  def output_of(*carriers)
+    carriers.map do |c| 
+      key = c.respond_to?(:key) ? c.key : c
+      output_of_carrier(key)
+    end.compact.sum
+  end
+
   def output_of_carrier(carrier)
     c = converter.output(carrier)
     (c and c.external_value) || 0.0
   end
 
 
-  ##
   # Helper method to get all heat inputs (useable_heat, hot_water, steam_hot_wather)
   #
   def input_of_heat_carriers
@@ -37,7 +43,6 @@ class Qernel::ConverterApi
     end
   end
 
-  ##
   # Helper method to get all heat outputs (useable_heat, hot_water, steam_hot_wather)
   #
   def output_of_heat_carriers
@@ -73,6 +78,14 @@ class Qernel::ConverterApi
   def demand_of_carrier(carrier)
     Rails.logger.info('demand_of_* is deprecated. Use output_of_* instead')
     output_of_carrier(carrier)
+  end
+
+
+  def input_of(*carriers)
+    carriers.map do |c| 
+      key = c.respond_to?(:key) ? c.key : c
+      input_of_carrier(key)
+    end.compact.sum
   end
 
   def input_of_carrier(carrier)
