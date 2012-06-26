@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe Data::AreasController do
   let(:admin)     { Factory :admin }
-  let!(:area)     { Factory :area, :country => 'nl' }
 
   before do
     login_as(admin)
