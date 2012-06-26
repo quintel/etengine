@@ -50,14 +50,12 @@ class Carrier
 
   attr_accessor :id, :key, :graph
 
-  # @param id [int]
-  # @param key [Symbol]
-  # @param infinite [Float]
+  # @example
+  #   Qernel::Carrier.new key: :electricity 
   #
   def initialize(opts)
     @key      = opts[:key].andand.to_sym
-    @id       = opts[:id] || @key
-    @infinite = opts[:infinite]
+    @id       = @key
 
     # ----- Micro optimization --------------------
     
@@ -69,12 +67,6 @@ class Carrier
   end
 
   def self.dataset_group; :carriers; end
-
-  def infinite
-    # temporarly check whether infinite comes from the qernel::carrier 
-    # if not available it's inside the dataset.
-    @infinite || dataset_get(:infinite)
-  end
 
   # The effective total co2 emission that gets emitted from 
   # exploration until waste treatment. The user can change the
@@ -88,14 +80,6 @@ class Carrier
     # can be overwritten by Fce plugin
     dataset_fetch(:co2_per_mj) do
       co2_conversion_per_mj
-    end
-  end
-
-  def ==(other)
-    if other.is_a?(Symbol)
-      self.key === other
-    else
-      self.id == other.id
     end
   end
 
