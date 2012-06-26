@@ -217,7 +217,10 @@ class Graph
     self.converters.select{|c| c.use_key == use_key_sym }
   end
 
-  ##
+  def sectors
+    converters.map(&:sector_key).uniq.compact
+  end
+
   # Return all converters in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
