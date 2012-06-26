@@ -7,7 +7,7 @@ module GraphvizHelper
   end
 
   def graphviz_toggle_sectors
-    out = select_tag 'selected', options_for_select([*Qernel::Converter::SECTORS.values, 'all'])
+    out = select_tag 'selected', options_for_select([*@gql.present_graph.sectors, 'all'])
     out += link_to 'show', 'javascript:GRAPH.show_selected()'
     out += ", "
     out += link_to 'hide', 'javascript:GRAPH.hide_selected()'

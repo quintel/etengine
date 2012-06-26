@@ -98,18 +98,6 @@ class Converter
     :key
   ]
 
-  SECTORS = {
-    1 => :households,
-    2 => :industry,
-    3 => :transport,
-    4 => :agriculture,
-    5 => :energy,
-    6 => :other,
-    7 => :environment,
-    8 => :buildings,
-    9 => :neighbor
-  }
-
   attr_reader  :id, 
                :output_links, 
                :input_links, 

@@ -83,8 +83,6 @@ module Gql::Runtime
 
       # Returns an Array of {Qernel::Converter} for given sector.
       #
-      # See Qernel::Converter::SECTORS
-      #
       # Examples
       #
       #   SECTORS(households)
