@@ -23,7 +23,7 @@ class Qernel::ConverterApi
   alias_method :output_of_sustainable, :demand_of_sustainable
 
   def output_of(*carriers)
-    carriers.map do |c| 
+    carriers.flatten.map do |c| 
       key = c.respond_to?(:key) ? c.key : c
       output_of_carrier(key)
     end.compact.sum
@@ -82,7 +82,7 @@ class Qernel::ConverterApi
 
 
   def input_of(*carriers)
-    carriers.map do |c| 
+    carriers.flatten.map do |c| 
       key = c.respond_to?(:key) ? c.key : c
       input_of_carrier(key)
     end.compact.sum
