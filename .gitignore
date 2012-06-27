@@ -2,6 +2,7 @@ gqlconsole/*
 bin/*
 db/dumps
 db/sphinx
+db/structure.sql
 config/development.sphinx.conf
 log/*
 config/database.yml

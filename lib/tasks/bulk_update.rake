@@ -208,22 +208,20 @@ namespace :bulk_update do
 
       # Cost slider for fuel cell should be initialized at the correct 
       # cost (depends on start-year of scenario)
-      if s.end_year == 2012
-        inputs[595] = -16.7
-      elsif s.end_year == 2013
-        inputs[595] = -33.3
+      if s.end_year == 2013
+        inputs[595] = -20.0
       elsif s.end_year == 2014
-        inputs[595] = -50
+        inputs[595] = -40
       elsif s.end_year == 2015
-        inputs[595] = -66.7
+        inputs[595] = -60.0
       elsif s.end_year.between?(2016,2019)
-        inputs[595] = -71.7
+        inputs[595] = -66.0
       elsif s.end_year.between?(2020,2029)
-        inputs[595] = -75
+        inputs[595] = -70.0
       elsif s.end_year.between?(2030,2039)
-        inputs[595] = -78.3
+        inputs[595] = -74.0
       elsif s.end_year.between?(2040,2050)
-        inputs[595] = -81.7
+        inputs[595] = -78.0
       end
       
       # Input for the new co-firing wood pellets slider based
