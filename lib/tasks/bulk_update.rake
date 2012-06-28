@@ -259,7 +259,7 @@ namespace :bulk_update do
         end
       end
 
-      puts inputs
+      #puts inputs
 
       if (inputs[559] + inputs[596] + inputs[560]).round(1) != 100.0
         puts "Error! Sum of 559, 596 and 560 = " + (inputs[559] + inputs[596] + inputs[560]).to_s
