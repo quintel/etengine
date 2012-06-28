@@ -69,8 +69,9 @@ namespace :bulk_update do
     Scenario.order('id').find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
-      if s.area_code.blank?
+      if s.area_code.blank? || counter == 0
         puts "skipping Scenario"
+        counter += 1
         next
       end
 
@@ -136,11 +137,19 @@ namespace :bulk_update do
         inputs[441] = (inputs[441]/factor).round(1)
         inputs[248] = (inputs[248]/factor).round(1)
         inputs[411] = (inputs[411]/factor).round(1)
+<<<<<<< HEAD
 
+=======
+      
+
+        if !(inputs[333] + inputs[338] + inputs[51 ] + inputs[582] + inputs[340] + inputs[375] + inputs[317] + inputs[52 ] + inputs[441] + inputs[248] + inputs[411]).round(1).between?(99.9, 100.1)
+          puts "Error! Sum of 333, 338, 51, 582, 340, 375, 317, 52, 441, 248, 411 = " + (inputs[333] + inputs[338] + inputs[51 ] + inputs[582] + inputs[340] + inputs[375] + inputs[317] + inputs[52 ] + inputs[441] + inputs[248] + inputs[411]).to_s
+          exit 
+        end
+>>>>>>> Added some checks to the script
       end
 
       # Sliders in HHs hot water should add up to 100%
-      # Sliders in HHs space heating should add up to 100%
       share_group_inputs = [421, 420, 444, 445, 446, 347, 439, 346, 435, 443]
       sum = 0
       share_group_inputs.each do |element|
@@ -164,13 +173,19 @@ namespace :bulk_update do
         inputs[346]=(inputs[346]/factor).round(1)
         inputs[435]=(inputs[435]/factor).round(1)
         inputs[443]=(inputs[443]/factor).round(1)
+  
+        if !(inputs[446] + inputs[421] + inputs[420] + inputs[444] + inputs[445] + inputs[347] + inputs[439] + inputs[346] + inputs[435] + inputs[443]).round(1).between?(99.9, 100.1)
+          puts "Error! Sum of inputs[446] + inputs[421] + inputs[420] + inputs[444] + inputs[445] + inputs[347] + inputs[439] + inputs[346] + inputs[435] + inputs[443] = " + (inputs[446] + inputs[421] + inputs[420] + inputs[444] + inputs[445] + inputs[347] + inputs[439] + inputs[346] + inputs[435] + inputs[443]).to_s
+          exit 
+        end
       end
 
       # Sliders in Buildings district heating should add up to 100%
       share_group_inputs = [386, 388, 385, 593]
-      sum = 0
+      sum = 0.0
       share_group_inputs.each do |element|
         sum = sum + inputs[element] unless inputs[element].nil?
+        puts "#{element} " + inputs[element].to_s unless inputs[element].nil?
       end
 
       # This is the new district heating input
@@ -188,6 +203,23 @@ namespace :bulk_update do
         inputs[385]=(inputs[385]/factor).round(1)
         inputs[593]=(inputs[593]/factor).round(1)
       end
+
+      # This is the new district heating input
+      inputs[585] = sum.round(1)
+      
+      # Sliders in Buildings space heating should (still) add up to 100%
+      share_group_inputs = [383, 394, 390, 387, 389, 409, 406, 585]
+      sum = 0.0
+      share_group_inputs.each do |element|
+        sum = sum + inputs[element] unless inputs[element].nil?
+      end
+      
+      if sum>0.0 
+        if !(sum).round(1).between?(99.9, 100.1)
+          puts "Error! Sum of inputs = inputs[383] + inputs[394] + inputs[390] + inputs[387] + inputs[389] + inputs[409] + inputs[406] + inputs[585] = " + sum.to_s
+          exit 
+        end
+      end 
 
       # Buildings insulation
       if inputs[381].nil?
@@ -266,18 +298,16 @@ namespace :bulk_update do
         exit
       end
 
-
-
-
       ################ END ####################################
 
       if @update_records
         puts "saving"
-        s.update_attributes!(:user_values => inputs) if counter !=0
+
+        #s.update_attributes!(:user_values => inputs)
       end
 
       counter += 1
-      #exit if counter == 100
+      exit if counter == 100
     end
   end
 end
