@@ -26,6 +26,7 @@
           = link_to 'Carriers', data_carriers_path
           = link_to 'Converters', data_converters_path
           = link_to 'Gqueries', data_gqueries_path
+          = link_to 'GQL', test_data_gqueries_path
           = link_to "ETSource", etsource_root_path
           = link_to "Checks", :controller => 'data/checks', :action => 'expected_demand'
           = link_to "Inputs", data_inputs_path
@@ -39,7 +40,7 @@
       #flash
         - flash.each do |k,msg|
           .flash{:class => k}= msg
-      
+
       #content= yield
       #footer
         = yield :footer
