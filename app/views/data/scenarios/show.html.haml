@@ -19,10 +19,10 @@
         %tr
           %th Id
           %th Key
-          %th Value 
+          %th Value
       - @scenario.user_values.sort.each do |pair|
         - k, v = pair
-        - input = Input.find(k) rescue nil
+        - input = Input.get(k) rescue nil
         %tr
           %td= k
           - if input
@@ -30,7 +30,7 @@
           - else
             %td.red missing!
           %td= v
-  
+
 
 %p
   = link_to 'edit', edit_data_scenario_path(:id => @scenario)
