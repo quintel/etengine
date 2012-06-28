@@ -96,7 +96,7 @@ namespace :bulk_update do
       #
       # To see what's going on
       # inputs.to_yaml
-      
+
       ##########################################################
       # Following lines describe the changes of scenarios in the
       # deploy of July 10 2012
@@ -104,7 +104,7 @@ namespace :bulk_update do
 
       # HHs heatpump add-on
       inputs[339] = (inputs[339] / 0.6).round(1) unless inputs[339].nil?
-      
+
       # HHs solar thermal panel
       demand_space_heating = 298.91
       demand_hot_water = 96.17
@@ -117,13 +117,13 @@ namespace :bulk_update do
       share_group_inputs.each do |element|
         sum = sum + inputs[element] unless inputs[element].nil?
       end
-      
+
       if sum>0.0
-      
+
         share_group_inputs.each do |element|
           inputs[element] = 0.0 if inputs[element].nil?
         end
-      
+
         factor = sum/100.0
         inputs[333] = (inputs[333]/factor).round(1)
         inputs[338] = (inputs[338]/factor).round(1)
@@ -136,9 +136,9 @@ namespace :bulk_update do
         inputs[441] = (inputs[441]/factor).round(1)
         inputs[248] = (inputs[248]/factor).round(1)
         inputs[411] = (inputs[411]/factor).round(1)
-      
+
       end
-      
+
       # Sliders in HHs hot water should add up to 100%
       # Sliders in HHs space heating should add up to 100%
       share_group_inputs = [421, 420, 444, 445, 446, 347, 439, 346, 435, 443]
@@ -146,9 +146,9 @@ namespace :bulk_update do
       share_group_inputs.each do |element|
         sum = sum + inputs[element] unless inputs[element].nil?
       end
-      
-      if sum>0.0 
-        
+
+      if sum>0.0
+
         share_group_inputs.each do |element|
           inputs[element] = 0.0 if inputs[element].nil?
         end
@@ -165,7 +165,7 @@ namespace :bulk_update do
         inputs[435]=(inputs[435]/factor).round(1)
         inputs[443]=(inputs[443]/factor).round(1)
       end
-      
+
       # Sliders in Buildings district heating should add up to 100%
       share_group_inputs = [386, 388, 385, 593]
       sum = 0
@@ -175,20 +175,20 @@ namespace :bulk_update do
 
       # This is the new district heating input
       inputs[585] = sum.round(1)
-      
+
       if sum>0.0
 
         share_group_inputs.each do |element|
           inputs[element] = 0.0 if inputs[element].nil?
         end
 
-        factor = sum/100.0        
+        factor = sum/100.0
         inputs[386]=(inputs[386]/factor).round(1)
         inputs[388]=(inputs[388]/factor).round(1)
         inputs[385]=(inputs[385]/factor).round(1)
-        inputs[593]=(inputs[593]/factor).round(1)     
+        inputs[593]=(inputs[593]/factor).round(1)
       end
-      
+
       # Buildings insulation
       if inputs[381].nil?
         inputs[381]= inputs[382] unless inputs[382].nil?
@@ -198,15 +198,15 @@ namespace :bulk_update do
 
       # Transport fuels should have gasoline - > 0 (new slider)
       inputs[588]=0.0
-      
+
       # Heavy fuel oil should be zero (new slider)
       inputs[589]=0.0
-      
+
       # Delete old inputs
       inputs.delete(48)
       inputs.delete(382)
 
-      # Cost slider for fuel cell should be initialized at the correct 
+      # Cost slider for fuel cell should be initialized at the correct
       # cost (depends on start-year of scenario)
       if s.end_year == 2013
         inputs[595] = -20.0
@@ -223,7 +223,7 @@ namespace :bulk_update do
       elsif s.end_year.between?(2040,2050)
         inputs[595] = -78.0
       end
-      
+
       # Input for the new co-firing wood pellets slider based
       # Values are determined based on user input of number of co-firing plants and coal plants
       # Set to defaults if nil (not touched)
@@ -236,14 +236,14 @@ namespace :bulk_update do
 
       sum_coal_plants = inputs[250]+inputs[251]+inputs[551]+inputs[261]
       sum_co_firing_plants = inputs[261]
-      
+
       if sum_coal_plants == 0.0
         inputs[596] = 0.0 # co-firing share
         inputs[559] = 0.0 # bio-coal
         inputs[560] = 100.0 # coal share
       elsif sum_co_firing_plants >= 0.5*sum_coal_plants
         inputs[596] = 50.0 # Co-firing wood pellets slider is capped at 50%
-        if inputs[559] >= 50.0 
+        if inputs[559] >= 50.0
           inputs[559] = 50.0
           inputs[560] = 0.0
         else
@@ -263,19 +263,19 @@ namespace :bulk_update do
 
       if (inputs[559] + inputs[596] + inputs[560]).round(1) != 100.0
         puts "Error! Sum of 559, 596 and 560 = " + (inputs[559] + inputs[596] + inputs[560]).to_s
-        exit 
+        exit
       end
 
 
 
 
       ################ END ####################################
-      
+
       if @update_records
         puts "saving"
-        #s.update_attributes!(:user_values => inputs) if counter !=0
+        s.update_attributes!(:user_values => inputs) if counter !=0
       end
-      
+
       counter += 1
       #exit if counter == 100
     end
