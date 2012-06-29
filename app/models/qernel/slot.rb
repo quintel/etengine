@@ -152,6 +152,14 @@ class Slot
     end
   end
 
+  def siblings
+    if input?
+      converter.inputs - [self]
+    else
+      converter.outputs - [self]
+    end
+  end
+
   # --------- Value -----------------------------------------------------------
 
   # Expected value of this slot. Must equal to the actual value (sum of link values * conversion)
@@ -179,7 +187,7 @@ class Slot
   #
   def external_value
     values = links.map(&:value)
-    values.compact.sum.to_f
+    values.compact.sum.to_f    
   end
 
   # Used for calculation of flexible links.

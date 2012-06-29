@@ -40,6 +40,10 @@ class Gquery
     @lookup_id ||= Hashpipe.hash(key)
   end
 
+  def group_key
+    gquery_group.try :group_key
+  end
+
   # As a tribute to Ed Posnak I leave the following comment where it is.
   # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
 

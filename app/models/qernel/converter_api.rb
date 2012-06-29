@@ -40,6 +40,7 @@ module Qernel
 class ConverterApi
   include MethodMetaData
   include DatasetAttributes
+  include CalculationUnits
 
   def self.dataset_group; :graph; end
 
@@ -116,9 +117,8 @@ class ConverterApi
 
   ATTRIBUTES_USED = ATTRIBUTE_GROUPS.values.flatten
 
-  # For the data/converter/show page we need grouping of the attributes
-  # these atrribut groups should only be used to show the values in the data section
-
+  # For the data/converter/show page we need grouping of the attributes. These
+  # attribute groups should only be used to show the values in the data section
   ELECTRICITY_PRODUCTION_VALUES  =  {
     :technical => {
       :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
@@ -222,7 +222,7 @@ class ConverterApi
   attr_reader :converter, :dataset_key, :dataset_group
   # attributes updated by Converter#graph=
   attr_accessor :area, :graph
-  
+
   # dataset attributes of converter
   dataset_accessors [:preset_demand, :demand]
 

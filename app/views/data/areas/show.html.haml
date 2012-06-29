@@ -1,13 +1,15 @@
-- breadcrumb "Area: #{@area.area}"
+- breadcrumb "Area: #{@area_present.area}"
 
 %table
+  %thead
+    %tr
+      %th
+      %th Present
+      %th Future
   %tbody
-    - Qernel::Area::ATTRIBUTES_USED.each do |column_name|
+    - Qernel::Area::ATTRIBUTES_USED.each do |attr|
+      - pres, fut = @area_present.send(attr), @area_future.send(attr)
       %tr
-        %th= column_name
-        - v = @area.send(column_name)
-        %td{:title => v}
-          - if v.is_a?(Numeric)
-            = auto_number v
-          - else
-            = v
+        %th= attr
+        %td{:title => pres}= pres.is_a?(Numeric) ? auto_number(pres) : pres
+        %td{:title => fut}= fut.is_a?(Numeric) ? auto_number(fut) : fut

@@ -8,6 +8,14 @@ class Qernel::ConverterApi
   end
   attributes_required_for :mwh_input, [:demand]
 
+  # The output of electricity expressed in MWh.
+  def mwh_electricy_output
+    dataset_fetch_handle_nil(:mwh_electricy_output) do
+      output_of_electricity / SECS_PER_HOUR
+    end
+  end
+  attributes_required_for :mwh_electricy_output, [:output_of_electricity]
+
   # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
   #
   def typical_input_capacity_in_mw

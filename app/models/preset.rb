@@ -1,14 +1,15 @@
-# Preset contains the preset scenarios that can be selected in the 
+# Preset contains the preset scenarios that can be selected in the
 # dropdown on et-model.com. They are loaded through etsource.
 #
-class Preset 
+class Preset
   include InMemoryRecord
   include ActiveModel::Serialization
   include ActiveModel::Serializers::JSON
   include ActiveModel::Serializers::Xml
 
 
-  COLUMNS = [:id, :user_values, :end_year, :area_code, :use_fce, :title, :description]
+  COLUMNS = [:id, :user_values, :end_year, :area_code, :use_fce, :title,
+    :description, :in_start_menu]
 
   attr_accessor *COLUMNS
 
@@ -24,8 +25,10 @@ class Preset
   def to_scenario
     attrs = attributes
     id = attrs.delete(:id)
-    
+    # DANGER: Mark the scenarios as frozen or unsaveable to avoid disaster!
     Scenario.new(attrs).tap{|scenario| scenario.id = id }
+    # DANGER: Mark the scenarios as frozen or unsaveable to avoid disaster!
+    # Scenario.new(attrs).tap{|scenario| scenario.id = id; scenario.readonly! }
   end
 
   def attributes(attrs = {})

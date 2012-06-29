@@ -1,7 +1,7 @@
 %section#search_box
   = form_tag data_gqueries_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
-    = select_tag :group_ids, options_from_collection_for_select(GqueryGroup.all, :id, :group_key, params[:group_ids]), :include_blank => '-- group --'
+    = select_tag :group, options_for_select(GqueryGroup.all.map(&:group_key), params[:group]), :include_blank => '-- group --'
     = submit_tag "search"
 
 - content_for :footer do

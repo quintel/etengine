@@ -57,7 +57,9 @@ module Qernel
       :number_of_existing_households,
       :economic_multiplier,
       :employment_local_fraction,
-      :employment_fraction_production
+      :employment_fraction_production,
+      :has_employment,
+      :has_merit_order
     ]
 
     dataset_accessors ATTRIBUTES_USED

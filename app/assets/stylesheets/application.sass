@@ -23,11 +23,20 @@
   font-weight: bold
 #header
   @include gradient(#6a7176, #4d5256)
-  height: 30px
+  border-bottom: 1px solid #34383b
+  height: 29px
   color: #CDCDCD
   line-height: 28px
   label
     text-shadow: #000000 0 1px 0
+
+  form
+    display: inline-block
+    margin-left: 10px
+    padding-top: 1px
+    select
+      margin-top: -2px
+      vertical-align: middle
   nav
     ul
       list-style-type: none
@@ -50,22 +59,27 @@
     a
       border-right: 1px solid #919191
       float: left
-      padding: 5px 10px 5px 5px
+      padding: 6px 10px 5px
       display: block
       color: #3A3E41
       text-decoration: none
+      text-shadow: 0 1px 0 #ccc
       &:hover
         background-color: white
+        text-shadow: none
+        padding-bottom: 4px
 
 #subnav
   nav
     border-bottom: 1px solid #AFAFAF
     background-color: #CACACA
+    overflow: hidden
     a
       border-right: 1px solid #919191
-      padding: 5px 10px 5px 5px
-      display: inline-block
+      padding: 5px 10px 6px
+      display: block
       color: #3A3E41
+      float: left
       text-decoration: none
       font-size: .8em
       &:hover
@@ -74,7 +88,7 @@
 #breadcrumbs
   clear: both
   @include gradient(#DFDFDF, #CCCFD0)
-  padding: 5px
+  padding: 5px 10px
   border-bottom: 1px solid #989898
   nav
     a
@@ -125,7 +139,7 @@ section#actions
 
 section#search_box
   @include gradient(#efefef, #dfe1e2)
-  padding: 5px
+  padding: 5px 10px
   border-bottom: 1px solid #919191
   input[type=search]
     width: 200px
