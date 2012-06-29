@@ -11,10 +11,10 @@ class Api::ScenariosController < Api::BaseController
     respond_with(@scenarios)
   end
 
-  # ETM makes use of this action to fill the preset scenarios select box
+  # ETM uses this to fill the preset scenarios select box
   #
   def homepage
-    respond_with Preset.all.map(&:to_scenario).uniq
+    respond_with Preset.all.map(&:to_scenario).select(&:in_start_menu).sort_by(&:id)
   end
 
   def show
@@ -27,14 +27,13 @@ class Api::ScenariosController < Api::BaseController
 
   def create
     api_session_id = params[:scenario].delete("api_session_id")
-    api_session_id ||= params[:scenario].delete("api_session_key") # legacy remove after 2011-10
 
     if api_session_id
       api_scenario = Scenario.find(api_session_id)
+      # this creates a copy of the scenario
       @scenario = api_scenario.save_as_scenario(params[:scenario])
     else
-      #@scenario = Scenario.new(params[:scenario])
-      #@scenario.save
+      @scenario = Scenario.create(params[:scenario])
     end
     respond_with(@scenario)
   end
@@ -55,7 +54,7 @@ class Api::ScenariosController < Api::BaseController
   private
 
     def find_scenario
-      @scenario = Scenario.find(params[:id])
+      @scenario = Preset.get(params[:id]).try(:to_scenario) || Scenario.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       Rails.logger.warn "*** ActiveResource 404 Error"
       nil

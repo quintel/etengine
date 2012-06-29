@@ -6,9 +6,7 @@
 
 .header= @converter_present
 
-%h3 Info
-
-%table
+%table.floating
   %tr
     %td Sector
     %td= @converter_present.sector_key
@@ -29,29 +27,28 @@
       = link_to 'Present', {:format => 'svg'}, :target => :blank
       = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
 
-%h3 Future Input / Outputs
-= render 'converter_links'
 
 - if @converter_present.groups.include?(:cost_traditional_heat)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
   = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_electricity_production)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
   = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_heat_pumps)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::HEAT_PUMP_VALUES
   = render "data/converters/details"
 - if @converter_present.groups.include?(:cost_chps)
-  %h3 Converter details
   - @values = Qernel::ConverterApi::CHP_VALUES
   = render "data/converters/details"
 
-%h3 Attributes
+.clear
 
-%table
+%h3 Future Input / Outputs
+= render 'converter_links'
+
+%h3 Attributes and Calculations
+
+%table.floating
   %thead
     %tr
       %th Converter Attributes
@@ -67,82 +64,48 @@
           %th= attr_name
           - result_fields(@pre,@fut,attr_name)
 
-%h3 Calculations
-
-%table
+%table.floating
   %thead
     %tr
-      %th Calculations
+      %th Converter Calculations
       %th Present
       %th Future
       %th Change
+      %th Unit
   %tbody
-    %tr
-      %th demand
-      - result_fields(@pre,@fut, :demand)
-    %tr
-      %th preset_demand
-      - result_fields(@pre,@fut, :preset_demand)
-    %tr
-      %th demand_of_sustainable
-      - result_fields(@pre,@fut, :demand_of_sustainable)
-    %tr
-      %th weighted_carrier_cost_per_mj
-      - result_fields(@pre,@fut, :weighted_carrier_cost_per_mj)
-    %tr
-      %th weighted_carrier_co2_per_mj
-      - result_fields(@pre,@fut, :weighted_carrier_co2_per_mj)
-    %tr
-      %th sustainability_share
-      - result_fields(@pre,@fut, :sustainability_share)
+    :ruby
+      calculations = {
+        :demand => [:demand, :preset_demand, :demand_of_sustainable,
+          :weighted_carrier_cost_per_mj, :weighted_carrier_co2_per_mj,
+          :sustainability_share, :final_demand, :primary_demand,
+          :primary_demand_of_fossil, :primary_demand_of_sustainable],
+        :other => Qernel::ConverterApi.calculation_methods.sort
+      }
+      calculations[:demand] += @qernel_graph.carriers.
+        map{|x| "primary_demand_of_#{x.key}"}.
+        select{|x| val = @pre.send(x); val > 0.0}
+      calculations[:other] += [:total_cost_per_mwh, :total_losses]
 
-    - Qernel::ConverterApi.calculation_methods.sort.each do |attr_name|
-      :ruby
-        present_value = @pre.send attr_name
-        future_value  = @fut.send attr_name
-        next if present_value.nil? && future_value.nil?
-        next if present_value.to_f.nan? && future_value.to_f.nan?
-        difference = (future_value / present_value - 1) * 100 rescue nil
-        difference = nil if difference.try :nan?
+    - calculations.each_pair do |group, methods|
       %tr
-        %th= attr_name
-        %td{:title => present_value}= auto_number present_value
-        %td{:title => future_value}= auto_number future_value
-        %td= "#{difference}%" if difference
-    %tr
-      %th Total Cost Per MWhe
-      - result_fields(@pre,@fut) do |converter|
-        - converter.total_cost_per_mwh
-    %tr
-      %th total_losses
-      - result_fields(@pre.converter,@fut.converter, :total_losses)
-
-  %table
-    %thead
-      %tr
-        %th Final and primary demand
-        %th Present
-        %th Future
-        %th Change
-    %tr
-      %th final_demand
-      - result_fields(@pre,@fut, :final_demand)
-    %tr
-      %th primary_demand
-      - result_fields(@pre,@fut, :primary_demand)
-    %tr
-      %th primary_demand_of_fossil
-      - result_fields(@pre,@fut, :primary_demand_of_fossil)
-    %tr
-      %th primary_demand_of_sustainable
-      - result_fields(@pre,@fut, :primary_demand_of_sustainable)
-
-    - @qernel_graph.carriers.each do |carrier|
-      - if primary_demand = @pre.primary_demand_of_carrier(carrier.key.to_sym) and primary_demand > 0.0
+        %th.calculation_group{:colspan => 5}= group
+      - methods.each do |method|
+        :ruby
+          next unless @pre.respond_to?(method)
+          present_value = @pre.send method
+          future_value  = @fut.send method
+          next if present_value.nil? && future_value.nil?
+          next if present_value.to_f.nan? && future_value.to_f.nan?
+          difference = ((future_value / present_value - 1) * 100).round(2) rescue nil
+          difference = nil if difference.try :nan?
         %tr
-          %th== Primary Demand of #{carrier.key}
-          - result_fields(@pre,@fut) do |converter|
-            - converter.primary_demand_of_carrier(carrier.key.to_sym)
+          %th= method
+          %td{:title => present_value}= auto_number present_value
+          %td{:title => future_value}= auto_number future_value
+          %td= "#{difference}%" if difference
+          %td= Qernel::ConverterApi.unit_for_calculation(method)
+
+.clear
 
 %h3 References
 

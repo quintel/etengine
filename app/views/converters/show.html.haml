@@ -1,27 +1,51 @@
-:ruby
-  @pre = @converter_present.query
-  @fut = @converter_future.query
 %html
   %head
     = stylesheet_link_tag 'converter_details'
   %body#converter_detail
-    - if @converter_present.groups.include?(:cost_traditional_heat)
-      - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
-      = render "data/converters/details"
-    - if @converter_present.groups.include?(:cost_electricity_production)
-      - @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
-      = render "data/converters/details"
-    - if @converter_present.groups.include?(:cost_heat_pumps)
-      - @values = Qernel::ConverterApi::HEAT_PUMP_VALUES
-      = render "data/converters/details"
-    - if @converter_present.groups.include?(:cost_chps)
-      - @values = Qernel::ConverterApi::CHP_VALUES
+    - if @converter_present && @converter_future
+      :ruby
+        @pre = @converter_present.query
+        @fut = @converter_future.query
+        if @converter_present.groups.include?(:cost_traditional_heat)
+          @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
+        elsif @converter_present.groups.include?(:cost_electricity_production)
+          @values = Qernel::ConverterApi::ELECTRICITY_PRODUCTION_VALUES
+        elsif @converter_present.groups.include?(:cost_heat_pumps)
+          @values = Qernel::ConverterApi::HEAT_PUMP_VALUES
+        elsif @converter_present.groups.include?(:cost_chps)
+          @values = Qernel::ConverterApi::CHP_VALUES
+        else
+          @values = {}
+        end
+
+        # Some converters require custom information
+        #
+        carriers = @converter_present.input_carriers.map &:key
+        if coal_and_wp = (carriers.include?(:coal) && carriers.include?(:wood_pellets))
+          old = @values
+          new = {}
+          new["Technical **"] = old[:technical]
+          new["Current Fuel Input Mix"] = {}
+          new["Costs **"] = old[:cost]
+          new["Other"] = old[:other]
+
+          @converter_present.input_links.each do |link|
+            new["Current Fuel Input Mix"]["#{link.carrier.key}_input_conversion"] = [link.carrier.key.to_s.humanize, '%']
+          end
+          @values = new
+        end
+
+
       = render "data/converters/details"
 
-    - if (@converter_present.groups & [:cost_traditional_heat, :cost_electricity_productions, :cost_heat_pumps, :cost_chps]).empty?
-      No converter details specified
+      - if (@converter_present.groups & [:cost_traditional_heat, :cost_electricity_productions, :cost_heat_pumps, :cost_chps]).empty?
+        No converter details specified
 
-    %p
-      We are currently in the process of updating some of these numbers.
-      For questions about these data, please contact: 
-      = mail_to 'alexander.wirtz@quintel.com'
+      - if coal_and_wp
+        %p
+          ** The fuel input mix of this plant can be changed by your slider settings. Doing so changes both technical and cost parameters in this table.
+      %p
+        For questions about these data, please contact:
+        = mail_to 'alexander.wirtz@quintel.com'
+    - else
+      %p Converter information not available

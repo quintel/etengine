@@ -1,4 +1,12 @@
 module Qernel::Plugins
+  # Fce calculation updates a carriers co2_per_mj attribute. 
+  #
+  # @example Updating coal carrier with an input gquery
+  #   GRAPH().update_fce(CARRIER(coal),east_asia, USER_INPUT() / 100)
+  # 
+  # The fce_values are read out of etsource/datasets/_globals/fce_values.yml
+  #
+  #
   module Fce
     extend ActiveSupport::Concern
 
@@ -12,7 +20,7 @@ module Qernel::Plugins
     module ClassMethods
 
       def fce_values
-        @fce_values ||= Etsource::Loader.instance.globals('fce_values').map{|f|
+        @fce_values ||= (Etsource::Loader.instance.globals('fce_values') || []).map{|f|
           OpenStruct.new(f).freeze
         }.freeze
       end
@@ -23,42 +31,63 @@ module Qernel::Plugins
       @fce_update_values = {}
     end
 
+    # calculate_fce 
+    #
+    #
     def calculate_fce
-      return unless self.use_fce
+      modified_fce_values_by_carrier.each do |carrier_key, fce_values|
+        carrier = carrier(carrier_key)
+        sum = 0
 
-      @fce_update_values.andand.each do |carrier, values|
-        values.each do |key, sum|
-          carrier[key] = sum
+        attributes_for_fce = attributes_to_consider
+        attributes_to_consider(true).each do |attr_name|
+          # if use_fce is disabled assign all attributes, but only 
+          # overwrite the co2_per_mj with the sum of co2_conversion_per_mj.
+          carrier[attr_name] = fce_values.map do |f| 
+            f.send(attr_name) * (f.start_value / 100.0)
+          end.compact.sum
+
+          sum += carrier[attr_name] if attributes_for_fce.include?(attr_name)
         end
-        carrier.dataset_set(:co2_per_mj, values.map(&:last).sum)
+        
+        carrier.dataset_set(:co2_per_mj, sum)
       end
+      
       # reset fce_update_values so it is not accidentally used in another request
       # (graph is memoized over requests)
       @fce_update_values = nil
     end
 
-    # carrier - The carrier key as a String
-    # origin  - The name of the origin as a String. E.g. australia, east_asi
-    # country - The country code as a String
-    #
-    # Returns an Openstruct of FCE data.
-    #
-    def fce_value(carrier, origin, country)
-      self.class.fce_values.andand.detect do |fce|
-        fce.carrier == carrier && fce.origin_country == origin && fce.using_country == country
+    def attributes_to_consider(_use_fce = use_fce)
+      if _use_fce
+        FCE_ATTRIBUTES
+      else
+        [:co2_conversion_per_mj]
       end
     end
 
-    def update_fce(carrier, origin, value)
-      # GQL CARRIER(...) gives back an array of carriers.
-      carrier = [carrier].flatten.first
-      fce = fce_value(carrier.key.to_s, origin.to_s, area.area.to_s)
+    # a clone of the original fce_values for the current country.
+    def modified_fce_values_by_carrier
+      unless @fce_update_values
+        area_code = area.area.to_s
+        arr = Marshal.load(Marshal.dump(self.class.fce_values))
+        arr.select!{|fce| fce.using_country == area_code }
+        @fce_update_values = arr.group_by(&:carrier)
+      end
+      @fce_update_values
+    end
 
-      @fce_update_values ||= {}
-      @fce_update_values[carrier] ||= {}
-      FCE_ATTRIBUTES.each do |key|
-        @fce_update_values[carrier][key] ||= 0.0
-        @fce_update_values[carrier][key] += fce.send(key) * value
+    def update_fce(carrier, origin, user_input)
+      # GQL CARRIER(...) gives back an array of carriers.
+      carrier     = [carrier].flatten.first
+      carrier_key = carrier.key.to_s
+      origin      = origin.to_s
+
+      fce_values = modified_fce_values_by_carrier[carrier_key] || []
+      if fce_ostruct = fce_values.detect{|f| f.origin_country == origin }
+        attributes_to_consider.each do |key|
+          fce_ostruct.start_value = user_input * 100.0
+        end
       end
       nil
     end

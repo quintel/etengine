@@ -68,6 +68,7 @@ class Input < ActiveRecord::Base
     Etsource::Loader.instance.inputs.each do |input|
       h[input.lookup_id]      = input
       h[input.lookup_id.to_s] = input
+      h[input.key]            = input
     end
     h
   end
