@@ -148,12 +148,12 @@ class Qernel::ConverterApi
   #
   def operation_and_maintenance_cost_variable_per_mwh_input
     dataset_fetch_handle_nil(:operation_and_maintenance_cost_variable_per_mwh_input) do
-      # return 0 if typical_input_capacity == 0
-      (operation_and_maintenance_cost_variable_per_full_load_hour + ccs_operation_and_maintenance_cost_per_full_load_hour) / typical_input_capacity
+      # return 0 if typical_input_capacity_in_mw == 0
+      (operation_and_maintenance_cost_variable_per_full_load_hour + ccs_operation_and_maintenance_cost_per_full_load_hour) / typical_input_capacity_in_mw
     end
   end
   attributes_required_for :operation_and_maintenance_cost_variable_per_mwh_input, [
-    :operation_and_maintenance_cost_variable_per_full_load_hour, :typical_input_capacity
+    :operation_and_maintenance_cost_variable_per_full_load_hour, :typical_input_capacity_in_mw
   ]
 
   # The total of all assigned costs for this converter.
