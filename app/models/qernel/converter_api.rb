@@ -117,9 +117,8 @@ class ConverterApi
 
   ATTRIBUTES_USED = ATTRIBUTE_GROUPS.values.flatten
 
-  # For the data/converter/show page we need grouping of the attributes
-  # these atrribut groups should only be used to show the values in the data section
-
+  # For the data/converter/show page we need grouping of the attributes. These
+  # attribute groups should only be used to show the values in the data section
   ELECTRICITY_PRODUCTION_VALUES  =  {
     :technical => {
       :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
