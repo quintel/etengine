@@ -4,6 +4,7 @@ class Data::GqueriesController < Data::BaseController
   def index
     all = Gquery.all
     all = all.select{|g| g.key.include?(params[:q])} if params[:q]
+    all = all.select{|g| g.group_key == params[:group]} if params[:group]
     @gqueries = Kaminari.paginate_array(all.sort_by(&:key)).page(params[:page]).per(50)
   end
 
