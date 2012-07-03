@@ -230,29 +230,21 @@ namespace :bulk_update do
       inputs.delete(48)
       inputs.delete(382)
 
-      # Cost slider for fuel cell AND micro CHP (Sterling Engine) should be initialized at the correct
+      # Cost slider for fuel cell should be initialized at the correct
       # cost (depends on start-year of scenario)
-      # NOTE: they are the same (based on the micro CHP curve for the micro CHP)
       if s.end_year == 2013
-        inputs[594] = -20.0
         inputs[595] = -20.0
       elsif s.end_year == 2014
-        inputs[594] = -40
         inputs[595] = -40
       elsif s.end_year == 2015
-        inputs[594] = -60.0
         inputs[595] = -60.0
       elsif s.end_year.between?(2016,2019)
-        inputs[594] = -66.0
         inputs[595] = -66.0
       elsif s.end_year.between?(2020,2029)
-        inputs[594] = -70.0
         inputs[595] = -70.0
       elsif s.end_year.between?(2030,2039)
-        inputs[594] = -74.0
         inputs[595] = -74.0
       elsif s.end_year.between?(2040,2050)
-        inputs[594] = -78.0
         inputs[595] = -78.0
       end
 
