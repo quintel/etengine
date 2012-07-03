@@ -22,6 +22,14 @@ class Qernel::ConverterApi
   end
   alias_method :output_of_sustainable, :demand_of_sustainable
 
+  def input_of_loss
+    converter.demand - converter.inputs.reject(&:loss).map(&:external_value).compact.sum
+  end
+
+  def output_of_loss
+    converter.demand - converter.outputs.reject(&:loss).map(&:external_value).compact.sum
+  end
+
   def output_of(*carriers)
     carriers.flatten.map do |c| 
       key = c.respond_to?(:key) ? c.key : c
