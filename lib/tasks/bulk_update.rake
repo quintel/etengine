@@ -63,13 +63,81 @@ namespace :bulk_update do
     text.gsub(token, token.red)
   end
 
+  desc 'Convenience method. runs the 3 rake task after each other'
+  task :update_presets => :environment do
+    ENV['PRESETS'] = "1"
+    Rake::Task["bulk_update:update_db_presets"].invoke
+    Rake::Task["bulk_update:update_scenarios"].invoke
+    Rake::Task["bulk_update:update_etsource_presets"].invoke
+  end
+
+  desc 'Takes the etsource/presets and stores them in the database'
+  task :update_db_presets => :environment do
+    bkp_path = "#{Rails.root}/tmp/scenarios_backup_#{Time.now.to_i}"
+    FileUtils.mkdir_p(bkp_path)
+
+    presets = Preset.all
+    presets.each do |preset|
+      puts "Updating preset #{preset.id}"
+      
+      scenario = Scenario.find_by_id(preset.id)
+      
+      # backing up in case we overwrite something wrong
+      puts "writing backup files to: #{bkp_path}"
+      File.open("#{bkp_path}/scenarios_#{scenario.id}.yml", 'w') do |f|
+        f << YAML::dump(scenario.attributes)
+      end
+
+      # if no scenario with that id, create one with same preset id
+      unless scenario
+        puts "** Create new scenario db record for #{preset.id}"
+        scenario = preset.to_scenario
+        scenario.preset_scenario_id = nil
+        scenario.save!
+        Scenario.update_all("id = #{preset.id}", "id = #{scenario.id}")
+        scenario.reload
+      end
+
+      # overwrite scenario user_values with presets from etsource.
+      scenario.user_values = preset.user_values
+      puts scenario.changed? ? "** Saving new values" : "** Nothing changed"
+      scenario.save!
+    end
+  end
+
+  desc 'Updates etsource/presets/ yml files with database records'
+  task :update_etsource_presets => :environment do
+    Preset.all.each do |preset|
+      puts "Updating etsource/preset #{preset.id}"
+      scenario     = Scenario.find(preset.id)
+      etsource_dir = Etsource::Base.instance.base_dir
+      preset_file  = "#{etsource_dir}/presets/scenarios_#{preset.id}.yml"
+      yml = YAML::load(File.read(preset_file))
+      yml['user_values'] = scenario.user_values.to_hash
+
+      puts "** saving to: #{preset_file}"
+      File.open(preset_file, 'w') { |f| f << YAML::dump(yml) }
+    end
+    puts "\n\n"
+    puts "#"*40
+    puts "You can revert the changes by running path/to/etsource $ git checkout presets"
+  end
+
+  desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
   task :update_scenarios => :environment do
+    if ENV['PRESETS']
+      scenario_scope = Scenario.where(:id => Preset.all.map(&:id))
+      puts "Trying to updating #{scenario_scope.length} presets"
+    else
+      scenario_scope = Scenario.order('id')
+    end
     @update_records = HighLine.agree("You want to update records, right? [y/n]")
     counter = 0
-    Scenario.order('id').find_each(:batch_size => 100) do |s|
+
+    scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
-      if s.area_code.blank? || counter == 0
+      if s.area_code.blank?  || (counter == 0 && !ENV['PRESETS'])
         puts "ERROR: no area code. Skipping Scenario"
         counter += 1
         next
@@ -309,10 +377,9 @@ namespace :bulk_update do
 
       ################ END ####################################
 
-      if @update_records
-        #puts "saving"
-
-        #s.update_attributes!(:user_values => inputs)
+      if @update_records || ENV['PRESETS']
+        puts "saving"
+        s.update_attributes!(:user_values => inputs)
       end
 
       counter += 1
