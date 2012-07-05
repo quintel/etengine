@@ -137,6 +137,7 @@ namespace :bulk_update do
     scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
+      #if s.area_code.blank?  || counter == 0
       if s.area_code.blank?  || (counter == 0 && !ENV['PRESETS'])
         puts "ERROR: no area code. Skipping Scenario"
         counter += 1
@@ -377,6 +378,7 @@ namespace :bulk_update do
 
       ################ END ####################################
 
+      # if @update_records
       if @update_records || ENV['PRESETS']
         puts "saving"
         s.update_attributes!(:user_values => inputs)
