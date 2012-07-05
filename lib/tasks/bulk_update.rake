@@ -137,8 +137,10 @@ namespace :bulk_update do
     scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
-      #if s.area_code.blank?  || counter == 0
-      if s.area_code.blank?  || (counter == 0 && !ENV['PRESETS'])
+      if ENV['PRESETS']
+        # presets should all run. don't check for the following
+        # counter == 0 exceptions
+      elsif s.area_code.blank? || counter == 0
         puts "ERROR: no area code. Skipping Scenario"
         counter += 1
         next
