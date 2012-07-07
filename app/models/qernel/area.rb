@@ -58,7 +58,8 @@ module Qernel
       :economic_multiplier,
       :employment_local_fraction,
       :employment_fraction_production,
-      :has_employment
+      :has_employment,
+      :has_merit_order
     ]
 
     dataset_accessors ATTRIBUTES_USED
