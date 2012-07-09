@@ -55,7 +55,7 @@ class Api::ScenariosController < Api::BaseController
   private
 
     def find_scenario
-      @scenario = Scenario.find(params[:id])
+      @scenario = Preset.get(params[:id]).try(:to_scenario) || Scenario.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       Rails.logger.warn "*** ActiveResource 404 Error"
       nil
