@@ -193,11 +193,11 @@ class Qernel::ConverterApi
   #
   def purchase_price_per_unit
     dataset_fetch_handle_nil(:purchase_price_per_unit) do
-      purchase_price_per_mw_input * typical_nominal_input_capacity
+      purchase_price_per_mw_input * typical_input_capacity_in_mw
     end
   end
   attributes_required_for :purchase_price_per_unit, [
     :purchase_price_per_mw_input,
-    :typical_nominal_input_capacity
+    :typical_input_capacity_in_mw
   ]
 end
