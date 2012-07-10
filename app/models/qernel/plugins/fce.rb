@@ -24,13 +24,18 @@ module Qernel::Plugins
     end
 
     def calculate_fce
-      return unless self.use_fce
-
       @fce_update_values.andand.each do |carrier, values|
         values.each do |key, sum|
-          carrier[key] = sum
+          if self.use_fce
+            carrier[key] = sum
+          else
+            # Exception to the rule: if use_fce is disabled we still want
+            # the co2_conversion_per_mj to be updated.
+            # https://github.com/dennisschoenmakers/etengine/issues/361
+            carrier[key] = sum if key.to_sym == :co2_conversion_per_mj
+          end
         end
-        carrier.dataset_set(:co2_per_mj, values.map(&:last).sum)
+        carrier[:co2_per_mj] = values.map(&:last).sum
       end
       # reset fce_update_values so it is not accidentally used in another request
       # (graph is memoized over requests)
