@@ -35,8 +35,11 @@ module Qernel::Plugins
             carrier[key] = sum if key.to_sym == :co2_conversion_per_mj
           end
         end
-        carrier.dataset_set(:co2_per_mj, values.map(&:last).sum)
+        unless values.map(&:last).empty?
+          carrier.dataset_set(:co2_per_mj, values.map(&:last).sum)
+        end
       end
+      @fce_update_values = nil
     rescue => ex
       unless APP_CONFIG[:standalone]
         Airbrake.notify(
