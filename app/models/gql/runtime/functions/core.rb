@@ -158,16 +158,8 @@ module Gql::Runtime
       #
       def M(elements, attr_name)
         elements = [elements] unless elements.is_a?(::Array) 
-        
-        elements.tap(&:flatten!).map! do |a| 
-          a = a.respond_to?(:query) ? a.query : a
-
-          if attr_name.respond_to?(:call)
-             a.instance_exec(&attr_name)
-          else
-            # to_s imported, for when MAP(..., demand) demand comes through method_missing (as a symbol)
-            a.instance_eval(attr_name.to_s)
-          end
+        elements.tap(&:flatten!).map! do |element| 
+          GET(element, attr_name)
         end
         elements.length <= 1 ? (elements.first || 0.0) : elements
       end
@@ -177,6 +169,23 @@ module Gql::Runtime
       # @deprecated
       alias A M
 
+      # Retrieves the attribute from one *single* object.
+      # The main reason for this function is that we can have better
+      # support for the debugger. 
+      #
+      # This is used internally by MAP/M function and does not work
+      # in conjunction with L() as this returns an array.
+      #
+      def GET(object, attr_name)
+        object = object.respond_to?(:query) ? object.query : object
+
+        if attr_name.respond_to?(:call)
+          object.instance_exec(&attr_name)
+        else
+          # to_s imported, for when MAP(..., demand) demand comes through method_missing (as a symbol)
+          object.instance_eval(attr_name.to_s)
+        end
+      end
     end
   end
 end

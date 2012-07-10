@@ -58,7 +58,7 @@
 module Qernel::DatasetAttributes
 
   def self.included(klass)
-    klass.send(:attr_accessor, :object_dataset)
+    klass.send(:attr_accessor, :object_dataset, :observe, :observe_get)
     klass.extend(ClassMethods)
   end
 
@@ -67,8 +67,8 @@ module Qernel::DatasetAttributes
     # that delegate the storage to the Qernel::Dataset#data hash.
     # In most Qernel objects you will see this method called with a list
     # of the attributes stored in the dataset.    
-    def dataset_accessors(*dataset_attributes)
-      dataset_attributes.flatten.each do |attr_name|
+    def dataset_accessors(*attributes)
+      attributes.flatten.each do |attr_name|
         attr_name_sym = attr_name.to_sym
         #   def attr_name
         #     dataset_get :attr_name
@@ -122,6 +122,8 @@ module Qernel::DatasetAttributes
 
   def reset_object_dataset
     @object_dataset = nil
+    @observe        = nil
+    @observe_get    = nil
   end
 
   # Here we make the object attributes a member of the object itself.
@@ -130,6 +132,8 @@ module Qernel::DatasetAttributes
   def assign_object_dataset
     if dataset
       @object_dataset = (dataset.data[dataset_group][dataset_key] ||= {})
+      @observe        = nil
+      @observe_get    = nil
     end
   rescue => e
     raise "Qernel::Dataset: missing dataset item for #{dataset_group.inspect} #{dataset_key}. #{e.inspect}"
@@ -140,36 +144,70 @@ module Qernel::DatasetAttributes
   HANDLE_NIL_SECURLY = true 
   def dataset_fetch_handle_nil(attr_name, handle_nil_securly = false, &block)
     if object_dataset.has_key?(attr_name)
-      object_dataset[attr_name]
+      dataset_get(attr_name)
     elsif HANDLE_NIL_SECURLY || handle_nil_securly
-      object_dataset[attr_name] = handle_nil(attr_name, &block)
+      if observe_get
+        log :fetch_set, attr_name do 
+          object_dataset[attr_name] = handle_nil(attr_name, &block)
+        end
+      else
+        object_dataset[attr_name] = handle_nil(attr_name, &block)
+      end
     else
-      object_dataset[attr_name] = yield rescue nil
+      if observe_get
+        log :fetch_set, attr_name do
+          object_dataset[attr_name] = yield rescue nil
+        end
+      else
+        object_dataset[attr_name] = yield rescue nil
+      end
     end
   end
 
   def handle_nil(attr_name, rescue_with = nil, &block)
     if required_attributes_contain_nil?(attr_name)
+      log :get, attr_name, nil
       nil
     else
-      yield
+      # log :get, attr_name do 
+        yield 
+      # end
     end
   end
 
   # observe and log changes to an attribute
   def dataset_observe(*keys)
+    graph[:observe_log] ||= []
     @observe = true
     @observe_keys ||= []
     @observe_keys += keys.flatten.map(&:to_sym)
+  end
+  
+  # observe access of attributes
+  def dataset_observe_get(*keys)
+    graph[:observe_log] ||= []
+    @observe_get  = true
+    @observe_get_keys ||= []
+    @observe_get_keys += keys.flatten.map(&:to_sym)
   end
 
   # Memoization
   #
   def dataset_fetch(attr_name, &block)
     if object_dataset.has_key?(attr_name)
-      object_dataset[attr_name]
+      if observe_get
+        log :fetch_get, attr_name do object_dataset[attr_name] end
+      else
+        object_dataset[attr_name]
+      end
     else
-      object_dataset[attr_name] = yield
+      if observe_get
+        log :fetch_set, attr_name do
+          object_dataset[attr_name] = yield
+        end
+      else
+        object_dataset[attr_name] = yield
+      end
     end
   end
 
@@ -177,21 +215,34 @@ module Qernel::DatasetAttributes
     object_dataset.delete(attr_name)
   end
 
+  def log(type, attr_name, value = nil, &block)
+    if block_given?
+      graph.logger.log(type, key, attr_name, value, &block)
+    else
+      graph.logger.log(type, key, attr_name, value)
+    end
+  end
+
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    if @observe && @observe_keys.include?(attr_name)
-      str = self.is_a?(Qernel::Converter) ? "#{'-'*200}\n" : ""
-      str += topology_key.to_s.ljust(150) + " #{attr_name}: ".rjust(10)
-      str += value.round(9).inspect.cjust('.', 20, 10)
-      str += "   # by #{@calculation_state} / #{object_dataset[attr_name].inspect}"
-      puts str
+    if observe && @observe_keys.include?(attr_name)
+      log(:set, attr_name, value)
+      # str = self.is_a?(Qernel::Converter) ? "#{'-'*200}\n" : ""
+      # str += topology_key.to_s.ljust(150) + " #{attr_name}: ".rjust(10)
+      # str += value.round(9).inspect.cjust('.', 20, 10)
+      # str += "   # by #{@calculation_state} / #{object_dataset[attr_name].inspect}"
+      # puts str
     end
     object_dataset[attr_name] = value
   end
 
   # @param attr_name [Symbol]
   def dataset_get(attr_name)
+    if @observe_get # && @observe_get_keys.include?(attr_name)
+      log(:get, attr_name, object_dataset[attr_name])
+    end
     object_dataset[attr_name]
+
   rescue => e
     raise "#{dataset_key} #{attr_name} not found: #{e.message}" 
   end

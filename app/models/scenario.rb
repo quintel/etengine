@@ -145,6 +145,7 @@ class Scenario < ActiveRecord::Base
     unless @gql
       @gql = Gql::Gql.new(self)
       @gql.prepare if options.fetch(:prepare, true)
+      @gql.sandbox_mode = options.fetch(:sandbox_mode, :sandbox)
     end
    @gql
   end

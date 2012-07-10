@@ -95,6 +95,9 @@ Etm::Application.routes.draw do
 
       match '/checks/:action' => 'checks'
 
+      match '/debug/calculation' => 'debug#calculation'
+      match '/debug/gquery' => 'debug#gquery'
+
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
