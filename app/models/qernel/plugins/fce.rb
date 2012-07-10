@@ -26,28 +26,13 @@ module Qernel::Plugins
     def calculate_fce
       @fce_update_values.andand.each do |carrier, values|
         values.each do |key, sum|
-          if self.use_fce
-            carrier[key] = sum
-          else
-            # Exception to the rule: if use_fce is disabled we still want
-            # the co2_conversion_per_mj to be updated.
-            # https://github.com/dennisschoenmakers/etengine/issues/361
-            carrier[key] = sum if key.to_sym == :co2_conversion_per_mj
-          end
+          carrier[key] = sum
         end
         unless values.map(&:last).empty?
           carrier.dataset_set(:co2_per_mj, values.map(&:last).sum)
         end
       end
-      @fce_update_values = nil
-    rescue => ex
-      unless APP_CONFIG[:standalone]
-        Airbrake.notify(
-          :error_message => "FCE#calculate (silently) failed: #{ex}",
-          :backtrace => caller
-        )
-      end
-    ensure
+      
       # reset fce_update_values so it is not accidentally used in another request
       # (graph is memoized over requests)
       @fce_update_values = nil
@@ -73,8 +58,10 @@ module Qernel::Plugins
       @fce_update_values ||= {}
       @fce_update_values[carrier] ||= {}
       FCE_ATTRIBUTES.each do |key|
-        @fce_update_values[carrier][key] ||= 0.0
-        @fce_update_values[carrier][key] += fce.send(key) * value
+        if self.use_fce || key.to_sym == :co2_conversion_per_mj
+          @fce_update_values[carrier][key] ||= 0.0
+          @fce_update_values[carrier][key] += fce.send(key) * value
+        end
       end
       nil
     end
