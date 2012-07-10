@@ -37,6 +37,14 @@ module Qernel::Plugins
         end
         carrier[:co2_per_mj] = values.map(&:last).sum
       end
+    rescue => ex
+      unless APP_CONFIG[:standalone]
+        Airbrake.notify(
+          :error_message => "FCE#calculate (silently) failed: #{ex}",
+          :backtrace => caller
+        )
+      end
+    ensure
       # reset fce_update_values so it is not accidentally used in another request
       # (graph is memoized over requests)
       @fce_update_values = nil
