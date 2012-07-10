@@ -79,9 +79,9 @@ namespace :bulk_update do
     presets = Preset.all
     presets.each do |preset|
       puts "Updating preset #{preset.id}"
-      
+
       scenario = Scenario.find_by_id(preset.id)
-      
+
       # backing up in case we overwrite something wrong
       puts "writing backup files to: #{bkp_path}"
       File.open("#{bkp_path}/scenarios_#{scenario.id}.yml", 'w') do |f|
@@ -136,6 +136,8 @@ namespace :bulk_update do
 
     scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
+
+      next if s.id.to_i == 1
 
       if ENV['PRESETS']
         # presets should all run. don't check for the following
@@ -200,13 +202,13 @@ namespace :bulk_update do
         inputs[346]=(inputs[346]/factor)
         inputs[435]=(inputs[435]/factor)
         inputs[443]=(inputs[443]/factor)
-  
+
         if !(inputs[446] + inputs[421] + inputs[420] + inputs[444] + inputs[445] + inputs[347] + inputs[439] + inputs[346] + inputs[435] + inputs[443]).round(1).between?(99.9, 100.1)
           puts "Error! Sum of HHs HW = " + (inputs[446] + inputs[421] + inputs[420] + inputs[444] + inputs[445] + inputs[347] + inputs[439] + inputs[346] + inputs[435] + inputs[443]).to_s
-          exit 
+          exit
         end
       end
-  
+
       # Sliders in HHs space heating should add up to 100%
       share_group_inputs = [333, 338, 51, 582, 340, 375, 317, 52, 441, 248, 411]
       sum = 0.0
@@ -223,7 +225,7 @@ namespace :bulk_update do
           puts "Error! Share group of HHs space heating is not 100% in scenario, but is " + (sum + inputs[339] + inputs[48]).to_s
           #errorFile << puts "Error! Share group of HHs space heating is not 100% in scenario, but is " + (sum + inputs[339] + inputs[48]).to_s
       end
-        
+
       # HHs heatpump add-on
       inputs[339] = (inputs[339] / 0.6).round(1) unless inputs[339].nil?
 
@@ -250,7 +252,7 @@ namespace :bulk_update do
 
         if !(inputs[333] + inputs[338] + inputs[51 ] + inputs[582] + inputs[340] + inputs[375] + inputs[317] + inputs[52 ] + inputs[441] + inputs[248] + inputs[411]).between?(99.9, 100.1)
           puts "Error! Sum of HHs SH= " + (inputs[333] + inputs[338] + inputs[51 ] + inputs[582] + inputs[340] + inputs[375] + inputs[317] + inputs[52 ] + inputs[441] + inputs[248] + inputs[411]).to_s
-          exit 
+          exit
         end
       end
 
@@ -289,12 +291,12 @@ namespace :bulk_update do
         #puts "#{element} " + inputs[element].to_s
         sum = sum + inputs[element]
       end
-      
-      if sum>0.0 
+
+      if sum>0.0
         if !(sum).round(1).between?(99.9, 100.1)
           puts "Error! Sum of inputs Buildings SH = " + sum.to_s
         end
-      end 
+      end
 
       # Buildings insulation
       if inputs[381].nil?
