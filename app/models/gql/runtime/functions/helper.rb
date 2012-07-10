@@ -19,6 +19,24 @@ module Gql::Runtime
         end
       end
 
+      def OBSERVE_GET(*objects, arguments)
+        keys = arguments # OBSERVE(..., :demand)
+        if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:links])
+          keys     = arguments[:keys]
+          includes = [arguments[:include]].flatten
+          
+          if includes.include?(:links)
+            objects += flatten_uniq(objects).map{|o| [o.input_links, o.output_links]}
+          end
+        end
+        keys ||= [:demand, :value]
+
+        flatten_uniq(objects).each do |obj|
+          obj.query.dataset_observe_get(keys) if obj.respond_to? :query
+          obj.dataset_observe_get keys
+        end
+      end
+
       # SORT_BY( converters , attribute_1)
       #
       def SORT_BY(*objects, arguments)

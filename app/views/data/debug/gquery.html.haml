@@ -1,0 +1,33 @@
+%table.table{:style => 'font-family: Courier New'}
+  - prev_key = nil
+  - @logs.each_with_index do |log, idx|
+    %tr{:id => "tr_#{idx}", :class => "nesting_#{log[:nesting]}"}
+      %td
+        -#{:click => "expand(this)"}
+        - unless prev_key == log[:key]
+          - prev_key = log[:key]
+          = "-"*log[:nesting]
+          = log[:key] 
+      %td
+        == #{"·" * log[:nesting]}+-
+        = log[:attr_name]
+      %td= log[:value].inspect
+    - if log[:key] == 'Q'
+      %tr
+        %td{colspan: 3}
+          %pre= Gquery.get(log[:attr_name].to_s).query
+:javascript
+  function expand(el) {
+    console.log("expand");
+    var tr = $(el).closest('tr');
+    var nesting = tr.attr('class');
+    var idx = parseInt(nesting.split("_")[1]) + 1
+    var next = tr;
+    while(next = next.next()) {
+      if (next.attr('class') == nesting) { return }
+      if (next.attr('class') == 'nesting_'+idx) { next.show(); }
+    }
+  }
+  //$("tr").hide();
+  //$("tr.nesting_1").show();
+  //$("tr.nesting_2").show();

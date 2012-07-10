@@ -41,7 +41,7 @@ class Graph
     self
   end
 
-  attr_reader :converters
+  attr_reader :converters, :logger
   attr_writer :goals
   
   attr_accessor :dataset,
@@ -52,6 +52,7 @@ class Graph
 
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
+    @logger = ::Qernel::Logger.new
     self.converters = converters
     self.area = Qernel::Area.new(self)
   end
