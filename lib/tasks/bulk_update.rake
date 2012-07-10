@@ -186,7 +186,7 @@ namespace :bulk_update do
 
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.9, 100.1)
-          puts "Error! Share group of HHs hot water is not 100% in scenario, but is " + (sum).to_s
+          puts "Warning! Share group of HHs hot water is not 100% in scenario, but is " + (sum).to_s
       end
 
       if sum>0.0
@@ -222,7 +222,7 @@ namespace :bulk_update do
       inputs[48] = defaults[48] if inputs[48].nil?
       inputs[339] = defaults[339] if inputs[339].nil?
       if !(sum + inputs[339] + inputs[48] ).between?(99.9, 100.1)
-          puts "Error! Share group of HHs space heating is not 100% in scenario, but is " + (sum + inputs[339] + inputs[48]).to_s
+          puts "Warning! Share group of HHs space heating is not 100% in scenario, but is " + (sum + inputs[339] + inputs[48]).to_s
           #errorFile << puts "Error! Share group of HHs space heating is not 100% in scenario, but is " + (sum + inputs[339] + inputs[48]).to_s
       end
 
@@ -307,6 +307,10 @@ namespace :bulk_update do
 
       # Transport fuels should have gasoline - > 0 (new slider)
       inputs[588]=0.0
+
+      # In the Transport (aviation) group, the kerosene (423) shoud be initialized at its initial value
+      # because it is in a share group with 588 and can mess with the behavior of 588
+      inputs[423] = defaults[423] if inputs[423].nil?
 
       # Heavy fuel oil should be zero (new slider)
       inputs[589]=0.0
