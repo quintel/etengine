@@ -193,7 +193,7 @@ namespace :bulk_update do
       end
 
       if !(inputs[391] + inputs[392] + inputs[393]).round(1).between?(99.9, 100.1)
-        puts "Error! Sum of HHs HW = " + (inputs[391] + inputs[392] + inputs[393]).to_s
+        puts "Error! Sum of Buildings cooling = " + (inputs[391] + inputs[392] + inputs[393]).to_s
         exit
       end
 
