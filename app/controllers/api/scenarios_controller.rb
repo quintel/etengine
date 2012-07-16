@@ -27,14 +27,13 @@ class Api::ScenariosController < Api::BaseController
 
   def create
     api_session_id = params[:scenario].delete("api_session_id")
-    api_session_id ||= params[:scenario].delete("api_session_key") # legacy remove after 2011-10
 
     if api_session_id
       api_scenario = Scenario.find(api_session_id)
+      # this creates a copy of the scenario
       @scenario = api_scenario.save_as_scenario(params[:scenario])
     else
-      #@scenario = Scenario.new(params[:scenario])
-      #@scenario.save
+      @scenario = Scenario.create(params[:scenario])
     end
     respond_with(@scenario)
   end
