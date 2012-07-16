@@ -25,8 +25,10 @@ class Preset
   def to_scenario
     attrs = attributes
     id = attrs.delete(:id)
-
+    # DANGER: Mark the scenarios as frozen or unsaveable to avoid disaster!
     Scenario.new(attrs).tap{|scenario| scenario.id = id }
+    # DANGER: Mark the scenarios as frozen or unsaveable to avoid disaster!
+    # Scenario.new(attrs).tap{|scenario| scenario.id = id; scenario.readonly! }
   end
 
   def attributes(attrs = {})
