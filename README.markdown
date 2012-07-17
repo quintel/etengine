@@ -20,7 +20,7 @@ you have to follow these steps to run ET-Engine.
 * open up these two files in your favorite text-editor and fill in the
   details of the directories you just created. You can leave the defaults as
   they are, unless you want something else
-* fire up your local rails server (use `rails s` on the console or use
+* fire up your local rails server (use `$> rails s` on the console or use
   [pow](http://pow.cx)
 * go to `http://etengine.dev/etsource` or equivalent
 * import the latest commit or another one if you like that better
