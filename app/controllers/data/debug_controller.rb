@@ -1,4 +1,5 @@
 class Data::DebugController < Data::BaseController
+  layout 'etsource'
 
   def calculation
     @gql.init_datasets
@@ -17,7 +18,7 @@ class Data::DebugController < Data::BaseController
     @gql.prepare
     #@gql.query("OBSERVE_GET(OUTPUT_LINKS(ALL()), demand)")
     @gql.query("OBSERVE_GET(ALL(), demand)")
-    @gql.query("Q(dashboard_security_of_supply)")
+    @gql.query("Q(security_of_supply_loss_of_load_probability)")
     @logs = (@gql.future.graph.logger.logs || []).compact.flatten
   end
 

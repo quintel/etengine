@@ -50,7 +50,7 @@ module Gql::Runtime
           LOOKUP(*args)
         else
           attr_name = args.pop
-          MAP(LOOKUP(*args), attr_name)
+          M(LOOKUP(*args), attr_name)
         end
       end
       alias VALUE V
