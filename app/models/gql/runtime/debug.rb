@@ -17,9 +17,9 @@ module Gql::Runtime
     
     def log(key, attr_name, value, &block)
       if block_given?
-        logger.log(type, key, attr_name, value, &block)
+        logger.log(:gql, key, attr_name, value, &block)
       else
-        logger.log(type, key, attr_name, value)
+        logger.log(:gql, key, attr_name, value)
       end
     end
 
@@ -36,21 +36,57 @@ module Gql::Runtime
     
     module FunctionDebug
 
-      def Q(key)
-        log("Q", key, nil) do
+
+      def NORMCDF(*args)
+        log("NORMCDF", "NORMCDF", nil) do
           super
         end
       end
 
+      def Q(key)
+        log("Q", "Q: #{key}", nil) do
+          super
+        end
+      end
+
+      def GREATER(*args)
+        log("GREATER", "GREATER: #{args.join(' ')}", nil) do
+          super
+        end
+      end
 
       def M(elements, attr_name)
-        log("MAP", attr_name, nil) do
+        log("MAP: #{attr_name}", "MAP: #{attr_name}", nil) do
+          super
+        end
+      end
+
+      def SQRT(*args)
+        log("SQRT", "SQRT", nil) do
+          super
+        end
+      end
+
+      def PRODUCT(*args)
+        log("PRODUCT", "PRODUCT", nil) do
+          super
+        end
+      end
+
+      def SUM(*args)
+        log("SUM", "SUM", nil) do
           super
         end
       end
 
       def GET(element, attr_name)
-        log("GET(#{element.key}, ", attr_name, nil) do
+        log("GET: #{element.key}", "GET: #{element.key}", nil) do
+          super
+        end
+      end
+
+      def G(key)
+        log("GROUP: #{key}", "GROUP: #{key}", nil) do
           super
         end
       end
