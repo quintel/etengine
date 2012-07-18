@@ -43,7 +43,7 @@ class Slot
     @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
 
     @converter = converter
-    @carrier = carrier
+    @carrier   = carrier
     @direction = direction.to_sym
     self.dataset_key # memoize dataset_key
   end
