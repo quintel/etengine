@@ -1,4 +1,7 @@
 #debugger.row-fluid
+
+  -# RAW LOGS 
+    %pre= @logs.join("\n")
   - @method_definitions = Set.new
   .span12{:style => 'font-family: Courier New'}
     - log_tree
