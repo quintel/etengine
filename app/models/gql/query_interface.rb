@@ -33,6 +33,7 @@ module Gql
       @rubel = case options.fetch(:sandbox_mode, :sandbox)
                when :sandbox then Runtime::Sandbox.new(self)
                when :console then Runtime::Console.new(self)
+               when :debug   then Runtime::Debug.new(self)
                end
       @graph = graph
       @gql = gql

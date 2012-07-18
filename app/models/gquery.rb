@@ -116,7 +116,7 @@ class Gquery
 
   def self.name_or_query_contains(q)
     all.select do |g|
-      [:name, :query, :deprecated_key].any? do |attr|
+      [:key, :query, :deprecated_key].any? do |attr|
         g.send(attr).to_s.include? q
       end
     end

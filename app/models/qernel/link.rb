@@ -31,7 +31,8 @@ class Link
                 :carrier 
 
   attr_reader :id,
-              :link_type
+              :link_type,
+              :key
 
 
   # --------- Flow ------------------------------------------------------------
@@ -61,6 +62,7 @@ class Link
   # --------- Initialize ------------------------------------------------------
 
   def initialize(id, input, output, carrier, link_type, reversed = false)
+    @key = id
     @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
 
     @reversed = reversed
