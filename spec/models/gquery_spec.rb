@@ -19,15 +19,5 @@ describe Gquery do
       gquery.key.should == 'foo'
     end
   end
-
-  it "should be valid'" do
-    Gquery.new(:key => 'foo_bar_new', :query => 'SUM(1,1)').should be_valid
-  end
-
-  it "should not be valid with keys 'null' and 'undefined'" do
-    Gquery.new(:key => 'null', :query => 'SUM(1,1)').should_not be_valid
-    Gquery.new(:key => 'undefined', :query => 'SUM(1,1)').should_not be_valid
-  end
-
 end
 
