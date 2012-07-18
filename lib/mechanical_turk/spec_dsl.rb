@@ -44,11 +44,11 @@ module MechanicalTurk
     end
 
     def the_present(cmd)
-      execute(cmd).present_value
+      execute(cmd).andand.present_value
     end
 
     def the_future(cmd)
-      execute(cmd).future_value
+      execute(cmd).andand.future_value
     end
 
     def the_relative_increase(cmd)
@@ -144,6 +144,8 @@ module MechanicalTurk
         @gqueries << query
         custom(Gquery.get(query))
       end
+    rescue => e
+      nil
     end
   end
 
