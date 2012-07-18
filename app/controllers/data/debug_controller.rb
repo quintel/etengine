@@ -18,7 +18,8 @@ class Data::DebugController < Data::BaseController
     @gql.prepare
     #@gql.query("OBSERVE_GET(OUTPUT_LINKS(ALL()), demand)")
     @gql.query("OBSERVE_GET(ALL(), demand)")
-    @gql.query("Q(security_of_supply_loss_of_load_probability)")
+    @gql.query("Q(dashboard_total_costs)")
+    # @gql.query("V(households_water_heater_solar_thermal, total_costs)")
     @logs = (@gql.future.graph.logger.logs || []).compact.flatten
   end
 

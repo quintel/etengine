@@ -30,7 +30,7 @@ module Qernel
         type:      type
       })
       if block_given?
-        increase_nesting if block_given?
+        increase_nesting
         log[:value] = yield
         decrease_nesting
       end

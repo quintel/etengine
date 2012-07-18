@@ -183,17 +183,12 @@ module Qernel::DatasetAttributes
   end
 
   def handle_nil(attr_name, rescue_with = nil, &block)
-    if required_attributes_contain_nil?(attr_name)
-      log :method, attr_name, nil if observe_get
-      nil
-    else
-      if observe_get
-        log :method, attr_name do 
-          yield
-        end
-      else
-        yield 
+    if observe_get
+      log :method, attr_name, nil do 
+        required_attributes_contain_nil?(attr_name) ? nil : yield
       end
+    else
+      required_attributes_contain_nil?(attr_name) ? nil : yield
     end
   end
 
@@ -202,13 +197,15 @@ module Qernel::DatasetAttributes
   def dataset_fetch(attr_name, &block)
     if object_dataset.has_key?(attr_name)
       if observe_get
-        log :method, attr_name do object_dataset[attr_name] end
+        log :method, attr_name, object_dataset[attr_name]
       else
         object_dataset[attr_name]
       end
     else
       if observe_get
-        log :method, attr_name do object_dataset[attr_name] = yield end
+        log :method, attr_name do 
+          object_dataset[attr_name] = yield 
+        end
       else
         object_dataset[attr_name] = yield
       end

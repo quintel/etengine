@@ -1,5 +1,5 @@
 module DebugHelper
-  LABELS = {gql: 'label-info', attr: 'label-inverse', set: 'label-warning' }
+  LABELS = {gql: 'label-info', method: 'label-inverse', set: 'label-warning' }
 
   def method_source(method_name)
     f, line = Qernel::ConverterApi.instance_method(method_name).andand.source_location
@@ -19,6 +19,8 @@ module DebugHelper
       end
       source
     end
+  rescue => e
+    e
   end
 
   def log_tree(logs = @logs)
@@ -39,8 +41,13 @@ module DebugHelper
           haml_tag :p, :class => type do
             haml_tag "span.label.unfold_toggle", type.to_s, :class => LABELS[type]
             haml_tag 'span' do
-              haml_tag 'a.fold_all', '-', :href => '#'
-              haml_tag 'a.unfold_all', '+', :href => '#'
+              if type == :attr
+                haml_tag 'span', '-'
+                haml_tag 'span', '+'
+              else
+                haml_tag 'a.fold_all',   '-', :href => 'javascript:void(null)'
+                haml_tag 'a.unfold_all', '+', :href => 'javascript:void(null)'
+              end
               # haml_tag 'a.unfold_1', '1', :href => '#'
               # haml_tag 'a.unfold_2', '2', :href => '#'
             end
