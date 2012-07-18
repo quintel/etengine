@@ -2,9 +2,7 @@ class Qernel::ConverterApi
 
   def fuel_cost_raw_material_per_mje
     dataset_fetch_handle_nil(:fuel_cost_raw_material_per_mje) do
-      electricity_conversion = converter.outputs.select{|output|
-       output.carrier === :electricity
-       }.first.conversion
+      electricity_conversion = converter.output(:electricity).conversion
       (electricity_conversion == 0.0) ? 0.0 : (weighted_carrier_cost_per_mj / electricity_conversion)
     end
   end

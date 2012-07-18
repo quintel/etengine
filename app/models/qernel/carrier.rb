@@ -83,6 +83,14 @@ class Carrier
     end
   end
 
+  def ==(other)
+    if other.is_a?(Symbol)
+      self.key === other
+    else
+      self.id == other.id
+    end
+  end
+
   # used by url_for
   def to_param
     key.to_s
