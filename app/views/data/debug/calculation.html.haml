@@ -1,0 +1,11 @@
+- grouped = @logs.group_by{|l| l[:key]}
+%table.table.table-condensed
+  - @gql.query_present("MAP(ALL(), key)").sort_by(&:to_s).each do |key|
+    %tr
+      %td= key
+      - set_log = grouped[key].andand.detect{|l| l[:type] == :set} || {}
+      - get_log = grouped[key].andand.select{|l| l[:type] == :get} || []
+      %td= @gql.query_present("V(#{key}, preset_demand)")
+      %td= set_log[:value]
+      %td= @logs.index(set_log)
+      %td= get_log.map{|l| "#{l[:attr_name]}: #{l[:value].inspect}"}.join(', ')
