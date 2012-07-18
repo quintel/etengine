@@ -16,10 +16,10 @@ class Data::DebugController < Data::BaseController
 
   def gquery
     @gql.prepare
-    #@gql.query("OBSERVE_GET(OUTPUT_LINKS(ALL()), demand)")
     @gql.query("OBSERVE_GET(ALL(), demand)")
-    @gql.query("Q(dashboard_total_costs)")
-    # @gql.query("V(households_water_heater_solar_thermal, total_costs)")
+    if params[:gquery]
+      @gql.query(params[:gquery])
+    end
     @logs = (@gql.future.graph.logger.logs || []).compact.flatten
   end
 

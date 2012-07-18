@@ -22,13 +22,14 @@ module Qernel
       attrs
     end
 
-    def log(type, key, attr_name, value = nil)
+    def log(type, key, attr_name, value = nil, options = nil)
+      options ||= {}
       log = push({
         key:       key,
         attr_name: attr_name, 
         value:     value, 
         type:      type
-      })
+      }.merge(options))
       if block_given?
         increase_nesting
         log[:value] = yield

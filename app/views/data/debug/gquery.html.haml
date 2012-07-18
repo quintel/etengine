@@ -1,10 +1,31 @@
-#debugger.row-fluid
+- # Add methods used to the following array, to fetch the source codes for the modals.
+- @method_definitions = Set.new
+- @gquery_keys = Set.new
 
-  -# RAW LOGS 
-    %pre= @logs.join("\n")
-  - @method_definitions = Set.new
-  .span12{:style => 'font-family: Courier New'}
-    - log_tree
+#debugger
+  .row-fluid
+    .span8
+      = form_tag data_debug_gquery_path, :method => :get do 
+        = text_area_tag :gquery, params[:gquery], :placeholder => 'GQL Query', :class => 'span8'
+        %p
+          = submit_tag 'Analyse', :class => 'btn'
+          %br
+    .span4
+      .alert
+        %strong Folding
+        In the output below, click on the icon to the left to fold/unfold. It cycles between:
+        %ol
+          %li Fold all sublists
+          %li Unfold 1 level
+          %li Unfold all sublists
+
+
+    -# RAW LOGS 
+      %pre= @logs.join("\n")
+  
+  .row
+    .span10{:style => 'font-family: Courier New'}
+      - log_tree
 
           
   .modals   
@@ -24,11 +45,12 @@
   $('.unfold_toggle').bind('click', function() { unfold_toggle(this)} );
   $('.unfold_all').bind('click', function() { expand_all(this)} );
   $('.unfold_1'  ).bind('click', function() { expand_1(this)} );
-  $('.unfold_2'  ).bind('click', function() { expand_2(this)} );
 
   function unfold_toggle(el) {
     var parent = $(el).closest('li');
     if (parent.attr('data-folding') == 'folded') {
+      expand_1(el);
+    } else if (parent.attr('data-folding') == 'unfolded_1') {
       expand_all(el);
     } else {
       fold_all(el);
@@ -41,11 +63,6 @@
     parent.attr('data-folding', 'unfolded_1')
     $('> ul', parent).show();
   }
-  function expand_2(el) {
-    var parent = $(el).closest('li');
-    expand_1(el)
-    $('> ul > ul', parent).show();
-  }
   function expand_all(el) {
     var parent = $(el).closest('li');
     parent.attr('data-folding', 'unfolded')
@@ -56,6 +73,3 @@
     parent.attr('data-folding', 'folded')
     $('ul', parent).hide();
   }
-  //$("tr").hide();
-  //$("tr.nesting_1").show();
-  //$("tr.nesting_2").show();

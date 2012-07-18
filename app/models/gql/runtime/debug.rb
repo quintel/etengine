@@ -15,11 +15,11 @@ module Gql::Runtime
       scope.graph.logger
     end
     
-    def log(key, attr_name, value, &block)
+    def log(key, attr_name, options = {}, &block)
       if block_given?
-        logger.log(:gql, key, attr_name, value, &block)
+        logger.log(:gql, key, attr_name, nil, options, &block)
       else
-        logger.log(:gql, key, attr_name, value)
+        logger.log(:gql, key, attr_name, nil, options)
       end
     end
 
@@ -44,7 +44,7 @@ module Gql::Runtime
       end
 
       def Q(key)
-        log("Q", "Q: #{key}", nil) do
+        log("Q", "Q: #{key}", :gquery_key => key) do
           super
         end
       end
@@ -80,7 +80,7 @@ module Gql::Runtime
       end
 
       def GET(element, attr_name)
-        log("GET: #{element.key}", "GET: #{element.key}", nil) do
+        log("MAP/GET: #{element.key}", "MAP/GET: #{element.key}", {:converter => element.key}) do
           super
         end
       end

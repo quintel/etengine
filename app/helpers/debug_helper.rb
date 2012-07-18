@@ -2,33 +2,42 @@ module DebugHelper
   LABELS = {gql: 'label-info', method: 'label-inverse', set: 'label-warning' }
 
   def method_source(method_name)
-    f, line = Qernel::ConverterApi.instance_method(method_name).andand.source_location
-    if f and line
-      lines = File.read(f).lines.to_a
+    Rails.cache.fetch("methods/source/#{method_name}") do
+      begin
+        f, line = Qernel::ConverterApi.instance_method(method_name).andand.source_location
+        if f and line
+          lines = File.read(f).lines.to_a
 
-      source = lines[line - 1]
-      intendation = source.match(/^(\s*)def/).captures.first
-      
-      lines[line..-1].each do |l| 
-        if l.match(/^#{intendation}end/) 
-          source << l
-          break
-        else
-          source << l
+          source = lines[line - 1]
+          intendation = source.match(/^(\s*)def/).captures.first
+          
+          lines[line..-1].each do |l| 
+            if l.match(/^#{intendation}end/) 
+              source << l
+              break
+            else
+              source << l
+            end
+          end
+          source
         end
+      rescue => e
+        e
       end
-      source
     end
-  rescue => e
-    e
   end
 
   def log_tree(logs = @logs)
-    tree = Qernel::Logger.to_tree(logs)
-    log_subtree(tree)
+    if tree = Qernel::Logger.to_tree(logs) 
+      log_subtree(tree)
+    end
   end
 
   def log_subtree(subtree)
+    if @gquery_keys.nil? || @method_definitions.nil?
+      raise "log_subtree requires the variables @gquery_keys and @method_definitions"
+    end
+
     haml_tag 'ul.unstyled' do
       subtree.each do |parent, children|
         next if parent.nil?
@@ -40,46 +49,22 @@ module DebugHelper
 
           haml_tag :p, :class => type do
             haml_tag "span.label.unfold_toggle", type.to_s, :class => LABELS[type]
-            haml_tag 'span' do
-              if type == :attr
-                haml_tag 'span', '-'
-                haml_tag 'span', '+'
-              else
-                haml_tag 'a.fold_all',   '-', :href => 'javascript:void(null)'
-                haml_tag 'a.unfold_all', '+', :href => 'javascript:void(null)'
-              end
-              # haml_tag 'a.unfold_1', '1', :href => '#'
-              # haml_tag 'a.unfold_2', '2', :href => '#'
-            end
-            
-            if type == :method
-              haml_tag 'a.attr_name', attr_name.to_s, 
-                :rel  => 'modal', 
-                :href => '#',
-                :data => {
-                  :target        => "##{attr_name}", 
-                  :"toggle" => :modal
-                }
+            haml_concat "&nbsp;"
 
-              @method_definitions << attr_name
-            else
-              haml_tag 'span.attr_name', attr_name.to_s
-            end
-            value = value.first if value.is_a?(Array) and value.length == 1
-            
-            if value.is_a?(Array) 
-              haml_tag 'strong.pull-right', "#{value.length} #"
-            else
-              haml_tag 'strong.pull-right', auto_number(value)
-            end
+            log_folding_tags(type)
+            log_title(parent)
+            log_value(value)
           end
 
-          if parent[:key] == 'Q'
-            gquery =  Gquery.get(parent[:attr_name].split(' ').last)
+          if (gquery_key = parent[:gquery_key]) && !@gquery_keys.include?(gquery_key)
+            gquery =  Gquery.get(gquery_key.to_s)
             haml_tag 'strong.pull-right', (gquery.unit || '-')+" "
-            with_tabs(0) do
-              haml_tag :pre, gquery.query
+            haml_tag 'div.offset1' do
+              with_tabs(0) do
+                haml_tag :pre, gquery.query, :class => 'gql'
+              end
             end
+            @gquery_keys << gquery_key
           end
 
           log_subtree(children) unless children.nil?
@@ -88,5 +73,50 @@ module DebugHelper
     end
   end
 
+  def log_title(log)
+    type      = log[:type]
+    attr_name = log[:attr_name]
+    value     = log[:value]
+    if type == :method
+      haml_tag 'a.attr_name', attr_name.to_s, 
+        :rel  => 'modal', 
+        :href => 'javacsript:void(null)',
+        :data => {
+          :target        => "##{attr_name}", 
+          :"toggle" => :modal
+        }
+      @method_definitions << attr_name
+    else
+      haml_tag 'span.attr_name', attr_name.to_s
+      if log[:converter]
+        haml_concat link_to(">>", data_converter_path(:id => log[:converter]))
+      end  
+    end
+  end
+
+  def log_value(value)
+    value = value.first if value.is_a?(Array) and value.length == 1
+    
+    if value.is_a?(Array) 
+      haml_tag 'strong.pull-right', "#{value.length} #"
+    else
+      haml_tag 'strong.pull-right', auto_number(value)
+    end
+  end
+
+  def log_folding_tags(type)
+    return 
+    haml_tag 'span' do
+      if type == :attr
+        haml_tag 'span', '-'
+        haml_tag 'span', '+'
+      else
+        haml_tag 'a.fold_all',   '-', :href => 'javascript:void(null)'
+        haml_tag 'a.unfold_all', '+', :href => 'javascript:void(null)'
+      end
+      # haml_tag 'a.unfold_1', '1', :href => '#'
+      # haml_tag 'a.unfold_2', '2', :href => '#'
+    end
+  end
 
 end
