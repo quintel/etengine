@@ -1,4 +1,4 @@
-module Qernel::WouterDance::MaxDemand
+module Qernel::RecursiveFactor::MaxDemand
   def max_demand_recursive
     if query.max_demand
       query.max_demand

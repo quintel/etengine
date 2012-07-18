@@ -1,7 +1,7 @@
-module Qernel::WouterDance::PrimaryCo2
+module Qernel::RecursiveFactor::PrimaryCo2
 
   def primary_demand_co2_per_mj_of_carrier(carrier_key)
-    factor = wouter_dance(:co2_per_mj_of_carrier_factor, nil, nil, carrier_key)
+    factor = recursive_factor(:co2_per_mj_of_carrier_factor, nil, nil, carrier_key)
     (self.demand || 0.0) * factor
   end
 
@@ -16,7 +16,7 @@ module Qernel::WouterDance::PrimaryCo2
     (1.0 - (query.co2_free || 0.0))
   end
 
-  # @return [0.0] if converter is non_energetic_use / has co2_free of 1.0. This ends the wouter_dance.
+  # @return [0.0] if converter is non_energetic_use / has co2_free of 1.0. This ends the recursive_factor.
   # @return [nil] until dead end or primary_energy_demand
   # @return [Float] co2_per_mj of primary_energy_demand carrier
   #
@@ -33,7 +33,7 @@ module Qernel::WouterDance::PrimaryCo2
     end
   end
 
-  # @return [0.0] if converter is non_energetic_use / has co2_free of 1.0. This ends the wouter_dance.
+  # @return [0.0] if converter is non_energetic_use / has co2_free of 1.0. This ends the recursive_factor.
   # @return [nil] until dead end or primary_energy_demand
   # @return [Float] co2_per_mj of primary_energy_demand carrier
   #

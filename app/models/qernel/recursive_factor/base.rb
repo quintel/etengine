@@ -1,10 +1,10 @@
-module Qernel::WouterDance::Base
+module Qernel::RecursiveFactor::Base
 
 
   # WARNING: This method should only be used for attributes unrelated to demand
   # See the exceptions in the code for why.
   #
-  def wouter_dance_without_losses(strategy_method, converter_share_method = nil, link = nil, *args)
+  def recursive_factor_without_losses(strategy_method, converter_share_method = nil, link = nil, *args)
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
@@ -55,7 +55,7 @@ module Qernel::WouterDance::Base
           #
           inp = self.input(link.carrier)
           child_conversion = (inp and inp.conversion) || 1.0
-          child_value = child.wouter_dance_without_losses(strategy_method, converter_share_method, link, *args)
+          child_value = child.recursive_factor_without_losses(strategy_method, converter_share_method, link, *args)
 
           link_share * child_value * child_conversion
         end
@@ -65,17 +65,17 @@ module Qernel::WouterDance::Base
   end
 
   ##
-  # The wouter_dance recursively traverses the graph from "self" (this converter) to the right.
+  # The recursive_factor recursively traverses the graph from "self" (this converter) to the right.
   # It does so by following its input_links according to a *strategy method*. The strategy
   # method returns either:
-  # * a 'weight' of a link/path. When returning a weight, the wouter_dance stops for that path
+  # * a 'weight' of a link/path. When returning a weight, the recursive_factor stops for that path
   # * nil, in which case the recursion continuess.
   #
   # Example:
   #   .4  b
   # a -<
   #   .6  c -- d (1.5)
-  #   wouter_dance(:primary_demand_factor)
+  #   recursive_factor(:primary_demand_factor)
   #   1.) path b) b.primary_demand_factor => 0.4 * 1.0
   #   2.1.) d.primary_demand_factor => 1.0 * 1.5
   #   2.2.) c.primary_demand_factor => 0.6 * 1.5 (1.5 is result from 2.1)
@@ -85,11 +85,11 @@ module Qernel::WouterDance::Base
   # @param strategy_method [String,Symbol] The method name that controls the flow
   # @param converter_share_method [String,Symbol] Additional method_name that gives a weight to a converter.
   #   E.g. we use #co2_free_factor to exclude converters that have co2 filters.
-  # @param link [Qernel::Link] The link through which we called the wouter_dance (is nil for the first converter)
+  # @param link [Qernel::Link] The link through which we called the recursive_factor (is nil for the first converter)
   # @param args Additional arguments
   # @return [Float] The factor with which we have to multiply. (E.g. demand * primary_demand_factor = primary_demand)
   #
-  def wouter_dance(strategy_method, converter_share_method = nil, link = nil, *args)
+  def recursive_factor(strategy_method, converter_share_method = nil, link = nil, *args)
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
@@ -103,7 +103,7 @@ module Qernel::WouterDance::Base
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
           0.0
         else
-          child_value = child.wouter_dance(strategy_method, converter_share_method, link, *args)
+          child_value = child.recursive_factor(strategy_method, converter_share_method, link, *args)
           demanding_share * loss_share * converter_share * child_value
         end
       end
