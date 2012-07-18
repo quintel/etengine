@@ -5,7 +5,7 @@
 #debugger
   .row-fluid
     .span8
-      = form_tag data_debug_gquery_path, :method => :get do 
+      = form_tag data_debug_gql_path, :method => :get do 
         = text_area_tag :gquery, params[:gquery], :placeholder => 'GQL Query', :class => 'span8'
         %p
           = submit_tag 'Analyse', :class => 'btn'
