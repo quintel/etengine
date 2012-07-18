@@ -4,7 +4,7 @@
     %li= link_to 'Commits', etsource_commits_path
     %li= link_to 'Current', etsource_commit_path('current')
     %li= link_to '/data', data_root_path(api_scenario_id: 'latest')
-    %li= link_to 'Debugger', data_debug_gql_path
+    %li= link_to 'Debugger', data_debug_gql_path(api_scenario_id: 'latest')
 
   %p.pull-right== Logged in as #{current_user.email}
 = render :template => 'layouts/application'
