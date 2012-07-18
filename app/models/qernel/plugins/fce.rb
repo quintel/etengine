@@ -20,7 +20,7 @@ module Qernel::Plugins
     module ClassMethods
 
       def fce_values
-        @fce_values ||= Etsource::Loader.instance.globals('fce_values').map{|f|
+        @fce_values ||= (Etsource::Loader.instance.globals('fce_values') || []).map{|f|
           OpenStruct.new(f).freeze
         }.freeze
       end
