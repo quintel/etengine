@@ -12,7 +12,7 @@
     %tbody
       - attrs.andand.each do |key,value|
         %tr
-          %td= value.first
+          %th.method_name{'data-method-name' => key}= value.first
           %td{:title => title_tag_number(@fut.send(key))}= simple_auto_number(@fut.send(key),value.last)
           %td= value.last
 

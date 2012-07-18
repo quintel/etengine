@@ -99,7 +99,7 @@
           difference = ((future_value / present_value - 1) * 100).round(2) rescue nil
           difference = nil if difference.try :nan?
         %tr
-          %th= method
+          %th{'data-method-name' => method}= method
           %td{:title => present_value}= auto_number present_value
           %td{:title => future_value}= auto_number future_value
           %td= "#{difference}%" if difference
@@ -114,3 +114,10 @@
     %tr
       %td Gquery
       %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
+
+-# javascipt helper to open the gql debug for a given method of this converter.
+:javascript
+  $('[data-method-name]').bind('click', function() {
+    var gql = "V(#{@converter_present.key}, "+$(this).attr('data-method-name')+")";
+    window.open("#{data_debug_gql_path}?"+$.param({gquery: gql}), '_blank' );
+  })
