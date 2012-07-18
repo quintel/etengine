@@ -160,7 +160,7 @@ public
   end
 
   # Updates the shares according to demand.
-  # This is needed so that wouter_dances work correctly.
+  # This is needed so that recursive_factors work correctly.
   #
   def update_share
     demand = input_external_demand
@@ -168,7 +168,7 @@ public
       self.share = self.value / demand
     elsif value == 0.0
       # if the value is 0.0, we have to set rules what links
-      # get what shares. In order to have wouter_dances work properly.
+      # get what shares. In order to have recursive_factors work properly.
       self.share = 0.0 if constant?
       # To fix https://github.com/dennisschoenmakers/etengine/issues/178
       # we have to change the following line:
@@ -271,8 +271,8 @@ protected
       # Sometimes this construct does not work properly, so we manually make
       # sure a flexible can go below 0.0.
       # If you remove that you will get *stackoverflow problems for primary_demand*, 
-      # when both links have a non 0.0 value (because of the == check in wouter_dance).
-      # causing a loop in the wouter_dance. Forcing a 0.0 on the flex link closes the loop.
+      # when both links have a non 0.0 value (because of the == check in recursive_factor).
+      # causing a loop in the recursive_factor. Forcing a 0.0 on the flex link closes the loop.
       0.0
     else
       nil

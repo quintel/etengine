@@ -80,14 +80,14 @@ module Qernel
 class Converter
   extend ActiveModel::Naming
 
-  include Qernel::WouterDance::Base
-  include Qernel::WouterDance::PrimaryDemand
-  include Qernel::WouterDance::FinalDemand
-  include Qernel::WouterDance::PrimaryCo2
-  include Qernel::WouterDance::WeightedCarrier
-  include Qernel::WouterDance::Sustainable
+  include Qernel::RecursiveFactor::Base
+  include Qernel::RecursiveFactor::PrimaryDemand
+  include Qernel::RecursiveFactor::FinalDemand
+  include Qernel::RecursiveFactor::PrimaryCo2
+  include Qernel::RecursiveFactor::WeightedCarrier
+  include Qernel::RecursiveFactor::Sustainable
 
-  include Qernel::WouterDance::MaxDemand
+  include Qernel::RecursiveFactor::MaxDemand
 
   include DatasetAttributes
   include Topology::Converter

@@ -1,4 +1,4 @@
-module Qernel::WouterDance::WeightedCarrier
+module Qernel::RecursiveFactor::WeightedCarrier
 
   # Carrier Cost can depend on the share of other carriers flowing
   # into it. 
@@ -9,7 +9,7 @@ module Qernel::WouterDance::WeightedCarrier
   #
   def weighted_carrier_cost_per_mj
     dataset_fetch(:weighted_carrier_cost_per_mj_memoized) do
-      wouter_dance_without_losses(:weighted_carrier_cost_per_mj_factor)
+      recursive_factor_without_losses(:weighted_carrier_cost_per_mj_factor)
     end
   end
 
@@ -32,7 +32,7 @@ module Qernel::WouterDance::WeightedCarrier
   #
   def weighted_carrier_co2_per_mj
     dataset_fetch(:weighted_carrier_co2_per_mj_memoized) do
-      wouter_dance_without_losses(:weighted_carrier_co2_per_mj_factor)
+      recursive_factor_without_losses(:weighted_carrier_co2_per_mj_factor)
     end
   end
 

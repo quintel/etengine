@@ -1,9 +1,9 @@
-module Qernel::WouterDance::FinalDemand
+module Qernel::RecursiveFactor::FinalDemand
 
 
   def final_demand
     dataset_fetch(:final_demand_memoized) do
-      (self.demand || 0.0) * wouter_dance(:final_demand_factor)
+      (self.demand || 0.0) * recursive_factor(:final_demand_factor)
     end
   end
 
@@ -15,7 +15,7 @@ module Qernel::WouterDance::FinalDemand
   end
 
   def final_demand_of_carrier(carrier_key)
-    factor = wouter_dance(:final_demand_factor_of_carrier, nil, nil, carrier_key)
+    factor = recursive_factor(:final_demand_factor_of_carrier, nil, nil, carrier_key)
     (self.demand || 0.0) * factor
   end
 

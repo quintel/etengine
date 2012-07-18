@@ -1,4 +1,4 @@
-module Qernel::WouterDance::PrimaryDemand
+module Qernel::RecursiveFactor::PrimaryDemand
 
 
   # Calculates the primary energy demand. It recursively iterates through all the child links.
@@ -9,7 +9,7 @@ module Qernel::WouterDance::PrimaryDemand
   #
   def primary_demand
     dataset_fetch(:primary_demand_memoized) do
-      primary_demand_share = wouter_dance(:primary_demand_factor)
+      primary_demand_share = recursive_factor(:primary_demand_factor)
       (self.demand || 0.0) * (primary_demand_share)
     end
   end
@@ -24,16 +24,16 @@ module Qernel::WouterDance::PrimaryDemand
   # Primary demand of only a specific carrier.
   #
   def primary_demand_of_carrier(carrier_key)
-    factor = wouter_dance(:primary_demand_factor_of_carrier, nil, nil, carrier_key)
+    factor = recursive_factor(:primary_demand_factor_of_carrier, nil, nil, carrier_key)
     (self.demand || 0.0) * factor
   end
 
 
   def primary_demand_with(factor_method, converter_share_method = nil)
     if converter_share_method
-      w = wouter_dance("#{factor_method}_factor", "#{converter_share_method}_factor")
+      w = recursive_factor("#{factor_method}_factor", "#{converter_share_method}_factor")
     else
-      w = wouter_dance("#{factor_method}_factor")
+      w = recursive_factor("#{factor_method}_factor")
     end
     d = (self.demand || 0.0)
     w * d

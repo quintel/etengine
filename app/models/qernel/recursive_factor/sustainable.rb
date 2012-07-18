@@ -1,12 +1,12 @@
 
-module Qernel::WouterDance::Sustainable
+module Qernel::RecursiveFactor::Sustainable
 
 
   # Primary demand of sustainable sources. Uses the Carrier#sustainable attribute
   #
   def primary_demand_of_sustainable
     dataset_fetch(:primary_demand_of_sustainable_memoized) do
-      (self.demand || 0.0) * (wouter_dance(:sustainable_factor))
+      (self.demand || 0.0) * (recursive_factor(:sustainable_factor))
     end
   end
 
@@ -14,7 +14,7 @@ module Qernel::WouterDance::Sustainable
   #
   def primary_demand_of_fossil
     dataset_fetch(:primary_demand_of_fossil_memoized) do
-      self.primary_demand - (wouter_dance(:sustainable_factor)) * (self.demand || 0.0)
+      self.primary_demand - (recursive_factor(:sustainable_factor)) * (self.demand || 0.0)
     end
   end
 
@@ -26,7 +26,7 @@ module Qernel::WouterDance::Sustainable
   #
   def sustainability_share
     dataset_fetch(:sustainability_share_factor_memoized) do
-      wouter_dance_without_losses(:sustainability_share_factor)
+      recursive_factor_without_losses(:sustainability_share_factor)
     end
   end
 
@@ -66,7 +66,7 @@ module Qernel::WouterDance::Sustainable
 
   def infinite_demand
     raise "DEPRECATED infinite_demand"
-    infinte_demand_factor ||= wouter_dance(:infinte_demand_factor)
+    infinte_demand_factor ||= recursive_factor(:infinte_demand_factor)
     (self.demand || 0.0) * infinte_demand_factor
   end
 
