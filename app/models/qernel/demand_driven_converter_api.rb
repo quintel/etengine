@@ -14,9 +14,15 @@ module Qernel
     # depending on the demand.
     def full_load_seconds
       dataset_fetch :full_load_seconds do
-        begin 
+        begin
           supply = nominal_capacity_heat_output_per_unit * number_of_units
-          supply.zero? ? 0.0 : demand / supply
+          if supply.zero?
+            0.0
+          else
+            [ demand_of_hot_water,
+              demand_of_steam_hot_water,
+              demand_of_useable_heat ].compact.sum / supply
+          end
         rescue
           nil
         end
