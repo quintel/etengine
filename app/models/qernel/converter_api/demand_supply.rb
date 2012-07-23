@@ -62,7 +62,7 @@ class Qernel::ConverterApi
   # Helper method to get all heat outputs (useable_heat, hot_water, steam_hot_wather)
   #
   def output_of_heat_carriers
-    dataset_fetch(:input_of_heat_carriers) do
+    dataset_fetch(:output_of_heat_carriers) do
       output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water
     end
   end
