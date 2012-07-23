@@ -9,6 +9,15 @@ development: &DEV
     # if for some reason you don't want to clear the etsource_export directory
     etsource_disable_export: false
 
+    # Enables "live" reloading of the ETsource export. When enabled, changes
+    # to datasets/, gqueries/, inputs/, and topology/ will be detected and
+    # ETsource will expire its cached copy. The files will be reloaded the on
+    # the next request.
+    #
+    # Note that this setting only applies to the development environment; live
+    # reloading is always disabled in production and test environments.
+    etsource_live_reload: true
+
     # Setting this to true caches the dataset in between requests. set to false
     # makes working with etsource easier.
     etsource_cache_dataset: false # set true for 'live' releases

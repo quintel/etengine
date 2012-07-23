@@ -244,6 +244,7 @@ DEPENDENCIES
   jbuilder!
   jquery-rails (~> 1.0.19)
   kaminari (~> 0.13.0)
+  listen
   mysql2 (~> 0.3.11)
   pry (~> 0.9.9.3)
   pry-rails

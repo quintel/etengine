@@ -52,6 +52,9 @@ end
 group :development do
   gem 'annotate', :require => false
   gem 'ruby-prof'
+
+  # ETsource live-reloading.
+  gem 'listen'
 end
 
 group :test, :development do
