@@ -25,4 +25,8 @@ Etm::Application.configure do
   require 'lib/gc_stats'
   config.middleware.use "GCStats"
 
+  config.after_initialize do
+    Etsource::Reloader.start! if APP_CONFIG[:etsource_live_reload]
+  end
+
 end
