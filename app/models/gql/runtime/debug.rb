@@ -80,7 +80,8 @@ module Gql::Runtime
       end
 
       def GET(element, attr_name)
-        log("MAP/GET: #{element.key}", "MAP/GET: #{element.key}", {:converter => element.key}) do
+        key = element.key rescue nil
+        log("MAP/GET: #{key}", "MAP/GET: #{key}", {:converter => key}) do
           super
         end
       end

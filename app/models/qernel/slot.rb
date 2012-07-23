@@ -27,7 +27,8 @@ class Slot
                 :graph
 
   attr_reader :direction,
-              :id
+              :id,
+              :key
 
 
   # --------- Dataset ---------------------------------------------------------
@@ -40,8 +41,8 @@ class Slot
   # --------- Initialize ------------------------------------------------------
 
   def initialize(id, converter, carrier, direction = :input)
-    @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
-
+    @id  = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
+    @key = @id
     @converter = converter
     @carrier   = carrier
     @direction = direction.to_sym

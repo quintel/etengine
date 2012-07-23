@@ -65,11 +65,11 @@ module Qernel
     dataset_accessors ATTRIBUTES_USED
 
     attr_accessor :graph
-    attr_reader :dataset_key
+    attr_reader :dataset_key, :key
 
     def initialize(graph = nil)
       self.graph = graph unless graph.nil?
-      @dataset_key = :area_data
+      @dataset_key = @key = :area_data
     end
 
     # Remove when we replace :area with :area_code
