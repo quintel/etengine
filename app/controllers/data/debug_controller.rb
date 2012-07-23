@@ -16,6 +16,7 @@ class Data::DebugController < Data::BaseController
 
   def gquery
     @gql.prepare
+    @gql.sandbox_mode = :debug
     @gql.query("OBSERVE_GET(ALL(), demand)")
     if params[:gquery]
       @gql.query(params[:gquery])
@@ -31,6 +32,6 @@ class Data::DebugController < Data::BaseController
     else
       @api_scenario = Scenario.find(params[:api_scenario_id])
     end
-    @gql = @api_scenario.gql(prepare: false, sandbox_mode: :debug)
+    @gql = @api_scenario.gql(prepare: false)
   end
 end
