@@ -57,14 +57,15 @@ module DebugHelper
           end
 
           if (gquery_key = parent[:gquery_key]) && !@gquery_keys.include?(gquery_key)
-            gquery =  Gquery.get(gquery_key.to_s)
-            haml_tag 'strong.pull-right', (gquery.unit || '-')+" "
-            haml_tag 'div.offset1' do
-              with_tabs(0) do
-                haml_tag :pre, gquery.query, :class => 'gql'
+            if gquery =  Gquery.get(gquery_key.to_s)
+              haml_tag 'strong.pull-right', (gquery.unit || '-')+" "
+              haml_tag 'div.offset1' do
+                with_tabs(0) do
+                  haml_tag :pre, gquery.query, :class => 'gql'
+                end
               end
+              @gquery_keys << gquery_key
             end
-            @gquery_keys << gquery_key
           end
 
           log_subtree(children) unless children.nil?
