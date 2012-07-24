@@ -89,7 +89,8 @@ class ConverterApi
       :simult_sd,
       :simult_se,
       :simult_wd,
-      :simult_we
+      :simult_we,
+      :simult_supply
     ],
 
     :merit_order => [
