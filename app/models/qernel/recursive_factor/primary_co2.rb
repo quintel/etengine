@@ -6,7 +6,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   end
 
   def primary_co2_emission
-    dataset_fetch(:primary_co2_emission_memoized) do
+    function(:primary_co2_emission_memoized) do
       primary_demand_with(:co2_per_mj, :co2_free)
     end
   end

@@ -159,61 +159,78 @@ module Qernel::DatasetAttributes
     @observe_get          = true
   end
 
-  # HANDLE_NIL_SECURLY = true has better output for debugging
-  # HANDLE_NIL_SECURLY = false is 50 ms faster. but harder to debug if problem occurs
-  HANDLE_NIL_SECURLY = true 
-  def dataset_fetch_handle_nil(attr_name, &block)
-    if object_dataset.has_key?(attr_name)
-      if observe_get
-        log(:method, attr_name, object_dataset[attr_name])
-      else
-        object_dataset[attr_name]
-      end
-    elsif HANDLE_NIL_SECURLY
-      object_dataset[attr_name] = handle_nil(attr_name, &block)
-    else
-      if observe_get
-        log :method, attr_name do
-          object_dataset[attr_name] = yield rescue nil
-        end
-      else
-        object_dataset[attr_name] = yield rescue nil
-      end
-    end
-  end
 
-  def handle_nil(attr_name, rescue_with = nil, &block)
-    if observe_get
-      log :method, attr_name, nil do 
-        required_attributes_contain_nil?(attr_name) ? nil : yield
-      end
-    else
-      required_attributes_contain_nil?(attr_name) ? nil : yield
-    end
-  end
-
-  # Memoization
   #
-  def dataset_fetch(attr_name, &block)
+  # @example Default usage
+  #
+  #   def total_costs_of_co2
+  #     function(:total_costs_of_co2) do
+  #       # ...
+  #     end
+  #   end
+  #
+  # @example Runs the calculation only once
+  #
+  #   def total_costs_of_co2
+  #     @counter ||= 0
+  #     function(:total_costs_of_co2) do
+  #       @counter += 1
+  #     end
+  #   end
+  #   # => 1
+  #   # => 1
+  #
+  # @example Returns nil when exception happens
+  #
+  #   def total_costs_of_co2
+  #     function(:total_costs_of_co2) do
+  #       nil * 3.0
+  #     end
+  #   end
+  #   # => nil
+  #
+  # @example Returns second parameter when exception happens
+  #
+  #   def total_costs_of_co2
+  #     function(:total_costs_of_co2, 0.0) do
+  #       nil * 3.0
+  #     end
+  #   end
+  #   # => 0.0
+  #
+  #
+  def function(attr_name, rescue_with = nil)
+    # function is memoized, so check if it was called already.
     if object_dataset.has_key?(attr_name)
-      if observe_get
+      # are we in the debugger mode?
+      if observe_get 
+        # log records the access and returns the value
         log :method, attr_name, object_dataset[attr_name]
       else
+        # not debugger, so just return the memoized value
         object_dataset[attr_name]
       end
     else
+      # function is called for the first time
       if observe_get
+        # in debug mode we call #log with a block, which stores the value
+        # in the log and returns it back. 
         log :method, attr_name do 
-          object_dataset[attr_name] = yield 
+          begin
+            object_dataset[attr_name] = yield 
+          rescue => e
+            # We have an exception, most likely a nil value. log the error
+            # with message and apply the value defined in rescue_with param
+            log :error, attr_name, e
+            object_dataset[attr_name] = rescue_with
+          end
         end
       else
-        object_dataset[attr_name] = yield
+        # if not in debug mode, simply yield the value. Do not log the exceptions
+        # but simply return the rescue_with value
+        object_dataset[attr_name] = yield rescue rescue_with
       end
     end
-  end
-
-  def dataset_delete(attr_name)
-    object_dataset.delete(attr_name)
   end
 
   def log(type, attr_name, value = nil, &block)
@@ -239,7 +256,7 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_get(attr_name)
-    if observe_get # && @observe_get_keys.include?(attr_name)
+    if observe_get
       log(:attr, attr_name, object_dataset[attr_name])
     end
     object_dataset[attr_name]

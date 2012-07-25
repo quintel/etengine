@@ -1,5 +1,5 @@
 module DebugHelper
-  LABELS = {gql: 'label-info', method: 'label-inverse', set: 'label-warning' }
+  LABELS = {gql: 'label-info', method: 'label-inverse', set: 'label-warning', error: 'label-important' }
 
   def method_source(method_name)
     Rails.cache.fetch("methods/source/#{method_name}") do

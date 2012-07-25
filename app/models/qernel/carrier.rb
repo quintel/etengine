@@ -78,7 +78,7 @@ class Carrier
   #
   def co2_per_mj
     # can be overwritten by Fce plugin
-    dataset_fetch(:co2_per_mj) do
+    function(:co2_per_mj) do
       co2_conversion_per_mj
     end
   end
