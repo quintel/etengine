@@ -182,7 +182,7 @@ class ConverterApi
         %w[conversion value share actual_conversion].each do |method|
           self.class_eval <<-EOF,__FILE__,__LINE__ +1
             def #{carrier}_#{side}_#{method}
-              dataset_fetch(:#{carrier}_#{side}_#{method}) do
+              function(:#{carrier}_#{side}_#{method}) do
                 slot = self.converter.#{side}(#{carrier_key.inspect})
                 value = slot && slot.send(#{method.inspect})
                 value || 0.0

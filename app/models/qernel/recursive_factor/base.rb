@@ -126,7 +126,7 @@ module Qernel::RecursiveFactor::Base
 
 
   def loss_share
-    dataset_fetch(:loss_share) do
+    function(:loss_share) do
       v = self.share_of_losses
       (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
     end

@@ -5,7 +5,7 @@ module Qernel::RecursiveFactor::Sustainable
   # Primary demand of sustainable sources. Uses the Carrier#sustainable attribute
   #
   def primary_demand_of_sustainable
-    dataset_fetch(:primary_demand_of_sustainable_memoized) do
+    function(:primary_demand_of_sustainable_memoized) do
       (self.demand || 0.0) * (recursive_factor(:sustainable_factor))
     end
   end
@@ -13,7 +13,7 @@ module Qernel::RecursiveFactor::Sustainable
   # Primary demand of fossil sources. (primary_demand - primary_demand_of_sustainable)
   #
   def primary_demand_of_fossil
-    dataset_fetch(:primary_demand_of_fossil_memoized) do
+    function(:primary_demand_of_fossil_memoized) do
       self.primary_demand - (recursive_factor(:sustainable_factor)) * (self.demand || 0.0)
     end
   end
@@ -25,7 +25,7 @@ module Qernel::RecursiveFactor::Sustainable
   # A.sustainability_share == 0.4*0.85 + 0.6 * 1.0
   #
   def sustainability_share
-    dataset_fetch(:sustainability_share_factor_memoized) do
+    function(:sustainability_share_factor_memoized) do
       recursive_factor_without_losses(:sustainability_share_factor)
     end
   end
