@@ -23,8 +23,29 @@ you have to follow these steps to run ET-Engine.
 * fire up your local rails server (use `$> rails s` on the console or use
   [pow](http://pow.cx)
 * go to `http://etengine.dev/etsource` or equivalent
-* import the latest commit or another one if you like that better
+* Press 'import' (the latest commit or another one if you like that better)
 * you're done!
+
+### Auto-reloading your changes to etsource
+
+Sometimes you want to play around or tweak some gqueries. Then, you don't
+want to create commits every time and import them. Because when you are
+satisfied, you'll probably have 10 commits, that needs to be cleaned up,
+squashed.
+
+You can add the option `etsource_live_reload: true` in your `config.yml` 
+file.
+
+Change queries, inputs, datasets, gqueries, inputs or topology directory
+in your **et_source_export** folder, and Etengine reloads your changes
+automatically!
+
+B.t.w. By default your *etsource_export* directory is not under version control.
+In order to gain the advantages of Git, just point *etsource_export* to the 
+*etsource* directory, either by using a symbolic link or using the same directory
+in your config.yml file. But **be carefull** NOT to use the interface's 
+'import' action on /etsource: that will delete/overwrite your etsource_export 
+directory!
 
 ## GQL
 
