@@ -12,6 +12,19 @@ class Qernel::ConverterApi
   ]
   alias delta_in_capacity_in_mj_s delta_in_capacity_in_mw
 
+  def peak_load_in_mw
+    dataset_fetch_handle_nil(:peak_load_in_mw) do
+      (electricity_output_conversion + electricity_input_conversion) * 
+      typical_input_capacity_in_mw * (number_of_units - peak_load_units_present)
+    end
+  end
+  attributes_required_for :peak_load_in_mw, [
+    :electricity_output_conversion,
+    :electricity_input_conversion,
+    :typical_input_capacity_in_mw,
+    :number_of_units,
+    :peak_load_units_present
+  ]
 
   def peak_load_units_delta_for_mv_hv
     dataset_fetch_handle_nil(:peak_load_units_delta_for_mv_hv) do
