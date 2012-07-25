@@ -128,4 +128,12 @@ module Scenario::UserUpdates
     user_values.delete(id)
   end
 
+  # These two methods are only used in the edit scenario form
+  def user_values_as_yaml
+    user_values.to_yaml
+  end
+
+  def user_values_as_yaml=(values)
+    self.user_values = YAML::load(values)
+  end
 end

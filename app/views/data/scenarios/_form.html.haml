@@ -7,5 +7,5 @@
   = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
   = f.input :end_year
   = f.input :area_code, :hint => "make sure you got it right"
-  = f.input :user_values, :hint => "Position (values) of all the sliders"
+  = f.input :user_values_as_yaml, :as => :text, :hint => "Position (values) of all the sliders"
   = f.button :submit
