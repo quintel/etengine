@@ -116,20 +116,17 @@ module Gql::Runtime
         scope.carriers(keys)
       end
 
-      # Returns an attribute {Qernel::Area}. 
+      # Returns an attribute {Qernel::Area}
       #
-      # keys - The name of the attribute. 
+      # keys - The name of the attribute
       #
-      # Advanced
-      # 
       # AREA() without a key returns {Qernel::Area}
       #
       #   AREA() # => <Qernel::Area>
       #
       # Examples
       #
-      #   AREA(number_of_households) => ...
-      #   AREA() => <Qernel::Area>
+      #   AREA(number_households) => 7349500.0
       #
       def AREA(*keys)
         keys.empty? ? scope.graph.area : scope.area(keys.first)
