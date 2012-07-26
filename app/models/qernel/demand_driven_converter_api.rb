@@ -14,23 +14,17 @@ module Qernel
     # depending on the demand.
     def full_load_seconds
       dataset_fetch :full_load_seconds do
-        begin
-          supply = nominal_capacity_heat_output_per_unit * number_of_units
-          if supply.zero?
-            0.0
-          else
-            [ demand_of_hot_water,
-              demand_of_steam_hot_water,
-              demand_of_useable_heat ].compact.sum / supply
-          end
-        rescue
-          nil
+        supply = nominal_capacity_heat_output_per_unit * number_of_units
+
+        if supply.zero?
+          0.0
+        else
+          [ demand_of_hot_water,
+            demand_of_steam_hot_water,
+            demand_of_useable_heat ].compact.sum / supply
         end
       end
     end
-#    attributes_required_for :full_load_seconds,
-#      [ :demand, :nominal_capacity_heat_output_per_unit, :number_of_units ]
-
 
     # How many hours a year the converter runs at full load. Varies depending
     # on the demand.
@@ -41,6 +35,7 @@ module Qernel
     def full_load_hours
       handle_nil(:full_load_hours) { full_load_seconds / 3600 }
     end
+
     attributes_required_for :full_load_hours, [ :full_load_seconds ]
 
     # Demand-driven converters have a semi-fixed number of units which changes
@@ -61,7 +56,8 @@ module Qernel
       dataset_fetch :number_of_units do
         begin
           heat_links = converter.output_links.select do |link|
-            link.carrier && ( link.useable_heat? || link.hot_water? || link.steam_hot_water? )
+            link.carrier && (
+              link.useable_heat? || link.hot_water? || link.steam_hot_water? )
           end
 
           return 0.0 if heat_links.empty?
@@ -71,9 +67,9 @@ module Qernel
 
           supplied = households_supplied_per_unit
 
-          # Sanity check; if households_supplied_per_unit is zero, it may simply
-          # be that a value wasn't set, so we instead assume that it should be
-          # set to 1.
+          # Sanity check; if households_supplied_per_unit is zero, it may
+          # simply be that a value wasn't set, so we instead assume that it
+          # should be set to 1.
           supplied = 1.0 if supplied.zero?
 
           units / supplied
