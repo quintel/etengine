@@ -1,10 +1,12 @@
-Factory.define :scenario do |f|
-  f.title "Some scenario"
-  f.area_code "nl"
-  f.end_year 2040
-  f.use_fce false
-end
+FactoryGirl.define do
+  factory :scenario do
+    title "Some scenario"
+    area_code "nl"
+    end_year 2040
+    use_fce false
+  end
 
-Factory.define :scenario_visible_in_homepage, :parent => :scenario do |f|
-  f.in_start_menu true
+  factory :scenario_visible_in_homepage, parent: :scenario do
+    in_start_menu true
+  end
 end

@@ -12,12 +12,5 @@ describe Gquery do
       gquery.gql_modifier.should == nil
     end
   end
-
-  describe "#new" do
-    it "should remove whitespace from key" do
-      gquery = Gquery.new(:key => " foo \t ", :query => "SUM(1,1)")
-      gquery.key.should == 'foo'
-    end
-  end
 end
 

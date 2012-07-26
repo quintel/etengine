@@ -58,7 +58,7 @@ group :development do
 end
 
 group :test, :development do
-  gem "rspec-rails", "~> 2.8.0"
+  gem "rspec-rails", "~> 2.11.0"
   gem 'ruby-prof'
   gem 'pry-rails'
   gem 'pry-remote'
@@ -70,7 +70,7 @@ group :test, :development do
 end
 
 group :test do
-  gem 'factory_girl_rails', "~> 1.2.0"
+  gem 'factory_girl_rails', "~> 3.5.0"
   gem 'shoulda-matchers'
   gem 'webrat'
   gem 'simplecov', '~> 0.5.3', :require => false

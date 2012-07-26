@@ -1,5 +1,7 @@
-Factory.define :area do |f|
-  f.country 'nl'
-  f.percentage_of_new_houses 50
-  f.number_households 100
+FactoryGirl.define do
+  factory :area do
+    country 'nl'
+    percentage_of_new_houses 50
+    number_households 100
+  end
 end
