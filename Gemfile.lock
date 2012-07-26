@@ -65,10 +65,10 @@ GEM
     diff-lcs (1.1.3)
     distribution (0.7.0)
     erubis (2.7.0)
-    factory_girl (2.1.2)
-      activesupport
-    factory_girl_rails (1.2.0)
-      factory_girl (~> 2.1.0)
+    factory_girl (3.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (3.5.0)
+      factory_girl (~> 3.5.0)
       railties (>= 3.0.0)
     ffi (1.0.11)
     fileutils (0.7)
@@ -162,19 +162,19 @@ GEM
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rmagick (2.13.1)
-    rspec (2.8.0)
-      rspec-core (~> 2.8.0)
-      rspec-expectations (~> 2.8.0)
-      rspec-mocks (~> 2.8.0)
-    rspec-core (2.8.0)
-    rspec-expectations (2.8.0)
-      diff-lcs (~> 1.1.2)
-    rspec-mocks (2.8.0)
-    rspec-rails (2.8.1)
+    rspec (2.11.0)
+      rspec-core (~> 2.11.0)
+      rspec-expectations (~> 2.11.0)
+      rspec-mocks (~> 2.11.0)
+    rspec-core (2.11.0)
+    rspec-expectations (2.11.1)
+      diff-lcs (~> 1.1.3)
+    rspec-mocks (2.11.1)
+    rspec-rails (2.11.0)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
-      rspec (~> 2.8.0)
+      rspec (~> 2.11.0)
     rubel (0.0.3)
     ruby-graphviz (1.0.5)
     ruby-prof (0.11.2)
@@ -231,7 +231,7 @@ DEPENDENCIES
   dalli
   default_value_for
   distribution (~> 0.6)
-  factory_girl_rails (~> 1.2.0)
+  factory_girl_rails (~> 3.5.0)
   fileutils
   fnv
   git!
@@ -254,7 +254,7 @@ DEPENDENCIES
   rb-fsevent
   rdiscount
   rest-client
-  rspec-rails (~> 2.8.0)
+  rspec-rails (~> 2.11.0)
   rubel (= 0.0.3)
   ruby-graphviz
   ruby-prof

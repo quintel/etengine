@@ -1,3 +1,5 @@
-Factory.define :input do |f|
-  f.name "an_input"
+FactoryGirl.define do
+  factory :input do
+    name "an_input"
+  end
 end
