@@ -1,14 +1,18 @@
-- breadcrumb "GQueries"
-= render 'search_box'
+= render 'subnav'
 
-.header Test Query
 
-= form_tag test_data_gqueries_path do |f|
-  %p= text_area_tag :query, params[:query], :style => "width: 500px; height: 200px"
-  %p= submit_tag 'check'
+.row
+  .span8
+    .page-header
+      %h2 Test GQL
+    %p
+      = form_tag test_data_gqueries_path do |f|
+        = text_area_tag :query, params[:query], :class => 'span8', :style => "height: 200px"
+        %p
+          = submit_tag 'Run GQL', :class => 'btn btn-primary'
+          = submit_tag 'Debug', :class => 'btn btn'
 
-  %h3 Result
-  - if @query
-    = render 'result'
-  - else
-    %em no query
+  - if @query    
+    .span8
+      %h3 Result
+      = render 'result'

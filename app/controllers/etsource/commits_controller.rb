@@ -1,5 +1,6 @@
 class Etsource::CommitsController < ApplicationController
-  layout 'etsource'
+  layout 'application'
+  
   before_filter :find_commit, :only => :import
   before_filter :setup_etsource
 

@@ -1,4 +1,6 @@
 class Data::InputsController < Data::BaseController
+  layout 'application'
+
   before_filter :find_input, :only => [:show]
 
   def index

@@ -1,39 +1,43 @@
-- breadcrumb link_to "GQueries", data_gqueries_path
-- breadcrumb @gquery.key
-= render 'search_box'
+-# breadcrumb link_to "GQueries", data_gqueries_path
+-# breadcrumb @gquery.key
+= render 'subnav'
 
-.header
-  \##{@gquery.id}
-  \:
-  = @gquery.key
+
+.row
+  .span12
+    .page-header
+      %h2
+        = @gquery.key
+        %small 
   
-%h3 Query
 
-%pre.gql
-  = color_syntaxed_gquery @gquery.query
+    %pre.gql
+      = color_syntaxed_gquery @gquery.query
 
-%h3 Result
-- @query = @gquery.query
-= render 'result'
+    %h3 Result
+    - @query = @gquery.query
+    = render 'result'
 
-%h3 Info
+    %h3 Info
 
-%dl
-  - if @gquery.deprecated_key
-    %dt Deprecated Key
-    %dd= @gquery.deprecated_key
-  %dt Groups
-  %dd= @gquery.gquery_group.try(:group_key)
-  %dt Unit
-  %dd= @gquery.unit
-  %dt Description
-  %dd= simple_format @gquery.description
+    %dl
+      - if @gquery.deprecated_key
+        %dt Deprecated Key
+        %dd= @gquery.deprecated_key
+      %dt Groups
+      %dd= @gquery.gquery_group.try(:group_key)
+      %dt Unit
+      %dd= @gquery.unit
+      %dt Description
+      %dd= simple_format @gquery.description
+      %dt File path
+      %dd= @gquery.file_path
 
-%h3 References
+    %h3 References
 
-%table
-  - Gquery.contains(@gquery.key).each do |gquery|
-    %tr
-      %td Gquery
-      %td= link_to gquery.key, data_gquery_path(:id => gquery.key)
+    %table
+      - Gquery.contains(@gquery.key).each do |gquery|
+        %tr
+          %td Gquery
+          %td= link_to gquery.key, data_gquery_path(:id => gquery.key)
 

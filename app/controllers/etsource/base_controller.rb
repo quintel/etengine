@@ -1,5 +1,5 @@
 class Etsource::BaseController < ApplicationController
-  layout 'etsource'
+  layout 'application'
   
   authorize_resource :class => false
 

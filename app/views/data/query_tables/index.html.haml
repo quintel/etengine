@@ -1,14 +1,20 @@
-- breadcrumb link_to 'Gqueries', data_gqueries_path
-- breadcrumb 'Query tables'
-- title "Query Tables"
+= render 'data/gqueries/subnav'
 
-%table
-  %tr
-    %th Name
-    %th Description
-  - for query_table in @query_tables
-    %tr
-      %td= link_to h(query_table.name), data_query_table_path(:id => query_table.id)
-      %td= h(query_table.description)
+.row-fluid
+  .span12
+    .page-header
+      %h2 
+        Query tables
+        = link_to "New", new_data_query_table_path, :class => 'btn'
+    %table.table.table-condensed.table-striped
+      %thead
+        %tr
+          %th.span4 Name
+          %th Description
+      %tbody
+        - for query_table in @query_tables
+          %tr
+            %td= link_to h(query_table.name), data_query_table_path(:id => query_table.id)
+            %td= h(query_table.description)
 
-%p= link_to "New Query Table", new_data_query_table_path
+    

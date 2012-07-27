@@ -101,6 +101,8 @@ Etm::Application.routes.draw do
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
+
+      match 'search' => 'search#index', :as => :search
     end
   end
 

@@ -1,16 +1,16 @@
-- breadcrumb link_to "Carriers", data_carriers_path
-- breadcrumb @carrier.key
-= render :partial => "data/carriers/search_box"
+= render "data/shared/data_subnav"
 
-.header
-  == ##{@carrier.id}
-  = @carrier.key
+.row
+  .span12
+    .page-header
+      %h2= @carrier.key
 
 
-= notice_message
+    = notice_message
 
-%table
-  - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
-    %tr
-      %th= key
-      %td= @carrier[key]
+    %table.table.table-condensed
+      %tbody
+        - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+          %tr
+            %th= key
+            %td= @carrier[key]

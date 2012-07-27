@@ -1,9 +1,9 @@
 - content_for :subnav do
-  %nav
-    = link_to 'Gquery Groups', data_gquery_groups_path
-    = link_to 'Query sandbox', test_data_gqueries_path
-    = link_to 'Query Dump', dump_data_gqueries_path
-    = link_to 'Query Tables', data_query_tables_path
-    = link_to "GQL Search", data_gql_search_path
-    = link_to "GQL Log", data_gql_log_path
-    
+  %ul.nav.nav-pills
+    %li= link_to 'Gqueries', data_gqueries_path
+    %li= link_to 'Sandbox', test_data_gqueries_path
+    %li= link_to 'Query Tables', data_query_tables_path
+    %li= link_to "GQL Search", data_gql_search_path
+    -#%li= link_to 'Gquery Groups', data_gquery_groups_path
+    -#%li= link_to 'Query Dump', dump_data_gqueries_path
+    %li= link_to "GQL Log", data_gql_log_path

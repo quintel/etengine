@@ -1,4 +1,6 @@
 class Data::GqueryGroupsController < Data::BaseController
+  layout 'application'
+
   def index
     @gquery_groups = GqueryGroup.all
   end

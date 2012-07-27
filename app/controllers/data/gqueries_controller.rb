@@ -1,5 +1,8 @@
 class Data::GqueriesController < Data::BaseController
+  layout 'application'
+  
   before_filter :find_model, :only => :show
+  skip_before_filter :initialize_gql, :only => [:index]
 
   def index
     all = Gquery.all
@@ -17,7 +20,11 @@ class Data::GqueriesController < Data::BaseController
   end
 
   def test
-    @query = params[:query].gsub(/\s/,'') if params[:query].present?
+    if params[:commit] == "Debug"
+      redirect_to data_debug_gql_path(gquery: params[:query])
+    else
+      @query = params[:query].gsub(/\s/,'') if params[:query].present?
+    end
   end
 
   def show

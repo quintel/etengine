@@ -1,16 +1,19 @@
-- breadcrumb "Carriers"
+= render "data/shared/data_subnav"
+.row
+  .span12
+    .page-header 
+      %h2 Carriers
 
-= render 'search_box'
+    %table.table.table-condensed.table-striped
+      %thead
+        %tr
+          %th Key
+          - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+            %th= key.to_s.gsub '_', ' '
 
-.header Carriers
-
-%table
-  %thead
-    %tr
-      %th Id
-      %th Key
-  %tbody
-    - @carriers.each do |c|
-      %tr
-        %td= c.id
-        %td= link_to c.key, data_carrier_path(:id => c)
+      %tbody
+        - @carriers.each do |c|
+          %tr
+            %td= link_to c.key, data_carrier_path(:id => c)
+            - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+              %td= auto_number c[key]
