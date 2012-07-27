@@ -1,5 +1,4 @@
-
-= render 'subnav'
+= render "data/shared/data_subnav"
 
 .header Check if present demand matches demand_expected_value.
 
@@ -11,7 +10,7 @@
     = @converters.select{ |c| c.demand_expected? == false }.length
     converters are unhappy. :-( 
 
-%table
+%table.table.table-condensed
   %thead
     %tr
       %th Id
@@ -35,7 +34,7 @@
           &nbsp; 
 
 %h2 All converters
-%table
+%table.table.table-condensed
   %thead
     %tr
       %th Id

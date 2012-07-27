@@ -1,14 +1,14 @@
-- breadcrumb "Backend"
+= render 'data/shared/data_subnav'
 
 = button_to "Restart", data_restart_path,
-    :confirm =>"This will drop the sessions for ALL users! Please be patient, server restarts takes 30secs. Are you sure?"
-= button_to "Clear Cache", data_clear_cache_path, :confirm =>"Are you sure?"
+    :confirm =>"This will drop the sessions for ALL users! Please be patient, server restarts takes 30secs. Are you sure?", :class => 'btn'
+= button_to "Clear Cache", data_clear_cache_path, :confirm =>"Are you sure?", :class => 'btn'
 
 %p= link_to 'GQL Log', data_gql_log_path
 
 %h3 System
 
-%table
+%table.table.table-condensed
   %tr
     %td Uptime
     %td= %x{uptime}

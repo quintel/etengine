@@ -1,22 +1,25 @@
-- breadcrumb "GQueries"
-= render 'search_box'
 = render 'subnav'
-%table
-  %thead
-    %tr
-      %th Key
-      %th Unit
-      %th debug
-      %th Updated at
-      %th Deprecated Key
-  %tbody
-    - @gqueries.flatten.each do |gquery|
+
+.row-fluid
+  %br
+  .well= render 'search_box'  
+  %table.table.table-condensed.table-striped
+    %thead
       %tr
-        %td= link_to highlight(gquery.key, params[:q]), data_gquery_path(:id => gquery.key)
-        %td= gquery.unit
-        %td= link_to 'debug', data_debug_gql_path(:gquery => "Q(#{gquery.key})"), :target => :blank
-        %td= gquery.gquery_group.try(:group_key)
-        %td= gquery.deprecated_key
-  %tfoot
-    %tr
-      %td{:colspan => 9}= paginate @gqueries
+        %th Key
+        %th Unit
+        %th 
+        %th Group
+        %th Deprecated Key
+    %tbody
+      - @gqueries.flatten.each do |gquery|
+        %tr
+          %td= link_to highlight(gquery.key, params[:q]), data_gquery_path(:id => gquery.key)
+          %td= gquery.unit.andand.upcase
+          %td= link_to 'debug', data_debug_gql_path(:gquery => "Q(#{gquery.key})"), :target => :blank
+          %td= gquery.gquery_group.try(:group_key)
+          %td= gquery.deprecated_key
+    %tfoot
+
+  %div
+    = paginate @gqueries

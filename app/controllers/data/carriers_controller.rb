@@ -1,4 +1,6 @@
 class Data::CarriersController < Data::BaseController
+  layout 'application'
+
   def index
     @carriers = @gql.present_graph.carriers.sort_by(&:key)
   end

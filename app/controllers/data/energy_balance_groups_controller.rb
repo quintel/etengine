@@ -1,4 +1,6 @@
 class Data::EnergyBalanceGroupsController < Data::BaseController
+  layout 'application'
+
   before_filter :find_item, :only => [:show, :edit, :update, :destroy]
   
   def index

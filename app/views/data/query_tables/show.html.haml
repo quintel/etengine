@@ -1,37 +1,42 @@
-- breadcrumb link_to 'Gqueries', data_gqueries_path
-- breadcrumb link_to 'Query tables', data_query_table_path(:id => @query_table)
-- breadcrumb @query_table.name
+= render 'data/gqueries/subnav'
 
-- title h(@query_table.name)
+.row-fluid
+  .span12
+    .page-header
+      %h2
+        = h(@query_table.name)
+        %small
+          = link_to "Back", data_query_tables_path
+          = link_to "Edit", edit_data_query_table_path(:id => @query_table.id)
 
-%p=h @query_table.description
 
-- row_total = {}
-- col_total = {}
-%table#query_table{:border => 1}
-  - 1.upto(@query_table.row_count) do |row|
-    %tr
-      - 1.upto(@query_table.column_count) do |col|
-        - if cell = @query_table.cell(row,col)
-          - result = cell.result(@gql)
-          - url = edit_data_query_table_cell_path(:id => cell.id)
-          %td.result= link_to result, url, :class => 'fancybox'
-          - if result.is_a?(Numeric)
-            - (row_total[row] ||= []) << result
-            - (col_total[col] ||= []) << result
-        - else
-          - url = new_data_query_table_cell_path(:query_table_id => @query_table.id, :row => row, :column => col)
-          %td.new= link_to 'edit', url, :class => 'fancybox'
+    %p=h @query_table.description
 
-      %td.total.result= row_total[row].compact.sum rescue '-'
-  %tr
-    - 1.upto(@query_table.column_count) do |col|
-      %td.total.result= col_total[col].compact.sum rescue '-'
-    %td.total.result -
+    - row_total = {}
+    - col_total = {}
+    %table.table.table-condensed.table-bordered#query_table
+      - 1.upto(@query_table.row_count) do |row|
+        %tr
+          - 1.upto(@query_table.column_count) do |col|
+            - if cell = @query_table.cell(row,col)
+              - result = cell.result(@gql)
+              - url = edit_data_query_table_cell_path(:id => cell.id)
+              %td.result= link_to result, url, :class => 'fancybox'
+              - if result.is_a?(Numeric)
+                - (row_total[row] ||= []) << result
+                - (col_total[col] ||= []) << result
+            - else
+              - url = new_data_query_table_cell_path(:query_table_id => @query_table.id, :row => row, :column => col)
+              %td.new= link_to 'edit', url, :class => 'fancybox'
 
-%p
-  = link_to "Edit", edit_data_query_table_path(:id => @query_table.id)
-  |
-  = link_to "Destroy", data_query_table_path(:id => @query_table.id), :confirm => 'Are you sure?', :method => :delete
-  |
-  = link_to "View All", data_query_tables_path
+          %td.total.result= row_total[row].compact.sum rescue '-'
+      %tr
+        - 1.upto(@query_table.column_count) do |col|
+          %td.total.result= col_total[col].compact.sum rescue '-'
+        %td.total.result -
+
+    %p
+      = link_to "Edit", edit_data_query_table_path(:id => @query_table.id)
+      |
+      = link_to "Destroy", data_query_table_path(:id => @query_table.id), :confirm => 'Are you sure?', :method => :delete
+      |

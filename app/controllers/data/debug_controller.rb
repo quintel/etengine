@@ -1,5 +1,5 @@
 class Data::DebugController < Data::BaseController
-  layout 'etsource'
+  layout 'application'
 
   def calculation
     @gql.init_datasets

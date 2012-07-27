@@ -96,7 +96,8 @@ module Etsource
         :description => description,
         :query => query,
         :unit => variables['unit'],
-        :deprecated_key => variables['deprecated_key']
+        :deprecated_key => variables['deprecated_key'],
+        :file_path => f
       )
     end
 

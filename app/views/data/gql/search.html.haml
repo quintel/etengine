@@ -1,70 +1,72 @@
-- breadcrumb link_to "Gqueries", data_gqueries_path
-- breadcrumb "GQL Search"
+= render 'data/gqueries/subnav'
 
-%section#search_box
-  = form_tag data_gql_search_path, :method => :get do
-    = label_tag "query"
-    = search_field_tag :q, @q
-    = submit_tag "Search"
+.row-fluid
+  .span12
+    .page-header
+      %section#search_box.form.form-inline
+        = form_tag data_gql_search_path, :method => :get do
+          = label_tag "Search"
+          = search_field_tag :q, @q
+          = submit_tag "Search", :class => 'btn btn-primary'
 
-- if @q
-  %h3
-    Total: #{pluralize(@gqueries.size + @inputs.size + @query_table_cells.size, 'result')} /
-    Inputs: #{pluralize @inputs.size, 'item'} /
-    GQueries: #{pluralize @gqueries.size, 'item'} /
-    QueryTableCells: #{pluralize @query_table_cells.size, 'item'}
+    - if @q
+      %h3
+        Total: #{pluralize(@gqueries.size + @inputs.size + @query_table_cells.size, 'result')} /
+        Inputs: #{pluralize @inputs.size, 'item'} /
+        GQueries: #{pluralize @gqueries.size, 'item'} /
+        QueryTableCells: #{pluralize @query_table_cells.size, 'item'}
 
-- if @gqueries.any?
-  %table
-    %thead
-      %tr
-        %th{:colspan => 4} GQueries
-      %tr
-        %th Key
-        %th Query
-        %th Deprecated key
-    %tbody
-      - @gqueries.each do |g|
-        %tr
-          %td= link_to highlight(g.key, @q), data_gquery_path(:id => g.key)
-          %td= highlight(g.query, @q)
-          %td= highlight(g.deprecated_key, @q) if g.deprecated_key
-- if @inputs.any?
-  %table
-    %thead
-      %tr
-        %th{:colspan => 8} Inputs
-      %tr
-        %th Id
-        %th Key
-        %th Start
-        %th Min
-        %th Max
-        %th Attr_name
-        %th Label Query
-        %th Query
-    %tbody
-      - @inputs.each do |g|
-        %tr
-          %td= g.id
-          %td= highlight(g.key, @q)
-          %td= highlight(g.start_value_gql, @q)
-          %td= highlight(g.min_value_gql, @q)
-          %td= highlight(g.max_value_gql, @q)
-          %td= highlight(g.attr_name, @q)
-          %td= highlight(g.label_query, @q)
-          %td= highlight(g.query, @q)
+    - if @gqueries.any?
+      %table
+        %thead
+          %tr
+            %th{:colspan => 4} GQueries
+          %tr
+            %th Key
+            %th Query
+            %th Deprecated key
+        %tbody
+          - @gqueries.each do |g|
+            %tr
+              %td= link_to highlight(g.key, @q), data_gquery_path(:id => g.key)
+              %td= highlight(g.query, @q)
+              %td= highlight(g.deprecated_key, @q) if g.deprecated_key
+    - if @inputs.any?
+      %table
+        %thead
+          %tr
+            %th{:colspan => 8} Inputs
+          %tr
+            %th Id
+            %th Key
+            %th Start
+            %th Min
+            %th Max
+            %th Attr_name
+            %th Label Query
+            %th Query
+        %tbody
+          - @inputs.each do |g|
+            %tr
+              %td= g.id
+              %td= highlight(g.key, @q)
+              %td= highlight(g.start_value_gql, @q)
+              %td= highlight(g.min_value_gql, @q)
+              %td= highlight(g.max_value_gql, @q)
+              %td= highlight(g.attr_name, @q)
+              %td= highlight(g.label_query, @q)
+              %td= highlight(g.query, @q)
 
-- if @query_table_cells.any?
-  %table
-    %thead
-      %tr
-        %th{:colspan => 4} Query Table Cells
-      %tr
-        %th Id
-        %th Query
-    %tbody
-      - @query_table_cells.each do |q|
-        %tr
-          %td= link_to q.id, edit_data_query_table_cell_path(:id => q.id)
-          %td= highlight(q.gquery, @q)
+    - if @query_table_cells.any?
+      %table
+        %thead
+          %tr
+            %th{:colspan => 4} Query Table Cells
+          %tr
+            %th Id
+            %th Query
+        %tbody
+          - @query_table_cells.each do |q|
+            %tr
+              %td= link_to q.id, edit_data_query_table_cell_path(:id => q.id)
+              %td= highlight(q.gquery, @q)
