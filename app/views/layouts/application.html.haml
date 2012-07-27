@@ -43,3 +43,5 @@
       #content= yield
       #footer
         = yield :footer
+    - unless APP_CONFIG[:standalone]
+      = render "layouts/ga" if Rails.env.production?
