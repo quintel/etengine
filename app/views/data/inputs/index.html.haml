@@ -1,14 +1,26 @@
-- breadcrumb "Inputs"
+= render "data/shared/data_subnav"
 
-.header Inputs
 
-%table
-  %thead
-    %th Id
-    %th Key
-    %th
-  %tbody
-    - @inputs.each do |i|
-      %tr
-        %td= i.id
-        %td= link_to highlight(i.key, params[:q]), data_input_path(:id => i.id)
+.row
+  .span12
+    .page-header 
+      %h2 Inputs
+    .alert
+      Min-, max- and start values on this screen are calculated for the current scenarios.
+
+    %table.table.table-condensed
+      %thead
+        %th Id
+        %th Key
+        %th Start/User
+        %th Min
+        %th Max
+      %tbody
+        - @inputs.each do |i|
+          %tr
+            %td= i.id
+            %td= link_to highlight(i.key, params[:q]), data_input_path(:id => i.id)
+            %td= auto_number i.start_value_for(@gql)
+            %td= auto_number i.min_value_for(@gql)
+            %td= auto_number i.max_value_for(@gql)
+            

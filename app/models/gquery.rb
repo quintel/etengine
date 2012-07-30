@@ -7,7 +7,7 @@ class Gquery
   include InMemoryRecord
   extend ActiveModel::Naming
 
-  attr_accessor :key, :description, :query, :unit, :deprecated_key, :gquery_group
+  attr_accessor :key, :description, :query, :unit, :deprecated_key, :gquery_group, :file_path
 
   def initialize(attributes={})
     attributes && attributes.each do |name, value|

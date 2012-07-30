@@ -1,5 +1,5 @@
-%table
-  %thead
+%table.table.table-condensed
+  -#%thead
     %tr
       %th Name
       %th Value*
@@ -8,7 +8,11 @@
   - @values.each do |group,attrs|
     %thead
       %tr
-        %th{:colspan=>3}= group.capitalize
+        %th{style: "background: #eee"}
+          %h4= group.capitalize
+        %th{style: "background: #eee"} Value*
+        %th{style: "background: #eee"} Unit
+
     %tbody
       - attrs.andand.each do |key,value|
         %tr

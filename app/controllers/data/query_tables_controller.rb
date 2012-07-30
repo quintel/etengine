@@ -1,4 +1,6 @@
 class Data::QueryTablesController < Data::BaseController
+  layout 'application'
+  
   def index
     @query_tables = QueryTable.all
   end

@@ -1,4 +1,6 @@
 class Data::GqlController < Data::BaseController
+  layout 'application'
+  
   def index
   end
 

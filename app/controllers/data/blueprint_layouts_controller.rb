@@ -5,6 +5,7 @@ class Data::BlueprintLayoutsController < Data::BaseController
 
   def index
     @blueprint_layouts = BlueprintLayout.find(:all)
+    render :layout => 'application'
   end
 
   def show
