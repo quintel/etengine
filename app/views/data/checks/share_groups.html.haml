@@ -1,0 +1,23 @@
+= render 'data/shared/data_subnav'
+
+.row
+  .span12
+    .page-header
+      %h2== Share Group Sums
+
+    %p.country-links
+      - Etsource::Dataset.region_codes.sort.each do |area|
+        %a(href="##{ area }")= area
+
+    - Etsource::Dataset.region_codes.sort.each do |area|
+      %h2(id="#{area}" style="text-transform: uppercase")= area
+
+      %table.table.table-condensed#share-groups
+        %thead
+          %th Group name
+          %th Sum of input start values
+        %tbody
+          - share_groups(area).each do |group|
+            %tr{ class: group.ok? ? 'ok' : 'invalid' }
+              %td= group.key
+              %td= group.sum

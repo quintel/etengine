@@ -92,6 +92,8 @@ Etm::Application.routes.draw do
       end
       resources :energy_balance_groups
 
+      match '/share_groups' => 'share_groups#index'
+
       match '/checks/:action' => 'checks'
 
       match '/debug/calculation' => 'debug#calculation'
