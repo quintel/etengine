@@ -13,6 +13,7 @@
         %th Id
         %th Key
         %th Start/User
+        %th Share group
         %th Min
         %th Max
       %tbody
@@ -21,6 +22,6 @@
             %td= i.id
             %td= link_to highlight(i.key, params[:q]), data_input_path(:id => i.id)
             %td= auto_number i.start_value_for(@gql)
+            %td= auto_number i.share_group
             %td= auto_number i.min_value_for(@gql)
             %td= auto_number i.max_value_for(@gql)
-            
