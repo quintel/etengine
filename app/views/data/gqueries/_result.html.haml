@@ -1,16 +1,15 @@
 - begin
-  - Rails.logger.warn "got to here 1"
   - result = @gql.query(@query)
   - if result.respond_to?(:present_year)
-    %table{:border => 1}
+    %table.table.table-bordered
       %tr
-        %td= result.present_year
-        %td.tal
+        %td.span1= result.present_year
+        %td.tal.span4
           - if result.present_value.is_a?(String)
             %pre= result.present_value
           - else
             = result.present_value
-        %td= @gquery.andand.unit
+        %td.span1= @gquery.andand.unit
       %tr
         %td= result.future_year
         %td.tal
@@ -20,13 +19,11 @@
             = result.future_value
         %td= @gquery.andand.unit
   - else
-    %table{:border => 1}
+    %table.table.table-bordered
       %tr
         %td No Year
         %td.tar= result
         %td= @gquery.try :unit
     
 - rescue => e
-  - Rails.logger.warn "got to here 2"
   %pre= e.inspect
-  - Rails.logger.warn "got to here 3"

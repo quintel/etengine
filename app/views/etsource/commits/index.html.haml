@@ -1,16 +1,13 @@
-- breadcrumb link_to("ETSource", etsource_root_path)
-
 
 %section#search_box
   .row
     .span16
-      = form_tag etsource_commits_path, :method => :get do
-        Branches
-        = select_tag :branch, options_for_select(@branches, @branch)
-        = submit_tag "Checkout", :class => 'btn'
-        = submit_tag "Refresh", :class => 'btn'
-        = link_to "verify if dashboard is working", etsource_commit_path(id: 'current')
-      %p Click "Checkout" to move to a different branch.
+      .well
+        = form_tag etsource_commits_path, :method => :get, :class => 'form-inline' do
+          = select_tag :branch, options_for_select(@branches, @branch)
+          = submit_tag "Checkout", :class => 'btn'
+          = submit_tag "Refresh", :class => 'btn'
+        %p Click "Checkout" to move to a different branch.
 
 - if @output
   %pre.git_output= @output

@@ -1,4 +1,5 @@
-- breadcrumb 'Scenarios'
+= render "data/shared/data_subnav"
+
 %section#search_box
   = form_tag data_scenarios_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
@@ -6,11 +7,11 @@
     In start menu
     = check_box_tag :protected, 1, params[:protected]
     Protected
-    = submit_tag "search"
+    = submit_tag "search", :class => 'btn'
 
 =link_to "create new scenario", new_data_scenario_path
 
-%table
+%table.table.table-condensed
   %thead
     %tr
       %th{:colspan => 8} Scenario count: #{Scenario.count}

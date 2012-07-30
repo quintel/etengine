@@ -1,13 +1,14 @@
-- breadcrumb link_to "Inputs", data_inputs_path
-- breadcrumb @input.key
-= render 'search_box'
-.header
-  input #{@input.key}
+= render "data/shared/data_subnav"
 
-%strong{style: "color: red"} Inputs have to be edited through ETsource.
+.row
+  .span12
+    .page-header
+      %h2 input #{@input.key}
 
-%table
-  - Input::ATTRIBUTES.each do |attr|
-    %tr
-      %td= attr
-      %td= @input.send attr
+    .alert.alert-warning Inputs have to be edited through ETsource.
+
+    %table.table.table-condensed
+      - Input::ATTRIBUTES.each do |attr|
+        %tr
+          %td= attr
+          %td= @input.send attr

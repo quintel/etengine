@@ -1,0 +1,8 @@
+<% cache("/data/latest/search/keys.js") do %>
+var search_keys = <%= 
+  [
+    *Etsource::Loader.instance.graph.converters.map(&:key),
+    *Gquery.all.map(&:key)
+  ].to_json.html_safe 
+%>
+<% end %> 

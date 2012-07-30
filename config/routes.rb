@@ -80,7 +80,6 @@ Etm::Application.routes.draw do
       end
 
       resources :converters, :only => [:index, :show]
-      resources :gquery_groups, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
       resource  :area, :as => :area, :only => :show
 
@@ -101,6 +100,8 @@ Etm::Application.routes.draw do
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
+
+      match 'search' => 'search#index', :as => :search
     end
   end
 
