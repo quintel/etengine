@@ -12,7 +12,7 @@ module Qernel
 
       def to_topology
         [
-          [topology_key, key, sector_key, use_key, energy_balance_group, groups.join(GROUPS_SEPARATOR)].join(";\t"),
+          [key, sector_key, use_key, energy_balance_group, groups.join(GROUPS_SEPARATOR)].join(";"),
           inputs.map(&:to_topology),
           outputs.map(&:to_topology)
         ].join("\n")
@@ -20,7 +20,7 @@ module Qernel
 
       module ClassMethods
         def import(line)
-          key, _key, sector_key, use_key, energy_balance_group, groups = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
+          key, sector_key, use_key, energy_balance_group, groups = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
           groups = groups.to_s.split(GROUPS_SEPARATOR).map(&:to_sym)
           key = key.to_s.scan(/\w+/).first.strip.gsub(/\s/,'').to_sym
 
