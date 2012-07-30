@@ -2,7 +2,7 @@
 
 
 .row
-  .span8
+  .span12
     .page-header
       %h2 Test GQL
     %p
@@ -12,7 +12,8 @@
           = submit_tag 'Run GQL', :class => 'btn btn-primary'
           = submit_tag 'Debug', :class => 'btn btn'
 
-  - if @query    
-    .span8
+- if @query    
+  .row-fluid
+    .span11
       %h3 Result
       = render 'result'
