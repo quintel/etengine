@@ -3,7 +3,7 @@ class Data::SearchController < Data::BaseController
 
   def index
     respond_to do |format|
-      format.js {}
+      format.js { render :layout => false}
       format.html do
         if search = params[:search]
           if gquery = Gquery.get(search.strip)
