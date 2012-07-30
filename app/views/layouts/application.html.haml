@@ -42,15 +42,16 @@
                   %form.form-inline.navbar-search{:action => data_search_path(url_params), :method => :get}
                     %input.search-query.span3.typeahead{:name => 'search', :placeholder => "Search", :rel => 'tooltip', :title => "Converter and Gquery keys. Use dots and underscores to shorten search.", 'data-placement' => 'right', 'data-trigger' => 'hover', 'data-delay' => 500}
                 %li.divider-vertical
-                %li
-                  %form#api_scenario_selector.navbar-search.form.form-inline{:action => data_redirect_path(url_params), :method => :get}
-                    - opts = [["Current - ##{@gql.scenario.id rescue 'error'}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
-                    = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
-                %li.divider-vertical
-                %li
-                  %form#area_code_selector.navbar-search.form.form-inline{:action => '#', :method => :get}
-                    - opts = Etsource::Dataset.region_codes
-                    = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1'
+                - if params[:api_scenario_id]
+                  %li
+                    %form#api_scenario_selector.navbar-search.form.form-inline{:action => data_redirect_path(url_params), :method => :get}
+                      - opts = [["Current - ##{@gql.scenario.id rescue 'error'}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
+                      = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
+                  %li.divider-vertical
+                  %li
+                    %form#area_code_selector.navbar-search.form.form-inline{:action => '#', :method => :get}
+                      - opts = Etsource::Dataset.region_codes
+                      = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1'
               %ul.nav.pull-right
                 %li
                   = link_to "Logout", logout_path, :class => 'pull-right', :title => "Logged in as #{current_user.email}", :rel => 'tooltip', 'data-placement' => 'bottom'
