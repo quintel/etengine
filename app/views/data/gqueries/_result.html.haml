@@ -4,7 +4,7 @@
     %table.table.table-bordered
       %tr
         %td.span1= result.present_year
-        %td.tal.span4
+        %td.tal
           - if result.present_value.is_a?(String)
             %pre= result.present_value
           - else
