@@ -31,7 +31,7 @@ module Scenario::UserUpdates
   def inputs_present
     unless @inputs_present
       @inputs_present = {}
-      user_values.each do |key, value|
+      (balanced_values.merge(user_values)).each do |key, value|
         input = Input.get(key)
         @inputs_present[input] = value if input.present? && input.updates_present?
       end
@@ -42,7 +42,7 @@ module Scenario::UserUpdates
   def inputs_future
     unless @inputs_future
       @inputs_future = {}
-      user_values.each do |key, value|
+      (balanced_values.merge(user_values)).each do |key, value|
         input = Input.get(key)
         unless input
           @input_errors ||= []

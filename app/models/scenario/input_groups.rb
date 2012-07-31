@@ -30,8 +30,11 @@ module Scenario::InputGroups
   #
   def used_groups_not_adding_up
     used_groups.reject do |group, elements|
-      v = elements.map{|e| user_values[e.id] }.compact.sum
-      v > 99.99 && v < 100.01
+      input_values = elements.map do |input|
+        user_values[input.id] || balanced_values[input.id]
+      end
+
+      input_values.compact.sum.between?(99.99, 100.01)
     end
   end
 
@@ -40,16 +43,17 @@ module Scenario::InputGroups
   # @return [Hash] group name => [Array<Input>]
   #
   def used_groups
-    groups = Input.inputs_grouped
-    hsh = {}
+    groups     = Input.inputs_grouped
+    input_keys = user_values.keys + balanced_values.keys
+    hash       = Hash.new
 
     # remove groups that have no input in user_values
     groups.each do |group, elements|
-      if (elements.map(&:id) & user_values.keys).present?
-        hsh[group] = elements
+      if (elements.map(&:id) & input_keys).present?
+        hash[group] = elements
       end
     end
 
-    hsh
+    hash
   end
 end
