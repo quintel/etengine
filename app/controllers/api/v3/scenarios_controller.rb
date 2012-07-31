@@ -90,7 +90,9 @@ module Api
         attrs = params[:scenario] || {}
         # TODO: handle int/string keys
         if attrs[:user_values]
-          attrs[:user_values].reverse_merge!(@scenario.user_values)
+          unless params[:reset]
+            attrs[:user_values].reverse_merge!(@scenario.user_values)
+          end
         end
         # TODO: handle scenario ownership!
         @scenario.update_attributes(attrs)
