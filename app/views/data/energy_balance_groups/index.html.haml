@@ -1,25 +1,21 @@
 = render "data/shared/data_subnav"
 
-.header
-  Energy Balance Groups
+.row
+  .span12
+    .page-header
+      %h2 Energy Balance Groups
+    .alert
+      You can edit Energy Balance Groups, delete and add them in ETSource.
 
-%strong{style: "color: red"} Deprecated. No longer supported.
-
-%table
-  %thead
-    %tr
-      %th Id
-      %th Name
-      %th Colour
-      %th Converters
-      %th
-  %tbody
-    - @energy_balance_groups.each do |e|
-      %tr
-        %td= e.id
-        %td= link_to e.name, data_energy_balance_group_path(:id => e.id)
-        %td{:style => "background-color: #{e.graphviz_color}"}= e.graphviz_color
-        %td=# e.converters.count
-        %td= link_to 'edit', edit_data_energy_balance_group_path(:id => e.id)
-%p
-  = link_to 'New Energy Balance Group', new_data_energy_balance_group_path
+    %table.table.table-condensed
+      %thead
+        %tr
+          %th Id
+          %th Color and Name
+      %tbody
+        - @energy_balance_groups.each do |e|
+          %tr
+            %td= e.id
+            %td
+              %span.label{:style => "background-color: #{e.graphviz_color}"}= e.graphviz_color
+              = e.name
