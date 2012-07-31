@@ -79,12 +79,20 @@ describe "api_scenario life cycle" do
     result['foo_demand'][1][1].should == 120.0
     result['bar_demand'][1][1].should == 120.0*0.6
 
-    # ----- reset --------------------------------------------------
+    # ----- reset -------------------------------------------------------------
 
-    get url, :reset => true, :result => %w[foo_demand bar_demand]
+    get url, :reset => 1, :result => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['result']
     result['foo_demand'][1][1].should == 100.0
+
+    # ----- reset and update simultaneously -----------------------------------
+
+    get url, :reset => 1,  :input => {'3' => '120'}, :result => %w[foo_demand bar_demand]
+
+    result = JSON.parse(response.body)['result']
+    result['foo_demand'][1][1].should == 120.0
+    result['bar_demand'][1][1].should == 120.0*0.6
   end
 
 
