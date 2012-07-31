@@ -31,7 +31,7 @@ module Qernel::Plugins
       @fce_update_values = {}
     end
 
-    # calculate_fce 
+    # calculate_fce
     #
     #
     def calculate_fce
@@ -67,6 +67,7 @@ module Qernel::Plugins
     end
 
     # a clone of the original fce_values for the current country.
+    # the values are read from etsource/datasets/_globals/fce_values.yml
     def modified_fce_values_by_carrier
       unless @fce_update_values
         area_code = area.area.to_s
@@ -77,6 +78,11 @@ module Qernel::Plugins
       @fce_update_values
     end
 
+    # Update a carriers fce values (co2_extraction, co2_treatment_per_mj)
+    # with the values defined in fce_values.yml multiplied by the users input
+    # (the share of).
+    #
+    # This method is called by update statements.
     def update_fce(carrier, origin, user_input)
       # GQL CARRIER(...) gives back an array of carriers.
       carrier     = [carrier].flatten.first
