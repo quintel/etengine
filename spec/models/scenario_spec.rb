@@ -66,19 +66,51 @@ describe Scenario do
       context "no user_values" do
         its(:used_groups_add_up?) { should be_true }
       end
-      context "user_valeus but without groups" do
+
+      context "user_values but without groups" do
         before { @scenario.user_values = {10 => 2}}
         its(:used_groups_add_up?) { should be_true }
       end
+
       context "user_values that don't add up to 100" do
         before { @scenario.user_values = {1 => 50}}
         its(:used_groups_add_up?) { should be_false }
         its(:used_groups_not_adding_up) { should have(1).items }
       end
+
       context "user_values that add up to 100" do
         before { @scenario.user_values = {1 => 50, 2 => 30, 3 => 20}}
         its(:used_groups_add_up?) { should be_true }
       end
+
+      context "with balanced values which add up to 100" do
+        before do
+          @scenario.user_values     = { 1 => 50}
+          @scenario.balanced_values = { 2 => 20, 3 => 30 }
+        end
+
+        its(:used_groups_add_up?) { should be_true }
+      end
+
+      context "with balanced values which do not add up to 100" do
+        before do
+          @scenario.user_values     = { 1 => 40 }
+          @scenario.balanced_values = { 2 => 20, 3 => 30 }
+        end
+
+        its(:used_groups_add_up?)       { should be_false }
+        its(:used_groups_not_adding_up) { should have(1).items }
+      end
+
+      context "with only balanced values which add up to 100" do
+        before do
+          @scenario.user_values     = {}
+          @scenario.balanced_values = { 1 => 50, 2 => 20, 3 => 30 }
+        end
+
+        its(:used_groups_add_up?) { should be_true }
+      end
+
     end
   end
 
