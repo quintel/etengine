@@ -43,7 +43,9 @@ module Api
           out = Jbuilder.encode do |json|
             scenario_to_jbuilder(@scenario, json)
           end
-          render :json => out, :status => 201
+          # With HTTP 201 nginx doesn't set content-length or chunked encoding
+          # headers
+          render :json => out, :status => 200
         else
           render :json => {:errors => @scenario.errors}, :status => 422
         end
