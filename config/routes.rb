@@ -90,7 +90,7 @@ Etm::Application.routes.draw do
       resources :scenarios, :only => [:index, :show, :edit, :update, :new] do
         put :fix, :on => :member
       end
-      resources :energy_balance_groups
+      resources :energy_balance_groups, only: [:index]
 
       match '/share_groups' => 'share_groups#index'
 
