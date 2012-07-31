@@ -1,6 +1,6 @@
 module Api
   module V3
-    class ScenariosController < ApplicationController
+    class ScenariosController < BaseController
       before_filter :find_scenario, :only => [:show, :update]
 
       # GET /api/v3/scenarios/:id
