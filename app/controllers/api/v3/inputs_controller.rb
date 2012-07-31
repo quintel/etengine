@@ -25,7 +25,7 @@ module Api
               if label = i.full_label_for(@gql)
                 json.label label
               end
-              if user_value = @scenario.user_values[i.id]
+              if user_value = @scenario.user_values[i.key || i.id]
                 json.user user_value
               end
             end
