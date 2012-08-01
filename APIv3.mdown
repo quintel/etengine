@@ -2,8 +2,7 @@
 
 ### Weak points and open issues
 
-* We must find a nice way to identify the scenarios that should be saved and those that can be pruned. Now we have ~25k scenarios. But we hardly need more than 1k - most of them are leftovers. The API should include a way to mark the scenarios to be stored and those that can be dropped. The best way is to set the existing `protected` field to `true`. The ETM now does it, the other apps not yet.
-* Another issue is the scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
+* Scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
 * drop column `present_updated_at` or `updated_at`- one is enough
 
 ## Scenarios
@@ -58,7 +57,7 @@ This action returns an array with the predefined scenarios. This list is used on
 * `area_code`: optional string, the default is nl. It's the unique area identifier - no more region/country duplication
 * `end_year`: optional integer, default is 2040
 * `source`: optional (but highly recommended) required string, the application that makes the request
-* `template`: optional id of the scenario used as template / preset_scenario_id
+* `scenario_id`: optional id of the scenario used as template / preset_scenario_id. This should be renamed into template!
 
 ##### Example
 
@@ -66,7 +65,7 @@ This action returns an array with the predefined scenarios. This list is used on
       "title": "My scenario",
       "area_code": "nl",
       "end_year": 2040,
-      "template": 12345,
+      "scenario_id": 12345,
       "source": "ETM"
     }
 
@@ -84,7 +83,9 @@ This action returns an array with the predefined scenarios. This list is used on
       "source": "ETM"
     }
 
-### Updating  and querying a scenario
+Until we update NGINX the HTTP status code will be 200 rather than 201.
+
+### Updating and querying a scenario
 
 The two operations should better be separated, but that would probably make the applications trigger too many requests. Since gqueries are basically read, safe operations, the right HTTP verb should be GET, but then we'd have the annoying URL length limit issues with IE.
 The slider update is a proper PUT/PATCH request instead.
@@ -95,9 +96,8 @@ The slider update is a proper PUT/PATCH request instead.
 
 * `reset`: optional boolean (default: false). If true the scenario inputs will first be reset. This means that the scenario will use only the inputs we're passing with the current request. Used by the energymixer
 * `gqueries`: optional array of gqueries to run
-* `scenario`: hash with the scenario attributes. Its `user_values` are merged with the existing values, because otherwise we should send the entire input sets with every request. We could otherwise implement a different solution: the `user_values` hash could behave like a standard ActiveRecord attribute (replacing the values every time), and the optional `inputs` hash would be merged with the existing user_values.
+* `scenario`: hash with the scenario attributes. Its `user_values` are merged with the existing values, because otherwise the entire input sets should be resent on every request. The `user_values` must be sent as a hash; the has key can be the input id (deprecated) or the input key.
 
-Partially implemented: the `gqueries` and `reset` attributes are still ignored.
 
 ##### Example
 
@@ -111,7 +111,7 @@ Partially implemented: the `gqueries` and `reset` attributes are still ignored.
         "title": "New title",
         "user_values": {
           "123": 4.56,
-          "124": 5.67
+          "households_replacement_of_existing_houses": 5.67
         }
       }
     }
@@ -149,7 +149,7 @@ Other things to consider: deal with gqueries that return strings or array of str
 
 ## Inputs
 
-Input values are scenario-dependent, so we should pass a scenario id. We should decide whether identifying inputs by key exclusively or by id, too. If the `scenario_id` parameter is missing then the engine will use the latest scenario.
+Input values are scenario-dependent, so we should pass a scenario id. If the `scenario_id` parameter is missing then the engine will use the latest scenario.
 
 ### Get all inputs details
 
@@ -192,6 +192,8 @@ Input values are scenario-dependent, so we should pass a scenario id. We should 
     GET /inputs/:code
     GET /scenarios/:scenario_id/inputs/:code
 
+* The `code` parameter might be the input's id (deprecated) or the input code.
+
 #### Response
 
     Status: 200 OK
@@ -215,39 +217,6 @@ If the input doesn't exist the server returns an HTTP 404 error and a message:
     {
       "errors": ["Input not found"]
     }
-
-### Get a subset of input details
-
-Not implemented yet.
-
-#### Request
-
-    GET /scenarios/:input_id/inputs/:keys
-    GET /scenarios/:input_id/inputs/1,2,3,4,5,10,11,12,13
-
-#### Response
-
-    Status: 200 OK
-
-    [
-      {
-        "key": "input_foobar",
-        "id": 1
-        "start_value": 1000,
-        "end_value": 2000,
-        "label": "1€/Kg",
-        "current_value": 1500
-      },
-    [...]
-      {
-        "key": "input_foobar_2",
-        "id": 13
-        "start_value": 1000,
-        "end_value": 2000,
-        "label": "1€/Kg",
-        "current_value": 1500
-      }
-    ]
 
 ## Converters
 
@@ -320,3 +289,37 @@ Implemented
 #### Response
 
 See above, the response is identical.
+
+## Stuff that hasn't been implemented yet
+
+
+### Get a subset of input details
+
+#### Request
+
+    GET /scenarios/:input_id/inputs/:keys
+    GET /scenarios/:input_id/inputs/1,2,3,4,5,10,11,12,13
+
+#### Response
+
+    Status: 200 OK
+
+    [
+      {
+        "key": "input_foobar",
+        "id": 1
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      },
+    [...]
+      {
+        "key": "input_foobar_2",
+        "id": 13
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      }
+    ]

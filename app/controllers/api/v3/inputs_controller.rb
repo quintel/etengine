@@ -66,7 +66,7 @@ module Api
       private
 
       def find_input
-        @input = Input.find(params[:id])
+        @input = Input.get(params[:id])
       rescue Exception => e
         render :json => {:errors => [e.message]}, :status => 404 and return
       end
