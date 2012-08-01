@@ -1,23 +1,20 @@
-%table.table.table-condensed
-  -#%thead
+%table.table.table-condensed.table-striped
+  %thead
     %tr
-      %th Name
+      %th
       %th Value*
       %th Unit
-
   - @values.each do |group,attrs|
     %thead
       %tr
-        %th{style: "background: #eee"}
-          %h4= group.capitalize
-        %th{style: "background: #eee"} Value*
-        %th{style: "background: #eee"} Unit
+        %th.attribute_group{colspan: 3}
+          = group.capitalize
 
     %tbody
       - attrs.andand.each do |key,value|
         %tr
-          %th.method_name{'data-method-name' => key}= value.first
+          %td.method_name{'data-method-name' => key}= value.first
           %td{:title => title_tag_number(@fut.send(key))}= simple_auto_number(@fut.send(key),value.last)
           %td= value.last
 
-* Values are for one typical unit (future value)
+%em * Values are for one typical unit (future value)
