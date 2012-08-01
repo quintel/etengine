@@ -8,17 +8,16 @@
 .row-fluid
   .span12
     .page-header
-      %h2
+      %h1
         = @converter_present.key
         %small== ID: #{@converter_present.excel_id}
+        = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
+        = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
 
 .row-fluid
-  .span6
+  .span12
+    %h2 Details
     %table.table.table-condensed
-      %thead
-        %tr
-          %th Details
-          %th
       %tbody
         %tr
           %td Sector
@@ -28,26 +27,34 @@
           %td
             - if g = @converter_present.energy_balance_group && g.to_s.present?
               = link_to g, data_energy_balance_group_path(:id => g)
+            - else
+              empty
         %tr
           %td Use
           %td= @converter_present.use_key
         %tr
-          %td Groups
-          %td= @converter_present.groups.join(' - ')
-        %tr
-          %td Graphviz
+          %td Converter groups
           %td
-            = link_to 'Present', {:format => 'svg'}, :target => :blank
-            = link_to 'Future', {:format => 'svg', :graph => 'future'}, :target => :blank
-
-    %h3 References
-    %table
-      - Gquery.name_or_query_contains(@converter_present.key.to_s).each do |gquery|
+            %ol
+              - @converter_present.groups.each do |group|
+                %li= group
         %tr
-          %td Gquery
-          %td= link_to gquery.key, data_gquery_path(:id => gquery.id)
+          %td Used in Gqueries
+          %td
+            %ol
+              - Gquery.name_or_query_contains(@converter_present.key.to_s).each do |gquery|
+                %li= link_to gquery.key, data_gquery_path(:id => gquery.id)
 
-  .span6
+.row-fluid
+  .span12
+    .page-header
+      %h2 Future Input / Outputs
+
+    = render 'converter_links'
+
+.row-fluid
+  .span12
+    %h2 Summary of Converter specifics
     - if @converter_present.groups.include?(:cost_traditional_heat)
       - @values = Qernel::ConverterApi::HEAT_PRODUCTION_VALUES
       = render "data/converters/details"
@@ -61,19 +68,11 @@
       - @values = Qernel::ConverterApi::CHP_VALUES
       = render "data/converters/details"
 
-
 .row-fluid
-  .span12
+
+  .span6
     .page-header
-      %h2 Future Input / Outputs
-
-    = render 'converter_links'
-
-.row
-
-  .span8
-    .page-header
-      %h2 Attributes
+      %h2 All Attributes
     %table.table.table-condensed
       %thead
         %tr
@@ -90,9 +89,9 @@
               %th= attr_name
               - result_fields(@pre,@fut,attr_name)
 
-  .span8
+  .span6
     .page-header
-      %h2 Calculations
+      %h2 All Calculations
     %table.table.table-condensed
       %thead
         %tr
@@ -128,7 +127,7 @@
               difference = ((future_value / present_value - 1) * 100).round(2) rescue nil
               difference = nil if difference.try :nan?
             %tr
-              %th{'data-method-name' => method}= method[0...30]
+              %th{'data-method-name' => method}= method
               %td{:title => present_value}= auto_number present_value
               %td{:title => future_value}= auto_number future_value
               %td= "#{difference}%" if difference

@@ -35,11 +35,10 @@
               %small
                 = link_to 'pres',
                   data_converter_path(:id => converter, :format => 'svg'),
-                  :target => :blank
-                |
+                  :target => :blank, class: 'btn btn-mini'
                 = link_to 'fut',
                   data_converter_path(:id => converter, :format => 'svg', :graph => 'future'),
-                  :target => :blank
+                  :target => :blank, class: 'btn btn-mini'
 
             - fields.each do |field|
               - if converter.key.present? and query = "V(#{converter.key.to_s.downcase},#{field})"
