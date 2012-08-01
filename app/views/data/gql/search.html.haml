@@ -10,14 +10,14 @@
           = submit_tag "Search", :class => 'btn btn-primary'
 
     - if @q
-      %h3
+      %h1
         Total: #{pluralize(@gqueries.size + @inputs.size + @query_table_cells.size, 'result')} /
         Inputs: #{pluralize @inputs.size, 'item'} /
         GQueries: #{pluralize @gqueries.size, 'item'} /
         QueryTableCells: #{pluralize @query_table_cells.size, 'item'}
 
     - if @gqueries.any?
-      %table
+      %table.table
         %thead
           %tr
             %th{:colspan => 4} GQueries
@@ -32,7 +32,7 @@
               %td= highlight(g.query, @q)
               %td= highlight(g.deprecated_key, @q) if g.deprecated_key
     - if @inputs.any?
-      %table
+      %table.table
         %thead
           %tr
             %th{:colspan => 8} Inputs
@@ -58,7 +58,7 @@
               %td= highlight(g.query, @q)
 
     - if @query_table_cells.any?
-      %table
+      %table.table
         %thead
           %tr
             %th{:colspan => 4} Query Table Cells

@@ -3,7 +3,7 @@
     =# search_field_tag :q, params[:q], :placeholder => 'search'
     %label Gquery Group: 
     = select_tag :group, options_for_select(GqueryGroup.all.map(&:group_key), params[:group]), :include_blank => '-- group --'
-    = submit_tag "search", :class => 'btn btn-small'
+    = submit_tag "Show group", :class => 'btn btn-small'
 
 - content_for :footer do
   :javascript
