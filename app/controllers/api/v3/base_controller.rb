@@ -2,16 +2,14 @@ module Api
   module V3
     class BaseController < ApplicationController
 
-      protected
-
       # Many API actions require an active scenario. Let's set it here
       # and let's prepare the field for the calculations.
       #
       def set_current_scenario
-        if params[:scenario_id]
-          @scenario = Scenario.find(params[:scenario_id])
+        @scenario = if params[:scenario_id]
+          Scenario.find(params[:scenario_id])
         else
-          @scenario = Scenario.last
+          Scenario.last
         end
         # this setup is ugly, we should find a simpler way to prepare all
         # we need. The scenario object should be able to set up all the
