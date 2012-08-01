@@ -30,10 +30,10 @@
 # is growth_rate (%y) or total growth (%) or absolute value ("")
 #
 
-class Input < ActiveRecord::Base
-  attr_accessor :lookup_id, :dependent_on
-
+class Input
   include InMemoryRecord
+  extend ActiveModel::Naming
+  include ActiveModel::Validations
 
   validates :updateable_period, :presence => true,
                                 :inclusion => %w[present future both before]
@@ -41,27 +41,32 @@ class Input < ActiveRecord::Base
   ATTRIBUTES = [
     :id,
     :key,
-    :attr_name,
     :comments,
     :factor,
-    :keys,
     :label,
     :label_query,
     :max_value,
     :max_value_gql,
     :min_value,
     :min_value_gql,
-    :name,
     :query,
     :share_group,
     :start_value,
     :start_value_gql,
     :unit,
-    :update_type,
     :updateable_period,
-    :v1_legacy_unit,
-    :dependent_on
+    :default_unit,
+    :dependent_on,
+    :lookup_id
   ]
+
+  attr_accessor *ATTRIBUTES
+
+  def initialize(attributes={})
+    attributes && attributes.each do |name, value|
+      send("#{name}=", value) if respond_to? name.to_sym
+    end
+  end
 
   def self.load_records
     h = {}
@@ -195,11 +200,11 @@ class Input < ActiveRecord::Base
   end
 
   def start_value_for(gql)
-    gql_query = self[:start_value_gql]
+    gql_query = @start_value_gql
     if !gql_query.blank? and result = gql.query(gql_query)
       result * factor
     else
-      self[:start_value]
+      start_value
     end
   end
 
@@ -207,10 +212,10 @@ class Input < ActiveRecord::Base
     min_value = min_value_for_current_area(gql)
     if min_value.present?
       min_value * factor
-    elsif gql_query = self[:min_value_gql] and !gql_query.blank?
+    elsif gql_query = @min_value_gql and !gql_query.blank?
       gql.query(gql_query)
     else
-      self[:min_value] || 0
+      @min_value || 0
     end
   end
 
@@ -219,15 +224,15 @@ class Input < ActiveRecord::Base
     if max_value.present?
       max_value * factor
     elsif
-      gql_query = self[:max_value_gql] and !gql_query.blank?
+      gql_query = @max_value_gql and !gql_query.blank?
       gql.query(gql_query)
     else
-      self[:max_value] || 0
+      @max_value || 0
     end
   end
 
   def dynamic_start_value?
-    self[:start_value_gql] && self[:start_value_gql].match(/^future:/) != nil
+    @start_value_gql && @start_value_gql.match(/^future:/) != nil
   end
 
   #############################################
@@ -256,5 +261,4 @@ class Input < ActiveRecord::Base
   def area_input_values(gql)
     gql.scenario.area_input_values[id]
   end
-
 end

@@ -21,7 +21,7 @@ module Gql
 
     # Returns the results of another gquery.
     #
-    # Calling it through subquery allows for caching and memoizing. This is 
+    # Calling it through subquery allows for caching and memoizing. This is
     # implemented inside submodules/mixins.
     #
     def subquery(gquery_key)
@@ -31,10 +31,10 @@ module Gql
         nil
       end
     end
-    
+
     def execute_input(input, value = nil)
       self.input_value = value.to_s
-      self.input_value = "#{self.input_value}#{input.v1_legacy_unit}" unless self.input_value.include?('%')  
+      self.input_value = "#{self.input_value}#{input.default_unit}" unless self.input_value.include?('%')
       rubel_execute(input.rubel) if input.rubel
     rescue => e
       raise "UPDATE: #{input.key}:\n #{e.inspect}"
