@@ -10,7 +10,7 @@ module Gql::Runtime
       # Run multiple (update) queries.
       #
       # @example Multiple UPDATE statements inside one input
-      #   EACH( 
+      #   EACH(
       #     UPDATE( foo, ... ),
       #     UPDATE( bar, ... )
       #   )
@@ -24,7 +24,7 @@ module Gql::Runtime
 
 
 
-      # == Remark about v1_legacy_unit
+      # == Remark about default_unit
       #
       # Because ETmodel/flex return only numbers when pulling a slider, we can
       # define a default suffix for an input with the v1_legacy_unit
@@ -37,7 +37,7 @@ module Gql::Runtime
       # etmodel frontend displays a slider where you can update the growth
       # rate. When the user chooses 7% the slider actually only sends the
       # number  7 to the etengine. The ETengine/API if there is no suffix for
-      # that slider, the api will append the one defined in  v1_legacy_unit
+      # that slider, the api will append the one defined in  default_unit
       # and send the "7%" to the GQL. The UPDATE function then derives from
       # that "7%" that it should increase the demand by 7% and not set the
       # demand to 7. Why: we once wanted the sliders to be flexible, so that
@@ -46,7 +46,7 @@ module Gql::Runtime
       # want to).
       #
       #
-      # @example Basic syntax for update 
+      # @example Basic syntax for update
       #   UPDATE( query_to_get_object, attr_name, new_value )
       #   UPDATE( L( foo ), demand, 100)
       #   UPDATE( L( foo ), demand, USER_INPUT() )
@@ -57,15 +57,15 @@ module Gql::Runtime
       #   UPDATE( L( foo ), demand, "5") # => demand becomes 5
       #
       # @example with growth_rate
-      #   UPDATE( L( foo ), demand, "5%") 
-      #   # => demand increases by 5% 
+      #   UPDATE( L( foo ), demand, "5%")
+      #   # => demand increases by 5%
       #
       # @example with growth_rate per year
-      #   UPDATE( L( foo ), demand, "5%y") 
+      #   UPDATE( L( foo ), demand, "5%y")
       #   # => demand increases by 5% for every year
       #
       # @example multiple objects with the same number
-      #   UPDATE( L( foo, bar, baz ), demand,  5 ) 
+      #   UPDATE( L( foo, bar, baz ), demand,  5 )
       #   # => demand of all converter becomes 5
       #
       # @example multiple objects with a different number
@@ -88,14 +88,14 @@ module Gql::Runtime
       #
       # @example WARNING: Updates run before the calculation
       #   # V(foo, demand) # => nil (no demand defined)
-      #   UPDATE( L(foo), demand, "500" ) 
+      #   UPDATE( L(foo), demand, "500" )
       #   # => 500. OK to assign an absolute value.
-      #   UPDATE( L(foo), demand, "5%" ) 
+      #   UPDATE( L(foo), demand, "5%" )
       #   # => undefined behaviour. cannot increase nil
       #
       # @example WARNING: 2 inputs updating same attribute with absolute numbers
-      #   input_1: UPDATE( L(foo), demand, "500" ) 
-      #   input_2: UPDATE( L(foo), demand, "100" ) 
+      #   input_1: UPDATE( L(foo), demand, "500" )
+      #   input_2: UPDATE( L(foo), demand, "100" )
       #   # => foo gets value 100. but order of inputs can be reversed in another scenario. (pulling input_2 first).
       #
       def UPDATE(*value_terms)
@@ -136,12 +136,12 @@ module Gql::Runtime
       def input_factor
         if scope.input_value.andand.include?('%')
           100.0
-        else 
+        else
           1.0
         end
       end
 
-      # Private: 
+      # Private:
       def big_decimal(n)
         scope.big_decimal(n)
       end
@@ -155,9 +155,9 @@ module Gql::Runtime
       def update_strategy
         input = scope.input_value
         if input.is_a?(::String)
-          if input.include?('%y') 
+          if input.include?('%y')
             :relative_per_year
-          elsif input.include?('%') 
+          elsif input.include?('%')
             :relative_total
           else
             :absolute
@@ -168,8 +168,8 @@ module Gql::Runtime
       end
 
 
-      # The numeric value of the slider. 
-      # 
+      # The numeric value of the slider.
+      #
       # The input value that is passed to the gql might be "3", "3%" or
       # "3%y". USER_INPUT() returns different numbers for different update
       # types, see examples.
@@ -204,10 +204,10 @@ module Gql::Runtime
       end
 
       # UPDATE_OBJECT() Access currently updated object. It refers to the
-      # object that is updated. 
+      # object that is updated.
       #
       # Because the value that is retrieved is dynamically retrieved we have
-      # to wrap it inside a block: -> {}.  
+      # to wrap it inside a block: -> {}.
       #
       # Remember that GQL goes from inside out, UPDATE_OBJECT() is
       # evaluated before UPDATE(...). UPDATE_OBJECT() would be nil. By
@@ -227,7 +227,7 @@ module Gql::Runtime
         scope.update_object
       end
 
-      # All objects in the UPDATE statement (the first part of UPDATE()). 
+      # All objects in the UPDATE statement (the first part of UPDATE()).
       #
       # Example
       #
