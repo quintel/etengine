@@ -4,7 +4,6 @@ module Api
       def initialize(key = nil, scenario = nil)
         raise "Missing Converter Key" unless key
         raise "Missing Scenario" unless scenario
-        @code     = key
         @key      = key
         @scenario = scenario
         @gql      = @scenario.gql(prepare: true)
@@ -18,7 +17,6 @@ module Api
       def to_json(options = {})
         Jbuilder.encode do |json|
           json.key  @key
-          json.code @key
           json.sector @present.sector_key
           json.use @present.use_key
           json.groups @present.groups
