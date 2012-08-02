@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::AreasController do
+describe Api::V2::AreasController do
   before do
     Factory.create :scenario
   end

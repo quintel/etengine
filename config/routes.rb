@@ -10,27 +10,28 @@ Etm::Application.routes.draw do
   resources :converters, :only => [:show]
   resources :users
 
-  scope '/api/v2', :module => 'api' do
-    resources :scenarios, :only => [:index, :show, :create, :update] do
-      get :load, :on => :member
-      collection do
-        get :homepage
-      end
-    end
-    resources :api_scenarios do
-      member do
-        get :user_values
-        get :input_data
-      end
-    end
-    resources :areas, :only => [:index, :show]
-    resources :inputs, :only => :index
-    resources :gqueries, :only => [:index]
-    # catches all OPTIONS requests
-    match '*url', to: 'base#cross_site_sharing', via: :options
-  end
-
   namespace :api do
+
+    namespace :v2 do
+      resources :scenarios, :only => [:index, :show, :create, :update] do
+        get :load, :on => :member
+        collection do
+          get :homepage
+        end
+      end
+      resources :api_scenarios do
+        member do
+          get :user_values
+          get :input_data
+        end
+      end
+      resources :areas, :only => [:index, :show]
+      resources :inputs, :only => :index
+      resources :gqueries, :only => [:index]
+      # catches all OPTIONS requests
+      match '*url', to: 'base#cross_site_sharing', via: :options
+    end
+
     namespace :v3 do
       resources :scenarios, :only => [:show, :create, :update] do
         get :templates, :on => :collection

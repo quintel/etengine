@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::ApiScenariosController do
+describe Api::V2::ApiScenariosController do
 
   before(:each) do
     # Current.instance.stub_chain(:gql, :query_multiple).and_return({'foo' => Gql::ResultSet.create([[2010,1],[2010,2]]) })
