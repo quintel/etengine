@@ -26,7 +26,8 @@ module Api
         @presets = Preset.all
         out = Jbuilder.encode do |json|
           json.array!(@presets) do |json, preset|
-            preset_to_jbuilder(preset, json)
+            # include description
+            preset_to_jbuilder(preset, json, true)
           end
         end
         render :json => out
@@ -163,7 +164,7 @@ module Api
       end
 
 
-      def preset_to_jbuilder(preset, json)
+      def preset_to_jbuilder(preset, json, include_description = false)
         json.id        preset.id
         json.title     preset.title
         json.url       api_v3_scenario_url(preset)
@@ -171,6 +172,9 @@ module Api
         json.end_year  preset.end_year
         json.template  nil
         json.source    nil
+        if include_description
+          json.description preset.description
+        end
       end
     end
   end
