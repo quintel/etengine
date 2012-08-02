@@ -69,6 +69,8 @@ class Scenario < ActiveRecord::Base
     :area_code, :country, :region, :in_start_menu, :user_id, :preset_scenario_id,
     :use_fce, :protected, :scenario_id, :source, :user_values_as_yaml
 
+  attr_accessor :input_errors
+
   before_create do |scenario|
     if preset = scenario.preset_scenario
       scenario.copy_scenario_state(preset)
