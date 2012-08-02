@@ -11,8 +11,9 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
+        detailed = params[:detailed].present?
         out = Jbuilder.encode do |json|
-          scenario_to_jbuilder(@scenario, json)
+          scenario_to_jbuilder(@scenario, json, detailed)
         end
 
         render :json => out
@@ -37,11 +38,13 @@ module Api
 
       # POST /api/v3/scenarios
       #
-      # Creates a new scenario
-      # TODO: not finished!
+      # Creates a new scenario. This action is used when a user on the ETM saves
+      # a scenario, too: in that case a copy of the scenario is saved.
+      #
       def create
         @scenario = Scenario.new(params[:scenario])
         @scenario.title ||= 'API'
+
         if @scenario.save
           out = Jbuilder.encode do |json|
             scenario_to_jbuilder(@scenario, json)
@@ -154,8 +157,7 @@ module Api
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
 
-      # TODO: move to model
-      def scenario_to_jbuilder(s, json)
+      def scenario_to_jbuilder(s, json, detailed_info = false)
         json.title      s.title
         json.url        api_v3_scenario_url(s)
         json.id         s.id
@@ -164,6 +166,10 @@ module Api
         json.template   s.preset_scenario_id
         json.source     s.source
         json.created_at s.created_at
+        if detailed_info
+          json.description s.description
+          json.use_fce s.use_fce
+        end
       end
 
 
