@@ -1,6 +1,6 @@
 module Api
   module V3
-    class InputsController < BaseController
+    class InputsController < ::Api::V3::BaseController
       before_filter :set_current_scenario, :only => [:index, :show]
       before_filter :find_input, :only => :show
 
