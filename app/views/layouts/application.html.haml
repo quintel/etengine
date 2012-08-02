@@ -71,12 +71,13 @@
             - breadcrumbs.each do |breadcrumb| 
               %li
                 = link_to breadcrumb, '#'
-                %span.divider 
-      #flash
-        - flash.each do |type,msg|
-          .alert-message{:class => type}
-            %a.close x
-            %p= msg
+                %span.divider
+      - if flash.any?
+        #flash
+          - flash.each do |type, msg|
+            .alert{:class => type}
+              %a.close x
+              %p= msg
 
         - if live_server?
           .alert-message.error This is the production server!

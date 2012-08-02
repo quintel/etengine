@@ -40,7 +40,7 @@ class Scenario < ActiveRecord::Base
   # when it has to be reset to this scenario.
   has_one :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
 
-  validates_presence_of :title, :on => :create, :message => I18n.t("scenario.provide_title")
+  validates_presence_of :title, :on => :create, :message => "Please provide a title"
   validates :area_code, :presence => true
 
   scope :in_start_menu, where(:in_start_menu => true)
