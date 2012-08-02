@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::InputsController do
+describe Api::V2::InputsController do
   before do
     Factory :scenario
   end

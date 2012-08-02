@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::ScenariosController do
+describe Api::V2::ScenariosController do
   before do
     @scenario = Factory :scenario
     @homepage_scenario = Preset.new({:in_start_menu => true})
