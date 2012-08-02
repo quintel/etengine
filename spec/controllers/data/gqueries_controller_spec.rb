@@ -2,14 +2,15 @@ require 'spec_helper'
 
 describe Data::GqueriesController do
   render_views
-  
+
   let!(:admin) { FactoryGirl.create :admin }
   let!(:gquery) { Gquery.all.first }
-  
+
   before do
     login_as(admin)
+    Factory.create :scenario
   end
-  
+
   describe "GET index" do
     it "should be successful" do
       get :index, :api_scenario_id =>'latest'

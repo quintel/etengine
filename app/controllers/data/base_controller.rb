@@ -10,7 +10,7 @@ class Data::BaseController < ApplicationController
 
   protected
 
-    def find_graph
+    def initialize_gql
       api_scenario_id = params[:api_scenario_id] ||= 'latest'
 
       if api_scenario_id == 'latest'
@@ -20,5 +20,4 @@ class Data::BaseController < ApplicationController
       end
       @gql = @api_scenario.gql(prepare: true)
     end
-    alias initialize_gql find_graph
 end

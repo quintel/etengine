@@ -5,6 +5,7 @@ describe Data::ConvertersController do
 
   before do
     login_as(admin)
+    Factory.create :scenario
   end
 
   describe "GET index" do
