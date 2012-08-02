@@ -3,14 +3,14 @@ require "spec_helper"
 # Uses the etsource defined in spec/fixtures/etsource
 #
 describe "api_scenario life cycle" do
-  before(:all) do 
+  before(:all) do
     NastyCache.instance.expire!
     Etsource::Base.loader('spec/fixtures/etsource')
   end
 
   it "should create, update, persist" do
     post 'api/v2/api_scenarios.json'
-    
+
     scenario = JSON.parse(response.body)['scenario']
     id = scenario['id']
     url = "api/v2/api_scenarios/#{id}.json"
@@ -66,7 +66,7 @@ describe "api_scenario life cycle" do
 
   it "should reset" do
     post 'api/v2/api_scenarios.json'
-    
+
     scenario = JSON.parse(response.body)['scenario']
     id       = scenario['id']
     url      = "api/v2/api_scenarios/#{id}.json"
@@ -98,7 +98,7 @@ describe "api_scenario life cycle" do
 
   it "should load from scenario" do
     post 'api/v2/api_scenarios.json', settings: {scenario_id: 2999}
-    
+
     scenario = JSON.parse(response.body)['scenario']
     id       = scenario['id']
     url      = "api/v2/api_scenarios/#{id}.json"

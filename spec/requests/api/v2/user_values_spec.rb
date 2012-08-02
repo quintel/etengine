@@ -3,7 +3,7 @@ require "spec_helper"
 # Uses the etsource defined in spec/fixtures/etsource
 #
 describe "api_scenario life cycle" do
-  before(:all) do 
+  before(:all) do
     NastyCache.instance.expire!
     Etsource::Base.loader('spec/fixtures/etsource')
   end
@@ -23,9 +23,9 @@ describe "api_scenario life cycle" do
     settings["1"]["min_value"].should == 0
     settings["1"]["start_value"].should == 50
     settings["2"]["start_value"].should == 100*100 # start_value_gql*factor
-    
+
     # ----- updating 2 --------------------------------------------------------
-    
+
     get api_url, :input => {'2' => '500'}
     get settings_url
     settings = JSON.parse(response.body)
@@ -33,13 +33,13 @@ describe "api_scenario life cycle" do
     settings["2"]["user_value"].should == 500
 
     # ----- updating again ----------------------------------------------------
-    
+
     get api_url, :input => {'2' => '300', '1' => '50'}
     get settings_url
     settings = JSON.parse(response.body)
     settings["2"]["user_value"].should == 300
     settings["1"]["user_value"].should == 50
-    
+
     # ----- updating going over min/max ----------------------------------------------------
     # api simply accepts without further checking :(
     #
