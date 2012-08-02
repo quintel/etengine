@@ -62,8 +62,8 @@ class Input
 
   attr_accessor *ATTRIBUTES
 
-  def initialize(attributes={})
-    attributes && attributes.each do |name, value|
+  def initialize(attrs={})
+    attrs && attrs.each do |name, value|
       send("#{name}=", value) if respond_to? name.to_sym
     end
   end
@@ -260,5 +260,15 @@ class Input
   # this loads the hash with area dependent settings for the current inputs object
   def area_input_values(gql)
     gql.scenario.area_input_values[id]
+  end
+
+  # Minimal input information. This is used on active resource request to get a
+  # list of the available inputs. The energymixer answer form uses this to fill
+  # this input select box
+  def basic_attributes
+    {
+      :id => id,
+      :key => key
+    }
   end
 end
