@@ -1,6 +1,8 @@
 module Api
   module V3
     class ScenariosController < BaseController
+      respond_to :json
+
       before_filter :find_scenario, :only => [:show, :update]
 
       # GET /api/v3/scenarios/:id
@@ -154,13 +156,14 @@ module Api
 
       # TODO: move to model
       def scenario_to_jbuilder(s, json)
-        json.title     s.title
-        json.url       api_v3_scenario_url(s)
-        json.id        s.id
-        json.area_code s.area_code
-        json.end_year  s.end_year
-        json.template  s.preset_scenario_id
-        json.source    s.source
+        json.title      s.title
+        json.url        api_v3_scenario_url(s)
+        json.id         s.id
+        json.area_code  s.area_code
+        json.end_year   s.end_year
+        json.template   s.preset_scenario_id
+        json.source     s.source
+        json.created_at s.created_at
       end
 
 
