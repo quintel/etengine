@@ -26,7 +26,7 @@ module Api
       # The important field is the id, that the clients will have to use on the following #show requests
       #
       def new
-        attributes = ApiRequest.new_attributes(params[:settings])
+        attributes = Request.new_attributes(params[:settings])
         @api_scenario = Scenario.new(attributes)
         @api_scenario.scenario_id = params[:settings][:scenario_id] rescue nil
         @api_scenario.save!
@@ -53,7 +53,7 @@ module Api
       # everything with a simple JSON POST request.
       #
       def show
-        @api_request = ApiRequest.response(params)
+        @api_request = Request.response(params)
         # We can probably get rid of this extra api_scenario assignment
         @api_scenario = @api_request.scenario
         @api_response = @api_request.response
@@ -80,7 +80,7 @@ module Api
       # TODO: it would be nice to move as much code as possible into a separate model
       #
       def user_values
-        @api_request = ApiRequest.response(params)
+        @api_request = Request.response(params)
         values = @api_request.scenario.input_values
 
         respond_to do |format|

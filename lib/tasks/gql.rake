@@ -12,7 +12,7 @@ namespace :gql do
     task :inputs => :environment do
       init_environment
       exceptions = {}
-      
+
       gql = unprepared_gql
       Input.all.each do |input|
         begin
@@ -21,10 +21,10 @@ namespace :gql do
           exceptions[input] = e
         end
       end
-      
+
       puts "=" * 20
       if exceptions.empty?
-        puts "All inputs completed" 
+        puts "All inputs completed"
       else
         exceptions.each do |input, e|
           puts "# #{input.key}"
@@ -40,7 +40,7 @@ namespace :gql do
     task :gqueries => :environment do
       init_environment
       exceptions = {}
-      
+
       gql = prepared_gql
       Gquery.all.each do |gquery|
         begin
@@ -49,10 +49,10 @@ namespace :gql do
           exceptions[gquery] = e
         end
       end
-      
+
       puts "=" * 20
       if exceptions.empty?
-        puts "All inputs completed" 
+        puts "All inputs completed"
       else
         exceptions.each do |gquery, e|
           puts "# #{gquery.key}"
@@ -91,22 +91,22 @@ namespace :gql do
       MechanicalTurk::Turk.all.each(&:run)
     end
   end
-  
+
   namespace :test do
     desc 'Update turk files (for other areas use AREA_CODE=nl)'
     task :update => :environment do
       init_environment
-      
+
       output_path     = Etsource::Base.instance.base_dir+"/mechanical_turk/generated"
-      
+
       Dir.glob(output_path+"/scenario_definitions/*.yml").each do |yml_file|
         puts "** Updating: #{yml_file}"
         path      = Pathname.new(yml_file)
 
         settings  = YAML::load_file(yml_file).with_indifferent_access
-        response  = ApiRequest.response(settings.merge(id: 'test').dup).response
+        response  = Api::V2::Request.response(settings.merge(id: 'test').dup).response
 
-        file_path = output_path+"/#{path.basename.to_s.split('.').first}_spec.rb"        
+        file_path = output_path+"/#{path.basename.to_s.split('.').first}_spec.rb"
         File.open(file_path, 'w') do |f|
           f.write MechanicalTurk::Generator.new(response.to_json, :all).render
         end
@@ -185,6 +185,6 @@ namespace :gql do
     else
       puts "** Using default scenario"
       nil
-    end  
+    end
   end
 end
