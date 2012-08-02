@@ -5,6 +5,72 @@
 * Scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
 * drop column `present_updated_at` or `updated_at`- one is enough
 
+## Areas
+
+### Get area list
+
+#### Request
+
+    GET /areas/
+
+#### Response
+
+    Status: 200 OK
+
+    [
+      {
+          "co2_price": 0.00805,
+          "areable_land": 20.1,
+          "available_land": 53,
+          "co2_emission_1990": 0.0537,
+          "co2_emission_2009": 0.0544,
+          "co2_emission_electricity_1990": 0.01,
+          "co2_percentage_free": 0.85,
+          "coast_line": 57,
+          "country": "ame",
+          "created_at": "2010-10-12T13:40:30Z",
+          "current_electricity_demand_in_mj": 86099978,
+          "el_export_capacity": 0,
+          "el_import_capacity": 0,
+          "entity": "",
+          "export_electricity_primary_demand_factor": 1,
+          "has_agriculture": true,
+          ...
+        },{
+          ...
+        }
+      ]
+
+### Get area details
+
+#### Request
+
+    GET /areas/nl
+
+#### Response
+
+    Status: 200 OK
+
+      {
+          "co2_price": 0.00805,
+          "areable_land": 20.1,
+          "available_land": 53,
+          "co2_emission_1990": 0.0537,
+          "co2_emission_2009": 0.0544,
+          "co2_emission_electricity_1990": 0.01,
+          "co2_percentage_free": 0.85,
+          "coast_line": 57,
+          "country": "ame",
+          "created_at": "2010-10-12T13:40:30Z",
+          "current_electricity_demand_in_mj": 86099978,
+          "el_export_capacity": 0,
+          "el_import_capacity": 0,
+          "entity": "",
+          "export_electricity_primary_demand_factor": 1,
+          "has_agriculture": true,
+          ...
+        }
+
 ## Scenarios
 
 ### Get a single scenario
