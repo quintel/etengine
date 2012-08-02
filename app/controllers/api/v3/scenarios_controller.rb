@@ -94,6 +94,7 @@ module Api
       # }
       #
       def update
+
         # TODO: move parameter logic to a separate object
         attrs = params[:scenario] || {}
         # TODO: handle int/string keys
@@ -105,6 +106,7 @@ module Api
         # TODO: handle scenario ownership!
         @scenario.update_attributes(attrs)
         begin
+          @scenario.input_errors = []
           gql = @scenario.gql(prepare: true)
         rescue Exception => e
           # TODO: Scenario#gql should raise helpful exceptions.
@@ -144,6 +146,9 @@ module Api
                 end
               end
             end
+          end
+          if @scenario.input_errors.any?
+            json.errors @scenario.input_errors
           end
         end
         render :json => out
