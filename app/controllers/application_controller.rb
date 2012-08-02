@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     store_location
-    redirect_to root_url, :alert => I18n.t("flash.not_allowed")
+    redirect_to root_url, :alert => "I am sorry. You are not allowed here."
   end
 
   def initialize_memory_cache
