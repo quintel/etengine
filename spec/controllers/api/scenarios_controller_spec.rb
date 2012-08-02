@@ -3,22 +3,23 @@ require 'spec_helper'
 describe Api::ScenariosController do
   before do
     @scenario = Factory :scenario
-    @homepage_scenario = Factory :scenario_visible_in_homepage
+    @homepage_scenario = Preset.new({:in_start_menu => true})
   end
 
   describe "GET index.xml" do
     it "should return all scenarios" do
       get :index, :format => :xml
       response.should be_success
-      assigns(:scenarios).to_set.should == [@scenario, @homepage_scenario].to_set
+      assigns(:scenarios).should == [@scenario]
     end
   end
 
   describe "GET homepage.xml" do
     it "should return the scenarios visible in homepage" do
+      Preset.stub!(:all) {[@homepage_scenario]}
       get :homepage, :format => :xml
       response.should be_success
-      assigns(:scenarios).should == [@homepage_scenario]
+      assigns(:scenarios).map(&:attributes).should == [@homepage_scenario.to_scenario.attributes]
     end
   end
 

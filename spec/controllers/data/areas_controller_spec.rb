@@ -5,6 +5,7 @@ describe Data::AreasController do
 
   before do
     login_as(admin)
+    Factory.create :scenario
   end
 
   describe "GET show" do

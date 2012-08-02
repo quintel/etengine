@@ -14,7 +14,8 @@ class Api::ScenariosController < Api::BaseController
   # ETM uses this to fill the preset scenarios select box
   #
   def homepage
-    respond_with Preset.all.map(&:to_scenario).select(&:in_start_menu).sort_by(&:id)
+    @scenarios = Preset.all.map(&:to_scenario).select(&:in_start_menu).sort_by(&:id)
+    respond_with @scenarios
   end
 
   def show
