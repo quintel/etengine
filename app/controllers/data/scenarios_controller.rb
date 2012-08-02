@@ -5,8 +5,16 @@ class Data::ScenariosController < Data::BaseController
 
   def index
     base = Scenario.scoped
-    base = base.by_name(params[:q]) if params[:q]
+    base = base.recent_first
+    if params[:q]
+      if params[:q] =~ /^\d+$/
+        base = base.by_id(params[:q])
+      else
+        base = base.by_name(params[:q]) if params[:q]
+      end
+    end
     base = base.in_start_menu if params[:in_start_menu]
+    base = base.protected if params[:protected]
     @scenarios = base.page(params[:page]).per(35)
   end
 

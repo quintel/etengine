@@ -35,20 +35,19 @@ class Scenario < ActiveRecord::Base
   store :user_values
 
   belongs_to :user
-
-  # A scenario can have a preset. We use this
-  # when it has to be reset to this scenario.
-  has_one :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
+  has_one               :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
 
   validates_presence_of :title, :on => :create, :message => "Please provide a title"
-  validates :area_code, :presence => true
+  validates             :area_code, :presence => true
 
   scope :in_start_menu, where(:in_start_menu => true)
-  scope :by_name, lambda{|q| where("title LIKE ?", "%#{q}%")}
+  scope :protected,     where(:protected => true)
+  scope :by_name,       lambda{|q| where("title LIKE ?", "%#{q}%")}
+  scope :by_id,         lambda{|q| where(id: q)}
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
-  scope :expired, lambda { where(['updated_at < ?', Date.today - 14]) }
-  scope :recent, order("created_at DESC").limit(30)
-  scope :recent_first, order('created_at DESC')
+  scope :expired,       lambda { where(['updated_at < ?', Date.today - 14]) }
+  scope :recent,        order("created_at DESC").limit(30)
+  scope :recent_first,  order('created_at DESC')
 
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
