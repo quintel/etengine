@@ -79,6 +79,8 @@
 
     GET /scenarios/:id
 
+If you set the optional `detailed` parameter then the `description` and `use_fce` fields will be returned, too.
+
 #### Response
 
     Status: 200 OK
@@ -90,7 +92,9 @@
       "area_code": "nl",
       "end_year": 2040,
       "template": 12345,
-      "source": "ETM"
+      "source": "ETM",
+      "description": "...",
+      "use_fce": "..."
     }
 
 If the scenario is missing then the action returns an empty hash with a 404 HTTP status code.
