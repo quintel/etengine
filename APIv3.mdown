@@ -2,7 +2,10 @@
 
 ### Weak points and open issues
 
-* Scenario ownership: now we have `author` and `user_id` field. If we add the `source` field then the `user_id` field could be relative to the client application. The ETM's `saved_scenario` object **can be migrated to user profile with a serialized hash 'saved_scenarios'**
+* Scenario ownership: now we have `author` and `user_id` field. If we add the
+  `source` field then the `user_id` field could be relative to the client
+  application. The ETM's `saved_scenario` object **can be migrated to user
+  profile with a serialized hash 'saved_scenarios'**
 * drop column `present_updated_at` or `updated_at`- one is enough
 
 ## Areas
@@ -157,17 +160,26 @@ Until we update NGINX the HTTP status code will be 200 rather than 201.
 
 ### Updating and querying a scenario
 
-The two operations should better be separated, but that would probably make the applications trigger too many requests. Since gqueries are basically read, safe operations, the right HTTP verb should be GET, but then we'd have the annoying URL length limit issues with IE.
+The two operations should better be separated, but that would probably make
+the applications trigger too many requests. Since gqueries are basically read,
+safe operations, the right HTTP verb should be GET, but then we'd have the
+annoying URL length limit issues with IE.
+
 The slider update is a proper PUT/PATCH request instead.
 
 #### Request
 
     PUT /scenarios/:id
 
-* `reset`: optional boolean (default: false). If true the scenario inputs will first be reset. This means that the scenario will use only the inputs we're passing with the current request. Used by the energymixer
+* `reset`: optional boolean (default: false). If true the scenario inputs will
+  first be reset. This means that the scenario will use only the inputs we're
+  passing with the current request. Used by the energymixer and the Mechanical
+  Turk.
 * `gqueries`: optional array of gqueries to run
-* `scenario`: hash with the scenario attributes. Its `user_values` are merged with the existing values, because otherwise the entire input sets should be resent on every request. The `user_values` must be sent as a hash; the has key can be the input id (deprecated) or the input key.
-
+* `scenario`: hash with the scenario attributes. Its `user_values` are merged
+  with the existing values, because otherwise the entire input sets should be
+  resent on every request. The `user_values` must be sent as a hash; the has
+  key can be the input id (deprecated) or the input key.
 
 ##### Example
 
@@ -208,18 +220,22 @@ The gquery result is a hash rather than an array.
       }
     }
 
-About gquery results with errors: to make the client applications more robust the single gquery should carry its errors, using something like:
+About gquery results with errors: to make the client applications more robust
+the single gquery should carry its errors, using something like:
 
     "foo" : {
       "error": "unknown gquery. Please check gquery list on http://et-engine.com."
       "unit": "MJ"
     }
 
-Other things to consider: deal with gqueries that return strings or array of strings (hello merit_order).
+Other things to consider: deal with gqueries that return strings or array of
+strings (hello merit_order).
 
 ## Inputs
 
-Input values are scenario-dependent, so we should pass a scenario id. If the `scenario_id` parameter is missing then the engine will use the latest scenario.
+Input values are scenario-dependent, so we should pass a scenario id. If the
+`scenario_id` parameter is missing then the engine will use the latest
+scenario.
 
 ### Get all inputs details
 
@@ -276,7 +292,8 @@ Input values are scenario-dependent, so we should pass a scenario id. If the `sc
       "default": 0
     }
 
-Just like the entire inputs list, but not indexed by input code. The attribute code is added to the output.
+Just like the entire inputs list, but not indexed by input code. The attribute
+code is added to the output.
 
 #### Errors
 
@@ -292,7 +309,14 @@ If the input doesn't exist the server returns an HTTP 404 error and a message:
 
 ### Get a converter details
 
-This information should be seen on the graph diagram (maybe when the user clicks on a node and wants to see the details) and on the ETM, when the user clicks on the converter info link (now we're loading an iframe). Do we ever need converter info outside the scope of a scenario? We could use the `/converters/:code` URL to get the generic converter attributes (those that don't require an active scenario) and `/scenarios/:scenario_id/converters/:code` to get the attributes for a specific scenario.
+This information should be seen on the graph diagram (maybe when the user
+clicks on a node and wants to see the details) and on the ETM, when the user
+clicks on the converter info link (now we're loading an iframe). Do we ever
+need converter info outside the scope of a scenario? We could use the
+`/converters/:code` URL to get the generic converter attributes (those that
+don't require an active scenario) and
+`/scenarios/:scenario_id/converters/:code` to get the attributes for a
+specific scenario.
 
 Implemented.
 
