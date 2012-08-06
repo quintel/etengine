@@ -1,16 +1,18 @@
-%h1 User Index
+%h1
+  Users
+  = link_to 'Add user', new_user_path, class: "btn btn-primary"
 
-%table.table.zebra-striped.bordered-table.condensed-table
+%table.table.table-striped.bordered-table.condensed-table
   %thead
     %tr
       %th Id
       %th Email
+      %th Role
       %th
   %tbody
     - @users.each do |u|
       %tr{:class => cycle('even', 'odd')}
         %td= u.id
-        %td= u.email
-        %td= link_to "Edit", edit_user_path(u)
-
-= link_to 'New user', new_user_path
+        %td= link_to u.email, user_path(u)
+        %td= u.role.name if u.role
+        %td= link_to 'Delete', user_path(u), method: 'delete', confirm: "Are you sure?", class: 'btn btn-mini btn-danger'
