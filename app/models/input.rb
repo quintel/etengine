@@ -308,6 +308,13 @@ class Input
     }
   end
 
+  # @return [String]
+  #   A human-readable version of the Input for debugging.
+  #
+  def inspect
+    "#<Input id=#{ id.inspect } key=#{ key.inspect }>"
+  end
+
   # Value Caching ------------------------------------------------------------
 
   def self.cache
