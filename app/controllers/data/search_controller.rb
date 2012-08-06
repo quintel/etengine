@@ -1,4 +1,5 @@
 class Data::SearchController < Data::BaseController
+  layout 'application'
   skip_before_filter :initialize_gql, :only => [:index]
 
   def index
@@ -10,12 +11,13 @@ class Data::SearchController < Data::BaseController
             redirect_to data_gquery_path(id: gquery.key)
           elsif Etsource::Loader.instance.graph.converter(search)
             redirect_to data_converter_path(id: search)
+          else
+            initialize_gql
+            @gqueries = Gquery.all.select{|g| g.key.include?(params[:search])}
+            @converters = @gql.present_graph.graph.converters.select!{|c| c.key.to_s.include?(params[:search])}
           end
-        else
-          redirect_to :back
         end
       end
     end
   end
-
 end

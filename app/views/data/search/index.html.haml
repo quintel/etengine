@@ -1,0 +1,19 @@
+%h2 Search
+
+%h3 Gqueries
+
+#{@gqueries.count} results found
+
+%table
+  - @gqueries.each do |g|
+    %tr
+      %td= link_to highlight(g.key, params[:search]), data_gquery_path(id: g.key)
+
+%h3 Converters
+
+#{@converters.count} results found
+
+%table
+  - @converters.each do |c|
+    %tr
+      %td= link_to highlight(c.key.to_s, params[:search]), data_converter_path(id: c.key)
