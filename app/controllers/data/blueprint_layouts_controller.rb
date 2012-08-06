@@ -3,6 +3,8 @@ class Data::BlueprintLayoutsController < Data::BaseController
 
   helper_method :attributes_for_json
 
+  skip_authorize_resource :only => :show
+
   def index
     @blueprint_layouts = BlueprintLayout.find(:all)
     render :layout => 'application'
@@ -62,7 +64,7 @@ private
 
   def graph_to_json(graph)
     graph.converters.inject({}) do |hsh, c|
-      attr_hash = attributes_for_json.inject({}) do |h, key| 
+      attr_hash = attributes_for_json.inject({}) do |h, key|
         v = c.query.send(key)
         h.merge key => auto_number(v)
       end
