@@ -3,13 +3,6 @@
 #     et = Etsource::Dataset.new('nl')
 #     et.import # => Qernel::Dataset for country 'nl'
 #
-#
-#
-# ------ DEBT: Refactor this --------------------------------------------------
-#
-# The YML parsing and import methods really deserve an own class. Right now it's
-# a bit a mess.. This should be fixed soon.
-#
 
 module Etsource
   class Dataset
