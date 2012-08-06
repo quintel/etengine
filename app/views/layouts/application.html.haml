@@ -41,7 +41,7 @@
                 %li.divider-vertical
                 %li
                   %form.form-inline.navbar-search{:action => data_search_path(url_params), :method => :get}
-                    %input.search-query.span3.typeahead{:name => 'search', :placeholder => "Search", :rel => 'tooltip', :title => "Converter and Gquery keys. Use dots and underscores to shorten search.", 'data-placement' => 'right', 'data-trigger' => 'hover', 'data-delay' => 500}
+                    %input.search-query.span3.typeahead{:name => 'search', :placeholder => "Search", :autocomplete => 'off', :rel => 'tooltip', :title => "Converter and Gquery keys. Use dots and underscores to shorten search.", 'data-placement' => 'right', 'data-trigger' => 'hover', 'data-delay' => 500}
                 %li.divider-vertical
                 - if params[:api_scenario_id]
                   %li
