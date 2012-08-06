@@ -32,7 +32,7 @@ module Etsource
     end
 
     def self.region_codes
-      Dir.glob(Etsource::Base.instance.export_dir+"/datasets/[a-z]*").map{|folders| folders.split("/").last }
+      Dir.glob(Etsource::Base.instance.export_dir+"/datasets/[a-z]*").map{|folders| folders.split("/").last }.sort
     end
   end
 end
