@@ -9,6 +9,7 @@ Etm::Application.routes.draw do
   # Frontend
   resources :converters, :only => [:show]
   resources :users
+  match '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest, :id => 1}
 
   namespace :api do
 
