@@ -1,5 +1,7 @@
 FactoryGirl.define do
   factory :input do
-    name "an_input"
+    key 'an_input'
+    sequence(:lookup_id)
+    factor 1
   end
 end

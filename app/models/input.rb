@@ -199,8 +199,20 @@ class Input
     "#{gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
   end
 
+  # Returns the input start value for a given Scenario or GQL instance.
+  #
+  # @param [Scenario, Gql::Gql] gql
+  #   When given a GQL instance, the start value will be determined by
+  #   performing the input's "start_value_gql" query. When given a Scenario,
+  #   the cached value will instead be returned.
+  #
+  # @return [Numeric]
+  #
   def start_value_for(gql)
+    return Input.cache.read(gql, self)[:default] if gql.is_a?(Scenario)
+
     gql_query = @start_value_gql
+
     if !gql_query.blank? and result = gql.query(gql_query)
       result * factor
     else
@@ -208,7 +220,18 @@ class Input
     end
   end
 
+  # Returns the input minimum value for a given Scenario or GQL instance.
+  #
+  # @param [Scenario, Gql::Gql] gql
+  #   When given a GQL instance, the minimum value will be determined by
+  #   performing the input's "min_value_gql" query. When given a Scenario,
+  #   the cached value will instead be returned.
+  #
+  # @return [Numeric]
+  #
   def min_value_for(gql)
+    return Input.cache.read(gql, self)[:min] if gql.is_a?(Scenario)
+
     min_value = min_value_for_current_area(gql)
     if min_value.present?
       min_value * factor
@@ -219,12 +242,22 @@ class Input
     end
   end
 
+  # Returns the input maximum value for a given Scenario or GQL instance.
+  #
+  # @param [Scenario, Gql::Gql] gql
+  #   When given a GQL instance, the maximum value will be determined by
+  #   performing the input's "max_value_gql" query. When given a Scenario,
+  #   the cached value will instead be returned.
+  #
+  # @return [Numeric]
+  #
   def max_value_for(gql)
+    return Input.cache.read(gql, self)[:max] if gql.is_a?(Scenario)
+
     max_value = max_value_for_current_area(gql)
     if max_value.present?
       max_value * factor
-    elsif
-      gql_query = @max_value_gql and !gql_query.blank?
+    elsif gql_query = @max_value_gql and !gql_query.blank?
       gql.query(gql_query)
     else
       @max_value || 0
@@ -249,6 +282,8 @@ class Input
   end
 
   def disabled_in_current_area?(gql = nil)
+    return Input.cache.read(gql, self)[:disabled] if gql.is_a?(Scenario)
+
     if gql.scenario.area_input_values['disabled']
       return true
     elsif dependent_on.present?
@@ -271,4 +306,85 @@ class Input
       :key => key
     }
   end
-end
+
+  # Value Caching ------------------------------------------------------------
+
+  def self.cache
+    @_cache ||= Input::Cache.new
+  end
+
+  class Cache
+    # Retrieves the hash containing all of the input attributes.
+    #
+    # If no values for the area and year are already cached, the entire input
+    # collection values will be calculated and cached.
+    #
+    # @param [Scenario] scenario
+    #   A scenario with an area code and end year.
+    # @param [Input] input
+    #   The input whose values are to be retrieved.
+    #
+    def read(scenario, input)
+      cache_key = input_cache_key(scenario, input)
+
+      Rails.cache.read(cache_key) ||
+        ( warm_values_for(scenario) && Rails.cache.read(cache_key) )
+    end
+
+    #######
+    private
+    #######
+
+    # Sets the hash containing all of the input attributes.
+    #
+    # @param [Scenario] scenario
+    #   A scenario with an area code and end year.
+    # @param [Input] input
+    #   The input whose values are to be set.
+    # @param [Hash{Symbol=>Numeric}] values
+    #   Values for the input.
+    #
+    def set(scenario, input, values)
+      Rails.cache.write(input_cache_key(scenario, input), values)
+    end
+
+    # Given a scenario, pre-calculates the values for each input using the
+    # scenario area and end year, and stores them in memcache for fast
+    # retrieval later.
+    #
+    # @param [Scenario] scenario
+    #   A scenario with an area code and end year. All other attributes are
+    #   ignored.
+    #
+    def warm_values_for(scenario)
+      attributes = scenario.attributes.slice('area_code', 'end_year')
+      gql        = Scenario.new(attributes).gql
+
+      Input.all.each do |input|
+        set(scenario, input, {
+          min:      input.min_value_for(gql),
+          max:      input.max_value_for(gql),
+          default:  input.start_value_for(gql),
+          label:    input.full_label_for(gql),
+          disabled: input.disabled_in_current_area?(gql)
+        })
+      end
+    end
+
+    # Given a scenario, returns the key used to store cached minimum, maximum,
+    # and start values.
+    #
+    # @param [Scenario] scenario
+    #   The scenario containing an area code and end year.
+    # @param [Input] input
+    #   The input whose key you want.
+    #
+    def input_cache_key(scenario, input)
+      area = scenario.area_code || :unknown
+      year = scenario.end_year  || :unknown
+
+      "#{ area }.#{ year }.inputs.#{ input.lookup_id }.values"
+    end
+  end # Cache
+
+end # Input
