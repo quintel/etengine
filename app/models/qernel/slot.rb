@@ -216,11 +216,7 @@ class Slot
   # @return 1.0 if converter is environment?
   #
   def conversion
-    if environment?
-      1.0
-    else
-      dataset_get(:conversion) || 0.0
-    end
+    dataset_get(:conversion) || 0.0
   end
 
   # Converts a value using the conversion.

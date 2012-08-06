@@ -8,8 +8,7 @@ module Qernel::RecursiveFactor::Base
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
-      valid_links = self.input_links.reject{|l| l.child.environment? }
-      val = valid_links.map do |link|
+      val = input_links.map do |link|
         child = link.child
         # Exception 1:
         # when import and local production of a carrier is 0 we still need a share of 1, 
@@ -93,7 +92,7 @@ module Qernel::RecursiveFactor::Base
     if (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
-      val = self.input_links.reject{|l| l.child.environment? }.map do |link|
+      val = input_links.map do |link|
         child = link.child
 
         demanding_share = demanding_share(link)
