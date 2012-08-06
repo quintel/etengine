@@ -2,7 +2,7 @@ module Qernel::RecursiveFactor::FinalDemand
 
 
   def final_demand
-    function(:final_demand_memoized) do
+    function(:final_demand) do
       (self.demand || 0.0) * recursive_factor(:final_demand_factor)
     end
   end
