@@ -33,7 +33,7 @@ class Slot
 
   # --------- Dataset ---------------------------------------------------------
 
-  DATASET_ATTRIBUTES = [:conversion, :country_specific]
+  DATASET_ATTRIBUTES = [:conversion, :country_specific, :flexible]
   dataset_accessors DATASET_ATTRIBUTES
 
   def self.dataset_group; :graph; end
@@ -207,8 +207,8 @@ class Slot
     links.map(&:value).compact.sum
   end
 
-  ##
-  # Conversion for given carrier.
+  # Conversion for given carrier. Returns the conversion dataset attribute. If it is nil
+  # and flexible, returns the remainder. Otherwise 0.0
   #
   # @param carrier [Symbol,Carrier]
   # @return [Float] The input conversion for the carrier, calculates #actual_conversion if #dynamic?
@@ -216,7 +216,7 @@ class Slot
   # @return 1.0 if converter is environment?
   #
   def conversion
-    dataset_get(:conversion) || 0.0
+    dataset_get(:conversion) || flexible_conversion || 0.0
   end
 
   # Converts a value using the conversion.
@@ -229,6 +229,29 @@ class Slot
     (conversion == 0.0) ? 0.0 : value / conversion
   end
 
+  # If a slot has a flag flexible: true we take the remainder of the other slots
+  #
+  # @example
+  #     converter_1
+  #       converter-(hot_water): {flexible: true, conversion: null}
+  #       converter-(gas):  {conversion: 0.4}
+  #
+  #     converter_1.input(:gas).flexible_conversion
+  #     # => 0.6
+  #
+  # The conversion of the slot must be nil. otherwise {#conversion} will not delegate
+  # to flexible_conversion.
+  # 
+  def flexible_conversion
+    if dataset_get(:flexible)
+      if siblings.any?(&:flexible)
+        raise "Multiple flexible slots defined for converter: #{converter.key}"
+      end
+      remainder = 1.0 - siblings.map(&:conversion).compact.sum
+    else
+      nil
+    end
+  end
 
   # --------- Debug -----------------------------------------------------------
 

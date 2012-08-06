@@ -5,3 +5,10 @@ baz;
 lft-(electricity) -- s --> (electricity)-bar
 foo-(electricity) -- s --> (electricity)-bar
 foo-(electricity) -- s --> (electricity)-baz
+
+
+# tests for slots:
+
+converter_fixture_for_slots;
+converter_fixture_for_slots-(electricity)
+converter_fixture_for_slots-(gas)
