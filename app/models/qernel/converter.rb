@@ -125,8 +125,7 @@ class Converter
   #
   # This is really just for micro-optimizing code
   # as attr_readers are faster then normal method calls.
-  attr_reader :environment_converter, :sector_environment
-  alias environment? environment_converter
+  attr_reader :sector_environment
   alias sector_environment? sector_environment
 
   attr_reader :primary_energy_demand, :useful_demand, :final_demand_cbs, :non_energetic_use, :energy_import_export
@@ -179,8 +178,7 @@ protected
   # Memoize here, so it doesn't have to at runtime
   #
   def memoize_for_cache
-    @environment_converter = key === :environment_environment
-    @sector_environment = sector_key === :environment
+    @sector_environment    = sector_key === :environment
 
     @primary_energy_demand = @groups.include? :primary_energy_demand
     @useful_demand         = @groups.include? :useful_demand

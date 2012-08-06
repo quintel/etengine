@@ -47,21 +47,6 @@ module Qernel
           @rgt2.primary_demand.should == 0.0
         end
 
-        it "if rgt2 is environment?" do
-          @rgt2.stub!(:environment?).and_return(true)
-
-          @lft.primary_demand.should == 80.0
-          @rgt1.primary_demand.should == 80.0
-
-          # incorrect behaviour tested separately
-          # @rgt2.primary_demand.should == 0.0
-        end
-
-        it "if rgt2 is environment? rgt2.primary_demand calculates wrongly" do
-          @rgt2.stub!(:environment?).and_return(true)
-          @rgt2.primary_demand.should == 20.0
-        end
-
         pending "should calculate primary_demand_of_electricity" do
           @lft.query.primary_demand_of_electricity.should == 80.0
           @mid.query.primary_demand_of_electricity.should == 80.0
