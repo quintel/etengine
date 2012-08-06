@@ -97,12 +97,15 @@ module Api
 
         # TODO: move parameter logic to a separate object
         attrs = params[:scenario] || {}
-        if params[:reset]
-          @scenario.user_values = {} if params[:reset]
-        end
-        if attrs[:user_values]
-          attrs[:user_values].reverse_merge!(@scenario.user_values)
-        end
+
+        attrs[:user_values] ||= {}
+        @scenario.user_values = {} if params[:reset]
+        values = attrs[:user_values].reverse_merge(@scenario.user_values)
+
+        # convert strings to integer
+        values.each_pair{|k, v| attrs[:user_values][k] = v.to_f}
+
+
         # TODO: handle scenario ownership!
         @scenario.update_attributes(attrs)
         begin

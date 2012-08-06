@@ -231,7 +231,7 @@ DEPENDENCIES
   dalli
   default_value_for
   distribution (~> 0.6)
-  factory_girl_rails (~> 3.5.0)
+  factory_girl_rails
   fileutils
   fnv
   git!

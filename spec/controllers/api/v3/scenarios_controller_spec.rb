@@ -1,15 +1,13 @@
 require 'spec_helper'
 
 describe Api::V3::ScenariosController do
-  before do
-    @scenario = Factory :scenario
-  end
+  let(:scenario) { Factory :scenario }
 
   describe "GET show.json" do
     it "should return a scenario info" do
-      get :show, :id => @scenario.id, :format => :json
+      get :show, :id => scenario.id, :format => :json
       response.should be_success
-      assigns(:scenario).should == @scenario
+      assigns(:scenario).should == scenario
     end
   end
 
@@ -18,6 +16,36 @@ describe Api::V3::ScenariosController do
       get :templates
       response.should be_success
       assigns(:presets).should == Preset.all
+    end
+  end
+
+  describe "PUT scenario" do
+    before do
+      @scenario = Factory :scenario, :user_values => {:foo => 123.0}
+    end
+
+    it "should reset parameters" do
+      put :update, :id => @scenario.id, :reset => true
+      response.should be_success
+      @scenario.reload.user_values.should == {}
+    end
+
+    it "should merge parameters" do
+      put :update, :id => @scenario.id, :scenario => {:user_values => {:bar => 456.0}}
+      response.should be_success
+      @scenario.reload.user_values.to_set.should == {'foo' => 123.0, 'bar' => 456.0}.to_set
+    end
+
+    it "should merge parameters resetting old values when needed" do
+      put :update, :id => @scenario.id, :scenario => {:user_values => {:bar => 456.0}}, :reset => true
+      response.should be_success
+      @scenario.reload.user_values.to_set.should == {'bar' => 456.0}.to_set
+    end
+
+    it "should update parameters" do
+      put :update, :id => @scenario.id, :scenario => {:user_values => {:foo => 456.0}}
+      response.should be_success
+      @scenario.reload.user_values.to_set.should == {'foo' => 456.0}.to_set
     end
   end
 end
