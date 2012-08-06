@@ -11,14 +11,6 @@ class Data::GqueriesController < Data::BaseController
     @gqueries = Kaminari.paginate_array(all.sort_by(&:key)).page(params[:page]).per(50)
   end
 
-  def dump
-    sort = params[:sort] ? "`#{params[:sort]}`" : "`gquery_group_id`"
-    order = params[:order] == 'ascending' ? "asc" : "desc"
-
-    @gqueries = Gquery.all
-    @gqueries = @gqueries.contains(params[:search]) if params[:search]
-  end
-
   def test
     if params[:commit] == "Debug"
       redirect_to data_debug_gql_path(gquery: params[:query])

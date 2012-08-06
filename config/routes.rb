@@ -73,8 +73,6 @@ Etm::Application.routes.draw do
       resources :gqueries, :only => [:index, :show] do
         get :result, :on => :member
         collection do
-          get :dump
-          post :dump
           get :test
           post :test
           get :result
