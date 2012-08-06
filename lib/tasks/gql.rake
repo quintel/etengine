@@ -176,7 +176,7 @@ namespace :gql do
   end
 
   def load_settings
-    json_file = ENV['JSON'] || "gqlconsole/default.json"
+    json_file = ENV['JSON'] || "tmp/default.json"
     settings = JSON.parse(open(json_file).read) rescue nil
     if settings
       puts "** Using settings defined in #{json_file}"

@@ -26,7 +26,7 @@ module Gql::Runtime
     #   include Readline
     #
     #   def readline(prompt = "GQL: ", add_hist = true)
-    #     @logger ||= Logger.new('gqlconsole/prompt.log', 'daily')
+    #     @logger ||= Logger.new('tmp/prompt.log', 'daily')
     #     super(prompt, add_hist).tap do |line| 
     #       @logger.info(line)
     #     end
