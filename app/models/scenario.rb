@@ -31,6 +31,7 @@ class Scenario < ActiveRecord::Base
   include Scenario::UserUpdates
   include Scenario::Persistable
   include Scenario::InputGroups
+  include Scenario::Copies
 
   store :user_values
 
