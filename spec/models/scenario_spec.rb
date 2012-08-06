@@ -81,4 +81,59 @@ describe Scenario do
       end
     end
   end
+
+  describe 'dup' do
+    let(:scenario) do
+      Scenario.create!(
+        title:           'Test',
+        use_fce:         true,
+        end_year:        2030,
+        area_code:       'nl',
+        user_values:     { 1 => 2, 3 => 4 },
+        balanced_values: { 5 => 6 }
+      )
+    end
+
+    let(:dup) { scenario.dup }
+
+    it 'clones the end year' do
+      dup.end_year.should eql(2030)
+    end
+
+    it 'clones the area' do
+      dup.area_code.should eql('nl')
+    end
+
+    it 'clones the user values' do
+      dup.user_values.should eql(scenario.user_values)
+    end
+
+    it 'clones balanced values' do
+      dup.balanced_values.should eql(scenario.balanced_values)
+    end
+
+    it 'clones the FCE status' do
+      dup.use_fce.should be_true
+    end
+
+    it 'does not clone the scenario ID' do
+      dup.id.should be_nil
+    end
+
+    it 'does not clone the GQL instance' do
+      dup.gql.should_not eql(scenario.gql)
+    end
+
+    it 'does not clone inputs_present' do
+      dup.inputs_present.should_not equal(scenario.inputs_present)
+    end
+
+    it 'does not clone inputs_before' do
+      dup.inputs_before.should_not equal(scenario.inputs_before)
+    end
+
+    it 'does not clone inputs_future' do
+      dup.inputs_future.should_not equal(scenario.inputs_future)
+    end
+  end
 end
