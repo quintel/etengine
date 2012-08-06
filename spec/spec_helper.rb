@@ -7,7 +7,7 @@ if ENV["COVERAGE"]
     add_group "Qernel", "app/models/qernel"
     add_group "GQL", "app/models/gql"
     #add_group "Controllers", "app/controllers"
-  end  
+  end
 end
 
 require 'rubygems'
@@ -26,6 +26,7 @@ Spork.prefork do
 
   require 'webrat'
   require 'authlogic/test_case'
+  require 'factory_girl'
 
   # Requires supporting ruby files with custom matchers and macros, etc,
   # in spec/support/ and its subdirectories.

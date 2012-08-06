@@ -70,7 +70,7 @@ group :test, :development do
 end
 
 group :test do
-  gem 'factory_girl_rails', "~> 3.5.0"
+  gem 'factory_girl_rails'
   gem 'shoulda-matchers'
   gem 'webrat'
   gem 'simplecov', '~> 0.5.3', :require => false
