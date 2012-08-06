@@ -32,7 +32,7 @@
                     %Li= link_to 'Overview',       data_root_path(url_params)
                     %li= link_to 'Area',           data_area_path(url_params)
                     %li= link_to 'Balance Groups', data_energy_balance_groups_path(url_params)
-                    %li= link_to "Checks", :controller => 'data/checks', :action => 'expected_demand'
+                    %li= link_to "Checks",         {:controller => 'data/checks', :action => 'expected_demand'}.merge(url_params)
                     %li= link_to 'Carriers',       data_carriers_path(url_params)
                     %li= link_to 'Converters',     data_converters_path(url_params)
                     %li= link_to "Inputs",         data_inputs_path(url_params)
@@ -68,7 +68,7 @@
       -# if breadcrumbs.any?
         #breadcrumbs
           %ul.breadcrumb
-            - breadcrumbs.each do |breadcrumb| 
+            - breadcrumbs.each do |breadcrumb|
               %li
                 = link_to breadcrumb, '#'
                 %span.divider
@@ -91,8 +91,8 @@
 :javascript
   $('[rel=tooltip]').tooltip();
   $('.typeahead').typeahead({
-    source: search_keys, 
-    items: 15, 
+    source: search_keys,
+    items: 15,
     matcher: function(item) { return item.match(new RegExp(this.query.replace(/_/g, '._').replace(/\./g, '.*'))) != null }
   }).change( function() { this.form.submit(); });
 
