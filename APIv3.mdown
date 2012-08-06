@@ -126,15 +126,17 @@ This action returns an array with the predefined scenarios. This list is used on
 
     POST /scenarios
 
+You can pass the scenario attributes enclosed in a `scenario` JSON object. The available attributes are:
+
+* `area_code`: string
 * `title`: optional string
-* `area_code`: optional string, the default is nl. It's the unique area identifier - no more region/country duplication
 * `end_year`: optional integer, default is 2040
 * `source`: optional (but highly recommended) required string, the application that makes the request
 * `scenario_id`: optional id of the scenario used as template / preset_scenario_id. This should be renamed into template!
 
 ##### Example
 
-    {
+    "scenario" : {
       "title": "My scenario",
       "area_code": "nl",
       "end_year": 2040,
@@ -156,7 +158,17 @@ This action returns an array with the predefined scenarios. This list is used on
       "source": "ETM"
     }
 
-Until we update NGINX the HTTP status code will be 200 rather than 201.
+Until we update NGINX the HTTP status code will be 200 rather than 201. If something goes wrong the server returns a JSON object with the errors:
+
+    Status: 422 Unprocessable Entity
+
+    {
+      "errors": {
+        "area_code": [
+          "can't be blank"
+        ]
+      }
+    }
 
 ### Updating and querying a scenario
 
@@ -220,12 +232,48 @@ The gquery result is a hash rather than an array.
       }
     }
 
-About gquery results with errors: to make the client applications more robust
-the single gquery should carry its errors, using something like:
+If the gquery doesn't exist then the gquery hash will contain:
 
     "foo" : {
-      "error": "unknown gquery. Please check gquery list on http://et-engine.com."
-      "unit": "MJ"
+      "errors": "Unknown gquery. Please check gquery list on http://et-engine.com."
+    }
+
+If we're using bad inputs the `errors` hash will contain something like:
+
+    "errors": [
+      ["Missing input: foo"]
+    ]
+
+Here is a complete server response that mixes valid and not valid data:
+
+    {
+      "scenario": {
+        "title": "API",
+        "url": "http://etengine.dev/api/v3/scenarios/30324",
+        "id": 30324,
+        "area_code": "nl",
+        "end_year": 2040,
+        "template": null,
+        "source": null,
+        "created_at": "2012-07-31T15:53:53+02:00"
+      },
+      "gqueries": {
+        "wood_pellets_extraction_in_fuel_chain_emissions": {
+          "unit": null,
+            "present": 1.1470420000000001,
+            "future": 1.1470420000000001
+        },
+        "aasdasdasd": {
+          "errors": [
+            "Missing gquery"
+          ]
+        }
+      },
+      "errors": [
+        [
+          "Missing input: foo"
+        ]
+      ]
     }
 
 Other things to consider: deal with gqueries that return strings or array of

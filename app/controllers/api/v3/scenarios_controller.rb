@@ -145,7 +145,7 @@ module Api
                   end
                   json.errors errors unless errors.empty?
                 else
-                  json.errors ["Missing gquery"]
+                  json.errors ["Unknown gquery. Please check gquery list on http://et-engine.com"]
                 end
               end
             end
