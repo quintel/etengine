@@ -21,3 +21,7 @@ max_demand_converter_a-(gas) -- s --> (gas)-max_demand_converter_b
 max_demand_converter_a-(gas) -- s --> (gas)-max_demand_converter_c
 max_demand_converter_d;
 max_demand_converter_d-(gas) -- s --> (gas)-max_demand_converter_a
+max_demand_converter_with_high_demand;
+max_demand_converter_with_high_demand-(gas) -- f --> (gas)-max_demand_converter_d
+max_demand_converter_with_high_demand_remainder;
+max_demand_converter_with_high_demand-(gas) -- f --> (gas)-max_demand_converter_with_high_demand_remainder
