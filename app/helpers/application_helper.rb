@@ -7,7 +7,7 @@ module ApplicationHelper
     str = str.gsub(/(\))/, '\1</span>')
 
     str = str.gsub(/(\(\s*)(#{Gquery.cached_keys.join('|')})(\s*\))/, '\1<a class="gql_gquery_key" href="'+data_gqueries_path+'/\2">\2</a>\3')
-    str = str.gsub(/(\(\s*)(#{Group.keys.join('|')})(\s*\))/, '\1<span class="gql_group_key">\2</span>\3')
+    str = str.gsub(/(\(\s*)(#{converter_groups.join('|')})(\s*\))/, '\1<span class="gql_group_key">\2</span>\3')
     str.html_safe
   end
 

@@ -93,4 +93,12 @@ module DataHelper
       carriers.sort_by(&:key).map {|a| {label: a.key, url: data_carrier_path(:id => a)} }.to_json
     end
   end
+
+  # Since the group table has been dropped we need to fetch the list from ETSource
+  def converter_groups
+    Rails.cache.fetch "converter_group_list" do
+      initialize_gql unless @gql
+      @gql.present_graph.converters.map{|c| c.groups}.flatten.sort.uniq
+    end
+  end
 end
