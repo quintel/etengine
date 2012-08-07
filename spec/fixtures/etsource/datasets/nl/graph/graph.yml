@@ -22,6 +22,7 @@ converter_fixture_for_slots-(gas): {conversion: null, flexible: true}
 max_demand_converter_d: {max_demand: 'recursive'}
 max_demand_converter_d-(gas) -- s --> (gas)-max_demand_converter_a: {share: 1.0}
 max_demand_converter_d-(gas): {conversion: 1.0}
+(gas)-max_demand_converter_d: {conversion: 1.0}
 max_demand_converter_a: {}
 max_demand_converter_b: {max_demand: 6000}
 max_demand_converter_c: {max_demand: 500}
@@ -32,3 +33,10 @@ max_demand_converter_a-(gas): {conversion: 1.0}
 # links have shares that are important for the calculation.
 max_demand_converter_a-(gas) -- s --> (gas)-max_demand_converter_b: {share: 0.9}
 max_demand_converter_a-(gas) -- s --> (gas)-max_demand_converter_c: {share: 0.1}
+#
+max_demand_converter_with_high_demand: {preset_demand: 10000}
+max_demand_converter_with_high_demand-(gas): {conversion: 1.0}
+max_demand_converter_with_high_demand-(gas) -- f --> (gas)-max_demand_converter_d: {}
+max_demand_converter_with_high_demand-(gas) -- f --> (gas)-max_demand_converter_with_high_demand_remainder: {}
+max_demand_converter_with_high_demand_remainder: {}
+(gas)-max_demand_converter_with_high_demand_remainder: {conversion: 1.0}
