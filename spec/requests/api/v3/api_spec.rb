@@ -79,7 +79,6 @@ describe "API v3scenario life cycle" do
     put url, :gqueries => ['terminator']
 
     result = JSON.parse(response.body)
-    puts response.body
     result["gqueries"]["terminator"]["errors"].should_not be_empty
     result["errors"][0].should =~ /Missing input/
 

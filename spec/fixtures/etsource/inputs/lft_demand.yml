@@ -1,6 +1,6 @@
 ---
 # updates lft converter with the negative user value
-id: 2
+id: 4
 key: lft_demand
 query: UPDATE(V(lft), preset_demand, USER_INPUT())
 unit: "PJ"
