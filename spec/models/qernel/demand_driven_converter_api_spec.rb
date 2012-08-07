@@ -37,7 +37,6 @@ module Qernel
     describe '#number_of_units' do
       describe 'when households_supplied_per_unit is 1' do
         it 'should be 50.0 when the converter has a 25% share' do
-          # binding.pry
           supply_one.converter_api.number_of_units.should eql(50.0)
         end
 
