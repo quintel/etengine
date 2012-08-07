@@ -1,10 +1,17 @@
 module Qernel::RecursiveFactor::MaxDemand
+  # max_demand_recursive is calculated by the MaxDemandRecursive plugin.
   def max_demand_recursive
-    if query.max_demand
-      query.max_demand
-    else
-      minimum_cap_link = rgt_links.min_by {|l| l.share * l.rgt_converter.max_demand_recursive rescue Float::INFINITY}
-      query.max_demand = minimum_cap_link.rgt_converter.max_demand_recursive / minimum_cap_link.share rescue nil
+    function :max_demand_recursive do
+      if query.max_demand && query.max_demand != 'recursive'
+        query.max_demand
+      elsif has_loop?
+        nil
+      else
+        capped_link = rgt_links.min_by do |l| 
+          (1.0 - l.share) * l.rgt_converter.max_demand_recursive rescue Float::INFINITY 
+        end
+        query.max_demand = capped_link.rgt_converter.max_demand_recursive / capped_link.share rescue nil
+      end
     end
   end
 end
