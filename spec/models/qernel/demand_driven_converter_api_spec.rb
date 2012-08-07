@@ -22,6 +22,8 @@ module Qernel
       supply_two.converter_api = DemandDrivenConverterApi.new(supply_two)
 
       [ supply_one, supply_two ].each do |converter|
+        converter.graph = graph
+
         api = converter.converter_api
         api.stub!(:nominal_capacity_heat_output_per_unit).and_return(20)
         api.stub!(:demand_of_hot_water).and_return(0)
@@ -35,6 +37,7 @@ module Qernel
     describe '#number_of_units' do
       describe 'when households_supplied_per_unit is 1' do
         it 'should be 50.0 when the converter has a 25% share' do
+          # binding.pry
           supply_one.converter_api.number_of_units.should eql(50.0)
         end
 
