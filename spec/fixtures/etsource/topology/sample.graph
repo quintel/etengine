@@ -25,3 +25,11 @@ max_demand_converter_with_high_demand;
 max_demand_converter_with_high_demand-(gas) -- f --> (gas)-max_demand_converter_d
 max_demand_converter_with_high_demand_remainder;
 max_demand_converter_with_high_demand-(gas) -- f --> (gas)-max_demand_converter_with_high_demand_remainder
+
+
+# resettable slots
+resettable_slots_with_reset_slot;
+resettable_slots_with_hidden_link;
+resettable_slots_with_hidden_link_child;;;;primary_energy_demand
+resettable_slots_with_reset_slot-(gas) -- s --> (gas)-resettable_slots_with_hidden_link
+resettable_slots_with_hidden_link-(gas) -- s --> (gas)-resettable_slots_with_hidden_link_child

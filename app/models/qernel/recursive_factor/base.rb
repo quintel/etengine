@@ -96,7 +96,7 @@ module Qernel::RecursiveFactor::Base
         child = link.child
 
         demanding_share = demanding_share(link)
-        loss_share = child.loss_share
+        loss_share      = child.loss_share
         converter_share = converter_share_method.nil? ? 1.0 : (self.send(converter_share_method) || 0.0)
 
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
