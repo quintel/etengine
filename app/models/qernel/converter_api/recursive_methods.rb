@@ -1,7 +1,7 @@
 class Qernel::ConverterApi
 
   def max_demand_recursive
-    converter.max_demand_recursive
+    converter.max_demand_recursive!
   end
 
   def primary_demand_of_fossil
