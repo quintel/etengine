@@ -247,7 +247,7 @@ If the gquery doesn't exist then the gquery hash will contain:
 If we're using bad inputs the `errors` hash will contain something like:
 
     "errors": [
-      ["Missing input: foo"]
+      "Missing input: foo"
     ]
 
 Here is a complete server response that mixes valid and not valid data:
@@ -276,9 +276,7 @@ Here is a complete server response that mixes valid and not valid data:
         }
       },
       "errors": [
-        [
-          "Missing input: foo"
-        ]
+        "Missing input: foo"
       ]
     }
 
