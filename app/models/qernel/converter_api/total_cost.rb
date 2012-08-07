@@ -5,12 +5,6 @@ class Qernel::ConverterApi
       total_costs / output_of_electricity
     end
   end
-  
-  def total_cost_per_mwh
-    function(:total_cost_per_mwh) do
-      total_cost_per_mje and total_cost_per_mje * SECS_PER_HOUR
-    end
-  end
 
   def total_cost_per_mj
     function(:total_cost_per_mj) do
@@ -18,13 +12,13 @@ class Qernel::ConverterApi
       total_costs / ( demand * useful_output )
     end
   end
-  
+
   # Removed total_cost, refactored to total_costs
   # Added an alias untill the queries are altered
   #
   alias total_cost total_costs
 
-  # Calcutes the total initial investment needed for the entire converter. Also needed in the network calculations. 
+  # Calcutes the total initial investment needed for the entire converter. Also needed in the network calculations.
   #
   def initial_investment_total
     function(:initial_investment_total) do
@@ -32,23 +26,15 @@ class Qernel::ConverterApi
     end
   end
 
-  # Returns the cost of installing one unit 
+  # Returns the cost of installing one unit
   #
   def cost_of_installing_per_unit
     function(:cost_of_installing_per_unit) do
       installing_costs_per_mw_input * typical_input_capacity_in_mw
     end
   end
-  
-  # Returns the cost of installing one mwe 
-  #
-  def cost_of_installing_per_mwe
-    function(:cost_of_installing_per_mwe) do
-      cost_of_installing_per_unit / nominal_capacity_electricity_output_per_unit
-    end
-  end
-  
-  # Returns the residual value per unit, the amount of money one unit is worth after the economic lifetime has passed 
+
+  # Returns the residual value per unit, the amount of money one unit is worth after the economic lifetime has passed
   #
   def residual_value_per_unit
     function(:residual_value_per_unit) do
@@ -61,44 +47,44 @@ class Qernel::ConverterApi
       residual_value_per_unit / nominal_capacity_electricity_output_per_unit
     end
   end
-  
-  # Returns the decommissioning costs per unit 
+
+  # Returns the decommissioning costs per unit
   #
   def decommissioning_costs_per_unit
     function(:decommissioning_costs_per_unit) do
       decommissioning_costs_per_mw_input * typical_input_capacity_in_mw
     end
   end
-  
+
   def decommissioning_costs_per_mwe
     function(:decommissioning_costs_per_mwe) do
       decommissioning_costs_per_unit / nominal_capacity_electricity_output_per_unit
     end
   end
-  
-  # Returns the yearly operation and maintenance costs per unit  
+
+  # Returns the yearly operation and maintenance costs per unit
   #
   def fixed_yearly_operation_and_maintenance_costs_per_unit
     function(:fixed_yearly_operation_and_maintenance_costs_per_unit) do
       operation_and_maintenance_cost_fixed_per_mw_input * typical_input_capacity_in_mw
     end
   end
-  
+
   def fixed_yearly_operation_and_maintenance_costs_per_mwe
     function(:fixed_yearly_operation_and_maintenance_costs_per_mwe) do
       fixed_yearly_operation_and_maintenance_costs_per_unit / nominal_capacity_electricity_output_per_unit
     end
   end
-  
-  # Returns the additional initial investment needed for CCS capture per unit. 
+
+  # Returns the additional initial investment needed for CCS capture per unit.
   #
   def additional_investment_ccs_per_unit
     function(:additional_investment_ccs_per_unit) do
       ccs_investment_per_mw_input * typical_input_capacity_in_mw
     end
   end
-  
-  # Returns the total of the purchase price and installation of the unit. Relevant for electricity production. 
+
+  # Returns the total of the purchase price and installation of the unit. Relevant for electricity production.
   #
   def initial_investment_excl_ccs_per_unit
     function(:initial_investment_excl_ccs_per_unit) do
@@ -108,32 +94,16 @@ class Qernel::ConverterApi
       ]
     end
   end
-  
+
   def additional_investment_ccs_per_mwe
     function(:additional_investment_ccs_per_mwe) do
       additional_investment_ccs_per_unit / nominal_capacity_electricity_output_per_unit
     end
   end
-  
+
   def initial_investment_excl_ccs_per_mwe
     function(:initial_investment_excl_ccs_per_mwe) do
       initial_investment_excl_ccs_per_unit / nominal_capacity_electricity_output_per_unit
-    end
-  end
-
-  def cost_of_inputs
-    function(:cost_of_inputs) do
-      converter.inputs.map do |input_slot|
-        (input_slot.carrier.cost_per_mj || 0.0) * converter.demand
-      end
-    end
-  end
-
-  def cost_of_outputs
-    function(:cost_of_outputs) do
-      converter.outputs.map do |output_slot|
-        (output_slot.carrier.cost_per_mj || 0.0) * converter.demand
-      end
     end
   end
 end
