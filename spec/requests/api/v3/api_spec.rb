@@ -66,5 +66,22 @@ describe "API v3scenario life cycle" do
     result['foo_demand']['present'].should == 100.0
     result['foo_demand']['future'].should == 180.0
     result['bar_demand']['future'].should == 180.0*0.6 + 20
+
+    # ---- using a bad input -----
+
+    put url, :scenario => {:user_values => {'paris_hilton' => '123'}}
+
+    result = JSON.parse(response.body)
+    result["errors"][0].should =~ /Missing input/
+
+  # ---- using a bad gquery -----
+
+    put url, :gqueries => ['terminator']
+
+    result = JSON.parse(response.body)
+    puts response.body
+    result["gqueries"]["terminator"]["errors"].should_not be_empty
+    result["errors"][0].should =~ /Missing input/
+
   end
 end

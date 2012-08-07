@@ -46,7 +46,7 @@ module Scenario::UserUpdates
         input = Input.get(key)
         unless input
           @input_errors ||= []
-          @input_errors << ["Missing input: #{key}"]
+          @input_errors << "Missing input: #{key}"
         end
         @inputs_future[input] = value if input.present? && input.updates_future?
       end
