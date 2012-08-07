@@ -33,7 +33,7 @@ class Slot
 
   # --------- Dataset ---------------------------------------------------------
 
-  DATASET_ATTRIBUTES = [:conversion, :country_specific, :flexible]
+  DATASET_ATTRIBUTES = [:conversion, :country_specific, :flexible, :reset_to_zero]
   dataset_accessors DATASET_ATTRIBUTES
 
   def self.dataset_group; :graph; end
