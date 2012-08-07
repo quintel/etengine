@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120806130345) do
+ActiveRecord::Schema.define(:version => 20120807092543) do
 
   create_table "blueprint_layouts", :force => true do |t|
     t.string   "key"
@@ -66,17 +66,6 @@ ActiveRecord::Schema.define(:version => 20120806130345) do
     t.datetime "updated_at"
     t.text     "description"
   end
-
-  create_table "groups", :force => true do |t|
-    t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "key"
-    t.string   "shortcut"
-    t.integer  "group_id"
-  end
-
-  add_index "groups", ["group_id"], :name => "index_groups_on_group_id"
 
   create_table "query_table_cells", :force => true do |t|
     t.integer  "query_table_id"
