@@ -44,4 +44,5 @@ etsource_export
 ./etsource_export
 !app/models/etsource
 !spec/models/etsource
+!spec/fixtures/etsource
 .sass-cache
