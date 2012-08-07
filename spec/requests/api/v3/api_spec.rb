@@ -23,7 +23,6 @@ describe "API v3scenario life cycle" do
 
     put url, :gqueries => ['bar_demand']
 
-    puts response.body
     result = JSON.parse(response.body)['gqueries']
     result['bar_demand']['present'].should == 60.0
     result['bar_demand']['future'].should == 60.0
@@ -31,7 +30,7 @@ describe "API v3scenario life cycle" do
     # ----- update ------------------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'3' => '120'} },
+        :scenario => {:user_values => {'foo_demand' => '120'} },
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']
@@ -41,7 +40,7 @@ describe "API v3scenario life cycle" do
     # ----- reset ------------------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'3' => 'reset'} },
+        :scenario => {:user_values => {'foo_demand' => 'reset'} },
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']
@@ -51,7 +50,7 @@ describe "API v3scenario life cycle" do
     # ----- updating another --------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'2' => '20', '3' => '120'}},
+        :scenario => {:user_values => {'2' => '20', 'foo_demand' => '120'}},
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']
@@ -60,7 +59,7 @@ describe "API v3scenario life cycle" do
 
     # ----- updating 3 again --------------------------------------------------
 
-    put url, :scenario => {:user_values => {'3' => '180'}},
+    put url, :scenario => {:user_values => {'foo_demand' => '180'}},
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']

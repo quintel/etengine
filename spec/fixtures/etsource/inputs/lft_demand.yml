@@ -1,0 +1,13 @@
+---
+# updates lft converter with the negative user value
+id: 2
+key: lft_demand
+query: UPDATE(V(lft), preset_demand, USER_INPUT())
+unit: "PJ"
+update_type: converters
+updateable_period: future
+default_unit: "PJ"
+factor: 100
+max_value: 100
+min_value: 0
+start_value: 60
