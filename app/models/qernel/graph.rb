@@ -21,6 +21,7 @@ class Graph
 
   include Plugins::MeritOrder
   include Plugins::Fce
+  include Plugins::MaxDemandRecursive
 
   # ---- DatasetAttributes ----------------------------------------------------
 
