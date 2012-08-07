@@ -8,7 +8,14 @@ foo-(electricity) -- s --> (electricity)-baz
 
 
 # tests for slots:
-
 converter_fixture_for_slots;
 converter_fixture_for_slots-(electricity)
 converter_fixture_for_slots-(gas)
+
+# max_demand(_recursive)
+
+max_demand_converter_a;
+max_demand_converter_b;
+max_demand_converter_c;
+max_demand_converter_a-(gas) -- s --> (gas)-max_demand_converter_b
+max_demand_converter_a-(gas) -- s --> (gas)-max_demand_converter_c
