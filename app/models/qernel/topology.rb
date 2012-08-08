@@ -40,7 +40,7 @@ module Qernel
 
       def topology_key
         o   = output.andand.topology_key
-        o ||= child.outputs.first.topology_key
+        o ||= rgt_converter.outputs.first.topology_key
         "#{input.andand.topology_key} -- #{link_type.to_s[0]} --> #{o}"
       end
 
@@ -107,7 +107,7 @@ module Qernel
           arr << topology_key if links.empty?
           arr << links.map(&:to_topology)
         elsif output?
-          arr << "#{topology_key} # #{links.length} links to: #{links.map{|l| l.parent.andand.topology_key}.join(', ')}"
+          arr << "#{topology_key} # #{links.length} links to: #{links.map{|l| l.lft_converter.andand.topology_key}.join(', ')}"
         end
         arr.flatten.join("\n")
       end

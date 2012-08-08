@@ -205,7 +205,7 @@ class ConverterApi
   def self.create_share_of_converter_method(converter_key)
     key = converter_key.to_sym
     define_method "share_of_#{key}" do
-      ol = self.converter.output_links.detect{|l| l.parent.key == key}
+      ol = self.converter.output_links.detect{|l| l.lft_converter.key == key}
       ol and ol.share
     end
   end
@@ -247,8 +247,8 @@ class ConverterApi
     if m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
       carrier_name, side, method = m.captures
       self.class.create_input_link_method_and_execute(self, method_id, carrier_name, side, method)
-    elsif m = /^share_of_(\w*)$/.match(method_id.to_s) and parent = m.captures.first
-      self.class.create_share_of_converter_method_and_execute(self, parent)
+    elsif m = /^share_of_(\w*)$/.match(method_id.to_s) and match = m.captures.first
+      self.class.create_share_of_converter_method_and_execute(self, match)
     elsif m = /^cost_(\w*)$/.match(method_id.to_s) and method_name = m.captures.first
       self.send(method_name)
     elsif m = /^primary_demand(\w*)$/.match(method_id.to_s)
