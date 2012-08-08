@@ -1,7 +1,16 @@
 FactoryGirl.define do
   factory :input do
-    key 'an_input'
     sequence(:lookup_id)
+    key { "input-#{ lookup_id }" }
     factor 1
+    min_value 5
+    max_value 15
+    start_value 10
+  end
+
+  factory :gql_input, parent: :input do
+    start_value_gql 'present:2 * 4'
+    min_value_gql   'present:2 * 2'
+    max_value_gql   'present:2 * 8'
   end
 end
