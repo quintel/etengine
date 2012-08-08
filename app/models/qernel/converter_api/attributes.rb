@@ -21,6 +21,7 @@ module Qernel
       },
 
       :cost => {
+        :test_me_baby => ['just a test, Hun', 'chicken'],
         :ccs_investment_per_mw_input => ['desc', 'unit'],
         :ccs_operation_and_maintenance_cost_per_full_load_hour => ['desc', 'unit'],
         :costs_per_mj => ['desc', 'unit'],
