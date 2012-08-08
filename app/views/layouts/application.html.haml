@@ -48,12 +48,12 @@
                   %li
                     %form#api_scenario_selector.navbar-search.form.form-inline{:action => data_redirect_path(url_params), :method => :get}
                       - opts = [["Current - ##{@gql.scenario.id rescue 'error'}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
-                      = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2', :onchange => 'form.submit()'
+                      = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
                   %li.divider-vertical
                   %li
                     %form#area_code_selector.navbar-search.form.form-inline{:action => '#', :method => :get}
                       - opts = Etsource::Dataset.region_codes
-                      = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1', :onchange => 'form.submit()'
+                      = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1'
               %ul.nav.pull-right
                 %li
                   = link_to "Logout", logout_path, :class => 'pull-right', :title => "Logged in as #{current_user.email}", :rel => 'tooltip', 'data-placement' => 'bottom'
@@ -96,4 +96,5 @@
     items: 15,
     matcher: function(item) { return item.match(new RegExp(this.query.replace(/_/g, '._').replace(/\./g, '.*'))) != null }
   }).change( function() { this.form.submit(); });
+
 
