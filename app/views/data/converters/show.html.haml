@@ -80,14 +80,17 @@
           %th Present
           %th Future
           %th Change
+          %th Unit
       %tbody
         - Qernel::ConverterApi::ATTRIBUTE_GROUPS.each do |group, attributes|
           %tr
-            %th.attribute_group{:colspan => 4}= group
-          - attributes.each do |attr_name|
+            %th.attribute_group{:colspan => 5}= group
+          - attributes.each do |attr_name, info|
+            - desc, unit = info
             %tr
               %th= attr_name
               - result_fields(@pre,@fut,attr_name)
+              %td= unit
 
   .span6
     .page-header
