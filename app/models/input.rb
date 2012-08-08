@@ -196,7 +196,8 @@ class Input
   end
 
   def full_label_for(gql)
-    "#{gql.query("present:#{label_query}").round(2)} #{label}".html_safe unless label_query.blank?
+    return Input.cache.read(gql, self)[:label] if gql.is_a?(Scenario)
+    "#{gql.query("present:#{label_query}").round(2)} #{label}".strip.html_safe unless label_query.blank?
   end
 
   # Returns the input start value for a given Scenario or GQL instance.
