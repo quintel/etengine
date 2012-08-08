@@ -9,9 +9,9 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       val = input_links.map do |link|
-        child = link.child
+        child = link.rgt_converter
         # Exception 1:
-        # when import and local production of a carrier is 0 we still need a share of 1, 
+        # when import and local production of a carrier is 0 we still need a share of 1,
         # otherwise the costs for fuel will always be 0.
         #
         # Exception 2:
@@ -23,7 +23,7 @@ module Qernel::RecursiveFactor::Base
         #                         --- link (constant: share nil) --- c_2 (method: 1.0)
         # slot(conversin: 1.0) <
         #                         --- link (flexible: share nil) --- c_3 (method: 1.0)
-        # 
+        #
         # (1.0 * 1.0 * 1.0) + (1.0 * 1.0 * 1.0)  # (conversion * link_share * value)
         # => 2.0!
         #
@@ -33,7 +33,7 @@ module Qernel::RecursiveFactor::Base
         #
         link_share = link.share
         if link_share.nil?
-          # Following code would make sure that combined link_shares would not 
+          # Following code would make sure that combined link_shares would not
           # be higher than 1.0:
           # total_link_shares = valid_links.map(&:share).compact.sum
           # link_share = (1.0 - total_link_shares) / valid_links.length
@@ -47,9 +47,9 @@ module Qernel::RecursiveFactor::Base
           # to deal with following scenario:
           #
           #       o slot(conversin: 0.9) --- link (share 1.0) --- c_2 (method: 100)
-          # c_1 < 
+          # c_1 <
           #       o slot(conversin: 0.1) --- link (share 1.0) --- c_3 (method: 80)
-          # 
+          #
           # c_1 should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
           #
           inp = self.input(link.carrier)
@@ -93,7 +93,7 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       val = input_links.map do |link|
-        child = link.child
+        child = link.rgt_converter
 
         demanding_share = demanding_share(link)
         loss_share      = child.loss_share
@@ -118,7 +118,7 @@ module Qernel::RecursiveFactor::Base
   #
   def right_dead_end?
     unless defined?(@right_dead_end)
-      @right_dead_end = self.input_links.reject{|l| l.child.sector_environment? }.empty? # and !environment? # is already checked
+      @right_dead_end = self.input_links.reject{|l| l.rgt_converter.sector_environment? }.empty? # and !environment? # is already checked
     end
     @right_dead_end
   end

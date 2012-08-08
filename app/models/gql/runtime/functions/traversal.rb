@@ -10,8 +10,8 @@ module Gql::Runtime
     #                   |               |
     #   heat1 <- (heat)-|  <Converter>  |- (oil)-+
     #                   |               |        +--> oil_1
-    #                   +---------------+        
-    #    
+    #                   +---------------+
+    #
     module Traversal
 
       # ELEMENT_AT( SORT_BY(GROUP(electricity); demand), 0) => converter with smallest demand
@@ -57,23 +57,23 @@ module Gql::Runtime
         if lft.nil? || rgt.nil?
           nil
         else
-          link = lft.input_links.detect{|l| l.child == rgt.converter}
-          link ||= lft.output_links.detect{|l| l.parent == rgt.converter}
+          link = lft.input_links.detect{|l| l.rgt_converter == rgt.converter}
+          link ||= lft.output_links.detect{|l| l.lft_converter == rgt.converter}
           link
         end
       end
 
-      
+
       # All links on both sides of a converter
       #
-      # @example 
+      # @example
       #   LINKS(L(foo)) # => [foo->gas_1, foo->gas_2, loss1->foo, heat1->foo]
       #
       def LINKS(*value_terms)
         value_terms.flatten.compact.map(&:links).flatten
       end
 
-      # Get the output (to the left) slots of converter(s). 
+      # Get the output (to the left) slots of converter(s).
       #
       # @example All input slots
       #   OUTPUT_SLOTS(foo)           #=> [(loss)-foo, (heat)-foo]
@@ -89,8 +89,8 @@ module Gql::Runtime
         flatten_uniq converters.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
       end
 
-      # Get the input (to the right) slots of converter(s). 
-      #  
+      # Get the input (to the right) slots of converter(s).
+      #
       # @example All input slots
       #   INPUT_SLOTS(foo) #=> [foo-(gas), foo-(oil)]
       #
@@ -129,7 +129,7 @@ module Gql::Runtime
 
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
-          links.select!{|link| link.instance_eval(inst_eval.to_s) } 
+          links.select!{|link| link.instance_eval(inst_eval.to_s) }
         end
         links
       end
@@ -160,7 +160,7 @@ module Gql::Runtime
 
         if arguments.present?
           inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
-          links.select!{|link| link.instance_eval(inst_eval.to_s) } 
+          links.select!{|link| link.instance_eval(inst_eval.to_s) }
         end
         links
       end

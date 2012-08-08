@@ -20,19 +20,19 @@ module Gql::Runtime
 
 
       def CHILDREN(*converters)
-        flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.children})
+        flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.rgt_converters})
       end
 
       def PARENTS(*converters)
-        flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.parents})
+        flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.lft_converters})
       end
-  
+
       # Returns the elements that are present in both the first and second arrays.
       #
       # Examples
       #
       #   INTERSECTION( V(1,2,3) , V(2,3,4) )
-      #   # => [2, 3]  
+      #   # => [2, 3]
       #
       def INTERSECTION(*keys)
         keys.first.flatten & keys.last.flatten
@@ -43,7 +43,7 @@ module Gql::Runtime
       # Examples
       #
       #   EXCLUDE( V(1,2,3) , V(2,3,4) )
-      #   # => [1]  
+      #   # => [1]
       #
       def EXCLUDE(first, last)
         first.flatten - last.flatten
