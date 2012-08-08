@@ -84,7 +84,7 @@ module Qernel::Plugins
     #    fce_start_value( CARRIER(coal), 'india')
     #
     def fce_start_value(carrier, origin)
-      fce_ostruct(carrier, origin).start_value
+      fce_ostruct(carrier, origin).andand.start_value
     end
 
     # Update a carriers fce values (co2_extraction, co2_treatment_per_mj)
