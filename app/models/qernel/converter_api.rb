@@ -125,10 +125,13 @@ class ConverterApi
   def primary_demand
     self.converter.primary_demand
   end
+  unit_for_calculation "primary_demand", 'MJ'
+
 
   def final_demand
     self.converter.final_demand
   end
+  unit_for_calculation "final_demand", 'MJ'
 
   # Is the calculated near the demand_expected_value?
   #
@@ -153,18 +156,27 @@ class ConverterApi
       define_method "demand_of_#{carrier}" do
         self.output_of_carrier(carrier_key) || 0.0
       end
+      unit_for_calculation "demand_of_#{carrier}", 'MJ'
+
       define_method "supply_of_#{carrier}" do
         self.input_of_carrier(carrier_key) || 0.0
       end
+      unit_for_calculation "supply_of_#{carrier}", 'MJ'
+
       define_method "input_of_#{carrier}" do
         self.input_of_carrier(carrier_key) || 0.0
       end
+      unit_for_calculation "input_of_#{carrier}", 'MJ'
+
       define_method "output_of_#{carrier}" do
         self.output_of_carrier(carrier_key) || 0.0
       end
+      unit_for_calculation "output_of_#{carrier}", 'MJ'
+
       define_method "primary_demand_of_#{carrier}" do
         converter.primary_demand_of_carrier(carrier_key) || 0.0
       end
+      unit_for_calculation "primary_demand_of_#{carrier}", 'MJ'
 
       ['input', 'output'].each do |side|
         define_method "#{carrier}_#{side}_link_share" do
