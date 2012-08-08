@@ -93,7 +93,8 @@ class Scenario < ActiveRecord::Base
       :area_code => 'nl',
       :user_values => {},
       :use_fce => false,
-      :end_year => 2040
+      :end_year => 2040,
+      :title => 'API'
     }.with_indifferent_access
   end
 

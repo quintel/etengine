@@ -42,8 +42,8 @@ module Api
       # a scenario, too: in that case a copy of the scenario is saved.
       #
       def create
-        @scenario = Scenario.new(params[:scenario])
-        @scenario.title ||= 'API'
+        attrs = (params[:scenario] || {}).reverse_merge(Scenario.default_attributes)
+        @scenario = Scenario.new(attrs)
 
         if @scenario.save
           out = Jbuilder.encode do |json|
