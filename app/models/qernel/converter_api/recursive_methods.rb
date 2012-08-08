@@ -7,10 +7,13 @@ class Qernel::ConverterApi
   def primary_demand_of_fossil
     converter.primary_demand_of_fossil
   end
+  unit_for_calculation "primary_demand_of_fossil", 'MJ'
+
 
   def primary_demand_of_sustainable
     converter.primary_demand_of_sustainable
   end
+  unit_for_calculation "primary_demand_of_sustainable", 'MJ'
 
   def sustainability_share
     converter.sustainability_share
