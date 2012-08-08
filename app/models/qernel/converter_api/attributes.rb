@@ -14,6 +14,7 @@ module Qernel
         :households_supplied_per_unit,
         :land_use_per_unit,
         :part_ets,
+        :peak_load_units,
         :peak_load_units_present,
         :technical_lifetime,
         :typical_nominal_input_capacity
