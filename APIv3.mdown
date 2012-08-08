@@ -132,9 +132,9 @@ the ETM intro page to build the select box.
 You can pass the scenario attributes enclosed in a `scenario` JSON object. The
 available attributes are:
 
-* `area_code`: string
-* `title`: optional string
-* `end_year`: optional integer, default is 2040
+* `area_code`: optional string, default: `nl`
+* `title`: optional string, default: `API`
+* `end_year`: optional integer, default: `2040`
 * `source`: optional (but highly recommended) required string, the application that makes the request
 * `scenario_id`: optional id of the scenario used as template / preset_scenario_id. This should be renamed into template!
 
