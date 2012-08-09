@@ -4,8 +4,6 @@
 //= require jquery-ui
 //= require jquery_ujs
 //= require bootstrap
-//
-//= require admin.interface
 
 $(document).ready(function() {
   $("#api_scenario_selector select").change(function(e){
@@ -25,4 +23,15 @@ $(document).ready(function() {
       location.href = "/data/"+data.id;
     })
   });
-})
+
+  $('.gql_operator').mouseover(function(ev) {
+    var statement = $(this).next().text();
+    var query = $(this).text() + statement;
+    $(this).next().css('background', '#666');
+  });
+
+  $('.gql_operator').mouseout(function(ev) {
+    $(this).next().css('background', 'none');
+  });
+
+});
