@@ -10,9 +10,9 @@ module DebugHelper
 
           source = lines[line - 1]
           intendation = source.match(/^(\s*)def/).captures.first
-          
-          lines[line..-1].each do |l| 
-            if l.match(/^#{intendation}end/) 
+
+          lines[line..-1].each do |l|
+            if l.match(/^#{intendation}end/)
               source << l
               break
             else
@@ -28,7 +28,7 @@ module DebugHelper
   end
 
   def log_tree(logs = @logs)
-    if tree = Qernel::Logger.to_tree(logs) 
+    if tree = Qernel::Logger.to_tree(logs)
       log_subtree(tree)
     end
   end
@@ -79,11 +79,11 @@ module DebugHelper
     attr_name = log[:attr_name]
     value     = log[:value]
     if type == :method
-      haml_tag 'a.attr_name', attr_name.to_s, 
-        :rel  => 'modal', 
+      haml_tag 'a.attr_name', attr_name.to_s,
+        :rel  => 'modal',
         :href => 'javacsript:void(null)',
         :data => {
-          :target        => "##{attr_name}", 
+          :target        => "##{attr_name}",
           :"toggle" => :modal
         }
       @method_definitions << attr_name
@@ -91,14 +91,14 @@ module DebugHelper
       haml_tag 'span.attr_name', attr_name.to_s
       if log[:converter]
         haml_concat link_to(">>", data_converter_path(:id => log[:converter]))
-      end  
+      end
     end
   end
 
   def log_value(value)
     value = value.first if value.is_a?(Array) and value.length == 1
-    
-    if value.is_a?(Array) 
+
+    if value.is_a?(Array)
       haml_tag 'strong.pull-right', "#{value.length} #"
     else
       haml_tag 'strong.pull-right', auto_number(value)
@@ -106,7 +106,7 @@ module DebugHelper
   end
 
   def log_folding_tags(type)
-    return 
+    return
     haml_tag 'span' do
       if type == :attr
         haml_tag 'span', '-'
@@ -120,4 +120,7 @@ module DebugHelper
     end
   end
 
+  def calculation_debugger_path(converter, calculation)
+    data_debug_gql_path(:gquery => "V(#{converter.key}, #{calculation})")
+  end
 end
