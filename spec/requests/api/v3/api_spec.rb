@@ -30,12 +30,12 @@ describe "API v3scenario life cycle" do
     # ----- update ------------------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'foo_demand' => '120'} },
+        :scenario => {:user_values => {'foo_demand' => '90'} },
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']
-    result['foo_demand']['future'].should == 120.0
-    result['bar_demand']['future'].should == 120.0*0.6
+    result['foo_demand']['future'].should == 90.0
+    result['bar_demand']['future'].should == 90.0*0.6
 
     # ----- reset ------------------------------------------------------------
 
@@ -50,37 +50,37 @@ describe "API v3scenario life cycle" do
     # ----- updating another --------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'2' => '20', 'foo_demand' => '120'}},
+        :scenario => {:user_values => {'2' => '20', 'foo_demand' => '80'}},
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']
-    result['foo_demand']['future'].should == 120.0
-    result['bar_demand']['future'].should == 120.0*0.6 + 20
+    result['foo_demand']['future'].should == 80.0
+    result['bar_demand']['future'].should == 80.0*0.6 + 20
 
     # ----- updating 3 again --------------------------------------------------
 
-    put url, :scenario => {:user_values => {'foo_demand' => '180'}},
+    put url, :scenario => {:user_values => {'foo_demand' => '25'}},
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']
     result['foo_demand']['present'].should == 100.0
-    result['foo_demand']['future'].should == 180.0
-    result['bar_demand']['future'].should == 180.0*0.6 + 20
+    result['foo_demand']['future'].should == 25.0
+    result['bar_demand']['future'].should == 25.0*0.6 + 20
 
     # ---- using a bad input -----
 
     put url, :scenario => {:user_values => {'paris_hilton' => '123'}}
 
     result = JSON.parse(response.body)
-    result["errors"][0].should =~ /Missing input/
+    result["errors"][0].should =~ /does not exist/
 
-  # ---- using a bad gquery -----
+    # ---- using a bad gquery -----
 
     put url, :gqueries => ['terminator']
 
     result = JSON.parse(response.body)
-    result["gqueries"]["terminator"]["errors"].should_not be_empty
-    result["errors"][0].should =~ /Missing input/
+    result["errors"].should_not be_empty
+    result["errors"][0].should =~ /does not exist/
   end
 
   it "should default to end_year 2050 and area_code 'nl' when creating a scenario" do
