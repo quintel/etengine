@@ -1,0 +1,9 @@
+---
+# An input which belongs to a group.
+id: 6
+key: grouped_input_two
+share_group: grouped
+query: "2 * 4"
+start_value: 0
+min_value: 0
+max_value: 100

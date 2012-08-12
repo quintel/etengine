@@ -2,6 +2,15 @@ require 'spec_helper'
 
 describe Api::V3::ScenariosController do
   let(:scenario) { Factory :scenario }
+  
+  before do
+    Input.stub(:records).and_return({
+      'foo' => FactoryGirl.build(:input),
+      'bar' => FactoryGirl.build(:input)
+    })
+
+    Input.stub(:all).and_return(Input.records.values)
+  end
 
   describe "GET show.json" do
     it "should return a scenario info" do
@@ -26,13 +35,12 @@ describe Api::V3::ScenariosController do
     it "should return the homepage scenarios" do
       get :templates
       response.should be_success
-      assigns(:presets).should == Preset.all
     end
   end
 
   describe "PUT scenario" do
     before do
-      @scenario = Factory :scenario, :user_values => {:foo => 123.0}
+      @scenario = Factory :scenario, :user_values => {'foo' => 23.0}
     end
 
     it "should reset parameters" do
@@ -42,21 +50,22 @@ describe Api::V3::ScenariosController do
     end
 
     it "should merge parameters" do
-      put :update, :id => @scenario.id, :scenario => {:user_values => {:bar => 456.0}}
+      put :update, :id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}
       response.should be_success
-      @scenario.reload.user_values.should == {'foo' => 123.0, 'bar' => 456.0}
+      @scenario.reload.user_values.to_set.should == {'foo' => 23.0, 'bar' => 56.0}.to_set
     end
 
     it "should merge parameters resetting old values when needed" do
-      put :update, :id => @scenario.id, :scenario => {:user_values => {:bar => 456.0}}, :reset => true
+      put :update, :id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}, :reset => true
       response.should be_success
-      @scenario.reload.user_values.should == {'bar' => 456.0}
+      @scenario.reload.user_values.to_set.should == {'bar' => 56.0}.to_set
     end
 
     it "should update parameters" do
-      put :update, :id => @scenario.id, :scenario => {:user_values => {:foo => 456.0}}
+      put :update, :id => @scenario.id, :scenario => {:user_values => {'foo' => 56.0}}
       response.should be_success
-      @scenario.reload.user_values.should == {'foo' => 456.0}
+      @scenario.reload.user_values.to_set.should == {'foo' => 56.0}.to_set
+      @scenario.reload.user_values.should == {'foo' => 56.0}
     end
 
     it "shouldn't update end_year" do
@@ -70,8 +79,6 @@ describe Api::V3::ScenariosController do
       response.should be_success
       @scenario.reload.area_code.should == 'nl'
     end
-
-
 
   end
 end

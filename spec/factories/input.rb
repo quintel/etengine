@@ -3,8 +3,8 @@ FactoryGirl.define do
     sequence(:lookup_id)
     key { "input-#{ lookup_id }" }
     factor 1
-    min_value 5
-    max_value 15
+    min_value 0
+    max_value 100
     start_value 10
   end
 
