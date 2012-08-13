@@ -11,12 +11,7 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
-        detailed = params[:detailed].present?
-        out = Jbuilder.encode do |json|
-          scenario_to_jbuilder(@scenario, json, detailed)
-        end
-
-        render :json => out
+        render json: ScenarioPresenter.new(self, @scenario, params[:detailed])
       end
 
       # GET /api/v3/scenarios/templates
@@ -26,34 +21,25 @@ module Api
       # page.
       #
       def templates
-        @presets = Preset.all
-        out = Jbuilder.encode do |json|
-          json.array!(@presets) do |json, preset|
-            # include description
-            preset_to_jbuilder(preset, json, true)
-          end
-        end
-        render :json => out
+        render json: Preset.all.map { |ps| PresetPresenter.new(self, ps) }
       end
 
       # POST /api/v3/scenarios
       #
-      # Creates a new scenario. This action is used when a user on the ETM saves
-      # a scenario, too: in that case a copy of the scenario is saved.
+      # Creates a new scenario. This action is used when a user on the ETM
+      # saves a scenario, too: in that case a copy of the scenario is saved.
       #
       def create
-        attrs = (params[:scenario] || {}).reverse_merge(Scenario.default_attributes)
+        attrs = Scenario.default_attributes.merge(params[:scenario] || {})
+
         @scenario = Scenario.new(attrs)
 
         if @scenario.save
-          out = Jbuilder.encode do |json|
-            scenario_to_jbuilder(@scenario, json)
-          end
           # With HTTP 201 nginx doesn't set content-length or chunked encoding
           # headers
-          render :json => out, :status => 200
+          render json: ScenarioPresenter.new(self, @scenario), status: 200
         else
-          render :json => {:errors => @scenario.errors}, :status => 422
+          render json: { errors: @scenario.errors }, status: 422
         end
       end
 
@@ -126,9 +112,8 @@ module Api
         end
         gquery_keys = params[:gqueries] || []
         out = Jbuilder.encode do |json|
-          json.scenario do |json|
-            scenario_to_jbuilder(@scenario, json)
-          end
+          json.scenario ScenarioPresenter.new(self, @scenario)
+
           json.gqueries do |json|
             gquery_keys.each do |k|
               json.set! k do |json|
@@ -221,7 +206,6 @@ module Api
           json.use_fce s.use_fce
         end
       end
-
 
       def preset_to_jbuilder(preset, json, include_description = false)
         json.id        preset.id
