@@ -81,7 +81,6 @@ describe "API v3scenario life cycle" do
     result = JSON.parse(response.body)
     result["gqueries"]["terminator"]["errors"].should_not be_empty
     result["errors"][0].should =~ /Missing input/
-
   end
 
   it "should default to end_year 2050 and area_code 'nl' when creating a scenario" do
