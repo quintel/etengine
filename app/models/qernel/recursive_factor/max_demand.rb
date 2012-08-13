@@ -1,6 +1,6 @@
 module Qernel::RecursiveFactor::MaxDemand
   # max_demand_recursive is calculated by the MaxDemandRecursive plugin.
-  # This method has to be called explicitly. 
+  # This method has to be called explicitly.
   #
   # Note: this method overwrites the max_demand attribute!
   #
@@ -11,8 +11,8 @@ module Qernel::RecursiveFactor::MaxDemand
       elsif has_loop?
         nil
       else
-        capped_link = rgt_links.min_by do |l| 
-          (1.0 - l.share) * l.rgt_converter.max_demand_recursive! rescue Float::INFINITY 
+        capped_link = rgt_links.min_by do |l|
+          l.rgt_converter.max_demand_recursive! / l.share rescue Float::INFINITY
         end
         query.max_demand = capped_link.rgt_converter.max_demand_recursive! / capped_link.share rescue nil
       end
