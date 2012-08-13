@@ -233,7 +233,7 @@ class Slot
   #
   # @example
   #     converter_1
-  #       converter-(hot_water): {flexible: true, conversion: null}
+  #       converter-(useable_heat): {flexible: true, conversion: null}
   #       converter-(gas):  {conversion: 0.4}
   #
   #     converter_1.input(:gas).flexible_conversion

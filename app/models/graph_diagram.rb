@@ -74,9 +74,7 @@ class GraphDiagram
         :natural_gas      => '#000099',
         :low_caloric_gas  => '#000099',
         :high_caloric_gas => '#000099',
-        :bio_gas          => '#000099',
-        :hot_water        => '#990099'
-      }
+        :bio_gas          => '#000099'      }
       if link.share
         share = "#{link.share} "
       else
