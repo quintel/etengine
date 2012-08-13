@@ -409,8 +409,9 @@ class Input
     def input_cache_key(scenario, input)
       area = scenario.area_code || :unknown
       year = scenario.end_year  || :unknown
+      key  = input.kind_of?(Input) ? input.key : input
 
-      "#{ area }.#{ year }.inputs.#{ input.lookup_id }.values"
+      "#{ area }.#{ year }.inputs.#{ key }.values"
     end
   end # Cache
 
