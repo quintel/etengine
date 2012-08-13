@@ -42,8 +42,8 @@ module Api
       # a scenario, too: in that case a copy of the scenario is saved.
       #
       def create
-        @scenario = Scenario.new(params[:scenario])
-        @scenario.title ||= 'API'
+        attrs = (params[:scenario] || {}).reverse_merge(Scenario.default_attributes)
+        @scenario = Scenario.new(attrs)
 
         if @scenario.save
           out = Jbuilder.encode do |json|
@@ -102,9 +102,14 @@ module Api
         @scenario.user_values = {} if params[:reset]
         values = attrs[:user_values].reverse_merge(@scenario.user_values)
 
-        # convert strings to integer
-        values.each_pair{|k, v| attrs[:user_values][k] = v.to_f}
-
+        # convert strings to integer and reset inputs as needed
+        values.each_pair do |k, v|
+          if v == 'reset'
+            attrs[:user_values].delete(k)
+          else
+            attrs[:user_values][k] = v.to_f
+          end
+        end
 
         # TODO: handle scenario ownership!
         @scenario.update_attributes(attrs)

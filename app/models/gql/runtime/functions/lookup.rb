@@ -4,9 +4,9 @@ module Gql::Runtime
 
       # Runs the gquery with given key for the present year only.
       #
-      # gquery_key - The gquery lookup key. 
+      # gquery_key - The gquery lookup key.
       #
-      # Returns the result of the gquery for only the present year. 
+      # Returns the result of the gquery for only the present year.
       #
       # Examples
       #
@@ -18,9 +18,9 @@ module Gql::Runtime
 
       # Runs the gquery with given key for the future year only.
       #
-      # gquery_key - The gquery lookup key. 
+      # gquery_key - The gquery lookup key.
       #
-      # Returns the result of the gquery for only the future year. 
+      # Returns the result of the gquery for only the future year.
       #
       # Examples
       #
@@ -32,19 +32,19 @@ module Gql::Runtime
 
       # Returns the first term for the present graph and the second for
       # the future graph.
-      # 
+      #
       # DEPRECATED: this might not work right now
       #
       def MIXED(present_term, future_term)
         scope.graph.present? ? present_term : future_term
       end
 
-      # Returns an attribute {Qernel::Graph}. 
+      # Returns an attribute {Qernel::Graph}.
       #
-      # keys - The name of the attribute. 
+      # keys - The name of the attribute.
       #
       # Advanced
-      # 
+      #
       # GRAPH() without a key returns {Qernel::Graph}
       #
       #   GRAPH() # => <Qernel::Graph>
@@ -59,7 +59,7 @@ module Gql::Runtime
       end
 
 
-      # Returns an Array of all {Qernel::Converter}. Use wisely, as this 
+      # Returns an Array of all {Qernel::Converter}. Use wisely, as this
       # could become a performance killer.
       #
       # Examples
@@ -69,7 +69,7 @@ module Gql::Runtime
       def ALL(*keys)
         scope.all_converters
       end
-  
+
       # Returns an Array of {Qernel::Converter} for given group.
       #
       # Examples
@@ -130,6 +130,16 @@ module Gql::Runtime
       #
       def AREA(*keys)
         keys.empty? ? scope.graph.area : scope.area(keys.first)
+      end
+
+      # Returns the start_value defined in fce_values.yml
+      #
+      # @example
+      #      FCE_START_VALUE(CARRIER(coal), australia)
+      #      FCE_START_VALUE(CARRIER(coal), "australia")
+      #
+      def FCE_START_VALUE(carrier, country)
+        scope.graph.fce_start_value(carrier, country)
       end
     end
   end

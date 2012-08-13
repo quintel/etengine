@@ -11,7 +11,7 @@ converters.each do |converter|
   position = @converter_positions[converter.excel_id]
   position ||= ConverterPosition.new(:converter_id => converter.excel_id)
   if converter
-    params = [converter.excel_id, 
+    params = [converter.excel_id,
               converter.key.to_s,
               position[:x] || 100,
               position.y_or_default(converter),
@@ -24,15 +24,15 @@ converters.each do |converter|
   end
 -%>
 <%= "new Converter(#{js_params(params)});".html_safe %>
-<% end %>      
+<% end %>
 
 
-<% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link| 
-  if converter_keys.include?(link.parent.excel_id) and converter_keys.include?(link.child.excel_id)
+<% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link|
+  if converter_keys.include?(link.lft_converter.excel_id) and converter_keys.include?(link.rgt_converter.excel_id)
     params = [
-      link.child .excel_id, 
-      link.parent.excel_id, 
-      (link.carrier.graphviz_color || '#999'), 
+      link.rgt_converter.excel_id,
+      link.lft_converter.excel_id,
+      (link.carrier.graphviz_color || '#999'),
       '1|-'   #"1|#{link.link_style}"
     ]
     -%>

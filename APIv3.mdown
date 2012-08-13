@@ -82,7 +82,8 @@
 
     GET /scenarios/:id
 
-If you set the optional `detailed` parameter then the `description` and `use_fce` fields will be returned, too.
+If you set the optional `detailed` parameter then the `description` and
+`use_fce` fields will be returned, too.
 
 #### Response
 
@@ -100,11 +101,13 @@ If you set the optional `detailed` parameter then the `description` and `use_fce
       "use_fce": "..."
     }
 
-If the scenario is missing then the action returns an empty hash with a 404 HTTP status code.
+If the scenario is missing then the action returns an empty hash with a 404 HTTP
+status code.
 
 ### Get predefined scenarios
 
-This action returns an array with the predefined scenarios. This list is used on the ETM intro page to build the select box.
+This action returns an array with the predefined scenarios. This list is used on
+the ETM intro page to build the select box.
 
 #### Request
 
@@ -126,11 +129,12 @@ This action returns an array with the predefined scenarios. This list is used on
 
     POST /scenarios
 
-You can pass the scenario attributes enclosed in a `scenario` JSON object. The available attributes are:
+You can pass the scenario attributes enclosed in a `scenario` JSON object. The
+available attributes are:
 
-* `area_code`: string
-* `title`: optional string
-* `end_year`: optional integer, default is 2040
+* `area_code`: optional string, default: `nl`
+* `title`: optional string, default: `API`
+* `end_year`: optional integer, default: `2040`
 * `source`: optional (but highly recommended) required string, the application that makes the request
 * `scenario_id`: optional id of the scenario used as template / preset_scenario_id. This should be renamed into template!
 
@@ -158,7 +162,8 @@ You can pass the scenario attributes enclosed in a `scenario` JSON object. The a
       "source": "ETM"
     }
 
-Until we update NGINX the HTTP status code will be 200 rather than 201. If something goes wrong the server returns a JSON object with the errors:
+Until we update NGINX the HTTP status code will be 200 rather than 201. If
+something goes wrong the server returns a JSON object with the errors:
 
     Status: 422 Unprocessable Entity
 
@@ -191,7 +196,8 @@ The slider update is a proper PUT/PATCH request instead.
 * `scenario`: hash with the scenario attributes. Its `user_values` are merged
   with the existing values, because otherwise the entire input sets should be
   resent on every request. The `user_values` must be sent as a hash; the has
-  key can be the input id (deprecated) or the input key.
+  key can be the input id (deprecated) or the input key. If you pass `reset` as
+  value for a single input then the input will be... reset.
 
 ##### Example
 
@@ -241,7 +247,7 @@ If the gquery doesn't exist then the gquery hash will contain:
 If we're using bad inputs the `errors` hash will contain something like:
 
     "errors": [
-      ["Missing input: foo"]
+      "Missing input: foo"
     ]
 
 Here is a complete server response that mixes valid and not valid data:
@@ -270,9 +276,7 @@ Here is a complete server response that mixes valid and not valid data:
         }
       },
       "errors": [
-        [
-          "Missing input: foo"
-        ]
+        "Missing input: foo"
       ]
     }
 

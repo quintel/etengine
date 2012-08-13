@@ -6,7 +6,7 @@
     - if current_user
       = javascript_include_tag '/data/latest/search.js'
 
-    = stylesheet_link_tag 'bootstrap_setup'
+    = stylesheet_link_tag 'application'
 
   %body#data
     .navbar
@@ -21,6 +21,7 @@
               %ul.nav
                 %li= link_to 'ETsource',  etsource_commits_path
                 %li= link_to 'Debug',     data_debug_gql_path(url_params)
+                %li= link_to 'Users',     users_path
                 %li= link_to 'Turk',      mechanical_turk_root_path
                 %li= link_to 'GQL',       test_data_gqueries_path(url_params)
                 %li= link_to 'Gqueries',  data_gqueries_path(url_params)
@@ -95,4 +96,5 @@
     items: 15,
     matcher: function(item) { return item.match(new RegExp(this.query.replace(/_/g, '._').replace(/\./g, '.*'))) != null }
   }).change( function() { this.form.submit(); });
+
 

@@ -62,21 +62,8 @@ module Qernel::RecursiveFactor::Sustainable
     out and out.external_value
   end
 
-
-
-  def infinite_demand
-    raise "DEPRECATED infinite_demand"
-    infinte_demand_factor ||= recursive_factor(:infinte_demand_factor)
-    (self.demand || 0.0) * infinte_demand_factor
-  end
-
   def infinite?
     carriers = slots.map {|slot| slot.carrier}.uniq
     !carriers.empty? and carriers.any?{|carrier| carrier.infinite == 1.0}
-  end
-
-  def infinte_demand_factor(link,ruby18fix = nil)
-    return nil if !right_dead_end?
-    (infinite? and primary_energy_demand?) ? (1 - loss_output_conversion) : 0.0
   end
 end

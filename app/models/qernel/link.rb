@@ -11,8 +11,8 @@ class Link
   include DatasetAttributes
 
   DATASET_ATTRIBUTES = [
-    :share, 
-    :value, 
+    :share,
+    :value,
     :max_demand,
     :priority,
     :calculated,
@@ -22,13 +22,13 @@ class Link
   dataset_accessors DATASET_ATTRIBUTES
 
   def self.dataset_group; :graph; end
-  
+
   # --------- Accessor ---------------------------------------------------------
 
   attr_accessor :graph, # needed for dataset
-                :parent, # Parent is the converter to the left (towards useful demand)
-                :child,  # Child is the converter to the right (towards useful primary demand)
-                :carrier 
+                :rgt_converter, # Parent is the converter to the left (towards useful demand)
+                :lft_converter,  # Child is the converter to the right (towards useful primary demand)
+                :carrier
 
   attr_reader :id,
               :link_type,
@@ -46,7 +46,7 @@ class Link
   # ----- Micro optimization -------------------------------------------------
 
   # make Array#flatten fast
-  attr_reader :to_ary 
+  attr_reader :to_ary
 
   # --------- Link Types ------------------------------------------------------
 
@@ -61,29 +61,21 @@ class Link
 
   # --------- Initialize ------------------------------------------------------
 
-  def initialize(id, input, output, carrier, link_type, reversed = false)
+  def initialize(id, lft, rgt, carrier, link_type, reversed = false)
     @key = id
     @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
 
     @reversed = reversed
-    @parent, @child, @carrier = input, output, carrier
-    
+    @lft_converter, @rgt_converter, @carrier = lft, rgt, carrier
+
     self.link_type = link_type.to_sym
 
     connect
     memoize_for_cache
   end
 
-  def lft_converter
-    @parent
-  end
-
-  def rgt_converter
-    @child
-  end
-
   # Creates methods to check for carrier.
-  # E.g.: #biogas? 
+  # E.g.: #biogas?
   def method_missing(name, args = nil)
     if name.to_s.last == "?"
       #   def biogas?
@@ -103,8 +95,8 @@ class Link
 protected
 
   def connect
-    @parent.add_input_link(self) if @parent # only used in testing
-    @child.add_output_link(self) if @child  # only used in testing
+    lft_converter.add_input_link(self)  if lft_converter # only used in testing
+    rgt_converter.add_output_link(self) if rgt_converter  # only used in testing
   end
 
   def memoize_for_cache
@@ -143,7 +135,7 @@ public
     dataset_get(:priority) || 1_000_000
   end
 
-  # Does link have min-/max_demand? 
+  # Does link have min-/max_demand?
   # Important to figure out for which flexible links to calculate first.
   def max_boundaries?
     flexible? && max_demand
@@ -177,7 +169,7 @@ public
       end
     end
   end
-  
+
 protected
   # --------- Calculation -----------------------------------------------------
 
@@ -186,7 +178,7 @@ protected
   def calculate_constant
     if self.share.nil?
       val = output_external_demand
-      raise "Constant Link with share = nil expects a demand of child converter #{@child.key}" if val.nil?
+      raise "Constant Link with share = nil expects a demand of child converter #{rgt_converter.key}" if val.nil?
       val
     else
       self.share
@@ -214,10 +206,9 @@ protected
   #
   # Inversed Flexible shouldn't become negative.
   # https://github.com/dennisschoenmakers/etengine/issues/194
-  # 
+  #
   def calculate_inversed_flexible
-    #raise "#{@child.key} has no demand" if @child.demand.nil?
-    result = @child.demand - @child.outputs.map(&:external_link_value).compact.sum
+    result = rgt_converter.demand - rgt_converter.outputs.map(&:external_link_value).compact.sum
     (result < 0.0) ? 0.0 : result
   end
 
@@ -236,7 +227,7 @@ protected
 
 
   # Make sure that the value is greater than the min_value and smaller
-  # than the max_value. 
+  # than the max_value.
   #
   # @param value [Float] value
   # @return [0.0,Float]
@@ -262,15 +253,15 @@ protected
   def min_demand
     # Default min_demand of flexible is 0.0 (no negative energy)
     # Exception being electricity import/export. where -energy = export
-    if flexible? && !@carrier.electricity? && !@child.energy_import_export?
+    if flexible? && !@carrier.electricity? && !rgt_converter.energy_import_export?
       0.0
-    elsif flexible? && @parent.has_loop?
-      # typically a loop contains an inversed_flexible (left) and a flexible 
+    elsif flexible? && lft_converter.has_loop?
+      # typically a loop contains an inversed_flexible (left) and a flexible
       # (right) to the same converter. When too much energy overflow into
-      # inversed, when too little flow into flexible. 
+      # inversed, when too little flow into flexible.
       # Sometimes this construct does not work properly, so we manually make
       # sure a flexible can go below 0.0.
-      # If you remove that you will get *stackoverflow problems for primary_demand*, 
+      # If you remove that you will get *stackoverflow problems for primary_demand*,
       # when both links have a non 0.0 value (because of the == check in recursive_factor).
       # causing a loop in the recursive_factor. Forcing a 0.0 on the flex link closes the loop.
       0.0
@@ -288,11 +279,11 @@ protected
   end
 
   def input
-    reversed? ? @child.output(@carrier) : @parent.input(@carrier)
+    reversed? ? rgt_converter.output(@carrier) : lft_converter.input(@carrier)
   end
 
   def output
-    reversed? ? @parent.input(@carrier) : @child.output(@carrier)
+    reversed? ? lft_converter.input(@carrier) : rgt_converter.output(@carrier)
   end
 
 
@@ -316,7 +307,7 @@ public
     when 1 then :yellow
     when 2 then :green
     end
-  end  
+  end
 end
 
 
