@@ -22,6 +22,8 @@ module Qernel
       supply_two.converter_api = DemandDrivenConverterApi.new(supply_two)
 
       [ supply_one, supply_two ].each do |converter|
+        converter.graph = graph
+
         api = converter.converter_api
         api.stub!(:nominal_capacity_heat_output_per_unit).and_return(20)
         api.stub!(:demand_of_hot_water).and_return(0)

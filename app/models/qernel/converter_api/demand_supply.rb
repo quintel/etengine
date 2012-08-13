@@ -39,7 +39,7 @@ class Qernel::ConverterApi
   end
 
   def output_of(*carriers)
-    carriers.flatten.map do |c| 
+    carriers.flatten.map do |c|
       key = c.respond_to?(:key) ? c.key : c
       (key == :loss) ? output_of_loss : output_of_carrier(key)
     end.compact.sum
@@ -50,15 +50,6 @@ class Qernel::ConverterApi
     (c and c.external_value) || 0.0
   end
 
-
-  # Helper method to get all heat inputs (useable_heat, hot_water, steam_hot_wather)
-  #
-  def input_of_heat_carriers
-    function(:input_of_heat_carriers) do
-      input_of_useable_heat + input_of_hot_water + input_of_steam_hot_water
-    end
-  end
-
   # Helper method to get all heat outputs (useable_heat, hot_water, steam_hot_wather)
   #
   def output_of_heat_carriers
@@ -66,7 +57,7 @@ class Qernel::ConverterApi
       output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water
     end
   end
-  
+
   def output_of_heat_and_cooling_carriers
     function(:output_of_heat_and_cooling_carriers) do
       output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water + output_of_cooling
@@ -79,18 +70,12 @@ class Qernel::ConverterApi
     end
   end
 
-  def input_of_biomass_group
-    function(:input_of_biomass_group) do
-      input_of_greengas + input_of_biodiesel + input_of_algae_diesel + input_of_biogas + input_of_bio_ethanol + input_of_wood_pellets + input_of_wood + input_of_torrified_biomass_pellets 
-    end
-  end
-  
   def input_of_ambient_carriers
     function(:input_of_ambient_carriers) do
       input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
     end
   end
-  
+
   def demand_of_carrier(carrier)
     Rails.logger.info('demand_of_* is deprecated. Use output_of_* instead')
     output_of_carrier(carrier)
@@ -98,7 +83,7 @@ class Qernel::ConverterApi
 
 
   def input_of(*carriers)
-    carriers.flatten.map do |c| 
+    carriers.flatten.map do |c|
       key = c.respond_to?(:key) ? c.key : c
       (key == :loss) ? input_of_loss : input_of_carrier(key)
     end.compact.sum
@@ -121,14 +106,5 @@ class Qernel::ConverterApi
     end
   end
 
-  def loss_ex_input_loss
-    function(:loss_ex_input_loss) do
-      out = converter.output(:loss)
-      out = out and out.expected_value
-      inp = converter.input(:loss)
-      inp = inp and inp.expected_value
-      (out || 0.0) - (inp || 0.0)
-    end
-  end
 
 end

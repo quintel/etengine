@@ -3,8 +3,6 @@ id: 2999
 end_year: 2040
 area_code: 'nl'
 use_fce: false
-user_values: 
-  203: 0.4
-  204: 0.2
-  335: 0.2
-  3:   250
+user_values:
+  1: 10
+  2: 20

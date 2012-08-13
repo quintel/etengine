@@ -21,7 +21,9 @@ class Graph
 
   include Plugins::MeritOrder
   include Plugins::Fce
-
+  include Plugins::MaxDemandRecursive
+  include Plugins::ResettableSlots
+  
   # ---- DatasetAttributes ----------------------------------------------------
 
   include DatasetAttributes
@@ -151,22 +153,23 @@ class Graph
         return
       end
 
-      # FIFO stack of all the converters. Converters are removed from the stack after calculation.
-      converter_stack = converters.clone
-      self.finished_converters = []
+      ActiveSupport::Notifications.instrument("gql.performance.calculate") do
+        # FIFO stack of all the converters. Converters are removed from the stack after calculation.
+        converter_stack = converters.clone
+        self.finished_converters = []
 
-      # delete_at is much faster as delete, that's why use #index rather than #detect
-      while index = converter_stack.index(&:ready?)
-        converter = converter_stack[index]
-        converter.calculate
-        self.finished_converters << converter_stack.delete_at(index)
-      end
+        # delete_at is much faster as delete, that's why use #index rather than #detect
+        while index = converter_stack.index(&:ready?)
+          converter = converter_stack[index]
+          converter.calculate
+          self.finished_converters << converter_stack.delete_at(index)
+        end
 
-      self.finished_converters.map(&:input_links).flatten.each(&:update_share)
-
-      unless converter_stack.empty?
-        ActiveSupport::Notifications.instrument("gql.debug",
-          "Following converters have not finished: #{converter_stack.map(&:key).join(', ')}")
+        self.finished_converters.map(&:input_links).flatten.each(&:update_share)
+        unless converter_stack.empty?
+          ActiveSupport::Notifications.instrument("gql.debug",
+            "Following converters have not finished: #{converter_stack.map(&:key).join(', ')}")
+        end
       end
     end
     self[:calculated] = true

@@ -1,0 +1,5 @@
+# It has a comment and no deprecated_key
+
+- unit = kg
+
+V(foo, demand)

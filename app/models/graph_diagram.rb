@@ -39,9 +39,9 @@ class GraphDiagram
 
     def draw_edges
       converters.map(&:input_links).flatten.each do |link|
-        p = nodes[link.parent]
+        p = nodes[link.lft_converter]
         # don't draw if no child anymore.
-        if p and c = nodes[link.child]
+        if p and c = nodes[link.rgt_converter]
           @g.add_edge p, c, edge_settings(link)
         end
       end

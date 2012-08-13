@@ -1,13 +1,21 @@
 module Qernel::RecursiveFactor::MaxDemand
-  def max_demand_recursive
-    if query.max_demand
-      query.max_demand
-    else
-      # the following line simply makes sure that converters recursively
-      # calculate a max_demand.
-      rgt_converters.each(&:max_demand_recursive) 
-      # now we can sum the max_demands
-      query.max_demand = rgt_links.map(&:max_demand).sum
+  # max_demand_recursive is calculated by the MaxDemandRecursive plugin.
+  # This method has to be called explicitly. 
+  #
+  # Note: this method overwrites the max_demand attribute!
+  #
+  def max_demand_recursive!
+    function :"max_demand_recursive!" do
+      if query.max_demand && query.max_demand != 'recursive'
+        query.max_demand
+      elsif has_loop?
+        nil
+      else
+        capped_link = rgt_links.min_by do |l| 
+          (1.0 - l.share) * l.rgt_converter.max_demand_recursive! rescue Float::INFINITY 
+        end
+        query.max_demand = capped_link.rgt_converter.max_demand_recursive! / capped_link.share rescue nil
+      end
     end
   end
 end
