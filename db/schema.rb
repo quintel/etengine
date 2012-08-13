@@ -11,16 +11,10 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120807092543) do
+ActiveRecord::Schema.define(:version => 20120809091419) do
 
   create_table "blueprint_layouts", :force => true do |t|
     t.string   "key"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "blueprint_models", :force => true do |t|
-    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
