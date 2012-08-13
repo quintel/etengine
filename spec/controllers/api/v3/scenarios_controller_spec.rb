@@ -10,6 +10,17 @@ describe Api::V3::ScenariosController do
       assigns(:scenario).should == scenario
     end
   end
+  
+  describe "GET sandbox" do
+    it "should return result of a gquerie" do
+      get :sandbox, :id => scenario.id,:gql => 'SUM(1,2)', :format => :json
+      response.should be_success
+      parsed_body = JSON.parse(response.body)
+      parsed_body["present_value"].to_i.should eql(3)
+      parsed_body["future_value"].to_i.should eql(3)
+      assigns(:scenario).should == scenario
+    end
+  end
 
   describe "GET templates" do
     it "should return the homepage scenarios" do
