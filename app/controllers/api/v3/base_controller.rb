@@ -11,12 +11,6 @@ module Api
         else
           Scenario.last
         end
-        # this setup is ugly, we should find a simpler way to prepare all
-        # we need. The scenario object should be able to set up all the
-        # gql, future/present stuff. I'd like to get rid of the Current
-        # object, too.
-        #
-        @gql = @scenario.gql(prepare: true)
       rescue ActiveRecord::RecordNotFound
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end

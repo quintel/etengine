@@ -130,17 +130,10 @@
               difference = ((future_value / present_value - 1) * 100).round(2) rescue nil
               difference = nil if difference.try :nan?
             %tr
-              %th{'data-method-name' => method}= method
+              %th= link_to method, calculation_debugger_path(@converter_present, method)
               %td{:title => present_value}= auto_number present_value
               %td{:title => future_value}= auto_number future_value
               %td= "#{difference}%" if difference
               %td= Qernel::ConverterApi.unit_for_calculation(method)
 
     .clear
-
--# javascipt helper to open the gql debug for a given method of this converter.
-:javascript
-  $('[data-method-name]').bind('click', function() {
-    var gql = "V(#{@converter_present.key}, "+$(this).attr('data-method-name')+")";
-    window.open("#{data_debug_gql_path}?"+$.param({gquery: gql}), '_blank' );
-  })
