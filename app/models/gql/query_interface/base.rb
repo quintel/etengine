@@ -12,6 +12,7 @@ module Gql
       case obj
       when Gquery then subquery(obj.key) # sending it to subquery allows for caching of gqueries
       when Input  then execute_input(obj, input_value)
+      when Symbol then subquery(obj.to_s)
       when String then rubel_execute(Gquery.rubel_proc(obj))
       when Proc   then rubel_execute(obj)
       else
