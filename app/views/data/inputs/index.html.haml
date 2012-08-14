@@ -3,7 +3,7 @@
 
 .row
   .span12
-    .page-header 
+    .page-header
       %h2 Inputs
     .alert
       Min-, max- and start values on this screen are calculated for the current scenarios.
@@ -21,7 +21,19 @@
           %tr
             %td= i.id
             %td= link_to highlight(i.key, params[:q]), data_input_path(:id => i.id)
-            %td= auto_number i.start_value_for(@gql)
-            %td= auto_number i.share_group
-            %td= auto_number i.min_value_for(@gql)
-            %td= auto_number i.max_value_for(@gql)
+            %td
+              - begin
+                = auto_number(i.start_value_for(@gql) / nil)
+              - rescue => e
+                %strong{:style => 'color: red'}= e
+            %td= auto_number(i.share_group)
+            %td
+              - begin
+                = auto_number(i.min_value_for(@gql))
+              - rescue => e
+                %strong{:style => 'color: red'}= e
+            %td
+              - begin
+                = auto_number(i.max_value_for(@gql))
+              - rescue => e
+                %strong{:style => 'color: red'}= e
