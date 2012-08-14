@@ -91,4 +91,30 @@ describe Input do
     end
   end # when the input has GQL start, minimum, and maximum
 
+  context 'when the input returns a non-numeric value' do
+    let(:input) do
+      input = Factory.build(:input, {
+        key:         'test-input',
+        start_value:  5,
+        min_value:    2,
+        max_value:    10,
+      })
+
+      input.stub(:start_value_for).and_return([1, 2, 3])
+      input
+    end
+
+    it 'should cache an error' do
+      data = Input.cache.read(scenario, input)
+      data.should have_key(:error)
+      data[:error].should eql('Non-numeric GQL value')
+    end
+
+    it 'should disable the input' do
+      data = Input.cache.read(scenario, input)
+      data.should have_key(:disabled)
+      data[:disabled].should be_true
+    end
+  end
+
 end

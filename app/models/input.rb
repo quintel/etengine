@@ -362,13 +362,32 @@ class Input
       gql        = Scenario.new(attributes).gql
 
       Input.all.each do |input|
-        set(scenario, input, {
-          min:      input.min_value_for(gql),
-          max:      input.max_value_for(gql),
-          default:  input.start_value_for(gql),
-          label:    input.full_label_for(gql),
-          disabled: input.disabled_in_current_area?(gql)
-        })
+        set(scenario, input, values_for(input, gql))
+      end
+    end
+
+    # Returns the values which should be cached for an input.
+    #
+    # @param [Input] input
+    #   The input whose values are to be cached.
+    # @param [Gql::Gql] gql
+    #   GQL instance for calculating values.
+    #
+    def values_for(input, gql)
+      values = {
+        min:      input.min_value_for(gql),
+        max:      input.max_value_for(gql),
+        default:  input.start_value_for(gql),
+        label:    input.full_label_for(gql),
+        disabled: input.disabled_in_current_area?(gql)
+      }
+
+      required_numerics = values.slice(:min, :max, :default).values
+
+      if required_numerics.any? { |value| ! value.kind_of?(Numeric) }
+        { disabled: true, error: 'Non-numeric GQL value' }
+      else
+        values
       end
     end
 
