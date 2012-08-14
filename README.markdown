@@ -4,13 +4,14 @@ Welcome.
 
 ## Changelog
 
-- 2012-08-14: QUERY_FUTURE/PRESENT now accept a lambda - sb
+##### 2012-08-14: QUERY_FUTURE/PRESENT now accept a lambda - sb
 
-    QUERY_PRESENT( -> { GRAPH(year) } )  # => 2010
-    QUERY_FUTURE( -> { GRAPH(year) } )   # => 2050
-    # Still works with gquery keys:
-    QUERY_FUTURE( dashboard_total_costs )
-
+```ruby
+QUERY_PRESENT( -> { GRAPH(year) } )  # => 2010
+QUERY_FUTURE( -> { GRAPH(year) } )   # => 2050
+# Still works with gquery keys:
+QUERY_FUTURE( dashboard_total_costs )
+```
 
 ## Installation
 
