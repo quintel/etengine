@@ -51,16 +51,6 @@ module Etsource
       @dataset.data = dataset_hash
       @dataset.data[:area] ||= {:area_data => {}}
       @dataset.data[:graph][:graph] = {:calculated => false}
-      # DEBT: we remove :demand from converter datasets, to allow
-      # for a cleaner preset_demand -> demand implementation.
-      # this has to be removed according to issue:
-      # https://github.com/dennisschoenmakers/etengine/issues/346
-      @dataset.data[:graph].each do |key, hsh|
-        hsh.delete(:demand)
-        # TODO: remove line above, uncomment line below, once xls2yml is properly updated
-        # raise "No longer allowed to add :demand to the dataset" hsh.has_key?(:demand)
-      end
-
       @dataset
     end
 
