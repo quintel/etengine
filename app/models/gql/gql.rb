@@ -59,10 +59,11 @@ class Gql
     end
   end
 
-
   # @param [:console, :sandbox] mode The GQL sandbox mode.
   def sandbox_mode=(mode)
     @sandbox_mode = mode
+    # We also have to change the sandbox_mode of the Gql::Runtime inside the
+    # query_interfaces.
     @present = QueryInterface.new(self, present_graph, sandbox_mode: mode)
     @future  = QueryInterface.new(self, future_graph,  sandbox_mode: mode)
   end
