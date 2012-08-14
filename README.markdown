@@ -4,6 +4,13 @@ Welcome.
 
 ## Changelog
 
+##### 2012-08-14: QUERY_DELTA - sb
+
+QUERY\_DELTA() returns QUERY\_FUTURE - QUERY_PRESENT
+
+```ruby
+QUERY_DELTA( -> { GRAPH(year) }) # => 30 (2040 - 2010)
+```
 
 ##### 2012-08-14: GQL Warnings - sb
 
