@@ -4,6 +4,14 @@ Welcome.
 
 ## Changelog
 
+
+##### 2012-08-14: GQL Warnings - sb
+
+A separate GQL warnings log was created, to show possible errors in the GQL/Qernel. Plus we raise errors when a converter was not found.
+
+http://beta.et-engine.com/data/latest/gql/warnings
+
+
 ##### 2012-08-14: QUERY_FUTURE/PRESENT now accept a lambda - sb
 
 ```ruby
