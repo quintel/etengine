@@ -7,7 +7,7 @@ module Gql
       Etsource::Base.loader('spec/fixtures/etsource')
     end
 
-    describe "QUERY_FUTURE/PRESENT" do
+    describe "QUERY_FUTURE/PRESENT/DELTA" do
       before do
         @gql = Scenario.default.gql(prepare: true)
       end
@@ -24,6 +24,10 @@ module Gql
         @gql.query_future( "QUERY_PRESENT( -> { GRAPH(year) } )").should == 2010
         @gql.query_present("QUERY_FUTURE(  -> { GRAPH(year) } )").should == 2040
         @gql.query_future( "QUERY_FUTURE(  -> { GRAPH(year) } )").should == 2040
+
+
+        @gql.query_present("QUERY_DELTA(  -> { GRAPH(year) } )").should == 30
+        @gql.query_future( "QUERY_DELTA(  -> { GRAPH(year) } )").should == 30
       end
     end
 

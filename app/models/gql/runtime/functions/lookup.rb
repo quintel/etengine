@@ -29,6 +29,10 @@ module Gql::Runtime
         scope.gql.future.query(query)
       end
 
+      def QUERY_DELTA(query)
+        QUERY_FUTURE(query) - QUERY_PRESENT(query)
+      end
+
       # Returns the first term for the present graph and the second for
       # the future graph.
       #
