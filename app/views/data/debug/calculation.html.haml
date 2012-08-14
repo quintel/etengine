@@ -1,11 +1,37 @@
+
 - grouped = @logs.group_by{|l| l[:key]}
-%table.table.table-condensed
-  - @gql.query_present("MAP(ALL(), key)").sort_by(&:to_s).each do |key|
+
+%h2 Calculation Audit
+
+%p
+  The following table shows the order of the graph calculation.
+
+.alert
+  %ul
+    %li You can order the table by clicking on the header column.
+    %li Table can be ordered with multiple columns. Click on the second header column while holding the shift-key.
+    %li E.g. Sort fifst by Energy Balance Group, then by position
+    %li Position 0 means, that the preset_demand is used.
+
+
+-# If you change the order of the columns, dont forget to adapt the default sort list in the $(...).tablesorter() withing application.js
+%table#debug-calculation.table.table-condensed.tablesorter
+  %thead
     %tr
-      %td= key
-      - set_log = grouped[key].andand.detect{|l| l[:type] == :set} || {}
-      - get_log = grouped[key].andand.select{|l| l[:type] == :get} || []
-      %td= @gql.query_present("V(#{key}, preset_demand)")
-      %td= set_log[:value]
-      %td= @logs.index(set_log)
-      %td= get_log.map{|l| "#{l[:attr_name]}: #{l[:value].inspect}"}.join(', ')
+      %th EBG
+      %th Key
+      %th.tar Preset
+      %th.tar Value
+      %th.tar Position
+  %tbody
+    - @gql.query_present("MAP(ALL(), key)").sort_by(&:to_s).each do |key|
+      - converter = @gql.future_graph.converter(key)
+      %tr
+        %td
+          %span.label= converter.energy_balance_group
+        %td= key
+        - set_log = grouped[key].andand.detect{|l| l[:type] == :set} || {}
+        - get_log = grouped[key].andand.select{|l| l[:type] == :get} || []
+        %td.tar= auto_number converter.preset_demand
+        %td.tar= auto_number set_log[:value]
+        %td.tar= @logs.index(set_log) || 0
