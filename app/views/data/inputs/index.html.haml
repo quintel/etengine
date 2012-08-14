@@ -23,7 +23,7 @@
             %td= link_to highlight(i.key, params[:q]), data_input_path(:id => i.id)
             %td
               - begin
-                = auto_number(i.start_value_for(@gql) / nil)
+                = auto_number(i.start_value_for(@gql))
               - rescue => e
                 %strong{:style => 'color: red'}= e
             %td= auto_number(i.share_group)
