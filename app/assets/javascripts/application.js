@@ -35,5 +35,5 @@ $(document).ready(function() {
   });
 
   // sort by energy balance group and by position
-  $('table#debug-calculation').tablesorter({ sortList: [[0,0], [4,0]] });
+  $('table#debug-calculation').tablesorter({ sortList: [[0,1], [4,0]] });
 });
