@@ -4,7 +4,7 @@
 //= require jquery-ui
 //= require jquery_ujs
 //= require bootstrap
-
+//= require jquery.tablesorter.min
 $(document).ready(function() {
   $("#api_scenario_selector select").change(function(e){
     e.preventDefault();
@@ -34,4 +34,6 @@ $(document).ready(function() {
     $(this).next().css('background', 'none');
   });
 
+  // sort by energy balance group and by position
+  $('table#debug-calculation').tablesorter({ sortList: [[0,0], [4,0]] });
 });
