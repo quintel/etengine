@@ -22,7 +22,7 @@ class Carrier
     :typical_production_per_km2,
     :kg_per_liter,
     :mj_per_kg,
-    :infinite, # infinite getter is overwritten below for legacy reason. 
+    :infinite, # infinite getter is overwritten below for legacy reason.
     :graphviz_color,
     *CO2_FCE_COMPONENTS
   ]
@@ -44,36 +44,36 @@ class Carrier
   alias loss? loss
 
   # make Array#flatten fast
-  attr_reader :to_ary 
+  attr_reader :to_ary
 
   # ----- /Micro optimization -------------------------------------------------
 
   attr_accessor :id, :key, :graph
 
   # @example
-  #   Qernel::Carrier.new key: :electricity 
+  #   Qernel::Carrier.new key: :electricity
   #
   def initialize(opts)
     @key      = opts[:key].andand.to_sym
     @id       = @key
 
     # ----- Micro optimization --------------------
-    
+
     @loss            = @key === :loss
     @electricity     = @key === :electricity
     @steam_hot_water = @key === :steam_hot_water
 
-    self.dataset_key # memoize dataset_key 
+    self.dataset_key # memoize dataset_key
   end
 
   def self.dataset_group; :carriers; end
 
-  # The effective total co2 emission that gets emitted from 
+  # The effective total co2 emission that gets emitted from
   # exploration until waste treatment. The user can change the
-  # individual co2_xxx_per_mj only indirectly by specifying 
+  # individual co2_xxx_per_mj only indirectly by specifying
   # origin of country for a specific carrier.
   #
-  # @return [Float] 
+  # @return [Float]
   #   The sum of CO2_FCE_COMPONENTS.
   #
   def co2_per_mj
@@ -84,6 +84,7 @@ class Carrier
   end
 
   def ==(other)
+    return false if other.nil?
     if other.is_a?(Symbol)
       self.key === other
     else

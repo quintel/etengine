@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe Etsource do
+  it 'imports fixtures/../query_starting_with_minus.gql' do
+    @import = Etsource::Gqueries.new(Etsource::Base.instance)
+    @import.from_file('spec/fixtures/etsource/gqueries/query_starting_with_minus.gql').query.should == "- 1.0"
+  end
+
   describe "fixtures/../gquery.txt" do
     before do
       @import = Etsource::Gqueries.new(Etsource::Base.instance)

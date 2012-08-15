@@ -2,9 +2,35 @@
 
 Welcome.
 
+## Changelog
+
+##### 2012-08-14: QUERY_DELTA - sb
+
+QUERY\_DELTA() returns QUERY\_FUTURE - QUERY_PRESENT
+
+```ruby
+QUERY_DELTA( -> { GRAPH(year) }) # => 30 (2040 - 2010)
+```
+
+##### 2012-08-14: GQL Warnings - sb
+
+A separate GQL warnings log was created, to show possible errors in the GQL/Qernel. Plus we raise errors when a converter was not found.
+
+http://beta.et-engine.com/data/latest/gql/warnings
+
+
+##### 2012-08-14: QUERY_FUTURE/PRESENT now accept a lambda - sb
+
+```ruby
+QUERY_PRESENT( -> { GRAPH(year) } )  # => 2010
+QUERY_FUTURE( -> { GRAPH(year) } )   # => 2050
+# Still works with gquery keys:
+QUERY_FUTURE( dashboard_total_costs )
+```
+
 ## Installation
 
-Assuming you can run a 'normal' rails application on your local machine, 
+Assuming you can run a 'normal' rails application on your local machine,
 you have to follow these steps to run ET-Engine.
 * `$> bundle install` to install dependencies if you haven't done already
 * `$> rake db:create` to create your database
@@ -33,7 +59,7 @@ want to create commits every time and import them. Because when you are
 satisfied, you'll probably have 10 commits, that needs to be cleaned up,
 squashed.
 
-You can add the option `etsource_live_reload: true` in your `config.yml` 
+You can add the option `etsource_live_reload: true` in your `config.yml`
 file.
 
 Change queries, inputs, datasets, gqueries, inputs or topology directory
@@ -41,10 +67,10 @@ in your **et_source_export** folder, and Etengine reloads your changes
 automatically!
 
 B.t.w. By default your *etsource_export* directory is not under version control.
-In order to gain the advantages of Git, just point *etsource_export* to the 
+In order to gain the advantages of Git, just point *etsource_export* to the
 *etsource* directory, either by using a symbolic link or using the same directory
-in your config.yml file. But **be carefull** NOT to use the interface's 
-'import' action on /etsource: that will delete/overwrite your etsource_export 
+in your config.yml file. But **be carefull** NOT to use the interface's
+'import' action on /etsource: that will delete/overwrite your etsource_export
 directory!
 
 ## GQL

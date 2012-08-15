@@ -5,13 +5,13 @@ class Data::DebugController < Data::BaseController
     @gql.init_datasets
     @gql.update_present
     @gql.present_graph.calculate
-    
-    @gql.future.query("OBSERVE(ALL(), demand)")
+
+    @gql.future.query("OBSERVE_SET(ALL(), demand)")
     @gql.update_future
     @gql.future_graph.calculate
     @gql.calculated = true
 
-    @logs = @gql.future.query("MAP(GRAPH(), observe_log)").compact.flatten
+    @logs = (@gql.future.graph.logger.logs || []).compact.flatten
   end
 
   def gquery

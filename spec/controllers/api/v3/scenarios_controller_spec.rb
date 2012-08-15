@@ -33,19 +33,19 @@ describe Api::V3::ScenariosController do
     it "should merge parameters" do
       put :update, :id => @scenario.id, :scenario => {:user_values => {:bar => 456.0}}
       response.should be_success
-      @scenario.reload.user_values.to_set.should == {'foo' => 123.0, 'bar' => 456.0}.to_set
+      @scenario.reload.user_values.should == {'foo' => 123.0, 'bar' => 456.0}
     end
 
     it "should merge parameters resetting old values when needed" do
       put :update, :id => @scenario.id, :scenario => {:user_values => {:bar => 456.0}}, :reset => true
       response.should be_success
-      @scenario.reload.user_values.to_set.should == {'bar' => 456.0}.to_set
+      @scenario.reload.user_values.should == {'bar' => 456.0}
     end
 
     it "should update parameters" do
       put :update, :id => @scenario.id, :scenario => {:user_values => {:foo => 456.0}}
       response.should be_success
-      @scenario.reload.user_values.to_set.should == {'foo' => 456.0}.to_set
+      @scenario.reload.user_values.should == {'foo' => 456.0}
     end
 
     it "shouldn't update end_year" do
