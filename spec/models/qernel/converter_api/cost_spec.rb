@@ -15,6 +15,11 @@ module Qernel
         @c.converter_api.average_cost_per_year.should == 100
       end
 
+      it "should return a fraction when numbers are small" do
+        @c.with total_real_costs: 1, lifetime: 10
+        @c.converter_api.average_cost_per_year.should == 0.1
+      end
+
       it "should return zero when total_real_costs is missing" do
         @c.with total_real_costs: nil, lifetime: 30
         @c.converter_api.average_cost_per_year.should == 0
