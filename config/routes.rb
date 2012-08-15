@@ -36,6 +36,9 @@ Etm::Application.routes.draw do
     namespace :v3 do
       resources :areas, :only => [:index, :show]
       resources :scenarios, :only => [:show, :create, :update] do
+        member do
+          get :sandbox
+        end
         get :templates, :on => :collection
         resources :converters, :only => :show
         resources :inputs, :only => [:index, :show]
