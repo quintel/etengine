@@ -146,8 +146,8 @@ module Qernel::DatasetAttributes
   # observe and log changes to an attribute
   def dataset_observe_set(*keys)
     graph[:observe_log] ||= []
-    @observe_set_keys   ||= []
-    @observe_set_keys    += keys.flatten.map(&:to_sym)
+    # @observe_set_keys   ||= []
+    # @observe_set_keys    += keys.flatten.map(&:to_sym)
     @observe_set          = true
   end
 
@@ -243,13 +243,8 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    if observe_set # && @observe_set_keys.include?(attr_name)
+    if observe_set
       log(:set, attr_name, value)
-      # str = self.is_a?(Qernel::Converter) ? "#{'-'*200}\n" : ""
-      # str += topology_key.to_s.ljust(150) + " #{attr_name}: ".rjust(10)
-      # str += value.round(9).inspect.cjust('.', 20, 10)
-      # str += "   # by #{@calculation_state} / #{object_dataset[attr_name].inspect}"
-      # puts str
     end
     object_dataset[attr_name] = value
   end

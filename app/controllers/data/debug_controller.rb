@@ -15,13 +15,25 @@ class Data::DebugController < Data::BaseController
   end
 
   def gquery
-    @gql.prepare
     @gql.sandbox_mode = :debug
-    @gql.query("OBSERVE_GET(ALL(), demand)")
-    if params[:gquery]
+    @gql.init_datasets
+    @gql.update_graphs
+
+    # Run the custom defined input
+    if params[:input_yml].andand.present? && params[:input_user_value]
+      input      = Input.load_yaml(params[:input_yml])
+      user_value = params[:input_user_value]
+      @gql.update_graph(:future, input, user_value)
+    end
+
+    @gql.calculate_graphs
+
+    if params[:gquery].andand.present?
+      @gql.query("OBSERVE_GET(ALL())")
       @gql.query(params[:gquery])
     end
-    @logs = (@gql.future.graph.logger.logs || []).compact.flatten
+
+    @logs = (@gql.future_graph.logger.logs || []).compact.flatten
   end
 
   def initialize_gql

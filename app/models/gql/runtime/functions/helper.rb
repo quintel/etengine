@@ -2,7 +2,10 @@ module Gql::Runtime
   module Functions
     module Helper
 
-      def OBSERVE_SET(*objects, arguments)
+      # OBSERVE_SET is mainly used to observe the graph calculation.
+      # It may be extended for more use. Observing update statements is done
+      # using Update#update_element_with in the debug runtime.
+      def OBSERVE_SET(objects, arguments)
         keys = arguments # OBSERVE(..., :demand)
         if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:links])
           keys     = arguments[:keys]
@@ -19,7 +22,7 @@ module Gql::Runtime
         end
       end
 
-      def OBSERVE_GET(*objects, arguments)
+      def OBSERVE_GET(objects, arguments = {})
         keys = arguments # OBSERVE(..., :demand)
         if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:links])
           keys     = arguments[:keys]

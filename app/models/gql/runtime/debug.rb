@@ -14,12 +14,13 @@ module Gql::Runtime
     def logger
       scope.graph.logger
     end
-    
+
     def log(key, attr_name, options = {}, &block)
+      type = options.fetch(:type, :gql)
       if block_given?
-        logger.log(:gql, key, attr_name, nil, options, &block)
+        logger.log(type, key, attr_name, nil, options, &block)
       else
-        logger.log(:gql, key, attr_name, nil, options)
+        logger.log(type, key, attr_name, nil, options)
       end
     end
 
@@ -33,12 +34,18 @@ module Gql::Runtime
     include ::Gql::Runtime::Functions::Update
     include ::Gql::Runtime::Functions::Helper
     include ::Gql::Runtime::Functions::Core
-    
+
     module FunctionDebug
 
+      # @private
+      def update_element_with(object, attribute_name, value)
+        log("UPDATE", "#{scope.input_key}: #{object.key}.#{attribute_name} =", :type => :update) do
+          super
+        end
+      end
 
       def NORMCDF(*args)
-        log("NORMCDF", "NORMCDF", nil) do
+        log("NORMCDF", "NORMCDF") do
           super
         end
       end
@@ -50,31 +57,31 @@ module Gql::Runtime
       end
 
       def GREATER(*args)
-        log("GREATER", "GREATER: #{args.join(' ')}", nil) do
+        log("GREATER", "GREATER: #{args.join(' ')}") do
           super
         end
       end
 
       def M(elements, attr_name)
-        log("MAP: #{attr_name}", "MAP: #{attr_name}", nil) do
+        log("MAP: #{attr_name}", "MAP: #{attr_name}") do
           super
         end
       end
 
       def SQRT(*args)
-        log("SQRT", "SQRT", nil) do
+        log("SQRT", "SQRT") do
           super
         end
       end
 
       def PRODUCT(*args)
-        log("PRODUCT", "PRODUCT", nil) do
+        log("PRODUCT", "PRODUCT") do
           super
         end
       end
 
       def SUM(*args)
-        log("SUM", "SUM", nil) do
+        log("SUM", "SUM") do
           super
         end
       end
@@ -87,7 +94,7 @@ module Gql::Runtime
       end
 
       def G(key)
-        log("GROUP: #{key}", "GROUP: #{key}", nil) do
+        log("GROUP: #{key}", "GROUP: #{key}") do
           super
         end
       end
