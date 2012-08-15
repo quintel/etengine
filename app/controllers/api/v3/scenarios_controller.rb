@@ -3,7 +3,7 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_filter :find_scenario, :only => [:show, :update]
+      before_filter :find_scenario, :only => [:show, :update, :sandbox]
 
       # GET /api/v3/scenarios/:id
       #
@@ -163,6 +163,39 @@ module Api
             json.errors @scenario.input_errors
           end
         end
+        render :json => out
+      end  
+      
+      # GET /api/v3/scenarios/:id/sandbox
+      #
+      # Returns the gql details in JSON format. If the scenario is missing
+      # the action returns an empty hash and a 404 status code.
+      #
+      def sandbox
+        if params[:gql].present?
+          @query = params[:gql].gsub(/\s/,'')
+        else
+          render :json => {:errors => 'No gql'}, :status => 500 and return
+        end
+
+        begin
+          gql = @scenario.gql(prepare: true)
+          result = gql.query(@query)
+        rescue Exception => e
+          render :json => {:errors => [e.to_s]}, :status => 500 and return
+        end
+
+        out = Jbuilder.encode do |json|
+          if result.respond_to?(:present_year)
+            json.present_year result.present_year
+            json.present_value result.present_value.inspect
+            json.future_year result.future_year
+            json.future_value result.future_value.inspect
+          else
+            json.result result
+          end
+        end
+
         render :json => out
       end
 
