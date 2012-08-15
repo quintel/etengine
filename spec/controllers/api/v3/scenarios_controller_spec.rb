@@ -47,5 +47,20 @@ describe Api::V3::ScenariosController do
       response.should be_success
       @scenario.reload.user_values.to_set.should == {'foo' => 456.0}.to_set
     end
+
+    it "shouldn't update end_year" do
+      put :update, :id => @scenario.id, :scenario => {:end_year => 2050}
+      response.should be_success
+      @scenario.reload.end_year.should == 2040
+    end
+
+    it "shouldn't update area" do
+      put :update, :id => @scenario.id, :scenario => {:area_code => 'de'}
+      response.should be_success
+      @scenario.reload.area_code.should == 'nl'
+    end
+
+
+
   end
 end
