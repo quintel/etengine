@@ -2,14 +2,14 @@ class Qernel::ConverterApi
 
   def delta_in_capacity_in_mw
     function(:delta_in_capacity_in_mw) do
-      (number_of_units - peak_load_units_present) * typical_electricity_production_capacity 
+      (number_of_units - peak_load_units_present) * typical_electricity_production_capacity
     end
   end
 
   def peak_load_in_mw
     function :peak_load_in_mw do
-      (electricity_output_conversion + electricity_input_conversion) * 
-      typical_input_capacity_in_mw * (number_of_units - peak_load_units_present)
+      (electricity_output_conversion + electricity_input_conversion) *
+        typical_input_capacity_in_mw * number_of_units
     end
   end
 

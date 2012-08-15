@@ -2,32 +2,35 @@ module Gql::Runtime
   module Functions
     module Lookup
 
-      # Runs the gquery with given key for the present year only.
+      # Returns the present value of the the gquery, when given a key.
+      # If the argument is a lambda ( -> { ... }), runs it for the present.
       #
-      # gquery_key - The gquery lookup key.
+      # @param queryThe gquery lookup key or a lambda with GQL statement
       #
-      # Returns the result of the gquery for only the present year.
+      # @example
       #
-      # Examples
+      #   QUERY_PRESENT(graph_year)              # => 2010
+      #   QUERY_PRESENT( -> { GRAPH(year) } )    # => 2010
       #
-      #   QUERY_PRESENT(graph_year)   # => 2010
-      #
-      def QUERY_PRESENT(gquery_key)
-        scope.gql.present.subquery(gquery_key.to_s)
+      def QUERY_PRESENT(query)
+        scope.gql.present.query(query)
       end
 
-      # Runs the gquery with given key for the future year only.
+      # Returns the future value of the the gquery, when given a key.
+      # If the argument is a lambda ( -> { ... }), runs it for the future.
       #
-      # gquery_key - The gquery lookup key.
+      # @param query The gquery lookup key or a lambda with GQL statement
+      # @example
       #
-      # Returns the result of the gquery for only the future year.
+      #   QUERY_FUTURE(graph_year)              # => 2050
+      #   QUERY_FUTURE( -> { GRAPH(year) } )    # => 2050
       #
-      # Examples
-      #
-      #   QUERY_FUTURE(graph_year)    # => 2050
-      #
-      def QUERY_FUTURE(gquery_key)
-        scope.gql.future.subquery(gquery_key.to_s)
+      def QUERY_FUTURE(query)
+        scope.gql.future.query(query)
+      end
+
+      def QUERY_DELTA(query)
+        QUERY_FUTURE(query) - QUERY_PRESENT(query)
       end
 
       # Returns the first term for the present graph and the second for

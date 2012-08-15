@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120809091419) do
+ActiveRecord::Schema.define(:version => 20120814153024) do
 
   create_table "blueprint_layouts", :force => true do |t|
     t.string   "key"

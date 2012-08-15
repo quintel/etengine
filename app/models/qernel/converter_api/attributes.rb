@@ -105,7 +105,7 @@ module Qernel
       },
       :cost => {
         :purchase_price_per_unit => ['Initial purchase price', 'euro'],
-        :cost_of_installing_per_unit => ['Cost of installing','euro'],
+        :installing_costs_per_unit => ['Cost of installing','euro'],
         :residual_value_per_unit => ['Residual value after lifetime','euro'],
         :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
         :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
@@ -129,7 +129,7 @@ module Qernel
       },
       :cost => {
         :purchase_price_per_unit => ['Initial purchase price', 'euro'],
-        :cost_of_installing_per_unit => ['Cost of installing','euro'],
+        :installing_costs_per_unit => ['Cost of installing','euro'],
         :residual_value_per_unit => ['Residual value after lifetime','euro'],
         :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
         :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],

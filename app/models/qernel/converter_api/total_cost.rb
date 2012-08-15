@@ -28,8 +28,8 @@ class Qernel::ConverterApi
 
   # Returns the cost of installing one unit
   #
-  def cost_of_installing_per_unit
-    function(:cost_of_installing_per_unit) do
+  def installing_costs_per_unit
+    function(:installing_costs_per_unit) do
       installing_costs_per_mw_input * typical_input_capacity_in_mw
     end
   end
@@ -90,7 +90,7 @@ class Qernel::ConverterApi
     function(:initial_investment_excl_ccs_per_unit) do
       sum_unless_empty [
         purchase_price_per_unit,
-        cost_of_installing_per_unit
+        installing_costs_per_unit
       ]
     end
   end
