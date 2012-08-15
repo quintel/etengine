@@ -14,21 +14,39 @@ module Etsource
     def import
       converters = {}
 
-      each_file do |lines|
-        # Initialize all converters first, before we map slots and links to them.
-        hsh = lines.select{|l| l =~ /^\w+;/ }. # only match converter lines
-                    map{|l| Qernel::Converter.import(l) }.
-                    inject({}) {|h,k| h.merge k.key => k}
-        converters.merge!(hsh)
+      converter_groups = Hash.new { |hash, key| hash[key] = [] }
+
+      # Load the converter groups from the topology/groups.yml
+      # and convert the {group_1: [converter_1, converter_2], ...} into
+      # {converter_1: [group_1, group_2], ...}
+      groups = YAML::load_file("#{base_dir}/groups.yml")
+      groups.each do |group, converter_keys|
+        group = group.to_sym
+        converter_keys.each do |key|
+          converter_groups[key.to_sym] << group
+        end
       end
 
-      graph = Qernel::Graph.new(converters.values).tap{|g| g.connect_qernel }
+      # Loads converters and puts into converters hash. Attaches
+      # the previously loaded groups.
+      each_file do |lines|
+        # Initialize all converters first, before we map slots and links to them.
+        lines.select{|l| l =~ /^\w+;/ }.each do |l|
+          attrs          = Qernel::Converter.attributes_from_line(l)
+          attrs[:groups] = converter_groups[attrs[:key]]
+
+          converter      = Qernel::Converter.new( attrs )
+          converters[converter.key] = converter
+        end
+      end
+
+      # Connect converters with
+      graph = Qernel::Graph.new(converters.values)
 
       each_file do |lines|
         lines.map{|l| Qernel::Slot::Token.find(l) }.flatten.uniq(&:key).each do |token|
           converter = converters[token.converter_key]
           slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
-          slot.graph = graph
           converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
         end
 
@@ -39,6 +57,7 @@ module Etsource
       end
 
       graph.carriers.each {|c| c.graph = graph}
+      graph.connect_qernel
       graph
     end
 
