@@ -4,6 +4,10 @@ module Gql
       @input_value
     end
 
+    def input_key
+      @input_key
+    end
+
     def input_value=(val)
       @input_value = val
     end
@@ -34,6 +38,7 @@ module Gql
     end
 
     def execute_input(input, value = nil)
+      @input_key   = input.key   # used for the logger
       self.input_value = value.to_s
       self.input_value = "#{self.input_value}#{input.default_unit}" unless self.input_value.include?('%')
       rubel_execute(input.rubel) if input.rubel

@@ -68,6 +68,12 @@ class Input
     end
   end
 
+  def self.load_yaml(str)
+    attributes = YAML::load( str )
+    attributes[:lookup_id] ||= attributes.delete('id')
+    Input.new(attributes)
+  end
+
   def self.load_records
     h = {}
     Etsource::Loader.instance.inputs.each do |input|
@@ -88,10 +94,6 @@ class Input
 
   def self.by_name(q)
     q.present? ? all.select{|input| input.key.include?(q)} : all
-  end
-
-  def force_id(new_id)
-    self.lookup_id = new_id
   end
 
   def self.before_inputs
@@ -164,7 +166,6 @@ class Input
       begin
         hsh.merge input.client_values(gql)
       rescue => ex
-        Rails.logger.warn("Input#static_values for input #{input.lookup_id} failed: #{ex}")
         Airbrake.notify(
           :error_message => "Input#static_values for input #{input.lookup_id} failed: #{ex}",
           :backtrace => caller,
@@ -185,7 +186,6 @@ class Input
           :start_value => input.start_value_for(gql)
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}. #{ex}")
         Airbrake.notify(
           :error_message => "Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}",
           :backtrace => caller,
