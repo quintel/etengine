@@ -97,7 +97,11 @@ module Api
 
         # TODO: move parameter logic to a separate object
         attrs = params[:scenario] || {}
-
+        
+        #prevent changing settings of scenario
+        render :json => {:errors => ["Cannot change end year"]} and return if attrs.delete(:end_year) 
+        render :json => {:errors => ["Cannot change area code"]} and return if attrs.delete(:area_code)
+        
         attrs[:user_values] ||= {}
         @scenario.user_values = {} if params[:reset]
         values = attrs[:user_values].reverse_merge(@scenario.user_values)
