@@ -146,7 +146,9 @@ class Balancer
       break if flex.zero? or flex == start_flex
     end # 20.times do ...
 
-    raise CannotBalance.new(group_name, masters) unless flex.zero?
+    unless flex.between?(-0.01, 0.01)
+      raise CannotBalance.new(group_name, masters)
+    end
 
     subordinates.each_with_object(Hash.new) do |input, memo|
       memo[ input.key ] = input.value
