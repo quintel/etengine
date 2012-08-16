@@ -43,6 +43,10 @@ class Data::ScenariosController < Data::BaseController
   private
 
   def find_scenario
-    @scenario = Scenario.find params[:id]
+    if params[:id] == 'current'
+      @scenario = @api_scenario
+    else
+      @scenario = Scenario.find params[:id]
+    end
   end
 end
