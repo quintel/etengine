@@ -357,6 +357,37 @@ If the input doesn't exist the server returns an HTTP 404 error and a message:
       "errors": ["Input not found"]
     }
 
+### Get a subset of input details
+
+#### Request
+
+    GET /scenarios/:input_id/inputs/:keys
+    GET /scenarios/:input_id/inputs/1,2,3,4,5,10,11,12,13
+
+#### Response
+
+    Status: 200 OK
+
+    [
+      {
+        "key": "input_foobar",
+        "id": 1
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      },
+    [...]
+      {
+        "key": "input_foobar_2",
+        "id": 13
+        "start_value": 1000,
+        "end_value": 2000,
+        "label": "1€/Kg",
+        "current_value": 1500
+      }
+    ]
+
 ## Converters
 
 ### Get a converter details
@@ -435,37 +466,3 @@ Implemented
 #### Response
 
 See above, the response is identical.
-
-## Stuff that hasn't been implemented yet
-
-
-### Get a subset of input details
-
-#### Request
-
-    GET /scenarios/:input_id/inputs/:keys
-    GET /scenarios/:input_id/inputs/1,2,3,4,5,10,11,12,13
-
-#### Response
-
-    Status: 200 OK
-
-    [
-      {
-        "key": "input_foobar",
-        "id": 1
-        "start_value": 1000,
-        "end_value": 2000,
-        "label": "1€/Kg",
-        "current_value": 1500
-      },
-    [...]
-      {
-        "key": "input_foobar_2",
-        "id": 13
-        "start_value": 1000,
-        "end_value": 2000,
-        "label": "1€/Kg",
-        "current_value": 1500
-      }
-    ]
