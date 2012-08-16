@@ -107,7 +107,13 @@ module Api
           end.compact
 
           unless values.sum.between?(99.99, 100.01)
-            errors.add(:base, "#{ group.inspect } group does not balance")
+            info = inputs.map(&:key).zip(values).map do |key, value|
+              "#{ key }=#{ value }"
+            end.join(' ')
+
+            errors.add(:base,
+              "#{ group.inspect } group does not balance: group sums to " \
+              "#{ values.sum } using #{ info }")
           end
         end
       end
