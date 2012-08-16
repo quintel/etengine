@@ -1,36 +1,48 @@
-- breadcrumb link_to 'Scenarios', data_scenarios_path
-- breadcrumb "##{@scenario.id} #{@scenario.title}"
-
-%dl
-  %dt Title
-  %dd= @scenario.title
-  %dt End Year
-  %dd= @scenario.end_year
-  %dt Area
-  %dd= @scenario.area_code
-  %dt In start menu
-  %dd= @scenario.in_start_menu
-  %dt Protected
-  %dd= @scenario.protected
-  %dt Inputs
-  %dd
-    %table
-      %thead
-        %tr
-          %th Id
-          %th Key
-          %th Value
-      - @scenario.user_values.sort.each do |pair|
-        - k, v = pair
-        - input = Input.get(k) rescue nil
-        %tr
-          %td= k
-          - if input
-            %td= link_to input.key, data_input_path(:id => input.id)
-          - else
-            %td.red missing!
-          %td= v
 
 
-%p
-  = link_to 'edit', edit_data_scenario_path(:id => @scenario)
+.row
+  .span4
+    %table.table
+      %tr
+        %th Area
+        %td= @scenario.area_code
+      %tr
+        %th End Year
+        %td= @scenario.end_year
+
+.row
+  .span10
+    - {future: :inputs_future, present: :inputs_present}.each do |name, method|
+
+      %h3== Inputs #{name}
+      - inputs = @scenario.send(method)
+      - if inputs.empty?
+        %p No updates
+      - else
+        %table.table.table-condensed
+          %thead
+            %tr
+              %th.span1 id
+              %th.span6 key
+              %th.span1.tar value
+              %td.span1.tar min
+              %td.span1.tar max
+          %tbody
+            - inputs.group_by{|h| h.first.share_group.to_s }.each do |share_group, input_value|
+              %tr
+                %td(colspan=2)
+                  %strong
+                    = share_group.present? ? share_group : "no share group"
+                %td.tar
+                  - if share_group.present?
+                    = auto_number input_value.map(&:last).compact.sum rescue 'error'
+                %td(colspan=2)
+
+              - input_value.sort_by{|iv| iv.first.key.to_s}.each do |input, value|
+                %tr
+                  %td.tar= input.id
+                  %td= input.key
+                  %td.tar
+                    %strong= auto_number value rescue 'error'
+                  %td.tar= auto_number input.min_value_for(@scenario) rescue 'error'
+                  %td.tar= auto_number input.max_value_for(@scenario) rescue 'error'
