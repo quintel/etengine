@@ -20,7 +20,7 @@ describe Api::V3::InputsController do
   end
 
   before do
-    Rails.cache.clear
+    NastyCache.instance.expire!
     Input.stub(:all).and_return([ static_input, gql_input ])
   end
 
@@ -165,6 +165,41 @@ describe Api::V3::InputsController do
        json.should_not have_key('user')
      end
    end # "user" attribute
+ end # GET /api/v3/scenarios/:scenario_id/inputs
+
+ # ---------------------------------------------------------------------------
+
+ describe 'GET /api/v3/scenarios/:scenario_id/inputs/:id,:id,...' do
+   let(:third_input) { FactoryGirl.build(:input) }
+
+   let(:json) do
+     Input.stub(:records).and_return({
+       static_input.key => static_input,
+       gql_input.key    => gql_input,
+       third_input.key  => third_input
+     })
+
+     Input.stub(:all).and_return(Input.records.values)
+
+     keys = "#{ static_input.key },#{ third_input.key }"
+     get(:show, scenario_id: scenario.id, id: keys)
+     JSON.parse(response.body)
+   end
+
+   it 'returns an array' do
+     json.should be_kind_of(Array)
+   end
+
+   it 'includes the requested inputs' do
+     json.should have(2).inputs
+
+     json.any? { |v| v['code'] == static_input.key }.should be_true
+     json.any? { |v| v['code'] == third_input.key  }.should be_true
+   end
+
+   it 'does not include unrequested inputs' do
+     json.any? { |v| v['code'] == gql_input.key }.should be_false
+   end
  end # GET /api/v3/scenarios/:scenario_id/inputs
 
 end
