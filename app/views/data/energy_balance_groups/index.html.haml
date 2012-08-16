@@ -10,12 +10,14 @@
     %table.table.table-condensed
       %thead
         %tr
-          %th Id
-          %th Color and Name
+          %th.span1 Id
+          %th.span1 Color
+          %th Name
       %tbody
         - @energy_balance_groups.each do |e|
           %tr
             %td= e.id
             %td
               %span.label{:style => "background-color: #{e.graphviz_color}"}= e.graphviz_color
+            %td
               = e.name
