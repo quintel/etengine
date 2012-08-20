@@ -195,77 +195,88 @@ class Input
     end
   end
 
-  def full_label_for(gql)
-    return Input.cache.read(gql, self)[:label] if gql.is_a?(Scenario)
+  # Returns the label shown alongside the input name in ETM.
+  #
+  # @param [Scenario, Gql::Gql] gql_or_scenario
+  #   When given a GQL instance, the start value will be determined by
+  #   performing the input's "label_query" query. When given a Scenario,
+  #   the cached value will instead be returned.
+  #
+  # @return [String, nil]
+  #   Returns nil if the input has no label.
+  #
+  def full_label_for(gql_or_scenario)
+    if gql_or_scenario.is_a?(Scenario)
+      Input.cache.read(gql_or_scenario, self)[:label]
+    elsif @label_query.present?
+      result = wrap_gql_errors(:label) do
+        gql_or_scenario.query_present(@label_query)
+      end
 
-    if label_query.present?
-      result = wrap_gql_errors(:label) { gql.query("present:#{label_query}") }
-      "#{result.round(2)} #{label}".strip.html_safe
+      "#{ result.round(2) } #{ label }".strip.html_safe
     end
   end
 
   # Returns the input start value for a given Scenario or GQL instance.
   #
-  # @param [Scenario, Gql::Gql] gql
+  # @param [Scenario, Gql::Gql] gql_or_scenario
   #   When given a GQL instance, the start value will be determined by
   #   performing the input's "start_value_gql" query. When given a Scenario,
   #   the cached value will instead be returned.
   #
   # @return [Numeric]
   #
-  def start_value_for(gql)
-    return Input.cache.read(gql, self)[:default] if gql.is_a?(Scenario)
-
-    gql_query = @start_value_gql
-
-    if !gql_query.blank? and result = wrap_gql_errors(:start) { gql.query(gql_query) }
-      result * factor
+  def start_value_for(gql_or_scenario)
+    if gql_or_scenario.is_a?(Scenario)
+      Input.cache.read(gql_or_scenario, self)[:default]
+    elsif @start_value_gql.present?
+      factor * wrap_gql_errors(:start) do
+        gql_or_scenario.query(@start_value_gql)
+      end
     else
-      start_value
+      @start_value
     end
   end
 
   # Returns the input minimum value for a given Scenario or GQL instance.
   #
-  # @param [Scenario, Gql::Gql] gql
+  # @param [Scenario, Gql::Gql] gql_or_scenario
   #   When given a GQL instance, the minimum value will be determined by
   #   performing the input's "min_value_gql" query. When given a Scenario,
   #   the cached value will instead be returned.
   #
   # @return [Numeric]
   #
-  def min_value_for(gql)
-    return Input.cache.read(gql, self)[:min] if gql.is_a?(Scenario)
-
-    min_value = min_value_for_current_area(gql)
-    if min_value.present?
-      min_value * factor
-    elsif gql_query = @min_value_gql and !gql_query.blank?
-      wrap_gql_errors(:min) { gql.query(gql_query) }
+  def min_value_for(gql_or_scenario)
+    if gql_or_scenario.is_a?(Scenario)
+      Input.cache.read(gql_or_scenario, self)[:min]
+    elsif area_value = area_input_value(gql_or_scenario.scenario, :min)
+      area_value * factor
+    elsif @min_value_gql.present?
+      wrap_gql_errors(:min) { gql_or_scenario.query(@min_value_gql) }
     else
-      @min_value || 0
+      @min_value || 0.0
     end
   end
 
   # Returns the input maximum value for a given Scenario or GQL instance.
   #
-  # @param [Scenario, Gql::Gql] gql
+  # @param [Scenario, Gql::Gql] gql_or_scenario
   #   When given a GQL instance, the maximum value will be determined by
   #   performing the input's "max_value_gql" query. When given a Scenario,
   #   the cached value will instead be returned.
   #
   # @return [Numeric]
   #
-  def max_value_for(gql)
-    return Input.cache.read(gql, self)[:max] if gql.is_a?(Scenario)
-
-    max_value = max_value_for_current_area(gql)
-    if max_value.present?
-      max_value * factor
-    elsif gql_query = @max_value_gql and !gql_query.blank?
-      wrap_gql_errors(:max) { gql.query(gql_query) }
+  def max_value_for(gql_or_scenario)
+    if gql_or_scenario.is_a?(Scenario)
+      Input.cache.read(gql_or_scenario, self)[:max]
+    elsif area_value = area_input_value(gql_or_scenario.scenario, :max)
+      area_value * factor
+    elsif @max_value_gql.present?
+      wrap_gql_errors(:max) { gql_or_scenario.query(@max_value_gql) }
     else
-      @max_value || 0
+      @max_value || 0.0
     end
   end
 
@@ -273,33 +284,46 @@ class Input
     @start_value_gql && @start_value_gql.match(/^future:/) != nil
   end
 
-  #############################################
-  # Area Dependent min / max / fixed settings
-  #############################################
+  # Area Dependent Min / Max / Disabled Settings -----------------------------
 
-
-  def min_value_for_current_area(gql = nil)
-    area_input_values(gql).andand["min"]
-  end
-
-  def max_value_for_current_area(gql = nil)
-    area_input_values(gql).andand["max"]
-  end
-
-  def disabled_in_current_area?(gql = nil)
-    return Input.cache.read(gql, self)[:disabled] if gql.is_a?(Scenario)
-
-    if gql.scenario.area_input_values['disabled']
-      return true
-    elsif dependent_on.present?
-      return true if !gql.scenario.area[dependent_on]
+  # Returns if the Input is disabled in the area of the given scenario or
+  # Gql instance.
+  #
+  # @param [Scenario, Gql::Gql] gql_or_scenario
+  #   When given a GQL instance, the disabled status will be determined by
+  #   checking the area data. When given a Scenario, the cached value will
+  #   instead be returned.
+  #
+  # @return [true, false]
+  #
+  def disabled_in_current_area?(gql_or_scenario)
+    if gql_or_scenario.is_a?(Scenario)
+      return Input.cache.read(gql_or_scenario, self)[:disabled]
     end
-    false
+
+    scenario = gql_or_scenario.scenario
+
+    area_input_value(scenario, :disabled) ||
+      ( dependent_on.present? && ! scenario.area[dependent_on] )
   end
 
-  # this loads the hash with area dependent settings for the current inputs object
-  def area_input_values(gql)
-    gql.scenario.area_input_values[id]
+  # Retrieves a setting for this input which is defined in the area. This
+  # allows area settings to override the normal min, max, and disabled values.
+  #
+  # @param [Scenario] scenario
+  #   The scenario, so that we can determine which area to query.
+  # @param [#to_s] attribute
+  #   The attribute you want to retrieve. One of 'min', 'max', or 'disabled'.
+  #
+  # @return [Numeric, true, false, nil]
+  #   Returns a numeric when querying the minimum and maximum values, true or
+  #   false for the "disabled" status. Will always return nil if the area
+  #   does not have a setting for the input.
+  #
+  def area_input_value(scenario, attribute)
+    if values = scenario.area_input_values[id]
+      values[attribute.to_s]
+    end
   end
 
   # Minimal input information. This is used on active resource request to get a
