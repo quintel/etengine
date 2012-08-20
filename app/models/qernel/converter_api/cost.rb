@@ -145,6 +145,7 @@ class Qernel::ConverterApi
   # for one plant, the 
   def fuel_costs
     function(:fuel_costs) do
+      return 0 if real_number_of_units <= 0
       (demand * weighted_carrier_cost_per_mj) / real_number_of_units
     end
   end
@@ -159,14 +160,23 @@ class Qernel::ConverterApi
     end
   end
   
-  # DEBT: niet per converter! Is per MWH input / number of units
   # DEBT: rename co2_free and part_ets
+  # DEBT: maybe move the factors of how much CO2 has to be paid to a separate
+  # function ?
+  #
+  # input of fuel in mj * the amount of co2 per mj * the co2 price * how much
+  # co2 is given away for free * how much of the co2 of this plant is in ETS
+  # * how much co2 is not counted (non-energetic or CCS plants) / the number
+  # of units
+  #
   def co2_emissions_costs
     function(:co2_emissions_costs) do
-      ((1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR) / real_number_of_units
+      return 0 if real_number_of_units <= 0
+      (demand * weighted_carrier_co2_per_mj * self.area.co2_price * (1 - self.area.co2_percentage_free) *  part_ets * ((1 - co2_free))) / real_number_of_units
     end
   end
   
+  #DEBT: method and attribute have same name!
   def variable_operations_and_maintenance_costs
     function(:variable_operations_and_maintenance_costs) do
       (variable_operation_and_maintenance_costs + variable_operation_and_maintenance_costs_for_ccs) * full_load_hours
