@@ -4,6 +4,17 @@ module Qernel
     # Access the following attributes with @. e.g
     #   @demand_expected_value *and not* demand_expected_value (or self.demand_expected_value)
     ATTRIBUTE_GROUPS = {
+      :new => {
+        :initial_investment => ['desc', 'unit'],
+        :ccs_investment => ['desc', 'unit'],
+        :cost_of_installing => ['desc', 'unit'],
+        :decommissioning_costs => ['desc', 'unit'],
+        :residual_value => ['desc', 'unit'],
+        :fixed_operation_and_maintenance_costs => ['desc', 'unit'],
+        :variable_operation_and_maintenance_costs => ['desc', 'unit'],
+        :variable_operation_and_maintenance_costs_for_ccs => ['desc', 'unit'],
+      }
+      
       :operational => {
         :average_effective_output_of_nominal_capacity_over_lifetime => ['desc', 'unit'],
         :co2_free => ['desc', 'unit'],
