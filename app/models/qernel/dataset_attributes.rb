@@ -1,5 +1,5 @@
 # This mixin is included by the qernel objects that have attributes defined
-# in a dataset. See Qernel::Dataset for a general introduction about the 
+# in a dataset. See Qernel::Dataset for a general introduction about the
 # object. The Dataset object contains a huge hash with all the attributes
 # of the area, carriers, converters etc of the graph. Those attributes are
 # stored in the database in the dataset_*_data tables. Qernel::Dataset takes
@@ -12,12 +12,12 @@
 #       include Qernel::DatasetAttributes
 #
 #       dataset_accessor :demand
-#    
+#
 #       # above dataset_accessor generates the following methods:
 #       def demand
 #         dataset_get[:demand]
 #       end
-#    
+#
 #       def demand=(val)
 #         dataset_set :demand, val
 #       end
@@ -26,13 +26,13 @@
 # So then you can access attributes like:
 #
 #     c = Qernel::Converter.new
-#     c.demand 
+#     c.demand
 #     c.dataset_get(:demand)
 #
-# == Careful: 
+# == Careful:
 #
 #     c[:demand]
-# 
+#
 # will execute self.send(:demand), and not as you might assume
 # dataset_get(:demand).
 #
@@ -43,7 +43,7 @@
 #       include Qernel::DatasetAttributes
 #
 #       dataset_accessor :demand
-#       
+#
 #       def demand; "hello world"; end
 #     end
 #
@@ -66,7 +66,7 @@ module Qernel::DatasetAttributes
     # This creates a bunch of pseudo attr_reader / attr_writer methods
     # that delegate the storage to the Qernel::Dataset#data hash.
     # In most Qernel objects you will see this method called with a list
-    # of the attributes stored in the dataset.    
+    # of the attributes stored in the dataset.
     def dataset_accessors(*attributes)
       attributes.flatten.each do |attr_name|
         attr_name_sym = attr_name.to_sym
@@ -81,7 +81,7 @@ module Qernel::DatasetAttributes
           def #{attr_name_sym}
             dataset_get #{attr_name_sym.inspect}
           end
-        
+
           def #{attr_name_sym}=(value)
             dataset_set #{attr_name_sym.inspect}, value
           end
@@ -99,7 +99,7 @@ module Qernel::DatasetAttributes
       @object_dataset = hsh
       self
     end
-  
+
   # The dataset belongs to the graph and the Qernel object belongs to the graph:
   # let's get the dataset then. This assumes that the Qernel object has already
   # been assigned a graph and the graph has a dataset too. Don't forget this when
@@ -144,13 +144,13 @@ module Qernel::DatasetAttributes
   end
 
   # observe and log changes to an attribute
-  def dataset_observe(*keys)
+  def dataset_observe_set(*keys)
     graph[:observe_log] ||= []
-    @observe_set_keys   ||= []
-    @observe_set_keys    += keys.flatten.map(&:to_sym)
+    # @observe_set_keys   ||= []
+    # @observe_set_keys    += keys.flatten.map(&:to_sym)
     @observe_set          = true
   end
-  
+
   # observe access of attributes
   def dataset_observe_get(*keys)
     graph[:observe_log] ||= []
@@ -203,7 +203,7 @@ module Qernel::DatasetAttributes
     # function is memoized, so check if it was called already.
     if object_dataset.has_key?(attr_name)
       # are we in the debugger mode?
-      if observe_get 
+      if observe_get
         # log records the access and returns the value
         log :method, attr_name, object_dataset[attr_name]
       else
@@ -214,10 +214,10 @@ module Qernel::DatasetAttributes
       # function is called for the first time
       if observe_get
         # in debug mode we call #log with a block, which stores the value
-        # in the log and returns it back. 
-        log :method, attr_name do 
+        # in the log and returns it back.
+        log :method, attr_name do
           begin
-            object_dataset[attr_name] = yield 
+            object_dataset[attr_name] = yield
           rescue => e
             # We have an exception, most likely a nil value. log the error
             # with message and apply the value defined in rescue_with param
@@ -243,13 +243,8 @@ module Qernel::DatasetAttributes
 
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
-    if observe_set # && @observe_set_keys.include?(attr_name)
+    if observe_set
       log(:set, attr_name, value)
-      # str = self.is_a?(Qernel::Converter) ? "#{'-'*200}\n" : ""
-      # str += topology_key.to_s.ljust(150) + " #{attr_name}: ".rjust(10)
-      # str += value.round(9).inspect.cjust('.', 20, 10)
-      # str += "   # by #{@calculation_state} / #{object_dataset[attr_name].inspect}"
-      # puts str
     end
     object_dataset[attr_name] = value
   end
@@ -262,7 +257,7 @@ module Qernel::DatasetAttributes
     object_dataset[attr_name]
 
   rescue => e
-    raise "#{dataset_key} #{attr_name} not found: #{e.message}" 
+    raise "#{dataset_key} #{attr_name} not found: #{e.message}"
   end
 
   def [](attr_name)

@@ -50,17 +50,17 @@ class Qernel::ConverterApi
     (c and c.external_value) || 0.0
   end
 
-  # Helper method to get all heat outputs (useable_heat, hot_water, steam_hot_wather)
+  # Helper method to get all heat outputs (useable_heat, steam_hot_water)
   #
   def output_of_heat_carriers
     function(:output_of_heat_carriers) do
-      output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water
+      output_of_useable_heat + output_of_steam_hot_water
     end
   end
 
   def output_of_heat_and_cooling_carriers
     function(:output_of_heat_and_cooling_carriers) do
-      output_of_useable_heat + output_of_hot_water + output_of_steam_hot_water + output_of_cooling
+      output_of_useable_heat + output_of_steam_hot_water + output_of_cooling
     end
   end
 

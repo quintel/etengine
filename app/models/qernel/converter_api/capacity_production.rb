@@ -48,19 +48,19 @@ class Qernel::ConverterApi
     end
   end
   
-  ## Returns the total heat output conversion of one unit. This is useable heat, steam_hot_water and hot_water.
+  ## Returns the total heat output conversion of one unit. This is useable heat and steam_hot_water.
   #
   def heat_output_conversion
     function(:heat_output_conversion) do
-      (steam_hot_water_output_conversion + hot_water_output_conversion + useable_heat_output_conversion)
+      (steam_hot_water_output_conversion  + useable_heat_output_conversion)
     end
   end
   
-  ## Returns the total heat and cold output conversion of one unit. This is useable heat, steam_hot_water, hot_water and cooling.
+  ## Returns the total heat and cold output conversion of one unit. This is useable heat, steam_hot_water and cooling.
   #
   def heat_and_cold_output_conversion
     function(:heat_and_cold_output_conversion) do
-      (steam_hot_water_output_conversion + hot_water_output_conversion + useable_heat_output_conversion + cooling_output_conversion)
+      (steam_hot_water_output_conversion + useable_heat_output_conversion + cooling_output_conversion)
     end
   end
 
@@ -131,8 +131,7 @@ class Qernel::ConverterApi
     return nil if [typical_nominal_input_capacity, number_of_units].any?(&:nil?)
     [
       useable_heat_output_conversion,
-      steam_hot_water_output_conversion,
-      hot_water_output_conversion
+      steam_hot_water_output_conversion
     ].compact.sum * typical_nominal_input_capacity * number_of_units
   end
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
@@ -148,8 +147,7 @@ class Qernel::ConverterApi
     return nil if typical_input_capacity.nil?
     [
       useable_heat_output_conversion, 
-      steam_hot_water_output_conversion,
-      hot_water_output_conversion
+      steam_hot_water_output_conversion
     ].compact.sum * typical_input_capacity * full_load_seconds
   end
 end

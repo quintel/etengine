@@ -23,7 +23,7 @@ class Graph
   include Plugins::Fce
   include Plugins::MaxDemandRecursive
   include Plugins::ResettableSlots
-  
+
   # ---- DatasetAttributes ----------------------------------------------------
 
   include DatasetAttributes
@@ -31,9 +31,9 @@ class Graph
   dataset_accessors :calculated,
                     :year,
                     :use_fce,
-                    # graphs do not know the number of years, which is defined in 
+                    # graphs do not know the number of years, which is defined in
                     # scenario.
-                    :number_of_years 
+                    :number_of_years
 
   def dataset_key
     :graph
@@ -45,7 +45,7 @@ class Graph
 
   attr_reader :converters, :logger
   attr_writer :goals
-  
+
   attr_accessor :dataset,
                 :finished_converters,
                 :area,
@@ -111,7 +111,7 @@ class Graph
   end
 
   def refresh_dataset_objects
-    # See Qernel::Dataset#assign_object_dataset to understand what's going on:    
+    # See Qernel::Dataset#assign_object_dataset to understand what's going on:
     each_dataset_object_item(:assign_object_dataset)
     reset_goals
   end
@@ -244,7 +244,7 @@ class Graph
   def group_converters(group_key)
     group_key_sym = group_key.to_sym
 
-    @group_converters_cache[group_key_sym] ||= 
+    @group_converters_cache[group_key_sym] ||=
       self.converters.select{|c| c.groups.include?(group_key_sym) }
   end
 
@@ -295,10 +295,10 @@ class Graph
     @groups = nil
     @primary_energy_carriers = nil
   end
-  
+
   # Goal-related methods
   #
-  
+
   # Returns an array with all the defined goals. The value is not memoized because
   # goals can be added dynamically
   #
@@ -321,11 +321,11 @@ class Graph
     end
     return g
   end
-  
+
   def reset_goals
     @goals = []
   end
-  
+
 private
 
   def reset_group_converters_and_memoize
@@ -348,7 +348,7 @@ private
 
 public
   # ====== Methods only used for Testing =============================
-  
+
   if Rails.env.test? || Rails.env.development?
     # create slot if necessary.
     # return link

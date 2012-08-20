@@ -1,4 +1,6 @@
-- breadcrumb 'GQL Log'
+= render 'data/gqueries/subnav'
+
+%h2 GQL Logs
 
 %section#search_box
   = form_tag data_gql_log_path, :method => :get do
@@ -8,6 +10,5 @@
 = button_to 'Clear Log', data_gql_log_path(:reset => 1), :confirm => 'Are you sure?'
 = button_to 'Refresh', data_gql_log_path(:reset => false)
 
-%h2 GQL Log Contents
 
 %pre= @log_contents

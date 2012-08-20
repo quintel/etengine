@@ -113,14 +113,8 @@ module Gql::Runtime
             input_value    = input_value.first if input_value.is_a?(::Array)
             original_value = big_decimal(object[attribute_name].to_s)
 
-            updated_value = case update_strategy
-              when :absolute then input_value
-              when :relative_total
-                original_value + (original_value * input_value)
-              when :relative_per_year
-                original_value * ((1.0 + input_value) ** scope.scenario.years)
-              end
-            object.send "#{attribute_name}=", updated_value.to_f
+            value = update_value_with_strategy(input_value, original_value)
+            update_element_with(object, attribute_name, value)
           else
             # this will not execute...
             raise "UPDATE: objects not found: #{value_terms}"
@@ -129,6 +123,22 @@ module Gql::Runtime
       ensure
         scope.update_collection = nil
         scope.update_object = nil
+      end
+
+      # @private
+      def update_value_with_strategy(input_value, original_value)
+        case update_strategy
+        when :absolute then input_value
+        when :relative_total
+          original_value + (original_value * input_value)
+        when :relative_per_year
+          original_value * ((1.0 + input_value) ** scope.scenario.years)
+        end.to_f
+      end
+
+      # @private
+      def update_element_with(object, attribute_name, value)
+        object.send "#{attribute_name}=", value
       end
 
       # Private: at the moment only takes care of percentages and absolute numbers.

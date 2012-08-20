@@ -12,7 +12,7 @@ module Api
       API_ATTRIBUTES = [:user_values, :area_code, :start_year, :end_year, :use_fce,
         :preset_scenario_id, :source]
 
-      attr_accessor :settings, :input, :reset, :use_fce, :sanitize_groups
+      attr_accessor :settings, :input, :reset, :use_fce
 
       # gquery_keys is populated by {#r=} and {#result=}
       attr_reader :gquery_keys
@@ -72,7 +72,7 @@ module Api
           scenario.save
           scenario.reload
         end
-        scenario.update_inputs_for_api(input, :sanitize_groups => sanitize_groups) if input
+        scenario.update_inputs_for_api(input) if input
         scenario.use_fce = use_fce if use_fce
         scenario.save unless test_scenario?
       end

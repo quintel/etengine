@@ -19,8 +19,7 @@ module Qernel
           if supply.zero?
             0.0
           else
-            [ demand_of_hot_water,
-              demand_of_steam_hot_water,
+            [ demand_of_steam_hot_water,
               demand_of_useable_heat ].compact.sum / supply
           end
         rescue
@@ -58,7 +57,7 @@ module Qernel
         begin
           heat_links = converter.output_links.select do |link|
             link.carrier && (
-              link.useable_heat? || link.hot_water? || link.steam_hot_water? )
+              link.useable_heat? || link.steam_hot_water? )
           end
 
           return 0.0 if heat_links.empty?

@@ -36,6 +36,9 @@ Etm::Application.routes.draw do
     namespace :v3 do
       resources :areas, :only => [:index, :show]
       resources :scenarios, :only => [:show, :create, :update] do
+        member do
+          get :sandbox
+        end
         get :templates, :on => :collection
         resources :converters, :only => :show
         resources :inputs, :only => [:index, :show]
@@ -103,6 +106,7 @@ Etm::Application.routes.draw do
       match '/gql' => "gql#index"
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
+      match '/gql/warnings' => "gql#warnings", :as => :gql_warnings
 
       match 'search' => 'search#index', :as => :search
     end

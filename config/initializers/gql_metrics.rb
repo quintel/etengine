@@ -3,6 +3,7 @@
 # save them to a separate log file or store them externally and use a gquery counter.
 #
 GqlLogger = Logger.new(Rails.root.join('log/gql.log'))
+GqlWarnings = Logger.new(Rails.root.join('log/warnings.log'))
 
 ActiveSupport::Notifications.subscribe 'gql.gquery.deprecated' do |name, start, finish, id, payload|
   GqlLogger.info "gql.gquery.deprecated: #{payload}"
@@ -10,6 +11,11 @@ end
 
 ActiveSupport::Notifications.subscribe 'gql.debug' do |name, start, finish, id, payload|
   GqlLogger.debug "gql.debug: #{payload}"
+end
+
+# Show all 'performance' related outputs
+ActiveSupport::Notifications.subscribe /^warn/ do |name|
+  GqlWarnings.warn name
 end
 
 # Show all 'performance' related outputs

@@ -68,6 +68,12 @@ class Input
     end
   end
 
+  def self.load_yaml(str)
+    attributes = YAML::load( str )
+    attributes[:lookup_id] ||= attributes.delete('id')
+    Input.new(attributes)
+  end
+
   def self.load_records
     h = {}
     Etsource::Loader.instance.inputs.each do |input|
@@ -88,10 +94,6 @@ class Input
 
   def self.by_name(q)
     q.present? ? all.select{|input| input.key.include?(q)} : all
-  end
-
-  def force_id(new_id)
-    self.lookup_id = new_id
   end
 
   def self.before_inputs
@@ -164,7 +166,6 @@ class Input
       begin
         hsh.merge input.client_values(gql)
       rescue => ex
-        Rails.logger.warn("Input#static_values for input #{input.lookup_id} failed: #{ex}")
         Airbrake.notify(
           :error_message => "Input#static_values for input #{input.lookup_id} failed: #{ex}",
           :backtrace => caller,
@@ -185,7 +186,6 @@ class Input
           :start_value => input.start_value_for(gql)
         }
       rescue => ex
-        Rails.logger.warn("Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}. #{ex}")
         Airbrake.notify(
           :error_message => "Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}",
           :backtrace => caller,
@@ -308,6 +308,13 @@ class Input
     }
   end
 
+  # @return [String]
+  #   A human-readable version of the Input for debugging.
+  #
+  def inspect
+    "#<Input id=#{ id.inspect } key=#{ key.inspect }>"
+  end
+
   # Value Caching ------------------------------------------------------------
 
   def self.cache
@@ -362,13 +369,32 @@ class Input
       gql        = Scenario.new(attributes).gql
 
       Input.all.each do |input|
-        set(scenario, input, {
-          min:      input.min_value_for(gql),
-          max:      input.max_value_for(gql),
-          default:  input.start_value_for(gql),
-          label:    input.full_label_for(gql),
-          disabled: input.disabled_in_current_area?(gql)
-        })
+        set(scenario, input, values_for(input, gql))
+      end
+    end
+
+    # Returns the values which should be cached for an input.
+    #
+    # @param [Input] input
+    #   The input whose values are to be cached.
+    # @param [Gql::Gql] gql
+    #   GQL instance for calculating values.
+    #
+    def values_for(input, gql)
+      values = {
+        min:      input.min_value_for(gql),
+        max:      input.max_value_for(gql),
+        default:  input.start_value_for(gql),
+        label:    input.full_label_for(gql),
+        disabled: input.disabled_in_current_area?(gql)
+      }
+
+      required_numerics = values.slice(:min, :max, :default).values
+
+      if required_numerics.any? { |value| ! value.kind_of?(Numeric) }
+        { disabled: true, error: 'Non-numeric GQL value' }
+      else
+        values
       end
     end
 
@@ -383,8 +409,9 @@ class Input
     def input_cache_key(scenario, input)
       area = scenario.area_code || :unknown
       year = scenario.end_year  || :unknown
+      key  = input.kind_of?(Input) ? input.key : input
 
-      "#{ area }.#{ year }.inputs.#{ input.lookup_id }.values"
+      "#{ area }.#{ year }.inputs.#{ key }.values"
     end
   end # Cache
 
