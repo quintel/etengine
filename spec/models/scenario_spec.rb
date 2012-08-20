@@ -66,19 +66,106 @@ describe Scenario do
       context "no user_values" do
         its(:used_groups_add_up?) { should be_true }
       end
-      context "user_valeus but without groups" do
+
+      context "user_values but without groups" do
         before { @scenario.user_values = {10 => 2}}
         its(:used_groups_add_up?) { should be_true }
       end
+
       context "user_values that don't add up to 100" do
         before { @scenario.user_values = {1 => 50}}
         its(:used_groups_add_up?) { should be_false }
         its(:used_groups_not_adding_up) { should have(1).items }
       end
+
       context "user_values that add up to 100" do
         before { @scenario.user_values = {1 => 50, 2 => 30, 3 => 20}}
         its(:used_groups_add_up?) { should be_true }
       end
+
+      context "with balanced values which add up to 100" do
+        before do
+          @scenario.user_values     = { 1 => 50}
+          @scenario.balanced_values = { 2 => 20, 3 => 30 }
+        end
+
+        its(:used_groups_add_up?) { should be_true }
+      end
+
+      context "with balanced values which do not add up to 100" do
+        before do
+          @scenario.user_values     = { 1 => 40 }
+          @scenario.balanced_values = { 2 => 20, 3 => 30 }
+        end
+
+        its(:used_groups_add_up?)       { should be_false }
+        its(:used_groups_not_adding_up) { should have(1).items }
+      end
+
+      context "with only balanced values which add up to 100" do
+        before do
+          @scenario.user_values     = {}
+          @scenario.balanced_values = { 1 => 50, 2 => 20, 3 => 30 }
+        end
+
+        its(:used_groups_add_up?) { should be_true }
+      end
+
+    end
+  end
+
+  describe 'dup' do
+    let(:scenario) do
+      Scenario.create!(
+        title:           'Test',
+        use_fce:         true,
+        end_year:        2030,
+        area_code:       'nl',
+        user_values:     { 1 => 2, 3 => 4 },
+        balanced_values: { 5 => 6 }
+      )
+    end
+
+    let(:dup) { scenario.dup }
+
+    it 'clones the end year' do
+      dup.end_year.should eql(2030)
+    end
+
+    it 'clones the area' do
+      dup.area_code.should eql('nl')
+    end
+
+    it 'clones the user values' do
+      dup.user_values.should eql(scenario.user_values)
+    end
+
+    it 'clones balanced values' do
+      dup.balanced_values.should eql(scenario.balanced_values)
+    end
+
+    it 'clones the FCE status' do
+      dup.use_fce.should be_true
+    end
+
+    it 'does not clone the scenario ID' do
+      dup.id.should be_nil
+    end
+
+    it 'does not clone the GQL instance' do
+      dup.gql.should_not eql(scenario.gql)
+    end
+
+    it 'does not clone inputs_present' do
+      dup.inputs_present.should_not equal(scenario.inputs_present)
+    end
+
+    it 'does not clone inputs_before' do
+      dup.inputs_before.should_not equal(scenario.inputs_before)
+    end
+
+    it 'does not clone inputs_future' do
+      dup.inputs_future.should_not equal(scenario.inputs_future)
     end
   end
 end

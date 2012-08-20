@@ -11,8 +11,7 @@ class Qernel::ConverterApi
     function(:useful_output) do
       [ converter.output(:electricity),
         converter.output(:useable_heat),
-        converter.output(:steam_hot_water),
-        converter.output(:hot_water)
+        converter.output(:steam_hot_water)
       ].map{|c| c and c.conversion }.compact.sum
     end
   end

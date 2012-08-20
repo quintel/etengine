@@ -40,18 +40,30 @@ class Gql
   #
   def initialize(scenario)
     if scenario.is_a?(Scenario)
+      # Assign this GQL instance the scenario, which defines the area_code,
+      # end_year and the values of the sliders
       @scenario = scenario
+      # Assign the present and future Qernel:Graph. They are both "empty" /
+      # have no dataset assigned yet. The graphs are both permanent objects,
+      # they stay in memory forever. So we need two different graph objects
+      # (and nested objects) for present/future.
       loader    = Etsource::Loader.instance
       @present_graph = loader.graph
       @future_graph  = loader.graph
+      # Assign the dataset. It is not yet assigned to the present/future
+      # graphs yet, which will happen with #init_datasets or #prepare. This
+      # allows for more flexibility with caching. The @dataset will hold
+      # the present dataset, without any updates run. However some updates
+      # also update the present graph, so it is not completely identical.
       @dataset = loader.dataset(@scenario.area_code)
     end
   end
 
-
   # @param [:console, :sandbox] mode The GQL sandbox mode.
   def sandbox_mode=(mode)
     @sandbox_mode = mode
+    # We also have to change the sandbox_mode of the Gql::Runtime inside the
+    # query_interfaces.
     @present = QueryInterface.new(self, present_graph, sandbox_mode: mode)
     @future  = QueryInterface.new(self, future_graph,  sandbox_mode: mode)
   end
@@ -247,8 +259,14 @@ class Gql
     end
   end
 
+  # @param graph a Qernel::Graph or :present, :future
+  #
   def update_graph(graph, input, value)
     # TODO: the disabled_in_current_area check should be moved somewhere else
+    case graph
+    when :present then graph = present
+    when :future  then graph = future
+    end
     graph.query(input, value) unless input.disabled_in_current_area?(self)
   end
 

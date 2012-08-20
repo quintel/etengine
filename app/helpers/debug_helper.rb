@@ -28,7 +28,13 @@ module DebugHelper
   end
 
   def log_tree(logs = @logs)
+    updates, logs = logs.partition{|l| l[:type] == :update}
+
     if tree = Qernel::Logger.to_tree(logs)
+      log_subtree(tree)
+    end
+    haml_tag :h3, "UPDATE commands"
+    if tree = Qernel::Logger.to_tree(updates)
       log_subtree(tree)
     end
   end

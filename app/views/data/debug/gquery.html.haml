@@ -10,7 +10,14 @@
     .span8
       .page-header
         %h2 Debug GQL
-      = form_tag data_debug_gql_path, :method => :get do 
+      = form_tag data_debug_gql_path, :method => :get do
+        %h4 Input YAML (optional)
+        %p Copy/Paste the contents of a inputs/*.yml file in here
+        = text_area_tag :input_yml, params[:input_yml], :placeholder => 'Input YML', :class => 'span8'
+        %label
+          User value for above input:
+          = text_field_tag :input_user_value, params[:input_user_value]
+        %h4 GQuery
         = text_area_tag :gquery, params[:gquery], :placeholder => 'GQL Query', :class => 'span8'
         %p
           = submit_tag 'Analyse', :class => 'btn btn-primary'
@@ -25,15 +32,15 @@
           %li Unfold all sublists
 
 
-    -# RAW LOGS 
+    -# RAW LOGS
       %pre= @logs.join("\n")
-  
+
   .row
     .span10{:style => 'font-family: Courier New'}
       - log_tree
 
-          
-  .modals   
+
+  .modals
     - @method_definitions.each do |method_name|
       .modal.hide{:id => method_name, :style => 'width: 800px'}
         .modal-header

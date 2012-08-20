@@ -3,7 +3,9 @@
   - if result.respond_to?(:present_year)
     %table.table.table-bordered
       %tr
-        %td.span1= result.present_year
+        %td.span1
+          = result.present_year
+          = clippy(result.present_value)
         %td.tal
           - if result.present_value.is_a?(String)
             %pre= result.present_value
@@ -11,7 +13,9 @@
             = result.present_value
         %td.span1= @gquery.andand.unit
       %tr
-        %td= result.future_year
+        %td
+          = result.future_year
+          = clippy(result.future_value)
         %td.tal
           - if result.future_value.is_a?(String)
             %pre= result.future_value
@@ -24,6 +28,6 @@
         %td No Year
         %td.tar= result
         %td= @gquery.try :unit
-    
+
 - rescue => e
   %pre= e.inspect

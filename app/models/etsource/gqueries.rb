@@ -73,9 +73,17 @@ module Etsource
       key = f.split('/').last.split('.').first.strip
       txt = File.read(f)
 
-      comment_lines  = txt.lines.select{|l| l.match(/^#/)}
-      variable_lines = txt.lines.select{|l| l.match(/^#{VARIABLE_PREFIX}/)}
-      query_lines    = txt.lines.reject{|l| l.match(/^[#{VARIABLE_PREFIX}#]/)}
+
+      comment_lines  = []
+      variable_lines = []
+      query_lines    = []
+      txt.lines.each do |line|
+        case line
+        when /^#/ then comment_lines << line
+        when /^#{VARIABLE_PREFIX}.*=/ then variable_lines << line
+        else query_lines << line
+        end
+      end
 
       # the unit and deprecated_key (optional) is defined inside the comment-block:
       #   # deprecated_key: foo

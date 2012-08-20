@@ -25,6 +25,8 @@ module Qernel
       :capacity_buffer_in_mj_s,
       :capacity_buffer_decentral_in_mj_s,
       :km_per_truck,
+      :man_hours_per_man_year, # MAN_HOURS_PER_MAN_YEAR
+      :man_year_per_mj_insulation_per_year, #MAN_YEAR_PER_MJ_INSULATION_PER_YEAR
       :number_households,
       :number_inhabitants,
       :annual_infrastructure_cost_gas,

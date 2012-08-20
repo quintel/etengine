@@ -31,8 +31,10 @@ class Scenario < ActiveRecord::Base
   include Scenario::UserUpdates
   include Scenario::Persistable
   include Scenario::InputGroups
+  include Scenario::Copies
 
   store :user_values
+  store :balanced_values
 
   belongs_to :user
   has_one               :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
@@ -64,9 +66,10 @@ class Scenario < ActiveRecord::Base
     AND updated_at < ?
   ], Date.today - 5)
 
-  attr_accessible :author, :title, :description, :user_values, :end_year,
-    :area_code, :country, :region, :in_start_menu, :user_id, :preset_scenario_id,
-    :use_fce, :protected, :scenario_id, :source, :user_values_as_yaml
+  attr_accessible :author, :title, :description, :user_values,
+    :balanced_values, :end_year, :area_code, :country, :region,
+    :in_start_menu, :user_id, :preset_scenario_id, :use_fce, :protected,
+    :scenario_id, :source, :user_values_as_yaml
 
   attr_accessor :input_errors
 
@@ -161,6 +164,10 @@ class Scenario < ActiveRecord::Base
 
     Input.dynamic_start_values(gql).each do |id, dynamic_values|
       values[id][:start_value] = dynamic_values[:start_value] if values[id]
+    end
+
+    balanced_values.each do |id, balanced_value|
+      values[id][:user_value] = balanced_value if values[id]
     end
 
     user_values.each do |id, user_value|

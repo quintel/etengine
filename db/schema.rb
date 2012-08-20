@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120809091419) do
+ActiveRecord::Schema.define(:version => 20120814153024) do
 
   create_table "blueprint_layouts", :force => true do |t|
     t.string   "key"
@@ -104,6 +104,7 @@ ActiveRecord::Schema.define(:version => 20120809091419) do
     t.integer  "protected",          :limit => 1
     t.string   "area_code"
     t.string   "source"
+    t.text     "balanced_values"
   end
 
   add_index "scenarios", ["source"], :name => "index_scenarios_on_source"
