@@ -3,17 +3,21 @@ module Qernel
     # All the static attributes that come from the database
     # Access the following attributes with @. e.g
     #   @demand_expected_value *and not* demand_expected_value (or self.demand_expected_value)
+    #
+    # DEBT: 'desc' seems to be unused. Use it!
     ATTRIBUTE_GROUPS = {
       :new => {
-        :initial_investment => ['desc', 'unit'],
-        :ccs_investment => ['desc', 'unit'],
-        :cost_of_installing => ['desc', 'unit'],
-        :decommissioning_costs => ['desc', 'unit'],
-        :residual_value => ['desc', 'unit'],
-        :fixed_operation_and_maintenance_costs => ['desc', 'unit'],
-        :variable_operation_and_maintenance_costs => ['desc', 'unit'],
-        :variable_operation_and_maintenance_costs_for_ccs => ['desc', 'unit'],
-      }
+        :initial_investment => ['desc', 'euro / unit'],
+        :ccs_investment => ['desc', 'euro / unit'],
+        :cost_of_installing => ['desc', 'euro / unit'],
+        :decommissioning_costs => ['desc', 'euro / unit'],
+        :residual_value => ['desc', 'euro / unit'],
+        :fixed_operation_and_maintenance_costs => ['desc', 'euro / unit / year'],
+        :variable_operation_and_maintenance_costs => ['desc', 'euro / full load hour'],
+        :variable_operation_and_maintenance_costs_for_ccs => ['desc', 'euro / full load hour'],
+        :output_capacity_electricity => ['desc', 'MWe'],
+        :output_capacity_heat => ['desc', 'MWth']        
+      },
       
       :operational => {
         :average_effective_output_of_nominal_capacity_over_lifetime => ['desc', 'unit'],

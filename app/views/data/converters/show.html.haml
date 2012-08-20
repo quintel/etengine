@@ -110,7 +110,12 @@
               :weighted_carrier_cost_per_mj, :weighted_carrier_co2_per_mj,
               :sustainability_share, :final_demand, :primary_demand,
               :primary_demand_of_fossil, :primary_demand_of_sustainable],
-            :other => Qernel::ConverterApi.calculation_methods.sort
+            :new => [:nominal_input_capacity, :effective_input_capacity, :total_cost, 
+              :fixed_costs, :cost_of_capital, :depreciation_costs, :variable_costs, 
+              :fuel_costs, :real_number_of_units, :co2_emissions_costs, 
+              :variable_operations_and_maintenance_costs, :initial_investment_costs],
+            :other => Qernel::ConverterApi.calculation_methods.sort,
+
           }
           calculations[:demand] += @qernel_graph.carriers.
             map{|x| "primary_demand_of_#{x.key}"}.

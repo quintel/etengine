@@ -11,33 +11,34 @@ class Qernel::ConverterApi
   ############################
 
   # Calculates the input capacity of a typical plant, based on
-  # the output capacity. 
+  # the output capacity in MW. 
   # If the converter has an electrical efficiency this is used to calculate
   # the input capacity, otherwise it uses the heat capacity
   #
   # @param []
   #   
   # 
-  # @return
+  # @return [Float] Input capacity of a typical plant
   #
   def nominal_input_capacity
      function(:nominal_input_capacity) do
        if electricity_output_conversion > 0.0
-         nominal_capacity_electricity_output_per_unit / electricity_output_conversion
+         output_capacity_electricity / electricity_output_conversion
        elsif heat_output_conversion > 0.0
-         nominal_capacity_heat_capacity_output_per_unit / heat_output_conversion
+         output_capacity_heat / heat_output_conversion
        else
          0.0
        end
      end
-   end
+  end
 
-   # Calculates the effective input capacity of a plant based on the
-   # nominal input capacity and the average effective capacity fraction.
+   # Calculates the effective input capacity of a plant (in MW) based on the
+   # nominal input capacity and the average effective capacity over
+   # the lifetime of a plant.
    # 
    # @param [] 
    # 
-   # @return 
+   # @return [Float] Effective input capacity of a typical plant in MW
    #
    def effective_input_capacity
      function(:effective_input_capacity) do
@@ -58,7 +59,7 @@ class Qernel::ConverterApi
    #  Unit in which the total cost should be calculated.
    #  Possible units: :unit, :mw, :mwh, :mj, :converter
    #
-   # @return
+   # @return [Float] total costs for one unit or plant
    #
   def total_cost
     function(:total_cost) do
@@ -79,11 +80,11 @@ class Qernel::ConverterApi
   #  Unit in which the fixed costs should be calculated.
   #  Possible units: unit, MW, MWh, mj, converter
   #
-  # @return
+  # @return [Float]
   #
   def fixed_costs
     function(:fixed_costs) do
-      cost_of_capital + depreciation_costs + @fixed_operation_and_maintenance_costs
+      cost_of_capital + depreciation_costs + fixed_operation_and_maintenance_costs
     end
   end
 
@@ -98,7 +99,7 @@ class Qernel::ConverterApi
   #
   # @param []
   #
-  # @return
+  # @return [Float]
   #
   def cost_of_capital
     function(:cost_of_capital) do
@@ -110,6 +111,8 @@ class Qernel::ConverterApi
   # The straight-line depreciation methodology is used.
   #
   # Used to determine fixed costs
+  #
+  # @return [Float]
   #
   def depreciation_costs
     function(:depreciation_costs) do
@@ -127,16 +130,22 @@ class Qernel::ConverterApi
   # fuel is consumed by the plant, how much this (mix of) fuel costs
   # etc. The logic is therefore more complex than the fixed costs.
   #
+  # Variable costs are made up of fuel costs, co2 emission credit costs
+  # and variable operation and mainentance costs
+  #
+  # @return [Float]
+  #
   def variable_costs
     function(:variable_costs) do
       fuel_costs + co2_emissions_costs + variable_operation_and_maintenance_costs
     end
   end
   
-  # Calculates the fuel costs for a single plant
+  # Calculates the fuel costs for a single plant, based on the input of fuel
+  # for one plant, the 
   def fuel_costs
     function(:fuel_costs) do
-      (demand * weighted_carrier_cost_per_mj) / number_of_units
+      (demand * weighted_carrier_cost_per_mj) / real_number_of_units
     end
   end
 
@@ -144,15 +153,17 @@ class Qernel::ConverterApi
   # converter, based on the demand (input) of the converter, the effective
   # input capacity and the full_load_seconds of the converter (to effectively)
   # convert MJ and MW 
-  def number_of_units
-    function(:number_of_units) do
-      demand / (effective_input_capacity * full_load_seconds)
+  def real_number_of_units
+    function(:real_number_of_units) do
+      demand / (effective_input_capacity * full_load_seconds) rescue 0
     end
   end
   
+  # DEBT: niet per converter! Is per MWH input / number of units
+  # DEBT: rename co2_free and part_ets
   def co2_emissions_costs
     function(:co2_emissions_costs) do
-      (1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR) / number_of_units
+      ((1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR) / real_number_of_units
     end
   end
   
@@ -180,9 +191,6 @@ class Qernel::ConverterApi
       initial_investment + ccs_investment + cost_of_installing
     end
   end
-
-
-
 
 
   #########
