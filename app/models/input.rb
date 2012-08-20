@@ -197,7 +197,11 @@ class Input
 
   def full_label_for(gql)
     return Input.cache.read(gql, self)[:label] if gql.is_a?(Scenario)
-    "#{gql.query("present:#{label_query}").round(2)} #{label}".strip.html_safe unless label_query.blank?
+
+    if label_query.present?
+      result = wrap_gql_errors(:label) { gql.query("present:#{label_query}") }
+      "#{result.round(2)} #{label}".strip.html_safe
+    end
   end
 
   # Returns the input start value for a given Scenario or GQL instance.
@@ -214,7 +218,7 @@ class Input
 
     gql_query = @start_value_gql
 
-    if !gql_query.blank? and result = gql.query(gql_query)
+    if !gql_query.blank? and result = wrap_gql_errors(:start) { gql.query(gql_query) }
       result * factor
     else
       start_value
@@ -237,7 +241,7 @@ class Input
     if min_value.present?
       min_value * factor
     elsif gql_query = @min_value_gql and !gql_query.blank?
-      gql.query(gql_query)
+      wrap_gql_errors(:min) { gql.query(gql_query) }
     else
       @min_value || 0
     end
@@ -259,7 +263,7 @@ class Input
     if max_value.present?
       max_value * factor
     elsif gql_query = @max_value_gql and !gql_query.blank?
-      gql.query(gql_query)
+      wrap_gql_errors(:max) { gql.query(gql_query) }
     else
       @max_value || 0
     end
@@ -314,6 +318,31 @@ class Input
   def inspect
     "#<Input id=#{ id.inspect } key=#{ key.inspect }>"
   end
+
+  # Runs the given block, wrapping any errors raised in an exception which
+  # provides information about in which input and method the error was caused.
+  #
+  # Used primarily to provide more descriptive GQL errors for min/max values.
+  #
+  # @param [Symbol] attribute
+  #   The attribute being calculated by GQL. One of :min, :max, :start or
+  #   :label.
+  #
+  # @return [Object]
+  #   Returns whatever the block returned.
+  #
+  # @example
+  #   wrap_exceptions(:min) { gql.query(@min_value_gql) }
+  #
+  def wrap_gql_errors(attribute)
+    begin
+      yield
+    rescue Exception => e
+      raise InputGQLError.new(e, self, attribute)
+    end
+  end
+
+  private :wrap_gql_errors
 
   # Value Caching ------------------------------------------------------------
 
@@ -414,5 +443,24 @@ class Input
       "#{ area }.#{ year }.inputs.#{ key }.values"
     end
   end # Cache
+
+  # Errors -------------------------------------------------------------------
+
+  # Used when calculating a min, max, start, etc, value fails to provide users
+  # with some idea of where the error occurred.
+  class InputGQLError < RuntimeError
+    def initialize(original_exception, input, attribute)
+      @original  = original_exception
+      @key       = input.key
+      @attribute = attribute
+
+      set_backtrace(@original.backtrace)
+    end
+
+    def message
+      "Failed to calculate #{ @attribute } value for #{ @key } input, " \
+        "with error: #{ @original.message }"
+    end
+  end # InputGQLError
 
 end # Input
