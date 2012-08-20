@@ -132,8 +132,8 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)['errors']).
-          to include('"grouped" group does not balance')
+        expect(JSON.parse(response.body)).
+          to have_api_balance_error.on(:grouped)
       end
     end # providing a balancing single value
 
@@ -179,8 +179,8 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)['errors']).
-          to include('"grouped" group does not balance')
+        expect(JSON.parse(response.body)).
+          to have_api_balance_error.on(:grouped)
       end
     end # providing a non-balancing single value
 
@@ -207,8 +207,8 @@ describe 'Updating inputs with API v3' do
         end
 
         it 'warns about the unbalanced group' do
-          expect(JSON.parse(response.body)['errors']).
-            to include('"grouped" group does not balance')
+          expect(JSON.parse(response.body)).
+            to have_api_balance_error.on(:grouped)
         end
       end # when the other member is explicitly set
 
@@ -294,8 +294,8 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)['errors']).
-          to include('"grouped" group does not balance')
+        expect(JSON.parse(response.body)).
+          to have_api_balance_error.on(:grouped)
       end
 
       it_should_behave_like 'updating inputs'
@@ -315,8 +315,8 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)['errors']).
-          to include('"grouped" group does not balance')
+        expect(JSON.parse(response.body)).
+          to have_api_balance_error.on(:grouped)
       end
 
       it_should_behave_like 'updating inputs'

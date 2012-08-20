@@ -325,8 +325,9 @@ describe Api::V3::ScenarioUpdater do
       it 'should have an error message' do
         updater.apply
 
-        updater.errors[:base].should \
-          include('"grouped" group does not balance')
+        updater.errors[:base].any? { |error|
+          error.match(/"grouped" group does not balance/)
+        }.should be_true
       end
     end # when the group does not add up
   end # Updating grouped inputs without the balancer
