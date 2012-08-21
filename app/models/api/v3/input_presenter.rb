@@ -34,11 +34,14 @@ module Api
         json[:default]     = values[:default]
 
         json[:user]        = user_val           if user_val.present?
-        json[:label]       = values[:label]     if values[:label].present?
         json[:disabled]    = true               if values[:disabled]
         json[:cache_error] = values[:error]     if values[:error]
 
         json[:share_group] = @input.share_group if @input.share_group.present?
+
+        if values[:label].present?
+          json[:label] = { value: values[:label], suffix: @input.label }
+        end
 
         json
       end
