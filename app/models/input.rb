@@ -206,14 +206,32 @@ class Input
   #   Returns nil if the input has no label.
   #
   def full_label_for(gql_or_scenario)
+    if value = label_value_for(gql_or_scenario)
+      "#{ value } #{ label }".strip.html_safe
+    end
+  end
+
+  # Returns the numeric value calculated by the label query.
+  #
+  # @param [Scenario, Gql::Gql] gql_or_scenario
+  #   When given a GQL instance, the start value will be determined by
+  #   performing the input's "label_query" query. When given a Scenario,
+  #   the cached value will instead be returned.
+  #
+  # @return [String, nil]
+  #   Returns nil if the input has no label.
+  #
+  def label_value_for(gql_or_scenario)
+    return nil unless @label_query.present?
+
     if gql_or_scenario.is_a?(Scenario)
       Input.cache.read(gql_or_scenario, self)[:label]
-    elsif @label_query.present?
-      result = wrap_gql_errors(:label) do
+    else
+      value = wrap_gql_errors(:label) do
         gql_or_scenario.query_present(@label_query)
       end
 
-      "#{ result.round(2) } #{ label }".strip.html_safe
+      value && value.round(2) || nil
     end
   end
 
@@ -438,7 +456,7 @@ class Input
         min:      input.min_value_for(gql),
         max:      input.max_value_for(gql),
         default:  input.start_value_for(gql),
-        label:    input.full_label_for(gql),
+        label:    input.label_value_for(gql),
         disabled: input.disabled_in_current_area?(gql)
       }
 
