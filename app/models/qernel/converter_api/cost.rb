@@ -36,6 +36,9 @@ class Qernel::ConverterApi
    # nominal input capacity and the average effective capacity over
    # the lifetime of a plant.
    # 
+   # Assumes 100% when average_effective_output_of_nominal_capacity_over_lifetime
+   # is not set (nil).
+   #
    # @param [] 
    # 
    # @return [Float] Effective input capacity of a typical plant in MW
