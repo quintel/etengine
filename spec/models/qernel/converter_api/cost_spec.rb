@@ -8,39 +8,50 @@ module Qernel
       @c = Qernel::Converter.new(id:1)
     end
 
-    describe '#average_cost_per_year' do
+    describe '#nominal_input_capacity' do
 
-      it "should calculate correctly when numbers are given" do
-        @c.with total_real_costs: 3000, lifetime: 30
-        @c.converter_api.average_cost_per_year.should == 100
+      it "should calculate correctly when electrical capacity and electrical efficiency are given" do
+        @c.with electricity_output_conversion: 0.4, output_capacity_electricity: 800
+        @c.converter_api.nominal_input_capacity.should == 2000
       end
 
-      it "should return a fraction when numbers are small" do
-        @c.with total_real_costs: 1, lifetime: 10
-        @c.converter_api.average_cost_per_year.should == 0.1
+      it "should calculate correctly when both heat and electrical capacity and heat and electrical efficiency are given" do
+        @c.with electricity_output_conversion: 0.4, output_capacity_electricity: 800, heat_output_conversion: 0.1, output_capacity_heat: 400
+        @c.converter_api.nominal_input_capacity.should == 2000
       end
 
-      it "should return zero when total_real_costs is missing" do
-        @c.with total_real_costs: nil, lifetime: 30
-        @c.converter_api.average_cost_per_year.should == 0
+      it "should calculate correctly when heat capacity and heat efficiency are given" do
+        @c.with heat_output_conversion: 0.2, output_capacity_heat: 400
+        @c.converter_api.nominal_input_capacity.should == 2000
       end
 
-      it "should return zero when lifetime is missing" do
-        @c.with total_real_costs: 3000, lifetime: nil
-        @c.converter_api.average_cost_per_year.should == 0
+      it "should return zero when no efficiencies are set" do
+        @c.with heat_output_conversion: nil, electricity_output_conversion: nil
+        @c.converter_api.nominal_input_capacity.should == 0.0
+      end
+      
+      it "should return zero when electrical efficiency and heat capacity not set" do
+        @c.with heat_output_conversion: 0.2, electricity_output_conversion: nil
+        @c.converter_api.nominal_input_capacity.should == 0.0
+      end
+      
+      it "should return zero when heat efficiency and electrical capacity not set" do
+        @c.with heat_output_conversion: nil, electricity_output_conversion: nil
+        @c.converter_api.nominal_input_capacity.should == 0.0
       end
 
-      it "should return zero when lifetime is 0" do
-        @c.with total_real_costs: 3000, lifetime: 0
-        @c.converter_api.average_cost_per_year.should == 0
+      it "should return zero when efficiencies are zero" do
+        @c.with heat_output_conversion: 0, electricity_output_conversion: 0
+        @c.converter_api.nominal_input_capacity.should == 0.0
       end
 
-      it "should return zero when total_real_costs is 0" do
-        @c.with total_real_costs: 0, lifetime: 30
-        @c.converter_api.average_cost_per_year.should == 0
+      it "should return zero when electrical capacity and heat capacity are not set" do
+        @c.with output_capacity_heat: nil, output_capacity_electricity: nil, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
+        @c.converter_api.nominal_input_capacity.should == 0
       end
+      
     end
-
+    
   end
 
 end
