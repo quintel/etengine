@@ -46,6 +46,16 @@ describe Input do
       end
     end
 
+    describe 'label_value_for' do
+      it 'should return nil when given Gql::Gql' do
+        input.label_value_for(gql).should be_nil
+      end
+
+      it 'should return nil when given Scenario' do
+        input.label_value_for(scenario).should be_nil
+      end
+    end
+
     describe 'full_label_for' do
       it 'should return nil when given Gql::Gql' do
         input.full_label_for(gql).should be_nil
@@ -151,6 +161,16 @@ describe Input do
 
       it 'should return the value when given Scenario' do
         input.start_value_for(scenario).should eql(25)
+      end
+    end
+
+    describe 'label_value_for' do
+      it 'should return the value when given Gql::Gql' do
+        input.label_value_for(gql).should eql(500)
+      end
+
+      it 'should return the value when given Scenario' do
+        input.label_value_for(scenario).should eql(500)
       end
     end
 
