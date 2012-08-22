@@ -3,8 +3,6 @@ namespace :ci do
 
   desc <<-DESC
     Runs tasks to prepare a CI build on Semaphore.
-
-    Sets up the configuration and database.
   DESC
 
   task :setup do
@@ -17,9 +15,5 @@ namespace :ci do
     config   = { 'development' => original['ci'], 'test' => original['ci'] }
 
     File.write('config/config.yml', YAML.dump(config))
-
-    # Database.
-    Rake::Task['db:setup'].invoke
-    Rake::Task['db:test:prepare'].invoke
   end
 end
