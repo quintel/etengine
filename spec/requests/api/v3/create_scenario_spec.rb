@@ -61,4 +61,23 @@ describe 'APIv3 Scenarios' do
     end
   end
 
+  context 'when inheriting a preset' do
+    before do
+      post 'api/v3/scenarios', scenario: { scenario_id: Preset.all.first.id }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'should be successful' do
+      response.status.should eql(200)
+    end
+
+    it 'should save the user values' do
+      scenario = Scenario.find(json['id'])
+
+      scenario.user_values.should_not be_blank
+      scenario.user_values.should eql(Preset.all.first.user_values)
+    end
+  end
+
 end
