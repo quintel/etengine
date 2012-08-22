@@ -4,14 +4,29 @@ class Qernel::ConverterApi
     converter.primary_co2_emission
   end
 
-  # This returns the costs for co2 emission credits, based on the CO2_per mwh input.
+  # This returns the costs for co2 emission credits of the converter,
+  # based on the CO2_per mwh input.
+  #
+  # Used in total costs calculation of old cost calculation and some gqueries
+  # to determine total costs of CO2 for electricity and heat. Unclear why it
+  # has to be calculated via mwh_input
+  #
+  # DEPRECATED
+  #
   def cost_of_co2_emission_credits
     function(:cost_of_co2_emission_credits) do
       cost_of_co2_emission_credits_per_mwh_input * mwh_input
     end
   end
 
-  # This returns the costs for co2 emission credits per MWh input, as it multiplies the CO2 emitted by the converter by the price of the CO2 emissions.
+  # This returns the costs for co2 emission credits per MWh input, as it
+  # multiplies the CO2 emitted by the converter by the price of the 
+  # CO2 emissions.
+  #
+  # Only used to calculate total CO2 emission cost per converter (see function
+  # above) and in calculation of variable_costs_per_mwh_input.
+  #
+  # DEPRECATED
   #
   def cost_of_co2_emission_credits_per_mwh_input
     function(:cost_of_co2_emission_credits_per_mwh_input) do

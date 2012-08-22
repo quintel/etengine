@@ -3,6 +3,25 @@
 # 
 # 
 # Costs can be calculated in different units...
+# MW input: for backup options chart  DEBT: this should be done differently
+# MWe: for costs scatter plot
+# MWth: 
+# converter: for total cost calculations of an area
+# MWh input: for Merit Order
+# MWhe: for costs scatter plot
+# MWhth: 
+
+
+# Calculation methods to go from plant to another unit:
+# MW input: divide by method effective_input_capacity
+# MWe: divide by attribute output_capacity_electricity
+# MWth: divide by attribute output_capacity_heat
+# converter: multiply by (real_)number_of_units
+# MWh input: divide by (demand / SECS_PER_HOUR / (real_)number_of_units)
+# MWhe: 
+# MWhth: 
+
+
 
 class Qernel::ConverterApi
 
@@ -157,6 +176,9 @@ class Qernel::ConverterApi
   # converter, based on the demand (input) of the converter, the effective
   # input capacity and the full_load_seconds of the converter (to effectively)
   # convert MJ and MW 
+  #
+  # DEBT: should be called number_of_units, but this is already taken
+  #
   def real_number_of_units
     function(:real_number_of_units) do
       demand / (effective_input_capacity * full_load_seconds) rescue 0
@@ -197,7 +219,8 @@ class Qernel::ConverterApi
   #
   # Used in the scatter plot for costs
   #
-  # DEBT: It would be better to use the total investment costs in the scatter plot
+  # DEBT: It would be better to use the total investment costs in the scatter
+  # plot
   # 
   def initial_investment_costs
     function(:initial_investment_costs) do
@@ -231,7 +254,8 @@ class Qernel::ConverterApi
   
   # Used to calculate yearly depreciation costs
   #
-  # DEBT: this function should be used for investment costs in the scatter plot of the ETM as well. Move up to public methods if making it so.
+  # DEBT: this function should be used for investment costs in the scatter
+  # plot of the ETM as well. Move up to public methods if making it so.
   def total_investment_costs
     function(:total_investment_costs) do
       initial_investment_costs + decommissioning_costs

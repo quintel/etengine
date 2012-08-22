@@ -19,6 +19,7 @@ module Qernel
       #  0.4    nil    nil    400        0
       #  0.4    0.2    nil    nil        0
       #  0.4    0.2    nil    nil        0
+      #    0    0     800       0        ?
       #
 
       it "should calculate correctly when electrical capacity and electrical efficiency are given" do
@@ -59,6 +60,11 @@ module Qernel
       it "should return zero when electrical capacity and heat capacity are not set" do
         @c.with output_capacity_heat: nil, output_capacity_electricity: nil, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
         @c.converter_api.nominal_input_capacity.should == 0
+      end
+      
+      it "should should raise an error when electrical efficiency is 0" do
+        @c.with output_capacity_heat: nil, output_capacity_electricity: 800, heat_output_conversion: nil, electricity_output_conversion: 0
+        lambda { @c.converter_api.nominal_input_capacity }.should raise_error(ZeroDivisionError)
       end
       
     end

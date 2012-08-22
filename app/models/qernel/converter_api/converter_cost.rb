@@ -4,6 +4,10 @@ class Qernel::ConverterApi
 
   # Determines the value of the converter at the end of its economical life.
   #
+  # Used in calculation of depreciation costs (private method)
+  #
+  # DEPRECATED
+  #
   def end_of_life_value_per_mw_input
     function(:end_of_life_value_per_mw_input) do
       residual_value_per_mw_input - decommissioning_costs_per_mw_input
@@ -11,6 +15,10 @@ class Qernel::ConverterApi
   end
   
   # The total of the costs of the installation per installed MW of input.
+  #
+  # Only used inside cost calculation (private method)
+  #
+  # DEPRECATED
   #
   def initial_investment_costs_per_mw_input
     function(:initial_investment_costs_per_mw_input) do
@@ -24,6 +32,10 @@ class Qernel::ConverterApi
   
   # Total fixed costs per year for the converter.
   #
+  # private method
+  #
+  # DEPRECATED
+  #
   def fixed_costs
     function(:fixed_costs) do
       sum_unless_empty [
@@ -36,6 +48,10 @@ class Qernel::ConverterApi
   
   # The total of fixed costs for the converter per year, based on how many units are required to meet demand.
   #
+  # private method
+  # 
+  # DEPRECATED
+  #
   def operation_and_maintenance_cost_fixed
     function(:operation_and_maintenance_cost_fixed) do
       operation_and_maintenance_cost_fixed_per_mw_input * mw_input_capacity
@@ -44,6 +60,10 @@ class Qernel::ConverterApi
   
   # Total capital cost for the converter per year.
   #
+  # Used in several gqueries for electricity and heat
+  #
+  # DEPRECATED
+  #
   def cost_of_capital_total
     function(:cost_of_capital_total) do
       cost_of_capital_per_mw_input * mw_input_capacity
@@ -51,6 +71,10 @@ class Qernel::ConverterApi
   end
   
   # The capital cost of the converter per MW input.
+  #
+  # private method
+  #
+  # DEPRECATED
   #
   def cost_of_capital_per_mw_input
     function(:cost_of_capital_per_mw_input) do
@@ -61,6 +85,10 @@ class Qernel::ConverterApi
   
   # The average investment is determined, to later determine the costs of financing this capital.
   #
+  # private method
+  #
+  # DEPRECATED
+  #
   def average_investment_per_mw_input
     function(:average_investment_per_mw_input) do
       (initial_investment_costs_per_mw_input + decommissioning_costs_per_mw_input) / 2
@@ -68,6 +96,10 @@ class Qernel::ConverterApi
   end
   
   # Calculates the total depreciation for the converter in euros per year. 
+  #
+  # Used in several gqueries for electricity and heat
+  #
+  # DEPRECATED
   #
   def depreciation_total
     function(:depreciation_total) do
@@ -77,6 +109,10 @@ class Qernel::ConverterApi
 
   # Calculates the depreciation for the converter in euros per mw input.
   #
+  # private method
+  #
+  # DEPRECATED
+  #
   def depreciation_per_mw_input
     function(:depreciation_per_mw_input) do
       (initial_investment_costs_per_mw_input - end_of_life_value_per_mw_input) / technical_lifetime
@@ -84,6 +120,10 @@ class Qernel::ConverterApi
   end
   
   # Sums the various variable costs.
+  #
+  # private method
+  #
+  # DEPRECATED
   #
   def variable_costs
     function(:variable_costs) do
@@ -97,6 +137,11 @@ class Qernel::ConverterApi
   
   # Sums the various fixed costs per MW input capacity.
   #
+  # Used in backup option overview chart:
+  # /supply/electricity_backup#backup-options 
+  # 
+  # DEPRECATED
+  #
   def fixed_costs_per_mw_input
     function(:fixed_costs_per_mw_input) do
       sum_unless_empty [
@@ -106,6 +151,8 @@ class Qernel::ConverterApi
   end
   
   # Sums the various variable costs per MWh input.
+  #
+  # Used in Merit Order module
   #
   def variable_costs_per_mwh_input
     function(:variable_costs_per_mwh_input) do
@@ -118,6 +165,11 @@ class Qernel::ConverterApi
   end
   
   # Calculates the total variable costs for the converter, including variable CCS costs.
+  # 
+  # Used in 3 GQL statements that display total O&M costs for all electricity
+  # and heat converters
+  #
+  # DEPRECATED
   #
   def operation_and_maintenance_cost_variable_total
     function(:operation_and_maintenance_cost_variable_total) do
@@ -145,6 +197,11 @@ class Qernel::ConverterApi
   end
   
   # The total costs of running the converter for 1 MWh of input.
+  #
+  # Used to calculate total_cost_per_mw_electricity (private method)
+  #
+  # DEPRECATED
+  #
   def total_cost_per_mwh_input
     function(:total_cost_per_mwh_input) do
       variable_costs_per_mwh_input + fixed_costs_per_mw_input / full_load_hours
@@ -152,6 +209,11 @@ class Qernel::ConverterApi
   end
 
   # The total costs of running the converter for 1 MWh of electricity.
+  #
+  # Used in cost scatter plot (y-axis)
+  #
+  # DEPRECATED
+  #
   def total_cost_per_mwh_electricity
     function(:total_cost_per_mwh_electricity) do
       total_cost_per_mwh_input / electricity_output_efficiency
@@ -159,6 +221,11 @@ class Qernel::ConverterApi
   end
 
   # The initial investment costs per MW of electricity capacity.
+  #
+  # Used in cost scatter plot (x-axis)
+  #
+  # DEPRECATED
+  #
   def initial_investment_costs_per_mw_electricity
     function(:initial_investment_costs_per_mw_electricity) do
       # return 0 if electricity_output_efficiency == 0
@@ -167,6 +234,8 @@ class Qernel::ConverterApi
   end
   
   ## Returns the purchase price of one unit 
+  #
+  # Used in ETEngine converter overview page
   #
   def purchase_price_per_unit
     function(:purchase_price_per_unit) do
