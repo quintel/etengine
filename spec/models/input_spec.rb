@@ -166,11 +166,11 @@ describe Input do
 
     describe 'label_value_for' do
       it 'should return the value when given Gql::Gql' do
-        input.label_value_for(gql).should eql(500)
+        input.label_value_for(gql).to_f.should eql(500.0)
       end
 
       it 'should return the value when given Scenario' do
-        input.label_value_for(scenario).should eql(500)
+        input.label_value_for(scenario).to_f.should eql(500.0)
       end
     end
 
