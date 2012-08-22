@@ -37,9 +37,15 @@ development: &DEV
     # set to true if you want see the backtrace in production. Development will
     # always show it
     show_backtrace: false
+
 production:
     <<: *DEV
     airbrake_api_key: '3ea5a72aad48a32d7bb486bc71ad4fd5'
 
-test:
+test: &TEST
     <<: *DEV
+
+ci:
+    <<: *TEST
+    etsource_export: tmp/etsource
+    etsource_working_copy: tmp/etsource
