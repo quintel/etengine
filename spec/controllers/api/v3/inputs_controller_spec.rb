@@ -77,7 +77,8 @@ describe Api::V3::InputsController do
       end
 
       it 'should be present when an input has a label' do
-        json[static_input.key].should include('label' => '32.0 g')
+        json[static_input.key].should \
+          include('label' => { 'value' => 32.0, 'suffix' => 'g'})
       end
 
       it 'should not be present when an input is not disabled' do
@@ -146,7 +147,7 @@ describe Api::V3::InputsController do
        static_input.label_query = 'present:2 * 16'
        static_input.label       = 'g'
 
-       json['label'].should eql('32.0 g')
+       json['label'].should eql('value' => 32.0, 'suffix' => 'g')
      end
 
      it 'is present when an input is not disabled' do
