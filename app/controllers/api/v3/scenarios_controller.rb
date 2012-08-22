@@ -32,6 +32,12 @@ module Api
       def create
         attrs = Scenario.default_attributes.merge(params[:scenario] || {})
 
+        if attrs.key?(:scenario_id) || attrs.key?(:preset_scenario_id)
+          # If user_values is assigned after the preset ID, we would wipe out
+          # the preset user values.
+          attrs.delete(:user_values)
+        end
+
         @scenario = Scenario.new(attrs)
 
         if @scenario.save
