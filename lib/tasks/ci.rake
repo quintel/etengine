@@ -1,6 +1,4 @@
 namespace :ci do
-  ETSOURCE_REPO = 'git@github.com:dennisschoenmakers/etsource.git'
-
   desc <<-DESC
     Runs tasks to prepare a CI build on Semaphore.
   DESC
