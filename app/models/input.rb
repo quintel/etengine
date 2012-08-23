@@ -378,7 +378,8 @@ class Input
   #
   def wrap_gql_errors(attribute)
     begin
-      yield
+      yield ||
+        raise("#{ attribute } GQL value for #{ @key } input returned nil")
     rescue Exception => e
       raise InputGQLError.new(e, self, attribute)
     end
