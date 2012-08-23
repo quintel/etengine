@@ -3,23 +3,23 @@
 # 
 # 
 # Costs can be calculated in different units...
-# MW input: for backup options chart  DEBT: this should be done differently
-# MWe: for costs scatter plot
-# MWth: 
+# mw_input: for backup options chart  DEBT: this should be done differently
+# mw_electricity: for costs scatter plot
+# mw_heat: 
 # converter: for total cost calculations of an area
-# MWh input: for Merit Order
-# MWhe: for costs scatter plot
-# MWhth: 
+# mwh_input: for Merit Order
+# mwh_electricity: for costs scatter plot
+# mwh_heat: 
 
 
 # Calculation methods to go from plant to another unit:
-# MW input: divide by method effective_input_capacity
-# MWe: divide by attribute output_capacity_electricity
-# MWth: divide by attribute output_capacity_heat
+# mw_input: divide by method effective_input_capacity
+# mw_electricity: divide by attribute output_capacity_electricity
+# mw_heat: divide by attribute output_capacity_heat
 # converter: multiply by (real_)number_of_units
-# MWh input: divide by (demand / SECS_PER_HOUR / (real_)number_of_units)
-# MWhe: 
-# MWhth: 
+# mwh_input: divide by (demand / SECS_PER_HOUR / (real_)number_of_units)
+# mwh_electricity: divide by (output_of_electricity / SECS_PER_HOUR / (real_)number_of_units)
+# mwh_heat: divide by (output_of_heat_carriers / SECS_PER_HOUR / (real_)number_of_units)
 
 
 
