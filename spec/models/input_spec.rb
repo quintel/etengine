@@ -211,4 +211,64 @@ describe Input do
     end
   end
 
+  context 'when the input have nil GQL start, minimum, and maximum' do
+    let(:input) do
+      Factory.build(:input, {
+        key:             'test-input',
+        start_value_gql: 'present:nil',
+        min_value_gql:   'present:nil',
+        max_value_gql:   'present:nil',
+        label_query:     'present:nil'
+      })
+    end
+
+    describe 'min_value_for' do
+      it 'should raise an error when given Gql::Gql' do
+        expect { input.min_value_for(gql) }.
+          to raise_error(/returned nil/)
+      end
+
+      it 'should return the value when given Scenario' do
+        expect { input.min_value_for(scenario) }.
+          to raise_error(/returned nil/)
+      end
+    end
+
+    describe 'max_value_for' do
+      it 'should return the value when given Gql::Gql' do
+        expect { input.max_value_for(gql) }.
+          to raise_error(/returned nil/)
+      end
+
+      it 'should return the value when given Scenario' do
+        expect { input.max_value_for(scenario) }.
+          to raise_error(/returned nil/)
+      end
+    end
+
+    describe 'start_value_for' do
+      it 'should return the value when given Gql::Gql' do
+        expect { input.start_value_for(gql) }.
+          to raise_error(/returned nil/)
+      end
+
+      it 'should return the value when given Scenario' do
+        expect { input.start_value_for(scenario) }.
+          to raise_error(/returned nil/)
+      end
+    end
+
+    describe 'label_value_for' do
+      it 'should return the value when given Gql::Gql' do
+        expect { input.label_value_for(gql) }.
+          to raise_error(/returned nil/)
+      end
+
+      it 'should return the value when given Scenario' do
+        expect { input.label_value_for(scenario) }.
+          to raise_error(/returned nil/)
+      end
+    end
+  end
+
 end
