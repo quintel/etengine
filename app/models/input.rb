@@ -227,7 +227,7 @@ class Input
     if gql_or_scenario.is_a?(Scenario)
       Input.cache.read(gql_or_scenario, self)[:label]
     else
-      value = wrap_gql_errors(:label) do
+      value = wrap_gql_errors(:label, true) do
         gql_or_scenario.query_present(@label_query)
       end
 
@@ -248,9 +248,11 @@ class Input
     if gql_or_scenario.is_a?(Scenario)
       Input.cache.read(gql_or_scenario, self)[:default]
     elsif @start_value_gql.present?
-      factor * wrap_gql_errors(:start) do
+      start = wrap_gql_errors(:start, true) do
         gql_or_scenario.query(@start_value_gql)
       end
+
+      start.nil? ? min_value_for(gql_or_scenario) : start
     else
       @start_value
     end
@@ -376,10 +378,15 @@ class Input
   # @example
   #   wrap_exceptions(:min) { gql.query(@min_value_gql) }
   #
-  def wrap_gql_errors(attribute)
+  def wrap_gql_errors(attribute, allow_nil = false)
     begin
-      yield ||
-        raise("#{ attribute } GQL value for #{ @key } input returned nil")
+      value = yield
+
+      if value.nil? && ! allow_nil
+        raise "#{ attribute } GQL value for #{ @key } input returned nil"
+      end
+
+      value
     rescue Exception => e
       raise InputGQLError.new(e, self, attribute)
     end

@@ -215,8 +215,11 @@ describe Input do
     let(:input) do
       Factory.build(:input, {
         key:             'test-input',
+        start_value:      nil,
         start_value_gql: 'present:nil',
+        min_value:        nil,
         min_value_gql:   'present:nil',
+        max_value:        nil,
         max_value_gql:   'present:nil',
         label_query:     'present:nil'
       })
@@ -247,28 +250,46 @@ describe Input do
     end
 
     describe 'start_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        expect { input.start_value_for(gql) }.
-          to raise_error(/returned nil/)
+      context 'and the input has no minimum value value' do
+        it 'should return the value when given Gql::Gql' do
+          expect { input.start_value_for(gql) }.
+            to raise_error(/returned nil/)
+        end
+
+        it 'should return the value when given Scenario' do
+          expect { input.start_value_for(scenario) }.
+            to raise_error(/returned nil/)
+        end
       end
 
-      it 'should return the value when given Scenario' do
-        expect { input.start_value_for(scenario) }.
-          to raise_error(/returned nil/)
+      context 'and the input has a minimum value' do
+        before do
+          input.min_value_gql = 'present:5.0'
+          input.max_value_gql = 'present:8.0'
+        end
+
+        it 'should return the value when given Gql::Gql' do
+          input.start_value_for(gql).should eql(5.0)
+        end
+
+        it 'should return the value when given Scenario' do
+          input.start_value_for(scenario).should eql(5.0)
+        end
       end
     end
 
     describe 'label_value_for' do
       it 'should return the value when given Gql::Gql' do
-        expect { input.label_value_for(gql) }.
-          to raise_error(/returned nil/)
+        input.label_value_for(gql).should be_nil
       end
 
       it 'should return the value when given Scenario' do
-        expect { input.label_value_for(scenario) }.
-          to raise_error(/returned nil/)
+        input.min_value_gql = 'present:5.0'
+        input.max_value_gql = 'present:8.0'
+
+        input.label_value_for(scenario).should be_nil
       end
     end
-  end
+  end # when the input have nil GQL start, minimum, and maximum
 
 end
