@@ -252,7 +252,7 @@ class Input
         gql_or_scenario.query(@start_value_gql)
       end
 
-      start.nil? ? min_value_for(gql_or_scenario) : start
+      start.nil? ? min_value_for(gql_or_scenario) : start * factor
     else
       @start_value
     end
