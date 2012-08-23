@@ -23,47 +23,47 @@ module Qernel
       #
 
       it "should calculate correctly when electrical capacity and electrical efficiency are given" do
-        @c.with electricity_output_conversion: 0.4, output_capacity_electricity: 800
+        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800
         @c.converter_api.nominal_input_capacity.should == 2000
       end
 
       it "should calculate correctly when both heat and electrical capacity and heat and electrical efficiency are given" do
-        @c.with electricity_output_conversion: 0.4, output_capacity_electricity: 800, heat_output_conversion: 0.1, output_capacity_heat: 400
+        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, heat_output_conversion: 0.1, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 2000
       end
 
       it "should calculate correctly when heat capacity and heat efficiency are given" do
-        @c.with heat_output_conversion: 0.1, output_capacity_heat: 400
+        @c.with heat_output_conversion: 0.1, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 4000
       end
 
       it "should return zero when no efficiencies are set" do
-        @c.with heat_output_conversion: nil, electricity_output_conversion: nil, output_capacity_electricity: 800, output_capacity_heat: 400
+        @c.with heat_output_conversion: nil, electricity_output_conversion: nil, electricity_output_capacity: 800, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 0.0
       end
       
       it "should return zero when electrical efficiency and heat capacity are not set" do
-        @c.with heat_output_conversion: 0.1, electricity_output_conversion: nil, output_capacity_electricity: 800, output_capacity_heat: nil
+        @c.with heat_output_conversion: 0.1, electricity_output_conversion: nil, electricity_output_capacity: 800, heat_output_capacity: nil
         @c.converter_api.nominal_input_capacity.should == 0.0
       end
       
       it "should return zero when heat efficiency and electrical capacity not set" do
-        @c.with heat_output_conversion: nil, electricity_output_conversion: 0.4, output_capacity_electricity: nil, output_capacity_heat: 400
+        @c.with heat_output_conversion: nil, electricity_output_conversion: 0.4, electricity_output_capacity: nil, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 0.0
       end
 
       it "should return zero when efficiencies are zero" do
-        @c.with heat_output_conversion: 0, electricity_output_conversion: 0, output_capacity_heat: 400, output_capacity_electricity: 800
+        @c.with heat_output_conversion: 0, electricity_output_conversion: 0, heat_output_capacity: 400, electricity_output_capacity: 800
         @c.converter_api.nominal_input_capacity.should == 0.0
       end
 
       it "should return zero when electrical capacity and heat capacity are not set" do
-        @c.with output_capacity_heat: nil, output_capacity_electricity: nil, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
+        @c.with heat_output_capacity: nil, electricity_output_capacity: nil, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
         @c.converter_api.nominal_input_capacity.should == 0
       end
       
       it "should should raise an error when electrical efficiency is 0" do
-        @c.with output_capacity_heat: nil, output_capacity_electricity: 800, heat_output_conversion: nil, electricity_output_conversion: 0
+        @c.with heat_output_capacity: nil, electricity_output_capacity: 800, heat_output_conversion: nil, electricity_output_conversion: 0
         lambda { @c.converter_api.nominal_input_capacity }.should raise_error(ZeroDivisionError)
       end
       
@@ -92,12 +92,12 @@ module Qernel
       end
       
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is nil" do
-        @c.with electricity_output_conversion: 0.4, output_capacity_electricity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
+        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
         @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
       end
 
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is 100%" do
-        @c.with electricity_output_conversion: 0.4, output_capacity_electricity: 800, average_effective_output_of_nominal_capacity_over_lifetime: 1
+        @c.with electricity_output_conversion: 0.4, heat_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: 1
         @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
       end
 

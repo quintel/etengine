@@ -42,9 +42,9 @@ class Qernel::ConverterApi
   def nominal_input_capacity
      function(:nominal_input_capacity) do
        if electricity_output_conversion > 0.0
-         output_capacity_electricity / electricity_output_conversion
+         electricity_output_capacity / electricity_output_conversion
        elsif heat_output_conversion > 0.0
-         output_capacity_heat / heat_output_conversion
+         heat_output_capacity / heat_output_conversion
        else
          0.0
        end
@@ -55,7 +55,7 @@ class Qernel::ConverterApi
    # nominal input capacity and the average effective capacity over
    # the lifetime of a plant.
    # 
-   # Assumes 100% when average_effective_output_of_nominal_capacity_over_lifetime
+   # DEBT: Assumes 100% when average_effective_output_of_nominal_capacity_over_lifetime
    # is not set (nil).
    #
    # @param [] 
@@ -177,7 +177,7 @@ class Qernel::ConverterApi
   # input capacity and the full_load_seconds of the converter (to effectively)
   # convert MJ and MW 
   #
-  # DEBT: should be called number_of_units, but this is already taken
+  # DEBT: should be called number_of_units, but this is already taken in the app
   #
   def real_number_of_units
     function(:real_number_of_units) do

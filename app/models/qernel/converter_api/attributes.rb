@@ -15,8 +15,8 @@ module Qernel
         :fixed_operation_and_maintenance_costs => ['desc', 'euro / unit / year'],
         :variable_operation_and_maintenance_costs => ['desc', 'euro / full load hour'],
         :variable_operation_and_maintenance_costs_for_ccs => ['desc', 'euro / full load hour'],
-        :output_capacity_electricity => ['desc', 'MWe'],
-        :output_capacity_heat => ['desc', 'MWth']        
+        :electricity_output_capacity => ['desc', 'MWe'],
+        :heat_output_capacity => ['desc', 'MWth']        
       },
       
       :operational => {
