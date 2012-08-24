@@ -501,7 +501,7 @@ namespace :bulk_update do
       end
       
       #update user values to key last time to do this. API v3 is this default
-      new_inputs = {}
+      new_inputs = {}.with_indifferent_access
       inputs.each do |x|
         # convert strings values to float
         if x[1].is_a?(String)
@@ -520,18 +520,18 @@ namespace :bulk_update do
           new_inputs[key] = x[1]
         end
       end
-      inputs = new_inputs
 
       # Rounding all inputs
-      inputs.each do |x|
+      new_inputs.each do |x|
         x[1] =x[1].round(1) unless x[1].nil?
       end
 
       ################ END ####################################
+      
 
       if @update_records || ENV['PRESETS']
         puts "saving"
-        s.update_attributes!(:user_values => inputs)
+        s.update_attributes!(:user_values => new_inputs)
       end
 
     end    
