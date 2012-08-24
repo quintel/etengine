@@ -134,7 +134,7 @@ namespace :bulk_update do
       scenario_scope = Scenario.where(:id => Preset.all.map(&:id))
       puts "Trying to updating #{scenario_scope.length} presets"
     else
-      puts "!!!!Look out this script isn't designed for all scenario's. only for preset scenarios!!!!"
+      puts "!!!!Look out this script update all scenarios!!!!"
       scenario_scope = Scenario.order('id')
     end
     @update_records = HighLine.agree("You want to update records, right? [y/n]")
