@@ -22,8 +22,12 @@ module Etsource
       base_dir = "#{@etsource.export_dir}/inputs"
 
       Dir.glob("#{base_dir}/**/*.yml").map do |f|
-        Input.load_yaml(File.read(f))
+        attributes = YAML.load_file(f)
+        attributes[:key] = f.split('/').last.split('.').first.strip
+        attributes[:lookup_id] ||= attributes.delete('id')
+        Input.new(attributes)
       end
+
     end
 
   end

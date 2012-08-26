@@ -68,12 +68,6 @@ class Input
     end
   end
 
-  def self.load_yaml(str)
-    attributes = YAML::load( str )
-    attributes[:lookup_id] ||= attributes.delete('id')
-    Input.new(attributes)
-  end
-
   def self.load_records
     h = {}
     Etsource::Loader.instance.inputs.each do |input|
