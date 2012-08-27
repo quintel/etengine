@@ -44,13 +44,8 @@ class Qernel::ConverterApi
   #
   def nominal_input_capacity
     function(:nominal_input_capacity) do
-      if electricity_output_conversion && electricity_output_conversion > 0.0
-        electricity_output_capacity / electricity_output_conversion
-      elsif heat_output_conversion && heat_output_conversion > 0.0
-        heat_output_capacity / heat_output_conversion
-      else
-        0.0
-      end
+      electric_based_nominal_output_capacity ||
+        heat_based_nominal_output_capacity || 0.0
     end
   end
 
@@ -58,18 +53,22 @@ class Qernel::ConverterApi
   # nominal input capacity and the average effective capacity over
   # the lifetime of a plant.
   #
-  # DEBT: Assumes 100% when
-  # average_effective_output_of_nominal_capacity_over_lifetime
-  # is not set (nil).
+  # Assumes a value of 100% when
+  # average_effective_output_of_nominal_capacity_over_lifetime is not set
   #
   # @param []
   #
   # @return [Float] Effective input capacity of a typical plant in MW
   #
   def effective_input_capacity
-   function(:effective_input_capacity) do
-     nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
-   end
+    function(:effective_input_capacity) do
+      if average_effective_output_of_nominal_capacity_over_lifetime
+        nominal_input_capacity *
+          average_effective_output_of_nominal_capacity_over_lifetime
+      else
+        nominal_input_capacity
+      end
+    end
   end
 
   ##########################
@@ -103,7 +102,7 @@ class Qernel::ConverterApi
   def fixed_costs
     function(:fixed_costs) do
       cost_of_capital + depreciation_costs +
-      fixed_operation_and_maintenance_costs
+        fixed_operation_and_maintenance_costs
     end
   end
 
@@ -123,8 +122,8 @@ class Qernel::ConverterApi
   def cost_of_capital
     function(:cost_of_capital) do
       average_investment_costs * wacc *
-      (construction_time + technical_lifetime) /
-      technical_lifetime
+        (construction_time + technical_lifetime) /
+          technical_lifetime
     end
   end
 
@@ -159,7 +158,7 @@ class Qernel::ConverterApi
   def variable_costs
     function(:variable_costs) do
       fuel_costs + co2_emissions_costs +
-      variable_operation_and_maintenance_costs_including_ccs
+        variable_operation_and_maintenance_costs_including_ccs
     end
   end
 
@@ -176,8 +175,7 @@ class Qernel::ConverterApi
   end
 
   # DEBT: rename co2_free and part_ets
-  # DEBT: maybe move the factors of how much CO2 has to be paid to a separate
-  # function ?
+  # DEBT: move factors to a separate function ?
   #
   # input of fuel in mj * the amount of co2 per mj * the co2 price * how much
   # co2 is given away for free * how much of the co2 of this plant is in ETS
@@ -188,15 +186,15 @@ class Qernel::ConverterApi
     function(:co2_emissions_costs) do
       if number_of_units >= 0
         (demand * weighted_carrier_co2_per_mj * area.co2_price *
-        (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
-        number_of_units
+          (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
+            number_of_units
       else
         0
       end
     end
   end
 
-   # Calculates the number of units that are installed in the future for this
+  # Calculates the number of units that are installed in the future for this
   # converter, based on the demand (input) of the converter, the effective
   # input capacity and the full_load_seconds of the converter (to effectively)
   # convert MJ and MW
@@ -207,12 +205,11 @@ class Qernel::ConverterApi
     end
   end
 
- #DEBT: method and attribute have same name!
   def variable_operation_and_maintenance_costs_including_ccs
     function(:variable_operation_and_maintenance_costs_including_ccs) do
-      (variable_operation_and_maintenance_costs +
-       variable_operation_and_maintenance_costs_for_ccs) *
-      full_load_hours
+      full_load_hours * (
+        variable_operation_and_maintenance_costs +
+        variable_operation_and_maintenance_costs_for_ccs )
     end
   end
 
@@ -263,12 +260,25 @@ class Qernel::ConverterApi
   # Used to calculate yearly depreciation costs
   #
   # DEBT: this function should be used for investment costs in the scatter
-  # plot of the ETM as well. Move up to public methods if making it so.
+  #   plot of the ETM as well.
+  # DEBT: should be named total_investments (without costs)
   def total_investment_costs
     function(:total_investment_costs) do
       initial_investment_costs + decommissioning_costs
     end
   end
 
+  # Used for calculating the nominal_output_capacity
+  def electric_based_nominal_output_capacity
+    function(:electric_based_nominal_output_capacity) do
+      electricity_output_capacity / electricity_output_conversion rescue nil
+    end
+  end
+
+  def heat_based_nominal_output_capacity
+    function(:heat_based_nominal_output_capacity) do
+      heat_output_capacity / heat_output_conversion rescue nil
+    end
+  end
 
 end

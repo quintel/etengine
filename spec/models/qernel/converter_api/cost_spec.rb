@@ -40,7 +40,7 @@ module Qernel
       end
 
       it "should raise error when incomplete" do
-        pending "Data Validations of Converters upon loading / importing" do
+        pending "Data validations of Converters upon loading / importing" do
           @c.with electricity_output_conversion: 0.4,
                   electricity_output_capacity: nil,
                   heat_output_conversion: nil,
@@ -50,7 +50,7 @@ module Qernel
       end
 
       it "should raise error when capicity-e/eff-e != capacity-h/eff-h" do
-        pending "Implementation of raising error" do
+        pending "Data validations of Converters upon loading / importing" do
           @c.with heat_output_capacity: 400, electricity_output_capacity: 1000, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
           expect { @c.converter_api.nominal_input_capacity }.to raise_error
         end
@@ -70,11 +70,10 @@ module Qernel
         @c.converter_api.effective_input_capacity.should == 0.0
       end
 
-      it "should calculate correctly when nominal_input capacity is not set" do
-        pending "rescue when nil" do
-          @c.with nominal_input_capacity: nil, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
-          @c.converter_api.effective_input_capacity.should == 0.0
-        end
+      # Failing
+      it "should return zero when nominal_input capacity is zero" do
+        @c.with nominal_input_capacity: 0, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
+        @c.converter_api.effective_input_capacity.should == 0.0
       end
 
       it "should calculate correctly when average_effective_output_of_nominal_capacity_over_lifetime is zero" do
@@ -83,10 +82,8 @@ module Qernel
       end
 
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is nil" do
-        pending "Assume 100% (1.0) when nil" do
-          @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
-          @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
-        end
+        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
+        @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
       end
 
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is 100%" do
@@ -120,21 +117,21 @@ module Qernel
       end
 
       it "should add correctly when cost_of_capital is nil" do
-        pending "rescue when nil" do
+        pending "Data validations of Converters upon loading / importing" do
           @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
           @c.converter_api.fixed_costs.should == 500
         end
       end
 
       it "should add correctly when depreciation costs are nil" do
-        pending "rescue when nil" do
+        pending "Data validations of Converters upon loading / importing" do
           @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs: 300
           @c.converter_api.fixed_costs.should == 400
         end
       end
 
       it "should add correctly when fixed O&M costs are nil" do
-        pending "rescue when nil" do
+        pending "Data validations of Converters upon loading / importing" do
           @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: nil
           @c.converter_api.fixed_costs.should == 300
         end
@@ -143,10 +140,23 @@ module Qernel
     end
 
     describe '#cost_of_capital' do
-      # should calculate when everything is set
-      # should raise error when wacc is zero (pending error raising)
-      # should raise error when technical lifetime is 0 or nil (pending error raising)
-      # should assume 0 when construction time is nil (pending rescue on nil)
+
+      it "should calculate when all values are given" do
+        pending "TODO Wouter?"
+      end
+
+      it "should handle nil values" do
+        pending "Data validations of Converters upon loading / importing"
+      end
+
+      it "should raise error when technical life time is zero" do
+        pending "Data validations of Converters upon loading / importing"
+      end
+
+      it "should raise error when construction time is zero" do
+        pending "Data validations of Converters upon loading / importing"
+      end
+
     end
 
     describe '#depreciation_costs' do
