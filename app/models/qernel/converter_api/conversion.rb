@@ -1,7 +1,7 @@
 class Qernel::ConverterApi
 
   # For the following methods we want to have a method that
-  # returns the value per unit.
+  # returns the cost per unit.
   #
   # Example:
   #   total_costs_per(:converter)
@@ -28,7 +28,8 @@ class Qernel::ConverterApi
   private
   #######
 
-  # This methods converts an outcome of a Converter to another unit,
+  # This methods converts the cost of one (typical sized) 'plant'
+  # to another unit.
   #
   # Example:
   #   convert_to(1000, :mw_input)
@@ -40,30 +41,30 @@ class Qernel::ConverterApi
   #   convert_to(total_costs, :mw_input)
   #   => 12972.12
   #
-  def convert_to(value, unit)
+  def convert_to(cost, unit)
     case
 
     # Plant and Converter
     when unit == :plant
-      value
+      cost
     when unit == :converter
-      value * real_number_of_units
+      cost * real_number_of_units
 
     # MW
     when unit == :mw_input
-      value / effective_input_capacity
+      cost / effective_input_capacity
     when unit == :mw_electricity
-      value / output_capacity_electricity
+      cost / output_capacity_electricity
     when unit == :mw_heat
-      value / output_capacity_heat
+      cost / output_capacity_heat
 
     # MWh
     when unit == :mwh_input
-      value / demand / SECS_PER_HOUR / real_number_of_units
+      cost / demand / SECS_PER_HOUR / real_number_of_units
     when unit == :mwh_electricity
-      value / output_of_electricity / SECS_PER_HOUR / real_number_of_units
+      cost / output_of_electricity / SECS_PER_HOUR / real_number_of_units
     when unit == :mwh_heat
-      value / output_of_heat_carriers / SECS_PER_HOUR / real_number_of_units
+      cost / output_of_heat_carriers / SECS_PER_HOUR / real_number_of_units
 
     # Some other unit that is unknown
     else
