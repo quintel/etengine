@@ -7,7 +7,7 @@ module Gql::QueryInterface::Lookup
   def update_object=(object)
     @update_object = object
   end
-  
+
   def update_collection
     @update_collection
   end
@@ -19,9 +19,13 @@ module Gql::QueryInterface::Lookup
   def big_decimal(n)
     BigDecimal(n)
   end
-  
+
   def scenario
     @gql.scenario
+  end
+
+  def present?
+    graph.present?
   end
 
   # @param [String] Graph API Method.
