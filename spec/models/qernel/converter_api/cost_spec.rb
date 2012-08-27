@@ -32,16 +32,19 @@ module Qernel
         @c.converter_api.nominal_input_capacity.should == 4000
       end
 
-      it "should return zero when all variables are not set or zero" do
-        pending "Implementation to rescue upon nil" do
-          @c.with heat_output_capacity: nil, electricity_output_capacity: 0, heat_output_conversion: nil, electricity_output_conversion: 0
-          @c.converter_api.nominal_input_capacity.should == 0
-        end
+      it "should return zero when capacity and conversion are both zero" do
+        @c.with electricity_output_capacity: 0, electricity_output_conversion: 0
+        @c.converter_api.nominal_input_capacity.should == 0
+        @c.with heat_output_capacity: 0, heat_output_conversion: 0
+        @c.converter_api.nominal_input_capacity.should == 0
       end
 
       it "should raise error when incomplete" do
-        pending "Implementation of raising error" do
-          @c.with electricity_output_conversion: 0.4, electricity_output_capacity: nil, heat_output_conversion: nil, heat_output_capacity: 400
+        pending "Data Validations of Converters upon loading / importing" do
+          @c.with electricity_output_conversion: 0.4,
+                  electricity_output_capacity: nil,
+                  heat_output_conversion: nil,
+                  heat_output_capacity: 400
           expect { @c.converter_api.nominal_input_capacity }.to raise_error
         end
       end
