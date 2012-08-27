@@ -1,7 +1,6 @@
 class Qernel::ConverterApi
 
-  # RD: This method is used by the number_of_units_update in multicommand factory
-  # I dont think this belongs here!
+  # DEBT: Remove this method if no longer used
   def number_of_units=(val)
     dataset_set(:number_of_units, val)
   end
