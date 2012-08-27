@@ -148,34 +148,34 @@ module Qernel
       # should raise error when technical lifetime is 0 or nil (pending error raising)
       # should assume 0 when construction time is nil (pending rescue on nil)
     end
-    
+
     describe '#depreciation_costs' do
       # should calculate when everything is set
       # should raise error when total_investment_costs - residual_value < 0 (pending error raising)
       # should assume 0 when residual_value is nil
       # should raise error when technical_lifetime is 0 or nil
     end
-    
+
     describe '#variable_costs' do
       it "should calculate correctly when values are given" do
         @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
         @c.converter_api.variable_costs.should == 600
       end
-      
+
       it "should add correctly when cost_of_capital is nil" do
         pending "rescue when nil" do
           @c.with fuel_costs: nil, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
           @c.converter_api.variable_costs.should == 500
         end
       end
-      
+
       it "should add correctly when depreciation costs are nil" do
         pending "rescue when nil" do
           @c.with fuel_costs: 100, co2_emissions_costs: nil, variable_operation_and_maintenance_costs: 300
           @c.converter_api.variable_costs.should == 400
         end
       end
-      
+
       it "should add correctly when fixed O&M costs are nil" do
         pending "rescue when nil" do
           @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: nil
@@ -183,33 +183,33 @@ module Qernel
         end
       end
     end
-    
+
     describe "#fuel_costs" do
       # should calculate when everything is set
       # should return 0 when real_number_of_units <= 0
       # should raise error when real_number_of_units is nil (pending error raising)
     end
-    
+
     describe '#co2_emissions_costs' do
       # DEBT: first refactor method
     end
-    
+
     describe '#variable_operations_and_maintenance_costs' do
       # should calculate when everything is set
       # should return 0 when full_load_hours is nil (pending)
       # should treat everything nil as 0 in the calculation (pending)
     end
-    
+
     describe '#initial_investment_costs' do
       # should calculate when everything is set
       # should treat nil as 0 (pending rescue on nil)
     end
-    
+
     describe '#average_investment_costs' do
       # should calculate when everything is set
       # should treat nil as 0 (pending rescue on nil)
     end
-    
+
     describe '#total_investment_costs' do
       # should calculate when everything is set
       # should treat nil as 0 (pending rescue on nil)
