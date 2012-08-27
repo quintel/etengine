@@ -1,15 +1,15 @@
 # Supplies the Converter API with methods to calculate the yearly costs
 # of a converter in a number of different units
-# 
-# 
+#
+#
 # Costs can be calculated in different units...
 # mw_input: for backup options chart  DEBT: this should be done differently
 # mw_electricity: for costs scatter plot
-# mw_heat: 
+# mw_heat:
 # converter: for total cost calculations of an area
 # mwh_input: for Merit Order
 # mwh_electricity: for costs scatter plot
-# mwh_heat: 
+# mwh_heat:
 
 
 # Calculation methods to go from plant to another unit:
@@ -30,13 +30,13 @@ class Qernel::ConverterApi
   ############################
 
   # Calculates the input capacity of a typical plant, based on
-  # the output capacity in MW. 
+  # the output capacity in MW.
   # If the converter has an electrical efficiency this is used to calculate
   # the input capacity, otherwise it uses the heat capacity
   #
   # @param []
-  #   
-  # 
+  #
+  #
   # @return [Float] Input capacity of a typical plant
   #
   def nominal_input_capacity
@@ -54,12 +54,12 @@ class Qernel::ConverterApi
    # Calculates the effective input capacity of a plant (in MW) based on the
    # nominal input capacity and the average effective capacity over
    # the lifetime of a plant.
-   # 
+   #
    # DEBT: Assumes 100% when average_effective_output_of_nominal_capacity_over_lifetime
    # is not set (nil).
    #
-   # @param [] 
-   # 
+   # @param []
+   #
    # @return [Float] Effective input capacity of a typical plant in MW
    #
    def effective_input_capacity
@@ -67,7 +67,7 @@ class Qernel::ConverterApi
        nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
      end
    end
-   
+
    ##########################
    # Total Cost calculation #
    ##########################
@@ -76,8 +76,8 @@ class Qernel::ConverterApi
    # Total cost is made up of fixed costs and variable costs.
    #
    # In GQL use total_cost_per_unit (where unit is the unit parameter)
-   # 
-   # @param [symbol] 
+   #
+   # @param [symbol]
    #  Unit in which the total cost should be calculated.
    #  Possible units: :unit, :mw, :mwh, :mj, :converter
    #
@@ -93,7 +93,7 @@ class Qernel::ConverterApi
   ###########################
   # Fixed Costs calculation #
   ###########################
-  
+
   # Calculates the fixed costs of a converter in a given unit.
   # Fixed costs are made up of cost of capital, depreciation costs
   # and fixed operation and maintenance costs.
@@ -112,10 +112,10 @@ class Qernel::ConverterApi
 
   # Calculates the yearly costs of capital for the unit, based on the average
   # yearly payment, the weighted average cost of capital (WACC) and a factor
-  # to include the construction time in the total rent period of the loan. 
-  # ETM assumes that capital has to be held during construction time 
+  # to include the construction time in the total rent period of the loan.
+  # ETM assumes that capital has to be held during construction time
   # (and so interest has to be paid during this period) and that technical
-  # and economic lifetime are the same. 
+  # and economic lifetime are the same.
   #
   # Used in the calculation of fixed costs
   #
@@ -146,7 +146,7 @@ class Qernel::ConverterApi
   ##############################
   # Variable Costs calculation #
   ##############################
-  
+
   # Calculates the variable costs in a given unit. Defaults to plant.
   # The variable costs cannot be calculated without knowing how much
   # fuel is consumed by the plant, how much this (mix of) fuel costs
@@ -162,9 +162,9 @@ class Qernel::ConverterApi
       fuel_costs + co2_emissions_costs + variable_operation_and_maintenance_costs
     end
   end
-  
+
   # Calculates the fuel costs for a single plant, based on the input of fuel
-  # for one plant, the 
+  # for one plant, the
   def fuel_costs
     function(:fuel_costs) do
       return 0 if real_number_of_units <= 0
@@ -175,7 +175,7 @@ class Qernel::ConverterApi
   # Calculates the number of units that are installed in the future for this
   # converter, based on the demand (input) of the converter, the effective
   # input capacity and the full_load_seconds of the converter (to effectively)
-  # convert MJ and MW 
+  # convert MJ and MW
   #
   # DEBT: should be called number_of_units, but this is already taken in the app
   #
@@ -184,7 +184,7 @@ class Qernel::ConverterApi
       demand / (effective_input_capacity * full_load_seconds) rescue 0
     end
   end
-  
+
   # DEBT: rename co2_free and part_ets
   # DEBT: maybe move the factors of how much CO2 has to be paid to a separate
   # function ?
@@ -200,7 +200,7 @@ class Qernel::ConverterApi
       (demand * weighted_carrier_co2_per_mj * self.area.co2_price * (1 - self.area.co2_percentage_free) *  part_ets * ((1 - co2_free))) / real_number_of_units
     end
   end
-  
+
   #DEBT: method and attribute have same name!
   def variable_operations_and_maintenance_costs
     function(:variable_operations_and_maintenance_costs) do
@@ -214,14 +214,14 @@ class Qernel::ConverterApi
   ###################
 
   # Calculates the inital investment costs of a plant, based on the
-  # initial investment (purchase costs), installation costs and 
+  # initial investment (purchase costs), installation costs and
   # the additional cost for CCS (if applicable)
   #
   # Used in the scatter plot for costs
   #
   # DEBT: It would be better to use the total investment costs in the scatter
   # plot
-  # 
+  #
   def initial_investment_costs
     function(:initial_investment_costs) do
       initial_investment + ccs_investment + cost_of_installing
@@ -232,18 +232,18 @@ class Qernel::ConverterApi
   #########
   private
   #########
-  
+
   # The average yearly installment of capital cost repayments, assuming
   # a linear repayment scheme. That is why divided by 2, to be at 50% between
-  # initial cost and 0. 
+  # initial cost and 0.
   #
-  # DEBT: decomissioning costs should be paid at the end of lifetime, 
-  # and so should not have a WACC associated with it. 
+  # DEBT: decomissioning costs should be paid at the end of lifetime,
+  # and so should not have a WACC associated with it.
   #
   # DEBT: wrong term. It's not the average investment costs, but it is
   # the investment still left after 50% of the repayment period (which is
   # equal to the construction time + the technical lifetime)
-  # 
+  #
   # Used to determine cost of capital
   #
   def average_investment_costs
@@ -251,7 +251,7 @@ class Qernel::ConverterApi
       (initial_investment_costs + decommissioning_costs) / 2
     end
   end
-  
+
   # Used to calculate yearly depreciation costs
   #
   # DEBT: this function should be used for investment costs in the scatter
