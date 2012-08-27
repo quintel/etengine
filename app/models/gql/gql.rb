@@ -129,7 +129,8 @@ class Gql
       modifier = gquery_or_string.gql_modifier
       query = gquery_or_string
     elsif gquery_or_string.is_a?(String)
-      query, modifier = gquery_or_string.split(':').reverse
+      modifier = gquery_or_string.match(Gquery::GQL_MODIFIER_REGEXP).captures.first rescue nil
+      query    = gquery_or_string.sub(Gquery::GQL_MODIFIER_REGEXP, '')
     elsif gquery_or_string.respond_to?(:call)
       query, modifier = gquery_or_string, nil
     end
