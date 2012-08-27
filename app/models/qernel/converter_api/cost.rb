@@ -1,25 +1,30 @@
 # Supplies the Converter API with methods to calculate the yearly costs
-# of a converter in a number of different units
-#
+# of a converter in a number of different units.
 #
 # Costs can be calculated in different units...
-# mw_input: for backup options chart  DEBT: this should be done differently
-# mw_electricity: for costs scatter plot
-# mw_heat:
-# converter: for total cost calculations of an area
-# mwh_input: for Merit Order
-# mwh_electricity: for costs scatter plot
-# mwh_heat:
-
-
-# Calculation methods to go from plant to another unit:
-# mw_input: divide by method effective_input_capacity
-# mw_electricity: divide by attribute output_capacity_electricity
-# mw_heat: divide by attribute output_capacity_heat
-# converter: multiply by (real_)number_of_units
-# mwh_input: divide by (demand / SECS_PER_HOUR / (real_)number_of_units)
-# mwh_electricity: divide by (output_of_electricity / SECS_PER_HOUR / (real_)number_of_units)
-# mwh_heat: divide by (output_of_heat_carriers / SECS_PER_HOUR / (real_)number_of_units)
+# * number:          per typical size of a converter. This is
+#                    the default unit, and is used internally
+# * mw_input:        for backup options chart
+#                    DEBT: this should be done differently
+# * mw_electri city: for costs scatter plot
+# * mw_heat:         ...?
+# * converter:       for total cost calculations for an area
+# * mwh_input:       for Merit Order
+# * mwh_electricity: for costs scatter plot
+# * mwh_heat:        ...
+#
+# Calculation methods to go from plant/per number to another unit:
+# * number:          DEFAULT unit, so no conversion needed
+# * mw_input:        divide by method effective_input_capacity
+# * mw_electricity:  divide by attribute output_capacity_electricity
+# * mw_heat:         divide by attribute output_capacity_heat
+# * converter:       multiply by (real_)number_of_units
+# * mwh_input:       divide by (demand / SECS_PER_HOUR /
+#                      (real_)number_of_units)
+# * mwh_electricity: divide by (output_of_electricity /
+#                      SECS_PER_HOUR / (real_)number_of_units)
+# * mwh_heat:        divide by (output_of_heat_carriers / SECS_PER_HOUR 
+#                      / (real_)number_of_units)
 
 
 
