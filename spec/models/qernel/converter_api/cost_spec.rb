@@ -12,59 +12,45 @@ module Qernel
       #
       # e-eff  h-eff  e-cap  h-cap  expected outcome
       #  0.4    nil    800    nil     2000
-      #  0.4    0.1    800    400     2000   e takes precedence over h
+      #  0.4    0.1    800    400     error   error in data
       #  nil    0.1    nil    400     4000
-      #  nil    nil    800    400        0
-      #  nil    0.1    800    nil        0
-      #  0.4    nil    nil    400        0
-      #  0.4    0.2    nil    nil        0
-      #  0.4    0.2    nil    nil        0
-      #    0    0     800       0        ?
+      #  nil    nil    800    400     error   incomplete data
+      #  nil    0.1    800    nil     error   incomplete data
+      #  0.4    nil    nil    400     error   incomplete data
+      #  0.4    0.2    nil    nil     error   incomplete data
+      #  0.4    0.2    nil    nil     error   incomplete data
+      #    0    0     800       0     error   incomplete data
       #
 
-      it "should calculate correctly when electrical capacity and electrical efficiency are given" do
+      it "should calculate correctly when only electrical capacity and electrical efficiency are given" do
         @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800
         @c.converter_api.nominal_input_capacity.should == 2000
       end
 
-      it "should calculate correctly when both heat and electrical capacity and heat and electrical efficiency are given" do
-        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, heat_output_conversion: 0.1, heat_output_capacity: 400
-        @c.converter_api.nominal_input_capacity.should == 2000
-      end
-
-      it "should calculate correctly when heat capacity and heat efficiency are given" do
+      it "should calculate correctly when only heat capacity and heat efficiency are given" do
         @c.with heat_output_conversion: 0.1, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 4000
       end
 
-      it "should return zero when no efficiencies are set" do
-        @c.with heat_output_conversion: nil, electricity_output_conversion: nil, electricity_output_capacity: 800, heat_output_capacity: 400
-        @c.converter_api.nominal_input_capacity.should == 0.0
-      end
-      
-      it "should return zero when electrical efficiency and heat capacity are not set" do
-        @c.with heat_output_conversion: 0.1, electricity_output_conversion: nil, electricity_output_capacity: 800, heat_output_capacity: nil
-        @c.converter_api.nominal_input_capacity.should == 0.0
-      end
-      
-      it "should return zero when heat efficiency and electrical capacity not set" do
-        @c.with heat_output_conversion: nil, electricity_output_conversion: 0.4, electricity_output_capacity: nil, heat_output_capacity: 400
-        @c.converter_api.nominal_input_capacity.should == 0.0
+      it "should return zero when all variables are not set or zero" do
+        pending "Implementation to rescue upon nil" do
+          @c.with heat_output_capacity: nil, electricity_output_capacity: 0, heat_output_conversion: nil, electricity_output_conversion: 0
+          @c.converter_api.nominal_input_capacity.should == 0
+        end
       end
 
-      it "should return zero when efficiencies are zero" do
-        @c.with heat_output_conversion: 0, electricity_output_conversion: 0, heat_output_capacity: 400, electricity_output_capacity: 800
-        @c.converter_api.nominal_input_capacity.should == 0.0
+      it "should raise error when incomplete" do
+        pending "Implementation of raising error" do
+          @c.with electricity_output_conversion: 0.4, electricity_output_capacity: nil, heat_output_conversion: nil, heat_output_capacity: 400
+          expect { @c.converter_api.nominal_input_capacity }.to raise_error
+        end
       end
 
-      it "should return zero when electrical capacity and heat capacity are not set" do
-        @c.with heat_output_capacity: nil, electricity_output_capacity: nil, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
-        @c.converter_api.nominal_input_capacity.should == 0
-      end
-      
-      it "should should raise an error when electrical efficiency is 0" do
-        @c.with heat_output_capacity: nil, electricity_output_capacity: 800, heat_output_conversion: nil, electricity_output_conversion: 0
-        lambda { @c.converter_api.nominal_input_capacity }.should raise_error(ZeroDivisionError)
+      it "should raise error when capicity-e/eff-e != capacity-h/eff-h" do
+        pending "Implementation of raising error" do
+          @c.with heat_output_capacity: 400, electricity_output_capacity: 1000, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
+          expect { @c.converter_api.nominal_input_capacity }.to raise_error
+        end
       end
       
     end
@@ -82,8 +68,10 @@ module Qernel
       end
       
       it "should calculate correctly when nominal_input capacity is not set" do
-        @c.with nominal_input_capacity: nil, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
-        @c.converter_api.effective_input_capacity.should == 0.0
+        pending "rescue when nil" do
+          @c.with nominal_input_capacity: nil, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
+          @c.converter_api.effective_input_capacity.should == 0.0
+        end
       end
       
       it "should calculate correctly when average_effective_output_of_nominal_capacity_over_lifetime is zero" do
@@ -92,8 +80,10 @@ module Qernel
       end
       
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is nil" do
-        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
-        @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
+        pending "Assume 100% (1.0) when nil" do
+          @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
+          @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
+        end
       end
 
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is 100%" do
@@ -130,23 +120,43 @@ module Qernel
       end
       
       it "should add correctly when cost_of_capital is nil" do
-        @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
-        @c.converter_api.fixed_costs.should == 500
+        pending "rescue when nil" do
+          @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
+          @c.converter_api.fixed_costs.should == 500
+        end
       end
       
       it "should add correctly when depreciation costs are nil" do
-        @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs: 300
-        @c.converter_api.fixed_costs.should == 400
+        pending "rescue when nil" do
+          @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs: 300
+          @c.converter_api.fixed_costs.should == 400
+        end
       end
       
       it "should add correctly when fixed O&M costs are nil" do
-        @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: nil
-        @c.converter_api.fixed_costs.should == 300
+        pending "rescue when nil" do
+          @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: nil
+          @c.converter_api.fixed_costs.should == 300
+        end
       end
     
     end
     
     describe '#cost_of_capital' do
+      # should calculate when everything is set
+      # should raise error when wacc is zero (pending error raising)
+      # should raise error when technical lifetime is 0 or nil (pending error raising)
+      # should assume 0 when construction time is nil (pending rescue on nil)
+    end
+    
+    describe '#depreciation_costs' do
+      # should calculate when everything is set
+      # should raise error when total_investment_costs - residual_value < 0 (pending error raising)
+      # should assume 0 when residual_value is nil
+      # should raise error when technical_lifetime is 0 or nil
+    end
+    
+    describe '#variable_costs' do
     end
     
   end
