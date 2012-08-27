@@ -2,11 +2,10 @@
 # of a converter in a number of different units.
 #
 # Costs can be calculated in different units...
-# * number:          per typical size of a converter. This is
+# * plant:           per typical size of a converter. This is
 #                    the default unit, and is used internally
-# * mw_input:        for backup options chart
-#                    DEBT: this should be done differently
-# * mw_electri city: for costs scatter plot
+# * mw_input:
+# * mw_electricity:  for costs scatter plot
 # * mw_heat:         ...?
 # * converter:       for total cost calculations for an area
 # * mwh_input:       for Merit Order
@@ -14,7 +13,7 @@
 # * mwh_heat:        ...
 #
 # Calculation methods to go from plant/per number to another unit:
-# * number:          DEFAULT unit, so no conversion needed
+# * plant:           DEFAULT unit, so no conversion needed
 # * mw_input:        divide by method effective_input_capacity
 # * mw_electricity:  divide by attribute output_capacity_electricity
 # * mw_heat:         divide by attribute output_capacity_heat
@@ -41,26 +40,26 @@ class Qernel::ConverterApi
   #
   # @param []
   #
-  #
   # @return [Float] Input capacity of a typical plant
   #
   def nominal_input_capacity
-     function(:nominal_input_capacity) do
-       if electricity_output_conversion > 0.0
-         electricity_output_capacity / electricity_output_conversion
-       elsif heat_output_conversion > 0.0
-         heat_output_capacity / heat_output_conversion
-       else
-         0.0
-       end
-     end
+    function(:nominal_input_capacity) do
+      if electricity_output_conversion > 0.0
+        electricity_output_capacity / electricity_output_conversion
+      elsif heat_output_conversion > 0.0
+        heat_output_capacity / heat_output_conversion
+      else
+        0.0
+      end
+    end
   end
 
    # Calculates the effective input capacity of a plant (in MW) based on the
    # nominal input capacity and the average effective capacity over
    # the lifetime of a plant.
    #
-   # DEBT: Assumes 100% when average_effective_output_of_nominal_capacity_over_lifetime
+   # DEBT: Assumes 100% when
+   # average_effective_output_of_nominal_capacity_over_lifetime
    # is not set (nil).
    #
    # @param []
@@ -81,10 +80,6 @@ class Qernel::ConverterApi
    # Total cost is made up of fixed costs and variable costs.
    #
    # In GQL use total_cost_per_unit (where unit is the unit parameter)
-   #
-   # @param [symbol]
-   #  Unit in which the total cost should be calculated.
-   #  Possible units: :unit, :mw, :mwh, :mj, :converter
    #
    # @return [Float] total costs for one unit or plant
    #
