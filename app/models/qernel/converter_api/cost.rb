@@ -54,35 +54,35 @@ class Qernel::ConverterApi
     end
   end
 
-   # Calculates the effective input capacity of a plant (in MW) based on the
-   # nominal input capacity and the average effective capacity over
-   # the lifetime of a plant.
-   #
-   # DEBT: Assumes 100% when
-   # average_effective_output_of_nominal_capacity_over_lifetime
-   # is not set (nil).
-   #
-   # @param []
-   #
-   # @return [Float] Effective input capacity of a typical plant in MW
-   #
-   def effective_input_capacity
-     function(:effective_input_capacity) do
-       nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
-     end
+  # Calculates the effective input capacity of a plant (in MW) based on the
+  # nominal input capacity and the average effective capacity over
+  # the lifetime of a plant.
+  #
+  # DEBT: Assumes 100% when
+  # average_effective_output_of_nominal_capacity_over_lifetime
+  # is not set (nil).
+  #
+  # @param []
+  #
+  # @return [Float] Effective input capacity of a typical plant in MW
+  #
+  def effective_input_capacity
+   function(:effective_input_capacity) do
+     nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
    end
+  end
 
-   ##########################
-   # Total Cost calculation #
-   ##########################
+  ##########################
+  # Total Cost calculation #
+  ##########################
 
-   # Calculates the total cost of a converter in a given unit.
-   # Total cost is made up of fixed costs and variable costs.
-   #
-   # In GQL use total_cost_per_unit (where unit is the unit parameter)
-   #
-   # @return [Float] total costs for one unit or plant
-   #
+  # Calculates the total cost of a converter in a given unit.
+  # Total cost is made up of fixed costs and variable costs.
+  #
+  # In GQL use total_cost_per_unit (where unit is the unit parameter)
+  #
+  # @return [Float] total costs for one unit or plant
+  #
   def total_costs
     function(:total_costs) do
       fixed_costs + variable_costs
