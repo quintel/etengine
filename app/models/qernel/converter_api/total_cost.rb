@@ -13,10 +13,6 @@ class Qernel::ConverterApi
     end
   end
 
-  # Removed total_cost, refactored to total_costs
-  # Added an alias untill the queries are altered
-  #
-  alias total_cost total_costs
 
   # Calcutes the total initial investment needed for the entire converter. Also needed in the network calculations.
   #
