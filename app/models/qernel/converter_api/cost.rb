@@ -83,8 +83,8 @@ class Qernel::ConverterApi
    #
    # @return [Float] total costs for one unit or plant
    #
-  def total_cost
-    function(:total_cost) do
+  def total_costs
+    function(:total_costs) do
       fixed_costs + variable_costs
     end
   end
