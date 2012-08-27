@@ -100,14 +100,11 @@ module Qernel
         @c.converter_api.total_costs.should == 300
       end
 
-      it "should take fixed costs when variable costs are nil" do
+      it "should return nil when one of the two is missing" do
         @c.with fixed_costs: 100, variable_costs: nil
-        @c.converter_api.total_costs.should == 100
-      end
-
-      it "should take variable costs when fixed costs are nil" do
+        @c.converter_api.total_costs.should == nil
         @c.with fixed_costs: nil, variable_costs: 200
-        @c.converter_api.total_costs.should == 200
+        @c.converter_api.total_costs.should == nil
       end
 
     end

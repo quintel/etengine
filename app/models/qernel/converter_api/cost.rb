@@ -29,9 +29,9 @@
 
 class Qernel::ConverterApi
 
-  #############################
-  # Calculate Input Capacity #
-  ############################
+  ##################
+  # Input Capacity #
+  ##################
 
   # Calculates the input capacity of a typical plant, based on
   # the output capacity in MW.
@@ -90,23 +90,20 @@ class Qernel::ConverterApi
   end
 
 
-  ###########################
-  # Fixed Costs calculation #
-  ###########################
+  ###############
+  # Fixed Costs #
+  ###############
 
   # Calculates the fixed costs of a converter in a given unit.
   # Fixed costs are made up of cost of capital, depreciation costs
   # and fixed operation and maintenance costs.
   #
-  # @param []
-  #  Unit in which the fixed costs should be calculated.
-  #  Possible units: unit, MW, MWh, mj, converter
-  #
   # @return [Float]
   #
   def fixed_costs
     function(:fixed_costs) do
-      cost_of_capital + depreciation_costs + fixed_operation_and_maintenance_costs
+      cost_of_capital + depreciation_costs +
+      fixed_operation_and_maintenance_costs
     end
   end
 
@@ -125,7 +122,9 @@ class Qernel::ConverterApi
   #
   def cost_of_capital
     function(:cost_of_capital) do
-      average_investment_costs * wacc * (construction_time + technical_lifetime) / technical_lifetime
+      average_investment_costs * wacc *
+      (construction_time + technical_lifetime) /
+      technical_lifetime
     end
   end
 
@@ -143,9 +142,9 @@ class Qernel::ConverterApi
   end
 
 
-  ##############################
-  # Variable Costs calculation #
-  ##############################
+  ##################
+  # Variable Costs #
+  ##################
 
   # Calculates the variable costs in a given unit. Defaults to plant.
   # The variable costs cannot be calculated without knowing how much
@@ -167,8 +166,11 @@ class Qernel::ConverterApi
   # for one plant, the
   def fuel_costs
     function(:fuel_costs) do
-      return 0 if real_number_of_units <= 0
-      (demand * weighted_carrier_cost_per_mj) / real_number_of_units
+      if number_of_units >= 0
+        (demand * weighted_carrier_cost_per_mj) / number_of_units
+      else
+        0
+      end
     end
   end
 
@@ -177,10 +179,8 @@ class Qernel::ConverterApi
   # input capacity and the full_load_seconds of the converter (to effectively)
   # convert MJ and MW
   #
-  # DEBT: should be called number_of_units, but this is already taken in the app
-  #
-  def real_number_of_units
-    function(:real_number_of_units) do
+  def number_of_units
+    function(:number_of_units) do
       demand / (effective_input_capacity * full_load_seconds) rescue 0
     end
   end
@@ -196,15 +196,22 @@ class Qernel::ConverterApi
   #
   def co2_emissions_costs
     function(:co2_emissions_costs) do
-      return 0 if real_number_of_units <= 0
-      (demand * weighted_carrier_co2_per_mj * self.area.co2_price * (1 - self.area.co2_percentage_free) *  part_ets * ((1 - co2_free))) / real_number_of_units
+      if number_of_units >= 0
+        (demand * weighted_carrier_co2_per_mj * area.co2_price *
+        (1 - self.area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
+        number_of_units
+      else
+        0
+      end
     end
   end
 
   #DEBT: method and attribute have same name!
   def variable_operations_and_maintenance_costs
     function(:variable_operations_and_maintenance_costs) do
-      (variable_operation_and_maintenance_costs + variable_operation_and_maintenance_costs_for_ccs) * full_load_hours
+      (variable_operation_and_maintenance_costs +
+       variable_operation_and_maintenance_costs_for_ccs) *
+      full_load_hours
     end
   end
 
