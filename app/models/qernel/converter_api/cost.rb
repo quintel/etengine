@@ -44,9 +44,9 @@ class Qernel::ConverterApi
   #
   def nominal_input_capacity
     function(:nominal_input_capacity) do
-      if electricity_output_conversion > 0.0
+      if electricity_output_conversion && electricity_output_conversion > 0.0
         electricity_output_capacity / electricity_output_conversion
-      elsif heat_output_conversion > 0.0
+      elsif heat_output_conversion && heat_output_conversion > 0.0
         heat_output_capacity / heat_output_conversion
       else
         0.0
