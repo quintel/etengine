@@ -52,33 +52,33 @@ module Qernel
           expect { @c.converter_api.nominal_input_capacity }.to raise_error
         end
       end
-      
+
     end
-    
+
     describe '#effective_input_capacity' do
-      
+
       it "should calculate correctly when nominal_input_capacity and average_effective_output_of_nominal_capacity_over_lifetime are set" do
         @c.with nominal_input_capacity: 100, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
         @c.converter_api.effective_input_capacity.should == 99
       end
-      
+
       it "should calculate correctly when nominal_input_capacity is zero" do
         @c.with nominal_input_capacity: 0, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
         @c.converter_api.effective_input_capacity.should == 0.0
       end
-      
+
       it "should calculate correctly when nominal_input capacity is not set" do
         pending "rescue when nil" do
           @c.with nominal_input_capacity: nil, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
           @c.converter_api.effective_input_capacity.should == 0.0
         end
       end
-      
+
       it "should calculate correctly when average_effective_output_of_nominal_capacity_over_lifetime is zero" do
         @c.with nominal_input_capacity: 100, average_effective_output_of_nominal_capacity_over_lifetime: 0
         @c.converter_api.effective_input_capacity.should == 0.0
       end
-      
+
       it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is nil" do
         pending "Assume 100% (1.0) when nil" do
           @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
@@ -92,56 +92,56 @@ module Qernel
       end
 
     end
-    
+
     describe '#total_cost' do
-    
+
       it "should calculate correctly when values are given" do
         @c.with fixed_costs: 100, variable_costs: 200
         @c.converter_api.total_cost.should == 300
       end
-      
+
       it "should take fixed costs when variable costs are nil" do
         @c.with fixed_costs: 100, variable_costs: nil
         @c.converter_api.total_cost.should == 100
       end
-      
+
       it "should take variable costs when fixed costs are nil" do
         @c.with fixed_costs: nil, variable_costs: 200
         @c.converter_api.total_cost.should == 200
       end
-    
+
     end
-    
+
     describe '#fixed_costs' do
-    
+
       it "should calculate correctly when values are given" do
         @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
         @c.converter_api.fixed_costs.should == 600
       end
-      
+
       it "should add correctly when cost_of_capital is nil" do
         pending "rescue when nil" do
           @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
           @c.converter_api.fixed_costs.should == 500
         end
       end
-      
+
       it "should add correctly when depreciation costs are nil" do
         pending "rescue when nil" do
           @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs: 300
           @c.converter_api.fixed_costs.should == 400
         end
       end
-      
+
       it "should add correctly when fixed O&M costs are nil" do
         pending "rescue when nil" do
           @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: nil
           @c.converter_api.fixed_costs.should == 300
         end
       end
-    
+
     end
-    
+
     describe '#cost_of_capital' do
       # should calculate when everything is set
       # should raise error when wacc is zero (pending error raising)
@@ -214,6 +214,7 @@ module Qernel
       # should calculate when everything is set
       # should treat nil as 0 (pending rescue on nil)
     end
+
   end
 
 end
