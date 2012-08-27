@@ -158,7 +158,8 @@ class Qernel::ConverterApi
   #
   def variable_costs
     function(:variable_costs) do
-      fuel_costs + co2_emissions_costs + variable_operation_and_maintenance_costs
+      fuel_costs + co2_emissions_costs +
+      variable_operation_and_maintenance_costs_including_ccs
     end
   end
 
@@ -171,17 +172,6 @@ class Qernel::ConverterApi
       else
         0
       end
-    end
-  end
-
-  # Calculates the number of units that are installed in the future for this
-  # converter, based on the demand (input) of the converter, the effective
-  # input capacity and the full_load_seconds of the converter (to effectively)
-  # convert MJ and MW
-  #
-  def number_of_units
-    function(:number_of_units) do
-      demand / (effective_input_capacity * full_load_seconds) rescue 0
     end
   end
 
@@ -198,7 +188,7 @@ class Qernel::ConverterApi
     function(:co2_emissions_costs) do
       if number_of_units >= 0
         (demand * weighted_carrier_co2_per_mj * area.co2_price *
-        (1 - self.area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
+        (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
         number_of_units
       else
         0
@@ -206,9 +196,20 @@ class Qernel::ConverterApi
     end
   end
 
-  #DEBT: method and attribute have same name!
-  def variable_operations_and_maintenance_costs
-    function(:variable_operations_and_maintenance_costs) do
+   # Calculates the number of units that are installed in the future for this
+  # converter, based on the demand (input) of the converter, the effective
+  # input capacity and the full_load_seconds of the converter (to effectively)
+  # convert MJ and MW
+  #
+  def number_of_units
+    function(:number_of_units) do
+      demand / (effective_input_capacity * full_load_seconds) rescue 0
+    end
+  end
+
+ #DEBT: method and attribute have same name!
+  def variable_operation_and_maintenance_costs_including_ccs
+    function(:variable_operation_and_maintenance_costs_including_ccs) do
       (variable_operation_and_maintenance_costs +
        variable_operation_and_maintenance_costs_for_ccs) *
       full_load_hours

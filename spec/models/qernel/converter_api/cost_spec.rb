@@ -155,7 +155,7 @@ module Qernel
 
     describe '#variable_costs' do
       it "should calculate correctly when values are given" do
-        @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
+        @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs_including_ccs: 300
         @c.converter_api.variable_costs.should == 600
       end
 
@@ -191,7 +191,7 @@ module Qernel
       # DEBT: first refactor method
     end
 
-    describe '#variable_operations_and_maintenance_costs' do
+    describe '#variable_operation_and_maintenance_costs' do
       # should calculate when everything is set
       # should return 0 when full_load_hours is nil (pending)
       # should treat everything nil as 0 in the calculation (pending)
