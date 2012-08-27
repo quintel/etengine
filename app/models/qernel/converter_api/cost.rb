@@ -227,8 +227,8 @@ class Qernel::ConverterApi
   #
   # Used in the scatter plot for costs
   #
-  # DEBT: It would be better to use the total investment costs in the scatter
-  # plot
+  # DEBT: should not be named _costs, since it it an expenditure, not a cost!
+  #       option: total_initial_investment
   #
   def initial_investment_costs
     function(:initial_investment_costs) do
