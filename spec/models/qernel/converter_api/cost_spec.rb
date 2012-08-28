@@ -196,8 +196,8 @@ module Qernel
 
     describe "#fuel_costs" do
       # should calculate when everything is set
-      # should return 0 when real_number_of_units <= 0
-      # should raise error when real_number_of_units is nil (pending error raising)
+      # should return 0 when number_of_units <= 0
+      # should raise error when number_of_units is nil (pending error raising)
     end
 
     describe '#co2_emissions_costs' do

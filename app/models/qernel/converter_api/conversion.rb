@@ -59,7 +59,7 @@ class Qernel::ConverterApi
     when :plant
       cost
     when :converter
-      cost * real_number_of_units
+      cost * number_of_units
 
     # MW
     when :mw_input
@@ -71,11 +71,11 @@ class Qernel::ConverterApi
 
     # MWh
     when :mwh_input
-      cost / demand / SECS_PER_HOUR / real_number_of_units
+      cost / demand / SECS_PER_HOUR / number_of_units
     when :mwh_electricity
-      cost / output_of_electricity / SECS_PER_HOUR / real_number_of_units
+      cost / output_of_electricity / SECS_PER_HOUR / number_of_units
     when :mwh_heat
-      cost / output_of_heat_carriers / SECS_PER_HOUR / real_number_of_units
+      cost / output_of_heat_carriers / SECS_PER_HOUR / number_of_units
 
     # Some other unit that is unknown
     else
