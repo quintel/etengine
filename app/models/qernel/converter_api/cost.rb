@@ -17,13 +17,12 @@
 # * mw_input:        divide by method effective_input_capacity
 # * mw_electricity:  divide by attribute output_capacity_electricity
 # * mw_heat:         divide by attribute output_capacity_heat
-# * converter:       multiply by (real_)number_of_units
-# * mwh_input:       divide by (demand / SECS_PER_HOUR /
-#                      (real_)number_of_units)
+# * converter:       multiply by number_of_units
+# * mwh_input:       divide by (demand / SECS_PER_HOUR / number_of_units
 # * mwh_electricity: divide by (output_of_electricity /
-#                      SECS_PER_HOUR / (real_)number_of_units)
+#                      SECS_PER_HOUR / number_of_units)
 # * mwh_heat:        divide by (output_of_heat_carriers / SECS_PER_HOUR 
-#                      / (real_)number_of_units)
+#                      / number_of_units)
 
 
 
