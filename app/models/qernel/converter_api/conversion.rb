@@ -31,8 +31,8 @@ class Qernel::ConverterApi
     convert_to co2_emissions_costs, unit
   end
 
-  def variable_operations_and_maintenance_costs_per(unit)
-    convert_to variable_operations_and_maintenance_costs, unit
+  def variable_operation_and_maintenance_costs_per(unit)
+    convert_to variable_operation_and_maintenance_costs, unit
   end
 
   #######
@@ -52,6 +52,16 @@ class Qernel::ConverterApi
   #   convert_to(total_costs, :mw_input)
   #   => 12972.12
   #
+  # @param [Float] The cost in euro / plant / year to be converted
+  # to another unit
+  #
+  # @param [symbol] The unit to convert the cost parameter in.
+  # Allowed: :plant, :converter, :mw_input, :mw_electricity,
+  # :mw_heat, :mwh_input, :mwh_electricity, :mwh_heat,
+  # :full_load_hours
+  #
+  # @return [Float] Cost converted to Cost per Unit
+  #
   def convert_to(cost, unit)
     case unit
 
@@ -61,7 +71,7 @@ class Qernel::ConverterApi
     when :converter
       cost * number_of_units
 
-    # MW
+    # MW capacity
     when :mw_input
       cost / effective_input_capacity
     when :mw_electricity
@@ -69,13 +79,17 @@ class Qernel::ConverterApi
     when :mw_heat
       cost / output_capacity_heat
 
-    # MWh
+    # MWh production
     when :mwh_input
       cost / demand / SECS_PER_HOUR / number_of_units
     when :mwh_electricity
       cost / output_of_electricity / SECS_PER_HOUR / number_of_units
     when :mwh_heat
       cost / output_of_heat_carriers / SECS_PER_HOUR / number_of_units
+
+    # full load hours
+    when
+      cost / full_load_hours
 
     # Some other unit that is unknown
     else
