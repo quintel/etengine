@@ -202,17 +202,6 @@ class Qernel::ConverterApi
     end
   end
 
-  # Calculates the number of units that are installed in the future for this
-  # converter, based on the demand (input) of the converter, the effective
-  # input capacity and the full_load_seconds of the converter (to effectively)
-  # convert MJ and MW
-  #
-  def number_of_units
-    function(:number_of_units) do
-      demand / (effective_input_capacity * full_load_seconds) rescue 0
-    end
-  end
-
   def variable_operation_and_maintenance_costs
     function(:variable_operation_and_maintenance_costs) do
       full_load_hours * (
