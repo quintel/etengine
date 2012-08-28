@@ -112,8 +112,9 @@
               :primary_demand_of_fossil, :primary_demand_of_sustainable],
             :new => [:nominal_input_capacity, :effective_input_capacity, :total_cost, 
               :fixed_costs, :cost_of_capital, :depreciation_costs, :variable_costs, 
-              :fuel_costs, :number_of_units, :co2_emissions_costs, 
-              :variable_operations_and_maintenance_costs, :initial_investment_costs],
+              :fuel_costs, :real_number_of_units, :number_of_units, :co2_emissions_costs, 
+              :variable_operations_and_maintenance_costs, :initial_investment_costs,],
+            :old => [:mw_input_capacity, :typical_input_capacity],
             :other => Qernel::ConverterApi.calculation_methods.sort,
 
           }

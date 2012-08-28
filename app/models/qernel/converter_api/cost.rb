@@ -169,9 +169,11 @@ class Qernel::ConverterApi
 
   # Calculates the fuel costs for a single plant, based on the input of fuel
   # for one plant, the
+  #
+  #  # DEBT: does not calculate correctly per unit if there are zero units!
   def fuel_costs
     function(:fuel_costs) do
-      if number_of_units >= 0
+      if number_of_units > 0
         (demand * weighted_carrier_cost_per_mj) / number_of_units
       else
         0
@@ -181,6 +183,7 @@ class Qernel::ConverterApi
 
   # DEBT: rename co2_free and part_ets
   # DEBT: move factors to a separate function ?
+  # DEBT: does not calculate correctly per unit if there are zero units!
   #
   # input of fuel in mj * the amount of co2 per mj * the co2 price * how much
   # co2 is given away for free * how much of the co2 of this plant is in ETS
@@ -189,7 +192,7 @@ class Qernel::ConverterApi
   #
   def co2_emissions_costs
     function(:co2_emissions_costs) do
-      if number_of_units >= 0
+      if number_of_units > 0
         (demand * weighted_carrier_co2_per_mj * area.co2_price *
           (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
             number_of_units
