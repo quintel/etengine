@@ -142,7 +142,7 @@ module Qernel
     describe '#cost_of_capital' do
 
       it "should calculate when all values are given" do
-        pending "TODO Wouter?"
+        pending "TODO Wouter."
       end
 
       it "should handle nil values" do
@@ -160,7 +160,9 @@ module Qernel
     end
 
     describe '#depreciation_costs' do
-      # should calculate when everything is set
+      it "should calculate when everything is set" do
+        pending "TODO Wouter"
+      end
       # should raise error when total_investment_costs - residual_value < 0 (pending error raising)
       # should assume 0 when residual_value is nil
       # should raise error when technical_lifetime is 0 or nil
