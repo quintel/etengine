@@ -13,8 +13,8 @@ module Qernel
         :decommissioning_costs => ['desc', 'euro / unit'],
         :residual_value => ['desc', 'euro / unit'],
         :fixed_operation_and_maintenance_costs => ['desc', 'euro / unit / year'],
-        :variable_operation_and_maintenance_costs => ['desc', 'euro / full load hour'],
-        :variable_operation_and_maintenance_costs_for_ccs => ['desc', 'euro / full load hour'],
+        :variable_operation_and_maintenance_costs_per_full_load_hour => ['desc', 'euro / full load hour'],
+        :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['desc', 'euro / full load hour'],
         :electricity_output_capacity => ['desc', 'MWe'],
         :heat_output_capacity => ['desc', 'MWth']        
       },

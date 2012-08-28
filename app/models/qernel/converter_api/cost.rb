@@ -2,17 +2,22 @@
 # of a converter in a number of different units.
 #
 # Costs can be calculated in different units...
-# * plant:           per typical size of a converter. This is
+# * plant:           per typical size of a plant. This is
 #                    the default unit, and is used internally
-# * mw_input:
-# * mw_electricity:  for costs scatter plot
-# * mw_heat:         ...?
-# * converter:       for total cost calculations for an area
-# * mwh_input:       for Merit Order
-# * mwh_electricity: for costs scatter plot
-# * mwh_heat:        ...
+# * mw_input:        Costs per MW capacity of input fuel (MWinput)
+# * mw_electricity:  Costs per MW electrical capacity (MWe)
+#                    Used by costs scatter plot
+# * mw_heat:         Costs per MW heat capacity (MWth)
+# * converter:       How much do all the plants of a given type cost per year
+#                    Used for total cost calculations for an area
+# * mwh_input:       How much fuel is used as input for the plant in MWh
+#                    Used for Merit Order charts.
+# * mwh_electricity: How much electricity is produced by the plant per year
+#                    in MWh. Used by the costs scatter plot.
+# * mwh_heat:        How much heat is produced by the plant per year in MWh
+# * full_load_hours  The costs per full load hour
 #
-# Calculation methods to go from plant/per number to another unit:
+# Calculation methods to go from plant/year to another unit:
 # * plant:           DEFAULT unit, so no conversion needed
 # * mw_input:        divide by method effective_input_capacity
 # * mw_electricity:  divide by attribute output_capacity_electricity
@@ -23,6 +28,7 @@
 #                      SECS_PER_HOUR / number_of_units)
 # * mwh_heat:        divide by (output_of_heat_carriers / SECS_PER_HOUR 
 #                      / number_of_units)
+# * full_load_hours  divide by full_load_hours
 
 
 
@@ -43,8 +49,8 @@ class Qernel::ConverterApi
   #
   def nominal_input_capacity
     function(:nominal_input_capacity) do
-      electric_based_nominal_output_capacity ||
-        heat_based_nominal_output_capacity || 0.0
+      electric_based_nominal_input_capacity ||
+        heat_based_nominal_input_capacity || 0.0
     end
   end
 
@@ -157,7 +163,7 @@ class Qernel::ConverterApi
   def variable_costs
     function(:variable_costs) do
       fuel_costs + co2_emissions_costs +
-        variable_operation_and_maintenance_costs_including_ccs
+        variable_operation_and_maintenance_costs
     end
   end
 
@@ -204,11 +210,11 @@ class Qernel::ConverterApi
     end
   end
 
-  def variable_operation_and_maintenance_costs_including_ccs
-    function(:variable_operation_and_maintenance_costs_including_ccs) do
+  def variable_operation_and_maintenance_costs
+    function(:variable_operation_and_maintenance_costs) do
       full_load_hours * (
-        variable_operation_and_maintenance_costs +
-        variable_operation_and_maintenance_costs_for_ccs )
+        variable_operation_and_maintenance_costs_per_full_load_hour +
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour )
     end
   end
 
@@ -244,10 +250,6 @@ class Qernel::ConverterApi
   # DEBT: decomissioning costs should be paid at the end of lifetime,
   # and so should not have a WACC associated with it.
   #
-  # DEBT: wrong term. It's not the average investment costs, but it is
-  # the investment still left after 50% of the repayment period (which is
-  # equal to the construction time + the technical lifetime)
-  #
   # Used to determine cost of capital
   #
   def average_investment_costs
@@ -267,15 +269,15 @@ class Qernel::ConverterApi
     end
   end
 
-  # Used for calculating the nominal_output_capacity
-  def electric_based_nominal_output_capacity
-    function(:electric_based_nominal_output_capacity) do
+  # Used for calculating the nominal_input_capacity
+  def electric_based_nominal_input_capacity
+    function(:electric_based_nominal_input_capacity) do
       electricity_output_capacity / electricity_output_conversion rescue nil
     end
   end
 
-  def heat_based_nominal_output_capacity
-    function(:heat_based_nominal_output_capacity) do
+  def heat_based_nominal_input_capacity
+    function(:heat_based_nominal_input_capacity) do
       heat_output_capacity / heat_output_conversion rescue nil
     end
   end

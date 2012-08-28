@@ -170,7 +170,7 @@ module Qernel
 
     describe '#variable_costs' do
       it "should calculate correctly when values are given" do
-        @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs_including_ccs: 300
+        @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
         @c.converter_api.variable_costs.should == 600
       end
 
