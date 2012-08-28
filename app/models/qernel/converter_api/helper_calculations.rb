@@ -16,6 +16,10 @@ class Qernel::ConverterApi
     end
   end
 
+  def number_of_units=(val)
+    dataset_set(:number_of_units, val)
+  end
+
   def total_land_use
     return nil if [number_of_units, land_use_per_unit].any?(&:nil?)
     number_of_units * land_use_per_unit
