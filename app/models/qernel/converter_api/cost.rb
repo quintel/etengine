@@ -68,7 +68,7 @@ class Qernel::ConverterApi
   def effective_input_capacity
     function(:effective_input_capacity) do
       if average_effective_output_of_nominal_capacity_over_lifetime
-        nominal_input_capacity *
+        nominal_input_capacity * 
           average_effective_output_of_nominal_capacity_over_lifetime
       else
         nominal_input_capacity
@@ -170,20 +170,14 @@ class Qernel::ConverterApi
   # Calculates the fuel costs for a single plant, based on the input of fuel
   # for one plant, the
   #
-  #  # DEBT: does not calculate correctly per unit if there are zero units!
   def fuel_costs
     function(:fuel_costs) do
-      if number_of_units > 0
-        (demand * weighted_carrier_cost_per_mj) / number_of_units
-      else
-        0
-      end
+      typical_fuel_input * weighted_carrier_cost_per_mj
     end
   end
 
   # DEBT: rename co2_free and part_ets
   # DEBT: move factors to a separate function ?
-  # DEBT: does not calculate correctly per unit if there are zero units!
   #
   # input of fuel in mj * the amount of co2 per mj * the co2 price * how much
   # co2 is given away for free * how much of the co2 of this plant is in ETS
@@ -192,13 +186,8 @@ class Qernel::ConverterApi
   #
   def co2_emissions_costs
     function(:co2_emissions_costs) do
-      if number_of_units > 0
-        (demand * weighted_carrier_co2_per_mj * area.co2_price *
-          (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))) /
-            number_of_units
-      else
-        0
-      end
+      typical_fuel_input * weighted_carrier_co2_per_mj * area.co2_price *
+        (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))
     end
   end
 
@@ -271,6 +260,18 @@ class Qernel::ConverterApi
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
       heat_output_capacity / heat_output_conversion rescue nil
+    end
+  end
+  
+  # Calculates the typical fuel input of one plant of this type
+  #
+  # Used for variable costs: fuel costs and CO2 emissions costs
+  #
+  # @return [Float] Typical fuel input in MJ
+  #
+  def typical_fuel_input
+    function(:typical_fuel_input) do
+      effective_input_capacity * full_load_seconds
     end
   end
 
