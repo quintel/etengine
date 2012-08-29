@@ -107,7 +107,7 @@ class Qernel::ConverterApi
   def fixed_costs
     function(:fixed_costs) do
       cost_of_capital + depreciation_costs +
-        fixed_operation_and_maintenance_costs
+        fixed_operation_and_maintenance_costs_per_year
     end
   end
 

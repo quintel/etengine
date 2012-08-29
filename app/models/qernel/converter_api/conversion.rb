@@ -38,6 +38,10 @@ class Qernel::ConverterApi
   def variable_operation_and_maintenance_costs_per(unit)
     convert_to variable_operation_and_maintenance_costs, unit
   end
+  
+  def fixed_operation_and_maintenance_costs_per(unit)
+    convert_to fixed_operation_and_maintenance_costs_per_year, unit
+  end
 
   #######
   private
