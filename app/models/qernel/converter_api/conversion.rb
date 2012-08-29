@@ -18,6 +18,10 @@ class Qernel::ConverterApi
   def depreciation_costs_per(unit)
     convert_to depreciation_costs, unit
   end
+  
+  def cost_of_capital_per(unit)
+    convert_to cost_of_capital, unit
+  end
 
   def variable_costs_per(unit)
     convert_to variable_costs, unit
