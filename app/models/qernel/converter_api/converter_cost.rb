@@ -60,7 +60,7 @@ class Qernel::ConverterApi
   
   # Total capital cost for the converter per year.
   #
-  # Used in several gqueries for electricity and heat
+  # Used to be used in several gqueries for electricity and heat
   #
   # DEPRECATED
   #
@@ -97,7 +97,7 @@ class Qernel::ConverterApi
   
   # Calculates the total depreciation for the converter in euros per year. 
   #
-  # Used in several gqueries for electricity and heat
+  # Used to be used in several gqueries for electricity and heat
   #
   # DEPRECATED
   #
@@ -137,7 +137,7 @@ class Qernel::ConverterApi
   
   # Sums the various fixed costs per MW input capacity.
   #
-  # Used in backup option overview chart:
+  # DEBT: Used in backup option overview chart:
   # /supply/electricity_backup#backup-options 
   # 
   # DEPRECATED
@@ -152,7 +152,7 @@ class Qernel::ConverterApi
   
   # Sums the various variable costs per MWh input.
   #
-  # Used in Merit Order module
+  # DEBT: Used in Merit Order module
   #
   def variable_costs_per_mwh_input
     function(:variable_costs_per_mwh_input) do
@@ -166,7 +166,7 @@ class Qernel::ConverterApi
   
   # Calculates the total variable costs for the converter, including variable CCS costs.
   # 
-  # Used in 3 GQL statements that display total O&M costs for all electricity
+  # Used to be used in 3 GQL statements that display total O&M costs for all electricity
   # and heat converters
   #
   # DEPRECATED
@@ -179,6 +179,10 @@ class Qernel::ConverterApi
 
   # Calculates the variable costs for the converter per MWh input, including variable CCS costs.
   #
+  # Private method
+  #
+  # DEPRECATED
+  #
   def operation_and_maintenance_cost_variable_per_mwh_input
     function(:operation_and_maintenance_cost_variable_per_mwh_input) do
       # return 0 if typical_input_capacity_in_mw == 0
@@ -187,6 +191,9 @@ class Qernel::ConverterApi
   end
   
   # The total of all assigned costs for this converter.
+  #
+  # DEPRECATED: use total_costs_per(:converter)
+  #
   def total_costs
     function(:total_costs) do
       sum_unless_empty [
@@ -210,9 +217,9 @@ class Qernel::ConverterApi
 
   # The total costs of running the converter for 1 MWh of electricity.
   #
-  # Used in cost scatter plot (y-axis)
+  # Used to be used in cost scatter plot (y-axis)
   #
-  # DEPRECATED
+  # DEPRECATED: use total_costs_per(:mwh_electricity)
   #
   def total_cost_per_mwh_electricity
     function(:total_cost_per_mwh_electricity) do

@@ -274,5 +274,28 @@ class Qernel::ConverterApi
       effective_input_capacity * full_load_seconds
     end
   end
-
+  
+  # Calculates the typical electricity output of one plant of this type
+  #
+  # Used for conversion of plant to other units
+  #
+  # @return [Float] Typical electricity output in MJ
+  #
+  def typical_electricity_output
+    function(:typical_electricity_output) do
+      typical_fuel_input * electricity_output_conversion
+    end
+  end
+  
+  # Calculates the typical heat output of one plant of this type
+  #
+  # Used for conversion of plant to other units
+  #
+  # @return [Float] Typical heat output in MJ
+  #
+  def typical_heat_output
+    function(:typical_heat_output) do
+      typical_fuel_input * heat_output_conversion
+    end
+  end
 end
