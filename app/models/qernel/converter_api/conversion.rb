@@ -7,6 +7,9 @@ class Qernel::ConverterApi
   #   total_costs_per(:converter)
   #   => 129721.8
   #
+  # DEBT: add methods to convert converter attributes to 
+  # different units
+  #
   def total_costs_per(unit)
     convert_to total_costs, unit
   end
@@ -42,6 +45,10 @@ class Qernel::ConverterApi
   def fixed_operation_and_maintenance_costs_per(unit)
     convert_to fixed_operation_and_maintenance_costs_per_year, unit
   end
+  
+  def initial_investment_costs_per(unit)
+    convert_to initial_investment_costs, unit
+  end
 
   #######
   private
@@ -66,7 +73,7 @@ class Qernel::ConverterApi
   # @param [symbol] The unit to convert the cost parameter in.
   # Allowed: :plant, :converter, :mw_input, :mw_electricity,
   # :mw_heat, :mwh_input, :mwh_electricity, :mwh_heat,
-  # :full_load_hours
+  # :full_load_hour
   #
   # @return [Float] Cost converted to Cost per Unit
   #
@@ -96,7 +103,7 @@ class Qernel::ConverterApi
       cost / typical_heat_output * SECS_PER_HOUR
 
     # full load hours
-    when :full_load_hours
+    when :full_load_hour
       cost / full_load_hours
 
     # Some other unit that is unknown
