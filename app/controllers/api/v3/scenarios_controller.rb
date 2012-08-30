@@ -3,7 +3,8 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_filter :find_scenario, :only => [:show, :update, :sandbox]
+      before_filter :find_scenario, :only => [:update, :sandbox]
+      before_filter :find_preset_or_scenario, :only => :show
 
       # GET /api/v3/scenarios/:id
       #
@@ -137,6 +138,11 @@ module Api
       end
 
       private
+
+      def find_preset_or_scenario
+        @scenario = Preset.get(params[:id]).try(:to_scenario) || Scenario.find(params[:id])
+        render :json => {:errors => ["Scenario not found"]}, :status => 404 and return unless @scenario
+      end
 
       def find_scenario
         @scenario = Scenario.find params[:id]

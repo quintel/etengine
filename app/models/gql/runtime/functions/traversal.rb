@@ -100,7 +100,7 @@ module Gql::Runtime
       def INPUT_SLOTS(*args)
         carrier = args.pop if args.length > 1
         converters = LOOKUP(args).flatten
-        flatten_uniq converters.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.outputs}
+        flatten_uniq converters.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.inputs}
       end
 
       # @example All input links
