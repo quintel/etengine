@@ -88,7 +88,7 @@ module Qernel
     # attribute groups should only be used to show the values in the data section
     ELECTRICITY_PRODUCTION_VALUES  =  {
       :technical => {
-        :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
+        :electricity_output_capacity => ['Nominal electrical capacity','MW'],
         :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
         :full_load_hours  => ['Full load hours', 'hour / year'],
         :electricity_output_conversion  => ['Electrical efficiency', '%'],
@@ -119,7 +119,7 @@ module Qernel
         :heat_output_conversion  => ['Heat efficiency', '%']
       },
       :cost => {
-        :purchase_price_per_unit => ['Initial purchase price', 'euro'],
+        :initial_investment => ['Initial purchase price', 'euro'],
         :installing_costs_per_unit => ['Cost of installing','euro'],
         :residual_value_per_unit => ['Residual value after lifetime','euro'],
         :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
@@ -143,7 +143,7 @@ module Qernel
         :heat_and_cold_output_conversion  => ['Efficiency (after COP)', '%']
       },
       :cost => {
-        :purchase_price_per_unit => ['Initial purchase price', 'euro'],
+        :initial_investment => ['Initial purchase price', 'euro'],
         :installing_costs_per_unit => ['Cost of installing','euro'],
         :residual_value_per_unit => ['Residual value after lifetime','euro'],
         :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
