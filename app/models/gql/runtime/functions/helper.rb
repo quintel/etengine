@@ -55,11 +55,8 @@ module Gql::Runtime
       # )
       #
       def TXT_TABLE(objects, *arguments)
-        rows = [arguments]
-        rows += flatten_uniq(objects).map do |obj|
-          arguments.map{|a| obj.query.instance_eval(a.to_s) }
-        end
-        rows.to_table(:first_row_is_head => true).to_s
+        table_data(objects, *arguments).
+          to_table(:first_row_is_head => true).to_s
       end
 
       # TXT_TABLE( converters ; attribute_1 ; attribute_2 ; ... )
@@ -70,12 +67,35 @@ module Gql::Runtime
       # )
       #
       def EXCEL_TABLE(objects, *arguments)
-        rows = [arguments]
-        rows += flatten_uniq(objects).map do |obj|
-          arguments.map{|a| obj.query.instance_eval(a.to_s) }
-        end
-        rows.map{|row| row.join("\t") }.join("\n")
+        table_data(objects, *arguments).
+          map{ |row| row.join("\t") }.join("\n")
       end
+
+      #######
+      private
+      #######
+
+      # Returns data for use in a TXT or EXCEL table.
+      #
+      # The first row contains the headers (attributes) with subsequent rows
+      # containing the result of each requested GQL expression.
+      #
+      def table_data(objects, *arguments)
+        rows = [arguments]
+
+        rows += flatten_uniq(objects).map do |obj|
+          arguments.map do |argument|
+            if argument.respond_to?(:call)
+              obj.query.instance_eval(&argument)
+            else
+              obj.query.instance_eval(argument.to_s)
+            end
+          end
+        end
+
+        rows
+      end
+
     end
   end
 end
