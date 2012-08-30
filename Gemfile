@@ -62,6 +62,8 @@ group :test, :development do
   gem 'ruby-prof'
   gem 'pry-rails'
   gem 'pry-remote'
+  gem 'pry-stack_explorer'
+  gem 'pry-debugger'
   gem 'guard'
   gem 'guard-rspec'
   gem 'spork', '~> 0.9.0.rc'
