@@ -1,4 +1,5 @@
 class Qernel::ConverterApi
+# DEBT: Clean up this file! wmeyers - 20120830
 
   # The required installed input capacity, based on the demand.
   def mwh_input

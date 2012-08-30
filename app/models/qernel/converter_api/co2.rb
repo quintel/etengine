@@ -8,8 +8,7 @@ class Qernel::ConverterApi
   # based on the CO2_per mwh input.
   #
   # Used in total costs calculation of old cost calculation and some gqueries
-  # to determine total costs of CO2 for electricity and heat. Unclear why it
-  # has to be calculated via mwh_input
+  # to determine total costs of CO2 for electricity and heat.
   #
   # DEPRECATED
   #
