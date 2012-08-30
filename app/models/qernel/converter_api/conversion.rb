@@ -83,20 +83,20 @@ class Qernel::ConverterApi
     when :mw_input
       cost / effective_input_capacity
     when :mw_electricity
-      cost / output_capacity_electricity
+      cost / electricity_output_capacity
     when :mw_heat
-      cost / output_capacity_heat
+      cost / heat_output_capacity
 
     # MWh production
     when :mwh_input
-      cost / demand / SECS_PER_HOUR / number_of_units
+      cost / typical_fuel_input * SECS_PER_HOUR
     when :mwh_electricity
-      cost / output_of_electricity / SECS_PER_HOUR / number_of_units
+      cost / typical_electricity_output * SECS_PER_HOUR
     when :mwh_heat
-      cost / output_of_heat_carriers / SECS_PER_HOUR / number_of_units
+      cost / typical_heat_output * SECS_PER_HOUR
 
     # full load hours
-    when
+    when :full_load_hours
       cost / full_load_hours
 
     # Some other unit that is unknown
