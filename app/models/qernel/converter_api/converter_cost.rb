@@ -137,8 +137,7 @@ class Qernel::ConverterApi
   
   # Sums the various fixed costs per MW input capacity.
   #
-  # DEBT: Used in backup option overview chart:
-  # /supply/electricity_backup#backup-options 
+  # Used to be used in backup options chart
   # 
   # DEPRECATED
   #

@@ -19,6 +19,7 @@ class Qernel::ConverterApi
 
   # Determines the fuel costs, bases on the weighted costs of the used input.
   #
+  # DEPRECATED: use fuel_costs_per(converter)
   def fuel_costs_total
     function(:fuel_costs_total) do
       demand * weighted_carrier_cost_per_mj
@@ -26,6 +27,8 @@ class Qernel::ConverterApi
   end
 
   # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
+  #
+  # DEPRECATED: use fuel_costs_per(mwh_input)
   #
   def fuel_costs_per_mwh_input
     function(:fuel_costs_per_mwh_input) do
