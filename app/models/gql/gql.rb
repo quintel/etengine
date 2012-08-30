@@ -263,12 +263,11 @@ class Gql
   # @param graph a Qernel::Graph or :present, :future
   #
   def update_graph(graph, input, value)
-    # TODO: the disabled_in_current_area check should be moved somewhere else
     case graph
     when :present then graph = present
     when :future  then graph = future
     end
-    graph.query(input, value) unless input.disabled_in_current_area?(self)
+    graph.query(input, value)
   end
 
   # Standard query without modifiers. Queries present and future graph.
