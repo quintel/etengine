@@ -15,6 +15,7 @@ class Qernel::ConverterApi
       end
     end
   end
+  unit_for_calculation "number_of_units", 'number'
 
   def number_of_units=(val)
     dataset_set(:number_of_units, val)
@@ -24,6 +25,7 @@ class Qernel::ConverterApi
     return nil if [number_of_units, land_use_per_unit].any?(&:nil?)
     number_of_units * land_use_per_unit
   end
+  unit_for_calculation "total_land_use", 'km2'
 
   # Returns the number of households which are supplied by the energy created
   # in each unit. Used in DemandDriven converters for cases where a converter

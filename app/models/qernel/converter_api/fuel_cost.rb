@@ -5,6 +5,7 @@ class Qernel::ConverterApi
       converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
     end
   end
+  unit_for_calculation "sustainable_input_factor", 'factor'
 
   #TODO: this method returns a share. But the name presumes it is not!
   def useful_output
@@ -15,6 +16,7 @@ class Qernel::ConverterApi
       ].map{|c| c and c.conversion }.compact.sum
     end
   end
+  unit_for_calculation "useful_output", 'factor'
 
 
   # Determines the fuel costs, bases on the weighted costs of the used input.

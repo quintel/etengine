@@ -17,6 +17,7 @@ class Qernel::ConverterApi
       cost_of_co2_emission_credits_per_mwh_input * mwh_input
     end
   end
+  unit_for_calculation "cost_of_co2_emission_credits", 'euro'
 
   # This returns the costs for co2 emission credits per MWh input, as it
   # multiplies the CO2 emitted by the converter by the price of the 
@@ -32,5 +33,6 @@ class Qernel::ConverterApi
       (1 - self.area.co2_percentage_free ) * self.area.co2_price * part_ets * ((1 - co2_free) * weighted_carrier_co2_per_mj) * SECS_PER_HOUR
     end
   end
+  unit_for_calculation "cost_of_co2_emission_credits_per_mwh_input", 'euro'
 
 end

@@ -7,6 +7,7 @@ class Qernel::ConverterApi
       demand / SECS_PER_HOUR
     end
   end
+  unit_for_calculation "mwh_input", 'MWh'
 
   # The output of electricity expressed in MWh.
   def mwh_electricy_output
@@ -14,6 +15,7 @@ class Qernel::ConverterApi
       output_of_electricity / SECS_PER_HOUR
     end
   end
+  unit_for_calculation "mwh_electricy_output", 'MWh'
 
   # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
   #
@@ -23,6 +25,7 @@ class Qernel::ConverterApi
     end
   end
   # TODO: get rid of the alias
+  unit_for_calculation "typical_input_capacity_in_mw", 'MW'
   alias typical_input_capacity typical_input_capacity_in_mw
 
   ## Returns the nominal electrical capicity of one unit.
@@ -32,6 +35,7 @@ class Qernel::ConverterApi
       typical_nominal_input_capacity * electricity_output_conversion
     end
   end
+  unit_for_calculation "nominal_capacity_electricity_output_per_unit", 'MW'
 
   ## Returns the nominal heat capicity of one unit. This is both useable heat as steam_hot_water.
   #
@@ -40,6 +44,7 @@ class Qernel::ConverterApi
       typical_nominal_input_capacity * heat_output_conversion
     end
   end
+  unit_for_calculation "nominal_capacity_heat_output_per_unit", 'MW'
 
   ## Returns the nominal cooling capacity of one unit
   #
@@ -48,6 +53,7 @@ class Qernel::ConverterApi
       typical_nominal_input_capacity * cooling_output_conversion
     end
   end
+  unit_for_calculation "nominal_capacity_cooling_output_per_unit", 'MW'
   
   ## Returns the total heat output conversion of one unit. This is useable heat and steam_hot_water.
   #
@@ -56,6 +62,7 @@ class Qernel::ConverterApi
       (steam_hot_water_output_conversion  + useable_heat_output_conversion)
     end
   end
+  unit_for_calculation "heat_output_conversion", 'factor'
   
   ## Returns the total heat and cold output conversion of one unit. This is useable heat, steam_hot_water and cooling.
   #
@@ -64,12 +71,14 @@ class Qernel::ConverterApi
       (steam_hot_water_output_conversion + useable_heat_output_conversion + cooling_output_conversion)
     end
   end
+  unit_for_calculation "heat_and_cold_output_conversion", 'factor'
 
   def coefficient_of_performance
     function(:coefficient_of_performance) do
       (1 / (1 - ( ambient_heat_input_conversion + ambient_cold_input_conversion + geothermal_input_conversion)))
     end
   end
+  unit_for_calculation "coefficient_of_performance", ''
   
   # How many seconds a year the converters runs at full load.
   # This is useful because MJ is MW per second.
@@ -78,24 +87,28 @@ class Qernel::ConverterApi
       full_load_hours * SECS_PER_HOUR
     end
   end
+  unit_for_calculation "full_load_seconds", 'seconds'
   
   def production_based_on_number_of_units
     function(:production_based_on_number_of_units) do
       number_of_units * typical_electricity_production_per_unit
     end
   end
+  unit_for_calculation "production_based_on_number_of_units", 'MJ'
   
   def typical_electricity_production_capacity
     function(:typical_electricity_production_capacity) do
       electricity_output_conversion * typical_input_capacity
     end
   end
+  unit_for_calculation "typical_electricity_production_capacity", 'MW'
   
   def typical_electricity_production_per_unit
     function(:typical_electricity_production_per_unit) do
       typical_electricity_production_capacity * full_load_seconds
     end
   end
+  unit_for_calculation "typical_electricity_production_per_unit", 'MJ'
   
   # Removed typical_production, refactored to typical_production
   # Added an alias untill the queries are altered
@@ -108,6 +121,7 @@ class Qernel::ConverterApi
       electricity_output_conversion * typical_nominal_input_capacity * number_of_units
     end
   end
+  unit_for_calculation "installed_production_capacity_in_mw_electricity", 'MW'
   alias_method :electricity_production_in_mw, :installed_production_capacity_in_mw_electricity
 
   # The MW input capacity that is required to provide the demand.
@@ -126,6 +140,7 @@ class Qernel::ConverterApi
     end
     out || 0.0 # FIXME!
   end
+  unit_for_calculation "mw_input_capacity", 'MW'
 
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
@@ -135,6 +150,7 @@ class Qernel::ConverterApi
       steam_hot_water_output_conversion
     ].compact.sum * typical_nominal_input_capacity * number_of_units
   end
+  unit_for_calculation "installed_production_capacity_in_mw_heat", 'MW'
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
 
   # NOTE: disabled caching - Fri 29 Jul 2011 16:36:49 CEST
@@ -143,6 +159,7 @@ class Qernel::ConverterApi
     return nil if [number_of_units, typical_heat_production_per_unit].any?(&:nil?)
     number_of_units * typical_heat_production_per_unit
   end
+  unit_for_calculation "production_based_on_number_of_heat_units", 'MJ'
   
   def typical_heat_production_per_unit
     return nil if typical_input_capacity.nil?
@@ -151,4 +168,5 @@ class Qernel::ConverterApi
       steam_hot_water_output_conversion
     ].compact.sum * typical_input_capacity * full_load_seconds
   end
+  unit_for_calculation "typical_heat_production_per_unit", 'MJ'
 end
