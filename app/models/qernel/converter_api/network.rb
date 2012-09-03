@@ -26,7 +26,8 @@ class Qernel::ConverterApi
     function(:peak_load_capacity_delta_for_mv_hv) do
       (simult_we * peak_load_units_delta_for_mv_hv * typical_electricity_production_capacity)
     end
-  end  unit_for_calculation "peak_load_capacity_delta_for_mv_hv", 'MW'
+  end
+  unit_for_calculation "peak_load_capacity_delta_for_mv_hv", 'MW'
 
   def peak_load_capacity_per_unit
     function(:peak_load_units_capacity_per_unit) do
