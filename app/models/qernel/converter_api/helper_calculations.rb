@@ -7,6 +7,7 @@ class Qernel::ConverterApi
       mw_input_capacity / typical_input_capacity
     end
   end
+  unit_for_calculation "number_of_units", 'number'
 
   # RD: This method is used by the number_of_units_update in multicommand factory
   # I dont think this belongs here!
@@ -18,6 +19,8 @@ class Qernel::ConverterApi
     return nil if [number_of_units, land_use_per_unit].any?(&:nil?)
     number_of_units * land_use_per_unit
   end
+  unit_for_calculation "total_land_use", 'km2'
+  
   
   # Returns the number of households which are supplied by the energy created
   # in each unit. Used in DemandDriven converters for cases where a converter

@@ -15,8 +15,8 @@ class Qernel::ConverterApi
       ].map{|c| c and c.conversion }.compact.sum
     end
   end
-
-
+  unit_for_calculation "useful_output", 'factor'
+  
   # Determines the fuel costs, bases on the weighted costs of the used input.
   #
   def fuel_costs_total
@@ -24,7 +24,8 @@ class Qernel::ConverterApi
       demand * weighted_carrier_cost_per_mj
     end
   end
-
+  unit_for_calculation "fuel_costs_total", 'euro'
+  
   # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
   #
   def fuel_costs_per_mwh_input
@@ -32,5 +33,6 @@ class Qernel::ConverterApi
       SECS_PER_HOUR * weighted_carrier_cost_per_mj
     end
   end
+  unit_for_calculation "fuel_costs_per_mwh_input", 'euro'
 
 end
