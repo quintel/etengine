@@ -47,7 +47,7 @@ module Etsource
     def area_attributes(area_code)
       if @area_attributes.has_key?(area_code)
         @area_attributes[area_code]
-      else  
+      else
         hsh = dataset(area_code).data[:area][:area_data] rescue {}
         @area_attributes[area_code] = hsh.with_indifferent_access
       end
@@ -99,6 +99,19 @@ module Etsource
       end
     end
 
+    # Load merit_order.csv and create an array of arrays.
+    # The merit_order.csv has to be in sync with merit_order_converters.yml
+    # The columns correspond to the column_1, column_2, ... keys in that file.
+    #
+    #
+    #            column_1, column_2, column_3, column_4, column_5, column_6, column_7
+    # 0.6255066,0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000
+    # 0.5601907,0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000
+    #
+    # =>
+    # [ [0.6255066,[0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000]],
+    #   [0.5601907,[0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000]]  ]
+    #
     def merit_order_table
       # make sure we don't accidentally overwrite values, so we freeze everything.
       instrument("etsource.loader: merit_order_table") do

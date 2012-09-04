@@ -167,14 +167,34 @@ module Qernel::Plugins
       private
       #######
 
+      # Load merit_order.csv and create an array of arrays.
+      # The merit_order.csv has to be in sync with merit_order_converters.yml
+      # The columns correspond to the column_1, column_2, ... keys in that file.
+      #
+      #            column_1, column_2, column_3, column_4, column_5, column_6, column_7
+      # 0.6255066,0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000
+      # 0.5601907,0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000
+      #
+      # @return Array that looks like this:
+      #
+      # [ [0.6255066,[0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000]],
+      #   [0.5601907,[0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000]]  ]
+      #
       def merit_order_table
         @merit_order_table ||= Etsource::Loader.instance.merit_order_table
       end
 
+      # Returns the "demands" (?) for the converters defined in merit_order_converters.yml.
       #
+      # Returns an array of sums for every column_X group, like this:
+      #
+      # [
+      #    247.3,    # [23.2, 211.1, 23.0].sum derived from the column_1: ... converters.
+      #    100.1     # [50, 50.1].sum derived from the column_1: ... converters.
+      # ]
       #
       def merit_order_demands
-        merit_order_converters.map do |_ignore, converter_keys|
+        merit_order_converters.map do |_ignore_column, converter_keys|
           converter_keys.map do |key|
             converter = @graph.converter(key)
             begin
