@@ -265,14 +265,22 @@ class Qernel::ConverterApi
   # Used for calculating the nominal_input_capacity
   def electric_based_nominal_input_capacity
     function(:electric_based_nominal_input_capacity) do
-      electricity_output_capacity / electricity_output_conversion rescue nil
+      if electricity_output_conversion && electricity_output_conversion > 0
+        electricity_output_capacity / electricity_output_conversion
+      else
+        0.0
+      end
     end
   end
   unit_for_calculation "electric_based_nominal_input_capacity", 'MW'
 
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
-      heat_output_capacity / heat_output_conversion rescue nil
+      if heat_output_conversion && heat_output_conversion > 0
+        heat_output_capacity / heat_output_conversion
+      else
+        0.0
+      end
     end
   end
   unit_for_calculation "heat_based_nominal_input_capacity", 'MW'
