@@ -30,8 +30,8 @@ module DataHelper
       end
       change_field(present_value, future_value)
     else
-      present_value = present.send(attr_name)
-      future_value  = future.send(attr_name)
+      present_value = present.instance_eval(attr_name.to_s)
+      future_value  = future.instance_eval(attr_name.to_s)
 
       haml_tag :td, auto_number(present_value), :title => title_tag_number(present_value)
       haml_tag :td, auto_number(future_value), :title => title_tag_number(future_value)

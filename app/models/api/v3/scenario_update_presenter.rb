@@ -73,10 +73,9 @@ module Api
           present = perform_query(gql, :present, query)
           future  = perform_query(gql, :future,  query)
 
-          if present && future
-            results[query.key] = {
-              present: present, future: future, unit: query.unit }
-          end
+          results[query.key] = {
+            present: present, future: future, unit: query.unit
+          }
         end
       rescue Exception => exception
         # An error while setting up the graph.
@@ -90,7 +89,8 @@ module Api
       # @param [Gquery]   query  The query to be performed.
       #
       # @return [Numeric, false]
-      #   Returns the query result, or false if there was an error.
+      #   Returns the query result, or nil if there was an error. Some gqueries
+      #  return boolean values, so false must be preserved
       #
       def perform_query(gql, period, query)
         gql.public_send(:"query_#{ period }", query)
@@ -98,7 +98,7 @@ module Api
         # TODO Exception is *way* too low level to be rescued; we could do
         #      with a GraphError exception for "acceptable" graph errors.
         @errors.push("#{ query.key }/#{ period } - #{ exception.message }")
-        false
+        nil
       end
 
     end # ScenarioUpdatePresenter

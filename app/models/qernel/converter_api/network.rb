@@ -34,6 +34,6 @@ class Qernel::ConverterApi
       ( (electricity_input_conversion || 0.0) - (electricity_output_conversion|| 0.0) ) * (typical_input_capacity|| 0.0)
     end
   end
-  unit_for_calculation "peak_load_units_capacity_per_unit", 'NW'
+  unit_for_calculation "peak_load_capacity_per_unit", 'MW'
 
 end
