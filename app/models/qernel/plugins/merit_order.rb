@@ -11,7 +11,6 @@ module Qernel::Plugins
     end
 
     module ClassMethods
-
       def merit_order_table
         @merit_order_table ||= Etsource::Loader.instance.merit_order_table
       end
@@ -19,9 +18,9 @@ module Qernel::Plugins
       def merit_order_converters
         @merit_order_converters ||= Etsource::Loader.instance.globals('merit_order_converters')
       end
-
     end
 
+    # Converters to include in the sorting: G(electricity_production)
     def converters_for_merit_order
       group_converters(:merit_order_converters).map(&:query).tap do |arr|
         raise "MeritOrder: no converters in group: merit_order_converters. Update ETsource." if arr.empty?
@@ -33,40 +32,45 @@ module Qernel::Plugins
       return if group_converters(:merit_order_converters).empty?
 
       instrument("qernel.merit_order: calculate_merit_order") do
-        # Converters to include in the sorting: G(electricity_production)
-        converters = converters_for_merit_order
-        converters.sort_by! do |c|
+        converters = converters_for_merit_order.sort_by do |c|
           c.variable_costs_per_mwh_input / c.electricity_output_conversion
         end
 
         if first = converters.first
-          safe_inst_prod_cap = first.installed_production_capacity_in_mw_electricity || 0.0
-          first[:merit_order_end] = safe_inst_prod_cap * first.availability
           first[:merit_order_start] = 0.0
+          update_merit_order_end!(first)
 
-          if safe_inst_prod_cap > 0.0
-            first[:merit_order_position] = counter = 1
-          else
-            counter = 0
-            first[:merit_order_position] = 1000
-          end
+          counter = 0 # keep track of the counter, it is incremented by #update_merit_order_pos!
+          counter = update_merit_order_pos!(first, counter)
 
-          converters[1..-1].each_with_index do |converter, i|
-            # i points now to the previous one, not the current index! (because we start from [1..-1])
-            # the merit_order_start of this 'converter' is the merit_order_end of the previous at 'i'.
-            converter[:merit_order_start] = converters[i][:merit_order_end]
-            installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
-
-            merit_order_end = converter[:merit_order_start] + installed_capacity * converter.availability
-            converter[:merit_order_end] = merit_order_end.round(3)
-
-            # Assign a position at the end if installed_capacity is 0. Issue #293
-            converter[:merit_order_position] = (installed_capacity > 0.0) ? (counter += 1) : 1000
+          converters.each_cons(2) do |prev, converter|
+            # the merit_order_start of this 'converter' is the merit_order_end of the previous.
+            converter[:merit_order_start] = prev[:merit_order_end]
+            update_merit_order_end!(converter)
+            counter = update_merit_order_pos!(converter, counter)
           end
         end # if
         dataset_set(:calculate_merit_order_finished, true)
       end
     end # calculate_merit_order
+
+    # Assigns the merit_order_position attribute to a converter.
+    # Assign a position at the end if installed_capacity is 0. Issue #293
+    #
+    # @return counter so we can keep track of the last assigned position
+    #
+    def update_merit_order_pos!(converter, counter)
+      installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
+      converter[:merit_order_position] = (installed_capacity > 0.0) ? (counter += 1) : 1000
+
+      counter
+    end
+
+    def update_merit_order_end!(converter)
+      installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
+      merit_order_end    = converter[:merit_order_start] + (installed_capacity * converter.availability)
+      converter[:merit_order_end] = merit_order_end.round(3)
+    end
 
     #
     #
@@ -112,60 +116,46 @@ module Qernel::Plugins
       end
     end
 
-    def residual_ldc
+    # Returns an array of x,y coordinates and the max_load to be used with a PolgyonArea
+    #
+    # @return [[[x,y], [x,y]], max_load]
+    #
+    def residual_ldc_coordinates_and_max_load
       instrument("qernel.merit_order: residual_ldc") do
-        loads      = []
         load_profiles        = residual_load_profiles
         load_profiles_length = load_profiles.length.to_f
-
+        max_load             = load_profiles.max
+        # TODO: what is precision?
         precision = 10
 
-        (0..precision).to_a.each do |i|
-          q = i / precision.to_f  * load_profiles.max
-          y = load_profiles.count{|n| n >= q} / load_profiles_length
-          loads << [q, y.to_f]
+        loads = (0..precision).map do |i|
+          q = i / precision.to_f * max_load
+          y = load_profiles.count{ |n| n >= q } / load_profiles_length
+          [q, y.to_f]
         end
 
-        loads
+        [loads, max_load]
       end
     end
 
     def calculate_full_load_hours
       return unless area.area_code == 'nl'
-      #return unless enable_merit_order?
       return unless group_converters(:merit_order_converters).present?
 
       if dataset_get(:calculate_merit_order_finished) != true
         calculate_merit_order
       end
 
-      ldc_points = residual_ldc
-      y_max = residual_load_profiles.max
-
-      converters = converters_for_merit_order
-      converters.sort_by!{|c| c[:merit_order_end]}
-
-      max_merit  = converters.last.andand[:merit_order_end] || 0.0
+      # Create a polygon area with the residual-ldc coordinates.
+      # I resist the temptation to make an instance variable out of it, otherwise it'll persist
+      # over requests and will cause mischief.
+      ldc_polygon = PolgyonArea.new(*residual_ldc_coordinates_and_max_load)
+      converters  = converters_for_merit_order.sort_by { |c| c[:merit_order_end] }
 
       instrument("qernel.merit_order: calculate_full_load_hours") do
         converters.each do |converter|
-          lft = converter.merit_order_start
-          rgt = converter.merit_order_end
-
-          points = [ # polygon_area expects the points passed in clock-wise order.
-            [lft, 0],                                       # bottom left
-            [lft, interpolate_y(ldc_points, lft, y_max)],   # top left (y interpolated)
-            *ldc_points.select{|x,y| x > lft && x < rgt },  # points on residual_ldc curve
-            [rgt, interpolate_y(ldc_points, rgt, y_max)],   # top right (y interpolated)
-            [rgt, 0]                                        # bottom right
-          ]
-
-          area_size       = polygon_area(points.map(&:first), points.map(&:second))
-          diff            = [rgt - lft, 0.0].max
-          availability    = converter.availability
-
-          capacity_factor = [availability * (area_size / diff).rescue_nan, availability].min
-          full_load_hours = capacity_factor * 8760
+          capacity_factor = capacity_factor_for(converter, ldc_polygon)
+          full_load_hours = capacity_factor * 8760 # hours per year
 
           converter.merit_order_capacity_factor = capacity_factor.round(3)
           converter.merit_order_full_load_hours = full_load_hours.round(1)
@@ -175,40 +165,101 @@ module Qernel::Plugins
       nil
     end
 
-    # this function is probably not so precise.
-    # it's supposed to interpolate the y value for a given x.
-    # It uses the formulas i've learned at school and wikipedia
-    def interpolate_y(points, x, y_max)
-      return 1.0 if x == 0.0
-      return 0.0 if x >= y_max
+    def capacity_factor_for(converter, ldc_polygon)
+      merit_order_start = converter.merit_order_start
+      merit_order_end   = converter.merit_order_end
 
-      index = points.index{|px,y| px >= x } - 1
-      index = 0 if index < 0
+      area_size       = ldc_polygon.area(merit_order_start, merit_order_end)
+      delta           = [merit_order_end - merit_order_start, 0.0].max
+      availability    = converter.availability
 
-      x1,y1 = points[index]
-      x2,y2 = points[index + 1]
-
-      m = (y2 - y1) / (x2 - x1)
-      n = y1 - ((y2 - y1)/(x2-x1)) * x1
-
-      y = m*x + n
-
-      y.rescue_nan
+      capacity_factor = [availability * (area_size / delta).rescue_nan, availability].min
     end
 
-    # Inspired from http://alienryderflex.com/polygon_area/
+    # Given a line with x,y coordinates, PolygonArea will calculate
+    # the area below that line from a x_1 to x_2.
+    #
+    #     The polgyon area               What's the area?
+    #
+    #     |__                            |__
+    #     |  --                          |  --
+    #     |     -----                    |   |x-----
+    #     |          ______              |   |xxxxx| ______
+    #     |                ---           |   |xxxxx|       ---
+    #     +-------------------           +-------------------
+    #                                       lft   rgt
+    #
+    # The algorithm is inspired from http://alienryderflex.com/polygon_area/
     # points have to be passed in "around the clock" direction
-    def polygon_area(x_arr, y_arr)
-      points = x_arr.length
-      i = points - 1
-      j = points - 1
+    #
+    # @example
+    #
+    #   poly = LdcPolygonArea.new()
+    #   poly.area( converter ) # => ...
+    #
+    class PolgyonArea
+      attr_reader :points, :y_max
 
-      area = 0.0
-      0.upto(points - 1) do |i|
-        area += (x_arr[j] + x_arr[i])*(y_arr[j] - y_arr[i])
-        j = i
+      # points    - An array of [x,y] coordinates for the line
+      # y_max     - the maximum y
+      def initialize(points, y_max)
+        @points = points
+        @y_max = y_max
       end
-      area * 0.5
-    end
+
+      def area(x_lft, x_rgt)
+        coordinates = coordinates(x_lft, x_rgt)
+        polygon_area(coordinates.map(&:first), coordinates.map(&:second))
+      end
+
+      private
+
+      # returns x,y coordinates of the polygon_area in clock-wise order.
+      def coordinates(x_lft, x_rgt)
+        [
+          [x_lft, 0],                                     # bottom left
+          [x_lft, interpolate_y(points, x_lft, y_max)],   # top left (y interpolated)
+          *points.select{|x,y| x > x_lft && x < x_rgt },  # points on residual_ldc curve
+          [x_rgt, interpolate_y(points, x_rgt, y_max)],   # top right (y interpolated)
+          [x_rgt, 0]                                      # bottom right
+        ]
+      end
+
+      # this function is not too precise.
+      # it's supposed to interpolate the y value for a given x.
+      # It uses the formulas i've learned at school and wikipedia
+      def interpolate_y(points, x, y_max)
+        return 1.0 if x == 0.0
+        return 0.0 if x >= y_max
+
+        index = points.index{|px,y| px >= x } - 1
+        index = 0 if index < 0
+
+        x1,y1 = points[index]
+        x2,y2 = points[index + 1]
+
+        m = (y2 - y1) / (x2 - x1)
+        n = y1 - ((y2 - y1)/(x2-x1)) * x1
+
+        y = m*x + n
+
+        y.rescue_nan
+      end
+
+      def polygon_area(x_arr, y_arr)
+        points = x_arr.length
+        i = points - 1
+        j = points - 1
+
+        area = 0.0
+        0.upto(points - 1) do |i|
+          area += (x_arr[j] + x_arr[i])*(y_arr[j] - y_arr[i])
+          j = i
+        end
+        area * 0.5
+      end
+    end # LdcPolgyonArea
   end # MeritOrder
 end
+
+
