@@ -46,6 +46,7 @@ module Qernel::Plugins
           converters.each_cons(2) do |prev, converter|
             # the merit_order_start of this 'converter' is the merit_order_end of the previous.
             converter[:merit_order_start] = prev[:merit_order_end]
+
             update_merit_order_end!(converter)
             counter = update_merit_order_pos!(converter, counter)
           end
@@ -72,71 +73,6 @@ module Qernel::Plugins
       converter[:merit_order_end] = merit_order_end.round(3)
     end
 
-    #
-    #
-    def merit_order_demands
-      instrument("qernel.merit_order: merit_order_demands") do
-        self.class.merit_order_converters.map do |_ignore, converter_keys|
-          converter_keys.map do |key|
-            converter = converter(key)
-            raise "merit_order: no converter found with key: #{key.inspect}" unless converter
-            begin
-              converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
-            rescue
-              # We've been getting errors with nil attributes. Debug info
-              debug = [:mw_input_capacity, :electricity_output_conversion, :availability].map do |a|
-                "#{a}: #{converter.query.send a}"
-              end.join "\n"
-              raise "Error with converter #{key}: #{debug}"
-            end
-          end.sum.round(1)
-        end
-      end
-    end
-
-    # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
-    # It uses the tabular data merit_order.csv
-    #
-    # Returns an Array of x,y
-    #
-    def residual_load_profiles # Excel N
-      instrument("qernel.merit_order: residual_load_profiles") do
-        demands     = merit_order_demands
-        peak_demand = group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
-
-        self.class.merit_order_table.map do |normalized_load, wewp|
-          load = peak_demand * normalized_load
-
-          # take one column from the table and multiply it with the demands
-          # defined in the merit_order_converters.yml
-          wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,3]]
-          wewp_x_demands.map!{|wewp, demand| wewp * demand }
-          [0, load - wewp_x_demands.sum].max
-        end
-      end
-    end
-
-    # Returns an array of x,y coordinates and the max_load to be used with a PolgyonArea
-    #
-    # @return [[[x,y], [x,y]], max_load]
-    #
-    def residual_ldc_coordinates_and_max_load
-      instrument("qernel.merit_order: residual_ldc") do
-        load_profiles        = residual_load_profiles
-        load_profiles_length = load_profiles.length.to_f
-        max_load             = load_profiles.max
-        # TODO: what is precision?
-        precision = 10
-
-        loads = (0..precision).map do |i|
-          q = i / precision.to_f * max_load
-          y = load_profiles.count{ |n| n >= q } / load_profiles_length
-          [q, y.to_f]
-        end
-
-        [loads, max_load]
-      end
-    end
 
     def calculate_full_load_hours
       return unless area.area_code == 'nl'
@@ -149,7 +85,9 @@ module Qernel::Plugins
       # Create a polygon area with the residual-ldc coordinates.
       # I resist the temptation to make an instance variable out of it, otherwise it'll persist
       # over requests and will cause mischief.
-      ldc_polygon = PolgyonArea.new(*residual_ldc_coordinates_and_max_load)
+      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates_and_max_load
+      ldc_polygon = PolgyonArea.new(*coordinates)
+
       converters  = converters_for_merit_order.sort_by { |c| c[:merit_order_end] }
 
       instrument("qernel.merit_order: calculate_full_load_hours") do
@@ -175,6 +113,104 @@ module Qernel::Plugins
 
       capacity_factor = [availability * (area_size / delta).rescue_nan, availability].min
     end
+
+    # --- LoadProfileTable ----------------------------------------------------
+
+
+    #
+    #
+    #
+    #
+    class LoadProfileTable
+      def initialize(graph)
+        @graph = graph
+      end
+
+      # Returns an array of x,y coordinates and the max_load to be used with a PolgyonArea
+      #
+      # @return [[[x,y], [x,y]], max_load]
+      #
+      def residual_ldc_coordinates_and_max_load
+        load_profiles        = residual_load_profiles
+        load_profiles_length = load_profiles.length.to_f
+        max_load             = load_profiles.max
+        # TODO: what is precision?
+        precision = 10
+
+        loads = (0..precision).map do |i|
+          q = i / precision.to_f * max_load
+          y = load_profiles.count{ |n| n >= q } / load_profiles_length
+          [q, y.to_f]
+        end
+
+        [loads, max_load]
+      end
+
+
+      def merit_order_converters
+        unless @merit_order_converters
+          @merit_order_converters = Etsource::Loader.instance.globals('merit_order_converters')#.values
+          #@merit_order_converters = keys.flatten.map {|key| @graph.converter(key)}
+        end
+        @merit_order_converters
+      end
+
+      def ensure_converts_exist(keys)
+        keys.each do |key|
+          unless @graph.converter(key)
+            raise "merit_order: no converter found with key: #{key.inspect}"
+          end
+        end
+      end
+
+      #######
+      private
+      #######
+
+      def merit_order_table
+        @merit_order_table ||= Etsource::Loader.instance.merit_order_table
+      end
+
+      #
+      #
+      def merit_order_demands
+        merit_order_converters.map do |_ignore, converter_keys|
+          converter_keys.map do |key|
+            converter = @graph.converter(key)
+            begin
+              converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
+            rescue
+              # We've been getting errors with nil attributes. Debug info
+              debug = [:mw_input_capacity, :electricity_output_conversion, :availability].map do |a|
+                "#{a}: #{converter.query.send a}"
+              end.join "\n"
+              raise "Error with converter #{key}: #{debug}"
+            end
+          end.sum.round(1)
+        end
+      end
+
+      # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
+      # It uses the tabular data merit_order.csv
+      #
+      # Returns an Array of x,y
+      #
+      def residual_load_profiles # Excel N
+        demands     = merit_order_demands
+        peak_demand = @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
+
+        merit_order_table.map do |normalized_load, wewp|
+          load = peak_demand * normalized_load
+
+          # take one column from the table and multiply it with the demands
+          # defined in the merit_order_converters.yml
+          wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,4]]
+          wewp_x_demands.map!{|wewp, demand| wewp * demand }
+          [0, load - wewp_x_demands.sum].max
+        end
+      end
+    end
+
 
     # Given a line with x,y coordinates, PolygonArea will calculate
     # the area below that line from a x_1 to x_2.
