@@ -21,7 +21,10 @@ class Qernel::ConverterApi
 
   # Determines the fuel costs, bases on the weighted costs of the used input.
   #
+  # Used to be used in several gqueries
+  #
   # DEPRECATED: use fuel_costs_per(converter)
+  #
   def fuel_costs_total
     function(:fuel_costs_total) do
       demand * weighted_carrier_cost_per_mj
