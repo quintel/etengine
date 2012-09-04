@@ -50,7 +50,8 @@ class Qernel::ConverterApi
   def nominal_input_capacity
     function(:nominal_input_capacity) do
       electric_based_nominal_input_capacity ||
-        heat_based_nominal_input_capacity || 0.0
+        heat_based_nominal_input_capacity || 
+          cooling_based_nominal_input_capacity || 0.0
     end
   end
   unit_for_calculation "nominal_input_capacity", 'MW'
@@ -268,7 +269,7 @@ class Qernel::ConverterApi
       if electricity_output_conversion && electricity_output_conversion > 0
         electricity_output_capacity / electricity_output_conversion
       else
-        0.0
+        nil
       end
     end
   end
@@ -277,13 +278,26 @@ class Qernel::ConverterApi
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
       if heat_output_conversion && heat_output_conversion > 0
-        heat_output_capacity / heat_output_conversion
+        heat_output_capacity / heat_and_cold_output_conversion
       else
-        0.0
+        nil
       end
     end
   end
   unit_for_calculation "heat_based_nominal_input_capacity", 'MW'
+  
+  # ETM does not have seperate cooling capacity, so use heat capacity to
+  # calculate cooling based nominal input capacity
+  def cooling_based_nominal_input_capacity
+    function(:cooling_based_nominal_input_capacity) do
+      if cooling_output_conversion && cooling_output_conversion > 0
+        heat_output_capacity / cooling_output_conversion
+      else
+        nil
+      end
+    end
+  end
+  unit_for_calculation "cooling_based_nominal_input_capacity", 'MW'
   
   # Calculates the typical fuel input of one plant of this type
   #
@@ -319,7 +333,7 @@ class Qernel::ConverterApi
   #
   def typical_heat_output
     function(:typical_heat_output) do
-      typical_fuel_input * heat_output_conversion
+      typical_fuel_input * heat_and_cold_output_conversion
     end
   end
   unit_for_calculation "typical_heat_output", 'MJ'
