@@ -155,33 +155,28 @@ module Qernel::Plugins
         @merit_order_converters
       end
 
-      def ensure_converts_exist(keys)
-        keys.each do |key|
-          unless @graph.converter(key)
-            raise "merit_order: no converter found with key: #{key.inspect}"
-          end
-        end
-      end
-
       #######
       private
       #######
 
-      # Load merit_order.csv and create an array of arrays.
-      # The merit_order.csv has to be in sync with merit_order_converters.yml
-      # The columns correspond to the column_1, column_2, ... keys in that file.
+      # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
+      # It uses the tabular data merit_order.csv
       #
-      #            column_1, column_2, column_3, column_4, column_5, column_6, column_7
-      # 0.6255066,0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000
-      # 0.5601907,0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000
+      # Returns an Array of x,y
       #
-      # @return Array that looks like this:
-      #
-      # [ [0.6255066,[0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000]],
-      #   [0.5601907,[0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000]]  ]
-      #
-      def merit_order_table
-        @merit_order_table ||= Etsource::Loader.instance.merit_order_table
+      def residual_load_profiles # Excel N
+        demands     = merit_order_demands
+        peak_demand = @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
+
+        merit_order_table.map do |normalized_load, wewp|
+          load = peak_demand * normalized_load
+
+          # take one column from the table and multiply it with the demands
+          # defined in the merit_order_converters.yml
+          wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,4]]
+          wewp_x_demands.map!{|wewp, demand| wewp * demand }
+          [0, load - wewp_x_demands.sum].max
+        end
       end
 
       # Returns the "demands" (?) for the converters defined in merit_order_converters.yml.
@@ -210,24 +205,21 @@ module Qernel::Plugins
         end
       end
 
-      # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
-      # It uses the tabular data merit_order.csv
+      # Load merit_order.csv and create an array of arrays.
+      # The merit_order.csv has to be in sync with merit_order_converters.yml
+      # The columns correspond to the column_1, column_2, ... keys in that file.
       #
-      # Returns an Array of x,y
+      #            column_1, column_2, column_3, column_4, column_5, column_6, column_7
+      # 0.6255066,0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000
+      # 0.5601907,0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000
       #
-      def residual_load_profiles # Excel N
-        demands     = merit_order_demands
-        peak_demand = @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
-
-        merit_order_table.map do |normalized_load, wewp|
-          load = peak_demand * normalized_load
-
-          # take one column from the table and multiply it with the demands
-          # defined in the merit_order_converters.yml
-          wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,4]]
-          wewp_x_demands.map!{|wewp, demand| wewp * demand }
-          [0, load - wewp_x_demands.sum].max
-        end
+      # @return Array that looks like this:
+      #
+      # [ [0.6255066,[0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000]],
+      #   [0.5601907,[0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000]]  ]
+      #
+      def merit_order_table
+        @merit_order_table ||= Etsource::Loader.instance.merit_order_table
       end
     end
 
