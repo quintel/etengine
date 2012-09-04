@@ -17,7 +17,7 @@ module MethodMetaData
   module ClassMethods
     # used now in api/v3/converter.rb. Implement this when needed.
     def calculation_methods
-      []
+      [:primary_demand]
     end
   end
 
