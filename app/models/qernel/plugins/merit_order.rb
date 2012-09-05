@@ -11,6 +11,27 @@ module Qernel::Plugins
       end
     end
 
+    # ---- Converters ------------------------------------------------------------
+
+    # For stubbing convenience
+    def group_merit_order
+      group_converters(:merit_order_converters)
+    end
+
+    # Converters to include in the sorting: G(electricity_production)
+    def converters_for_merit_order
+      group_merit_order.map(&:query).tap do |arr|
+        raise "MeritOrder: no converters in group: merit_order_converters. Update ETsource." if arr.empty?
+      end
+    end
+
+    # The total variable costs. Cheaper power plants should be used first.
+    def converters_by_total_variable_cost
+      converters_for_merit_order.sort_by do |c|
+        c.variable_costs_per_mwh_input / c.electricity_output_conversion
+      end
+    end
+
     # ---- MeritOrder ------------------------------------------------------------
 
     # assign merit_order_start and merit_order_end
