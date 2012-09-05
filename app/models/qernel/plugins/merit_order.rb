@@ -11,81 +11,94 @@ module Qernel::Plugins
       end
     end
 
+    # For stubbing convenience
+    def group_merit_order
+      group_converters(:merit_order_converters)
+    end
 
     # Converters to include in the sorting: G(electricity_production)
     def converters_for_merit_order
-      group_converters(:merit_order_converters).map(&:query).tap do |arr|
+      group_merit_order.map(&:query).tap do |arr|
         raise "MeritOrder: no converters in group: merit_order_converters. Update ETsource." if arr.empty?
+      end
+    end
+
+    # The total variable costs. Cheaper power plants should be used first.
+    def converters_by_total_variable_cost
+      converters_for_merit_order.sort_by do |c|
+        c.variable_costs_per_mwh_input / c.electricity_output_conversion
       end
     end
 
     # assign merit_order_start and merit_order_end
     def calculate_merit_order
-      return if group_converters(:merit_order_converters).empty?
+      return if group_merit_order.empty?
 
       instrument("qernel.merit_order: calculate_merit_order") do
-        converters = converters_for_merit_order.sort_by do |c|
-          # The total variable costs. Cheaper power plants should be used first.
-          c.variable_costs_per_mwh_input / c.electricity_output_conversion
-        end
+        converters = converters_by_total_variable_cost
 
-        first = converters.first
-        first.merit_order_start = 0.0
-
-        position = 0 # keep track of the position, it is incremented by #update_merit_order_pos!
-        position = update_merit_order_attrs!(first, position)
+        first = converters.first.tap{|c| c.merit_order_start = 0.0 }
+        update_merit_order_end!(first)
 
         converters.each_cons(2) do |prev, converter|
           # the merit_order_start of this 'converter' is the merit_order_end of the previous.
           converter.merit_order_start = prev.merit_order_end
-
-          position = update_merit_order_attrs!(converter, position)
+          update_merit_order_end!(converter)
         end
+
+        calculate_merit_order_position(converters)
 
         dataset_set(:calculate_merit_order_finished, true)
       end
     end # calculate_merit_order
+
+    # Updates the merit_order_position attributes. It assumes the given converters array
+    # is already properly sorted by merit_order_start.
+    #
+    def calculate_merit_order_position(converters)
+      position = 1
+      converters.each do |converter|
+        if (converter.installed_production_capacity_in_mw_electricity || 0) > 0.0
+          converter.merit_order_position = position
+          position += 1
+        else
+          converter.merit_order_position = 1000
+        end
+      end
+    end
 
     # Assigns the merit_order_position attribute to a converter.
     # Assign a position at the end if installed_capacity is 0. Issue #293
     #
     # @return counter so we can keep track of the last assigned position
     #
-    def update_merit_order_attrs!(converter, position)
+    def update_merit_order_end!(converter)
+      unless converter.merit_order_start
+        raise "MeritOrder#update_merit_order_end! undefined merit_order_start for: #{converter.key}"
+      end
       converter.merit_order_end = converter.merit_order_start
+
       inst_cap = converter.installed_production_capacity_in_mw_electricity || 0
       if inst_cap > 0.0
-        position += 1
-        converter[:merit_order_position] = position
-        # Increase the merit_order_end by how much a converter is capabale of delivering
-        converter.merit_order_end     += (inst_cap * converter.availability).round(3)
-      else
-        # Move converter to the end, and do not increase position counter!
-        converter[:merit_order_position] = 1000
+        converter.merit_order_end += (inst_cap * converter.availability).round(3)
       end
-      position
     end
 
 
     def calculate_full_load_hours
       return unless area.area_code == 'nl'
-      return unless group_converters(:merit_order_converters).present?
+      return if group_merit_order.empty?
 
       if dataset_get(:calculate_merit_order_finished) != true
         calculate_merit_order
       end
 
-      # Create a polygon area with the residual-ldc coordinates.
-      # I resist the temptation to make an instance variable out of it, otherwise it'll persist
-      # over requests and will cause mischief.
-      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates
-      ldc_polygon = CurveArea.new(coordinates)
-
-      converters  = converters_for_merit_order.sort_by { |c| c.merit_order_end }
+      load_profile_curve = self.load_profile_curve
+      converters = converters_for_merit_order.sort_by { |c| c.merit_order_end }
 
       instrument("qernel.merit_order: calculate_full_load_hours") do
         converters.each do |converter|
-          capacity_factor = capacity_factor_for(converter, ldc_polygon)
+          capacity_factor = capacity_factor_for(converter, load_profile_curve)
           full_load_hours = capacity_factor * 8760 # hours per year
 
           converter.merit_order_capacity_factor = capacity_factor.round(3)
@@ -96,17 +109,39 @@ module Qernel::Plugins
       nil
     end
 
+    # Create a CurveArea with the residual-ldc coordinates.
+    # I resist the temptation to make an instance variable out of it, otherwise it'll persist
+    # over requests and will cause mischief.
+    def load_profile_curve
+      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates
+      CurveArea.new(coordinates)
+    end
+
     # capacity_factor uses the LoadProfileTable. It get's the area between merit_order_start to -end
     #
-    def capacity_factor_for(converter, ldc_polygon)
+    #
+    #     |__
+    #     |  --
+    #     |   |x-----
+    #     |   |xxxxx| ______
+    #     |   |xxxxx|       ---
+    #     +-------------------
+    #        strt   end
+    #
+    # Total demand (? TODO: find a good name) :
+    #   area_size / merit_span (= merit_end - merit_start)
+    # capacity_factor:
+    #   multiply above with the availability of a converter.
+    #
+    def capacity_factor_for(converter, profile_curve)
       merit_order_start = converter.merit_order_start
       merit_order_end   = converter.merit_order_end
 
-      area_size       = ldc_polygon.area(merit_order_start, merit_order_end)
-      delta           = [merit_order_end - merit_order_start, 0.0].max
-      availability    = converter.availability
+      area_size    = profile_curve.area(merit_order_start, merit_order_end)
+      merit_span   = [merit_order_end - merit_order_start, 0.0].max
+      availability = converter.availability
 
-      capacity_factor = [availability * (area_size / delta).rescue_nan, availability].min
+      capacity_factor = [availability * (area_size / merit_span).rescue_nan, availability].min
     end
 
     # --- LoadProfileTable ----------------------------------------------------
