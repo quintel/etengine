@@ -4,21 +4,13 @@ module Qernel::Plugins
     extend ActiveSupport::Concern
 
     included do |variable|
-      if merit_order_converters
+      # Only run if merit_order_converters.yml file is given.
+      if Etsource::Loader.instance.globals('merit_order_converters')
         set_callback :calculate, :after, :calculate_merit_order
         set_callback :calculate, :after, :calculate_full_load_hours
       end
     end
 
-    module ClassMethods
-      def merit_order_table
-        @merit_order_table ||= Etsource::Loader.instance.merit_order_table
-      end
-
-      def merit_order_converters
-        @merit_order_converters ||= Etsource::Loader.instance.globals('merit_order_converters')
-      end
-    end
 
     # Converters to include in the sorting: G(electricity_production)
     def converters_for_merit_order
@@ -37,18 +29,16 @@ module Qernel::Plugins
         end
 
         if first = converters.first
+          position = 0 # keep track of the position, it is incremented by #update_merit_order_pos!
           first[:merit_order_start] = 0.0
-          update_merit_order_end!(first)
 
-          counter = 0 # keep track of the counter, it is incremented by #update_merit_order_pos!
-          counter = update_merit_order_pos!(first, counter)
+          position = update_merit_order_attrs!(first, position)
 
           converters.each_cons(2) do |prev, converter|
             # the merit_order_start of this 'converter' is the merit_order_end of the previous.
             converter[:merit_order_start] = prev[:merit_order_end]
 
-            update_merit_order_end!(converter)
-            counter = update_merit_order_pos!(converter, counter)
+            position = update_merit_order_attrs!(converter, position)
           end
         end # if
         dataset_set(:calculate_merit_order_finished, true)
@@ -60,17 +50,20 @@ module Qernel::Plugins
     #
     # @return counter so we can keep track of the last assigned position
     #
-    def update_merit_order_pos!(converter, counter)
-      installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
-      converter[:merit_order_position] = (installed_capacity > 0.0) ? (counter += 1) : 1000
-
-      counter
-    end
-
-    def update_merit_order_end!(converter)
-      installed_capacity = converter.installed_production_capacity_in_mw_electricity || 0.0
-      merit_order_end    = converter[:merit_order_start] + (installed_capacity * converter.availability)
-      converter[:merit_order_end] = merit_order_end.round(3)
+    def update_merit_order_attrs!(converter, position)
+      converter[:merit_order_end] = converter[:merit_order_start]
+      inst_cap = converter.installed_production_capacity_in_mw_electricity || 0
+      if inst_cap > 0.0
+        position += 1
+        converter[:merit_order_position] = position
+        # Increase the merit_order_end by the (installed_capacity * avaialability)
+        # TODO> what is the actual meaning of that formula?
+        converter[:merit_order_end]     += (inst_cap * converter.availability).round(3)
+      else
+        # Do not increase position!
+        converter[:merit_order_position] = 1000
+      end
+      position
     end
 
 
@@ -86,7 +79,7 @@ module Qernel::Plugins
       # I resist the temptation to make an instance variable out of it, otherwise it'll persist
       # over requests and will cause mischief.
       coordinates = LoadProfileTable.new(self).residual_ldc_coordinates_and_max_load
-      ldc_polygon = PolgyonArea.new(*coordinates)
+      ldc_polygon = PolgyonArea.new(coordinates)
 
       converters  = converters_for_merit_order.sort_by { |c| c[:merit_order_end] }
 
@@ -103,6 +96,8 @@ module Qernel::Plugins
       nil
     end
 
+    # capacity_factor uses the LoadProfileTable. It get's the area between merit_order_start to -end
+    #
     def capacity_factor_for(converter, ldc_polygon)
       merit_order_start = converter.merit_order_start
       merit_order_end   = converter.merit_order_end
@@ -116,41 +111,75 @@ module Qernel::Plugins
 
     # --- LoadProfileTable ----------------------------------------------------
 
-
     #
+    #
+    #     |__
+    #     |  --
+    #     |     -----
+    #     |          ______
+    #     |                ---
+    #     +--------------------
+    #       400   1600        4000
     #
     #
     #
     class LoadProfileTable
+      # Precision defines how many points will be calculated. E.g. how smooth the curve
+      # is. So in this case #residual_ldc_coordinates_and_max_load will return 10 coordinates
+      # for the curve.
+      PRECISION = 10
+
       def initialize(graph)
         @graph = graph
       end
 
-      # Returns an array of x,y coordinates and the max_load to be used with a PolgyonArea
+      # Returns an array of x,y coordinates and the max_load to be used with a PolgyonArea.
+      #
+      # We basically group the array of load profiles into n steps (n defined by PRECISION).
+      #
+      #   * x: the max of residual_load_profiles divided by the segment (e.g. 4000 * 0.1 => 400)
+      #   * y: average number of residual_load_profiles that are higher then x?
+      #
+      #  [    0,   1    ] # all load_profiles are higher then 0
+      #  [  400,   0.7  ] #
+      #  [  800,   0.5  ] #
+      #  ...
+      #  [ 3500,   0.01 ] #
+      #  [ 4000,   0    ] # Close to 0 profiles are >= 4000.
+      #
+      #
       #
       # @return [[[x,y], [x,y]], max_load]
       #
       def residual_ldc_coordinates_and_max_load
         load_profiles        = residual_load_profiles
-        load_profiles_length = load_profiles.length.to_f
+        load_profiles_length = load_profiles.length
         max_load             = load_profiles.max
-        # TODO: what is precision?
-        precision = 10
 
-        loads = (0..precision).map do |i|
-          q = i / precision.to_f * max_load
-          y = load_profiles.count{ |n| n >= q } / load_profiles_length
-          [q, y.to_f]
+        steps = PRECISION
+
+        (0..steps).map do |i|
+          section      = i.fdiv(steps) * max_load
+          loads_higher = load_profiles.count{ |n| n >= section }
+
+          y = loads_higher.fdiv(load_profiles_length)
+          [section, y]
         end
-
-        [loads, max_load]
       end
 
-
       def merit_order_converters
+        self.class.merit_order_converters(@graph)
+      end
+
+      def self.merit_order_converters(graph)
         unless @merit_order_converters
-          @merit_order_converters = Etsource::Loader.instance.globals('merit_order_converters')#.values
-          #@merit_order_converters = keys.flatten.map {|key| @graph.converter(key)}
+          @merit_order_converters = Etsource::Loader.instance.globals('merit_order_converters')
+          # Fail early:
+          @merit_order_converters.values.flatten.each do |key|
+            unless graph.converter(key)
+              raise "Qernel::Graph#merit_order: no converter found for #{key.inspect}. Update datasets/_globals/merit_order_converters.yml"
+            end
+          end
         end
         @merit_order_converters
       end
@@ -160,9 +189,23 @@ module Qernel::Plugins
       #######
 
       # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
-      # It uses the tabular data merit_order.csv
+      # It uses the tabular data from datasets/_globals/merit_order.csv
       #
-      # Returns an Array of x,y
+      # It uses the *merit_order_table*
+      #
+      #      normalized,  column_1, column_2, column_3, column_4, column_5, column_6, column_7
+      #     [ 0.6255066, [0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000]],
+      #     [ 0.5601907, [0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000]],
+      #
+      # and the merit_order_demands. The 7 numbers sum an attribute for every group in merit_order_converters.yml
+      #
+      #                   column_1, column_2, column_3, column_4, column_5, column_6, column_7
+      #     [             1000,      1500,      8000,     1000,       2000,    300000,   10000]
+      #
+      # It returns an array of the load profiles, adjusted by the demands.
+      #
+      #    [ (PeakLoad - ( 0.618*1000 + 0.000 * 1500, + 1.000 * 8000, 0.002* 1000, ...))]
+      #    [ (PeakLoad - ( 0.618*1000 + 0.000 * 1500, + 1.000 * 8000, 0.0018*1000, ...))]
       #
       def residual_load_profiles # Excel N
         demands     = merit_order_demands
@@ -175,6 +218,7 @@ module Qernel::Plugins
           # defined in the merit_order_converters.yml
           wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,4]]
           wewp_x_demands.map!{|wewp, demand| wewp * demand }
+
           [0, load - wewp_x_demands.sum].max
         end
       end
@@ -209,7 +253,7 @@ module Qernel::Plugins
       # The merit_order.csv has to be in sync with merit_order_converters.yml
       # The columns correspond to the column_1, column_2, ... keys in that file.
       #
-      #            column_1, column_2, column_3, column_4, column_5, column_6, column_7
+      # normalized,column_1, column_2, column_3, column_4, column_5, column_6, column_7
       # 0.6255066,0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000
       # 0.5601907,0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000
       #
@@ -250,9 +294,9 @@ module Qernel::Plugins
 
       # points    - An array of [x,y] coordinates for the line
       # y_max     - the maximum y
-      def initialize(points, y_max)
+      def initialize(points)
         @points = points
-        @y_max = y_max
+        @y_max  = points.last.first
       end
 
       def area(x_lft, x_rgt)
