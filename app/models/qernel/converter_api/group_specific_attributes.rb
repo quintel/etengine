@@ -85,7 +85,15 @@ module Qernel
       }
     })
 
-    # combines the *_VALUES hashes as needed
+    # some converters use extra attributes. Rather than messing up the views I
+    # add the method here. I hope this will be removed
+    def uses_coal_and_wood_pellets?
+      carriers = converter.input_carriers.map &:key
+      carriers.include?(:coal) && carriers.include?(:wood_pellets)
+    end
+
+    # combines the *_VALUES hashes as needed. This is used in the converter
+    # details page, in the /data section and through the API (v3)
     def relevant_attributes
       out = {}
       out = out.deep_merge HEAT_PRODUCTION_VALUES if
@@ -96,6 +104,16 @@ module Qernel
         converter.groups.include?(:cost_heat_pumps)
       out = out.deep_merge CHP_VALUES if
         converter.groups.include?(:cost_chps)
+
+      # custom stuff, trying to keep the view simple
+      if uses_coal_and_wood_pellets?
+        out[:current_fuel_input_mix] = {}
+        fuel_mix = {}
+        converter.input_links.each do |link|
+          fuel_mix["#{link.carrier.key}_input_conversion"] = [link.carrier.key.to_s.humanize, '%']
+        end
+        out[:current_fuel_input_mix] = fuel_mix
+      end
       out
     end
   end
