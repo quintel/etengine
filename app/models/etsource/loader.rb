@@ -104,7 +104,7 @@ module Etsource
     # The columns correspond to the column_1, column_2, ... keys in that file.
     #
     #
-    #            column_1, column_2, column_3, column_4, column_5, column_6, column_7
+    # normalized,column_1, column_2, column_3, column_4, column_5, column_6, column_7
     # 0.6255066,0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000
     # 0.5601907,0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000
     #
