@@ -7,6 +7,7 @@ module Qernel
           :full_load_hours  => ['Full load hours', 'hour / year'],
         },
       :cost => {
+          :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour'],
           :part_ets  => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
           :wacc  => ['Weighted average cost of capital', '%']
         },
@@ -16,7 +17,7 @@ module Qernel
       }
     }
 
-    ELECTRICITY_PRODUCTION_VALUES  =  SHARED_ATTRIBUTES.deep_merge({
+    ELECTRICITY_PRODUCTION_VALUES  = SHARED_ATTRIBUTES.deep_merge({
       :technical => {
         :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
         :electricity_output_conversion  => ['Electrical efficiency', '%'],
@@ -35,7 +36,7 @@ module Qernel
       }
     })
 
-    HEAT_PRODUCTION_VALUES  =  SHARED_ATTRIBUTES.deep_merge({
+    HEAT_PRODUCTION_VALUES  = SHARED_ATTRIBUTES.deep_merge({
       :technical => {
         :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
         :heat_output_conversion  => ['Heat efficiency', '%']
@@ -45,8 +46,7 @@ module Qernel
         :installing_costs_per_unit => ['Cost of installing','euro'],
         :residual_value_per_unit => ['Residual value after lifetime','euro'],
         :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
-        :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
-        :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour']
+        :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year']
       }
     })
 
@@ -61,12 +61,11 @@ module Qernel
         :installing_costs_per_unit => ['Cost of installing','euro'],
         :residual_value_per_unit => ['Residual value after lifetime','euro'],
         :decommissioning_costs_per_unit => ['Decommissioning costs','euro'],
-        :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year'],
-        :operation_and_maintenance_cost_variable_per_full_load_hour  => ['Variable operation and maintenance costs', 'euro / full load hour']
+        :fixed_yearly_operation_and_maintenance_costs_per_unit => ['Fixed operation and maintenance costs','euro / year']
       }
     })
 
-    CHP_VALUES  =  SHARED_ATTRIBUTES.deep_merge({
+    CHP_VALUES  = SHARED_ATTRIBUTES.deep_merge({
       :technical => {
         :nominal_capacity_electricity_output_per_unit => ['Nominal electrical capacity','MW'],
         :nominal_capacity_heat_output_per_unit => ['Nominal heat capacity','MW'],
@@ -85,5 +84,19 @@ module Qernel
         :construction_time  => ['Construction time', 'year']
       }
     })
+
+    # combines the *_VALUES hashes as needed
+    def relevant_attributes
+      out = {}
+      out = out.deep_merge HEAT_PRODUCTION_VALUES if
+        converter.groups.include?(:cost_traditional_heat)
+      out = out.deep_merge ELECTRICITY_PRODUCTION_VALUES if
+        converter.groups.include?(:cost_electricity_production)
+      out = out.deep_merge HEAT_PUMP_VALUES if
+        converter.groups.include?(:cost_heat_pumps)
+      out = out.deep_merge CHP_VALUES if
+        converter.groups.include?(:cost_chps)
+      out
+    end
   end
 end
