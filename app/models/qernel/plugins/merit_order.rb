@@ -29,19 +29,19 @@ module Qernel::Plugins
           c.variable_costs_per_mwh_input / c.electricity_output_conversion
         end
 
-        if first = converters.first
-          position = 0 # keep track of the position, it is incremented by #update_merit_order_pos!
-          first.merit_order_start = 0.0
+        first = converters.first
+        first.merit_order_start = 0.0
 
-          position = update_merit_order_attrs!(first, position)
+        position = 0 # keep track of the position, it is incremented by #update_merit_order_pos!
+        position = update_merit_order_attrs!(first, position)
 
-          converters.each_cons(2) do |prev, converter|
-            # the merit_order_start of this 'converter' is the merit_order_end of the previous.
-            converter.merit_order_start = prev.merit_order_end
+        converters.each_cons(2) do |prev, converter|
+          # the merit_order_start of this 'converter' is the merit_order_end of the previous.
+          converter.merit_order_start = prev.merit_order_end
 
-            position = update_merit_order_attrs!(converter, position)
-          end
-        end # if
+          position = update_merit_order_attrs!(converter, position)
+        end
+
         dataset_set(:calculate_merit_order_finished, true)
       end
     end # calculate_merit_order
@@ -57,8 +57,7 @@ module Qernel::Plugins
       if inst_cap > 0.0
         position += 1
         converter[:merit_order_position] = position
-        # Increase the merit_order_end by the (installed_capacity * avaialability)
-        # TODO> what is the actual meaning of that formula?
+        # Increase the merit_order_end by how much a converter is capabale of delivering
         converter.merit_order_end     += (inst_cap * converter.availability).round(3)
       else
         # Move converter to the end, and do not increase position counter!
