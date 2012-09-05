@@ -363,6 +363,7 @@ module Qernel::Plugins
         y.rescue_nan
       end
 
+      # The actual algorithm from http://alienryderflex.com/polygon_area/
       def polygon_area(x_arr, y_arr)
         points = x_arr.length
         i = points - 1
