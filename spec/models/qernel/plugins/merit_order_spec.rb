@@ -99,7 +99,7 @@ module Qernel::Plugins::MeritOrder
           [0.5, [0.7, 0.00,1.00,0.2]], # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.1*400)
           [0.5, [0.7, 0.00,1.00,0.1]]  # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.1*400)
         ])
-        # demands calculated by the graph for a set of converters.
+        # demands calculated by the graph for the defined groups of converters.
         dmnds = [100, 200, 300, 400]
         @tbl.stub!(:merit_order_demands).and_return(dmnds)
       end
@@ -143,7 +143,7 @@ module Qernel::Plugins::MeritOrder
     #            5         10
     #       total area: 50
     #
-    context "curve with a simple slope" do
+    context "curve with a 2 point slope" do
       before  { @curve = CurveArea.new([[0.0, 10.0], [10.0, 0.0]]) }
 
       specify { @curve.area(0,   10.0).should == 50.0 } # total area
@@ -169,7 +169,7 @@ module Qernel::Plugins::MeritOrder
     #            5         10
     #       35   +   10 => 45 total area
     #
-    context "curve with a simple slope" do
+    context "curve with a 3 point slope" do
       before  { @curve = CurveArea.new([[0.0, 10.0], [5.0, 4.0], [10.0, 0.0]]) }
 
       specify { @curve.area(0.0,  5.0).should == 35 }
