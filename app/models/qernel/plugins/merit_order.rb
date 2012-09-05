@@ -79,7 +79,7 @@ module Qernel::Plugins
       # Create a polygon area with the residual-ldc coordinates.
       # I resist the temptation to make an instance variable out of it, otherwise it'll persist
       # over requests and will cause mischief.
-      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates_and_max_load
+      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates
       ldc_polygon = CurveArea.new(coordinates)
 
       converters  = converters_for_merit_order.sort_by { |c| c.merit_order_end }
@@ -152,7 +152,7 @@ module Qernel::Plugins
       #
       # @return [[[x,y], [x,y]], max_load]
       #
-      def residual_ldc_coordinates_and_max_load
+      def residual_ldc_coordinates
         load_profiles        = residual_load_profiles
         load_profiles_length = load_profiles.length
         max_load             = load_profiles.max
@@ -189,6 +189,10 @@ module Qernel::Plugins
       private
       #######
 
+      def graph_peak_demand
+        @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
+      end
+
       # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
       # It uses the tabular data from datasets/_globals/merit_order.csv
       #
@@ -210,7 +214,7 @@ module Qernel::Plugins
       #
       def residual_load_profiles # Excel N
         demands     = merit_order_demands
-        peak_demand = @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
+        peak_demand = graph_peak_demand
 
         merit_order_table.map do |normalized_load, wewp|
           load = peak_demand * normalized_load
@@ -291,13 +295,13 @@ module Qernel::Plugins
     #   poly.area( converter ) # => ...
     #
     class CurveArea
-      attr_reader :points, :y_max
+      attr_reader :points, :x_max
 
       # points    - An array of [x,y] coordinates for the line
-      # y_max     - the maximum y
+      # x_max     - the maximum y
       def initialize(points)
         @points = points
-        @y_max  = points.last.first
+        @x_max  = points.last.first
       end
 
       # Area below the curve, from x1 to x2.
@@ -309,31 +313,47 @@ module Qernel::Plugins
         polygon_area(coordinates.map(&:first), coordinates.map(&:second))
       end
 
+      #######
       private
+      #######
 
       # returns x,y coordinates of the polygon_area in clock-wise order.
+      #
+      # @example: coordinates(2,7)
+      #
+      #     *
+      #   5 |  o
+      #   3 |      o
+      #   1 |         o
+      #     +--o------o--*
+      #        2   5  7  10
+      #
+      # => [2,0], [2,5], [5,3], [7,1], [7,0]
+      #
       def coordinates(x_lft, x_rgt)
         [
           [x_lft, 0],                                     # bottom left
-          [x_lft, interpolate_y(x_lft, y_max)],   # top left (y interpolated)
+          [x_lft, interpolate_y(x_lft)],                  # top left (y interpolated)
           *points.select{|x,y| x > x_lft && x < x_rgt },  # points on residual_ldc curve
-          [x_rgt, interpolate_y(x_rgt, y_max)],   # top right (y interpolated)
+          [x_rgt, interpolate_y(x_rgt)],                  # top right (y interpolated)
           [x_rgt, 0]                                      # bottom right
         ]
       end
 
-      # this function is not too precise.
-      # it's supposed to interpolate the y value for a given x.
-      # It uses the formulas i've learned at school and wikipedia
-      def interpolate_y(x, y_max)
-        return @points.first.last if x == 0.0
-        return 0.0 if x >= y_max
 
-        index = @points.index{|px,y| px >= x } - 1
+      # it interpolates the y value for a given x.
+      #
+      #
+      # It uses the formulas i've learned at school and wikipedia
+      def interpolate_y(x)
+        return points.first.last if x == 0.0
+        return 0.0 if x >= x_max
+
+        index = points.index{|px,y| px >= x } - 1
         index = 0 if index < 0
 
-        x1,y1 = @points[index]
-        x2,y2 = @points[index + 1]
+        x1,y1 = points[index]
+        x2,y2 = points[index + 1]
 
         m = (y2 - y1) / (x2 - x1)
         n = y1 - ((y2 - y1)/(x2-x1)) * x1
