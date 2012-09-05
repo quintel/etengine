@@ -49,7 +49,7 @@ module Etm
     end
 
     config.assets.enabled = true
-    config.assets.precompile += ['graph.js', 'graph.css', 'converter_details.css']
+    config.assets.precompile += ['graph.js', 'graph.css']
 
     # Add this for Spork
     if Rails.env.test?
