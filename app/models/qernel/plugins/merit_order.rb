@@ -11,24 +11,7 @@ module Qernel::Plugins
       end
     end
 
-    # For stubbing convenience
-    def group_merit_order
-      group_converters(:merit_order_converters)
-    end
-
-    # Converters to include in the sorting: G(electricity_production)
-    def converters_for_merit_order
-      group_merit_order.map(&:query).tap do |arr|
-        raise "MeritOrder: no converters in group: merit_order_converters. Update ETsource." if arr.empty?
-      end
-    end
-
-    # The total variable costs. Cheaper power plants should be used first.
-    def converters_by_total_variable_cost
-      converters_for_merit_order.sort_by do |c|
-        c.variable_costs_per_mwh_input / c.electricity_output_conversion
-      end
-    end
+    # ---- MeritOrder ------------------------------------------------------------
 
     # assign merit_order_start and merit_order_end
     def calculate_merit_order
@@ -84,6 +67,7 @@ module Qernel::Plugins
       end
     end
 
+    # ---- full_load_hours, capacity_factor  ----------------------------------
 
     def calculate_full_load_hours
       return unless area.area_code == 'nl'
@@ -93,10 +77,10 @@ module Qernel::Plugins
         calculate_merit_order
       end
 
-      load_profile_curve = self.load_profile_curve
-      converters = converters_for_merit_order.sort_by { |c| c.merit_order_end }
-
       instrument("qernel.merit_order: calculate_full_load_hours") do
+        load_profile_curve = self.load_profile_curve
+        converters = converters_for_merit_order.sort_by { |c| c.merit_order_end }
+
         converters.each do |converter|
           capacity_factor = capacity_factor_for(converter, load_profile_curve)
           full_load_hours = capacity_factor * 8760 # hours per year
@@ -105,16 +89,7 @@ module Qernel::Plugins
           converter.merit_order_full_load_hours = full_load_hours.round(1)
         end
       end
-
       nil
-    end
-
-    # Create a CurveArea with the residual-ldc coordinates.
-    # I resist the temptation to make an instance variable out of it, otherwise it'll persist
-    # over requests and will cause mischief.
-    def load_profile_curve
-      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates
-      CurveArea.new(coordinates)
     end
 
     # capacity_factor uses the LoadProfileTable. It get's the area between merit_order_start to -end
@@ -142,6 +117,14 @@ module Qernel::Plugins
       availability = converter.availability
 
       capacity_factor = [availability * (area_size / merit_span).rescue_nan, availability].min
+    end
+
+    # Create a CurveArea with the residual-ldc coordinates.
+    # I resist the temptation to make an instance variable out of it, otherwise it'll persist
+    # over requests and will cause mischief.
+    def load_profile_curve
+      coordinates = LoadProfileTable.new(self).residual_ldc_coordinates
+      CurveArea.new(coordinates)
     end
 
     # --- LoadProfileTable ----------------------------------------------------
