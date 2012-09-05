@@ -25,18 +25,19 @@ module Qernel::Plugins
 
       instrument("qernel.merit_order: calculate_merit_order") do
         converters = converters_for_merit_order.sort_by do |c|
+          # The total variable costs. Cheaper power plants should be used first.
           c.variable_costs_per_mwh_input / c.electricity_output_conversion
         end
 
         if first = converters.first
           position = 0 # keep track of the position, it is incremented by #update_merit_order_pos!
-          first[:merit_order_start] = 0.0
+          first.merit_order_start = 0.0
 
           position = update_merit_order_attrs!(first, position)
 
           converters.each_cons(2) do |prev, converter|
             # the merit_order_start of this 'converter' is the merit_order_end of the previous.
-            converter[:merit_order_start] = prev[:merit_order_end]
+            converter.merit_order_start = prev.merit_order_end
 
             position = update_merit_order_attrs!(converter, position)
           end
@@ -51,16 +52,16 @@ module Qernel::Plugins
     # @return counter so we can keep track of the last assigned position
     #
     def update_merit_order_attrs!(converter, position)
-      converter[:merit_order_end] = converter[:merit_order_start]
+      converter.merit_order_end = converter.merit_order_start
       inst_cap = converter.installed_production_capacity_in_mw_electricity || 0
       if inst_cap > 0.0
         position += 1
         converter[:merit_order_position] = position
         # Increase the merit_order_end by the (installed_capacity * avaialability)
         # TODO> what is the actual meaning of that formula?
-        converter[:merit_order_end]     += (inst_cap * converter.availability).round(3)
+        converter.merit_order_end     += (inst_cap * converter.availability).round(3)
       else
-        # Do not increase position!
+        # Move converter to the end, and do not increase position counter!
         converter[:merit_order_position] = 1000
       end
       position
@@ -79,9 +80,9 @@ module Qernel::Plugins
       # I resist the temptation to make an instance variable out of it, otherwise it'll persist
       # over requests and will cause mischief.
       coordinates = LoadProfileTable.new(self).residual_ldc_coordinates_and_max_load
-      ldc_polygon = PolgyonArea.new(coordinates)
+      ldc_polygon = CurveArea.new(coordinates)
 
-      converters  = converters_for_merit_order.sort_by { |c| c[:merit_order_end] }
+      converters  = converters_for_merit_order.sort_by { |c| c.merit_order_end }
 
       instrument("qernel.merit_order: calculate_full_load_hours") do
         converters.each do |converter|
@@ -133,7 +134,7 @@ module Qernel::Plugins
         @graph = graph
       end
 
-      # Returns an array of x,y coordinates and the max_load to be used with a PolgyonArea.
+      # Returns an array of x,y coordinates and the max_load to be used with a CurveArea.
       #
       # We basically group the array of load profiles into n steps (n defined by PRECISION).
       #
@@ -289,7 +290,7 @@ module Qernel::Plugins
     #   poly = LdcPolygonArea.new()
     #   poly.area( converter ) # => ...
     #
-    class PolgyonArea
+    class CurveArea
       attr_reader :points, :y_max
 
       # points    - An array of [x,y] coordinates for the line
@@ -299,6 +300,10 @@ module Qernel::Plugins
         @y_max  = points.last.first
       end
 
+      # Area below the curve, from x1 to x2.
+      #
+      #
+      #
       def area(x_lft, x_rgt)
         coordinates = coordinates(x_lft, x_rgt)
         polygon_area(coordinates.map(&:first), coordinates.map(&:second))
@@ -310,9 +315,9 @@ module Qernel::Plugins
       def coordinates(x_lft, x_rgt)
         [
           [x_lft, 0],                                     # bottom left
-          [x_lft, interpolate_y(points, x_lft, y_max)],   # top left (y interpolated)
+          [x_lft, interpolate_y(x_lft, y_max)],   # top left (y interpolated)
           *points.select{|x,y| x > x_lft && x < x_rgt },  # points on residual_ldc curve
-          [x_rgt, interpolate_y(points, x_rgt, y_max)],   # top right (y interpolated)
+          [x_rgt, interpolate_y(x_rgt, y_max)],   # top right (y interpolated)
           [x_rgt, 0]                                      # bottom right
         ]
       end
@@ -320,15 +325,15 @@ module Qernel::Plugins
       # this function is not too precise.
       # it's supposed to interpolate the y value for a given x.
       # It uses the formulas i've learned at school and wikipedia
-      def interpolate_y(points, x, y_max)
-        return 1.0 if x == 0.0
+      def interpolate_y(x, y_max)
+        return @points.first.last if x == 0.0
         return 0.0 if x >= y_max
 
-        index = points.index{|px,y| px >= x } - 1
+        index = @points.index{|px,y| px >= x } - 1
         index = 0 if index < 0
 
-        x1,y1 = points[index]
-        x2,y2 = points[index + 1]
+        x1,y1 = @points[index]
+        x2,y2 = @points[index + 1]
 
         m = (y2 - y1) / (x2 - x1)
         n = y1 - ((y2 - y1)/(x2-x1)) * x1
@@ -350,7 +355,7 @@ module Qernel::Plugins
         end
         area * 0.5
       end
-    end # LdcPolgyonArea
+    end # LdcCurveArea
   end # MeritOrder
 end
 
