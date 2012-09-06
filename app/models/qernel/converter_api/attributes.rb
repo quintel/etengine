@@ -5,48 +5,51 @@ module Qernel
     #   @demand_expected_value *and not* demand_expected_value (or self.demand_expected_value)
     #
     # DEBT: 'desc' seems to be unused. Use it!
+    #
+    # PZ: in the converter detail page only a subset of these attributes is
+    # shown. They are defined in a new file, group_specific_attributes.rb.
     ATTRIBUTE_GROUPS = {
       :new => {
-        :initial_investment => ['desc', 'euro / unit'],
-        :ccs_investment => ['desc', 'euro / unit'],
-        :cost_of_installing => ['desc', 'euro / unit'],
-        :decommissioning_costs => ['desc', 'euro / unit'],
-        :residual_value => ['desc', 'euro / unit'],
-        :fixed_operation_and_maintenance_costs_per_year => ['desc', 'euro / unit / year'],
-        :variable_operation_and_maintenance_costs_per_full_load_hour => ['desc', 'euro / full load hour'],
-        :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['desc', 'euro / full load hour'],
-        :electricity_output_capacity => ['desc', 'MWe'],
-        :heat_output_capacity => ['desc', 'MWth'],
-        :electric_based_nominal_input_capacity => ['desc', 'MWe']
+        :initial_investment => ['', 'euro / unit'],
+        :ccs_investment => ['', 'euro / unit'],
+        :cost_of_installing => ['', 'euro / unit'],
+        :decommissioning_costs => ['', 'euro / unit'],
+        :residual_value => ['', 'euro / unit'],
+        :fixed_operation_and_maintenance_costs_per_year => ['', 'euro / unit / year'],
+        :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
+        :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
+        :electricity_output_capacity => ['', 'MWe'],
+        :heat_output_capacity => ['', 'MWth'],
+        :electric_based_nominal_input_capacity => ['', 'MWe']
       },
 
       :operational => {
-        :average_effective_output_of_nominal_capacity_over_lifetime => ['desc', 'unit'],
-        :co2_free => ['desc', 'unit'],
-        :construction_time => ['desc', 'unit'],
-        :electrical_efficiency_when_using_coal => ['desc', 'unit'],
-        :electrical_efficiency_when_using_wood_pellets => ['desc', 'unit'],
-        :full_load_hours => ['desc', 'unit'],
-        :households_supplied_per_unit => ['desc', 'unit'],
-        :land_use_per_unit => ['desc', 'unit'],
-        :part_ets => ['desc', 'unit'],
-        :peak_load_units => ['desc', 'unit'],
-        :peak_load_units_present => ['desc', 'unit'],
-        :technical_lifetime => ['desc', 'unit'],
-        :typical_nominal_input_capacity => ['desc', 'unit'] # Deprecated by new cost calculation
+        :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
+        :co2_free => ['', ''],
+        :construction_time => ['', ''],
+        :electrical_efficiency_when_using_coal => ['', ''],
+        :electrical_efficiency_when_using_wood_pellets => ['', ''],
+        :full_load_hours => ['', ''],
+        :households_supplied_per_ => ['', ''],
+        :land_use_per_ => ['', ''],
+        :part_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
+        :peak_load_s => ['', ''],
+        :peak_load_s_present => ['', ''],
+        :technical_lifetime => ['Technical lifetime', 'year'],
+        :typical_nominal_input_capacity => ['', ''] # Deprecated by new cost calculation
       },
 
       :cost => {
-        :ccs_investment_per_mw_input => ['desc', 'unit'], # Deprecated by new cost calculation
-        :ccs_operation_and_maintenance_cost_per_full_load_hour => ['desc', 'unit'], # Deprecated by new cost calculation
-        :costs_per_mj => ['desc', 'unit'],
-        :decommissioning_costs_per_mw_input => ['desc', 'unit'], # Deprecated by new cost calculation
-        :installing_costs_per_mw_input => ['desc', 'unit'], # Deprecated by new cost calculation
-        :operation_and_maintenance_cost_fixed_per_mw_input => ['desc', 'unit'], # Deprecated by new cost calculation
-        :operation_and_maintenance_cost_variable_per_full_load_hour => ['desc', 'unit'], # Deprecated by new cost calculation
-        :purchase_price_per_mw_input => ['desc', 'unit'], # Deprecated by new cost calculation
-        :residual_value_per_mw_input => ['desc', 'unit'], # Deprecated by new cost calculation
-        :wacc => ['desc', 'unit']
+        :ccs_investment_per_mw_input => ['', ''], # Deprecated by new cost calculation
+        :ccs_operation_and_maintenance_cost_per_full_load_hour => ['', ''], # Deprecated by new cost calculation
+        :costs_per_mj => ['', ''],
+        :decommissioning_costs_per_mw_input => ['', ''], # Deprecated by new cost calculation
+        :installing_costs_per_mw_input => ['', ''], # Deprecated by new cost calculation
+        :operation_and_maintenance_cost_fixed_per_mw_input => ['', ''], # Deprecated by new cost calculation
+        :operation_and_maintenance_cost_variable_per_full_load_hour => ['', ''], # Deprecated by new cost calculation
+        :purchase_price_per_mw_input => ['', ''], # Deprecated by new cost calculation
+        :residual_value_per_mw_input => ['', ''], # Deprecated by new cost calculation
+        :wacc => ['', '']
       },
 
       :network => {
