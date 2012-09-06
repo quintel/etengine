@@ -9,6 +9,7 @@ module Api
         @gql      = @scenario.gql(prepare: true)
         @present  = @gql.present_graph.graph.converter(@key) rescue nil
         @future   = @gql.future_graph.graph.converter(@key) rescue nil
+        @converter_api = @present.converter_api rescue nil
         if @present.nil? || @future.nil?
           raise "Converter not found! (#{@key})"
         end
@@ -22,20 +23,27 @@ module Api
           json.groups @present.groups
           json.energy_balance_group @present.energy_balance_group
           json.attributes do |json|
-            Qernel::ConverterApi::ATTRIBUTE_GROUPS.each_pair do |group, attrs|
+            @converter_api.relevant_attributes.each_pair do |group, attrs|
               json.set! group do |json|
-                attrs.each do |attr|
+                attrs.each do |attr, attr_data|
+                  desc, unit = attr_data
                   pres = format_value(@present, attr)
                   fut = format_value(@future, attr)
                   next unless (pres || fut)
                   json.set! attr do |json|
                     json.present pres
                     json.future fut
+                    json.unit unit
+                    json.desc desc
                   end
                 end
               end
             end
           end
+          # This boolean is used on the converter detail page to set some custom
+          # text. I know it's ugly, but better adding one line here than low-level
+          # details inside the view. PZ
+          json.uses_coal_and_wood_pellets @converter_api.uses_coal_and_wood_pellets?
           json.calculations do |json|
             Qernel::ConverterApi.calculation_methods.sort.each do |attr|
               pres = format_value(@present, attr)
@@ -44,6 +52,7 @@ module Api
               json.set!(attr) do |json|
                 json.present pres
                 json.future fut
+                json.unit Qernel::ConverterApi.unit_for_calculation(attr)
               end
             end
           end

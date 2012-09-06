@@ -1,13 +1,5 @@
 = form_tag data_converters_path, :method => :get, :class => "form form-inline", :style => 'display: inline' do
-  =# search_field_tag :q, params[:q], :placeholder => 'search'
+  = search_field_tag :q, params[:q], :placeholder => 'search'
   = select_tag 'group', options_for_select(converter_groups, params[:group]),
     :include_blank => true
   = submit_tag "search", :class => 'btn'
-- content_for :footer do
-  :javascript
-    $(function(){
-      $("input#q").autocomplete({
-        source: #{converters_autocomplete_map_cache},
-        select: function(event, ui) { window.location.href = ui.item.url }
-      });
-    });

@@ -97,7 +97,8 @@ namespace :gql do
     task :update => :environment do
       init_environment
 
-      output_path     = Etsource::Base.instance.base_dir+"/mechanical_turk/generated"
+      output_path     = "spec/mechanical_turk/generated"
+      # output_path     = Etsource::Base.instance.base_dir+"/mechanical_turk/generated"
 
       Dir.glob(output_path+"/scenario_definitions/*.yml").each do |yml_file|
         puts "** Updating: #{yml_file}"
