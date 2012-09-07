@@ -1,11 +1,11 @@
 module Qernel::Plugins
-  # TXT_TABLE(SORT_BY(G(merit_order_converters),merit_order_position),code,merit_order_full_load_hours)
+  # TXT_TABLE(SORT_BY(G(merit_order_converters),merit_order_position),key,merit_order_full_load_hours)
   module MeritOrder
     extend ActiveSupport::Concern
 
     included do |variable|
-      # Only run if merit_order_converters.yml file is given.
-      if Etsource::Loader.instance.globals('merit_order_converters')
+      # Only run if must_run_merit_order_converters.yml file is given.
+      if Etsource::Loader.instance.globals('must_run_merit_order_converters')
         set_callback :calculate, :after, :calculate_merit_order
         set_callback :calculate, :after, :calculate_full_load_hours
       end
@@ -13,34 +13,38 @@ module Qernel::Plugins
 
     # ---- Converters ------------------------------------------------------------
 
-    # For stubbing convenience
-    def group_merit_order
+    # Select dispatchable merit order converters
+    def dispatchable_merit_order_converters
       group_converters(:merit_order_converters)
     end
 
-    # Converters to include in the sorting: G(electricity_production)
-    def converters_for_merit_order
-      group_merit_order.map(&:query).tap do |arr|
+    # Converters to include in the sorting: G(merit_order_converters)
+    # returns array of converter objects
+    def dispatchable_converters_for_merit_order
+      dispatchable_merit_order_converters.map(&:query).tap do |arr|
         raise "MeritOrder: no converters in group: merit_order_converters. Update ETsource." if arr.empty?
       end
     end
 
-    # The total variable costs. Cheaper power plants should be used first.
+    # Sort dispatschable converters by their total variable costs. Cheaper power plants should be used first.
+    # returns (sorted) array of converter objects
     def converters_by_total_variable_cost
-      converters_for_merit_order.sort_by do |c|
+      dispatchable_converters_for_merit_order.sort_by do |c|
+        # Convert variable_costs_per_mwh_input to variable_costs_per_mwh_output
         c.variable_costs_per_mwh_input / c.electricity_output_conversion
       end
     end
 
     # ---- MeritOrder ------------------------------------------------------------
 
-    # assign merit_order_start and merit_order_end
+    # Assign merit_order_start and merit_order_end 
     def calculate_merit_order
-      return if group_merit_order.empty?
+      return if dispatchable_merit_order_converters.empty?
 
       instrument("qernel.merit_order: calculate_merit_order") do
         converters = converters_by_total_variable_cost
 
+        # 
         first = converters.first.tap{|c| c.merit_order_start = 0.0 }
         update_merit_order_end!(first)
 
@@ -57,8 +61,8 @@ module Qernel::Plugins
     end # calculate_merit_order
 
     # Updates the merit_order_position attributes. It assumes the given converters array
-    # is already properly sorted by merit_order_start.
-    #
+    # is already properly sorted by merit_order_start attribute.
+    # 
     def calculate_merit_order_position(converters)
       position = 1
       converters.each do |converter|
@@ -90,20 +94,21 @@ module Qernel::Plugins
 
     # ---- full_load_hours, capacity_factor  ----------------------------------
 
+    # Assign full load hours and capacity factors to dispatchable converters
     def calculate_full_load_hours
       return unless area.area_code == 'nl'
-      return if group_merit_order.empty?
+      return if dispatchable_merit_order_converters.empty?
 
       if dataset_get(:calculate_merit_order_finished) != true
         calculate_merit_order
       end
 
       instrument("qernel.merit_order: calculate_full_load_hours") do
-        load_profile_curve = self.load_profile_curve
-        converters = converters_for_merit_order.sort_by { |c| c.merit_order_end }
+        residual_load_duration_curve = self.residual_load_duration_curve
+        converters = dispatchable_converters_for_merit_order.sort_by { |c| c.merit_order_end }
 
         converters.each do |converter|
-          capacity_factor = capacity_factor_for(converter, load_profile_curve)
+          capacity_factor = capacity_factor_for(converter, residual_load_duration_curve)
           full_load_hours = capacity_factor * 8760 # hours per year
 
           converter.merit_order_capacity_factor = capacity_factor.round(3)
@@ -113,6 +118,7 @@ module Qernel::Plugins
       nil
     end
 
+    # Returns capacity factors for converters given the residual_load_duration_curve
     # capacity_factor uses the LoadProfileTable. It get's the area between merit_order_start to -end
     #
     #
@@ -124,33 +130,26 @@ module Qernel::Plugins
     #     +-------------------
     #        strt   end
     #
-    # Total demand (? TODO: find a good name) :
-    #   area_size / merit_span (= merit_end - merit_start)
-    # capacity_factor:
-    #   multiply above with the availability of a converter.
+    # capacity_factor = availability * area_size / merit_span (= merit_end - merit_start)
     #
     def capacity_factor_for(converter, profile_curve)
       merit_order_start = converter.merit_order_start
       merit_order_end   = converter.merit_order_end
-
       area_size    = profile_curve.area(merit_order_start, merit_order_end)
       merit_span   = [merit_order_end - merit_order_start, 0.0].max
       availability = converter.availability
-
       capacity_factor = [availability * (area_size / merit_span).rescue_nan, availability].min
     end
 
     # Create a CurveArea with the residual-ldc coordinates.
-    # I resist the temptation to make an instance variable out of it, otherwise it'll persist
+    # SB: I resist the temptation to make an instance variable out of it, otherwise it'll persist
     # over requests and will cause mischief.
-    def load_profile_curve
+    def residual_load_duration_curve
       coordinates = LoadProfileTable.new(self).residual_ldc_coordinates
       CurveArea.new(coordinates)
     end
 
     # --- LoadProfileTable ----------------------------------------------------
-
-    #
     #
     #     |__
     #     |  --
@@ -160,11 +159,9 @@ module Qernel::Plugins
     #     +--------------------
     #       400   1600        4000
     #
-    #
-    #
     class LoadProfileTable
       # Precision defines how many points will be calculated. E.g. how smooth the curve
-      # is. So in this case #residual_ldc_coordinates_and_max_load will return 10 coordinates
+      # is. So in this case #residual_ldc_coordinates and max_load will return 10 coordinates
       # for the curve.
       PRECISION = 10
 
@@ -174,9 +171,10 @@ module Qernel::Plugins
 
       # Returns an array of x,y coordinates and the max_load to be used with a CurveArea.
       #
-      # We basically group the array of load profiles into n steps (n defined by PRECISION).
+      # We basically group the array of load profiles into n bins (n defined by PRECISION).
       #
-      #   * x: the max of residual_load_profiles divided by the segment (e.g. 4000 * 0.1 => 400)
+      #   * x: the max of residual_load_profiles divided by the bin-size 
+      #   (e.g. for N = 10 and max_load = 4000: 4000 * 0.1 => 400)
       #   * y: average number of residual_load_profiles that are higher then x?
       #
       #  [    0,   1    ] # all load_profiles are higher then 0
@@ -185,7 +183,6 @@ module Qernel::Plugins
       #  ...
       #  [ 3500,   0.01 ] #
       #  [ 4000,   0    ] # Close to 0 profiles are >= 4000.
-      #
       #
       #
       # @return [[[x,y], [x,y]], max_load]
@@ -206,67 +203,70 @@ module Qernel::Plugins
         end
       end
 
-      def merit_order_converters
-        self.class.merit_order_converters(@graph)
+      def must_run_merit_order_converters
+        self.class.must_run_merit_order_converters(@graph)
       end
 
-      def self.merit_order_converters(graph)
-        unless @merit_order_converters
-          @merit_order_converters = Etsource::Loader.instance.globals('merit_order_converters')
+      def self.must_run_merit_order_converters(graph)
+        unless @must_run_merit_order_converters
+          @must_run_merit_order_converters = Etsource::Loader.instance.globals('must_run_merit_order_converters')
           # Fail early:
-          @merit_order_converters.values.flatten.each do |key|
+          @must_run_merit_order_converters.values.flatten.each do |key|
             unless graph.converter(key)
-              raise "Qernel::Graph#merit_order: no converter found for #{key.inspect}. Update datasets/_globals/merit_order_converters.yml"
+              raise "Qernel::Graph#merit_order: no converter found for #{key.inspect}. Update datasets/_globals/must_run_merit_order_converters.yml"
             end
           end
         end
-        @merit_order_converters
+        @must_run_merit_order_converters
       end
 
       #######
       private
       #######
 
-      def graph_peak_demand
-        @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_input_capacity }.compact.sum
+      # Peak power of electricity for all final demand converters..
+      def graph_peak_power
+        @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_power }.compact.sum
       end
 
-      # Adjust the loads by the demands of the converters defined in merit_order_converters.yml
+      # Adjust the load curve (column 0) by subtracting the loads of the must-run converters 
+      # defined in must_run_merit_order_converters.yml
       # It uses the tabular data from datasets/_globals/merit_order.csv
       #
       # It uses the *merit_order_table*
       #
       #      normalized,  column_1, column_2, column_3, column_4, column_5, column_6, column_7
-      #     [ 0.6255066, [0.6186073,0.0000000,1.0000000,0.0002222,0.0000000,0.0000000,0.0000000]],
-      #     [ 0.5601907, [0.6186073,0.0000000,1.0000000,0.0001867,0.0000000,0.0000000,0.0000000]],
+      #     [ 0.6255066, [0.6186073, 0.0000000, 1.0000000, 0.0002222, 0.0000000, 0.0000000, 0.0000000]],
+      #     [ 0.5601907, [0.6186073, 0.0000000, 1.0000000, 0.0001867, 0.0000000, 0.0000000, 0.0000000]],
+      #     ...
       #
-      # and the merit_order_demands. The 7 numbers sum an attribute for every group in merit_order_converters.yml
+      # and the merit_order_must_run_loads. The 7 numbers sum loads for every group in must_run_merit_order_converters.yml
       #
       #                   column_1, column_2, column_3, column_4, column_5, column_6, column_7
       #     [             1000,      1500,      8000,     1000,       2000,    300000,   10000]
       #
-      # It returns an array of the load profiles, adjusted by the demands.
+      # It returns an array of the load profiles, adjusted by subtracting the must-run loads.
       #
-      #    [ (PeakLoad - ( 0.618*1000 + 0.000 * 1500, + 1.000 * 8000, 0.002* 1000, ...))]
-      #    [ (PeakLoad - ( 0.618*1000 + 0.000 * 1500, + 1.000 * 8000, 0.0018*1000, ...))]
+      #    [ (0.6255066 * peak_power - ( 0.618 * 1000 + 0.000 * 1500 + 1.000 * 8000 + 0.002 * 1000 ...))]
+      #    [ (0.5601907 * peak_power - ( 0.618 * 1000 + 0.000 * 1500 + 1.000 * 8000 + 0.0018 * 1000 ...))]
       #
       def residual_load_profiles # Excel N
-        demands     = merit_order_demands
-        peak_demand = graph_peak_demand
+        loads      = merit_order_must_run_loads
+        peak_power = graph_peak_power
 
         merit_order_table.map do |normalized_load, wewp|
-          load = peak_demand * normalized_load
+          load = peak_power * normalized_load
 
-          # take one column from the table and multiply it with the demands
-          # defined in the merit_order_converters.yml
-          wewp_x_demands = wewp.zip(demands) # [1,2].zip([3,4]) => [[1,3],[2,4]]
-          wewp_x_demands.map!{|wewp, demand| wewp * demand }
+          # take one column from the table and multiply it with the loads
+          # defined in the must_run_merit_order_converters.yml
+          wewp_x_loads = wewp.zip(loads) # [1,2].zip([3,4]) => [[1,3],[2,4]]
+          wewp_x_loads.map!{|wewp, load| wewp * load }
 
-          [0, load - wewp_x_demands.sum].max
+          [0, load - wewp_x_loads.sum].max
         end
       end
 
-      # Returns the "demands" (?) for the converters defined in merit_order_converters.yml.
+      # Returns the summed load for the must-run converters defined in must_run_merit_order_converters.yml.
       #
       # Returns an array of sums for every column_X group, like this:
       #
@@ -275,8 +275,8 @@ module Qernel::Plugins
       #    100.1     # [50, 50.1].sum derived from the column_1: ... converters.
       # ]
       #
-      def merit_order_demands
-        merit_order_converters.map do |_ignore_column, converter_keys|
+      def merit_order_must_run_loads
+        must_run_merit_order_converters.map do |_ignore_column, converter_keys|
           converter_keys.map do |key|
             converter = @graph.converter(key)
             begin
@@ -293,7 +293,7 @@ module Qernel::Plugins
       end
 
       # Load merit_order.csv and create an array of arrays.
-      # The merit_order.csv has to be in sync with merit_order_converters.yml
+      # The merit_order.csv has to be in sync with must_run_merit_order_converters.yml
       # The columns correspond to the column_1, column_2, ... keys in that file.
       #
       # normalized,column_1, column_2, column_3, column_4, column_5, column_6, column_7

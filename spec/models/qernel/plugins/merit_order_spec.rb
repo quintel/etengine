@@ -18,7 +18,7 @@ module Qernel::Plugins::MeritOrder
           @converters[i].query.stub!(:availability).and_return 1.0
         end
 
-        @graph.stub!(:group_merit_order).and_return(@converters)
+        @graph.stub!(:dispatchable_merit_order_converters).and_return(@converters)
         @graph.stub!(:converters_by_total_variable_cost).and_return(@converters.map(&:query))
         @graph.calculate_merit_order
       end
