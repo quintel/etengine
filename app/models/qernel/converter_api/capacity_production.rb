@@ -109,12 +109,28 @@ class Qernel::ConverterApi
   end
   alias_method :electricity_production_in_mw, :installed_production_capacity_in_mw_electricity
 
-  # The MW input capacity that is required to provide the demand.
+  # The MW power that is consumed by an electricity consuming technology.
   #
   # TODO:
   # 11.6.2012: issues with some scenarios (beta 28291), for some reason this method
   # returns nil. Temp fix to force-convert it to 0. CL+SB: please take a look at
   # this ASAP - PZ
+  def mw_power
+    out = function(:mw_power) do
+      if full_load_seconds == 0.0
+        0.0
+      else
+        demand / full_load_seconds
+      end
+    end
+    out || 0.0 # FIXME!
+  end
+
+  # The MW input capacity of a (electricity producing) technology
+  # NOTE: this function is identical to mw_power (defined above)
+  # power is a more precise name if we talk about the actually consumed MWs
+  # capacity is the maximal power and therefore more appropriate to calculate
+  # the output of electricity generating technologies.
   def mw_input_capacity
     out = function(:mw_input_capacity) do
       if full_load_seconds == 0.0
@@ -125,6 +141,7 @@ class Qernel::ConverterApi
     end
     out || 0.0 # FIXME!
   end
+
 
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
