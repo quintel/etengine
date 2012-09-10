@@ -17,24 +17,6 @@ module Qernel
           outputs.map(&:to_topology)
         ].join("\n")
       end
-
-      module ClassMethods
-        def import(line)
-          Qernel::Converter.new(attributes_from_line(line))
-        end
-
-        def attributes_from_line(line)
-          key, sector_key, use_key, energy_balance_group, groups = line.split(SEPARATOR).map(&:strip).map(&:to_sym)
-          key = key.to_s.scan(/\w+/).first.strip.gsub(/\s/,'').to_sym
-
-          {
-            key:       key,
-            sector_id: sector_key,
-            use_id:    use_key,
-            energy_balance_group: energy_balance_group
-          }
-        end
-      end
     end
 
     module Link
