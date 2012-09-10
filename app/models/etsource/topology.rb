@@ -29,29 +29,48 @@ module Etsource
 
       # Loads converters and puts into converters hash. Attaches
       # the previously loaded groups.
-      each_file do |lines|
+      topology_hash.each_pair do |key, attrs|
         # Initialize all converters first, before we map slots and links to them.
-        lines.select{|l| l =~ /^\w+;/ }.each do |l|
-          attrs          = Qernel::Converter.attributes_from_line(l)
-          attrs[:groups] = converter_groups[attrs[:key]]
+        converter_key = key.to_sym
 
-          converter      = Qernel::Converter.new( attrs )
-          converters[converter.key] = converter
-        end
+        converter = Qernel::Converter.new({
+          key:                  converter_key,
+          sector_id:            attrs['sector'].try(:to_sym),
+          use_id:               attrs['use'].try(:to_sym),
+          energy_balance_group: attrs['energy_balance_group'].try(:to_sym),
+          groups:               converter_groups[converter_key]
+        })
+        converters[converter_key] = converter
       end
 
       # Connect converters with
       graph = Qernel::Graph.new(converters.values)
 
-      each_file do |lines|
-        lines.map{|l| Qernel::Slot::Token.find(l) }.flatten.uniq(&:key).each do |token|
-          converter = converters[token.converter_key]
-          slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
-          converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
-        end
+      # The new export.graph uses yaml. The old format was parsed line by line,
+      # now we must parse the entire structure. A slot object can be built from
+      # a link and a slot line, so we merge them, remove duplicates and create
+      # the slots as needed
+      slot_tokens = []
+      topology_hash.each_pair do |c_key, values|
+        slot_lines = ((values['slots'] || []) + (values['links'] || []))
+        slot_tokens << slot_lines.map{|line| Qernel::Slot::Token.find(line)}.flatten
+      end
 
-        lines.map{|l| Qernel::Link::Token.find(l) }.flatten.each do |link|
-          link = Qernel::Link.new(link.key, converters[link.input_key], converters[link.output_key], carrier(link), link.link_type)
+      slot_tokens.flatten.uniq_by{|t| t.key.strip}.each do |token|
+        converter = converters[token.converter_key.to_sym]
+        slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
+        converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
+      end
+
+      topology_hash.each_pair do |converter_key, values|
+        (values['links'] || []).each do |line|
+          link = Qernel::Link::Token.find(line)
+          next unless link.is_a?(Qernel::Topology::Link::Token)
+          link = Qernel::Link.new(link.key,
+                                  converters[link.input_key],
+                                  converters[link.output_key],
+                                  carrier(link),
+                                  link.link_type)
           link.graph = graph
         end
       end
@@ -80,14 +99,11 @@ module Etsource
       @carriers[key] ||= Qernel::Carrier.new(key: key)
     end
 
-    def each_file(&block)
-      Dir.glob("#{export_dir}/*.graph").each do |f|
-        lines = File.read(f).lines
-        yield lines if block_given?
-      end
-    end
-
   protected
+
+    def topology_hash
+      @topology_hash ||= YAML::load(File.read(topology_file))
+    end
 
     def topology_file
       "#{base_dir}/export.graph"
@@ -95,13 +111,12 @@ module Etsource
 
     # working copy
     def base_dir
-      "#{@etsource.base_dir}/topology"
+      "#{@etsource.export_dir}/topology"
     end
 
     # export, read-only dir
     def export_dir
       "#{@etsource.export_dir}/topology"
     end
-
   end
 end
