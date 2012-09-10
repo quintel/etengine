@@ -66,8 +66,6 @@ group :test, :development do
   gem 'pry-debugger'
   gem 'guard'
   gem 'guard-rspec'
-  gem 'spork', '~> 0.9.0.rc'
-  gem 'guard-spork'
   gem 'watchr'
 end
 
