@@ -2,9 +2,13 @@ class Qernel::ConverterApi
   
   # How many units are required to fill demand.
   def number_of_units
-    return 0 if typical_input_capacity == 0 or typical_input_capacity.nil?
-    function(:number_of_units) do
-      mw_input_capacity / typical_input_capacity
+    if dataset_get(:number_of_units)
+      dataset_get(:number_of_units)
+    else
+      function(:number_of_units) do
+        return 0 if typical_input_capacity == 0 or typical_input_capacity.nil?
+        mw_input_capacity / typical_input_capacity
+      end
     end
   end
   unit_for_calculation "number_of_units", 'number'
