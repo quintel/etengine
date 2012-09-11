@@ -11,4 +11,4 @@
       - Input::ATTRIBUTES.each do |attr|
         %tr
           %td= attr
-          %td= @input.send attr
+          %td= highlight @input.send(attr).to_s, params[:highlight]

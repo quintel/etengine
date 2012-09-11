@@ -96,6 +96,15 @@ class Input
     q.present? ? all.select{|input| input.key.include?(q)} : all
   end
 
+  def self.with_queries_containing(q)
+    all.select do |input|
+      [:label_query, :query, :max_value_gql,
+       :min_value_gql, :start_value_gql]. any? do |attr|
+        input.send(attr).to_s.include? q
+      end
+    end
+  end
+
   def self.before_inputs
     @before_inputs ||= all.select(&:before_update?)
   end

@@ -3,13 +3,14 @@
 :ruby
   @pre = @converter_present.query
   @fut = @converter_future.query
+  converter_key = @converter_present.key.to_s
 
 
 .row-fluid
   .span12
     .page-header
       %h1
-        = @converter_present.key
+        = converter_key
         %small== ID: #{@converter_present.excel_id}
         = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
@@ -42,8 +43,14 @@
           %td Used in Gqueries
           %td
             %ol
-              - Gquery.name_or_query_contains(@converter_present.key.to_s).each do |gquery|
+              - Gquery.name_or_query_contains(converter_key).each do |gquery|
                 %li= link_to gquery.key, data_gquery_path(:id => gquery.id)
+        %tr
+          %td Used in Inputs
+          %td
+            %ol
+              - Input.with_queries_containing(converter_key).each do |input|
+                %li= link_to input.key, data_input_path(:id => input.id, :highlight => converter_key)
 
 .row-fluid
   .span12
