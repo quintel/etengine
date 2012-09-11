@@ -35,8 +35,6 @@ module Qernel::Plugins
       end
     end
 
-    public
-
     # ---- MeritOrder ------------------------------------------------------------
 
     # Assign merit_order_start and merit_order_end
@@ -61,8 +59,6 @@ module Qernel::Plugins
         dataset_set(:calculate_merit_order_finished, true)
       end
     end # calculate_merit_order
-
-    private
 
     # Updates the merit_order_position attributes. It assumes the given converters array
     # is already properly sorted by merit_order_start attribute.
