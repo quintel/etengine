@@ -131,17 +131,7 @@ class Qernel::ConverterApi
   # power is a more precise name if we talk about the actually consumed MWs
   # capacity is the maximal power and therefore more appropriate to calculate
   # the output of electricity generating technologies.
-  def mw_input_capacity
-    out = function(:mw_input_capacity) do
-      if full_load_seconds == 0.0
-        0.0
-      else
-        demand / full_load_seconds
-      end
-    end
-    out || 0.0 # FIXME!
-  end
-
+  alias_method :mw_input_capacity, :mw_power
 
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
