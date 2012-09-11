@@ -13,6 +13,8 @@ module Qernel::Plugins::MeritOrder
 
         # Take some random converters and assign them required variables
         @converters = @graph.converters[0...4]
+
+        # The following numbers define how the merit_order attributes are assigned.
         [50, 0, nil, 200].each_with_index do |inst_cap, i|
           @converters[i].query.stub!(:installed_production_capacity_in_mw_electricity).and_return inst_cap
           @converters[i].query.stub!(:availability).and_return 1.0
@@ -54,11 +56,12 @@ module Qernel::Plugins::MeritOrder
         @converter.merit_order_start = 0.0
       end
 
-      it "if it covers the whole area" do
+      it "if it covers the whole area (roughly only half capacity)" do
         @converter.merit_order_end = 14000
+
         @ldc_polygon.area(0, 14000).should == 7206.8
 
-        {
+        { # availability, expected capacity_factor
           1.0 => 0.5,
           0.8 => 0.4,
           0.5 => 0.3,
@@ -71,6 +74,7 @@ module Qernel::Plugins::MeritOrder
 
       it "if it covers only the first part (full capacity) availability becomes capacity_factor" do
         @converter.merit_order_end = 1402
+
         @ldc_polygon.area(0, @converter.merit_order_end).should == 1402
 
         { # availability, expected capacity_factor
