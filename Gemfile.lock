@@ -16,12 +16,12 @@ GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
   specs:
-    actionmailer (3.2.7)
-      actionpack (= 3.2.7)
+    actionmailer (3.2.8)
+      actionpack (= 3.2.8)
       mail (~> 2.4.4)
-    actionpack (3.2.7)
-      activemodel (= 3.2.7)
-      activesupport (= 3.2.7)
+    actionpack (3.2.8)
+      activemodel (= 3.2.8)
+      activesupport (= 3.2.8)
       builder (~> 3.0.0)
       erubis (~> 2.7.0)
       journey (~> 1.0.4)
@@ -29,21 +29,21 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.1.3)
-    activemodel (3.2.7)
-      activesupport (= 3.2.7)
+    activemodel (3.2.8)
+      activesupport (= 3.2.8)
       builder (~> 3.0.0)
-    activerecord (3.2.7)
-      activemodel (= 3.2.7)
-      activesupport (= 3.2.7)
+    activerecord (3.2.8)
+      activemodel (= 3.2.8)
+      activesupport (= 3.2.8)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
     activerecord-import (0.2.9)
       activerecord (~> 3.0)
       activerecord (~> 3.0)
-    activeresource (3.2.7)
-      activemodel (= 3.2.7)
-      activesupport (= 3.2.7)
-    activesupport (3.2.7)
+    activeresource (3.2.8)
+      activemodel (= 3.2.8)
+      activesupport (= 3.2.8)
+    activesupport (3.2.8)
       i18n (~> 0.6)
       multi_json (~> 1.0)
     airbrake (3.1.1)
@@ -58,7 +58,7 @@ GEM
       activesupport (>= 3.0.7)
     binding_of_caller (0.6.7)
     blankslate (2.1.2.4)
-    builder (3.0.0)
+    builder (3.0.3)
     cancan (1.6.7)
     coderay (1.0.6)
     columnize (0.3.6)
@@ -88,9 +88,6 @@ GEM
       thor (>= 0.14.6)
     guard-rspec (1.0.1)
       guard (>= 1.1)
-    guard-spork (1.0.0)
-      guard (>= 1.0.0)
-      spork (>= 0.8.4)
     haml (3.1.6)
     highline (1.6.12)
     hike (1.2.1)
@@ -99,12 +96,12 @@ GEM
     httparty (0.8.3)
       multi_json (~> 1.0)
       multi_xml
-    i18n (0.6.0)
+    i18n (0.6.1)
     journey (1.0.4)
     jquery-rails (2.0.2)
       railties (>= 3.2.0, < 5.0)
       thor (~> 0.14)
-    json (1.7.4)
+    json (1.7.5)
     kaminari (0.13.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -148,17 +145,17 @@ GEM
       rack
     rack-test (0.6.1)
       rack (>= 1.0)
-    rails (3.2.7)
-      actionmailer (= 3.2.7)
-      actionpack (= 3.2.7)
-      activerecord (= 3.2.7)
-      activeresource (= 3.2.7)
-      activesupport (= 3.2.7)
+    rails (3.2.8)
+      actionmailer (= 3.2.8)
+      actionpack (= 3.2.8)
+      activerecord (= 3.2.8)
+      activeresource (= 3.2.8)
+      activesupport (= 3.2.8)
       bundler (~> 1.0)
-      railties (= 3.2.7)
-    railties (3.2.7)
-      actionpack (= 3.2.7)
-      activesupport (= 3.2.7)
+      railties (= 3.2.8)
+    railties (3.2.8)
+      actionpack (= 3.2.8)
+      activesupport (= 3.2.8)
       rack-ssl (~> 1.3.2)
       rake (>= 0.8.7)
       rdoc (~> 3.4)
@@ -208,14 +205,13 @@ GEM
       simplecov-html (~> 0.5.3)
     simplecov-html (0.5.3)
     slop (2.4.4)
-    spork (0.9.2)
     sprockets (2.1.3)
       hike (~> 1.2)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     term-ansicolor (1.0.7)
     text-table (1.2.2)
-    thor (0.15.4)
+    thor (0.16.0)
     tilt (1.3.3)
     treetop (1.4.10)
       polyglot
@@ -251,7 +247,6 @@ DEPENDENCIES
   git!
   guard
   guard-rspec
-  guard-spork
   haml (~> 3.1.4)
   highline
   hipchat
@@ -266,7 +261,7 @@ DEPENDENCIES
   pry-remote
   pry-stack_explorer
   rack-cors
-  rails (= 3.2.7)
+  rails (= 3.2.8)
   rb-fsevent
   rdiscount
   rest-client
@@ -279,7 +274,6 @@ DEPENDENCIES
   shoulda-matchers
   simple_form
   simplecov (~> 0.5.3)
-  spork (~> 0.9.0.rc)
   term-ansicolor
   text-table
   unicorn
