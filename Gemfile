@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-gem 'rails', '3.2.7'
+gem 'rails', '3.2.8'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml', '~>3.1.4'
 
@@ -66,8 +66,6 @@ group :test, :development do
   gem 'pry-debugger'
   gem 'guard'
   gem 'guard-rspec'
-  gem 'spork', '~> 0.9.0.rc'
-  gem 'guard-spork'
   gem 'watchr'
 end
 

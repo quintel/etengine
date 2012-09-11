@@ -19,7 +19,7 @@ module Api
 
       def find_converter
         key = params[:id].to_sym rescue nil
-        @converter = Converter.new(key, @scenario)
+        @converter = ConverterPresenter.new(key, @scenario)
       rescue Exception => e
         render :json => {:errors => [e.message]}, :status => 404 and return
       end
