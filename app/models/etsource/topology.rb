@@ -13,17 +13,16 @@ module Etsource
 
     def import
       converters = {}
-
       converter_groups = Hash.new { |hash, key| hash[key] = [] }
 
-      # Load the converter groups from the topology/groups.yml
-      # and convert the {group_1: [converter_1, converter_2], ...} into
+      # Load the converter groups from the topology/groups/*.yml
+      # creating a in this format:
       # {converter_1: [group_1, group_2], ...}
-      groups = YAML::load_file("#{base_dir}/groups.yml")
-      groups.each do |group, converter_keys|
-        group = group.to_sym
-        converter_keys.each do |key|
-          converter_groups[key.to_sym] << group
+      Dir.glob("#{base_dir}/groups/*.yml").each do |file|
+        group_name = File.basename(file, '.yml').to_sym
+        items = YAML::load_file(file)
+        items.each do |key|
+          converter_groups[key.to_sym] << group_name
         end
       end
 
