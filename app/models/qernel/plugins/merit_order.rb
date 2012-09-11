@@ -35,16 +35,18 @@ module Qernel::Plugins
       end
     end
 
+    public
+
     # ---- MeritOrder ------------------------------------------------------------
 
-    # Assign merit_order_start and merit_order_end 
+    # Assign merit_order_start and merit_order_end
     def calculate_merit_order
       return if dispatchable_merit_order_converters.empty?
 
       instrument("qernel.merit_order: calculate_merit_order") do
         converters = converters_by_total_variable_cost
 
-        # 
+        #
         first = converters.first.tap{|c| c.merit_order_start = 0.0 }
         update_merit_order_end!(first)
 
@@ -60,9 +62,11 @@ module Qernel::Plugins
       end
     end # calculate_merit_order
 
+    private
+
     # Updates the merit_order_position attributes. It assumes the given converters array
     # is already properly sorted by merit_order_start attribute.
-    # 
+    #
     def calculate_merit_order_position(converters)
       position = 1
       converters.each do |converter|
@@ -173,7 +177,7 @@ module Qernel::Plugins
       #
       # We basically group the array of load profiles into n bins (n defined by PRECISION).
       #
-      #   * x: the max of residual_load_profiles divided by the bin-size 
+      #   * x: the max of residual_load_profiles divided by the bin-size
       #   (e.g. for N = 10 and max_load = 4000: 4000 * 0.1 => 400)
       #   * y: average number of residual_load_profiles that are higher then x?
       #
@@ -229,7 +233,7 @@ module Qernel::Plugins
         @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_power }.compact.sum
       end
 
-      # Adjust the load curve (column 0) by subtracting the loads of the must-run converters 
+      # Adjust the load curve (column 0) by subtracting the loads of the must-run converters
       # defined in must_run_merit_order_converters.yml
       # It uses the tabular data from datasets/_globals/merit_order.csv
       #
