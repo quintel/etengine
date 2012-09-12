@@ -2,9 +2,9 @@
 :javascript
   var converter_url_prefix = "#{data_converters_path()}";
   var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout)}";
-  var r = Raphael("canvas", 8000, 10000).initZoom();
+  var r = Raphael("canvas", GRID_X_SIZE, GRID_Y_SIZE).initZoom();
   var data;
-  
+
   $.getJSON(data_json_url, function(json_data) {
     data = json_data;
     for (var key in data['present']['1']) {
@@ -12,7 +12,7 @@
     }
   })
   $(function(){
-    $("#instructions").draggable(); 
+    $("#instructions").draggable();
   });
-  
+
 = javascript_include_tag data_blueprint_layout_path(:id => @blueprint_layout, :format => 'js')
