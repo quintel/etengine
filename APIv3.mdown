@@ -401,8 +401,6 @@ don't require an active scenario) and
 `/scenarios/:scenario_id/converters/:code` to get the attributes for a
 specific scenario.
 
-Implemented.
-
 #### Request
 
     GET /converters/:code
@@ -419,7 +417,7 @@ If the scenario_id is missing then the controller will use the latest scenario.
         "use": "energetic",
         "groups": ["electricity_production", "central_production"],
         "energy_balance_group": "central CHPs",
-        "attributes": {
+        "data": {
             "operational": {
                 "typical_nominal_input_capacity": {
                     "present": 162.60162601626,
@@ -441,23 +439,12 @@ If the scenario_id is missing then the controller will use the latest scenario.
                     "future": 0.0
                 },
                 ...
-        },
-        "calculations": {
-            "additional_investment_ccs_per_mwe": {
-                "present": 0.0,
-                "future": 0.0
-            },
-            "cost_of_capital_per_mw_input": {
-                "present": 23898.9,
-                "future": 23898.9
-            },
-            ...
-       }
+        }
     }
 
-### Converter details for a specific scenario
+The `data` section contains both attributes and calculations.
 
-Implemented
+### Converter details for a specific scenario
 
 #### Request
 
