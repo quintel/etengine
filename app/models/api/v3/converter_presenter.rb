@@ -51,11 +51,12 @@ module Api
         json[:calculations] = {}
         @converter_api.calculation_methods.each_pair do |group, methods|
           hsh = {}
-          methods.each do |method|
+          methods.each_pair do |method, opts|
             pres = format_value(@present, method)
             fut = format_value(@future, method)
             unit = Qernel::ConverterApi.unit_for_calculation(method)
             next unless (pres || fut)
+            next if pres <= 0.0 && opts[:hide_if_zero]
             hsh[method] = {
               :present => pres,
               :future => fut,

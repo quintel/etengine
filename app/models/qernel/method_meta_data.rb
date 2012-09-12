@@ -16,22 +16,29 @@ module Qernel
     # used now in api/v3/converter.rb and data converter detail page.
     # Returns a hash with the methods (grouped by category) to be shown
     #
+    # This belongs mostly to the presentation layer, so this method could be
+    # moved somewhere else, but it needs access to the graph method to get the
+    # list of carriers.
+    # The extra hash can be used to pass extra parameters as needed.
+    #
     def calculation_methods
       out = {
-        :demand => [
-          :demand,
-          :preset_demand,
-          :demand_of_sustainable,
-          :weighted_carrier_cost_per_mj,
-          :weighted_carrier_co2_per_mj,
-          :sustainability_share,
-          :final_demand,
-          :primary_demand,
-          :primary_demand_of_fossil,
-        :primary_demand_of_sustainable]
+        :demand => {
+          :demand                        => {},
+          :preset_demand                 => {},
+          :demand_of_sustainable         => {},
+          :weighted_carrier_cost_per_mj  => {},
+          :weighted_carrier_co2_per_mj   => {},
+          :sustainability_share          => {},
+          :final_demand                  => {},
+          :primary_demand                => {},
+          :primary_demand_of_fossil      => {},
+          :primary_demand_of_sustainable => {}
+        }
       }
       graph.carriers.each do |c|
-        out[:demand] << "primary_demand_of_#{c.key}".to_sym
+        method_name = "primary_demand_of_#{c.key}".to_sym
+        out[:demand][method_name] = {hide_if_zero: true}
       end
       out
     end
