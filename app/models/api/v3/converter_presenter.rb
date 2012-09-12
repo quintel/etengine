@@ -34,7 +34,7 @@ module Api
             pres = format_value(@present, attr)
             fut = format_value(@future, attr)
             next unless (pres || fut)
-            json[:attributes][group] = {
+            json[:attributes][group][attr] = {
               :present => pres,
               :future => fut,
               :unit => unit,
