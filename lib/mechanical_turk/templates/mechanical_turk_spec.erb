@@ -21,8 +21,8 @@ describe "<%= @area_code %>" do
       present = @gql.query(gquery).present_value.inspect
       future = @gql.query(gquery).future_value.inspect %>
     it "<%= gquery.key %>" do
-      the_present.should be_within(<%= present %>, some_tolerance)
-      the_future.should be_within(<%= future %>,   some_tolerance)
+      the_present.should be_within(some_tolerance).of(<%= present %>)
+      the_future.should be_within(some_tolerance).of(<%= future %>)
     end
     <% end %>
   end
