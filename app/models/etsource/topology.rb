@@ -1,4 +1,8 @@
+
+
 module Etsource
+
+
   class Topology
 
     def initialize(etsource = Etsource::Base.instance)
@@ -52,7 +56,7 @@ module Etsource
       slot_tokens = []
       topology_hash.each_pair do |c_key, values|
         slot_lines = ((values['slots'] || []) + (values['links'] || []))
-        slot_tokens << slot_lines.map{|line| Qernel::Slot::Token.find(line)}.flatten
+        slot_tokens << slot_lines.map{|line| SlotToken.find(line)}.flatten
       end
 
       slot_tokens.flatten.uniq_by{|t| t.key.strip}.each do |token|
@@ -63,8 +67,8 @@ module Etsource
 
       topology_hash.each_pair do |converter_key, values|
         (values['links'] || []).each do |line|
-          link = Qernel::Link::Token.find(line)
-          next unless link.is_a?(Qernel::Topology::Link::Token)
+          link = LinkToken.find(line)
+          next unless link.is_a?(LinkToken)
           link = Qernel::Link.new(link.key,
                                   converters[link.input_key],
                                   converters[link.output_key],
@@ -77,19 +81,6 @@ module Etsource
       graph.carriers.each {|c| c.graph = graph}
       graph.connect_qernel
       graph
-    end
-
-    # writes to disk *in the working copy directory*
-    #
-    def export
-      FileUtils.mkdir_p(base_dir)
-      File.open(topology_file, 'w') do |out|
-        gql = Scenario.default.gql(prepare: false)
-        gql.present_graph.converters.each do |converter|
-          out << converter.to_topology
-          out << "\n\n"
-        end
-      end
     end
 
     def carrier(obj)
@@ -116,6 +107,75 @@ module Etsource
     # export, read-only dir
     def export_dir
       "#{@etsource.export_dir}/topology"
+    end
+  end
+
+  # Extract keys from a Slot Topology String
+  #    Token.new("FOO-(HW) -- s --> (HW)-BAR")
+  #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, link_type: :share>
+  #
+  class LinkToken
+    attr_reader :input_key, :carrier_key, :output_key, :key, :link_type
+
+    LINK_TYPES = {
+      's' => :share,
+      'f' => :flexible,
+      'i' => :inversed_flexible,
+      'd' => :dependent,
+      'c' => :constant
+    }
+
+    def initialize(line)
+      line.gsub!(/#.+/, '')
+      line.strip!
+      line.gsub!(/\s+/,'')
+      @key = line
+
+      input, output = SlotToken.find(line)
+
+      Rails.logger.warn("No Slots '#{line}'") if input.nil? or output.nil?
+      Rails.logger.warn("Carriers do not match in '#{line}'") if input.carrier_key != output.carrier_key
+      @carrier_key = input.carrier_key
+      @input_key   = input.converter_key
+      @output_key  = output.converter_key
+
+      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)-->/).flatten.first]
+    end
+
+    def self.find(line)
+      if line.gsub(/\s/,'') =~ /\)--\w-->\(/
+        new(line)
+      else
+        []
+      end
+    end
+  end
+
+  # Extract keys from a Slot Topology String
+  #    Token.new("(HW)-FOO")
+  #    t.converter_key # => :FOO
+  #    t.carrier_key # => :HW
+  #    t.direction # => :output
+  #    t.key # => HW-FOO
+  #
+  class SlotToken
+    attr_reader :converter_key, :carrier_key, :direction, :key
+
+    def initialize(line)
+      @key = line.gsub(/#.+/, '').strip
+      @converter_key, @carrier_key = if line.include?(')-')
+        @direction = :output
+        @key.split('-').reverse.map(&:to_sym)
+      else
+        @direction = :input
+        @key.split('-').map(&:to_sym)
+      end
+      @carrier_key = @carrier_key.to_s.gsub(/[\(\)]/, '').to_sym
+    end
+
+    # @return [Array] all the slots in a given string.
+    def self.find(line)
+      (line.scan(/\w+-\(\w+\)|\(\w+\)-\w+/) || []).map{|t| new(t) }
     end
   end
 end

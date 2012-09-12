@@ -1,7 +1,6 @@
 module Qernel
 
 class Carrier
-  include Topology::Carrier
 
   # ----- Dataset -------------------------------------------------------------
 
