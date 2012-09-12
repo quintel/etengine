@@ -90,7 +90,6 @@ class Converter
   include Qernel::RecursiveFactor::MaxDemand
 
   include DatasetAttributes
-  include Topology::Converter
 
   # Following keys can be looked up by {Qernel::Graph#converter}.
   KEYS_FOR_LOOKUP = [
