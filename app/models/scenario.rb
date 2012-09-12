@@ -44,7 +44,6 @@ class Scenario < ActiveRecord::Base
   validates             :area_code, :presence => true
 
   scope :in_start_menu, where(:in_start_menu => true)
-  scope :protected,     where(:protected => true)
   scope :by_name,       lambda{|q| where("title LIKE ?", "%#{q}%")}
   scope :by_id,         lambda{|q| where(id: q)}
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
