@@ -71,7 +71,9 @@ module Api
       private
 
       def format_value(graph, attribute)
-        graph.query.send(attribute) #rescue nil
+        graph.query.send(attribute)
+        # Use instance_eval when we'll need to pass methods with parameters
+        # graph.query.instance_eval(attribute.to_s)
       end
     end
   end
