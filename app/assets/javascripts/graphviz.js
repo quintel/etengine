@@ -8,6 +8,8 @@
 
 var updated_coordinates = {};
 var SNAPPABLE_GRID_SIZE = 10;
+var GRID_X_SIZE = 8000;
+var GRID_Y_SIZE = 13000;
 
 var link_styles = {
   'constant'  : '',
@@ -17,9 +19,7 @@ var link_styles = {
 };
 
 var Graph = Class.extend({
-  GRID_STEP_SIZE :   800,
-  GRID_X_SIZE :    10000,
-  GRID_Y_SIZE :    13000,
+  GRID_STEP_SIZE:   800,
 
   init:function(width, height) {
     this.width = width;
@@ -34,7 +34,7 @@ var Graph = Class.extend({
    * Draws the graph
    */
   draw:function() {
-    this.drawGrid(this.GRID_X_SIZE, this.GRID_Y_SIZE);
+    this.drawGrid(GRID_X_SIZE, GRID_Y_SIZE);
 
     _.each(this.links,  function(link) { link.draw();} );
     _.each(this.converters, function(converter) { converter.draw();} );
