@@ -14,6 +14,7 @@ class Data::ConvertersController < Data::BaseController
     @qernel_graph = @gql.present_graph
     @converter_present = @gql.present_graph.graph.converter(params[:id].to_sym)
     @converter_future  = @gql.future_graph.graph.converter(params[:id].to_sym)
+    @converter_api  = @converter_future.converter_api
 
     respond_to do |format|
       format.html { render :layout => true }

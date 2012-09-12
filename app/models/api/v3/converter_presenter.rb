@@ -49,16 +49,20 @@ module Api
         json[:uses_coal_and_wood_pellets] = @converter_api.uses_coal_and_wood_pellets?
 
         json[:calculations] = {}
-        Qernel::ConverterApi.calculation_methods.sort.each do |attr|
-          pres = format_value(@present, attr)
-          fut = format_value(@future, attr)
-          unit = Qernel::ConverterApi.unit_for_calculation(attr)
-          next unless (pres || fut)
-          json[:calculations][attr] = {
-            :present => pres,
-            :future => fut,
-            :unit => unit
-          }
+        @converter_api.calculation_methods.each_pair do |group, methods|
+          hsh = {}
+          methods.each do |method|
+            pres = format_value(@present, method)
+            fut = format_value(@future, method)
+            unit = Qernel::ConverterApi.unit_for_calculation(method)
+            next unless (pres || fut)
+            hsh[method] = {
+              :present => pres,
+              :future => fut,
+              :unit => unit
+            }
+          end
+          json[:calculations][group] = hsh
         end
 
         json
