@@ -159,7 +159,10 @@ module Qernel::DatasetAttributes
     @observe_get          = true
   end
 
-
+  # Function memoizes a block, and returns nil when it catches an exception.
+  # Functions and dataset attributes share the same dataset hash. So make sure
+  # the function keys (function(:i_am_a_key) {...} ) do not overlap with
+  # dataset_attributes.
   #
   # @example Default usage
   #
@@ -200,7 +203,7 @@ module Qernel::DatasetAttributes
   #
   #
   def function(attr_name, rescue_with = nil)
-    # function is memoized, so check if it was called already.
+    # check if we have a memoized result already.
     if object_dataset.has_key?(attr_name)
       # are we in the debugger mode?
       if observe_get
