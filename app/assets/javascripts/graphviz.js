@@ -1,7 +1,7 @@
 /*
  * On drawing boxes and links:
- * SVG determines z-index of elements by its creation order. 
- * 
+ * SVG determines z-index of elements by its creation order.
+ *
  *
  *
  */
@@ -13,11 +13,13 @@ var link_styles = {
   'constant'  : '',
   'share'     : '-',
   'flexible'  : '. ',
-  'dependent' : '--..'  
+  'dependent' : '--..'
 };
 
 var Graph = Class.extend({
-  GRID_STEP_SIZE : 800,
+  GRID_STEP_SIZE :   800,
+  GRID_X_SIZE :    10000,
+  GRID_Y_SIZE :    13000,
 
   init:function(width, height) {
     this.width = width;
@@ -31,8 +33,8 @@ var Graph = Class.extend({
   /*
    * Draws the graph
    */
-  draw:function() {    
-    this.drawGrid(10000, 10000);
+  draw:function() {
+    this.drawGrid(this.GRID_X_SIZE, this.GRID_Y_SIZE);
 
     _.each(this.links,  function(link) { link.draw();} );
     _.each(this.converters, function(converter) { converter.draw();} );
@@ -66,7 +68,7 @@ var Graph = Class.extend({
       var attr = $('#attribute').val();
       if (data[period] != undefined
           && data[period][''+c.id] != undefined
-          && data[period][''+c.id][attr] != undefined) {            
+          && data[period][''+c.id][attr] != undefined) {
         var value = data[period][''+c.id][attr];
         c.box.value_node.setAttr('text', ''+value);
       }
@@ -97,12 +99,12 @@ var Graph = Class.extend({
     });
     return false;
   },
-  
+
   highlight_off_all: function() {
     _.each(GRAPH.converters, function(converter) {
       converter.highlight_off();
     });
-    return false;    
+    return false;
   }
 
 })
@@ -121,12 +123,12 @@ var Link = Class.extend({
   },
 
   /*
-   * Draw the Link. 
+   * Draw the Link.
    * *Warning*: The order of the elements being drawed defines their z-index.
    *            We want the links to appear behind the converter boxes, therefore
    *            call draw() on links first.
    *
-   */  
+   */
   draw:function() {
     this.shape = r.connection(this.input_converter.input_slot(), this.output_converter.output_slot(), this.color, this.color+'|'+this.style);
   },
@@ -147,7 +149,7 @@ var Link = Class.extend({
 
   /*
    * (Re-)connects a link to the converter slots.
-   * Needs to be called everytime we move/drag a Converter. 
+   * Needs to be called everytime we move/drag a Converter.
    * Also has to be called after drawing the converters.
    */
   adjust_to_converter:function() {
@@ -178,7 +180,7 @@ var Converter = Class.extend({
   },
 
   /*
-   * Draws the Converter on the raphael space. 
+   * Draws the Converter on the raphael space.
    * *Warning*: The order of the elements being drawed defines their z-index.
    *            We want the links to appear behind the converter boxes, therefore
    *            call draw() on converters after the links.
@@ -222,9 +224,9 @@ var Converter = Class.extend({
   addEventListeners:function() {
     var that = this;
     this.box.node.onclick = function(evt) {
-      if (evt.altKey && evt.shiftKey) { 
+      if (evt.altKey && evt.shiftKey) {
         that.toggle_visibility();
-      } else if (evt.altKey) { 
+      } else if (evt.altKey) {
         that.toggle_selection();
       } else if (evt.shiftKey) {
         that.highlight_toggle();
@@ -250,7 +252,7 @@ var Converter = Class.extend({
     this.box.move = function(dx, dy) {
       elements_move($.merge([this],GRAPH.selected), dx,dy);
     }
-    this.box.up = function() { 
+    this.box.up = function() {
       elements_up($.merge([this],GRAPH.selected));
     }
     this.box.drag(this.box.move, this.box.dragger, this.box.up);
@@ -260,7 +262,7 @@ var Converter = Class.extend({
    * Has Converter changed attribute values?
    */
   isDirty:function() { return (this.dirty == true); },
-  
+
   /*
    * Mark Converter changed.
    */
@@ -295,7 +297,7 @@ var Converter = Class.extend({
 
   unselect:function() {
     GRAPH.selected = _.without(GRAPH.selected, this.box);
-    this.box.attr(this.getBoxAttributes());  
+    this.box.attr(this.getBoxAttributes());
   },
 
   select:function() {
@@ -374,17 +376,17 @@ var Converter = Class.extend({
 
   getBoxAttributes:function() {
     return {
-      fill: this.fill_color, 
-      "fill-opacity": 1, 
-      'stroke-width' : 2, 
+      fill: this.fill_color,
+      "fill-opacity": 1,
+      'stroke-width' : 2,
       'stroke' : this.stroke_color
     };
   },
 
   getAttributes:function() {
     return {
-      'x' : this.pos_x, 
-      'y' : this.pos_y, 
+      'x' : this.pos_x,
+      'y' : this.pos_y,
       'hidden' : this.getHidden()
     };
   },
@@ -418,8 +420,8 @@ var Converter = Class.extend({
 
   /*
    * Relative move to.
-   * Snaps converter to an (invisible) grid. 
-   */ 
+   * Snaps converter to an (invisible) grid.
+   */
   moveTo:function(dx,dy) {
     var b = this.box;
 
@@ -465,7 +467,7 @@ function elements_up(elements){
       link.input_converter.input_slot().attr({fill : '#fff'});
       link.output_converter.output_slot().attr({fill : '#fff'});
     })
-    converter_box.converter.update_position(converter_box.attr('x'), converter_box.attr('y'));    
+    converter_box.converter.update_position(converter_box.attr('x'), converter_box.attr('y'));
   })
 }
 
