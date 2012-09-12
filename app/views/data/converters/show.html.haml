@@ -101,19 +101,7 @@
           %th Change
           %th Unit
       %tbody
-        :ruby
-          calculations = {
-            :demand => [:demand, :preset_demand, :demand_of_sustainable,
-              :weighted_carrier_cost_per_mj, :weighted_carrier_co2_per_mj,
-              :sustainability_share, :final_demand, :primary_demand,
-              :primary_demand_of_fossil, :primary_demand_of_sustainable],
-            :other => Qernel::ConverterApi.calculation_methods.sort
-          }
-          calculations[:demand] += @qernel_graph.carriers.
-            map{|x| "primary_demand_of_#{x.key}"}.
-            select{|x| val = @pre.send(x); val > 0.0}
-
-        - calculations.each_pair do |group, methods|
+        - @converter_api.calculation_methods.each_pair do |group, methods|
           %tr
             %th.calculation_group{:colspan => 5}= group
           - methods.each do |method|
