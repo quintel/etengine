@@ -11,10 +11,12 @@ class Data::ConvertersController < Data::BaseController
   end
 
   def show
+    key = params[:id].to_sym
     @qernel_graph = @gql.present_graph
-    @converter_present = @gql.present_graph.graph.converter(params[:id].to_sym)
-    @converter_future  = @gql.future_graph.graph.converter(params[:id].to_sym)
+    @converter_present = @gql.present_graph.graph.converter(key.to_sym)
+    @converter_future  = @gql.future_graph.graph.converter(key.to_sym)
     @converter_api  = @converter_present.converter_api
+    @presenter = Api::V3::ConverterPresenter.new(key, @api_scenario)
 
     respond_to do |format|
       format.html { render :layout => true }
