@@ -129,6 +129,5 @@
             %tr
               %th= link_to method, calculation_debugger_path(@converter_present, method)
               - result_fields(@pre, @fut, method)
-              %td= Qernel::ConverterApi.unit_for_calculation(method)
-
+              %td= opts[:unit] || Qernel::ConverterApi.unit_for_calculation(method)
     .clear
