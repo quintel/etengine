@@ -21,7 +21,7 @@ class Qernel::ConverterApi
   #
   def typical_input_capacity_in_mw
     function(:typical_input_capacity_in_mw) do
-      typical_nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
+      nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
     end
   end
   # TODO: get rid of the alias
@@ -32,7 +32,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_electricity_output_per_unit
     function(:nominal_capacity_electricity_output_per_unit) do
-      typical_nominal_input_capacity * electricity_output_conversion
+      nominal_input_capacity * electricity_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_electricity_output_per_unit", 'MW'
@@ -41,7 +41,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_heat_output_per_unit
     function(:nominal_capacity_heat_output_per_unit) do
-      typical_nominal_input_capacity * heat_output_conversion
+      nominal_input_capacity * heat_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_heat_output_per_unit", 'MW'
@@ -50,7 +50,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_cooling_output_per_unit
     function(:nominal_capacity_cooling_output_per_unit) do
-      typical_nominal_input_capacity * cooling_output_conversion
+      nominal_input_capacity * cooling_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_cooling_output_per_unit", 'MW'
@@ -118,7 +118,7 @@ class Qernel::ConverterApi
 
   def installed_production_capacity_in_mw_electricity
     function(:installed_production_capacity_in_mw_electricity) do
-      electricity_output_conversion * typical_nominal_input_capacity * number_of_units
+      electricity_output_conversion * nominal_input_capacity * number_of_units
     end
   end
   unit_for_calculation "installed_production_capacity_in_mw_electricity", 'MW'
@@ -152,11 +152,11 @@ class Qernel::ConverterApi
 
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
-    return nil if [typical_nominal_input_capacity, number_of_units].any?(&:nil?)
+    return nil if [nominal_input_capacity, number_of_units].any?(&:nil?)
     [
       useable_heat_output_conversion,
       steam_hot_water_output_conversion
-    ].compact.sum * typical_nominal_input_capacity * number_of_units
+    ].compact.sum * nominal_input_capacity * number_of_units
   end
   unit_for_calculation "installed_production_capacity_in_mw_heat", 'MW'
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
