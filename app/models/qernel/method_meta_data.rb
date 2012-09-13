@@ -47,7 +47,7 @@ module Qernel
           :number_of_units => {},
           :co2_emissions_costs => {},
           :variable_operation_and_maintenance_costs => {},
-          :initial_investment_cost => {},
+          :initial_investment_costs => {},
           :typical_fuel_input => {}
         },
         :old => {
