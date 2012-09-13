@@ -54,7 +54,7 @@ class Qernel::ConverterApi
           cooling_based_nominal_input_capacity || 0.0
     end
   end
-  unit_for_calculation "nominal_input_capacity", 'MW'
+  unit_for_calculation "nominal_input_capacity", 'MWinput'
 
   # Calculates the effective input capacity of a plant (in MW) based on the
   # nominal input capacity and the average effective capacity over
@@ -77,7 +77,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "effective_input_capacity", 'MW'
+  unit_for_calculation "effective_input_capacity", 'MWinput'
 
   ##########################
   # Total Cost calculation #
@@ -95,7 +95,7 @@ class Qernel::ConverterApi
       fixed_costs + variable_costs
     end
   end
-  unit_for_calculation "total_costs", 'euro'
+  unit_for_calculation "total_costs", 'euro / plant / year'
 
 
   ###############
@@ -114,7 +114,7 @@ class Qernel::ConverterApi
         fixed_operation_and_maintenance_costs_per_year
     end
   end
-  unit_for_calculation "fixed_costs", 'euro'
+  unit_for_calculation "fixed_costs", 'euro / plant / year'
 
   # Calculates the yearly costs of capital for the unit, based on the average
   # yearly payment, the weighted average cost of capital (WACC) and a factor
@@ -136,7 +136,7 @@ class Qernel::ConverterApi
           technical_lifetime
     end
   end
-  unit_for_calculation "cost_of_capital", 'euro'
+  unit_for_calculation "cost_of_capital", 'euro / plant / year'
 
   # Determines the yearly depreciation of the plant over its lifetime.
   # The straight-line depreciation methodology is used.
@@ -150,7 +150,7 @@ class Qernel::ConverterApi
       (total_investment_costs - residual_value) / technical_lifetime
     end
   end
-  unit_for_calculation "depreciation_costs", 'euro'
+  unit_for_calculation "depreciation_costs", 'euro / plant / year'
 
 
   ##################
@@ -173,7 +173,7 @@ class Qernel::ConverterApi
         variable_operation_and_maintenance_costs
     end
   end
-  unit_for_calculation "variable_costs", 'euro'
+  unit_for_calculation "variable_costs", 'euro / plant / year'
 
   # Calculates the fuel costs for a single plant, based on the input of fuel
   # for one plant, the
@@ -183,7 +183,7 @@ class Qernel::ConverterApi
       typical_fuel_input * weighted_carrier_cost_per_mj
     end
   end
-  unit_for_calculation "fuel_costs", 'euro'
+  unit_for_calculation "fuel_costs", 'euro / plant / year'
 
   # DEBT: rename co2_free and part_ets
   # DEBT: move factors to a separate function ?
@@ -199,7 +199,7 @@ class Qernel::ConverterApi
         (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))
     end
   end
-  unit_for_calculation "co2_emissions_costs", 'euro'
+  unit_for_calculation "co2_emissions_costs", 'euro / plant / year'
 
   def variable_operation_and_maintenance_costs
     function(:variable_operation_and_maintenance_costs) do
@@ -208,7 +208,7 @@ class Qernel::ConverterApi
         variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour )
     end
   end
-  unit_for_calculation "variable_operation_and_maintenance_costs", 'euro'
+  unit_for_calculation "variable_operation_and_maintenance_costs", 'euro / plant / year'
 
 
   ###################
@@ -229,7 +229,7 @@ class Qernel::ConverterApi
       initial_investment + ccs_investment + cost_of_installing
     end
   end
-  unit_for_calculation "initial_investment_costs", 'euro'
+  unit_for_calculation "initial_investment_costs", 'euro / plant / year'
 
   #########
   private
@@ -249,7 +249,7 @@ class Qernel::ConverterApi
       (initial_investment_costs + decommissioning_costs) / 2
     end
   end
-  unit_for_calculation "average_investment_costs", 'euro'
+  unit_for_calculation "average_investment_costs", 'euro / plant / year'
 
   # Used to calculate yearly depreciation costs
   #
@@ -261,7 +261,7 @@ class Qernel::ConverterApi
       initial_investment_costs + decommissioning_costs
     end
   end
-  unit_for_calculation "total_investment_costs", 'euro'
+  unit_for_calculation "total_investment_costs", 'euro / plant / year'
 
   # Used for calculating the nominal_input_capacity
   def electric_based_nominal_input_capacity
@@ -273,7 +273,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "electric_based_nominal_input_capacity", 'MW'
+  unit_for_calculation "electric_based_nominal_input_capacity", 'MWinput'
 
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
@@ -284,7 +284,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "heat_based_nominal_input_capacity", 'MW'
+  unit_for_calculation "heat_based_nominal_input_capacity", 'MWinput'
   
   # ETM does not have seperate cooling capacity, so use heat capacity to
   # calculate cooling based nominal input capacity
@@ -297,7 +297,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "cooling_based_nominal_input_capacity", 'MW'
+  unit_for_calculation "cooling_based_nominal_input_capacity", 'MWinput'
   
   # Calculates the typical fuel input of one plant of this type
   #
@@ -323,7 +323,7 @@ class Qernel::ConverterApi
       typical_fuel_input * electricity_output_conversion
     end
   end
-  unit_for_calculation "typical_electricity_output", 'MJ'
+  unit_for_calculation "typical_electricity_output", 'MJ / year'
   
   # Calculates the typical heat output of one plant of this type
   #
@@ -336,5 +336,5 @@ class Qernel::ConverterApi
       typical_fuel_input * heat_and_cold_output_conversion
     end
   end
-  unit_for_calculation "typical_heat_output", 'MJ'
+  unit_for_calculation "typical_heat_output", 'MJ / year'
 end
