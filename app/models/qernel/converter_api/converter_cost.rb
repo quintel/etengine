@@ -36,15 +36,15 @@ class Qernel::ConverterApi
   #
   # DEPRECATED
   #
-  def fixed_costs
-    function(:fixed_costs) do
-      sum_unless_empty [
-        cost_of_capital_total,
-        depreciation_total,
-        operation_and_maintenance_cost_fixed
-      ]
-    end
-  end
+  # def fixed_costs
+  #   function(:fixed_costs) do
+  #     sum_unless_empty [
+  #       cost_of_capital_total,
+  #       depreciation_total,
+  #       operation_and_maintenance_cost_fixed
+  #     ]
+  #   end
+  # end
 
   # The total of fixed costs for the converter per year, based on how many units are required to meet demand.
   #
@@ -192,15 +192,16 @@ class Qernel::ConverterApi
   # The total of all assigned costs for this converter.
   #
   # DEPRECATED: use total_costs_per(:converter)
+  # -commented on 13 september 2012
   #
-  def total_costs
-    function(:total_costs) do
-      sum_unless_empty [
-        fixed_costs,
-        variable_costs
-      ]
-    end
-  end
+  # def total_costs
+  #   function(:total_costs) do
+  #     sum_unless_empty [
+  #       fixed_costs,
+  #       variable_costs
+  #     ]
+  #   end
+  # end
 
   # The total costs of running the converter for 1 MWh of input.
   #
