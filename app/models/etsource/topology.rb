@@ -1,4 +1,8 @@
+
+
 module Etsource
+
+
   class Topology
 
     def initialize(etsource = Etsource::Base.instance)
@@ -13,45 +17,63 @@ module Etsource
 
     def import
       converters = {}
-
       converter_groups = Hash.new { |hash, key| hash[key] = [] }
 
-      # Load the converter groups from the topology/groups.yml
-      # and convert the {group_1: [converter_1, converter_2], ...} into
+      # Load the converter groups from the topology/groups/*.yml
+      # creating a in this format:
       # {converter_1: [group_1, group_2], ...}
-      groups = YAML::load_file("#{base_dir}/groups.yml")
-      groups.each do |group, converter_keys|
-        group = group.to_sym
-        converter_keys.each do |key|
-          converter_groups[key.to_sym] << group
+      Dir.glob("#{base_dir}/groups/*.yml").each do |file|
+        group_name = File.basename(file, '.yml').to_sym
+        items = YAML::load_file(file)
+        items.each do |key|
+          converter_groups[key.to_sym] << group_name
         end
       end
 
       # Loads converters and puts into converters hash. Attaches
       # the previously loaded groups.
-      each_file do |lines|
+      topology_hash.each_pair do |key, attrs|
         # Initialize all converters first, before we map slots and links to them.
-        lines.select{|l| l =~ /^\w+;/ }.each do |l|
-          attrs          = Qernel::Converter.attributes_from_line(l)
-          attrs[:groups] = converter_groups[attrs[:key]]
+        converter_key = key.to_sym
 
-          converter      = Qernel::Converter.new( attrs )
-          converters[converter.key] = converter
-        end
+        converter = Qernel::Converter.new({
+          key:                  converter_key,
+          sector_id:            attrs['sector'].try(:to_sym),
+          use_id:               attrs['use'].try(:to_sym),
+          energy_balance_group: attrs['energy_balance_group'].try(:to_sym),
+          groups:               converter_groups[converter_key]
+        })
+        converters[converter_key] = converter
       end
 
       # Connect converters with
       graph = Qernel::Graph.new(converters.values)
 
-      each_file do |lines|
-        lines.map{|l| Qernel::Slot::Token.find(l) }.flatten.uniq(&:key).each do |token|
-          converter = converters[token.converter_key]
-          slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
-          converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
-        end
+      # The new export.graph uses yaml. The old format was parsed line by line,
+      # now we must parse the entire structure. A slot object can be built from
+      # a link and a slot line, so we merge them, remove duplicates and create
+      # the slots as needed
+      slot_tokens = []
+      topology_hash.each_pair do |c_key, values|
+        slot_lines = ((values['slots'] || []) + (values['links'] || []))
+        slot_tokens << slot_lines.map{|line| SlotToken.find(line)}.flatten
+      end
 
-        lines.map{|l| Qernel::Link::Token.find(l) }.flatten.each do |link|
-          link = Qernel::Link.new(link.key, converters[link.input_key], converters[link.output_key], carrier(link), link.link_type)
+      slot_tokens.flatten.uniq_by{|t| t.key.strip}.each do |token|
+        converter = converters[token.converter_key.to_sym]
+        slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
+        converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
+      end
+
+      topology_hash.each_pair do |converter_key, values|
+        (values['links'] || []).each do |line|
+          link = LinkToken.find(line)
+          next unless link.is_a?(LinkToken)
+          link = Qernel::Link.new(link.key,
+                                  converters[link.input_key],
+                                  converters[link.output_key],
+                                  carrier(link),
+                                  link.link_type)
           link.graph = graph
         end
       end
@@ -61,33 +83,17 @@ module Etsource
       graph
     end
 
-    # writes to disk *in the working copy directory*
-    #
-    def export
-      FileUtils.mkdir_p(base_dir)
-      File.open(topology_file, 'w') do |out|
-        gql = Scenario.default.gql(prepare: false)
-        gql.present_graph.converters.each do |converter|
-          out << converter.to_topology
-          out << "\n\n"
-        end
-      end
-    end
-
     def carrier(obj)
       key = obj.respond_to?(:carrier_key) ? obj.carrier_key : obj
       @carriers ||= {}
       @carriers[key] ||= Qernel::Carrier.new(key: key)
     end
 
-    def each_file(&block)
-      Dir.glob("#{export_dir}/*.graph").each do |f|
-        lines = File.read(f).lines
-        yield lines if block_given?
-      end
-    end
-
   protected
+
+    def topology_hash
+      @topology_hash ||= YAML::load(File.read(topology_file))
+    end
 
     def topology_file
       "#{base_dir}/export.graph"
@@ -95,13 +101,81 @@ module Etsource
 
     # working copy
     def base_dir
-      "#{@etsource.base_dir}/topology"
+      "#{@etsource.export_dir}/topology"
     end
 
     # export, read-only dir
     def export_dir
       "#{@etsource.export_dir}/topology"
     end
+  end
 
+  # Extract keys from a Slot Topology String
+  #    Token.new("FOO-(HW) -- s --> (HW)-BAR")
+  #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, link_type: :share>
+  #
+  class LinkToken
+    attr_reader :input_key, :carrier_key, :output_key, :key, :link_type
+
+    LINK_TYPES = {
+      's' => :share,
+      'f' => :flexible,
+      'i' => :inversed_flexible,
+      'd' => :dependent,
+      'c' => :constant
+    }
+
+    def initialize(line)
+      line.gsub!(/#.+/, '')
+      line.strip!
+      line.gsub!(/\s+/,'')
+      @key = line
+
+      input, output = SlotToken.find(line)
+
+      Rails.logger.warn("No Slots '#{line}'") if input.nil? or output.nil?
+      Rails.logger.warn("Carriers do not match in '#{line}'") if input.carrier_key != output.carrier_key
+      @carrier_key = input.carrier_key
+      @input_key   = input.converter_key
+      @output_key  = output.converter_key
+
+      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)-->/).flatten.first]
+    end
+
+    def self.find(line)
+      if line.gsub(/\s/,'') =~ /\)--\w-->\(/
+        new(line)
+      else
+        []
+      end
+    end
+  end
+
+  # Extract keys from a Slot Topology String
+  #    Token.new("(HW)-FOO")
+  #    t.converter_key # => :FOO
+  #    t.carrier_key # => :HW
+  #    t.direction # => :output
+  #    t.key # => HW-FOO
+  #
+  class SlotToken
+    attr_reader :converter_key, :carrier_key, :direction, :key
+
+    def initialize(line)
+      @key = line.gsub(/#.+/, '').strip
+      @converter_key, @carrier_key = if line.include?(')-')
+        @direction = :output
+        @key.split('-').reverse.map(&:to_sym)
+      else
+        @direction = :input
+        @key.split('-').map(&:to_sym)
+      end
+      @carrier_key = @carrier_key.to_s.gsub(/[\(\)]/, '').to_sym
+    end
+
+    # @return [Array] all the slots in a given string.
+    def self.find(line)
+      (line.scan(/\w+-\(\w+\)|\(\w+\)-\w+/) || []).map{|t| new(t) }
+    end
   end
 end

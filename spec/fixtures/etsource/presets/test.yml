@@ -4,5 +4,5 @@ end_year: 2040
 area_code: 'nl'
 use_fce: false
 user_values:
-  1: 10
-  2: 20
+  foo_demand: 10
+  input_2: 20

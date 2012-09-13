@@ -7,16 +7,16 @@
 %>
 
     it "<%= key %>" do
-      the_present.should be_within(<%= present.round(MechanicalTurk::ROUNDING) rescue 'nil' %>, some_tolerance)
-      the_future.should  be_within(<%= future.round(MechanicalTurk::ROUNDING) rescue 'nil' %>, some_tolerance)
-      the_relative_increase.should be_within(<%= change.inspect %>, some_tolerance)
-      the_absolute_increase.should be_within(<%= delta.inspect  %>, some_tolerance)
+      the_present.should be_within(some_tolerance).of(<%= present.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+      the_future.should  be_within(some_tolerance).of(<%= future.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+      the_relative_increase.should be_within(some_tolerance).of(<%= change.inspect %>)
+      the_absolute_increase.should be_within(some_tolerance).of(<%= delta.inspect  %>)
     end
 
 <% else %>
 
     it "<%= key %>" do
-      the_value.should be_within(<%= result.round(MechanicalTurk::ROUNDING) rescue 'nil' %>, some_tolerance)
+      the_value.should be_within(some_tolerance).of(<%= result.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
     end
 
 <% end %>

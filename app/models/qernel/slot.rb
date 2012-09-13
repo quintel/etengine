@@ -16,7 +16,6 @@ module Qernel
 #
 class Slot
   include DatasetAttributes
-  include Topology::Slot
 
 
   # --------- Accessor ---------------------------------------------------------
@@ -188,7 +187,7 @@ class Slot
   #
   def external_value
     values = links.map(&:value)
-    values.compact.sum.to_f    
+    values.compact.sum.to_f
   end
 
   # Used for calculation of flexible links.
@@ -241,7 +240,7 @@ class Slot
   #
   # The conversion of the slot must be nil. otherwise {#conversion} will not delegate
   # to flexible_conversion.
-  # 
+  #
   def flexible_conversion
     if dataset_get(:flexible)
       if siblings.any?(&:flexible)

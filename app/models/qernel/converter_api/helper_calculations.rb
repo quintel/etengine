@@ -6,12 +6,16 @@ class Qernel::ConverterApi
   # convert MJ and MW
   #
   def number_of_units
-    function(:number_of_units) do
-      if ( effective_input_capacity == 0 || effective_input_capacity.nil? ||
-           full_load_seconds == 0 || full_load_seconds.nil? )
-        0
-      else
-        demand / (effective_input_capacity * full_load_seconds)
+    if dataset_get(:number_of_units)
+      dataset_get(:number_of_units)
+    else
+      function(:number_of_units) do
+        if ( effective_input_capacity == 0 || effective_input_capacity.nil? ||
+             full_load_seconds == 0 || full_load_seconds.nil? )
+          0
+        else
+          demand / (effective_input_capacity * full_load_seconds)
+        end
       end
     end
   end

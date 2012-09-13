@@ -3,13 +3,14 @@
 :ruby
   @pre = @converter_present.query
   @fut = @converter_future.query
+  converter_key = @converter_present.key.to_s
 
 
 .row-fluid
   .span12
     .page-header
       %h1
-        = @converter_present.key
+        = converter_key
         %small== ID: #{@converter_present.excel_id}
         = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
@@ -42,24 +43,22 @@
           %td Used in Gqueries
           %td
             %ol
-              - Gquery.name_or_query_contains(@converter_present.key.to_s).each do |gquery|
+              - Gquery.name_or_query_contains(converter_key).each do |gquery|
                 %li= link_to gquery.key, data_gquery_path(:id => gquery.id)
+        %tr
+          %td Used in Inputs
+          %td
+            %ol
+              - Input.with_queries_containing(converter_key).each do |input|
+                %li= link_to input.key, data_input_path(:id => input.id, :highlight => converter_key)
 
 .row-fluid
   .span12
     .page-header
       %h2 Future Input / Outputs
-
     = render 'converter_links'
 
 .row-fluid
-  .span12
-    %h2 Summary of Converter specifics
-    = render :partial => "data/converters/details",
-      :locals => {:attr_groups => @converter_present.converter_api.relevant_attributes}
-
-.row-fluid
-
   .span6
     .page-header
       %h2 All Attributes
@@ -94,29 +93,12 @@
           %th Change
           %th Unit
       %tbody
-        :ruby
-          calculations = {
-            :demand => [:demand, :preset_demand, :demand_of_sustainable,
-              :weighted_carrier_cost_per_mj, :weighted_carrier_co2_per_mj,
-              :sustainability_share, :final_demand, :primary_demand,
-              :primary_demand_of_fossil, :primary_demand_of_sustainable],
-            :new => [:nominal_input_capacity, :effective_input_capacity, :total_costs, 
-              :fixed_costs, :cost_of_capital, :depreciation_costs, :variable_costs, 
-              :fuel_costs, :number_of_units, :co2_emissions_costs, 
-              :variable_operation_and_maintenance_costs, :initial_investment_costs,
-              :typical_fuel_input],
-            :old => [:mw_input_capacity, :typical_input_capacity],
-            :other => Qernel::ConverterApi.calculation_methods.sort,
-
-          }
-          calculations[:demand] += @qernel_graph.carriers.
-            map{|x| "primary_demand_of_#{x.key}"}.
-            select{|x| val = @pre.send(x); val > 0.0}
-
-        - calculations.each_pair do |group, methods|
+        - @converter_api.calculation_methods.each_pair do |group, methods|
           %tr
             %th.calculation_group{:colspan => 5}= group
-          - methods.each do |method|
+          - methods.each_pair do |method, opts|
+            - present_value = @pre.instance_eval(method.to_s).to_f
+            - next if present_value <= 0.0 && opts[:hide_if_zero]
             %tr
               %th= link_to method, calculation_debugger_path(@converter_present, method)
               - result_fields(@pre, @fut, method)
