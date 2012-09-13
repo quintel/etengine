@@ -9,21 +9,9 @@ module Qernel
     # PZ: in the converter detail page only a subset of these attributes is
     # shown. They are defined in a new file, group_specific_attributes.rb.
     ATTRIBUTE_GROUPS = {
-      :new => {
-        :initial_investment => ['', 'euro / unit'],
-        :ccs_investment => ['', 'euro / unit'],
-        :cost_of_installing => ['', 'euro / unit'],
-        :decommissioning_costs => ['', 'euro / unit'],
-        :residual_value => ['', 'euro / unit'],
-        :fixed_operation_and_maintenance_costs_per_year => ['', 'euro / unit / year'],
-        :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
-        :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
+      :operational => {
         :electricity_output_capacity => ['', 'MWe'],
         :heat_output_capacity => ['', 'MWth'],
-        :electric_based_nominal_input_capacity => ['', 'MWe']
-      },
-
-      :operational => {
         :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
         :co2_free => ['', ''],
         :construction_time => ['', ''],
@@ -40,6 +28,14 @@ module Qernel
       },
 
       :cost => {
+        :initial_investment => ['', 'euro / unit'],
+        :ccs_investment => ['', 'euro / unit'],
+        :cost_of_installing => ['', 'euro / unit'],
+        :decommissioning_costs => ['', 'euro / unit'],
+        :residual_value => ['', 'euro / unit'],
+        :fixed_operation_and_maintenance_costs_per_year => ['', 'euro / unit / year'],
+        :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
+        :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
         :ccs_investment_per_mw_input => ['', ''], # Deprecated by new cost calculation
         :ccs_operation_and_maintenance_cost_per_full_load_hour => ['', ''], # Deprecated by new cost calculation
         :costs_per_mj => ['', ''],
