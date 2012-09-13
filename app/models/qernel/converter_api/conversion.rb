@@ -10,6 +10,33 @@ class Qernel::ConverterApi
   # DEBT: add methods to convert converter attributes to
   # different units
   #
+  
+  # CONVERTER ATTRIBUTES TO CONVERT
+  def initial_investment_per(unit)
+    convert_to initial_investment, unit
+  end
+  
+  def ccs_investment_per(unit)
+    convert_to ccs_investment, unit
+  end
+  
+  def cost_of_installing_per(unit)
+    convert_to cost_of_installing, unit
+  end
+  
+  def fixed_operation_and_maintenance_costs_per(unit)
+    convert_to fixed_operation_and_maintenance_costs_per_year, unit
+  end
+  
+  def decommissioning_costs_per(unit)
+    convert_to decommissioning_costs, unit
+  end
+  
+  def residual_value_per(unit)
+    convert_to residual_value, unit
+  end
+  
+  # CONVERTER METHODS TO CONVERT
   def total_costs_per(unit)
     convert_to total_costs, unit
   end
@@ -40,10 +67,6 @@ class Qernel::ConverterApi
 
   def variable_operation_and_maintenance_costs_per(unit)
     convert_to variable_operation_and_maintenance_costs, unit
-  end
-
-  def fixed_operation_and_maintenance_costs_per(unit)
-    convert_to fixed_operation_and_maintenance_costs_per_year, unit
   end
 
   def initial_investment_costs_per(unit)
