@@ -7,7 +7,7 @@ class Qernel::ConverterApi
   #   total_costs_per(:converter)
   #   => 129721.8
   #
-  # DEBT: add methods to convert converter attributes to 
+  # DEBT: add methods to convert converter attributes to
   # different units
   #
   def total_costs_per(unit)
@@ -21,7 +21,7 @@ class Qernel::ConverterApi
   def depreciation_costs_per(unit)
     convert_to depreciation_costs, unit
   end
-  
+
   def cost_of_capital_per(unit)
     convert_to cost_of_capital, unit
   end
@@ -41,11 +41,11 @@ class Qernel::ConverterApi
   def variable_operation_and_maintenance_costs_per(unit)
     convert_to variable_operation_and_maintenance_costs, unit
   end
-  
+
   def fixed_operation_and_maintenance_costs_per(unit)
     convert_to fixed_operation_and_maintenance_costs_per_year, unit
   end
-  
+
   def initial_investment_costs_per(unit)
     convert_to initial_investment_costs, unit
   end
