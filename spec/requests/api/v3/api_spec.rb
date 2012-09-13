@@ -83,6 +83,31 @@ describe "API v3scenario life cycle" do
     result["errors"][0].should =~ /does not exist/
   end
 
+  it "should reset the user_values, also the ones from a preset scenario" do
+    post 'api/v3/scenarios', :scenario => {:scenario_id => 2999}
+
+    scenario = JSON.parse(response.body)
+    url = "api/v3/scenarios/#{scenario['id']}"
+
+    # ---- test that presets have been applied -----------------------------------
+
+    put url, :gqueries => ['foo_demand']
+
+    result = JSON.parse(response.body)['gqueries']
+    result['foo_demand']['future'].should == 10.0
+
+    # ---- reset -----------------------------------------------------------------
+
+    put url, :reset => 1
+
+    # ---- query again -----------------------------------------------------------
+
+    put url, :gqueries => ['foo_demand']
+
+    result = JSON.parse(response.body)['gqueries']
+    result['foo_demand']['future'].should == 100.0
+  end
+
   it "should default to end_year 2050 and area_code 'nl' when creating a scenario" do
     post 'api/v3/scenarios'#, :scenario => {:area_code => 'nl', :end_year => 2040}
 

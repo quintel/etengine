@@ -39,12 +39,12 @@ module Api
       def apply
         return true if @data.empty?
 
-        @scenario.attributes = @scenario.attributes.merge(
+        @scenario.attributes = @scenario.attributes.except(
+          "id", "present_updated_at", "created_at", "updated_at").merge(
           @scenario_data.except(:area_code, :end_year).merge(
             balanced_values: balanced_values,
             user_values:     user_values
         ))
-
         valid? ? @scenario.save(validate: false) : false
       end
 

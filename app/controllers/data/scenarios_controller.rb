@@ -14,7 +14,7 @@ class Data::ScenariosController < Data::BaseController
       end
     end
     base = base.in_start_menu if params[:in_start_menu]
-    base = base.protected if params[:protected]
+    base = base.where(:protected => true) if params[:protected]
     @scenarios = base.page(params[:page]).per(35)
   end
 

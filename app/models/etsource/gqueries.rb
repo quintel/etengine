@@ -7,19 +7,6 @@ module Etsource
       @etsource = etsource
     end
 
-    def export
-      base_dir = "#{@etsource.base_dir}/gqueries"
-      Gquery.includes(:gquery_groups).all.each do |gquery|
-        group = group_key(gquery.gquery_groups.first)
-        path = [base_dir, group].compact.join('/')
-
-        FileUtils.mkdir_p(path)
-        File.open("#{path}/#{gquery.key}.#{FILE_SUFFIX}", 'w') do |f|
-          f << to_file(gquery)
-        end
-      end
-    end
-
     def import
       gqueries
     end
@@ -54,19 +41,6 @@ module Etsource
         gquery_groups[group_key] = @gquery_groups_identity_map[group_key]
       end
       gquery_groups
-    end
-
-  #protected
-    def to_file(gquery)
-      commented_description = "# #{gquery.description.to_s.strip.gsub("\n", "\n# ")}\n\n"
-      unit = gquery.unit.to_s.downcase.strip.gsub(' ', '_')
-      unit = 'boolean' if unit.include?('true')
-
-      out = commented_description
-      out += "#{VARIABLE_PREFIX} deprecated_key = #{gquery.deprecated_key}\n" if gquery.deprecated_key.present?
-      out += "#{VARIABLE_PREFIX} unit = #{unit}\n\n"
-      out += gquery.query
-      out
     end
 
     def from_file(f)

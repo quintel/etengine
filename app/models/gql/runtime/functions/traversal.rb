@@ -1,4 +1,3 @@
-
 module Gql::Runtime
   module Functions
     # @example Example used in description
@@ -63,14 +62,23 @@ module Gql::Runtime
         end
       end
 
-
-      # All links on both sides of a converter
+      # @example All links on a converter
+      #   LINKS(L(foo))
+      #   # => [foo->gas_1, foo->gas_2, loss1->foo, heat1->foo]
       #
-      # @example
-      #   LINKS(L(foo)) # => [foo->gas_1, foo->gas_2, loss1->foo, heat1->foo]
+      # @example All output links with a constraint
+      #   LINKS(L(foo), "share?")
+      #   LINKS(L(foo), "flexible?")
+      #   LINKS(L(foo), "flexible? && share >= 1.0")
       #
-      def LINKS(*value_terms)
-        value_terms.flatten.compact.map(&:links).flatten
+      # @example All links of a given carrier/slot
+      #    LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
+      #
+      # @example Links of multiple converters
+      #   LINKS(L(foo, bar))
+      #
+      def LINKS(value_terms, arguments = nil)
+        links_for(value_terms, arguments)
       end
 
       # Get the output (to the left) slots of converter(s).
@@ -117,27 +125,14 @@ module Gql::Runtime
       # @example Input links of multiple converters
       #   INPUT_LINKS(L(foo, bar))
       #
-      def INPUT_LINKS(value_terms, arguments = [])
-        links = flatten_uniq(value_terms.tap(&:flatten!)).map do |obj|
-          if obj.respond_to?(:input_links) # it's a converter
-            obj.input_links
-          elsif obj.respond_to?(:links) # it's a slot
-            obj.links
-          end
-        end
-        links.flatten!
-
-        if arguments.present?
-          inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
-          links.select!{|link| link.instance_eval(inst_eval.to_s) }
-        end
-        links
+      def INPUT_LINKS(value_terms, arguments = nil)
+        links_for(value_terms, arguments, [:input_links, :links])
       end
 
-      # @example All input links
+      # @example All output links
       #   OUTPUT_LINKS(L(foo))
       #
-      # @example All input links with a constraint
+      # @example All output links with a constraint
       #   OUTPUT_LINKS(L(foo), "share?")
       #   OUTPUT_LINKS(L(foo), "flexible?")
       #   OUTPUT_LINKS(L(foo), "flexible? && share >= 1.0")
@@ -145,25 +140,60 @@ module Gql::Runtime
       # @example All output links of a given carrier/slot
       #    OUTPUT_LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
-      # @example Input links of multiple converters
+      # @example Output links of multiple converters
       #   OUTPUT_LINKS(L(foo, bar))
       #
-      def OUTPUT_LINKS(value_terms, arguments = [])
-        links = flatten_uniq(value_terms.tap(&:flatten!)).map do |obj|
-          if obj.respond_to?(:output_links) # it's a converter
-            obj.output_links
-          elsif obj.respond_to?(:links) # it's a slot
-            obj.links
+      def OUTPUT_LINKS(value_terms, arguments = nil)
+        links_for(value_terms, arguments, [:output_links, :links])
+      end
+
+      #######
+      private
+      #######
+
+      # Internal: Returns links from one or more Qernel objects.
+      #
+      # The `using` parameter allows you to provide an array of methods to try
+      # in order to retrieve the links for each object. For example, when
+      # looking for output links, you might use `[:output_links, :links]`.
+      # Objects with an `output_links` method (Converter) would use that,
+      # otherwise `links` will be used (Slot).
+      #
+      # `arguments` may contain a single string used to filter out
+      # non-matching links.
+      #
+      # @example All links from two objects.
+      #   links_for(L(converter_one, converter_two))
+      #
+      # @example Filtering
+      #   links_for(L(converter_one), '! flexible?')
+      #
+      # @example Selecting only output links.
+      #   links_for(L(converter_one), nil, [:output_links])
+      #
+      # @example Selecting output links, falling back to all links.
+      #   links_for(L(converter_one, slot_one), nil, [:output_links, :links])
+      #
+      def links_for(value_terms, arguments = nil, using = [:links])
+        value_terms.flatten
+
+        links = flatten_uniq(value_terms).map! do |obj|
+          if method = using.detect { |method| obj.respond_to?(method) }
+            obj.public_send(method)
           end
         end
+
+        links.compact!
         links.flatten!
 
         if arguments.present?
-          inst_eval = arguments.is_a?(Array) ? arguments.first : arguments
-          links.select!{|link| link.instance_eval(inst_eval.to_s) }
+          filter = arguments.is_a?(Array) ? arguments.first : arguments
+          links.select! { |link| link.instance_eval(filter.to_s) }
         end
+
         links
       end
-    end
-  end
-end
+
+    end # Traversal
+  end # Functions
+end # Gql::Runtime

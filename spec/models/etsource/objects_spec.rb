@@ -13,10 +13,6 @@ describe Etsource do
       @gq = Gquery.new(:key => 'gquery', :unit => 'kg', :query => 'SUM(1,1)', :deprecated_key => "foo_bar")
     end
 
-    it "should export" do
-      @import.to_file(@gq).should == @txt
-    end
-
     it "should import correctly" do
       gq = @import.from_file('spec/fixtures/etsource/gqueries/category/gquery.txt')
       gq.key.should   == @gq.key
@@ -33,10 +29,6 @@ describe Etsource do
       @gq = Gquery.new(:key => 'gquery2', :unit => 'kg', :query => "SUM(\n  SUM(1,2)\n)", :deprecated_key => nil,
         :description => "It has a comment and no deprecated_key"
       )
-    end
-
-    it "should export correctly" do
-      @import.to_file(@gq).should == @txt
     end
 
     it "should import correctly" do

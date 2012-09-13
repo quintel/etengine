@@ -5,8 +5,8 @@ module TurkHelper
     if present.is_a?(Numeric) && future.is_a?(Numeric)
        <<-STR
 it "checks #{key}" do
-  @present.#{key}.should be_within(#{present.round(3)}, TOLERANCE)
-  @future.#{key}.should be_within(#{future.round(3)}, TOLERANCE)
+  @present.#{key}.should be_within(TOLERANCE).of(#{present.round(3)})
+  @future.#{key}.should be_within(TOLERANCE).of(#{future.round(3)})
 end
       STR
     end
