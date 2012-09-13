@@ -33,8 +33,8 @@ module Api
           json[:data][group] = {}
 
           items.each_pair do |attr, opts|
-            pres = format_value(@present, attr)
-            fut = format_value(@future, attr)
+            pres = present_value(attr)
+            fut = future_value(attr)
             next unless (pres || fut)
             next if pres <= 0.0 && opts[:hide_if_zero]
             json[:data][group][attr] = {
@@ -52,6 +52,14 @@ module Api
         json[:uses_coal_and_wood_pellets] = uses_coal_and_wood_pellets?
 
         json
+      end
+
+      def present_value(attr)
+        format_value @present, attr
+      end
+
+      def future_value(attr)
+        format_value @future, attr
       end
 
       private
