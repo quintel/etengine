@@ -1,6 +1,6 @@
 class Etsource::CommitsController < ApplicationController
   layout 'application'
-  
+
   before_filter :find_commit, :only => :import
   before_filter :setup_etsource
 
@@ -20,6 +20,8 @@ class Etsource::CommitsController < ApplicationController
       log "Refresh branch #{@branch}"
     end
     @commits = @etsource.commits
+
+    @using_repository = APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
   end
 
   # Will import a revision to APP_CONFIG[:etsource_working_copy]

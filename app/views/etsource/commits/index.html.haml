@@ -16,6 +16,8 @@
   .span16
     %h3
       Commits in #{@branch} #{'(detached)' if @etsource.detached_branch?}
+    - if @using_repository
+      %strong Looks like you're loading etsource from the local working copy
     %table.table-striped.table-condensed.table
       %tbody
         - @commits.each do |commit|
@@ -25,7 +27,10 @@
                 %span.label.label-info Current
               =commit.message
             %td.span1= link_to commit.to_s[0..6], "https://github.com/dennisschoenmakers/etsource/commit/#{commit.to_s}", :target => :blank
-            %td.span1= link_to 'Import', import_etsource_commit_path(:id => commit.to_s), :confirm => 'This will take a while', :class => 'btn btn-mini'
+            %td.span1
+              - unless @using_repository
+                = link_to 'Import', import_etsource_commit_path(:id => commit.to_s),
+                  :confirm => 'This will take a while', :class => 'btn btn-mini'
             %td.span2= commit.date.strftime("%m-%d %H:%M")
             %td.span3= commit.author.name
     %h5
