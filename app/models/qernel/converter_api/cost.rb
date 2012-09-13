@@ -229,7 +229,7 @@ class Qernel::ConverterApi
       initial_investment + ccs_investment + cost_of_installing
     end
   end
-  unit_for_calculation "initial_investment_costs", 'euro / plant / year'
+  unit_for_calculation "initial_investment_costs", 'euro / plant'
 
   #########
   private
