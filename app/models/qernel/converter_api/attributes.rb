@@ -24,7 +24,6 @@ module Qernel
         :peak_load_units => ['', ''],
         :peak_load_units_present => ['', ''],
         :technical_lifetime => ['Technical lifetime', 'year'],
-        :typical_nominal_input_capacity => ['', ''] # Deprecated by new cost calculation
       },
 
       :cost => {
@@ -36,15 +35,7 @@ module Qernel
         :fixed_operation_and_maintenance_costs_per_year => ['', 'euro / unit / year'],
         :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
         :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
-        :ccs_investment_per_mw_input => ['', ''], # Deprecated by new cost calculation
-        :ccs_operation_and_maintenance_cost_per_full_load_hour => ['', ''], # Deprecated by new cost calculation
         :costs_per_mj => ['', ''],
-        :decommissioning_costs_per_mw_input => ['', ''], # Deprecated by new cost calculation
-        :installing_costs_per_mw_input => ['', ''], # Deprecated by new cost calculation
-        :operation_and_maintenance_cost_fixed_per_mw_input => ['', ''], # Deprecated by new cost calculation
-        :operation_and_maintenance_cost_variable_per_full_load_hour => ['', ''], # Deprecated by new cost calculation
-        :purchase_price_per_mw_input => ['', ''], # Deprecated by new cost calculation
-        :residual_value_per_mw_input => ['', ''], # Deprecated by new cost calculation
         :wacc => ['', '']
       },
 
