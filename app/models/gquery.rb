@@ -125,4 +125,8 @@ class Gquery
   def self.contains(q)
     all.select {|g| g.query.to_s.include? q }
   end
+
+  def <=>(other)
+    self.key <=> other.key
+  end
 end
