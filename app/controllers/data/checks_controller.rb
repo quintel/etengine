@@ -11,6 +11,10 @@ class Data::ChecksController < Data::BaseController
   def index
   end
 
+  def gquery_results
+    @gqueries = Gquery.all.sort
+  end
+
   #######
   private
   #######

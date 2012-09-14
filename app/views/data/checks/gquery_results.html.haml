@@ -1,0 +1,20 @@
+= render "data/shared/data_subnav"
+
+.header
+  %h1 All gquery outcomes
+
+%table.table.table-condensed
+  %thead
+    %tr
+      %th Gquery
+      %th Present
+      %th Future
+      %th
+  %tbody
+    - @gqueries.each do |gquery|
+      - result = @gql.query(gquery.query) rescue nil
+      - if result.respond_to?(:present_year)
+        %tr
+          %td= link_to truncate(gquery.key, length:80), data_gquery_path(:id => gquery.key)
+          %td.align-right= auto_number result.present_value rescue "N/A"
+          %td.align-right= auto_number result.future_value rescue "N/A"
