@@ -50,8 +50,9 @@ class Qernel::ConverterApi
   def nominal_input_capacity
     function(:nominal_input_capacity) do
       electric_based_nominal_input_capacity ||
-        heat_based_nominal_input_capacity || 
-          cooling_based_nominal_input_capacity || 0.0
+        heat_based_nominal_input_capacity ||
+          cooling_based_nominal_input_capacity ||
+            typical_nominal_input_capacity || 0.0
     end
   end
   unit_for_calculation "nominal_input_capacity", 'MWinput'

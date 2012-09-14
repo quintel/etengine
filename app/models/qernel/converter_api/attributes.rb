@@ -21,9 +21,8 @@ module Qernel
         :households_supplied_per_unit => ['', ''],
         :land_use_per_unit => ['', ''],
         :part_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
-        :peak_load_units => ['', ''],
-        :peak_load_units_present => ['', ''],
         :technical_lifetime => ['Technical lifetime', 'year'],
+        :typical_nominal_input_capacity => ['', 'MWinput']
       },
 
       :cost => {
@@ -47,7 +46,9 @@ module Qernel
         :simult_se => ['', ''],
         :simult_wd => ['', ''],
         :simult_we => ['', ''],
-        :simult_supply => ['', '']
+        :simult_supply => ['', ''],
+        :peak_load_units => ['', ''],
+        :peak_load_units_present => ['', '']
       },
 
       :merit_order => {
