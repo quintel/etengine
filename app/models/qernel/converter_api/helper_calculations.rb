@@ -1,31 +1,36 @@
 class Qernel::ConverterApi
-  
-  # How many units are required to fill demand.
+
+  # Calculates the number of units that are installed in the future for this
+  # converter, based on the demand (input) of the converter, the effective
+  # input capacity and the full_load_seconds of the converter (to effectively)
+  # convert MJ and MW
+  #
   def number_of_units
     if dataset_get(:number_of_units)
       dataset_get(:number_of_units)
     else
       function(:number_of_units) do
-        return 0 if typical_input_capacity == 0 or typical_input_capacity.nil?
-        mw_input_capacity / typical_input_capacity
+        if ( effective_input_capacity == 0 || effective_input_capacity.nil? ||
+             full_load_seconds == 0 || full_load_seconds.nil? )
+          0
+        else
+          demand / (effective_input_capacity * full_load_seconds)
+        end
       end
     end
   end
   unit_for_calculation "number_of_units", 'number'
 
-  # RD: This method is used by the number_of_units_update in multicommand factory
-  # I dont think this belongs here!
   def number_of_units=(val)
     dataset_set(:number_of_units, val)
   end
 
-  def total_land_use 
+  def total_land_use
     return nil if [number_of_units, land_use_per_unit].any?(&:nil?)
     number_of_units * land_use_per_unit
   end
   unit_for_calculation "total_land_use", 'km2'
-  
-  
+
   # Returns the number of households which are supplied by the energy created
   # in each unit. Used in DemandDriven converters for cases where a converter
   # may supply more than one building.

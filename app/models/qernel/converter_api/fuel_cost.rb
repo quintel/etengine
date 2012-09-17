@@ -5,6 +5,7 @@ class Qernel::ConverterApi
       converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
     end
   end
+  unit_for_calculation "sustainable_input_factor", 'factor'
 
   #TODO: this method returns a share. But the name presumes it is not!
   def useful_output
@@ -16,8 +17,12 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "useful_output", 'factor'
-  
+
   # Determines the fuel costs, bases on the weighted costs of the used input.
+  #
+  # Used to be used in several gqueries
+  #
+  # DEPRECATED: use fuel_costs_per(converter)
   #
   def fuel_costs_total
     function(:fuel_costs_total) do
@@ -27,6 +32,8 @@ class Qernel::ConverterApi
   unit_for_calculation "fuel_costs_total", 'euro'
   
   # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
+  #
+  # DEPRECATED: use fuel_costs_per(mwh_input)
   #
   def fuel_costs_per_mwh_input
     function(:fuel_costs_per_mwh_input) do
