@@ -19,6 +19,8 @@ class Graph
 
   define_callbacks :calculate
 
+  include Plugins::CalculationBreakpoints
+
   include Plugins::MeritOrder
   include Plugins::Fce
   include Plugins::MaxDemandRecursive
@@ -163,7 +165,6 @@ class Graph
   #
   def calculate(options = {})
     run_callbacks :calculate do
-
       if calculated?
         instrument("gql.debug", "Graph already calculated")
         return
@@ -171,24 +172,35 @@ class Graph
 
       instrument("gql.performance.calculate") do
         # FIFO stack of all the converters. Converters are removed from the stack after calculation.
+        @converter_stack = converters.clone
         @finished_converters = []
-        converter_stack = converters.clone
 
-        # delete_at is much faster as delete, that's why use #index rather than #detect
-        while index = converter_stack.index(&:ready?)
-          converter = converter_stack[index]
-          converter.calculate
-          @finished_converters << converter_stack.delete_at(index)
-        end
+        self.calculation_loop
 
         @finished_converters.map(&:input_links).flatten.each(&:update_share)
-
-        unless converter_stack.empty?
-          instrument("gql.debug", "Following converters have not finished: #{converter_stack.map(&:key).join(', ')}")
+        unless @converter_stack.empty?
+          ActiveSupport::Notifications.instrument("gql.debug",
+            "Following converters have not finished: #{@converter_stack.map(&:key).join(', ')}")
         end
       end
     end
     calculated = true
+  end
+
+  define_callbacks :calculate_start,
+                   :calculate_merit_order,
+                   :calculate_finished
+
+  def calculation_loop
+    state = [:calculate, @current_breakpoint].compact.join("_").to_sym
+    puts state
+    run_callbacks state do
+      while index = @converter_stack.index(&:ready?)
+        converter = @converter_stack[index]
+        converter.calculate
+        @finished_converters << @converter_stack.delete_at(index)
+      end
+    end
   end
 
   def links

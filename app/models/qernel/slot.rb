@@ -53,7 +53,7 @@ class Slot
 
   # --------- Dataset ---------------------------------------------------------
 
-  DATASET_ATTRIBUTES = [:conversion, :country_specific, :flexible, :reset_to_zero]
+  DATASET_ATTRIBUTES = [:conversion, :country_specific, :flexible, :reset_to_zero, :breakpoint]
   dataset_accessors DATASET_ATTRIBUTES
 
   def self.dataset_group; :graph; end
@@ -75,7 +75,11 @@ class Slot
   # @return [Boolean] is Slot ready for calculation?
   #
   def ready?
-    passive_links.all?(&:value)
+    if input? && graph.past_breakpoint?(breakpoint)
+      passive_links.all?(&:value)
+    else
+      passive_links.all?(&:value)
+    end
     # 2010-06-07 sb:
     # Theoretically it should be:
     #

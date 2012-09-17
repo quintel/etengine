@@ -118,7 +118,7 @@ class Converter
   alias_method :lft_links, :output_links
   alias_method :rgt_links, :input_links
 
-  dataset_accessors [:demand, :preset_demand, :excel_id]
+  dataset_accessors [:demand, :preset_demand, :excel_id, :breakpoint]
 
   # --------- Micro-optimizing ------------------------------------------------
   #
@@ -279,11 +279,15 @@ public
     @inputs ||= input_hash.values
   end
 
+  alias_method :input_slots, :inputs
+
   # @return [Array<Slot>] all output slots
   #
   def outputs
     @outputs ||= output_hash.values
   end
+
+  alias_method :output_slots, :outputs
 
   # @return [Array<Slot>] input *and* output slots
   #
