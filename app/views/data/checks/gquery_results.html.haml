@@ -12,9 +12,12 @@
       %th
   %tbody
     - @gqueries.each do |gquery|
-      - result = @gql.query(gquery.query) rescue nil
-      - if result.respond_to?(:present_year)
-        %tr
-          %td= link_to truncate(gquery.key, length:80), data_gquery_path(:id => gquery.key)
+      %tr
+        %td= link_to truncate(gquery.key, length:80), data_gquery_path(:id => gquery.key)
+        :ruby
+          result = @gql.query(gquery.query) rescue nil
+        - if result.respond_to?(:present_year)
           %td.align-right= auto_number result.present_value rescue "N/A"
           %td.align-right= auto_number result.future_value rescue "N/A"
+        - else
+          %td{:colspan => 2}= auto_number result rescue 'N/A'
