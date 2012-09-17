@@ -30,8 +30,8 @@ module Qernel::Plugins
     # returns (sorted) array of converter objects
     def converters_by_total_variable_cost
       dispatchable_converters_for_merit_order.sort_by do |c|
-        # Convert variable_costs_per_mwh_input to variable_costs_per_mwh_output
-        c.variable_costs_per_mwh_input / c.electricity_output_conversion
+        # Sort by the variable costs of electricity output per MWh
+        c.variable_costs_per(:mwh_electricity)
       end
     end
 
