@@ -12,6 +12,34 @@ class Qernel::ConverterApi
   # :mw_heat, :mwh_input, :mwh_electricity, :mwh_heat,
   # :full_load_hour
   #
+  # Costs can be calculated in different units...
+  # * plant:           per typical size of a plant. 
+  # * mw_input:        Costs per MW capacity of input fuel (MWinput)
+  # * mw_electricity:  Costs per MW electrical capacity (MWe)
+  #                    Used by costs scatter plot
+  # * mw_heat:         Costs per MW heat capacity (MWth)
+  # * converter:       How much do all the plants of a given type cost per year
+  #                    Used for total cost calculations for an area
+  # * mwh_input:       What are the costs per MWh of fuel input
+  # * mwh_electricity: what are the costs per MWh of electricity the plant produces
+  #                    Used by the costs scatter plot.
+  # * mwh_heat:        what are the costs per MWh of heat the plant produces
+  # * full_load_hour  The costs per full load hour
+  #
+  # Calculation methods to go from plant/year to another unit:
+  # * plant:           DEFAULT unit, so no conversion needed
+  # * mw_input:        divide by method effective_input_capacity
+  # * mw_electricity:  divide by attribute electricity_output_capacity
+  # * mw_heat:         divide by attribute heat_output_capacity
+  # * converter:       multiply by number_of_units
+  # * mwh_input:       divide by private method typical_fuel_input *
+  #                    SECS_PER_HOUR
+  # * mwh_electricity: divide by private method typical_electricity_output *
+  #                    SECS_PER_HOUR
+  # * mwh_heat:        divide by private method typical_heat_output *
+  #                    SECS_PER_HOUR
+  # * full_load_hours  divide by full_load_hours
+  #
   # @return [Float] the Cost per plant converted to Cost per unit as
   # specified in the parameter
   #
@@ -74,8 +102,8 @@ class Qernel::ConverterApi
     convert_to variable_operation_and_maintenance_costs, unit
   end
 
-  def initial_investment_costs_per(unit)
-    convert_to initial_investment_costs, unit
+  def total_initial_investment_per(unit)
+    convert_to total_initial_investment, unit
   end
 
   #######

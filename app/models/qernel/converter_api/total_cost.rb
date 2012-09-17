@@ -27,7 +27,7 @@ class Qernel::ConverterApi
   #
   # Used to be used in several gqueries for total investment costs.
   #
-  # DEPRECATED: use initial_investment_costs_per(converter)
+  # DEPRECATED: use total_initial_investment_per(:converter)
   #
   def initial_investment_total
     function(:initial_investment_total) do
