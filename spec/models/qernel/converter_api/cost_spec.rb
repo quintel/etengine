@@ -28,7 +28,7 @@ module Qernel
       end
 
       it "should calculate correctly when only heat capacity and heat efficiency are given" do
-        @c.with heat_and_cold_output_conversion: 0.1, heat_output_capacity: 400
+        @c.with heat_output_conversion: 0.1, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 4000
       end
 
