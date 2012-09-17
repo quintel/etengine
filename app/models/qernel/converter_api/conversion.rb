@@ -1,14 +1,19 @@
 class Qernel::ConverterApi
 
-  # For the following methods we want to have a method that
-  # returns the cost per unit.
+  # For the following attributes and methods we want to have a method that
+  # returns the cost for a given unit.
   #
   # Example:
   #   total_costs_per(:converter)
   #   => 129721.8
   #
-  # DEBT: add methods to convert converter attributes to
-  # different units
+  # @param [symbol] The unit to convert the cost parameter in.
+  # Allowed: :plant, :converter, :mw_input, :mw_electricity,
+  # :mw_heat, :mwh_input, :mwh_electricity, :mwh_heat,
+  # :full_load_hour
+  #
+  # @return [Float] the Cost per plant converted to Cost per unit as
+  # specified in the parameter
   #
   
   # CONVERTER ATTRIBUTES TO CONVERT
