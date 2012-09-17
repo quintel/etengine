@@ -275,8 +275,8 @@ class Qernel::ConverterApi
   #
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
-      if heat_and_cold_output_conversion && heat_and_cold_output_conversion > 0
-        heat_output_capacity / heat_and_cold_output_conversion
+      if heat_output_conversion && heat_output_conversion > 0
+        heat_output_capacity / heat_output_conversion
       else
         nil
       end
