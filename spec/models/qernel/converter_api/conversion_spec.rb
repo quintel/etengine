@@ -18,9 +18,16 @@ describe Qernel::ConverterApi do
       @c.converter_api.total_costs_per(:converter).should == 10_000
     end
 
-    it "should calculate correctly when asked for :mwh_input" do
-      @c.with total_costs: 1000, number_of_units: 10, demand: 50
-      @c.converter_api.total_costs_per(:mwh_input).should == 2 / SECS_PER_HOUR
+    it "should calculate correctly when asked for :mw_heat" do
+      @c.with total_costs: 1000, heat_output_capacity: 200
+      @c.converter_api.total_costs_per(:mw_heat).should == 5
+    end
+
+    it "should calculate correctly when asked for :mwh_electricity" do
+      pending "help from Dennis" do
+        @c.with total_costs: 1000, typical_electricity_output: 3600
+        @c.converter_api.total_costs_per(:mwh_electricity).should == 1000
+      end
     end
 
   end

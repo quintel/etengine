@@ -28,14 +28,14 @@ module Qernel
       end
 
       it "should calculate correctly when only heat capacity and heat efficiency are given" do
-        @c.with heat_output_conversion: 0.1, heat_output_capacity: 400
+        @c.with heat_and_cold_output_conversion: 0.1, heat_output_capacity: 400
         @c.converter_api.nominal_input_capacity.should == 4000
       end
 
       it "should return zero when capacity and conversion are both zero" do
         @c.with electricity_output_capacity: 0, electricity_output_conversion: 0
         @c.converter_api.nominal_input_capacity.should == 0
-        @c.with heat_output_capacity: 0, heat_output_conversion: 0
+        @c.with heat_output_capacity: 0, heat_and_cold_output_conversion: 0
         @c.converter_api.nominal_input_capacity.should == 0
       end
 
@@ -43,7 +43,7 @@ module Qernel
         pending "Data validations of Converters upon loading / importing" do
           @c.with electricity_output_conversion: 0.4,
                   electricity_output_capacity: nil,
-                  heat_output_conversion: nil,
+                  heat_and_cold_output_conversion: nil,
                   heat_output_capacity: 400
           expect { @c.converter_api.nominal_input_capacity }.to raise_error
         end
@@ -51,7 +51,7 @@ module Qernel
 
       it "should raise error when capicity-e/eff-e != capacity-h/eff-h" do
         pending "Data validations of Converters upon loading / importing" do
-          @c.with heat_output_capacity: 400, electricity_output_capacity: 1000, heat_output_conversion: 0.2, electricity_output_conversion: 0.4
+          @c.with heat_output_capacity: 400, electricity_output_capacity: 1000, heat_and_cold_output_conversion: 0.2, electricity_output_conversion: 0.4
           expect { @c.converter_api.nominal_input_capacity }.to raise_error
         end
       end
@@ -70,7 +70,6 @@ module Qernel
         @c.converter_api.effective_input_capacity.should == 0.0
       end
 
-      # Failing
       it "should return zero when nominal_input capacity is zero" do
         @c.with nominal_input_capacity: 0, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
         @c.converter_api.effective_input_capacity.should == 0.0
@@ -112,27 +111,27 @@ module Qernel
     describe '#fixed_costs' do
 
       it "should calculate correctly when values are given" do
-        @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
+        @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs_per_year: 300
         @c.converter_api.fixed_costs.should == 600
       end
 
       it "should add correctly when cost_of_capital is nil" do
         pending "Data validations of Converters upon loading / importing" do
-          @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs: 300
+          @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs_per_year: 300
           @c.converter_api.fixed_costs.should == 500
         end
       end
 
       it "should add correctly when depreciation costs are nil" do
         pending "Data validations of Converters upon loading / importing" do
-          @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs: 300
+          @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs_per_year: 300
           @c.converter_api.fixed_costs.should == 400
         end
       end
 
       it "should add correctly when fixed O&M costs are nil" do
         pending "Data validations of Converters upon loading / importing" do
-          @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs: nil
+          @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs_per_year: nil
           @c.converter_api.fixed_costs.should == 300
         end
       end
@@ -142,7 +141,8 @@ module Qernel
     describe '#cost_of_capital' do
 
       it "should calculate when all values are given" do
-        pending "TODO Wouter."
+        @c.with average_investment: 100, wacc: 0.1, construction_time: 1, technical_lifetime: 10
+        @c.converter_api.cost_of_capital.should == 11
       end
 
       it "should handle nil values" do
@@ -161,11 +161,21 @@ module Qernel
 
     describe '#depreciation_costs' do
       it "should calculate when everything is set" do
-        pending "TODO Wouter"
+        @c.with total_investment: 100, residual_value: 10, technical_lifetime: 10
+        @c.converter_api.depreciation_costs.should == 9
       end
-      # should raise error when total_investment_costs - residual_value < 0 (pending error raising)
-      # should assume 0 when residual_value is nil
-      # should raise error when technical_lifetime is 0 or nil
+
+      it "should raise error when total_investment_costs - residual_value < 0" do
+        pending "error raising"
+      end
+
+      it "should assume 0 when residual_value is nil" do
+        pending "error raising"
+      end
+
+      it "should raise error when technical_lifetime is 0 or nil" do
+        pending "error raising"
+      end
     end
 
     describe '#variable_costs' do
@@ -197,34 +207,52 @@ module Qernel
     end
 
     describe "#fuel_costs" do
-      # should calculate when everything is set
-      # should return 0 when number_of_units <= 0
-      # should raise error when number_of_units is nil (pending error raising)
+      it "should calculate when everything is set" do
+        @c.with total_investment: 100, residual_value: 10, technical_lifetime: 10
+        @c.converter_api.depreciation_costs.should == 9
+      end
+
+      it "should return 0 when typical_fuel_input <= 0" do
+        pending "error raising"
+      end
+
+      it "should raise error when typical_fuel_input is nil" do
+        pending "statistical converters and data validation"
+      end
     end
 
     describe '#co2_emissions_costs' do
-      # DEBT: first refactor method
+      it "should calculate when everything is set" do
+        pending "correct syntax of spec"
+        # @c.with typical_fuel_input: 500, weighted_carrier_co2_per_mj: 1, area.co2_price: 1, area.co2_percentage_free: 0, part_ets: 1, co2_free: 0
+        # @c.converter_api.co2_emissions_costs.should == 500
+      end
+      
+      it "should handle nil values" do
+        pending "Data validations of Converters upon loading / importing"
+      end
     end
 
     describe '#variable_operation_and_maintenance_costs' do
-      # should calculate when everything is set
-      # should return 0 when full_load_hours is nil (pending)
-      # should treat everything nil as 0 in the calculation (pending)
+      it "should calculate when everything is set" do
+        @c.with full_load_hours: 500, variable_operation_and_maintenance_costs_per_full_load_hour: 10, variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 1
+        @c.converter_api.variable_operation_and_maintenance_costs.should == 5500
+      end
+      
+      it "should handle nil values" do
+        pending "Data validations of Converters upon loading / importing"
+      end
     end
 
-    describe '#initial_investment_costs' do
-      # should calculate when everything is set
-      # should treat nil as 0 (pending rescue on nil)
-    end
+    describe '#total_initial_investment' do
+      it "should calculate when everything is set" do
+        @c.with initial_investment: 500, ccs_investment: 100, cost_of_installing: 66
+        @c.converter_api.total_initial_investment.should == 666
+      end
 
-    describe '#average_investment_costs' do
-      # should calculate when everything is set
-      # should treat nil as 0 (pending rescue on nil)
-    end
-
-    describe '#total_investment_costs' do
-      # should calculate when everything is set
-      # should treat nil as 0 (pending rescue on nil)
+      it "should handle nil values" do
+        pending "Data validations of Converters upon loading / importing"
+      end
     end
 
   end
