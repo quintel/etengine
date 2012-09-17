@@ -72,13 +72,53 @@ module Qernel::Plugins
     included do |variable|
       # Only run if must_run_merit_order_converters.yml file is given.
       if Etsource::Loader.instance.globals('must_run_merit_order_converters')
-        # set_callback :calculate, :before, :assign_breakpoint_to_dispatchable_merit_order_converters
-        set_callback :calculate, :after,  :calculate_merit_order
-        set_callback :calculate, :after,  :calculate_full_load_hours
+        set_callback :calculate, :before, :assign_breakpoint_to_dispatchable_merit_order_converters
+        set_callback :calculate, :after,  :run_merit_order
       end
     end
 
+
+    # ---- Breakpoints -----------------------------------------------------------
+
+
+    def run_merit_order
+      calculate_merit_order
+      calculate_full_load_hours
+
+      continue_after_breakpoint!(:merit_order)
+    end
+
+    # Assign breakpoint merit_order to dispatchable MO converters. So that the calculation
+    # does not calculate demand for them, and we can instead update the demands from the
+    # MO calculation. The updated demand will then backpropagate to the grid.
+    #
+    def assign_breakpoint_to_dispatchable_merit_order_converters
+      dispatchable_converters_for_merit_order.each do |converter|
+        converter.outputs.each do |output_slot|
+          output_slot.breakpoint = :merit_order
+        end
+      end
+    end
+
+    # # programmatically sets breakpoint dataset_attribute to converters
+    # # this could be done in the dataset directly.
+    # def assign_merit_order_breakpoint_attributes
+    #   converters = [
+    #     LoadProfileTable.must_run_merit_order_converter_objects(self),
+    #     # dispatchable_merit_order_converters return query objects:
+    #     dispatchable_merit_order_converters.map(&:converter)
+    #   ].flatten.compact
+
+    #   converters.each do |converter|
+    #     converter.input_slots.each do |input_slot|
+    #       input_slot.breakpoint = :merit_order
+    #     end
+    #   end
+    # end
+
+
     # ---- Converters ------------------------------------------------------------
+
 
     # Select dispatchable merit order converters
     def dispatchable_merit_order_converters
@@ -102,7 +142,9 @@ module Qernel::Plugins
       end
     end
 
+
     # ---- MeritOrder ------------------------------------------------------------
+
 
     # Assign merit_order_start and merit_order_end
     def calculate_merit_order
@@ -158,7 +200,9 @@ module Qernel::Plugins
       end
     end
 
+
     # ---- full_load_hours, capacity_factor  ----------------------------------
+
 
     # Assign full load hours and capacity factors to dispatchable converters
     def calculate_full_load_hours
@@ -201,10 +245,12 @@ module Qernel::Plugins
     def capacity_factor_for(converter, profile_curve)
       merit_order_start = converter.merit_order_start
       merit_order_end   = converter.merit_order_end
-      area_size    = profile_curve.area(merit_order_start, merit_order_end)
-      merit_span   = [merit_order_end - merit_order_start, 0.0].max
-      availability = converter.availability
-      capacity_factor = [availability * (area_size / merit_span).rescue_nan, availability].min
+
+      area_size         = profile_curve.area(merit_order_start, merit_order_end)
+      merit_span        = [merit_order_end - merit_order_start, 0.0].max
+      availability      = converter.availability
+
+      capacity_factor   = [availability * (area_size / merit_span).rescue_nan, availability].min
     end
 
     # Create a CurveArea with the residual-ldc coordinates.
@@ -215,7 +261,16 @@ module Qernel::Plugins
       CurveArea.new(coordinates)
     end
 
-    # --- LoadProfileTable ----------------------------------------------------
+
+    # ---- LoadProfileTable ---------------------------------------------------
+
+
+    # LoadProfileTable connects the static load data defined in yml files with the actual
+    # demands of the graph.
+    #
+    # It requires that:
+    # - G(final_demand_electricity) have calculated demand (through #mw_power)
+    # - must_run_merit_order_converters.yml converters have calculated demand
     #
     #     |__
     #     |  --
@@ -271,10 +326,12 @@ module Qernel::Plugins
         end
       end
 
+      # @return a Hash {column_1: ['converter_key_1', 'converter_key_2'], column_2: [...]}
       def must_run_merit_order_converters
         self.class.must_run_merit_order_converters(@graph)
       end
 
+      # @return a Hash {column_1: ['converter_key_1', 'converter_key_2'], column_2: [...]}
       def self.must_run_merit_order_converters(graph)
         unless @must_run_merit_order_converters
           @must_run_merit_order_converters = Etsource::Loader.instance.globals('must_run_merit_order_converters')
@@ -286,6 +343,12 @@ module Qernel::Plugins
           end
         end
         @must_run_merit_order_converters
+      end
+
+      def self.must_run_merit_order_converter_objects(graph)
+        must_run_merit_order_converters(graph).values.flatten.map do |key|
+          graph.converter(key)
+        end
       end
 
       #######
@@ -348,10 +411,11 @@ module Qernel::Plugins
           converter_keys.map do |key|
             converter = @graph.converter(key)
             begin
-              converter.query.instance_exec { mw_input_capacity * electricity_output_conversion * availability }
+              # mw_power is alias to mw_input_capacity
+              converter.query.instance_exec { mw_power * electricity_output_conversion * availability }
             rescue
               # We've been getting errors with nil attributes. Debug info
-              debug = [:mw_input_capacity, :electricity_output_conversion, :availability].map do |a|
+              debug = [:mw_power, :electricity_output_conversion, :availability].map do |a|
                 "#{a}: #{converter.query.send a}"
               end.join "\n"
               raise "Error with converter #{key}: #{debug}"
