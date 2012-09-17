@@ -5,21 +5,15 @@ module Gql::Runtime
       # Lookup a named time series value by year.
       #
       # @example
-      #     TIME_SERIE_VALUE(gas_reserves, 2030)
+      #     TIME_SERIE_VALUE(gas_reserves, preset_demand, 2030)
       #
       # @example useage in inputs with USER_INPUT()
-      #     TIME_SERIE_VALUE(gas_reserves,USER_INPUT())
+      #     TIME_SERIE_VALUE(gas_reserves, preset_demand, USER_INPUT())
       #
       def TIME_SERIE_VALUE(*keys)
-        keys = keys.flatten
-        # TODO: make this method generic and indepenent from how many parameters are passed.
-        if keys.length == 2
-          time_curve_key, year = keys
-          scope.graph.time_curves[time_curve_key.to_sym][year.to_i] rescue nil
-        else
-          converter_id, time_curve_key, year = keys
-          scope.graph.time_curves[converter_id.to_i][time_curve_key.to_sym][year.to_i] rescue nil
-        end
+        # TODO: make the following dynamic.
+        key_1, key_2, year = keys.flatten
+        scope.graph.time_curves[key_1.to_sym][key_2.to_sym][year.to_i] rescue nil
       end
 
       # Run multiple (update) queries.
