@@ -1,36 +1,9 @@
-# Supplies the Converter API with methods to calculate the yearly costs
-# of a converter in a number of different units.
-#
-# Costs can be calculated in different units...
-# * plant:           per typical size of a plant. This is
-#                    the default unit, and is used internally
-# * mw_input:        Costs per MW capacity of input fuel (MWinput)
-# * mw_electricity:  Costs per MW electrical capacity (MWe)
-#                    Used by costs scatter plot
-# * mw_heat:         Costs per MW heat capacity (MWth)
-# * converter:       How much do all the plants of a given type cost per year
-#                    Used for total cost calculations for an area
-# * mwh_input:       How much fuel is used as input for the plant in MWh
-#                    Used for Merit Order charts.
-# * mwh_electricity: How much electricity is produced by the plant per year
-#                    in MWh. Used by the costs scatter plot.
-# * mwh_heat:        How much heat is produced by the plant per year in MWh
-# * full_load_hours  The costs per full load hour
-#
-# Calculation methods to go from plant/year to another unit:
-# * plant:           DEFAULT unit, so no conversion needed
-# * mw_input:        divide by method effective_input_capacity
-# * mw_electricity:  divide by attribute output_capacity_electricity
-# * mw_heat:         divide by attribute output_capacity_heat
-# * converter:       multiply by number_of_units
-# * mwh_input:       divide by (demand / SECS_PER_HOUR / number_of_units
-# * mwh_electricity: divide by (output_of_electricity /
-#                      SECS_PER_HOUR / number_of_units)
-# * mwh_heat:        divide by (output_of_heat_carriers / SECS_PER_HOUR 
-#                      / number_of_units)
-# * full_load_hours  divide by full_load_hours
-
-
+  # Supplies the Converter API with methods to calculate the yearly costs
+  # of one plant.
+  #
+  # These methods are used in conversion.rb to offer a possibility to convert
+  # to a number of different units.
+  #
 
 class Qernel::ConverterApi
 
@@ -40,12 +13,14 @@ class Qernel::ConverterApi
 
   # Calculates the input capacity of a typical plant, based on
   # the output capacity in MW.
-  # If the converter has an electrical efficiency this is used to calculate
-  # the input capacity, otherwise it uses the heat capacity
+  # If the converter has an electrical efficiency and capacity this is used
+  # to calculate the input capacity. Otherwise it checks for a heat capacity
+  # and heat efficiency. If this can also not be found it will try cooling.
+  # Finally it will try the attribute typical_nominal_input_capacity
+  # (currently only used for electric transport). If all return nil 0.0 will
+  # be used. This should only happen for statistical converters.
   #
-  # @param []
-  #
-  # @return [Float] Input capacity of a typical plant
+  # @return [Float] Input capacity of a typical plant in MWinput
   #
   def nominal_input_capacity
     function(:nominal_input_capacity) do
@@ -63,8 +38,6 @@ class Qernel::ConverterApi
   #
   # Assumes a value of 100% when
   # average_effective_output_of_nominal_capacity_over_lifetime is not set
-  #
-  # @param []
   #
   # @return [Float] Effective input capacity of a typical plant in MW
   #
@@ -84,12 +57,10 @@ class Qernel::ConverterApi
   # Total Cost calculation #
   ##########################
 
-  # Calculates the total cost of a converter in a given unit.
+  # Calculates the total cost of a plant in euro per plant per year.
   # Total cost is made up of fixed costs and variable costs.
   #
-  # In GQL use total_cost_per_unit (where unit is the unit parameter)
-  #
-  # @return [Float] total costs for one unit or plant
+  # @return [Float] total costs for one plant
   #
   def total_costs
     function(:total_costs) do
@@ -107,7 +78,12 @@ class Qernel::ConverterApi
   # Fixed costs are made up of cost of capital, depreciation costs
   # and fixed operation and maintenance costs.
   #
-  # @return [Float]
+  # Note that fixed_operation_and_maintenance_costs_per_year is
+  # an attribute of the Converter. There is therefore no method
+  # to 'calculate' this for one plant. In conversion.rb there is
+  # a method to convert to different other cost units however.
+  #
+  # @return [Float] total fixed costs for one plant
   #
   def fixed_costs
     function(:fixed_costs) do
@@ -120,19 +96,17 @@ class Qernel::ConverterApi
   # Calculates the yearly costs of capital for the unit, based on the average
   # yearly payment, the weighted average cost of capital (WACC) and a factor
   # to include the construction time in the total rent period of the loan.
-  # ETM assumes that capital has to be held during construction time
+  # The ETM assumes that capital has to be held during construction time
   # (and so interest has to be paid during this period) and that technical
   # and economic lifetime are the same.
   #
   # Used in the calculation of fixed costs
   #
-  # @param []
-  #
-  # @return [Float]
+  # @return [Float] yearly cost of capital for one plant
   #
   def cost_of_capital
     function(:cost_of_capital) do
-      average_investment_costs * wacc *
+      average_investment * wacc *
         (construction_time + technical_lifetime) /
           technical_lifetime
     end
@@ -144,11 +118,12 @@ class Qernel::ConverterApi
   #
   # Used to determine fixed costs
   #
-  # @return [Float]
+  # @return [Float] yearly depreciation costs of the plant using the
+  # straight-line depreciation method
   #
   def depreciation_costs
     function(:depreciation_costs) do
-      (total_investment_costs - residual_value) / technical_lifetime
+      (total_investment - residual_value) / technical_lifetime
     end
   end
   unit_for_calculation "depreciation_costs", 'euro / plant / year'
@@ -158,7 +133,7 @@ class Qernel::ConverterApi
   # Variable Costs #
   ##################
 
-  # Calculates the variable costs in a given unit. Defaults to plant.
+  # Calculates the variable costs for one plant.
   # The variable costs cannot be calculated without knowing how much
   # fuel is consumed by the plant, how much this (mix of) fuel costs
   # etc. The logic is therefore more complex than the fixed costs.
@@ -166,7 +141,7 @@ class Qernel::ConverterApi
   # Variable costs are made up of fuel costs, co2 emission credit costs
   # and variable operation and mainentance costs
   #
-  # @return [Float]
+  # @return [Float] the total variable costs of one plant
   #
   def variable_costs
     function(:variable_costs) do
@@ -177,7 +152,9 @@ class Qernel::ConverterApi
   unit_for_calculation "variable_costs", 'euro / plant / year'
 
   # Calculates the fuel costs for a single plant, based on the input of fuel
-  # for one plant, the
+  # for one plant and the weighted costs of this/these carrier(s) per mj.
+  #
+  # @return [Float] the yearly fuel costs for one single plant
   #
   def fuel_costs
     function(:fuel_costs) do
@@ -186,13 +163,17 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "fuel_costs", 'euro / plant / year'
 
+
+  # This method determines the costs of co2 emissions by doing:
+  # Typical input of fuel in mj * the amount of co2 per mj fuel *
+  # the co2 price * how much co2 is given away for free *
+  # how much of the co2 of this plant is in ETS *
+  # how much co2 is not counted (non-energetic or CCS plants)
+  #
   # DEBT: rename co2_free and part_ets
   # DEBT: move factors to a separate function ?
   #
-  # input of fuel in mj * the amount of co2 per mj * the co2 price * how much
-  # co2 is given away for free * how much of the co2 of this plant is in ETS
-  # * how much co2 is not counted (non-energetic or CCS plants) / the number
-  # of units
+  # @return [Float] the yearly costs for co2 emissions for one plant
   #
   def co2_emissions_costs
     function(:co2_emissions_costs) do
@@ -202,6 +183,13 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "co2_emissions_costs", 'euro / plant / year'
 
+  # Calculates the variable operation and maintenance costs for one plant.
+  # These costs are made up of variable O&M costs for the plant per full load
+  # hour and the variable O&M costs for CCS for this plant. Most plants have
+  # a variable O&M costs component, but only CCS plants have CCS O&M costs.
+  #
+  # @return [Float] Yearly variable operation and maintenance costs per plant
+  #
   def variable_operation_and_maintenance_costs
     function(:variable_operation_and_maintenance_costs) do
       full_load_hours * (
@@ -225,12 +213,12 @@ class Qernel::ConverterApi
   # DEBT: should not be named _costs, since it it an expenditure, not a cost!
   #       option: total_initial_investment
   #
-  def initial_investment_costs
-    function(:initial_investment_costs) do
+  def total_initial_investment
+    function(:total_initial_investment) do
       initial_investment + ccs_investment + cost_of_installing
     end
   end
-  unit_for_calculation "initial_investment_costs", 'euro / plant'
+  unit_for_calculation "total_initial_investment", 'euro / plant'
 
   #########
   private
@@ -245,26 +233,30 @@ class Qernel::ConverterApi
   #
   # Used to determine cost of capital
   #
-  def average_investment_costs
-    function(:average_investment_costs) do
-      (initial_investment_costs + decommissioning_costs) / 2
+  def average_investment
+    function(:average_investment) do
+      (total_investment) / 2
     end
   end
-  unit_for_calculation "average_investment_costs", 'euro / plant / year'
+  unit_for_calculation "average_investment", 'euro / plant / year'
 
   # Used to calculate yearly depreciation costs
   #
-  # DEBT: this function should be used for investment costs in the scatter
-  #   plot of the ETM as well.
-  # DEBT: should be named total_investments (without costs)
-  def total_investment_costs
-    function(:total_investment_costs) do
-      initial_investment_costs + decommissioning_costs
+  # DEBT: should this function be used for investment costs in the scatter
+  #   plot of the ETM as well?
+  #
+  def total_investment
+    function(:total_investment) do
+      total_initial_investment + decommissioning_costs
     end
   end
-  unit_for_calculation "total_investment_costs", 'euro / plant / year'
+  unit_for_calculation "total_investment", 'euro / plant / year'
 
-  # Used for calculating the nominal_input_capacity
+  # This method calculates the input capacity of a plant based on the
+  # electrical output capacity and electrical efficiency of the converter
+  #
+  # @return [Float] the typical input capacity of a plant in MWinput
+  #
   def electric_based_nominal_input_capacity
     function(:electric_based_nominal_input_capacity) do
       if electricity_output_conversion && electricity_output_conversion > 0
@@ -276,6 +268,11 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "electric_based_nominal_input_capacity", 'MWinput'
 
+  # This method calculates the input capacity of a plant based on the
+  # heat output capacity and heat efficiency of the converter
+  #
+  # @return [Float] the typical input capacity of a plant in MWinput
+  #
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
       if heat_output_conversion && heat_output_conversion > 0
@@ -287,8 +284,16 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "heat_based_nominal_input_capacity", 'MWinput'
   
-  # ETM does not have seperate cooling capacity, so use heat capacity to
-  # calculate cooling based nominal input capacity
+  # This method calculates the input capacity of one plant based on the
+  # heat capacity of the plant and the cooling efficiency.
+  #
+  # The ETM does not have seperate cooling capacity, so use heat capacity to
+  # calculate cooling based nominal input capacity. This method will only
+  # be called with cooling technologies which have no heat output.
+  #
+  # @return [Float] the input capacity of a plant based on the output
+  # capacity and the cooling efficiency of the plant 
+  #
   def cooling_based_nominal_input_capacity
     function(:cooling_based_nominal_input_capacity) do
       if cooling_output_conversion && cooling_output_conversion > 0
@@ -304,7 +309,7 @@ class Qernel::ConverterApi
   #
   # Used for variable costs: fuel costs and CO2 emissions costs
   #
-  # @return [Float] Typical fuel input in MJ
+  # @return [Float] Typical fuel input of one plant in MJ
   #
   def typical_fuel_input
     function(:typical_fuel_input) do
