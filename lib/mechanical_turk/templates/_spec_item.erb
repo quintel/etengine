@@ -7,16 +7,30 @@
 %>
 
     it "<%= key %>" do
+    <% if present.nil? %>
+      the_present.should be_nil
+    <% else %>
       the_present.should be_within(some_tolerance).of(<%= present.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+    <% end %>
+    <% if future.nil? %>
+      the_future.should be_nil
+    <% else %>
       the_future.should  be_within(some_tolerance).of(<%= future.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+    <% end %>
+    <% if present and future %>
       the_relative_increase.should be_within(some_tolerance).of(<%= change.inspect %>)
       the_absolute_increase.should be_within(some_tolerance).of(<%= delta.inspect  %>)
+    <% end %>
     end
 
 <% else %>
 
     it "<%= key %>" do
+    <% if result.nil? %>
+      the_value.should be_nil
+    <% else %>
       the_value.should be_within(some_tolerance).of(<%= result.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+    <% end %>
     end
 
 <% end %>
