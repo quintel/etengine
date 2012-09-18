@@ -30,14 +30,19 @@ module Api
         json[:data] = {}
 
         attributes_and_methods_to_show.each_pair do |group, items|
-          json[:data][group] = {}
+          group_label = group.to_s.humanize
+          json[:data][group_label] = {}
 
           items.each_pair do |attr, opts|
             pres = present_value(attr)
             fut = future_value(attr)
             next unless (pres || fut)
             next if pres <= 0.0 && opts[:hide_if_zero]
-            json[:data][group][attr] = {
+
+            pres = opts[:formatter].call(pres) if opts[:formatter]
+            fut =  opts[:formatter].call(fut) if opts[:formatter]
+
+            json[:data][group_label][attr] = {
               :present => pres,
               :future => fut,
               :unit => Qernel::ConverterApi.unit_for_calculation(attr) || opts[:unit],

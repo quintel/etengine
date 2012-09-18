@@ -17,7 +17,7 @@ module Api
             'variable_operation_and_maintenance_costs_per(:full_load_hour)'  =>
               {label: 'Variable operation and maintenance costs', unit: 'euro / full load hour'},
             :part_ets  =>
-              {label: 'Do emissions have to be paid for through the ETS?', unit: 'yes=1 / no=0'},
+              {label: 'Do emissions have to be paid for through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}},
             :wacc  =>
               {label: 'Weighted average cost of capital', unit: '%'}
           },
