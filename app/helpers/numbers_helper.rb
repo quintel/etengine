@@ -1,5 +1,4 @@
 module NumbersHelper
-  # TODO refactor (seb 2010-10-11)
   def auto_number(value)
     return '-' if value.nil?
     return value unless value.is_a?(Numeric)
