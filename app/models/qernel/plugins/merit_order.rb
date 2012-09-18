@@ -84,7 +84,7 @@ module Qernel::Plugins
     def run_merit_order
       calculate_merit_order
       calculate_full_load_hours
-
+      inject_updated_demand
       continue_after_breakpoint!(:merit_order)
     end
 
@@ -142,6 +142,15 @@ module Qernel::Plugins
       end
     end
 
+    # ---- inject_updated_demand --
+
+    def inject_updated_demand
+      converters_by_total_variable_cost.each do |converter|
+        new_demand = converter.full_load_seconds * converter.typical_nominal_input_capacity * converter.number_of_units #rescue converter.demand
+        Rails.logger.warn "**** #{converter.key}: #{converter.demand} -> #{new_demand}"
+        converter.demand = new_demand
+      end
+    end
 
     # ---- MeritOrder ------------------------------------------------------------
 
