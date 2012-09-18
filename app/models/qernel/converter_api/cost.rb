@@ -210,9 +210,6 @@ class Qernel::ConverterApi
   #
   # Used in the scatter plot for costs
   #
-  # DEBT: should not be named _costs, since it it an expenditure, not a cost!
-  #       option: total_initial_investment
-  #
   def total_initial_investment
     function(:total_initial_investment) do
       initial_investment + ccs_investment + cost_of_installing
