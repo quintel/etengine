@@ -182,6 +182,7 @@ module Api
       # combines the *_VALUES hashes as needed. This is used in the converter
       # details page, in the /data section and through the API (v3)
       def attributes_and_methods_to_show
+        out = {}
         out = HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS        if @converter.groups.include?(:cost_traditional_heat)
         out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.groups.include?(:cost_electricity_production)
         out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.groups.include?(:cost_heat_pumps)
