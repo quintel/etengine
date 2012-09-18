@@ -1,10 +1,10 @@
 # This mixin is included by the qernel objects that have attributes defined
 # in a dataset. See Qernel::Dataset for a general introduction about the
 # object. The Dataset object contains a huge hash with all the attributes
-# of the area, carriers, converters etc of the graph. Those attributes are
-# stored in the database in the dataset_*_data tables. Qernel::Dataset takes
-# care of loading them into a single hash.
-# Most of the methods defined in this mixin were made to access this hash.
+# of the area, carriers, converters etc of the graph.
+#
+# Qernel::Dataset takes care of loading them into a single hash.  Most of the
+# methods defined in this mixin were made to access this hash.
 #
 # == Example:
 #

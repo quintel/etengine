@@ -59,17 +59,20 @@ class Graph
     self.area = Qernel::Area.new(self)
   end
 
+  # TODO @hasclass: What is this method for?
   def connect_qernel
     converters.each do |converter|
       converter.graph = self
       converter.slots.each {|s| s.graph = self}
     end
     links.each {|obj| obj.graph = self }
+    # TODO @hasclass: can this line be removed?
     # carriers.each {|obj| obj.graph = self }
   end
 
   def converters=(converters)
     @converters = converters
+    # @hasclass: why not use the connect qernel above here?
     @converters.each{|converter| converter.graph = self }
 
     self.reset_memoized_methods
@@ -143,7 +146,6 @@ class Graph
   # 3. Remove converter from stack and move it to {#finished_converters}
   # 5. => (continue at 1. until stack is empty)
   # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
-  #
   # TODO refactor
   def calculate(options = {})
     run_callbacks :calculate do

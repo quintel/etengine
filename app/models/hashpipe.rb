@@ -1,3 +1,4 @@
+# TODO @hasclass can you add some documentation?
 class Hashpipe
   include Singleton
 
