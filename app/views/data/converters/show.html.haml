@@ -58,36 +58,35 @@
       %h2 Future Input / Outputs
     = render 'converter_links'
 
-.row-fluid
-  .span12
-    .page-header
-      %h2 Converter Summary
-    %table.table.table-condensed
-      %thead
-        %tr
-          %th Method
-          %th Label
-          %th Present
-          %th Future
-          %th Unit
-      %tbody
-        - @presenter.attributes_and_methods_to_show.each_pair do |group, items|
-          - next if items.empty?
+- if @presenter.attributes_and_methods_to_show.any?
+  .row-fluid
+    .span12
+      .page-header
+        %h2 Converter Summary
+      %table.table.table-condensed
+        %thead
           %tr
-            %th{:colspan => 5}= group
-          - items.each_pair do |key, opts|
+            %th Method
+            %th Label
+            %th Present
+            %th Future
+            %th Unit
+        %tbody
+          - @presenter.attributes_and_methods_to_show.each_pair do |group, items|
+            - next if items.empty?
             %tr
-              %td= key
-              %td= opts[:label]
-              %td
-                - val = @presenter.present_value(key)
-                = opts[:formatter] ? opts[:formatter].call(val) : val
-              %td
-                - val = @presenter.future_value(key)
-                = opts[:formatter] ? opts[:formatter].call(val) : val
-              %td= opts[:unit]
-
-
+              %th{:colspan => 5}= group
+            - items.each_pair do |key, opts|
+              %tr
+                %td= key
+                %td= opts[:label]
+                %td
+                  - val = @presenter.present_value(key)
+                  = opts[:formatter] ? opts[:formatter].call(val) : val
+                %td
+                  - val = @presenter.future_value(key)
+                  = opts[:formatter] ? opts[:formatter].call(val) : val
+                %td= opts[:unit]
 
 .row-fluid
   .span6
