@@ -17,27 +17,14 @@ module DataHelper
     end
   end
 
-  def result_fields(present, future, attr_name = nil, &block)
-    if block_given?
-      present_value, future_value = nil, nil
-      haml_tag :td do
-        present_value = yield(present)
-        haml_concat auto_number(present_value)
-      end
-      haml_tag :td do
-        future_value = yield(future)
-        haml_concat auto_number(future_value)
-      end
-      change_field(present_value, future_value)
-    else
-      present_value = present.instance_eval(attr_name.to_s)
-      future_value  = future.instance_eval(attr_name.to_s)
+  def result_fields(present, future, attr_name = nil)
+    present_value = present.instance_eval(attr_name.to_s)
+    future_value  = future.instance_eval(attr_name.to_s)
 
-      haml_tag :td, auto_number(present_value), :title => title_tag_number(present_value)
-      haml_tag :td, auto_number(future_value), :title => title_tag_number(future_value)
+    haml_tag :td, auto_number(present_value), :title => title_tag_number(present_value)
+    haml_tag :td, auto_number(future_value), :title => title_tag_number(future_value)
 
-      change_field(present_value, future_value)
-    end
+    change_field(present_value, future_value)
   rescue => e
     haml_tag :td, :colspan => 2 do
       haml_concat "ERROR (#{e})"

@@ -21,17 +21,10 @@ module NumbersHelper
       value
     end
   end
-  
-  def simple_auto_number(value,unit)
-    return '-' if value.nil?
-    return value unless value.is_a?(Numeric)
-    return 'Infinity' if value.to_f.infinite?
-    if unit == '%'
-      number_with_precision(value * 100, :precision => 1)
-    else
-      number_with_precision(value, :precision => 4, :significant => true,
-        :delimiter => ",", :separator => '.')
-    end
+
+  # Formats number nicely, ignoring the unit
+  def nice_number(x)
+    x = number_with_precision x, :precision => 2
+    number_with_delimiter(x, :delimiter => ",", :separator => '.')
   end
-  
 end
