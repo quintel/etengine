@@ -517,8 +517,9 @@ namespace :bulk_update do
         key = x[0]
         if key.is_a?(Integer) &&  inputs_key.has_key?(key)
           key = inputs_key[key]
-          new_inputs[key] = x[1]
         end
+
+        new_inputs[key] = x[1]
       end
 
       # Rounding all inputs
