@@ -79,8 +79,12 @@
             %tr
               %td= key
               %td= opts[:label]
-              %td= @presenter.present_value key
-              %td= @presenter.future_value key
+              %td
+                - val = @presenter.present_value(key)
+                = opts[:formatter] ? opts[:formatter].call(val) : val
+              %td
+                - val = @presenter.future_value(key)
+                = opts[:formatter] ? opts[:formatter].call(val) : val
               %td= opts[:unit]
 
 
