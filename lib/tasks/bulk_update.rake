@@ -82,14 +82,14 @@ namespace :bulk_update do
 
       scenario = Scenario.find_by_id(preset.id)
 
-      # backing up in case we overwrite something wrong
-      puts "writing backup files to: #{bkp_path}"
-      File.open("#{bkp_path}/scenarios_#{scenario.id}.yml", 'w') do |f|
-        f << YAML::dump(scenario.attributes)
-      end
-
-      # if no scenario with that id, create one with same preset id
-      unless scenario
+      if scenario
+        # backing up in case we overwrite something wrong
+        puts "** writing scenario ##{scenario.id} backup to: #{bkp_path}"
+        File.open("#{bkp_path}/scenarios_#{scenario.id}.yml", 'w') do |f|
+          f << YAML::dump(scenario.attributes)
+        end
+      else
+        # if no scenario with that id, create one with same preset id
         puts "** Create new scenario db record for #{preset.id}"
         scenario = preset.to_scenario
         scenario.preset_scenario_id = nil
@@ -130,7 +130,7 @@ namespace :bulk_update do
          ENV['PRESETS'] = "1"
       end
     end
-    if ENV['PRESETS'] 
+    if ENV['PRESETS']
       scenario_scope = Scenario.where(:id => Preset.all.map(&:id))
       puts "Trying to updating #{scenario_scope.length} presets"
     else
@@ -138,14 +138,14 @@ namespace :bulk_update do
       scenario_scope = Scenario.order('id')
     end
     @update_records = HighLine.agree("You want to update records, right? [y/n]")
-    
+
     #store all inputs lookup id with key
     input_info = Input.all
     inputs_key = {}
     input_info.each do |x|
       inputs_key[x.lookup_id] = x.key
     end
-    
+
     ##########################################################
     # Following lines describe the changes of scenarios in the
     # deploy of August 28 2012
@@ -478,14 +478,14 @@ namespace :bulk_update do
       "initial_updates_preset_demands"=>2040.0,
       "standalone_electric_cars_share"=>0.0,
       "buildings_heating_geothermal_share"=>0.0}
-      
-      
+
+
     scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
-      
+
       #skip scenario if not nl
       next unless s.area_code == "nl"
-      
+
       # cleanup unused scenarios
       if s.area_code.blank? || (s.title == "API" && s.updated_at  < 14.day.ago ) || s.source == "Mechanical Turk"
         puts "INFO: scenario removed"
@@ -499,7 +499,7 @@ namespace :bulk_update do
         puts "Error! cannot load user_values"
         next
       end
-      
+
       #update user values to key last time to do this. API v3 is this default
       new_inputs = {}.with_indifferent_access
       inputs.each do |x|
@@ -511,9 +511,9 @@ namespace :bulk_update do
           rescue
             puts "Error! cannot convert string to float round #{x[0]}"
             next
-          end          
+          end
         end
-        
+
         key = x[0]
         if key.is_a?(Integer) &&  inputs_key.has_key?(key)
           key = inputs_key[key]
@@ -528,13 +528,13 @@ namespace :bulk_update do
       end
 
       ################ END ####################################
-      
+
 
       if @update_records || ENV['PRESETS']
         puts "saving"
         s.update_attributes!(:user_values => new_inputs)
       end
 
-    end    
+    end
   end
 end
