@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Qernel
   describe do
-    pending do # rewrite as part of the etsource/models/reference
+    describe do # rewrite as part of the etsource/models/reference
       describe Graph, '#initialize' do
         it "should initialize without attributes" do
           @g = Qernel::Graph.new()
@@ -14,43 +14,43 @@ module Qernel
       end
 
       describe Graph, 'valid' do
-        before { @g = Qernel::Graph.new() }
-        subject { @g }
+        before  { @graph = Qernel::Graph.new() }
+
+        subject { @graph }
 
         its(:area) { should_not be_nil }
 
-        describe "#converters=" do
-          it "should #reset_memoized_methods when adding converters" do
-            @g.should_receive(:reset_memoized_methods)
-            @g.converters = []
-          end
+        it "should #reset_memoized_methods when adding converters" do
+          @graph.should_receive(:reset_memoized_methods)
+          @graph.converters = []
+        end
 
-          it "should assign graph to converters" do
-            converter = Qernel::Converter.new(id: 1, key: 'foo')
-            @g.converters = [converter]
-            converter.graph.should == @g
-          end
+        pending "should assign graph to converters" do
+          converter = Qernel::Converter.new(id: 1, key: 'foo')
+
+          @graph.converters = [converter]
+          converter.graph.should == @graph
         end
       end
 
       describe Graph do
-        before do 
+        before do
           @g = GraphParser.new(example.description).build
           @g.converters.each do |converter|
             instance_variable_set("@#{converter.key}", converter)
           end
         end
-        
+
         context "Flex Max" do
           it "# Fill flex_max link upto max_demand
-              mid(100) == f(1.0) ==> rgt1 
+              mid(100) == f(1.0) ==> rgt1
               mid      == f(1.0) ==> rgt2" do
-            
+
             @rgt1.output_links.first.max_demand = 30.0
             @g.calculate
-            
-            @rgt1.demand.should ==  30.0 
-            @rgt2.demand.should ==  70.0 
+
+            @rgt1.demand.should ==  30.0
+            @rgt2.demand.should ==  70.0
           end
 
           it "# flexible links have a default min_demand of 0.0
@@ -73,29 +73,29 @@ module Qernel
             @rgt2.demand.should == -20.0
           end
 
-          # seb: skip implementatio of min_demand because it'll 
+          # seb: skip implementatio of min_demand because it'll
           #      complicate things quite a bit.
           #
           # it "# rgt1 min_demand: 30. Rgt1 should get all.
-          #     mid(100) == f(1.0) ==> rgt1 
+          #     mid(100) == f(1.0) ==> rgt1
           #     mid      == f(1.0) ==> rgt2" do
-          # 
+          #
           #   @rgt1.output_links.first.min_demand = 30.0
           #   @g.calculate
-          #   
-          #   @rgt1.demand.should == 100.0 
-          #   @rgt2.demand.should ==   0.0 
+          #
+          #   @rgt1.demand.should == 100.0
+          #   @rgt2.demand.should ==   0.0
           # end
         end
 
         context do
-          
+
           before do
             @g.calculate
           end
 
           # ----- SYNTAX  ------------------------------------------------
-        
+
           # defaults:
           # carrier: foo
           # conversion: 1.0
@@ -110,7 +110,7 @@ module Qernel
 
           # ----- Mutliple carriers ------------------------------------------------
 
-          it "bar[0.5]: lft(100) == s(1.0) ==> rgt1 
+          it "bar[0.5]: lft(100) == s(1.0) ==> rgt1
               foo[0.5]: lft      == s(1.0) ==> rgt2" do
 
             @rgt1.demand.should == 50.0
@@ -128,35 +128,35 @@ module Qernel
 
           # ----- Constant ------------------------------------------------
 
-          it "mid(nil) == c(30) ==> rgt1 
+          it "mid(nil) == c(30) ==> rgt1
               mid      == c(20) ==> rgt2" do
 
-            @mid.demand.should ==  0.0 
-            @rgt1.demand.should == 30.0 
-            @rgt2.demand.should == 20.0 
+            @mid.demand.should ==  0.0
+            @rgt1.demand.should == 30.0
+            @rgt2.demand.should == 20.0
           end
 
-          it "mid(nil) == c(nil) ==> rgt1(80) 
+          it "mid(nil) == c(nil) ==> rgt1(80)
               mid      == c(nil) ==> rgt2(20)" do
 
-            @mid.demand.should == 100.0 
-            @rgt1.demand.should == 80.0 
-            @rgt2.demand.should == 20.0 
+            @mid.demand.should == 100.0
+            @rgt1.demand.should == 80.0
+            @rgt2.demand.should == 20.0
           end
 
           # ----- Flexible & Share  --------------------------------------
 
-          it "mid(100) == s(0.8) ==> rgt1(nil) 
+          it "mid(100) == s(0.8) ==> rgt1(nil)
               mid      == f(1.0) ==> rgt2(nil)" do
 
             @rgt1.demand.should == 80.0
-            @rgt2.demand.should == 20.0 
+            @rgt2.demand.should == 20.0
           end
 
           # ----- Flexible & Constant  --------------------------------------
 
           it "# If mid has no output link, it becomes 0.0
-              mid(nil) == c(80)  ==> rgt1(nil) 
+              mid(nil) == c(80)  ==> rgt1(nil)
               mid      == f(1.0) ==> rgt2(nil)" do
 
             @mid.demand.should == 0.0
@@ -166,7 +166,7 @@ module Qernel
 
           it "# This works, because mid gets demand from lft
               lft(100) == s(1)  ==> mid(nil)
-              mid(nil) == c(80) ==> rgt1(nil) 
+              mid(nil) == c(80) ==> rgt1(nil)
               mid      == f(1)  ==> rgt2(nil)" do
 
             @lft.demand.should ==  100.0
@@ -194,7 +194,7 @@ module Qernel
               bar:   loss(nil) == i(nil)   ==> mid(nil)
               foo:   lft1(50)  == s(1)   ==> mid
               foo:   mid       == c(nil) ==> rgt1(70)" do
-          
+
             @rgt1.demand.should == 70.0
             @lft1.demand.should == 50.0
 
@@ -206,9 +206,9 @@ module Qernel
               # if outputs are higher then inputs set inversed_flexible to 0.0
               bar:   loss(nil) == i(nil)   ==> mid(nil)
               foo:   lft1(100) == s(1)   ==> mid
-              foo:   mid       == c(nil) ==> rgt1(40) 
+              foo:   mid       == c(nil) ==> rgt1(40)
               foo:   mid       == f(nil) ==> rgt2(30)" do
-          
+
             @lft1.demand.should == 100.0
             @mid.demand.should ==  100.0
             @rgt1.demand.should == 40.0
@@ -221,7 +221,7 @@ module Qernel
               foo[1;0.5]: el_output(nil) == d(nil) ==> mid
               bar[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
               foo:        mid            == c(nil) ==> rgt1(120)" do
-          
+
             @rgt1.demand.should == 120.0
             @hw_demand.demand.should == 60.0
 
@@ -236,7 +236,7 @@ module Qernel
               foo[1;0.5]: el_output(nil) == d(nil) ==> mid
               bar[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
               foo:        mid            == c(nil) ==> rgt1(120)" do
-          
+
             @rgt1.demand.should == 120.0
             @hw_demand.demand.should == 50.0
 
@@ -249,19 +249,20 @@ module Qernel
 
           it "# If right side is lower, fill up flexible link
               loss(nil) == i(nil) ==> mid(nil)
-              lft1(100) == s(1)   ==> mid 
+              lft1(100) == s(1)   ==> mid
                                       mid == f(nil) ==> loss
-                                      mid == c(nil) ==> rgt1(40)" do
+                                      mid == c(nil) ==> rgt1( 40)" do
             @lft1.demand.should == 100.0
             @mid.demand.should ==  100.0
             @rgt1.demand.should == 40.0
             @loss.demand.should == 60.0
           end
 
-          it "# If right side is higher, fill up inversed_flexible link
+          # This does not work as expected
+          pending "# If right side is higher, fill up inversed_flexible link
               # sb: HELP: but loss demand stays 0.0???
               loss(nil) == i(nil) ==> mid(nil)
-              lft1(100) == s(1)   ==> mid 
+              lft1(100) == s(1)   ==> mid
                                       mid == f(nil) ==> loss
                                       mid == c(nil) ==> rgt1(140)" do
             @lft1.demand.should == 100.0
@@ -275,7 +276,7 @@ module Qernel
           it "bar[1.0;0.7]: hw_demand(70) == s(1) ==> chp(nil)
               foo[1.0;0.3]: el_output(nil) == d()  ==> chp(nil)
               foo:          chp(nil)       == s(1) ==> rgt(nil) " do
-          
+
             @hw_demand.demand.should == 70.0
             @el_output.demand.should == 30.0
             @chp.demand.should == 100.0
@@ -286,7 +287,7 @@ module Qernel
               foo[1.0;0.3]: el_output(40)  == d      ==> chp
               foo:          el_output      == f(nil) ==> rgt1
               #foo:          el_output      == s(0.6) ==> rgt2" do
-          
+
             @hw_demand.demand.should == 70.0
             @chp.demand.should == 100.0
             @el_output.demand.should == 40.0
@@ -302,7 +303,7 @@ module Qernel
               foo[1.0;0.3]: el_output(40)  == d      ==> chp
               foo:          el_output      == f(nil) ==> rgt1
               foo:          el_output      == s(0.6) ==> rgt2" do
-          
+
             @hw_demand.demand.should == 70.0
             @chp.demand.should == 100.0
             @el_output.demand.should == 40.0
@@ -316,7 +317,7 @@ module Qernel
           #     foo[1.0]:     hw_demand(70)  == s(1) ==> chp(nil)
           #     foo[1.0]:     el_output(nil) == d()  ==> chp(nil)
           #     foo:          chp(nil)       == s(1) ==> rgt(nil) " do
-          #   
+          #
           #   @hw_demand.demand.should == 70.0
           #   @el_output.demand.should == 30.0
           #   @chp.demand.should == 100.0
@@ -353,12 +354,12 @@ module Qernel
           # ----- Reversed Dependent functionality  ------------------
 
           describe "Reversed Dependent functionality" do
-          
+
             it "# dependent as reversed share(1)
                 bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
                 foo[1.0;0.3]: el_output(nil) == s(1) ==< chp(nil)
                 foo:          chp(nil)       == s(1) ==> rgt(nil) " do
-          
+
               @hw_demand.demand.should == 70.0
               @el_output.demand.should == 30.0
               @chp.demand.should == 100.0
@@ -369,7 +370,7 @@ module Qernel
                 bar[1.0;0.7]: hw_demand(70)  == s(1) ==> chp(nil)
                 foo[1.0;0.3]: el_output(nil) == f(nil) ==< chp(nil)
                 foo:          chp(nil)       == s(1) ==> rgt(nil) " do
-          
+
               @hw_demand.demand.should == 70.0
               @el_output.demand.should == 30.0
               @chp.demand.should == 100.0
@@ -379,7 +380,7 @@ module Qernel
             it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
                 foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
                 foo:          el_output      == f(nil) ==> rgt1" do
-          
+
               @hw_demand.demand.should == 70.0
               @chp.demand.should == 100.0
               @el_output.demand.should == 40.0
@@ -395,7 +396,7 @@ module Qernel
                 foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
                 foo:          el_output      == f(nil) ==> rgt1
                 foo:          el_output      == s(0.6) ==> rgt2" do
-          
+
               @hw_demand.demand.should == 70.0
               @chp.demand.should == 100.0
               @el_output.demand.should == 40.0
@@ -415,10 +416,10 @@ module Qernel
           #     loss:  loss(nil) == f(nil) ==< mid(nil)
           #     foo:   lft1(50)  == s(1)   ==> mid
           #     foo:   mid       == c(nil) ==> rgt1(70)" do
-          #   
+          #
           #   @rgt1.demand.should == 70.0
           #   @lft1.demand.should == 50.0
-          # 
+          #
           #   @mid.demand.should ==  70.0
           #   @loss.demand.should == 20.0
           # end
@@ -467,19 +468,19 @@ module Qernel
         end
 
         context "calculated" do
-          before do 
+          before do
             @g.calculate
           end
 
           # specify { @l.value.should == 100.0 }
         end
       end
-      
+
       describe "Policy Goals" do
         before do
           @graph = Graph.new
         end
-        
+
         describe "#goals" do
           it "should have no goals on initialize" do
             @graph.goals.should be_empty
@@ -503,7 +504,7 @@ module Qernel
             @graph.goal(:bar).should be_nil
           end
         end
-        
+
         describe "#find_or_create_goal" do
           it "should create a goal object as needed" do
             @graph.goals.should be_empty
@@ -511,7 +512,7 @@ module Qernel
             @graph.goals.size.should == 1
           end
         end
-        
+
         # Check query_interface_spec.rb to see how we update goals through GQL
       end
     end
