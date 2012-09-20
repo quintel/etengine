@@ -82,10 +82,10 @@
                 %td= opts[:label]
                 %td
                   - val = @presenter.present_value(key)
-                  = opts[:formatter] ? opts[:formatter].call(val) : nice_number(val)
+                  = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
                 %td
                   - val = @presenter.future_value(key)
-                  = opts[:formatter] ? opts[:formatter].call(val) : nice_number(val)
+                  = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
                 %td= opts[:unit]
 
 .row-fluid

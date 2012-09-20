@@ -23,18 +23,4 @@ module NumbersHelper
       value
     end
   end
-
-  # Formats number nicely, ignoring the unit and without transformations
-  def nice_number(x)
-    return 0 if x === 0
-    abs_value = x.abs
-    precision = if abs_value >= 1000
-      0
-    else
-      2
-    end
-
-    x = number_with_precision x, :precision => precision
-    number_with_delimiter(x, :delimiter => ".", :separator => ',')
-  end
 end
