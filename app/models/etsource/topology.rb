@@ -73,7 +73,8 @@ module Etsource
                                   converters[link.input_key],
                                   converters[link.output_key],
                                   carrier(link),
-                                  link.link_type )
+                                  link.link_type,
+                                  link.reversed )
         end
       end
 
@@ -113,7 +114,7 @@ module Etsource
   #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, link_type: :share>
   #
   class LinkToken
-    attr_reader :input_key, :carrier_key, :output_key, :key, :link_type
+    attr_reader :input_key, :carrier_key, :output_key, :key, :link_type, :reversed
 
     LINK_TYPES = {
       's' => :share,
@@ -136,12 +137,12 @@ module Etsource
       @carrier_key = input.carrier_key
       @input_key   = input.converter_key
       @output_key  = output.converter_key
-
-      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)-->/).flatten.first]
+      @reversed    = line.include?('<')
+      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)--[<>]/).flatten.first]
     end
 
     def self.find(line)
-      if line.gsub(/\s/,'') =~ /\)--\w-->\(/
+      if line.gsub(/\s/,'') =~ /\)--\w--[<>]\(/
         new(line)
       else
         []
