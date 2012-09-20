@@ -51,9 +51,9 @@ reversed_links_middle_2: {}
 reversed_links_middle_3: {}
 reversed_links_left:
   links:
-  - reversed_links_left-(gas) -- f --> (gas)-reversed_links_middle_2
+  - reversed_links_left-(gas) --f--> (gas)-reversed_links_middle_2
   # NOTE: that the following links are reversed!
-  - reversed_links_left-(gas) -- f --< (gas)-reversed_links_middle_1
-  - reversed_links_left-(gas) -- s --< (gas)-reversed_links_middle_3
+  - reversed_links_left-(gas) <--f-- (gas)-reversed_links_middle_1
+  - reversed_links_left-(gas) <--s-- (gas)-reversed_links_middle_3
 
 

@@ -6,9 +6,9 @@ reversed_links_middle_2: {}
 reversed_links_middle_3: {preset_demand:  100.0}
 reversed_links_left:     {preset_demand: 1500.0}
 
-reversed_links_left-(gas) -- f --< (gas)-reversed_links_middle_1: {}
+reversed_links_left-(gas) <-- f -- (gas)-reversed_links_middle_1: {}
 reversed_links_left-(gas) -- f --> (gas)-reversed_links_middle_2: {}
-reversed_links_left-(gas) -- s --< (gas)-reversed_links_middle_3: {share: 1.0}
+reversed_links_left-(gas) <-- s -- (gas)-reversed_links_middle_3: {share: 1.0}
 
 reversed_links_left-(gas): {conversion: 1.0}
 (gas)-reversed_links_middle_1: {conversion: 1.0}
