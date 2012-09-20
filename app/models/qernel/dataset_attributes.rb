@@ -58,7 +58,7 @@
 module Qernel::DatasetAttributes
 
   def self.included(klass)
-    klass.send(:attr_accessor, :object_dataset, :observe_set, :observe_get)
+    klass.send(:attr_accessor, :dataset_attributes, :observe_set, :observe_get)
     klass.extend(ClassMethods)
   end
 
@@ -96,7 +96,7 @@ module Qernel::DatasetAttributes
 
   # For testing only
     def with(hsh)
-      @object_dataset = hsh
+      @dataset_attributes = hsh
       self
     end
 
@@ -120,8 +120,8 @@ module Qernel::DatasetAttributes
     @dataset_key ||= id
   end
 
-  def reset_object_dataset
-    @object_dataset   = nil
+  def reset_dataset_attributes
+    @dataset_attributes   = nil
     @observe_set      = nil
     @observe_get      = nil
     @observe_get_keys = []
@@ -131,9 +131,9 @@ module Qernel::DatasetAttributes
   # Here we make the object attributes a member of the object itself.
   # The dataset_get/fetch methods act on this variable (which, btw, is
   # made accessible with the attr_accessor at the beginning of this mixin)
-  def assign_object_dataset
+  def assign_dataset_attributes
     if dataset
-      @object_dataset   = (dataset.data[dataset_group][dataset_key] ||= {})
+      @dataset_attributes   = (dataset.data[dataset_group][dataset_key] ||= {})
       @observe_set      = nil
       @observe_get      = nil
       @observe_get_keys = []
@@ -204,14 +204,14 @@ module Qernel::DatasetAttributes
   #
   def function(attr_name, rescue_with = nil)
     # check if we have a memoized result already.
-    if object_dataset.has_key?(attr_name)
+    if dataset_attributes.has_key?(attr_name)
       # are we in the debugger mode?
       if observe_get
         # log records the access and returns the value
-        log :method, attr_name, object_dataset[attr_name]
+        log :method, attr_name, dataset_attributes[attr_name]
       else
         # not debugger, so just return the memoized value
-        object_dataset[attr_name]
+        dataset_attributes[attr_name]
       end
     else
       # function is called for the first time
@@ -220,18 +220,18 @@ module Qernel::DatasetAttributes
         # in the log and returns it back.
         log :method, attr_name do
           begin
-            object_dataset[attr_name] = yield
+            dataset_attributes[attr_name] = yield
           rescue => e
             # We have an exception, most likely a nil value. log the error
             # with message and apply the value defined in rescue_with param
             log :error, attr_name, e
-            object_dataset[attr_name] = rescue_with
+            dataset_attributes[attr_name] = rescue_with
           end
         end
       else
         # if not in debug mode, simply yield the value. Do not log the exceptions
         # but simply return the rescue_with value
-        object_dataset[attr_name] = yield rescue rescue_with
+        dataset_attributes[attr_name] = yield rescue rescue_with
       end
     end
   end
@@ -249,15 +249,15 @@ module Qernel::DatasetAttributes
     if observe_set
       log(:set, attr_name, value)
     end
-    object_dataset[attr_name] = value
+    dataset_attributes[attr_name] = value
   end
 
   # @param attr_name [Symbol]
   def dataset_get(attr_name)
     if observe_get
-      log(:attr, attr_name, object_dataset[attr_name])
+      log(:attr, attr_name, dataset_attributes[attr_name])
     end
-    object_dataset[attr_name]
+    dataset_attributes[attr_name]
 
   rescue => e
     raise "#{dataset_key} #{attr_name} not found: #{e.message}"

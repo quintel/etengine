@@ -145,7 +145,7 @@ module Etsource
             g = unoptimized_graph
             g.dataset = dataset('nl')
             g.optimize_calculation_order
-            g.reset_dataset!
+            g.detach_dataset!
             g
           end
         else

@@ -97,8 +97,8 @@ class ConverterApi
   # Otherwise graphs by GraphParser won't be Gqueryable
   # DEBT properly fix
   if Rails.env.development? or Rails.env.test?
-    def object_dataset
-      converter.object_dataset
+    def dataset_attributes
+      converter.dataset_attributes
     end
   end
 

@@ -59,68 +59,83 @@ class Graph
     self.area = Qernel::Area.new(self)
   end
 
-  # TODO @hasclass: What is this method for?
-  def connect_qernel
+  # Assigns self to the graph variables of every qernel objects. The qernel
+  # objects access dataset currently through graph. This could be optimized by
+  # assigning the dataset object instead, but some objects need(ed?) access to
+  # graph anyway, so that was a convenient.
+  #
+  def assign_graph_to_qernel_objects
     converters.each do |converter|
       converter.graph = self
-      converter.slots.each {|s| s.graph = self}
+      converter.slots.each { |s| s.graph = self }
     end
-    links.each {|obj| obj.graph = self }
-    # TODO @hasclass: can this line be removed?
-    # carriers.each {|obj| obj.graph = self }
+    links.each    { |l| l.graph = self }
+    carriers.each { |c| c.graph = self }
   end
 
   def converters=(converters)
     @converters = converters
-    # @hasclass: why not use the connect qernel above here?
-    @converters.each{|converter| converter.graph = self }
-
-    self.reset_memoized_methods
-
+    reset_memoized_methods
     @converters
   end
 
+  # Assigning a new dataset will also attach it to all qernel objects.
+  #
+  # graph.dataset = nil will detach the dataset_attributes from qernel objects.
+  #
   def dataset=(dataset)
     @dataset = dataset
-    refresh_dataset_objects if @dataset
-    # lookup hash for #converter( ) method uses :excel_id from dataset
-    # so we have to reset the lookup
-    reset_converter_lookup_and_memoize if @dataset
+    if @dataset.nil?
+      remove_dataset_attributes
+    else
+      refresh_dataset_attributes
+    end
   end
 
   # Removes dataset from graph and all its objects.
+  # More verbose version of:
   #
-  def reset_dataset!
-    @dataset = nil
-    reset_dataset_objects
+  #     graph.dataset = nil
+  #
+  def detach_dataset!
+    self.dataset = nil
   end
 
-  def each_dataset_object_item(method_name)
+  # Calls method_name on every qernel object including graph itself.
+  # => caution: stacklevel too deep
+  #
+  def call_on_each_qernel_object(method_name)
     self.send(method_name)
-    self.converters.each do |c|
+    area.send(method_name)
+    carriers.each(&method_name)
+
+    converters.each do |c|
       c.query.send(method_name)
       c.send(method_name)
       c.input_links.each(&method_name)
       c.inputs.each(&method_name)
       c.outputs.each(&method_name)
     end
-    self.area.send(method_name)
-    self.carriers.each(&method_name)
   end
 
-  def reset_dataset_objects
-    each_dataset_object_item(:reset_object_dataset)
+  # Removes dataset object from qernel objects
+  #
+  def remove_dataset_attributes
+    call_on_each_qernel_object(:reset_dataset_attributes)
     reset_goals
   end
 
-  def refresh_dataset_objects
-    # See Qernel::Dataset#assign_object_dataset to understand what's going on:
-    each_dataset_object_item(:assign_object_dataset)
+  # Reassigns the dataset attributes to qernel objects.
+  # Use this when you assign the graph a new dataset.
+  #
+  def refresh_dataset_attributes
+    # See Qernel::Dataset#assign_dataset_attributes to understand what's going on:
+    call_on_each_qernel_object(:assign_dataset_attributes)
     reset_goals
   end
 
   def calculated?
-    self[:calculated] == true
+    calculated == true
   end
 
   def enable_merit_order?
@@ -136,7 +151,6 @@ class Graph
     year == START_YEAR
   end
 
-  ##
   # Calculates the Graph.
   #
   # = Algorithm
@@ -185,10 +199,6 @@ class Graph
     @groups ||= converters.map(&:groups).flatten.uniq
   end
 
-  def primary_energy_carriers
-    @primary_energy_carriers ||= group_converters(:primary_energy_demand).map{|c| c.output_carriers}.flatten.uniq
-  end
-
   def carrier(key)
     carriers.detect{|c| c.key == key.to_sym or c.id.to_s == key.to_s}
   end
@@ -212,7 +222,6 @@ class Graph
     end
   end
 
-  ##
   # Return all converters in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
@@ -237,7 +246,6 @@ class Graph
     self.converters.select{|c| c.sector_key == sector_key_sym }
   end
 
-  ##
   # Return all converters in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
@@ -250,7 +258,6 @@ class Graph
       self.converters.select{|c| c.groups.include?(group_key_sym) }
   end
 
-  ##
   # Return the converter with given id or key. See {Qernel::Converter::KEYS_FOR_LOOKUP} for used keys
   #
   # @param id [Integer,String] lookup key for converter
@@ -268,7 +275,6 @@ class Graph
   end
 
 
-  ##
   # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of converters.
   def inspect
     "<Qernel::Graph>"
@@ -288,18 +294,8 @@ class Graph
     end
   end
 
-  def reset_memoized_methods
-    reset_group_converters_and_memoize
-    reset_converter_lookup_and_memoize
+  # --- Goal-related methods --------------------------------------------------
 
-    @carriers = nil
-    @links = nil
-    @groups = nil
-    @primary_energy_carriers = nil
-  end
-
-  # Goal-related methods
-  #
 
   # Returns an array with all the defined goals. The value is not memoized because
   # goals can be added dynamically
@@ -328,16 +324,30 @@ class Graph
     @goals = []
   end
 
-private
 
-  def reset_group_converters_and_memoize
-    @group_converters_cache = {}
-    groups.uniq.each {|key| group_converters(key)}
+  def reset_memoized_methods
+    @carriers = nil
+    @links    = nil
+    @groups   = nil
+
+    regenerate_converter_lookup
+    reset_group_converters
   end
 
-  def reset_converter_lookup_and_memoize
+private
+
+  # Reset a lookup for converter groups.
+  #
+  def reset_group_converters
+    @group_converters_cache = {}
+  end
+
+  # Regenerate a lookup hash for converters, used by #converter( key_or_excel_id )
+  #
+  def regenerate_converter_lookup
     @converters_hash = {}
-    self.converters.each do |converter|
+
+    converters.each do |converter|
       Qernel::Converter::KEYS_FOR_LOOKUP.each do |method_for_key|
         @converters_hash[converter.send(method_for_key)] = converter
       end

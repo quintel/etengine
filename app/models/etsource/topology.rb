@@ -73,13 +73,11 @@ module Etsource
                                   converters[link.input_key],
                                   converters[link.output_key],
                                   carrier(link),
-                                  link.link_type)
-          link.graph = graph
+                                  link.link_type )
         end
       end
 
-      graph.carriers.each {|c| c.graph = graph}
-      graph.connect_qernel
+      graph.assign_graph_to_qernel_objects
       graph
     end
 
