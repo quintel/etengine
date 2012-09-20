@@ -145,11 +145,29 @@ class Scenario < ActiveRecord::Base
   end
 
   # If you want to "prepare" the gql in a different way (hook into methods, etc)
-  #   scenario.gql(prepare: false)
-  def gql(options = {})
+  #
+  # @example
+  #     Scenario.default.gql # => default scenario gql
+  #     scenario.gql         # => calculated scenario gql
+  #
+  # @example Customize (see Gql#initialize docs)
+  #     Scenario.default.gql do |gql|
+  #        gql.do_this_and_that ...
+  #     end
+  #
+  # @example
+  #     scenario.gql(prepare: false) # => gql without datasets, updates or calculated
+  #
+  #
+  def gql(options = {}, &block)
     unless @gql
-      @gql = Gql::Gql.new(self)
-      @gql.prepare if options.fetch(:prepare, true)
+
+      if block_given?
+        @gql = Gql::Gql.new(self, &block)
+      else
+        @gql = Gql::Gql.new(self)
+        @gql.prepare if options.fetch(:prepare, true)
+      end
       @gql.sandbox_mode = options.fetch(:sandbox_mode, :sandbox)
     end
    @gql

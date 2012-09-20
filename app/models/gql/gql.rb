@@ -13,8 +13,6 @@ class Gql
 
   # Initialize a Gql instance by passing a (api) scenario
   #
-  #
-  #
   # @example Initialize with scenario
   #   gql = Scenario.default.gql(prepare: true)
   #   gql.query(...)
@@ -23,6 +21,22 @@ class Gql
   #   gql = Gql::Gql.new(Scenario.default)
   #   gql.prepare
   #   gql.query(...)
+  #
+  # @example Initialize with block (useful for manipulating things in specs)
+  #
+  # Yields before the calculation and after assigning datasets and updating inputs.
+  #
+  #   g = Scenario.default.gql do |gql|
+  #     # before yielding Gql#initialize calls
+  #     # gql.init_datasets
+  #     # gql.update_graphs
+  #     gql.future_graph.converter(:foo).preset_demand = nil
+  #     gql.update_graph(:future, Input.last, 2.0)
+  #     # after yielding:
+  #     # gql.calculate_graphs
+  #   end
+  #   g # is now fully calculated gql.
+  #
   #
   # @example Initialize with scenario and individually prepare the gql
   #   gql = Scenario.default.gql(prepare: false)
@@ -56,6 +70,13 @@ class Gql
       # the present dataset, without any updates run. However some updates
       # also update the present graph, so it is not completely identical.
       @dataset = loader.dataset(@scenario.area_code)
+
+      if block_given?
+        self.init_datasets
+        self.update_graphs
+        yield self
+        self.calculate_graphs
+      end
     end
   end
 
