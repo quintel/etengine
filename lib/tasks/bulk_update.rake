@@ -139,13 +139,6 @@ namespace :bulk_update do
     end
     @update_records = HighLine.agree("You want to update records, right? [y/n]")
 
-    #store all inputs lookup id with key
-    input_info = Input.all
-    inputs_key = {}
-    input_info.each do |x|
-      inputs_key[x.lookup_id] = x.key
-    end
-
     ##########################################################
     # Following lines describe the changes of scenarios in the
     # deploy of August 28 2012
@@ -479,7 +472,7 @@ namespace :bulk_update do
       "standalone_electric_cars_share"=>0.0,
       "buildings_heating_geothermal_share"=>0.0}
 
-
+    # Only look at first 100 scenarios in DB
     scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
@@ -500,39 +493,24 @@ namespace :bulk_update do
         next
       end
 
-      #update user values to key last time to do this. API v3 is this default
-      new_inputs = {}.with_indifferent_access
-      inputs.each do |x|
-        # convert strings values to float
-        if x[1].is_a?(String)
-          begin
-            x[1] = Float(x[1])
-            puts "Round to float"
-          rescue
-            puts "Error! cannot convert string to float round #{x[0]}"
-            next
-          end
-        end
-
-        key = x[0]
-        if key.is_a?(Integer) &&  inputs_key.has_key?(key)
-          key = inputs_key[key]
-        end
-
-        new_inputs[key] = x[1]
-      end
-
       # Rounding all inputs
-      new_inputs.each do |x|
+      inputs.each do |x|
         x[1] =x[1].round(1) unless x[1].nil?
       end
 
-      ################ END ####################################
+      ######## CODE BELOW CHANGES INPUTS OF SCENARIOS #########
+      ####################### START ###########################
 
+      # converter 239 (households_space_heater_heatpump_air_water_network_gas) has been removed 
+            
+
+      # converter 322 (households_cooling_heatpump_air_water_network_gas) has been removed
+
+      ######################## END ############################
 
       if @update_records || ENV['PRESETS']
         puts "saving"
-        s.update_attributes!(:user_values => new_inputs)
+        s.update_attributes!(:user_values => inputs)
       end
 
     end
