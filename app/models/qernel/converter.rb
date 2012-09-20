@@ -165,7 +165,7 @@ class Converter
   # return the key if no excel_id defined or dataset not initialised yet.
   #
   def excel_id_to_sym
-    if object_dataset
+    if dataset_attributes
       (excel_id || key).to_s.to_sym
     else
       key

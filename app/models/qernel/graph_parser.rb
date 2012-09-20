@@ -13,7 +13,7 @@ module Qernel
     }
 
     CARRIERS = {}.merge(CARRIERS_FOR_SPECS)
-    
+
     LINK_TYPES = {
       's' => :share,
       'c' => :constant,
@@ -32,7 +32,7 @@ module Qernel
       b.build
     end
 
-    def self.gql_stubbed(g)      
+    def self.gql_stubbed(g)
       raise "GraphParser.gql_stubbed only workds in test" unless Rails.env.test?
       gql = Gql::Gql.new(nil)
       gql.scenario = Scenario.default
@@ -68,7 +68,7 @@ module Qernel
         link_type, link_share, reversed = link(link_str)
         c_lft = build_converter(lft)
         c_rgt = build_converter(rgt)
-        carrier = carrier(carrier_key) 
+        carrier = carrier(carrier_key)
 
         link = graph.
           connect(c_lft, c_rgt, carrier, link_type ).
@@ -80,10 +80,10 @@ module Qernel
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt
       end
 
-      graph.refresh_dataset_objects
+      graph.refresh_dataset_attributes
       graph
     end
-  
+
     # s => :share, nil
     # s(1.0) => :share, 1.0
     def link(str)
@@ -134,4 +134,4 @@ module Qernel
 
   end
 end
-  
+

@@ -19,8 +19,8 @@ class GraphApi
     @graph = graph
   end
 
-  def object_dataset
-    @graph.object_dataset
+  def dataset_attributes
+    @graph.dataset_attributes
   end
 
   def dataset_key
