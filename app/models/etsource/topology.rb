@@ -138,11 +138,16 @@ module Etsource
       @input_key   = input.converter_key
       @output_key  = output.converter_key
       @reversed    = line.include?('<')
-      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/--(\w)--[<>]/).flatten.first]
+      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/-(\w)-/).flatten.first]
     end
 
+    # Matches:
+    #
+    # )<--s--(
+    # )--s-->(
+    #
     def self.find(line)
-      if line.gsub(/\s/,'') =~ /\)--\w--[<>]\(/
+      if line.gsub(/\s/,'') =~ /\)<?--\w-->?\(/
         new(line)
       else
         []
