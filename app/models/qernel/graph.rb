@@ -1,15 +1,15 @@
 module Qernel
-##
-# TODO (interface so that):
-# g = Qernel::Graph.new([Qernel::Converter], [Qernel::Carrier])
-# g.links = [Qernel::Link]
-# g.slot = [Qernel::Slot]
+# Graph connects and datasets, converters, links, carriers. It controls the
+# main calculation logic and gives allows for plugins to hook into the
+# calculation.
 #
-# g can now be cached
-#
-# g.dataset = Dataset.new
-# g.optimize_calculation_order (needs dataset) (this should be cached as well)
-# g.calculate
+#     g = Qernel::Graph.new([Qernel::Converter], [Qernel::Carrier])
+#     g.links = [Qernel::Link]
+#     g.slot  = [Qernel::Slot]
+#     # g can now be cached
+#     g.dataset = Dataset.new
+#     g.optimize_calculation_order (needs dataset) (this should be cached as well)
+#     g.calculate
 #
 #
 class Graph
@@ -31,8 +31,8 @@ class Graph
   dataset_accessors :calculated,
                     :year,
                     :use_fce,
-                    # graphs do not know the number of years, which is defined in
-                    # scenario.
+                    # graphs do not know the number of years, that is defined
+                    # in scenario and assigned in a 2nd step by the gql.
                     :number_of_years
 
   def dataset_key
@@ -48,15 +48,15 @@ class Graph
 
   attr_accessor :dataset,
                 :finished_converters,
-                :area,
-                :graph_id
+                :area
 
 
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
     @logger = ::Qernel::Logger.new
+    @area   = Qernel::Area.new(self)
+
     self.converters = converters
-    self.area = Qernel::Area.new(self)
   end
 
   # Assigns self to the graph variables of every qernel objects. The qernel
@@ -73,6 +73,9 @@ class Graph
     carriers.each { |c| c.graph = self }
   end
 
+  # Assigning new converters will also invalidate memoized lookup tables that
+  # are related to converters.
+  #
   def converters=(converters)
     @converters = converters
     reset_memoized_methods
@@ -160,7 +163,7 @@ class Graph
   # 3. Remove converter from stack and move it to {#finished_converters}
   # 5. => (continue at 1. until stack is empty)
   # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
-  # TODO refactor
+  #
   def calculate(options = {})
     run_callbacks :calculate do
 
@@ -200,17 +203,16 @@ class Graph
   end
 
   def carrier(key)
-    carriers.detect{|c| c.key == key.to_sym or c.id.to_s == key.to_s}
+    carriers.detect{ |c| c.key == key.to_sym or c.id.to_s == key.to_s }
   end
 
   def carriers
     # The list of carriers is retrieved by looking at all slots, not just
     # links, so that "orphan" carriers used only for initial input (e.g.
     # imported_steam_hot_water) get included.
-    @carriers ||=
-      converters.each_with_object(Set.new) do |converter, carriers|
-        converter.slots.each { |slot| carriers.add slot.carrier }
-      end.freeze
+    @carriers ||= converters.each_with_object(Set.new) do |converter, carriers|
+      converter.slots.each { |slot| carriers.add slot.carrier }
+    end.freeze
   end
 
   # used by gql
@@ -242,8 +244,8 @@ class Graph
   # @return [Array<Converter>]
   #
   def sector_converters(sector_key)
-    sector_key_sym = sector_key.to_sym
-    self.converters.select{|c| c.sector_key == sector_key_sym }
+    key = sector_key.to_sym
+    converters.select{|c| c.sector_key == key }
   end
 
   # Return all converters in the given sector.
@@ -252,10 +254,8 @@ class Graph
   # @return [Array<Converter>]
   #
   def group_converters(group_key)
-    group_key_sym = group_key.to_sym
-
-    @group_converters_cache[group_key_sym] ||=
-      self.converters.select{|c| c.groups.include?(group_key_sym) }
+    key = group_key.to_sym
+    @converters_by_group[key] ||= converters.select{|c| c.groups.include?(key) }
   end
 
   # Return the converter with given id or key. See {Qernel::Converter::KEYS_FOR_LOOKUP} for used keys
@@ -268,7 +268,7 @@ class Graph
     @converters_hash[id]
   end
 
-
+  # Graphviz
   def to_image
     g = GraphDiagram.new(self.converters)
     g.generate('graph')
@@ -280,9 +280,34 @@ class Graph
     "<Qernel::Graph>"
   end
 
-  # optimizes calculation speed of graph by rearranging order of converters array
+  # optimizes calculation speed of graph by rearranging the order of the converters array.
   #
-  # @todo Calculate graph, and order converters array according to finished_converters
+  # Basic idea is to run a brute-force calculation, after the optimal way of
+  # traversing through the graph can be found in finished_converters.
+  #
+  # @example
+  #      # Load topology from etsource, random ordering of converters:
+  #      # converters: [converter_1, converter_2, converter_3]
+  #      converter_1.ready?     # => false
+  #      converter_2.ready?     # => false
+  #      converter_3.ready?     # => true
+  #      converter_3.calculate  # => finished_converters: [converter_3]
+  #      converter_1.ready?     # => false
+  #      converter_2.ready?     # => true    | calculating converter_3 makes _2 calculateable/ready
+  #      converter_2.calculate  # => finished_converters: [converter_3, converter_2]
+  #      converter_1.ready?     # => true    | calculating converter_2 makes _1 calculateable/ready
+  #      converter_1.calculate  # => finished_converters: [converter_3, converter_2, converter_1]
+  #      # reorder the converters array according to finished_converters
+  #      # converters: [converter_3, converter_2, converter_1]
+  #      # From now on converters are correctly ordered and we save us lots of expensive ready? checks:
+  #      converter_3.ready?     # => true
+  #      converter_3.calculate
+  #      converter_2.ready?     # => true
+  #      converter_2.calculate
+  #      converter_1.ready?     # => true
+  #      converter_1.calculate
+  #
+  #
   def optimize_calculation_order
     copy = Marshal.load(Marshal.dump(self))
     copy.calculate
@@ -324,22 +349,13 @@ class Graph
     @goals = []
   end
 
-
   def reset_memoized_methods
     @carriers = nil
     @links    = nil
     @groups   = nil
+    @converters_by_group = {}
 
     regenerate_converter_lookup
-    reset_group_converters
-  end
-
-private
-
-  # Reset a lookup for converter groups.
-  #
-  def reset_group_converters
-    @group_converters_cache = {}
   end
 
   # Regenerate a lookup hash for converters, used by #converter( key_or_excel_id )
@@ -359,6 +375,7 @@ private
   end
 
 public
+
   # ====== Methods only used for Testing =============================
 
   if Rails.env.test? || Rails.env.development?

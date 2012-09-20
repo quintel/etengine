@@ -13,7 +13,6 @@ class GraphApi
 
   dataset_accessors :enable_merit_order
 
-  ##
   # @param graph [Qernel::Graph]
   def initialize(graph)
     @graph = graph
