@@ -11,16 +11,17 @@ module Qernel
         logs << (l32 = { :nesting => 3, :id => 121 } )
         logs << (l32 = { :nesting => 4, :id => 121 } )
         logs << (l32 = { :nesting => 2, :id => 21 } )
-        # logs << (l33 = { :nesting => 3, :id => 33 } )
-        # logs << (l22 = { :nesting => 2, :id => 22 } )
-        
+
         tree = Logger.to_tree(logs)
-        # tree.length.should == 1
-        # binding.pry
-        # tree[l1][l21][l31].should == nil
-        # tree[l1][l22].should == nil
-
-
+        # 1 root element:
+        tree.length.should == 1
+        tree.first[0].should == {nesting: 1, id: 1}
+        root = tree.first[1]
+        # 2 childs for root
+        root.length.should == 2
+        # the leafs of the 2 children:
+        root.values.first.length.should == 2 # the two leafs with nesting 3( 31,121)
+        root.values.last.should == nil
       end
     end
   end
