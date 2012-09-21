@@ -122,6 +122,28 @@ class ConverterApi
     converter.preset_demand = val
   end
 
+  # Updates a (power plant) converter demand by its electricity output.
+  #
+  # That means we have to divide by the conversion of the electricity slot. So
+  # that the electricity output link receive that value, otherwise one part would
+  # go away to losses.
+  #
+  # UPDATE( ... , preset_demand_by_electricity_production, 1000)
+  #
+  #               +--------+
+  #  1000   el---o|        |
+  #               |  1030  |o----
+  #    30 loss---o|        |
+  #               +--------+
+  #
+  def preset_demand_by_electricity_production=(val)
+    if output_slot = converter.output(:electricity)
+      converter.preset_demand = val / output_slot.conversion
+    else
+      raise "UPDATE: preset_demand_by_electricity_production could not find an electricity output for #{key.inspect}"
+    end
+  end
+
   def primary_demand
     self.converter.primary_demand
   end
