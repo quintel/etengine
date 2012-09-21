@@ -55,6 +55,7 @@ class Graph
   def initialize(converters = [])
     @logger = ::Qernel::Logger.new
     @area   = Qernel::Area.new(self)
+    @converters_by_group = {}
 
     self.converters = converters
   end
