@@ -1,4 +1,4 @@
-<% if result.is_a?(Array) 
+<% if result.is_a?(Array)
   present = result.first.last #.round(3) rescue nil
   future  = result.last.last #.round(3) rescue nil
   delta   = (future - present).round(1).rescue_nan rescue nil
@@ -7,17 +7,17 @@
 %>
 
     it "<%= key %>" do
-    <% if present.nil? %>
+    <% if present.nil? or present == 'null' %>
       the_present.should be_nil
     <% else %>
-      the_present.should be_within(some_tolerance).of(<%= present.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+      the_present.should be_within(some_tolerance).of(<%= present.round(MechanicalTurk::ROUNDING) %>)
     <% end %>
-    <% if future.nil? %>
+    <% if future.nil? or future == 'null'  %>
       the_future.should be_nil
     <% else %>
-      the_future.should  be_within(some_tolerance).of(<%= future.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+      the_future.should  be_within(some_tolerance).of(<%= future.round(MechanicalTurk::ROUNDING) %>)
     <% end %>
-    <% if present and future %>
+    <% if !(change.nil? or change.nil?) # dont bother about changes/deltas if anyone is nil %>
       the_relative_increase.should be_within(some_tolerance).of(<%= change.inspect %>)
       the_absolute_increase.should be_within(some_tolerance).of(<%= delta.inspect  %>)
     <% end %>
@@ -26,10 +26,10 @@
 <% else %>
 
     it "<%= key %>" do
-    <% if result.nil? %>
+    <% if result.nil? or result == 'null' %>
       the_value.should be_nil
     <% else %>
-      the_value.should be_within(some_tolerance).of(<%= result.round(MechanicalTurk::ROUNDING) rescue 'nil' %>)
+      the_value.should be_within(some_tolerance).of(<%= result.round(MechanicalTurk::ROUNDING) %>)
     <% end %>
     end
 

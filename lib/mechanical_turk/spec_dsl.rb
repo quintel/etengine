@@ -1,5 +1,5 @@
 # Mechanical Turk DSL
-# 
+#
 # before(:all) do
 #   load_scenario({end_year: 2030}) do
 #     move_slider 3, 2.0
@@ -44,11 +44,11 @@ module MechanicalTurk
     end
 
     def the_present(cmd)
-      execute(cmd).andand.present_value
+      execute(cmd).present_value.rescue_nan(nil) rescue nil
     end
 
     def the_future(cmd)
-      execute(cmd).andand.future_value
+      execute(cmd).future_value.rescue_nan(nil) rescue nil
     end
 
     def the_relative_increase(cmd)
@@ -61,14 +61,14 @@ module MechanicalTurk
 
     def load_scenario(options = {}, &block)
       NastyCache.instance.expire!
-      
+
       scenario = Scenario.new(Scenario.default_attributes.merge options)
       @gql = scenario.gql(prepare: false)
-      
+
       @gql.init_datasets
       instance_eval(&block) if block_given?
       # @gql.update_graphs
-      # self.lazy_load_calculate 
+      # self.lazy_load_calculate
       # Above is called when the first numbers are requested through the_future.
       # this allows us to have custom sliders inside "should" do (This works
       # when we initialize load_scenario inside before(:each) and not before(:all)
@@ -86,11 +86,11 @@ module MechanicalTurk
         @user_values_log[input.id] = value
         scenario.update_input(input, value)
       else
-        puts "no input found with id #{id.inspect}" 
+        puts "no input found with id #{id.inspect}"
       end
     end
 
-  protected 
+  protected
 
     def scenario
       @gql.scenario
@@ -121,7 +121,7 @@ module MechanicalTurk
     def lazy_load_calculate
       unless @gql.calculated?
         @gql.update_graphs
-        @gql.calculate_graphs 
+        @gql.calculate_graphs
       end
     end
 
@@ -136,7 +136,7 @@ module MechanicalTurk
       input = Input.new(:key => 'custom', :query => query)
       move_slider(input, value)
     end
-    
+
     def execute(query)
       if query.include?("(")
         custom(query)
@@ -149,5 +149,5 @@ module MechanicalTurk
     end
   end
 
-  
+
 end
