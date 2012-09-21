@@ -115,10 +115,6 @@ module Qernel
           'variable_operation_and_maintenance_costs_per(:mwh_heat)' => {},
           'total_initial_investment_per(:mwh_heat)'                 => {},
         },
-        :old => {
-          :mw_input_capacity => {},
-          :typical_input_capacity => {}
-        }
       }
       graph.carriers.each do |c|
         method_name = "primary_demand_of_#{c.key}".to_sym
