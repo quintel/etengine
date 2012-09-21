@@ -24,22 +24,22 @@ class Qernel::ConverterApi
   #
   # DEPRECATED: use fuel_costs_per(converter)
   #
-  #def fuel_costs_total
-  #  function(:fuel_costs_total) do
-  #    demand * weighted_carrier_cost_per_mj
-  #  end
-  #end
-  #unit_for_calculation "fuel_costs_total", 'euro'
+  def fuel_costs_total
+    function(:fuel_costs_total) do
+      demand * weighted_carrier_cost_per_mj
+    end
+  end
+  unit_for_calculation "fuel_costs_total", 'euro'
   
   # Determines the fuel costs per MWh input, bases on the weighted costs of the used input.
   #
   # DEPRECATED: use fuel_costs_per(mwh_input)
   #
-  #def fuel_costs_per_mwh_input
-  #  function(:fuel_costs_per_mwh_input) do
-  #    SECS_PER_HOUR * weighted_carrier_cost_per_mj
-  #  end
-  #end
-  #unit_for_calculation "fuel_costs_per_mwh_input", 'euro'
+  def fuel_costs_per_mwh_input
+    function(:fuel_costs_per_mwh_input) do
+      SECS_PER_HOUR * weighted_carrier_cost_per_mj
+    end
+  end
+  unit_for_calculation "fuel_costs_per_mwh_input", 'euro'
 
 end
