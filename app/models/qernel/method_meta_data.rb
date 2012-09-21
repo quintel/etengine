@@ -53,7 +53,7 @@ module Qernel
           'co2_emissions_costs_per(:plant)'                          => {},
           'fixed_operation_and_maintenance_costs_per(:plant)'        => {},
           'variable_operation_and_maintenance_costs_per(:plant)'     => {},
-          'initial_investment_costs_per(:plant)'                     => {},
+          'total_initial_investment_per(:plant)'                     => {},
         },
         :costs_per_converter => {
           'total_costs_per(:converter)'                              => {},
@@ -65,7 +65,7 @@ module Qernel
           'co2_emissions_costs_per(:converter)'                      => {},
           'fixed_operation_and_maintenance_costs_per(:converter)'    => {},
           'variable_operation_and_maintenance_costs_per(:converter)' => {},
-          'initial_investment_costs_per(:converter)'                 => {},
+          'total_initial_investment_per(:converter)'                 => {},
         },
         :costs_per_mw_electricity => {
           'total_costs_per(:mw_electricity)'                              => {},
@@ -77,7 +77,7 @@ module Qernel
           'co2_emissions_costs_per(:mw_electricity)'                      => {},
           'fixed_operation_and_maintenance_costs_per(:mw_electricity)'    => {},
           'variable_operation_and_maintenance_costs_per(:mw_electricity)' => {},
-          'initial_investment_costs_per(:mw_electricity)'                 => {},
+          'total_initial_investment_per(:mw_electricity)'                 => {},
         },
         :costs_per_mwh_electricity => {
           'total_costs_per(:mwh_electricity)'                              => {},
@@ -89,7 +89,7 @@ module Qernel
           'co2_emissions_costs_per(:mwh_electricity)'                      => {},
           'fixed_operation_and_maintenance_costs_per(:mwh_electricity)'    => {},
           'variable_operation_and_maintenance_costs_per(:mwh_electricity)' => {},
-          'initial_investment_costs_per(:mwh_electricity)'                 => {},
+          'total_initial_investment_per(:mwh_electricity)'                 => {},
         },
         :costs_per_mw_heat => {
           'total_costs_per(:mw_heat)'                              => {},
@@ -101,7 +101,7 @@ module Qernel
           'co2_emissions_costs_per(:mw_heat)'                      => {},
           'fixed_operation_and_maintenance_costs_per(:mw_heat)'    => {},
           'variable_operation_and_maintenance_costs_per(:mw_heat)' => {},
-          'initial_investment_costs_per(:mw_heat)'                 => {},
+          'total_initial_investment_per(:mw_heat)'                 => {},
         },
         :costs_per_mwh_heat => {
           'total_costs_per(:mwh_heat)'                              => {},
@@ -113,7 +113,7 @@ module Qernel
           'co2_emissions_costs_per(:mwh_heat)'                      => {},
           'fixed_operation_and_maintenance_costs_per(:mwh_heat)'    => {},
           'variable_operation_and_maintenance_costs_per(:mwh_heat)' => {},
-          'initial_investment_costs_per(:mwh_heat)'                 => {},
+          'total_initial_investment_per(:mwh_heat)'                 => {},
         },
         :old => {
           :mw_input_capacity => {},
