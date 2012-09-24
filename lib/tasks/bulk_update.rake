@@ -281,7 +281,6 @@ namespace :bulk_update do
       "number_of_solar_pv_roofs_fixed"=>0.0,
       "number_of_coal_conventional"=>0.0,
       "number_of_coal_lignite"=>0.0,
-      "households_heating_gas_fired_heat_pump_share"=>0.0030104,
       "other_number_of_small_gas_chp"=>0.0,
       "industry_number_of_gas_chp"=>122.08775,
       "industry_number_of_biomass_chp"=>7.41075,
@@ -302,8 +301,7 @@ namespace :bulk_update do
       "households_hot_water_gas_water_heater_share"=>13.578585,
       "households_hot_water_electric_boiler_share"=>7.0920372,
       "households_hot_water_solar_water_heater_share"=>0.9046521,
-      "households_cooling_heat_pump_ground_share"=>0.0748925,
-      "households_cooling_gas_fired_heat_pump_share"=>0.0030104,
+      "households_cooling_heat_pump_ground_share"=>0.0,
       "households_cooling_airconditioning_share"=>100.0,
       "households_cooking_gas_share"=>59.918324,
       "households_cooking_electric_share"=>16.03267,
@@ -323,6 +321,7 @@ namespace :bulk_update do
       "households_hot_water_demand_per_person"=>0.0,
       "households_cooling_heatpump_air_water_electricity_share"=>0.0,
       "households_space_heater_heatpump_air_water_electricity_share"=>0.0,
+      "households_water_heater_heatpump_air_water_electricity_share"=>0.0,
       "buildings_number_of_buildings"=>0.0,
       "buildings_electricity_per_student_employee"=>0.0,
       "buildings_heat_per_employee_student"=>0.0,
@@ -472,7 +471,7 @@ namespace :bulk_update do
       "standalone_electric_cars_share"=>0.0,
       "buildings_heating_geothermal_share"=>0.0}
 
-    # Only look at first 100 scenarios in DB
+    # Fetch scenario's in batches of 100
     scenario_scope.find_each(:batch_size => 100) do |s|
       puts "Scenario ##{s.id}"
 
@@ -501,10 +500,106 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES INPUTS OF SCENARIOS #########
       ####################### START ###########################
 
-      # converter 239 (households_space_heater_heatpump_air_water_network_gas) has been removed 
-            
+      # converter 239 (households_space_heater_heatpump_air_water_network_gas) has been removed (key: households_heating_gas_fired_heat_pump_share)
+      # converter 14 (households_space_heater_collective_heatpump_water_water_ts_electricity) has been replaced by households_space_heater_heatpump_air_water_electricity
+      
+      # HHs space heating group
+      share_group_inputs = [
+      "households_space_heater_heatpump_air_water_electricity_share",
+      "households_heating_micro_chp_share",
+      "households_heating_electric_heater_share",
+      "households_heating_oil_fired_heater_share",
+      "households_heating_gas_combi_heater_share",
+      "households_heating_heat_pump_ground_share",
+      "households_heating_pellet_stove_share",
+      "households_heating_coal_fired_heater_share",
+      "households_heating_gas_fired_heater_share",
+      "households_heating_district_heating_network_share",
+      ]
 
-      # converter 322 (households_cooling_heatpump_air_water_network_gas) has been removed
+      # Transfer share of the households_heating_gas_fired_heat_pump_share and 
+      inputs["households_space_heater_heatpump_air_water_electricity_share"] += inputs["households_heating_gas_fired_heat_pump_share"] unless inputs["households_heating_gas_fired_heat_pump_share"].nil?
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = defaults[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% BEFORE scaling
+      if !(sum).between?(99.99, 100.01)
+
+        puts "Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
+
+        gas_heatpump_share = 100.0 - sum
+        puts "gas_heatpump_share: " + gas_heatpump_share.to_s
+
+        inputs["households_space_heater_heatpump_air_water_electricity_share"] += gas_heatpump_share
+      end
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = defaults[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      if !(sum).between?(99.99, 100.01)
+
+        puts "Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
+        # scale
+        factor = sum / 100.0;
+        share_group_inputs.each do |element|
+          inputs[element] = inputs[element] / factor
+        end
+      end
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = defaults[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+      if !(sum).between?(99.99, 100.01)
+        puts "Error! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
+        exit
+      end
+
+
+      # converter 322 (households_cooling_heatpump_air_water_network_gas) has been removed (key: households_cooling_gas_fired_heat_pump_share)
+      # converter 323 (households_cooling_collective_heatpump_water_water_ts_electricity) has been replaced by households_cooling_heatpump_air_water_electricity_share
+
+      #Share group of HHs cooling
+      share_group_inputs = [
+      "households_cooling_heat_pump_ground_share", 
+      "households_cooling_heatpump_air_water_electricity_share", 
+      "households_cooling_airconditioning_share"]
+      
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = defaults[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% BEFORE scaling
+      if !(sum).between?(99.99, 100.01)
+          puts "Warning! Share group of HHs cooling is not 100% in scenario, but is " + (sum).to_s
+
+          # If "households_cooling_gas_fired_heat_pump_share" still has a share, give it to air-water pump
+          inputs["households_cooling_heatpump_air_water_electricity_share"] += inputs["households_cooling_gas_fired_heat_pump_share"] unless inputs["households_cooling_gas_fired_heat_pump_share"].nil?
+
+          # Scale the airco down if necessary
+          inputs["households_cooling_airconditioning_share"] = 100.0 - inputs["households_cooling_heat_pump_ground_share"] - inputs["households_cooling_heatpump_air_water_electricity_share"]
+      end
+
+      if !(inputs["households_cooling_heat_pump_ground_share"] +
+        inputs["households_cooling_heatpump_air_water_electricity_share"] + 
+        inputs["households_cooling_airconditioning_share"]).round(1).between?(99.99, 100.01)
+
+        puts "Error! Sum of HHs cooling = " + (inputs["households_cooling_heat_pump_ground_share"] + 
+          inputs["households_cooling_heatpump_air_water_electricity_share"] + 
+          inputs["households_cooling_airconditioning_share"]).to_s
+        exit
+      end
+
 
       ######################## END ############################
 
