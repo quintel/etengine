@@ -5,6 +5,55 @@ module Qernel::Plugins::MeritOrder
     before :all do
       NastyCache.instance.expire!
       Etsource::Base.loader('spec/fixtures/etsource')
+      Qernel::ConverterApi.create_methods_for_each_carrier([:electricity])
+    end
+
+    # Stubs methods for the etsource fixture, so that merit order runs properly
+    def stubbed_gql
+      Scenario.default.gql do |gql|
+        # make first converters more expensive. So their merit_order_position moves backwards
+        # typical_electricity_output needed for variable_costs
+        # Default of 500.0 for installed_production_capacity_in_mw_electricity needed for the merit_order calculation
+        gql.present_graph.dispatchable_merit_order_converters.sort_by(&:key).each_with_index do |converter, idx|
+          converter.query.stub!(:variable_costs).and_return(10.0 - idx)
+          converter.query.stub!(:typical_electricity_output).and_return(1.0)
+          converter.query.stub!(:installed_production_capacity_in_mw_electricity).and_return(500.0)
+
+          yield converter, idx if block_given?
+        end
+      end
+    end
+
+    context "fixtures default scenario" do
+
+      it "with misisng attrs/methods assigns merit_order_position 1000" do
+        gql = Scenario.default.gql
+        gql.query_present("V(plant_1, merit_order_position)").should == 1000
+        gql.query_present("V(plant_2, merit_order_position)").should == 1000
+        gql.query_present("V(plant_3, merit_order_position)").should == 1000
+      end
+
+      it "with stubbed attrs/methods assigns merit_order as expected" do
+        gql = stubbed_gql
+
+        gql.query_present("V(plant_1, merit_order_position)").should == 3
+        gql.query_present("V(plant_1, merit_order_end)").should      == 1500.0
+        gql.query_present("V(plant_2, merit_order_position)").should == 2
+
+        gql.query_present("V(plant_3, merit_order_position)").should == 1
+        gql.query_present("V(plant_3, merit_order_start)").should    == 0.0
+        gql.query_present("V(plant_3, merit_order_end)").should      == 500.0
+      end
+
+      it "takes into account availability" do
+        gql = stubbed_gql do |converter, idx|
+          converter.query.stub!(:availability).and_return( 0.5 )
+        end
+
+        gql.query_present("V(plant_1, merit_order_end)").should      == 750.0
+        gql.query_present("V(plant_2, merit_order_end)").should      == 500.0
+        gql.query_present("V(plant_3, merit_order_end)").should      == 250.0
+      end
     end
 
     describe "#calculate_merit_order" do
