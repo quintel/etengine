@@ -161,7 +161,7 @@ module Qernel
 
     describe '#depreciation_costs' do
       it "should calculate when everything is set" do
-        @c.with total_investment: 100, residual_value: 10, technical_lifetime: 10
+        @c.with total_investment_over_lifetime: 100, residual_value: 10, technical_lifetime: 10
         @c.converter_api.depreciation_costs.should == 9
       end
 
@@ -208,7 +208,7 @@ module Qernel
 
     describe "#fuel_costs" do
       it "should calculate when everything is set" do
-        @c.with total_investment: 100, residual_value: 10, technical_lifetime: 10
+        @c.with total_investment_over_lifetime: 100, residual_value: 10, technical_lifetime: 10
         @c.converter_api.depreciation_costs.should == 9
       end
 
