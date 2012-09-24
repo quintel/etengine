@@ -57,3 +57,20 @@ reversed_links_left:
   - reversed_links_left-(gas) <--s-- (gas)-reversed_links_middle_3
 
 
+# merit order ----------------------
+
+el_grid:
+  links:
+    - el_grid-(electricity) <--f-- (electricity)-plant_1
+    - el_grid-(electricity) <--f-- (electricity)-plant_2
+    - el_grid-(electricity) --f--> (electricity)-plant_3
+
+plant_1: {}
+plant_2: {}
+plant_3: {}
+
+must_run_1: {}
+must_run_2: {}
+must_run_3: {}
+
+fd_electricity_for_merit_order: {}

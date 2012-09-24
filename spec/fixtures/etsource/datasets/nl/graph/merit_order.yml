@@ -1,0 +1,34 @@
+fd_electricity_for_merit_order:
+  preset_demand: 5000
+  full_load_seconds: 1.0
+
+el_grid:
+  preset_demand: 5000
+
+el_grid-(electricity):
+  conversion: 1.0
+
+el_grid-(electricity) <--f-- (electricity)-plant_1: {}
+el_grid-(electricity) <--f-- (electricity)-plant_2: {}
+el_grid-(electricity) --f--> (electricity)-plant_3: {}
+
+plant_1:
+  preset_demand: 1000
+  availability: 1.0
+
+plant_2:
+  preset_demand: 2000
+  availability: 1.0
+
+plant_3:
+  availability: 1.0
+
+(electricity)-plant_1: {conversion: 1.0}
+(electricity)-plant_2: {conversion: 1.0}
+(electricity)-plant_3: {conversion: 1.0}
+
+
+must_run_1: {preset_demand:  100, availability: 1.0}
+must_run_2: {preset_demand:  500, availability: 1.0}
+must_run_3: {preset_demand: 1000, availability: 1.0}
+

@@ -1,0 +1,7 @@
+# the kyes column_x are on purpose. so that it is clear that the
+# order is important, and has to match the order in merit_order.csv
+column_1: # MW_industryCHP
+  - must_run_1
+  - must_run_2
+column_2: # MW_agriCHP:
+  - must_run_3
