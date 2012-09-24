@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 module Qernel::Plugins::MeritOrder
-  pending "CalculationBreakpoints" do
+  describe "CalculationBreakpoints" do
     before :all do
       NastyCache.instance.expire!
       Etsource::Base.loader('spec/fixtures/etsource')
     end
 
-    context "fixtures" do
+    pending "fixtures" do
       before do
 
       end
