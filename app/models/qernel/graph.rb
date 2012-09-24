@@ -192,8 +192,7 @@ class Graph
                    :calculate_finished
 
   def calculation_loop
-    state = [:calculate, @current_breakpoint].compact.join("_").to_sym
-    puts state
+    state = :"calculate_#{@current_breakpoint}"
     run_callbacks state do
       while index = @converter_stack.index(&:ready?)
         converter = @converter_stack[index]
