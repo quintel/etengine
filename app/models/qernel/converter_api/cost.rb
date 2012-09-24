@@ -22,6 +22,8 @@ class Qernel::ConverterApi
   #
   # @return [Float] Input capacity of a typical plant in MWinput
   #
+  # DEBT: move to another file when cleaning up Converter API
+  #
   def nominal_input_capacity
     function(:nominal_input_capacity) do
       electric_based_nominal_input_capacity ||
@@ -40,6 +42,8 @@ class Qernel::ConverterApi
   # average_effective_output_of_nominal_capacity_over_lifetime is not set
   #
   # @return [Float] Effective input capacity of a typical plant in MW
+  #
+  # DEBT: move to another file when cleaning up Converter API
   #
   def effective_input_capacity
     function(:effective_input_capacity) do
@@ -123,7 +127,7 @@ class Qernel::ConverterApi
   #
   def depreciation_costs
     function(:depreciation_costs) do
-      (total_investment - residual_value) / technical_lifetime
+      (total_investment_over_lifetime - residual_value) / technical_lifetime
     end
   end
   unit_for_calculation "depreciation_costs", 'euro / plant / year'
@@ -167,11 +171,10 @@ class Qernel::ConverterApi
   # This method determines the costs of co2 emissions by doing:
   # Typical input of fuel in mj * the amount of co2 per mj fuel *
   # the co2 price * how much co2 is given away for free *
-  # how much of the co2 of this plant is in ETS *
+  # Is this converter part of the ETS? *
   # how much co2 is not counted (non-energetic or CCS plants)
   #
   # DEBT: rename co2_free and part_ets
-  # DEBT: move factors to a separate function ?
   #
   # @return [Float] the yearly costs for co2 emissions for one plant
   #
@@ -217,6 +220,24 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "total_initial_investment", 'euro / plant'
 
+  # The total investment required at the beginning of the project
+  # plus the decommissioning costs which have to be paid at the end
+  # of the project.
+  #
+  # Note that decommissioning costs have capital costs associated with
+  # them, because it is assumed that the money for this has to be 
+  # paid up front. This is also the case in the Netherlands.
+  #
+  # Used to calculate yearly depreciation costs
+  #
+  #
+  def total_investment_over_lifetime
+    function(:total_investment_over_lifetime) do
+      total_initial_investment + decommissioning_costs
+    end
+  end
+  unit_for_calculation "total_investment_over_lifetime", 'euro / plant / year'
+
   #########
   private
   #########
@@ -225,34 +246,21 @@ class Qernel::ConverterApi
   # a linear repayment scheme. That is why divided by 2, to be at 50% between
   # initial cost and 0.
   #
-  # DEBT: decomissioning costs should be paid at the end of lifetime,
-  # and so should not have a WACC associated with it.
-  #
   # Used to determine cost of capital
   #
   def average_investment
     function(:average_investment) do
-      (total_investment) / 2
+      (total_investment_over_lifetime) / 2
     end
   end
   unit_for_calculation "average_investment", 'euro / plant / year'
-
-  # Used to calculate yearly depreciation costs
-  #
-  # DEBT: should this function be used for investment costs in the scatter
-  #   plot of the ETM as well?
-  #
-  def total_investment
-    function(:total_investment) do
-      total_initial_investment + decommissioning_costs
-    end
-  end
-  unit_for_calculation "total_investment", 'euro / plant / year'
 
   # This method calculates the input capacity of a plant based on the
   # electrical output capacity and electrical efficiency of the converter
   #
   # @return [Float] the typical input capacity of a plant in MWinput
+  #
+  # DEBT: move to another file when cleaning up Converter API
   #
   def electric_based_nominal_input_capacity
     function(:electric_based_nominal_input_capacity) do
@@ -269,6 +277,8 @@ class Qernel::ConverterApi
   # heat output capacity and heat efficiency of the converter
   #
   # @return [Float] the typical input capacity of a plant in MWinput
+  #
+  # DEBT: move to another file when cleaning up Converter API
   #
   def heat_based_nominal_input_capacity
     function(:heat_based_nominal_input_capacity) do
@@ -291,6 +301,8 @@ class Qernel::ConverterApi
   # @return [Float] the input capacity of a plant based on the output
   # capacity and the cooling efficiency of the plant 
   #
+  # DEBT: move to another file when cleaning up Converter API
+  #
   def cooling_based_nominal_input_capacity
     function(:cooling_based_nominal_input_capacity) do
       if cooling_output_conversion && cooling_output_conversion > 0
@@ -302,24 +314,13 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "cooling_based_nominal_input_capacity", 'MWinput'
   
-  # Calculates the typical fuel input of one plant of this type
-  #
-  # Used for variable costs: fuel costs and CO2 emissions costs
-  #
-  # @return [Float] Typical fuel input of one plant in MJ
-  #
-  def typical_fuel_input
-    function(:typical_fuel_input) do
-      effective_input_capacity * full_load_seconds
-    end
-  end
-  unit_for_calculation "typical_fuel_input", 'MJ'
-  
   # Calculates the typical electricity output of one plant of this type
   #
   # Used for conversion of plant to other units
   #
   # @return [Float] Typical electricity output in MJ
+  #
+  # DEBT: move to another file when cleaning up Converter API
   #
   def typical_electricity_output
     function(:typical_electricity_output) do
@@ -334,6 +335,8 @@ class Qernel::ConverterApi
   #
   # @return [Float] Typical heat output in MJ
   #
+  # DEBT: move to another file when cleaning up Converter API
+  #
   def typical_heat_output
     function(:typical_heat_output) do
       typical_fuel_input * heat_and_cold_output_conversion
@@ -341,3 +344,18 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "typical_heat_output", 'MJ / year'
 end
+
+  # Calculates the typical fuel input of one plant of this type
+  #
+  # Used for variable costs: fuel costs and CO2 emissions costs
+  #
+  # @return [Float] Typical fuel input of one plant in MJ
+  #
+  # DEBT: move to another file when cleaning up Converter API
+  #
+  def typical_fuel_input
+    function(:typical_fuel_input) do
+      effective_input_capacity * full_load_seconds
+    end
+  end
+  unit_for_calculation "typical_fuel_input", 'MJ'
