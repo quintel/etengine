@@ -73,7 +73,6 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "total_costs", 'euro / plant / year'
 
-
   ###############
   # Fixed Costs #
   ###############
@@ -166,7 +165,6 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "fuel_costs", 'euro / plant / year'
-
 
   # This method determines the costs of co2 emissions by doing:
   # Typical input of fuel in mj * the amount of co2 per mj fuel *
@@ -343,7 +341,6 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "typical_heat_output", 'MJ / year'
-end
 
   # Calculates the typical fuel input of one plant of this type
   #
@@ -359,3 +356,4 @@ end
     end
   end
   unit_for_calculation "typical_fuel_input", 'MJ'
+end
