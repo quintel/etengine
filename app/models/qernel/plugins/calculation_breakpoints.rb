@@ -8,7 +8,7 @@ module Qernel::Plugins
       :finished    => 2
     }
 
-    included do |variable|
+    included do |klass|
       set_callback :calculate, :before, :initialize_breakpoint
     end
 
