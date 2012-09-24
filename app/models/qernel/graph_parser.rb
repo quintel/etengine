@@ -82,6 +82,7 @@ module Qernel
         c_rgt.output(carrier.key).with(s_rgt) if s_rgt
       end
 
+      graph.assign_graph_to_qernel_objects
       graph.refresh_dataset_attributes
       graph
     end
