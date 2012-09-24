@@ -1,3 +1,69 @@
+# Schematic of Merit Order calculation
+# ==========================================================================================================
+#
+#    FD HH Electr.                                                          G(merit_order_converters)
+#    +-----------+                                                              +------------+
+#    |           |                                                              |            |
+#    |           |                                                 +--- c ----->|            |
+#    +-----------+                 +---------------------+         |  dmd: 200  |            |
+#                                  | Energy Network      |         |            +------------+
+#                                  |---------------------|         |
+#                                  |                     |         |
+#                                  |                     +---------+            +------------+
+#                                  |                     |         |            |            |
+#                                  |                     |         +--- c ----->|            |
+#                                  +---------------------+         |  dmd: 100  |            |
+#                                          ^                       |            +------------+
+#                                          |                       |     ^               ^
+#                                +---------+                       F!    |               |   MeritOrder
+#                                |                                 |     +- - - - -+     +- - - --+
+#    FD Industry Electr.         |                                 |               |
+#     +----------+               |                                 |   +-----+     +
+#     |          +---------------+                                 +-->|     |  |--O-----| Slider no of
+#     |          |               |                                     |     |
+#     +----------+               |              must_run_merit_order   +-----+
+#                                |               +-------------+
+#                                |               |             |
+#                                +-------------->|             |
+#   +--------------+                             |             |
+#   +--------------+                             +-------------+
+#                                              industry chp combined gas power
+#   SUM = graph_peak_power                     SUM(mw_power * electr_output_conversion * availability)
+#
+# ==========================================================================================================
+#
+# Merit Order is influenced among others by sliders:
+# --------------------------
+# * that update number_of_units of plants
+#   => This also overwrites the preset demand of these demands
+# * update costs for energy carriers
+# * other changes to final electricity demand
+#
+# A) Before calculation:
+# --------------------------
+# * Set a calculation breakpoint to output slots of dispatchable merit order plants.
+#
+# B) Calculation
+# --------------------------
+# 1. Graph calculates up to dispatchable merit order plants (they have break-points)
+#
+# C) Merit-order breakpoint.
+# --------------------------
+# 2. MO calculates FLH (based on number_of_units, capacities and availabilities of plants,
+#    combined with demand from HV network)
+# 3. FLH from MO calculation are injected into dispatchable plants
+# 4. Dispatchable plants get a new energy flow assigned (based on number_of_units, capacities
+#    and availabilities of plants and new FLH).
+#
+# D) Resume calculation from breakpoint
+# --------------------------
+# 5. Outgoing reversed flexible links from dispatchable MO plants are updated
+# 6. Inverse links to HV network are updated
+# 7. Graph calculation commences at dispatchable MO plants
+#
+#
+#
+#
 module Qernel::Plugins
   # TXT_TABLE(SORT_BY(G(merit_order_converters),merit_order_position),key,merit_order_full_load_hours)
   module MeritOrder
@@ -6,8 +72,9 @@ module Qernel::Plugins
     included do |variable|
       # Only run if must_run_merit_order_converters.yml file is given.
       if Etsource::Loader.instance.globals('must_run_merit_order_converters')
-        set_callback :calculate, :after, :calculate_merit_order
-        set_callback :calculate, :after, :calculate_full_load_hours
+        set_callback :calculate, :before, :assign_breakpoint_to_dispatchable_merit_order_converters
+        set_callback :calculate, :after,  :calculate_merit_order
+        set_callback :calculate, :after,  :calculate_full_load_hours
       end
     end
 
@@ -44,7 +111,6 @@ module Qernel::Plugins
       instrument("qernel.merit_order: calculate_merit_order") do
         converters = converters_by_total_variable_cost
 
-        #
         first = converters.first.tap{|c| c.merit_order_start = 0.0 }
         update_merit_order_end!(first)
 
