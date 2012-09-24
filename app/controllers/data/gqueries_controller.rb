@@ -1,6 +1,6 @@
 class Data::GqueriesController < Data::BaseController
   layout 'application'
-  
+
   before_filter :find_model, :only => :show
   skip_before_filter :initialize_gql, :only => [:index]
 
@@ -28,17 +28,19 @@ class Data::GqueriesController < Data::BaseController
     render 'result'
   end
 
+  #######
   private
+  #######
 
-    def find_model
-      @gquery = Gquery.get(params[:id])
-    end
+  def find_model
+    @gquery = Gquery.get(params[:id])
+  end
 
-    def assign_query_groups(gquery,groups)
-      return unless groups.kind_of?(Array)
-      groups.each do |group|
-        gquery.gquery_groups.delete_all
-        GqueriesGqueryGroup.new(:gquery_group_id => group, :gquery_id => gquery.id).save
-      end
+  def assign_query_groups(gquery,groups)
+    return unless groups.kind_of?(Array)
+    groups.each do |group|
+      gquery.gquery_groups.delete_all
+      GqueriesGqueryGroup.new(:gquery_group_id => group, :gquery_id => gquery.id).save
     end
+  end
 end
