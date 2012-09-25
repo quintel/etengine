@@ -17,10 +17,11 @@ class Graph
   include ActiveSupport::Callbacks
   include Instrumentable
 
-  define_callbacks :calculate
+  define_callbacks :calculate,
+                   :calculate_initial_loop
+
 
   include Plugins::CalculationBreakpoints
-
   include Plugins::MeritOrder
   include Plugins::Fce
   include Plugins::MaxDemandRecursive
@@ -175,24 +176,45 @@ class Graph
         @converter_stack = converters.clone
         @finished_converters = []
 
-        self.calculation_loop
+        self.calculation_loop(:initial_loop)
 
-        @finished_converters.map(&:input_links).flatten.each(&:update_share)
-        unless @converter_stack.empty?
-          ActiveSupport::Notifications.instrument("gql.debug",
-            "Following converters have not finished: #{@converter_stack.map(&:key).join(', ')}")
-        end
+        self.update_link_shares
       end
     end
     calculated = true
   end
 
-  define_callbacks :calculate_start,
-                   :calculate_merit_order,
-                   :calculate_finished
-
-  def calculation_loop
-    state = :"calculate_#{@current_breakpoint}"
+  # A calculation_loop is one cycle of calculating converters until there is
+  # no converter left to calculate (no converters is #ready? anymore). This
+  # can mean that the calculation is finished or that we need to run a
+  # "plugin" (e.g. merit order). The plugin most likely will update some
+  # converter demands, what "unlocks" more converters and the calculation can
+  # continue.
+  #
+  # Schematic of calculation_loop and callbacks
+  #
+  #    graph.calculate
+  #    callback :before, :calculate
+  #      graph.calculate_loop(:initial_loop)
+  #      callback :before, :calculate_initial_loop
+  #      callback :after,  :calculate_initial_loop
+  #        graph.run_merit_order
+  #        # => this injects updated demands to power plants.
+  #        #    Now continue loop with 'injected_merit_order'
+  #        graph.calculate_loop(:injected_merit_order)
+  #      callback :before, :calculate_injected_merit_order
+  #      # => now the newly 'unlocked' converters are calculated.
+  #      callback :after,  :calculate_injected_merit_order
+  #      # => finished. You could add a new callback here and add another calculation_loop
+  #    # some cleaning up stuff
+  #    callback :after, :calculate
+  #
+  # Note the :before, :calculate_injected_merit_order is probably unnecesary
+  # but is simply added for consistency. It could be used for logging and
+  # debugging however.
+  #
+  def calculation_loop(state)
+    state = :"calculate_#{state}"
     run_callbacks state do
       while index = @converter_stack.index(&:ready?)
         converter = @converter_stack[index]
@@ -200,6 +222,10 @@ class Graph
         @finished_converters << @converter_stack.delete_at(index)
       end
     end
+  end
+
+  def update_link_shares
+    @finished_converters.map(&:input_links).flatten.each(&:update_share)
   end
 
   def links
