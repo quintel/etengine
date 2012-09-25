@@ -72,7 +72,7 @@ module Qernel::Plugins
     included do |variable|
       # Only run if must_run_merit_order_converters.yml file is given.
       if Etsource::Loader.instance.globals('must_run_merit_order_converters')
-        set_callback :calculate, :before, :assign_breakpoint_to_dispatchable_merit_order_converters
+        # set_callback :calculate, :before, :assign_breakpoint_to_dispatchable_merit_order_converters
         set_callback :calculate, :after,  :calculate_merit_order
         set_callback :calculate, :after,  :calculate_full_load_hours
       end
@@ -98,7 +98,7 @@ module Qernel::Plugins
     def converters_by_total_variable_cost
       dispatchable_converters_for_merit_order.sort_by do |c|
         # Sort by the variable costs of electricity output per MWh
-        c.variable_costs_per(:mwh_electricity)
+        c.variable_costs_per(:mwh_electricity) rescue nil
       end
     end
 
