@@ -1,8 +1,4 @@
-
-
 module Etsource
-
-
   class Topology
 
     def initialize(etsource = Etsource::Base.instance)
