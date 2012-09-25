@@ -114,6 +114,36 @@ describe "API v3scenario life cycle" do
     scenario = JSON.parse(response.body)
     scenario['area_code'].should == 'nl'
     scenario['end_year'].should == 2040
+
+    id = scenario['id']
+    url = "api/v3/scenarios/#{id}"
+
+    # ---- fce disabled by default ------------------------------------------------
+
+    put url, :gqueries => ['fce_enabled']
+
+    result = JSON.parse(response.body)['gqueries']
+    result['fce_enabled']['present'].should == 0.0
+    result['fce_enabled']['future'].should  == 0.0
+
+    # ---- enable fce -------------------------------------------------------------
+
+    put url, :scenario => {:use_fce => 1},
+             :gqueries => ['fce_enabled']
+
+    result = JSON.parse(response.body)['gqueries']
+    result['fce_enabled']['present'].should == 1
+    result['fce_enabled']['future'].should  == 1
+
+    # ---- disable fce -------------------------------------------------------------
+
+    put url, :scenario => {:use_fce => 0},
+             :gqueries => ['fce_enabled']
+
+    result = JSON.parse(response.body)['gqueries']
+    result['fce_enabled']['present'].should == 0
+    result['fce_enabled']['future'].should  == 0
   end
+
 
 end
