@@ -30,6 +30,10 @@ class GraphApi
     enable_merit_order == 1.0
   end
 
+  def fce_enabled?
+    @graph.fce_enabled?
+  end
+
   def area
     @graph.area
   end
