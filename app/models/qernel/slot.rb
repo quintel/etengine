@@ -34,7 +34,12 @@ class Slot
   # @return [Slot]
   #
   def self.factory(type, id, converter, carrier, direction = :input)
-    klass = (type == :elastic ? Slot::Elastic : Slot)
+    klass = case type
+      when :elastic           then Slot::Elastic
+      when :carrier_efficient then Slot::CarrierEfficient
+      else                         Slot
+    end
+
     klass.new(id, converter, carrier, direction)
   end
 
