@@ -48,15 +48,27 @@ module Etsource
       # The new export.graph uses yaml. The old format was parsed line by line,
       # now we must parse the entire structure. A slot object can be built from
       # a link and a slot line, so we merge them, remove duplicates and create
-      # the slots as needed
-      slot_tokens = []
+      # the slots as needed.
+      slot_tokens      = Set.new
+      slots_from_links = Set.new
+
       topology_hash.each_pair do |c_key, values|
-        slot_lines = ((values['slots'] || []) + (values['links'] || []))
-        slot_tokens << slot_lines.map{|line| SlotToken.find(line)}.flatten
+        # First we create slot tokens by parsing the defined "slots"; this
+        # data will contain the most precise definition of the slot (with
+        # optional data).
+        (values['slots'] || []).each do |line|
+          slot_tokens.add(SlotToken.find(line).first)
+        end
+
+        # Then we go through each link to add any slots which weren't
+        # explicitly defined in the "slots" section.
+        (values['links'] || []).each do |line|
+          SlotToken.find(line).each { |token| slots_from_links.add(token) }
+        end
       end
 
-      slot_tokens.flatten.uniq_by{|t| t.key.strip}.each do |token|
-        converter = converters[token.converter_key.to_sym]
+      slot_tokens.merge(slots_from_links).each do |token|
+        converter = converters[token.converter_key]
 
         slot = Qernel::Slot.factory(
           token.data(:type), token.key, converter,
@@ -190,10 +202,18 @@ module Etsource
       @data && @data[key]
     end
 
+    def eql?(other)
+      @key == other.key
+    end
+
+    def hash
+      @key.hash
+    end
+
     # @return [Array] all the slots in a given string.
     def self.find(line)
-      line.scan(SlotToken::MATCHER).map do |(line, data)|
-        new(line, data && eval(data))
+      line.scan(SlotToken::MATCHER).map do |(full_key, data)|
+        new(full_key, data && eval(data))
       end
     end
   end
