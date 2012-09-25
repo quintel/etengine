@@ -94,9 +94,7 @@ module Qernel::Plugins
     #
     def assign_breakpoint_to_dispatchable_merit_order_converters
       dispatchable_converters_for_merit_order.each do |converter_api|
-        converter_api.converter.inputs.each do |slot|
-          slot.breakpoint = :merit_order
-        end
+        converter_api.converter.breakpoint = :merit_order
       end
     end
 
@@ -131,7 +129,7 @@ module Qernel::Plugins
     def inject_updated_demand
       converters_by_total_variable_cost.each do |converter|
         new_demand = converter.full_load_seconds * converter.typical_nominal_input_capacity * converter.number_of_units rescue nil
-        Rails.logger.warn "**** #{converter.key}: #{converter.demand} -> #{new_demand}"
+        # Rails.logger.warn "**** #{converter.key}: #{converter.demand} -> #{new_demand}"
         converter.demand = new_demand
       end
     end

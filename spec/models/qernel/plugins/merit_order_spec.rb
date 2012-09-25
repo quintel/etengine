@@ -19,30 +19,61 @@ module Qernel::Plugins::MeritOrder
           converter.query.stub!(:typical_electricity_output).and_return(1.0)
           converter.query.stub!(:installed_production_capacity_in_mw_electricity).and_return(500.0)
 
+          converter.query.stub!(:full_load_seconds).and_return(100.0)
+          converter.query.stub!(:typical_nominal_input_capacity).and_return(1.0)
+          converter.query.stub!(:number_of_units).and_return(1.0)
+
           yield converter, idx if block_given?
         end
       end
     end
 
     context "fixtures default scenario" do
+      it "works correctly with breakpoints." do
+        # Sort converters randomly, to check that calculation respects breakpoints.
+        gql = Scenario.default.gql do |gql|
+          gql.present_graph.converters.sort_by!{rand}
+        end
+
+        finished = gql.present_graph.finished_converters.map(&:key)
+        finished.last.should == :import_electricity
+
+        # plants are calculated before grid and overflowing import_electricity. But after
+        # all other converters were calculated.
+        finished.index(:plant_1).should < finished.index(:el_grid)
+        finished.index(:plant_1).should < finished.index(:import_electricity)
+        finished.index(:plant_2).should < finished.index(:import_electricity)
+        finished.index(:must_run_1).should < finished.index(:plant_1)
+        finished.index(:must_run_2).should < finished.index(:plant_1)
+      end
+
+
+      it "MO updates demand and calculates correctly reversed links and fills up remaining flex" do
+        gql = stubbed_gql
+
+        gql.query_present("V(el_grid, demand)").should == 5000
+        gql.query_present("V(plant_1, demand)").should == 100
+        gql.query_present("V(plant_2, demand)").should == 100
+        gql.query_present("V(import_electricity, demand)").should == 4800
+
+      end
 
       it "with misisng attrs/methods assigns merit_order_position 1000" do
         gql = Scenario.default.gql
         gql.query_present("V(plant_1, merit_order_position)").should == 1000
         gql.query_present("V(plant_2, merit_order_position)").should == 1000
-        gql.query_present("V(plant_3, merit_order_position)").should == 1000
       end
 
       it "with stubbed attrs/methods assigns merit_order as expected" do
         gql = stubbed_gql
 
-        gql.query_present("V(plant_1, merit_order_position)").should == 3
-        gql.query_present("V(plant_1, merit_order_end)").should      == 1500.0
-        gql.query_present("V(plant_2, merit_order_position)").should == 2
+        gql.query_present("V(plant_1, merit_order_position)").should == 2
+        gql.query_present("V(plant_1, merit_order_end)").should      == 1000.0
+        gql.query_present("V(plant_2, merit_order_position)").should == 1
 
-        gql.query_present("V(plant_3, merit_order_position)").should == 1
-        gql.query_present("V(plant_3, merit_order_start)").should    == 0.0
-        gql.query_present("V(plant_3, merit_order_end)").should      == 500.0
+        gql.query_present("V(plant_2, merit_order_position)").should == 1
+        gql.query_present("V(plant_2, merit_order_start)").should    == 0.0
+        gql.query_present("V(plant_2, merit_order_end)").should      == 500.0
       end
 
       it "takes into account availability" do
@@ -50,9 +81,17 @@ module Qernel::Plugins::MeritOrder
           converter.query.stub!(:availability).and_return( 0.5 )
         end
 
-        gql.query_present("V(plant_1, merit_order_end)").should      == 750.0
-        gql.query_present("V(plant_2, merit_order_end)").should      == 500.0
-        gql.query_present("V(plant_3, merit_order_end)").should      == 250.0
+        gql.query_present("V(plant_1, merit_order_end)").should      == 500.0
+        gql.query_present("V(plant_2, merit_order_end)").should      == 250.0
+      end
+
+      it "takes into account availability" do
+        gql = stubbed_gql do |converter, idx|
+          converter.query.stub!(:availability).and_return( 0.5 )
+        end
+
+        gql.query_present("V(plant_1, merit_order_end)").should      == 500.0
+        gql.query_present("V(plant_2, merit_order_end)").should      == 250.0
       end
     end
 

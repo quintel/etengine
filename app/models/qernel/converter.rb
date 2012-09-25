@@ -361,7 +361,7 @@ public
   # @return [true,false]
   #
   def ready?
-    slots.all?(&:ready?)
+    graph.past_breakpoint?(breakpoint) && slots.all?(&:ready?)
   end
 
   # Calculates the demand of the converter and of the links that depend on this demand.

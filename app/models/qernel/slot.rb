@@ -75,11 +75,7 @@ class Slot
   # @return [Boolean] is Slot ready for calculation?
   #
   def ready?
-    if graph.past_breakpoint?(breakpoint)
-      passive_links.all?(&:value)
-    else
-      false
-    end
+    passive_links.all?(&:value)
     # 2010-06-07 sb:
     # Theoretically it should be:
     #
