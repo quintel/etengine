@@ -165,8 +165,17 @@ module Etsource
   class SlotToken
     attr_reader :converter_key, :carrier_key, :direction, :key
 
-    def initialize(line)
-      @key = line.gsub(/#.+/, '').strip
+    MATCHER = /
+      (\w+-\(\w+\)|\(\w+\)-\w+)  # (carrier)-converter_key
+      (?::\s?                    # Non-matching group containing hash data.
+       (\{.+\})                  # Data hash.
+      )?                         # Data is optional.
+    /x
+
+    def initialize(line, data = nil)
+      @key  = line.gsub(/#.+/, '').strip
+      @data = data
+
       @converter_key, @carrier_key = if line.include?(')-')
         @direction = :output
         @key.split('-').reverse.map(&:to_sym)
@@ -177,9 +186,16 @@ module Etsource
       @carrier_key = @carrier_key.to_s.gsub(/[\(\)]/, '').to_sym
     end
 
+    def data(key)
+      @data && @data[key]
+    end
+
     # @return [Array] all the slots in a given string.
     def self.find(line)
-      (line.scan(/\w+-\(\w+\)|\(\w+\)-\w+/) || []).map{|t| new(t) }
+      line.scan(SlotToken::MATCHER).map do |(line, data)|
+        new(line, data && eval(data))
+      end
     end
   end
+
 end
