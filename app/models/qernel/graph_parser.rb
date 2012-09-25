@@ -73,7 +73,7 @@ module Qernel
         carrier = carrier(carrier_key)
 
         link = graph.
-          connect(c_lft, c_rgt, carrier, link_type ).
+          connect(c_lft, c_rgt, carrier, link_type, *slot_types(line)).
           with(:share => link_share)
         link.reversed = reversed
 
@@ -107,6 +107,24 @@ module Qernel
         r << {:conversion => lft_conversion.to_f} if lft_conversion
         r << {:conversion => rgt_conversion.to_f} if rgt_conversion
         r
+      end
+    end
+
+    # Given a full converter/link line, returns any custom slot types to be
+    # used at either end of the link.
+    #
+    # @example
+    #   "electricity: l == s ==> r"                  # => []
+    #   "electricity[0.4;0.4]: l == s ==> r"         # => []
+    #   "electricity[0.4(elastic);0.4] l == s ==> r" # => [:elastic, nil]
+    #   "electricity[0.4;0.4(elastic)] l == s ==> r" # => [nil, :elastic]
+    def slot_types(str)
+      if match = str.match(/\[(.*)\]/)
+        match[1].split(';').map do |slot_str|
+          (type = slot_str.match(/\((.*)\)/)) && type[1].to_sym
+        end
+      else
+        Array.new
       end
     end
 
