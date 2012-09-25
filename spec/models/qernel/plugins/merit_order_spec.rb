@@ -110,7 +110,7 @@ module Qernel::Plugins::MeritOrder
 
         @graph.stub!(:dispatchable_merit_order_converters).and_return(@converters)
         @graph.stub!(:converters_by_total_variable_cost).and_return(@converters.map(&:query))
-        @graph.calculate_merit_order
+        Qernel::Plugins::MeritOrder::MeritOrderBreakpoint.new(@graph).run
       end
 
       it "should correctly sum merit_order_start" do
@@ -142,6 +142,7 @@ module Qernel::Plugins::MeritOrder
         @ldc_polygon = CurveArea.new([[0.0, 1.0], [1402, 1.0], [7014, 0.5], [12000, 0.1], [14000, 0.0]])
         @converter = @graph.converters.first.query
         @converter.merit_order_start = 0.0
+        @calc = Qernel::Plugins::MeritOrder::MeritOrderBreakpoint.new(@graph)
       end
 
       # 
@@ -157,7 +158,7 @@ module Qernel::Plugins::MeritOrder
           0.1 => 0.1
         }.each do |availability, capacity_factor|
           @converter.availability = availability
-          @graph.capacity_factor_for(@converter, @ldc_polygon).round(1).should == capacity_factor
+          @calc.capacity_factor_for(@converter, @ldc_polygon).round(1).should == capacity_factor
         end
       end
 
@@ -173,7 +174,7 @@ module Qernel::Plugins::MeritOrder
           0.1 => 0.1
         }.each do |availability, capacity_factor|
           @converter.availability = availability
-          @graph.capacity_factor_for(@converter, @ldc_polygon).round(1).should == capacity_factor
+          @calc.capacity_factor_for(@converter, @ldc_polygon).round(1).should == capacity_factor
         end
       end
     end

@@ -166,17 +166,20 @@ class Graph
   #
   def calculate(options = {})
     run_callbacks :calculate do
-      if calculated?
-        instrument("gql.debug", "Graph already calculated")
-        return
-      end
+      return if calculated?
+
+      setup_breakpoints
 
       instrument("gql.performance.calculate") do
         # FIFO stack of all the converters. Converters are removed from the stack after calculation.
         @converter_stack = converters.clone
         @finished_converters = []
 
-        self.calculation_loop(:initial_loop)
+        self.calculation_loop # the initial loop
+        while breakpoint = next_breakpoint
+          breakpoint.run
+          self.calculation_loop
+        end
 
         self.update_link_shares
       end
@@ -191,36 +194,11 @@ class Graph
   # converter demands, what "unlocks" more converters and the calculation can
   # continue.
   #
-  # Schematic of calculation_loop and callbacks
-  #
-  #    graph.calculate
-  #    callback :before, :calculate
-  #      graph.calculate_loop(:initial_loop)
-  #      callback :before, :calculate_initial_loop
-  #      callback :after,  :calculate_initial_loop
-  #        graph.run_merit_order
-  #        # => this injects updated demands to power plants.
-  #        #    Now continue loop with 'injected_merit_order'
-  #        graph.calculate_loop(:injected_merit_order)
-  #      callback :before, :calculate_injected_merit_order
-  #      # => now the newly 'unlocked' converters are calculated.
-  #      callback :after,  :calculate_injected_merit_order
-  #      # => finished. You could add a new callback here and add another calculation_loop
-  #    # some cleaning up stuff
-  #    callback :after, :calculate
-  #
-  # Note the :before, :calculate_injected_merit_order is probably unnecesary
-  # but is simply added for consistency. It could be used for logging and
-  # debugging however.
-  #
-  def calculation_loop(state)
-    state = :"calculate_#{state}"
-    run_callbacks state do
-      while index = @converter_stack.index(&:ready?)
-        converter = @converter_stack[index]
-        converter.calculate
-        @finished_converters << @converter_stack.delete_at(index)
-      end
+  def calculation_loop
+    while index = @converter_stack.index(&:ready?)
+      converter = @converter_stack[index]
+      converter.calculate
+      @finished_converters << @converter_stack.delete_at(index)
     end
   end
 

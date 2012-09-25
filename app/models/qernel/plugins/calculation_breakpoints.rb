@@ -1,31 +1,43 @@
 module Qernel::Plugins
+  # CalculationBreakpoints break the calculation into multiple steps.
+  # Inbetween the steps code can be run to update demands.
+  #
+  # E.g.
+  #
+  #   [ foo: nil ] <--- [ nok: nil ]
+  #
+  #   [ bar: 100 ] <--- [ baz: nil]
+  #
+  # The only known converter is bar. The demand of foo is defined to be 50% of
+  # 'baz'. Running the calculation, would update baz demand to 100 but foo,
+  # nok remain nil.
+  #
+  # To fix this we define the breakpoint :update_foo and a function that runs
+  # after the initial calculation.
+  #
+  #
+  #
+  #
+  # CalculationBreakpoints requires the #calculation_loop method
+  #
+  #
   module CalculationBreakpoints
     extend ActiveSupport::Concern
 
-    included do |klass|
-      set_callback :calculate, :before, :initialize_breakpoint
-    end
-
-    def initialize_breakpoint
-      set_breakpoint(:initial_loop)
-    end
-
     def breakpoints
-      @breakpoints ||= {:initial_loop => 0}
+      @breakpoints ||= {}
     end
 
-    def add_breakpoint(key)
-      breakpoints[key] ||= @breakpoints.length
+    def setup_breakpoints
+      breakpoints.values.each(&:setup)
     end
 
-    def continue_after_breakpoint!(past_breakpoint)
-      unless breakpoints.include?(past_breakpoint)
-        raise "continue_after_breakpoint #{past_breakpoint.inspect} is not in list: #{breakpoints.inspect}"
-      end
-      set_breakpoint(past_breakpoint)
-      calculation_loop(past_breakpoint)
+    def next_breakpoint
+      breakpoints.delete(breakpoints.keys.first)
     end
 
+    # Are we past the given breakpoint?
+    #
     # current  | given      |
     # ------------------------------
     # initial   | merit     | false
@@ -38,14 +50,7 @@ module Qernel::Plugins
       if breakpoint.nil?
         true # no breakpoint => run always
       else
-        breakpoints[breakpoint] <= @current_breakpoint_idx
-      end
-    end
-
-    def set_breakpoint(key)
-      instrument("graph.set_breakpoint: #{key}") do
-        @current_breakpoint     = key
-        @current_breakpoint_idx = breakpoints[key]
+        !breakpoints.has_key?(breakpoint)
       end
     end
 
