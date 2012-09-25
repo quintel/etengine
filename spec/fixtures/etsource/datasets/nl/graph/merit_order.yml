@@ -10,7 +10,7 @@ el_grid-(electricity):
 
 el_grid-(electricity) <--f-- (electricity)-plant_1: {}
 el_grid-(electricity) <--f-- (electricity)-plant_2: {}
-el_grid-(electricity) --f--> (electricity)-plant_3: {}
+el_grid-(electricity) --f--> (electricity)-import_electricity: {}
 
 plant_1:
   preset_demand: 1000
@@ -20,12 +20,12 @@ plant_2:
   preset_demand: 2000
   availability: 1.0
 
-plant_3:
+import_electricity:
   availability: 1.0
 
 (electricity)-plant_1: {conversion: 1.0}
 (electricity)-plant_2: {conversion: 1.0}
-(electricity)-plant_3: {conversion: 1.0}
+(electricity)-import_electricity: {conversion: 1.0}
 
 
 must_run_1: {preset_demand:  100, availability: 1.0}
