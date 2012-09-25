@@ -61,7 +61,11 @@ module Etsource
 
       slot_tokens.flatten.uniq_by{|t| t.key.strip}.each do |token|
         converter = converters[token.converter_key.to_sym]
-        slot = Qernel::Slot.new(token.key, converter, carrier(token), token.direction)
+
+        slot = Qernel::Slot.factory(
+          token.data(:type), token.key, converter,
+          carrier(token), token.direction)
+
         converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
       end
 

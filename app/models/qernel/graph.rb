@@ -382,15 +382,17 @@ public
   if Rails.env.test? || Rails.env.development?
     # create slot if necessary.
     # return link
-    def connect(lft, rgt, carrier, link_type = :share)
+    def connect(lft, rgt, carrier, link_type = :share,
+                left_slot_type = nil, right_slot_type = nil)
+
       lft = converter(lft) if lft.is_a?(Symbol)
       rgt = converter(rgt) if rgt.is_a?(Symbol)
 
       unless lft.input(carrier)
-        lft.add_slot(Slot.new(lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
+        lft.add_slot(Slot.factory(left_slot_type, lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
       end
       unless rgt.output(carrier)
-        rgt.add_slot(Slot.new(rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
+        rgt.add_slot(Slot.factory(right_slot_type, rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
       end
       Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type)
     end
