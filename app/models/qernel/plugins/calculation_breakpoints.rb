@@ -2,47 +2,52 @@ module Qernel::Plugins
   module CalculationBreakpoints
     extend ActiveSupport::Concern
 
-    BREAKPOINTS = {
-      :start       => 0,
-      :merit_order => 1,
-      :finished    => 2
-    }
-
     included do |klass|
       set_callback :calculate, :before, :initialize_breakpoint
     end
 
     def initialize_breakpoint
-      set_breakpoint(:start)
+      set_breakpoint(:initial_loop)
+    end
+
+    def breakpoints
+      @breakpoints ||= {:initial_loop => 0}
+    end
+
+    def add_breakpoint(key)
+      breakpoints[key] ||= @breakpoints.length
     end
 
     def continue_after_breakpoint!(past_breakpoint)
-      unless BREAKPOINTS.include?(past_breakpoint)
-        raise "continue_after_breakpoint #{past_breakpoint.inspect} is not in list: #{BREAKPOINTS.inspect}"
+      unless breakpoints.include?(past_breakpoint)
+        raise "continue_after_breakpoint #{past_breakpoint.inspect} is not in list: #{breakpoints.inspect}"
       end
       set_breakpoint(past_breakpoint)
-      calculation_loop
+      calculation_loop(past_breakpoint)
     end
 
-    def set_breakpoint(key)
-      @current_breakpoint     = key
-      @current_breakpoint_idx = BREAKPOINTS[key]
-    end
-
-    # current | given   |
-    # -----------------------
-    # start   | merit   | false
-    # start   | start   | true
-    # start   | nil     | true
-    # merit   | start   | true
-    # merit   | merit   | true
+    # current  | given      |
+    # ------------------------------
+    # initial   | merit     | false
+    # initial   | initial   | true
+    # initial   | nil       | true
+    # merit     | initial   | true
+    # merit     | merit     | true
     #
     def past_breakpoint?(breakpoint)
       if breakpoint.nil?
-        true
+        true # no breakpoint => run always
       else
-        BREAKPOINTS[breakpoint] <= @current_breakpoint_idx
+        breakpoints[breakpoint] <= @current_breakpoint_idx
       end
     end
+
+    def set_breakpoint(key)
+      instrument("graph.set_breakpoint: #{key}") do
+        @current_breakpoint     = key
+        @current_breakpoint_idx = breakpoints[key]
+      end
+    end
+
   end
 end

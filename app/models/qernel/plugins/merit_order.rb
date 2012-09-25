@@ -69,33 +69,43 @@ module Qernel::Plugins
   module MeritOrder
     extend ActiveSupport::Concern
 
-    included do |variable|
-      # Only run if must_run_merit_order_converters.yml file is given.
-      if Etsource::Loader.instance.globals('must_run_merit_order_converters')
-        set_callback :calculate, :before, :assign_breakpoint_to_dispatchable_merit_order_converters
-        set_callback :calculate, :after,  :run_merit_order
-      end
+    MERIT_ORDER_BREAKPOINT = :injected_merit_order
+
+    included do |klass|
+      define_callbacks :"calculate_#{MERIT_ORDER_BREAKPOINT}"
+      set_callback :calculate,              :before, :setup_merit_order_breakpoints
+      set_callback :calculate_initial_loop, :after,  :run_merit_order_plugin
     end
 
+    def merit_order_enabled?
+      true
+    end
 
     # ---- Breakpoints -----------------------------------------------------------
-
-
-    def run_merit_order
-      calculate_merit_order
-      calculate_full_load_hours
-      inject_updated_demand
-      continue_after_breakpoint!(:merit_order)
-    end
 
     # Assign breakpoint merit_order to dispatchable MO converters. So that the calculation
     # does not calculate demand for them, and we can instead update the demands from the
     # MO calculation. The updated demand will then backpropagate to the grid.
     #
-    def assign_breakpoint_to_dispatchable_merit_order_converters
+    def setup_merit_order_breakpoints
+      return unless merit_order_enabled?
+
+      add_breakpoint(MERIT_ORDER_BREAKPOINT)
       dispatchable_converters_for_merit_order.each do |converter_api|
-        converter_api.converter.breakpoint = :merit_order
+        converter_api.converter.breakpoint = MERIT_ORDER_BREAKPOINT
       end
+    end
+
+    def run_merit_order_plugin
+      return unless merit_order_enabled?
+
+      set_breakpoint(MERIT_ORDER_BREAKPOINT)
+
+      calculate_merit_order
+      calculate_full_load_hours
+      inject_updated_demand
+
+      continue_after_breakpoint!(MERIT_ORDER_BREAKPOINT)
     end
 
     # ---- Converters ------------------------------------------------------------
