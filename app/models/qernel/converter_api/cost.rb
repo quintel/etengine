@@ -57,6 +57,45 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "effective_input_capacity", 'MWinput'
 
+  ###################
+  # Chart functions #
+  ###################
+
+  # Calculates the inital investment costs of a plant, based on the
+  # initial investment (purchase costs), installation costs and
+  # the additional cost for CCS (if applicable)
+  #
+  # Used in the scatter plot for costs
+  #
+  def total_initial_investment
+    function(:total_initial_investment) do
+      initial_investment + ccs_investment + cost_of_installing
+    end
+  end
+  unit_for_calculation "total_initial_investment", 'euro / plant'
+
+  # The total investment required at the beginning of the project
+  # plus the decommissioning costs which have to be paid at the end
+  # of the project.
+  #
+  # Note that decommissioning costs have capital costs associated with
+  # them, because it is assumed that the money for this has to be 
+  # paid up front. This is also the case in the Netherlands.
+  #
+  # Used to calculate yearly depreciation costs
+  #
+  #
+  def total_investment_over_lifetime
+    function(:total_investment_over_lifetime) do
+      total_initial_investment + decommissioning_costs
+    end
+  end
+  unit_for_calculation "total_investment_over_lifetime", 'euro / plant / year'
+
+  #########
+  private
+  #########
+
   ##########################
   # Total Cost calculation #
   ##########################
@@ -199,46 +238,6 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "variable_operation_and_maintenance_costs", 'euro / plant / year'
-
-
-  ###################
-  # Chart functions #
-  ###################
-
-  # Calculates the inital investment costs of a plant, based on the
-  # initial investment (purchase costs), installation costs and
-  # the additional cost for CCS (if applicable)
-  #
-  # Used in the scatter plot for costs
-  #
-  def total_initial_investment
-    function(:total_initial_investment) do
-      initial_investment + ccs_investment + cost_of_installing
-    end
-  end
-  unit_for_calculation "total_initial_investment", 'euro / plant'
-
-  # The total investment required at the beginning of the project
-  # plus the decommissioning costs which have to be paid at the end
-  # of the project.
-  #
-  # Note that decommissioning costs have capital costs associated with
-  # them, because it is assumed that the money for this has to be 
-  # paid up front. This is also the case in the Netherlands.
-  #
-  # Used to calculate yearly depreciation costs
-  #
-  #
-  def total_investment_over_lifetime
-    function(:total_investment_over_lifetime) do
-      total_initial_investment + decommissioning_costs
-    end
-  end
-  unit_for_calculation "total_investment_over_lifetime", 'euro / plant / year'
-
-  #########
-  private
-  #########
 
   # The average yearly installment of capital cost repayments, assuming
   # a linear repayment scheme. That is why divided by 2, to be at 50% between
