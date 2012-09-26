@@ -280,7 +280,7 @@ class Slot
   # --------- Debug -----------------------------------------------------------
 
   def inspect
-    "<Qernel::Slot id:#{id} carrier:#{carrier.key}>"
+    "<#{ self.class.name } id:#{ id } carrier:#{ carrier.key }>"
   end
 
 
