@@ -44,4 +44,25 @@ class Qernel::ConverterApi
     function(:households_supplied_per_unit) { 1.0 }
   end
 
+  def sustainable_input_factor
+    function(:sustainable_input_factor) do
+      converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
+    end
+  end
+  unit_for_calculation "sustainable_input_factor", 'factor'
+
+  #TODO: this method returns a share. But the name presumes it is not!
+  def useful_output
+    function(:useful_output) do
+      [ converter.output(:electricity),
+        converter.output(:useable_heat),
+        converter.output(:steam_hot_water)
+      ].map{|c| c and c.conversion }.compact.sum
+    end
+  end
+  unit_for_calculation "useful_output", 'factor'
+  
+  def primary_co2_emission
+    converter.primary_co2_emission
+  end
 end
