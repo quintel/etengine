@@ -3,7 +3,7 @@ require "spec_helper"
 # Uses the etsource defined in spec/fixtures/etsource
 #
 describe "API v3scenario life cycle" do
-  before(:all) do
+  before do
     NastyCache.instance.expire!
     Etsource::Base.loader('spec/fixtures/etsource')
   end
