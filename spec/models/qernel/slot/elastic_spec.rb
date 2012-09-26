@@ -53,4 +53,15 @@ describe Qernel::Slot::Elastic do
     expect(loss.conversion).to eql(0.75)
   end
 
+  it 'raises an error if a converter has two elastic slots' do
+    layout = <<-LAYOUT.strip_heredoc
+      loss[0.5;0.5(elastic)]:        irrelevant   == s(1.0)  ==> network
+      electricity[0.5;0.5(elastic)]: irrelevant   == s(1.0)  ==> network
+    LAYOUT
+
+    expect(-> { Qernel::GraphParser.new(layout).build }).to \
+      raise_error(Qernel::Slot::Elastic::TooManyElasticSlots,
+                 /already has an elastic slot/)
+  end
+
 end # Qernel::Slot::Elastic
