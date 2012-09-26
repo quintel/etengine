@@ -105,6 +105,10 @@ class Qernel::ConverterApi
   def total_initial_investment_per(unit)
     convert_to total_initial_investment, unit
   end
+  
+  def total_investment_over_lifetime_per(unit)
+    convert_to total_investment_over_lifetime, unit
+  end
 
   #######
   private
