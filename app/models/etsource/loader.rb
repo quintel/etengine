@@ -22,7 +22,7 @@ module Etsource
     def globals(file_name)
       instrument("etsource.loader: globals #{file_name.inspect}") do
         cache("globals/#{file_name}") do
-          f = "#{@etsource.base_dir}/datasets/_globals/#{file_name}.yml"
+          f = "#{@etsource.export_dir}/datasets/_globals/#{file_name}.yml"
           File.exists?(f) ? YAML::load_file(f) : nil
         end
       end
@@ -116,7 +116,7 @@ module Etsource
       # make sure we don't accidentally overwrite values, so we freeze everything.
       instrument("etsource.loader: merit_order_table") do
         cache("merit_order_rows") do
-          rows = CSV.read("#{@etsource.base_dir}/datasets/_globals/merit_order.csv", :converters => :numeric)
+          rows = CSV.read("#{@etsource.export_dir}/datasets/_globals/merit_order.csv", :converters => :numeric)
           rows.map! { |row| [row.delete_at(0), row.freeze].freeze }
           rows
         end
