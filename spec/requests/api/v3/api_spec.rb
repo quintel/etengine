@@ -108,7 +108,7 @@ describe "API v3scenario life cycle" do
     result['foo_demand']['future'].should == 100.0
   end
 
-  it "should default to end_year 2050 and area_code 'nl' when creating a scenario" do
+  pending "should default to end_year 2050 and area_code 'nl' when creating a scenario" do
     post 'api/v3/scenarios', :scenario => {:area_code => 'nl', :end_year => 2040}
 
     scenario = JSON.parse(response.body)
