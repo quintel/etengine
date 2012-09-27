@@ -359,7 +359,8 @@ namespace :bulk_update do
       "households_water_heater_heatpump_ground_water_electricity_share"=>0.0,
       "households_hot_water_heat_network_share"=>2.3840614,
       "number_of_lignite_chp"=>0.0,
-      "transport_planes_fossil_fuel_share"=>100.0,
+      "transport_planes_kerosene_share"=>100.0,
+      "transport_planes_gasoline_share"=>0.0,
       "transport_planes_bio_ethanol_share"=>0.0,
       "transport_ships_diesel_share"=>100.0,
       "transport_ships_bio_diesel_share"=>0.0,
@@ -492,16 +493,8 @@ namespace :bulk_update do
         next
       end
 
-      # Rounding all inputs
-      inputs.each do |x|
-        x[1] =x[1].round(1) unless x[1].nil?
-      end
-
-      ######## CODE BELOW CHANGES INPUTS OF SCENARIOS #########
-      ####################### START ###########################
-
-      # converter 239 (households_space_heater_heatpump_air_water_network_gas) has been removed (key: households_heating_gas_fired_heat_pump_share)
-      # converter 14 (households_space_heater_collective_heatpump_water_water_ts_electricity) has been replaced by households_space_heater_heatpump_air_water_electricity
+      ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
+      ############################# START ##############################
       
       # HHs space heating group
       share_group_inputs = [
@@ -517,9 +510,6 @@ namespace :bulk_update do
       "households_heating_district_heating_network_share",
       ]
 
-      # Transfer share of the households_heating_gas_fired_heat_pump_share and 
-      inputs["households_space_heater_heatpump_air_water_electricity_share"] += inputs["households_heating_gas_fired_heat_pump_share"] unless inputs["households_heating_gas_fired_heat_pump_share"].nil?
-
       sum = 0.0
       share_group_inputs.each do |element|
         inputs[element] = defaults[element] if inputs[element].nil?
@@ -528,44 +518,27 @@ namespace :bulk_update do
 
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
-
         puts "Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
-
-        gas_heatpump_share = 100.0 - sum
-        puts "gas_heatpump_share: " + gas_heatpump_share.to_s
-
-        inputs["households_space_heater_heatpump_air_water_electricity_share"] += gas_heatpump_share
       end
+
+      # Buildings district heating group
+      share_group_inputs = [
+      "buildings_heating_biomass_chp_share",
+      "buildings_heating_small_gas_chp_share",
+      "buildings_heating_heat_network_share",
+      "buildings_heating_geothermal_share"
+      ]
 
       sum = 0.0
       share_group_inputs.each do |element|
         inputs[element] = defaults[element] if inputs[element].nil?
         sum = sum + inputs[element]
       end
-
+      
+      # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
-
-        puts "Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
-        # scale
-        factor = sum / 100.0;
-        share_group_inputs.each do |element|
-          inputs[element] = inputs[element] / factor
-        end
+        puts "Warning! Share group of Buildings district heating is not 100% in scenario, but is " + (sum).to_s
       end
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = defaults[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-      if !(sum).between?(99.99, 100.01)
-        puts "Error! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
-        exit
-      end
-
-
-      # converter 322 (households_cooling_heatpump_air_water_network_gas) has been removed (key: households_cooling_gas_fired_heat_pump_share)
-      # converter 323 (households_cooling_collective_heatpump_water_water_ts_electricity) has been replaced by households_cooling_heatpump_air_water_electricity_share
 
       #Share group of HHs cooling
       share_group_inputs = [
@@ -582,24 +555,12 @@ namespace :bulk_update do
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
           puts "Warning! Share group of HHs cooling is not 100% in scenario, but is " + (sum).to_s
-
-          # If "households_cooling_gas_fired_heat_pump_share" still has a share, give it to air-water pump
-          inputs["households_cooling_heatpump_air_water_electricity_share"] += inputs["households_cooling_gas_fired_heat_pump_share"] unless inputs["households_cooling_gas_fired_heat_pump_share"].nil?
-
-          # Scale the airco down if necessary
-          inputs["households_cooling_airconditioning_share"] = 100.0 - inputs["households_cooling_heat_pump_ground_share"] - inputs["households_cooling_heatpump_air_water_electricity_share"]
       end
 
-      if !(inputs["households_cooling_heat_pump_ground_share"] +
-        inputs["households_cooling_heatpump_air_water_electricity_share"] + 
-        inputs["households_cooling_airconditioning_share"]).round(1).between?(99.99, 100.01)
-
-        puts "Error! Sum of HHs cooling = " + (inputs["households_cooling_heat_pump_ground_share"] + 
-          inputs["households_cooling_heatpump_air_water_electricity_share"] + 
-          inputs["households_cooling_airconditioning_share"]).to_s
-        exit
+      # Rounding all inputs
+      inputs.each do |x|
+        x[1] =x[1].round(1) unless x[1].nil?
       end
-
 
       ######################## END ############################
 
