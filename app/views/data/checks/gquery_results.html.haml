@@ -20,4 +20,7 @@
           %td.align-right= auto_number result.present_value rescue "N/A"
           %td.align-right= auto_number result.future_value rescue "N/A"
         - else
-          %td{:colspan => 2}= auto_number result rescue 'N/A'
+          %td.align-right
+            = auto_number result rescue 'N/A' if gquery.query.start_with?('present:')
+          %td.align-right
+            = auto_number result rescue 'N/A' if gquery.query.start_with?('future:')
