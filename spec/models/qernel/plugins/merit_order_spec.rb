@@ -56,6 +56,7 @@ module Qernel::Plugins::MeritOrder
         @converter.merit_order_start = 0.0
       end
 
+      # 
       it "if it covers the whole area (roughly only half capacity)" do
         @converter.merit_order_end = 14000
 
@@ -99,8 +100,8 @@ module Qernel::Plugins::MeritOrder
         # calculations fit together.
         @tbl.stub!(:merit_order_table).and_return([
           [0.6, [0.6, 0.00,1.00,3.0]], # 1000*0.6 - (0.6*100 + 0.0 + 1.0*300 + 3.0*400)
-          [0.5, [0.7, 0.00,1.00,0.0]], # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.1*400)
-          [0.5, [0.7, 0.00,1.00,0.2]], # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.1*400)
+          [0.5, [0.7, 0.00,1.00,0.0]], # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.0*400)
+          [0.5, [0.7, 0.00,1.00,0.2]], # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.2*400)
           [0.5, [0.7, 0.00,1.00,0.1]]  # 1000*0.5 - (0.7*100 + 0.0 + 1.0*300 + 0.1*400)
         ])
         # demands calculated by the graph for the defined groups of converters.

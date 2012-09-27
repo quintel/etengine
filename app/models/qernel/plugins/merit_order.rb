@@ -237,10 +237,10 @@ module Qernel::Plugins
 
       # Returns an array of x,y coordinates and the max_load to be used with a CurveArea.
       #
-      # We basically group the array of load profiles into n bins (n defined by PRECISION).
+      # We basically group the residual load profile into n bins (n defined by PRECISION).
       #
-      #   * x: the max of residual_load_profiles divided by the bin-size
-      #   (e.g. for N = 10 and max_load = 4000: 4000 * 0.1 => 400)
+      #   * x: the max of residual_load_profiles divided by the number of bins (PRECISION)
+      #   (e.g. for N = 10 and max_load = 4000: size of bins in MW = 4000 * 0.1 => 400)
       #   * y: average number of residual_load_profiles that are higher then x?
       #
       #  [    0,   1    ] # all load_profiles are higher then 0
@@ -251,7 +251,7 @@ module Qernel::Plugins
       #  [ 4000,   0    ] # Close to 0 profiles are >= 4000.
       #
       #
-      # @return [[[x,y], [x,y]], max_load]
+      # @return [[[x,y], [x,y], ... ], max_load]
       #
       def residual_ldc_coordinates
         load_profiles        = residual_load_profiles
@@ -264,7 +264,9 @@ module Qernel::Plugins
           section      = i.fdiv(steps) * max_load
           loads_higher = load_profiles.count{ |n| n >= section }
 
+          # Normalize the frequencies to unit interval
           y = loads_higher.fdiv(load_profiles_length)
+          # making [x, y] array
           [section, y]
         end
       end
