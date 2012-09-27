@@ -96,14 +96,14 @@ module Qernel
 
       it "should calculate correctly when values are given" do
         @c.with fixed_costs: 100, variable_costs: 200
-        @c.converter_api.total_costs.should == 300
+        @c.converter_api.send(:total_costs).should == 300
       end
 
       it "should return nil when one of the two is missing" do
         @c.with fixed_costs: 100, variable_costs: nil
-        @c.converter_api.total_costs.should == nil
+        @c.converter_api.send(:total_costs).should == nil
         @c.with fixed_costs: nil, variable_costs: 200
-        @c.converter_api.total_costs.should == nil
+        @c.converter_api.send(:total_costs).should == nil
       end
 
     end
@@ -112,27 +112,27 @@ module Qernel
 
       it "should calculate correctly when values are given" do
         @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs_per_year: 300
-        @c.converter_api.fixed_costs.should == 600
+        @c.converter_api.send(:fixed_costs).should == 600
       end
 
       it "should add correctly when cost_of_capital is nil" do
         pending "Data validations of Converters upon loading / importing" do
           @c.with cost_of_capital: nil, depreciation_costs: 200, fixed_operation_and_maintenance_costs_per_year: 300
-          @c.converter_api.fixed_costs.should == 500
+          @c.converter_api.send(:fixed_costs).should == 500
         end
       end
 
       it "should add correctly when depreciation costs are nil" do
         pending "Data validations of Converters upon loading / importing" do
           @c.with cost_of_capital: 100, depreciation_costs: nil, fixed_operation_and_maintenance_costs_per_year: 300
-          @c.converter_api.fixed_costs.should == 400
+          @c.converter_api.send(:fixed_costs).should == 400
         end
       end
 
       it "should add correctly when fixed O&M costs are nil" do
         pending "Data validations of Converters upon loading / importing" do
           @c.with cost_of_capital: 100, depreciation_costs: 200, fixed_operation_and_maintenance_costs_per_year: nil
-          @c.converter_api.fixed_costs.should == 300
+          @c.converter_api.send(:fixed_costs).should == 300
         end
       end
 
@@ -142,7 +142,7 @@ module Qernel
 
       it "should calculate when all values are given" do
         @c.with average_investment: 100, wacc: 0.1, construction_time: 1, technical_lifetime: 10
-        @c.converter_api.cost_of_capital.should == 11
+        @c.converter_api.send(:cost_of_capital).should == 11
       end
 
       it "should handle nil values" do
@@ -162,7 +162,7 @@ module Qernel
     describe '#depreciation_costs' do
       it "should calculate when everything is set" do
         @c.with total_investment_over_lifetime: 100, residual_value: 10, technical_lifetime: 10
-        @c.converter_api.depreciation_costs.should == 9
+        @c.converter_api.send(:depreciation_costs).should == 9
       end
 
       it "should raise error when total_investment_costs - residual_value < 0" do
@@ -181,27 +181,27 @@ module Qernel
     describe '#variable_costs' do
       it "should calculate correctly when values are given" do
         @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
-        @c.converter_api.variable_costs.should == 600
+        @c.converter_api.send(:variable_costs).should == 600
       end
 
       it "should add correctly when cost_of_capital is nil" do
         pending "rescue when nil" do
           @c.with fuel_costs: nil, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
-          @c.converter_api.variable_costs.should == 500
+          @c.converter_api.send(:variable_costs).should == 500
         end
       end
 
       it "should add correctly when depreciation costs are nil" do
         pending "rescue when nil" do
           @c.with fuel_costs: 100, co2_emissions_costs: nil, variable_operation_and_maintenance_costs: 300
-          @c.converter_api.variable_costs.should == 400
+          @c.converter_api.send(:variable_costs).should == 400
         end
       end
 
       it "should add correctly when fixed O&M costs are nil" do
         pending "rescue when nil" do
           @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: nil
-          @c.converter_api.variable_costs.should == 300
+          @c.converter_api.send(:variable_costs).should == 300
         end
       end
     end
@@ -209,7 +209,7 @@ module Qernel
     describe "#fuel_costs" do
       it "should calculate when everything is set" do
         @c.with total_investment_over_lifetime: 100, residual_value: 10, technical_lifetime: 10
-        @c.converter_api.depreciation_costs.should == 9
+        @c.converter_api.send(:depreciation_costs).should == 9
       end
 
       it "should return 0 when typical_fuel_input <= 0" do
@@ -236,7 +236,7 @@ module Qernel
     describe '#variable_operation_and_maintenance_costs' do
       it "should calculate when everything is set" do
         @c.with full_load_hours: 500, variable_operation_and_maintenance_costs_per_full_load_hour: 10, variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 1
-        @c.converter_api.variable_operation_and_maintenance_costs.should == 5500
+        @c.converter_api.send(:variable_operation_and_maintenance_costs).should == 5500
       end
       
       it "should handle nil values" do
@@ -254,7 +254,17 @@ module Qernel
         pending "Data validations of Converters upon loading / importing"
       end
     end
-
+    
+    describe '#total_investment_over_lifetime' do
+      it "should calculate when everything is set" do
+        @c.with total_initial_investment: 10000, decommissioning_costs: 5000
+        @c.converter_api.total_investment_over_lifetime.should == 15000
+      end
+      
+      it "should handle nil values" do
+        pending "Data validations of Converters upon loading / importing"
+      end
+    end
   end
 
 end
