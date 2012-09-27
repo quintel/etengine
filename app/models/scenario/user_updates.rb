@@ -47,6 +47,7 @@ module Scenario::UserUpdates
         unless input
           @input_errors ||= []
           @input_errors << "Missing input: #{key}"
+          GqlLogger.warn "Scenario ##{id}: missing input #{key}"
         end
         @inputs_future[input] = value if input.present? && input.updates_future?
       end
