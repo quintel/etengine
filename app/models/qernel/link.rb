@@ -299,9 +299,9 @@ public
   end
 
   def topology_key
-    o   = output.andand.key
-    o ||= rgt_converter.outputs.first.key
-    "#{input.andand.key} -- #{link_type.to_s[0]} --> #{o}"
+    o   = output.andand.converter.key
+    o ||= rgt_converter.outputs.first.converter.key
+    "#{input.andand.converter.key} -- #{link_type.to_s[0]} --> #{o}"
   end
 
   # TODO: find better names and explanation, this was added for the upcoming input module
