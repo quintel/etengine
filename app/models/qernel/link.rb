@@ -299,8 +299,7 @@ public
   end
 
   def topology_key
-    o   = output.andand.converter.key
-    o ||= rgt_converter.outputs.first.converter.key
+    o = output.andand.converter.key || rgt_converter.key
     "#{input.andand.converter.key} -- #{link_type.to_s[0]} --> #{o}"
   end
 
