@@ -31,6 +31,10 @@ module Qernel::Plugins
       @fce_update_values = {}
     end
 
+    def fce_enabled?
+      use_fce
+    end
+
     # calculate_fce
     #
     #
@@ -39,8 +43,8 @@ module Qernel::Plugins
         carrier = carrier(carrier_key)
         sum = 0
 
-        attributes_for_fce = attributes_to_consider
-        attributes_to_consider(true).each do |attr_name|
+        attributes_for_fce = self.fce_attributes_for_area
+        FCE_ATTRIBUTES.each do |attr_name|
           # if use_fce is disabled assign all attributes, but only
           # overwrite the co2_per_mj with the sum of co2_conversion_per_mj.
           carrier[attr_name] = fce_values.map do |f|
@@ -58,8 +62,10 @@ module Qernel::Plugins
       @fce_update_values = nil
     end
 
-    def attributes_to_consider(_use_fce = use_fce)
-      if _use_fce
+    # Different attributes to consider if FCE is enabled or not.
+    #
+    def fce_attributes_for_area
+      if fce_enabled?
         FCE_ATTRIBUTES
       else
         [:co2_conversion_per_mj]
@@ -94,7 +100,7 @@ module Qernel::Plugins
     # This method is called by update statements.
     def update_fce(carrier, origin, user_input)
       if fce_ostruct = self.fce_ostruct(carrier, origin)
-        attributes_to_consider.each do |key|
+        fce_attributes_for_area.each do |key|
           fce_ostruct.start_value = user_input * 100.0
         end
       end
