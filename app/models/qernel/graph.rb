@@ -142,10 +142,6 @@ class Graph
     calculated == true
   end
 
-  def enable_merit_order?
-    query(:enable_merit_order?)
-  end
-
   def time_curves
     dataset.time_curves
   end
