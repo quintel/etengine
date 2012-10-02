@@ -236,7 +236,7 @@ var Converter = Class.extend({
 
     this.box.node.ondblclick = function(evt) {
       if (!evt.altKey || !evt.shiftKey) {
-        var url = converter_url_prefix +"/" + that.id;
+        var url = converter_url_prefix +"/" + that.label;
         window.open(url, '_blank');
       }
       return false;
