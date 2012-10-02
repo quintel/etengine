@@ -19,19 +19,15 @@ class Slot
 
   # Returns a new Slot instance.
   #
-  # @param [Symbol, nil] type
-  #   The special-case "type" of slot to be used. For example, :elastic, will
-  #   give you a Slot::Elastic. nil will return a normal Slot.
-  # @param [Numeric] id
-  #   Unique identifier for the slot.
-  # @param [Qernel::Converter] converter
-  #   The converter to which the slot belongs.
-  # @param [Qernel::Carrier] carrier
-  #   The carrier; indicates the type of links which connect to the slot.
-  # @param [Symbol]
-  #   Indicates whether the slot is for :input or :output.
+  # type      - The special-case "type" of slot to be used. For example,
+  #             :elastic will give you a Slot::Elastic instance. nil will
+  #             return a normal slot.
+  # id        - Unique identifier for the slot.
+  # converter - The converter to which the slot belongs.
+  # carrier   - The carrier used by the links which connect to the slot.
+  # direction - Indicates whether the slot is for :input or :output.
   #
-  # @return [Slot]
+  # Returns an instance of Slot, or a Slot subclass.
   #
   def self.factory(type, id, converter, carrier, direction = :input)
     klass = case type
