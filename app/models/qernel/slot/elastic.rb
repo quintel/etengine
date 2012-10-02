@@ -6,14 +6,14 @@ module Qernel
   # Used for:
   #
   #   * Output slots whose carrier is "loss".
+  #   * Slots which have a truthy "flexible" attribute.
   #
   class Slot::Elastic < Slot
 
-    # Creates a new Elastic slot.
+    # Public: Creates a new Elastic slot.
     #
-    # @raise [Qernel::Slot::Elastic::TooManyElasticSlots]
-    #   Raised if the converter already has an elastic slot with the same
-    #   direction.
+    # Raises a Qernel::Slot::Elastic::TooManyElasticSlots if the converter
+    # already has an elastic slot with the same direction.
     #
     def initialize(*)
       super
@@ -23,7 +23,11 @@ module Qernel
       end
     end
 
-    # Dynamically calculates +conversion+ so that all of the slots sum to 1.0.
+    # Public: Dynamically calculates +conversion+ so that all of the slots sum
+    # to 1.0.
+    #
+    # Returns a float.
+    #
     def conversion
       function(:conversion) do
         others = siblings.sum(&:conversion)
@@ -34,7 +38,8 @@ module Qernel
       end
     end
 
-    # Raised when trying to add a second elastic slot to a converter.
+    # Internal: Raised when trying to add a second elastic slot to a
+    # converter.
     class TooManyElasticSlots < RuntimeError
       def initialize(slot)
         @slot = slot

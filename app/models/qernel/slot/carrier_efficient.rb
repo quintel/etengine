@@ -2,6 +2,13 @@ module Qernel
   # Used for slots whose +conversion+ needs to be adjusted to reflect the
   # inputs provided to the converter.
   class Slot::CarrierEfficient < Slot
+
+    # Public: Dynamically calculates +conversion+ based on the efficiency data
+    # held by the converter. More efficient converter inputs will produce a
+    # higher conversion.
+    #
+    # Returns a float.
+    #
     def conversion
       function(:conversion) do
         input_keys = converter.inputs.map { |input| input.carrier.key }
@@ -25,8 +32,8 @@ module Qernel
       end
     end
 
-    # Raised when the converter does not have all of the carrier efficiency
-    # data it needs.
+    # Internal: Raised when the converter does not have all of the carrier
+    # efficiency data it needs.
     class InsufficientCarrierData < RuntimeError
       def initialize(converter, inputs, data)
         @converter, @inputs, @data = converter, inputs, data
