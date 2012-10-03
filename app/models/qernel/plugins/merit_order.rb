@@ -251,7 +251,7 @@ module Qernel::Plugins
       #  [ 4000,   0    ] # Close to 0 profiles are >= 4000.
       #
       #
-      # @return [[[x,y], [x,y], ... ], max_load]
+      # @return [[x,y], [x,y], ... ]
       #
       def residual_ldc_coordinates
         load_profiles        = residual_load_profiles
