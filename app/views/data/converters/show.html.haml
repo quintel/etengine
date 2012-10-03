@@ -26,10 +26,8 @@
         %tr
           %td Energy Balance Group
           %td
-            - if g = @converter_present.energy_balance_group && g.to_s.present?
-              = link_to g, data_energy_balance_group_path(:id => g)
-            - else
-              empty
+            - if g = @converter_present.energy_balance_group
+              = link_to g, data_energy_balance_groups_path(:id => g)
         %tr
           %td Use
           %td= @converter_present.use_key
