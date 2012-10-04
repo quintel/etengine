@@ -17,6 +17,27 @@ module Qernel
 class Slot
   include DatasetAttributes
 
+  # Returns a new Slot instance.
+  #
+  # type      - The special-case "type" of slot to be used. For example,
+  #             :elastic will give you a Slot::Elastic instance. nil will
+  #             return a normal slot.
+  # id        - Unique identifier for the slot.
+  # converter - The converter to which the slot belongs.
+  # carrier   - The carrier used by the links which connect to the slot.
+  # direction - Indicates whether the slot is for :input or :output.
+  #
+  # Returns an instance of Slot, or a Slot subclass.
+  #
+  def self.factory(type, id, converter, carrier, direction = :input)
+    klass = case type
+      when :elastic           then Slot::Elastic
+      when :carrier_efficient then Slot::CarrierEfficient
+      else                         Slot
+    end
+
+    klass.new(id, converter, carrier, direction)
+  end
 
   # --------- Accessor ---------------------------------------------------------
 
@@ -255,7 +276,7 @@ class Slot
   # --------- Debug -----------------------------------------------------------
 
   def inspect
-    "<Qernel::Slot id:#{id} carrier:#{carrier.key}>"
+    "<#{ self.class.name } id:#{ id } carrier:#{ carrier.key }>"
   end
 
 
