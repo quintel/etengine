@@ -21,7 +21,9 @@ class Graph
                    :calculate_initial_loop
 
 
+  # Concerns (Required Plugin)
   include Plugins::CalculationBreakpoints
+
   include Plugins::MeritOrder
   include Plugins::Fce
   include Plugins::MaxDemandRecursive
@@ -34,6 +36,7 @@ class Graph
   dataset_accessors :calculated,
                     :year,
                     :use_fce,
+                    :use_merit_order_demands,
                     # graphs do not know the number of years, that is defined
                     # in scenario and assigned in a 2nd step by the gql.
                     :number_of_years
@@ -141,10 +144,6 @@ class Graph
     reset_goals
   end
 
-  def calculated?
-    calculated == true
-  end
-
   def time_curves
     dataset.time_curves
   end
@@ -152,54 +151,6 @@ class Graph
   def present?
     raise "Qernel::Graph#present? #year not defined" if year.nil?
     year == START_YEAR
-  end
-
-  # Calculates the Graph.
-  #
-  # = Algorithm
-  #
-  # 1. Take first converter that is "ready for calculation" (see {Qernel::Converter#ready?}) from the converter stack
-  # 2. Calculate the converter (see: {Qernel::Converter#calculate})
-  # 3. Remove converter from stack and move it to {#finished_converters}
-  # 5. => (continue at 1. until stack is empty)
-  # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
-  #
-  def calculate(options = {})
-    run_callbacks :calculate do
-      return if calculated?
-
-      setup_breakpoints
-
-      instrument("gql.performance.calculate") do
-        # FIFO stack of all the converters. Converters are removed from the stack after calculation.
-        @converter_stack = converters.clone
-        @finished_converters = []
-
-        self.calculation_loop # the initial loop
-        while breakpoint = next_breakpoint
-          breakpoint.run
-          self.calculation_loop
-        end
-
-        self.update_link_shares
-      end
-    end
-    calculated = true
-  end
-
-  # A calculation_loop is one cycle of calculating converters until there is
-  # no converter left to calculate (no converters is #ready? anymore). This
-  # can mean that the calculation is finished or that we need to run a
-  # "plugin" (e.g. merit order). The plugin most likely will update some
-  # converter demands, what "unlocks" more converters and the calculation can
-  # continue.
-  #
-  def calculation_loop
-    while index = @converter_stack.index(&:ready?)
-      converter = @converter_stack[index]
-      converter.calculate
-      @finished_converters << @converter_stack.delete_at(index)
-    end
   end
 
   def update_link_shares
