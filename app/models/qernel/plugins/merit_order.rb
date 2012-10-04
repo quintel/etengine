@@ -9,14 +9,18 @@ module Qernel::Plugins
     end
 
     def add_merit_order_breakpoint
-      if merit_order_enabled?
+      if use_merit_order_demands?
         brk = MeritOrderBreakpoint.new(self)
-        breakpoints[brk.key] = brk
+        add_breakpoint(brk)
       end
     end
 
-    def merit_order_enabled?
-      true
+    def use_merit_order_demands?
+      if self[:use_merit_order_demands].nil?
+        false
+      else
+        self[:use_merit_order_demands].to_i == 1
+      end
     end
 
     # Select dispatchable merit order converters
