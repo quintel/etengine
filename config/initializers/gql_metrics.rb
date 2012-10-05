@@ -5,6 +5,9 @@
 GqlLogger = Logger.new(Rails.root.join('log/gql.log'), 5, 1_048_576)
 GqlWarnings = Logger.new(Rails.root.join('log/warnings.log'), 5, 1_048_576)
 
+# For quick debugging sessions
+DebugLogger = Logger.new(Rails.root.join('log/debug.log'), 5, 1_048_576)
+
 ActiveSupport::Notifications.subscribe 'gql.gquery.deprecated' do |name, start, finish, id, payload|
   GqlLogger.info "gql.gquery.deprecated: #{payload}"
 end
