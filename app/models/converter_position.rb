@@ -48,6 +48,8 @@ class ConverterPosition < ActiveRecord::Base
 
   validates_presence_of :converter_id, :on => :create, :message => "can't be blank"
 
+  scope :not_hidden, where(:hidden => false)
+
   def self.default_position_for(converter)
     position = new
     position.tap{|p| p.converter = converter }
@@ -55,7 +57,7 @@ class ConverterPosition < ActiveRecord::Base
 
   def fill_color(converter)
     if converter && converter.sector_key
-      STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym] 
+      STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym]
     else
       '#eee'
     end

@@ -458,3 +458,13 @@ The `data` section contains both attributes and calculations.
 #### Response
 
 See above, the response is identical.
+
+### Converter topology
+
+#### Request
+
+    GET /scenarios/:scenario_id/converters/topology
+
+#### Response
+
+Returns an array of ConverterPosition objects. Will be used on visualization.
