@@ -42,7 +42,9 @@ Etm::Application.routes.draw do
         resources :converters, :only => :show
         resources :inputs, :only => [:index, :show]
       end
-      resources :converters, :only => :show
+      resources :converters, :only => :show do
+        get :topology, :on => :collection
+      end
       resources :inputs, :only => [:index, :show]
     end
   end

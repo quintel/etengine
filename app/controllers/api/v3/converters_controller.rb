@@ -15,6 +15,15 @@ module Api
         render :json => @converter
       end
 
+      # returns the converter topology coordinates, using the old
+      # converter_positions table
+      #
+      def topology
+        render :json => ConverterPosition.not_hidden.map {|c|
+          { key: c.converter_key, x: c.x, y: c.y }
+        }
+      end
+
       private
 
       def find_converter
