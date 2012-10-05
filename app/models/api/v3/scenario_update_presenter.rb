@@ -5,6 +5,7 @@ module Api
         @controller = controller
         @updater = updater
         @requested_queries = params[:gqueries] || []
+        @detailed = params[:detailed].present?
 
         @errors  = []
         @results = {}
@@ -19,7 +20,7 @@ module Api
       # @return [Hash]
       #
       def as_json(*)
-        { scenario: ScenarioPresenter.new(@controller, @updater.scenario),
+        { scenario: ScenarioPresenter.new(@controller, @updater.scenario, @detailed),
           gqueries: @results }
       end
 

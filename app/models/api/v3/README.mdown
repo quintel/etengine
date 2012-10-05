@@ -82,8 +82,8 @@
 
     GET /scenarios/:id
 
-If you set the optional `detailed` parameter then the `description` and
-`use_fce` fields will be returned, too.
+If you set the optional `detailed` parameter then the `description`,
+`user_values` and `use_fce` fields will be returned, too.
 
 #### Response
 
@@ -98,7 +98,10 @@ If you set the optional `detailed` parameter then the `description` and
       "template": 12345,
       "source": "ETM",
       "description": "...",
-      "use_fce": "..."
+      "use_fce": "...",
+      "user_values": {
+        "households_number_of_inhabitants": 2.3
+      }
     }
 
 If the scenario is missing then the action returns an empty hash with a 404 HTTP
@@ -198,6 +201,8 @@ The slider update is a proper PUT/PATCH request instead.
   resent on every request. The `user_values` must be sent as a hash; the has
   key can be the input id (deprecated) or the input key. If you pass `reset` as
   value for a single input then the input will be... reset.
+* `detailed`: optional boolean. If true then the `scenario` object response
+  will contain extra information such as `use_fce` and `user_values`
 
 ##### Example
 

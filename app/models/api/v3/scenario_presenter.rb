@@ -33,7 +33,8 @@ module Api
         json[:created_at] = @resource.created_at
 
         if @detailed
-          json[:use_fce] = @resource.use_fce
+          json[:use_fce]     = @resource.use_fce
+          json[:user_values] = @resource.user_values
         else
           json.delete(:description)
         end
