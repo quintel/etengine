@@ -100,7 +100,7 @@ module Qernel::Plugins
       def run
         calculate_merit_order
         calculate_full_load_hours
-        inject_updated_demand
+        inject_updated_demand if @graph.use_merit_order_demands?
       end
 
       # ---- Converters ------------------------------------------------------------

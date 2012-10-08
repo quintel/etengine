@@ -9,10 +9,8 @@ module Qernel::Plugins
     end
 
     def add_merit_order_breakpoint
-      if use_merit_order_demands?
-        brk = MeritOrderBreakpoint.new(self)
-        add_breakpoint(brk)
-      end
+      brk = MeritOrderBreakpoint.new(self)
+      add_breakpoint(brk)
     end
 
     def use_merit_order_demands?
