@@ -1,29 +1,68 @@
 module Qernel::Plugins
-  # CalculationBreakpoints break the calculation into multiple steps.
-  # Inbetween the steps code can be run to update demands.
+  # CalculationBreakpoints break the calculation into multiple steps. In
+  # between the steps code can be run to update demands. So with a breakpoint
+  # we break the calculation into two parts. After the first one runs, we
+  # pause the calculation and run the modification/calculation defined in the
+  # breakpoint, and continue with the 2nd part of the calculation. The
+  # modification typically involves numbers that were calculated in the first
+  # step.
   #
-  # E.g.
+  # # Example
   #
-  #   [ foo: nil ] <--- [ nok: nil ]
+  #   [ bar: 100 ] ---> [ baz: nil]
   #
-  #   [ bar: 100 ] <--- [ baz: nil]
+  #   [ foo: nil ] ---> [ nok: nil ]
   #
   # The only known converter is bar. The demand of foo is defined to be 50% of
-  # 'baz'. Running the calculation, would update baz demand to 100 but foo,
+  # 'baz'. Running the calculation, would update baz demand to 100 but foo and
   # nok remain nil.
   #
   # To fix this we define the breakpoint :update_foo and a function that runs
   # after the initial calculation.
   #
+  #    class NokBreakpoint
+  #      attr_reader :key
   #
+  #      def initialize(graph)
+  #        @graph = graph
+  #        @key   = :nok
+  #      end
   #
+  #      def setup
+  #        # Modify the graph to make the breakpoint work. E
+  #        # In this particular case the following line is not needed, foo.preset_demand is nil
+  #        # so it does not get calculated anyway. However if we set foo.preset_demand to
+  #        # 100.0 foo and nok calculates before the breakpoint runs. so we can force that
+  #        # converter to wait until the breakpoint :nok is called.
+  #        @graph.converter(:foo).breakpoint = :nok
+  #      end
   #
-  # CalculationBreakpoints requires the #calculation_loop method
+  #      def run
+  #         # The action that runs in the breakpoint.
+  #         @graph.converter(:foo).preset_demand = @graph.converter(:bar).demand / 2.0
+  #      end
+  #
+  #      def pre_condition_met?; true; end
+  #
+  #      def before_calculation_loop
+  #        puts @graph.converter(:foo).demand
+  #      end
+  #
+  #      def after_calculation_loop
+  #        puts @graph.converter(:foo).demand
+  #      end
+  #    end
+  #
+  #    # and add it to a graph. this will most probably be in an included do |klass| block
+  #
+  #    graph.add_breakpoint(new NokBreakpoint(graph))
   #
   #
   module CalculationBreakpoints
     extend ActiveSupport::Concern
 
+    # Has graph finished calculating.
+    #
     def calculated?
       calculated == true
     end
@@ -85,6 +124,8 @@ module Qernel::Plugins
       @breakpoints ||= {}
     end
 
+    # Adds a breakpoint to the #breakpoints hash. Checks if required methods are present.
+    #
     def add_breakpoint(brk)
       unless [:pre_condition_met?, :run, :key].all?{|method| brk.respond_to?(method) }
         raise "breakpoints must implement #pre_condition_met?, #run, #key"
@@ -92,10 +133,14 @@ module Qernel::Plugins
       breakpoints[brk.key] = brk
     end
 
+    # Calls #setup on every registered breakpoint.
+    #
     def setup_breakpoints
       breakpoints.values.each(&:setup)
     end
 
+    # Fetch (and removes) the first breakpoint whose pre_condition_met is true.
+    #
     def next_breakpoint
       if brk = breakpoints.values.detect(&:pre_condition_met?)
         breakpoints.delete(brk.key)
