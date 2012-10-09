@@ -19,9 +19,12 @@ module Api
       # converter_positions table
       #
       def topology
-        render :json => ConverterPosition.not_hidden.map {|c|
-          { key: c.converter_key, x: c.x, y: c.y }
+        converters = ConverterPosition.not_hidden.where("converter_key IS NOT NULL")
+        out = {
+          :converters => converters.map {|c| { key: c.converter_key, x: c.x, y: c.y } },
+          :links => []
         }
+        render :json => out
       end
 
       private
