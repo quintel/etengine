@@ -235,7 +235,7 @@ module Qernel::Plugins
         @graph = graph
       end
 
-      # Returns an array of x,y coordinates and the max_load to be used with a CurveArea.
+      # Returns an array of x,y coordinates to be used with a CurveArea.
       #
       # We basically group the residual load profile into n bins (n defined by PRECISION).
       #
