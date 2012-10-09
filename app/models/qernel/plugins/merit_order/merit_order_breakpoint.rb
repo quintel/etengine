@@ -77,10 +77,12 @@ module Qernel::Plugins
       end
 
       def pre_condition_met?
-        [
-          @graph.group_converters(:final_demand_electricity),
-          LoadProfileTable.must_run_merit_order_converter_objects(@graph)
-        ].flatten.all?(&:ready?)
+        true
+        # TODO: define proper pre_condition
+        # [
+        #   @graph.group_converters(:final_demand_electricity),
+        #   LoadProfileTable.must_run_merit_order_converter_objects(@graph)
+        # ].flatten.all?(&:ready?)
       end
 
       # Required by CalculationBreakpoint
