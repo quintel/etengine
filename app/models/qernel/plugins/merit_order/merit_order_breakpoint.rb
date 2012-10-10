@@ -137,7 +137,8 @@ module Qernel::Plugins
         converters_by_total_variable_cost.each do |converter|
           new_demand = converter.full_load_seconds * converter.typical_nominal_input_capacity * converter.number_of_units rescue nil
           # Rails.logger.warn "**** #{converter.key}: #{converter.demand} -> #{new_demand}"
-          converter.demand = new_demand
+          # do not overwrite demand with nil
+          converter.demand = new_demand if new_demand
         end
       end
 
