@@ -17,7 +17,12 @@ class Graph
   include ActiveSupport::Callbacks
   include Instrumentable
 
-  define_callbacks :calculate
+  define_callbacks :calculate,
+                   :calculate_initial_loop
+
+
+  # Concerns (Required Plugin)
+  include Plugins::CalculationBreakpoints
 
   include Plugins::MeritOrder
   include Plugins::Fce
@@ -31,6 +36,7 @@ class Graph
   dataset_accessors :calculated,
                     :year,
                     :use_fce,
+                    :use_merit_order_demands,
                     # graphs do not know the number of years, that is defined
                     # in scenario and assigned in a 2nd step by the gql.
                     :number_of_years
@@ -138,10 +144,6 @@ class Graph
     reset_goals
   end
 
-  def calculated?
-    calculated == true
-  end
-
   def time_curves
     dataset.time_curves
   end
@@ -151,44 +153,8 @@ class Graph
     year == START_YEAR
   end
 
-  # Calculates the Graph.
-  #
-  # = Algorithm
-  #
-  # 1. Take first converter that is "ready for calculation" (see {Qernel::Converter#ready?}) from the converter stack
-  # 2. Calculate the converter (see: {Qernel::Converter#calculate})
-  # 3. Remove converter from stack and move it to {#finished_converters}
-  # 5. => (continue at 1. until stack is empty)
-  # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
-  #
-  def calculate(options = {})
-    run_callbacks :calculate do
-
-      if calculated?
-        instrument("gql.debug", "Graph already calculated")
-        return
-      end
-
-      instrument("gql.performance.calculate") do
-        # FIFO stack of all the converters. Converters are removed from the stack after calculation.
-        @finished_converters = []
-        converter_stack = converters.clone
-
-        # delete_at is much faster as delete, that's why use #index rather than #detect
-        while index = converter_stack.index(&:ready?)
-          converter = converter_stack[index]
-          converter.calculate
-          @finished_converters << converter_stack.delete_at(index)
-        end
-
-        @finished_converters.map(&:input_links).flatten.each(&:update_share)
-
-        unless converter_stack.empty?
-          instrument("gql.debug", "Following converters have not finished: #{converter_stack.map(&:key).join(', ')}")
-        end
-      end
-    end
-    calculated = true
+  def update_link_shares
+    @finished_converters.map(&:input_links).flatten.each(&:update_share)
   end
 
   def links
