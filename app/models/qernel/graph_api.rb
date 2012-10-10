@@ -11,7 +11,7 @@ class GraphApi
   include MethodMetaData
   include DatasetAttributes
 
-  dataset_accessors :enable_merit_order
+  dataset_accessors :enable_merit_order, :use_merit_order_demands
 
   # @param graph [Qernel::Graph]
   def initialize(graph)
@@ -28,6 +28,10 @@ class GraphApi
 
   def enable_merit_order?
     enable_merit_order == 1.0
+  end
+
+  def use_merit_order_demands?
+    @graph.use_merit_order_demands?
   end
 
   def fce_enabled?
