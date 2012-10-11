@@ -43,7 +43,8 @@ module Api
         @converters.map(&:input_links).flatten.uniq.map do |l|
           {
             left: l.lft_converter.key,
-            right: l.rgt_converter.key
+            right: l.rgt_converter.key,
+            color: l.carrier.graphviz_color || '#999'
           }
         end
       end
