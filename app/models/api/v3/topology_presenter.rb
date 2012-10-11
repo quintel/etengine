@@ -34,7 +34,10 @@ module Api
             x: position.try(:x) || 100,
             y: position.try(:y_or_default, c),
             fill_color: position.try(:fill_color, c),
-            stroke_color: position.try(:stroke_color, c)
+            stroke_color: position.try(:stroke_color, c),
+            sector: c.sector_key,
+            use: c.use_key,
+            group: c.energy_balance_group
           }
         end
       end
@@ -44,7 +47,8 @@ module Api
           {
             left: l.lft_converter.key,
             right: l.rgt_converter.key,
-            color: l.carrier.graphviz_color || '#999'
+            color: l.carrier.graphviz_color || '#999',
+            type: l.link_type
           }
         end
       end
