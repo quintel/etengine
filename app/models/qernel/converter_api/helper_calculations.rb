@@ -10,11 +10,11 @@ class Qernel::ConverterApi
       dataset_get(:number_of_units)
     else
       function(:number_of_units) do
-        if ( effective_input_capacity == 0 || effective_input_capacity.nil? ||
-             full_load_seconds == 0 || full_load_seconds.nil? )
+        # #to_i also checks if it is nil
+        if effective_input_capacity.to_i == 0 || effective_input_capacity.to_i == 0
           0
         else
-          demand / (effective_input_capacity * full_load_seconds)
+          (demand || preset_demand) / (effective_input_capacity * full_load_seconds)
         end
       end
     end
@@ -61,7 +61,7 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "useful_output", 'factor'
-  
+
   def primary_co2_emission
     converter.primary_co2_emission
   end
