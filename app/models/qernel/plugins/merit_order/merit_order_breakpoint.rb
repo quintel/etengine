@@ -136,7 +136,7 @@ module Qernel::Plugins
       def inject_updated_demand
         converters_by_total_variable_cost.each do |converter|
           new_demand = converter.full_load_seconds * converter.typical_nominal_input_capacity * converter.number_of_units rescue nil
-          # Rails.logger.warn "**** #{converter.key}: #{converter.demand} -> #{new_demand}"
+          Rails.logger.warn "**** demand #{converter.key}: #{converter.demand} -> #{new_demand}"
           # do not overwrite demand with nil
           converter.demand = new_demand if new_demand
         end
@@ -224,6 +224,8 @@ module Qernel::Plugins
 
             converter.merit_order_capacity_factor = capacity_factor.round(3)
             converter.merit_order_full_load_hours = full_load_hours.round(1)
+            converter[:full_load_seconds] = full_load_hours * 3600
+            converter[:capacity_factor] = capacity_factor.round(3)
           end
         end
         nil
