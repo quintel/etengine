@@ -35,7 +35,7 @@ module Qernel
     # (incorrect) value from the dataset, instead of using the dynamic value
     # calculated in full_load_seconds.
     def full_load_hours
-      full_load_seconds ? full_load_seconds / 3600 : nil #handle_nil(:full_load_hours) { full_load_seconds / 3600 }
+      full_load_seconds ? full_load_seconds / 3600 : nil
     end
 
     # Demand-driven converters have a semi-fixed number of units which changes
