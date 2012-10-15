@@ -102,7 +102,9 @@ module Qernel::Plugins
       def run
         calculate_merit_order
         calculate_full_load_hours
-        inject_updated_demand if @graph.use_merit_order_demands?
+        if @graph.use_merit_order_demands?
+          inject_updated_demand
+        end
       end
 
       # ---- Converters ------------------------------------------------------------
@@ -135,6 +137,9 @@ module Qernel::Plugins
 
       def inject_updated_demand
         converters_by_total_variable_cost.each do |converter|
+          converter[:full_load_seconds] = converter.merit_order_full_load_hours * 3600
+          converter[:capacity_factor]   = converter.merit_order_capacity_factor
+
           new_demand = converter.full_load_seconds * converter.typical_nominal_input_capacity * converter.number_of_units rescue nil
           Rails.logger.warn "**** demand #{converter.key}: #{converter.demand} -> #{new_demand}"
           # do not overwrite demand with nil
@@ -224,8 +229,6 @@ module Qernel::Plugins
 
             converter.merit_order_capacity_factor = capacity_factor.round(3)
             converter.merit_order_full_load_hours = full_load_hours.round(1)
-            converter[:full_load_seconds] = full_load_hours * 3600
-            converter[:capacity_factor] = capacity_factor.round(3)
           end
         end
         nil
