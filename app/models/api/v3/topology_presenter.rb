@@ -28,13 +28,13 @@ module Api
         @converters.map do |c|
           # I'd rather use the converter key
           excel_id = c.excel_id.to_i
-          position = @positions[excel_id]
+          position = @positions[excel_id] || ConverterPosition.new
           {
             key: c.key,
-            x: position.try(:x) || 100,
-            y: position.try(:y_or_default, c),
-            fill_color: position.try(:fill_color, c),
-            stroke_color: position.try(:stroke_color, c),
+            x: position.x || 100,
+            y: position.y_or_default(c),
+            fill_color: position.fill_color(c),
+            stroke_color: position.stroke_color(c),
             sector: c.sector_key,
             use: c.use_key,
             group: c.energy_balance_group
