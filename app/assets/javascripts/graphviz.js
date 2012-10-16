@@ -105,6 +105,12 @@ var Graph = Class.extend({
       converter.highlight_off();
     });
     return false;
+  },
+
+  mark_all_dirty: function() {
+    _.each(GRAPH.converters, function(converter) {
+      converter.markDirty();
+    });
   }
 
 })

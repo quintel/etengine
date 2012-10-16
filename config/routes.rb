@@ -39,7 +39,9 @@ Etm::Application.routes.draw do
           get :sandbox
         end
         get :templates, :on => :collection
-        resources :converters, :only => :show
+        resources :converters, :only => :show do
+          get :topology, :on => :collection
+        end
         resources :inputs, :only => [:index, :show]
       end
       resources :converters, :only => :show do

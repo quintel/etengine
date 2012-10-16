@@ -86,10 +86,11 @@ module Gql::Runtime
         rows += flatten_uniq(objects).map do |obj|
           arguments.map do |argument|
             begin
+              obj = obj.query if obj.respond_to?(:query)
               if argument.respond_to?(:call)
-                obj.query.instance_eval(&argument)
+                obj.instance_eval(&argument)
               else
-                obj.query.instance_eval(argument.to_s)
+                obj.instance_eval(argument.to_s)
               end
             rescue => e
               'error'
