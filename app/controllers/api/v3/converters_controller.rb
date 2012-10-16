@@ -1,7 +1,7 @@
 module Api
   module V3
     class ConvertersController < BaseController
-      before_filter :set_current_scenario, :only => :show
+      before_filter :set_current_scenario
       before_filter :find_converter, :only => :show
 
       # GET /api/v3/converters/:id
@@ -19,12 +19,8 @@ module Api
       # converter_positions table
       #
       def topology
-        converters = ConverterPosition.not_hidden.where("converter_key IS NOT NULL")
-        out = {
-          :converters => converters.map {|c| { key: c.converter_key, x: c.x, y: c.y } },
-          :links => []
-        }
-        render :json => out
+        topology = TopologyPresenter.new(@scenario)
+        render :json => topology
       end
 
       private
