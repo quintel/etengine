@@ -7,7 +7,7 @@ Etm::Application.routes.draw do
   resources :user_sessions
 
   # Frontend
-  resources :users
+  resources :users, :except => :show
   match '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
 
   namespace :api do

@@ -1,12 +1,9 @@
 class UsersController < ApplicationController
   authorize_resource :class => false
-  before_filter :find_user, :only => [:show, :edit, :update, :destroy]
+  before_filter :find_user, :only => [:edit, :update, :destroy]
 
   def index
     @users = User.all
-  end
-
-  def show
   end
 
   def new
@@ -21,10 +18,9 @@ class UsersController < ApplicationController
       if current_user.try(:admin?)
         @user.role_id = params[:user][:role_id] and @user.save
       end
-      redirect_to @user, :notice => 'User updated'
-    else
-      render :edit
+      flash[:notice] = 'User updated'
     end
+    render :edit
   end
 
   def create
