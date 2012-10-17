@@ -6,6 +6,7 @@
   %thead
     %tr
       %th Id
+      %th Name
       %th Email
       %th Role
       %th
@@ -13,6 +14,7 @@
     - @users.each do |u|
       %tr{:class => cycle('even', 'odd')}
         %td= u.id
-        %td= link_to u.email, user_path(u)
+        %td= u.name
+        %td= link_to u.email, edit_user_path(u)
         %td= u.role.name if u.role
         %td= link_to 'Delete', user_path(u), method: 'delete', confirm: "Are you sure?", class: 'btn btn-mini btn-danger'
