@@ -9,7 +9,6 @@
 #  created_at          :datetime
 #  updated_at          :datetime
 #  hidden              :boolean(1)
-#  blueprint_layout_id :integer(4)
 #  converter_key       :string(255)
 #
 
@@ -42,9 +41,6 @@ class ConverterPosition < ActiveRecord::Base
     :buildings    => '#FF6666',
     :neighbor     => '#87CEEB'
   }.with_indifferent_access
-
-  #belongs_to :converter
-  belongs_to :blueprint_layout
 
   validates_presence_of :converter_id, :on => :create, :message => "can't be blank"
 
