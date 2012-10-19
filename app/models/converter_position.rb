@@ -74,4 +74,20 @@ class ConverterPosition < ActiveRecord::Base
   def y_or_default(converter)
     self.y || DEFAULT_Y_BY_SECTOR[converter.sector_key.to_s.to_sym] || 100
   end
+
+  def self.update_everything!
+    ids = []
+    Scenario.default.gql.present_graph.converters.each do |c|
+      ids << c.excel_id
+      p = where(:converter_id => c.excel_id).first
+      p ||= new(:converter_id => c.excel_id)
+      p.converter_key = c.key
+      p.blueprint_layout_id = 1
+      p.save
+    end
+    # delete the bad ones now
+    all.each do |p|
+      p.destroy unless ids.include? p.converter_id
+    end
+  end
 end
