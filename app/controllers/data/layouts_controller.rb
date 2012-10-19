@@ -1,14 +1,9 @@
-class Data::BlueprintLayoutsController < Data::BaseController
+class Data::LayoutsController < Data::BaseController
   before_filter :find_models, :only => [:show, :edit]
 
   helper_method :attributes_for_json
 
   skip_authorize_resource :only => :show
-
-  def index
-    @blueprint_layouts = BlueprintLayout.find(:all)
-    render :layout => 'application'
-  end
 
   def show
     respond_to do |format|
@@ -26,18 +21,17 @@ class Data::BlueprintLayoutsController < Data::BaseController
     end
   end
 
-
-  def new
-    @blueprint_layout = BlueprintLayout.new
-  end
-
-  def create
-    @blueprint_layout = BlueprintLayout.new(params[:blueprint_layout])
-    if @blueprint_layout.save
-      redirect_to data_blueprint_layouts_path
-    else
-      render :action => 'new'
+  def update
+    if params[:converter_positions].present?
+      params[:converter_positions].each do |converter_id,attributes|
+        if bcp = ConverterPosition.find_by_converter_id(converter_id)
+          bcp.update_attributes attributes
+        else
+          ConverterPosition.create attributes.merge(:converter_id => converter_id, :blueprint_layout_id => params[:blueprint_layout_id])
+        end
+      end
     end
+    render :text => ''
   end
 
 private
@@ -58,8 +52,7 @@ private
   end
 
   def find_models
-    @blueprint_layout = BlueprintLayout.find(params[:id])
-    @converter_positions = @blueprint_layout.converter_positions.inject({}) {|hsh, cp| hsh.merge cp.converter_id => cp}
+    @converter_positions = ConverterPosition.all.inject({}) {|hsh, cp| hsh.merge cp.converter_id => cp}
   end
 
   def graph_to_json(graph)

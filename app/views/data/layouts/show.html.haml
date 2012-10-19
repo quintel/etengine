@@ -10,7 +10,7 @@
     %li= graphviz_toggle_sectors
 
   :javascript
-    var data_json_url = "#{data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
+    var data_json_url = "#{data_layout_path(:format => 'json')}";
 
 = render 'initialize_graph'
 

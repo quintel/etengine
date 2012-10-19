@@ -1,7 +1,7 @@
 #canvas
 :javascript
   var converter_url_prefix = "#{data_converters_path()}";
-  var update_converter_positions_path = "#{data_blueprint_layout_converter_positions_path(:blueprint_layout_id => @blueprint_layout)}";
+  var update_converter_positions_path = "#{data_layout_path}";
   var r = Raphael("canvas", GRID_X_SIZE, GRID_Y_SIZE).initZoom();
   var data;
 
@@ -15,4 +15,4 @@
     $("#instructions").draggable();
   });
 
-= javascript_include_tag data_blueprint_layout_path(:id => @blueprint_layout, :format => 'js')
+= javascript_include_tag data_layout_path(:format => 'js')

@@ -10,16 +10,16 @@
     %li= graphviz_toggle_sectors
 
   %script
-    == var data_json_url = "#{edit_data_blueprint_layout_path(:id => @blueprint_layout, :format => 'json')}";
-    
+    == var data_json_url = "#{edit_data_layout_path(:format => 'json')}";
+
 = render 'initialize_graph'
 
 :javascript
   function update_positions() {
     $('#graph_saving').text('Saving...').show();
     $.ajax({
-      type: 'POST',
-      url: update_converter_positions_path, 
+      type: 'PUT',
+      url: update_converter_positions_path,
       data: {'converter_positions' : getUpdatedValues()},
       success: function(data) { $('#graph_saving').fadeOut(); },
       error: function(data) { $('#graph_saving').text('ERROR'); }
@@ -27,8 +27,8 @@
     updated_coordinates = {};
     return false;
   };
-  
-  
+
+
   GRAPH.enableDragging();
 
 #options{:style => 'position: fixed; height: 25px; width: 250px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
