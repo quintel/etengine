@@ -83,14 +83,6 @@ module Etsource
       end
     end
 
-    def gquery_groups
-      instrument("etsource.loader: gquery_groups") do
-        cache("gqueries") do
-          @gquery.gquery_groups
-        end
-      end
-    end
-
     def inputs
       instrument("etsource.loader: inputs") do
         cache("inputs") do

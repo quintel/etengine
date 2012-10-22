@@ -7,7 +7,7 @@ class Gquery
   include InMemoryRecord
   extend ActiveModel::Naming
 
-  attr_accessor :key, :description, :query, :unit, :deprecated_key, :gquery_group, :file_path
+  attr_accessor :key, :description, :query, :unit, :deprecated_key, :file_path, :group_key
 
   def initialize(attributes={})
     attributes && attributes.each do |name, value|
@@ -38,10 +38,6 @@ class Gquery
 
   def lookup_id
     @lookup_id ||= Hashpipe.hash(key)
-  end
-
-  def group_key
-    gquery_group.try :group_key
   end
 
   # As a tribute to Ed Posnak I leave the following comment where it is.
@@ -98,13 +94,19 @@ class Gquery
   end
 
   def output_element?
-    gquery_group.group_key.include?("output_elements")
+    group_key.include?("output_elements")
   rescue => e
     false
   end
 
   def gql_modifier
     @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
+  end
+
+  def self.group_keys
+    NastyCache.instance.fetch_cached("Gquery.groups") do
+      Gquery.all.map(&:group_key).uniq
+    end
   end
 
   # GQL syntax highlighting uses this array

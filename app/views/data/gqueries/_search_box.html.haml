@@ -2,5 +2,5 @@
   = form_tag data_gqueries_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
     %label Gquery Group:
-    = select_tag :group, options_for_select(GqueryGroup.all.map(&:group_key), params[:group]), :include_blank => '-- group --'
+    = select_tag :group, options_for_select(Gquery.group_keys, params[:group]), :include_blank => '-- group --'
     = submit_tag "Show group", :class => 'btn btn-small'
