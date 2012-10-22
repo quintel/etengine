@@ -20,11 +20,14 @@
     $.ajax({
       type: 'PUT',
       url: update_converter_positions_path,
-      data: {'converter_positions' : getUpdatedValues()},
-      success: function(data) { $('#graph_saving').fadeOut(); },
+      data: {'converter_positions' : GRAPH.getUpdatedValues()},
+      success: function(data) {
+        $('#graph_saving').fadeOut();
+        GRAPH.updated_coordinates = {};
+        },
       error: function(data) { $('#graph_saving').text('ERROR'); }
     });
-    updated_coordinates = {};
+
     return false;
   };
 
