@@ -21,11 +21,12 @@ class Data::LayoutsController < Data::BaseController
 
   def update
     if params[:converter_positions].present?
-      params[:converter_positions].each do |converter_id,attributes|
-        if bcp = ConverterPosition.find_by_converter_id(converter_id)
+      params[:converter_positions].each do |key, attributes|
+        if bcp = ConverterPosition.find_by_converter_key(key)
           bcp.update_attributes attributes
         else
-          ConverterPosition.create attributes.merge(:converter_id => converter_id, :blueprint_layout_id => params[:blueprint_layout_id])
+          ConverterPosition.create attributes.merge(:converter_key => key,
+                         :blueprint_layout_id => params[:blueprint_layout_id])
         end
       end
     end
