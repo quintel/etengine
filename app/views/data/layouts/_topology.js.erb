@@ -2,7 +2,6 @@
 var GRAPH = new Graph();
 
 <%
-@bp = @blueprint
 @gql.prepare
 converters = @gql.present_graph.converters
 converter_keys = converters.map(&:excel_id)
@@ -39,8 +38,5 @@ converters.each do |converter|
     <%= "new Link(#{js_params(params)});".html_safe %>
   <% end %>
 <% end %>
-
-
-
 
 GRAPH.draw();
