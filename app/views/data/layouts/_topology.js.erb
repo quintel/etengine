@@ -4,37 +4,36 @@ var GRAPH = new Graph();
 <%
 @gql.prepare
 converters = @gql.present_graph.converters
-converter_keys = converters.map(&:excel_id)
+converter_keys = converters.map(&:key)
 
 converters.each do |converter|
   position = @converter_positions[converter.excel_id]
   position ||= ConverterPosition.new(:converter_id => converter.excel_id)
   if converter
-    params = [converter.excel_id,
-              converter.key.to_s,
+    params = [converter.key,
               position[:x] || 100,
               position.y_or_default(converter),
-              converter.sector_key.to_s,
-              converter.use_key.to_s,
+              converter.sector_key,
+              converter.use_key,
               (position.hidden == true),
               position.fill_color(converter),
               position.stroke_color(converter)]
   end
 -%>
-<%= "new Converter(#{js_params(params)});".html_safe %>
+<%= "new Converter(#{params.to_json});".html_safe %>
 <% end %>
 
 
 <% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link|
-  if converter_keys.include?(link.lft_converter.excel_id) and converter_keys.include?(link.rgt_converter.excel_id)
+  if converter_keys.include?(link.lft_converter.key) and converter_keys.include?(link.rgt_converter.key)
     params = [
-      link.rgt_converter.excel_id,
-      link.lft_converter.excel_id,
+      link.rgt_converter.key,
+      link.lft_converter.key,
       (link.carrier.graphviz_color || '#999'),
       '1|-'   #"1|#{link.link_style}"
     ]
     -%>
-    <%= "new Link(#{js_params(params)});".html_safe %>
+    <%= "new Link(#{params.to_json});".html_safe %>
   <% end %>
 <% end %>
 

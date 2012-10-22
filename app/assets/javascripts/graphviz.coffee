@@ -28,12 +28,12 @@ class @Graph
   draw: =>
     @drawGrid(@GRID_X_SIZE, @GRID_Y_SIZE)
     link.draw() for link in @links
-    for id, converter of @converters
+    for key, converter of @converters
       converter.draw()
     link.adjust_to_converter() for link in @links
 
   enableDragging: ->
-    converter.addDragEventListeners() for id, converter of @converters
+    converter.addDragEventListeners() for key, converter of @converters
 
   # Draw the grid.
   #
@@ -51,17 +51,16 @@ class @Graph
         .attr({stroke : '#ccc'})
 
   show_attribute_values: =>
-    for id, c of @converters
-      cid = "#{id}"
+    for key, c of @converters
       period = $('#period').val()
       attr = $('#attribute').val()
-      if data[period]? && data[period][cid]? && data[period][cid][attr]?
-        value = data[period][cid][attr]
+      if data[period]? && data[period][key]? && data[period][key][attr]?
+        value = data[period][key][attr]
         c.box.value_node.setAttr('text', value)
 
   show_selected: ->
     selected_group = $('#selected').val()
-    for id, converter of @converters
+    for key, converter of @converters
       if (selected_group == 'all' || converter.sector == selected_group)
         converter.show()
 
@@ -77,20 +76,20 @@ class @Graph
     return false
 
   highlight_off_all: =>
-    for id, converter of @converters
+    for key, converter of @converters
       converter.highlight_off()
     return false
 
   mark_all_dirty: =>
-    converter.markDirty() for id, converter of @converters
+    converter.markDirty() for key, converter of @converters
 
-  # { converter_id : {x : 12, y : 23, hidden : true} }
+  # { converter_key : {x : 12, y : 23, hidden : true} }
   #
   getUpdatedValues: ->
     converter_position_attrs = {}
-    for id, converter of @converters
+    for key, converter of @converters
       if converter.isDirty()
-        converter_position_attrs[converter.id] = converter.getAttributes()
+        converter_position_attrs[key] = converter.getAttributes()
     converter_position_attrs
 
   # drag event handlers
@@ -117,11 +116,12 @@ class @Graph
       converter_box.converter.update_position(converter_box.attr('x'), converter_box.attr('y'))
 
 class @Link
-  constructor: (converter_input_id, converter_output_id, color, style) ->
+  constructor: (args) ->
+    [input_key, output_key, color, style] = args
     @color = color
     @style = style
-    @output_converter = GRAPH.converters[converter_output_id]
-    @input_converter = GRAPH.converters[converter_input_id]
+    @output_converter = GRAPH.converters[output_key]
+    @input_converter = GRAPH.converters[input_key]
 
     @output_converter.links.push(this)
     @input_converter.links.push(this)
@@ -161,8 +161,8 @@ class @Converter
   STYLE_SELECTED : {fill : '#cff', 'stroke' : '#f00' }
   STYLE_HIGHLIGHT : {'stroke' : '#f00'}
 
-  constructor: (id, key, pos_x, pos_y, sector, use, hidden, fill_color, stroke_color) ->
-    @id = id
+  constructor: (args) ->
+    [key, pos_x, pos_y, sector, use, hidden, fill_color, stroke_color] = args
     @key = key
     @pos_x = pos_x
     @pos_y = pos_y
@@ -176,7 +176,7 @@ class @Converter
     @stroke_color = stroke_color
     @r = GRAPH.r
 
-    GRAPH.converters[id] = this
+    GRAPH.converters[key] = this
 
   # Draws the Converter on the raphael space.
   # *Warning*: The order of the elements being drawed defines their z-index.
@@ -200,17 +200,14 @@ class @Converter
 
     box = @r.rect(pos_x, pos_y, 80, 50)
     box.attr(@getBoxAttributes())
-    box.converter_id = @id
     box.converter = this
 
     # Creating text nodes of converter
-    box.id_node = @r.text(0, 0, "##{@id}.")
     box.sector_node = @r.text(0, 0, @getSectorUseShortcut())
     box.text_node = @r.text(0, 0, @key).attr({'text-anchor': 'start'})
     box.value_node = @r.text(0,0, '').attr({'text-anchor': 'start'})
 
     # Default styles for text nodes
-    box.id_node.attr(txt_attributes)
     box.text_node.attr(txt_attributes)
     box.value_node.attr(txt_attributes)
 
@@ -358,7 +355,6 @@ class @Converter
     pos_x = @box.attr('x')
     pos_y = @box.attr('y')
 
-    @box.id_node.attr(     {x : pos_x - 30, y : pos_y + 7 })
     @box.sector_node.attr( {x : pos_x - 10, y : pos_y + 35})
     @box.text_node.attr(   {x : pos_x + 5,  y : pos_y + 10})
     @box.value_node.attr(  {x : pos_x + 5,  y : pos_y + 40})
