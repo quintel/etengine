@@ -187,7 +187,7 @@ module Qernel::Plugins::MeritOrder
     describe "#residual_load_profiles" do
       before do
         @tbl = LoadProfileTable.new(nil)
-        @tbl.stub!(:graph_peak_power).and_return(1000.0)
+        @tbl.stub!(:graph_electricity_demand).and_return(1000.0)
         # Stubbing all this is unsexy, but it gives a good overview how the
         # calculations fit together.
         @tbl.stub!(:merit_order_table).and_return([
@@ -198,7 +198,7 @@ module Qernel::Plugins::MeritOrder
         ])
         # demands calculated by the graph for the defined groups of converters.
         dmnds = [100, 200, 300, 400]
-        @tbl.stub!(:merit_order_must_run_loads).and_return(dmnds)
+        @tbl.stub!(:merit_order_must_run_production).and_return(dmnds)
       end
 
       specify { LoadProfileTable::PRECISION.should == 10 }
