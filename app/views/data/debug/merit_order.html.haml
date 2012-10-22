@@ -1,0 +1,43 @@
+%h2
+  Merit Order
+
+  - if @gql.future_graph.use_merit_order_demands?
+    %span.badge.badge-success ON
+  - else
+    %span.badge.badge-important OFF
+
+.alert
+
+- graph = @gql.future_graph
+- lp = Qernel::Plugins::MeritOrder::LoadProfileTable.new(graph)
+
+%h2 Dispatchables
+%table.table
+  %tr
+    %th Key
+    %th Demand
+    %th MO Pos.
+    %th MO Start
+    %th MO End
+    %th Full Load sec
+    %th Cap. Factor
+
+  - graph.group_converters(:merit_order_converters).sort_by{|c| c[:merit_order_position] }.each do |converter|
+    %tr
+      %td= converter.key
+      %td= converter.demand
+      %td= converter[:merit_order_position]
+      %td= converter[:merit_order_start]
+      %td= converter[:merit_order_end  ]
+      %td= converter[:full_load_seconds]
+      %td= converter[:capacity_factor  ]
+
+
+%h2 residual_ldc_coordinates
+%table.table
+  - lp.residual_ldc_coordinates.each do |x,y|
+    %tr
+      %td= x.round(3)
+      %td= y.round(3)
+
+

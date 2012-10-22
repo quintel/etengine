@@ -140,7 +140,7 @@ module Qernel::Plugins
       # ]
       #
       def merit_order_must_run_production
-        must_run_merit_order_converters.map do |_ignore_column, converter_keys|
+        must_run_merit_order_converters.map do |_, converter_keys|
           converter_keys.map do |key|
             converter = @graph.converter(key).query
             begin

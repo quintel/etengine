@@ -103,6 +103,7 @@ Etm::Application.routes.draw do
 
       match '/checks/:action' => 'checks'
 
+      match '/debug/merit_order' => 'debug#merit_order'
       match '/debug/calculation' => 'debug#calculation'
       match '/debug/gquery' => 'debug#gquery', :as => :debug_gql
 

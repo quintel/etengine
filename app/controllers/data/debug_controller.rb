@@ -14,6 +14,10 @@ class Data::DebugController < Data::BaseController
     @logs = (@gql.future.graph.logger.logs || []).compact.flatten
   end
 
+  def merit_order
+    @gql.prepare
+  end
+
   def gquery
     @gql.sandbox_mode = :debug
     @gql.init_datasets
