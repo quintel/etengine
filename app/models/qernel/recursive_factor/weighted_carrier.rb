@@ -1,14 +1,14 @@
 module Qernel::RecursiveFactor::WeightedCarrier
 
   # Carrier Cost can depend on the share of other carriers flowing
-  # into it. 
-  # E.g. Gas price is dependent on the mix of greengas and natural 
-  # gas. 
+  # into it.
+  # E.g. Gas price is dependent on the mix of greengas and natural
+  # gas.
   #
   # A.carrier_cost_per_mj == 0.4*0.85 + 0.6 * 1.0
   #
   def weighted_carrier_cost_per_mj
-    function(:weighted_carrier_cost_per_mj) do
+    fetch_and_rescue(:weighted_carrier_cost_per_mj) do
       recursive_factor_without_losses(:weighted_carrier_cost_per_mj_factor)
     end
   end
@@ -31,7 +31,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
   # Same as weighted_carrier_cost_per_mj but for co2
   #
   def weighted_carrier_co2_per_mj
-    function(:weighted_carrier_co2_per_mj) do
+    fetch_and_rescue(:weighted_carrier_co2_per_mj) do
       recursive_factor_without_losses(:weighted_carrier_co2_per_mj_factor)
     end
   end
