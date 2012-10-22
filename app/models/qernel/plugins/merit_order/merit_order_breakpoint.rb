@@ -30,7 +30,7 @@ module Qernel::Plugins
     #   +--------------+                             |             |
     #   +--------------+                             +-------------+
     #                                              industry chp combined gas power
-    #   SUM = graph_peak_power                     SUM(mw_power * electr_output_conversion * availability)
+    #   SUM = graph_electricity_demand             SUM(mw_power * electr_output_conversion * availability)
     #
     # ==========================================================================================================
     #

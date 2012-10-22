@@ -88,9 +88,9 @@ module Qernel::Plugins
       private
       #######
 
-      # Peak power of electricity for all final demand converters..
-      def graph_peak_power
-        @graph.group_converters(:final_demand_electricity).map{|c| c.query.mw_power }.compact.sum
+      # Demand of electricity for all final demand converters..
+      def graph_electricity_demand
+        @graph.group_converters(:final_demand_electricity).map{|c| c.query.demand }.compact.sum
       end
 
       # Adjust the load curve (column 0) by subtracting the loads of the must-run converters
@@ -104,22 +104,22 @@ module Qernel::Plugins
       #     [ 0.5601907, [0.6186073, 0.0000000, 1.0000000, 0.0001867, 0.0000000, 0.0000000, 0.0000000]],
       #     ...
       #
-      # and the merit_order_must_run_loads. The 7 numbers sum loads for every group in must_run_merit_order_converters.yml
+      # and the merit_order_must_run_production. The 7 numbers sum electricity production for every group in must_run_merit_order_converters.yml
       #
       #                   column_1, column_2, column_3, column_4, column_5, column_6, column_7
       #     [             1000,      1500,      8000,     1000,       2000,    300000,   10000]
       #
-      # It returns an array of the load profiles, adjusted by subtracting the must-run loads.
+      # It returns an array of the load profiles, adjusted by subtracting the must-run production.
       #
       #    [ (0.6255066 * peak_power - ( 0.618 * 1000 + 0.000 * 1500 + 1.000 * 8000 + 0.002 * 1000 ...))]
       #    [ (0.5601907 * peak_power - ( 0.618 * 1000 + 0.000 * 1500 + 1.000 * 8000 + 0.0018 * 1000 ...))]
       #
       def residual_load_profiles # Excel N
-        loads      = merit_order_must_run_loads
-        peak_power = graph_peak_power
+        loads      = merit_order_must_run_production
+        electricity_demand = graph_electricity_demand
 
         merit_order_table.map do |normalized_load, wewp|
-          load = peak_power * normalized_load
+          load = electricity_demand * normalized_load
 
           # take one column from the table and multiply it with the loads
           # defined in the must_run_merit_order_converters.yml
@@ -130,7 +130,7 @@ module Qernel::Plugins
         end
       end
 
-      # Returns the summed load for the must-run converters defined in must_run_merit_order_converters.yml.
+      # Returns the summed production for the must-run converters defined in must_run_merit_order_converters.yml.
       #
       # Returns an array of sums for every column_X group, like this:
       #
@@ -139,19 +139,16 @@ module Qernel::Plugins
       #    100.1     # [50, 50.1].sum derived from the column_1: ... converters.
       # ]
       #
-      def merit_order_must_run_loads
+      def merit_order_must_run_production
         must_run_merit_order_converters.map do |_ignore_column, converter_keys|
           converter_keys.map do |key|
-            converter = @graph.converter(key)
+            converter = @graph.converter(key).query
             begin
+
               # mw_power is alias to mw_input_capacity
-              converter.query.instance_exec { mw_power * electricity_output_conversion * availability }
+              converter.instance_exec { mw_power * electricity_output_conversion * full_load_seconds }
             rescue
-              # We've been getting errors with nil attributes. Debug info
-              debug = [:mw_power, :electricity_output_conversion, :availability].map do |a|
-                "#{a}: #{converter.query.send a}"
-              end.join "\n"
-              raise "Error with converter #{key}: #{debug}"
+              raise "Merit Order: merit_order_must_run_production: Error with converter #{key}: #{debug}"
             end
           end.sum.round(1)
         end
