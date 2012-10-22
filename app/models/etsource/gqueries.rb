@@ -13,40 +13,21 @@ module Etsource
 
     def gqueries
       gqueries = []
-      groups = gquery_groups
 
       Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
-        tokens = f.gsub(base_dir+"/", '').split('/')
         # the group name concatenates the directory names
-        group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
+        tokens = f.gsub(base_dir+"/", '').split('/')
+        group_key = tokens[0..-2].join('_').gsub(' ', '_').to_sym rescue nil
         gquery = from_file(f)
-
-        gquery.gquery_group = groups[group_key]
+        gquery.group_key = group_key
         gqueries << gquery
       end
       gqueries
     end
 
-    def gquery_groups
-      # make something like an identity map, so that there can be no duplicates
-      # of groups around.
-      @gquery_groups_identity_map ||= {}
-      gquery_groups = {}
-
-      Dir.glob("#{base_dir}/**/*.#{FILE_SUFFIX}").each do |f|
-        tokens = f.gsub(base_dir+"/", '').split('/')
-        # the group name concatenates the directory names
-        group_key = tokens[0..-2].join('_').gsub(' ', '_') rescue nil
-        @gquery_groups_identity_map[group_key] ||= GqueryGroup.new(:group_key => group_key)
-        gquery_groups[group_key] = @gquery_groups_identity_map[group_key]
-      end
-      gquery_groups
-    end
-
     def from_file(f)
       key = f.split('/').last.split('.').first.strip
       txt = File.read(f)
-
 
       comment_lines  = []
       variable_lines = []
@@ -81,10 +62,6 @@ module Etsource
         :deprecated_key => variables['deprecated_key'],
         :file_path => f
       )
-    end
-
-    def group_key(g)
-      g.group_key.downcase.gsub(/\s/, '_') rescue 'other'
     end
 
     def base_dir
