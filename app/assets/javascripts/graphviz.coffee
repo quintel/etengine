@@ -72,7 +72,7 @@ class @Graph
         converter.hide()
 
   deselect_all: =>
-    for id, converter of @selected
+    for converter in @selected
       converter.converter.unselect()
     return false
 
