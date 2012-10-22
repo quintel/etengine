@@ -41,42 +41,43 @@ class @Graph
     for  i in [1..width] by @GRID_STEP_SIZE
       # M0   1 L10000   1
       # M0 801 L10000 80
-      @r.path("M0 "+i+"L"+height+" "+i)
+      @r.path("M0 #{i} L#{height} #{i}")
         .attr({stroke : '#ccc'})
 
     for i in [1..height] by @GRID_STEP_SIZE
       # M1   0 L1   8000
       # M801 0 L801 8000
-      @r.path("M"+i+" 0 L"+i+" "+width)
+      @r.path("M#{i} 0 L#{i} #{width}")
         .attr({stroke : '#ccc'})
 
-  show_attribute_values: ->
-    for c in @converters
+  show_attribute_values: =>
+    for id, c of @converters
+      cid = "#{id}"
       period = $('#period').val()
       attr = $('#attribute').val()
-      if data[period]? && data[period][''+c.id]? && data[period][''+c.id][attr]?
-        value = data[period][''+c.id][attr]
-        c.box.value_node.setAttr('text', ''+value)
+      if data[period]? && data[period][cid]? && data[period][cid][attr]?
+        value = data[period][cid][attr]
+        c.box.value_node.setAttr('text', value)
 
   show_selected: ->
     selected_group = $('#selected').val()
-    for converter in @converters
+    for id, converter of @converters
       if (selected_group == 'all' || converter.sector == selected_group)
         converter.show()
 
   hide_selected: ->
     selected_group = $('#selected').val()
-    for id, converter in @converters
+    for id, converter of @converters
       if (selected_group == 'all' || converter.sector == selected_group)
         converter.hide()
 
   deselect_all: =>
-    for converter in @selected
+    for id, converter of @selected
       converter.converter.unselect()
     return false
 
   highlight_off_all: =>
-    for converter in  @converters
+    for id, converter of @converters
       converter.highlight_off()
     return false
 
@@ -160,14 +161,13 @@ class @Converter
   STYLE_SELECTED : {fill : '#cff', 'stroke' : '#f00' }
   STYLE_HIGHLIGHT : {'stroke' : '#f00'}
 
-  constructor: (id, key, pos_x, pos_y, sector, use, label, hidden, fill_color, stroke_color) ->
+  constructor: (id, key, pos_x, pos_y, sector, use, hidden, fill_color, stroke_color) ->
     @id = id
     @key = key
     @pos_x = pos_x
     @pos_y = pos_y
     @use = use
     @sector = sector
-    @label = label
     @links = []
     @highlighted = false
     @dirty = false
@@ -197,7 +197,6 @@ class @Converter
 
     pos_x = @pos_x
     pos_y = @pos_y
-    text_label = @label
 
     box = @r.rect(pos_x, pos_y, 80, 50)
     box.attr(@getBoxAttributes())
@@ -207,7 +206,7 @@ class @Converter
     # Creating text nodes of converter
     box.id_node = @r.text(0, 0, "##{@id}.")
     box.sector_node = @r.text(0, 0, @getSectorUseShortcut())
-    box.text_node = @r.text(0, 0, text_label).attr({'text-anchor': 'start'})
+    box.text_node = @r.text(0, 0, @key).attr({'text-anchor': 'start'})
     box.value_node = @r.text(0,0, '').attr({'text-anchor': 'start'})
 
     # Default styles for text nodes
@@ -230,7 +229,7 @@ class @Converter
 
     @box.node.ondblclick = (evt) =>
       if !evt.altKey || !evt.shiftKey
-        url = window.converter_url_prefix + "/" + @label
+        url = "#{window.converter_url_prefix}/#{@key}"
         window.open(url, '_blank')
       false
 

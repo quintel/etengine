@@ -16,10 +16,9 @@ converters.each do |converter|
               position.y_or_default(converter),
               converter.sector_key.to_s,
               converter.use_key.to_s,
-              converter.key.to_s]
-    params << (position.hidden == true)
-    params << position.fill_color(converter)
-    params << position.stroke_color(converter)
+              (position.hidden == true),
+              position.fill_color(converter),
+              position.stroke_color(converter)]
   end
 -%>
 <%= "new Converter(#{js_params(params)});".html_safe %>
