@@ -202,7 +202,7 @@ public
 
   # if demand is not set, use preset_demand.
   def demand
-    function(:demand) { preset_demand }
+    fetch_and_rescue(:demand) { preset_demand }
     # equivalent to:
     # dataset_get(:demand) or dataset_set(:demand, preset_demand)
   end

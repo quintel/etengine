@@ -10,7 +10,7 @@ module Qernel
     # Returns a float.
     #
     def conversion
-      function(:conversion) do
+      fetch_and_rescue(:conversion) do
         input_keys = converter.inputs.map { |input| input.carrier.key }
 
         unless efficiencies = converter.dataset_get(:carrier_efficiency)

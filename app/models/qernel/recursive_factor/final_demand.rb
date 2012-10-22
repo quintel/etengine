@@ -2,15 +2,15 @@ module Qernel::RecursiveFactor::FinalDemand
 
 
   def final_demand
-    function(:final_demand) do
+    fetch_and_rescue(:final_demand) do
       (self.demand || 0.0) * recursive_factor(:final_demand_factor)
     end
   end
 
   def final_demand_of(*carriers)
-    carriers.flatten.map do |c| 
+    carriers.flatten.map do |c|
       key = c.respond_to?(:key) ? c.key : c
-      final_demand_of_carrier(key) 
+      final_demand_of_carrier(key)
     end.compact.sum
   end
 
@@ -28,7 +28,7 @@ module Qernel::RecursiveFactor::FinalDemand
       nil
     end
   end
-  
+
   def final_demand_factor(link,ruby18fix = nil)
     if    final_demand_cbs?  then 1.0
     elsif right_dead_end?    then 0.0
