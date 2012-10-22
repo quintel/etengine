@@ -2,7 +2,6 @@
 :javascript
   var converter_url_prefix = "#{data_converters_path()}";
   var update_converter_positions_path = "#{data_layout_path}";
-  var r = Raphael("canvas", GRID_X_SIZE, GRID_Y_SIZE).initZoom();
   var data;
 
   $.getJSON(data_json_url, function(json_data) {
@@ -15,4 +14,4 @@
     $("#instructions").draggable();
   });
 
-= javascript_include_tag data_layout_path(:format => 'js')
+  #{render 'topology.js'}

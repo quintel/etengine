@@ -9,7 +9,6 @@ class Data::LayoutsController < Data::BaseController
     respond_to do |format|
       format.html { render :layout => 'blueprint_layout' }
       format.json { render :json => result  }
-      format.js   { render :layout => false }
     end
   end
 
@@ -17,7 +16,6 @@ class Data::LayoutsController < Data::BaseController
     respond_to do |format|
       format.html { render :layout => 'blueprint_layout' }
       format.json { render :json => result  }
-      format.js   { render :layout => false }
     end
   end
 
