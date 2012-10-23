@@ -33,7 +33,7 @@ module Gql::Runtime
 
 
 
-      # == Remark about default_unit
+      # == Remark about update_type
       #
       # Because ETmodel/flex return only numbers when pulling a slider, we can
       # define a default suffix for an input with the v1_legacy_unit
@@ -46,7 +46,7 @@ module Gql::Runtime
       # etmodel frontend displays a slider where you can update the growth
       # rate. When the user chooses 7% the slider actually only sends the
       # number  7 to the etengine. The ETengine/API if there is no suffix for
-      # that slider, the api will append the one defined in  default_unit
+      # that slider, the api will append the one defined in  update_type
       # and send the "7%" to the GQL. The UPDATE function then derives from
       # that "7%" that it should increase the demand by 7% and not set the
       # demand to 7. Why: we once wanted the sliders to be flexible, so that
