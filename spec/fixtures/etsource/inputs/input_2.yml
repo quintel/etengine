@@ -1,13 +1,13 @@
---- 
-# updates lft converter with the negative user value 
+---
+# updates lft converter with the negative user value
 id: 2
 key: input_2
 query: UPDATE(V(lft), preset_demand, USER_INPUT())
 unit: ""
-updateable_period: future
+update_period: future
 attr_name: decrease_total
 factor: 100
-v1_legacy_unit: 
+update_type:
 max_value: 100000
 min_value: 10
 # start_value_gql is multiplied by factor
