@@ -32,6 +32,9 @@
       %td= converter[:full_load_seconds]
       %td= converter[:capacity_factor  ]
 
+%h2 Residual Load Profile table
+%textarea
+  = lp.send(:residual_load_profiles_table).map{|row| row.join("\t")}.join("\n")
 
 %h2 residual_ldc_coordinates
 %table.table

@@ -130,6 +130,25 @@ module Qernel::Plugins
         end
       end
 
+      # THis is for debugging only and can be removed
+      #
+      def residual_load_profiles_table
+        loads      = merit_order_must_run_production
+        electricity_demand = graph_electricity_demand
+
+        merit_order_table.map do |normalized_load, wewp|
+          load = electricity_demand * normalized_load
+
+          # take one column from the table and multiply it with the loads
+          # defined in the must_run_merit_order_converters.yml
+          wewp_x_loads = wewp.zip(loads) # [1,2].zip([3,4]) => [[1,3],[2,4]]
+          wewp_x_loads.map!{|wewp, load| wewp * load }
+
+          wewp_x_loads
+        end
+      end
+
+
       # Returns the summed production for the must-run converters defined in must_run_merit_order_converters.yml.
       #
       # Returns an array of sums for every column_X group, like this:
@@ -146,7 +165,7 @@ module Qernel::Plugins
             begin
 
               # mw_power is alias to mw_input_capacity
-              converter.instance_exec { mw_power * electricity_output_conversion * full_load_seconds }
+              converter.instance_exec { demand * electricity_output_conversion }
             rescue
               raise "Merit Order: merit_order_must_run_production: Error with converter #{key}: #{debug}"
             end
