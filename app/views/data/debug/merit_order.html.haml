@@ -19,7 +19,7 @@
     %th MO Pos.
     %th MO Start
     %th MO End
-    %th Full Load sec
+    %th Full Load Hours
     %th Cap. Factor
 
   - graph.group_converters(:merit_order_converters).sort_by{|c| c[:merit_order_position] }.each do |converter|
@@ -29,7 +29,7 @@
       %td= converter[:merit_order_position]
       %td= converter[:merit_order_start]
       %td= converter[:merit_order_end  ]
-      %td= converter[:full_load_hours  ]
+      %td= converter.query.full_load_hours
       %td= converter[:capacity_factor  ]
 
 %h2 Residual Load Profile table
