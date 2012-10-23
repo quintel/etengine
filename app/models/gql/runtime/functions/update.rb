@@ -36,11 +36,7 @@ module Gql::Runtime
       # == Remark about update_type
       #
       # Because ETmodel/flex return only numbers when pulling a slider, we can
-      # define a default suffix for an input with the v1_legacy_unit
-      # attribute.
-      #
-      # So if you define inside an inputs/my_special_input.yml
-      # v1_legacy_unit: "%"
+      # define a default suffix for an input with the update_type attribute.
       #
       # A number 5 from an etmodel slider will be converted to "5%". So the
       # etmodel frontend displays a slider where you can update the growth

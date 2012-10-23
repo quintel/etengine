@@ -1,41 +1,9 @@
-# == Schema Information
-#
-# Table name: inputs
-#
-#  id                :integer(4)      not null, primary key
-#  name              :string(255)
-#  key               :string(255)
-#  keys              :text
-#  attr_name         :string(255)
-#  share_group       :string(255)
-#  start_value_gql   :string(255)
-#  min_value_gql     :string(255)
-#  max_value_gql     :string(255)
-#  min_value         :float
-#  max_value         :float
-#  start_value       :float
-#  created_at        :datetime
-#  updated_at        :datetime
-#  update_type       :string(255)
-#  unit              :string(255)
-#  factor            :float
-#  label             :string(255)
-#  comments          :text
-#  label_query       :string(255)
-#  updateable_period :string(255)     default("future"), not null
-#  query             :text
-#  v1_legacy_unit    :string(255)
-#
-# v1_legacy_unit is appended to the value provided by the user, and defines whether it
-# is growth_rate (%y) or total growth (%) or absolute value ("")
-#
-
 class Input
   include InMemoryRecord
   extend ActiveModel::Naming
   include ActiveModel::Validations
 
-  validates :updateable_period, :presence => true,
+  validates :update_period, :presence => true,
                                 :inclusion => %w[present future both before]
 
   ATTRIBUTES = [
@@ -54,7 +22,7 @@ class Input
     :start_value,
     :start_value_gql,
     :unit,
-    :updateable_period,
+    :update_period,
     :update_type,
     :dependent_on,
     :lookup_id
@@ -131,15 +99,15 @@ class Input
   end
 
   def before_update?
-    updateable_period == 'before'
+    update_period == 'before'
   end
 
   def updates_present?
-    updateable_period == 'present' || updateable_period == 'both'
+    update_period == 'present' || update_period == 'both'
   end
 
   def updates_future?
-    updateable_period == 'future' || updateable_period == 'both'
+    update_period == 'future' || update_period == 'both'
   end
 
   # make as_json work
