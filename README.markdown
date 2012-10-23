@@ -4,6 +4,18 @@ Welcome.
 
 ## Changelog
 
+##### 2012-10-23: Link#update_share - sb
+
+Link#update_share used #input_external_demand which in turn used #input to determine the link share (= lft_converter.demand / link.value). Unfortunately with reversed links #input was the output slot of the rgt_converter. This was changed and a few extra methods introduced.
+
+##### 2012-10-22: TRASH: GqueryGroup - sb
+
+GqueryGroup was trashed and replaced with the group symbols of the Qernel::Converter.
+
+##### 2012-10-22: #function renamed to #fetch_and_rescue - sb
+
+The ubiquitous function(:foo) was renamed to the more describing #fetch_and_rescue.
+
 ##### 2012-08-14: QUERY_DELTA - sb
 
 QUERY\_DELTA() returns QUERY\_FUTURE - QUERY_PRESENT
