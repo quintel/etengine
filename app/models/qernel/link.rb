@@ -154,7 +154,7 @@ public
   # This is needed so that recursive_factors work correctly.
   #
   def update_share
-    demand = input_external_demand
+    demand = lft_external_demand
     if self.value and demand and demand > 0
       self.share = self.value / demand
     elsif value == 0.0
@@ -164,7 +164,7 @@ public
       # To fix https://github.com/dennisschoenmakers/etengine/issues/178
       # we have to change the following line:
       if flexible?
-        self.share = 1.0 - input.links.map(&:share).compact.sum.to_f
+        self.share = 1.0 - lft_input.links.map(&:share).compact.sum.to_f
       end
     end
   end
@@ -269,20 +269,43 @@ protected
     end
   end
 
+  # The external demand of the converter to the left.
   def output_external_demand
     output.expected_external_value || 0.0
   end
 
+  # What is the demand of the link input. For reversed links we use the demand
+  # of the rgt converter otherwise the lft one.
   def input_external_demand
     input && input.expected_external_value || 0.0
   end
 
-  def input
-    reversed? ? rgt_converter.output(@carrier) : lft_converter.input(@carrier)
+  # The external demand of the converter to the left.
+  def lft_external_demand
+    lft_input = self.lft_input
+    lft_input && lft_input.expected_external_value || 0.0
   end
 
+  # slot of lft converter
+  def lft_input
+    lft_converter.input(@carrier)
+  end
+
+  # slot of rgt converter
+  def rgt_input
+    rgt_converter.input(@carrier)
+  end
+
+  # The slot from where the energy for this link comes. If reversed it will be
+  # the rgt converter.
+  def input
+    reversed? ? rgt_input : lft_input
+  end
+
+  # The slot that receives the energy of this link. If reversed it will be the
+  # lft converter.
   def output
-    reversed? ? lft_converter.input(@carrier) : rgt_converter.output(@carrier)
+    reversed? ? lft_input : rgt_input
   end
 
 
