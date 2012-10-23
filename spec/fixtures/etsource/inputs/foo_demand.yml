@@ -4,8 +4,7 @@ id: 1
 key: foo_demand
 query: UPDATE(V(foo), preset_demand, USER_INPUT())
 unit: "PJ"
-update_type: converters
-updateable_period: future
+update_period: future
 update_type: "PJ"
 factor: 100
 max_value: 100
