@@ -55,7 +55,7 @@ class Input
     :start_value_gql,
     :unit,
     :updateable_period,
-    :default_unit,
+    :update_type,
     :dependent_on,
     :lookup_id
   ]

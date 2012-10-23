@@ -6,7 +6,7 @@ query: UPDATE(V(foo), preset_demand, USER_INPUT())
 unit: "PJ"
 update_type: converters
 updateable_period: future
-default_unit: "PJ"
+update_type: "PJ"
 factor: 100
 max_value: 100
 min_value: 0
