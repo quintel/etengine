@@ -292,20 +292,20 @@ protected
   end
 
   # slot of rgt converter
-  def rgt_input
-    rgt_converter.input(@carrier)
+  def rgt_output
+    rgt_converter.output(@carrier)
   end
 
   # The slot from where the energy for this link comes. If reversed it will be
   # the rgt converter.
   def input
-    reversed? ? rgt_input : lft_input
+    reversed? ? rgt_output : lft_input
   end
 
   # The slot that receives the energy of this link. If reversed it will be the
   # lft converter.
   def output
-    reversed? ? lft_input : rgt_input
+    reversed? ? lft_input : rgt_output
   end
 
 
