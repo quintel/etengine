@@ -133,7 +133,7 @@ module Qernel::Plugins
       # THis is for debugging only and can be removed
       #
       def residual_load_profiles_table
-        loads      = merit_order_must_run_production
+        loads              = merit_order_must_run_production
         electricity_demand = graph_electricity_demand
 
         merit_order_table.map do |normalized_load, wewp|
@@ -144,7 +144,7 @@ module Qernel::Plugins
           wewp_x_loads = wewp.zip(loads) # [1,2].zip([3,4]) => [[1,3],[2,4]]
           wewp_x_loads.map!{|wewp, load| wewp * load }
 
-          wewp_x_loads
+          [load, *wewp_x_loads]
         end
       end
 
