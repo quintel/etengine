@@ -19,6 +19,7 @@ module Qernel::Plugins
       else
         self[:use_merit_order_demands].to_i == 1
       end
+      true
     end
 
     # Select dispatchable merit order converters
