@@ -6,7 +6,7 @@
 # into a update_statements hash it is split into the subhashes :carriers,
 # :converters, :area. To define what kind of objects need to be updated.
 #
-# Based on Input#updateable_period a update_statement is added to either
+# Based on Input#update_period a update_statement is added to either
 # update_statements, update_statements_present or both.
 #
 #

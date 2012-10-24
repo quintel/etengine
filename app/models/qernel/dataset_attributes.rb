@@ -161,13 +161,13 @@ module Qernel::DatasetAttributes
 
   # Function memoizes a block, and returns nil when it catches an exception.
   # Functions and dataset attributes share the same dataset hash. So make sure
-  # the function keys (function(:i_am_a_key) {...} ) do not overlap with
+  # the function keys (fetch_and_rescue(:i_am_a_key) {...} ) do not overlap with
   # dataset_attributes.
   #
   # @example Default usage
   #
   #   def total_costs_of_co2
-  #     function(:total_costs_of_co2) do
+  #     fetch_and_rescue(:total_costs_of_co2) do
   #       # ...
   #     end
   #   end
@@ -176,7 +176,7 @@ module Qernel::DatasetAttributes
   #
   #   def total_costs_of_co2
   #     @counter ||= 0
-  #     function(:total_costs_of_co2) do
+  #     fetch_and_rescue(:total_costs_of_co2) do
   #       @counter += 1
   #     end
   #   end
@@ -186,7 +186,7 @@ module Qernel::DatasetAttributes
   # @example Returns nil when exception happens
   #
   #   def total_costs_of_co2
-  #     function(:total_costs_of_co2) do
+  #     fetch_and_rescue(:total_costs_of_co2) do
   #       nil * 3.0
   #     end
   #   end
@@ -195,14 +195,14 @@ module Qernel::DatasetAttributes
   # @example Returns second parameter when exception happens
   #
   #   def total_costs_of_co2
-  #     function(:total_costs_of_co2, 0.0) do
+  #     fetch_and_rescue(:total_costs_of_co2, 0.0) do
   #       nil * 3.0
   #     end
   #   end
   #   # => 0.0
   #
   #
-  def function(attr_name, rescue_with = nil)
+  def fetch_and_rescue(attr_name, rescue_with = nil)
     # check if we have a memoized result already.
     if dataset_attributes.has_key?(attr_name)
       # are we in the debugger mode?

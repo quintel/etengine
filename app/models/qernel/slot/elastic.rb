@@ -29,7 +29,7 @@ module Qernel
     # Returns a float.
     #
     def conversion
-      function(:conversion) do
+      fetch_and_rescue(:conversion) do
         others = siblings.sum(&:conversion)
 
         # Don't break the laws of thermodynamics; conversion may not be

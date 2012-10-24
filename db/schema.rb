@@ -11,13 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120814153024) do
-
-  create_table "blueprint_layouts", :force => true do |t|
-    t.string   "key"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(:version => 20121019111531) do
 
   create_table "converter_positions", :force => true do |t|
     t.integer  "converter_id"
@@ -26,7 +20,6 @@ ActiveRecord::Schema.define(:version => 20120814153024) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "hidden"
-    t.integer  "blueprint_layout_id"
     t.string   "converter_key"
   end
 
@@ -106,8 +99,6 @@ ActiveRecord::Schema.define(:version => 20120814153024) do
     t.string   "source"
     t.text     "balanced_values"
   end
-
-  add_index "scenarios", ["source"], :name => "index_scenarios_on_source"
 
   create_table "users", :force => true do |t|
     t.string   "name",                                  :null => false

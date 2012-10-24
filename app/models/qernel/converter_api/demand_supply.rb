@@ -1,7 +1,7 @@
 class Qernel::ConverterApi
 
   def demand_of_fossil
-    function(:demand_of_fossil) do
+    fetch_and_rescue(:demand_of_fossil) do
       converter.input_carriers.map do |carrier|
         if carrier.sustainable and demand = demand_of_carrier(carrier)
           demand * (1 - carrier.sustainable)
@@ -12,7 +12,7 @@ class Qernel::ConverterApi
   alias_method :output_of_fossil, :demand_of_fossil
 
   def demand_of_sustainable
-    function(:demand_of_sustainable) do
+    fetch_and_rescue(:demand_of_sustainable) do
       converter.input_carriers.map do |carrier|
         if carrier.sustainable and demand = demand_of_carrier(carrier)
           demand * carrier.sustainable
@@ -30,7 +30,7 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "input_of_loss", 'MJ'
-  
+
 
   def output_of_loss
     if converter.demand
@@ -40,7 +40,7 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "output_of_loss", 'MJ'
-  
+
 
   def output_of(*carriers)
     carriers.flatten.map do |c|
@@ -57,36 +57,36 @@ class Qernel::ConverterApi
   # Helper method to get all heat outputs (useable_heat, steam_hot_water)
   #
   def output_of_heat_carriers
-    function(:output_of_heat_carriers) do
+    fetch_and_rescue(:output_of_heat_carriers) do
       output_of_useable_heat + output_of_steam_hot_water
     end
   end
   unit_for_calculation "output_of_heat_carriers", 'MJ'
-  
+
   def output_of_heat_and_cooling_carriers
-    function(:output_of_heat_and_cooling_carriers) do
+    fetch_and_rescue(:output_of_heat_and_cooling_carriers) do
       output_of_useable_heat + output_of_steam_hot_water + output_of_cooling
     end
   end
   unit_for_calculation "output_of_heat_and_cooling_carriers", 'MJ'
-  
-  
+
+
   # Don't use this function before checking if all fossil carriers are
   # included!
   def input_of_fossil_carriers
-    function(:input_of_fossil_carriers) do
+    fetch_and_rescue(:input_of_fossil_carriers) do
       input_of_coal + input_of_crude_oil + input_of_natural_gas + input_of_diesel + input_of_gasoline + input_of_steam_hot_water + input_of_gas_power_fuelmix
     end
   end
   unit_for_calculation "input_of_fossil_carriers", 'MJ'
-  
+
   def input_of_ambient_carriers
-    function(:input_of_ambient_carriers) do
+    fetch_and_rescue(:input_of_ambient_carriers) do
       input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
     end
   end
   unit_for_calculation "input_of_ambient_carriers", 'MJ'
-  
+
   def demand_of_carrier(carrier)
     Rails.logger.info('demand_of_* is deprecated. Use output_of_* instead')
     output_of_carrier(carrier)
@@ -111,7 +111,7 @@ class Qernel::ConverterApi
   end
 
   def electricity_output_efficiency
-    function(:electricity_output_efficiency) do
+    fetch_and_rescue(:electricity_output_efficiency) do
       c = converter.output(:electricity)
       c and c.conversion
     end

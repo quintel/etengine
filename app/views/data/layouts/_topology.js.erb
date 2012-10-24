@@ -1,0 +1,40 @@
+// GRAPH is uppercase to make it obvious that it is in global namespace!
+var GRAPH = new Graph();
+
+<%
+@gql.prepare
+converters = @gql.present_graph.converters
+converter_keys = converters.map(&:key)
+
+converters.each do |converter|
+  position = @converter_positions[converter.excel_id]
+  position ||= ConverterPosition.new(:converter_id => converter.excel_id)
+  if converter
+    params = [converter.key,
+              position[:x] || 100,
+              position.y_or_default(converter),
+              converter.sector_key,
+              converter.use_key,
+              (position.hidden == true),
+              position.fill_color(converter),
+              position.stroke_color(converter)]
+  end
+-%>
+<%= "new Converter(#{params.to_json});".html_safe %>
+<% end %>
+
+
+<% @gql.present_graph.converters.map(&:input_links).flatten.uniq.each do |link|
+  if converter_keys.include?(link.lft_converter.key) and converter_keys.include?(link.rgt_converter.key)
+    params = [
+      link.rgt_converter.key,
+      link.lft_converter.key,
+      (link.carrier.graphviz_color || '#999'),
+      '1|-'   #"1|#{link.link_style}"
+    ]
+    -%>
+    <%= "new Link(#{params.to_json});".html_safe %>
+  <% end %>
+<% end %>
+
+GRAPH.draw();
