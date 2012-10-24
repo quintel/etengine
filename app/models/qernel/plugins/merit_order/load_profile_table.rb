@@ -90,7 +90,13 @@ module Qernel::Plugins
 
       # Demand of electricity for all final demand converters..
       def graph_electricity_demand
-        @graph.group_converters(:final_demand_electricity).map{|c| c.query.demand }.compact.sum
+        converter = @graph.converter(:energy_power_hv_network_electricity)
+        conversion_loss        = converter.output(:loss).conversion
+        conversion_electricity = converter.output(:electricity).conversion
+        transformer_demand     = @graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+        
+        total_demand = @graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
+        total_demand + transformer_demand * conversion_loss / conversion_electricity 
       end
 
       # Adjust the load curve (column 0) by subtracting the loads of the must-run converters
