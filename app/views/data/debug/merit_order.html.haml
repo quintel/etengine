@@ -32,6 +32,28 @@
       %td= converter.query.full_load_hours
       %td= converter[:capacity_factor  ]
 
+%h2 Must Run
+%table.table
+  %tr
+    %th Key
+    %th Demand
+    %th MO Pos.
+    %th MO Start
+    %th MO End
+    %th Full Load Hours
+    %th Cap. Factor
+
+  - lp.must_run_merit_order_converters.values.flatten.each do |converter_key|
+    - converter = graph.converter(converter_key)
+    %tr
+      %td= converter.key
+      %td= converter.demand
+      %td= converter[:merit_order_position]
+      %td= converter[:merit_order_start]
+      %td= converter[:merit_order_end  ]
+      %td= converter.query.full_load_hours
+      %td= converter[:capacity_factor  ]
+
 %h2 Residual Load Profile table
 %textarea
   = lp.send(:residual_load_profiles_table).map{|row| row.join("\t")}.join("\n")
