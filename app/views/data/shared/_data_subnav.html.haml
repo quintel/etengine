@@ -6,7 +6,11 @@
     %li= link_to 'Carriers',       data_carriers_path
     %li= link_to 'Converters',     data_converters_path
     %li= link_to "Inputs",         data_inputs_path
-    %li= link_to 'Layouts',        data_blueprint_layouts_path
+    %li.dropdown
+      %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'} Layout
+      %ul.dropdown-menu
+        %li= link_to 'Show', data_layout_path, :target => '_blank'
+        %li= link_to 'Edit', edit_data_layout_path, :target => '_blank'
     %li.dropdown
       %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
         Checks

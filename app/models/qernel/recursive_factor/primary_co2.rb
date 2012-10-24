@@ -6,7 +6,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   end
 
   def primary_co2_emission
-    function(:primary_co2_emission) do
+    fetch_and_rescue(:primary_co2_emission) do
       primary_demand_with(:co2_per_mj, :co2_free)
     end
   end

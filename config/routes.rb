@@ -7,7 +7,7 @@ Etm::Application.routes.draw do
   resources :user_sessions
 
   # Frontend
-  resources :users
+  resources :users, :except => :show
   match '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
 
   namespace :api do
@@ -73,9 +73,7 @@ Etm::Application.routes.draw do
       root :to => "pages#index"
 
       # The Graphviz
-      resources :blueprint_layouts, :except => [:update, :destroy] do
-        resources :converter_positions, :only => :create
-      end
+      resource :layout, :except => [:new, :index, :create, :destroy]
 
       resources :gqueries, :only => [:index, :show] do
         get :result, :on => :member

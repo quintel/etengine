@@ -9,7 +9,6 @@
 #  created_at          :datetime
 #  updated_at          :datetime
 #  hidden              :boolean(1)
-#  blueprint_layout_id :integer(4)
 #  converter_key       :string(255)
 #
 
@@ -43,9 +42,6 @@ class ConverterPosition < ActiveRecord::Base
     :neighbor     => '#87CEEB'
   }.with_indifferent_access
 
-  #belongs_to :converter
-  belongs_to :blueprint_layout
-
   validates_presence_of :converter_id, :on => :create, :message => "can't be blank"
 
   scope :not_hidden, where(:hidden => false)
@@ -73,5 +69,21 @@ class ConverterPosition < ActiveRecord::Base
 
   def y_or_default(converter)
     self.y || DEFAULT_Y_BY_SECTOR[converter.sector_key.to_s.to_sym] || 100
+  end
+
+  def self.update_everything!
+    ids = []
+    Scenario.default.gql.present_graph.converters.each do |c|
+      ids << c.excel_id
+      p = where(:converter_id => c.excel_id).first
+      p ||= new(:converter_id => c.excel_id)
+      p.converter_key = c.key
+      p.blueprint_layout_id = 1
+      p.save
+    end
+    # delete the bad ones now
+    all.each do |p|
+      p.destroy unless ids.include? p.converter_id
+    end
   end
 end
