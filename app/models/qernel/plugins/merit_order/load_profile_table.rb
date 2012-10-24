@@ -125,7 +125,6 @@ module Qernel::Plugins
           # defined in the must_run_merit_order_converters.yml
           wewp_x_loads = wewp.zip(loads) # [1,2].zip([3,4]) => [[1,3],[2,4]]
           wewp_x_loads.map!{|wewp, load| wewp * load }
-
           [0, load - wewp_x_loads.sum].max
         end
       end
@@ -164,7 +163,7 @@ module Qernel::Plugins
             converter = @graph.converter(key).query
             begin
 
-              # mw_power is alias to mw_input_capacity
+              # electricity production
               converter.instance_exec { demand * electricity_output_conversion }
             rescue
               raise "Merit Order: merit_order_must_run_production: Error with converter #{key}: #{debug}"

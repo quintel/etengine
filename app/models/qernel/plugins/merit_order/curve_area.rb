@@ -40,6 +40,10 @@ module Qernel::Plugins
         polygon_area(coordinates.map(&:first), coordinates.map(&:second))
       end
 
+      def total_area
+        area(0, x_max)
+      end
+
       #######
       private
       #######
