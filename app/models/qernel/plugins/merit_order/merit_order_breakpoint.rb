@@ -141,7 +141,8 @@ module Qernel::Plugins
           converter[:full_load_seconds] = converter.merit_order_full_load_hours * 3600
           converter[:capacity_factor]   = converter.merit_order_capacity_factor
 
-          new_demand = converter.full_load_seconds * converter.typical_effective_input_capacity * converter.number_of_units # DEBT: check this better!
+          # DEBT: check this better!
+          new_demand = converter.full_load_seconds * converter.effective_input_capacity * converter.number_of_units
 
           Rails.logger.warn "**** demand #{converter.key}: #{converter.demand} -> #{new_demand}"
           # do not overwrite demand with nil
