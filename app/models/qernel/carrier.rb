@@ -82,6 +82,22 @@ class Carrier
     end
   end
 
+  def merit_order_co2_per_mj
+    if @key == :gas_power_fuelmix
+      graph.carrier(:natural_gas).co2_per_mj
+    else
+      co2_per_mj
+    end
+  end
+
+  def merit_order_cost_per_mj
+    if @key == :gas_power_fuelmix
+      graph.carrier(:natural_gas).cost_per_mj
+    else
+      cost_per_mj
+    end
+  end
+
   def ==(other)
     return false if other.nil?
     if other.is_a?(Symbol)

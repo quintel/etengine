@@ -120,7 +120,7 @@ module Qernel::Plugins
       def converters_by_total_variable_cost
         dispatchable_converters_for_merit_order.sort_by do |c|
           # Sort by the variable costs of electricity output per MWh
-          c.variable_costs_per(:mwh_electricity) rescue nil
+          c.merit_order_variable_costs_per(:mwh_electricity) rescue nil
         end
       end
 

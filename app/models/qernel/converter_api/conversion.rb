@@ -90,6 +90,10 @@ class Qernel::ConverterApi
     convert_to variable_costs, unit
   end
 
+  def merit_order_variable_costs_per(unit)
+    convert_to merit_order_variable_costs, unit
+  end
+
   def fuel_costs_per(unit)
     convert_to fuel_costs, unit
   end
@@ -105,7 +109,7 @@ class Qernel::ConverterApi
   def total_initial_investment_per(unit)
     convert_to total_initial_investment, unit
   end
-  
+
   def total_investment_over_lifetime_per(unit)
     convert_to total_investment_over_lifetime, unit
   end
