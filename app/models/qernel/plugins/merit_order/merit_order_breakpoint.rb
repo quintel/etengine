@@ -76,15 +76,6 @@ module Qernel::Plugins
         @key   = Qernel::Plugins::MeritOrder::MERIT_ORDER_BREAKPOINT
       end
 
-      def pre_condition_met?
-        true
-        # TODO: define proper pre_condition
-        # [
-        #   @graph.group_converters(:final_demand_electricity),
-        #   LoadProfileTable.must_run_merit_order_converter_objects(@graph)
-        # ].flatten.all?(&:ready?)
-      end
-
       # Required by CalculationBreakpoint
       #
       # Assign breakpoint merit_order to dispatchable MO converters. So that the calculation

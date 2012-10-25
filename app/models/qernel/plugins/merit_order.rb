@@ -6,11 +6,20 @@ module Qernel::Plugins
 
     included do |klass|
       set_callback :calculate, :before, :add_merit_order_breakpoint
+      set_callback :calculate, :after,  :calculate_merit_order_if_no_breakpoint
     end
 
     def add_merit_order_breakpoint
-      brk = MeritOrderBreakpoint.new(self)
-      add_breakpoint(brk)
+      if use_merit_order_demands?
+        brk = MeritOrderBreakpoint.new(self)
+        add_breakpoint(brk)
+      end
+    end
+
+    def calculate_merit_order_if_no_breakpoint
+      unless use_merit_order_demands?
+        MeritOrderBreakpoint.new(self).run
+      end
     end
 
     def use_merit_order_demands?
