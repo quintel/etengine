@@ -119,7 +119,7 @@ class Qernel::ConverterApi
 
   def installed_production_capacity_in_mw_electricity
     fetch_and_rescue(:installed_production_capacity_in_mw_electricity) do
-      electricity_output_conversion * nominal_input_capacity * number_of_units
+      electricity_output_conversion * effective_input_capacity * number_of_units
     end
   end
   unit_for_calculation "installed_production_capacity_in_mw_electricity", 'MW'

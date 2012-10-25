@@ -134,6 +134,7 @@ module Qernel::Plugins
 
           # DEBT: check this better!
           new_demand = converter.full_load_seconds * converter.effective_input_capacity * converter.number_of_units
+
           # do not overwrite demand with nil
           converter.demand = new_demand if new_demand
         end
@@ -244,7 +245,6 @@ module Qernel::Plugins
         merit_order_end   = converter.merit_order_end
 
         area_size         = profile_curve.area(merit_order_start, merit_order_end)
-
         merit_span        = [merit_order_end - merit_order_start, 0.0].max
         availability      = converter.availability
 
