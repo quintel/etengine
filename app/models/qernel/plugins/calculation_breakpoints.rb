@@ -42,8 +42,6 @@ module Qernel::Plugins
   #         @graph.converter(:foo).preset_demand = @graph.converter(:bar).demand / 2.0
   #      end
   #
-  #      def pre_condition_met?; true; end
-  #
   #      def before_calculation_loop
   #        puts @graph.converter(:foo).demand
   #      end
@@ -127,8 +125,8 @@ module Qernel::Plugins
     # Adds a breakpoint to the #breakpoints hash. Checks if required methods are present.
     #
     def add_breakpoint(brk)
-      unless [:pre_condition_met?, :run, :key].all?{|method| brk.respond_to?(method) }
-        raise "breakpoints must implement #pre_condition_met?, #run, #key"
+      unless [:run, :key].all?{|method| brk.respond_to?(method) }
+        raise "breakpoints must implement #run, #key"
       end
       breakpoints[brk.key] = brk
     end
@@ -142,7 +140,7 @@ module Qernel::Plugins
     # Fetch (and removes) the first breakpoint whose pre_condition_met is true.
     #
     def next_breakpoint
-      if brk = breakpoints.values.detect(&:pre_condition_met?)
+      if brk = breakpoints.values.first
         breakpoints.delete(brk.key)
         brk
       end
