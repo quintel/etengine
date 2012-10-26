@@ -168,13 +168,12 @@ module Qernel::Plugins
           converter_keys.map do |key|
             converter = @graph.converter(key).query
             begin
-
               # electricity production
               converter.instance_exec { demand * electricity_output_conversion }
             rescue
               raise "Merit Order: merit_order_must_run_production: Error with converter #{key}: #{debug}"
             end
-          end.sum.round(1)
+          end.sum.round(3)
         end
       end
 
