@@ -30,12 +30,22 @@ module Qernel
     #
     def conversion
       fetch_and_rescue(:conversion) do
-        others = siblings.sum(&:conversion)
+        others = inelastic_siblings.sum(&:conversion)
 
         # Don't break the laws of thermodynamics; conversion may not be
         # negative.
         others > 1.0 ? 0.0 : 1.0 - others
       end
+    end
+
+    # Public: Returns the sibling slots to be considered when calculating the
+    # conversion. Override in a subclass if you need to ignore certain
+    # carriers itn some calculations.
+    #
+    # Returns an array of Slots
+    #
+    def inelastic_siblings
+      siblings
     end
 
     # Internal: Raised when trying to add a second elastic slot to a
