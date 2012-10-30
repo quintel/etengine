@@ -30,7 +30,7 @@ module Qernel::Plugins::MeritOrder
     end
 
     context "fixtures default scenario" do
-      it "works correctly with breakpoints." do
+      pending "works correctly with breakpoints." do
         # Sort converters randomly, to check that calculation respects breakpoints.
         gql = Scenario.default.gql do |gql|
           gql.future_graph[:use_merit_order_demands] = 1
@@ -50,7 +50,7 @@ module Qernel::Plugins::MeritOrder
       end
 
 
-      it "MO updates demand and calculates correctly reversed links and fills up remaining flex" do
+      pending "MO updates demand and calculates correctly reversed links and fills up remaining flex" do
         gql = stubbed_gql
 
         gql.query_future("V(el_grid, demand)").should == 5000
@@ -59,7 +59,7 @@ module Qernel::Plugins::MeritOrder
         gql.query_future("V(import_electricity, demand)").should == 4800
       end
 
-      it "with misisng attrs/methods assigns merit_order_position 1000" do
+      pending "with misisng attrs/methods assigns merit_order_position 1000" do
         gql = Scenario.default.gql do |gql|
           gql.future_graph[:use_merit_order_demands] = 1
         end
@@ -67,7 +67,7 @@ module Qernel::Plugins::MeritOrder
         gql.query_future("V(plant_2, merit_order_position)").should == 1000
       end
 
-      it "with stubbed attrs/methods assigns merit_order as expected" do
+      pending "with stubbed attrs/methods assigns merit_order as expected" do
         gql = stubbed_gql
 
         gql.query_future("V(plant_1, merit_order_position)").should == 2
@@ -79,7 +79,7 @@ module Qernel::Plugins::MeritOrder
         gql.query_future("V(plant_2, merit_order_end)").should      == 500.0
       end
 
-      it "takes into account availability" do
+      pending "takes into account availability" do
         gql = stubbed_gql do |converter, idx|
           converter.query.stub!(:availability).and_return( 0.5 )
         end
@@ -88,7 +88,7 @@ module Qernel::Plugins::MeritOrder
         gql.query_future("V(plant_2, merit_order_end)").should      == 250.0
       end
 
-      it "takes into account availability" do
+      pending "takes into account availability" do
         gql = stubbed_gql do |converter, idx|
           converter.query.stub!(:availability).and_return( 0.5 )
         end
