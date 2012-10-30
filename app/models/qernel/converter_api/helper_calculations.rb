@@ -11,7 +11,7 @@ class Qernel::ConverterApi
     else
       fetch_and_rescue(:number_of_units) do
         # #to_i also checks if it is nil
-        if effective_input_capacity.to_i == 0 || effective_input_capacity.to_i == 0
+        if effective_input_capacity.nil? || effective_input_capacity.zero?
           0
         else
           (demand || preset_demand) / (effective_input_capacity * full_load_seconds)
