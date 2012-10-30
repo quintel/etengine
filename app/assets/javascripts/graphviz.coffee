@@ -17,8 +17,7 @@ class @Graph
   constructor: (width = @GRID_X_SIZE, height = @GRID_Y_SIZE) ->
     @width = width
     @height = height
-    @r = Raphael("canvas", width, height).initZoom()
-    @drawGrid(width, height)
+    @r = Raphael("canvas", width, height)
     @selected = []
     @converters = {}
     @links = []
@@ -26,7 +25,7 @@ class @Graph
   # Draws the graph
   #
   draw: =>
-    @drawGrid(@GRID_X_SIZE, @GRID_Y_SIZE)
+    @drawGrid()
     link.draw() for link in @links
     for key, converter of @converters
       converter.draw()
@@ -37,17 +36,17 @@ class @Graph
 
   # Draw the grid.
   #
-  drawGrid: (width, height) ->
-    for  i in [1..width] by @GRID_STEP_SIZE
+  drawGrid: =>
+    for i in [1..@width] by @GRID_STEP_SIZE
       # M0   1 L10000   1
       # M0 801 L10000 80
-      @r.path("M0 #{i} L#{height} #{i}")
+      @r.path("M#{i},0L#{i},#{@height}")
         .attr({stroke : '#ccc'})
 
-    for i in [1..height] by @GRID_STEP_SIZE
+    for i in [1..@height] by @GRID_STEP_SIZE
       # M1   0 L1   8000
       # M801 0 L801 8000
-      @r.path("M#{i} 0 L#{i} #{width}")
+      @r.path("M0,#{i}L#{@width},#{i}")
         .attr({stroke : '#ccc'})
 
   show_attribute_values: =>
