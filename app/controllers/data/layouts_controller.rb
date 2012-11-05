@@ -25,8 +25,7 @@ class Data::LayoutsController < Data::BaseController
         if bcp = ConverterPosition.find_by_converter_key(key)
           bcp.update_attributes attributes
         else
-          ConverterPosition.create attributes.merge(:converter_key => key,
-                         :blueprint_layout_id => params[:blueprint_layout_id])
+          ConverterPosition.create attributes.merge(:converter_key => key)
         end
       end
     end
