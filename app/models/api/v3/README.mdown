@@ -393,6 +393,27 @@ If the input doesn't exist the server returns an HTTP 404 error and a message:
       }
     ]
 
+### Get complete list of inputs
+
+This is used to build a list of inputs. Added to make the transition to API v3
+simpler with old apps
+
+#### Request
+
+    GET /inputs/list.json
+
+#### Response
+
+    Status: 200 OK
+
+    [
+      {
+        id: 1,
+        key: foo
+      },
+      ...
+    ]
+
 ## Converters
 
 ### Get a converter details

@@ -39,6 +39,16 @@ module Api
         render json: { errors: [ e.message ]}, status: 404
       end
 
+      # GET /api/v3/inputs/list.json
+      #
+      # Returns a JSON-encoded array of inputs. Used to transition from v2 to
+      # v3 and replace ids with keys. Can be deleted when all applications
+      # will have been upgraded.
+      #
+      def list
+        render json: Input.all.map{|i| {id: i.id, key: i.key}}
+      end
+
       #######
       private
       #######
