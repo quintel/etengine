@@ -24,6 +24,11 @@ module Scenario::Persistable
   #
   def copy_scenario_state(preset)
     self.user_values.reverse_merge!(preset.user_values.clone)
+
+    if preset.respond_to?(:balanced_values)
+      self.balanced_values.reverse_merge!(preset.balanced_values.clone)
+    end
+
     self.end_year    = preset.end_year
     self.area_code   = preset.area_code
     self.use_fce     = preset.use_fce

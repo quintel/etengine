@@ -114,6 +114,28 @@ describe Scenario do
     end
   end
 
+  describe 'with a preset scenario' do
+    let(:preset) do
+      FactoryGirl.create(:scenario, {
+        id:              99999, # Avoid a collision with a preset ID
+        user_values:     { 'one' => 1 },
+        balanced_values: { 'two' => 2 }
+      })
+    end
+
+    let(:scenario) do
+      Scenario.new(scenario_id: preset.id)
+    end
+
+    it 'should copy the user values', focus: true do
+      scenario.user_values.should eql(preset.user_values)
+    end
+
+    it 'should copy the balanced values' do
+      scenario.balanced_values.should eql(preset.balanced_values)
+    end
+  end
+
   describe 'dup' do
     let(:scenario) do
       Scenario.create!(
