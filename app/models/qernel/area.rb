@@ -29,6 +29,7 @@ module Qernel
       :entity,
       :export_electricity_primary_demand_factor,
       :has_buildings,
+      :has_climate,
       :has_coastline,
       :has_cold_network,
       :has_employment,
