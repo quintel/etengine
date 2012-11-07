@@ -277,6 +277,13 @@ describe 'Updating inputs with API v3' do
         expect(scenario.balanced_values).to include('balanced_two' => 90.0)
       end
 
+      it 'includes the balanaced value when requesting inputs.json' do
+        get "api/v3/scenarios/#{ scenario.id }/inputs.json"
+        inputs = JSON.parse(response.body)
+
+        inputs['balanced_two']['user'].should eql(90.0)
+      end
+
       it_should_behave_like 'updating inputs'
     end # providing one member of a group
 
