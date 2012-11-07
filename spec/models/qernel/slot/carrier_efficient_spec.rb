@@ -39,7 +39,7 @@ describe 'Qernel::Slot::CarrierEfficient' do
     expect(slot.conversion).to eql(0.4)
   end
 
-  it 'raises if no efficiency data is present', focus: true do
+  it 'raises if no efficiency data is present' do
     network.dataset_attributes.delete(:carrier_efficiency)
 
     pending 'Pending stopping rescuing all graph exceptions' do

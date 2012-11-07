@@ -127,7 +127,7 @@ describe Scenario do
       Scenario.new(scenario_id: preset.id)
     end
 
-    it 'should copy the user values', focus: true do
+    it 'should copy the user values' do
       scenario.user_values.should eql(preset.user_values)
     end
 

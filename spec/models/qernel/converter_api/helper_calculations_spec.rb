@@ -22,7 +22,7 @@ module Qernel
       context 'when an explicit dataset value is present' do
         before { converter.dataset_set(:households_supplied_per_unit, 20) }
 
-        it 'should use the dataset value', focus: true do
+        it 'should use the dataset value' do
           converter.converter_api.households_supplied_per_unit.should eql(20)
         end
       end # when no dataset value is present
