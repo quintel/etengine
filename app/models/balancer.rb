@@ -146,6 +146,13 @@ class Balancer
       break if flex.zero? or flex == start_flex
     end # 20.times do ...
 
+    # antw: Since we started receiving "comparison with float failed" on the
+    # between? check below -- which should not happen when comparing a bigdec
+    # with a float -- I suspect that "flex" is sometimes ending up as NaN.
+    # It's impossible to debug so I'm opting to raise a noisy exception with
+    # all of the user values so that I can track it down...
+    raise "Balancer 'flex' was NaN; given: #{ masters.inspect }" if flex.nan?
+
     unless flex.between?(-0.01, 0.01)
       raise CannotBalance.new(group_name, masters)
     end
