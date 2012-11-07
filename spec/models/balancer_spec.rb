@@ -93,6 +93,44 @@ describe 'Balancer' do
 
   end # With start:(100, 0, 0)
 
+  describe 'When a subordinate has a delta of zero' do
+    before do
+      inputs[0].start_value = 96.0
+      inputs[1].start_value = 4.0
+
+      inputs[2].min_value = 0.0
+      inputs[2].max_value = 0.0
+    end
+
+    context 'given values which manually balance' do
+      let(:masters) { [ 38.0, 62.0 ] }
+
+      it 'should set no subordinate values' do
+        subordinates.should be_empty
+      end
+    end # given values which balance
+
+    context 'given values which auto-balance' do
+      let(:masters) { [ 36.0 ] }
+
+      it 'should set the subordinate value' do
+        subordinates.should include(inputs[1].key => 64.0)
+      end
+
+      it 'should not set a value for the zero-delta input' do
+        subordinates.should_not have_key(inputs[2].key)
+      end
+    end # given values which balance
+
+    context 'given values which do not balance' do
+      let(:masters) { [ 31.0, 62.0 ] }
+
+      it 'should raise an error' do
+        expect { subordinates }.to raise_error(Balancer::BalancerError)
+      end
+    end # given values which do not balance
+  end # When a subordinate has a delta of zero
+
   # --------------------------------------------------------------------------
 
   describe 'With start:(50, 30, 20)' do
