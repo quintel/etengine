@@ -25,7 +25,9 @@ module Api
         json     = Hash.new
 
         values   = Input.cache.read(@scenario, @input)
-        user_val = @scenario.user_values[@input.key || @input.id]
+
+        user_val = @scenario.user_values[@input.key] ||
+                     @scenario.balanced_values[@input.key]
 
         json[:code]        = @input.key         if @include_key
 
