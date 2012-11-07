@@ -302,7 +302,7 @@ describe Api::V3::ScenarioUpdater do
 
       it_should_behave_like 'a successful scenario update'
 
-      it 'sets the user values', focus: true do
+      it 'sets the user values' do
         updater.apply
         scenario.reload
 
