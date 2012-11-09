@@ -354,5 +354,5 @@ class Qernel::ConverterApi
       effective_input_capacity * full_load_seconds
     end
   end
-  unit_for_calculation "typical_fuel_input", 'MJ'
+  unit_for_calculation "typical_fuel_input", 'MJ / year'
 end
