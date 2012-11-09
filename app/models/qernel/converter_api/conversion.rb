@@ -32,12 +32,12 @@ class Qernel::ConverterApi
   # * mw_electricity:  divide by attribute electricity_output_capacity
   # * mw_heat:         divide by attribute heat_output_capacity
   # * converter:       multiply by number_of_units
-  # * mwh_input:       divide by private method typical_fuel_input *
-  #                    SECS_PER_HOUR
-  # * mwh_electricity: divide by private method typical_electricity_output *
-  #                    SECS_PER_HOUR
-  # * mwh_heat:        divide by private method typical_heat_output *
-  #                    SECS_PER_HOUR
+  # * mwh_input:       divide by private method typical_fuel_input then
+  #                    multiply by SECS_PER_HOUR
+  # * mwh_electricity: divide by private method typical_electricity_output then
+  #                    multiply by SECS_PER_HOUR
+  # * mwh_heat:        divide by private method typical_heat_output then
+  #                    multiply by SECS_PER_HOUR
   # * full_load_hours  divide by full_load_hours
   #
   # @return [Float] the Cost per plant converted to Cost per unit as
