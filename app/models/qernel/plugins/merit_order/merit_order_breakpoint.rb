@@ -94,7 +94,7 @@ module Qernel::Plugins
         calculate_merit_order
         calculate_full_load_hours
         if @graph.use_merit_order_demands?
-          inject_updated_demand
+          inject_updated_demand if @graph.future?
         end
       end
 

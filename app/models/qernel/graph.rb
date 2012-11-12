@@ -153,6 +153,10 @@ class Graph
     year == START_YEAR
   end
 
+  def future?
+    year != START_YEAR
+  end
+
   def update_link_shares
     @finished_converters.map(&:input_links).flatten.each(&:update_share)
   end
