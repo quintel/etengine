@@ -52,7 +52,7 @@ module Qernel::Plugins
 
         (0..steps).map do |i|
           section      = i.fdiv(steps) * max_load
-          loads_higher = load_profiles.count{ |n| n > section }
+          loads_higher = load_profiles.count{ |n| n >= section }
 
           y = loads_higher.fdiv(load_profiles_length)
           [section, y]
@@ -96,7 +96,7 @@ module Qernel::Plugins
         transformer_demand     = @graph.converter(:energy_power_transformer_mv_hv_electricity).demand
         
         total_demand = @graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
-        total_demand + transformer_demand * conversion_loss / conversion_electricity
+        total_demand + transformer_demand * conversion_loss / conversion_electricity 
       end
 
       # Adjust the load curve (column 0) by subtracting the loads of the must-run converters
@@ -134,6 +134,25 @@ module Qernel::Plugins
           [0, load - wewp_x_loads.sum].max
         end
       end
+
+      # THis is for debugging only and can be removed
+      #
+      def residual_load_profiles_table
+        loads              = merit_order_must_run_production
+        electricity_demand = graph_electricity_demand
+
+        merit_order_table.map do |normalized_load, wewp|
+          load = electricity_demand * normalized_load
+
+          # take one column from the table and multiply it with the loads
+          # defined in the must_run_merit_order_converters.yml
+          wewp_x_loads = wewp.zip(loads) # [1,2].zip([3,4]) => [[1,3],[2,4]]
+          wewp_x_loads.map!{|wewp, load| wewp * load }
+
+          [load, *wewp_x_loads]
+        end
+      end
+
 
       # Returns the summed production for the must-run converters defined in must_run_merit_order_converters.yml.
       #
