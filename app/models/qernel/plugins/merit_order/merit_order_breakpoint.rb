@@ -69,7 +69,7 @@ module Qernel::Plugins
     class MeritOrderBreakpoint
       include Instrumentable
 
-      attr_reader :key, :graph
+      attr_reader :key, :graph, :items
 
       def initialize(graph)
         @graph = graph
@@ -83,6 +83,7 @@ module Qernel::Plugins
       # MO calculation. The updated demand will then backpropagate to the grid.
       #
       def setup
+        setup_merit_order
         dispatchable_converters_for_merit_order.each do |converter_api|
           converter_api.converter.breakpoint = MERIT_ORDER_BREAKPOINT
         end
@@ -96,6 +97,14 @@ module Qernel::Plugins
         if @graph.use_merit_order_demands?
           inject_updated_demand if @graph.future?
         end
+      end
+
+      # --- Merit Order Gem --------------------------------------------------
+
+      def setup_merit_order
+        DebugLogger.debug 'setting up MO'
+        @items ||= Etsource::MeritOrder.new.import
+        @m = Merit::Order.new
       end
 
       # ---- Converters ------------------------------------------------------------
