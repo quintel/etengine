@@ -92,18 +92,16 @@ module Qernel::Plugins
       #
       def run
         setup_items
-        calculate_merit_order
-        calculate_full_load_hours
-        if @graph.use_merit_order_demands?
-          inject_updated_demand if @graph.future?
-        end
+        # calculate_merit_order
+        # if @graph.use_merit_order_demands?
+        #   inject_updated_demand if @graph.future?
+        # end
       end
 
       # --- Merit Order Gem --------------------------------------------------
 
       def setup_items
         @m = Merit::Order.new
-        DebugLogger.debug 'building MO items'
         add_volatile_producers
         add_must_run_producers
         add_dispatchable_producers
@@ -111,13 +109,12 @@ module Qernel::Plugins
       end
 
       def add_volatile_producers
-        DebugLogger.debug "Volatile: #{volatile_producers}"
         volatile_producers.each do |p|
           c = p.converter_api
           begin
             producer = Merit::VolatileProducer.new(
               key: p.key,
-              marginal_costs: c.merit_order_variable_costs_per(:mwh_electricity),
+              marginal_costs: c.variable_costs_per(:mwh_electricity),
               effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
               number_of_units: c.number_of_units,
               availability: c.availability,
@@ -133,13 +130,12 @@ module Qernel::Plugins
       end
 
       def add_must_run_producers
-        DebugLogger.debug "Must Run: #{must_run_producers}"
         must_run_producers.each do |p|
           c = p.converter_api
           begin
             producer = Merit::MustRunProducer.new(
               key: p.key,
-              marginal_costs: c.merit_order_variable_costs_per(:mwh_electricity),
+              marginal_costs: c.variable_costs_per(:mwh_electricity),
               effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
               number_of_units: c.number_of_units,
               availability: c.availability,
@@ -155,13 +151,12 @@ module Qernel::Plugins
       end
 
       def add_dispatchable_producers
-        DebugLogger.debug "Dispatchable: #{dispatchable_producers}"
         dispatchable_producers.each do |p|
           c = p.converter_api
           begin
             producer = Merit::DispatchableProducer.new(
               key: p.key,
-              marginal_costs: c.merit_order_variable_costs_per(:mwh_electricity),
+              marginal_costs: c.variable_costs_per(:mwh_electricity),
               effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
               number_of_units: c.number_of_units,
               availability: c.availability,
@@ -250,16 +245,20 @@ module Qernel::Plugins
       # ---- inject_updated_demand ------------------------------------------------------------
 
       def inject_updated_demand
-        converters_by_total_variable_cost.each do |converter|
-          converter[:full_load_hours]   = converter.merit_order_full_load_hours
-          converter[:full_load_seconds] = converter.merit_order_full_load_hours * 3600
-          converter[:capacity_factor]   = converter.merit_order_capacity_factor
+        @m.dispatchables.each do |d|
+          c = graph.converter(d.key)
+
+          # FLH, marginal_costs, production
+          c[:full_load_hours]   = d.full_load_hours
+          c[:full_load_seconds] = d.full_load_hours * 3600
+          c[:marginal_costs]     = d.marginal_costs
 
           # DEBT: check this better!
-          new_demand = converter.full_load_seconds * converter.effective_input_capacity * converter.number_of_units
+          new_demand = c.full_load_seconds * c.effective_input_capacity * c.number_of_units
 
+          DebugLogger "updating #{c.key}"
           # do not overwrite demand with nil
-          converter.demand = new_demand if new_demand
+          c.demand = new_demand if new_demand
         end
       end
 
@@ -270,20 +269,10 @@ module Qernel::Plugins
       # Assign merit_order_start and merit_order_end
       def calculate_merit_order
         return if dispatchable_merit_order_converters.empty?
+        DebugLogger.debug 'calculating MO!'
 
         instrument("qernel.merit_order: calculate_merit_order") do
-          converters = converters_by_total_variable_cost
-
-          first = converters.first.tap{|c| c.merit_order_start = 0.0 }
-          update_merit_order_end!(first)
-
-          converters.each_cons(2) do |prev, converter|
-            # the merit_order_start of this 'converter' is the merit_order_end of the previous.
-            converter.merit_order_start = prev.merit_order_end
-            update_merit_order_end!(converter)
-          end
-
-          calculate_merit_order_position(converters)
+          @m.calculate
 
           @graph.dataset_set(:calculate_merit_order_finished, true)
         end
