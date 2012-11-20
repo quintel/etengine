@@ -102,8 +102,6 @@ module Qernel::Plugins
       # --- Merit Order Gem --------------------------------------------------
 
       def setup_merit_order
-        DebugLogger.debug 'setting up MO'
-        @items ||= Etsource::MeritOrder.new.import
         @m = Merit::Order.new
       end
 
