@@ -91,21 +91,10 @@ module Qernel::Plugins
       # Required by CalculationBreakpoint
       #
       def run
-        setup_items
         if @graph.use_merit_order_demands? && graph.future?
+          setup_items
           calculate_merit_order
           inject_updated_demand
-        end
-      end
-
-      # If the plugin is disabled we should make sure that the attributes are
-      # set, because otherwise some gqueries that make operations on them,
-      # merit_order_table notably, will raise errors
-      #
-      def mock_merit_order
-        dispatchable_producers.each do |c|
-          c.converter_api.merit_order_start = 0
-          c.converter_api.merit_order_end = 0
         end
       end
 
@@ -259,22 +248,16 @@ module Qernel::Plugins
         @m.dispatchables.each_with_index do |d, i|
           c = graph.converter(d.key).converter_api
 
-          # FLH, marginal_costs, production
-
           flh = d.full_load_hours
           flh = 0 if flh.nan?
           c[:full_load_hours]   = flh
           c[:full_load_seconds] = flh * 3600
           c[:marginal_costs]    = d.marginal_costs
-
-          c[:merit_order_start] = 0
-          c[:merit_order_end] = 0
           c[:merit_order_position] = i
 
           # DEBT: check this better!
           new_demand = c.full_load_seconds * c.effective_input_capacity * c.number_of_units
 
-          DebugLogger.debug "updating #{c.key}, FLH: #{d.full_load_hours}"
           # do not overwrite demand with nil
           c.demand = new_demand if new_demand
         end
