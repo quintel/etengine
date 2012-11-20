@@ -106,6 +106,7 @@ module Qernel::Plugins
         DebugLogger.debug 'building MO items'
         add_volatile_producers
         add_must_run_producers
+        add_dispatchable_producers
       end
 
       def add_volatile_producers
@@ -152,12 +153,33 @@ module Qernel::Plugins
         end
       end
 
+      def add_dispatchable_producers
+        DebugLogger.debug "Dispatchable: #{dispatchable_producers}"
+        dispatchable_producers.each do |p|
+          c = p.converter_api
+          begin
+            producer = Merit::DispatchableProducer.new(
+              key: p.key,
+              marginal_costs: c.merit_order_variable_costs_per(:mwh_electricity),
+              effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
+              number_of_units: c.number_of_units,
+              availability: c.availability,
+              fixed_costs: c.send(:fixed_costs)
+            )
+            @m.add producer
+          rescue Exception => e
+            raise "Merit order: error adding dispatchable producer #{p.key}: #{e.message}"
+          end
+        end
+      end
+
       # ---- Converters ------------------------------------------------------------
 
       # Select dispatchable merit order converters
       def dispatchable_merit_order_converters
         @graph.dispatchable_merit_order_converters
       end
+      alias_method :dispatchable_producers, :dispatchable_merit_order_converters
 
       def volatile_producers
         @volatile_producers ||= begin
