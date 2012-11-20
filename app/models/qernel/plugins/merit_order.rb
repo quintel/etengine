@@ -51,6 +51,16 @@ module Qernel::Plugins
       @merit_order_data ||= Etsource::MeritOrder.new.import
     end
 
+    # Demand of electricity for all final demand converters..
+    def graph_electricity_demand
+      converter = graph.converter(:energy_power_hv_network_electricity)
+      conversion_loss        = converter.output(:loss).conversion
+      conversion_electricity = converter.output(:electricity).conversion
+      transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+
+      total_demand = graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
+      total_demand + transformer_demand * conversion_loss / conversion_electricity
+    end
 
 
   end # MeritOrder

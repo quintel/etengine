@@ -107,6 +107,7 @@ module Qernel::Plugins
         add_volatile_producers
         add_must_run_producers
         add_dispatchable_producers
+        add_total_demand
       end
 
       def add_volatile_producers
@@ -171,6 +172,16 @@ module Qernel::Plugins
             raise "Merit order: error adding dispatchable producer #{p.key}: #{e.message}"
           end
         end
+      end
+
+      def add_total_demand
+        u = Merit::User.new(
+          key: :total_demand,
+          total_consumption: @graph.graph_electricity_demand
+        )
+        @m.add u
+      rescue Exception => e
+        raise "Merit order: error adding total_demand: #{e.message}"
       end
 
       # ---- Converters ------------------------------------------------------------
