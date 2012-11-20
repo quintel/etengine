@@ -105,6 +105,7 @@ module Qernel::Plugins
         @m = Merit::Order.new
         DebugLogger.debug 'building MO items'
         add_volatile_producers
+        add_must_run_producers
       end
 
       def add_volatile_producers
@@ -124,7 +125,29 @@ module Qernel::Plugins
             )
             @m.add producer
           rescue Exception => e
-            raise "Merit order: error adding producer #{p.key}: #{e.message}"
+            raise "Merit order: error adding volatile producer #{p.key}: #{e.message}"
+          end
+        end
+      end
+
+      def add_must_run_producers
+        DebugLogger.debug "Must Run: #{must_run_producers}"
+        must_run_producers.each do |p|
+          c = p.converter_api
+          begin
+            producer = Merit::MustRunProducer.new(
+              key: p.key,
+              marginal_costs: c.merit_order_variable_costs_per(:mwh_electricity),
+              effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
+              number_of_units: c.number_of_units,
+              availability: c.availability,
+              fixed_costs: c.send(:fixed_costs),
+              load_profile_key: c.load_profile_key,
+              full_load_hours: c.full_load_hours
+            )
+            @m.add producer
+          rescue Exception => e
+            raise "Merit order: error adding must-run producer #{p.key}: #{e.message}"
           end
         end
       end
@@ -148,6 +171,20 @@ module Qernel::Plugins
         end
       rescue Exception => e
         raise "Merit order: error fetching volatile producers: #{e.message}"
+      end
+
+      def must_run_producers
+        @must_run_producers ||= begin
+          converters = []
+          @graph.merit_order_data['must_run'].each_pair do |key, profile_key|
+            c = graph.converter(key)
+            c.converter_api.load_profile_key = profile_key
+            converters.push c
+          end
+          converters
+        end
+      rescue Exception => e
+        raise "Merit order: error fetching must-run producers: #{e.message}"
       end
 
 
