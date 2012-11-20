@@ -6,7 +6,7 @@ module Etsource
 
     def import
       Rails.cache.fetch('merit_order_hash') do
-        file = "#{@etsource.export_dir}/datasets/_globals/merit_orders.yml"
+        file = "#{@etsource.export_dir}/datasets/_globals/merit_order.yml"
         YAML.load_file file
       end
     rescue Exception => e

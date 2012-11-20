@@ -1,2 +1,4 @@
 dispatchable:
   foo: bar
+volatile:
+  foo: bar

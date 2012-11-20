@@ -28,6 +28,11 @@ module Qernel::Plugins
       self[:use_merit_order_demands].to_i == 1
     end
 
+    # -- internals -----------------------------------------------------------
+
+    # These methods could be moved to the MO breakpoint class
+    #
+
     # Select dispatchable merit order converters
     #
     def dispatchable_merit_order_converters
@@ -39,8 +44,6 @@ module Qernel::Plugins
     rescue Exception => e
       raise "Error loading dispatchable converters: #{e.message}"
     end
-
-    private
 
     # memoizes the etsource-based merit order hash
     #

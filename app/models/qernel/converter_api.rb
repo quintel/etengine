@@ -55,6 +55,9 @@ class ConverterApi
   # attributes updated by Converter#graph=
   attr_accessor :area, :graph
 
+  # attribute used by merit order
+  attr_accessor :load_profile_key
+
   # dataset attributes of converter
   dataset_accessors [:preset_demand, :demand]
 
