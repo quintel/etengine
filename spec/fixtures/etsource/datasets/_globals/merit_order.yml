@@ -2,3 +2,6 @@ dispatchable:
   foo: bar
 volatile:
   foo: bar
+must_run:
+  must_run_1:
+  must_run_2:
