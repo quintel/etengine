@@ -83,7 +83,6 @@ module Qernel::Plugins
       # MO calculation. The updated demand will then backpropagate to the grid.
       #
       def setup
-        setup_merit_order
         dispatchable_converters_for_merit_order.each do |converter_api|
           converter_api.converter.breakpoint = MERIT_ORDER_BREAKPOINT
         end
@@ -92,6 +91,7 @@ module Qernel::Plugins
       # Required by CalculationBreakpoint
       #
       def run
+        setup_items
         calculate_merit_order
         calculate_full_load_hours
         if @graph.use_merit_order_demands?
@@ -101,8 +101,32 @@ module Qernel::Plugins
 
       # --- Merit Order Gem --------------------------------------------------
 
-      def setup_merit_order
+      def setup_items
         @m = Merit::Order.new
+        DebugLogger.debug 'building MO items'
+        add_volatile_producers
+      end
+
+      def add_volatile_producers
+        DebugLogger.debug "Volatile: #{volatile_producers}"
+        volatile_producers.each do |p|
+          c = p.converter_api
+          begin
+            producer = Merit::VolatileProducer.new(
+              key: p.key,
+              marginal_costs: c.merit_order_variable_costs_per(:mwh_electricity),
+              effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
+              number_of_units: c.number_of_units,
+              availability: c.availability,
+              fixed_costs: c.send(:fixed_costs),
+              load_profile_key: c.load_profile_key,
+              full_load_hours: c.full_load_hours
+            )
+            @m.add producer
+          rescue Exception => e
+            raise "Merit order: error adding producer #{p.key}: #{e.message}"
+          end
+        end
       end
 
       # ---- Converters ------------------------------------------------------------
@@ -111,6 +135,24 @@ module Qernel::Plugins
       def dispatchable_merit_order_converters
         @graph.dispatchable_merit_order_converters
       end
+
+      def volatile_producers
+        @volatile_producers ||= begin
+          converters = []
+          @graph.merit_order_data['volatile'].each_pair do |key, profile_key|
+            c = graph.converter(key)
+            c.converter_api.load_profile_key = profile_key
+            converters.push c
+          end
+          converters
+        end
+      rescue Exception => e
+        raise "Merit order: error fetching volatile producers: #{e.message}"
+      end
+
+
+
+
 
       # Converters to include in the sorting: G(merit_order_converters)
       # returns array of converter objects
