@@ -64,8 +64,6 @@ module Qernel::Plugins
     # 7. Graph calculation commences at dispatchable MO plants
     #
     #
-    #
-    #
     class MeritOrderBreakpoint
       include Instrumentable
 
@@ -83,7 +81,7 @@ module Qernel::Plugins
       # MO calculation. The updated demand will then backpropagate to the grid.
       #
       def setup
-        dispatchable_converters_for_merit_order.each do |converter_api|
+        dispatchable_producers.each do |converter_api|
           converter_api.converter.breakpoint = MERIT_ORDER_BREAKPOINT
         end
       end
@@ -182,10 +180,9 @@ module Qernel::Plugins
       # ---- Converters ------------------------------------------------------------
 
       # Select dispatchable merit order converters
-      def dispatchable_merit_order_converters
+      def dispatchable_producers
         @graph.dispatchable_merit_order_converters
       end
-      alias_method :dispatchable_producers, :dispatchable_merit_order_converters
 
       def volatile_producers
         @volatile_producers ||= begin
@@ -240,7 +237,7 @@ module Qernel::Plugins
 
       # Assign merit_order_start and merit_order_end
       def calculate_merit_order
-        return if dispatchable_merit_order_converters.empty?
+        return if dispatchable_producers.empty?
         instrument("qernel.merit_order: calculate_merit_order") do
           @m.calculate
           @graph.dataset_set(:calculate_merit_order_finished, true)
