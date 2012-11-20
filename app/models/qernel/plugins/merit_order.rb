@@ -6,9 +6,7 @@ module Qernel::Plugins
 
     included do |klass|
       set_callback :calculate, :before, :add_merit_order_breakpoint
-      # Disabled by PZ: is there any reason to run the merit order calculation
-      # when MO is off?
-      # set_callback :calculate, :after,  :calculate_merit_order_if_no_breakpoint
+      set_callback :calculate, :after,  :calculate_merit_order_if_no_breakpoint
     end
 
     def add_merit_order_breakpoint
@@ -18,9 +16,12 @@ module Qernel::Plugins
       end
     end
 
+    # some gqueries expect the merit_order_start and end, let's set them to
+    # 0 if MO is disabled
+    #
     def calculate_merit_order_if_no_breakpoint
       unless use_merit_order_demands?
-        MeritOrderBreakpoint.new(self).run
+        MeritOrderBreakpoint.new(self).mock_merit_order
       end
     end
 
