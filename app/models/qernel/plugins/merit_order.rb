@@ -36,6 +36,8 @@ module Qernel::Plugins
           graph.converter(k.to_sym)
         end.compact
       end
+    rescue Exception => e
+      raise "Error loading dispatchable converters: #{e.message}"
     end
 
     private
