@@ -99,7 +99,7 @@ module Qernel::Plugins
       # --- Merit Order Gem --------------------------------------------------
 
       def setup_items
-        @m = Merit::Order.new
+        @m = ::Merit::Order.new
         add_volatile_producers
         add_must_run_producers
         add_dispatchable_producers
@@ -110,7 +110,7 @@ module Qernel::Plugins
         volatile_producers.each do |p|
           c = p.converter_api
           begin
-            producer = Merit::VolatileProducer.new(
+            producer = ::Merit::VolatileProducer.new(
               key: p.key,
               marginal_costs: c.variable_costs_per(:mwh_electricity),
               effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
@@ -131,7 +131,7 @@ module Qernel::Plugins
         must_run_producers.each do |p|
           c = p.converter_api
           begin
-            producer = Merit::MustRunProducer.new(
+            producer = ::Merit::MustRunProducer.new(
               key: p.key,
               marginal_costs: c.variable_costs_per(:mwh_electricity),
               effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
@@ -152,7 +152,7 @@ module Qernel::Plugins
         dispatchable_producers.each do |p|
           c = p.converter_api
           begin
-            producer = Merit::DispatchableProducer.new(
+            producer = ::Merit::DispatchableProducer.new(
               key: p.key,
               marginal_costs: c.variable_costs_per(:mwh_electricity),
               effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
@@ -168,7 +168,7 @@ module Qernel::Plugins
       end
 
       def add_total_demand
-        u = Merit::User.new(
+        u = ::Merit::User.new(
           key: :total_demand,
           total_consumption: @graph.graph_electricity_demand
         )
@@ -215,7 +215,8 @@ module Qernel::Plugins
       # ---- inject_updated_demand ------------------------------------------------------------
 
       def inject_updated_demand
-        @m.dispatchables.each_with_index do |d, i|
+        position_index = 1
+        @m.dispatchables.each do |d|
           c = graph.converter(d.key).converter_api
 
           flh = d.full_load_hours
@@ -223,7 +224,15 @@ module Qernel::Plugins
           c[:full_load_hours]   = flh
           c[:full_load_seconds] = flh * 3600
           c[:marginal_costs]    = d.marginal_costs
-          c[:merit_order_position] = i
+
+          capacity_production = c.installed_production_capacity_in_mw_electricity
+          if capacity_production.zero? || capacity_production.nil?
+            position = -1
+          else
+            position = position_index
+            position_index += 1
+          end
+          c[:merit_order_position] = position
 
           # DEBT: check this better!
           new_demand = c.full_load_seconds * c.effective_input_capacity * c.number_of_units
@@ -242,22 +251,7 @@ module Qernel::Plugins
           @m.calculate
           @graph.dataset_set(:calculate_merit_order_finished, true)
         end
-      end # calculate_merit_order
-
-      # # Updates the merit_order_position attributes. It assumes the given converters array
-      # # is already properly sorted by merit_order_start attribute.
-      # #
-      # def calculate_merit_order_position(converters)
-      #   position = 1
-      #   converters.each do |converter|
-      #     if (converter.installed_production_capacity_in_mw_electricity || 0) > 0.0
-      #       converter.merit_order_position = position
-      #       position += 1
-      #     else
-      #       converter.merit_order_position = 1000
-      #     end
-      #   end
-      # end
+      end
     end
   end
 end
