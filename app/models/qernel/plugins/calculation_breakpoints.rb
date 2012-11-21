@@ -79,8 +79,6 @@ module Qernel::Plugins
       run_callbacks :calculate do
         return if calculated?
 
-        setup_breakpoints
-
         instrument("gql.performance.calculate") do
           # FIFO stack of all the converters. Converters are removed from the stack after calculation.
           @converter_stack = converters.clone
@@ -88,14 +86,11 @@ module Qernel::Plugins
 
           calculation_loop # the initial loop
 
-          while breakpoint = next_breakpoint
-            breakpoint.run
-            breakpoint.before_calculation_loop if breakpoint.respond_to?(:before_calculation_loop)
+          if use_merit_order_demands?
+            mo = MeritOrder::MeritOrderBreakpoint.new(self)
+            mo.run
             calculation_loop
-            breakpoint.after_calculation_loop  if breakpoint.respond_to?(:after_calculation_loop)
           end
-
-          update_link_shares
         end
       end
       calculated = true
@@ -114,55 +109,7 @@ module Qernel::Plugins
         converter.calculate
         @finished_converters << @converter_stack.delete_at(index)
       end
+      update_link_shares
     end
-
-    # Hash of breakpoints. Breakpoint#key is the key of the hash.
-    #
-    def breakpoints
-      @breakpoints ||= {}
-    end
-
-    # Adds a breakpoint to the #breakpoints hash. Checks if required methods are present.
-    #
-    def add_breakpoint(brk)
-      unless [:run, :key].all?{|method| brk.respond_to?(method) }
-        raise "breakpoints must implement #run, #key"
-      end
-      breakpoints[brk.key] = brk
-    end
-
-    # Calls #setup on every registered breakpoint.
-    #
-    def setup_breakpoints
-      breakpoints.values.each(&:setup)
-    end
-
-    # Fetch (and removes) the first breakpoint whose pre_condition_met is true.
-    #
-    def next_breakpoint
-      if brk = breakpoints.values.first
-        breakpoints.delete(brk.key)
-        brk
-      end
-    end
-
-    # Are we past the given breakpoint?
-    #
-    # current  | given      |
-    # ------------------------------
-    # initial   | merit     | false
-    # initial   | initial   | true
-    # initial   | nil       | true
-    # merit     | initial   | true
-    # merit     | merit     | true
-    #
-    def breakpoint_reached?(breakpoint)
-      if breakpoint.nil?
-        true # no breakpoint => run always
-      else
-        !breakpoints.has_key?(breakpoint)
-      end
-    end
-
   end
 end
