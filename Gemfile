@@ -33,7 +33,6 @@ gem 'merit', :git => 'git@github.com:quintel/merit.git'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
-gem 'hipchat'
 
 # system gems
 gem 'mysql2', '~>0.3.11'
@@ -60,7 +59,7 @@ group :development do
 end
 
 group :test, :development do
-  gem "rspec-rails", "~> 2.11.0"
+  gem "rspec-rails", "~> 2.12.0"
   gem 'ruby-prof'
   gem 'pry-rails'
   gem 'pry-remote'
