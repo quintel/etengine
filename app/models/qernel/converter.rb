@@ -118,7 +118,7 @@ class Converter
   alias_method :lft_links, :output_links
   alias_method :rgt_links, :input_links
 
-  dataset_accessors [:demand, :preset_demand, :excel_id, :breakpoint]
+  dataset_accessors [:demand, :preset_demand, :excel_id]
 
   # --------- Micro-optimizing ------------------------------------------------
   #
@@ -361,7 +361,7 @@ public
   # @return [true,false]
   #
   def ready?
-    graph.breakpoint_reached?(breakpoint) && slots.all?(&:ready?)
+    slots.all?(&:ready?)
   end
 
   # Calculates the demand of the converter and of the links that depend on this demand.

@@ -1,38 +1,5 @@
 module Qernel::Plugins
   module MeritOrder
-    # Schematic of Merit Order calculation
-    # ==========================================================================================================
-    #
-    #    FD HH Electr.                                                          G(merit_order_converters)
-    #    +-----------+                                                              +------------+
-    #    |           |                                                              |            |
-    #    |           |                                                 +--- c ----->|            |
-    #    +-----------+                 +---------------------+         |  dmd: 200  |            |
-    #                                  | Energy Network      |         |            +------------+
-    #                                  |---------------------|         |
-    #                                  |                     |         |
-    #                                  |                     +---------+            +------------+
-    #                                  |                     |         |            |            |
-    #                                  |                     |         +--- c ----->|            |
-    #                                  +---------------------+         |  dmd: 100  |            |
-    #                                          ^                       |            +------------+
-    #                                          |                       |     ^               ^
-    #                                +---------+                       F!    |               |   MeritOrder
-    #                                |                                 |     +- - - - -+     +- - - --+
-    #    FD Industry Electr.         |                                 |               |
-    #     +----------+               |                                 |   +-----+     +
-    #     |          +---------------+                                 +-->|     |  |--O-----| Slider no of
-    #     |          |               |                                     |     |
-    #     +----------+               |              must_run_merit_order   +-----+
-    #                                |               +-------------+
-    #                                |               |             |
-    #                                +-------------->|             |
-    #   +--------------+                             |             |
-    #   +--------------+                             +-------------+
-    #                                              industry chp combined gas power
-    #   SUM = graph_electricity_demand             SUM(mw_power * electr_output_conversion * availability)
-    #
-    # ==========================================================================================================
     #
     # Merit Order is influenced among others by sliders:
     # --------------------------
@@ -67,7 +34,7 @@ module Qernel::Plugins
     class MeritOrderBreakpoint
       include Instrumentable
 
-      attr_reader :key, :graph, :items
+      attr_reader :key, :graph
 
       def initialize(graph)
         @graph = graph

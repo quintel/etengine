@@ -4,17 +4,6 @@ module Qernel::Plugins
 
     MERIT_ORDER_BREAKPOINT = :injected_merit_order
 
-    included do |klass|
-      set_callback :calculate, :before, :add_merit_order_breakpoint
-    end
-
-    def add_merit_order_breakpoint
-      if use_merit_order_demands?
-        brk = MeritOrderBreakpoint.new(self)
-        add_breakpoint(brk)
-      end
-    end
-
     def use_merit_order_demands?
       self[:use_merit_order_demands].to_i == 1
     end
@@ -52,8 +41,6 @@ module Qernel::Plugins
       total_demand = graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
       total_demand + transformer_demand * conversion_loss / conversion_electricity
     end
-
-
   end # MeritOrder
 end
 
