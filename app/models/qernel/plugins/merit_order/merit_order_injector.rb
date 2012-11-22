@@ -23,12 +23,14 @@ module Qernel::Plugins
 
       def initialize(graph)
         @graph = graph
+        @capacities = {}
       end
 
       def run
         if @graph.use_merit_order_demands? && graph.future?
           setup_items
           calculate_merit_order
+          store_capacities
         end
       end
 
@@ -43,7 +45,8 @@ module Qernel::Plugins
           c[:full_load_seconds] = flh * 3600
           c[:marginal_costs]    = d.marginal_costs
 
-          capacity_production = c.installed_production_capacity_in_mw_electricity
+          capacity_production = @capacities[c.key]
+
           if capacity_production.zero? || capacity_production.nil?
             position = -1
           else
@@ -180,6 +183,15 @@ module Qernel::Plugins
         return if dispatchable_producers.empty?
         instrument("qernel.merit_order: calculate_merit_order") do
           @m.calculate
+        end
+      end
+
+      # Store a copy of each converter's production capacity so that we can
+      # later use it to set the merit order positions of each converter.
+      def store_capacities
+        @m.dispatchables.each do |d|
+          @capacities[d.key] = graph.converter(d.key).converter_api.
+            installed_production_capacity_in_mw_electricity
         end
       end
     end # class MeritOrderInjector
