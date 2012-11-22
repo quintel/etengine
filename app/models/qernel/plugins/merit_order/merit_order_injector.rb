@@ -33,7 +33,9 @@ module Qernel::Plugins
         end
       end
 
-      # --- Merit Order Gem --------------------------------------------------
+      #######
+      private
+      #######
 
       def setup_items
         @m = ::Merit::Order.new
@@ -44,63 +46,42 @@ module Qernel::Plugins
       end
 
       def add_volatile_producers
-        volatile_producers.each do |p|
-          c = p.converter_api
-          begin
-            producer = ::Merit::VolatileProducer.new(
-              key: p.key,
-              marginal_costs: c.variable_costs_per(:mwh_electricity),
-              effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
-              number_of_units: c.number_of_units,
-              availability: c.availability,
-              fixed_costs: c.send(:fixed_costs),
-              load_profile_key: c.load_profile_key,
-              full_load_hours: c.full_load_hours
-            )
-            @m.add producer
-          rescue Exception => e
-            raise "Merit order: error adding volatile producer #{p.key}: #{e.message}"
-          end
-        end
+        volatile_producers.each {|p| add_producer :volatile, p}
       end
 
       def add_must_run_producers
-        must_run_producers.each do |p|
-          c = p.converter_api
-          begin
-            producer = ::Merit::MustRunProducer.new(
-              key: p.key,
-              marginal_costs: c.variable_costs_per(:mwh_electricity),
-              effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
-              number_of_units: c.number_of_units,
-              availability: c.availability,
-              fixed_costs: c.send(:fixed_costs),
-              load_profile_key: c.load_profile_key,
-              full_load_hours: c.full_load_hours
-            )
-            @m.add producer
-          rescue Exception => e
-            raise "Merit order: error adding must-run producer #{p.key}: #{e.message}"
-          end
-        end
+        must_run_producers.each {|p| add_producer :must_run, p}
       end
 
       def add_dispatchable_producers
-        dispatchable_producers.each do |p|
+        dispatchable_producers.each {|p| add_producer :dispatchable, p}
+      end
+
+      def add_producer(type, p)
+        klass = case type
+          when :dispatchable then ::Merit::DispatchableProducer
+          when :volatile     then ::Merit::VolatileProducer
+          when :must_run     then ::Merit::MustRunProducer
+        end
+
+        begin
           c = p.converter_api
-          begin
-            producer = ::Merit::DispatchableProducer.new(
-              key: p.key,
-              marginal_costs: c.variable_costs_per(:mwh_electricity),
-              effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
-              number_of_units: c.number_of_units,
-              availability: c.availability,
-              fixed_costs: c.send(:fixed_costs)
-            )
-            @m.add producer
-          rescue Exception => e
-            raise "Merit order: error adding dispatchable producer #{p.key}: #{e.message}"
+          attrs = {
+            key: p.key,
+            marginal_costs: c.variable_costs_per(:mwh_electricity),
+            effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
+            number_of_units: c.number_of_units,
+            availability: c.availability,
+            fixed_costs: c.send(:fixed_costs)
+          }
+          if type == :must_run || type == :volatile_producers
+            attrs[:load_profile_key] = c.load_profile_key
+            attrs[:full_load_hours]  = c.full_load_hours
           end
+          producer = klass.new(attrs)
+          @m.add producer
+        rescue Exception => e
+          raise "Merit order: error adding #{type} #{p.key}: #{e.message}"
         end
       end
 
@@ -161,8 +142,6 @@ module Qernel::Plugins
         raise "Merit order: error fetching must-run producers: #{e.message}"
       end
 
-      # --- stuff we need from the graph -------------------------------------
-
       # Demand of electricity for all final demand converters..
       def total_electricity_demand
         converter = graph.converter(:energy_power_hv_network_electricity)
@@ -173,8 +152,6 @@ module Qernel::Plugins
         total_demand = graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
         total_demand + transformer_demand * conversion_loss / conversion_electricity
       end
-
-      # ---- inject_updated_demand -------------------------------------------
 
       def inject_updated_demand
         position_index = 1
@@ -204,15 +181,12 @@ module Qernel::Plugins
         end
       end
 
-      # ---- MeritOrder ------------------------------------------------------
-
       def calculate_merit_order
         return if dispatchable_producers.empty?
         instrument("qernel.merit_order: calculate_merit_order") do
           @m.calculate
-          @graph.dataset_set(:calculate_merit_order_finished, true)
         end
       end
-    end
-  end
-end
+    end # class MeritOrderInjector
+  end # module MeritOrder
+end # module Qernel::Plugins
