@@ -29,7 +29,29 @@ module Qernel::Plugins
         if @graph.use_merit_order_demands? && graph.future?
           setup_items
           calculate_merit_order
-          inject_updated_demand
+        end
+      end
+
+      def inject_updated_demand
+        position_index = 1
+        @m.dispatchables.each do |d|
+          c = graph.converter(d.key).converter_api
+
+          flh = d.full_load_hours
+          flh = 0.0 if flh.nan? || flh.nil?
+          c[:full_load_hours]   = flh
+          c[:full_load_seconds] = flh * 3600
+          c[:marginal_costs]    = d.marginal_costs
+
+          capacity_production = c.installed_production_capacity_in_mw_electricity
+          if capacity_production.zero? || capacity_production.nil?
+            position = -1
+          else
+            position = position_index
+            position_index += 1
+          end
+          c[:merit_order_position] = position
+          c.demand = nil
         end
       end
 
@@ -153,33 +175,6 @@ module Qernel::Plugins
         total_demand + transformer_demand * conversion_loss / conversion_electricity
       end
 
-      def inject_updated_demand
-        position_index = 1
-        @m.dispatchables.each do |d|
-          c = graph.converter(d.key).converter_api
-
-          flh = d.full_load_hours
-          flh = 0 if flh.nan?
-          c[:full_load_hours]   = flh
-          c[:full_load_seconds] = flh * 3600
-          c[:marginal_costs]    = d.marginal_costs
-
-          capacity_production = c.installed_production_capacity_in_mw_electricity
-          if capacity_production.zero? || capacity_production.nil?
-            position = -1
-          else
-            position = position_index
-            position_index += 1
-          end
-          c[:merit_order_position] = position
-
-          # DEBT: check this better!
-          new_demand = c.full_load_seconds * c.effective_input_capacity * c.number_of_units
-
-          # do not overwrite demand with nil
-          c.demand = nil
-        end
-      end
 
       def calculate_merit_order
         return if dispatchable_producers.empty?
