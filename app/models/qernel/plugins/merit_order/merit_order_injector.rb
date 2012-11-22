@@ -177,7 +177,7 @@ module Qernel::Plugins
           new_demand = c.full_load_seconds * c.effective_input_capacity * c.number_of_units
 
           # do not overwrite demand with nil
-          c.demand = new_demand if new_demand
+          c.demand = nil
         end
       end
 
