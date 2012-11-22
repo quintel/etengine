@@ -8,53 +8,23 @@ module Qernel::Plugins
     # * update costs for energy carriers
     # * other changes to final electricity demand
     #
-    # A) Before calculation:
-    # --------------------------
-    # * Set a calculation breakpoint to output slots of dispatchable merit order plants.
+    # Workflow
+    # --------
+    # * Run a full calculation loop
+    # * Feed the results to the merit order library
+    # * Let MO calculate the new FLH and marginal costs
+    # * Inject those values in the converters
+    # * Run a full calculation loop again
     #
-    # B) Calculation
-    # --------------------------
-    # 1. Graph calculates up to dispatchable merit order plants (they have break-points)
-    #
-    # C) Merit-order breakpoint.
-    # --------------------------
-    # 2. MO calculates FLH (based on number_of_units, capacities and availabilities of plants,
-    #    combined with demand from HV network)
-    # 3. FLH from MO calculation are injected into dispatchable plants
-    # 4. Dispatchable plants get a new energy flow assigned (based on number_of_units, capacities
-    #    and availabilities of plants and new FLH).
-    #
-    # D) Resume calculation from breakpoint
-    # --------------------------
-    # 5. Outgoing reversed flexible links from dispatchable MO plants are updated
-    # 6. Inverse links to HV network are updated
-    # 7. Graph calculation commences at dispatchable MO plants
-    #
-    #
-    class MeritOrderBreakpoint
+    class MeritOrderInjector
       include Instrumentable
 
       attr_reader :key, :graph
 
       def initialize(graph)
         @graph = graph
-        @key   = Qernel::Plugins::MeritOrder::MERIT_ORDER_BREAKPOINT
       end
 
-      # Required by CalculationBreakpoint
-      #
-      # Assign breakpoint merit_order to dispatchable MO converters. So that the calculation
-      # does not calculate demand for them, and we can instead update the demands from the
-      # MO calculation. The updated demand will then backpropagate to the grid.
-      #
-      def setup
-        dispatchable_producers.each do |converter_api|
-          converter_api.converter.breakpoint = MERIT_ORDER_BREAKPOINT
-        end
-      end
-
-      # Required by CalculationBreakpoint
-      #
       def run
         if @graph.use_merit_order_demands? && graph.future?
           setup_items
@@ -137,24 +107,36 @@ module Qernel::Plugins
       def add_total_demand
         u = ::Merit::User.new(
           key: :total_demand,
-          total_consumption: @graph.graph_electricity_demand
+          total_consumption: total_electricity_demand
         )
         @m.add u
       rescue Exception => e
         raise "Merit order: error adding total_demand: #{e.message}"
       end
 
-      # ---- Converters ------------------------------------------------------------
+      # ---- Converters ------------------------------------------------------
+
+      # memoizes the etsource-based merit order hash
+      #
+      def merit_order_data
+        @merit_order_data ||= Etsource::MeritOrder.new.import
+      end
 
       # Select dispatchable merit order converters
       def dispatchable_producers
-        @graph.dispatchable_merit_order_converters
+        @dispatchable_converters ||= begin
+          merit_order_data['dispatchable'].keys.map do |k|
+            graph.converter(k.to_sym)
+          end.compact
+        end
+      rescue Exception => e
+        raise "Error loading dispatchable converters: #{e.message}"
       end
 
       def volatile_producers
         @volatile_producers ||= begin
           converters = []
-          @graph.merit_order_data['volatile'].each_pair do |key, profile_key|
+          merit_order_data['volatile'].each_pair do |key, profile_key|
             c = graph.converter(key)
             c.converter_api.load_profile_key = profile_key
             converters.push c
@@ -168,7 +150,7 @@ module Qernel::Plugins
       def must_run_producers
         @must_run_producers ||= begin
           converters = []
-          @graph.merit_order_data['must_run'].each_pair do |key, profile_key|
+          merit_order_data['must_run'].each_pair do |key, profile_key|
             c = graph.converter(key)
             c.converter_api.load_profile_key = profile_key
             converters.push c
@@ -179,7 +161,20 @@ module Qernel::Plugins
         raise "Merit order: error fetching must-run producers: #{e.message}"
       end
 
-      # ---- inject_updated_demand ------------------------------------------------------------
+      # --- stuff we need from the graph -------------------------------------
+
+      # Demand of electricity for all final demand converters..
+      def total_electricity_demand
+        converter = graph.converter(:energy_power_hv_network_electricity)
+        conversion_loss        = converter.output(:loss).conversion
+        conversion_electricity = converter.output(:electricity).conversion
+        transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+
+        total_demand = graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
+        total_demand + transformer_demand * conversion_loss / conversion_electricity
+      end
+
+      # ---- inject_updated_demand -------------------------------------------
 
       def inject_updated_demand
         position_index = 1
@@ -209,9 +204,8 @@ module Qernel::Plugins
         end
       end
 
-      # ---- MeritOrder ------------------------------------------------------------
+      # ---- MeritOrder ------------------------------------------------------
 
-      # Assign merit_order_start and merit_order_end
       def calculate_merit_order
         return if dispatchable_producers.empty?
         instrument("qernel.merit_order: calculate_merit_order") do
