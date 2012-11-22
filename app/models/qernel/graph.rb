@@ -268,20 +268,30 @@ class Graph
       return if calculated?
 
       instrument("gql.performance.calculate") do
-        # FIFO stack of all the converters. Converters are removed from the stack after calculation.
-        @converter_stack = converters.clone
-        @finished_converters = []
+
+        if use_merit_order_demands? && future?
+          dataset_copy = Marshal.load(Marshal.dump(@dataset))
+        end
 
         calculation_loop # the initial loop
 
-        if use_merit_order_demands?
-          Plugins::MeritOrder::MeritOrderInjector.new(self).run
+        if use_merit_order_demands? && future?
+          mo = Plugins::MeritOrder::MeritOrderInjector.new(self)
+          mo.run
+          self.dataset = dataset_copy
+          mo.inject_updated_demand
           calculation_loop
         end
       end
     end
     calculated = true
   end
+
+  # def reset_calculated_values
+  #   converters.each{|c| c.demand = nil}
+  #   links.each{|l| c.value = nil}
+  #   links.each{|l| c.share = nil}
+  # end
 
   # A calculation_loop is one cycle of calculating converters until there is
   # no converter left to calculate (no converters is #ready? anymore). This
@@ -291,6 +301,10 @@ class Graph
   # continue.
   #
   def calculation_loop
+    # FIFO stack of all the converters. Converters are removed from the stack after calculation.
+    @converter_stack = converters.clone
+    @finished_converters = []
+
     while index = @converter_stack.index(&:ready?)
       converter = @converter_stack[index]
       converter.calculate
