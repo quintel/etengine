@@ -5,8 +5,10 @@ module Qernel::Plugins
     # --------------------------
     # * that update number_of_units of plants
     #   => This also overwrites the preset demand of these demands
-    # * update costs for energy carriers
-    # * other changes to final electricity demand
+    # * update costs of energy carriers
+    # * update costs of technologies
+    # * update costs of CO2
+    # * changes to final electricity demand
     #
     # Workflow
     # --------
