@@ -180,7 +180,7 @@ module Qernel::Plugins
             converter.merit_order_position = position
             position += 1
           else
-            converter.merit_order_position = 1000
+            converter.merit_order_position = -1
           end
         end
       end
