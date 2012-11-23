@@ -278,6 +278,7 @@ class Graph
         if use_merit_order_demands? && future?
           mo = Plugins::MeritOrder::MeritOrderInjector.new(self)
           mo.run
+          detach_dataset!
           self.dataset = dataset_copy
           mo.inject_updated_demand
           calculation_loop
