@@ -132,8 +132,8 @@ module Qernel::Plugins::MeritOrder
 
       it "should correctly count positions" do
         @converters[0].query.merit_order_position.should == 1
-        @converters[1].query.merit_order_position.should == 1000 # 0   => 1000
-        @converters[2].query.merit_order_position.should == 1000 # nil => 1000
+        @converters[1].query.merit_order_position.should == -1 # 0   => 1000
+        @converters[2].query.merit_order_position.should == -1 # nil => 1000
         @converters[3].query.merit_order_position.should == 2
       end
     end
