@@ -43,9 +43,12 @@ module Qernel::Plugins
 
           flh = d.full_load_hours
           flh = 0.0 if flh.nan? || flh.nil?
+          fls = flh * 3600
+
           c[:full_load_hours]   = flh
-          c[:full_load_seconds] = flh * 3600
+          c[:full_load_seconds] = fls
           c[:marginal_costs]    = d.marginal_costs
+          c[:number_of_units] = d.number_of_units
 
           capacity_production = @capacities[c.key]
 
@@ -56,7 +59,7 @@ module Qernel::Plugins
             position_index += 1
           end
           c[:merit_order_position] = position
-          c.demand = nil
+          c.demand = fls * c.effective_input_capacity * d.number_of_units
         end
       end
 
