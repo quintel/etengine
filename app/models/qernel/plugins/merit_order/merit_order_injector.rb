@@ -36,21 +36,23 @@ module Qernel::Plugins
         end
       end
 
+      # TODO: make clear or refactor that FLHs and number of units is also
+      # updated. (and that we add an index number too)
       def inject_updated_demand
         position_index = 1
-        @m.dispatchables.each do |d|
-          c = graph.converter(d.key).converter_api
+        @m.dispatchables.each do |dispatchable|
+          converter = graph.converter(dispatchable.key).converter_api
 
-          flh = d.full_load_hours
+          flh = dispatchable.full_load_hours
           flh = 0.0 if flh.nan? || flh.nil?
           fls = flh * 3600
 
-          c[:full_load_hours]   = flh
-          c[:full_load_seconds] = fls
-          c[:marginal_costs]    = d.marginal_costs
-          c[:number_of_units] = d.number_of_units
+          converter[:full_load_hours]   = flh
+          converter[:full_load_seconds] = fls
+          converter[:marginal_costs]    = dispatchable.marginal_costs
+          converter[:number_of_units]   = dispatchable.number_of_units
 
-          capacity_production = @capacities[c.key]
+          capacity_production = @capacities[converter.key]
 
           if capacity_production.zero? || capacity_production.nil?
             position = -1
@@ -58,8 +60,11 @@ module Qernel::Plugins
             position = position_index
             position_index += 1
           end
-          c[:merit_order_position] = position
-          c.demand = fls * c.effective_input_capacity * d.number_of_units
+          converter[:merit_order_position] = position
+
+          converter.demand = fls *
+                             converter.effective_input_capacity *
+                             dispatchable.number_of_units
         end
       end
 
