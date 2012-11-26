@@ -64,6 +64,7 @@ group :test, :development do
   gem 'pry-rails'
   gem 'pry-remote'
   gem 'pry-stack_explorer'
+  gem 'pry-debugger'
   gem 'guard'
   gem 'guard-rspec'
   gem 'watchr'
