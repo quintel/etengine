@@ -1,4 +1,6 @@
 class Data::QueryTableCellsController < Data::BaseController
+  layout 'application'
+
   def new
     @query_table_cell = QueryTableCell.new(
       :column => params[:column],
