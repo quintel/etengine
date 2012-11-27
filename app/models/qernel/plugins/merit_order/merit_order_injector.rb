@@ -109,7 +109,7 @@ module Qernel::Plugins
             availability: c.availability,
             fixed_costs: c.send(:fixed_costs)
           }
-          if type == :must_run || type == :volatile_producers
+          if type == :must_run || type == :volatile
             attrs[:load_profile_key] = c.load_profile_key
             attrs[:full_load_hours]  = c.full_load_hours
           end
