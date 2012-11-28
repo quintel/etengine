@@ -53,8 +53,6 @@ module Qernel
       },
 
       :merit_order => {
-        :merit_order_start => ['', ''],
-        :merit_order_end => ['', ''],
         :merit_order_full_load_hours => ['', ''],
         :merit_order_capacity_factor => ['', ''],
         :merit_order_position => ['', '']

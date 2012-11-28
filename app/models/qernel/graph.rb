@@ -22,8 +22,6 @@ class Graph
 
 
   # Concerns (Required Plugin)
-  include Plugins::CalculationBreakpoints
-
   include Plugins::MeritOrder
   include Plugins::Fce
   include Plugins::MaxDemandRecursive
@@ -246,6 +244,76 @@ class Graph
   def inspect
     "<Qernel::Graph>"
   end
+
+  # --- Calculation ----------------------------------------------------------
+
+  # Has graph finished calculating.
+  #
+  def calculated?
+    calculated == true
+  end
+
+  # Calculates the Graph.
+  #
+  # = Algorithm
+  #
+  # 1. Take first converter that is "ready for calculation" (see {Qernel::Converter#ready?}) from the converter stack
+  # 2. Calculate the converter (see: {Qernel::Converter#calculate})
+  # 3. Remove converter from stack and move it to {#finished_converters}
+  # 5. => (continue at 1. until stack is empty)
+  # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
+  #
+  def calculate(options = {})
+    run_callbacks :calculate do
+      return if calculated?
+
+      instrument("gql.performance.calculate") do
+
+        if use_merit_order_demands? && future?
+          dataset_copy = Marshal.load(Marshal.dump(@dataset))
+        end
+
+        calculation_loop # the initial loop
+
+        if use_merit_order_demands? && future?
+          mo = Plugins::MeritOrder::MeritOrderInjector.new(self)
+          mo.run
+          detach_dataset!
+          self.dataset = dataset_copy
+          mo.inject_updated_demand
+          calculation_loop
+        end
+      end
+    end
+    calculated = true
+  end
+
+  # def reset_calculated_values
+  #   converters.each{|c| c.demand = nil}
+  #   links.each{|l| c.value = nil}
+  #   links.each{|l| c.share = nil}
+  # end
+
+  # A calculation_loop is one cycle of calculating converters until there is
+  # no converter left to calculate (no converters is #ready? anymore). This
+  # can mean that the calculation is finished or that we need to run a
+  # "plugin" (e.g. merit order). The plugin most likely will update some
+  # converter demands, what "unlocks" more converters and the calculation can
+  # continue.
+  #
+  def calculation_loop
+    # FIFO stack of all the converters. Converters are removed from the stack after calculation.
+    @converter_stack = converters.clone
+    @finished_converters = []
+
+    while index = @converter_stack.index(&:ready?)
+      converter = @converter_stack[index]
+      converter.calculate
+      @finished_converters << @converter_stack.delete_at(index)
+    end
+    update_link_shares
+  end
+
 
   # optimizes calculation speed of graph by rearranging the order of the converters array.
   #
