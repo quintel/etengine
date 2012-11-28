@@ -42,3 +42,7 @@ ActiveSupport::Notifications.subscribe /gql\.inputs/ do |name, start, finish, id
   GqlLogger.debug "#{name}: #{payload}"
 end
 
+def dbg(x)
+  DebugLogger.debug x
+end
+

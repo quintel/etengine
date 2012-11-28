@@ -39,7 +39,8 @@ module Gql::Runtime
 
       # @private
       def update_element_with(object, attribute_name, value)
-        log("UPDATE", "#{scope.input_key}: #{object.key}.#{attribute_name} =", :type => :update) do
+        obj_key = object.key rescue nil
+        log("UPDATE", "#{scope.input_key}: #{obj_key}.#{attribute_name} =", :type => :update) do
           super
         end
       end

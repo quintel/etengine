@@ -28,6 +28,8 @@ gem 'fnv'
 # own gems
 gem "yaml_pack", '~>0.0.3.alpha'
 gem 'rubel', '0.0.3'
+gem 'merit', :git => 'git@github.com:quintel/merit.git'
+# gem 'merit', :github => 'quintel/merit'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
@@ -63,6 +65,7 @@ group :test, :development do
   gem 'pry-rails'
   gem 'pry-remote'
   gem 'pry-stack_explorer'
+  gem 'pry-debugger'
   gem 'guard'
   gem 'guard-rspec'
   gem 'watchr'
