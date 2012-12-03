@@ -11,27 +11,6 @@ Etm::Application.routes.draw do
   match '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
 
   namespace :api do
-
-    namespace :v2 do
-      resources :scenarios, :only => [:index, :show, :create, :update] do
-        get :load, :on => :member
-        collection do
-          get :homepage
-        end
-      end
-      resources :api_scenarios do
-        member do
-          get :user_values
-          get :input_data
-        end
-      end
-      resources :areas, :only => [:index, :show]
-      resources :inputs, :only => :index
-      resources :gqueries, :only => [:index]
-      # catches all OPTIONS requests
-      match '*url', to: 'base#cross_site_sharing', via: :options
-    end
-
     namespace :v3 do
       resources :areas, :only => [:index, :show]
       resources :scenarios, :only => [:show, :create, :update] do
