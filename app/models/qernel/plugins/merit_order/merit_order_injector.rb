@@ -104,10 +104,11 @@ module Qernel::Plugins
           attrs = {
             key: p.key,
             marginal_costs: c.variable_costs_per(:mwh_electricity),
-            effective_output_capacity: c.electricity_output_conversion * c.effective_input_capacity,
+            output_capacity_per_unit: c.electricity_output_conversion * c.effective_input_capacity,
             number_of_units: c.number_of_units,
             availability: c.availability,
-            fixed_costs: c.send(:fixed_costs)
+            fixed_costs_per_unit: c.send(:fixed_costs),
+            fixed_om_costs_per_unit: c.send(:fixed_operation_and_maintenance_costs_per_year)
           }
           if type == :must_run || type == :volatile
             attrs[:load_profile_key] = c.load_profile_key
