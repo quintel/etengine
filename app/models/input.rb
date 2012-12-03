@@ -323,16 +323,6 @@ class Input
     end
   end
 
-  # Minimal input information. This is used on active resource request to get a
-  # list of the available inputs. The energymixer answer form uses this to fill
-  # this input select box
-  def basic_attributes
-    {
-      :id => id,
-      :key => key
-    }
-  end
-
   # @return [String]
   #   A human-readable version of the Input for debugging.
   #

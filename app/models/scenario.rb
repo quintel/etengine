@@ -32,7 +32,6 @@ class Scenario < ActiveRecord::Base
   include Scenario::Persistable
   include Scenario::InputGroups
   include Scenario::Copies
-  include Api::V2::ScenarioHelpers
 
   store :user_values
   store :balanced_values
