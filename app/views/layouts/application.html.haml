@@ -39,7 +39,7 @@
                     %li= link_to 'Converters',     data_converters_path(url_params)
                     %li= link_to "Inputs",         data_inputs_path(url_params)
                     %li= link_to "Scenarios",      data_scenarios_path(url_params)
-                    %li= link_to " · current",      data_scenario_path(url_params,:id => 'current')
+                    %li= link_to " · current",      data_scenario_path(url_params.merge(id: 'current'))
                 %li.divider-vertical
                 %li
                   %form.form-inline.navbar-search{:action => data_search_path(url_params), :method => :get}
