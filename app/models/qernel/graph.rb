@@ -288,12 +288,6 @@ class Graph
     calculated = true
   end
 
-  # def reset_calculated_values
-  #   converters.each{|c| c.demand = nil}
-  #   links.each{|l| c.value = nil}
-  #   links.each{|l| c.share = nil}
-  # end
-
   # A calculation_loop is one cycle of calculating converters until there is
   # no converter left to calculate (no converters is #ready? anymore). This
   # can mean that the calculation is finished or that we need to run a
