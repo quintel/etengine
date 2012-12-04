@@ -42,8 +42,6 @@ class ConverterPosition < ActiveRecord::Base
     :neighbor     => '#87CEEB'
   }.with_indifferent_access
 
-  validates_presence_of :converter_id, :on => :create, :message => "can't be blank"
-
   scope :not_hidden, where(:hidden => false)
 
   def self.default_position_for(converter)
