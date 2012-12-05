@@ -56,6 +56,12 @@ module Qernel::Plugins::MeritOrder
       end
 
       it "should get a list of converters from ETSource" do
+        Etsource::MeritOrder.any_instance.should_receive(:import).once.
+          and_return({'dispatchable' => {}, 'volatile' => {}, 'must_run' => {}})
+        @mo.run
+      end
+
+      it "should calculate values" do
         @mo.should_receive(:calculate_merit_order)
         @mo.run
       end
