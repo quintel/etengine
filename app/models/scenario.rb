@@ -191,4 +191,9 @@ class Scenario < ActiveRecord::Base
   def identifier
     "##{id} - #{area_code} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
   end
+
+  # shortcut to run GQL queries
+  def query(q)
+    gql(prepare: true).query(q)
+  end
 end
