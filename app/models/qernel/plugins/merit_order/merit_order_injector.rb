@@ -51,6 +51,7 @@ module Qernel::Plugins
           converter[:full_load_seconds] = fls
           converter[:marginal_costs]    = dispatchable.marginal_costs
           converter[:number_of_units]   = dispatchable.number_of_units
+          converter[:profitable]   = dispatchable.profitability == :profitable
 
           capacity_production = @capacities[converter.key]
 
