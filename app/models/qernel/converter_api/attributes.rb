@@ -36,7 +36,8 @@ module Qernel
         :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
         :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
         :costs_per_mj => ['', ''],
-        :wacc => ['', '']
+        :wacc => ['', ''],
+        :profitable => ['', 'true/false'] # Used by merit order
       },
 
       :network => {
