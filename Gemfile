@@ -28,8 +28,7 @@ gem 'fnv'
 # own gems
 gem "yaml_pack", '~>0.0.3.alpha'
 gem 'rubel', '0.0.3'
-gem 'merit', :git => 'git@github.com:quintel/merit.git', branch: :profit
-# gem 'merit', :github => 'quintel/merit'
+gem 'merit', :git => 'git@github.com:quintel/merit.git'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
