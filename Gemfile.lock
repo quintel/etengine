@@ -64,6 +64,9 @@ GEM
       activerecord (>= 3.0.7)
       activesupport (>= 3.0.0)
       activesupport (>= 3.0.7)
+    better_errors (0.0.8)
+      coderay
+      erubis
     binding_of_caller (0.6.7)
     blankslate (2.1.2.4)
     builder (3.0.3)
@@ -253,6 +256,7 @@ DEPENDENCIES
   airbrake
   annotate
   authlogic
+  better_errors
   cancan
   coffee-rails (~> 3.2.1)
   dalli

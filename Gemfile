@@ -54,6 +54,7 @@ group :development do
   gem 'annotate', :require => false
   gem 'ruby-prof'
   gem 'quiet_assets'
+  gem 'better_errors'
 
   # ETsource live-reloading.
   gem 'listen'
