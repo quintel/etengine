@@ -17,10 +17,16 @@ describe Scenario do
   end
 
   describe "user supplied parameters" do
-    it "should not allow a scenario with a bad area code" do
+    it "should not allow a bad area code" do
       s = Scenario.new(:area_code => '{}')
       expect(s).to_not be_valid
       expect(s.errors[:area_code])
+    end
+
+    it "should not allow a bad year format" do
+      s = Scenario.new(:end_year => 'abc')
+      expect(s).to_not be_valid
+      expect(s.errors[:end_year])
     end
   end
 
