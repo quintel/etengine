@@ -52,9 +52,9 @@ module Qernel::Plugins
           converter[:profitable]   = dispatchable.profitability == :profitable
 
           capacity_production = dispatchable.output_capacity_per_unit *
-                                dispatchable.number_of_units rescue nil
+                                dispatchable.number_of_units
 
-          if capacity_production.zero? || capacity_production.nil?
+          if capacity_production.zero?
             position = -1
           else
             position = position_index
