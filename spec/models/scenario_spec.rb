@@ -16,6 +16,14 @@ describe Scenario do
     end
   end
 
+  describe "user supplied parameters" do
+    it "should not allow a scenario with a bad area code" do
+      s = Scenario.new(:area_code => '{}')
+      expect(s).to_not be_valid
+      expect(s.errors[:area_code])
+    end
+  end
+
   describe "#user_values" do
     context ":user_values = YAMLized object (when coming from db)" do
       before {@scenario = Scenario.new(:user_values => {:foo => :bar})}

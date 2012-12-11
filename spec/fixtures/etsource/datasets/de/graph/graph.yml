@@ -1,0 +1,19 @@
+lft: {preset_demand:   0}
+foo: {preset_demand: 100}
+# bar:
+# baz:
+lft-(electricity): {conversion: 1.0}
+foo-(electricity): {conversion: 1.0}
+(electricity)-bar: {conversion: 1.0}
+(electricity)-baz: {conversion: 1.0}
+
+foo-(electricity) -- s --> (electricity)-bar: {share: 0.6}
+foo-(electricity) -- s --> (electricity)-baz: {share: 0.4}
+lft-(electricity) -- s --> (electricity)-bar: {share: 1.0}
+
+# Tests for slots
+# With flexible: true slots
+converter_fixture_for_slots: {preset_demand: 100}
+converter_fixture_for_slots-(electricity): {conversion: 0.6}
+converter_fixture_for_slots-(gas): {conversion: null, flexible: true}
+

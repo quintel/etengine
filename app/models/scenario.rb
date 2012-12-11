@@ -41,6 +41,7 @@ class Scenario < ActiveRecord::Base
 
   validates_presence_of :title, :on => :create, :message => "Please provide a title"
   validates             :area_code, :presence => true
+  validates :area_code, :inclusion => {:in => Etsource::Dataset.region_codes}
 
   scope :in_start_menu, where(:in_start_menu => true)
   scope :by_name,       lambda{|q| where("title LIKE ?", "%#{q}%")}
