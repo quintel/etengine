@@ -46,3 +46,5 @@ etsource_export
 !spec/models/etsource
 !spec/fixtures/etsource
 .sass-cache
+*.sublime-project
+*.sublime-workspace
