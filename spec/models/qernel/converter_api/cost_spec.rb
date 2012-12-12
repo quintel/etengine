@@ -178,31 +178,25 @@ module Qernel
       end
     end
 
+    describe '#marginal_costs' do
+      it "should calculate correctly when values are given" do
+        @c.with variable_costs_per_typical_input: 100
+        @c.converter_api.send(:marginal_costs).should == 360000.0
+      end
+    end
+
     describe '#variable_costs' do
       it "should calculate correctly when values are given" do
-        @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
+        @c.with variable_costs_per_typical_input: 300, typical_input: 2
         @c.converter_api.send(:variable_costs).should == 600
       end
+    end
 
-      it "should add correctly when cost_of_capital is nil" do
-        pending "rescue when nil" do
-          @c.with fuel_costs: nil, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: 300
-          @c.converter_api.send(:variable_costs).should == 500
-        end
-      end
-
-      it "should add correctly when depreciation costs are nil" do
-        pending "rescue when nil" do
-          @c.with fuel_costs: 100, co2_emissions_costs: nil, variable_operation_and_maintenance_costs: 300
-          @c.converter_api.send(:variable_costs).should == 400
-        end
-      end
-
-      it "should add correctly when fixed O&M costs are nil" do
-        pending "rescue when nil" do
-          @c.with fuel_costs: 100, co2_emissions_costs: 200, variable_operation_and_maintenance_costs: nil
-          @c.converter_api.send(:variable_costs).should == 300
-        end
+    describe '#variable_costs_per_typical_input' do
+      it "should calculate correctly when values are given" do
+        @c.with weighted_carrier_cost_per_mj: 200, co2_emissions_costs_per_typical_input: 300, 
+        variable_operation_and_maintenance_costs_per_typical_input: 400
+        @c.converter_api.send(:variable_costs_per_typical_input).should == 900
       end
     end
 
@@ -212,20 +206,27 @@ module Qernel
         @c.converter_api.send(:depreciation_costs).should == 9
       end
 
-      it "should return 0 when typical_fuel_input <= 0" do
+      it "should return 0 when typical_input <= 0" do
         pending "error raising"
       end
 
-      it "should raise error when typical_fuel_input is nil" do
+      it "should raise error when typical_input is nil" do
         pending "statistical converters and data validation"
       end
     end
 
     describe '#co2_emissions_costs' do
       it "should calculate when everything is set" do
+        @c.with typical_input: 500, co2_emissions_costs_per_typical_input: 2
+        @c.converter_api.send(:co2_emissions_costs).should == 1000
+      end
+    end
+
+    describe '#co2_emissions_costs_per_typical_input' do
+      it "should calculate when everything is set" do
         pending "correct syntax of spec"
-        # @c.with typical_fuel_input: 500, weighted_carrier_co2_per_mj: 1, area.co2_price: 1, area.co2_percentage_free: 0, part_ets: 1, co2_free: 0
-        # @c.converter_api.co2_emissions_costs.should == 500
+        # @c.with typical_input: 500, weighted_carrier_co2_per_mj: 1, area.co2_price: 1, area.co2_percentage_free: 0, part_ets: 1, co2_free: 0
+        # @c.converter_api.co2_emissions_costs_per_typical_input.should == 500
       end
       
       it "should handle nil values" do
@@ -235,8 +236,21 @@ module Qernel
 
     describe '#variable_operation_and_maintenance_costs' do
       it "should calculate when everything is set" do
-        @c.with full_load_hours: 500, variable_operation_and_maintenance_costs_per_full_load_hour: 10, variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 1
-        @c.converter_api.send(:variable_operation_and_maintenance_costs).should == 5500
+        @c.with variable_operation_and_maintenance_costs_per_typical_input: 500, typical_input: 2
+        @c.converter_api.send(:variable_operation_and_maintenance_costs).should == 1000
+      end
+      
+      it "should handle nil values" do
+        pending "Data validations of Converters upon loading / importing"
+      end
+    end
+
+    describe '#variable_operation_and_maintenance_costs_per_typical_input' do
+      it "should calculate when everything is set" do
+        @c.with variable_operation_and_maintenance_costs_per_full_load_hour: 500, 
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 400,
+        effective_input_capacity: 2
+        @c.converter_api.send(:variable_operation_and_maintenance_costs_per_typical_input).should == 0.125
       end
       
       it "should handle nil values" do
