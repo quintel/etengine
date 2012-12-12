@@ -38,7 +38,7 @@ module Qernel
         :costs_per_mj => ['', ''],
         :wacc => ['', ''],
         :profitable => ['', 'true/false'], # Used by merit order
-        :profits_per_mwh => ['', 'eur/MWh']  # Used by merit order
+        :profits_per_mwh_per_unit => ['', 'eur/MWh']  # Used by merit order
       },
 
       :network => {
