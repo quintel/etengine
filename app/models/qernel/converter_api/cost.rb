@@ -170,6 +170,23 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "depreciation_costs", 'euro / plant / year'
 
+  ##################
+  # Marginal Costs #
+  ##################
+
+  # Calculates the marginal costs for a plant, which is the same as the
+  # variable costs per typical input (times SECS_PER_HOUR to convert from
+  # euro / MJ to euro / MWh)
+  # The marginal costs are the **extra** costs made if an **extra** unit
+  # of energy is produced. It is, in essence, the slope of the cost curve
+  # when cost (in euro) is plotted versus total production (in MWh).
+  #
+  # @return [Float] marginal costs per MWh 
+  #
+  def marginal_costs
+    variable_costs_per_typical_input * SECS_PER_HOUR
+  end
+  unit_for_calculation "marginal_costs", 'euro / MWh'
 
   ##################
   # Variable Costs #
@@ -187,11 +204,24 @@ class Qernel::ConverterApi
   #
   def variable_costs
     fetch_and_rescue(:variable_costs) do
-      fuel_costs + co2_emissions_costs +
-        variable_operation_and_maintenance_costs
+      typical_input * variable_costs_per_typical_input
     end
   end
   unit_for_calculation "variable_costs", 'euro / plant / year'
+
+  # Calculates the variable costs per typical input (in MJ). 
+  # Unlike the variable_costs (defined above), this function does not
+  # explicity depend on the production of the plant.
+  #
+  # @return [Float] 
+  def variable_costs_per_typical_input
+    fetch_and_rescue(:variable_costs_per_typical_input) do
+      (weighted_carrier_cost_per_mj + 
+       co2_emissions_costs_per_typical_input +
+       variable_operation_and_maintenance_costs_per_typical_input)
+    end
+  end
+  unit_for_calculation "variable_costs_per_typical_input", 'euro / MJ'
 
   # Calculates the fuel costs for a single plant, based on the input of fuel
   # for one plant and the weighted costs of this/these carrier(s) per mj.
@@ -200,7 +230,7 @@ class Qernel::ConverterApi
   #
   def fuel_costs
     fetch_and_rescue(:fuel_costs) do
-      typical_fuel_input * weighted_carrier_cost_per_mj
+      typical_input * weighted_carrier_cost_per_mj
     end
   end
   unit_for_calculation "fuel_costs", 'euro / plant / year'
@@ -211,17 +241,30 @@ class Qernel::ConverterApi
   # Is this converter part of the ETS? *
   # how much co2 is not counted (non-energetic or CCS plants)
   #
-  # DEBT: rename co2_free and part_ets
   #
   # @return [Float] the yearly costs for co2 emissions for one plant
   #
   def co2_emissions_costs
     fetch_and_rescue(:co2_emissions_costs) do
-      typical_fuel_input * weighted_carrier_co2_per_mj * area.co2_price *
-        (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free))
+      typical_input * co2_emissions_costs_per_typical_input
     end
   end
   unit_for_calculation "co2_emissions_costs", 'euro / plant / year'
+
+  # Calculates the CO2 emission costs per typical input (in MJ). 
+  # Unlike the co2_emissions_costs (defined above), this function does not
+  # explicity depend on the production of the plant.
+  #
+  # DEBT: rename co2_free and part_ets
+  #
+  # @return [Float] 
+  def co2_emissions_costs_per_typical_input
+    fetch_and_rescue(:co2_emissions_costs_per_typical_input) do
+      weighted_carrier_co2_per_mj * area.co2_price *
+      (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free)) 
+    end
+  end
+  unit_for_calculation "co2_emissions_costs_per_typical_input", 'euro / MJ'
 
   # Calculates the variable operation and maintenance costs for one plant.
   # These costs are made up of variable O&M costs for the plant per full load
@@ -232,12 +275,28 @@ class Qernel::ConverterApi
   #
   def variable_operation_and_maintenance_costs
     fetch_and_rescue(:variable_operation_and_maintenance_costs) do
-      full_load_hours * (
-        variable_operation_and_maintenance_costs_per_full_load_hour +
-        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour)
+      typical_input * 
+      variable_operation_and_maintenance_costs_per_typical_input
     end
   end
   unit_for_calculation "variable_operation_and_maintenance_costs", 'euro / plant / year'
+
+  # Calculates the ariable_operation_and_maintenance_costs per typical input 
+  # (in MJ).
+  # Unlike the variable_operation_and_maintenance_costs (defined above), this 
+  # function does not explicity depend on the production of the plant.
+  #
+  # @return [Float] Yearly variable operation and maintenance costs per typical 
+  # input
+  #
+  def variable_operation_and_maintenance_costs_per_typical_input
+    fetch_and_rescue(:variable_operation_and_maintenance_costs_per_typical_input) do
+      (variable_operation_and_maintenance_costs_per_full_load_hour +
+      variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour) /
+      (effective_input_capacity * 3600.0)
+    end
+  end
+  unit_for_calculation "variable_operation_and_maintenance_costs_per_typical_input", 'euro / MJ'
 
   # The average yearly installment of capital cost repayments, assuming
   # a linear repayment scheme. That is why divided by 2, to be at 50% between
@@ -321,7 +380,7 @@ class Qernel::ConverterApi
   #
   def typical_electricity_output
     fetch_and_rescue(:typical_electricity_output) do
-      typical_fuel_input * electricity_output_conversion
+      typical_input * electricity_output_conversion
     end
   end
   unit_for_calculation "typical_electricity_output", 'MJ / year'
@@ -336,7 +395,7 @@ class Qernel::ConverterApi
   #
   def typical_heat_output
     fetch_and_rescue(:typical_heat_output) do
-      typical_fuel_input * heat_and_cold_output_conversion
+      typical_input * heat_and_cold_output_conversion
     end
   end
   unit_for_calculation "typical_heat_output", 'MJ / year'
@@ -349,10 +408,10 @@ class Qernel::ConverterApi
   #
   # DEBT: move to another file when cleaning up Converter API
   #
-  def typical_fuel_input
-    fetch_and_rescue(:typical_fuel_input) do
+  def typical_input
+    fetch_and_rescue(:typical_input) do
       effective_input_capacity * full_load_seconds
     end
   end
-  unit_for_calculation "typical_fuel_input", 'MJ / year'
+  unit_for_calculation "typical_input", 'MJ / year'
 end

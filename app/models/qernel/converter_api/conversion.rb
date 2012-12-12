@@ -32,7 +32,7 @@ class Qernel::ConverterApi
   # * mw_electricity:  divide by attribute electricity_output_capacity
   # * mw_heat:         divide by attribute heat_output_capacity
   # * converter:       multiply by number_of_units
-  # * mwh_input:       divide by private method typical_fuel_input then
+  # * mwh_input:       divide by private method typical_input then
   #                    multiply by SECS_PER_HOUR
   # * mwh_electricity: divide by private method typical_electricity_output then
   #                    multiply by SECS_PER_HOUR
@@ -160,7 +160,7 @@ class Qernel::ConverterApi
 
     # MWh production
     when :mwh_input
-      cost / typical_fuel_input.to_f * SECS_PER_HOUR
+      cost / typical_input.to_f * SECS_PER_HOUR
     when :mwh_electricity
       cost / typical_electricity_output.to_f * SECS_PER_HOUR
     when :mwh_heat
