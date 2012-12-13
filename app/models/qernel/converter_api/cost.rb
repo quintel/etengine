@@ -174,17 +174,19 @@ class Qernel::ConverterApi
   # Marginal Costs #
   ##################
 
-  # Calculates the marginal costs for a plant, which is the same as the
-  # variable costs per typical input (times SECS_PER_HOUR to convert from
-  # euro / MJ to euro / MWh)
+  # Calculates the marginal costs for a plant in euro per MWh produced
+  # electricity. This is the same as the variable costs per typical input 
+  # divided through electricity_output_conversion (times SECS_PER_HOUR to 
+  # convert from euro / MJ to euro / MWh).
   # The marginal costs are the **extra** costs made if an **extra** unit
-  # of energy is produced. It is, in essence, the slope of the cost curve
-  # when cost (in euro) is plotted versus total production (in MWh).
+  # of electricity is produced. It is, in essence, the slope of the cost 
+  # curve where cost (in euro) is plotted versus total production (in MWh).
   #
-  # @return [Float] marginal costs per MWh 
+  # @return [Float] marginal costs per MWh (produced electricity)
   #
   def marginal_costs
-    variable_costs_per_typical_input * SECS_PER_HOUR
+    variable_costs_per_typical_input * 
+    SECS_PER_HOUR / electricity_output_conversion
   end
   unit_for_calculation "marginal_costs", 'euro / MWh'
 
