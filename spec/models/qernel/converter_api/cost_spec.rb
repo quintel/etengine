@@ -180,8 +180,8 @@ module Qernel
 
     describe '#marginal_costs' do
       it "should calculate correctly when values are given" do
-        @c.with variable_costs_per_typical_input: 100
-        @c.converter_api.send(:marginal_costs).should == 360000.0
+        @c.with variable_costs_per_typical_input: 100, electricity_output_conversion: 0.5
+        @c.converter_api.send(:marginal_costs).should == 720000.0
       end
     end
 
