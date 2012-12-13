@@ -90,7 +90,7 @@ class Qernel::ConverterApi
       total_initial_investment + decommissioning_costs
     end
   end
-  unit_for_calculation "total_investment_over_lifetime", 'euro / plant / year'
+  unit_for_calculation "total_investment_over_lifetime", 'euro / plant'
 
   #########
   private
@@ -281,7 +281,7 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "variable_operation_and_maintenance_costs", 'euro / plant / year'
 
-  # Calculates the ariable_operation_and_maintenance_costs per typical input 
+  # Calculates the variable_operation_and_maintenance_costs per typical input 
   # (in MJ).
   # Unlike the variable_operation_and_maintenance_costs (defined above), this 
   # function does not explicity depend on the production of the plant.
