@@ -50,11 +50,6 @@ module Qernel::Plugins
           converter[:marginal_costs]    = dispatchable.marginal_costs
           converter[:number_of_units]   = dispatchable.number_of_units
           converter[:profitable]        = dispatchable.profitability
-          converter[:profits_per_mwh_per_unit] = if dispatchable.number_of_units.zero?
-            nil
-          else
-            dispatchable.profit / dispatchable.number_of_units
-          end
 
           capacity_production = dispatchable.output_capacity_per_unit *
                                 dispatchable.number_of_units
@@ -70,6 +65,14 @@ module Qernel::Plugins
           converter.demand = fls *
                              converter.effective_input_capacity *
                              dispatchable.number_of_units
+
+
+          x = (converter.demand * converter.electricity_output_conversion)
+          converter[:profits_per_mwh_electricity] = if x.zero?
+            nil
+          else
+            dispatchable.profit / x * 3600
+          end
         end
       end
 
