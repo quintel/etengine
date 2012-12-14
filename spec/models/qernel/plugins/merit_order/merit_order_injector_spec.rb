@@ -46,13 +46,17 @@ module Qernel::Plugins::MeritOrder
 
         @converter = double("Converter")
         @converter.stub(:key){ :foo }
-        @converter.stub(:converter_api){@converter_api}
+        @converter.stub(:converter_api){ @converter_api }
         @converter.stub(:output){ 123 }
 
-        @graph.stub(:converter){@converter}
+        @graph.stub(:converter){ @converter }
+        @graph.stub_chain(:graph_query, :final_demand_for_electricity) do
+          100
+        end
+        @graph.stub_chain(:graph_query, :electricity_losses_if_export_is_zero) do
+          23
+        end
         @mo = MeritOrderInjector.new(@graph)
-
-        @mo.stub(:total_electricity_demand){ 123 }
       end
 
       it "should get a list of converters from ETSource" do
