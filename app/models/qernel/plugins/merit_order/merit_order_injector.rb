@@ -28,7 +28,7 @@ module Qernel::Plugins
       end
 
       def run
-        if @graph.use_merit_order_demands? && graph.future?
+        if graph.use_merit_order_demands? && graph.future?
           setup_items
           calculate_merit_order
         end
@@ -112,11 +112,13 @@ module Qernel::Plugins
           attrs = {
             key: p.key,
             marginal_costs: c.variable_costs_per(:mwh_electricity),
-            output_capacity_per_unit: c.electricity_output_conversion * c.effective_input_capacity,
+            output_capacity_per_unit:
+              c.electricity_output_conversion * c.effective_input_capacity,
             number_of_units: c.number_of_units,
             availability: c.availability,
             fixed_costs_per_unit: c.send(:fixed_costs),
-            fixed_om_costs_per_unit: c.send(:fixed_operation_and_maintenance_costs_per_year)
+            fixed_om_costs_per_unit:
+              c.send(:fixed_operation_and_maintenance_costs_per_year)
           }
           if type == :must_run || type == :volatile
             attrs[:load_profile_key] = c.load_profile_key
@@ -130,11 +132,14 @@ module Qernel::Plugins
       end
 
       def add_total_demand
-        u = ::Merit::User.new(
-          key: :total_demand,
-          total_consumption: total_electricity_demand
+        user = ::Merit::User.new(
+          key:
+            :total_demand,
+          total_consumption:
+            graph.graph_query.final_demand_for_electricity +
+            graph.graph_query.electricity_losses_if_export_is_zero
         )
-        @m.add u
+        @m.add user
       rescue Exception => e
         raise "Merit order: error adding total_demand: #{e.message}"
       end
@@ -185,18 +190,6 @@ module Qernel::Plugins
       rescue Exception => e
         raise "Merit order: error fetching must-run producers: #{e.message}"
       end
-
-      # Demand of electricity for all final demand converters..
-      def total_electricity_demand
-        converter = graph.converter(:energy_power_hv_network_electricity)
-        conversion_loss        = converter.output(:loss).conversion
-        conversion_electricity = converter.output(:electricity).conversion
-        transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
-
-        total_demand = graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
-        total_demand + transformer_demand * conversion_loss / conversion_electricity
-      end
-
 
       def calculate_merit_order
         return if dispatchable_producers.empty?
