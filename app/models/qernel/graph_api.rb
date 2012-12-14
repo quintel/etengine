@@ -11,6 +11,8 @@ class GraphApi
   include MethodMetaData
   include DatasetAttributes
 
+  attr_reader :graph
+
   dataset_accessors :enable_merit_order, :use_merit_order_demands
 
   # @param graph [Qernel::Graph]
@@ -19,7 +21,7 @@ class GraphApi
   end
 
   def dataset_attributes
-    @graph.dataset_attributes
+    graph.dataset_attributes
   end
 
   def dataset_key
@@ -31,29 +33,29 @@ class GraphApi
   end
 
   def use_merit_order_demands?
-    @graph.use_merit_order_demands?
+    graph.use_merit_order_demands?
   end
 
   def fce_enabled?
-    @graph.fce_enabled?
+    graph.fce_enabled?
   end
 
   def area
-    @graph.area
+    graph.area
   end
 
   def year
-    @graph.year
+    graph.year
   end
 
   def carrier(key)
-    @graph.carrier(key)
+    graph.carrier(key)
   end
 
   # NON GQL-able
 
   def residual_ldc
-    @graph.residual_ldc
+    graph.residual_ldc
   end
 
   def area_footprint
@@ -68,6 +70,22 @@ class GraphApi
     end.flatten.compact.sum
   end
 
+  # Demand of electricity for all final demand converters
+  def final_demand_for_electricity
+    graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
+  end
+
+  # Computes the electricity losses AS IF there were no exports
+  # TODO CK: add more documentation on how this exactly works.
+  def electricity_losses_if_export_is_zero
+    transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+    converter              = graph.converter(:energy_power_hv_network_electricity)
+    conversion_loss        = converter.output(:loss).conversion
+    conversion_electricity = converter.output(:electricity).conversion
+
+    transformer_demand * conversion_loss / conversion_electricity
+  end
+
   # @return [Integer] Difference between start_year and end_year
   #
   def number_of_years
@@ -78,9 +96,6 @@ class GraphApi
     graph.converter(key).query
   end
 
-  def graph
-    @graph
-  end
 end
 
 end
