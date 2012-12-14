@@ -75,8 +75,50 @@ class GraphApi
     graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
   end
 
-  # Computes the electricity losses AS IF there were no exports
-  # TODO CK: add more documentation on how this exactly works.
+  # Computes the electricity losses AS IF there were no exports.
+  # This is accomplished by using the (fixed) conversion efficiencies
+  # of the HV network for electricity (effE) and losses (effL) and the 
+  # expected total demand of the network IF the merit order is activated 
+  # (transformer_demand + export (== 0)).
+  # 
+  # +---------------------+
+  # |                     |
+  # |                     |
+  # |   export            <--------+
+  # |                     |        |
+  # |                     |        |
+  # +---------------------+        |
+  #                                |
+  # +---------------------+        |       +---------------------+
+  # |                     |        +-------+                     |
+  # |                     |                |                     |
+  # |   MV trafo          <----------------+      HV network     |
+  # |                     |                |                     |
+  # |                     |        +-------+                     |
+  # +---------------------+        |       +---------------------+
+  #                                |
+  # +---------------------+        |
+  # |                     |        |
+  # |                     |        |
+  # |   loss              <--------+
+  # |                     |
+  # |                     |
+  # +---------------------+
+  #
+  # To find the loss IF export is zero, we use the fact that the ratio of
+  # loss and electricity coming from the HV network is fixed.
+  # In math:
+  # loss / (transformer_demand + export) == effL / effE
+  #
+  # Setting export == 0 (as would be the case if the MO module is enabled)
+  # gives the loss:
+  #
+  # loss = transformer_demand * effL / effE
+  #
+  # NOTE: This is ONLY correct if import and export are NOT taken into account
+  # in the MO module.
+  #
+  # returns [Float] the network losses for the electricity net. 
   def electricity_losses_if_export_is_zero
     transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
     converter              = graph.converter(:energy_power_hv_network_electricity)
