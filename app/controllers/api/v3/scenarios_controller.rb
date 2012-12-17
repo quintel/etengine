@@ -140,7 +140,8 @@ module Api
       private
 
       def find_preset_or_scenario
-        @scenario = Preset.get(params[:id]).try(:to_scenario) || Scenario.find(params[:id])
+        @scenario = Preset.get(params[:id]).try(:to_scenario) ||
+                    Scenario.find_by_id(params[:id])
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return unless @scenario
       end
 
