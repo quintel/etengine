@@ -68,7 +68,7 @@ module Qernel::Plugins
 
 
           x = (converter.demand * converter.electricity_output_conversion)
-          converter[:profits_per_mwh_electricity] = if x.zero?
+          converter[:profit_per_mwh_electricity] = if x.zero?
             nil
           else
             dispatchable.profit / x * 3600
