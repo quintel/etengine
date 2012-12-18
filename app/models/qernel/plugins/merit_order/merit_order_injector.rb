@@ -34,9 +34,10 @@ module Qernel::Plugins
         end
       end
 
-      # TODO: make clear or refactor that FLHs and number of units is also
-      # updated. (and that we add an index number too)
-      def inject_updated_demand
+      # Updates the converters with the results of the MO calculation.
+      # Called by the graph between the two calculation loops.
+      #
+      def inject_values
         @m.dispatchables.each do |dispatchable|
           converter = graph.converter(dispatchable.key).converter_api
 
@@ -51,10 +52,12 @@ module Qernel::Plugins
           converter[:profitability]        = dispatchable.profitability
           converter[:merit_order_position] = dispatchable.position
 
+          # TODO: should this be moved to gem, too?
           converter.demand = fls *
                              converter.effective_input_capacity *
                              dispatchable.number_of_units
 
+          # TODO: move to gem
           x = (converter.demand * converter.electricity_output_conversion)
           converter[:profit_per_mwh_electricity] = if x.zero?
             nil

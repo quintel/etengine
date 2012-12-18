@@ -285,7 +285,7 @@ class Graph
           detach_dataset!
           self.dataset = dataset_copy
           self.goals   = goals_copy
-          mo.inject_updated_demand
+          mo.inject_values
           calculation_loop
         end
       end
