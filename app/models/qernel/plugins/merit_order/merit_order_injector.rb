@@ -51,19 +51,13 @@ module Qernel::Plugins
           converter[:number_of_units]      = dispatchable.number_of_units
           converter[:profitability]        = dispatchable.profitability
           converter[:merit_order_position] = dispatchable.position
+          converter[:profit_per_mwh_electricity] = dispatchable.profit_per_mwh_electricity
 
           # TODO: should this be moved to gem, too?
           converter.demand = fls *
                              converter.effective_input_capacity *
                              dispatchable.number_of_units
 
-          # TODO: move to gem
-          x = (converter.demand * converter.electricity_output_conversion)
-          converter[:profit_per_mwh_electricity] = if x.zero?
-            nil
-          else
-            dispatchable.profit / x * 3600
-          end
         end
       end
 

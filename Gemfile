@@ -29,6 +29,7 @@ gem 'fnv'
 gem "yaml_pack", '~>0.0.3.alpha'
 gem 'rubel', '0.0.3'
 gem 'merit', :git => 'git@github.com:quintel/merit.git'
+# gem 'merit', :path => '~/Sites/merit'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
