@@ -25,7 +25,8 @@ class Input
     :update_period,
     :update_type,
     :dependent_on,
-    :lookup_id
+    :lookup_id,
+    :step_value
   ]
 
   attr_accessor *ATTRIBUTES

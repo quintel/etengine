@@ -44,6 +44,7 @@ module Api
         if values[:label].present?
           json[:label] = { value: values[:label], suffix: @input.label }
         end
+        json[:step_value] = @input.step_value if @input.step_value.present?
 
         json
       end
