@@ -7,13 +7,14 @@ module Api
       #   The input for which we want JSON.
       # @param [Scenario] scenario
       #   The scenario whose values are being rendered.
-      # @param [true, false] include_key
-      #   Do you want the input key to be included in the output?
+      # @param [true, false] extra_attributes
+      #   Do you want the extra attributes (key, unit, step) to be included in
+      #   the output?
       #
-      def initialize(input, scenario, include_key = false)
-        @input       = input
-        @scenario    = scenario
-        @include_key = include_key
+      def initialize(input, scenario, extra_attributes = false)
+        @input            = input
+        @scenario         = scenario
+        @extra_attributes = extra_attributes
       end
 
       # Creates a Hash suitable for conversion to JSON by Rails.
@@ -29,7 +30,6 @@ module Api
         user_val = @scenario.user_values[@input.key] ||
                      @scenario.balanced_values[@input.key]
 
-        json[:code]        = @input.key         if @include_key
 
         json[:min]         = values[:min]
         json[:max]         = values[:max]
@@ -41,10 +41,15 @@ module Api
 
         json[:share_group] = @input.share_group if @input.share_group.present?
 
+        if @extra_attributes
+          json[:step] = @input.step_value
+          json[:code] = @input.key
+          json[:unit] = @input.unit
+        end
+
         if values[:label].present?
           json[:label] = { value: values[:label], suffix: @input.label }
         end
-        json[:step_value] = @input.step_value if @input.step_value.present?
 
         json
       end
