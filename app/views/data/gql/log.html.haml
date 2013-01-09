@@ -8,7 +8,7 @@
     = submit_tag "search"
 
 = button_to 'Clear Log', data_gql_log_path(:reset => 1), :confirm => 'Are you sure?'
-= button_to 'Refresh', data_gql_log_path(:reset => false)
+= button_to 'Refresh', data_gql_log_path
 
 
 %pre= @log_contents
