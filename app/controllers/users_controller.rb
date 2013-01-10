@@ -27,7 +27,7 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     @user.role_id = params[:user][:role_id] if current_user.try(:admin?)
     if @user.save
-      redirect_to @user, :notice => 'User added'
+      redirect_to users_path, :notice => 'User added'
     else
       render :new
     end
