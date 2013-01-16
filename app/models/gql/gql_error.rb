@@ -6,4 +6,10 @@ module Gql
     end
   end
 
+  class NoSuchInputError < GqlError
+    def initialize(key)
+      super "No input exists with the key #{ key.inspect }"
+    end
+  end
+
 end

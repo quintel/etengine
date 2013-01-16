@@ -218,6 +218,32 @@ module Gql::Runtime
         input_float / input_factor
       end
 
+      # Public: Given the +key+ for an input, INPUT_VALUE retrieves the value
+      # of that input in the following precedence:
+      #
+      #   * User-specified value,
+      #   * Automatically balanced value,
+      #   * Input start value.
+      #
+      # A Gql::NoSuchInputError is raised if no input has the given +key+.
+      #
+      # For example:
+      #
+      #   INPUT_VALUE('agriculture_heating_geothermal_share')
+      #   # => 0.104
+      #
+      #   INPUT_VALUE('infinite_improbability_drive_share')
+      #   # !! Gql::NoSuchInputError
+      #
+      # Returns a float.
+      def INPUT_VALUE(key)
+        unless input = Input.get(key.to_s)
+          raise Gql::NoSuchInputError.new(key.to_s)
+        end
+
+        scope.gql.scenario.input_value(input)
+      end
+
       # UPDATE_OBJECT() Access currently updated object. It refers to the
       # object that is updated.
       #

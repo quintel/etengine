@@ -1,3 +1,5 @@
+require 'gql/gql_error'
+
 module Gql
 # GQL (Graph Query Language) is to a Graph/Qernel what SQL is to a database.
 #
