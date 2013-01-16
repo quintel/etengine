@@ -49,6 +49,51 @@ describe Scenario do
     end
   end
 
+  describe '#input_value' do
+    let(:input) { Input.new(key: 'my-input', start_value: 99.0) }
+
+    before { Input.stub(:all).and_return([input]) }
+    before { Rails.cache.clear }
+
+    context 'with a user value present' do
+      let(:scenario) do
+        FactoryGirl.create(:scenario, {
+          user_values:     { 'my-input' => 20.0 },
+          balanced_values: { 'my-input' => 50.0 }
+        })
+      end
+
+      it 'returns the user value' do
+        scenario.input_value(input).should eql(20.0)
+      end
+    end
+
+    context 'with a balanced value present' do
+      let(:scenario) do
+        FactoryGirl.create(:scenario, balanced_values: { 'my-input' => 50.0 })
+      end
+
+      it 'returns the balanced value' do
+        scenario.input_value(input).should eql(50.0)
+      end
+    end
+
+    context 'with no user or balanced value' do
+      let(:scenario) { FactoryGirl.create(:scenario) }
+
+      it "returns the input's default value" do
+        scenario.input_value(input).should eql(99.0)
+      end
+    end
+
+    context 'given nil' do
+      it 'raises an error' do
+        expect { FactoryGirl.create(:scenario).input_value(nil) }.
+          to raise_error(/nil is not an input/)
+      end
+    end
+  end
+
   describe "#used_groups_add_up?" do
     before do
       @scenario = Scenario.default

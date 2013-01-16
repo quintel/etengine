@@ -198,4 +198,22 @@ class Scenario < ActiveRecord::Base
   def query(q)
     gql(prepare: true).query(q)
   end
+
+  # Public: Given an input, returns the value of that input as it will be used
+  # within GQL/Qernel.
+  #
+  # If no user value is present, the default input value is retrieved instead.
+  #
+  # Raises an ArgumentError if the given +input+ does not have a +key+ method.
+  #
+  # Returns a float.
+  def input_value(input)
+    unless input.respond_to?(:key)
+      raise ArgumentError, "#{ input.inspect } is not an input"
+    end
+
+    user_values[input.key] ||
+      balanced_values[input.key] ||
+      input.start_value_for(self)
+  end
 end
