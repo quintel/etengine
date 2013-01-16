@@ -59,7 +59,6 @@ module Etm
     end
   end
 
-  require 'csv' # used for importing merit_order_table
   require 'lib/instrumentable'
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
