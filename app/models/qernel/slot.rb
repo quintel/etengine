@@ -277,7 +277,8 @@ class Slot
   # --------- Debug -----------------------------------------------------------
 
   def inspect
-    "<#{ self.class.name } id:#{ id } carrier:#{ carrier.key }>"
+    "<#{ self.class.name } id:#{ id } carrier:#{ carrier.key } " \
+      "converter:#{ converter.key }>"
   end
 
 
