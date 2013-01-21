@@ -17,8 +17,10 @@ module Gql::Runtime
       MILLIONS = 10.0**6
       #NIL = nil if !defined?(NIL)
       EURO_SIGN = '&euro;'
+      MONTHS_PER_YEAR = 12.0
 
-      # 2011-12-09 GQL grammar does not allow "." inside V(...; ___ ). 
+
+      # 2011-12-09 GQL grammar does not allow "." inside V(...; ___ ).
       # So it is impossible to use floats, e.g. V(...; demand * 2.5)
       # or V(...; demand ** 2/3). (2/3 would return 0, because they are ints)
       #
