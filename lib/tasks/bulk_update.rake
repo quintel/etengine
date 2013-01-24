@@ -316,7 +316,7 @@ namespace :bulk_update do
       "households_behavior_standby_killer_turn_off_appliances"=>0.0,
       "households_behavior_turn_off_the_light"=>0.0,
       "households_behavior_close_windows_turn_off_heating"=>0.0,
-      "households_efficiency_low_temperature_washing"=>0.0,
+      "households_behavior_low_temperature_washing"=>0.0,
       "households_heat_demand_per_person"=>0.0,
       "households_hot_water_demand_per_person"=>0.0,
       "households_cooling_heatpump_air_water_electricity_share"=>0.0,
@@ -495,7 +495,7 @@ namespace :bulk_update do
 
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
-      
+
       # HHs space heating group
       share_group_inputs = [
       "households_space_heater_heatpump_air_water_electricity_share",
@@ -534,7 +534,7 @@ namespace :bulk_update do
         inputs[element] = defaults[element] if inputs[element].nil?
         sum = sum + inputs[element]
       end
-      
+
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
         puts "Warning! Share group of Buildings district heating is not 100% in scenario, but is " + (sum).to_s
@@ -542,10 +542,10 @@ namespace :bulk_update do
 
       #Share group of HHs cooling
       share_group_inputs = [
-      "households_cooling_heat_pump_ground_share", 
-      "households_cooling_heatpump_air_water_electricity_share", 
+      "households_cooling_heat_pump_ground_share",
+      "households_cooling_heatpump_air_water_electricity_share",
       "households_cooling_airconditioning_share"]
-      
+
       sum = 0.0
       share_group_inputs.each do |element|
         inputs[element] = defaults[element] if inputs[element].nil?
