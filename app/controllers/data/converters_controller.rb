@@ -15,6 +15,12 @@ class Data::ConvertersController < Data::BaseController
     @qernel_graph = @gql.present_graph
     @converter_present = @gql.present_graph.graph.converter(key.to_sym)
     @converter_future  = @gql.future_graph.graph.converter(key.to_sym)
+
+    if @converter_present.nil?
+      flash[:error] = "No such converter: #{key}"
+      redirect_to data_converters_path and return
+    end
+
     @converter_api  = @converter_present.converter_api
     @presenter = Api::V3::ConverterPresenter.new(key, @api_scenario)
 
