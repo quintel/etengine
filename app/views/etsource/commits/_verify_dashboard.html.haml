@@ -14,7 +14,7 @@
     - gql_prepare_time = Time.now
     - gql.prepare rescue ''
     - gql_prepare_time = Time.now - gql_prepare_time
-  
+
     .span10
       %h4
         = scenario.title || scenario.preset_scenario_id
@@ -42,8 +42,8 @@
             %tr
               %td
                 %small= link_to gquery.key, data_gquery_path(:id => gquery.key, :api_scenario_id => 'latest')
-              %td= auto_number result.present_value
-              %td= auto_number result.future_value
+              %td= truncate auto_number(result.present_value).to_s
+              %td= truncate auto_number(result.future_value).to_s
               %td== #{result_time.round(3)}s
         %tfoot
           - query_time = Time.now - query_time
@@ -52,4 +52,4 @@
             %td(colspan=2) All gqueries:
             %td
               %small== #{query_time.round(3)}s
-          
+
