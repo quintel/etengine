@@ -11,7 +11,8 @@ module Qernel::RecursiveFactor::PrimaryCo2
     end
   end
 
-
+  # TODO: Add documentation.
+  # TODO: Rename to CO2_factor (remove `free`).
   def co2_free_factor
     (1.0 - (query.co2_free || 0.0))
   end

@@ -93,12 +93,35 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       val = input_links.map do |link|
+
+        # Warning: The child is the parent in Refinery's conventions
         child = link.rgt_converter
 
+        # The demanding_share returns the right to left share. This has to
+        # be taken into account, since this needs to 
+        # A <-- B (demanding_share = 100%)
+        #   \-- C (demanding_share = 100%)
+        # A needs to be 100% * B + 100% * C
         demanding_share = demanding_share(link)
-        loss_share      = child.loss_share
+
+        # Loss share is actually more a 'loss_multiplier'. The output of the
+        # child for this algorithm needs to be multiplied by this
+        # 'loss_multiplier' to include losses.
+        # See https://github.com/quintel/etengine/issues/518.
+        loss_share = child.loss_share
+
+        # What part is considered to be contributing to the outcome?
+        # (e.g. 80% when co2_free is 20%). This is 100% when the
+        # converter_share method is nil.
         converter_share = converter_share_method.nil? ? 1.0 : (self.send(converter_share_method) || 0.0)
 
+        # We want to NOT include the right converters demand in the case of:
+        # * demanding_share = 0: because there is no demand coming from this
+        #   converter
+        # * loss_share = 0: This is a bit weird: the loss_share is only 0 when
+        #   the losses amount to 100%. Not sure how this works!
+        #   TODO: Investigate and document.
+        # * converter_share = 0: 
         if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
           0.0
         else
@@ -123,21 +146,31 @@ module Qernel::RecursiveFactor::Base
     @right_dead_end
   end
 
-
+  # TODO: Add Documentation.
+  # Apparently, this method returns
+  #
+  # Examples:
+  #
+  #   loss_output_conversion = 1
+  #   loss_share
+  #   => 0
+  #
+  #   loss_output_conversion = 0
+  #   loss_share
+  #   => 1
+  #
+  #   loss_output_conversion = 0.99
+  #   loss_share
+  #   => 100
+  #
+  #   loss_output_conversion = 0.1
+  #   loss_share
+  #   => 1.1111111
   def loss_share
     fetch_and_rescue(:loss_share) do
-      v = self.share_of_losses
-      (v == 1.0) ? 0.0 : (1.0 / (1.0 - self.share_of_losses))
+      v = loss_output_conversion
+      (v == 1.0) ? 0.0 : (1.0 / (1.0 - v))
     end
-  end
-
-  # Share of loss regarding total energy demand
-  #
-  def share_of_losses
-    # theoretically should be the uncommented solution.
-    # Takes into account the "flexible" losses, like grid losses
-    #output_conversion?(:loss) ? output_conversion(:loss) : loss_per_demand
-    loss_output_conversion
   end
 
   # In contrast to link.share, demanding_share takes also into account
@@ -154,11 +187,10 @@ module Qernel::RecursiveFactor::Base
   def demanding_share(link)
     # TODO optimize by using dataset_fetch
     return 0.0 if link.loss?
-    # link.dataset_fetch(:demanding_share) do
-      demanding_share = (link.value || 0.0) / (self.demand || 0.0)
-      demanding_share = 0.0 if demanding_share.nan? or demanding_share.infinite?
-      demanding_share
-    # end
+
+    demanding_share = (link.value || 0.0) / (self.demand || 0.0)
+    demanding_share = 0.0 if demanding_share.nan? or demanding_share.infinite?
+    demanding_share
   end
 
 
