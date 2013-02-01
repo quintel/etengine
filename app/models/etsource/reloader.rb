@@ -27,6 +27,7 @@ module Etsource
       def reload!
         Rails.cache.clear
         NastyCache.instance.expire!
+        NastyCache.instance.expire_local!
 
         Rails.logger.info 'ETsource live reload: Caches cleared.'
       end
