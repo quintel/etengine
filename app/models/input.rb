@@ -82,8 +82,6 @@ class Input
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  # i had to resort to a class method for "caching" procs
-  # as somewhere inputs are marshaled (where??)
   # Internal: Fetches the Rubel proc used to execute the input statement on
   # the graph.
   #
