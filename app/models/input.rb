@@ -84,9 +84,20 @@ class Input
 
   # i had to resort to a class method for "caching" procs
   # as somewhere inputs are marshaled (where??)
+  # Internal: Fetches the Rubel proc used to execute the input statement on
+  # the graph.
+  #
+  # These procs are memoized by NastyCache; the cache=false option prevents
+  # the proc from being serialized into Memcache (since this would come with
+  # an unnecessary performance hit) and ensures that it remains "in-process".
+  #
+  # input - The input whose Rubel proc you want.
+  #
+  # Returns a Proc.
   def self.memoized_rubel_proc_for(input)
-    @rubel_proc ||= {}
-    @rubel_proc[input.lookup_id] ||= (input.rubel_proc)
+    NastyCache.instance.fetch("inputs.rubel.#{ input.key }", cache: false) do
+      input.rubel_proc
+    end
   end
 
   def rubel
