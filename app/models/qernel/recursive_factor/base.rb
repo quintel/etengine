@@ -7,7 +7,7 @@ module Qernel::RecursiveFactor::Base
   #   * a 'weight' of a link/path. When returning a weight, the
   #     recursive_factor stops for that path
   #
-  #   * nil, in which case the recursion continuess.
+  #   * nil, in which case the recursion continues.
   #
   # For example:
   #
@@ -72,11 +72,11 @@ module Qernel::RecursiveFactor::Base
           # The converter has no demand, we can safely omit it.
           0.0
         elsif loss_compensation_factor.zero?
-          # The converter is 100% loss, so there is no point in recusing
+          # The converter is 100% loss, so there is no point in recursing
           # further on this link.
           0.0
         elsif converter_share.zero?
-          # The converter has been assigned a weight of zeor, so we can safely
+          # The converter has been assigned a weight of zero, so we can safely
           # omit it.
           0.0
         else
