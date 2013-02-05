@@ -31,6 +31,14 @@ module Api
       # saves a scenario, too: in that case a copy of the scenario is saved.
       #
       def create
+        # Weird ActiveResource bug: the user values attribute is nested inside
+        # another user_values hash. Used when generating a scenario with the
+        # average values of other scenarios.
+        inputs = params[:scenario][:user_values]["user_values"] rescue nil
+        if inputs
+          params[:scenario][:user_values] = inputs
+        end
+
         attrs = Scenario.default_attributes.merge(params[:scenario] || {})
 
         if attrs.key?(:scenario_id) || attrs.key?(:preset_scenario_id)
