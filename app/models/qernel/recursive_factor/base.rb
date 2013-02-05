@@ -108,7 +108,7 @@ module Qernel::RecursiveFactor::Base
         # child for this algorithm needs to be multiplied by this
         # 'loss_multiplier' to include losses.
         # See https://github.com/quintel/etengine/issues/518.
-        loss_share = child.loss_share
+        loss_compensation_factor = child.loss_compensation_factor
 
         # What part is considered to be contributing to the outcome?
         # (e.g. 80% when co2_free is 20%). This is 100% when the
@@ -118,15 +118,16 @@ module Qernel::RecursiveFactor::Base
         # We want to NOT include the right converters demand in the case of:
         # * demanding_share = 0: because there is no demand coming from this
         #   converter
-        # * loss_share = 0: This is a bit weird: the loss_share is only 0 when
-        #   the losses amount to 100%. Not sure how this works!
+        # * loss_compensation_factor = 0: This is a bit weird: the
+        #   loss_compensation_factor is only 0 when the losses amount to 100%.
+        #   Not sure how this works!
         #   TODO: Investigate and document.
         # * converter_share = 0: 
-        if demanding_share == 0.0 or loss_share == 0.0 or converter_share == 0.0
+        if demanding_share == 0.0 or loss_compensation_factor == 0.0 or converter_share == 0.0
           0.0
         else
           child_value = child.recursive_factor(strategy_method, converter_share_method, link, *args)
-          demanding_share * loss_share * converter_share * child_value
+          demanding_share * loss_compensation_factor * converter_share * child_value
         end
       end
       val.sum
@@ -146,30 +147,37 @@ module Qernel::RecursiveFactor::Base
     @right_dead_end
   end
 
-  # TODO: Add Documentation.
-  # Apparently, this method returns
+  # Public: The loss compensation factor is the amount by which we must
+  # multiply the demand of a link in order to account for the losses of the
+  # parent (right-hand) converter.
   #
-  # Examples:
+  # A factor of 0.0 means that the converter is 100% loss. A factor of
+  # precisely 1.0 indicates the converter has zero loss, while a factor
+  # greater than one means that the converter has *some* loss.
   #
-  #   loss_output_conversion = 1
-  #   loss_share
-  #   => 0
+  # For example:
   #
-  #   loss_output_conversion = 0
-  #   loss_share
-  #   => 1
+  #   loss_output_conversion = 1.0
+  #   loss_compensation_factor
+  #   # => 0.0
+  #
+  #   loss_output_conversion = 0.0
+  #   loss_compensation_factor
+  #   # => 1.0
   #
   #   loss_output_conversion = 0.99
-  #   loss_share
-  #   => 100
+  #   loss_compensation_factor
+  #   # => 100.0
   #
-  #   loss_output_conversion = 0.1
-  #   loss_share
-  #   => 1.1111111
-  def loss_share
-    fetch_and_rescue(:loss_share) do
-      v = loss_output_conversion
-      (v == 1.0) ? 0.0 : (1.0 / (1.0 - v))
+  #   loss_output_conversion = 0.2
+  #   loss_compensation_factor
+  #   # => 1.25
+  #
+  # Returns a float.
+  def loss_compensation_factor
+    fetch_and_rescue(:loss_compensation_factor) do
+      loss_conversion = loss_output_conversion
+      (loss_conversion == 1.0) ? 0.0 : (1.0 / (1.0 - loss_conversion))
     end
   end
 
