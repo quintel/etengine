@@ -7,7 +7,7 @@ converters = @gql.present_graph.converters
 converter_keys = converters.map(&:key)
 
 converters.each do |converter|
-  position = @converter_positions[converter.excel_id]
+  position = @converter_positions[converter.key.to_s] || @converter_positions[converter.excel_id]
   position ||= ConverterPosition.new(:converter_id => converter.excel_id)
   if converter
     params = [converter.key,

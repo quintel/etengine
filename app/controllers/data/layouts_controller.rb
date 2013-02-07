@@ -50,7 +50,11 @@ private
   end
 
   def find_models
-    @converter_positions = ConverterPosition.all.inject({}) {|hsh, cp| hsh.merge cp.converter_id => cp}
+    @converter_positions = {}
+    ConverterPosition.all.each do |cp|
+      @converter_positions[cp.converter_id] = cp
+      @converter_positions[cp.converter_key] = cp
+    end
   end
 
   def graph_to_json(graph)
