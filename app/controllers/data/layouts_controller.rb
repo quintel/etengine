@@ -50,10 +50,20 @@ private
   end
 
   def find_models
-    @converter_positions = {}
-    ConverterPosition.all.each do |cp|
-      @converter_positions[cp.converter_id] = cp
-      @converter_positions[cp.converter_key] = cp
+    @converters = @gql.present_graph.converters
+    @positions = {}
+
+    map = {}
+    ConverterPosition.all.each do |c|
+      map[c.converter_id]         = c if c.converter_id
+      map[c.converter_key.to_sym] = c if c.converter_key
+    end
+
+    @converters.each do |c|
+      p = map[c.key] ||
+          map[c.excel_id] ||
+          ConverterPosition.create(:converter_key => c.key)
+      @positions[c.key] = p
     end
   end
 
