@@ -72,15 +72,15 @@ class GraphApi
 
   # Demand of electricity for all final demand converters
   def final_demand_for_electricity
-    graph.group_converters(:final_demand_electricity).map(&:demand).compact.sum
+    graph.group_converters(:final_demand_cbs).map(&:converter_api).map(&:input_of_electricity).compact.sum
   end
 
   # Computes the electricity losses AS IF there were no exports.
   # This is accomplished by using the (fixed) conversion efficiencies
-  # of the HV network for electricity (effE) and losses (effL) and the 
-  # expected total demand of the network IF the merit order is activated 
+  # of the HV network for electricity (effE) and losses (effL) and the
+  # expected total demand of the network IF the merit order is activated
   # (transformer_demand + export (== 0)).
-  # 
+  #
   # +---------------------+
   # |                     |
   # |                     |
@@ -118,7 +118,7 @@ class GraphApi
   # NOTE: This is ONLY correct if import and export are NOT taken into account
   # in the MO module.
   #
-  # returns [Float] the network losses for the electricity net. 
+  # returns [Float] the network losses for the electricity net.
   def electricity_losses_if_export_is_zero
     transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
     converter              = graph.converter(:energy_power_hv_network_electricity)
