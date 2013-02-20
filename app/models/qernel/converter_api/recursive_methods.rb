@@ -18,7 +18,7 @@ class Qernel::ConverterApi
   def sustainability_share
     converter.sustainability_share
   end
-  unit_for_calculation "primary_demand_of_sustainable", 'factor'
+  unit_for_calculation "primary_demand_of_sustainable", 'MJ'
 
   # Inverse of sustainability_share
   # https://github.com/dennisschoenmakers/etengine/issues/272
