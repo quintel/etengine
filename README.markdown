@@ -50,7 +50,7 @@ you have to follow these steps to run ET-Engine.
   server
 * create a directory to clone etsource into, I advise to use
   a dedicated etsource copy in the etengine root folder:
-  `git clone git@github.com:dennisschoenmakers/etsource.git`
+  `git clone git@github.com:quintel/etsource.git`
 * create an empty directory as a working copy for your etsource directory
   `mdkir etsource_export`
 * `$> cd config`
