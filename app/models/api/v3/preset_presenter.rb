@@ -27,6 +27,7 @@ module Api
         json[:end_year]    = @resource.end_year
         json[:description] = @resource.description
         json[:url]         = @controller.api_v3_scenario_url(@resource)
+        json[:ordering]    = @resource.ordering
 
         json
       end
