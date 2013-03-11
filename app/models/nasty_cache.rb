@@ -49,23 +49,24 @@ class NastyCache
 
   attr_accessor :local_timestamp
 
-  def initialize
+  def initialize(verbose = false)
     @local_timestamp = init_timestamp
     @cache_store = {}
+    @verbose = verbose
   end
 
   def initialize_request
     if expired?
       expire_local!
     else
-      Rails.logger.info("NastyCache(#{Process.pid})#cached: keys: #{@cache_store.keys.join(", ")}")
+      log("NastyCache(#{Process.pid})#cached: #{ @cache_store.length } keys")
     end
   end
 
   # Expires both local (@cache_store) and Rails.cache 
   # this is equivalent of a server restart.
   def expire!
-    Rails.logger.info("NastyCache(#{Process.pid})#expire!")
+    log("NastyCache(#{Process.pid})#expire!")
     expire_cache!
     mark_expired!
     expire_local!
@@ -119,9 +120,9 @@ class NastyCache
   end
 
   def expire_local!
-    Rails.logger.info("NastyCache(#{Process.pid})#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
+    log("NastyCache(#{Process.pid})#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
     @local_timestamp = global_timestamp
-    Rails.logger.info("NastyCache#expire: keys #{@cache_store.keys.join(", ")}")
+    log("NastyCache#expire: #{ @cache_store.length } keys")
     @cache_store = {}
   end
 
@@ -139,5 +140,11 @@ class NastyCache
 
   def rails_cache_key(key)
     ["NastyCache", local_timestamp, key].join('/')
+  end
+
+  # Internal: Sends a message to the Rails logger if NastyCache verbose mode
+  # is enabled, otherwise the message is discarded.
+  def log(message)
+    Rails.logger.info(message) if @verbose
   end
 end
