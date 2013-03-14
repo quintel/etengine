@@ -14,6 +14,7 @@ gem 'kaminari', "~> 0.13.0"
 gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
 gem 'jbuilder', :git => 'git://github.com/rails/jbuilder.git'
+gem 'osmosis', github: 'quintel/osmosis'
 
 gem 'rest-client'
 

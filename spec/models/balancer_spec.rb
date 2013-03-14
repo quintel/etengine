@@ -105,8 +105,8 @@ describe 'Balancer' do
     context 'given values which manually balance' do
       let(:masters) { [ 38.0, 62.0 ] }
 
-      it 'should set no subordinate values' do
-        subordinates.should be_empty
+      it 'should not change the zero-delta input' do
+        subordinates.should include(inputs[2].key => 0.0)
       end
     end # given values which balance
 
@@ -117,8 +117,8 @@ describe 'Balancer' do
         subordinates.should include(inputs[1].key => 64.0)
       end
 
-      it 'should not set a value for the zero-delta input' do
-        subordinates.should_not have_key(inputs[2].key)
+      it 'should not change the zero-delta input' do
+        subordinates.should include(inputs[2].key => 0.0)
       end
     end # given values which balance
 
