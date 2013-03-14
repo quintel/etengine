@@ -43,6 +43,16 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Tries to find examples / groups with the focus tag, and runs them. If no
+  # examples are focues, run everything. Prevents the need to specify
+  # `--tag focus` when you only want to run certain examples.
+  # config.filter_run(push_relabel: true)
+  config.filter_run(focus: true)
+  config.run_all_when_everything_filtered = true
+
+  # Allow adding examples to a filter group with only a symbol.
+  config.treat_symbols_as_metadata_keys_with_true_values = true
+
   config.include(Webrat::Matchers)
   config.include(Authlogic::TestCase)
   config.include(EtmAuthHelper)
