@@ -8,7 +8,7 @@ describe Data::GqueriesController do
 
   before do
     login_as(admin)
-    Factory.create :scenario
+    FactoryGirl.create :scenario
   end
 
   describe "GET index" do

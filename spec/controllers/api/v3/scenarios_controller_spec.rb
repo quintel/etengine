@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::V3::ScenariosController do
-  let(:scenario) { Factory :scenario }
+  let(:scenario) { FactoryGirl.create(:scenario) }
   
   before do
     Input.stub(:records).and_return({
@@ -40,7 +40,7 @@ describe Api::V3::ScenariosController do
 
   describe "PUT scenario" do
     before do
-      @scenario = Factory :scenario, :user_values => {'foo' => 23.0}
+      @scenario = FactoryGirl.create(:scenario, :user_values => {'foo' => 23.0})
     end
 
     it "should reset parameters" do

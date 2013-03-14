@@ -62,7 +62,7 @@ group :development do
 end
 
 group :test, :development do
-  gem "rspec-rails", "~> 2.12.0"
+  gem "rspec-rails", "~> 2.12"
   gem 'ruby-prof'
   gem 'pry-rails'
   gem 'pry-remote'
