@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Data::AreasController do
-  let(:admin)     { Factory :admin }
+  let(:admin) { FactoryGirl.create :admin }
 
   before do
     login_as(admin)
-    Factory.create :scenario
+    FactoryGirl.create :scenario
   end
 
   describe "GET show" do

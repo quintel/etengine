@@ -7,7 +7,7 @@ describe 'Updating inputs with API v3' do
   end
 
   let(:scenario) do
-    Factory.create(:scenario,
+    FactoryGirl.create(:scenario,
       user_values:     { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
   end
@@ -15,15 +15,15 @@ describe 'Updating inputs with API v3' do
   before do
     Input.stub(:records).and_return({
       'balanced_one' =>
-        Factory.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped'),
+        FactoryGirl.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped'),
       'balanced_two' =>
-        Factory.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped'),
+        FactoryGirl.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped'),
       'unrelated_one' =>
-        Factory.build(:input, key: 'unrelated_one', share_group: 'diode'),
+        FactoryGirl.build(:input, key: 'unrelated_one', share_group: 'diode'),
       'unrelated_two' =>
-        Factory.build(:input, key: 'unrelated_two', share_group: 'diode'),
+        FactoryGirl.build(:input, key: 'unrelated_two', share_group: 'diode'),
       'nongrouped' =>
-        Factory.build(:input, key: 'nongrouped')
+        FactoryGirl.build(:input, key: 'nongrouped')
     })
 
     Input.stub(:all).and_return(Input.records.values)
