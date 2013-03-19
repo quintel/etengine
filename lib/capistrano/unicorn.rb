@@ -1,4 +1,4 @@
-set :rails_env, :production
+set :rails_env, 'production'
 set(:unicorn_binary) {"#{current_path}/bin/unicorn"}
 set(:unicorn_config) {"#{current_path}/config/unicorn/production.rb"}
 set(:unicorn_pid)    {"#{current_path}/tmp/pids/unicorn.pid"}
