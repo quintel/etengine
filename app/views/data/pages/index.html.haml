@@ -14,6 +14,9 @@
   %tr
     %td Uptime
     %td= %x{uptime}
+  %tr
+    %td Ruby Version
+    %td== #{ RUBY_VERSION}-p#{ RUBY_PATCHLEVEL }
   - @cache_stats.each_pair do |store, info|
     %tr
       %th{:colspan => 2} Memcache: #{store}
