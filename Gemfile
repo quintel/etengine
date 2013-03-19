@@ -38,7 +38,7 @@ gem 'airbrake'
 # system gems
 gem 'mysql2', '~>0.3.11'
 gem 'dalli'
-gem 'term-ansicolor', :require => false
+gem 'term-ansicolor', '1.0.7', :require => false
 gem 'highline', :require => false
 gem 'rubyzip', '0.9.4'
 gem 'fileutils'
