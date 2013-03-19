@@ -129,4 +129,16 @@ module DebugHelper
   def calculation_debugger_path(converter, calculation)
     data_debug_gql_path(:gquery => "V(#{converter.key}, #{calculation})")
   end
+
+  # Merit Order --------------------------------------------------------------
+
+  def merit_order_converters(graph, type)
+    unless converters = Etsource::MeritOrder.new.import[type.to_s]
+      raise "No such merit order group: #{ type.inspect }"
+    end
+
+    converters.
+      map     { |key, *| graph.converter(key) }.
+      sort_by { |converter| converter[:merit_order_position] }
+  end
 end

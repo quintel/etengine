@@ -9,7 +9,7 @@
 .alert
 
 - graph = @gql.future_graph
-- lp = Qernel::Plugins::MeritOrder::LoadProfileTable.new(graph)
+-# - lp = Qernel::Plugins::MeritOrder::LoadProfileTable.new(graph)
 
 %h2 Dispatchables
 %table.table
@@ -20,13 +20,13 @@
     %th Full Load Hours
     %th Cap. Factor
 
-  - graph.group_converters(:merit_order_converters).sort_by{|c| c[:merit_order_position] }.each do |converter|
+  - merit_order_converters(graph, :dispatchable).each do |converter|
     %tr
       %td= converter.key
-      %td= converter.demand
+      %td= number_with_delimiter(converter.demand)
       %td= converter[:merit_order_position]
-      %td= converter.query.full_load_hours
-      %td= converter[:capacity_factor  ]
+      %td= number_with_delimiter(converter.query.full_load_hours)
+      %td= converter[:capacity_factor]
 
 %h2 Must Run
 %table.table
@@ -34,29 +34,13 @@
     %th Key
     %th Demand
     %th MO Pos.
-    %th MO Start
-    %th MO End
     %th Full Load Hours
     %th Cap. Factor
 
-  - lp.must_run_merit_order_converters.values.flatten.each do |converter_key|
-    - converter = graph.converter(converter_key)
+  - merit_order_converters(graph, :must_run).each do |converter|
     %tr
       %td= converter.key
-      %td= converter.demand
+      %td= number_with_delimiter(converter.demand)
       %td= converter[:merit_order_position]
-      %td= converter.query.full_load_hours
-      %td= converter[:capacity_factor  ]
-
-%h2 Residual Load Profile table
-%textarea
-  = lp.send(:residual_load_profiles_table).map{|row| row.join("\t")}.join("\n")
-
-%h2 residual_ldc_coordinates
-%table.table
-  - lp.residual_ldc_coordinates.each do |x,y|
-    %tr
-      %td= x.round(3)
-      %td= y.round(3)
-
-
+      %td= number_with_delimiter(converter.query.full_load_hours)
+      %td= converter[:capacity_factor]
