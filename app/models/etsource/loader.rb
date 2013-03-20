@@ -78,7 +78,7 @@ module Etsource
     def gqueries
       instrument("etsource.loader: gqueries") do
         cache("gqueries") do
-          @gquery.gqueries
+          @gquery.import
         end
       end
     end
