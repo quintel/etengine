@@ -14,7 +14,7 @@ ETSOURCE_EXPORT_DIR = ENV['ETSOURCE_DIR'] || APP_CONFIG.fetch(:etsource_export, 
 
 # Easy, piecy, but hacky, cracky: loading ETSource
 # TODO: add as a Gem!
-require File.join(ETSOURCE_EXPORT_DIR, 'lib', 'etsource.rb')
+require File.join(ETSOURCE_DIR, 'lib', 'etsource.rb')
 
 # On staging we might want to see the backtrace
 if Rails.env.production? && APP_CONFIG[:show_backtrace]
