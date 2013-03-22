@@ -5,6 +5,8 @@ gem 'rails', '3.2.13'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml', '~>3.1.4'
 
+gem 'newrelic_rpm'
+
 gem 'authlogic'
 gem 'cancan'
 gem 'simple_form'
