@@ -1,12 +1,7 @@
 require 'spec_helper'
 
 module Gql
-  describe Runtime do
-    before :all do
-      NastyCache.instance.expire!
-      Etsource::Base.loader('spec/fixtures/etsource')
-    end
-
+  describe Runtime, :etsource_fixture do
     describe "QUERY_FUTURE/PRESENT/DELTA" do
       before do
         @gql = Scenario.default.gql(prepare: true)

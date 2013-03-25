@@ -233,10 +233,6 @@ describe Scenario do
       dup.id.should be_nil
     end
 
-    it 'does not clone the GQL instance' do
-      dup.gql.should_not eql(scenario.gql)
-    end
-
     it 'does not clone inputs_present' do
       dup.inputs_present.should_not equal(scenario.inputs_present)
     end
