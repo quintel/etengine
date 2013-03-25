@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::ScenarioUpdater do
+describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
   shared_examples_for 'a successful scenario update' do
     it 'is valid' do
@@ -46,11 +46,6 @@ describe Api::V3::ScenarioUpdater do
 
   let(:scenario) { FactoryGirl.create(:scenario) }
   let(:updater)  { Api::V3::ScenarioUpdater.new(scenario, params) }
-
-  before do
-    NastyCache.instance.expire!
-    Etsource::Base.loader('spec/fixtures/etsource')
-  end
 
   # --------------------------------------------------------------------------
 

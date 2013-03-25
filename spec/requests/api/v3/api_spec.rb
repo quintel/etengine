@@ -2,12 +2,7 @@ require "spec_helper"
 
 # Uses the etsource defined in spec/fixtures/etsource
 #
-describe "API v3scenario life cycle" do
-  before do
-    NastyCache.instance.expire!
-    Etsource::Base.loader('spec/fixtures/etsource')
-  end
-
+describe "API v3scenario life cycle", :etsource_fixture do
   it "should create, update, persist" do
     post 'api/v3/scenarios', :scenario => {:area_code => 'nl', :end_year => 2040}
 

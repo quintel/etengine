@@ -1,0 +1,12 @@
+# updates lft converter with the negative user value
+- id = 4
+- key = lft_demand
+- unit = PJ
+- update_period = future
+- update_type = PJ
+- factor = 100
+- max_value = 100
+- min_value = 0
+- start_value = 60
+
+UPDATE(V(lft), preset_demand, USER_INPUT())
