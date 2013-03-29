@@ -17,7 +17,7 @@ Etm::Application.configure do
   config.action_mailer.raise_delivery_errors = false
 
 
-  config.action_controller.perform_caching             = true
+  config.action_controller.perform_caching = true
   #config.cache_store = :memory_store
   config.cache_store = :dalli_store
   #config.cache_store = :file_store, '/tmp/cache'
@@ -28,5 +28,7 @@ Etm::Application.configure do
   config.after_initialize do
     Etsource::Reloader.start! if APP_CONFIG[:etsource_live_reload]
   end
+
+  config.middleware.use ::Rack::PerftoolsProfiler, default_printer: 'pdf', bundler: true
 
 end

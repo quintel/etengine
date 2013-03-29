@@ -59,6 +59,8 @@ group :development do
 
   # ETsource live-reloading.
   gem 'listen'
+
+  gem 'rack-perftools_profiler', require: 'rack/perftools_profiler'
 end
 
 group :test, :development do
