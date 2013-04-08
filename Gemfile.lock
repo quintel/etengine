@@ -18,6 +18,12 @@ GIT
       activesupport (>= 3.0.0)
 
 GIT
+  remote: git@github.com:andremedeiros/ruby-deepclone.git
+  revision: 07dce397ebfd2d72a52a69dd139de896c8b8a8f8
+  specs:
+    deep_clone (0.0.3)
+
+GIT
   remote: git@github.com:quintel/merit.git
   revision: c5de70a29c60abe0590a8c457ae29032748b1a07
   specs:
@@ -273,6 +279,7 @@ DEPENDENCIES
   cancan
   coffee-rails (~> 3.2.1)
   dalli
+  deep_clone!
   default_value_for
   distribution (~> 0.6)
   factory_girl_rails
