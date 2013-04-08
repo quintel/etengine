@@ -5,7 +5,7 @@ gem 'rails', '3.2.13'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml', '~>3.1.4'
 
-gem 'deep_clone', :git => "git@github.com:andremedeiros/ruby-deepclone.git"
+gem 'deep_clone', :git => "git@github.com:andremedeiros/ruby-deepclone.git", :require => 'deep_clone'
 
 gem 'authlogic'
 gem 'cancan'
