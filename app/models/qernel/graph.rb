@@ -270,7 +270,7 @@ class Graph
       instrument("gql.performance.calculate") do
 
         if use_merit_order_demands? && future?
-          dataset_copy = Marshal.load(Marshal.dump(@dataset))
+          dataset_copy = DeepClone.clone @dataset #Marshal.load(Marshal.dump(@dataset))
         end
 
         calculation_loop # the initial loop
@@ -343,7 +343,7 @@ class Graph
   #
   #
   def optimize_calculation_order
-    copy = Marshal.load(Marshal.dump(self))
+    copy = DeepClone.clone self #Marshal.load(Marshal.dump(self))
     copy.calculate
     copy.finished_converters.reverse.each_with_index do |converter, index|
       if old = converters.detect{|c| c.id == converter.id}
