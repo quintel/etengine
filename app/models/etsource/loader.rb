@@ -33,7 +33,7 @@ module Etsource
     #   be independent to reduce bugs.
     def graph(country = nil)
       instrument("etsource.loader: graph") do
-        graph = DeepClone.clone optimized_graph # Marshal.load(Marshal.dump(optimized_graph))
+        graph = DeepClone.clone optimized_graph 
         graph.dataset = dataset(country) if country
         graph
       end
