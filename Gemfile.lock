@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: git@github.com:andremedeiros/ruby-deepclone.git
-  revision: 07dce397ebfd2d72a52a69dd139de896c8b8a8f8
+  revision: f1f7c67a7611768314fb8c04368f90484886efb5
   specs:
     deep_clone (0.0.3)
 

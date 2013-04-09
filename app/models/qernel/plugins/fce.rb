@@ -77,7 +77,8 @@ module Qernel::Plugins
     def modified_fce_values_by_carrier
       unless @fce_update_values
         area_code = area.area.to_s
-        arr = Marshal.load(Marshal.dump(self.class.fce_values))
+        arr = DeepClone.clone self.class.fce_values
+        # arr = Marshal.load(Marshal.dump(self.class.fce_values))
         arr.select!{|fce| fce.using_country == area_code }
         @fce_update_values = arr.group_by(&:carrier)
       end
