@@ -68,7 +68,6 @@ namespace :bulk_update do
     ENV['PRESETS'] = "1"
     Rake::Task["bulk_update:update_db_presets"].invoke
     Rake::Task["bulk_update:update_scenarios"].invoke
-    Rake::Task["bulk_update:update_etsource_presets"].invoke
   end
 
   desc 'Takes the etsource/presets and stores them in the database'
@@ -103,24 +102,6 @@ namespace :bulk_update do
       puts scenario.changed? ? "** Saving new values" : "** Nothing changed"
       scenario.save!
     end
-  end
-
-  desc 'Updates etsource/presets/ yml files with database records'
-  task :update_etsource_presets => :environment do
-    Preset.all.each do |preset|
-      puts "Updating etsource/preset #{preset.id}"
-      scenario     = Scenario.find(preset.id)
-      etsource_dir = Etsource::Base.instance.base_dir
-      preset_file  = "#{etsource_dir}/presets/scenarios_#{preset.id}.yml"
-      yml = YAML::load(File.read(preset_file))
-      yml['user_values'] = scenario.user_values.to_hash
-
-      puts "** saving to: #{preset_file}"
-      File.open(preset_file, 'w') { |f| f << YAML::dump(yml) }
-    end
-    puts "\n\n"
-    puts "#"*40
-    puts "You can revert the changes by running path/to/etsource $ git checkout presets"
   end
 
   desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
