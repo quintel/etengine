@@ -2,6 +2,50 @@ require 'highline/import'
 require 'term/ansicolor'
 include Term::ANSIColor
 
+class BulkUpdateHelpers
+  class << self
+    def save(object, user_values,  dry_run = true)
+      if object.is_a?(Preset)
+        save_preset(object, user_values, dry_run)
+      elsif object.is_a?(Scenario)
+        save_scenario(object, user_values, dry_run)
+      end
+    end
+
+    def show_diff(object, user_values)
+      object.user_values.each do |key, value|
+        if value != user_values[key]
+          puts "Different value in #{key}: #{value} => #{user_values[value]}"
+        end
+      end
+    end
+
+    private
+      def save_preset(preset, user_values, dry_run)
+        return show_diff(preset, user_values) if dry_run
+
+        preset_file = File.join(preset_dir, "scenarios_#{preset.id}.yml")
+        preset = YAML::load_file(preset_file).with_indifferent_access
+        preset[:user_values] = user_values
+
+        File.open(preset_file, 'w') do |f|
+          f << YAML::dump(preset)
+        end
+      end
+
+      def save_scenario(scenario, user_values, dry_run)
+        return show_diff(scenario, user_values) if dry_run
+
+        scenario.update_attributes(:user_values => user_values)
+      end
+
+      def preset_dir
+        @preset_dir ||= File.join(Etsource::Base.instance.base_dir, 'presets')
+      end
+
+  end
+end
+
 namespace :bulk_update do
   desc "This shows the changes that would be applied to gqueries. Pass FORCE=TRUE to update records"
   task :gquery_replace => :environment do
@@ -106,19 +150,19 @@ namespace :bulk_update do
 
   desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
   task :update_scenarios => :environment do
-    unless ENV['PRESETS']
-      if HighLine.agree("You want to update only preset? [y/n]")
-         ENV['PRESETS'] = "1"
+    @dry_run = !ENV['PERFORM']
+
+    if @dry_run
+      puts "=== Doing a dry run! (run with PERFORM=1 to execute changes.)"
+    else
+      @dry_run = !HighLine.agree("Are you sure you want to perform the updates? [y/n]")
+
+      if @dry_run
+        puts "=== You have forced to perform, but decided on a dry run."
+      else
+        puts "=== Doing the changes."
       end
     end
-    if ENV['PRESETS']
-      scenario_scope = Scenario.where(:id => Preset.all.map(&:id))
-      puts "Trying to updating #{scenario_scope.length} presets"
-    else
-      puts "!!!!Look out this script update all scenarios!!!!"
-      scenario_scope = Scenario.order('id')
-    end
-    @update_records = HighLine.agree("You want to update records, right? [y/n]")
 
     ##########################################################
     # Following lines describe the changes of scenarios in the
@@ -453,24 +497,27 @@ namespace :bulk_update do
       "standalone_electric_cars_share"=>0.0,
       "buildings_heating_geothermal_share"=>0.0}
 
-    # Fetch scenario's in batches of 100
-    scenario_scope.find_each(:batch_size => 100) do |s|
-      puts "Scenario ##{s.id}"
+    update_block = proc { |s|
+      puts "#{s.class} ##{s.id}"
 
       #skip scenario if not nl
       next unless s.area_code == "nl"
 
       # cleanup unused scenarios
-      if s.area_code.blank? || (s.title == "API" && s.updated_at  < 14.day.ago ) || s.source == "Mechanical Turk"
-        puts "INFO: scenario removed"
-        s.destroy
+      if s.is_a?(Scenario) && (s.area_code.blank? || (s.title == "API" && s.updated_at  < 14.day.ago ) || s.source == "Mechanical Turk")
+        if @dry_run
+          puts "> Would be removed, but this is a dry run"
+        else
+          puts "> REMOVING"
+          s.destroy
+        end
         next
       end
 
       begin
         inputs = s.user_values
       rescue
-        puts "Error! cannot load user_values"
+        puts "> Error! cannot load user_values"
         next
       end
 
@@ -499,7 +546,7 @@ namespace :bulk_update do
 
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
-        puts "Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
+        puts "> Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
       end
 
       # Buildings district heating group
@@ -518,7 +565,7 @@ namespace :bulk_update do
 
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
-        puts "Warning! Share group of Buildings district heating is not 100% in scenario, but is " + (sum).to_s
+        puts "> Warning! Share group of Buildings district heating is not 100% in scenario, but is " + (sum).to_s
       end
 
       #Share group of HHs cooling
@@ -535,21 +582,26 @@ namespace :bulk_update do
 
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
-          puts "Warning! Share group of HHs cooling is not 100% in scenario, but is " + (sum).to_s
+          puts "> Warning! Share group of HHs cooling is not 100% in scenario, but is " + (sum).to_s
       end
 
       # Rounding all inputs
       inputs.each do |x|
-        x[1] =x[1].round(1) unless x[1].nil?
+        x[1] =x[1].to_f.round(1) unless x[1].nil?
       end
 
       ######################## END ############################
+      puts "> Saving!"
+      BulkUpdateHelpers.save(s, inputs, @dry_run)
+    }
 
-      if @update_records || ENV['PRESETS']
-        puts "saving"
-        s.update_attributes!(:user_values => inputs)
-      end
+    # Update presets
+    Preset.all.each do |preset|
+      update_block.call preset
+    end
 
+    Scenario.order('id').find_each(:batch_size => 100) do |scenario|
+      update_block.call scenario
     end
   end
 end
