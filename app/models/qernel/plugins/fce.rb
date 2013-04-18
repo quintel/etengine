@@ -77,9 +77,15 @@ module Qernel::Plugins
     def modified_fce_values_by_carrier
       unless @fce_update_values
         area_code = area.area.to_s
-        arr = DeepClone.clone self.class.fce_values
-        # arr = Marshal.load(Marshal.dump(self.class.fce_values))
+
+        arr = DeepClone.clone(self.class.fce_values)
         arr.select!{|fce| fce.using_country == area_code }
+
+        # Note that each FCE OpenStruct is dup'ed *again*. The values are
+        # modified in +update_fce+ and so the object must be unfrozen. Ruby
+        # has no way to unfreeze an object, so +dup+ does the job.
+        arr.map!(&:dup)
+
         @fce_update_values = arr.group_by(&:carrier)
       end
       @fce_update_values
