@@ -595,13 +595,26 @@ namespace :bulk_update do
       BulkUpdateHelpers.save(s, inputs, @dry_run)
     }
 
-    # Update presets
-    Preset.all.each do |preset|
-      update_block.call preset
+    if !ENV['PRESETS'] && !ENV['SCENARIOS']
+      puts "Help:"
+      puts "-----"
+      puts "Append the following options to the rake command:"
+      puts "PRESETS=1       Run on the presets"
+      puts "SCENARIOS=1     Run on the scenarios"
+      puts "PERFORM=1       Run the actions (as in, don't do a dry run)"
     end
 
-    Scenario.order('id').find_each(:batch_size => 100) do |scenario|
-      update_block.call scenario
+    # Update presets
+    if !!ENV['PRESETS']
+      Preset.all.each do |preset|
+        update_block.call preset
+      end
+    end
+
+    if !!ENV['SCENARIOS']
+      Scenario.order('id').find_each(:batch_size => 100) do |scenario|
+        update_block.call scenario
+      end
     end
   end
 end
