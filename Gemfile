@@ -27,6 +27,7 @@ gem 'pry', '~> 0.9.9.3'
 gem 'git', :git => 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import', '~> 0.2.9'
 gem 'fnv'
+gem 'virtus'
 
 # own gems
 gem "yaml_pack", '~>0.0.3.alpha'
@@ -61,8 +62,6 @@ group :development do
 
   # ETsource live-reloading.
   gem 'listen'
-
-  gem 'rack-perftools_profiler', require: 'rack/perftools_profiler'
 end
 
 group :test, :development do
@@ -94,7 +93,7 @@ end
 
 group :assets do
   gem 'sass-rails', '~>3.2.3'
-  gem 'therubyracer', '0.11.0beta8'
+  gem 'therubyracer', '~> 0.11.4'
   gem 'libv8', '~> 3.11.8'
   gem 'coffee-rails', '~> 3.2.1'
 end
