@@ -28,7 +28,4 @@ Etm::Application.configure do
   config.after_initialize do
     Etsource::Reloader.start! if APP_CONFIG[:etsource_live_reload]
   end
-
-  config.middleware.use ::Rack::PerftoolsProfiler, default_printer: 'pdf', bundler: true
-
 end
