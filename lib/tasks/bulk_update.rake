@@ -125,8 +125,6 @@ namespace :bulk_update do
       end
     end
 
-
-
     update_block = proc { |s|
       puts "#{s.class} ##{s.id}"
 
@@ -154,6 +152,17 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
 
+      # As of deploy on 24-04-2013, the agricultural gas chp has a capacity that 
+      # is 1.69 times larger than before. To keep the installed capacity the same
+      # we must lower the number of units (multiply with 0.59)
+
+      # Set to the default value if nil
+      inputs["agriculture_number_of_small_gas_chp"] = 
+      INPUT_DEFAULTS["agriculture_number_of_small_gas_chp"] if inputs["agriculture_number_of_small_gas_chp"].nil?
+
+      # Scale to keep installed capacity correct.
+      inputs["agriculture_number_of_small_gas_chp"] *= 0.59
+
       # HHs space heating group
       share_group_inputs = [
       "households_space_heater_heatpump_air_water_electricity_share",
@@ -165,7 +174,7 @@ namespace :bulk_update do
       "households_heating_pellet_stove_share",
       "households_heating_coal_fired_heater_share",
       "households_heating_gas_fired_heater_share",
-      "households_heating_district_heating_network_share",
+      "households_heating_district_heating_network_share"
       ]
 
       sum = 0.0
