@@ -107,47 +107,6 @@ namespace :bulk_update do
     text.gsub(token, token.red)
   end
 
-  desc 'Convenience method. runs the 3 rake task after each other'
-  task :update_presets => :environment do
-    ENV['PRESETS'] = "1"
-    Rake::Task["bulk_update:update_db_presets"].invoke
-    Rake::Task["bulk_update:update_scenarios"].invoke
-  end
-
-  desc 'Takes the etsource/presets and stores them in the database'
-  task :update_db_presets => :environment do
-    bkp_path = "#{Rails.root}/tmp/scenarios_backup_#{Time.now.to_i}"
-    FileUtils.mkdir_p(bkp_path)
-
-    presets = Preset.all
-    presets.each do |preset|
-      puts "Updating preset #{preset.id}"
-
-      scenario = Scenario.find_by_id(preset.id)
-
-      if scenario
-        # backing up in case we overwrite something wrong
-        puts "** writing scenario ##{scenario.id} backup to: #{bkp_path}"
-        File.open("#{bkp_path}/scenarios_#{scenario.id}.yml", 'w') do |f|
-          f << YAML::dump(scenario.attributes)
-        end
-      else
-        # if no scenario with that id, create one with same preset id
-        puts "** Create new scenario db record for #{preset.id}"
-        scenario = preset.to_scenario
-        scenario.preset_scenario_id = nil
-        scenario.save!
-        Scenario.update_all("id = #{preset.id}", "id = #{scenario.id}")
-        scenario.reload
-      end
-
-      # overwrite scenario user_values with presets from etsource.
-      scenario.user_values = preset.user_values
-      puts scenario.changed? ? "** Saving new values" : "** Nothing changed"
-      scenario.save!
-    end
-  end
-
   desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
   task :update_scenarios => :environment do
     @dry_run = !ENV['PERFORM']
