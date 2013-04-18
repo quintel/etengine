@@ -193,7 +193,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.valid?
 
       updater.errors[:base].should \
-        include('Input foo_demand cannot be less than 0')
+        include('Input foo_demand cannot be less than 0.0')
     end
   end # Setting invalid scenario values
 
