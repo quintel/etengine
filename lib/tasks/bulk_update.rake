@@ -153,15 +153,15 @@ namespace :bulk_update do
       ############################# START ##############################
 
       # As of deploy on 24-04-2013, the agricultural gas chp has a capacity that 
-      # is 1.69 times larger than before. To keep the installed capacity the same
-      # we must lower the number of units (multiply with 0.59)
+      # is almost 2 times larger than before. To keep the installed capacity the same
+      # we must lower the number of units (multiply with 0.5069)
 
       # Set to the (now updated) default value if nil
       if inputs["agriculture_number_of_small_gas_chp"].nil?
         inputs["agriculture_number_of_small_gas_chp"] = INPUT_DEFAULTS["agriculture_number_of_small_gas_chp"] 
       else 
         # Scale to keep installed capacity correct.
-        inputs["agriculture_number_of_small_gas_chp"] *= 0.59
+        inputs["agriculture_number_of_small_gas_chp"] *= 0.5069
       end
 
       # HHs warm water group
