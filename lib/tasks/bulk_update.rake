@@ -156,12 +156,53 @@ namespace :bulk_update do
       # is 1.69 times larger than before. To keep the installed capacity the same
       # we must lower the number of units (multiply with 0.59)
 
-      # Set to the default value if nil
-      inputs["agriculture_number_of_small_gas_chp"] = 
-      INPUT_DEFAULTS["agriculture_number_of_small_gas_chp"] if inputs["agriculture_number_of_small_gas_chp"].nil?
+      # Set to the (now updated) default value if nil
+      if inputs["agriculture_number_of_small_gas_chp"].nil?
+        inputs["agriculture_number_of_small_gas_chp"] = INPUT_DEFAULTS["agriculture_number_of_small_gas_chp"] 
+      else 
+        # Scale to keep installed capacity correct.
+        inputs["agriculture_number_of_small_gas_chp"] *= 0.59
+      end
 
-      # Scale to keep installed capacity correct.
-      inputs["agriculture_number_of_small_gas_chp"] *= 0.59
+      # HHs warm water group
+      share_group_inputs = [
+        "households_hot_water_biomass_heater_share",
+        "households_hot_water_coal_fired_heater_hotwater_share",
+        "households_hot_water_electric_boiler_share",
+        "households_hot_water_fuel_cell_share",
+        "households_hot_water_gas_fired_heater_share",
+        "households_hot_water_gas_water_heater_share",
+        "households_hot_water_heat_network_share",
+        "households_hot_water_micro_chp_share",
+        "households_hot_water_oil_fired_heater_share",
+        "households_water_heater_heatpump_air_water_electricity_share",
+        "households_water_heater_heatpump_ground_water_electricity_share"
+      ]
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% BEFORE scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> Warning! Share group of HHs warm water is not 100% in scenario, but is " + (sum).to_s
+      end
+
+      # Scaling the group
+      scale_factor = sum / 100.0
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] /= scale_factor
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% AFTER scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> ERROR! Share group of HHs warm water is not 100% in scenario, but is " + (sum).to_s
+        exit(1)
+      end
 
       # HHs space heating group
       share_group_inputs = [
@@ -186,14 +227,36 @@ namespace :bulk_update do
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
         puts "> Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
+
+        # default_sum = 0.0
+        # puts "Defaults add up to:"
+        # share_group_inputs.each do |element|
+        #   puts "#{element}: #{INPUT_DEFAULTS[element]}"
+        #   default_sum += INPUT_DEFAULTS[element]
+        # end
+        # puts "Sum: #{default_sum}"
+      end
+
+      # Scaling the group
+      scale_factor = sum / 100.0
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] /= scale_factor
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% AFTER scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> ERROR! Share group of HHs space heating is not 100% in scenario, but is " + (sum).to_s
+        exit(1)
       end
 
       # Buildings district heating group
       share_group_inputs = [
-      "buildings_heating_biomass_chp_share",
-      "buildings_heating_small_gas_chp_share",
-      "buildings_heating_heat_network_share",
-      "buildings_heating_geothermal_share"
+        "buildings_heating_biomass_chp_share",
+        "buildings_heating_small_gas_chp_share",
+        "buildings_heating_heat_network_share",
+        "buildings_heating_geothermal_share"
       ]
 
       sum = 0.0
@@ -205,6 +268,12 @@ namespace :bulk_update do
       # Check if the share group adds up to 100% BEFORE scaling
       if !(sum).between?(99.99, 100.01)
         puts "> Warning! Share group of Buildings district heating is not 100% in scenario, but is " + (sum).to_s
+
+        # Setting to defaults!
+        puts "Setting Buildings district heating group to defaults!"
+        share_group_inputs.each do |element|
+          inputs[element] = INPUT_DEFAULTS[element]
+        end
       end
 
       #Share group of HHs cooling
