@@ -62,6 +62,31 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
   # --------------------------------------------------------------------------
 
+  context 'With parameters, but no user values' do
+    before do
+      scenario.update_attributes!(
+        use_fce: true,
+        user_values: { 'foo_demand' => 1.0 })
+    end
+
+    let(:params) { { autobalance: true, scenario: { use_fce: false } } }
+
+    it_should_behave_like 'a successful scenario update'
+
+    it 'saves the scenario attributes' do
+      scenario.should_receive(:save)
+      updater.apply
+      expect(scenario.reload.use_fce).to be_true
+    end
+
+    it 'does not change the user values' do
+      updater.apply
+      scenario.reload.user_values.should eql({ 'foo_demand' => 1.0 })
+    end
+  end # With parameters, but no user values
+
+  # --------------------------------------------------------------------------
+
   context 'With a clean scenario' do
     let(:params) { {
       scenario: { user_values: { 'foo_demand' => '10.0' } }
