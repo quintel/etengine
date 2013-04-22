@@ -39,6 +39,9 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       new_attributes.should eql(old_attributes)
       scenario.user_values.should eql(user_values)
       scenario.balanced_values.should eql(balanced_values)
+
+      scenario.user_values.should_not be_nil
+      scenario.balanced_values.should_not be_nil
     end
   end
 
@@ -66,6 +69,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     before do
       scenario.update_attributes!(
         use_fce: true,
+        autobalance: true,
         user_values: { 'foo_demand' => 1.0 })
     end
 
@@ -231,6 +235,43 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     it_should_behave_like 'a failed scenario update'
   end # Setting an invalid input value
+
+  # --------------------------------------------------------------------------
+
+  context 'Sending a non-hash user_values attribute' do
+    before do
+      scenario.update_attributes!(user_values: { 'foo_demand' => 1.0 })
+    end
+
+    let(:params) { {
+      scenario: { user_values: nil }
+    } }
+
+    it_should_behave_like 'a successful scenario update'
+
+    it 'does not change user_values' do
+      scenario.reload
+      scenario.user_values.should eq({ 'foo_demand' => 1.0 })
+    end
+  end # Sending a non-hash user_values attribute
+
+  # --------------------------------------------------------------------------
+
+  context 'Changing a scenario which references an old input' do
+    before do
+      scenario.update_attributes!(user_values: { 'removed' => 1.0 })
+    end
+
+    let(:params) { {
+      scenario: { user_values: { 'foo_demand' => '-1.0' } }
+    } }
+
+    it_should_behave_like 'a failed scenario update'
+
+    it 'does not change the user values' do
+      expect(scenario.reload.user_values).to eql({ 'removed' => 1.0 })
+    end
+  end # Changing a scenario which references an old input
 
   # --------------------------------------------------------------------------
 
