@@ -251,6 +251,31 @@ namespace :bulk_update do
         exit(1)
       end
 
+      # HHs district heating group
+      share_group_inputs = [
+        "households_heating_small_gas_chp_share",
+        "households_heating_biomass_chp_share",
+        "households_heating_geothermal_share",
+        "households_heating_heat_network_share"
+      ]
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% BEFORE scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> Warning! Share group of Households district heating is not 100% in scenario, but is " + (sum).to_s
+
+        # Setting to defaults!
+        puts "Setting Households district heating group to defaults!"
+        share_group_inputs.each do |element|
+          inputs[element] = INPUT_DEFAULTS[element]
+        end
+      end
+
       # Buildings district heating group
       share_group_inputs = [
         "buildings_heating_biomass_chp_share",
