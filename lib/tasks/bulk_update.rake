@@ -152,16 +152,16 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
 
-      # As of deploy on 24-04-2013, the agricultural gas chp has a capacity that 
-      # is almost 2 times larger than before. To keep the installed capacity the same
-      # we must lower the number of units (multiply with 0.5069)
+      # As of deploy on 29-05-2013, the  chp has a capacity that 
+      # is almost 5 times smaller than before. To keep the installed capacity the same
+      # we must increase the number of units (multiply with 5)
 
       # Set to the (now updated) default value if nil
-      if inputs["agriculture_number_of_small_gas_chp"].nil?
-        inputs["agriculture_number_of_small_gas_chp"] = INPUT_DEFAULTS["agriculture_number_of_small_gas_chp"] 
+      if inputs["energy_chp_combined_cycle_network_gas"].nil?
+        inputs["energy_chp_combined_cycle_network_gas"] = INPUT_DEFAULTS["energy_chp_combined_cycle_network_gas"] 
       else 
         # Scale to keep installed capacity correct.
-        inputs["agriculture_number_of_small_gas_chp"] *= 0.5069
+        inputs["energy_chp_combined_cycle_network_gas"] *= 5.0575
       end
 
       # HHs warm water group
