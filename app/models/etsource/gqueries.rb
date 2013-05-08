@@ -10,7 +10,7 @@ module Etsource
     def import
       ETSource::Gquery.all.map do |gquery|
         Gquery.new(
-          :key => gquery.key,
+          :key => gquery.key.to_s,
           :description => gquery.description,
           :query => gquery.query,
           :unit => gquery.unit,
