@@ -34,6 +34,7 @@ gem "yaml_pack", '~>0.0.3.alpha'
 gem 'rubel', '0.0.3'
 gem 'merit', :git => 'git@github.com:quintel/merit.git'
 # gem 'merit', :path => '~/Sites/merit'
+gem 'turbine-graph', '>=0.1', require: 'turbine'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
@@ -80,7 +81,7 @@ group :test do
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
   gem 'webrat'
-  gem 'simplecov', '~> 0.5.3', :require => false
+  gem 'simplecov', '~> 0.7.1', :require => false
 end
 
 group :darwin do
