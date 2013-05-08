@@ -9,7 +9,7 @@ module Etsource
       ETSource::Input.all.map do |input|
         attributes = input.to_hash
         attributes[:lookup_id] ||= attributes.delete(:id)
-        attributes[:key] = input.key
+        attributes[:key] = input.key.to_s
         Input.new(attributes)
       end
     end
