@@ -1,7 +1,7 @@
 INPUT_DEFAULTS = {
-"agriculture_electricity_demand" => 0.0,
-"agriculture_heat_demand" => 0.0,
-"agriculture_heating_biomass_fired_heater_share" =>  0.63542904375678,
+"agriculture_useful_demand_electricity" => 0.0,
+"agriculture_useful_demand_useable_heat" => 0.0,
+"agriculture_heating_burner_wood_pellets_share" =>  0.63542904375678,
 "agriculture_heating_combined_heat_power_share" =>  57.41893544109799,
 "agriculture_heating_gas_fired_heater_share" =>  28.2814356563517,
 "agriculture_heating_geothermal_share" =>  0.10439806443836,
