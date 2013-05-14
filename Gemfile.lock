@@ -11,6 +11,12 @@ GIT
     osmosis (1.0.0)
 
 GIT
+  remote: git://github.com/quintel/rubel.git
+  revision: 963e6caa53b4018cc2d5554019353ae55db55994
+  specs:
+    rubel (0.0.3)
+
+GIT
   remote: git://github.com/rails/jbuilder.git
   revision: 57e30e48c8900b6b3674691847e33e933bffe78b
   specs:
@@ -219,7 +225,6 @@ GEM
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
       rspec-mocks (~> 2.13.0)
-    rubel (0.0.3)
     ruby-graphviz (1.0.9)
     ruby-prof (0.13.0)
     rubyzip (0.9.4)
@@ -314,7 +319,7 @@ DEPENDENCIES
   rdiscount
   rest-client
   rspec-rails (~> 2.12)
-  rubel (= 0.0.3)
+  rubel (>= 0.0.3)!
   ruby-graphviz
   ruby-prof
   rubyzip (= 0.9.4)
