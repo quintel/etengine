@@ -10,118 +10,103 @@ module Qernel::Plugins
   module Fce
     extend ActiveSupport::Concern
 
-    FCE_ATTRIBUTES = ::Qernel::Carrier::CO2_FCE_COMPONENTS
+    FCE_CARRIERS = [
+      :crude_oil,
+      :greengas,
+      :wood_pellets,
+      :coal,
+      :natural_gas,
+      :uranium_oxide,
+      :biodiesel,
+      :bio_ethanol
+    ]
 
     included do |variable|
-      set_callback :calculate, :after,  :calculate_fce
-    end
-
-
-    module ClassMethods
-
-      def fce_values
-        @fce_values ||= (Etsource::Loader.instance.globals('fce_values') || []).map{|f|
-          OpenStruct.new(f).freeze
-        }.freeze
-      end
-
-    end # ClassMethods
-
-    def reset_temporary_fce_data
-      @fce_update_values = {}
+      set_callback :calculate, :after, :calculate_fce
     end
 
     def fce_enabled?
       use_fce
     end
 
-    # calculate_fce
-    #
-    #
     def calculate_fce
-      modified_fce_values_by_carrier.each do |carrier_key, fce_values|
+      @cache ||= {}
+      FCE_CARRIERS.each do |carrier_key|
+        # Get the carrier
         carrier = carrier(carrier_key)
+        next unless carrier
         sum = 0
 
-        attributes_for_fce = self.fce_attributes_for_area
-        FCE_ATTRIBUTES.each do |attr_name|
-          # if use_fce is disabled assign all attributes, but only
-          # overwrite the co2_per_mj with the sum of co2_conversion_per_mj.
-          carrier[attr_name] = fce_values.map do |f|
-            f.send(attr_name) * (f.start_value / 100.0)
-          end.compact.sum
-
-          sum += carrier[attr_name] if attributes_for_fce.include?(attr_name)
+        if carrier.fce
+          # The carrier has FCE "profiles" for each origin of country
+          # or material.
+          co2_attributes_for_calculation.each do |attribute|
+            fce_values = carrier.fce.map do |fce_profile|
+              key   = "#{carrier.key}_#{fce_profile['origin_country']}"
+              value = @cache[key] || fce_profile['start_value']
+              fce_profile[attribute.to_s] * (value / 100)
+            end
+            carrier[attribute] = fce_values.compact.sum
+            sum += carrier[attribute]
+          end
+        else
+          # The carrier doesn't have FCE "profiles, so we'll just use the
+          # carrier properties instead.
+          co2_attributes_for_calculation.each do |attribute|
+            sum += carrier[attribute] || 0
+          end
         end
-
         carrier.dataset_set(:co2_per_mj, sum)
       end
 
-      # reset fce_update_values so it is not accidentally used in another request
-      # (graph is memoized over requests)
-      @fce_update_values = nil
+      # Reset the cache, as it's memoized between requests.
+      @cache = {}
     end
 
     # Different attributes to consider if FCE is enabled or not.
     #
-    def fce_attributes_for_area
+    def co2_attributes_for_calculation
       if fce_enabled?
-        FCE_ATTRIBUTES
+        ::Qernel::Carrier::CO2_FCE_COMPONENTS
       else
         [:co2_conversion_per_mj]
       end
     end
 
-    # a clone of the original fce_values for the current country.
-    # the values are read from etsource/datasets/_globals/fce_values.yml
-    def modified_fce_values_by_carrier
-      unless @fce_update_values
-        area_code = area.area.to_s
-
-        arr = DeepClone.clone(self.class.fce_values)
-        arr.select!{|fce| fce.using_country == area_code }
-
-        # Note that each FCE OpenStruct is dup'ed *again*. The values are
-        # modified in +update_fce+ and so the object must be unfrozen. Ruby
-        # has no way to unfreeze an object, so +dup+ does the job.
-        arr.map!(&:dup)
-
-        @fce_update_values = arr.group_by(&:carrier)
+    # Method that the graph uses to get start values for a specific FCE
+    # profile.
+    #
+    def fce_start_value(carrier_key, origin)
+      if carrier_key.is_a?(Symbol)
+        carrier = carrier(carrier_key)
+      elsif carrier_key.is_a?(Array)
+        carrier = carrier_key.flatten[0]
+      else
+        carrier = carrier_key
       end
-      @fce_update_values
+
+
+      key = "#{carrier.key}_#{origin}"
+      return @cache[key] if @cache[key]
+
+      return 0.0 unless carrier.fce
+
+      fce_profiles = carrier.fce.select { |fp|
+        fp["origin_country"] == origin.to_s
+      }
+
+      if fce_profile = fce_profiles.first
+        fce_profile["start_value"]
+      else
+        0.0
+      end
     end
 
-    # Return the start_values defined in fce_values.yml
-    #
-    # @example
-    #    fce_start_value( CARRIER(coal), 'india')
-    #
-    def fce_start_value(carrier, origin)
-      fce_ostruct(carrier, origin).andand.start_value || 0.0
-    end
-
-    # Update a carriers fce values (co2_extraction, co2_treatment_per_mj)
-    # with the values defined in fce_values.yml multiplied by the users input
-    # (the share of).
-    #
-    # This method is called by update statements.
     def update_fce(carrier, origin, user_input)
-      if fce_ostruct = self.fce_ostruct(carrier, origin)
-        fce_attributes_for_area.each do |key|
-          fce_ostruct.start_value = user_input * 100.0
-        end
-      end
+      key = "#{carrier[0].key}_#{origin}"
+      @cache ||= {}
+      @cache[key] = user_input * 100
       nil
     end
-
-    def fce_ostruct(carrier, origin)
-      carrier     = [carrier].flatten.first
-      carrier_key = carrier.respond_to?(:key) ? carrier.key.to_s : carrier.to_s
-      origin      = origin.to_s
-      fce_values  = modified_fce_values_by_carrier[carrier_key] || []
-      fce_ostruct = fce_values.detect{|f| f.origin_country == origin }
-      fce_ostruct
-    end
-
   end # Fce
 end
