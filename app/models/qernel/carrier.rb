@@ -16,6 +16,7 @@ class Carrier
   ].freeze
 
   DATASET_ATTRIBUTES = [
+    :fce,
     :cost_per_mj,
     :sustainable,
     :typical_production_per_km2,
