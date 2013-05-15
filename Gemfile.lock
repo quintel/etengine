@@ -31,16 +31,6 @@ GIT
       multi_json (>= 1.2.0)
 
 GIT
-  remote: git@github.com:quintel/etsource.git
-  revision: 32d75116dcce8906b2c5d3a25cf8b4e549787218
-  specs:
-    etsource (0.0.1)
-      activemodel (>= 3.2.12)
-      rubel (>= 0.0.3)
-      turbine-graph (>= 0.1)
-      virtus (>= 0.5.4)
-
-GIT
   remote: git@github.com:quintel/merit.git
   revision: f6256154c918fb24cbe3064f918c02bc9beeb9b1
   specs:
@@ -301,7 +291,6 @@ DEPENDENCIES
   deep_clone!
   default_value_for
   distribution (~> 0.6)
-  etsource!
   factory_girl_rails
   fileutils
   fnv
