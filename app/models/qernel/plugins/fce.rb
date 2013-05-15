@@ -6,7 +6,7 @@ module Qernel::Plugins
   #
   # The fce_values are read out of etsource/datasets/_globals/fce_values.yml
   #
-  #
+  # TODO: check out whether we can replace @cache with (Scenario)#user_values.
   module Fce
     extend ActiveSupport::Concern
 
@@ -25,38 +25,34 @@ module Qernel::Plugins
       set_callback :calculate, :after, :calculate_fce
     end
 
-    def fce_enabled?
-      use_fce
-    end
-
     def calculate_fce
       @cache ||= {}
+
       FCE_CARRIERS.each do |carrier_key|
         # Get the carrier
         carrier = carrier(carrier_key)
         next unless carrier
-        sum = 0
+
+        co2_per_mj = 0
 
         if carrier.fce
           # The carrier has FCE "profiles" for each origin of country
           # or material.
           co2_attributes_for_calculation.each do |attribute|
             fce_values = carrier.fce.map do |fce_profile|
-              key   = "#{carrier.key}_#{fce_profile['origin_country']}"
-              value = @cache[key] || fce_profile['start_value']
-              fce_profile[attribute.to_s] * (value / 100)
+              fce_profile[attribute.to_s] * fce_start_value(carrier, fce_profile['origin_country']) / 100
             end
-            carrier[attribute] = fce_values.compact.sum
-            sum += carrier[attribute]
+            carrier[attribute] = fce_values.sum
+            co2_per_mj += carrier[attribute]
           end
         else
-          # The carrier doesn't have FCE "profiles, so we'll just use the
+          # The carrier doesn't have FCE "profiles", so we'll just use the
           # carrier properties instead.
           co2_attributes_for_calculation.each do |attribute|
-            sum += carrier[attribute] || 0
+            co2_per_mj += carrier[attribute] || 0
           end
         end
-        carrier.dataset_set(:co2_per_mj, sum)
+        carrier.dataset_set(:co2_per_mj, co2_per_mj)
       end
 
       # Reset the cache, as it's memoized between requests.
@@ -73,10 +69,18 @@ module Qernel::Plugins
       end
     end
 
+    # Returns true or false if fce is enabled for this scenario.
+    def fce_enabled?
+      use_fce
+    end
+
     # Method that the graph uses to get start values for a specific FCE
     # profile.
     #
     def fce_start_value(carrier_key, origin)
+      # DEBT: currently, it is called sometimes with carrier_key as a Symbol
+      # and other times as an Array..
+      # TODO: needs to be cleaned up.
       if carrier_key.is_a?(Symbol)
         carrier = carrier(carrier_key)
       elsif carrier_key.is_a?(Array)
@@ -85,15 +89,15 @@ module Qernel::Plugins
         carrier = carrier_key
       end
 
-
       key = "#{carrier.key}_#{origin}"
-      return @cache[key] if @cache[key]
 
+      return @cache[key] if @cache[key]
       return 0.0 unless carrier.fce
 
-      fce_profiles = carrier.fce.select { |fp|
+      fce_profiles = carrier.fce.select do |fp|
+        # TODO: rename to 'origin'
         fp["origin_country"] == origin.to_s
-      }
+      end
 
       if fce_profile = fce_profiles.first
         fce_profile["start_value"]
