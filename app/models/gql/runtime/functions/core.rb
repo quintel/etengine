@@ -40,8 +40,8 @@ module Gql::Runtime
       #
       def V(*args)
         # Given: V(..., primary_demand_of( CARRIER(...) ))
-        # args.last would be a Proc. Do not call LOOKUP for Procs.
-        last_key = args.last.is_a?(Proc) ? [] : TRY_LOOKUP(args.last)
+        # args.last would be a Rubel message. Do not call LOOKUP for these.
+        last_key = args.last.respond_to?(:call) ? [] : TRY_LOOKUP(args.last)
 
         if args.length == 1
           last_key
@@ -102,7 +102,8 @@ module Gql::Runtime
           # Given LOOKUP( key_1 ) key_1 will respond_to to_sym because
           # it comes from Rubel::Base#method_missing, which returns Symbols.
           if key.respond_to?(:to_sym)
-            # prevents lookup for strings from V(.., "demand*2") or Procs V(.., foo(1))
+            # prevents lookup for strings from V(.., "demand*2") or Rubel
+            # messages V(.., foo(1))
             @scope.converters(key).tap do |arr|
               if arr.empty?
                 ActiveSupport::Notifications.instrument("warn: No converter found with key: #{key}")
@@ -126,7 +127,8 @@ module Gql::Runtime
       #
       def TRY_LOOKUP(key)
         if key.respond_to?(:to_sym)
-          # prevents lookup for strings from V(.., "demand*2") or Procs V(.., foo(1))
+          # prevents lookup for strings from V(.., "demand*2") or Rubel
+          # messages V(.., foo(1))
           @scope.converters(key)
         else
           [key]

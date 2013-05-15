@@ -81,7 +81,7 @@ module Gql::Runtime
       # containing the result of each requested GQL expression.
       #
       def table_data(objects, *arguments)
-        rows = [arguments.map{|arg| arg.is_a?(Proc) ? 'custom' : arg }]
+        rows = [[*arguments]]
 
         rows += flatten_uniq(objects).map do |obj|
           arguments.map do |argument|
