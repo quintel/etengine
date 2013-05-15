@@ -17,18 +17,18 @@ GIT
     rubel (0.0.3)
 
 GIT
+  remote: git://github.com/quintel/ruby-deepclone.git
+  revision: f1f7c67a7611768314fb8c04368f90484886efb5
+  specs:
+    deep_clone (0.0.3)
+
+GIT
   remote: git://github.com/rails/jbuilder.git
   revision: 57e30e48c8900b6b3674691847e33e933bffe78b
   specs:
     jbuilder (1.4.0)
       activesupport (>= 3.0.0)
       multi_json (>= 1.2.0)
-
-GIT
-  remote: git@github.com:andremedeiros/ruby-deepclone.git
-  revision: f1f7c67a7611768314fb8c04368f90484886efb5
-  specs:
-    deep_clone (0.0.3)
 
 GIT
   remote: git@github.com:quintel/etsource.git
