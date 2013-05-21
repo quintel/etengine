@@ -8,7 +8,7 @@ module Etsource
       base_dir = "#{@etsource.export_dir}/presets"
 
       presets = []
-      Dir.glob("#{base_dir}/*.yml").each do |f|
+      Dir.glob("#{base_dir}/**/*.yml").each do |f|
         attributes = YAML::load_file(f).with_indifferent_access
         presets << Preset.new(attributes)
       end
