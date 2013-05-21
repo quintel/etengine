@@ -166,15 +166,15 @@ namespace :bulk_update do
 
       # HHs warm water group
       share_group_inputs = [
-        "households_hot_water_biomass_heater_share",
-        "households_hot_water_coal_fired_heater_hotwater_share",
-        "households_hot_water_electric_boiler_share",
-        "households_hot_water_fuel_cell_share",
-        "households_hot_water_gas_fired_heater_share",
-        "households_hot_water_gas_water_heater_share",
-        "households_hot_water_heat_network_share",
-        "households_hot_water_micro_chp_share",
-        "households_hot_water_oil_fired_heater_share",
+        "households_water_heater_wood_pellets_share",
+        "households_water_heater_coal_share",
+        "households_water_heater_resistive_electricity_share",
+        "households_water_heater_fuel_cell_chp_network_gas_share",
+        "households_water_heater_combined_network_gas_share",
+        "households_water_heater_network_gas_share",
+        "households_water_heater_district_heating_steam_hot_water_share",
+        "households_water_heater_micro_chp_network_gas_share",
+        "households_water_heater_crude_oil_share",
         "households_water_heater_heatpump_air_water_electricity_share",
         "households_water_heater_heatpump_ground_water_electricity_share"
       ]
@@ -207,15 +207,15 @@ namespace :bulk_update do
       # HHs space heating group
       share_group_inputs = [
       "households_space_heater_heatpump_air_water_electricity_share",
-      "households_heating_micro_chp_share",
-      "households_heating_electric_heater_share",
-      "households_heating_oil_fired_heater_share",
-      "households_heating_gas_combi_heater_share",
-      "households_heating_heat_pump_ground_share",
-      "households_heating_pellet_stove_share",
-      "households_heating_coal_fired_heater_share",
-      "households_heating_gas_fired_heater_share",
-      "households_heating_district_heating_network_share"
+      "households_space_heater_micro_chp_network_gas_share",
+      "households_space_heater_electricity_share",
+      "households_space_heater_crude_oil_share",
+      "households_space_heater_combined_network_gas_share",
+      "households_space_heater_heatpump_ground_water_electricity_share",
+      "households_space_heater_wood_pellets_share",
+      "households_space_heater_coal_share",
+      "households_space_heater_network_gas_share",
+      "households_space_heater_district_heating_steam_hot_water_share"
       ]
 
       sum = 0.0
@@ -253,10 +253,10 @@ namespace :bulk_update do
 
       # HHs district heating group
       share_group_inputs = [
-        "households_heating_small_gas_chp_share",
-        "households_heating_biomass_chp_share",
-        "households_heating_geothermal_share",
-        "households_heating_heat_network_share"
+        "households_collective_chp_network_gas_share",
+        "households_collective_chp_wood_pellets_share",
+        "households_collective_geothermal_share",
+        "households_heat_network_connection_steam_hot_water_share"
       ]
 
       sum = 0.0
@@ -278,10 +278,10 @@ namespace :bulk_update do
 
       # Buildings district heating group
       share_group_inputs = [
-        "buildings_heating_biomass_chp_share",
-        "buildings_heating_small_gas_chp_share",
-        "buildings_heating_heat_network_share",
-        "buildings_heating_geothermal_share"
+        "buildings_collective_chp_wood_pellets_share",
+        "buildings_collective_chp_network_gas_share",
+        "buildings_heat_network_connection_steam_hot_water_share",
+        "buildings_collective_geothermal_share"
       ]
 
       sum = 0.0
@@ -303,9 +303,9 @@ namespace :bulk_update do
 
       #Share group of HHs cooling
       share_group_inputs = [
-      "households_cooling_heat_pump_ground_share",
+      "households_cooling_heatpump_ground_water_electricity_share",
       "households_cooling_heatpump_air_water_electricity_share",
-      "households_cooling_airconditioning_share"]
+      "households_cooling_airconditioning_electricity_share"]
 
       sum = 0.0
       share_group_inputs.each do |element|
