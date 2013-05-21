@@ -21,7 +21,7 @@ module Qernel
       :co2_price,
       :coast_line,
       :cold_network_potential,
-      :economic_multiplier,
+      :employment_economic_multiplier,
       :el_export_capacity,
       :el_import_capacity,
       :employment_fraction_production,
