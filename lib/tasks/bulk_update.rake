@@ -21,30 +21,45 @@ class BulkUpdateHelpers
       end
     end
 
+    #######
     private
-      def save_preset(preset, user_values, dry_run)
-        return show_diff(preset, user_values) if dry_run
+    #######
 
-        preset_file = File.join(preset_dir, "scenarios_#{preset.id}.yml")
-        preset = YAML::load_file(preset_file).with_indifferent_access
-        preset[:user_values] = user_values
+    def save_preset(preset, user_values, dry_run)
+      return show_diff(preset, user_values) if dry_run
+      
+      @file_data ||= get_file_data
+      
+      preset_file_path = @file_data[preset.id][:path]
+      preset = YAML::load_file(preset_file_path).with_indifferent_access
+      preset[:user_values] = user_values
 
-        File.open(preset_file, 'w') do |f|
-          f << YAML::dump(preset)
-        end
+      File.open(preset_file, 'w') do |f|
+        f << YAML::dump(preset)
       end
+    end
 
-      def save_scenario(scenario, user_values, dry_run)
-        return show_diff(scenario, user_values) if dry_run
+    def save_scenario(scenario, user_values, dry_run)
+      return show_diff(scenario, user_values) if dry_run
 
-        puts "> Saving!"
-        scenario.update_attributes(:user_values => user_values)
+      puts "> Saving!"
+      scenario.update_attributes(:user_values => user_values)
+    end
+
+    def preset_dir
+      @preset_dir ||= File.join(Etsource::Base.instance.base_dir, 'presets')
+    end
+
+    # Returns Hash containing key-value pairs with ID and path of individual
+    # presets
+    def get_file_data
+      file_data = {}
+      Dir.glob("#{preset_dir}/**/*.yml").each do |f|
+        file = YAML::load_file(f).with_indifferent_access
+        file_data[file[:id]] = { path: f }
       end
-
-      def preset_dir
-        @preset_dir ||= File.join(Etsource::Base.instance.base_dir, 'presets')
-      end
-
+      file_data
+    end
   end
 end
 
