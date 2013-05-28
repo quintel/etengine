@@ -34,15 +34,21 @@ module Qernel::Plugins
         next unless carrier
 
         co2_per_mj = 0
+        fce_values = {}
 
         if carrier.fce
           # The carrier has FCE "profiles" for each origin of country
-          # or material.
-          co2_attributes_for_calculation.each do |attribute|
-            fce_values = carrier.fce.map do |fce_profile|
+          # or material. First we calculate the attributes separately,
+          # and we have to do it on all of them.
+          ::Qernel::Carrier::CO2_FCE_COMPONENTS.each do |attribute|
+            fce_values[attribute] = carrier.fce.map do |fce_profile|
               fce_profile[attribute.to_s] * fce_start_value(carrier, fce_profile['origin_country']) / 100
             end
-            carrier[attribute] = fce_values.sum
+            carrier[attribute] = fce_values[attribute].sum
+          end
+
+          # Then, we calculate the CO2 emissions per MJ.
+          co2_attributes_for_calculation.each do |attribute|
             co2_per_mj += carrier[attribute]
           end
         else
