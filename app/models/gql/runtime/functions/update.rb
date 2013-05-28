@@ -229,7 +229,7 @@ module Gql::Runtime
       #
       # For example:
       #
-      #   INPUT_VALUE('agriculture_heating_geothermal_share')
+      #   INPUT_VALUE('agriculture_geothermal_share')
       #   # => 0.104
       #
       #   INPUT_VALUE('infinite_improbability_drive_share')
