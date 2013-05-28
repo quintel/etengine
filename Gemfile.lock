@@ -37,15 +37,6 @@ GIT
     merit (0.0.9)
       terminal-table
 
-GIT
-  remote: git@github.com:quintel/refinery.git
-  revision: 849676ea4e5a7f62d10b516bad30a4770e0aebbd
-  specs:
-    refinery (0.0.1)
-      ruby-graphviz
-      terminal-table
-      turbine-graph (>= 0.1)
-
 GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
@@ -326,7 +317,6 @@ DEPENDENCIES
   rails (= 3.2.13)
   rb-fsevent
   rdiscount
-  refinery!
   rest-client
   rspec-rails (~> 2.12)
   rubel (>= 0.0.3)!

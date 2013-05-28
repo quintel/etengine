@@ -17,7 +17,6 @@ gem 'distribution', '~> 0.6' # This gem is only used for GQL: NORMCDF()
 gem 'text-table'
 gem 'jbuilder', :git => 'git://github.com/rails/jbuilder.git'
 gem 'osmosis', github: 'quintel/osmosis'
-gem 'refinery', git: 'git@github.com:quintel/refinery.git'
 
 gem 'rest-client'
 
