@@ -5,6 +5,7 @@ task :chp_filter => [:environment] do
   date    = ENV['date'] || "01/01/2009"
   email   = ENV['email'] && ENV['email'].upcase=='TRUE'
   file    = ENV['file']
+  list    = ENV['list'] && ENV['list'].upcase=='TRUE'
 
   unless key && !key.blank?
     puts 'Missing key'
@@ -16,6 +17,15 @@ task :chp_filter => [:environment] do
   selection = valid_scenarios.select { |scen| scen.user_values.keys.delete_if { |h_key| not(exclude.blank?) ? Regexp.new(exclude).match(h_key.to_s) : false }.select { |h_key| Regexp.new(key).match(h_key.to_s)}.count > 0 }
   users = selection.collect { |scen| scen.user_id }.uniq
   active_users = users.select { |user| User.exists?(user) }
+  
+  if list
+    selection.each do |scen| 
+      occurrences = scen.user_values.keys.select { |h_key| Regexp.new(key).match(h_key.to_s) }
+      occurrences.each {|entry| puts "#{ scen.id }: Value for #{ entry } = #{ scen.user_values[entry] }" }
+      puts "-----"
+    end
+    # puts "Value for #{key} = #{ scen.user_values[scen.user_values.keys.select { |h_key| Regexp.new(key).match(key) }.first] }"
+  end
   
   puts "Selected scenarios  : #{selection.count}"
   puts "# of users affected : #{active_users.count}"
