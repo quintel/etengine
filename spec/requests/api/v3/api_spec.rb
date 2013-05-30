@@ -45,7 +45,8 @@ describe "API v3scenario life cycle", :etsource_fixture do
     # ----- updating another --------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'2' => '20', 'foo_demand' => '80'}},
+        :scenario => {:user_values => {'input_2' => '20',
+                                       'foo_demand' => '80'}},
         :gqueries => %w[foo_demand bar_demand]
 
     result = JSON.parse(response.body)['gqueries']

@@ -11,6 +11,7 @@ class Input
     :key,
     :comments,
     :factor,
+    :priority,
     :label,
     :label_query,
     :max_value,

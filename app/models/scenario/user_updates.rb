@@ -29,30 +29,11 @@ module Scenario::UserUpdates
   end
 
   def inputs_present
-    unless @inputs_present
-      @inputs_present = {}
-      (balanced_values.merge(user_values)).each do |key, value|
-        input = Input.get(key)
-        @inputs_present[input] = value if input.present? && input.updates_present?
-      end
-    end
-    @inputs_present
+    @inputs_present ||= input_values_for_graph(:present)
   end
 
   def inputs_future
-    unless @inputs_future
-      @inputs_future = {}
-      (balanced_values.merge(user_values)).each do |key, value|
-        input = Input.get(key)
-        unless input
-          @input_errors ||= []
-          @input_errors << "Missing input: #{key}"
-          GqlLogger.warn "Scenario ##{id}: missing input #{key}"
-        end
-        @inputs_future[input] = value if input.present? && input.updates_future?
-      end
-    end
-    @inputs_future
+    @inputs_future ||= input_values_for_graph(:future)
   end
 
   # This will process an {:input_id => :value} hash and update the inputs as needed
@@ -100,4 +81,40 @@ module Scenario::UserUpdates
   def user_values_as_yaml=(values)
     self.user_values = YAML::load(values)
   end
-end
+
+  #######
+  private
+  #######
+
+  # Internal: The inputs for which the user - or balancer - has specified a
+  # value.
+  #
+  # Returns an array of inputs, in order of their execution priority.
+  def inputs
+    @inputs ||=
+      combined_values.map { |key, _| Input.get(key) }.
+      compact.sort_by(&:priority).reverse
+  end
+
+  # Internal: A hash of inputs, and the values to be set on the named graph.
+  #
+  # name - The "name" of the graph for which you want values; :future or
+  #        :present.
+  #
+  # Returns a hash.
+  def input_values_for_graph(name)
+    inputs.select { |input| input.public_send(:"updates_#{ name }?") }.
+      each_with_object(Hash.new) do |input, hash|
+        hash[input] = combined_values[input.key]
+      end
+  end
+
+  # Internal: All of the inputs values to be set; includes the values
+  # specified by the user, and any values from the balancer.
+  #
+  # Returns an hash.
+  def combined_values
+    @combined_values ||= balanced_values.merge(user_values)
+  end
+
+end  # Input
