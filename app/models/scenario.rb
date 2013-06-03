@@ -72,7 +72,7 @@ class Scenario < ActiveRecord::Base
     :in_start_menu, :user_id, :preset_scenario_id, :use_fce, :protected,
     :scenario_id, :source, :user_values_as_yaml
 
-  attr_accessor :input_errors, :ordering
+  attr_accessor :input_errors, :ordering, :display_group
 
   before_create do |scenario|
     if preset = scenario.preset_scenario
