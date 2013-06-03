@@ -21,13 +21,14 @@ module Api
       def as_json(*)
         json = Hash.new
 
-        json[:id]          = @resource.id
-        json[:title]       = @resource.title
-        json[:area_code]   = @resource.area_code
-        json[:end_year]    = @resource.end_year
-        json[:description] = @resource.description
-        json[:url]         = @controller.api_v3_scenario_url(@resource)
-        json[:ordering]    = @resource.ordering
+        json[:id]             = @resource.id
+        json[:title]          = @resource.title
+        json[:area_code]      = @resource.area_code
+        json[:end_year]       = @resource.end_year
+        json[:description]    = @resource.description
+        json[:url]            = @controller.api_v3_scenario_url(@resource)
+        json[:ordering]       = @resource.ordering
+        json[:display_group]  = @resource.display_group
 
         json
       end
