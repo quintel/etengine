@@ -199,14 +199,17 @@ namespace :bulk_update do
       # WM has chosen the number_of_agriculture_chp_supercritical_wood_pellets to 'replace' it
       # With 1.5 MWe and 7500 FLHs this leads to 
       # industry_chp_supercritical_wood_pellets_production_in_MW / (1.5 * 7500) ~ X units of number_of_agriculture_chp_supercritical_wood_pellets extra.
-      number_of_units_old = inputs["industry_number_of_biomass_chp"].nil? ? 0.0 : inputs["industry_number_of_biomass_chp"]
-      inputs["number_of_agriculture_chp_supercritical_wood_pellets"] = INPUT_DEFAULTS["number_of_agriculture_chp_supercritical_wood_pellets"] if inputs["number_of_agriculture_chp_supercritical_wood_pellets"].nil?
+
+      number_of_units_old = inputs["industry_number_of_biomass_chp"] || 0.0
+
+      # number_of_agriculture_chp_supercritical_wood_pellets is new
+      inputs["number_of_agriculture_chp_supercritical_wood_pellets"] ||= 0.0
 
       old_production = number_of_units_old * 32.5 * 3594.0 # MWH (NoU * Cap)
       extra_number_of_units = old_production / (1.5 * 7500.0) 
       new_number_of_units = inputs["number_of_agriculture_chp_supercritical_wood_pellets"] + extra_number_of_units
       max_number_of_units = 1339
-      if new_number_of_units < max_number_of_units
+      if new_number_of_units <= max_number_of_units
         inputs["number_of_agriculture_chp_supercritical_wood_pellets"] = new_number_of_units
       else
         inputs["number_of_agriculture_chp_supercritical_wood_pellets"] = max_number_of_units
@@ -215,9 +218,6 @@ namespace :bulk_update do
 
       # number_of_agriculture_chp_engine_biogas is new
       inputs["number_of_agriculture_chp_engine_biogas"] = 0.0
-
-      # number_of_agriculture_chp_supercritical_wood_pellets is new
-      inputs["number_of_agriculture_chp_supercritical_wood_pellets"] = 0.0
 
       # The number_of_agriculture_chp_engine_network_gas chp has a capacity that 
       # is almost 1.97 times smaller than before. To keep the installed capacity the same
