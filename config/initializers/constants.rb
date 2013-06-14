@@ -16,6 +16,7 @@ MJ_PER_MWH = 3600
 BILLIONS = 10.0**9
 MJ_TO_PJ = BILLIONS
 MILLIONS = 10.0**6
+THOUSANDS = 1000.0
 #NIL = nil if !defined?(NIL)
 EURO_SIGN = '&euro;'
 
