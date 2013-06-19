@@ -326,6 +326,39 @@ namespace :bulk_update do
           puts "> Warning! Share group of HHs cooling is not 100% in scenario, but is " + (sum).to_s
       end
 
+      #Share group of industry heating
+      share_group_inputs = [
+      "industry_burner_network_gas_share",
+      "industry_burner_crude_oil_share",
+      "industry_burner_coal_share",
+      "industry_burner_wood_pellets_share",
+      "industry_final_demand_steam_hot_water_share"]
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% BEFORE scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> Warning! Share group of Industry Heat is not 100% in scenario, but is " + (sum).to_s
+      end
+
+      # Scaling the group
+      scale_factor = sum / 100.0
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] /= scale_factor
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% AFTER scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> ERROR! Share group of Industry Heat is not 100% in scenario, but is " + (sum).to_s
+        exit(1)
+      end
+
       # Rounding all inputs
       inputs.each do |x|
         x[1] =x[1].to_f.round(1) unless x[1].nil?
