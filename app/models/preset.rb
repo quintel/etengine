@@ -9,7 +9,7 @@ class Preset
 
 
   COLUMNS = [:id, :user_values, :end_year, :area_code, :use_fce, :title,
-    :description, :in_start_menu, :ordering, :display_group]
+    :description, :in_start_menu, :ordering, :display_group, :created_at]
 
   attr_accessor *COLUMNS
 
