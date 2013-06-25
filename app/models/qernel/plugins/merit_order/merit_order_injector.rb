@@ -122,6 +122,7 @@ module Qernel::Plugins
             :total_demand,
           total_consumption:
             graph.graph_query.final_demand_for_electricity +
+            graph.graph_query.energy_sector_final_demand_for_electricity +
             graph.graph_query.electricity_losses_if_export_is_zero
         )
         @m.add user
