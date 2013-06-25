@@ -75,6 +75,12 @@ class GraphApi
     graph.group_converters(:final_demand_cbs).map(&:converter_api).map(&:input_of_electricity).compact.sum
   end
 
+  # Demand of electricity of the energy sector itself 
+  # (not included in final_demand_for_electricity)
+  def energy_sector_final_demand_for_electricity
+    graph.converter(:energy_power_sector_own_use_electricity).demand
+  end
+
   # Computes the electricity losses AS IF there were no exports.
   # This is accomplished by using the (fixed) conversion efficiencies
   # of the HV network for electricity (effE) and losses (effL) and the
