@@ -98,8 +98,8 @@ class GraphApi
   # +---------------------+        |       +---------------------+
   # |                     |        +-------+                     |
   # |                     |                |                     |
-  # |   MV trafo          <----------------+      HV network     |
-  # |                     |                |                     |
+  # |   MV trafo +        <----------------+      HV network     |
+  # |   own_use_of_sector |                |                     |
   # |                     |        +-------+                     |
   # +---------------------+        |       +---------------------+
   #                                |
@@ -127,11 +127,12 @@ class GraphApi
   # returns [Float] the network losses for the electricity net.
   def electricity_losses_if_export_is_zero
     transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+    own_use_of_sector      = energy_sector_final_demand_for_electricity
     converter              = graph.converter(:energy_power_hv_network_electricity)
     conversion_loss        = converter.output(:loss).conversion
     conversion_electricity = converter.output(:electricity).conversion
 
-    transformer_demand * conversion_loss / conversion_electricity
+    (transformer_demand + own_use_of_sector) * conversion_loss / conversion_electricity
   end
 
   # @return [Integer] Difference between start_year and end_year
