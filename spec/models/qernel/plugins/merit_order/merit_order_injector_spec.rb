@@ -53,6 +53,9 @@ module Qernel::Plugins::MeritOrder
         @graph.stub_chain(:graph_query, :final_demand_for_electricity) do
           100
         end
+        @graph.stub_chain(:graph_query, :energy_sector_final_demand_for_electricity) do
+          17
+        end
         @graph.stub_chain(:graph_query, :electricity_losses_if_export_is_zero) do
           23
         end
