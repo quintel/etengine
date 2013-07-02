@@ -32,7 +32,7 @@ module Qernel
       :has_climate,
       :has_coastline,
       :has_cold_network,
-      :has_energy_storage,
+      :has_electricity_storage,
       :has_employment,
       :has_lignite,
       :has_merit_order,
