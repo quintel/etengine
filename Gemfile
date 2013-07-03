@@ -35,6 +35,7 @@ gem 'rubel', '>= 0.0.3', github: 'quintel/rubel'
 gem 'merit', :git => 'git@github.com:quintel/merit.git'
 # gem 'merit', :path => '~/Sites/merit'
 gem 'turbine-graph', '>=0.1', require: 'turbine'
+gem 'tome', :git => 'git@github.com:quintel/tome.git'
 
 gem 'rack-cors', :require => 'rack/cors'
 gem 'airbrake'
