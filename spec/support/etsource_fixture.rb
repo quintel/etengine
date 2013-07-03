@@ -6,7 +6,7 @@ module ETSourceFixtureHelper
       fixture_path = Rails.root.join('spec/fixtures/etsource/data')
 
       NastyCache.instance.expire!
-      ETSource.with_data_dir(fixture_path) { example.run }
+      Tome.with_data_dir(fixture_path) { example.run }
     end
   end
 end # EtmFixtureHelper
