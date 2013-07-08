@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Data::GqueriesController do
+describe Data::GqueriesController, :etsource_fixture do
   render_views
 
   let!(:admin) { FactoryGirl.create :admin }
-  let!(:gquery) { Gquery.all.first }
+  let!(:gquery) { Gquery.get('bar_demand') }
 
   before do
     login_as(admin)
