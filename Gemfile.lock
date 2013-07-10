@@ -317,7 +317,6 @@ DEPENDENCIES
   merit!
   mysql2 (~> 0.3.11)
   osmosis!
-  pry (~> 0.9.9.3)
   pry-debugger
   pry-rails
   pry-remote
@@ -343,7 +342,6 @@ DEPENDENCIES
   tome!
   turbine-graph (>= 0.1)
   unicorn
-  virtus
   watchr
   webrat
   yaml_pack (~> 0.0.3.alpha)
