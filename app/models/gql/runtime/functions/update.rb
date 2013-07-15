@@ -130,6 +130,33 @@ module Gql::Runtime
         scope.update_object = nil
       end
 
+      def UPDATE_WITH_FACTOR(*value_terms)
+        input_value_proc = value_terms.pop
+        attribute_name   = value_terms.pop
+        objects          = value_terms.flatten.compact
+
+        scope.update_collection = objects # for UPDATE_COLLECTION()
+        objects.each do |object|
+          object = object.query if object.respond_to?(:query)
+
+          if object
+            scope.update_object = object # for UPDATE_OBJECT()
+            input_value    = input_value_proc.respond_to?(:call) ? input_value_proc.call : input_value_proc
+            input_value    = input_value.first if input_value.is_a?(::Array)
+            original_value = big_decimal(object[attribute_name].to_s)
+
+            value = original_value * input_value
+            update_element_with(object, attribute_name, value)
+          else
+            # this will not execute...
+            raise "UPDATE: objects not found: #{value_terms}"
+          end
+        end
+      ensure
+        scope.update_collection = nil
+        scope.update_object = nil
+      end
+
       # @private
       def update_value_with_strategy(input_value, original_value)
         case update_strategy
