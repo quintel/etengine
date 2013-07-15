@@ -104,6 +104,32 @@ module Gql::Runtime
       #   # => foo gets value 100. but order of inputs can be reversed in another scenario. (pulling input_2 first).
       #
       def UPDATE(*value_terms)
+        update_something_by(*value_terms) do |original_value, input_value|
+          case update_strategy
+          when :absolute then input_value
+          when :relative_total
+            original_value + (original_value * input_value)
+          when :relative_per_year
+            original_value * ((1.0 + input_value) ** scope.scenario.years)
+          end.to_f
+        end
+      end
+
+      # Same as UPDATE, but now the INPUT_VALUE() is expected to be factor,
+      # that the user supplies.
+      #
+      # @example when foo has a preset_demand of 100.0
+      #     UPDATE_WITH_FACTOR(V(foo), preset_demand, 1.1)
+      #     # => foo gets a demand of 110.0
+      #
+      def UPDATE_WITH_FACTOR(*value_terms)
+        update_something_by(*value_terms) do |original_value, input_value|
+          original_value * input_value
+        end
+      end
+
+      # @private
+      def update_something_by(*value_terms)
         input_value_proc = value_terms.pop
         attribute_name   = value_terms.pop
         objects          = value_terms.flatten.compact
@@ -118,7 +144,8 @@ module Gql::Runtime
             input_value    = input_value.first if input_value.is_a?(::Array)
             original_value = big_decimal(object[attribute_name].to_s)
 
-            value = update_value_with_strategy(input_value, original_value)
+            value = yield original_value, input_value
+
             update_element_with(object, attribute_name, value)
           else
             # this will not execute...
@@ -128,17 +155,6 @@ module Gql::Runtime
       ensure
         scope.update_collection = nil
         scope.update_object = nil
-      end
-
-      # @private
-      def update_value_with_strategy(input_value, original_value)
-        case update_strategy
-        when :absolute then input_value
-        when :relative_total
-          original_value + (original_value * input_value)
-        when :relative_per_year
-          original_value * ((1.0 + input_value) ** scope.scenario.years)
-        end.to_f
       end
 
       # @private
