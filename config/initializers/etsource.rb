@@ -12,7 +12,7 @@ end
 ETSOURCE_DIR = APP_CONFIG.fetch(:etsource_working_copy, 'etsource')
 ETSOURCE_EXPORT_DIR = ENV['ETSOURCE_DIR'] || APP_CONFIG.fetch(:etsource_export, 'etsource')
 
-Tome.data_dir = "#{ ETSOURCE_DIR }/data"
+Atlas.data_dir = "#{ ETSOURCE_DIR }/data"
 
 # On staging we might want to see the backtrace
 if Rails.env.production? && APP_CONFIG[:show_backtrace]

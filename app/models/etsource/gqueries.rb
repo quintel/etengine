@@ -8,7 +8,7 @@ module Etsource
     end
 
     def import
-      Tome::Gquery.all.map do |gquery|
+      Atlas::Gquery.all.map do |gquery|
         Gquery.new(
           :key =>            gquery.key.to_s,
           :description =>    gquery.description,
