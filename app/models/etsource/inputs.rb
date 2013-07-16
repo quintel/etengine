@@ -6,7 +6,7 @@ module Etsource
     end
 
     def import
-      Tome::Input.all.map do |input|
+      Atlas::Input.all.map do |input|
         attributes = input.to_hash
         attributes[:lookup_id] ||= attributes.delete(:id)
         attributes[:key] = input.key.to_s
