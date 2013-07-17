@@ -29,6 +29,8 @@ module Etsource
         NastyCache.instance.expire!
         NastyCache.instance.expire_local!
 
+        Atlas::ActiveDocument::Manager.clear_all!
+
         Rails.logger.info 'ETsource live reload: Caches cleared.'
       end
     end # class << self
