@@ -166,8 +166,67 @@ namespace :bulk_update do
 
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
-
       
+      # updating sliders in demand growth / prosperity slide
+
+      # read old slider setting
+
+      puts s.end_year
+
+      old_setting = inputs["households_useful_demand_electricity_per_person"] || INPUT_DEFAULTS["households_useful_demand_electricity_per_person"]
+      inputs["households_useful_demand_electric_appliances"] = old_setting
+      inputs["households_useful_demand_lighting"] = old_setting
+
+      inputs["households_useful_demand_cooking"] = INPUT_DEFAULTS["households_useful_demand_cooking"] if inputs["households_useful_demand_cooking"].nil?
+
+      print "households_useful_demand_electricity_per_person old: #{old_setting} => "
+
+      print inputs["households_useful_demand_electric_appliances"]
+      print ", "
+      print inputs["households_useful_demand_lighting"]
+      print ", "
+      puts inputs["households_useful_demand_cooking"]
+
+
+      # updating slider in population slide
+
+      old_setting = inputs["households_number_of_inhabitants"] || INPUT_DEFAULTS["households_number_of_inhabitants"]
+      print "households_number_of_inhabitants old: #{old_setting} => "
+
+      if old_setting < -1.7
+        inputs["households_number_of_inhabitants"] = 16.5303880 * (0.983) ** (s.end_year - 2010)
+        puts inputs["households_number_of_inhabitants"]
+
+      elsif old_setting >= -1.7 && old_setting <= 2.7
+        inputs["households_number_of_inhabitants"] = 16.5303880 * (1.0 + old_setting / 100.0) ** (s.end_year - 2010)
+        puts inputs["households_number_of_inhabitants"]
+
+      else
+        inputs["households_number_of_inhabitants"] = 16.5303880 * (1.027) ** (s.end_year - 2010)
+        puts inputs["households_number_of_inhabitants"]
+
+      end
+
+      # updating sliders in construction and insulation slide
+
+      old_setting = inputs["households_replacement_of_existing_houses"] || INPUT_DEFAULTS["households_replacement_of_existing_houses"]
+
+      old_houses_present = 7.3495000 * 0.86
+      old_houses_future = old_houses_present * (1.0 - old_setting / 100.0) ** (s.end_year - 2010)
+      replaced_houses = old_houses_present - old_houses_future
+
+      print "households_replacement_of_existing_houses: #{old_setting} => "
+
+      inputs["households_number_of_old_houses"] = old_houses_future
+      
+      print inputs["households_number_of_old_houses"]
+      print ', '
+
+      inputs["households_number_of_new_houses"] = 7.3495000 * 0.14 + replaced_houses
+
+      puts inputs["households_number_of_new_houses"]
+
+      puts "==========="
 
       ###################### GENERAL CHECKS ##########################
 
