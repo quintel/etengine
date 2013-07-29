@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       before_filter :find_scenario, :only => [:update, :sandbox]
-      before_filter :find_preset_or_scenario, :only => :show
+      before_filter :find_preset_or_scenario, :only => [:show, :dashboard]
 
       # GET /api/v3/scenarios/:id
       #
@@ -13,6 +13,20 @@ module Api
       #
       def show
         render json: ScenarioPresenter.new(self, @scenario, params[:detailed])
+      end
+
+      def dashboard
+        presenter = nil
+        
+        Scenario.transaction do
+          presenter = ScenarioDashboardPresenter.new(self, @scenario, params)
+        end
+        
+        if presenter.errors.any?
+          render json: { errors: presenter.errors }, status: 422
+        else
+          render json: presenter
+        end
       end
 
       # GET /api/v3/scenarios/templates
