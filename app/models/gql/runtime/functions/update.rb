@@ -111,7 +111,7 @@ module Gql::Runtime
             original_value + (original_value * input_value)
           when :relative_per_year
             original_value * ((1.0 + input_value) ** scope.scenario.years)
-          end.to_f
+          end
         end
       end
 
@@ -146,7 +146,7 @@ module Gql::Runtime
 
             value = yield original_value, input_value
 
-            update_element_with(object, attribute_name, value)
+            update_element_with(object, attribute_name, value.to_f)
           else
             # this will not execute...
             raise "UPDATE: objects not found: #{value_terms}"
