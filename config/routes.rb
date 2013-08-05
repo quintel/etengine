@@ -16,6 +16,7 @@ Etm::Application.routes.draw do
       resources :scenarios, :only => [:show, :create, :update] do
         member do
           get :sandbox
+          put :dashboard
         end
         get :templates, :on => :collection
         resources :converters, :only => :show do
