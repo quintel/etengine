@@ -8,5 +8,4 @@
 - max_value = 100
 - min_value = 0
 - start_value = 50
-
-UPDATE(V(foo), preset_demand, USER_INPUT())
+- query = UPDATE(V(foo), preset_demand, USER_INPUT())

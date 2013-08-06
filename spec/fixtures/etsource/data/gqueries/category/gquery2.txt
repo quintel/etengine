@@ -1,7 +1,7 @@
 # It has a comment and no deprecated_key
 
 - unit = kg
-
-SUM(
-  SUM(1,2)
-)
+- query =
+    SUM(
+      SUM(1,2)
+    )

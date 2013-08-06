@@ -1,3 +1,2 @@
 - unit = kg
-
-V(bar,demand)
+- query = V(bar,demand)
