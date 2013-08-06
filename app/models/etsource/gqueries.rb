@@ -11,7 +11,7 @@ module Etsource
       Atlas::Gquery.all.map do |gquery|
         Gquery.new(
           :key =>            gquery.key.to_s,
-          :description =>    gquery.description,
+          :description =>    gquery.comments,
           :query =>          gquery.query,
           :unit =>           gquery.unit,
           :deprecated_key => gquery.deprecated_key,
