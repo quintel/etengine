@@ -5,5 +5,4 @@
 - start_value = 100
 - min_value = 0
 - max_value = 100
-
-2 * 2
+- query = 2 * 2

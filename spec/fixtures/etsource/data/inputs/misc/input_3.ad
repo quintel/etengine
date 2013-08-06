@@ -4,5 +4,4 @@
 - unit = %
 - update_period = future
 - factor = 100
-
-UPDATE(V(foo), preset_demand, USER_INPUT())
+- query = UPDATE(V(foo), preset_demand, USER_INPUT())

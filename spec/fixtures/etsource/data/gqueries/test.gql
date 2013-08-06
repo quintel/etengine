@@ -1,5 +1,4 @@
 # It has a comment and no deprecated_key
 
 - unit = kg
-
-V(bar,demand)
+- query = V(bar,demand)
