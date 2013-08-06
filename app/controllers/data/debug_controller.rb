@@ -24,9 +24,18 @@ class Data::DebugController < Data::BaseController
     @gql.update_graphs
 
     # Run the custom defined input
-    if params[:input_yml].andand.present? && params[:input_user_value]
-      input      = Input.load_yaml(params[:input_yml])
+    if params[:input_doc].andand.present? && params[:input_user_value]
+      attributes = Atlas::Input.new(
+        { key: :debug_input }.merge(
+          Atlas::Parser::TextToHash::Base.new(params[:input_doc]).to_hash)
+      ).to_hash
+
+      attributes[:lookup_id] ||= attributes.delete(:id)
+      attributes.delete(:key)
+
+      input      = Input.new(attributes)
       user_value = params[:input_user_value]
+
       @gql.update_graph(:future, input, user_value)
     end
 
