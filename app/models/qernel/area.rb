@@ -55,6 +55,8 @@ module Qernel
       :market_share_daylight_control,
       :market_share_motion_detection,
       :number_households,
+      :number_of_old_residences,
+      :number_of_new_residences,
       :number_inhabitants,
       :number_of_existing_households,
       :offshore_suitable_for_wind,
