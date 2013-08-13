@@ -8,7 +8,7 @@ set :db_host, "etm.cr6sxqj0itls.eu-west-1.rds.amazonaws.com"
 
 task :production do
   set :domain, "et-engine.com"
-  set :branch, "production"
+  set :branch, fetch(:branch, "production")
   set :db_pass, "HaLjXwRWmu60DK"
   set :db_name, application_key
   set :db_user, application_key
@@ -16,13 +16,9 @@ task :production do
   server domain, :web, :app, :db, :primary => true
 end
 
-task :beta do
-  staging
-end
-
 task :staging do
   set :domain, "beta.et-engine.com"
-  set :branch, "staging"
+  set :branch, fetch(:branch, "staging")
   set :db_pass, "r8ZPP7pQTDTBha"
   set :db_name, 'etengine_staging'
   set :db_user, 'etengine_staging'
