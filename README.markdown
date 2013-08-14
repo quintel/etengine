@@ -19,7 +19,7 @@ also has heavy drawbacks.
 The ETEngine uses two graphs that store all the data: one for the present
 year and one for the future year. In this sense, the ETengine is a 'two
 state' model. An exception to this is [Merit](http://github.com/quintel/merit)
-which contains time series of 15 minutes for one year.
+which contains time series at 1 hour resolution for one year.
 
 ### Inputs
 
