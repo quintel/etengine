@@ -1,44 +1,33 @@
 # ETengine
 
-Welcome.
+The Calculation Engine that is used by the Energy Transition Model. 
 
-## Changelog
+Copyright (C) Quintel Intelligence. All rights reserved.
 
-##### 2012-10-23: Link#update_share - sb
+## Design
 
-Link#update_share used #input_external_demand which in turn used #input to determine the link share (= lft_converter.demand / link.value). Unfortunately with reversed links #input was the output slot of the rgt_converter. This was changed and a few extra methods introduced.
+### Caching
 
-##### 2012-10-22: TRASH: GqueryGroup - sb
+The ETEngine uses heavily caching of calculated values by using the
+[fetch_and_rescue](https://github.com/quintel/etengine/blob/51b321f6d43a2d2a626aa268845b775fca051ae0/app/models/qernel/dataset_attributes.rb#L205-L237)
+function that stores and retrieves calculated values and makes sure
+that possible errors do not block execution. This needless to say,
+also has heavy drawbacks.
 
-GqueryGroup was trashed and replaced with the group symbols of the Qernel::Converter.
+### Present and future
 
-##### 2012-10-22: #function renamed to #fetch_and_rescue - sb
+The ETEngine uses two graphs that store all the data: one for the present
+year and one for the future year. In this sense, the ETengine is a 'two
+state' model. An exception to this is [Merit](http://github.com/quintel/merit)
+which contains time series of 15 minutes for one year.
 
-The ubiquitous function(:foo) was renamed to the more describing #fetch_and_rescue.
+### Inputs
 
-##### 2012-08-14: QUERY_DELTA - sb
+Every times the user requests some output, the **total** set of inputs are
+applied to the scenario at hand. This is someting to keep in mind when
+designing your input statements.
 
-QUERY\_DELTA() returns QUERY\_FUTURE - QUERY_PRESENT
-
-```ruby
-QUERY_DELTA( -> { GRAPH(year) }) # => 30 (2040 - 2010)
-```
-
-##### 2012-08-14: GQL Warnings - sb
-
-A separate GQL warnings log was created, to show possible errors in the GQL/Qernel. Plus we raise errors when a converter was not found.
-
-http://beta.et-engine.com/data/latest/gql/warnings
-
-
-##### 2012-08-14: QUERY_FUTURE/PRESENT now accept a lambda - sb
-
-```ruby
-QUERY_PRESENT( -> { GRAPH(year) } )  # => 2010
-QUERY_FUTURE( -> { GRAPH(year) } )   # => 2050
-# Still works with gquery keys:
-QUERY_FUTURE( dashboard_total_costs )
-```
+ELABORATE MORE ON THIS.
 
 ## Installation
 
