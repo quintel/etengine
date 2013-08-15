@@ -1,9 +1,8 @@
 require 'spec_helper'
 
-describe 'APIv3 Scenarios' do
+describe 'APIv3 Scenarios', :etsource_fixture do
   before(:all) do
     NastyCache.instance.expire!
-    Etsource::Base.loader('spec/fixtures/etsource')
   end
 
   context 'with valid parameters' do
