@@ -5,15 +5,8 @@ module Etsource
     end
 
     def presets
-      base_dir = "#{@etsource.export_dir}/presets"
-
-      presets = []
-      Dir.glob("#{base_dir}/**/*.yml").each do |f|
-        attributes = YAML::load_file(f).with_indifferent_access
-        presets << Preset.new(attributes)
-      end
-      presets
+      Atlas::Preset.all.map { |preset| Preset.new(preset.attributes) }
     end
-    
+
   end
 end
