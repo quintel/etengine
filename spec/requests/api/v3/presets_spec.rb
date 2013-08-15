@@ -1,11 +1,6 @@
 require 'spec_helper'
 
-describe 'APIv3 Presets' do
-  before(:all) do
-    NastyCache.instance.expire!
-    Etsource::Base.loader('spec/fixtures/etsource')
-  end
-
+describe 'APIv3 Presets', :etsource_fixture do
   it 'should respond with the presets' do
     get 'api/v3/scenarios/templates'
 
