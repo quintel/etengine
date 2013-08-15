@@ -12,9 +12,9 @@ GIT
 
 GIT
   remote: git://github.com/quintel/rubel.git
-  revision: 963e6caa53b4018cc2d5554019353ae55db55994
+  revision: d2ab7738766c79e51685ea8e7e91aa44bc3ac3c5
   specs:
-    rubel (0.0.3)
+    rubel (0.0.4)
 
 GIT
   remote: git://github.com/quintel/ruby-deepclone.git
@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: 7ae33671bffa43b5a983fb35d50a615e86d105e7
+  revision: 3ad545c1bb1092be5a0c9172bd0c1e0854306d71
   specs:
     atlas (0.0.2)
       activemodel (>= 3.2.12)
@@ -163,7 +163,7 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.1)
     mime-types (1.23)
-    multi_json (1.7.3)
+    multi_json (1.7.9)
     mysql2 (0.3.11)
     nokogiri (1.5.9)
     polyglot (0.3.3)
@@ -271,7 +271,7 @@ GEM
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
-    turbine-graph (0.1.0)
+    turbine-graph (0.1.1)
     tzinfo (0.3.37)
     unicorn (4.6.2)
       kgio (~> 2.6)
