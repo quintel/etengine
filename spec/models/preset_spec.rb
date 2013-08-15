@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Preset do
-  it "should initialize" do
+  it "initializes" do
     preset = Preset.new(id: 1, user_values: {}, end_year: 2050, area_code: 'nl', foo_bar: 'has no effect')
     preset.id.should          == 1
     preset.user_values.should == {}
@@ -9,14 +9,13 @@ describe Preset do
     preset.area_code.should   == 'nl'
   end
 
-  it "should load_records" do
+  it "load records" do
     Preset.all.map(&:id).include?(2999).should be_true
   end
 
 
-  it "#to_scenario should a scenario" do
+  it "#to_scenario returns a scenario" do
     scenario = Preset.all.first.to_scenario
-    scenario.id.should == 2999
     scenario.class.should == Scenario
   end
 
