@@ -14,6 +14,10 @@ function that stores and retrieves calculated values and makes sure
 that possible errors do not block execution. This needless to say,
 also has heavy drawbacks.
 
+### Scenario
+
+
+
 ### Present and future
 
 The ETEngine uses two graphs that store all the data: one for the present
@@ -22,6 +26,18 @@ state' model. An exception to this is [Merit](http://github.com/quintel/merit)
 which contains time series at 1 hour resolution for one year.
 
 ### Inputs
+
+A user can alter the start scenario with the use of **inputs**. Every input has
+a key and a value can be sent to ETEngine. For example a user can tell ETengine:
+
+    number_of_energy_power_nuclear_gen3_uranium_oxide = 2
+
+This means that the user wants to 'set' the number of nuclear power plants to `2`
+in his/her current scenario.
+
+The current set of inputs can be found on
+[etsource](https://github.com/quintel/etsource/tree/master/data/inputs).
+
 
 Every times the user requests some output, **all** the inputs that have been
 touched by that user for that scenario are applied again. The order in which
