@@ -23,11 +23,35 @@ which contains time series at 1 hour resolution for one year.
 
 ### Inputs
 
-Every times the user requests some output, the **total** set of inputs are
-applied to the scenario at hand. This is someting to keep in mind when
-designing your input statements.
+Every times the user requests some output, **all** the inputs that have been
+touched by that user for that scenario are applied again. The order in which
+they are applied can be controlled if necessary.
 
-ELABORATE MORE ON THIS.
+The priority of every input defaults to 0, and can be set a manual value
+(e.g. 100) on inputs which need to be executed first. For example, an input
+with `priority=100` gets executed before an input with `priority=99`, etc...
+
+This is someting to keep in mind when designing your input statements.
+
+#### Competing inputs
+
+For example, when you have two inputs:
+
+* input `A`: update attribute `X` to have value `1`
+* input `B`: update attribute `X` to have value `2`
+
+The outcome of this `X` will be `1` **or** `2` depending on the priority of
+these inputs (if they both have no priority or the same priority), this will
+be randomly determined.
+
+#### Complementary inputs
+
+For example, when you have two inputs:
+
+* input `A`: update attribute `X` to **increase** with `1%`
+* input `B`: update attribute `X` to **increase** with `2%`
+
+Then the outcome of the `X` will be 1.01 * 1.02.
 
 ## Installation
 
