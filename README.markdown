@@ -16,14 +16,20 @@ also has heavy drawbacks.
 
 ### Scenario
 
-
+When the user starts a new scenario, the user has to choose the `end_year`
+and the `area` for which this scenario applies. This can/should *not* be
+altered later.
 
 ### Present and future
 
-The ETEngine uses two graphs that store all the data: one for the present
+The ETEngine uses *two* graphs that store all the data: one for the present
 year and one for the future year. In this sense, the ETengine is a 'two
-state' model. An exception to this is [Merit](http://github.com/quintel/merit)
-which contains time series at 1 hour resolution for one year.
+state' model: everything is calculated twice: once for the start year, and
+once for the end year. It is important to note that ETengine therefor does
+*not* calculate intermediate years. An exception to this is
+[Merit](http://github.com/quintel/merit), a module for ETengine (that can
+also be used independently which contains time series at a one hour resolution
+for one year.
 
 ### Inputs
 
