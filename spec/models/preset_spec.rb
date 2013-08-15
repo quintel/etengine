@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Preset do
+describe Preset, :etsource_fixture do
   it "initializes" do
     preset = Preset.new(id: 1, user_values: {}, end_year: 2050, area_code: 'nl', foo_bar: 'has no effect')
     preset.id.should          == 1
@@ -10,6 +10,7 @@ describe Preset do
   end
 
   it "load records" do
+    puts Preset.all.length
     Preset.all.map(&:id).include?(2999).should be_true
   end
 
