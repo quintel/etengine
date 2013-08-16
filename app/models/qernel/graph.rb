@@ -223,7 +223,7 @@ class Graph
     @converters_by_group[key] ||= converters.select{|c| c.groups.include?(key) }
   end
 
-  # Return the converter with given id or key. See {Qernel::Converter::KEYS_FOR_LOOKUP} for used keys
+  # Return the converter with given key.
   #
   # @param id [Integer,String] lookup key for converter
   # @return [Converter]
@@ -398,9 +398,7 @@ class Graph
     @converters_hash = {}
 
     converters.each do |converter|
-      Qernel::Converter::KEYS_FOR_LOOKUP.each do |method_for_key|
-        @converters_hash[converter.send(method_for_key)] = converter
-      end
+      @converters_hash[converter.key] = converter
     end
   end
 

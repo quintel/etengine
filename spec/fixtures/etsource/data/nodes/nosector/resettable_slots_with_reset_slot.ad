@@ -1,0 +1,2 @@
+- groups = [primary_energy_demand]
+- preset_demand = 1000.0

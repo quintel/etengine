@@ -12,83 +12,10 @@ module Etsource
     end
 
     def import
-      converters = {}
-      converter_groups = Hash.new { |hash, key| hash[key] = [] }
+      graph = Qernel::Graph.new(converter_hash.values)
 
-      # Load the converter groups from the topology/groups/*.yml
-      # creating a in this format:
-      # {converter_1: [group_1, group_2], ...}
-      Dir.glob("#{base_dir}/groups/*.yml").each do |file|
-        group_name = File.basename(file, '.yml').to_sym
-        items = YAML::load_file(file)
-        items.each do |key|
-          converter_groups[key.to_sym] << group_name
-        end
-      end
-
-      # Loads converters and puts into converters hash. Attaches
-      # the previously loaded groups.
-      topology_hash.each_pair do |key, attrs|
-        # Initialize all converters first, before we map slots and links to them.
-        converter_key = key.to_sym
-
-        converter = Qernel::Converter.new({
-          key:                  converter_key,
-          sector_id:            attrs['sector'].try(:to_sym),
-          use_id:               attrs['use'].try(:to_sym),
-          energy_balance_group: attrs['energy_balance_group'].try(:to_sym),
-          groups:               converter_groups[converter_key]
-        })
-        converters[converter_key] = converter
-      end
-
-      # Connect converters with
-      graph = Qernel::Graph.new(converters.values)
-
-      # The new export.graph uses yaml. The old format was parsed line by line,
-      # now we must parse the entire structure. A slot object can be built from
-      # a link and a slot line, so we merge them, remove duplicates and create
-      # the slots as needed.
-      slot_tokens      = Set.new
-      slots_from_links = Set.new
-
-      topology_hash.each_pair do |c_key, values|
-        # First we create slot tokens by parsing the defined "slots"; this
-        # data will contain the most precise definition of the slot (with
-        # optional data).
-        (values['slots'] || []).each do |line|
-          slot_tokens.add(SlotToken.find(line).first)
-        end
-
-        # Then we go through each link to add any slots which weren't
-        # explicitly defined in the "slots" section.
-        (values['links'] || []).each do |line|
-          SlotToken.find(line).each { |token| slots_from_links.add(token) }
-        end
-      end
-
-      slot_tokens.merge(slots_from_links).each do |token|
-        converter = converters[token.converter_key]
-
-        slot = Qernel::Slot.factory(
-          token.data(:type), token.key, converter,
-          carrier(token), token.direction)
-
-        converter.add_slot(slot) # DEBT: after removing of Blueprint::Models we can simplify this
-      end
-
-      topology_hash.each_pair do |converter_key, values|
-        (values['links'] || []).each do |line|
-          link = LinkToken.find(line)
-          next unless link.is_a?(LinkToken)
-          link = Qernel::Link.new(link.key,
-                                  converters[link.input_key],
-                                  converters[link.output_key],
-                                  carrier(link),
-                                  link.link_type,
-                                  link.reversed )
-        end
-      end
+      create_explicit_slots!
+      establish_links!
 
       graph.assign_graph_to_qernel_objects
       graph
@@ -100,15 +27,9 @@ module Etsource
       @carriers[key] ||= Qernel::Carrier.new(key: key)
     end
 
-  protected
-
-    def topology_hash
-      @topology_hash ||= YAML::load(File.read(topology_file))
-    end
-
-    def topology_file
-      "#{base_dir}/export.graph"
-    end
+    #########
+    protected
+    #########
 
     # working copy
     def base_dir
@@ -118,6 +39,58 @@ module Etsource
     # export, read-only dir
     def export_dir
       "#{@etsource.export_dir}/topology"
+    end
+
+    #######
+    private
+    #######
+
+    def create_explicit_slots!
+      Atlas::Node.all.each do |node|
+        (node.in_slots + node.out_slots).each do |slot|
+          conv = converter(node.key)
+          conv.add_slot(FromAtlas.slot(slot, conv, carrier(slot.carrier)))
+        end
+      end
+    end
+
+    def establish_links!
+      Atlas::Edge.all.each do |edge|
+        supplier = converter(edge.supplier)
+        consumer = converter(edge.consumer)
+        carrier  = carrier(edge.carrier)
+
+        # Some slots are not explicitly defined as "input" or "output"
+        # attributes on the node document, so we add them here.
+
+        unless supplier.output(edge.carrier)
+          supplier.add_slot(FromAtlas.slot_from_data(supplier, carrier, :out))
+        end
+
+        unless consumer.input(edge.carrier)
+          consumer.add_slot(FromAtlas.slot_from_data(consumer, carrier, :in))
+        end
+
+        FromAtlas.link!(edge, consumer, supplier, carrier)
+      end
+    end
+
+    # Internal: Returns a hash of all the converter objects, where each key
+    # is the key of the converter, and each value the converter itself.
+    #
+    # Returns a Hash.
+    def converter_hash
+      @converter_hash ||=
+        Atlas::Node.all.each_with_object({}) do |node, collection|
+          collection[node.key] = FromAtlas.converter(node)
+        end
+    end
+
+    # Internal: Returns an the converter whose key matches +key+.
+    #
+    # Returns a Qernel::Converter.
+    def converter(key)
+      converter_hash[key]
     end
   end
 
