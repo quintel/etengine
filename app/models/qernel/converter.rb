@@ -91,12 +91,6 @@ class Converter
 
   include DatasetAttributes
 
-  # Following keys can be looked up by {Qernel::Graph#converter}.
-  KEYS_FOR_LOOKUP = [
-    :excel_id_to_sym,
-    :key
-  ]
-
   attr_reader  :id,
                :output_links,
                :input_links,

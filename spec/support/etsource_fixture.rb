@@ -4,6 +4,7 @@ module ETSourceFixtureHelper
   def self.included(config)
     config.around do |example|
       fixture_path = Rails.root.join('spec/fixtures/etsource/data')
+      Etsource::Base.loader('spec/fixtures/etsource')
 
       NastyCache.instance.expire!
       Atlas.with_data_dir(fixture_path) { example.run }

@@ -318,12 +318,7 @@ public
   end
 
   def inspect
-    "<Qernel::Link #{topology_key}>"
-  end
-
-  def topology_key
-    o = output.andand.converter.key || rgt_converter.key
-    "#{input.andand.converter.key} -- #{link_type.to_s[0]} --> #{o}"
+    "<Qernel::Link #{key.inspect}>"
   end
 
   # TODO: find better names and explanation, this was added for the upcoming input module
