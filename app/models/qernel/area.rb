@@ -44,6 +44,7 @@ module Qernel
       :heat_recovery,
       :import_electricity_primary_demand_factor,
       :input_values,
+      :technical_lifetime_insulation,
       :insulation_level_new_houses_min,
       :insulation_level_new_houses_max,
       :insulation_level_old_houses_min,
