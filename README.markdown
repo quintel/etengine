@@ -11,8 +11,8 @@ Copyright (C) Quintel Intelligence. All rights reserved.
 The ETEngine uses heavily caching of calculated values by using the
 [fetch_and_rescue](https://github.com/quintel/etengine/blob/51b321f6d43a2d2a626aa268845b775fca051ae0/app/models/qernel/dataset_attributes.rb#L205-L237)
 function that stores and retrieves calculated values and makes sure
-that possible errors do not block execution. This needless to say,
-also has heavy drawbacks.
+that possible errors do not block execution. This also has serious
+drawbacks, but is necessary to keep execution time down.
 
 ### Scenario
 
@@ -42,7 +42,7 @@ This means that the user wants to 'set' the number of nuclear power plants to `2
 in his/her current scenario.
 
 The current set of inputs can be found on
-[etsource](https://github.com/quintel/etsource/tree/master/data/inputs).
+[ETSource][ETSource].
 
 
 Every times the user requests some output, **all** the inputs that have been
@@ -74,6 +74,23 @@ For example, when you have two inputs:
 * input `B`: update attribute `X` to **increase** with `2%`
 
 Then the outcome of the `X` will be 1.01 * 1.02.
+
+### Output
+
+The user can request output from his/her scenario with the use of
+*gqueries*. A gquery always returns the *present* and the *future*
+output value, although there are exceptions to this.
+
+E.g. when the user sends the `dashboard_co2_emissions` query to
+ETEngine, it will receive the following feedback:
+
+* present: 123
+* future: 456
+* unit: MJ
+
+A **gquery** is nothing more then a stored statement. These statements are
+written in our own language called the *Graph Query Language* (GQL) and
+a recent list can be found on [ETSource][ETSource].
 
 ## Installation
 
@@ -148,3 +165,5 @@ We build a new etmodel with 3 converters from scratch. This helps you
 understand how the etsource works.
 
 The result you can find in: etsource/models/sample
+
+[ETSource]: http://github.com/quintel/etsource  "ETSource: database for the ETM."
