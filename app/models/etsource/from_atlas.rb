@@ -1,4 +1,6 @@
 module Etsource
+  # Contains helpers used to build the structure of the graph in ETEngine
+  # using the ETSource documents.
   module FromAtlas
     class << self
       # Public: Given an Atlas +node+, creates the corresponding Converter for
@@ -73,12 +75,6 @@ module Etsource
           edge.reversed?
         )
       end
-
-      #######
-      private
-      #######
-
-      # Helpers --------------------------------------------------------------
 
       # Internal: Given a node key, carrier key, and direction, returns the
       # key to be assigned to a slot with those attributes.
