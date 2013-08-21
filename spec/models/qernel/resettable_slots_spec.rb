@@ -7,7 +7,7 @@ module Qernel
         @gql = Scenario.default.gql
       end
 
-      it "equals max_demand if max_demand is available"  do
+      xit "equals max_demand if max_demand is available"  do
         @gql.query_future("V(resettable_slots_with_hidden_link, demand)").should == 11000.0
         @gql.query_future("V(resettable_slots_with_hidden_link_child, demand)").should == 11000.0
         @gql.query_future("V(resettable_slots_with_hidden_link_child, primary_demand)").should == 11000.0
