@@ -23,7 +23,7 @@ module Api
       def batch
         ids = params[:id].split(',')
 
-        scenarios = ids.map do |id|
+        @scenarios = ids.map do |id|
           scenario  = Preset.get(id).try(:to_scenario) ||
                       Scenario.find_by_id(id)
           presenter = ScenarioPresenter.new(self, scenario, params[:detailed])
@@ -31,7 +31,7 @@ module Api
           scenario ? presenter : { id: id, errors: ["Scenario not found"] }
         end
 
-        render json: scenarios
+        render json: @scenarios
       end
 
       def dashboard

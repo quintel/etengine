@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::ScenariosController do
   let(:scenario) { FactoryGirl.create(:scenario) }
+  let(:scenarios) { 5.times.map { FactoryGirl.create(:scenario) } }
   
   before do
     Input.stub(:records).and_return({
@@ -19,7 +20,20 @@ describe Api::V3::ScenariosController do
       assigns(:scenario).should == scenario
     end
   end
-  
+
+  describe "GET batch.json" do
+    it "should return the info of multiple scenarios" do
+      get :batch, :id => [scenarios.map(&:id)].join(','), :format => :json
+      response.should be_success
+
+      assigns(:scenarios).should be_a(Array)
+
+      assigns(:scenarios).each do |scenario|
+        expect(scenario).to be_a(Api::V3::ScenarioPresenter)
+      end
+    end
+  end
+
   describe "GET sandbox" do
     it "should return result of a gquerie" do
       get :sandbox, :id => scenario.id,:gql => 'SUM(1,2)', :format => :json
