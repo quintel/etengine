@@ -15,8 +15,7 @@ module Api
         render json: ScenarioPresenter.new(self, @scenario, params[:detailed])
       end
 
-
-      # GET /api/v3/scenarios/batch/:id1,:id2,:id3,...,:id20
+      # GET /api/v3/scenarios/:id1,:id2,:id3,...,:id20/batch
       #
       # Returns the scenarios' details in JSON format. If any of the scenarios
       # is missing, they're not returned.
