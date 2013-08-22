@@ -15,13 +15,33 @@ module Api
         render json: ScenarioPresenter.new(self, @scenario, params[:detailed])
       end
 
+
+      # GET /api/v3/scenarios/batch/:id1,:id2,:id3,...,:id20
+      #
+      # Returns the scenarios' details in JSON format. If any of the scenarios
+      # is missing, they're not returned.
+      #
+      def batch
+        ids = params[:id].split(',')
+
+        scenarios = ids.map do |id|
+          scenario  = Preset.get(id).try(:to_scenario) ||
+                      Scenario.find_by_id(id)
+          presenter = ScenarioPresenter.new(self, scenario, params[:detailed])
+
+          scenario ? presenter : { id: id, errors: ["Scenario not found"] }
+        end
+
+        render json: scenarios
+      end
+
       def dashboard
         presenter = nil
-        
+
         Scenario.transaction do
           presenter = ScenarioDashboardPresenter.new(self, @scenario, params)
         end
-        
+
         if presenter.errors.any?
           render json: { errors: presenter.errors }, status: 422
         else
