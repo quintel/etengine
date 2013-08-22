@@ -177,7 +177,9 @@ module Etsource
       attributes.delete(:demand)
       attributes.delete(:parent_share)
 
-      attributes[:share] = attributes.delete(:child_share)
+      if edge.type == :share
+        attributes[:share] = attributes.delete(:child_share)
+      end
 
       dataset[Hashpipe.hash(FromAtlas.link_key(edge))] = attributes
     end
