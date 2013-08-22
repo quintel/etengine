@@ -135,6 +135,12 @@ module Etsource
         attributes[:demand_expected_value] = demand * 1_000_000_000
       end
 
+      # Temporary until query-based attributes in Atlas are no longer defined
+      # as a method with the same name, but instead use AD#val.
+      if node.is_a?(Atlas::Node::CentralProducer)
+        attributes[:full_load_hours] = node.full_load_hours(@country)
+      end
+
       dataset[Hashpipe.hash(node.key)] = attributes
 
       (node.in_slots + node.out_slots).each do |slot|
