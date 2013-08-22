@@ -6,8 +6,12 @@
 
   $.getJSON(data_json_url, function(json_data) {
     data = json_data;
-    for (var key in data['present']['1']) {
-      $('#attribute').append($('<option></option>').val(key).html(key));
+    for (var node_key in data['present']) {
+      for (var key in data['present'][node_key]) {
+        $('#attribute').append($('<option></option>').val(key).html(key));
+      }
+      // We only need to use the first element to build the list of attributes
+      break;
     }
   })
   $(function(){

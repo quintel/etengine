@@ -6,8 +6,10 @@ module Api
         @gql = @scenario.gql(prepare: true)
         @converters = @gql.present_graph.converters
         @positions = {}
-        ConverterPosition.not_hidden.where("converter_key IS NOT NULL").
-          each {|c| @positions[c.converter_id] = c}
+
+        ConverterPosition.not_hidden.each do |pos|
+          @positions[pos.converter_key] = pos
+        end
       end
 
       # Creates a Hash suitable for conversion to JSON by Rails.
