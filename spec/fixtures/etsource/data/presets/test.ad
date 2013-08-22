@@ -2,5 +2,6 @@
 - end_year = 2040
 - area_code = nl
 - use_fce = false
+- display_group = Keizersgracht
 - user_values.foo_demand = 10
 - user_values.input_2 = 20
