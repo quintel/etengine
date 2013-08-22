@@ -156,12 +156,17 @@ module Etsource
     # Returns nothing.
     def import_slot!(slot, dataset)
       key = FromAtlas.slot_key(slot.node.key, slot.carrier, slot.direction)
+      attributes = {}
 
-      dataset[Hashpipe.hash(key)] = if slot.is_a?(Atlas::Slot::Elastic)
-        {}
-      else
-        { conversion: val(slot, :share) }
+      unless slot.is_a?(Atlas::Slot::Elastic)
+        attributes[:conversion] = val(slot, :share)
       end
+
+      if slot.carrier == :coupling_carrier && slot.in?
+        attributes[:reset_to_zero] = true
+      end
+
+      dataset[Hashpipe.hash(key)] = attributes
     end
 
     # Internal: Converts the attributes from a production-mode Atlas edge and
