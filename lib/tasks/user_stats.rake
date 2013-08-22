@@ -6,7 +6,7 @@ def median(array)
   return (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0
 end
 
-desc 'Displays number of created scenarios during the last week.'
+desc 'Displays number of created scenarios over the last x days (period=x, default = 7 days).'
 task :user_stats => [:environment] do
   number_of_days = ENV['period'].to_i || 7
 
@@ -37,7 +37,27 @@ task :user_stats => [:environment] do
   headings << {:value => "Max. # of\nsliders", :alignment => :center}
   
   table = Terminal::Table.new :title => "User Statistics", :headings => headings, :rows => rows
-  [1,2,3,4,5].each { |i| table.align_column(i,:right) }
+  a = *(1..headings.size - 1).each { |i| table.align_column(i,:right) }
+  puts table
+  
+  rows = []
+  scenarios.group_by(&:source).each do |key, coll|
+  # => { etmodel: [<Scenarios>,..], mixer: ...etc }
+    coll = coll.delete_if { |scen| scen.title == "API" }
+    count =  coll.size
+    slider_counts = coll.map(&:user_values).map(&:size)
+    avg = coll.blank? ? 0 : slider_counts.reduce(:+) / count.to_f.round
+    if coll.blank?
+      rows << ["#{ key }",0,"-","-","-","-"]
+    else
+      rows << ["#{ key }",count,avg,median(slider_counts),slider_counts.min,slider_counts.max]
+    end
+  end
+  
+  headings[1] = {:value => "# of saved\nscenarios", :alignment => :center}
+  
+  table = Terminal::Table.new :title => "User Statistics", :headings => headings, :rows => rows
+  a = *(1..headings.size - 1).each { |i| table.align_column(i,:right) }
   puts table
 end
 
