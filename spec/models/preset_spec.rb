@@ -14,10 +14,18 @@ describe Preset, :etsource_fixture do
     Preset.all.map(&:id).include?(2999).should be_true
   end
 
+  describe "#to_scenario" do
 
-  it "#to_scenario returns a scenario" do
-    scenario = Preset.all.first.to_scenario
-    scenario.class.should == Scenario
+    let(:scenario) { Preset.all.first.to_scenario }
+
+    it 'returns a scenario' do
+      expect(scenario).to be_a(Scenario)
+    end
+
+    it 'has the same user_values' do
+      expect(scenario.user_values).to include foo_demand: 10
+    end
+
   end
 
 end
