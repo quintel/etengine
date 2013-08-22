@@ -19,8 +19,7 @@ module Etsource
   class Dataset::Import
     attr_reader :country
 
-    PRESET_DEMAND_GROUPS = [:useful_demand, :central_production]
-    STATIC_REGION_FILES  = Rails.root.join('tmp')
+    STATIC_REGION_FILES = Rails.root.join('tmp')
 
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
@@ -110,7 +109,7 @@ module Etsource
     def demand_attribute(node)
       @demand_node_table ||=
         Atlas::Node.all.each_with_object({}) do |node, table|
-          table[node.key] = (PRESET_DEMAND_GROUPS & node.groups).any?
+          table[node.key] = node.groups.include?(:preset_demand)
         end
 
       @demand_node_table[node.key] ? :preset_demand : :demand_expected_value
