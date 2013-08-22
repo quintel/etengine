@@ -53,17 +53,13 @@ private
     @converters = @gql.present_graph.converters
     @positions = {}
 
-    map = {}
-    ConverterPosition.all.each do |c|
-      map[c.converter_id]         = c if c.converter_id
-      map[c.converter_key.to_sym] = c if c.converter_key
+    map = ConverterPosition.all.each_with_object({}) do |c, hash|
+      hash[c.converter_key.to_sym] = c
     end
 
     @converters.each do |c|
-      p = map[c.key] ||
-          map[c.excel_id] ||
-          ConverterPosition.create(:converter_key => c.key)
-      @positions[c.key] = p
+      @positions[c.key] =
+        map[c.key] || ConverterPosition.create(:converter_key => c.key)
     end
   end
 
@@ -73,7 +69,7 @@ private
         v = c.query.send(key)
         h.merge key => auto_number(v)
       end
-      hsh.merge c.excel_id => attr_hash
+      hsh.merge c.key => attr_hash
     end
   end
 
