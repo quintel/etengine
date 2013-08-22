@@ -99,12 +99,12 @@
   :resettable_slots_with_reset_slot:
     :demand: 1000.0
     :input:
-      :gas: 11.0
+      :coupling_carrier: 11.0
   :resettable_slots_with_hidden_link:
     :input:
       :gas: 1.0
     :output:
-      :gas: 1.0
+      :coupling_carrier: 1.0
   :resettable_slots_with_hidden_link_child:
     :output:
       :gas: 1.0
@@ -165,7 +165,7 @@
   # From resettable_slots.yml
   # -------------------------
 
-  :resettable_slots_with_reset_slot-resettable_slots_with_hidden_link@gas:
+  :resettable_slots_with_reset_slot-resettable_slots_with_hidden_link@coupling_carrier:
     :child_share: 1.0
   :resettable_slots_with_hidden_link-resettable_slots_with_hidden_link_child@gas:
     :child_share: 1.0
