@@ -2,14 +2,14 @@ desc 'Generates list converter keys and demands from a static.yml file'
 
 task :generate_key_demand_file => [:environment] do
   path              = ENV['path']
-  output_file_name  = 'tmp/node_demand.txt'
+  output_file_name  = 'tmp/node_demand.csv'
 
   unless path && !path.blank?
     abort 'Please specify: path=<path_to_file/filename>'
   end
 
   node_data = YAML.load_file(path)[:nodes]
-  demands   = node_data.map { |key, data| "#{ key } = #{ data[:demand] }" }
+  demands   = node_data.map { |key, data| "#{ key },#{ data[:demand] }" }
 
   File.write(output_file_name, demands.join("\n"))
 
