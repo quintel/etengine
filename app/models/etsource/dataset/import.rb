@@ -134,6 +134,10 @@ module Etsource
         attributes[:demand_expected_value] = demand * 1_000_000_000
       end
 
+      if attributes[:max_demand]
+        attributes[:max_demand] *= 1_000_000_000
+      end
+
       # Temporary until query-based attributes in Atlas are no longer defined
       # as a method with the same name, but instead use AD#val.
       if node.is_a?(Atlas::Node::CentralProducer)
