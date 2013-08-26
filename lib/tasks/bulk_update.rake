@@ -167,64 +167,46 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
       
-      # updating sliders in demand growth / prosperity slide
+      # updating sliders in construction and insulation slide
+      def new_rvalue(x1, x2, x3, r_old)
 
-      # read old slider setting
-
-      puts s.end_year
-
-      old_setting = inputs["households_useful_demand_electricity_per_person"] || INPUT_DEFAULTS["households_useful_demand_electricity_per_person"]
-      inputs["households_useful_demand_electric_appliances"] = old_setting
-      inputs["households_useful_demand_lighting"] = old_setting
-
-      inputs["households_useful_demand_cooking"] = INPUT_DEFAULTS["households_useful_demand_cooking"] if inputs["households_useful_demand_cooking"].nil?
-
-      print "households_useful_demand_electricity_per_person old: #{old_setting} => "
-
-      print inputs["households_useful_demand_electric_appliances"]
-      print ", "
-      print inputs["households_useful_demand_lighting"]
-      print ", "
-      puts inputs["households_useful_demand_cooking"]
-
-
-      # updating slider in population slide
-
-      old_setting = inputs["households_number_of_inhabitants"] || INPUT_DEFAULTS["households_number_of_inhabitants"]
-      print "households_number_of_inhabitants old: #{old_setting} => "
-
-      if old_setting < -1.7
-        inputs["households_number_of_inhabitants"] = 16.5303880 * (0.983) ** (s.end_year - 2010)
-        puts inputs["households_number_of_inhabitants"]
-
-      elsif old_setting >= -1.7 && old_setting <= 2.7
-        inputs["households_number_of_inhabitants"] = 16.5303880 * (1.0 + old_setting / 100.0) ** (s.end_year - 2010)
-        puts inputs["households_number_of_inhabitants"]
-
-      else
-        inputs["households_number_of_inhabitants"] = 16.5303880 * (1.027) ** (s.end_year - 2010)
-        puts inputs["households_number_of_inhabitants"]
+        new_r = x1 / ((0.8 * x3) / r_old + 0.2) - x2
+        return new_r
 
       end
 
-      # updating sliders in construction and insulation slide
+      # For old houses
+      x1old = 0.66
+      x2old = 0.16
+      x3old = 1.0 
 
-      old_setting = inputs["households_replacement_of_existing_houses"] || INPUT_DEFAULTS["households_replacement_of_existing_houses"]
+      old_setting = inputs[:households_insulation_level_old_houses] || INPUT_DEFAULTS[:households_insulation_level_old_houses]
+      inputs[:households_insulation_level_old_houses] = new_rvalue(x1old, x2old, x3old, old_setting)
+      puts "Old houses: #{old_setting} => #{inputs[:households_insulation_level_old_houses]}"
+      #puts "Old houses R_old = 3: #{new_rvalue(x1old, x2old, x3old, 3)}" 
 
-      old_houses_present = 7.3495000 * 0.86
-      old_houses_future = old_houses_present * (1.0 - old_setting / 100.0) ** (s.end_year - 2010)
-      replaced_houses = old_houses_present - old_houses_future
+      # For new houses
+      x1new = 1.85
+      x2new = 0.05
+      x3new = 2.5
 
-      print "households_replacement_of_existing_houses: #{old_setting} => "
+      old_setting = inputs[:households_insulation_level_new_houses] || INPUT_DEFAULTS[:households_insulation_level_new_houses]
+      if old_setting >= 4.91
+        old_setting = 4.91
+      end
+      inputs[:households_insulation_level_new_houses] = new_rvalue(x1new, x2new, x3new, old_setting)
+      puts "New houses: #{old_setting} => #{inputs[:households_insulation_level_new_houses]}"
+      #puts "New houses R_old = 3: #{new_rvalue(x1new, x2new, x3new, 3)}" 
 
-      inputs["households_number_of_old_houses"] = old_houses_future
-      
-      print inputs["households_number_of_old_houses"]
-      print ', '
+      # For buildings
+      x1buildings = 0.73
+      x2buildings = 0.13
+      x3buildings = 1.0 
 
-      inputs["households_number_of_new_houses"] = 7.3495000 * 0.14 + replaced_houses
-
-      puts inputs["households_number_of_new_houses"]
+      old_setting = inputs[:buildings_insulation_level] || INPUT_DEFAULTS[:buildings_insulation_level]
+      inputs[:buildings_insulation_level] = new_rvalue(x1buildings, x2buildings, x3buildings, old_setting)
+      puts "Buildings: #{old_setting} => #{inputs[:buildings_insulation_level]}"
+      #puts "Buildings  R_old = 3: #{new_rvalue(x1buildings, x2buildings, x3buildings, 3)}"       
 
       puts "==========="
 
@@ -232,17 +214,17 @@ namespace :bulk_update do
 
       # HHs warm water group
       share_group_inputs = [
-        "households_water_heater_wood_pellets_share",
-        "households_water_heater_coal_share",
-        "households_water_heater_resistive_electricity_share",
-        "households_water_heater_fuel_cell_chp_network_gas_share",
-        "households_water_heater_combined_network_gas_share",
-        "households_water_heater_network_gas_share",
-        "households_water_heater_district_heating_steam_hot_water_share",
-        "households_water_heater_micro_chp_network_gas_share",
-        "households_water_heater_crude_oil_share",
-        "households_water_heater_heatpump_air_water_electricity_share",
-        "households_water_heater_heatpump_ground_water_electricity_share"
+        :households_water_heater_wood_pellets_share,
+        :households_water_heater_coal_share,
+        :households_water_heater_resistive_electricity_share,
+        :households_water_heater_fuel_cell_chp_network_gas_share,
+        :households_water_heater_combined_network_gas_share,
+        :households_water_heater_network_gas_share,
+        :households_water_heater_district_heating_steam_hot_water_share,
+        :households_water_heater_micro_chp_network_gas_share,
+        :households_water_heater_crude_oil_share,
+        :households_water_heater_heatpump_air_water_electricity_share,
+        :households_water_heater_heatpump_ground_water_electricity_share
       ]
 
       sum = 0.0
@@ -272,16 +254,16 @@ namespace :bulk_update do
 
       # HHs space heating group
       share_group_inputs = [
-      "households_space_heater_heatpump_air_water_electricity_share",
-      "households_space_heater_micro_chp_network_gas_share",
-      "households_space_heater_electricity_share",
-      "households_space_heater_crude_oil_share",
-      "households_space_heater_combined_network_gas_share",
-      "households_space_heater_heatpump_ground_water_electricity_share",
-      "households_space_heater_wood_pellets_share",
-      "households_space_heater_coal_share",
-      "households_space_heater_network_gas_share",
-      "households_space_heater_district_heating_steam_hot_water_share"
+      :households_space_heater_heatpump_air_water_electricity_share,
+      :households_space_heater_micro_chp_network_gas_share,
+      :households_space_heater_electricity_share,
+      :households_space_heater_crude_oil_share,
+      :households_space_heater_combined_network_gas_share,
+      :households_space_heater_heatpump_ground_water_electricity_share,
+      :households_space_heater_wood_pellets_share,
+      :households_space_heater_coal_share,
+      :households_space_heater_network_gas_share,
+      :households_space_heater_district_heating_steam_hot_water_share
       ]
 
       sum = 0.0
@@ -319,11 +301,11 @@ namespace :bulk_update do
 
       # HHs district heating group
       share_group_inputs = [
-        "households_collective_chp_network_gas_share",
-        "households_collective_chp_wood_pellets_share",
-        "households_collective_chp_biogas_share",
-        "households_collective_geothermal_share",
-        "households_heat_network_connection_steam_hot_water_share"
+        :households_collective_chp_network_gas_share,
+        :households_collective_chp_wood_pellets_share,
+        :households_collective_chp_biogas_share,
+        :households_collective_geothermal_share,
+        :households_heat_network_connection_steam_hot_water_share
       ]
 
       sum = 0.0
@@ -345,10 +327,10 @@ namespace :bulk_update do
 
       # Buildings district heating group
       share_group_inputs = [
-        "buildings_collective_chp_wood_pellets_share",
-        "buildings_collective_chp_network_gas_share",
-        "buildings_heat_network_connection_steam_hot_water_share",
-        "buildings_collective_geothermal_share"
+        :buildings_collective_chp_wood_pellets_share,
+        :buildings_collective_chp_network_gas_share,
+        :buildings_heat_network_connection_steam_hot_water_share,
+        :buildings_collective_geothermal_share
       ]
 
       sum = 0.0
@@ -370,9 +352,10 @@ namespace :bulk_update do
 
       #Share group of HHs cooling
       share_group_inputs = [
-      "households_cooling_heatpump_ground_water_electricity_share",
-      "households_cooling_heatpump_air_water_electricity_share",
-      "households_cooling_airconditioning_electricity_share"]
+      :households_cooling_heatpump_ground_water_electricity_share,
+      :households_cooling_heatpump_air_water_electricity_share,
+      :households_cooling_airconditioning_electricity_share
+      ]
 
       sum = 0.0
       share_group_inputs.each do |element|
@@ -387,11 +370,12 @@ namespace :bulk_update do
 
       #Share group of industry heating
       share_group_inputs = [
-      "industry_burner_network_gas_share",
-      "industry_burner_crude_oil_share",
-      "industry_burner_coal_share",
-      "industry_burner_wood_pellets_share",
-      "industry_final_demand_steam_hot_water_share"]
+      :industry_burner_network_gas_share,
+      :industry_burner_crude_oil_share,
+      :industry_burner_coal_share,
+      :industry_burner_wood_pellets_share,
+      :industry_final_demand_steam_hot_water_share
+      ]
 
       sum = 0.0
       share_group_inputs.each do |element|
