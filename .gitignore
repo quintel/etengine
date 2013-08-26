@@ -48,3 +48,4 @@ etsource_export
 .sass-cache
 *.sublime-project
 *.sublime-workspace
+.powenv
