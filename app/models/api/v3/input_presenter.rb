@@ -27,9 +27,10 @@ module Api
 
         values   = Input.cache.read(@scenario, @input)
 
-        user_val = @scenario.user_values[@input.key] ||
-                     @scenario.balanced_values[@input.key]
+        user_values      = HashWithIndifferentAccess.new(@scenario.user_values)
+        balanced_values  = HashWithIndifferentAccess.new(@scenario.balanced_values)
 
+        user_val = user_values[@input.key] || balanced_values[@input.key]
 
         json[:min]         = values[:min]
         json[:max]         = values[:max]
