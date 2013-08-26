@@ -36,7 +36,6 @@ gem 'merit',                           git:     'git@github.com:quintel/merit.gi
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
 gem 'atlas',         '0.0.2',          git:     'git@github.com:quintel/atlas.git'
 
-
 # system gems
 gem 'mysql2',         '~>0.3.11'
 gem 'dalli'
@@ -44,6 +43,7 @@ gem 'term-ansicolor', '1.0.7',    require: false
 gem 'highline',                   require: false
 gem 'rubyzip',        '0.9.4'
 gem 'fileutils'
+gem 'capistrano'
 
 # documentation gems. Needed on production too for dynamically generated docs.
 group :development, :production do
