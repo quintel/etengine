@@ -96,22 +96,22 @@ a recent list can be found on [ETSource][ETSource].
 
 Assuming you can run a 'normal' rails application on your local machine,
 you have to follow these steps to run ET-Engine.
-* `$> bundle install` to install dependencies if you haven't done already
-* `$> rake db:create` to create your database
-* `$> cap staging db2local` to fill your database with records from staging
+* `bundle install` to install dependencies if you haven't done already
+* `bundle exec rake db:create` to create your database
+* `bundle exec cap staging db2local` to fill your database with records from staging
   server
 * create a directory to clone etsource into, I advise to use
   a dedicated etsource copy in the etengine root folder:
   `git clone git@github.com:quintel/etsource.git`
 * create an empty directory as a working copy for your etsource directory
   `mdkir etsource_export`
-* `$> cd config`
-* `$> cp config.sample.yml config.yml; cp database.sample.yml database.yml`
+* `cd config`
+* `cp config.sample.yml config.yml; cp database.sample.yml database.yml`
 * open up these two files in your favorite text-editor and fill in the
   details of the directories you just created. You can leave the defaults as
   they are, unless you want something else
 * make sure you have memcached running (using `memcached -d`)
-* fire up your local rails server (use `$> rails s` on the console or use
+* fire up your local rails server (use `rails s` on the console or use
   [pow](http://pow.cx)
 * go to `http://etengine.dev/etsource` or equivalent
 * Press 'import' (the latest commit or another one if you like that better)
