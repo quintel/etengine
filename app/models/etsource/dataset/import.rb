@@ -82,6 +82,8 @@ module Etsource
       data = default_dataset.deep_merge(country_dataset)
 
       data[:graph] = load_graph_dataset
+      data[:area]  = { area_data: load_region_data }
+
       data
     end
 
@@ -100,6 +102,13 @@ module Etsource
       graph_objects.edges.each { |edge| import_edge!(edge, graph_dataset) }
 
       graph_dataset
+    end
+
+    # Internal: Loads the region data.
+    #
+    # Returns a hash.
+    def load_region_data
+      Atlas::Dataset.find(@country).to_hash
     end
 
     # Internal: Given an Atlas node, determines if that node should have a
