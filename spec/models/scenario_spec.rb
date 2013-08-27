@@ -9,10 +9,10 @@ describe Scenario do
     its(:area_code) { should == 'nl'}
     its(:user_values) { should == {} }
     its(:end_year) { should == 2040 }
-    its(:start_year) { should == 2010 }
+    its(:start_year) { should == 2011 }
 
     describe "#years" do
-      its(:years) { should == 30 }
+      its(:years) { should == 29 }
     end
   end
 
