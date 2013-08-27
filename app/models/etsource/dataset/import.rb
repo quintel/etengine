@@ -134,7 +134,9 @@ module Etsource
         attributes[:demand_expected_value] = demand * 1_000_000_000
       end
 
-      if attributes[:max_demand]
+      # Test that max_demand is numeric, since some old tests assign the value
+      # to be "recursive".
+      if attributes[:max_demand].kind_of?(Numeric)
         attributes[:max_demand] *= 1_000_000_000
       end
 
