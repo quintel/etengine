@@ -15,12 +15,12 @@ module Gql
       end
 
       it "should work when passing procs" do
-        @gql.query_present("QUERY_PRESENT( -> { GRAPH(year) } )").should == 2010
-        @gql.query_future( "QUERY_PRESENT( -> { GRAPH(year) } )").should == 2010
+        @gql.query_present("QUERY_PRESENT( -> { GRAPH(year) } )").should == 2011
+        @gql.query_future( "QUERY_PRESENT( -> { GRAPH(year) } )").should == 2011
         @gql.query_present("QUERY_FUTURE(  -> { GRAPH(year) } )").should == 2040
         @gql.query_future( "QUERY_FUTURE(  -> { GRAPH(year) } )").should == 2040
 
-        @gql.query_future( "QUERY_DELTA(  -> { GRAPH(year) } )").should == 30
+        @gql.query_future( "QUERY_DELTA(  -> { GRAPH(year) } )").should == 29
       end
 
       it "QUERY_DELTA for the present should always return 0.0" do
