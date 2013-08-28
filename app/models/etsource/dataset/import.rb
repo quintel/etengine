@@ -199,6 +199,8 @@ module Etsource
 
       if edge.type == :share
         attributes[:share] = attributes.delete(:child_share)
+      elsif edge.type == :constant
+        attributes[:share] = attributes.delete(:demand)
       end
 
       dataset[Hashpipe.hash(FromAtlas.link_key(edge))] = attributes
