@@ -138,15 +138,15 @@ module Etsource
       attributes.delete(:demand)
 
       if (demand_attr = demand_attribute(node)) == :preset_demand
-        attributes[:preset_demand] = val(node, :demand) * 1_000_000_000
+        attributes[:preset_demand] = val(node, :demand) * 1_000_000
       elsif demand = node.demand
-        attributes[:demand_expected_value] = demand * 1_000_000_000
+        attributes[:demand_expected_value] = demand * 1_000_000
       end
 
       # Test that max_demand is numeric, since some old tests assign the value
       # to be "recursive".
       if attributes[:max_demand].kind_of?(Numeric)
-        attributes[:max_demand] *= 1_000_000_000
+        attributes[:max_demand] *= 1_000_000
       end
 
       # Temporary until query-based attributes in Atlas are no longer defined
@@ -197,7 +197,7 @@ module Etsource
       if edge.type == :share
         attributes[:share] = attributes.delete(:child_share)
       elsif edge.type == :constant
-        attributes[:share] = attributes.delete(:demand) * 1_000_000_000
+        attributes[:share] = attributes.delete(:demand) * 1_000_000
       end
 
       attributes.delete(:parent_share)
