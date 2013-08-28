@@ -194,14 +194,14 @@ module Etsource
     def import_edge!(edge, dataset)
       attributes = edge.attributes
 
-      attributes.delete(:demand)
-      attributes.delete(:parent_share)
-
       if edge.type == :share
         attributes[:share] = attributes.delete(:child_share)
       elsif edge.type == :constant
-        attributes[:share] = attributes.delete(:demand)
+        attributes[:share] = attributes.delete(:demand) * 1_000_000_000
       end
+
+      attributes.delete(:parent_share)
+      attributes.delete(:demand)
 
       dataset[Hashpipe.hash(FromAtlas.link_key(edge))] = attributes
     end
