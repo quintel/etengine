@@ -9,7 +9,7 @@
     :input:
       :electricity: 1.0
   :foo:
-    :demand: 1.0e-07
+    :demand: 1.0e-04
     :input:
       :electricity: 1.0
   :bar:
@@ -19,7 +19,7 @@
     :output:
       :electricity: 1.0
   :converter_fixture_for_slots:
-    :demand: 1.0e-07
+    :demand: 1.0e-04
     :input:
       :electricity: 0.6
       :gas: 0.4 # <- flexible
@@ -39,16 +39,16 @@
     :output:
       :gas: 1.0
   :max_demand_converter_b:
-    :max_demand: 6.0e-06
+    :max_demand: 6.0e-03
     :output:
       :gas: 1.0
   :max_demand_converter_c:
-    :max_demand: 5.0e-07
+    :max_demand: 5.0e-04
     :output:
       :gas: 1.0
 
   :max_demand_converter_with_high_demand:
-    :demand: 1.0e-05
+    :demand: 1.0e-02
     :input:
       :gas: 1.0
   :max_demand_converter_with_high_demand_remainder:
@@ -59,21 +59,21 @@
   # --------------------
 
   :fd_electricity_for_merit_order:
-    :demand: 5.0e-06
+    :demand: 5.0e-03
     :full_load_seconds: 1.0
   :el_grid:
-    :demand: 5.0e-06
+    :demand: 5.0e-03
     :input:
       :electricity: 1.0
 
   :plant_1:
-    :demand: 1.0e-06
+    :demand: 1.0e-03
     :availability: 1.0
     :output:
       :electricity: 1.0
 
   :plant_2:
-    :demand: 2.0e-06
+    :demand: 2.0e-03
     :availability: 1.0
     :output:
       :electricity: 1.0
@@ -84,20 +84,20 @@
       :electricity: 1.0
 
   :must_run_1:
-    :demand: 1.0e-07
+    :demand: 1.0e-04
     :availability: 1.0
   :must_run_2:
-    :demand: 5.0e-07
+    :demand: 5.0e-04
     :availability: 1.0
   :must_run_3:
-    :demand: 1.0e-06
+    :demand: 1.0e-03
     :availability: 1.0
 
   # From resettable_slots.yml
   # -------------------------
 
   :resettable_slots_with_reset_slot:
-    :demand: 1.0e-06
+    :demand: 1.0e-03
     :input:
       :coupling_carrier: 11.0
   :resettable_slots_with_hidden_link:
@@ -113,18 +113,18 @@
   # -----------------------
 
   :reversed_links_middle_1:
-    :demand: 1.0e-060
+    :demand: 1.0e-03
     :output:
       :gas: 1.0
   :reversed_links_middle_2:
     :output:
       :gas: 1.0
   :reversed_links_middle_3:
-    :demand: 1.0e-07
+    :demand: 1.0e-04
     :output:
       :gas: 1.0
   :reversed_links_left:
-    :demand: 1.5e-06
+    :demand: 1.5e-03
     :input:
       :gas: 1.0
 
