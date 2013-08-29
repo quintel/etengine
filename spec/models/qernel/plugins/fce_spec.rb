@@ -18,23 +18,23 @@ class DummyGraph
       if key.to_s == 'coal'
         carrier[:fce] = [
           {
-            'origin_country' => 'africa', 
-            'start_value' => 50.0, 
-            'co2_conversion_per_mj' => 100.0,
-            'co2_exploration_per_mj' => 100.0,
-            'co2_extraction_per_mj' => 100.0,
-            'co2_treatment_per_mj' => 100.0,
-            'co2_transportation_per_mj' => 100.0,
-            'co2_waste_treatment_per_mj' => 100.0
+            origin_country: 'africa',
+            start_value: 50.0,
+            co2_conversion_per_mj: 100.0,
+            co2_exploration_per_mj: 100.0,
+            co2_extraction_per_mj: 100.0,
+            co2_treatment_per_mj: 100.0,
+            co2_transportation_per_mj: 100.0,
+            co2_waste_treatment_per_mj: 100.0
           }, {
-            'origin_country' => 'russia',
-            'start_value' => 50.0,
-            'co2_conversion_per_mj' => 5000.0,
-            'co2_exploration_per_mj' => 5000.0,
-            'co2_extraction_per_mj' => 5000.0,
-            'co2_treatment_per_mj' => 5000.0,
-            'co2_transportation_per_mj' => 5000.0,
-            'co2_waste_treatment_per_mj' => 5000.0
+            origin_country: 'russia',
+            start_value: 50.0,
+            co2_conversion_per_mj: 5000.0,
+            co2_exploration_per_mj: 5000.0,
+            co2_extraction_per_mj: 5000.0,
+            co2_treatment_per_mj: 5000.0,
+            co2_transportation_per_mj: 5000.0,
+            co2_waste_treatment_per_mj: 5000.0
           }
         ]
       elsif key.to_s == 'greengas'
