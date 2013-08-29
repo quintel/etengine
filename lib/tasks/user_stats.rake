@@ -12,11 +12,31 @@ def plot_table(title, headings, rows)
   puts table
 end
 
+def save_as_csv(path, key, postfix, data)
+  CSV.open("#{path}/#{key}_#{postfix}.csv", "wb") do |csv|
+    csv << ["#{key} - #{postfix.humanize}"]
+    data.each do |row|
+      csv << row
+    end
+  end
+end
+
 desc 'Displays number of created scenarios over the last x days (period=x, default = 7 days).'
 task :user_stats => [:environment] do
   number_of_periods = ENV['periods'] || 1
   summary           = ENV['summary'] && (ENV['summary'].upcase=='TRUE' || ENV['summary'].upcase=='ONLY') || false
   summary_only      = ENV['summary'] && ENV['summary'].upcase=='ONLY' || false
+  csv               = ENV['csv'] && (ENV['csv'].upcase=='TRUE' || ENV['csv'].upcase=='ONLY') || false
+  csv_only          = (ENV['csv'] && ENV['csv'].upcase=='ONLY') || false
+  path              = ENV['path'] || Dir.home
+  
+  if csv or csv_only
+    puts "It's CSV"
+    unless File.directory?(path)
+      puts "Please make sure you provide a valid path"
+      exit
+    end
+  end
   
   periods = *(1..number_of_periods.to_i)
 
@@ -57,7 +77,7 @@ task :user_stats => [:environment] do
 
     title = "User Statistics for period: #{start_date} - #{end_date}"
 
-    plot_table(title, headings, rows) unless summary_only
+    plot_table(title, headings, rows) unless summary_only or csv_only
 
     rows = []
     scenarios.group_by(&:source).each do |key, coll|
@@ -78,10 +98,10 @@ task :user_stats => [:environment] do
 
     headings[1] = {:value => "# of saved\nscenarios", :alignment => :center}
 
-    plot_table(title, headings, rows) unless summary_only
+    plot_table(title, headings, rows) unless summary_only or csv_only
   end
   
-  if summary
+  if summary or csv
     headings = []
     headings << "Period"
     headings << {:value => "# of\nscenarios", :alignment => :center}
@@ -92,13 +112,17 @@ task :user_stats => [:environment] do
     
     scenario_summary_rows.keys.each do |key|
       title = "Summary for #{key}"
-      plot_table(title, headings, scenario_summary_rows[key])
+      postfix = "scenarios"
+      plot_table(title, headings, scenario_summary_rows[key]) unless csv_only
+      save_as_csv(path,key,postfix,scenario_summary_rows[key]) if csv
     end
     
     saved_scenario_summary_rows.keys.each do |key|
       title = "Summary for #{key}"
+      postfix = "saved_scenarios"
       headings[1] = {:value => "# of saved\nscenarios", :alignment => :center}
-      plot_table(title, headings, saved_scenario_summary_rows[key])
+      plot_table(title, headings, saved_scenario_summary_rows[key]) unless csv_only
+      save_as_csv(path,key,postfix,saved_scenario_summary_rows[key]) if csv
     end
   end
 end
