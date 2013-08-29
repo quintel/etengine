@@ -218,11 +218,16 @@ module Etsource
       attributes = edge.attributes
 
       if edge.type == :share
-        attributes[:share] = attributes.delete(:child_share)
+        if edge.reversed?
+          attributes[:share] = attributes[:parent_share]
+        else
+          attributes[:share] = attributes[:child_share]
+        end
       elsif edge.type == :constant
-        attributes[:share] = attributes.delete(:demand) * 1_000_000
+        attributes[:share] = attributes[:demand] * 1_000_000
       end
 
+      attributes.delete(:child_share)
       attributes.delete(:parent_share)
       attributes.delete(:demand)
 
