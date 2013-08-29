@@ -4,13 +4,13 @@ module Qernel
 
     CARRIERS_FOR_SPECS = {
       # Carriers used in the Specs
-      'foo'              => Carrier.new(id: 2, key: 'foo',  infinite: 1.0).with({}),
-      'bar'              => Carrier.new(id: 3, key: 'bar',  infinite: 1.0).with({}),
-      'loss'             => Carrier.new(id: 1, key: 'loss', infinite: 0.0),
-      'electricity'      => Carrier.new(id: 5, key: 'electricity', infinite: 0.0),
-      'cooling'          => Carrier.new(id: 6, key: 'cooling', infinite: 0.0),
-      'useable_heat'     => Carrier.new(id: 7, key: 'useable_heat', infinite: 0.0),
-      'coupling_carrier' => Carrier.new(id: 8, key: 'coupling_carrier', infinite: 0.0)
+      'foo'              => Carrier.new(id: 2, key: 'foo',  infinite: true).with({}),
+      'bar'              => Carrier.new(id: 3, key: 'bar',  infinite: true).with({}),
+      'loss'             => Carrier.new(id: 1, key: 'loss', infinite: false),
+      'electricity'      => Carrier.new(id: 5, key: 'electricity', infinite: false),
+      'cooling'          => Carrier.new(id: 6, key: 'cooling', infinite: false),
+      'useable_heat'     => Carrier.new(id: 7, key: 'useable_heat', infinite: false),
+      'coupling_carrier' => Carrier.new(id: 8, key: 'coupling_carrier', infinite: false)
     }
 
     CARRIERS = {}.merge(CARRIERS_FOR_SPECS)

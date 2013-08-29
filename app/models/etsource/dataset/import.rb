@@ -56,8 +56,7 @@ module Etsource
     # Return all the carrier keys we have defined in the dataset.
     # (used to dynamically generate some methods)
     def carrier_keys
-      hsh = load_dataset_hash
-      hsh[:carriers].andand.keys || []
+      Atlas::Carrier.all.map(&:key)
     end
 
     def raw_hash
@@ -81,8 +80,9 @@ module Etsource
 
       data = default_dataset.deep_merge(country_dataset)
 
-      data[:graph] = load_graph_dataset
-      data[:area]  = { area_data: load_region_data }
+      data[:area]     = { area_data: load_region_data }
+      data[:carriers] = load_carrier_data
+      data[:graph]    = load_graph_dataset
 
       data
     end
@@ -109,6 +109,29 @@ module Etsource
     # Returns a hash.
     def load_region_data
       Atlas::Dataset.find(@country).to_hash
+    end
+
+    # Internal: Loads the carrier data.
+    #
+    # Returns a hash, each key-pair being a carrier.
+    def load_carrier_data
+      Atlas::Carrier.all.each_with_object({}) do |carrier, data|
+        attributes = carrier.to_hash
+
+        if attributes[:fce].none?
+          attributes.delete(:fce)
+        else
+          # FCE data comes from Atlas in the form of a Hash, but ETEngine
+          # expects an array where each value is hash containing data for
+          # each source country.
+          attributes[:fce] = attributes[:fce].map do |source, fce_attributes|
+            fce_attributes[:origin_country] = source.to_s
+            fce_attributes
+          end
+        end
+
+        data[carrier.key] = attributes
+      end
     end
 
     # Internal: Given an Atlas node, determines if that node should have a
