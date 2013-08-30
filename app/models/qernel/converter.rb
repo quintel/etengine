@@ -404,17 +404,17 @@ protected
   def update_demand
     if output_links.any?(&:inversed_flexible?) or output_links.any?(&:reversed?)
       @calculation_state = :update_demand_if_inversed_flexible_or_reversed
-      slots.map(&:internal_value).compact.sort_by(&:abs).last
+      slots.map(&:internal_value).compact.max
     elsif output_links.empty?
       @calculation_state = :update_demand_if_no_output_links
       # 2010-06-23: If there is no output links we take the highest value from input.
       # otherwise left dead end converters don't get values
-      inputs.map(&:internal_value).compact.sort_by(&:abs).last
+      inputs.map(&:internal_value).compact.max
     else
       @calculation_state = :update_demand
       # 2010-06-23: The normal case. Just take the highest value from outputs.
       # We did this to make the gas_extraction gas_import_export thing work
-      outputs.map(&:internal_value).compact.sort_by(&:abs).last
+      outputs.map(&:internal_value).compact.max
     end
   end
 
