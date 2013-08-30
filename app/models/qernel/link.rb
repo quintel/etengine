@@ -207,8 +207,10 @@ protected
   # https://github.com/dennisschoenmakers/etengine/issues/194
   #
   def calculate_inversed_flexible
-    result = rgt_converter.demand - rgt_converter.outputs.map(&:external_link_value).compact.sum
-    (result < 0.0) ? 0.0 : result
+    output = rgt_converter.demand * rgt_output.conversion
+    excess = output - rgt_output.external_link_value
+
+    (excess < 0.0) ? 0.0 : excess
   end
 
   #
