@@ -1,0 +1,6 @@
+- sustainable = 0.0
+- infinite = false
+- cost_per_mj = 0.02076584
+- mj_per_kg = 46.60512112
+- kg_per_liter = 0.7375
+- graphviz_color = saddlebrown
