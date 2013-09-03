@@ -167,47 +167,32 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
       
-      # updating sliders in construction and insulation slide
-      def new_rvalue(x1, x2, x3, r_old)
+      # Get the old slider settings
+      A = inputs[:number_of_energy_power_ultra_supercritical_coal] || INPUT_DEFAULTS[:number_of_energy_power_ultra_supercritical_coal]
+      B = inputs[:number_of_energy_chp_ultra_supercritical_coal] || INPUT_DEFAULTS[:number_of_energy_chp_ultra_supercritical_coal]
+      C = inputs[:co_firing_wood_pellets_share] || INPUT_DEFAULTS[:co_firing_wood_pellets_share]
 
-        new_r = x1 / ((0.8 * x3) / r_old + 0.2) - x2
-        return new_r
+      # Calculate the values for the new slider settings
+      D = A * (1.0 - 2.0 * C / 100.0)   # new setting for number_of_energy_power_ultra_supercritical_coal
+      E = B * (1.0 - 2.0 * C / 100.0)   # new setting for number_of_energy_chp_ultra_supercritical_coal
+      F = 2.0 * A * C / 100.0           # setting for new slider energy_power_ultra_supercritical_cofiring_coal
+      G = 2.0 * B * C / 100.0           # setting for new slider energy_chp_ultra_supercritical_cofiring_coal
 
-      end
+      # for info only
+      puts "Cofiring coal share: #{C}"
 
-      # For old houses
-      x1old = 0.66
-      x2old = 0.16
-      x3old = 1.0 
+      inputs[:number_of_energy_power_ultra_supercritical_coal] = D
+      puts "Number of pulverized coal plants: #{A} => #{D}"
+     
+      inputs[:number_of_energy_chp_ultra_supercritical_coal] = E
+      puts "Number of coal plants for district heat: #{B} => #{E}"
 
-      old_setting = inputs[:households_insulation_level_old_houses] || INPUT_DEFAULTS[:households_insulation_level_old_houses]
-      inputs[:households_insulation_level_old_houses] = new_rvalue(x1old, x2old, x3old, old_setting)
-      puts "Old houses: #{old_setting} => #{inputs[:households_insulation_level_old_houses]}"
-      #puts "Old houses R_old = 3: #{new_rvalue(x1old, x2old, x3old, 3)}" 
+      inputs[:number_of_energy_power_ultra_supercritical_cofiring_coal] = F
+      puts "Number of pulverized coal plants with co-firing: 0.0 => #{F}"
 
-      # For new houses
-      x1new = 1.85
-      x2new = 0.05
-      x3new = 2.5
-
-      old_setting = inputs[:households_insulation_level_new_houses] || INPUT_DEFAULTS[:households_insulation_level_new_houses]
-      if old_setting >= 4.91
-        old_setting = 4.91
-      end
-      inputs[:households_insulation_level_new_houses] = new_rvalue(x1new, x2new, x3new, old_setting)
-      puts "New houses: #{old_setting} => #{inputs[:households_insulation_level_new_houses]}"
-      #puts "New houses R_old = 3: #{new_rvalue(x1new, x2new, x3new, 3)}" 
-
-      # For buildings
-      x1buildings = 0.73
-      x2buildings = 0.13
-      x3buildings = 1.0 
-
-      old_setting = inputs[:buildings_insulation_level] || INPUT_DEFAULTS[:buildings_insulation_level]
-      inputs[:buildings_insulation_level] = new_rvalue(x1buildings, x2buildings, x3buildings, old_setting)
-      puts "Buildings: #{old_setting} => #{inputs[:buildings_insulation_level]}"
-      #puts "Buildings  R_old = 3: #{new_rvalue(x1buildings, x2buildings, x3buildings, 3)}"       
-
+      inputs[:number_of_energy_chp_ultra_supercritical_cofiring_coal] = G
+      puts "Number of co-firing coal plants for district heat: 0.0 => #{G}"
+     
       puts "==========="
 
       ###################### GENERAL CHECKS ##########################
