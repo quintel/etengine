@@ -198,10 +198,8 @@ protected
   end
 
 
-  # Total converter demand - SUM(outputs.external_link_value)
-  # we take the external_link_values because slots that have
-  # inversed_flexible links are dynamic. So they do cannot have
-  # fixed conversions (and thus no valid internal_link_values).
+  # Inversed flexible links take any excess energy from a slot which isn't
+  # assigned to be carried through another link.
   #
   # Inversed Flexible shouldn't become negative.
   # https://github.com/dennisschoenmakers/etengine/issues/194
