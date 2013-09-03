@@ -30,7 +30,6 @@ gem 'activerecord-import', '~> 0.2.9'
 gem 'fnv'
 
 # own gems
-gem 'yaml_pack',     '~>0.0.3.alpha'
 gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
 gem 'merit',                           git:     'git@github.com:quintel/merit.git'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'

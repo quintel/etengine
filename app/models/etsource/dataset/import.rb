@@ -26,7 +26,9 @@ module Etsource
       @etsource = Etsource::Base.instance
 
       @country  = country
-      @dataset = Qernel::Dataset.new(Hashpipe.hash(country))
+      @dataset  = Qernel::Dataset.new(Hashpipe.hash(country))
+      @atlas_ds = Atlas::Dataset.find(@country)
+
       @hsh = {}
     end
 
@@ -37,19 +39,9 @@ module Etsource
     # performance reasons.
     #
     def import
-      if !Rails.env.test? && !File.exists?(country_dir(country))
-        # don't check for
-        raise "Trying to load a dataset with region code '#{country}' but it does not exist. Should be: #{country_dir(country)}"
-      end
-
-      dataset_hash = load_dataset_hash
-
-      dataset_hash.delete(:defaults)
-      dataset_hash.delete(:mixins)
-
-      @dataset.data = dataset_hash
-      @dataset.data[:area] ||= {:area_data => {}}
+      @dataset.data = load_dataset_hash
       @dataset.data[:graph][:graph] = {:calculated => false}
+
       @dataset
     end
 
@@ -67,24 +59,11 @@ module Etsource
     protected
     #########
 
-    def load_dataset_hash(yaml_pack_options = nil)
-      yaml_pack_options ||= yaml_box_opts
-      yaml_pack_options[:base_dir] = country_dir('_defaults')
-
-      default_files   = Dir.glob(country_dir('_defaults')+"/**/*.yml")
-      default_dataset = YamlPack.new(default_files, yaml_pack_options).load_deep_merged
-
-      yaml_pack_options[:base_dir] = country_dir
-      country_files   = Dir.glob(country_dir+"/**/*.yml")
-      country_dataset = YamlPack.new(country_files, yaml_pack_options).load_deep_merged
-
-      data = default_dataset.deep_merge(country_dataset)
-
-      data[:area]     = { area_data: load_region_data }
-      data[:carriers] = load_carrier_data
-      data[:graph]    = load_graph_dataset
-
-      data
+    def load_dataset_hash
+      { area:       load_region_data,
+        carriers:   load_carrier_data,
+        graph:      load_graph_dataset,
+        time_curve: load_time_curves }
     end
 
     # Internal: Reads the shares, demands, and other regional data from the
@@ -108,7 +87,7 @@ module Etsource
     #
     # Returns a hash.
     def load_region_data
-      Atlas::Dataset.find(@country).to_hash
+      { area_data: @atlas_ds.to_hash }
     end
 
     # Internal: Loads the carrier data.
@@ -131,6 +110,25 @@ module Etsource
         end
 
         data[carrier.key] = attributes
+      end
+    end
+
+    # Internal: Loads time curve data via the Atlas CSVs.
+    #
+    # Returns a hash where each key is the key for a node, and the values are
+    # hashes containing attributes and values.
+    def load_time_curves
+      @atlas_ds.time_curves.each_with_object({}) do |(key, csv), data|
+        headers = csv.table.headers - [:year]
+        curves  = Hash.new { |hash, key| hash[key] = {} }
+
+        data[key] = csv.table.each do |row|
+          headers.each do |header|
+            curves[header][row[:year]] = row[header].to_f * 1_000_000
+          end
+        end
+
+        data[key] = curves
       end
     end
 
@@ -234,37 +232,6 @@ module Etsource
       dataset[Hashpipe.hash(FromAtlas.link_key(edge))] = attributes
     end
 
-    # The following Proc transforms the keys of the dataset. It converts
-    # strings into symbols. For the special converter,slot and link keys
-    # it calculates a hash, for quicker hash lookups.
-    #
-    # :graph
-    #   :converter_xyz # <--- special rule for these keys
-    #      :demand
-    KEY_CONVERTER = Proc.new do |key, converter_keys|
-      # check that we are at the 2nd level in the 'graph' tree. Without the
-      # length check we would make hashes out of attribute names.
-      if converter_keys.first == 'graph' && converter_keys.length == 1
-        Hashpipe.hash(key)
-      else
-        key.respond_to?(:to_sym) ? key.to_sym : key
-      end
-    end
-
-    # options for yaml_pack loader
-    # - Always attach datasets/_includes/header.yml. There we can define mixins.
-    # - folders after base_dir, will get corresponding nested keys in the hash
-    #   e.g.: /graph/export.yml => {:graph => {...contents of file...}}
-    #
-    def yaml_box_opts(base_dir = nil)
-      {
-        key_converter: KEY_CONVERTER,
-        # base_dir makes a) nesting hashes into folders possible
-        # and b) allows for including other files.
-        base_dir: base_dir
-      }
-    end
-
     # Internal: Given a production-mode Atlas object and an attribute name,
     # returns the value of the attribute, or raises an error if it is nil.
     #
@@ -276,35 +243,6 @@ module Etsource
 
       value
     end
-
-  protected
-
-    # Messy legacy hack. Have no words for it right now.
-    def group_key(key)
-      key = key.to_s
-      if key.include?('-->')  then :link
-      elsif key.include?('(') then :slot
-      else                         :converter; end
-    end
-
-    def base_dir
-      "#{@etsource.export_dir}/datasets"
-    end
-
-    # @param [String] country shortcut 'de', 'nl', etc
-    #
-    def country_dir(c = country)
-      "#{base_dir}/#{c}"
-    end
-
-    # @param [String] country shortcut 'de', 'nl', etc
-    #
-    def country_file(country, file_name)
-      f = "#{base_dir}/#{country}/#{file_name}"
-      f += ".yml" unless f.include?('.yml')
-      f
-    end
-
-  end
-end
+  end # Import
+end # Etsource
 
