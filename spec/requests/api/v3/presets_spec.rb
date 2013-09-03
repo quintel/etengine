@@ -10,10 +10,11 @@ describe 'APIv3 Presets', :etsource_fixture do
     preset = Preset.all.first
     data   = json.first
 
-    data.should include('id'          => preset.id)
-    data.should include('title'       => preset.title)
-    data.should include('area_code'   => preset.area_code)
-    data.should include('end_year'    => preset.end_year)
+    data.should include('id'            => preset.id)
+    data.should include('title'         => preset.title)
+    data.should include('area_code'     => preset.area_code)
+    data.should include('end_year'      => preset.end_year)
+    data.should include('display_group' => 'Keizersgracht' )
     data.should_not include('template')
     data.should_not include('source')
     data.should include('description' => preset.description)
