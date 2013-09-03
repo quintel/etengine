@@ -24,8 +24,13 @@ module Etsource
       ::Etsource::Dataset::Import.new(country).import
     end
 
+    REGION_CODES = [ 'nl'.freeze ].freeze
+
     def self.region_codes
-      Dir.glob(Etsource::Base.instance.export_dir+"/datasets/[a-z]*").map{|folders| folders.split("/").last }.sort
+      # Temporarily restricting to Netherlands ONLY. Even though dataset files
+      # exist in Atlas for the UK and Germany, those are not yet ready for
+      # use.
+      REGION_CODES
     end
   end
 end

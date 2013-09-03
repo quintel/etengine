@@ -48,7 +48,7 @@ module Etsource
       if @area_attributes.has_key?(area_code)
         @area_attributes[area_code]
       else
-        hsh = dataset(area_code).data[:area][:area_data] rescue {}
+        hsh = dataset(area_code).data[:area][:area_data]
         @area_attributes[area_code] = hsh.with_indifferent_access
       end
     end

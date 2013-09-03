@@ -42,7 +42,7 @@ module Qernel::Plugins
           # and we have to do it on all of them.
           ::Qernel::Carrier::CO2_FCE_COMPONENTS.each do |attribute|
             fce_values[attribute] = carrier.fce.map do |fce_profile|
-              fce_profile[attribute.to_s] * fce_start_value(carrier, fce_profile['origin_country']) / 100
+              fce_profile[attribute.to_sym] * fce_start_value(carrier, fce_profile[:origin_country]) / 100
             end
             carrier[attribute] = fce_values[attribute].sum
           end
@@ -102,11 +102,11 @@ module Qernel::Plugins
 
       fce_profiles = carrier.fce.select do |fp|
         # TODO: rename to 'origin'
-        fp["origin_country"] == origin.to_s
+        fp[:origin_country] == origin.to_s
       end
 
       if fce_profile = fce_profiles.first
-        fce_profile["start_value"]
+        fce_profile[:start_value]
       else
         0.0
       end

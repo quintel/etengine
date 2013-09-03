@@ -19,6 +19,8 @@ module Etsource
   class Dataset::Import
     attr_reader :country
 
+    STATIC_REGION_FILES = Rails.root.join('tmp')
+
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
       @etsource = Etsource::Base.instance
@@ -40,11 +42,8 @@ module Etsource
         raise "Trying to load a dataset with region code '#{country}' but it does not exist. Should be: #{country_dir(country)}"
       end
 
-      begin
-        dataset_hash = load_dataset_hash
-      rescue Exception => e
-        raise "Error loading dataset: #{e}"
-      end
+      dataset_hash = load_dataset_hash
+
       dataset_hash.delete(:defaults)
       dataset_hash.delete(:mixins)
 
@@ -57,17 +56,16 @@ module Etsource
     # Return all the carrier keys we have defined in the dataset.
     # (used to dynamically generate some methods)
     def carrier_keys
-      hsh = load_dataset_hash
-      hsh[:carriers].andand.keys || []
+      Atlas::Carrier.all.map(&:key)
     end
 
     def raw_hash
       load_dataset_hash({})
     end
 
-  #########
-  protected
-  #########
+    #########
+    protected
+    #########
 
     def load_dataset_hash(yaml_pack_options = nil)
       yaml_pack_options ||= yaml_box_opts
@@ -80,7 +78,160 @@ module Etsource
       country_files   = Dir.glob(country_dir+"/**/*.yml")
       country_dataset = YamlPack.new(country_files, yaml_pack_options).load_deep_merged
 
-      default_dataset.deep_merge(country_dataset)
+      data = default_dataset.deep_merge(country_dataset)
+
+      data[:area]     = { area_data: load_region_data }
+      data[:carriers] = load_carrier_data
+      data[:graph]    = load_graph_dataset
+
+      data
+    end
+
+    # Internal: Reads the shares, demands, and other regional data from the
+    # production-mode Atlas documents, populating the +:graph+ part of the
+    # dataset.
+    #
+    # Returns a hash containing the data.
+    def load_graph_dataset
+      graph_dataset = {}
+
+      graph_objects = Atlas::ProductionMode.new(
+        YAML.load_file(STATIC_REGION_FILES.join('static.yml')))
+
+      graph_objects.nodes.each { |node| import_node!(node, graph_dataset) }
+      graph_objects.edges.each { |edge| import_edge!(edge, graph_dataset) }
+
+      graph_dataset
+    end
+
+    # Internal: Loads the region data.
+    #
+    # Returns a hash.
+    def load_region_data
+      Atlas::Dataset.find(@country).to_hash
+    end
+
+    # Internal: Loads the carrier data.
+    #
+    # Returns a hash, each key-pair being a carrier.
+    def load_carrier_data
+      Atlas::Carrier.all.each_with_object({}) do |carrier, data|
+        attributes = carrier.to_hash
+
+        if attributes[:fce].none?
+          attributes.delete(:fce)
+        else
+          # FCE data comes from Atlas in the form of a Hash, but ETEngine
+          # expects an array where each value is hash containing data for
+          # each source country.
+          attributes[:fce] = attributes[:fce].map do |source, fce_attributes|
+            fce_attributes[:origin_country] = source.to_s
+            fce_attributes
+          end
+        end
+
+        data[carrier.key] = attributes
+      end
+    end
+
+    # Internal: Given an Atlas node, determines if that node should have a
+    # useful demand attribute, or an expected demand attribute.
+    #
+    # Returns true or false.
+    def demand_attribute(node)
+      @demand_node_table ||=
+        Atlas::Node.all.each_with_object({}) do |node, table|
+          table[node.key] = node.groups.include?(:preset_demand)
+        end
+
+      @demand_node_table[node.key] ? :preset_demand : :demand_expected_value
+    end
+
+    # Internal: Converts the attributes from a production-mode Atlas node and
+    # sets the relevant data onto the ETEngine :graph dataset.
+    #
+    # Also imports slots.
+    #
+    # node    - The Atlas::Node.
+    # dataset - The :graph part of the dataset.
+    #
+    # Returns nothing.
+    def import_node!(node, dataset)
+      attributes = node.attributes
+      attributes.delete(:demand)
+
+      if (demand_attr = demand_attribute(node)) == :preset_demand
+        attributes[:preset_demand] = val(node, :demand) * 1_000_000
+      elsif demand = node.demand
+        attributes[:demand_expected_value] = demand * 1_000_000
+      end
+
+      # Test that max_demand is numeric, since some old tests assign the value
+      # to be "recursive".
+      if attributes[:max_demand].kind_of?(Numeric)
+        attributes[:max_demand] *= 1_000_000
+      end
+
+      # Temporary until query-based attributes in Atlas are no longer defined
+      # as a method with the same name, but instead use AD#val.
+      if node.is_a?(Atlas::Node::CentralProducer)
+        attributes[:full_load_hours] = node.full_load_hours(@country)
+      end
+
+      dataset[Hashpipe.hash(node.key)] = attributes
+
+      (node.in_slots + node.out_slots).each do |slot|
+        import_slot!(slot, dataset)
+      end
+    end
+
+    # Internal: Converts the attributes from a production-mode Atlas slot and
+    # sets the conversion and other relevant attributes onto the dataset.
+    #
+    # slot    - The Atlas::Slot.
+    # dataset - The :graph part of the dataset.
+    #
+    # Returns nothing.
+    def import_slot!(slot, dataset)
+      key = FromAtlas.slot_key(slot.node.key, slot.carrier, slot.direction)
+      attributes = {}
+
+      unless slot.is_a?(Atlas::Slot::Elastic)
+        attributes[:conversion] = val(slot, :share)
+      end
+
+      if slot.carrier == :coupling_carrier && slot.in?
+        attributes[:reset_to_zero] = true
+      end
+
+      dataset[Hashpipe.hash(key)] = attributes
+    end
+
+    # Internal: Converts the attributes from a production-mode Atlas edge and
+    # sets the attributes onto the dataset.
+    #
+    # edge    - The Atlas::Edge.
+    # dataset - The :graph part of the dataset.
+    #
+    # Returns nothing.
+    def import_edge!(edge, dataset)
+      attributes = edge.attributes
+
+      if edge.type == :share
+        if edge.reversed?
+          attributes[:share] = attributes[:parent_share]
+        else
+          attributes[:share] = attributes[:child_share]
+        end
+      elsif edge.type == :constant
+        attributes[:share] = attributes[:demand] * 1_000_000
+      end
+
+      attributes.delete(:child_share)
+      attributes.delete(:parent_share)
+      attributes.delete(:demand)
+
+      dataset[Hashpipe.hash(FromAtlas.link_key(edge))] = attributes
     end
 
     # The following Proc transforms the keys of the dataset. It converts
@@ -112,6 +263,18 @@ module Etsource
         # and b) allows for including other files.
         base_dir: base_dir
       }
+    end
+
+    # Internal: Given a production-mode Atlas object and an attribute name,
+    # returns the value of the attribute, or raises an error if it is nil.
+    #
+    # Returns the value.
+    def val(document, attribute)
+      unless value = document.public_send(attribute)
+        raise "#{ document.inspect } has no #{ attribute.inspect } value"
+      end
+
+      value
     end
 
   protected

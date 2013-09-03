@@ -1,0 +1,5 @@
+- sustainable = 1.0
+- infinite = false
+- cost_per_mj = 0.017718419328832
+- typical_production_per_km2 = 17131528.66
+- graphviz_color = green

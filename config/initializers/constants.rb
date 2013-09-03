@@ -1,7 +1,7 @@
 # CONSTANTS THAT ARE ACCESSED BY GQUERIES HAVE TO BE PUT IN:
 # app/models/rubel/functions/constants.rb
 
-START_YEAR = 2010
+START_YEAR = 2011
 
 MWH_TO_GJ = 3.6
 MONTHS_PER_YEAR = 12.0

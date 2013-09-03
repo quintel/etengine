@@ -1,0 +1,180 @@
+---
+:nodes:
+
+  # From graph.yml
+  # --------------
+
+  :lft:
+    :demand: 0.0
+    :input:
+      :electricity: 1.0
+  :foo:
+    :demand: 1.0e-04
+    :input:
+      :electricity: 1.0
+  :bar:
+    :output:
+      :electricity: 1.0
+  :baz:
+    :output:
+      :electricity: 1.0
+  :converter_fixture_for_slots:
+    :demand: 1.0e-04
+    :input:
+      :electricity: 0.6
+      :gas: 0.4 # <- flexible
+
+  # From max_demand_recursive.yml
+  # -----------------------------
+
+  :max_demand_converter_d:
+    :max_demand: 'recursive' # <- Refinery will not do this.
+    :input:
+      :gas: 1.0
+    :output:
+      :gas: 1.0
+  :max_demand_converter_a:
+    :input:
+      :gas: 1.0
+    :output:
+      :gas: 1.0
+  :max_demand_converter_b:
+    :max_demand: 6.0e-03
+    :output:
+      :gas: 1.0
+  :max_demand_converter_c:
+    :max_demand: 5.0e-04
+    :output:
+      :gas: 1.0
+
+  :max_demand_converter_with_high_demand:
+    :demand: 1.0e-02
+    :input:
+      :gas: 1.0
+  :max_demand_converter_with_high_demand_remainder:
+    :output:
+      :gas: 1.0
+
+  # From merit_order.yml
+  # --------------------
+
+  :fd_electricity_for_merit_order:
+    :demand: 5.0e-03
+    :full_load_seconds: 1.0
+  :el_grid:
+    :demand: 5.0e-03
+    :input:
+      :electricity: 1.0
+
+  :plant_1:
+    :demand: 1.0e-03
+    :availability: 1.0
+    :output:
+      :electricity: 1.0
+
+  :plant_2:
+    :demand: 2.0e-03
+    :availability: 1.0
+    :output:
+      :electricity: 1.0
+
+  :import_electricity:
+    :availability: 1.0
+    :output:
+      :electricity: 1.0
+
+  :must_run_1:
+    :demand: 1.0e-04
+    :availability: 1.0
+  :must_run_2:
+    :demand: 5.0e-04
+    :availability: 1.0
+  :must_run_3:
+    :demand: 1.0e-03
+    :availability: 1.0
+
+  # From resettable_slots.yml
+  # -------------------------
+
+  :resettable_slots_with_reset_slot:
+    :demand: 1.0e-03
+    :input:
+      :coupling_carrier: 11.0
+  :resettable_slots_with_hidden_link:
+    :input:
+      :gas: 1.0
+    :output:
+      :coupling_carrier: 1.0
+  :resettable_slots_with_hidden_link_child:
+    :output:
+      :gas: 1.0
+
+  # From reversed_links.yml
+  # -----------------------
+
+  :reversed_links_middle_1:
+    :demand: 1.0e-03
+    :output:
+      :gas: 1.0
+  :reversed_links_middle_2:
+    :output:
+      :gas: 1.0
+  :reversed_links_middle_3:
+    :demand: 1.0e-04
+    :output:
+      :gas: 1.0
+  :reversed_links_left:
+    :demand: 1.5e-03
+    :input:
+      :gas: 1.0
+
+# ----------------------------------------------------------------------------
+
+:edges:
+
+  # From graph.yml
+  # --------------
+
+  :foo-bar@electricity:
+    :child_share: 0.6
+  :foo-baz@electricity:
+    :child_share: 0.4
+  :lft-bar@electricity:
+    :child_share: 1.0
+
+  # From max_demand_recursive.yml
+  # -----------------------------
+
+  :max_demand_converter_d-max_demand_converter_a@gas:
+    :child_share: 1.0
+  :max_demand_converter_a-max_demand_converter_b@gas:
+    :child_share: 0.9
+  :max_demand_converter_a-max_demand_converter_c@gas:
+    :child_share: 0.1
+
+  :max_demand_converter_with_high_demand-max_demand_converter_d@gas:
+  :max_demand_converter_with_high_demand-max_demand_converter_with_high_demand_remainder@gas:
+
+  # From merit_order.yml
+  # --------------------
+
+  :el_grid-plant_1@electricity:
+  :el_grid-plant_2@electricity:
+  :el_grid-import_electricity@electricity:
+
+  # From resettable_slots.yml
+  # -------------------------
+
+  :resettable_slots_with_reset_slot-resettable_slots_with_hidden_link@coupling_carrier:
+    :child_share: 1.0
+  :resettable_slots_with_hidden_link-resettable_slots_with_hidden_link_child@gas:
+    :child_share: 1.0
+
+  # From reversed_links.yml
+  # -----------------------
+
+  :reversed_links_left-reversed_links_middle_1@gas:
+  :reversed_links_left-reversed_links_middle_2@gas:
+  :reversed_links_left-reversed_links_middle_3@gas:
+    :child_share: 1.0
+    :parent_share: 1.0
