@@ -1,0 +1,6 @@
+- sustainable = 0.0
+- infinite = false
+- cost_per_mj = 0.0011
+- mj_per_kg = 12.3
+- co2_conversion_per_mj = 0.1012
+- graphviz_color = black

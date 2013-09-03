@@ -198,17 +198,17 @@ protected
   end
 
 
-  # Total converter demand - SUM(outputs.external_link_value)
-  # we take the external_link_values because slots that have
-  # inversed_flexible links are dynamic. So they do cannot have
-  # fixed conversions (and thus no valid internal_link_values).
+  # Inversed flexible links take any excess energy from a slot which isn't
+  # assigned to be carried through another link.
   #
   # Inversed Flexible shouldn't become negative.
   # https://github.com/dennisschoenmakers/etengine/issues/194
   #
   def calculate_inversed_flexible
-    result = rgt_converter.demand - rgt_converter.outputs.map(&:external_link_value).compact.sum
-    (result < 0.0) ? 0.0 : result
+    output = rgt_converter.demand * rgt_output.conversion
+    excess = output - rgt_output.external_link_value
+
+    (excess < 0.0) ? 0.0 : excess
   end
 
   #
@@ -318,12 +318,7 @@ public
   end
 
   def inspect
-    "<Qernel::Link #{topology_key}>"
-  end
-
-  def topology_key
-    o = output.andand.converter.key || rgt_converter.key
-    "#{input.andand.converter.key} -- #{link_type.to_s[0]} --> #{o}"
+    "<Qernel::Link #{key.inspect}>"
   end
 
   # TODO: find better names and explanation, this was added for the upcoming input module

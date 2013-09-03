@@ -10,7 +10,6 @@ describe Preset, :etsource_fixture do
   end
 
   it "load records" do
-    puts Preset.all.length
     Preset.all.map(&:id).include?(2999).should be_true
   end
 

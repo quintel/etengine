@@ -1,13 +1,8 @@
 require 'spec_helper'
 
 describe "Reversed Links" do
-  before :all do
-    NastyCache.instance.expire!
-    Etsource::Base.loader('spec/fixtures/etsource')
-  end
-
   describe "reversed links" do
-    before :all do
+    before do
       @gql = Scenario.default.gql
     end
 

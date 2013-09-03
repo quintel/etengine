@@ -2,11 +2,6 @@ require 'spec_helper'
 
 module Qernel
   describe Converter do
-    before :all do
-      NastyCache.instance.expire!
-      Etsource::Base.loader('spec/fixtures/etsource')
-    end
-
     describe "max_demand_recursive" do
       before do 
         @gql = Scenario.default.gql

@@ -57,5 +57,5 @@ RSpec.configure do |config|
   config.include(Authlogic::TestCase)
   config.include(EtmAuthHelper)
   config.include(MechanicalTurkHelper)
-  config.include(ETSourceFixtureHelper, etsource_fixture: true)
+  config.include(ETSourceFixtureHelper)
 end
