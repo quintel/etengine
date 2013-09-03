@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: a862148815f17750c0b10aad1055c2c053b542fd
+  revision: ea3e77ec8c6860d21ddba7386afa62fefee8ac14
   specs:
     atlas (0.0.2)
       activemodel (>= 3.2.12)
@@ -298,7 +298,6 @@ GEM
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
-    yaml_pack (0.0.3.alpha)
     yard (0.7.5)
 
 PLATFORMS
@@ -360,5 +359,4 @@ DEPENDENCIES
   unicorn
   watchr
   webrat
-  yaml_pack (~> 0.0.3.alpha)
   yard (~> 0.7.2)
