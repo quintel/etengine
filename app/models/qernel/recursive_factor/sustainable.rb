@@ -64,6 +64,6 @@ module Qernel::RecursiveFactor::Sustainable
 
   def infinite?
     carriers = slots.map {|slot| slot.carrier}.uniq
-    !carriers.empty? and carriers.any?{|carrier| carrier.infinite == 1.0}
+    !carriers.empty? and carriers.any?(&:infinite)
   end
 end

@@ -1,0 +1,7 @@
+- sustainable = 1.0
+- infinite = false
+- cost_per_mj = 0.0033
+- mj_per_kg = 17.7
+- co2_conversion_per_mj = 0.0
+- typical_production_per_km2 = 17700000.0
+- graphviz_color = green

@@ -1,0 +1,3 @@
+- infinite = false
+- cost_per_mj = 0.0
+- graphviz_color = yellow

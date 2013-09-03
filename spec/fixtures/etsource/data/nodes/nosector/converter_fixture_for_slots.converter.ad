@@ -1,0 +1,4 @@
+- groups = []
+- preset_demand = 100.0
+- input.gas = 0.4
+- input.electricity =

@@ -29,9 +29,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data.should_not have_key('description')
     end
 
-    it 'should save custom parameters' do
+    it 'should save custom end years' do
       running_this = -> {
-        post 'api/v3/scenarios', scenario: { end_year: 2031, area_code: 'de' }
+        post 'api/v3/scenarios', scenario: { end_year: 2031 }
       }
 
       expect(&running_this).to change { Scenario.count }.by(1)
@@ -40,7 +40,21 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data = JSON.parse(response.body)
 
       data['end_year'].should eql(2031)
-      data['area_code'].should eql('de')
+    end
+
+    it 'should save custom end years' do
+      pending 'awaiting reintroduction of non-NL regions' do
+        running_this = -> {
+          post 'api/v3/scenarios', scenario: { area_code: 'de' }
+        }
+
+        expect(&running_this).to change { Scenario.count }.by(1)
+        response.status.should eql(200)
+
+        data = JSON.parse(response.body)
+
+        data['area_code'].should eql('de')
+      end
     end
   end
 
