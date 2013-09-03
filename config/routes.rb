@@ -15,6 +15,7 @@ Etm::Application.routes.draw do
       resources :areas, :only => [:index, :show]
       resources :scenarios, :only => [:show, :create, :update] do
         member do
+          get :batch
           get :sandbox
           put :dashboard
         end
