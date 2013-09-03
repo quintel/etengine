@@ -191,7 +191,7 @@ module Qernel
 
           it "# if outputs are higher then inputs fill up inversed_flexible
               # with the remainder.
-              bar:   loss(nil) == i(nil)   ==> mid(nil)
+              foo:   loss(nil) == i(nil) ==> mid(nil)
               foo:   lft1(50)  == s(1)   ==> mid
               foo:   mid       == c(nil) ==> rgt1(70)" do
 
@@ -204,7 +204,7 @@ module Qernel
 
           it "# we don't want inversed_flexible to become negative
               # if outputs are higher then inputs set inversed_flexible to 0.0
-              bar:   loss(nil) == i(nil)   ==> mid(nil)
+              foo:   loss(nil) == i(nil)   ==> mid(nil)
               foo:   lft1(100) == s(1)   ==> mid
               foo:   mid       == c(nil) ==> rgt1(40)
               foo:   mid       == f(nil) ==> rgt2(30)" do
@@ -217,7 +217,7 @@ module Qernel
           end
 
           it "# dependent consumes everything
-              loss:      loss(nil)      == i(nil) ==> mid(nil)
+              bar:        loss(nil)      == i(nil) ==> mid(nil)
               foo[1;0.5]: el_output(nil) == d(nil) ==> mid
               bar[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
               foo:        mid            == c(nil) ==> rgt1(120)" do
@@ -232,7 +232,7 @@ module Qernel
 
           it "# dependent takes it's cut from the total demand (120)
               # is not depending on the other output-links
-              loss:      loss(nil)      == i(nil) ==> mid(nil)
+              bar[1;0.5]: loss(nil)      == i(nil) ==> mid(nil)
               foo[1;0.5]: el_output(nil) == d(nil) ==> mid
               bar[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
               foo:        mid            == c(nil) ==> rgt1(120)" do
