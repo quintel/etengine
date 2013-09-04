@@ -24,7 +24,7 @@ module Etsource
       ::Etsource::Dataset::Import.new(country).import
     end
 
-    REGION_CODES = [ 'nl'.freeze ].freeze
+    REGION_CODES = [ 'nl'.freeze, 'de'.freeze ].freeze
 
     def self.region_codes
       # Temporarily restricting to Netherlands ONLY. Even though dataset files
