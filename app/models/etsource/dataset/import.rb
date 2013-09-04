@@ -120,10 +120,11 @@ module Etsource
     def load_time_curves
       @atlas_ds.time_curves.each_with_object({}) do |(key, csv), data|
         headers = csv.table.headers - [:year]
-        curves  = Hash.new { |hash, key| hash[key] = {} }
+        curves  = {}
 
         data[key] = csv.table.each do |row|
           headers.each do |header|
+            curves[header] ||= {}
             curves[header][row[:year]] = row[header].to_f * 1_000_000
           end
         end
