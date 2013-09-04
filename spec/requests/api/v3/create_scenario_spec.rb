@@ -45,7 +45,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'should save custom end years' do
       pending 'awaiting reintroduction of non-NL regions' do
         running_this = -> {
-          post 'api/v3/scenarios', scenario: { area_code: 'de' }
+          post 'api/v3/scenarios', scenario: { area_code: 'uk' }
         }
 
         expect(&running_this).to change { Scenario.count }.by(1)

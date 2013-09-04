@@ -13,7 +13,7 @@ module ETSourceFixtureHelper
     config.before(:each) do
       stub_const(
         'Etsource::Dataset::Import::STATIC_REGION_FILES',
-        Rails.root.join('spec/fixtures/etsource'))
+        Rails.root.join('spec/fixtures/etsource/static'))
     end
   end
 end # EtmFixtureHelper

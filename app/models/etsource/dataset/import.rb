@@ -19,7 +19,7 @@ module Etsource
   class Dataset::Import
     attr_reader :country
 
-    STATIC_REGION_FILES = Rails.root.join('tmp')
+    STATIC_REGION_FILES = Rails.root.join('tmp/atlas')
 
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
@@ -60,10 +60,10 @@ module Etsource
     #########
 
     def load_dataset_hash
-      { area:       load_region_data,
-        carriers:   load_carrier_data,
-        graph:      load_graph_dataset,
-        time_curve: load_time_curves }
+      { area:        load_region_data,
+        carriers:    load_carrier_data,
+        graph:       load_graph_dataset,
+        time_curves: load_time_curves }
     end
 
     # Internal: Reads the shares, demands, and other regional data from the
@@ -75,7 +75,7 @@ module Etsource
       graph_dataset = {}
 
       graph_objects = Atlas::ProductionMode.new(
-        YAML.load_file(STATIC_REGION_FILES.join('static.yml')))
+        YAML.load_file(STATIC_REGION_FILES.join("#{ @country }.yml")))
 
       graph_objects.nodes.each { |node| import_node!(node, graph_dataset) }
       graph_objects.edges.each { |edge| import_edge!(edge, graph_dataset) }
