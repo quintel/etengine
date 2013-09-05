@@ -124,6 +124,8 @@ class NastyCache
     @local_timestamp = global_timestamp
     log("NastyCache#expire: #{ @cache_store.length } keys")
     @cache_store = {}
+
+    Atlas::ActiveDocument::Manager.clear_all!
   end
 
   def expired?
