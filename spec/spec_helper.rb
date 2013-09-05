@@ -58,4 +58,12 @@ RSpec.configure do |config|
   config.include(EtmAuthHelper)
   config.include(MechanicalTurkHelper)
   config.include(ETSourceFixtureHelper)
+
+  # Prevent the static YML file from being deleted.
+  config.before(:suite) do
+    loader = ETSourceFixtureHelper::AtlasTestLoader.new(
+      Rails.root.join('spec/fixtures/etsource/static'))
+
+    Etsource::Dataset::Import.loader = loader
+  end
 end

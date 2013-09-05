@@ -37,8 +37,14 @@ namespace :deploy do
     run "ln -sf #{shared_path}/doc #{current_path}/public/"
     run "cd #{current_path}; rake yard"
   end
+
+  desc 'Calculates the datasets from ETSource using Atlas and Refinery'
+  task :calculate_datasets do
+    run "cd #{current_path}; RAILS_ENV=#{rails_env} rake calculate_datasets"
+  end
 end
 
 after "deploy:update_code", "deploy:symlink_configuration_files"
+after "deploy:update_code", "deploy:calculate_datasets"
 after "deploy", "deploy:cleanup"
 before 'deploy:assets:precompile', "deploy:symlink_configuration_files"
