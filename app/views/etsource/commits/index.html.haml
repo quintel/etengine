@@ -1,16 +1,24 @@
 
 %section#search_box
   .row
-    .span16
+    .span6
       .well
-        = form_tag etsource_commits_path, :method => :get, :class => 'form-inline' do
+        = form_tag etsource_commits_path, :method => :get, :class => 'form-inline', :style => 'margin-bottom: 13px' do
           = select_tag :branch, options_for_select(@branches, @branch)
           = submit_tag "Checkout", :class => 'btn'
-          = submit_tag "Refresh", :class => 'btn'
-        %p Click "Checkout" to move to a different branch.
-
-- if @output
-  %pre.git_output= @output
+          = submit_tag "Refresh", :class => 'btn btn-primary'
+        Click "Checkout" to move to a different branch.
+    - unless @using_repository && false
+      .span6.alert.alert-info
+        %h3(style="font-size: 16px")
+          %a(style="color: #3a87ad" href="https://www.youtube.com/watch?v=gT9xuXQjxMM") Careful now!
+        The page may appear to hang after you click an "import" button. This
+        is normal, and <em>definitely</em> not a sign that the world is about
+        to end. During this time the Atlas and Refinery calculations are being
+        re-run for each region.
+  - if @output
+    .row
+      %pre.git_output= @output
 
 .row
   .span16

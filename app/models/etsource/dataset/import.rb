@@ -19,7 +19,30 @@ module Etsource
   class Dataset::Import
     attr_reader :country
 
-    STATIC_REGION_FILES = Rails.root.join('tmp/atlas')
+    # Public: The loader used to create and fetch Atlas::ProductionMode
+    # instances.
+    #
+    # Returns an AtlasLoader::PreCalculated or AtlasLoader::Lazy.
+    def self.loader
+      # We have to set a default loader when it is nil, since Rails deletes
+      # the values of class variables when reloading code.
+      @loader ||=
+        if APP_CONFIG[:etsource_lazy_load_dataset]
+          AtlasLoader::Lazy.new(Rails.root.join('tmp/atlas'))
+        else
+          AtlasLoader::PreCalculated.new(Rails.root.join('tmp/atlas'))
+        end
+    end
+
+    # Public: Sets which loader (PreCalculated or Lazy) is to be used to fetch
+    # Atlas ProductionMode instances.
+    #
+    # Returns the loader.
+    def self.loader=(loader)
+      @loader = loader
+    end
+
+    # ------------------------------------------------------------------------
 
     def initialize(country)
       # DEBT: @etsource is only used for the base_dir, can be solved better.
@@ -74,8 +97,7 @@ module Etsource
     def load_graph_dataset
       graph_dataset = {}
 
-      graph_objects = Atlas::ProductionMode.new(
-        YAML.load_file(STATIC_REGION_FILES.join("#{ @country }.yml")))
+      graph_objects = self.class.loader.load(@country)
 
       graph_objects.nodes.each { |node| import_node!(node, graph_dataset) }
       graph_objects.edges.each { |edge| import_edge!(edge, graph_dataset) }

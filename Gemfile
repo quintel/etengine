@@ -56,6 +56,9 @@ group :development do
   gem 'quiet_assets'
   gem 'better_errors'
   gem 'listen'
+
+  # Required for lazy-loading datasets.
+  gem 'refinery', git: 'git@github.com:quintel/refinery.git', require: false
 end
 
 group :test, :development do
