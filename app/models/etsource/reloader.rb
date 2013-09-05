@@ -15,7 +15,7 @@ module Etsource
         return true if @listener
 
         @listener = Listen.to(ETSOURCE_EXPORT_DIR)
-        @listener.filter(%r{(?:datasets|gqueries|inputs|topology)/.*})
+        @listener.filter(%r{(?:data|datasets|presets)/.*})
         @listener.change { |*| reload! }
         @listener.start(false)
 
