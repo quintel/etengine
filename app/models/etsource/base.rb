@@ -4,13 +4,12 @@ module Etsource
   class Base
     include Singleton
 
-    attr_accessor :base_dir, :cache_dataset, :cache_topology, :export_dir
+    attr_accessor :base_dir, :cache_topology, :export_dir
 
     def initialize
       @base_dir       = ETSOURCE_DIR
       @export_dir     = ETSOURCE_EXPORT_DIR.gsub(/\/$/, '')
       @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
-      @cache_dataset  = APP_CONFIG.fetch(:etsource_cache_dataset, true)
       @git = Git.open @base_dir
     end
 
@@ -18,12 +17,6 @@ module Etsource
       instance.base_dir   = base_dir if base_dir
       instance.export_dir = base_dir if base_dir
       Loader.instance
-    end
-
-    # If you work on the input module, this disables caching and will
-    # always reload the Etsource from scratch.
-    def cache_dataset?
-      @cache_dataset
     end
 
     # set to true to force reloading the topology

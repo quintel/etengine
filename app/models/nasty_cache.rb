@@ -70,6 +70,7 @@ class NastyCache
     expire_cache!
     mark_expired!
     expire_local!
+    expire_atlas!
   end
 
   def fetch(key, opts = {})
@@ -124,8 +125,13 @@ class NastyCache
     @local_timestamp = global_timestamp
     log("NastyCache#expire: #{ @cache_store.length } keys")
     @cache_store = {}
+  end
 
+  def expire_atlas!
     Atlas::ActiveDocument::Manager.clear_all!
+
+    # We need to recalculate the datasets.
+    Etsource::Dataset::Import.loader.reload!
   end
 
   def expired?
