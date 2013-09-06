@@ -42,7 +42,10 @@ etsource
 etsource_export
 ./etsource
 ./etsource_export
+!app/controllers/etsource
+!app/helpers/etsource
 !app/models/etsource
+!app/views/etsource
 !spec/models/etsource
 !spec/fixtures/etsource
 .sass-cache
