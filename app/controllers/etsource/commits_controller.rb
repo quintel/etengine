@@ -48,7 +48,7 @@ class Etsource::CommitsController < ApplicationController
       revert!(previous_rev, backup_dir)
 
       @exception = ex
-      render 'failure'
+      render template: 'failure'
     else
       # Clients might need to flush their cache
       update_remote_client(APP_CONFIG[:client_refresh_url])
