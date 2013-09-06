@@ -1,51 +1,62 @@
 development: &DEV
-    # etsource folder. Default is APP/etsource (deprecated)
-    # this is where the working revisions will be exported to
-    etsource_export: /u/apps/etengine/etsource
+  # etsource folder. Default is APP/etsource (deprecated)
+  # this is where the working revisions will be exported to
+  etsource_export: /u/apps/etengine/etsource
 
-    # etsource working copy - directory you've git cloned to
-    etsource_working_copy: /u/apps/etsource
+  # etsource working copy - directory you've git cloned to
+  etsource_working_copy: /u/apps/etsource
 
-    # if for some reason you don't want to clear the etsource_export directory
-    etsource_disable_export: false
+  # if for some reason you don't want to clear the etsource_export directory
+  etsource_disable_export: false
 
-    # Enables "live" reloading of the ETsource export. When enabled, changes
-    # to datasets/, gqueries/, inputs/, and topology/ will be detected and
-    # ETsource will expire its cached copy. The files will be reloaded the on
-    # the next request.
-    #
-    # Note that this setting only applies to the development environment; live
-    # reloading is always disabled in production and test environments.
-    etsource_live_reload: true
+  # Enables "live" reloading of the ETsource export. When enabled, changes
+  # to datasets/, gqueries/, inputs/, and topology/ will be detected and
+  # ETsource will expire its cached copy. The files will be reloaded the on
+  # the next request.
+  #
+  # Note that this setting only applies to the development environment; live
+  # reloading is always disabled in production and test environments.
+  etsource_live_reload: true
 
-    # Setting this to true caches the dataset in between requests. set to false
-    # makes working with etsource easier.
-    etsource_cache_dataset: false # set true for 'live' releases
+  # Enables lazy loading of datasets from Refinery.
+  #
+  # With this disabled, ETEngine will expect that tmp/atlas contains YML
+  # files for each region. These are created by Atlas during a production
+  # deployment, or when changing the loaded version of ETESource in the
+  # admin interface.
+  #
+  # When enabled, ETEngine will load Atlas and Refinery, and calculate the
+  # graph in Refinery the first time you load a scenario for the region.
+  # This is preferable for development environments, when you don't want to
+  # have to worry about creating the YML files manually.
+  etsource_lazy_load_dataset: true
 
-    # URL to be called after a clean etsource import
-    # Usually you would set something like
-    # http://beta.et-model.com/pages/refresh_gqueries
-    client_refresh_url:
+  # URL to be called after a clean etsource import
+  # Usually you would set something like
+  # http://beta.et-model.com/pages/refresh_gqueries
+  client_refresh_url:
 
-    # set to true if the server won't have online access. this disables google
-    # analytics, airbrake etc.
-    standalone: false
+  # set to true if the server won't have online access. this disables google
+  # analytics, airbrake etc.
+  standalone: false
 
-    # set to true if you want the admin section to show a "production server" warning
-    live_server: false
+  # set to true if you want the admin section to show a "production server" warning
+  live_server: false
 
-    # set to true if you want see the backtrace in production. Development will
-    # always show it
-    show_backtrace: false
+  # set to true if you want see the backtrace in production. Development will
+  # always show it
+  show_backtrace: false
 
 production:
-    <<: *DEV
-    airbrake_api_key: '3ea5a72aad48a32d7bb486bc71ad4fd5'
+  <<: *DEV
+  airbrake_api_key: '3ea5a72aad48a32d7bb486bc71ad4fd5'
+  etsource_lazy_load_dataset: false
 
 test: &TEST
-    <<: *DEV
+  <<: *DEV
+  etsource_lazy_load_dataset: false
 
 ci:
-    <<: *TEST
-    etsource_export: tmp/etsource
-    etsource_working_copy: tmp/etsource
+  <<: *TEST
+  etsource_export: tmp/etsource
+  etsource_working_copy: tmp/etsource
