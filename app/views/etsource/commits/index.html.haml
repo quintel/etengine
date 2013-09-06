@@ -34,7 +34,7 @@
               - if @using_repository
                 - if index.zero?
                   %span.label.label-info Current
-              - else
+              - elsif @etsource.get_latest_import_sha == commit.to_s
                 %span.label.label-info Current
               =commit.message
             %td.span1= link_to commit.to_s[0..6], "https://github.com/quintel/etsource/commit/#{commit.to_s}", :target => :blank
