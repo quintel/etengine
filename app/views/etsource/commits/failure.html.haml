@@ -1,0 +1,14 @@
+- breadcrumb link_to("ETSource", etsource_root_path)
+
+%h2 Commit did not import successfully; rolled back.
+
+%h3 Message
+
+%pre
+  = @exception
+
+%h3 Backtrace
+
+%pre
+  - @exception.backtrace.each do |line|
+    = line
