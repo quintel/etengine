@@ -58,7 +58,7 @@ group :development do
   gem 'listen'
 
   # Required for lazy-loading datasets.
-  gem 'refinery', git: 'git@github.com:quintel/refinery.git', require: false
+  gem 'refinery', git: 'git@github.com:quintel/refinery.git'
   gem 'ruby-progressbar'
 end
 

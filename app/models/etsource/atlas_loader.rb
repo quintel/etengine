@@ -14,6 +14,13 @@ module Etsource
         @directory = directory
       end
 
+      # Public: The path to the YAML file directory.
+      #
+      # Returns a Pathname.
+      def directory
+        @directory
+      end
+
       # Public: The Atlas::ProductionMode for the region specified by the
       # given dataset key.
       #
