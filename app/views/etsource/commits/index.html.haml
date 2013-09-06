@@ -28,10 +28,13 @@
       %strong Looks like you're loading etsource from the local working copy
     %table.table-striped.table-condensed.table
       %tbody
-        - @commits.each do |commit|
+        - @commits.each_with_index do |commit, index|
           %tr
             %td.span9
-              - if @etsource.get_latest_import_sha == commit.to_s
+              - if @using_repository
+                - if index.zero?
+                  %span.label.label-info Current
+              - else
                 %span.label.label-info Current
               =commit.message
             %td.span1= link_to commit.to_s[0..6], "https://github.com/quintel/etsource/commit/#{commit.to_s}", :target => :blank
