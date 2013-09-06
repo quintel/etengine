@@ -24,18 +24,40 @@ class Etsource::CommitsController < ApplicationController
     @using_repository = APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
   end
 
-  # Will import a revision to APP_CONFIG[:etsource_working_copy]
-  # and store to db gqueries and inputs
   def import
-    sha = params[:id]
-    @etsource.export sha
-    @commit.import! and @etsource.update_latest_import_sha(sha)
-    log("Import #{sha}")
-    flash.now[:notice] = "Flushing ETM client cache"
-    NastyCache.instance.expire!
+    previous_rev = @etsource.get_latest_import_sha
+    backup_dir   = backup_atlas_files!(previous_rev)
 
-    # clients might need to flush their cache
-    update_remote_client APP_CONFIG[:client_refresh_url]
+    new_revision = params[:id]
+
+    log("Import #{ new_revision }")
+
+    begin
+      @etsource.export(new_revision)
+      @commit.import!
+      @etsource.update_latest_import_sha(new_revision)
+
+      NastyCache.instance.expire!
+    rescue Atlas::AtlasError, Refinery::RefineryError => ex
+      if previous_rev.nil? || Rails.env.development?
+        # If there is no previous commit (this may be a fresh deploy), we
+        # have nothing to roll back to so we just re-raise the error.
+        raise ex
+      end
+
+      revert!(previous_rev, backup_dir)
+
+      @exception = ex
+      render 'failure'
+    else
+      # Clients might need to flush their cache
+      update_remote_client(APP_CONFIG[:client_refresh_url])
+    ensure
+      if backup_dir && backup_dir.directory?
+        backup_dir.children.each(&:delete)
+        backup_dir.delete
+      end
+    end
   end
 
   private
@@ -72,5 +94,44 @@ class Etsource::CommitsController < ApplicationController
   def log(msg)
     @logger ||= Logger.new(Rails.root.join('log/etsource.log'))
     @logger.info "#{Time.new} #{current_user.email}: #{msg}"
+  end
+
+  # Internal: Prior to importing a new commit, backs up the production-mode
+  # files so that we can do a faster rollback.
+  #
+  # Returns the path to the backup directory (which can be deleted in its
+  # entirety once the import is finished).
+  def backup_atlas_files!(revision)
+    # If there is no previous good commit, there's nothing to back up.
+    return unless revision
+
+    from_dir   = Etsource::Dataset::Import.loader.directory
+    backup_dir = from_dir.join("backup-#{ revision }")
+
+    FileUtils.mkdir(backup_dir) unless backup_dir.directory?
+    FileUtils.cp_r(Pathname.glob(from_dir.join('*.yml')), backup_dir)
+
+    backup_dir
+  end
+
+  # Internal: Reverts a new ETSource commit by bringing back the old Atlas
+  # production mode files.
+  #
+  # Returns nothing.
+  def revert!(revision, directory)
+    @etsource.export(revision)
+    @commit.import!
+    @etsource.update_latest_import_sha(revision)
+
+    original_dir = directory.dirname
+
+    # Remove any partially calculated production mode files.
+    Pathname.glob(original_dir.join('*.yml')).each(&:delete)
+
+    # Then copy the old files back.
+    FileUtils.cp_r(Pathname.glob(directory.join('*.yml')), original_dir)
+
+    log("Revert to #{ revision }")
+    NastyCache.instance.expire!(keep_atlas_dataset: true)
   end
 end

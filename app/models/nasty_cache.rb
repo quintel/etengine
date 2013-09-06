@@ -65,12 +65,12 @@ class NastyCache
 
   # Expires both local (@cache_store) and Rails.cache 
   # this is equivalent of a server restart.
-  def expire!
+  def expire!(options = {})
     log("NastyCache(#{Process.pid})#expire!")
     expire_cache!
     mark_expired!
     expire_local!
-    expire_atlas!
+    expire_atlas!(options)
   end
 
   def fetch(key, opts = {})
@@ -127,11 +127,13 @@ class NastyCache
     @cache_store = {}
   end
 
-  def expire_atlas!
+  def expire_atlas!(options)
     Atlas::ActiveDocument::Manager.clear_all!
 
-    # We need to recalculate the datasets.
-    Etsource::Dataset::Import.loader.reload!
+    unless options[:keep_atlas_dataset]
+      # We need to recalculate the datasets.
+      Etsource::Dataset::Import.loader.reload!
+    end
   end
 
   def expired?
