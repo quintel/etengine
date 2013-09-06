@@ -28,6 +28,7 @@ gem 'rest-client'
 gem 'git',                            git: 'git://github.com/bradhe/ruby-git.git'
 gem 'activerecord-import', '~> 0.2.9'
 gem 'fnv'
+gem 'ruby-progressbar'
 
 # own gems
 gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
@@ -59,7 +60,6 @@ group :development do
 
   # Required for lazy-loading datasets.
   gem 'refinery', git: 'git@github.com:quintel/refinery.git'
-  gem 'ruby-progressbar'
 end
 
 group :test, :development do
