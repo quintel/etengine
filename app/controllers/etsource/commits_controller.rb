@@ -48,7 +48,7 @@ class Etsource::CommitsController < ApplicationController
       revert!(previous_rev, backup_dir)
 
       @exception = ex
-      render template: 'failure'
+      render action: 'failure'
     else
       # Clients might need to flush their cache
       update_remote_client(APP_CONFIG[:client_refresh_url])
@@ -108,7 +108,7 @@ class Etsource::CommitsController < ApplicationController
     from_dir   = Etsource::Dataset::Import.loader.directory
     backup_dir = from_dir.join("backup-#{ revision }")
 
-    FileUtils.mkdir(backup_dir) unless backup_dir.directory?
+    FileUtils.mkdir_p(backup_dir) unless backup_dir.directory?
     FileUtils.cp_r(Pathname.glob(from_dir.join('*.yml')), backup_dir)
 
     backup_dir
