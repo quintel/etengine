@@ -192,7 +192,14 @@ namespace :bulk_update do
 
       inputs[:number_of_energy_chp_ultra_supercritical_cofiring_coal] = G
       puts "Number of co-firing coal plants for district heat: 0.0 => #{G}"
-     
+
+      # rename households_useful_demand_cooking in households_useful_demand_cooking_per_person
+
+      inputs[:households_useful_demand_cooking_per_person] = inputs[:households_useful_demand_cooking]
+      inputs.delete(:households_useful_demand_cooking)
+
+      puts "Renamed households_useful_demand_cooking_per_person to households_useful_demand_cooking_per_person_per_person."
+
       puts "==========="
 
       ###################### GENERAL CHECKS ##########################
