@@ -59,6 +59,7 @@ group :development do
 
   # Required for lazy-loading datasets.
   gem 'refinery', git: 'git@github.com:quintel/refinery.git', require: false
+  gem 'ruby-progressbar'
 end
 
 group :test, :development do
