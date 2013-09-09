@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: 5ae702604a3b8403dec436727425716aed010867
+  revision: d8f25c8c247b56df917ed7ef5d12fbd32457056e
   specs:
     atlas (0.0.2)
       activemodel (>= 3.2.12)
@@ -178,7 +178,7 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.1)
     mime-types (1.23)
-    multi_json (1.7.9)
+    multi_json (1.8.0)
     mysql2 (0.3.11)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)

@@ -24,13 +24,10 @@ module Etsource
       ::Etsource::Dataset::Import.new(country).import
     end
 
-    REGION_CODES = [ 'nl'.freeze, 'de'.freeze ].freeze
-
     def self.region_codes
-      # Temporarily restricting to Netherlands ONLY. Even though dataset files
-      # exist in Atlas for the UK and Germany, those are not yet ready for
-      # use.
-      REGION_CODES
+      @region_codes ||= Atlas::Dataset.all
+        .select { |dataset| dataset.enabled[:etengine] }
+        .map    { |dataset| dataset.key.to_s }
     end
   end
 end

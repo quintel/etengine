@@ -4,7 +4,18 @@ module Api
       respond_to :json
 
       def index
-        respond_with(Etsource::Dataset.region_codes.map{|c| Area.get c})
+        data = Etsource::Dataset.region_codes.map do |code|
+          area_data = Area.get(code).dup
+
+          # For compatibility with ETModel, which expects a "useable"
+          # attribute which tells it if the region may be chosen.
+          area_data[:useable] = area_data[:enabled][:etmodel]
+          area_data.delete(:enabled)
+
+          area_data
+        end
+
+        respond_with(data)
       end
 
       def show

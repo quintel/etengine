@@ -86,7 +86,7 @@ module Qernel
       :roof_surface_available_pv,
       :roof_surface_available_pv_buildings,
       :use_network_calculations,
-      :useable,
+      :enabled,
       :ventilation_rate
     ]
 
