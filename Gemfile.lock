@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: d8f25c8c247b56df917ed7ef5d12fbd32457056e
+  revision: 488e2b13730d4e7c38a2fea35948030a4fe2b6e9
   specs:
     atlas (0.0.2)
       activemodel (>= 3.2.12)

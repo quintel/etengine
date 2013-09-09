@@ -10,7 +10,6 @@ module Etsource
       @base_dir       = ETSOURCE_DIR
       @export_dir     = ETSOURCE_EXPORT_DIR.gsub(/\/$/, '')
       @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
-      @git = Git.open @base_dir
     end
 
     def self.loader(base_dir = nil)
@@ -25,7 +24,7 @@ module Etsource
     end
 
     def commits
-      @git.log
+      git.log
     end
 
     def get_latest_export_sha
@@ -51,7 +50,7 @@ module Etsource
     # branch operations
     #
     def current_branch
-      @git.current_branch
+      git.current_branch
     end
 
     def detached_branch?
@@ -59,11 +58,11 @@ module Etsource
     end
 
     def branches
-      @git.branches.local.map(&:name)
+      git.branches.local.map(&:name)
     end
 
     def checkout(branch)
-      @git.checkout branch
+      git.checkout branch
     end
 
     def update_latest_import_sha(sha)
@@ -78,6 +77,10 @@ module Etsource
 
     def import_sha_file
       "#{Rails.root}/config/latest_etsource_import_sha"
+    end
+
+    def git
+      @git ||= Git.open @base_dir
     end
   end
 end
