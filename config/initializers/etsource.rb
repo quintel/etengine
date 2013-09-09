@@ -10,7 +10,7 @@ end
 ETSOURCE_DIR = APP_CONFIG.fetch(:etsource_working_copy, 'etsource')
 ETSOURCE_EXPORT_DIR = ENV['ETSOURCE_DIR'] || APP_CONFIG.fetch(:etsource_export, 'etsource')
 
-if ETSOURCE_DIR[0] == '/'
+if ETSOURCE_EXPORT_DIR[0] == '/'
   Atlas.data_dir = "#{ ETSOURCE_EXPORT_DIR }/data"
 else
   Atlas.data_dir = Rails.root.join(ETSOURCE_EXPORT_DIR).join('data')
