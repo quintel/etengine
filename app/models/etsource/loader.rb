@@ -45,12 +45,8 @@ module Etsource
     end
 
     def area_attributes(area_code)
-      if @area_attributes.has_key?(area_code)
-        @area_attributes[area_code]
-      else
-        hsh = dataset(area_code).data[:area][:area_data]
-        @area_attributes[area_code] = hsh.with_indifferent_access
-      end
+      @area_attributes[area_code] ||=
+        Atlas::Dataset.find(area_code).to_hash.with_indifferent_access
     end
 
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
