@@ -168,8 +168,11 @@ class ConverterApi
 
     return nil if demand.nil? or expected.nil?
 
-    return true if demand.to_f == 0 and expected.to_f == 0.0
-    (demand.to_f / expected.to_f - 1.0).abs < EXPECTED_DEMAND_TOLERANCE
+    actual   = demand.round(4)
+    expected = expected.round(4)
+
+    return true if actual.to_f == 0 and expected.to_f == 0.0
+    (actual.to_f / expected.to_f - 1.0).abs < EXPECTED_DEMAND_TOLERANCE
   end
 
   # Extracted into a method, because we have a circular dependency in specs
