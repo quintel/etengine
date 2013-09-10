@@ -39,7 +39,7 @@ namespace :deploy do
 
   desc 'Calculates the datasets from ETSource using Atlas and Refinery'
   task :calculate_datasets do
-    run "cd #{current_path}; RAILS_ENV=#{rails_env} rake calculate_datasets"
+    run "cd #{release_path}; RAILS_ENV=#{rails_env} rake calculate_datasets"
   end
 end
 
