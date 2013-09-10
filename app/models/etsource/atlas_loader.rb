@@ -96,7 +96,7 @@ module Etsource
       def reload!
         super
 
-        Etsource::Dataset::REGION_CODES.each do |code|
+        Etsource::Dataset.region_codes.each do |code|
           calculate!(code)
           yield code if block_given?
         end
