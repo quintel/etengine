@@ -31,7 +31,6 @@ id,carrier_id,key,name,infinite,created_at,updated_at
 30,30,car_kms,car kms,false,19-08-2010,19-08-2010
 31,31,truck_kms,truck kms,false,19-08-2010,19-08-2010
 32,32,light,light,false,19-08-2010,19-08-2010
-33,33,algae_diesel,Algae diesel,false,19-08-2010,19-08-2010
 34,34,biogas,biogas,false,19-08-2010,19-08-2010
 35,35,lignite,Lignite,false,19-08-2010,19-08-2010
 36,36,cng,CNG,false,19-08-2010,19-08-2010
