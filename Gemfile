@@ -29,13 +29,14 @@ gem 'git',                            git: 'git://github.com/bradhe/ruby-git.git
 gem 'activerecord-import', '~> 0.2.9'
 gem 'fnv'
 gem 'ruby-progressbar'
+gem 'msgpack'
 
 # own gems
 gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
 gem 'merit',                           git:     'git@github.com:quintel/merit.git'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
 gem 'refinery',                        git:     'git@github.com:quintel/refinery.git'
-gem 'atlas',         '0.0.2',          git:     'git@github.com:quintel/atlas.git'
+gem 'atlas',         '0.0.2',          git:     'git@github.com:quintel/atlas.git', ref: 'b125f10'
 
 # system gems
 gem 'mysql2',         '~>0.3.11'

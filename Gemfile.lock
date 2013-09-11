@@ -32,7 +32,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: 488e2b13730d4e7c38a2fea35948030a4fe2b6e9
+  revision: b125f102a5611572fe5835d8d83ed3356d8945dd
+  ref: b125f10
   specs:
     atlas (0.0.2)
       activemodel (>= 3.2.12)
@@ -178,6 +179,7 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.1)
     mime-types (1.23)
+    msgpack (0.5.5)
     multi_json (1.8.0)
     mysql2 (0.3.11)
     net-scp (1.1.2)
@@ -341,6 +343,7 @@ DEPENDENCIES
   libv8 (~> 3.11.8)
   listen
   merit!
+  msgpack
   mysql2 (~> 0.3.11)
   osmosis!
   pry-debugger
