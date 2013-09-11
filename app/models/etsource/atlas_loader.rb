@@ -7,7 +7,8 @@ module Etsource
 
       # Public: Creates a new AtlasLoader.
       #
-      # directory - Path to the directory in which the YML files are stored.
+      # directory - Path to the directory in which the cached files are
+      #             stored.
       #
       # Returns an AtlasLoader::Base
       def initialize(directory)
@@ -70,7 +71,7 @@ module Etsource
       # Returns nothing.
       def expire_all!
         if @directory.directory?
-          Pathname.glob(@directory.join("*.yml")).each(&:delete)
+          Pathname.glob(@directory.join('*')).each(&:delete)
         end
       end
 
@@ -138,7 +139,8 @@ module Etsource
 
       # Public: Creates a new AtlasLoader.
       #
-      # directory - Path to the directory in which the YML files are stored.
+      # directory - Path to the directory in which the cached files are
+      # stored.
       #
       # Returns an AtlasLoader::Base
       def initialize(directory)

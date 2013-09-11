@@ -35,6 +35,14 @@ module Etsource
           expect { loader.load(:nope) }.to raise_error(/no atlas data/i)
         end
       end # loading a dataset
+
+      context 'expire_all!' do
+        it 'removes the dataset files' do
+          expect(dir.children.length).to eq(1)
+          loader.expire_all!
+          expect(dir.children.length).to be_zero
+        end
+      end
     end # PreCalculated
 
     describe AtlasLoader::Lazy do
