@@ -2,7 +2,7 @@ class Data::PagesController < Data::BaseController
   layout 'application'
   
   def index
-    @cache_stats = Rails.cache.stats
+    @cache_stats = Rails.cache.respond_to?(:stats) ? Rails.cache.stats : {}
   end
 
   def restart

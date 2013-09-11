@@ -17,10 +17,15 @@
   %tr
     %td Ruby Version
     %td== #{ RUBY_VERSION}-p#{ RUBY_PATCHLEVEL }
-  - @cache_stats.each_pair do |store, info|
-    %tr
-      %th{:colspan => 2} Memcache: #{store}
-    - info.each_pair do |k,v|
+  - if @cache_stats.any?
+    - @cache_stats.each_pair do |store, info|
       %tr
-        %td= k
-        %td= v
+        %th{:colspan => 2} Memcache: #{store}
+      - info.each_pair do |k,v|
+        %tr
+          %td= k
+          %td= v
+  - else
+    %tr
+      %th{:colspan => 2}
+        == Memcache: disabled in the #{ Rails.env } environment

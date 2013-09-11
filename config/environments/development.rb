@@ -16,11 +16,10 @@ Etm::Application.configure do
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
 
-
   config.action_controller.perform_caching = true
-  #config.cache_store = :memory_store
-  config.cache_store = :dalli_store
-  #config.cache_store = :file_store, '/tmp/cache'
+  config.cache_store = :memory_store, { size: 512.megabytes }
+  # config.cache_store = :dalli_store
+  # config.cache_store = :file_store, '/tmp/cache'
 
   require 'lib/gc_stats'
   config.middleware.use "GCStats"
