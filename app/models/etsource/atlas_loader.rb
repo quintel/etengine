@@ -26,13 +26,13 @@ module Etsource
       #
       # Returns an Atlas::ProductionMode.
       def load(dataset_key)
-        location = yaml_path(dataset_key)
+        location = data_path(dataset_key)
 
         unless location.file?
           fail "No Atlas data for #{ dataset_key.inspect } at #{ location }"
         end
 
-        Atlas::ProductionMode.new(YAML.load_file(yaml_path(dataset_key)))
+        Atlas::ProductionMode.new(parse(location.read))
       end
 
       # Public: Forces calculation of all the regions which are enabled for
@@ -57,8 +57,11 @@ module Etsource
 
           runner.calculate
 
-          Atlas::Exporter.new(runner.refinery_graph).
-            export_to(yaml_path(dataset_key))
+          contents = dump(Atlas::Exporter.dump(runner.refinery_graph))
+          location = data_path(dataset_key)
+
+          FileUtils.mkdir_p(location.dirname)
+          File.write(location, contents, mode: 'wb')
         end
       end
 
@@ -79,8 +82,31 @@ module Etsource
       # dataset key.
       #
       # Returns a Pathname.
-      def yaml_path(dataset_key)
-        @directory.join("#{ dataset_key }.yml")
+      def data_path(dataset_key)
+        @directory.join("#{ dataset_key }.pack")
+      end
+
+      # Internal: Given the contents of a saved dataset file, parses the data
+      # into a Ruby hash.
+      #
+      # Returns a hash.
+      def parse(data)
+        hash = MessagePack.unpack(data)
+
+        # MessagePack converts hash keys from symbols to strings; we need to
+        # convert them back. The keys for the nested hashes (one per document)
+        # don't matter, since ActiveDocument/Virtus will take either.
+        { nodes: hash['nodes'].symbolize_keys!,
+          edges: hash['edges'].symbolize_keys! }
+      end
+
+      # Internal: Creates a string representing the exported data.
+      #
+      # data - A Ruby hash to be converted to a string for storage on disk.
+      #
+      # Returns a String..
+      def dump(data)
+        MessagePack.pack(data)
       end
     end # Base
 
@@ -125,12 +151,12 @@ module Etsource
       #
       # Returns an Atlas::ProductionMode.
       def load(dataset_key)
-        location = yaml_path(dataset_key)
+        location = data_path(dataset_key)
 
         # Lazy load the dataset if it doesn't exist yet.
         calculate!(dataset_key) unless location.file?
 
-        Atlas::ProductionMode.new(YAML.load_file(location))
+        super
       end
     end # Lazy
   end # AtlasLoader

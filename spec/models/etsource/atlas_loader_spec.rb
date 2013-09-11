@@ -2,15 +2,24 @@ require 'spec_helper'
 
 module Etsource
   describe AtlasLoader do
-    let(:yml) { Rails.root.join('spec/fixtures/etsource/static/.') }
+    let(:yml) { Rails.root.join('spec/fixtures/etsource/static') }
     let(:dir) { Pathname.new(Dir.mktmpdir) }
+
+    # Takes any YAML files in the +source+ directory, converts them into
+    # MessagePack format, then saves them into the +destination+ directory.
+    def yamls_to_msgpack!(source, destination)
+      Pathname.glob(source.join('*.yml')) do |path|
+        File.write(
+          destination.join("#{ path.basename('.yml') }.pack"),
+          MessagePack.pack(YAML.load_file(path)),
+          mode: 'wb'
+        )
+      end
+    end
 
     describe AtlasLoader::PreCalculated do
       let(:loader) { AtlasLoader::PreCalculated.new(dir) }
-
-      before(:each) do
-        FileUtils.cp_r(yml, dir)
-      end
+      before { yamls_to_msgpack!(yml, dir) }
 
       context 'loading a dataset' do
         it 'loads the dataset from the production-mode file' do
@@ -18,7 +27,7 @@ module Etsource
         end
 
         it 'raises an error when the production-mode file does not exist' do
-          dir.join('nl.yml').delete
+          dir.join('nl.pack').delete
           expect { loader.load(:nl) }.to raise_error(/no atlas data/i)
         end
 
@@ -32,9 +41,9 @@ module Etsource
       let(:loader) { AtlasLoader::Lazy.new(dir) }
       let(:subdir) { dir.join('lazy') }
 
-      before(:each) do
+      before do
         FileUtils.mkdir(subdir)
-        FileUtils.cp_r(yml, subdir)
+        yamls_to_msgpack!(yml, subdir)
       end
 
       context 'loading a dataset' do
@@ -44,7 +53,7 @@ module Etsource
 
         xit 'loads the dataset when the production-mode file does not exist' do
           # Bad query value in a document: invalid value for convert(): ""
-          subdir.join('nl.yml').delete
+          subdir.join('nl.pack').delete
           expect(loader.load(:nl)).to be_an(Atlas::ProductionMode)
         end
 

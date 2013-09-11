@@ -2,7 +2,8 @@
 # at spec/fixtures/etsource.
 module ETSourceFixtureHelper
   # A custom Atlas loader which will not attempt to calculate the dataset in
-  # Atlas and Refinery.
+  # Atlas and Refinery. It also uses YAML (since it is easier for humans to
+  # edit), instead of MessagePack.
   class AtlasTestLoader < Etsource::AtlasLoader::PreCalculated
     def calculate!(*)
       # noop
@@ -10,6 +11,22 @@ module ETSourceFixtureHelper
 
     def reload!(*)
       # noop
+    end
+
+    #######
+    private
+    #######
+
+    def parse(data)
+      YAML.load(data)
+    end
+
+    def dump(data)
+      YAML.dump(data)
+    end
+
+    def data_path(dataset_key)
+      super.dirname.join("#{ dataset_key }.yml")
     end
   end
 
