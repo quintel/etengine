@@ -57,7 +57,6 @@ RSpec.configure do |config|
   config.include(Authlogic::TestCase)
   config.include(EtmAuthHelper)
   config.include(MechanicalTurkHelper)
-  config.include(ETSourceFixtureHelper)
 
   # Prevent the static YML file from being deleted.
   config.before(:suite) do
@@ -65,5 +64,10 @@ RSpec.configure do |config|
       Rails.root.join('spec/fixtures/etsource/static'))
 
     Etsource::Dataset::Import.loader = loader
+
+    fixture_path = Rails.root.join('spec/fixtures/etsource')
+
+    Etsource::Base.loader(fixture_path.to_s)
+    Atlas.data_dir = fixture_path.join('data')
   end
 end

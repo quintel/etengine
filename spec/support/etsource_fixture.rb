@@ -13,12 +13,37 @@ module ETSourceFixtureHelper
       # noop
     end
 
+    def load(dataset_key)
+      self.class.loaded[dataset_key] ||= super
+    end
+
+    # Speed up tests by caching the loaded data.
+    def self.loaded
+      @loaded ||= {}
+    end
+
     #######
     private
     #######
 
+    # Parses the static YAML file. Since the Atlas::ProductionLoader expects
+    # a hash containing *all* the attributes, and the static file contains
+    # only the demands and shares, we merge the attributes from the original
+    # documents with the static data to create the complete hash.
     def parse(data)
-      YAML.load(data)
+      data = YAML.load(data)
+
+      Atlas::Node.all.each do |node|
+        data[:nodes][node.key] =
+          node.to_hash.deep_merge(data[:nodes][node.key] || {})
+      end
+
+      Atlas::Edge.all.each do |edge|
+        data[:edges][edge.key] =
+          edge.to_hash.deep_merge(data[:edges][edge.key] || {})
+      end
+
+      data
     end
 
     def dump(data)
@@ -27,18 +52,6 @@ module ETSourceFixtureHelper
 
     def data_path(dataset_key)
       super.dirname.join("#{ dataset_key }.yml")
-    end
-  end
-
-  def self.included(config)
-    config.around do |example|
-      fixture_path = Rails.root.join('spec/fixtures/etsource')
-
-      # Legacy YAML files.
-      Etsource::Base.loader(fixture_path.to_s)
-
-      NastyCache.instance.expire!
-      Atlas.with_data_dir(fixture_path.join('data')) { example.run }
     end
   end
 end # EtmFixtureHelper
