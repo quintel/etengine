@@ -72,6 +72,8 @@ module Api
           params[:scenario][:user_values] = inputs
         end
 
+        params[:scenario][:remote_ip] = request.remote_ip
+
         attrs = Scenario.default_attributes.merge(params[:scenario] || {})
 
         if attrs.key?(:scenario_id) || attrs.key?(:preset_scenario_id)
