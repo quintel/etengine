@@ -50,6 +50,9 @@ task :user_stats => [:environment] do
     # TODO: let's not query for mechanical turk origin scenarios.
     scenarios = Scenario.where("created_at >= ? AND created_at <= ?", start_date, end_date)
 
+    # TODO: filter out any QI-originated usage by figuring out the related IP address(es)
+    scenarios.delete_if { |s| %w{ 127.0.0.1 }.include?(s.remote_ip) }
+
     # Currently etflex doesn't register
     # https://github.com/quintel/etflex/issues/377
     scenarios.each { |s| s.source = "ETFlex" if s.source.nil? }
