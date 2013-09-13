@@ -17,6 +17,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data.should include('title'      => scenario.title)
       data.should include('id'         => scenario.id)
       data.should include('area_code'  => 'nl')
+      data.should include('start_year' => scenario.start_year)
       data.should include('end_year'   => scenario.end_year)
       data.should include('template'   => nil)
       data.should include('source'     => nil)

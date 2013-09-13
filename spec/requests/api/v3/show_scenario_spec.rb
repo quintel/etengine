@@ -22,6 +22,7 @@ describe 'APIv3 Scenarios' do
       json.should include('title'      => scenario.title)
       json.should include('id'         => scenario.id)
       json.should include('area_code'  => 'nl')
+      json.should include('start_year' => scenario.start_year)
       json.should include('end_year'   => scenario.end_year)
       json.should include('template'   => nil)
       json.should include('source'     => nil)

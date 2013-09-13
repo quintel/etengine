@@ -13,6 +13,11 @@ describe Preset, :etsource_fixture do
     Preset.all.map(&:id).include?(2999).should be_true
   end
 
+  it 'fetches the start_year' do
+    expect(Preset.new(area_code: 'nl').start_year).
+      to eq(Atlas::Dataset.find(:nl).analysis_year)
+  end
+
   describe "#to_scenario" do
 
     let(:scenario) { Preset.all.first.to_scenario }
