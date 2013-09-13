@@ -125,6 +125,9 @@ class Scenario < ActiveRecord::Base
     end
   end
 
+  # Public: The year on which the analysis for the scenario's area is based.
+  #
+  # Returns an integer.
   def start_year
     @start_year ||= Atlas::Dataset.find(area_code).analysis_year
   end

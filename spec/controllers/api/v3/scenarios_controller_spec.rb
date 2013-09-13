@@ -88,6 +88,14 @@ describe Api::V3::ScenariosController do
       @scenario.reload.end_year.should == 2040
     end
 
+    it "shouldn't update start_year" do
+      expect {
+        put :update, :id => @scenario.id, :scenario => {:start_year => 2009}
+      }.to_not change { @scenario.reload.start_year }
+
+      response.should be_success
+    end
+
     it "shouldn't update area" do
       put :update, :id => @scenario.id, :scenario => {:area_code => 'de'}
       response.should be_success

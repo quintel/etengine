@@ -21,6 +21,13 @@ class Preset
     end
   end
 
+  # Public: The year on which the analysis for the preset's area is based.
+  #
+  # Returns an integer.
+  def start_year
+    @start_year ||= Atlas::Dataset.find(area_code).analysis_year
+  end
+
   # provide legacy support by pretending to be a scenario
   def to_scenario
     attrs = attributes

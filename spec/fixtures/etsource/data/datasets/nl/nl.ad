@@ -3,7 +3,9 @@
 - id = 1
 - entity = 
 - parent_id = 1
-- useable = true
+- analysis_year = 2011
+- enabled.etengine = true
+- enabled.etmodel = true
 - has_agriculture = true
 - has_buildings = true
 - has_climate = true

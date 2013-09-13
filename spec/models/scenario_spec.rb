@@ -9,7 +9,7 @@ describe Scenario do
     its(:area_code) { should == 'nl'}
     its(:user_values) { should == {} }
     its(:end_year) { should == 2040 }
-    its(:start_year) { should == 2011 }
+    its(:start_year) { should == Atlas::Dataset.find(:nl).analysis_year }
 
     describe "#years" do
       its(:years) { should == 29 }

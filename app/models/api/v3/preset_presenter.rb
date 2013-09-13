@@ -24,6 +24,7 @@ module Api
         json[:id]             = @resource.id
         json[:title]          = @resource.title
         json[:area_code]      = @resource.area_code
+        json[:start_year]     = @resource.start_year
         json[:end_year]       = @resource.end_year
         json[:description]    = @resource.description
         json[:url]            = @controller.api_v3_scenario_url(@resource)
