@@ -147,12 +147,11 @@ class Graph
   end
 
   def present?
-    raise "Qernel::Graph#present? #year not defined" if year.nil?
-    year == START_YEAR
+    year == @area.analysis_year
   end
 
   def future?
-    year != START_YEAR
+    ! present?
   end
 
   def update_link_shares
