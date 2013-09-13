@@ -87,7 +87,8 @@ module Qernel
       :roof_surface_available_pv_buildings,
       :use_network_calculations,
       :enabled,
-      :ventilation_rate
+      :ventilation_rate,
+      :analysis_year
     ]
 
     dataset_accessors ATTRIBUTES_USED

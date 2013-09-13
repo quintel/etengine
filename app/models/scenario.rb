@@ -126,7 +126,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def start_year
-    START_YEAR
+    @start_year ||= Atlas::Dataset.find(area_code).analysis_year
   end
 
   def years
