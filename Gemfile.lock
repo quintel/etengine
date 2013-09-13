@@ -50,7 +50,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/refinery.git
-  revision: 639d53575e2c7d17fad429522a5c3d6f3ce09f29
+  revision: fa332c7212efbcb280f821fbd944e948fed761d9
+  ref: fa332c7
   specs:
     refinery (0.0.1)
       ruby-graphviz
@@ -319,7 +320,7 @@ DEPENDENCIES
   activerecord-import (~> 0.2.9)
   airbrake
   annotate
-  atlas (= 0.0.2)!
+  atlas!
   authlogic
   better_errors
   cancan
