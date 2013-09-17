@@ -23,7 +23,35 @@ def save_as_csv(path, key, postfix, data)
   end
 end
 
-desc 'Displays number of created scenarios over the last x months (periods = x, default = 1).'
+desc <<-DESC
+  Displays # of scenarios created over last x months (periods = x, default = 1).
+
+  OPTIONS:
+
+  summary=true      : Adds summary to the end of the overview.
+  summary=only      : Monthly overviews are suppressed and only a summary is 
+                      presented.
+  csv=true          : Export overview to csv file as well; seperate files for 
+                      scenarios and saved scenarios per source. Requires path
+                      option (see below).
+  csv=only          : No output to terminal, export to csv files only. Requires
+                      path option (see below).
+  path=<path>       : Path to directory where csv files are to be saved. 
+                      Directory has to exist for task to execute.
+
+  EXAMPLES:
+
+  rake user_stats periods=3 summary=true
+
+  > Outputs overview of user statistics for last 3 months, including a summary, 
+    to the terminal.
+
+  rake user_stats periods=3 summary=true csv=true path=user_statics/
+
+  > Outputs overview of user statistics for last 3 months, including a summary, 
+    to the terminal and creates a number of csv files in the directory 
+    user_statistics/ (relative to the current directory).
+DESC
 task :user_stats => [:environment] do
   number_of_periods = ENV['periods'] || 1
   summary           = ENV['summary'] && (ENV['summary'].upcase == 'TRUE' || ENV['summary'].upcase == 'ONLY') || false
