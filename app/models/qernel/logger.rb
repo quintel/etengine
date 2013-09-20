@@ -73,6 +73,9 @@ module Qernel
         subtree.insert(0, {:nesting => nest - 1, :attr_name => 'root'})
       end
 
+      # Prevent duplicate log entries causing infinite loops.
+      subtree.uniq!
+
       first         = subtree.first
       child_nesting = first[:nesting] + 1
       children      = subtree.select{|l| l[:nesting] == child_nesting }
@@ -81,6 +84,7 @@ module Qernel
 
       children.each_with_index do |l, idx|
         next_child = children[idx+1]
+
         idx1   = subtree.index( l )
         idx2   = subtree.index( next_child ) || 0
         # The subtree are all elements from child l until the next child (with
