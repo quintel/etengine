@@ -21,10 +21,13 @@ module Qernel::Plugins
     class MeritOrderInjector
       include Instrumentable
 
-      attr_reader :key, :graph
+      attr_reader :key, :graph, :m
 
-      def initialize(graph)
+      # When you initialize a new MeritOrderInjector, you can specify that
+      # you want to skip producers that have no known marginal costs.
+      def initialize(graph, skip_unknown_producers = false)
         @graph = graph
+        @skip_unknown_producers = skip_unknown_producers
       end
 
       def run
@@ -61,10 +64,6 @@ module Qernel::Plugins
         end
       end
 
-      #######
-      private
-      #######
-
       def setup_items
         @m = ::Merit::Order.new
         add_volatile_producers
@@ -73,16 +72,20 @@ module Qernel::Plugins
         add_total_demand
       end
 
+      #######
+      private
+      #######
+
       def add_volatile_producers
-        volatile_producers.each {|p| add_producer :volatile, p}
+        volatile_producers.each { |p| add_producer :volatile, p }
       end
 
       def add_must_run_producers
-        must_run_producers.each {|p| add_producer :must_run, p}
+        must_run_producers.each { |p| add_producer :must_run, p }
       end
 
       def add_dispatchable_producers
-        dispatchable_producers.each {|p| add_producer :dispatchable, p}
+        dispatchable_producers.each { |p| add_producer :dispatchable, p }
       end
 
       def add_producer(type, p)
@@ -110,7 +113,13 @@ module Qernel::Plugins
             attrs[:full_load_hours]  = c.full_load_hours
           end
           producer = klass.new(attrs)
-          @m.add producer
+
+          # When `@skip_unknown_producers` == true, we want to skip those
+          # producers whose marginal_costs is NaN.
+          unless @skip_unknown_producers && attrs[:marginal_costs].nan?
+            @m.add producer
+          end
+
         rescue Exception => e
           raise "Merit order: error adding #{type} #{p.key}: #{e.message}"
         end
