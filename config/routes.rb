@@ -67,6 +67,7 @@ Etm::Application.routes.draw do
         end
       end
 
+
       resources :converters, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
       resource  :area, :as => :area, :only => :show
@@ -92,6 +93,9 @@ Etm::Application.routes.draw do
       match '/gql/search' => "gql#search", :as => :gql_search
       match '/gql/log' => "gql#log", :as => :gql_log
       match '/gql/warnings' => "gql#warnings", :as => :gql_warnings
+
+      match '/merit' => 'merit#index'
+      match '/merit/download' => 'merit#download', as: :merit_download
 
       match 'search' => 'search#index', :as => :search
     end
