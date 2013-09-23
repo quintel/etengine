@@ -88,4 +88,34 @@ module DataHelper
       @gql.present_graph.converters.map{|c| c.groups}.flatten.sort.uniq
     end
   end
+
+  # Given a scenario or preset ID, creates an HTML link to display it.
+  #
+  # Presets are linked to the AD file on ETEngine, using the same Git
+  # reference as is currently loaded in ETE. Scenarios are linked to the "view
+  # scenario page" in the admin UI.
+  #
+  # Returns a string.
+  def preset_or_scenario_link(id)
+    if preset = Preset.get(id)
+      git_ref = Etsource::Base.instance.get_latest_import_sha
+      atl_doc = Atlas::Preset.all.find { |p| p.id == preset.id }
+
+      if atl_doc
+        link = "https://github.com/quintel/etsource/blob/" +
+          "#{ git_ref }/data/" +
+          "#{ atl_doc.path.relative_path_from(Atlas.data_dir) }"
+
+        name = atl_doc.path.relative_path_from(Atlas::Preset.directory).to_s
+      else
+        link = nil
+        name = id.to_s
+      end
+    else
+      link = data_scenario_path(id: id)
+      name = id.to_s
+    end
+
+    link ? link_to(name, link) : name
+  end
 end

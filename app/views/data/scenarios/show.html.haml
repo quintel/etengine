@@ -9,6 +9,17 @@
       %tr
         %th End Year
         %td= @scenario.end_year
+      %tr
+        %th Source
+        %td= @scenario.source
+      - if @scenario.preset_scenario_id.present?
+        %th Preset
+        %td
+          = preset_or_scenario_link(@scenario.preset_scenario_id)
+      - if @scenario.description.present?
+        %th Description
+        %td= @scenario.description
+
 
 .row
   .span10
