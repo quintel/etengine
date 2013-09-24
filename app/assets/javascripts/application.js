@@ -18,7 +18,13 @@ $(document).ready(function() {
 
   $("#area_code_selector select").change(function(e){
     e.preventDefault();
-    var params = {scenario: {area_code: $("#area_code_selector select").val()}};
+    var params = {
+        scenario: {
+            area_code: $("#area_code_selector select").val(),
+            source:    'ETEngine Admin UI'
+        }
+    };
+
     $.post('/api/v3/scenarios/', params, function(data, _ts, jqXHR) {
       location.href = "/data/"+data.id;
     })
