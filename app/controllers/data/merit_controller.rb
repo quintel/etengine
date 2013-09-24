@@ -8,6 +8,7 @@ class Data::MeritController < Data::BaseController
 
     moi = Qernel::Plugins::MeritOrder::MeritOrderInjector.new(@gql.future_graph, true)
     moi.setup_items
+    moi.send(:calculate_merit_order)
 
     contents = CSV.generate do |csv|
       moi.m.load_curves.each do |row|
