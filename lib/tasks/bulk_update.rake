@@ -195,12 +195,11 @@ namespace :bulk_update do
 
       # rename households_useful_demand_cooking in households_useful_demand_cooking_per_person
 
-      inputs[:households_useful_demand_cooking_per_person] = inputs[:households_useful_demand_cooking]
-      inputs.delete(:households_useful_demand_cooking)
+      #inputs[:households_useful_demand_cooking_per_person] = inputs[:households_useful_demand_cooking]
+      #inputs.delete(:households_useful_demand_cooking)
 
-      puts "Renamed households_useful_demand_cooking_per_person to households_useful_demand_cooking_per_person_per_person."
+      #puts "Renamed households_useful_demand_cooking_per_person to households_useful_demand_cooking."
 
-      puts "==========="
 
       ###################### GENERAL CHECKS ##########################
 
@@ -319,6 +318,7 @@ namespace :bulk_update do
 
       # Buildings district heating group
       share_group_inputs = [
+        :buildings_chp_engine_biogas_share,
         :buildings_collective_chp_wood_pellets_share,
         :buildings_collective_chp_network_gas_share,
         :buildings_heat_network_connection_steam_hot_water_share,
@@ -398,6 +398,8 @@ namespace :bulk_update do
       inputs.each do |x|
         x[1] =x[1].to_f.round(1) unless x[1].nil?
       end
+
+      puts "==========="
 
       ######################## END ############################
       BulkUpdateHelpers.save(s, inputs, @dry_run)

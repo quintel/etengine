@@ -12,6 +12,7 @@ INPUT_DEFAULTS = {
 :bio_ethanol_from_cane_sugar_share => 40.0,
 :biodiesel_from_palm_oil_share => 80.0,
 :biodiesel_from_waste_fats_share => 20.0,
+:buildings_chp_engine_biogas_share => 0.0,
 :buildings_collective_chp_network_gas_share => 69.95348837209299,
 :buildings_collective_chp_wood_pellets_share => 0.0,
 :buildings_collective_geothermal_share => 0.0,
