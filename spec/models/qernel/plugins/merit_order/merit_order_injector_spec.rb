@@ -4,6 +4,7 @@ module Qernel::Plugins::MeritOrder
   describe MeritOrderInjector do
     before do
       @graph = double("Graph")
+      Rails.cache.clear
     end
 
     it "should not run on present graph" do

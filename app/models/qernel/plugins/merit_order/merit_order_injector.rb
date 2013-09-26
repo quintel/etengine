@@ -143,14 +143,15 @@ module Qernel::Plugins
 
       # memoizes the etsource-based merit order hash
       #
-      def merit_order_data
+      def merit_order_data(type)
         @merit_order_data ||= Etsource::MeritOrder.new.import
+        @merit_order_data[type] || {}
       end
 
       # Select dispatchable merit order converters
       def dispatchable_producers
         @dispatchable_converters ||= begin
-          merit_order_data['dispatchable'].keys.map do |k|
+          merit_order_data('dispatchable').keys.map do |k|
             graph.converter(k.to_sym)
           end.compact
         end
@@ -161,7 +162,7 @@ module Qernel::Plugins
       def volatile_producers
         @volatile_producers ||= begin
           converters = []
-          merit_order_data['volatile'].each_pair do |key, profile_key|
+          merit_order_data('volatile').each_pair do |key, profile_key|
             c = graph.converter(key)
             c.converter_api.load_profile_key = profile_key
             converters.push c
@@ -175,7 +176,7 @@ module Qernel::Plugins
       def must_run_producers
         @must_run_producers ||= begin
           converters = []
-          merit_order_data['must_run'].each_pair do |key, profile_key|
+          merit_order_data('must_run').each_pair do |key, profile_key|
             c = graph.converter(key)
             c.converter_api.load_profile_key = profile_key
             converters.push c
