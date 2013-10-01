@@ -32,8 +32,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: ac7a269f311752512b2afcc0e0d023ebd11cb84c
-  ref: ac7a269
+  revision: b71bc703ac8d23449286a20d3fab1cb1fde5031d
+  ref: b71bc70
   specs:
     atlas (0.0.2)
       activemodel (~> 3.2.12)
@@ -51,8 +51,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/refinery.git
-  revision: 9d62df1d9abc01f42bc4ceb44143c8a62333d149
-  ref: 9d62df1
+  revision: 6c6e6b6b5cd70914b84de3ff8c85b12ac72d0072
+  ref: 6c6e6b6
   specs:
     refinery (0.0.1)
       ruby-graphviz
@@ -298,7 +298,7 @@ GEM
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
-    turbine-graph (0.1.1)
+    turbine-graph (0.1.3)
     tzinfo (0.3.37)
     unicorn (4.6.2)
       kgio (~> 2.6)
