@@ -70,7 +70,7 @@ class Scenario < ActiveRecord::Base
   attr_accessible :author, :title, :description, :user_values,
     :balanced_values, :end_year, :area_code, :country, :region,
     :in_start_menu, :user_id, :preset_scenario_id, :use_fce, :protected,
-    :scenario_id, :source, :user_values_as_yaml, :created_at
+    :scenario_id, :source, :user_values_as_yaml, :created_at, :remote_ip
 
   attr_accessor :input_errors, :ordering, :display_group
 

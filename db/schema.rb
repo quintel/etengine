@@ -11,7 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130821165553) do
+ActiveRecord::Schema.define(:version => 20130912084147) do
+
+  create_table "blueprint_layouts", :force => true do |t|
+    t.string   "key"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "converter_positions", :force => true do |t|
     t.integer  "x"
@@ -97,6 +103,7 @@ ActiveRecord::Schema.define(:version => 20130821165553) do
     t.string   "area_code"
     t.string   "source"
     t.text     "balanced_values"
+    t.string   "remote_ip"
   end
 
   create_table "users", :force => true do |t|
