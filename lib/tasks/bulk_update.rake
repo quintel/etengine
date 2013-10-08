@@ -170,7 +170,7 @@ namespace :bulk_update do
       # Get the old slider settings
       A = inputs[:number_of_energy_power_ultra_supercritical_coal] || INPUT_DEFAULTS[:number_of_energy_power_ultra_supercritical_coal]
       B = inputs[:number_of_energy_chp_ultra_supercritical_coal] || INPUT_DEFAULTS[:number_of_energy_chp_ultra_supercritical_coal]
-      C = inputs[:co_firing_wood_pellets_share] || INPUT_DEFAULTS[:co_firing_wood_pellets_share]
+      C = inputs[:co_firing_wood_pellets_share] || 12.0
 
       # Calculate the values for the new slider settings
       D = A * (1.0 - 2.0 * C / 100.0)   # new setting for number_of_energy_power_ultra_supercritical_coal
@@ -193,15 +193,28 @@ namespace :bulk_update do
       inputs[:number_of_energy_chp_ultra_supercritical_cofiring_coal] = G
       puts "Number of co-firing coal plants for district heat: 0.0 => #{G}"
 
-      # rename households_useful_demand_cooking in households_useful_demand_cooking_per_person
+      # Balance the share group of co-fring 
 
-      #inputs[:households_useful_demand_cooking_per_person] = inputs[:households_useful_demand_cooking]
-      #inputs.delete(:households_useful_demand_cooking)
+      A = inputs[:co_firing_biocoal_share] || INPUT_DEFAULTS[:co_firing_biocoal_share]
+      B = inputs[:co_firing_coal_share] || INPUT_DEFAULTS[:co_firing_coal_share]
+      sum = (A + B) / 100.0
 
-      #puts "Renamed households_useful_demand_cooking_per_person to households_useful_demand_cooking."
+      puts "BEFORE: Sum of coal and biocoal is: #{100 * sum}"
+
+      inputs[:co_firing_biocoal_share] = A / sum
+      inputs[:co_firing_coal_share] = B / sum
+
+      puts "AFTER: Sum of coal and biocoal is: #{inputs[:co_firing_biocoal_share] + inputs[:co_firing_coal_share]}"
+
+      #rename households_useful_demand_cooking in households_useful_demand_cooking_per_person
+
+      inputs[:households_useful_demand_cooking_per_person] = inputs[:households_useful_demand_cooking]
+      inputs.delete(:households_useful_demand_cooking)
+
+      puts "Renamed households_useful_demand_cooking_per_person to households_useful_demand_cooking."
 
 
-      ###################### GENERAL CHECKS ##########################
+      ######################  CHECKS ##########################
 
       # HHs warm water group
       share_group_inputs = [
