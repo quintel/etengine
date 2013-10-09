@@ -32,8 +32,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: fabfbc0bf71cc23a578490f24f17d63cca38fb17
-  ref: fabfbc0
+  revision: b6cc4abdb629d5f2447cb48bc109894615afff47
+  ref: b6cc4ab
   specs:
     atlas (0.0.2)
       activemodel (~> 3.2.12)
@@ -135,7 +135,7 @@ GEM
     debugger-linecache (1.2.0)
     debugger-ruby_core_source (1.2.3)
     default_value_for (2.0.2)
-    descendants_tracker (0.0.1)
+    descendants_tracker (0.0.3)
     diff-lcs (1.2.4)
     distribution (0.7.0)
     erubis (2.7.0)
