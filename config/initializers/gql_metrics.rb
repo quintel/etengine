@@ -5,6 +5,12 @@
 GqlLogger = Logger.new(Rails.root.join('log/gql.log'), 5, 1_048_576)
 GqlWarnings = Logger.new(Rails.root.join('log/warnings.log'), 5, 1_048_576)
 
+GqlWarnings.formatter = GqlLogger.formatter =
+  proc do |severity, datetime, progname, message|
+    progname = " #{ progname }" unless progname.nil?
+    "[#{ datetime }#{ progname }] #{ message }\n"
+  end
+
 # For quick debugging sessions
 DebugLogger = Logger.new(Rails.root.join('log/debug.log'), 5, 1_048_576)
 
