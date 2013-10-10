@@ -2,10 +2,13 @@
 
 %h2 Commit did not import successfully; rolled back.
 
-%h3 Message
+%h3
+  Message
+  %span(style="font-weight: normal; color: #777")
+    == (#{ @exception.class.name })
 
 %pre
-  = @exception
+  = @exception.message
 
 %h3 Backtrace
 
