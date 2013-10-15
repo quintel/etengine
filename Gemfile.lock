@@ -32,8 +32,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: b6cc4abdb629d5f2447cb48bc109894615afff47
-  ref: b6cc4ab
+  revision: d81c2a9c9e8c79f5734d2edcc8f5a2b5bd44e034
+  ref: d81c2a9
   specs:
     atlas (0.0.2)
       activemodel (~> 3.2.12)
@@ -51,8 +51,8 @@ GIT
 
 GIT
   remote: git@github.com:quintel/refinery.git
-  revision: 05607a878162cc599481c3933d20c00e08531dba
-  ref: 05607a8
+  revision: 73e78975948f2c69572b7052bbce8d4715d1b33a
+  ref: 73e7897
   specs:
     refinery (0.0.1)
       ruby-graphviz
@@ -103,7 +103,7 @@ GEM
     authlogic (3.3.0)
       activerecord (>= 3.2)
       activesupport (>= 3.2)
-    backports (3.3.4)
+    backports (3.3.5)
     better_errors (0.8.0)
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
