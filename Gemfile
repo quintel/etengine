@@ -35,7 +35,7 @@ gem 'msgpack'
 gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
 gem 'merit',                           git:     'git@github.com:quintel/merit.git'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
-gem 'refinery',      ref: '73e7897',   git:     'git@github.com:quintel/refinery.git'
+gem 'refinery',      ref: '9630d75',   git:     'git@github.com:quintel/refinery.git'
 gem 'atlas',         ref: '657ede1',   git:     'git@github.com:quintel/atlas.git'
 
 # system gems
