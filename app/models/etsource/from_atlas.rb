@@ -71,7 +71,8 @@ module Etsource
           supplier,
           carrier,
           edge.type,
-          edge.reversed?
+          edge.reversed?,
+          edge.groups
         )
       end
 

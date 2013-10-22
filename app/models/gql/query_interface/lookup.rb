@@ -101,6 +101,18 @@ module Gql::QueryInterface::Lookup
     end
   end
 
+  # @param [String,Array] Group keys
+  # @return [Array<Link>]
+  #
+  def group_links(keys)
+    # Array(keys).map(&graph.method(:group_links))
+    if keys.is_a?(Array)
+      flatten_compact(keys.flatten.map{|key| graph.group_links(key) })
+    else
+      flatten_compact graph.group_link(keys)
+    end
+  end
+
   def flatten_compact(val)
     val.flatten!
     val.compact!

@@ -88,6 +88,17 @@ module Gql::Runtime
       end
       alias G GROUP
 
+      # Returns an Array of {Qernel::Links} for given group.
+      #
+      # Examples
+      #
+      #   LINK_GROUP(households)
+      #
+      def LINK_GROUP(*keys)
+        scope.group_links(keys)
+      end
+      alias LG LINK_GROUP
+
       # Returns an Array of {Qernel::Converter} for given sector.
       #
       # Examples

@@ -59,7 +59,9 @@ class Graph
   def initialize(converters = [])
     @logger = ::Qernel::Logger.new
     @area   = Qernel::Area.new(self)
+
     @converters_by_group = {}
+    @links_by_group      = {}
 
     self.converters = converters
   end
@@ -220,6 +222,16 @@ class Graph
   def group_converters(group_key)
     key = group_key.to_sym
     @converters_by_group[key] ||= converters.select{|c| c.groups.include?(key) }
+  end
+
+  # Return all links in the given group.
+  #
+  # @param group_key [String,Symbol] group identifier
+  # @return [Array<Converter>]
+  #
+  def group_links(group_key)
+    key = group_key.to_sym
+    @links_by_group[key] ||= links.select{ |link| link.groups.include?(key) }
   end
 
   # Return the converter with given key.

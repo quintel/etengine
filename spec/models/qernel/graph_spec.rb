@@ -41,6 +41,18 @@ module Qernel
           end
         end
 
+        context 'group_links' do
+          before do
+            @g.links.first.instance_variable_set(:@groups, [:fd])
+          end
+
+          it '# returns an array of links in the given group
+              mid(100) == f(1.0) ==> rgt1
+              mid      == f(1.0) ==> rgt2' do
+            expect(@g.group_links(:fd)).to eq([@g.links.first])
+          end
+        end # #group_links
+
         context "Flex Max" do
           it "# Fill flex_max link upto max_demand
               mid(100) == f(1.0) ==> rgt1
