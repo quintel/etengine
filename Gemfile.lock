@@ -32,15 +32,15 @@ GIT
 
 GIT
   remote: git@github.com:quintel/atlas.git
-  revision: d81c2a9c9e8c79f5734d2edcc8f5a2b5bd44e034
-  ref: d81c2a9
+  revision: 657ede192faabfbc02a61b0a6df02198bc5f39cb
+  ref: 657ede1
   specs:
     atlas (0.0.2)
       activemodel (~> 3.2.12)
       activesupport (~> 3.2.12)
       rubel (>= 0.0.3)
       turbine-graph (>= 0.1)
-      virtus (>= 0.5.4)
+      virtus (~> 0.5.4)
 
 GIT
   remote: git@github.com:quintel/merit.git
