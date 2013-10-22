@@ -31,7 +31,8 @@ class Link
 
   attr_reader :id,
               :link_type,
-              :key
+              :key,
+              :groups
 
 
   # --------- Flow ------------------------------------------------------------
@@ -60,12 +61,15 @@ class Link
 
   # --------- Initialize ------------------------------------------------------
 
-  def initialize(id, lft, rgt, carrier, link_type, reversed = false)
+  def initialize(id, lft, rgt, carrier, link_type, reversed = false, groups = [])
     @key = id
     @id = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
 
-    @reversed = reversed
-    @lft_converter, @rgt_converter, @carrier = lft, rgt, carrier
+    @reversed      = reversed
+    @lft_converter = lft
+    @rgt_converter = rgt
+    @carrier       = carrier
+    @groups        = groups
 
     self.link_type = link_type.to_sym
 
