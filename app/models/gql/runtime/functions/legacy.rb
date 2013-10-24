@@ -2,20 +2,10 @@ module Gql::Runtime
   module Functions
     module Legacy
 
-      def replace_gql_with_ruby_brackets(attr_name)
-        if attr_name.include?('[')
-          attr_name.strip!
-          attr_name.gsub!('[','(')
-          attr_name.gsub!(']',')')
-          attr_name
-        else
-          attr_name.tap(&:strip!)
-        end
-      end
-
-      def FILTER(converters, filter_name)
-        inst_eval = replace_gql_with_ruby_brackets(filter_name)
-        flatten_uniq(converters.tap(&:flatten!).select{|c| c.query.instance_eval(inst_eval) })
+      def FILTER(collection, filter)
+        flatten_uniq(collection.tap(&:flatten!).select do |el|
+          el.query.instance_eval(filter.to_s)
+        end)
       end
 
 
