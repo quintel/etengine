@@ -38,7 +38,7 @@ class Etsource::CommitsController < ApplicationController
       @etsource.update_latest_import_sha(new_revision)
 
       NastyCache.instance.expire!
-    rescue Atlas::AtlasError, Refinery::RefineryError => ex
+    rescue RuntimeError => ex
       if previous_rev.nil? || Rails.env.development?
         # If there is no previous commit (this may be a fresh deploy), we
         # have nothing to roll back to so we just re-raise the error.
