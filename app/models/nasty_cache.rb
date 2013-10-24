@@ -58,6 +58,11 @@ class NastyCache
   def initialize_request
     if expired?
       expire_local!
+
+      # We need to get rid of the local Atlas cache, but DO NOT do anything with
+      # the *.pack dataset files; the process which triggered the expiry will
+      # recreate them.
+      expire_atlas!(keep_atlas_dataset: true)
     else
       log("NastyCache(#{Process.pid})#cached: #{ @cache_store.length } keys")
     end
@@ -67,10 +72,15 @@ class NastyCache
   # this is equivalent of a server restart.
   def expire!(options = {})
     log("NastyCache(#{Process.pid})#expire!")
-    expire_cache!
-    mark_expired!
-    expire_local!
+
+    # Atlas comes first to ensure that the cache isn't repopulated with old
+    # ETSource data. This should not happen, except if threading is enabled.
     expire_atlas!(options)
+
+    expire_local!
+    expire_cache!
+
+    mark_expired!
   end
 
   def fetch(key, opts = {})
