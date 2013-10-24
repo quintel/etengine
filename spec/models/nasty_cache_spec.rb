@@ -44,7 +44,7 @@ describe NastyCache do
 
   context "two processes" do
     before {
-      @cache_1 = NastyCache.instance
+      @cache_1 = NastyCache.new_process
       @cache_1.set("foo", "bar")
       @cache_2 = NastyCache.new_process
     }
