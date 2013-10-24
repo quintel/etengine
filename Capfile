@@ -1,10 +1,10 @@
 require 'bundler/capistrano'
 require 'airbrake/capistrano'
+require 'capistrano-unicorn'
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 load 'lib/capistrano/db_recipes'
 load 'lib/capistrano/memcached'
-load 'lib/capistrano/unicorn'
 load 'deploy/assets'
 
 load 'config/deploy' # remove this line to skip loading any of the default tasks
@@ -42,6 +42,9 @@ namespace :deploy do
     run "cd #{release_path}; RAILS_ENV=#{rails_env} rake calculate_datasets"
   end
 end
+
+# before_fork hook implemented (zero downtime deployments)
+after 'deploy:restart', 'unicorn:duplicate'
 
 after "deploy:update_code", "deploy:symlink_configuration_files"
 after "deploy:update_code", "deploy:calculate_datasets"

@@ -45,7 +45,6 @@ gem 'term-ansicolor', '1.0.7',    require: false
 gem 'highline',                   require: false
 gem 'rubyzip',        '0.9.4'
 gem 'fileutils'
-gem 'capistrano'
 
 # documentation gems. Needed on production too for dynamically generated docs.
 group :development, :production do
@@ -59,6 +58,9 @@ group :development do
   gem 'quiet_assets'
   gem 'better_errors'
   gem 'listen'
+
+  gem 'capistrano',         require: false
+  gem 'capistrano-unicorn', require: false
 end
 
 group :test, :development do
