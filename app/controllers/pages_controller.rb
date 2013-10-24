@@ -1,5 +1,9 @@
 class PagesController < ApplicationController
   def index
-    @user_session = UserSession.new unless current_user
+    if current_user
+      @user_session = UserSession.new
+    else
+      redirect_to login_path
+    end
   end
 end

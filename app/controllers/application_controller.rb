@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     store_location
-    redirect_to root_url, :alert => "I am sorry. You are not allowed here."
+    redirect_to login_url, :alert => "Please log in first."
   end
 
   def initialize_memory_cache
