@@ -21,29 +21,38 @@ pid '/u/apps/etengine/shared/pids/unicorn.pid'
 stderr_path '/u/apps/etengine/shared/log/unicorn.log'
 stdout_path '/u/apps/etengine/shared/log/unicorn.log'
 
+before_exec do |server|
+  ENV['BUNDLE_GEMFILE'] = "/u/apps/etengine/current/Gemfile"
+end
+
 before_fork do |server, worker|
   # This option works in together with preload_app true setting. What is does
   # is prevent the master process from holding the database connection
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
 
-  # When doing a "hot" restart of the Unicorn master, the old master hangs
-  # around until it is explicitly killed (so that it can be used if the new
-  # master fails to start). Since we got as far as starting a new worker, we
-  # end the old process...
-  old_pid = '/u/apps/etengine/shared/pids/unicorn.pid.oldbin'
-
-  if File.exists?(old_pid) && server.pid != old_pid
-    begin
-      Process.kill('QUIT', File.read(old_pid).to_i)
-    rescue Errno::ENOENT, Errno::ESRCH
-      # Old master already dead. Just ignore it.
-    end
-  end
+  # The following is only recommended for memory/DB-constrained
+  # installations.  It is not needed if your system can house
+  # twice as many worker_processes as you have configured.
+  #
+  # # When doing a "hot" restart of the Unicorn master, the old master hangs
+  # # around until it is explicitly killed (so that it can be used if the new
+  # # master fails to start). Since we got as far as starting a new worker, we
+  # # end the old process...
+  # old_pid = '/u/apps/etengine/shared/pids/unicorn.pid.oldbin'
+  #
+  # if File.exists?(old_pid) && server.pid != old_pid
+  #   begin
+  #     Process.kill('QUIT', File.read(old_pid).to_i)
+  #   rescue Errno::ENOENT, Errno::ESRCH
+  #     # Old master already dead. Just ignore it.
+  #   end
+  # end
 end
 
 after_fork do |server, worker|
   # Here we are establishing the connection after forking worker processes
   defined?(ActiveRecord::Base) and ActiveRecord::Base.establish_connection
+
   # Let's write to file the child pid, so monit can kill it as needed
   child_pid = server.config[:pid].sub('.pid', ".#{worker.nr}.pid")
   system("echo #{Process.pid} > #{child_pid}")

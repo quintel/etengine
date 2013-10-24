@@ -5,6 +5,9 @@ set :server_type, 'production'
 
 set :deploy_to, "/u/apps/etengine"
 
+set(:unicorn_bin) { "#{current_path}/bin/unicorn" }
+set(:unicorn_pid) { "#{current_path}/tmp/pids/unicorn.pid" }
+
 task :production do
   set :domain, "et-engine.com"
   set :branch, fetch(:branch, "production")
