@@ -102,6 +102,14 @@ class Link
     self
   end
 
+  # Public: The sector to which the link belongs. This is the same as the sector
+  # of the child (consumer, "left-hand") converter.
+  #
+  # Returns a symbol.
+  def sector
+    lft_converter.sector_key
+  end
+
 protected
 
   def connect
