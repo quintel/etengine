@@ -43,6 +43,8 @@ class Link
   alias reversed? reversed
   alias loss? is_loss
 
+  alias_method :demand, :value
+
   # ----- Micro optimization -------------------------------------------------
 
   # make Array#flatten fast
