@@ -95,6 +95,13 @@ class Link
     end
   end
 
+  # Public: The query object used by some GQL functions.
+  #
+  # Returns self.
+  def query
+    self
+  end
+
 protected
 
   def connect
