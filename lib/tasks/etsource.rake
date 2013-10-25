@@ -9,16 +9,18 @@ namespace :etsource do
 
     This is used as an aid during deployment so that new ETEngine versions,
     which may be incompatible with the currently-imported ETSource, can load the
-    desired ETSource version before starting the app.
+    desired ETSource version before starting the app. It is not intended for use
+    on local development machines.
 
     Provide the desired ETSource commit in a REV variable:
 
-      rake etsource:load REF=a9b8c7d6e5f4
+    rake etsource:load REF=a9b8c7d6e5f4
   DESC
   task load: :environment do
     etsource    = Pathname.new(ETSOURCE_DIR).expand_path
     destination = Pathname.new(ETSOURCE_EXPORT_DIR).expand_path
     revision    = (ENV['REV'] || '').strip
+    real_rev    = nil
 
     fail "You didn't provide a REV to load!" if revision.empty?
 
@@ -29,16 +31,19 @@ namespace :etsource do
       MESSAGE
     end
 
-    # rm_rf(destination)
-    # mkdir_p(destination)
-
     cd(etsource) do
       # Ensure the revision is real...
-      revision = sh("git rev-parse #{ revision }", verbose: false)
-      sh("git archive #{ revision } | tar -x -C #{ destination }")
+      sh("git rev-parse '#{ revision }'")
+      real_rev = `git rev-parse '#{ revision }'`.strip
     end
 
-    puts "ETSource #{ revision[0..6] } ready at #{ destination }"
+    puts 'Refreshing ETSource from GitHub'
+    Etsource::Base.instance.refresh
+
+    puts 'Loading ETSource files...'
+    Etsource::Base.instance.export(real_rev)
+
+    puts "ETSource #{ real_rev[0..6] } ready at #{ destination }"
   end
 
   desc "Validate before pushing an etsource commit."
