@@ -46,7 +46,6 @@ module Api
             stroke_color: position.stroke_color(c),
             sector: c.sector_key,
             use: c.use_key,
-            group: c.energy_balance_group,
             summary_available: (c.groups & groups_with_extra_info).any?
           }
         end

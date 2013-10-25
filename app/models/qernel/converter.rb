@@ -78,8 +78,7 @@ class Converter
                :input_links,
                :groups,
                :sector_key,
-               :use_key,
-               :energy_balance_group
+               :use_key
 
   attr_accessor :converter_api, :key, :graph
 
@@ -125,7 +124,6 @@ class Converter
     @groups     = opts[:groups] || []
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
-    @energy_balance_group = opts[:energy_balance_group]
 
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}

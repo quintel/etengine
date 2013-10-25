@@ -442,7 +442,6 @@ If the scenario_id is missing then the controller will use the latest scenario.
         "sector": "industry",
         "use": "energetic",
         "groups": ["electricity_production", "central_production"],
-        "energy_balance_group": "central CHPs",
         "data": {
             "operational": {
                 "typical_nominal_input_capacity": {

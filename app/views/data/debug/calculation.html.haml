@@ -10,7 +10,7 @@
   %ul
     %li You can order the table by clicking on the header column.
     %li Table can be ordered with multiple columns. Click on the second header column while holding the shift-key.
-    %li E.g. Sort fifst by Energy Balance Group, then by position
+    %li E.g. Sort first by key, then by position
     %li Position 0 means, that the preset_demand is used.
 
 
@@ -18,7 +18,6 @@
 %table#debug-calculation.table.table-condensed.tablesorter
   %thead
     %tr
-      %th EBG
       %th Key
       %th.tar Preset
       %th.tar Value
@@ -27,8 +26,6 @@
     - @gql.query_present("MAP(ALL(), key)").sort_by(&:to_s).each do |key|
       - converter = @gql.future_graph.converter(key)
       %tr
-        %td
-          %span.label= converter.energy_balance_group
         %td= key
         - set_log = grouped[key].andand.detect{|l| l[:type] == :set} || {}
         - get_log = grouped[key].andand.select{|l| l[:type] == :get} || []
