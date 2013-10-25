@@ -44,7 +44,7 @@ private
   end
 
   def attributes_for_json
-    attrs = ['demand', 'primary_demand', 'energy_balance_group']
+    attrs = ['demand', 'primary_demand']
     attrs << Qernel::ConverterApi::ATTRIBUTES_USED.sort if params[:action] == 'edit'
     attrs.flatten
   end

@@ -25,7 +25,6 @@ module Api
         json[:sector]               = @present.sector_key
         json[:use]                  = @present.use_key
         json[:groups]               = @present.groups
-        json[:energy_balance_group] = @present.energy_balance_group
 
         json[:data] = {}
 

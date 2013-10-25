@@ -14,7 +14,6 @@ module Etsource
           key:                  node.key.to_sym,
           sector_id:            node.sector.to_sym,
           use_id:               node.use.try(:to_sym),
-          energy_balance_group: node.energy_balance_group.try(:to_sym),
           groups:               node.groups
         )
       end

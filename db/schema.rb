@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130821165553) do
+ActiveRecord::Schema.define(:version => 20131024134222) do
 
   create_table "converter_positions", :force => true do |t|
     t.integer  "x"
@@ -23,14 +23,6 @@ ActiveRecord::Schema.define(:version => 20130821165553) do
   end
 
   add_index "converter_positions", ["converter_key"], :name => "index_converter_positions_on_converter_key", :unique => true
-
-  create_table "energy_balance_groups", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "graphviz_color"
-    t.integer  "graphviz_default_x"
-  end
 
   create_table "fce_values", :force => true do |t|
     t.string   "using_country"
