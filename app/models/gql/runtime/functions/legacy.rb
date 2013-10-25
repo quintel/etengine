@@ -94,7 +94,7 @@ module Gql::Runtime
       #
       def LESS(*values)
         values[0] < values[1]
-      rescue ntError
+      rescue NoMethodError, ArgumentError
         # NoMethodError = values[0] was nil
         # ArgumentError = values[1] was nil
         nil
