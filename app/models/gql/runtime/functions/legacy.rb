@@ -94,7 +94,9 @@ module Gql::Runtime
       #
       def LESS(*values)
         values[0] < values[1]
-      rescue TypeError, NoMethodError
+      rescue ntError
+        # NoMethodError = values[0] was nil
+        # ArgumentError = values[1] was nil
         nil
       end
 
@@ -102,7 +104,7 @@ module Gql::Runtime
       #
       def LESS_OR_EQUAL(*values)
         values[0] <= values[1]
-      rescue TypeError, NoMethodError
+      rescue NoMethodError, ArgumentError
         nil
       end
 
@@ -110,13 +112,13 @@ module Gql::Runtime
       #
       def GREATER(*values)
         values[0] > values[1]
-      rescue TypeError, NoMethodError
+      rescue NoMethodError, ArgumentError
         nil
       end
 
       def GREATER_OR_EQUAL(*values)
         values[0] >= values[1]
-      rescue TypeError, NoMethodError
+      rescue NoMethodError, ArgumentError
         nil
       end
 
