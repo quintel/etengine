@@ -26,27 +26,9 @@ module Qernel
 # Also note that some update statements modify preset_demand, rather then
 # demand.
 #
-# === Description
-#
-# The trouble is that municipalities can decide to build wind mills, but
-# the national scenario can have a certain amount of wind mills as well.
-#
-# E.g. Municipality of Amsterdam wants to build 200 windmills, but The
-# Netherlands also has 2.000 windmills. Total is 2.200 windmills, but they
-# can only adjust the 200. Furthermore, sometimes you want to adjust the
-# national scenario (you wanna change the 2.000), and sometimes you wanna
-# change the 200. So, in fact sometimes you wanna use two sliders for the
-# same converter, one that keeps track of the 'national' windmills, and
-# another that keeps track of the 'municipality' windmills.
-#
-#
-#
-#
-#
 # = Naming of child/parent converters and their links
 #
 # <tt>[Demander <b>D</b>]  <---Link <b>L</b> --- [Supplyer <b>S</b>]</tt>
-#
 #
 # * Energy flows from S to D.
 # * D demands energy from S
