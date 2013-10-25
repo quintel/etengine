@@ -93,28 +93,31 @@ module Gql::Runtime
       # LESS(1,1) => false
       #
       def LESS(*values)
-        a,b = values
-        a < b rescue nil
+        values[0] < values[1]
+      rescue TypeError, NoMethodError
+        nil
       end
 
       # LESS_OR_EQUAL(1,1) => true
       #
       def LESS_OR_EQUAL(*values)
-        a,b = values
-        a <= b rescue nil
+        values[0] <= values[1]
+      rescue TypeError, NoMethodError
+        nil
       end
 
       # GREATER(2,1) => true
       #
       def GREATER(*values)
-        a,b = values
-        a > b rescue false # FIX to make certain gqueries run with municipalities
-        # nil would be better if the comparison fails
+        values[0] > values[1]
+      rescue TypeError, NoMethodError
+        nil
       end
 
       def GREATER_OR_EQUAL(*values)
-        a,b = values
-        a >= b rescue nil
+        values[0] >= values[1]
+      rescue TypeError, NoMethodError
+        nil
       end
 
       def EQUALS(*values)
