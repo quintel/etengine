@@ -9,7 +9,7 @@ namespace :ci do
       raise 'config/config.yml already exists. Not continuing.'
     end
 
-    original = YAML.load_file('config/config.yml.sample')
+    original = YAML.load_file('config/config.sample.yml')
     config   = { 'development' => original['ci'], 'test' => original['ci'] }
 
     File.write('config/config.yml', YAML.dump(config))
