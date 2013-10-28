@@ -115,10 +115,6 @@ class ConverterApi
     converter.key
   end
 
-  def energy_balance_group
-    converter.energy_balance_group
-  end
-
   # See {Qernel::Converter} for difference of demand/preset_demand
   #
   def preset_demand=(val)

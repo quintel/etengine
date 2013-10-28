@@ -57,14 +57,14 @@ class ConverterPosition < ActiveRecord::Base
   end
 
   def stroke_color(converter)
-    (converter && EnergyBalanceGroup.find_by_name(converter.energy_balance_group).andand.graphviz_color) || '#999'
+    '#999'
   end
 
   def x_or_default(converter)
-    self.x || EnergyBalanceGroup.find_by_name(converter.energy_balance_group).andand.graphviz_default_x || 100
+    self.x || 100
   end
 
   def y_or_default(converter)
-    self.y || DEFAULT_Y_BY_SECTOR[converter.sector_key.to_s.to_sym] || 100
+    self.y || 100
   end
 end
