@@ -11,12 +11,15 @@
 %h3 System
 
 %table.table.table-condensed
+  = render partial: 'git_gem_info', locals: { name: 'atlas' }
+  = render partial: 'git_gem_info', locals: { name: 'refinery' }
   %tr
     %td Uptime
     %td= %x{uptime}
   %tr
     %td Ruby Version
     %td== #{ RUBY_VERSION}-p#{ RUBY_PATCHLEVEL }
+
   - if @cache_stats.any?
     - @cache_stats.each_pair do |store, info|
       %tr
