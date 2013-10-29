@@ -1,0 +1,15 @@
+- spec    = Gem.loaded_specs[name]
+- version = spec.full_gem_path.match(/-([a-f0-9]+)$/)[1]
+- commit  = Git.open(spec.full_gem_path).gcommit(version)
+
+%tr.gem-info
+  %td== #{ name.titleize } Info
+  %td
+    %a.compare{ href: "https://github.com/quintel/#{ name }/compare/#{ version }..master" }<
+      Compare with HEAD
+    %a{ href: "https://github.com/quintel/#{ name }/commit/#{ version }" }<
+      %span.version<= version
+      &mdash;&nbsp;
+      = commit.message.split("\n").first
+    %span.date{ title: commit.date }
+      == (committed #{ time_ago_in_words(commit.date) } ago)
