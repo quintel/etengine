@@ -1,37 +1,44 @@
+- if import_in_progress?
+  .span6.alert.alert-error
+    %h3(style="font-size: 16px")
+      Import in progress!
+    A new ETSource commit is already being imported. Refresh this page in a
+    minute to see the changes, and import another new version if you wish.
 
-%section#search_box
-  .row
-    .span6
-      .well
-        = form_tag etsource_commits_path, :method => :get, :class => 'form-inline', :style => 'margin-bottom: 13px' do
-          = select_tag :branch, options_for_select(@branches, @branch)
-          = submit_tag "Checkout", :class => 'btn'
-          = submit_tag "Refresh", :class => 'btn btn-primary'
-        Click "Checkout" to move to a different branch.
-    - unless @using_repository && false
-      .span6.alert.alert-info
-        %h3(style="font-size: 16px")
-          %a(style="color: #3a87ad" href="https://www.youtube.com/watch?v=gT9xuXQjxMM") Careful now!
-        The page may appear to hang after you click an "import" button. This
-        is normal, and <em>definitely</em> not a sign that the world is about
-        to end. During this time the Atlas and Refinery calculations are being
-        re-run for each region.
-  - if @output
+- if can_import?
+  %section#search_box
     .row
-      %pre.git_output= @output
+      .span6
+        .well
+          = form_tag etsource_commits_path, :method => :get, :class => 'form-inline', :style => 'margin-bottom: 13px' do
+            = select_tag :branch, options_for_select(@branches, @branch)
+            = submit_tag "Checkout", :class => 'btn'
+            = submit_tag "Refresh", :class => 'btn btn-primary'
+          Click "Checkout" to move to a different branch.
+      - if can_import?
+        .span6.alert.alert-info
+          %h3(style="font-size: 16px")
+            %a(style="color: #3a87ad" href="https://www.youtube.com/watch?v=gT9xuXQjxMM") Careful now!
+          The page may appear to hang after you click an "import" button. This
+          is normal, and <em>definitely</em> not a sign that the world is about
+          to end. During this time the Atlas and Refinery calculations are being
+          re-run for each region.
+    - if @output
+      .row
+        %pre.git_output= @output
 
 .row
   .span16
     %h3
       Commits in #{@branch} #{'(detached)' if @etsource.detached_branch?}
-    - if @using_repository
+    - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
       %strong Looks like you're loading etsource from the local working copy
     %table.table-striped.table-condensed.table
       %tbody
         - @commits.each_with_index do |commit, index|
           %tr
             %td.span9
-              - if @using_repository
+              - if can_import?
                 - if index.zero?
                   %span.label.label-info Current
               - elsif @etsource.get_latest_import_sha == commit.to_s
@@ -39,7 +46,7 @@
               =commit.message
             %td.span1= link_to commit.to_s[0..6], "https://github.com/quintel/etsource/commit/#{commit.to_s}", :target => :blank
             %td.span1
-              - unless @using_repository
+              - if can_import?
                 = link_to 'Import', import_etsource_commit_path(:id => commit.to_s),
                   :confirm => 'This will take a while', :class => 'btn btn-mini'
             %td.span2= commit.date.strftime("%m-%d %H:%M")
