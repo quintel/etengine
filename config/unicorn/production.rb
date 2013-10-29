@@ -30,23 +30,19 @@ before_fork do |server, worker|
   # is prevent the master process from holding the database connection
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
 
-  # The following is only recommended for memory/DB-constrained
-  # installations.  It is not needed if your system can house
-  # twice as many worker_processes as you have configured.
-  #
-  # # When doing a "hot" restart of the Unicorn master, the old master hangs
-  # # around until it is explicitly killed (so that it can be used if the new
-  # # master fails to start). Since we got as far as starting a new worker, we
-  # # end the old process...
-  # old_pid = '/u/apps/etengine/shared/pids/unicorn.pid.oldbin'
-  #
-  # if File.exists?(old_pid) && server.pid != old_pid
-  #   begin
-  #     Process.kill('QUIT', File.read(old_pid).to_i)
-  #   rescue Errno::ENOENT, Errno::ESRCH
-  #     # Old master already dead. Just ignore it.
-  #   end
-  # end
+  # When doing a "hot" restart of the Unicorn master, the old master hangs
+  # around until it is explicitly killed (so that it can be used if the new
+  # master fails to start). Since we got as far as starting a new worker, we
+  # end the old process...
+  old_pid = '/u/apps/etengine/shared/pids/unicorn.pid.oldbin'
+
+  if File.exists?(old_pid) && server.pid != old_pid
+    begin
+      Process.kill('QUIT', File.read(old_pid).to_i)
+    rescue Errno::ENOENT, Errno::ESRCH
+      # Old master already dead. Just ignore it.
+    end
+  end
 end
 
 after_fork do |server, worker|
