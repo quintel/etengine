@@ -30,7 +30,11 @@ class Etsource::CommitsController < ApplicationController
 
     new_revision = params[:id]
 
-    log("Import #{ new_revision }")
+    if previous_rev.nil?
+      log("Import #{ new_revision } (no revert possible)")
+    else
+      log("Import #{ new_revision } (can revert to #{ previous_rev })")
+    end
 
     begin
       @etsource.export(new_revision)
@@ -119,6 +123,8 @@ class Etsource::CommitsController < ApplicationController
   #
   # Returns nothing.
   def revert!(revision, directory)
+    log("Revert to #{ revision }")
+
     @etsource.export(revision)
     @commit.import!
     @etsource.update_latest_import_sha(revision)
@@ -131,7 +137,6 @@ class Etsource::CommitsController < ApplicationController
     # Then copy the old files back.
     FileUtils.cp_r(Pathname.glob(directory.join('*.yml')), original_dir)
 
-    log("Revert to #{ revision }")
     NastyCache.instance.expire!(keep_atlas_dataset: true)
   end
 end
