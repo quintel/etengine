@@ -4,6 +4,9 @@ class Etsource::CommitsController < ApplicationController
   before_filter :find_commit, :only => :import
   before_filter :setup_etsource
 
+  helper_method :can_import?
+  helper_method :import_in_progress?
+
   authorize_resource :class => false
 
   # data/latest/etsource/commits/current
@@ -25,6 +28,12 @@ class Etsource::CommitsController < ApplicationController
   end
 
   def import
+    # Prevent other processes from doing an import while this one is in
+    # progress.
+    (redirect_to(etsource_commits_path) ; return) unless can_import?
+
+    Rails.cache.write(:etsi_semaphore, Time.now)
+
     previous_rev = @etsource.get_latest_import_sha
     backup_dir   = backup_atlas_files!(previous_rev)
 
@@ -61,6 +70,8 @@ class Etsource::CommitsController < ApplicationController
         backup_dir.children.each(&:delete)
         backup_dir.delete
       end
+
+      Rails.cache.delete(:etsi_semaphore)
     end
   end
 
@@ -138,5 +149,19 @@ class Etsource::CommitsController < ApplicationController
     FileUtils.cp_r(Pathname.glob(directory.join('*.yml')), original_dir)
 
     NastyCache.instance.expire!(keep_atlas_dataset: true)
+  end
+
+  # Returns if the user is permitted to import a new version of ETSource at this
+  # time. If another import is already in progress, or the previous semaphore is
+  # less than three minutes old, then the user may not import.
+  def can_import?
+    (APP_CONFIG[:etsource_export] != APP_CONFIG[:etsource_working_copy]) &&
+    (! import_in_progress?)
+  end
+
+  # Returns if an import is currently being performed.
+  def import_in_progress?
+    semaphore = Rails.cache.read(:etsi_semaphore)
+    semaphore && semaphore >= 3.minutes.ago
   end
 end
