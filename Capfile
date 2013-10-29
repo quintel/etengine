@@ -43,8 +43,7 @@ namespace :deploy do
   end
 end
 
-# before_fork hook implemented (zero downtime deployments)
-after 'deploy:restart', 'unicorn:duplicate'
+after 'deploy:restart', 'unicorn:restart'
 
 after "deploy:update_code", "deploy:symlink_configuration_files"
 after "deploy:update_code", "deploy:calculate_datasets"
