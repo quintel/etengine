@@ -60,36 +60,20 @@ module Qernel
 
     describe '#effective_input_capacity' do
 
-      it "should calculate correctly when nominal_input_capacity and average_effective_output_of_nominal_capacity_over_lifetime are set" do
-        @c.with nominal_input_capacity: 100, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
-        @c.converter_api.effective_input_capacity.should == 99
+      it "should calculate correctly when nominal_input_capacity is set" do
+        @c.with nominal_input_capacity: 100
+        @c.converter_api.effective_input_capacity.should == 100
       end
 
       it "should calculate correctly when nominal_input_capacity is zero" do
-        @c.with nominal_input_capacity: 0, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
+        @c.with nominal_input_capacity: 0
         @c.converter_api.effective_input_capacity.should == 0.0
       end
 
       it "should return zero when nominal_input capacity is zero" do
-        @c.with nominal_input_capacity: 0, average_effective_output_of_nominal_capacity_over_lifetime: 0.99
+        @c.with nominal_input_capacity: 0
         @c.converter_api.effective_input_capacity.should == 0.0
       end
-
-      it "should calculate correctly when average_effective_output_of_nominal_capacity_over_lifetime is zero" do
-        @c.with nominal_input_capacity: 100, average_effective_output_of_nominal_capacity_over_lifetime: 0
-        @c.converter_api.effective_input_capacity.should == 0.0
-      end
-
-      it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is nil" do
-        @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: nil
-        @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
-      end
-
-      it "should return nominal_input_capacity when average_effective_output_of_nominal_capacity_over_lifetime is 100%" do
-        @c.with electricity_output_conversion: 0.4, heat_output_capacity: 800, average_effective_output_of_nominal_capacity_over_lifetime: 1
-        @c.converter_api.effective_input_capacity.should == @c.converter_api.nominal_input_capacity
-      end
-
     end
 
     describe '#total_cost' do

@@ -10,8 +10,6 @@ module Api
         :technical => {
           :electricity_output_capacity =>
             {label: 'Nominal electrical capacity', unit:'MW'},
-          :average_effective_output_of_nominal_capacity_over_lifetime =>
-            {label: 'Average effective output of nominal capacity over lifetime', unit: '%'},
           :electricity_output_conversion  =>
             {label: 'Electrical efficiency', unit: '%'},
           :full_load_hours  =>
@@ -53,8 +51,6 @@ module Api
         :technical => {
           :heat_output_capacity =>
             {label: 'Nominal heat capacity', unit:'MW'},
-          :average_effective_output_of_nominal_capacity_over_lifetime =>
-            {label: 'Average effective output of nominal capacity over lifetime', unit: '%'},
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :heat_output_conversion  =>
@@ -92,8 +88,6 @@ module Api
         :technical => {
           :heat_output_capacity =>
             {label: 'Nominal heat capacity', unit:'MW'},
-          :average_effective_output_of_nominal_capacity_over_lifetime =>
-            {label: 'Average effective output of nominal capacity over lifetime', unit: '%'},
           :coefficient_of_performance =>
             {label: 'Coefficient of Performance',  unit:''},
           :full_load_hours  =>
@@ -133,8 +127,6 @@ module Api
         :technical => {
           :electricity_output_capacity =>
             {label: 'Nominal electrical capacity', unit: 'MW'},
-          :average_effective_output_of_nominal_capacity_over_lifetime =>
-            {label: 'Average effective output of nominal capacity over lifetime', unit: '%'},
           :heat_output_capacity =>
             {label: 'Nominal heat capacity', unit: 'MW'},
           :full_load_hours  =>
