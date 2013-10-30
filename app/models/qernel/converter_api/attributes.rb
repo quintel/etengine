@@ -12,7 +12,6 @@ module Qernel
       :operational => {
         :electricity_output_capacity => ['', 'MWe'],
         :heat_output_capacity => ['', 'MWth'],
-        :average_effective_output_of_nominal_capacity_over_lifetime => ['Average effective output of nominal capacity over lifetime', '%'],
         :co2_free => ['', ''],
         :construction_time => ['', ''],
         :electrical_efficiency_when_using_coal => ['', ''],
