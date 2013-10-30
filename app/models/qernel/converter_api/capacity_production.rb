@@ -22,7 +22,7 @@ class Qernel::ConverterApi
   # DEBT: this is the same as effective_input_capacity in cost.rb. Get rid of this one and the alias.
   def typical_input_capacity_in_mw
     fetch_and_rescue(:typical_input_capacity_in_mw) do
-      nominal_input_capacity * average_effective_output_of_nominal_capacity_over_lifetime
+      nominal_input_capacity
     end
   end
   # TODO: get rid of the alias

@@ -35,11 +35,10 @@ class Qernel::ConverterApi
   unit_for_calculation "nominal_input_capacity", 'MWinput'
 
   # Calculates the effective input capacity of a plant (in MW) based on the
-  # nominal input capacity and the average effective capacity over
-  # the lifetime of a plant.
+  # nominal input capacity 
   #
-  # Assumes a value of 100% when
-  # average_effective_output_of_nominal_capacity_over_lifetime is not set
+  # DEBT: This function can be removed in the future as
+  # effective_input_capacity == nominal_input_capacity
   #
   # @return [Float] Effective input capacity of a typical plant in MW
   #
@@ -47,12 +46,7 @@ class Qernel::ConverterApi
   #
   def effective_input_capacity
     fetch_and_rescue(:effective_input_capacity) do
-      if average_effective_output_of_nominal_capacity_over_lifetime
-        nominal_input_capacity *
-          average_effective_output_of_nominal_capacity_over_lifetime
-      else
         nominal_input_capacity
-      end
     end
   end
   unit_for_calculation "effective_input_capacity", 'MWinput'
