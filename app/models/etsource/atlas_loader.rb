@@ -15,7 +15,7 @@ module Etsource
         @directory = directory
       end
 
-      # Public: The path to the YAML file directory.
+      # Public: The path to the .pack file directory.
       #
       # Returns a Pathname.
       def directory
@@ -66,12 +66,12 @@ module Etsource
         end
       end
 
-      # Public: Removes all the ProductionMode YAML files.
+      # Public: Removes all the ProductionMode .pack files.
       #
       # Returns nothing.
       def expire_all!
         if @directory.directory?
-          Pathname.glob(@directory.join('*')).each(&:delete)
+          Pathname.glob(@directory.join('*.pack')).each(&:delete)
         end
       end
 
@@ -79,7 +79,7 @@ module Etsource
       private
       #######
 
-      # Internal: Returns the path to an exported YAML file, for the given
+      # Internal: Returns the path to an exported .pack file, for the given
       # dataset key.
       #
       # Returns a Pathname.
@@ -111,7 +111,7 @@ module Etsource
       end
     end # Base
 
-    # An Atlas ProductionMode loader which expects the exported YAML files to
+    # An Atlas ProductionMode loader which expects the exported .pack files to
     # have been calculated already. They should be located in tmp/atlas.
     class PreCalculated
       include Common

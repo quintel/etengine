@@ -38,7 +38,7 @@
         - @commits.each_with_index do |commit, index|
           %tr
             %td.span9
-              - if can_import?
+              - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
                 - if index.zero?
                   %span.label.label-info Current
               - elsif @etsource.get_latest_import_sha == commit.to_s
