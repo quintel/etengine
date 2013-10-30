@@ -62,7 +62,7 @@ module Qernel
 
       it "should calculate correctly when nominal_input_capacity is set" do
         @c.with nominal_input_capacity: 100
-        @c.converter_api.effective_input_capacity.should == 99
+        @c.converter_api.effective_input_capacity.should == 100
       end
 
       it "should calculate correctly when nominal_input_capacity is zero" do
