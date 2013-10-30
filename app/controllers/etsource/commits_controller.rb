@@ -124,7 +124,7 @@ class Etsource::CommitsController < ApplicationController
     backup_dir = from_dir.join("backup-#{ revision }")
 
     FileUtils.mkdir_p(backup_dir) unless backup_dir.directory?
-    FileUtils.cp_r(Pathname.glob(from_dir.join('*.yml')), backup_dir)
+    FileUtils.cp_r(Pathname.glob(from_dir.join('*.pack')), backup_dir)
 
     backup_dir
   end
@@ -143,10 +143,10 @@ class Etsource::CommitsController < ApplicationController
     original_dir = directory.dirname
 
     # Remove any partially calculated production mode files.
-    Pathname.glob(original_dir.join('*.yml')).each(&:delete)
+    Pathname.glob(original_dir.join('*.pack')).each(&:delete)
 
     # Then copy the old files back.
-    FileUtils.cp_r(Pathname.glob(directory.join('*.yml')), original_dir)
+    FileUtils.cp_r(Pathname.glob(directory.join('*.pack')), original_dir)
 
     NastyCache.instance.expire!(keep_atlas_dataset: true)
   end
