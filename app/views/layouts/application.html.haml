@@ -80,8 +80,10 @@
               %a.close x
               %p= msg
 
-        - if live_server?
-          .alert-message.error This is the production server!
+      - if live_server?
+        .alert.alert-danger This is the production server!
+      - else
+        .alert.alert-success This is a local or beta server
 
       #content= yield
       #footer
