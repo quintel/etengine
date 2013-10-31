@@ -48,7 +48,18 @@ module Etsource
       return false if APP_CONFIG[:etsource_disable_export]
       FileUtils.rm_rf(@export_dir)
       FileUtils.mkdir(@export_dir)
-      system "cd #{@base_dir} && git archive #{sha_id} | tar -x -C #{@export_dir}"
+
+      # Make 100% sure that the branch is placed back at the HEAD; it seems
+      # other Git.open calls can cause Git commands belong to fail, citing that
+      # the commits don't exist.
+      commit  = Git.open(@base_dir).gcommit(sha_id)
+      archive = Rails.root.join('tmp').join("ets-#{ sha_id }.tar")
+
+      commit.archive(archive, format: 'tar')
+      system("tar -x -C '#{ @export_dir }' -f '#{ archive }'")
+
+      archive.delete
+
       update_latest_import_sha(sha_id)
     end
 
@@ -75,17 +86,19 @@ module Etsource
     end
 
     def update_latest_import_sha(sha)
-      File.open(import_sha_file, 'w') {|f| f.write(sha)} rescue nil
+      File.write(import_sha_file, "#{ sha }\n")
     end
 
     def get_latest_import_sha
-      File.read(import_sha_file) rescue nil
+      File.read(import_sha_file).strip
+    rescue Errno::ENOENT
+      nil
     end
 
     private
 
     def import_sha_file
-      "#{Rails.root}/config/latest_etsource_import_sha"
+      "#{@export_dir}/REVISION"
     end
 
     def git
