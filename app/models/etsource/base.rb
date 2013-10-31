@@ -33,7 +33,7 @@ module Etsource
     end
 
     def commits
-      git.log(50)
+      git.log(40)
     end
 
     def get_latest_export_sha
