@@ -5,6 +5,8 @@ gem 'rails',        '3.2.13'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml',         '~>3.1.4'
 
+gem 'gravatar_image_tag'
+
 # Ruby gems
 gem 'deep_clone',             github: 'quintel/ruby-deepclone'
 gem 'distribution', '~> 0.6'

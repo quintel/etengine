@@ -1,0 +1,13 @@
+.details
+  = gravatar_image_tag(commit.author.email, size: 140, class: 'avatar', gravatar: { default: 'http://beta.et-engine.com/assets/quintel-avatar.png' })
+  %span.message
+    %a.sha{ href: "https://github.com/quintel/etsource/commit/#{ commit.sha }" }
+      = truncate(commit.message.split("\n").first, length: 80)
+  %span.author
+    = commit.author.name
+    %span.date
+      == authored #{ time_ago_in_words(commit.date) } ago
+.links
+  %a.sha{ href: "https://github.com/quintel/etsource/commit/#{ commit.sha }" }
+    %span.ref= commit.sha[0..9]
+    →
