@@ -7,13 +7,19 @@ if APP_CONFIG[:airbrake_api_key].present? && !APP_CONFIG[:standalone]
   end
 end
 
-ETSOURCE_DIR = APP_CONFIG.fetch(:etsource_working_copy, 'etsource')
-ETSOURCE_EXPORT_DIR = ENV['ETSOURCE_DIR'] || APP_CONFIG.fetch(:etsource_export, 'etsource')
+# Sort out the ETSource paths
+ETSOURCE_DIR = Etsource::Base.clean_path(
+  APP_CONFIG.fetch(:etsource_working_copy, 'etsource'))
 
-if ETSOURCE_EXPORT_DIR[0] == '/'
-  Atlas.data_dir = "#{ ETSOURCE_EXPORT_DIR }/data"
-else
-  Atlas.data_dir = Rails.root.join(ETSOURCE_EXPORT_DIR).join('data')
+ETSOURCE_EXPORT_DIR = Etsource::Base.clean_path(
+  ENV['ETSOURCE_DIR'] || APP_CONFIG.fetch(:etsource_export, 'etsource'))
+
+Atlas.data_dir = ETSOURCE_EXPORT_DIR.join('data')
+
+# Ensure a user in development does not overwrite their ETSource repo by doing
+# an import via the admin UI.
+if ETSOURCE_DIR == ETSOURCE_EXPORT_DIR
+  APP_CONFIG[:etsource_disable_export] = true
 end
 
 # On staging we might want to see the backtrace

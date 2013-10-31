@@ -8,14 +8,23 @@ module Etsource
 
     def initialize
       @base_dir       = ETSOURCE_DIR
-      @export_dir     = ETSOURCE_EXPORT_DIR.gsub(/\/$/, '')
-      @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology,   true)
+      @export_dir     = ETSOURCE_EXPORT_DIR
+      @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology, true)
     end
 
     def self.loader(base_dir = nil)
       instance.base_dir   = base_dir if base_dir
       instance.export_dir = base_dir if base_dir
       Loader.instance
+    end
+
+    # Given a path as a string, returns the path as a Pathname. If the path is
+    # not absolute, it is assumed to be relative to the Rails root, and an
+    # absolute version is returned.
+    #
+    # Returns a Pathname.
+    def self.clean_path(path)
+      path.to_s[0] == '/' ? Pathname.new(path) : Rails.root.join(path)
     end
 
     # set to true to force reloading the topology
