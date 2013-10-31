@@ -1,10 +1,10 @@
 development: &DEV
   # etsource folder. Default is APP/etsource (deprecated)
   # this is where the working revisions will be exported to
-  etsource_export: /u/apps/etengine/etsource
+  etsource_export: ../etsource
 
   # etsource working copy - directory you've git cloned to
-  etsource_working_copy: /u/apps/etsource
+  etsource_working_copy: ../etsource
 
   # if for some reason you don't want to clear the etsource_export directory
   etsource_disable_export: false
@@ -49,8 +49,8 @@ development: &DEV
 
 production:
   <<: *DEV
-  airbrake_api_key: '3ea5a72aad48a32d7bb486bc71ad4fd5'
   etsource_lazy_load_dataset: false
+  etsource_export: tmp/etsource
 
 test: &TEST
   <<: *DEV

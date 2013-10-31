@@ -1,7 +1,6 @@
 class Etsource::CommitsController < ApplicationController
   layout 'application'
 
-  before_filter :find_commit, :only => :import
   before_filter :setup_etsource
 
   helper_method :can_import?
@@ -32,6 +31,15 @@ class Etsource::CommitsController < ApplicationController
     # progress.
     (redirect_to(etsource_commits_path) ; return) unless can_import?
 
+    @commit = Etsource::Commit.new(Etsource::Base.instance, params[:id])
+
+    if @commit.requires_confirmation? && ! params[:force]
+      # When a commit uses different Atlas and Refinery versions than are
+      # currently loaded, seek confirmation from the user before proceeding.
+      render action: 'confirm'
+      return
+    end
+
     Rails.cache.write(:etsi_semaphore, Time.now)
 
     previous_rev = @etsource.get_latest_import_sha
@@ -47,12 +55,9 @@ class Etsource::CommitsController < ApplicationController
 
     begin
       @etsource.export(new_revision)
-      @commit.import!
-      @etsource.update_latest_import_sha(new_revision)
-
       NastyCache.instance.expire!
     rescue RuntimeError => ex
-      if previous_rev.nil? || Rails.env.development?
+      if previous_rev.nil?
         # If there is no previous commit (this may be a fresh deploy), we
         # have nothing to roll back to so we just re-raise the error.
         raise ex
@@ -76,10 +81,6 @@ class Etsource::CommitsController < ApplicationController
   end
 
   private
-
-  def find_commit
-    @commit = Etsource::Commit.new(params[:id])
-  end
 
   def restart_web_server
     # @deprecated as of 2012-05. use NastyCache.expire!
@@ -137,8 +138,6 @@ class Etsource::CommitsController < ApplicationController
     log("Revert to #{ revision }")
 
     @etsource.export(revision)
-    @commit.import!
-    @etsource.update_latest_import_sha(revision)
 
     original_dir = directory.dirname
 
