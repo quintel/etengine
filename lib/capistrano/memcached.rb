@@ -16,6 +16,6 @@ namespace :memcached do
 
   desc "Flush memcached - this assumes memcached is on port 11211"
   task :flush, :roles => [:app] do
-    sudo "echo 'flush_all' | nc -q 1 localhost 11211"
+    run "echo 'flush_all' | nc -q 1 localhost 11211"
   end
 end

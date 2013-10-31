@@ -1,57 +1,9 @@
 namespace :etsource do
-  desc <<-DESC
-    Forcefully loads a specific ETSource commit
-
-    This does not calculate the dataset (production environment must still
-    run "rake calculate_datasets" afterwards) nor will it run in any environment
-    where your "etsource_export" and "etsource_working_copy" paths (found in
-    config/config.yml) are the same; i.e., in development.
-
-    This is used as an aid during deployment so that new ETEngine versions,
-    which may be incompatible with the currently-imported ETSource, can load the
-    desired ETSource version before starting the app. It is not intended for use
-    on local development machines.
-
-    Provide the desired ETSource commit in a REV variable:
-
-    rake etsource:load REF=a9b8c7d6e5f4
-  DESC
-  task load: :environment do
-    etsource    = Pathname.new(ETSOURCE_DIR).expand_path
-    destination = Pathname.new(ETSOURCE_EXPORT_DIR).expand_path
-    revision    = (ENV['REV'] || '').strip
-    real_rev    = nil
-
-    fail "You didn't provide a REV to load!" if revision.empty?
-
-    if etsource == destination
-      fail <<-MESSAGE.strip_heredoc
-        Cannot load a new ETSource version manually when the etsource_export
-        and etsource_working_copy paths are the same.
-      MESSAGE
-    end
-
-    cd(etsource) do
-      # Ensure the revision is real...
-      sh("git rev-parse '#{ revision }'")
-      real_rev = `git rev-parse '#{ revision }'`.strip
-    end
-
-    puts 'Refreshing ETSource from GitHub'
-    Etsource::Base.instance.refresh
-
-    puts 'Loading ETSource files...'
-    Etsource::Base.instance.export(real_rev)
-
-    puts "ETSource #{ real_rev[0..6] } ready at #{ destination }"
-  end
-
   desc "Validate before pushing an etsource commit."
   task :validate do
     Rake::Task["etsource:validate:hashes"].invoke
     Rake::Task["etsource:validate:duplicate_keys"].invoke
     Rake::Task["etsource:validate:duplicate_input_ids"].invoke
-    
   end
 
   namespace :validate do
