@@ -14,7 +14,7 @@ module Etsource
       def start!
         return true if @listener
 
-        @listener = Listen.to(ETSOURCE_EXPORT_DIR)
+        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s)
         @listener.filter(%r{(?:data|datasets|presets)/.*})
         @listener.change { |*| reload! }
         @listener.start(false)
