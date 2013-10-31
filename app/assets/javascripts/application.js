@@ -42,4 +42,28 @@ $(document).ready(function() {
 
   // sort by energy balance group and by position
   $('table#debug-calculation').tablesorter({ sortList: [[0,1], [4,0]] });
+
+  // ETSource import pages
+
+  var isImporting = false;
+
+  $('.commit-group a.import').click(function(event) {
+      if (isImporting) {
+          return false;
+      }
+
+      isImporting = true;
+      $(this).text('Importing...');
+  });
+
+  $('.compat-warning a.btn-success').click(function(event) {
+      if (isImporting) {
+          return false;
+      }
+
+      isImporting = true;
+      var width = $(this).width()
+
+      $(this).css('width', '' + width + 'px').text('Importing...');
+  });
 });

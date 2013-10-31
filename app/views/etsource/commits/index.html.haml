@@ -29,27 +29,25 @@
 
 .row
   .span16
-    %h3
-      Commits in #{@branch} #{'(detached)' if @etsource.detached_branch?}
     - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
       %strong Looks like you're loading etsource from the local working copy
-    %table.table-striped.table-condensed.table
-      %tbody
-        - @commits.each_with_index do |commit, index|
-          %tr
-            %td.span9
-              - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
-                - if index.zero?
-                  %span.label.label-info Current
-              - elsif @etsource.get_latest_import_sha == commit.to_s
-                %span.label.label-info Current
-              =commit.message
-            %td.span1= link_to commit.to_s[0..6], "https://github.com/quintel/etsource/commit/#{commit.to_s}", :target => :blank
-            %td.span1
-              - if can_import?
-                = link_to 'Import', import_etsource_commit_path(:id => commit.to_s),
-                  :confirm => 'This will take a while', :class => 'btn btn-mini'
-            %td.span2= commit.date.strftime("%m-%d %H:%M")
-            %td.span3= commit.author.name
-    %h5
-      Latest import: #{@etsource.get_latest_import_sha || 'N/A'}
+    - else
+      %h4(style="margin-bottom: 20px")
+        Latest import:
+        %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha || 'N/A'}
+
+    - @commits.group_by { |com| com.date.to_date }.each do |date, commits|
+      .commit-group
+        %h4= date.to_formatted_s(:long)
+        - commits.each do |commit|
+          .commit{ id: "rev-#{ commit.to_s }" }
+            .action
+              - if @etsource.get_latest_import_sha == commit.to_s
+                .current ✓ &nbsp;Loaded
+              - elsif import_in_progress?
+                .wait Please wait&hellip;
+              - elsif ! Etsource::Commit.new(Etsource::Base.instance, commit.to_s).can_import?
+                .incompatible(title="Incompatible due to non-matching dependencies") Incompatible
+              - else
+                %a.import{ href: import_etsource_commit_path(:id => commit.to_s) } Import
+            = render partial: 'commit', locals: { commit: commit }
