@@ -8,7 +8,7 @@ working_directory '/u/apps/etengine/current'
 #
 preload_app true
 
-timeout 30
+timeout 60
 
 # This is where we specify the socket. We will point the upstream Nginx module
 # to this socket later on
