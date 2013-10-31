@@ -1,35 +1,29 @@
 module Etsource
   class Commit
+    ATLAS_REPO      = Git.open(Gem.loaded_specs['atlas'].full_gem_path)
+    REFINERY_REPO   = Git.open(Gem.loaded_specs['refinery'].full_gem_path)
+
+    ATLAS_COMMIT    = ATLAS_REPO.gcommit('HEAD')
+    REFINERY_COMMIT = REFINERY_REPO.gcommit('HEAD')
+
     # Represents a Git dependency in a given ETSource revision. Tracks the exact
     # version of the dependency which is required, and the version of that
     # dependency currently loaded in ETEngine.
     class Dependency
-      attr_reader :loaded_rev, :needed_rev
+      attr_reader :loaded_commit, :needed_commit
 
       # Public: Creates a new Dependency
       #
-      # spec       - The Gem::Specification with details of the currently-loaded
-      #              dependency.
-      # needed_rev - The git revision of the dependency as it appears in the
-      #              ETSource Gemfile.
+      # repo          - The Git::Base repository for the dependency.
+      # loaded_commit - The Git::Object::Commit which ETEngine has currently
+      #                 loaded.
+      # needed_rev    - The git revision of the dependency as it appears in the
+      #                 ETSource Gemfile.
       #
       # Returns a Dependency.
-      def initialize(spec, needed_rev)
-        @repo       = Git.open(spec.full_gem_path)
-        @loaded_rev = @repo.gcommit('HEAD').sha
-        @needed_rev = needed_rev
-      end
-
-      # Public: Returns the Git::Object::Commit representing the revision of the
-      # dependency which is currently loaded.
-      def loaded_commit
-        @loaded_commit ||= @repo.gcommit(loaded_rev)
-      end
-
-      # Public: Returns the Git::Object::Commit representing the revision of the
-      # dependency which is desired.
-      def needed_commit
-        @needed_commit ||= @repo.gcommit(needed_rev)
+      def initialize(repo, loaded_commit, needed_rev)
+        @loaded_commit = loaded_commit
+        @needed_commit = repo.gcommit(needed_rev)
       end
 
       # Public: Returns if both the loaded and needed commits are exactly the
@@ -74,13 +68,13 @@ module Etsource
     # Public: Contains the dependency information for Atlas.
     def atlas
       @atlas ||= Dependency.new(
-        Gem.loaded_specs['atlas'], gemfile_revision('atlas'))
+        ATLAS_REPO, ATLAS_COMMIT, gemfile_revision('atlas'))
     end
 
     # Public: Contains the dependency information for Refinery.
     def refinery
       @refinery ||= Dependency.new(
-        Gem.loaded_specs['refinery'], gemfile_revision('refinery'))
+        REFINERY_REPO, REFINERY_COMMIT, gemfile_revision('refinery'))
     end
 
     # Public: The ETSource commit can be imported so long as neither of the
@@ -104,12 +98,15 @@ module Etsource
     private
     #######
 
+    # Internal: Returns the contents of the Gemfile in the ETSource tree.
+    def gemfile
+      @gemfile ||= @gcommit.gtree.blobs['Gemfile.lock'].contents
+    end
+
     # Internal: Reads the Gemfile in the ETSource commit, returning the "GIT"
     # section for the chosen gem.
     def gemfile_revision(gem)
-      parts = @gcommit.gtree.blobs['Gemfile.lock'].contents.split("\n\n")
-
-      part = parts.find do |str|
+      part = gemfile.split("\n\n").find do |str|
         str.include?("remote: git@github.com:quintel/#{ gem }.git")
       end
 
