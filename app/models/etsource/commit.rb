@@ -3,8 +3,8 @@ module Etsource
     ATLAS_REPO      = Git.open(Gem.loaded_specs['atlas'].full_gem_path)
     REFINERY_REPO   = Git.open(Gem.loaded_specs['refinery'].full_gem_path)
 
-    ATLAS_COMMIT    = ATLAS_REPO.gcommit('HEAD')
-    REFINERY_COMMIT = REFINERY_REPO.gcommit('HEAD')
+    ATLAS_COMMIT    = ATLAS_REPO.log(1).first
+    REFINERY_COMMIT = REFINERY_REPO.log(1).first
 
     # Represents a Git dependency in a given ETSource revision. Tracks the exact
     # version of the dependency which is required, and the version of that
