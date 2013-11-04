@@ -11,8 +11,8 @@
 %h3 System
 
 %table.table.table-condensed
-  = render partial: 'git_gem_info', locals: { name: 'atlas' }
-  = render partial: 'git_gem_info', locals: { name: 'refinery' }
+  = render partial: 'git_gem_info', locals: { name: 'atlas',    commit: Etsource::Commit::ATLAS_COMMIT }
+  = render partial: 'git_gem_info', locals: { name: 'refinery', commit: Etsource::Commit::REFINERY_COMMIT }
   %tr
     %td Uptime
     %td= %x{uptime}
