@@ -16,19 +16,19 @@
   .commit
     .action
       .commit-label ETEngine
-    = render(partial: 'commit', locals: { commit: @commit.atlas.loaded_commit })
+    = render(partial: 'commit', locals: { repo: 'atlas', commit: @commit.atlas.loaded_commit })
   .commit
     .action
       .commit-label ETSource
-    = render(partial: 'commit', locals: { commit: @commit.atlas.needed_commit })
+    = render(partial: 'commit', locals: { repo: 'atlas', commit: @commit.atlas.needed_commit })
 
 .commit-group
   %h4 Refinery Versions
   .commit
     .action
       .commit-label ETEngine
-    = render(partial: 'commit', locals: { commit: @commit.refinery.loaded_commit })
+    = render(partial: 'commit', locals: { repo: 'refinery', commit: @commit.refinery.loaded_commit })
   .commit
     .action
       .commit-label ETSource
-    = render(partial: 'commit', locals: { commit: @commit.refinery.needed_commit })
+    = render(partial: 'commit', locals: { repo: 'refinery', commit: @commit.refinery.needed_commit })
