@@ -41,6 +41,7 @@ module Qernel
       :has_old_technologies,
       :has_other,
       :has_solar_csp,
+      :has_import_export,
       :heat_recovery,
       :import_electricity_primary_demand_factor,
       :input_values,
