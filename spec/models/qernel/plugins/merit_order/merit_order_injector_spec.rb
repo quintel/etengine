@@ -51,6 +51,7 @@ module Qernel::Plugins::MeritOrder
         @converter.stub(:output){ 123 }
 
         @graph.stub(:converter){ @converter }
+        @graph.stub(:area) { :nl }
         @graph.stub_chain(:graph_query, :final_demand_for_electricity) do
           100
         end
