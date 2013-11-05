@@ -44,7 +44,7 @@ GIT
 
 GIT
   remote: git@github.com:quintel/merit.git
-  revision: 56c700cf93a5ab04585eb7d1bf94116e01fca369
+  revision: 3621cb075a2d24d99e979e29dda838742df22d45
   specs:
     merit (0.0.9)
       terminal-table

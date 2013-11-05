@@ -65,11 +65,13 @@ module Qernel::Plugins
       end
 
       def setup_items
-        @m = ::Merit::Order.new
-        add_volatile_producers
-        add_must_run_producers
-        add_dispatchable_producers
-        add_total_demand
+        Merit.within_area(@graph.area.to_sym) do
+          @m = ::Merit::Order.new
+          add_volatile_producers
+          add_must_run_producers
+          add_dispatchable_producers
+          add_total_demand
+        end
       end
 
       #######
