@@ -74,6 +74,13 @@ module Qernel::Plugins::MeritOrder
         @mo.should_receive(:calculate_merit_order)
         @mo.run
       end
+
+      it 'should use the merit order data for the graph region' do
+        @graph.stub(:area) { :eu }
+        Merit.should_receive(:within_area).with(:eu).and_call_original
+
+        @mo.run
+      end
     end
 
   end
