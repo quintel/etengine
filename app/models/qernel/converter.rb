@@ -451,15 +451,15 @@ public
   # --------- Debug -----------------------------------------------------------
 
   def name
-    key
+    @key
   end
 
   def to_s
-    "#{name} #{[self.excel_id]} (hash: #{@id})" || 'untitled'
+    @key
   end
 
   def inspect
-    "<Converter #{key}>"
+    "<Converter #{@key}>"
   end
 
   def to_image(depth = 1, svg_path = nil)
