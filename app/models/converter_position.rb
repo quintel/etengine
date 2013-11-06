@@ -1,21 +1,4 @@
-# == Schema Information
-#
-# Table name: converter_positions
-#
-#  id                  :integer(4)      not null, primary key
-#  x                   :integer(4)
-#  y                   :integer(4)
-#  created_at          :datetime
-#  updated_at          :datetime
-#  hidden              :boolean(1)
-#  converter_key       :string(255),    not null, unique
-#
-
-##
-# This class stores x,y values for the new online sanque diagram.
-#
-#
-class ConverterPosition < ActiveRecord::Base
+class ConverterPosition
 
   DEFAULT_Y_BY_SECTOR = {
     :households   =>  100,
@@ -29,7 +12,7 @@ class ConverterPosition < ActiveRecord::Base
     :neighbor     =>  100
   }.with_indifferent_access
 
-  STROKE_COLORS_BY_SECTOR = {
+  FILL_COLORS_BY_SECTOR = {
     :households   => '#E69567',
     :industry     => '#CCCCCC',
     :transport    => '#FFD700',
@@ -43,14 +26,17 @@ class ConverterPosition < ActiveRecord::Base
 
   scope :not_hidden, -> { where(:hidden => false) }
 
-  def self.default_position_for(converter)
-    position = new
-    position.tap{|p| p.converter = converter }
+  attr_reader :key, :x, :y
+
+  def initialize(attr)
+    @key = attr[:key]
+    @x   = attr[:x]
+    @y   = attr[:y]
   end
 
   def fill_color(converter)
     if converter && converter.sector_key
-      STROKE_COLORS_BY_SECTOR[converter.sector_key.to_sym]
+      FILL_COLORS_BY_SECTOR[converter.sector_key]
     else
       '#eee'
     end
@@ -61,10 +47,29 @@ class ConverterPosition < ActiveRecord::Base
   end
 
   def x_or_default(converter)
-    self.x || 100
+    x || 100
   end
 
   def y_or_default(converter)
-    self.y || 100
+    y || DEFAULT_Y_BY_SECTOR[converter.sector_key] || 100
+  end
+
+  class << self
+
+    def find(key)
+      all.select { |cp| cp.key == key }.first
+    end
+
+    # Returns all the converter positions from file and memoized it
+    def all
+      @all ||= begin
+        file_path = Rails.root.join('config/converter_positions.yml')
+
+        YAML.load_file(file_path).map do |key, value|
+          new({ key: key, x: value[:x], y: value[:y] })
+        end
+      end
+    end
+
   end
 end
