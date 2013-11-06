@@ -30,7 +30,7 @@
                             %td= link_to output_link.lft_converter.key, data_converter_path(:id => output_link.lft_converter)
                             %td{:title => output_link.value}= auto_number output_link.value
                             %td{:class => output_link.kind,
-                                :title => output_link.share}= "#{(100.0 * (output_link.value / output_slot.external_value)).round(2)} %" unless output_slot.external_value == 0
+                                :title => output_link.share}= "#{(100.0 * output_link.parent_share).round(2)} %" unless output_slot.external_value == 0
                             %td
                               = output_link.link_type
                               - if output_link.reversed?

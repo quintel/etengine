@@ -161,6 +161,21 @@ public
     flexible? && max_demand
   end
 
+  # Public: The share of energy from the parent converter carried away by this
+  # link.
+  #
+  # This is only able to return a meaningful value AFTER the graph has been
+  # calculated, since prior to this the link or converter may not yet have a
+  # demand.
+  #
+  # Returns a Numeric, or nil if no share can be calculated.
+  def parent_share
+    @parent_share ||=
+      if value && (slot_demand = rgt_output.external_value)
+        slot_demand.zero? ? 0.0 : value / slot_demand
+      end
+  end
+
   # --------- Calculation ------------------------------------------------------
 
   def calculate
