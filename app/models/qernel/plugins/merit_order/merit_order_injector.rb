@@ -65,7 +65,7 @@ module Qernel::Plugins
       end
 
       def setup_items
-        Merit.within_area(@graph.area.to_sym) do
+        Merit.within_area(@graph.area.area_code.to_sym) do
           @m = ::Merit::Order.new
           add_volatile_producers
           add_must_run_producers

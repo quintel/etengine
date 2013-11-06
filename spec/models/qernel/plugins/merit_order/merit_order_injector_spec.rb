@@ -51,7 +51,7 @@ module Qernel::Plugins::MeritOrder
         @converter.stub(:output){ 123 }
 
         @graph.stub(:converter){ @converter }
-        @graph.stub(:area) { :nl }
+        @graph.stub_chain(:area, :area_code) { :nl }
         @graph.stub_chain(:graph_query, :final_demand_for_electricity) do
           100
         end
@@ -76,7 +76,7 @@ module Qernel::Plugins::MeritOrder
       end
 
       it 'should use the merit order data for the graph region' do
-        @graph.stub(:area) { :eu }
+        @graph.stub_chain(:area, :area_code) { :eu }
         Merit.should_receive(:within_area).with(:eu).and_call_original
 
         @mo.run
