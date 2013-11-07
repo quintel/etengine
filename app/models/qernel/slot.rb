@@ -143,9 +143,9 @@ class Slot
   #
   def active_links
     @active_links ||= if input?
-      links.select(&LinkCalculation.method(:calculated_by_child?))
+      links.select(&Calculation::Links.method(:calculated_by_child?))
     else
-      links.select(&LinkCalculation.method(:calculated_by_parent?))
+      links.select(&Calculation::Links.method(:calculated_by_parent?))
     end
   end
 
@@ -154,9 +154,9 @@ class Slot
   #
   def passive_links
     @passive_links ||= if input?
-      links.select(&LinkCalculation.method(:calculated_by_parent?))
+      links.select(&Calculation::Links.method(:calculated_by_parent?))
     else
-      links.select(&LinkCalculation.method(:calculated_by_child?))
+      links.select(&Calculation::Links.method(:calculated_by_child?))
     end
   end
 
