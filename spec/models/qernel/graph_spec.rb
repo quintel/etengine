@@ -58,7 +58,7 @@ module Qernel
               mid(100) == f(1.0) ==> rgt1
               mid      == f(1.0) ==> rgt2" do
 
-            @rgt1.output_links.first.max_demand = 30.0
+            @rgt1.output_links.first.dataset_set(:max_demand, 30.0)
             @g.calculate
 
             @rgt1.demand.should ==  30.0
