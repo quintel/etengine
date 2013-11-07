@@ -122,26 +122,12 @@ protected
 
 public
 
-  def calculated_by_left?
-    !calculated_by_right?
-  end
-
-  def calculated_by_right?
-    (dependent? or inversed_flexible? or ((constant? and self.share.nil?) == true)) || reversed?
-  end
-
   def max_demand
     dataset_get(:max_demand) || rgt_converter.query.max_demand
   end
 
   def priority
     dataset_get(:priority) || 1_000_000
-  end
-
-  # Does link have min-/max_demand?
-  # Important to figure out for which flexible links to calculate first.
-  def max_boundaries?
-    flexible? && max_demand
   end
 
   # Public: The share of energy from the parent converter carried away by this
