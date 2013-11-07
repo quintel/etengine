@@ -12,6 +12,25 @@ module Qernel
       end
     end
 
+    # Public: Determines if the given +link+ will have its value calculated by
+    # looking at the parent (output) converter.
+    #
+    # Returns true or false.
+    def self.calculated_by_parent?(link)
+      link.reversed? ||
+        link.dependent? ||
+        link.inversed_flexible? ||
+        (link.constant? && link.share.nil?)
+    end
+
+    # Public: Determines if the given +link+ will have its value calculated by
+    # looking at the child (input) converter.
+    #
+    # Returns true or false.
+    def self.calculated_by_child?(link)
+      ! calculated_by_parent?(link)
+    end
+
     # Calculates the demand of a constant link. In many cases these are
     # identical to dependent links, except they they will (ab)use the "share"
     # attribute, if a value is set, to set the demand.
