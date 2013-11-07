@@ -75,7 +75,9 @@ class Link
 
     self.link_type = link_type.to_sym
 
-    connect
+    lft_converter.add_input_link(self)
+    rgt_converter.add_output_link(self)
+
     memoize_for_cache
   end
 
@@ -100,11 +102,6 @@ class Link
   end
 
 protected
-
-  def connect
-    lft_converter.add_input_link(self)  if lft_converter # only used in testing
-    rgt_converter.add_output_link(self) if rgt_converter  # only used in testing
-  end
 
   def memoize_for_cache
     @is_loss = @carrier.loss?
