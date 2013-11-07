@@ -449,9 +449,8 @@ module Qernel
         it "should have reversed link" do
           @l.reversed.should be_true
           @l.calculated_by_right?.should be_true
-          @l.send(:input).should == @g.converter(:rgt).slots.first
-          @l.send(:input).expected_external_value.should == 100.0
-          @l.send(:input_external_demand).should == 100.0
+          @l.input.should == @g.converter(:rgt).slots.first
+          @l.input.expected_external_value.should == 100.0
         end
 
         it "ready" do
@@ -460,7 +459,6 @@ module Qernel
         end
 
         it "should calculate link" do
-          @l.send(:calculate_share).should == 100.0
           @l.send(:calculate).should == 100.0
           @l.value.should == 100.0
         end

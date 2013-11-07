@@ -2,12 +2,12 @@ require 'spec_helper'
 
 module Qernel
   describe Link do
-    describe '#parent_share' do
-      let(:supplier) { Converter.new(key: :supplier) }
-      let(:consumer) { Converter.new(key: :consumer) }
-      let(:carrier)  { Carrier.new(key: :gas) }
-      let!(:link)    { Link.new('', consumer, supplier, carrier, :share) }
+    let(:supplier) { Converter.new(key: :supplier) }
+    let(:consumer) { Converter.new(key: :consumer) }
+    let(:carrier)  { Carrier.new(key: :network_gas) }
+    let!(:link)    { Link.new('', consumer, supplier, carrier, :share) }
 
+    describe '#parent_share' do
       # An other link which belongs to the same output slot.
       let!(:other) do
         Link.new('', consumer, supplier, carrier, :share).with(value: 15_000.0)
@@ -52,5 +52,19 @@ module Qernel
         expect(link.parent_share).to be
       end
     end # parent_share
+
+    describe "(carrier)?" do
+      it 'returns true when the link is of the correct carrier type' do
+        expect(link.network_gas?).to be_true
+      end
+
+      it 'returns false when the link is of the correct carrier type' do
+        expect(link.electricity?).to be_false
+      end
+
+      it 'raises an error when not a valid carrier' do
+        expect { link.invalid_carrier? }.to raise_error(NoMethodError)
+      end
+    end # (carrier)?
   end # Link
 end # Qernel
