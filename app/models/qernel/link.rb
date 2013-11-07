@@ -52,7 +52,7 @@ module Qernel
     # carrier  - The Carrier determining the type of energy which flows through
     #            this edge.
     # type     - A symbol which tells the link how it should be calculated. See
-    #            the options in LinkCalculation.for.
+    #            the options in Calculation::Links.for.
     # reversed - Should the link input and output be swapped when calculating?
     # groups   - An array of groups to which the link belongs.
     #
@@ -132,7 +132,7 @@ module Qernel
 
     def calculate
       unless self.calculated
-        self.value      = LinkCalculation.for(self).call(self)
+        self.value      = Calculation::Links.for(self).call(self)
         self.calculated = true
       end
 

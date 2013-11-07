@@ -1,5 +1,5 @@
-module Qernel
-  module LinkCalculation
+module Qernel::Calculation
+  module Links
     # Returns an object which responds to #call, capable of calculating a demand
     # for the given +link+.
     def self.for(link)
@@ -71,7 +71,7 @@ module Qernel
       end
     end
 
-    # Calculates the demand of an inversed flexible link. Link a flexible, this
+    # Calculates the demand of an inversed flexible link. Like a flexible, this
     # looks at how much excess energy the parent (output) slot has, and assigns
     # that amount to be taken away by the inversed flexible.
     InversedFlexible = lambda do |link|
@@ -140,5 +140,5 @@ module Qernel
         end
       end
     end # Flexible
-  end # LinkCalcualtion
-end # Qernel
+  end # Links
+end # Qernel::Calculation

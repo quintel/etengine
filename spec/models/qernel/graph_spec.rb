@@ -448,7 +448,7 @@ module Qernel
 
         it "should have reversed link" do
           @l.reversed.should be_true
-          LinkCalculation.calculated_by_parent?(@l).should be_true
+          Calculation::Links.calculated_by_parent?(@l).should be_true
           @l.input.should == @g.converter(:rgt).slots.first
           @l.input.expected_external_value.should == 100.0
         end
