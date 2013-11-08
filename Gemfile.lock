@@ -44,9 +44,9 @@ GIT
 
 GIT
   remote: git@github.com:quintel/merit.git
-  revision: 3621cb075a2d24d99e979e29dda838742df22d45
+  revision: 352ea9be86b42b7f9168b745eac89209b56b4c7a
   specs:
-    merit (0.0.9)
+    merit (0.1.0)
       terminal-table
 
 GIT
@@ -351,7 +351,7 @@ DEPENDENCIES
   kaminari (~> 0.13.0)
   libv8 (~> 3.11.8)
   listen
-  merit!
+  merit (>= 0.1.0)!
   msgpack
   mysql2 (~> 0.3.11)
   osmosis!
