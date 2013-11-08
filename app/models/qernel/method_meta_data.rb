@@ -40,7 +40,7 @@ module Qernel
           :electric_based_nominal_input_capacity => {label: '', unit: 'MWinput'},
           :heat_based_nominal_input_capacity => {label: '', unit: 'MWinput'},
           :cooling_based_nominal_input_capacity => {label: '', unit: 'MWinput'},
-          :effective_input_capacity => {},
+          :nominal_input_capacity => {},
           :number_of_units => {}
         },
         :costs_per_plant => {
