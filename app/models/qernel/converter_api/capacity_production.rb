@@ -99,12 +99,6 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "typical_electricity_production_per_unit", 'MJ'
 
-  # Removed typical_production, refactored to typical_production
-  # Added an alias untill the queries are altered
-  #
-  # DEBT: not used:
-  alias typical_production typical_electricity_production_per_unit
-
   def installed_production_capacity_in_mw_electricity
     fetch_and_rescue(:installed_production_capacity_in_mw_electricity) do
       electricity_output_conversion * nominal_input_capacity * number_of_units
