@@ -424,7 +424,7 @@ public
   if Rails.env.test? || Rails.env.development?
     # create slot if necessary.
     # return link
-    def connect(lft, rgt, carrier, link_type = :share,
+    def connect(lft, rgt, carrier, link_type = :share, reversed = false,
                 left_slot_type = nil, right_slot_type = nil)
 
       lft = converter(lft) if lft.is_a?(Symbol)
@@ -436,7 +436,7 @@ public
       unless rgt.output(carrier)
         rgt.add_slot(Slot.factory(right_slot_type, rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
       end
-      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type)
+      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type, reversed)
     end
 
     def with_converters(key_dataset_hsh)

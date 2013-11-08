@@ -21,23 +21,7 @@ module Qernel
 
     # Flow ---------------------------------------------------------------------
 
-    attr_accessor :reversed
-    attr_reader :is_loss
-
-    alias reversed? reversed
-    alias loss? is_loss
-
     alias_method :demand, :value
-
-    # Link Types ---------------------------------------------------------------
-
-    attr_reader :is_share, :flexible, :dependent, :constant, :inversed_flexible
-
-    alias share? is_share
-    alias flexible? flexible
-    alias dependent? dependent
-    alias constant? constant
-    alias inversed_flexible? inversed_flexible
 
     # --------------------------------------------------------------------------
 
@@ -66,13 +50,12 @@ module Qernel
       @rgt_converter = rgt
       @carrier       = carrier
       @groups        = groups.freeze
-
-      self.link_type = type.to_sym
+      @link_type     = type.to_sym
 
       lft_converter.add_input_link(self)
       rgt_converter.add_output_link(self)
 
-      memoize_for_cache
+      self.dataset_key # memoize dataset_key
     end
 
     # Enables link.electricity?, link.network_gas?, etc.
@@ -101,6 +84,32 @@ module Qernel
 
     def inspect
       "<Qernel::Link #{key.inspect}>"
+    end
+
+    # Link Types ---------------------------------------------------------------
+
+    def share?
+      @link_type === :share
+    end
+
+    def flexible?
+      @link_type === :flexible
+    end
+
+    def dependent?
+      @link_type === :dependent
+    end
+
+    def constant?
+      @link_type === :constant
+    end
+
+    def inversed_flexible?
+      @link_type === :inversed_flexible
+    end
+
+    def reversed?
+      @reversed
     end
 
     # Calculation --------------------------------------------------------------
@@ -206,28 +215,6 @@ module Qernel
     #######
     private
     #######
-
-    # Internal: Sets up some caches after the link is initialized.
-    #
-    # Returns nothing.
-    def memoize_for_cache
-      @is_loss = @carrier.loss?
-      self.dataset_key # memoize dataset_key
-    end
-
-    # Internal: Sets the type of the link. Initializes various caches used for
-    # faster querying of links.
-    #
-    # Returns the link type.
-    def link_type=(link_type)
-      @link_type = link_type
-
-      @is_share          = @link_type === :share
-      @flexible          = @link_type === :flexible
-      @inversed_flexible = @link_type === :inversed_flexible
-      @dependent         = @link_type === :dependent
-      @constant          = @link_type === :constant
-    end
 
     # Internal: Micro-optimization which improves the performance of
     # Array#flatten when the array contains Links.
