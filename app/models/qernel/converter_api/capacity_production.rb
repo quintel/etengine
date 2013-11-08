@@ -9,14 +9,6 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "mwh_input", 'MWh'
 
-  # The output of electricity expressed in MWh.
-  def mwh_electricy_output
-    fetch_and_rescue(:mwh_electricy_output) do
-      output_of_electricity / SECS_PER_HOUR
-    end
-  end
-  unit_for_calculation "mwh_electricy_output", 'MWh'
-
   ## Returns the nominal electrical capicity of one unit.
   #
   def nominal_capacity_electricity_output_per_unit
