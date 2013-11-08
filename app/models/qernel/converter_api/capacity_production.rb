@@ -17,18 +17,6 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "mwh_electricy_output", 'MWh'
 
-  # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
-  #
-  # DEBT: this is the same as nominal_input_capacity in cost.rb. Get rid of this one and the alias.
-  def typical_input_capacity_in_mw
-    fetch_and_rescue(:typical_input_capacity_in_mw) do
-      nominal_input_capacity
-    end
-  end
-  # TODO: get rid of the alias
-  unit_for_calculation "typical_input_capacity_in_mw", 'MW'
-  alias typical_input_capacity typical_input_capacity_in_mw
-
   ## Returns the nominal electrical capicity of one unit.
   #
   def nominal_capacity_electricity_output_per_unit
@@ -99,7 +87,7 @@ class Qernel::ConverterApi
 
   def typical_electricity_production_capacity
     fetch_and_rescue(:typical_electricity_production_capacity) do
-      electricity_output_conversion * typical_input_capacity
+      electricity_output_conversion * nominal_input_capacity
     end
   end
   unit_for_calculation "typical_electricity_production_capacity", 'MW'
@@ -171,11 +159,11 @@ class Qernel::ConverterApi
   unit_for_calculation "production_based_on_number_of_heat_units", 'MJ'
 
   def typical_heat_production_per_unit
-    return nil if typical_input_capacity.nil?
-    [
-      useable_heat_output_conversion,
-      steam_hot_water_output_conversion
-    ].compact.sum * typical_input_capacity * full_load_seconds
+    if nominal_input_capacity
+      [ useable_heat_output_conversion,
+        steam_hot_water_output_conversion
+      ].compact.sum * nominal_input_capacity * full_load_seconds
+    end
   end
   unit_for_calculation "typical_heat_production_per_unit", 'MJ'
 end
