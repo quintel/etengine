@@ -133,13 +133,13 @@ class Qernel::ConverterApi
   alias_method :mw_input_capacity, :mw_power
   unit_for_calculation "mw_input_capacity", 'MW'
 
+  # Heat
+
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
-    return nil if [nominal_input_capacity, number_of_units].any?(&:nil?)
-    [
-      useable_heat_output_conversion,
-      steam_hot_water_output_conversion
-    ].compact.sum * nominal_input_capacity * number_of_units
+    if nominal_input_capacity && number_of_units
+      heat_output_conversion * nominal_input_capacity * number_of_units
+    end
   end
   unit_for_calculation "installed_production_capacity_in_mw_heat", 'MW'
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
@@ -147,17 +147,17 @@ class Qernel::ConverterApi
   # NOTE: disabled caching - Fri 29 Jul 2011 16:36:49 CEST
   #       - Fixed attributes_required_for and use handle_nil instead. SB - Thu 25. Aug 11
   def production_based_on_number_of_heat_units
-    return nil if [number_of_units, typical_heat_production_per_unit].any?(&:nil?)
-    number_of_units * typical_heat_production_per_unit
+    if number_of_units && typical_heat_production_per_unit
+      number_of_units * typical_heat_production_per_unit
+    end
   end
   unit_for_calculation "production_based_on_number_of_heat_units", 'MJ'
 
   def typical_heat_production_per_unit
     if nominal_input_capacity
-      [ useable_heat_output_conversion,
-        steam_hot_water_output_conversion
-      ].compact.sum * nominal_input_capacity * full_load_seconds
+      heat_output_conversion * nominal_input_capacity * full_load_seconds
     end
   end
   unit_for_calculation "typical_heat_production_per_unit", 'MJ'
+
 end
