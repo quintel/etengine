@@ -348,6 +348,7 @@ DEPENDENCIES
   highline
   jbuilder!
   jquery-rails (~> 2.0.2)
+  json (~> 1.8.1)
   kaminari (~> 0.13.0)
   libv8 (~> 3.11.8)
   listen
