@@ -19,7 +19,7 @@ class Qernel::ConverterApi
 
   # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
   #
-  # DEBT: this is the same as effective_input_capacity in cost.rb. Get rid of this one and the alias.
+  # DEBT: this is the same as nominal_input_capacity in cost.rb. Get rid of this one and the alias.
   def typical_input_capacity_in_mw
     fetch_and_rescue(:typical_input_capacity_in_mw) do
       nominal_input_capacity
@@ -119,7 +119,7 @@ class Qernel::ConverterApi
 
   def installed_production_capacity_in_mw_electricity
     fetch_and_rescue(:installed_production_capacity_in_mw_electricity) do
-      electricity_output_conversion * effective_input_capacity * number_of_units
+      electricity_output_conversion * nominal_input_capacity * number_of_units
     end
   end
   unit_for_calculation "installed_production_capacity_in_mw_electricity", 'MW'

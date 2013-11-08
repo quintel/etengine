@@ -28,7 +28,7 @@ class Qernel::ConverterApi
   #
   # Calculation methods to go from plant/year to another unit:
   # * plant:           DEFAULT unit, so no conversion needed
-  # * mw_input:        divide by method effective_input_capacity
+  # * mw_input:        divide by method nominal_input_capacity
   # * mw_electricity:  divide by attribute electricity_output_capacity
   # * mw_heat:         divide by attribute heat_output_capacity
   # * converter:       multiply by number_of_units
@@ -152,7 +152,7 @@ class Qernel::ConverterApi
 
     # MW capacity
     when :mw_input
-      cost / effective_input_capacity.to_f
+      cost / nominal_input_capacity.to_f
     when :mw_electricity
       cost / electricity_output_capacity.to_f
     when :mw_heat

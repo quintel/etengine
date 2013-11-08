@@ -58,24 +58,6 @@ module Qernel
 
     end
 
-    describe '#effective_input_capacity' do
-
-      it "should calculate correctly when nominal_input_capacity is set" do
-        @c.with nominal_input_capacity: 100
-        @c.converter_api.effective_input_capacity.should == 100
-      end
-
-      it "should calculate correctly when nominal_input_capacity is zero" do
-        @c.with nominal_input_capacity: 0
-        @c.converter_api.effective_input_capacity.should == 0.0
-      end
-
-      it "should return zero when nominal_input capacity is zero" do
-        @c.with nominal_input_capacity: 0
-        @c.converter_api.effective_input_capacity.should == 0.0
-      end
-    end
-
     describe '#total_cost' do
 
       it "should calculate correctly when values are given" do
@@ -233,7 +215,7 @@ module Qernel
       it "should calculate when everything is set" do
         @c.with variable_operation_and_maintenance_costs_per_full_load_hour: 500, 
         variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 400,
-        effective_input_capacity: 2
+        nominal_input_capacity: 2
         @c.converter_api.send(:variable_operation_and_maintenance_costs_per_typical_input).should == 0.125
       end
       

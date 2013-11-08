@@ -58,7 +58,7 @@ module Qernel::Plugins
 
           # TODO: should this be moved to gem, too?
           converter.demand = fls *
-                             converter.effective_input_capacity *
+                             converter.nominal_input_capacity *
                              dispatchable.number_of_units
 
         end
@@ -103,7 +103,7 @@ module Qernel::Plugins
             key: p.key,
             marginal_costs: c.variable_costs_per(:mwh_electricity),
             output_capacity_per_unit:
-              c.electricity_output_conversion * c.effective_input_capacity,
+              c.electricity_output_conversion * c.nominal_input_capacity,
             number_of_units: c.number_of_units,
             availability: c.availability,
             fixed_costs_per_unit: c.send(:fixed_costs),

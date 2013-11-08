@@ -34,23 +34,6 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "nominal_input_capacity", 'MWinput'
 
-  # Calculates the effective input capacity of a plant (in MW) based on the
-  # nominal input capacity 
-  #
-  # DEBT: This function can be removed in the future as
-  # effective_input_capacity == nominal_input_capacity
-  #
-  # @return [Float] Effective input capacity of a typical plant in MW
-  #
-  # DEBT: move to another file when cleaning up Converter API
-  #
-  def effective_input_capacity
-    fetch_and_rescue(:effective_input_capacity) do
-        nominal_input_capacity
-    end
-  end
-  unit_for_calculation "effective_input_capacity", 'MWinput'
-
   ###################
   # Chart functions #
   ###################
@@ -289,7 +272,7 @@ class Qernel::ConverterApi
     fetch_and_rescue(:variable_operation_and_maintenance_costs_per_typical_input) do
       (variable_operation_and_maintenance_costs_per_full_load_hour +
       variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour) /
-      (effective_input_capacity * 3600.0)
+      (nominal_input_capacity * 3600.0)
     end
   end
   unit_for_calculation "variable_operation_and_maintenance_costs_per_typical_input", 'euro / MJ'
@@ -406,7 +389,7 @@ class Qernel::ConverterApi
   #
   def typical_input
     fetch_and_rescue(:typical_input) do
-      effective_input_capacity * full_load_seconds
+      nominal_input_capacity * full_load_seconds
     end
   end
   unit_for_calculation "typical_input", 'MJ / year'
