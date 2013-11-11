@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Etsource
   describe AtlasLoader do
-    let(:yml) { Rails.root.join('spec/fixtures/etsource/static') }
+    let(:yml) { Rails.root.join('spec/fixtures/atlas') }
     let(:dir) { Pathname.new(Dir.mktmpdir) }
 
     # Takes any YAML files in the +source+ directory, converts them into

@@ -14,7 +14,7 @@ ETSOURCE_DIR = Etsource::Base.clean_path(
 ETSOURCE_EXPORT_DIR = Etsource::Base.clean_path(
   ENV['ETSOURCE_DIR'] || APP_CONFIG.fetch(:etsource_export, 'etsource'))
 
-Atlas.data_dir = ETSOURCE_EXPORT_DIR.join('data')
+Atlas.data_dir = ETSOURCE_EXPORT_DIR
 
 # Ensure a user in development does not overwrite their ETSource repo by doing
 # an import via the admin UI.
