@@ -58,7 +58,7 @@ module Qernel
               mid(100) == f(1.0) ==> rgt1
               mid      == f(1.0) ==> rgt2" do
 
-            @rgt1.output_links.first.max_demand = 30.0
+            @rgt1.output_links.first.dataset_set(:max_demand, 30.0)
             @g.calculate
 
             @rgt1.demand.should ==  30.0
@@ -447,11 +447,10 @@ module Qernel
         end
 
         it "should have reversed link" do
-          @l.reversed.should be_true
-          @l.calculated_by_right?.should be_true
-          @l.send(:input).should == @g.converter(:rgt).slots.first
-          @l.send(:input).expected_external_value.should == 100.0
-          @l.send(:input_external_demand).should == 100.0
+          @l.should be_reversed
+          Calculation::Links.calculated_by_parent?(@l).should be_true
+          @l.input.should == @g.converter(:rgt).slots.first
+          @l.input.expected_external_value.should == 100.0
         end
 
         it "ready" do
@@ -460,7 +459,6 @@ module Qernel
         end
 
         it "should calculate link" do
-          @l.send(:calculate_share).should == 100.0
           @l.send(:calculate).should == 100.0
           @l.value.should == 100.0
         end

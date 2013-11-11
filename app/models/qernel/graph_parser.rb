@@ -74,9 +74,8 @@ module Qernel
         carrier = carrier(carrier_key)
 
         link = graph.
-          connect(c_lft, c_rgt, carrier, link_type, *slot_types(line)).
+          connect(c_lft, c_rgt, carrier, link_type, reversed, *slot_types(line)).
           with(:share => link_share)
-        link.reversed = reversed
 
         s_lft, s_rgt = slot(carrier_key)
         c_lft.input(carrier.key).with(s_lft) if s_lft
