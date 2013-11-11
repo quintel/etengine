@@ -188,6 +188,12 @@ module Gql::Runtime
 
         if arguments.present?
           filter = arguments.is_a?(Array) ? arguments.first : arguments
+
+          # If the filter is a symbol, it is probably selcting for link type,
+          # e.g. OUTPUT_LINKS(..., constant). Make sure it runs the correct
+          # predicate method:
+          filter = "#{ filter }?" if filter.is_a?(Symbol)
+
           links.select! { |link| link.instance_eval(filter.to_s) }
         end
 
