@@ -51,7 +51,7 @@ module ETSourceFixtureHelper
     end
 
     def data_path(dataset_key)
-      super.dirname.join("#{ dataset_key }.yml")
+      super.dirname.dirname.join("../atlas/#{ dataset_key }.yml")
     end
   end
 end # EtmFixtureHelper
