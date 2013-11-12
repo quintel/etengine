@@ -1,0 +1,5 @@
+- groups = []
+- output.greengas = 0.8
+- output.loss = 0.2
+- input.biogas = 0.5
+- input.greengas = 0.5

@@ -1,0 +1,3 @@
+- groups = []
+- output.greengas = 1.0
+- input.greengas = 1.0
