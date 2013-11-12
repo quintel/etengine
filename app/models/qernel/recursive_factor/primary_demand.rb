@@ -28,7 +28,6 @@ module Qernel::RecursiveFactor::PrimaryDemand
     (self.demand || 0.0) * factor
   end
 
-
   def primary_demand_with(factor_method, converter_share_method = nil)
     if converter_share_method
       w = recursive_factor("#{factor_method}_factor", "#{converter_share_method}_factor")
@@ -49,14 +48,53 @@ module Qernel::RecursiveFactor::PrimaryDemand
   end
 
 
-  def primary_demand_factor_of_carrier(link, carrier_key, ruby18fix = nil)
-    return nil if !right_dead_end? or !primary_energy_demand?
-    link ||= output_links.first
+  # Public: Calculates what proportion of a node's demand can be attributed to
+  # the given +carrier_key+. Normally you can achieve this by looking at the
+  # slot share, but this is of no use if you want to detmine how much of a
+  # carrier was used earlier in the graph.
+  #
+  # For example, you may want to know how much "green_gas" is used in a heating
+  # converter, but the node only receives "network_gas", the "green_gas" having
+  # been mixed with "natural_gas" earlier in the supply chain. Recursive factor
+  # will look to the supply-side of the converter and find the green gas which
+  # ends up being used for heating.
+  #
+  # There are two phases to the carrier primary demand calculation. Phase 1
+  # involves recursively traversing each input path until it either finds links
+  # of the desired carrier, or reaches the primary supply nodes which have no
+  # incoming links. Once a link has been found of the desired carrier on the
+  # path, "phase 2" begins in which we continue traversing to the right until
+  # there are no more links of that carrier, at which point the primary demand
+  # factor is calculated.
+  #
+  # See: https://github.com/quintel/etengine/issues/647
+  #
+  # link        - The link whose primary demand is to be calculated.
+  # carrier_key - The carrier name.
+  #
+  # Returns a numeric.
+  def primary_demand_factor_of_carrier(link, carrier_key)
+    return nil unless link
 
-    if link and link.carrier.key == carrier_key
-      factor_for_primary_demand(link)
+    if link.carrier.key == carrier_key
+      # Phase 2; we have found a link of the desired carrier.
+      if link.rgt_converter.input(carrier_key).nil? || primary_energy_demand?
+        # ... the supplier has no more links of this type, therefore we
+        # calculate the primary demand factor and do not traverse further.
+        #
+        # If factor_for_primary_demand returns zero, it is simply because the
+        # supply node is not in the primary_energy_demand group; however we
+        # don't want to ignore the node, but instead use its demand value.
+        factor = factor_for_primary_demand(link)
+        factor.zero? ? 1.0 : factor
+      else
+        # There are more +carrier_key+ links to be traversed...
+        nil
+      end
     else
-      0.0
+      # Phase 1; we have yet to find a link of the desired carrier; continue
+      # traversing until we find one, or run out of links.
+      nil
     end
   end
 

@@ -1,0 +1,4 @@
+- groups = []
+- output.network_gas = 1.0
+- input.greengas = 0.5
+- input.natural_gas = 0.5
