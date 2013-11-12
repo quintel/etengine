@@ -86,6 +86,8 @@ module Qernel
       "<Qernel::Link #{key.inspect}>"
     end
 
+    alias_method :to_s, :inspect
+
     # Link Types ---------------------------------------------------------------
 
     def share?
