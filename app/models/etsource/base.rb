@@ -32,8 +32,15 @@ module Etsource
       @cache_topology
     end
 
+    # Public: Given a Git reference, returns the matching commit.
+    #
+    # Returns an Etsource::Commit
+    def commit(ref)
+      Commit.new(self, git.gcommit(ref))
+    end
+
     def commits
-      git.log(40)
+      git.log(40).map { |gcommit| Commit.new(self, gcommit) }
     end
 
     def get_latest_export_sha
@@ -52,10 +59,10 @@ module Etsource
       # Make 100% sure that the branch is placed back at the HEAD; it seems
       # other Git.open calls can cause Git commands belong to fail, citing that
       # the commits don't exist.
-      commit  = Git.open(@base_dir).gcommit(sha_id)
+      commit  = commit(sha_id)
       archive = Rails.root.join('tmp').join("ets-#{ sha_id }.tar")
 
-      commit.archive(archive, format: 'tar')
+      commit.gcommit.archive(archive, format: 'tar')
       system("tar -x -C '#{ @export_dir }' -f '#{ archive }'")
 
       archive.delete
@@ -102,7 +109,7 @@ module Etsource
     end
 
     def git
-      @git ||= Git.open @base_dir
+      @git ||= Git.open(@base_dir)
     end
   end
 end
