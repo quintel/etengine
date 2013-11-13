@@ -38,21 +38,21 @@
         Latest import:
         %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha || 'N/A'}
 
-    - @commits.group_by { |com| com.date.to_date }.each do |date, commits|
+    - @commits.group_by { |com| com.gcommit.date.to_date }.each do |date, commits|
       .commit-group
         %h4= date.to_formatted_s(:long)
         - commits.each do |commit|
           .commit{ id: "rev-#{ commit.to_s }" }
             .action
-              - if @etsource.get_latest_import_sha == commit.to_s
+              - if @etsource.get_latest_import_sha == commit.sha
                 .current ✓ &nbsp;Loaded
               - elsif import_in_progress?
                 .wait Please wait&hellip;
               - else
                 - cache("etsource.status.#{ commit.sha }") do
-                  - if commit.date < require_newer_than || ! Etsource::Commit.new(Etsource::Base.instance, commit.to_s).can_import?
-                    .incompatible(title="Incompatible due to non-matching dependencies") Incompatible
-                  - else
+                  - if commit.gcommit.date >= require_newer_than && commit.can_import?
                     %a.import{ href: import_etsource_commit_path(:id => commit.to_s) } Import
+                  - else
+                    .incompatible(title="Incompatible due to non-matching dependencies") Incompatible
             - cache("etsource.info.#{ commit.sha }") do
-              = render partial: 'commit', locals: { commit: commit }
+              = render partial: 'commit', locals: { commit: commit.gcommit }

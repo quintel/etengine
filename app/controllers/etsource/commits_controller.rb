@@ -31,7 +31,7 @@ class Etsource::CommitsController < ApplicationController
     # progress.
     (redirect_to(etsource_commits_path) ; return) unless can_import?
 
-    @commit = Etsource::Commit.new(Etsource::Base.instance, params[:id])
+    @commit = Etsource::Base.instance.commit(params[:id])
 
     if @commit.requires_confirmation? && ! params[:force]
       # When a commit uses different Atlas and Refinery versions than are

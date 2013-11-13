@@ -51,18 +51,19 @@ module Etsource
 
     # --------------------------------------------------------------------------
 
+    # Returns the Git::Commit object.
+    attr_reader :gcommit
+
     # Public: Creates a new Commit, which represents a revision in the ETSource
     # repository.
     #
     # etsource - The current Etsource::Base instance.
-    # revision - A string SHA of the revision.
+    # gcommit  - A Git::Commit.
     #
     # Returns a Commit.
-    def initialize(etsource, revision)
+    def initialize(etsource, gcommit)
       @etsource = etsource
-      @revision = revision
-
-      @gcommit  = Git.open(@etsource.base_dir).gcommit(revision)
+      @gcommit  = gcommit
     end
 
     # Public: Contains the dependency information for Atlas.
@@ -92,6 +93,13 @@ module Etsource
     # Returns true or false.
     def requires_confirmation?
       (! atlas.identical?) || (! refinery.identical?)
+    end
+
+    # Public: The Git SHA reference for the commit.
+    #
+    # Returns a string.
+    def sha
+      @gcommit.sha
     end
 
     #######
