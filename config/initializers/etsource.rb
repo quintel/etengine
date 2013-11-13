@@ -16,6 +16,16 @@ ETSOURCE_EXPORT_DIR = Etsource::Base.clean_path(
 
 Atlas.data_dir = ETSOURCE_EXPORT_DIR
 
+# TODO Remove this line in a week or two.
+if Atlas.data_dir.join('data').directory?
+  raise 'Your ETSource repository is out-of-date; the directory structure ' \
+        'of ETSource has been changed recently in a way which is ' \
+        'incompatible with the (newer) version of ETEngine you are using. ' \
+        'Please "git up" if you are using etsource@master, or merge/rebase ' \
+        'with the latest master if you are on a different branch. For more ' \
+        'information, see https://github.com/quintel/etsource/issues/550'
+end
+
 # Ensure a user in development does not overwrite their ETSource repo by doing
 # an import via the admin UI.
 if ETSOURCE_DIR == ETSOURCE_EXPORT_DIR
