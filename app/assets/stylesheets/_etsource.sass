@@ -88,15 +88,24 @@
       color: #999
 
     .import
-      background: #eee linear-gradient(white, #eee)
+      background: #eee linear-gradient(#fafafa, #eee)
       border: 1px solid #ddd
+      color: #333
       padding: 8px 1px
+      text-shadow: 0 1px 0 white
 
     .import:hover
-      background: #468847
-      border-color: #468847
-      color: white
+      background: #ddd linear-gradient(#eee, #ddd)
+      border-color: #ccc
+      border-bottom-color: #bbb
       text-decoration: none
+
+    .import:active
+      background: #ccc
+      box-shadow: inset 0 2px 2px #ccc
+      border-color: #bbb
+      border-top-color: #aaa
+      text-shadow: 0 1px 0 #ddd
 
     .importing, .importing:hover
       background: #f0f0f0
@@ -119,9 +128,9 @@
       border-radius: 3px
       color: #666
       display: inline-block
-      padding: 6px 8px
+      padding: 4px 8px
       float: right
-      margin-top: 4px
+      margin-top: 6px
 
       .ref
         font: 12px Menlo, Monaco, monospace
