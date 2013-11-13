@@ -18,12 +18,22 @@ Atlas.data_dir = ETSOURCE_EXPORT_DIR
 
 # TODO Remove this line in a week or two.
 if Atlas.data_dir.join('data').directory?
-  raise 'Your ETSource repository is out-of-date; the directory structure ' \
-        'of ETSource has been changed recently in a way which is ' \
-        'incompatible with the (newer) version of ETEngine you are using. ' \
-        'Please "git up" if you are using etsource@master, or merge/rebase ' \
-        'with the latest master if you are on a different branch. For more ' \
-        'information, see https://github.com/quintel/etsource/issues/550'
+  raise <<-MESSAGE.strip_heredoc
+    Your ETSource repository is out-of-date; in the most recent versions of
+    ETSource, the data/ directory has been removed -- and its contents moved to
+    the top-level directory -- but it still seems to be present in your local
+    copy.
+
+    Please update your clone of ETSource if you are using etsource@master; if
+    you are on a different branch, you will need to merge/rebase with the master
+    branch.
+
+    Deleting the ETSource data/ directory will get this message to go away, but
+    make sure you don't have any important uncommitted changes there before
+    doing so.
+
+    For more information, see https://github.com/quintel/etsource/issues/550
+  MESSAGE
 end
 
 # Ensure a user in development does not overwrite their ETSource repo by doing
