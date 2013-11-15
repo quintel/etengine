@@ -155,47 +155,47 @@
   # From graph.yml
   # --------------
 
-  :foo-bar@electricity:
+  :bar-foo@electricity:
     :child_share: 0.6
-  :foo-baz@electricity:
+  :baz-foo@electricity:
     :child_share: 0.4
-  :lft-bar@electricity:
+  :bar-lft@electricity:
     :child_share: 1.0
 
   # From max_demand_recursive.yml
   # -----------------------------
 
-  :max_demand_converter_d-max_demand_converter_a@gas:
+  :max_demand_converter_a-max_demand_converter_d@gas:
     :child_share: 1.0
-  :max_demand_converter_a-max_demand_converter_b@gas:
+  :max_demand_converter_b-max_demand_converter_a@gas:
     :child_share: 0.9
-  :max_demand_converter_a-max_demand_converter_c@gas:
+  :max_demand_converter_c-max_demand_converter_a@gas:
     :child_share: 0.1
 
-  :max_demand_converter_with_high_demand-max_demand_converter_d@gas:
-  :max_demand_converter_with_high_demand-max_demand_converter_with_high_demand_remainder@gas:
+  :max_demand_converter_d@max_demand_converter_with_high_demand@gas:
+  :max_demand_converter_with_high_demand_remainder-max_demand_converter_with_high_demand@gas:
 
   # From merit_order.yml
   # --------------------
 
-  :el_grid-plant_1@electricity:
-  :el_grid-plant_2@electricity:
-  :el_grid-import_electricity@electricity:
+  :plant_1-el_grid@electricity:
+  :plant_2-el_grid@electricity:
+  :import_electricity-el_grid@electricity:
 
   # From resettable_slots.yml
   # -------------------------
 
-  :resettable_slots_with_reset_slot-resettable_slots_with_hidden_link@coupling_carrier:
+  :resettable_slots_with_hidden_link-resettable_slots_with_reset_slot@coupling_carrier:
     :child_share: 1.0
-  :resettable_slots_with_hidden_link-resettable_slots_with_hidden_link_child@gas:
+  :resettable_slots_with_hidden_link_child-resettable_slots_with_hidden_link@gas:
     :child_share: 1.0
 
   # From reversed_links.yml
   # -----------------------
 
-  :reversed_links_left-reversed_links_middle_1@gas:
-  :reversed_links_left-reversed_links_middle_2@gas:
-  :reversed_links_left-reversed_links_middle_3@gas:
+  :reversed_links_middle_1-reversed_links_left@gas:
+  :reversed_links_middle_2-reversed_links_left@gas:
+  :reversed_links_middle_3-reversed_links_left@gas:
     :child_share: 1.0
     :parent_share: 1.0
 
@@ -203,17 +203,17 @@
   # Carrier Primary Demand
   # ----------------------
 
-  :cpd_greengas_left-cpd_greengas_right@greengas:
+  :cpd_greengas_right-cpd_greengas_left@greengas:
     :child_share: 1.0
-  :cpd_mixer-cpd_greengas_left@greengas:
+  :cpd_greengas_left-cpd_mixer@greengas:
     :child_share: 1.0
-  :cpd_greengas_right-cpd_greengas_import@greengas:
+  :cpd_greengas_import-cpd_greengas_right@greengas:
     :child_share: 0.5
-  :cpd_greengas_right-cpd_greengas_source@greengas:
+  :cpd_greengas_source-cpd_greengas_right@greengas:
     :child_share: 0.5
-  :cpd_greengas_right-cpd_greengas_upgrade@biogas:
+  :cpd_greengas_upgrade-cpd_greengas_right@biogas:
     :child_share: 1.0
-  :cpd_mixer-cpd_natural_gas@natural_gas:
+  :cpd_natural_gas-cpd_mixer@natural_gas:
     :child_share: 1.0
-  :cpd_sink-cpd_mixer@network_gas:
+  :cpd_mixer-cpd_sink@network_gas:
     :child_share: 1.0
