@@ -2,6 +2,15 @@ module Qernel
   class Link
     extend ActiveModel::Naming
 
+    # Public: Defines a method on the Link which, when called, will call the
+    # method of the same name on the parent converter's ConverterApi, reducing
+    # the value according to the slot conversion and parent share.
+    #
+    # Returns nothing.
+    def self.delegated_calculation(name)
+      define_method(name) { |*args| delegated_calculation(name, *args) }
+    end
+
     # Dataset ------------------------------------------------------------------
 
     include DatasetAttributes
@@ -9,6 +18,11 @@ module Qernel
     dataset_accessors :share, :value, :calculated, :country_specific
 
     def self.dataset_group; :graph; end
+
+    delegated_calculation :primary_demand
+    delegated_calculation :primary_demand_of
+    delegated_calculation :primary_demand_of_carrier
+    delegated_calculation :sustainability_share
 
     # Accessors ----------------------------------------------------------------
 
@@ -114,6 +128,10 @@ module Qernel
       @reversed
     end
 
+    def energetic?
+      ! rgt_converter.non_energetic_use?
+    end
+
     # Calculation --------------------------------------------------------------
 
     def max_demand
@@ -137,6 +155,19 @@ module Qernel
         if value && (slot_demand = rgt_output.external_value)
           slot_demand.zero? ? 0.0 : value / slot_demand
         end
+    end
+
+    # Public: Delegates a calculation to the parent node ConverterApi, reducing
+    # the returned value in accordance with the slot conversion and link share.
+    #
+    # calculation - The method to be called on the ConverterApi
+    # *args       - Additional arguments to be passed to the calculation method.
+    #
+    # Returns a number, or nil if the calculation returned nil.
+    def delegated_calculation(calculation, *args)
+      if value = rgt_converter.query.send(calculation, *args)
+        value * output.conversion * parent_share
+      end
     end
 
     # Calculation --------------------------------------------------------------
