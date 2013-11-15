@@ -7,14 +7,14 @@ module Qernel
     let(:carrier)  { Carrier.new(key: :network_gas) }
     let!(:link)    { Link.new('', consumer, supplier, carrier, :share) }
 
+    before do
+      supplier.add_slot(Slot.new('', supplier, carrier, :output))
+    end
+
     describe '#parent_share' do
       # An other link which belongs to the same output slot.
       let!(:other) do
         Link.new('', consumer, supplier, carrier, :share).with(value: 15_000.0)
-      end
-
-      before do
-        supplier.add_slot(Slot.new('', supplier, carrier, :output))
       end
 
       it 'returns a value when both link and slot have a value' do
@@ -66,5 +66,51 @@ module Qernel
         expect { link.invalid_carrier? }.to raise_error(NoMethodError)
       end
     end # (carrier)?
+
+    describe 'primary_demand' do
+      it 'returns the right converter value, minus conversions' do
+        supplier.should_receive(:primary_demand).and_return(40.0)
+        link.output.should_receive(:conversion).and_return(0.5)
+        link.should_receive(:parent_share).and_return(0.25)
+
+        expect(link.primary_demand).to eq(5.0)
+      end
+
+      it 'returns nil if the parent converter value is nil' do
+        supplier.should_receive(:primary_demand).and_return(nil)
+        expect(link.primary_demand).to be_nil
+      end
+    end # primary_demand
+
+    describe 'primary_demand_of_carrier' do
+      it 'returns the right converter value, minus conversions' do
+        supplier.should_receive(:primary_demand_of_carrier).
+          with(:coal).and_return(40.0)
+
+        link.output.should_receive(:conversion).and_return(0.5)
+        link.should_receive(:parent_share).and_return(0.25)
+
+        expect(link.primary_demand_of_carrier(:coal)).to eq(5.0)
+      end
+
+      it 'returns nil if the parent converter value is nil' do
+        supplier.should_receive(:primary_demand_of_carrier).
+          with(:coal).and_return(nil)
+
+        expect(link.primary_demand_of_carrier(:coal)).to be_nil
+      end
+    end # primary_demand_of_carrier
+
+    describe 'energetic?' do
+      it 'returns true if the parent node is energetic' do
+        supplier.should_receive(:non_energetic_use?).and_return(false)
+        expect(link).to be_energetic
+      end
+
+      it 'returns true if the parent node is non-energetic' do
+        supplier.should_receive(:non_energetic_use?).and_return(true)
+        expect(link).to_not be_energetic
+      end
+    end # energetic?
   end # Link
 end # Qernel
