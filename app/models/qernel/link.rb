@@ -129,7 +129,7 @@ module Qernel
     end
 
     def energetic?
-      ! rgt_converter.non_energetic_use?
+      ! lft_converter.non_energetic_use?
     end
 
     # Calculation --------------------------------------------------------------

@@ -102,13 +102,13 @@ module Qernel
     end # primary_demand_of_carrier
 
     describe 'energetic?' do
-      it 'returns true if the parent node is energetic' do
-        supplier.should_receive(:non_energetic_use?).and_return(false)
+      it 'returns true if the consumer node is energetic' do
+        consumer.should_receive(:non_energetic_use?).and_return(false)
         expect(link).to be_energetic
       end
 
-      it 'returns true if the parent node is non-energetic' do
-        supplier.should_receive(:non_energetic_use?).and_return(true)
+      it 'returns false if the child node is non-energetic' do
+        consumer.should_receive(:non_energetic_use?).and_return(true)
         expect(link).to_not be_energetic
       end
     end # energetic?
