@@ -12,7 +12,7 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
-        render json: ScenarioPresenter.new(self, @scenario, params[:detailed])
+        render json: ScenarioPresenter.new(self, @scenario, params)
       end
 
       # GET /api/v3/scenarios/:id1,:id2,:id3,...,:id20/batch
@@ -26,7 +26,7 @@ module Api
         @scenarios = ids.map do |id|
           scenario  = Preset.get(id).try(:to_scenario) ||
                       Scenario.find_by_id(id)
-          presenter = ScenarioPresenter.new(self, scenario, params[:detailed])
+          presenter = ScenarioPresenter.new(self, scenario, params)
 
           scenario ? presenter : { id: id, errors: ["Scenario not found"] }
         end
@@ -85,7 +85,7 @@ module Api
         if @scenario.save
           # With HTTP 201 nginx doesn't set content-length or chunked encoding
           # headers
-          render json: ScenarioPresenter.new(self, @scenario), status: 200
+          render json: ScenarioPresenter.new(self, @scenario, params)
         else
           render json: { errors: @scenario.errors }, status: 422
         end

@@ -7,15 +7,16 @@ module Api
       #   The controller which created the presenter; required to
       # @param [Scenario] scenario
       #   The scenarios for which we want JSON.
-      # @param [true, false] detailed
-      #   Show extra details with the scenario such as the description and
-      #   FCE status?
+      # @param [Hash] options
+      #   Options for customising the returned JSON.
       #
       # @see PresetPresenter#initialize
       #
-      def initialize(controller, scenario, detailed = false)
+      def initialize(controller, scenario, options = {})
         super(controller, scenario)
-        @detailed = detailed
+
+        @detailed = options[:detailed].present?
+        @inputs   = options[:include_inputs].present?
       end
 
       # Creates a Hash suitable for conversion to JSON by Rails.
@@ -37,6 +38,10 @@ module Api
           json[:user_values] = @resource.user_values
         else
           json.delete(:description)
+        end
+
+        if @inputs
+          json[:inputs] = InputPresenter.collection(Input.all, @resource, true)
         end
 
         json

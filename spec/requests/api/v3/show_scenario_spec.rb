@@ -66,4 +66,31 @@ describe 'APIv3 Scenarios' do
     end
   end
 
+  context 'with the "include_inputs" param' do
+    before do
+      get("api/v3/scenarios/#{ scenario.id }", include_inputs: true)
+    end
+
+    it 'should be successful' do
+      response.status.should eql(200)
+    end
+
+    it 'should include the basic scenario data' do
+      json.should include('title'      => scenario.title)
+      json.should include('id'         => scenario.id)
+      json.should include('area_code'  => 'nl')
+      json.should include('end_year'   => scenario.end_year)
+      json.should include('template'   => nil)
+      json.should include('source'     => nil)
+
+      json.should have_key('created_at')
+
+      json['url'].should match(%r{/scenarios/#{ scenario.id }$})
+    end
+
+    it 'should include the inputs' do
+      json.should have_key('inputs')
+    end
+  end
+
 end
