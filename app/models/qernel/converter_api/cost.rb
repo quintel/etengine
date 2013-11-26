@@ -11,45 +11,29 @@ class Qernel::ConverterApi
   # Input Capacity #
   ##################
 
-  # Calculates the input capacity of a typical plant, based on
-  # the output capacity in MW.
-  # If the converter has an electrical efficiency and capacity this is used
-  # to calculate the input capacity. Otherwise it checks for a heat capacity
-  # and heat efficiency. If this can also not be found it will try cooling.
-  # Finally it will try the attribute typical_nominal_input_capacity
-  # (currently only used for electric transport). If all return nil 0.0 will
-  # be used. This should only happen for statistical converters.
+  # Calculates the input capacity of a typical plant, based on the output
+  # capacity in MW.
+  #
+  # If the converter has an electrical efficiency and capacity this is used to
+  # calculate the input capacity. Otherwise it checks for a heat capacity and
+  # heat efficiency. If this can also not be found it will try cooling.
+  #
+  # Finally it will try the attribute typical_input_capacity (currently only
+  # used for electric transport). If all return nil 0.0 will be used. This
+  # should only happen for statistical converters.
   #
   # @return [Float] Input capacity of a typical plant in MWinput
   #
   # DEBT: move to another file when cleaning up Converter API
-  #
-  def nominal_input_capacity
-    fetch_and_rescue(:nominal_input_capacity) do
-      electric_based_nominal_input_capacity ||
-        heat_based_nominal_input_capacity ||
-          cooling_based_nominal_input_capacity ||
-            typical_nominal_input_capacity || 0.0
+  def input_capacity
+    fetch_and_rescue(:input_capacity) do
+      electric_based_input_capacity ||
+        heat_based_input_capacity ||
+        cooling_based_input_capacity ||
+        typical_input_capacity || 0.0
     end
   end
-  unit_for_calculation "nominal_input_capacity", 'MWinput'
-
-  # Calculates the effective input capacity of a plant (in MW) based on the
-  # nominal input capacity 
-  #
-  # DEBT: This function can be removed in the future as
-  # effective_input_capacity == nominal_input_capacity
-  #
-  # @return [Float] Effective input capacity of a typical plant in MW
-  #
-  # DEBT: move to another file when cleaning up Converter API
-  #
-  def effective_input_capacity
-    fetch_and_rescue(:effective_input_capacity) do
-        nominal_input_capacity
-    end
-  end
-  unit_for_calculation "effective_input_capacity", 'MWinput'
+  unit_for_calculation "input_capacity", 'MWinput'
 
   ###################
   # Chart functions #
@@ -289,7 +273,7 @@ class Qernel::ConverterApi
     fetch_and_rescue(:variable_operation_and_maintenance_costs_per_typical_input) do
       (variable_operation_and_maintenance_costs_per_full_load_hour +
       variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour) /
-      (effective_input_capacity * 3600.0)
+      (input_capacity * 3600.0)
     end
   end
   unit_for_calculation "variable_operation_and_maintenance_costs_per_typical_input", 'euro / MJ'
@@ -314,8 +298,8 @@ class Qernel::ConverterApi
   #
   # DEBT: move to another file when cleaning up Converter API
   #
-  def electric_based_nominal_input_capacity
-    fetch_and_rescue(:electric_based_nominal_input_capacity) do
+  def electric_based_input_capacity
+    fetch_and_rescue(:electric_based_input_capacity) do
       if electricity_output_conversion && electricity_output_conversion > 0
         electricity_output_capacity / electricity_output_conversion
       else
@@ -323,7 +307,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "electric_based_nominal_input_capacity", 'MWinput'
+  unit_for_calculation "electric_based_input_capacity", 'MWinput'
 
   # This method calculates the input capacity of a plant based on the
   # heat output capacity and heat efficiency of the converter
@@ -332,8 +316,8 @@ class Qernel::ConverterApi
   #
   # DEBT: move to another file when cleaning up Converter API
   #
-  def heat_based_nominal_input_capacity
-    fetch_and_rescue(:heat_based_nominal_input_capacity) do
+  def heat_based_input_capacity
+    fetch_and_rescue(:heat_based_input_capacity) do
       if heat_output_conversion && heat_output_conversion > 0
         heat_output_capacity / heat_output_conversion
       else
@@ -341,7 +325,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "heat_based_nominal_input_capacity", 'MWinput'
+  unit_for_calculation "heat_based_input_capacity", 'MWinput'
 
   # This method calculates the input capacity of one plant based on the
   # heat capacity of the plant and the cooling efficiency.
@@ -355,8 +339,8 @@ class Qernel::ConverterApi
   #
   # DEBT: move to another file when cleaning up Converter API
   #
-  def cooling_based_nominal_input_capacity
-    fetch_and_rescue(:cooling_based_nominal_input_capacity) do
+  def cooling_based_input_capacity
+    fetch_and_rescue(:cooling_based_input_capacity) do
       if cooling_output_conversion && cooling_output_conversion > 0
         heat_output_capacity / cooling_output_conversion
       else
@@ -364,7 +348,7 @@ class Qernel::ConverterApi
       end
     end
   end
-  unit_for_calculation "cooling_based_nominal_input_capacity", 'MWinput'
+  unit_for_calculation "cooling_based_input_capacity", 'MWinput'
 
   # Calculates the typical electricity output of one plant of this type
   #
@@ -406,7 +390,7 @@ class Qernel::ConverterApi
   #
   def typical_input
     fetch_and_rescue(:typical_input) do
-      effective_input_capacity * full_load_seconds
+      input_capacity * full_load_seconds
     end
   end
   unit_for_calculation "typical_input", 'MJ / year'

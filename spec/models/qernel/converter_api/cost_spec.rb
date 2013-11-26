@@ -8,7 +8,7 @@ module Qernel
       @c = Qernel::Converter.new(id:1)
     end
 
-    describe '#nominal_input_capacity' do
+    describe '#input_capacity' do
       #
       # e-eff  h-eff  e-cap  h-cap  expected outcome
       #  0.4    nil    800    nil     2000
@@ -24,19 +24,19 @@ module Qernel
 
       it "should calculate correctly when only electrical capacity and electrical efficiency are given" do
         @c.with electricity_output_conversion: 0.4, electricity_output_capacity: 800
-        @c.converter_api.nominal_input_capacity.should == 2000
+        @c.converter_api.input_capacity.should == 2000
       end
 
       it "should calculate correctly when only heat capacity and heat efficiency are given" do
         @c.with heat_output_conversion: 0.1, heat_output_capacity: 400
-        @c.converter_api.nominal_input_capacity.should == 4000
+        @c.converter_api.input_capacity.should == 4000
       end
 
       it "should return zero when capacity and conversion are both zero" do
         @c.with electricity_output_capacity: 0, electricity_output_conversion: 0
-        @c.converter_api.nominal_input_capacity.should == 0
+        @c.converter_api.input_capacity.should == 0
         @c.with heat_output_capacity: 0, heat_and_cold_output_conversion: 0
-        @c.converter_api.nominal_input_capacity.should == 0
+        @c.converter_api.input_capacity.should == 0
       end
 
       it "should raise error when incomplete" do
@@ -45,35 +45,17 @@ module Qernel
                   electricity_output_capacity: nil,
                   heat_and_cold_output_conversion: nil,
                   heat_output_capacity: 400
-          expect { @c.converter_api.nominal_input_capacity }.to raise_error
+          expect { @c.converter_api.input_capacity }.to raise_error
         end
       end
 
       it "should raise error when capicity-e/eff-e != capacity-h/eff-h" do
         pending "Data validations of Converters upon loading / importing" do
           @c.with heat_output_capacity: 400, electricity_output_capacity: 1000, heat_and_cold_output_conversion: 0.2, electricity_output_conversion: 0.4
-          expect { @c.converter_api.nominal_input_capacity }.to raise_error
+          expect { @c.converter_api.input_capacity }.to raise_error
         end
       end
 
-    end
-
-    describe '#effective_input_capacity' do
-
-      it "should calculate correctly when nominal_input_capacity is set" do
-        @c.with nominal_input_capacity: 100
-        @c.converter_api.effective_input_capacity.should == 100
-      end
-
-      it "should calculate correctly when nominal_input_capacity is zero" do
-        @c.with nominal_input_capacity: 0
-        @c.converter_api.effective_input_capacity.should == 0.0
-      end
-
-      it "should return zero when nominal_input capacity is zero" do
-        @c.with nominal_input_capacity: 0
-        @c.converter_api.effective_input_capacity.should == 0.0
-      end
     end
 
     describe '#total_cost' do
@@ -233,7 +215,7 @@ module Qernel
       it "should calculate when everything is set" do
         @c.with variable_operation_and_maintenance_costs_per_full_load_hour: 500, 
         variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 400,
-        effective_input_capacity: 2
+        input_capacity: 2
         @c.converter_api.send(:variable_operation_and_maintenance_costs_per_typical_input).should == 0.125
       end
       

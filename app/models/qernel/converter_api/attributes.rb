@@ -21,8 +21,7 @@ module Qernel
         :land_use_per_unit => ['', ''],
         :part_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
         :technical_lifetime => ['Technical lifetime', 'year'],
-        :typical_nominal_input_capacity => ['', 'MWinput'],
-        :typical_effective_input_capacity => ['', 'MWinput']
+        :typical_input_capacity => ['', 'MWinput']
       },
 
       :cost => {

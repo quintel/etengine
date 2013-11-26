@@ -36,7 +36,7 @@ module Qernel::Plugins::MeritOrder
         @converter_api.stub(:load_profile_key=){ true }
         @converter_api.stub(:variable_costs_per){ 1 }
         @converter_api.stub(:electricity_output_conversion){ 1 }
-        @converter_api.stub(:effective_input_capacity){ 1 }
+        @converter_api.stub(:input_capacity){ 1 }
         @converter_api.stub(:number_of_units){ 1 }
         @converter_api.stub(:availability){ 1 }
         @converter_api.stub(:fixed_costs){ 1 }
