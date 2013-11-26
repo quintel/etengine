@@ -444,7 +444,7 @@ If the scenario_id is missing then the controller will use the latest scenario.
         "groups": ["electricity_production", "central_production"],
         "data": {
             "operational": {
-                "typical_nominal_input_capacity": {
+                "input_capacity": {
                     "present": 162.60162601626,
                     "future": 162.60162601626
                 },

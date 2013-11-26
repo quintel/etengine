@@ -36,11 +36,10 @@ module Qernel
           :primary_demand_of_sustainable => {}
         },
         :technical => {
-          :nominal_input_capacity => {},
-          :electric_based_nominal_input_capacity => {label: '', unit: 'MWinput'},
-          :heat_based_nominal_input_capacity => {label: '', unit: 'MWinput'},
-          :cooling_based_nominal_input_capacity => {label: '', unit: 'MWinput'},
-          :nominal_input_capacity => {},
+          :input_capacity => {},
+          :electric_based_input_capacity => {label: '', unit: 'MWinput'},
+          :heat_based_input_capacity => {label: '', unit: 'MWinput'},
+          :cooling_based_input_capacity => {label: '', unit: 'MWinput'},
           :number_of_units => {}
         },
         :costs_per_plant => {
