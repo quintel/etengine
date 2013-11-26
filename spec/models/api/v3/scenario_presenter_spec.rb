@@ -23,25 +23,41 @@ describe Api::V3::ScenarioPresenter do
     end
   end
 
-  context 'when "detailed=false"' do
+  context 'when "detailed=false", "include_inputs=false"' do
     subject do
-      Api::V3::ScenarioPresenter.new(controller, scenario, false).as_json
+      Api::V3::ScenarioPresenter.new(controller, scenario).as_json
     end
 
     it_should_behave_like 'a scenario presenter'
 
     it { should_not have_key(:description) }
     it { should_not have_key(:use_fce) }
+    it { should_not have_key(:inputs) }
   end
 
   context 'when "detailed=true"' do
     subject do
-      Api::V3::ScenarioPresenter.new(controller, scenario, true).as_json
+      Api::V3::ScenarioPresenter.new(
+        controller, scenario, detailed: true).as_json
     end
 
     it_should_behave_like 'a scenario presenter'
 
     it { should include(use_fce:     scenario.use_fce) }
     it { should include(description: 'Hello!') }
+  end
+
+  context 'when "include_inputs=true"' do
+    subject do
+      Api::V3::ScenarioPresenter.new(
+        controller, scenario, include_inputs: true).as_json
+    end
+
+    it_should_behave_like 'a scenario presenter'
+
+    it 'should include the default input data' do
+      expect(subject).to have_key(:inputs)
+      expect(subject[:inputs].keys.sort).to eq(Input.all.map(&:key).sort)
+    end
   end
 end # Api::V3::ScenarioPresenter

@@ -28,6 +28,36 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       data.should_not have_key('use_fce')
       data.should_not have_key('description')
+      data.should_not have_key('inputs')
+    end
+
+    it 'should optionally include detailed params' do
+      expect do
+        post 'api/v3/scenarios', detailed: true
+      end.to change { Scenario.count }.by(1)
+
+      response.status.should eql(200)
+
+      data     = JSON.parse(response.body)
+      scenario = Scenario.last
+
+      data.should have_key('use_fce')
+      data.should have_key('description')
+
+      data.should_not have_key('inputs')
+    end
+
+    it 'should optionally include inputs' do
+      expect do
+        post 'api/v3/scenarios', include_inputs: true
+      end.to change { Scenario.count }.by(1)
+
+      response.status.should eql(200)
+
+      data     = JSON.parse(response.body)
+      scenario = Scenario.last
+
+      data.should have_key('inputs')
     end
 
     it 'should save custom end years' do
