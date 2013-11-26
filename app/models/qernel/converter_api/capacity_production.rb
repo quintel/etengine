@@ -13,7 +13,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_electricity_output_per_unit
     fetch_and_rescue(:nominal_capacity_electricity_output_per_unit) do
-      nominal_input_capacity * electricity_output_conversion
+      input_capacity * electricity_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_electricity_output_per_unit", 'MW'
@@ -22,7 +22,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_heat_output_per_unit
     fetch_and_rescue(:nominal_capacity_heat_output_per_unit) do
-      nominal_input_capacity * heat_output_conversion
+      input_capacity * heat_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_heat_output_per_unit", 'MW'
@@ -31,7 +31,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_cooling_output_per_unit
     fetch_and_rescue(:nominal_capacity_cooling_output_per_unit) do
-      nominal_input_capacity * cooling_output_conversion
+      input_capacity * cooling_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_cooling_output_per_unit", 'MW'
@@ -79,7 +79,7 @@ class Qernel::ConverterApi
 
   def typical_electricity_production_capacity
     fetch_and_rescue(:typical_electricity_production_capacity) do
-      electricity_output_conversion * nominal_input_capacity
+      electricity_output_conversion * input_capacity
     end
   end
   unit_for_calculation "typical_electricity_production_capacity", 'MW'
@@ -93,7 +93,7 @@ class Qernel::ConverterApi
 
   def installed_production_capacity_in_mw_electricity
     fetch_and_rescue(:installed_production_capacity_in_mw_electricity) do
-      electricity_output_conversion * nominal_input_capacity * number_of_units
+      electricity_output_conversion * input_capacity * number_of_units
     end
   end
   unit_for_calculation "installed_production_capacity_in_mw_electricity", 'MW'
@@ -129,8 +129,8 @@ class Qernel::ConverterApi
 
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
-    if nominal_input_capacity && number_of_units
-      heat_output_conversion * nominal_input_capacity * number_of_units
+    if input_capacity && number_of_units
+      heat_output_conversion * input_capacity * number_of_units
     end
   end
   unit_for_calculation "installed_production_capacity_in_mw_heat", 'MW'
@@ -146,8 +146,8 @@ class Qernel::ConverterApi
   unit_for_calculation "production_based_on_number_of_heat_units", 'MJ'
 
   def typical_heat_production_per_unit
-    if nominal_input_capacity
-      heat_output_conversion * nominal_input_capacity * full_load_seconds
+    if input_capacity
+      heat_output_conversion * input_capacity * full_load_seconds
     end
   end
   unit_for_calculation "typical_heat_production_per_unit", 'MJ'
