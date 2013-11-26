@@ -11,11 +11,11 @@ class Qernel::ConverterApi
     else
       fetch_and_rescue(:number_of_units) do
         # #to_i also checks if it is nil
-        if effective_input_capacity.nil? || effective_input_capacity.zero? ||
+        if input_capacity.nil? || input_capacity.zero? ||
               full_load_seconds.nil? || full_load_seconds.zero?
           0
         else
-          (demand || preset_demand) / (effective_input_capacity * full_load_seconds)
+          (demand || preset_demand) / (input_capacity * full_load_seconds)
         end
       end
     end

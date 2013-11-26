@@ -9,31 +9,11 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "mwh_input", 'MWh'
 
-  # The output of electricity expressed in MWh.
-  def mwh_electricy_output
-    fetch_and_rescue(:mwh_electricy_output) do
-      output_of_electricity / SECS_PER_HOUR
-    end
-  end
-  unit_for_calculation "mwh_electricy_output", 'MWh'
-
-  # Determines the average typical input capacity over its lifetime, accounting for the loss in nominal capacity over its lifetime.
-  #
-  # DEBT: this is the same as effective_input_capacity in cost.rb. Get rid of this one and the alias.
-  def typical_input_capacity_in_mw
-    fetch_and_rescue(:typical_input_capacity_in_mw) do
-      nominal_input_capacity
-    end
-  end
-  # TODO: get rid of the alias
-  unit_for_calculation "typical_input_capacity_in_mw", 'MW'
-  alias typical_input_capacity typical_input_capacity_in_mw
-
   ## Returns the nominal electrical capicity of one unit.
   #
   def nominal_capacity_electricity_output_per_unit
     fetch_and_rescue(:nominal_capacity_electricity_output_per_unit) do
-      nominal_input_capacity * electricity_output_conversion
+      input_capacity * electricity_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_electricity_output_per_unit", 'MW'
@@ -42,7 +22,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_heat_output_per_unit
     fetch_and_rescue(:nominal_capacity_heat_output_per_unit) do
-      nominal_input_capacity * heat_output_conversion
+      input_capacity * heat_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_heat_output_per_unit", 'MW'
@@ -51,7 +31,7 @@ class Qernel::ConverterApi
   #
   def nominal_capacity_cooling_output_per_unit
     fetch_and_rescue(:nominal_capacity_cooling_output_per_unit) do
-      nominal_input_capacity * cooling_output_conversion
+      input_capacity * cooling_output_conversion
     end
   end
   unit_for_calculation "nominal_capacity_cooling_output_per_unit", 'MW'
@@ -99,7 +79,7 @@ class Qernel::ConverterApi
 
   def typical_electricity_production_capacity
     fetch_and_rescue(:typical_electricity_production_capacity) do
-      electricity_output_conversion * typical_input_capacity
+      electricity_output_conversion * input_capacity
     end
   end
   unit_for_calculation "typical_electricity_production_capacity", 'MW'
@@ -111,15 +91,9 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "typical_electricity_production_per_unit", 'MJ'
 
-  # Removed typical_production, refactored to typical_production
-  # Added an alias untill the queries are altered
-  #
-  # DEBT: not used:
-  alias typical_production typical_electricity_production_per_unit
-
   def installed_production_capacity_in_mw_electricity
     fetch_and_rescue(:installed_production_capacity_in_mw_electricity) do
-      electricity_output_conversion * effective_input_capacity * number_of_units
+      electricity_output_conversion * input_capacity * number_of_units
     end
   end
   unit_for_calculation "installed_production_capacity_in_mw_electricity", 'MW'
@@ -151,13 +125,13 @@ class Qernel::ConverterApi
   alias_method :mw_input_capacity, :mw_power
   unit_for_calculation "mw_input_capacity", 'MW'
 
+  # Heat
+
   ###instead of heat_production_in_mw, check for NIL in sum function!
   def installed_production_capacity_in_mw_heat
-    return nil if [nominal_input_capacity, number_of_units].any?(&:nil?)
-    [
-      useable_heat_output_conversion,
-      steam_hot_water_output_conversion
-    ].compact.sum * nominal_input_capacity * number_of_units
+    if input_capacity && number_of_units
+      heat_output_conversion * input_capacity * number_of_units
+    end
   end
   unit_for_calculation "installed_production_capacity_in_mw_heat", 'MW'
   alias_method :heat_production_in_mw, :installed_production_capacity_in_mw_heat
@@ -165,17 +139,17 @@ class Qernel::ConverterApi
   # NOTE: disabled caching - Fri 29 Jul 2011 16:36:49 CEST
   #       - Fixed attributes_required_for and use handle_nil instead. SB - Thu 25. Aug 11
   def production_based_on_number_of_heat_units
-    return nil if [number_of_units, typical_heat_production_per_unit].any?(&:nil?)
-    number_of_units * typical_heat_production_per_unit
+    if number_of_units && typical_heat_production_per_unit
+      number_of_units * typical_heat_production_per_unit
+    end
   end
   unit_for_calculation "production_based_on_number_of_heat_units", 'MJ'
 
   def typical_heat_production_per_unit
-    return nil if typical_input_capacity.nil?
-    [
-      useable_heat_output_conversion,
-      steam_hot_water_output_conversion
-    ].compact.sum * typical_input_capacity * full_load_seconds
+    if input_capacity
+      heat_output_conversion * input_capacity * full_load_seconds
+    end
   end
   unit_for_calculation "typical_heat_production_per_unit", 'MJ'
+
 end
