@@ -21,12 +21,42 @@ module Qernel::RecursiveFactor::PrimaryDemand
     end.compact.sum
   end
 
-  # Primary demand of only a specific carrier.
+  # Primary demand of multiple carriers.
+
+  # Public: Calculates how much energy must be generated earlier in the graph -
+  # matching the given +carriers+ keys - in order to fulfil demand of this
+  # converter.
   #
-  def primary_demand_of_carrier(carrier_key)
-    factor = recursive_factor(:primary_demand_factor_of_carrier, nil, nil, carrier_key)
-    (self.demand || 0.0) * factor
+  # You may supply one or more carrier keys. If you want to determine the
+  # primary demand of multiple, related carriers, you MUST always call this
+  # method once with all of the carrier keys, rather than calling it once PER
+  # carrier and them summing the result. This is because multiple separate calls
+  # may traverse the same edges, causing energy to be counted many times.
+  #
+  # A good example of this is with gas, where you may specifiy:
+  #
+  #   primary_demand_of_carriers(:network_gas, :natural_gas)
+  #
+  # If you were to do this:
+  #
+  #   SUM(
+  #     primary_demand_of_carriers(:network_gas),
+  #     primary_demand_of_carriers(:natural_gas))
+  #
+  # ... the natural gas which SUPPLIES the network gas converters would be
+  # counted twice.
+  #
+  # Returns a numeric.
+  def primary_demand_of_carriers(*carriers)
+     if demand && ! demand.zero?
+       demand * recursive_factor(
+         :primary_demand_factor_of_carriers, nil, nil, carriers)
+     else
+       0.0
+     end
   end
+
+  alias_method :primary_demand_of_carrier, :primary_demand_of_carriers
 
   def primary_demand_with(factor_method, converter_share_method = nil)
     if converter_share_method
@@ -46,7 +76,6 @@ module Qernel::RecursiveFactor::PrimaryDemand
     # a converter that is final_demand_cbs?
     factor_for_primary_demand(link)
   end
-
 
   # Public: Calculates what proportion of a node's demand can be attributed to
   # the given +carrier_key+. Normally you can achieve this by looking at the
@@ -79,6 +108,30 @@ module Qernel::RecursiveFactor::PrimaryDemand
     if link.carrier.key == carrier_key
       # Phase 2; we have found a link of the desired carrier.
       if link.rgt_converter.input(carrier_key).nil? || primary_energy_demand?
+        # ... the supplier has no more links of this type, therefore we
+        # calculate the primary demand factor and do not traverse further.
+        #
+        # If factor_for_primary_demand returns zero, it is simply because the
+        # supply node is not in the primary_energy_demand group; however we
+        # don't want to ignore the node, but instead use its demand value.
+        factor = factor_for_primary_demand(link)
+        factor.zero? ? 1.0 : factor
+      else
+        # There are more +carrier_key+ links to be traversed...
+        nil
+      end
+    else
+      # Phase 1; we have yet to find a link of the desired carrier; continue
+      # traversing until we find one, or run out of links.
+      nil
+    end
+  end
+  def primary_demand_factor_of_carriers(link, carriers)
+    return nil unless link
+
+    if carriers.include?(link.carrier.key)
+      # Phase 2; we have found a link of the desired carrier.
+      if link.rgt_converter.inputs.none? { |slot| carriers.include?(slot.carrier.key) } || primary_energy_demand?
         # ... the supplier has no more links of this type, therefore we
         # calculate the primary demand factor and do not traverse further.
         #
