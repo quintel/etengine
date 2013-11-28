@@ -44,7 +44,7 @@ module Api
             json[:data][group_label][attr] = {
               :present => pres,
               :future => fut,
-              :unit => Qernel::ConverterApi.unit_for_calculation(attr) || opts[:unit],
+              :unit => opts[:unit] || Qernel::ConverterApi.unit_for_calculation(attr),
               :desc => opts[:label]
             }
           end
