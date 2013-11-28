@@ -21,8 +21,6 @@ module Qernel::RecursiveFactor::PrimaryDemand
     end.compact.sum
   end
 
-  # Primary demand of multiple carriers.
-
   # Public: Calculates how much energy must be generated earlier in the graph -
   # matching the given +carriers+ keys - in order to fulfil demand of this
   # converter.
