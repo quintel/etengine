@@ -77,4 +77,24 @@ describe Qernel::Converter, 'carrier primary demand' do
       expect(query('V(cpd_sink, primary_demand_of_biogas)')).to eql(0.3125)
     end
   end # called on a "middle" node
+
+  describe 'called with multiple carriers' do
+    let(:carriers) { %w( natural_gas network_gas greengas biogas ) }
+
+    let(:result) do
+      query("V(cpd_sink, primary_demand_of_carriers(#{ carriers.join(', ') }))")
+    end
+
+    it 'returns a numeric' do
+      expect(result).to be_a(Numeric)
+    end
+
+    it 'prevents double-counting demand' do
+      doubled = carriers.sum do |carrier_key|
+        query("V(cpd_sink, primary_demand_of_#{ carrier_key })")
+      end
+
+      expect(result < doubled).to be_true
+    end
+  end # called with multiple carriers
 end # Qernel::Converter, carrier primary demand
