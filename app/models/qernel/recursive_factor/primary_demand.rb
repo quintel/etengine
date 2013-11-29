@@ -96,40 +96,20 @@ module Qernel::RecursiveFactor::PrimaryDemand
   #
   # See: https://github.com/quintel/etengine/issues/647
   #
-  # link        - The link whose primary demand is to be calculated.
-  # carrier_key - The carrier name.
+  # link     - The link whose primary demand is to be calculated.
+  # carriers - The carrier for which you want to calculate the primary demand.
   #
   # Returns a numeric.
-  def primary_demand_factor_of_carrier(link, carrier_key)
-    return nil unless link
-
-    if link.carrier.key == carrier_key
-      # Phase 2; we have found a link of the desired carrier.
-      if link.rgt_converter.input(carrier_key).nil? || primary_energy_demand?
-        # ... the supplier has no more links of this type, therefore we
-        # calculate the primary demand factor and do not traverse further.
-        #
-        # If factor_for_primary_demand returns zero, it is simply because the
-        # supply node is not in the primary_energy_demand group; however we
-        # don't want to ignore the node, but instead use its demand value.
-        factor = factor_for_primary_demand(link)
-        factor.zero? ? 1.0 : factor
-      else
-        # There are more +carrier_key+ links to be traversed...
-        nil
-      end
-    else
-      # Phase 1; we have yet to find a link of the desired carrier; continue
-      # traversing until we find one, or run out of links.
-      nil
-    end
-  end
   def primary_demand_factor_of_carriers(link, carriers)
     return nil unless link
 
     if carriers.include?(link.carrier.key)
       # Phase 2; we have found a link of the desired carrier.
-      if link.rgt_converter.inputs.none? { |slot| carriers.include?(slot.carrier.key) } || primary_energy_demand?
+      dead_end = link.rgt_converter.inputs.none? do |slot|
+        carriers.include?(slot.carrier.key)
+      end
+
+      if dead_end || primary_energy_demand?
         # ... the supplier has no more links of this type, therefore we
         # calculate the primary demand factor and do not traverse further.
         #
