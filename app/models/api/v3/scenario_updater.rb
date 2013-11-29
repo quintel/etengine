@@ -189,7 +189,7 @@ module Api
               inputs.each { |input| balanced.delete(input.key) }
             end
 
-            if @data[:autobalance]
+            if @data[:autobalance] != 'false' && @data[:autobalance] != false
               subordinates = Hash.new
 
               each_group(provided_values) do |_, inputs|

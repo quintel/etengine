@@ -38,6 +38,11 @@ describe 'Updating inputs with API v3' do
     scenario.reload
   end
 
+  def nonbalanced_scenario(user_values = {}, params = {})
+    # put_scenario(user_values, params)
+    put_scenario(user_values, params.merge(autobalance: false))
+  end
+
   def autobalance_scenario(user_values = {}, params = {})
     put_scenario(user_values, params.merge(autobalance: true))
   end
@@ -59,7 +64,7 @@ describe 'Updating inputs with API v3' do
   context 'when autobalance=false,' do
     context 'providing a non-grouped single value' do
       before do
-        put_scenario(nongrouped: 50)
+        nonbalanced_scenario(nongrouped: 50)
       end
 
       it 'responds 200 OK' do
@@ -99,7 +104,7 @@ describe 'Updating inputs with API v3' do
 
         scenario.save!
 
-        put_scenario(balanced_one: 100)
+        nonbalanced_scenario(balanced_one: 100)
       end
 
       it 'responds 200 OK' do
@@ -120,7 +125,7 @@ describe 'Updating inputs with API v3' do
 
     context 'providing an unbalanced single value' do
       before do
-        put_scenario(balanced_one: 50)
+        nonbalanced_scenario(balanced_one: 50)
       end
 
       it 'responds 422 Unprocessable Entity' do
@@ -145,7 +150,7 @@ describe 'Updating inputs with API v3' do
 
         scenario.save!
 
-        put_scenario(balanced_one: 45, balanced_two: 55)
+        nonbalanced_scenario(balanced_one: 45, balanced_two: 55)
       end
 
       it 'responds 200 OK' do
@@ -167,7 +172,7 @@ describe 'Updating inputs with API v3' do
 
     context 'providing a non-balancing single value' do
       before do
-        put_scenario(balanced_one: 99)
+        nonbalanced_scenario(balanced_one: 99)
       end
 
       it 'responds 422 Unprocessable Entity' do
@@ -193,7 +198,7 @@ describe 'Updating inputs with API v3' do
 
           scenario.save!
 
-          put_scenario(balanced_one: 'reset')
+          nonbalanced_scenario(balanced_one: 'reset')
         end
 
         it 'responds 422 Unprocessable Entity' do
@@ -219,7 +224,7 @@ describe 'Updating inputs with API v3' do
 
           scenario.save!
 
-          put_scenario(balanced_one: 'reset')
+          nonbalanced_scenario(balanced_one: 'reset')
         end
 
         it 'responds 200 OK' do
@@ -240,7 +245,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when performing a scenario-level reset' do
       before do
-        put_scenario({}, reset: true)
+        nonbalanced_scenario({}, reset: true)
       end
 
       it 'responds 200 OK' do
