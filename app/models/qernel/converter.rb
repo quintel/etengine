@@ -64,6 +64,7 @@ class Converter
 
   include Qernel::RecursiveFactor::Base
   include Qernel::RecursiveFactor::PrimaryDemand
+  include Qernel::RecursiveFactor::DependentSupply
   include Qernel::RecursiveFactor::FinalDemand
   include Qernel::RecursiveFactor::PrimaryCo2
   include Qernel::RecursiveFactor::WeightedCarrier
