@@ -308,6 +308,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   context 'Updating grouped inputs without the balancer' do
     context 'when the group adds up' do
       let(:params) { {
+        autobalance: false,
         scenario: { user_values: {
           'grouped_input_one' => '75.0',
           'grouped_input_two' => '25.0'
@@ -327,6 +328,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     context 'when the input has been previously balanced' do
       let(:params) { {
+        autobalance: false,
         scenario: { user_values: { 'grouped_input_one' => '100.0' } }
       } }
 
@@ -351,6 +353,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     context 'when related inputs have been previously balanced' do
       let(:params) { {
+        autobalance: false,
         scenario: { user_values: { 'grouped_input_one' => '100.0' } }
       } }
 
@@ -375,6 +378,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     context 'when the group does not add up' do
       let(:params) { {
+        autobalance: false,
         scenario: { user_values: {
           'grouped_input_one' => '75.0',
           'grouped_input_two' => '10.0'
