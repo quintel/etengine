@@ -76,7 +76,7 @@ class Gquery
   # sanitize query string. removes gquery related stuff
   # like future/present: gql modifier strings.
   def self.convert_to_rubel!(string)
-    string.gsub!(/[\n\t]/, '')
+    string.gsub!(/[\n\s\t]/, '')
     string.gsub!(/^[a-z]+\:/,'')
     string
   end
