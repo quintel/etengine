@@ -9,7 +9,7 @@ module ApplicationHelper
       <param name="allowScriptAccess" value="always" />
       <param name="quality" value="high" />
       <param name="scale" value="noscale" />
-      <param NAME="FlashVars" value="text=#{text}">
+      <param NAME="FlashVars" value="text=#{h(text)}">
       <param name="bgcolor" value="#{bgcolor}">
       <embed src="/clippy.swf"
              width="110"
@@ -19,7 +19,7 @@ module ApplicationHelper
              allowScriptAccess="always"
              type="application/x-shockwave-flash"
              pluginspage="http://www.macromedia.com/go/getflashplayer"
-             FlashVars="text=#{text}"
+             FlashVars="text=#{h(text)}"
              bgcolor="#{bgcolor}"
       />
       </object>
