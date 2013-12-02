@@ -130,12 +130,12 @@ GEM
     columnize (0.3.6)
     dalli (2.6.3)
     debug_inspector (0.0.2)
-    debugger (1.6.1)
+    debugger (1.6.3)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.3)
+      debugger-ruby_core_source (~> 1.2.4)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.3)
+    debugger-ruby_core_source (1.2.4)
     default_value_for (2.0.2)
     descendants_tracker (0.0.3)
     diff-lcs (1.2.4)
@@ -173,7 +173,7 @@ GEM
       activesupport (>= 3.0.0)
       railties (>= 3.0.0)
     kgio (2.8.0)
-    libv8 (3.11.8.17)
+    libv8 (3.16.14.3)
     listen (1.0.3)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
@@ -249,7 +249,7 @@ GEM
     rdiscount (2.0.7.3)
     rdoc (3.12.2)
       json (~> 1.4)
-    ref (1.0.4)
+    ref (1.0.5)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rmagick (2.13.2)
@@ -295,8 +295,8 @@ GEM
     term-ansicolor (1.0.7)
     terminal-table (1.4.5)
     text-table (1.2.3)
-    therubyracer (0.11.4)
-      libv8 (~> 3.11.8.12)
+    therubyracer (0.12.0)
+      libv8 (~> 3.16.14.0)
       ref
     thor (0.18.1)
     tilt (1.4.0)
@@ -350,7 +350,7 @@ DEPENDENCIES
   jquery-rails (~> 2.0.2)
   json (~> 1.8.1)
   kaminari (~> 0.13.0)
-  libv8 (~> 3.11.8)
+  libv8 (>= 3.16.14.3)
   listen
   merit (>= 0.1.0)!
   msgpack
@@ -379,7 +379,7 @@ DEPENDENCIES
   simplecov (~> 0.7.1)
   term-ansicolor (= 1.0.7)
   text-table
-  therubyracer (~> 0.11.4)
+  therubyracer (>= 0.12.0)
   turbine-graph (>= 0.1)
   unicorn
   watchr
