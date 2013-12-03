@@ -11,10 +11,7 @@ module Api
       #
       def index
         extras = params[:include_extras]
-
-        render json: (Input.all.each_with_object(Hash.new) do |input, data|
-          data[input.key] = InputPresenter.new(input, @scenario, extras)
-        end)
+        render json: InputPresenter.collection(Input.all, @scenario, extras)
       end
 
       # GET /api/v3/inputs/:id

@@ -1,6 +1,21 @@
 module Api
   module V3
     class InputPresenter
+      # Given an array of inputs, returns JSON for all of them.
+      #
+      # @param [Array<Input>] inputs
+      #   The input for which we want JSON.
+      # @param [Scenario] scenario
+      #   The scenario whose values are being rendered.
+      # @param [true, false] extras
+      #   Do you want the extra attributes (key, unit, step) to be included in
+      #   the output?
+      def self.collection(inputs, scenario, extras = false)
+        inputs.each_with_object(Hash.new) do |input, data|
+          data[input.key] = InputPresenter.new(input, scenario, extras)
+        end
+      end
+
       # Creates a new Input API presenter.
       #
       # @param [Input] input
