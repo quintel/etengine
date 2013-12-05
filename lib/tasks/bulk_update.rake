@@ -167,51 +167,6 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
       
-      # Get the old slider settings
-      A = inputs[:number_of_energy_power_ultra_supercritical_coal] || INPUT_DEFAULTS[:number_of_energy_power_ultra_supercritical_coal]
-      B = inputs[:number_of_energy_chp_ultra_supercritical_coal] || INPUT_DEFAULTS[:number_of_energy_chp_ultra_supercritical_coal]
-      C = inputs[:co_firing_wood_pellets_share] || 12.0
-
-      # Calculate the values for the new slider settings
-      D = A * (1.0 - 2.0 * C / 100.0)   # new setting for number_of_energy_power_ultra_supercritical_coal
-      E = B * (1.0 - 2.0 * C / 100.0)   # new setting for number_of_energy_chp_ultra_supercritical_coal
-      F = 2.0 * A * C / 100.0           # setting for new slider energy_power_ultra_supercritical_cofiring_coal
-      G = 2.0 * B * C / 100.0           # setting for new slider energy_chp_ultra_supercritical_cofiring_coal
-
-      # for info only
-      puts "Cofiring coal share: #{C}"
-
-      inputs[:number_of_energy_power_ultra_supercritical_coal] = D
-      puts "Number of pulverized coal plants: #{A} => #{D}"
-     
-      inputs[:number_of_energy_chp_ultra_supercritical_coal] = E
-      puts "Number of coal plants for district heat: #{B} => #{E}"
-
-      inputs[:number_of_energy_power_ultra_supercritical_cofiring_coal] = F
-      puts "Number of pulverized coal plants with co-firing: 0.0 => #{F}"
-
-      inputs[:number_of_energy_chp_ultra_supercritical_cofiring_coal] = G
-      puts "Number of co-firing coal plants for district heat: 0.0 => #{G}"
-
-      # Balance the share group of co-fring 
-
-      A = inputs[:co_firing_biocoal_share] || INPUT_DEFAULTS[:co_firing_biocoal_share]
-      B = inputs[:co_firing_coal_share] || INPUT_DEFAULTS[:co_firing_coal_share]
-      sum = (A + B) / 100.0
-
-      puts "BEFORE: Sum of coal and biocoal is: #{100 * sum}"
-
-      inputs[:co_firing_biocoal_share] = A / sum
-      inputs[:co_firing_coal_share] = B / sum
-
-      puts "AFTER: Sum of coal and biocoal is: #{inputs[:co_firing_biocoal_share] + inputs[:co_firing_coal_share]}"
-
-      #rename households_useful_demand_cooking in households_useful_demand_cooking_per_person
-
-      inputs[:households_useful_demand_cooking_per_person] = inputs[:households_useful_demand_cooking]
-      inputs.delete(:households_useful_demand_cooking)
-
-      puts "Renamed households_useful_demand_cooking_per_person to households_useful_demand_cooking."
 
 
       ######################  CHECKS ##########################
