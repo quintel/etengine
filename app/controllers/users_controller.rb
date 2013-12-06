@@ -14,18 +14,26 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update_attributes(params[:user])
-      if current_user.try(:admin?)
-        @user.role_id = params[:user][:role_id] and @user.save
-      end
-      flash[:notice] = 'User updated'
+    @user.attributes = user_attributes
+
+    if current_user && current_user.admin?
+      @user.role_id = params[:user][:role_id]
     end
-    render :edit
+
+    if @user.save
+      redirect_to user_path(@user), notice: 'User updated'
+    else
+      render :edit
+    end
   end
 
   def create
-    @user = User.new(params[:user])
-    @user.role_id = params[:user][:role_id] if current_user.try(:admin?)
+    @user = User.new(user_attributes)
+
+    if current_user && current_user.admin?
+      @user.role_id = params[:user][:role_id]
+    end
+
     if @user.save
       redirect_to users_path, :notice => 'User added'
     else
@@ -38,9 +46,18 @@ class UsersController < ApplicationController
     redirect_to users_path, :notice => 'User deleted'
   end
 
+  #######
   private
+  #######
 
-    def find_user
-      @user = User.find(params[:id])
-    end
+  def find_user
+    @user = User.find(params[:id])
+  end
+
+  def user_attributes
+    params.require(:user).permit(
+      :company_school, :email, :group, :heared_first_at, :name,
+      :phone_number, :send_score, :trackable
+    )
+  end
 end

@@ -1,0 +1,7 @@
+Etm::Application.config.secret_token =
+  '237f87e1e992eae492e8eb3de2157da4d3141c74f3918060cba89e8fdd39a1459' \
+  '90041ced83ffb5a96212399ff12b853157a4df9a0bdc71833130'
+
+Etm::Application.config.secret_key_base =
+  '42562fe69aa481c7ccf4c8551079a19353b1aff5509be1507d886e19492dd739' \
+  '2d9492609ecc9b3db19ae3b276e4aa5079d7929a10244ca2c9cdd92f03eea624'

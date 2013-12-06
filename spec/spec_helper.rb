@@ -17,7 +17,6 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun' # Required for Rcov to run.
 
-require 'webrat'
 require 'authlogic/test_case'
 require 'factory_girl'
 
@@ -53,7 +52,6 @@ RSpec.configure do |config|
   # Allow adding examples to a filter group with only a symbol.
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
-  config.include(Webrat::Matchers)
   config.include(Authlogic::TestCase)
   config.include(EtmAuthHelper)
   config.include(MechanicalTurkHelper)

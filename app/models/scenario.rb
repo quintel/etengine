@@ -44,33 +44,31 @@ class Scenario < ActiveRecord::Base
   validates :area_code, :inclusion => {:in => Etsource::Dataset.region_codes}
   validates :end_year, :numericality => true
 
-  scope :in_start_menu, where(:in_start_menu => true)
-  scope :by_name,       lambda{|q| where("title LIKE ?", "%#{q}%")}
-  scope :by_id,         lambda{|q| where(id: q)}
+  scope :in_start_menu, ->    { where(:in_start_menu => true) }
+  scope :by_name,       ->(q) { where("title LIKE ?", "%#{q}%")}
+  scope :by_id,         ->(q) { where(id: q)}
+
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
-  scope :expired,       lambda { where(['updated_at < ?', Date.today - 14]) }
-  scope :recent,        order("created_at DESC").limit(30)
-  scope :recent_first,  order('created_at DESC')
+  scope :expired,       -> { where(['updated_at < ?', Date.today - 14]) }
+  scope :recent,        -> { order("created_at DESC").limit(30) }
+  scope :recent_first,  -> { order('created_at DESC') }
 
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
-  scope :deletable, where(%q[
-    in_start_menu IS NULL
-    AND protected IS NULL
-    AND title = "API"
-    AND author IS NULL
-    AND user_id IS NULL
-    AND (
-      user_values IS NULL
-      OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
-    )
-    AND updated_at < ?
-  ], Date.today - 5)
-
-  attr_accessible :author, :title, :description, :user_values,
-    :balanced_values, :end_year, :area_code, :country, :region,
-    :in_start_menu, :user_id, :preset_scenario_id, :use_fce, :protected,
-    :scenario_id, :source, :user_values_as_yaml, :created_at
+  scope(:deletable, lambda do
+    where(%q[
+        in_start_menu IS NULL
+        AND protected IS NULL
+        AND title = "API"
+        AND author IS NULL
+        AND user_id IS NULL
+        AND (
+          user_values IS NULL
+          OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
+        )
+        AND updated_at < ?
+      ], Date.today - 5)
+  end)
 
   attr_accessor :input_errors, :ordering, :display_group
 
