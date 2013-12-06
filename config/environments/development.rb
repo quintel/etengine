@@ -14,7 +14,7 @@ Etm::Application.configure do
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
 
-  config.cache_store = :memory_store, { size: 512.megabytes }
+  config.cache_store = :memory_store, { size: 512 * (1024 ** 3) } # 512 Mb
   # config.cache_store = :dalli_store
   # config.cache_store = :file_store, '/tmp/cache'
 
