@@ -72,7 +72,7 @@ module Api
           params[:scenario][:user_values] = inputs
         end
 
-        attrs = Scenario.default_attributes.merge(params[:scenario] || {})
+        attrs = Scenario.default_attributes.merge(scenario_attributes || {})
 
         if attrs.key?(:scenario_id) || attrs.key?(:preset_scenario_id)
           # If user_values is assigned after the preset ID, we would wipe out
@@ -128,8 +128,9 @@ module Api
       # }
       #
       def update
-        updater   = ScenarioUpdater.new(@scenario, params)
-        presenter = nil
+        updater_attrs = params.merge(scenario: scenario_attributes)
+        updater       = ScenarioUpdater.new(@scenario, updater_attrs)
+        presenter     = nil
 
         Scenario.transaction do
           updater.apply
@@ -164,18 +165,17 @@ module Api
           render :json => {:errors => [e.to_s]}, :status => 500 and return
         end
 
-        out = Jbuilder.encode do |json|
+        json =
           if result.respond_to?(:present_year)
-            json.present_year result.present_year
-            json.present_value result.present_value.inspect
-            json.future_year result.future_year
-            json.future_value result.future_value.inspect
+            { present_year:  result.present_year,
+              present_value: result.present_value,
+              future_year:   result.future_year,
+              future_value:  result.future_value }
           else
-            json.result result
+            { result: result }
           end
-        end
 
-        render :json => out
+        render json: json
       end
 
       private
@@ -190,6 +190,17 @@ module Api
         @scenario = Scenario.find params[:id]
       rescue ActiveRecord::RecordNotFound
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
+      end
+
+      # Internal: Cleaned up attributes for creating and updating scenarios.
+      #
+      # Returns a hash.
+      def scenario_attributes
+        (params[:scenario] || {}).slice(
+          :author, :title, :description, :user_values, :end_year, :area_code,
+          :country, :region, :preset_scenario_id, :use_fce, :protected,
+          :scenario_id, :source, :user_values
+        )
       end
 
     end

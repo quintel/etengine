@@ -97,7 +97,7 @@ describe Scenario do
   describe "#used_groups_add_up?" do
     before do
       @scenario = Scenario.default
-      Input.stub!(:inputs_grouped).and_return({
+      Input.stub(:inputs_grouped).and_return({
         'share_group' => [
           mock_model(Input, :id => 1, :key => 'element_1', :share_group => 'share_group'),
           mock_model(Input, :id => 2, :key => 'element_2', :share_group => 'share_group'),

@@ -1,14 +1,14 @@
 Etm::Application.routes.draw do
   root :to => 'pages#index'
 
-  match 'login'  => 'user_sessions#new',     :as => :login
-  match 'logout' => 'user_sessions#destroy', :as => :logout
+  get 'login'  => 'user_sessions#new',     :as => :login
+  get 'logout' => 'user_sessions#destroy', :as => :logout
 
   resources :user_sessions
 
   # Frontend
   resources :users, :except => :show
-  match '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
+  get '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
 
   namespace :api do
     namespace :v3 do
@@ -41,19 +41,14 @@ Etm::Application.routes.draw do
   end
 
   namespace :data do
-    root :to => "pages#index", :api_scenario_id => 'latest'
-
-    match '/redirect'    => "base#redirect", :as => 'redirect'
-    match '/restart'     => 'pages#restart', :as => 'restart'
-    match '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
+    get '/redirect'    => "base#redirect", :as => 'redirect'
+    get '/restart'     => 'pages#restart', :as => 'restart'
+    get '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     scope '/:api_scenario_id' do
-      # Hanlde paths from previous routes.
-      scope "/nl" do
-        match "*path" => "pages#url_changed"
-      end
+      root :to => "pages#index", :api_scenario_id => 'latest'
 
-      root :to => "pages#index"
+      get '', to: 'pages#index'
 
       # The Graphviz
       resource :layout, :except => [:new, :index, :create, :destroy]
@@ -80,23 +75,23 @@ Etm::Application.routes.draw do
         put :fix, :on => :member
       end
 
-      match '/share_groups' => 'share_groups#index'
+      get '/share_groups' => 'share_groups#index'
 
-      match '/checks/:action' => 'checks'
+      get '/checks/:action' => 'checks'
 
-      match '/debug/merit_order' => 'debug#merit_order'
-      match '/debug/calculation' => 'debug#calculation'
-      match '/debug/gquery' => 'debug#gquery', :as => :debug_gql
+      get '/debug/merit_order' => 'debug#merit_order'
+      get '/debug/calculation' => 'debug#calculation'
+      get '/debug/gquery' => 'debug#gquery', :as => :debug_gql
 
-      match '/gql' => "gql#index"
-      match '/gql/search' => "gql#search", :as => :gql_search
-      match '/gql/log' => "gql#log", :as => :gql_log
-      match '/gql/warnings' => "gql#warnings", :as => :gql_warnings
+      get '/gql' => "gql#index"
+      get '/gql/search' => "gql#search", :as => :gql_search
+      get '/gql/log' => "gql#log", :as => :gql_log
+      get '/gql/warnings' => "gql#warnings", :as => :gql_warnings
 
-      match '/merit' => 'merit#index'
-      match '/merit/download' => 'merit#download', as: :merit_download
+      get '/merit' => 'merit#index'
+      get '/merit/download' => 'merit#download', as: :merit_download
 
-      match 'search' => 'search#index', :as => :search
+      get 'search' => 'search#index', :as => :search
     end
   end
 

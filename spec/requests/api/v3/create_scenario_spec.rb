@@ -120,7 +120,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       scenario = Scenario.find(json['id'])
 
       scenario.user_values.should_not be_blank
-      scenario.user_values.should eql(Preset.all.first.user_values)
+
+      scenario.user_values.should eql(
+        Preset.all.first.user_values.stringify_keys)
     end
   end
 
