@@ -10,14 +10,21 @@ module Etsource
   #   Etsource::Reloader.start!
   #
   class Reloader
+    DIRS = %w( carriers datasets edges gqueries inputs nodes presets )
+
     class << self
       def start!
         return true if @listener
 
-        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s)
-        @listener.filter(%r{(?:data|datasets|presets)/.*})
-        @listener.change { |*| reload! }
-        @listener.start(false)
+        watched_dirs = DIRS.map(&Regexp.method(:escape)).join('|')
+
+        Rails.logger.info('-' * 100)
+        Rails.logger.info(watched_dirs)
+        Rails.logger.info('-' * 100)
+
+        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s) { |*| reload! }
+        @listener.only(%r{(?:#{ watched_dirs })/.*})
+        @listener.start
 
         Rails.logger.info 'ETsource live reload: Listener started.'
 
