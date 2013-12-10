@@ -10,7 +10,7 @@ describe UsersController do
     end
 
     it "should work for admins" do
-      login_as admin
+      sign_in(admin)
       get :index
       response.should be_success
       response.should render_template(:index)
@@ -24,7 +24,7 @@ describe UsersController do
     end
 
     it "should work for admins" do
-      login_as admin
+      sign_in(admin)
       get :edit, :id => admin.id
       expect(response).to be_success
       expect(assigns(:user)).to eq(admin)

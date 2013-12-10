@@ -1,9 +1,9 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-gem 'rails',        '3.2.13'
+gem 'rails',        '~> 4.0.2'
 gem 'jquery-rails', '~> 2.0.2'
-gem 'haml',         '~>3.1.4'
+gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
 
 gem 'gravatar_image_tag'
@@ -16,20 +16,19 @@ gem 'osmosis',                github: 'quintel/osmosis'
 
 # Rails gem
 gem 'simple_form'
-gem 'authlogic'
+gem 'devise'
 gem 'cancan'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'default_value_for'
-gem 'kaminari',          '~> 0.13.0'
-gem 'jbuilder',                       git: 'git://github.com/rails/jbuilder.git'
+gem 'kaminari'
 
 # API
 gem 'rest-client'
 
 # for etsource
 gem 'git',                            git: 'git://github.com/bradhe/ruby-git.git'
-gem 'activerecord-import', '~> 0.2.9'
+gem 'activerecord-import'
 gem 'fnv'
 gem 'ruby-progressbar'
 gem 'msgpack'
@@ -39,7 +38,7 @@ gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
 gem 'merit',         '>=0.1.0',        git:     'git@github.com:quintel/merit.git'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
 gem 'refinery',      ref: 'a0dcae9',   git:     'git@github.com:quintel/refinery.git'
-gem 'atlas',         ref: '03209a2',   git:     'git@github.com:quintel/atlas.git'
+gem 'atlas',         ref: 'b9a8a27',   git:     'git@github.com:quintel/atlas.git'
 
 # system gems
 gem 'mysql2',         '~>0.3.11'
@@ -81,7 +80,6 @@ end
 group :test do
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
-  gem 'webrat'
   gem 'simplecov', '~> 0.7.1', require: false
 end
 
@@ -95,8 +93,8 @@ group :production do
 end
 
 group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
+  gem 'sass-rails'
   gem 'therubyracer', '>= 0.12.0'
   gem 'libv8',        '>= 3.16.14.3'
-  gem 'coffee-rails', '~> 3.2.1'
+  gem 'coffee-rails'
 end

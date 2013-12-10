@@ -83,7 +83,7 @@ describe Input do
 
       # Bad, bad, bad! I hate stubbing; it's so fragile.
       Etsource::Loader.instance.
-        should_receive(:area_attributes).any_number_of_times.
+        should_receive(:area_attributes).at_least(:once).
         with(scenario.area_code).
         and_return(:input_values => area_input_values)
     end

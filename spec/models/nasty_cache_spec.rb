@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+# Reopening NastyCache below appears to prevent Rails 4 from loading the file in
+# app/models; so we do it manually.
+require 'app/models/nasty_cache'
+
 class NastyCache
   # used to simulate two different server process
   def self.new_process
@@ -12,11 +16,13 @@ describe NastyCache do
     @cache = NastyCache.instance
     @cache.set("to_be_expired", "foo")
   }
-    
+
   describe "SingleTon" do
-    a = NastyCache.instance
-    b = NastyCache.instance
-    a.should == b
+    it 'is the same instance every time' do
+      a = NastyCache.instance
+      b = NastyCache.instance
+      a.should == b
+    end
   end
 
   specify { @cache.get("new_key").should be_nil }
