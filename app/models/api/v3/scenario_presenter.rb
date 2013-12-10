@@ -28,7 +28,6 @@ module Api
       #
       def as_json(*)
         json = super
-
         json[:source]     = @resource.source
         json[:template]   = @resource.preset_scenario_id
         json[:created_at] = @resource.created_at

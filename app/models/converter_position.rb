@@ -41,7 +41,7 @@ class ConverterPosition < ActiveRecord::Base
     :neighbor     => '#87CEEB'
   }.with_indifferent_access
 
-  scope :not_hidden, where(:hidden => false)
+  scope :not_hidden, -> { where(:hidden => false) }
 
   def self.default_position_for(converter)
     position = new

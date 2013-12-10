@@ -9,22 +9,22 @@
 # from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
-# It's strongly recommended to check this file into your version control system.
+# It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131024134222) do
+ActiveRecord::Schema.define(version: 20131209134003) do
 
-  create_table "converter_positions", :force => true do |t|
+  create_table "converter_positions", force: true do |t|
     t.integer  "x"
     t.integer  "y"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "hidden"
-    t.string   "converter_key", :null => false
+    t.string   "converter_key", null: false
   end
 
-  add_index "converter_positions", ["converter_key"], :name => "index_converter_positions_on_converter_key", :unique => true
+  add_index "converter_positions", ["converter_key"], name: "index_converter_positions_on_converter_key", unique: true, using: :btree
 
-  create_table "fce_values", :force => true do |t|
+  create_table "fce_values", force: true do |t|
     t.string   "using_country"
     t.string   "origin_country"
     t.float    "co2_exploration_per_mj"
@@ -38,14 +38,14 @@ ActiveRecord::Schema.define(:version => 20131024134222) do
     t.string   "carrier"
   end
 
-  create_table "gquery_groups", :force => true do |t|
+  create_table "gquery_groups", force: true do |t|
     t.string   "group_key"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "description"
   end
 
-  create_table "query_table_cells", :force => true do |t|
+  create_table "query_table_cells", force: true do |t|
     t.integer  "query_table_id"
     t.integer  "row"
     t.integer  "column"
@@ -55,9 +55,9 @@ ActiveRecord::Schema.define(:version => 20131024134222) do
     t.datetime "updated_at"
   end
 
-  add_index "query_table_cells", ["query_table_id"], :name => "index_query_table_cells_on_query_table_id"
+  add_index "query_table_cells", ["query_table_id"], name: "index_query_table_cells_on_query_table_id", using: :btree
 
-  create_table "query_tables", :force => true do |t|
+  create_table "query_tables", force: true do |t|
     t.string   "name"
     t.text     "description"
     t.integer  "row_count"
@@ -66,59 +66,59 @@ ActiveRecord::Schema.define(:version => 20131024134222) do
     t.datetime "updated_at"
   end
 
-  create_table "roles", :force => true do |t|
+  create_table "roles", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "scenarios", :force => true do |t|
+  create_table "scenarios", force: true do |t|
     t.string   "author"
     t.string   "title"
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "user_values"
-    t.integer  "end_year",                        :default => 2040
+    t.integer  "end_year",                     default: 2040
     t.boolean  "in_start_menu"
     t.integer  "user_id"
     t.integer  "preset_scenario_id"
     t.boolean  "use_fce"
     t.datetime "present_updated_at"
-    t.integer  "protected",          :limit => 1
+    t.integer  "protected",          limit: 1
     t.string   "area_code"
     t.string   "source"
     t.text     "balanced_values"
   end
 
-  create_table "users", :force => true do |t|
-    t.string   "name",                                  :null => false
-    t.string   "email",                                 :null => false
+  create_table "users", force: true do |t|
+    t.string   "name",                                   null: false
+    t.string   "email",                                  null: false
     t.string   "company_school"
-    t.boolean  "allow_news",         :default => true
-    t.string   "heared_first_at",    :default => ".."
-    t.string   "crypted_password"
+    t.boolean  "allow_news",             default: true
+    t.string   "heared_first_at",        default: ".."
     t.string   "password_salt"
-    t.string   "persistence_token",                     :null => false
-    t.string   "perishable_token",                      :null => false
-    t.integer  "login_count",        :default => 0,     :null => false
-    t.integer  "failed_login_count", :default => 0,     :null => false
-    t.datetime "last_request_at"
-    t.datetime "current_login_at"
-    t.datetime "last_login_at"
-    t.string   "current_login_ip"
-    t.string   "last_login_ip"
     t.integer  "role_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "openid_identifier"
     t.string   "phone_number"
     t.string   "group"
-    t.string   "trackable",          :default => "0"
-    t.boolean  "send_score",         :default => false
+    t.string   "trackable",              default: "0"
+    t.boolean  "send_score",             default: false
     t.boolean  "new_round"
+    t.string   "old_crypted_password"
+    t.string   "encrypted_password",     default: "",    null: false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          default: 0,     null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
   end
 
-  add_index "users", ["trackable"], :name => "index_users_on_trackable"
+  add_index "users", ["trackable"], name: "index_users_on_trackable", using: :btree
 
 end

@@ -372,8 +372,7 @@ describe 'Balancer' do
       let(:masters) { [ 89.889999999999999999999999 ] }
 
       it 'should not raise a CannotBalance error' do
-        expect { subordinates }.to_not \
-          raise_error(Balancer::CannotBalance, /could not balance/i)
+        expect { subordinates }.to_not raise_error
       end
     end
 
@@ -381,8 +380,7 @@ describe 'Balancer' do
       let(:masters) { [ 89.99999999999999999999 ] }
 
       it 'should not raise a CannotBalance error' do
-        expect { subordinates }.to_not \
-          raise_error(Balancer::CannotBalance, /could not balance/i)
+        expect { subordinates }.to_not raise_error
       end
     end
 
@@ -390,8 +388,7 @@ describe 'Balancer' do
       let(:masters) { [ 99.0 ] }
 
       it 'should not raise a CannotBalance error' do
-        expect { subordinates }.to_not \
-          raise_error(Balancer::CannotBalance, /could not balance/i)
+        expect { subordinates }.to_not raise_error
       end
     end
   end # With irregular values.

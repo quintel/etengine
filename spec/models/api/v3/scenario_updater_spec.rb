@@ -69,7 +69,6 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     before do
       scenario.update_attributes!(
         use_fce: true,
-        autobalance: true,
         user_values: { 'foo_demand' => 1.0 })
     end
 

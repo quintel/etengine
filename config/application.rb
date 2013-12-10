@@ -27,6 +27,7 @@ module Etm
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
+    config.i18n.enforce_available_locales = true
 
     ## Pseudo-modules
     # I packaged some classes/files separate folders
@@ -38,7 +39,6 @@ module Etm
 
     config.active_support.deprecation = :log
 
-    config.secret_token = '237f87e1e992eae492e8eb3de2157da4d3141c74f3918060cba89e8fdd39a145990041ced83ffb5a96212399ff12b853157a4df9a0bdc71833130'
     config.encoding = "utf-8"
 
     config.filter_parameters << :password

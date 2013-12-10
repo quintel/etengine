@@ -4,7 +4,7 @@ describe Data::AreasController do
   let(:admin) { FactoryGirl.create :admin }
 
   before do
-    login_as(admin)
+    sign_in(admin)
     FactoryGirl.create :scenario
   end
 
