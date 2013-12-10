@@ -7,7 +7,7 @@ module Api
         @converters = @gql.present_graph.converters
         @positions = {}
 
-        ConverterPosition.not_hidden.each do |pos|
+        ConverterPosition.all.each do |pos|
           @positions[pos.converter_key] = pos
         end
       end
