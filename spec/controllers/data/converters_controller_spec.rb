@@ -4,7 +4,7 @@ describe Data::ConvertersController do
   let!(:admin) { FactoryGirl.create(:admin) }
 
   before do
-    login_as(admin)
+    sign_in(admin)
     FactoryGirl.create :scenario
   end
 
