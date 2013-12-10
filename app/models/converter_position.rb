@@ -24,8 +24,6 @@ class ConverterPosition
     :neighbor     => '#87CEEB'
   }.with_indifferent_access
 
-  scope :not_hidden, -> { where(:hidden => false) }
-
   attr_reader :key, :x, :y
 
   def initialize(attr)
