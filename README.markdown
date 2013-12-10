@@ -8,6 +8,8 @@ It is an online web app that lets you create a future energy scenario for
 various countries.  This software is [Open Source](LICENSE.txt), so you can
 fork it and alter at your will.
 
+https://semaphoreapp.com/api/v1/projects/f64502fb2273b9a2c16b383cb2ff5b993911d751/45790/shields_badge.png
+
 ## License
 
 The ETE is released under the [MIT License](LICENSE.txt).
