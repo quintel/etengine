@@ -31,6 +31,11 @@
 #
 
 class User < ActiveRecord::Base
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable and :omniauthable, :registerable
+  devise :database_authenticatable, :recoverable, :rememberable,
+         :trackable, :validatable
+
   has_many :scenarios
   belongs_to :role
 
@@ -40,8 +45,6 @@ class User < ActiveRecord::Base
                         :if => Proc.new { |o| !o.phone_number.nil? }
 
   validates_presence_of :name
-
-  acts_as_authentic
 
   def admin?
     self.role.try(:name) == "admin"

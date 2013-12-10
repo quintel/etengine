@@ -17,7 +17,6 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun' # Required for Rcov to run.
 
-require 'authlogic/test_case'
 require 'factory_girl'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -52,8 +51,7 @@ RSpec.configure do |config|
   # Allow adding examples to a filter group with only a symbol.
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
-  config.include(Authlogic::TestCase)
-  config.include(EtmAuthHelper)
+  config.include(Devise::TestHelpers, type: :controller)
   config.include(MechanicalTurkHelper)
 
   # Prevent the static YML file from being deleted.

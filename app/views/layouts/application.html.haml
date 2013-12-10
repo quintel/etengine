@@ -56,10 +56,10 @@
                       = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1'
               %ul.nav.pull-right
                 %li
-                  = link_to "Logout", logout_path, :class => 'pull-right', :title => "Logged in as #{current_user.email}", :rel => 'tooltip', 'data-placement' => 'bottom'
+                  = link_to "Logout", destroy_user_session_path, :class => 'pull-right', :title => "Logged in as #{current_user.email}", :rel => 'tooltip', 'data-placement' => 'bottom', :method => :delete
             - else
               %ul.nav
-                %li= link_to 'login', login_path
+                %li= link_to 'login', new_user_session_path
 
 
     .subnav.subnav-fixed

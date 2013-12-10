@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
   include ApplicationController::ClientIdentification
 
   helper :all
-  helper_method :current_user_session, :current_user
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
   before_filter :initialize_memory_cache
@@ -12,7 +11,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     store_location
-    redirect_to login_url, :alert => "Please log in first."
+    redirect_to new_user_session_url, :alert => "Please log in first."
   end
 
   def initialize_memory_cache
@@ -55,16 +54,6 @@ class ApplicationController < ActionController::Base
     def redirect_back_or_default(default = root_path)
       redirect_to(session[:redirect_to] || default)
       clear_stored_location
-    end
-
-    def current_user_session
-      return @current_user_session if defined?(@current_user_session)
-      @current_user_session = UserSession.find
-    end
-
-    def current_user
-      return @current_user if defined?(@current_user)
-      @current_user = current_user_session && current_user_session.user
     end
 
     def require_no_user

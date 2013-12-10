@@ -7,7 +7,7 @@ describe Data::GqueriesController, :etsource_fixture do
   let!(:gquery) { Gquery.get('bar_demand') }
 
   before do
-    login_as(admin)
+    sign_in(admin)
     FactoryGirl.create :scenario
   end
 

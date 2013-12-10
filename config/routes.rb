@@ -1,10 +1,7 @@
 Etm::Application.routes.draw do
+  devise_for :users
+
   root :to => 'pages#index'
-
-  get 'login'  => 'user_sessions#new',     :as => :login
-  get 'logout' => 'user_sessions#destroy', :as => :logout
-
-  resources :user_sessions
 
   # Frontend
   resources :users, :except => :show
@@ -94,6 +91,8 @@ Etm::Application.routes.draw do
       get 'search' => 'search#index', :as => :search
     end
   end
+
+  get '/data', to: redirect("data/latest")
 
   namespace :etsource do
     root :to => 'commits#index'
