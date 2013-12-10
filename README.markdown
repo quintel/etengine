@@ -1,10 +1,18 @@
-# ETengine
+# Energy Transtion Engine (ETE)
 
-The Calculation Engine that is used by the Energy Transition Model. 
+This is the source code for the Calculation Engine that is used by the
+[Energy Transition Model](http://energytranstionmodel.com) and it's various
+interfaces (clients).
 
-Copyright (C) Quintel Intelligence. All rights reserved.
+It is an online web app that lets you create a future energy scenario for
+various countries.  This software is [Open Source](LICENSE.txt), so you can
+fork it and alter at your will.
 
-## Design
+## License
+
+The ETE is released under the [MIT License](LICENSE.txt).
+
+## Technical Design
 
 ### Caching
 
@@ -12,7 +20,7 @@ The ETEngine uses heavily caching of calculated values by using the
 [fetch_and_rescue](https://github.com/quintel/etengine/blob/51b321f6d43a2d2a626aa268845b775fca051ae0/app/models/qernel/dataset_attributes.rb#L205-L237)
 function that stores and retrieves calculated values and makes sure
 that possible errors do not block execution. This also has serious
-drawbacks, but is necessary to keep execution time down.
+drawbacks, but is necessary to keep performance up.
 
 ### Scenario
 
@@ -146,7 +154,7 @@ directory!
 
 ## Screencasts
 
-Password for all is: quintel
+Password for all the screencasts below is `quintel`.
 
 #### (GQL Console)[http://vimeo.com/40660438]
 
