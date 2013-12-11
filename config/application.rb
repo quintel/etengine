@@ -60,6 +60,7 @@ module Etm
   end
 
   require 'lib/instrumentable'
+  require 'lib/converter_positions'
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end

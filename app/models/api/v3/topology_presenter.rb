@@ -1,15 +1,19 @@
 module Api
   module V3
     class TopologyPresenter
+
+      # converter groups that have the converter summary table
+      GROUPS_WITH_EXTRA_INFO = [
+        :cost_traditional_heat,
+        :cost_electricity_production,
+        :cost_heat_pumps,
+        :cost_chps
+      ]
+
       def initialize(scenario)
         @scenario = scenario
         @gql = @scenario.gql(prepare: true)
         @converters = @gql.present_graph.converters
-        @positions = {}
-
-        ConverterPosition.not_hidden.each do |pos|
-          @positions[pos.converter_key] = pos
-        end
       end
 
       # Creates a Hash suitable for conversion to JSON by Rails.
@@ -24,30 +28,25 @@ module Api
         json
       end
 
+      #######
       private
+      #######
 
       def converters
-        # converter groups that have the converter summary table
-        groups_with_extra_info = [
-          :cost_traditional_heat,
-          :cost_electricity_production,
-          :cost_heat_pumps,
-          :cost_chps
-        ]
         @converters.map do |c|
-          # I'd rather use the converter key
-          excel_id = c.excel_id.to_i
-          position = @positions[excel_id] || ConverterPosition.new
+          position = positions.find(c)
+
           {
-            key: c.key,
-            x: position.x || 100,
-            y: position.y_or_default(c),
-            fill_color: position.fill_color(c),
-            stroke_color: position.stroke_color(c),
-            sector: c.sector_key,
-            use: c.use_key,
-            summary_available: (c.groups & groups_with_extra_info).any?
+            key:               c.key,
+            x:                 position[:x],
+            y:                 position[:y],
+            fill_color:        ConverterPositions::FILL_COLORS[c.sector_key],
+            stroke_color:      '#999',
+            sector:            c.sector_key,
+            use:               c.use_key,
+            summary_available: (c.groups & GROUPS_WITH_EXTRA_INFO).any?
           }
+
         end
       end
 
@@ -60,6 +59,11 @@ module Api
             type: l.link_type
           }
         end
+      end
+
+      def positions
+        ConverterPositions.new(
+          Rails.root.join('config/converter_positions.yml'))
       end
     end
   end

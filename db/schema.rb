@@ -13,17 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20131209134003) do
 
-  create_table "converter_positions", force: true do |t|
-    t.integer  "x"
-    t.integer  "y"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "hidden"
-    t.string   "converter_key", null: false
-  end
-
-  add_index "converter_positions", ["converter_key"], name: "index_converter_positions_on_converter_key", unique: true, using: :btree
-
   create_table "fce_values", force: true do |t|
     t.string   "using_country"
     t.string   "origin_country"
