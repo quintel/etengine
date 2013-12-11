@@ -1,7 +1,7 @@
 class Data::LayoutsController < Data::BaseController
   before_filter :find_models, :only => [:show, :edit]
 
-  helper_method :attributes_for_json
+  helper_method :attributes_for_json, :positions
 
   skip_authorize_resource :only => :show
 
@@ -10,6 +10,17 @@ class Data::LayoutsController < Data::BaseController
       format.html { render :layout => 'blueprint_layout' }
       format.json { render :json => result  }
     end
+  end
+
+  def yaml
+    response.headers['Content-Disposition'] = 'attachment; filename="converter_positions.yaml"'
+    response.headers['Content-Type']        = 'application/x-yaml'
+
+    render text: positions.to_yaml
+    # respond_to do |format|
+      # format.html { render :layout => 'blueprint_layout' }
+      # format.json { render text: positions.to_yaml  }
+    # end
   end
 
   def edit
@@ -21,14 +32,9 @@ class Data::LayoutsController < Data::BaseController
 
   def update
     if params[:converter_positions].present?
-      params[:converter_positions].each do |key, attributes|
-        if bcp = ConverterPosition.find_by_converter_key(key)
-          bcp.update_attributes attributes
-        else
-          ConverterPosition.create attributes.merge(:converter_key => key)
-        end
-      end
+      positions.update(params[:converter_positions])
     end
+
     render :text => ''
   end
 
@@ -51,16 +57,6 @@ private
 
   def find_models
     @converters = @gql.present_graph.converters
-    @positions = {}
-
-    map = ConverterPosition.all.each_with_object({}) do |c, hash|
-      hash[c.converter_key.to_sym] = c
-    end
-
-    @converters.each do |c|
-      @positions[c.key] =
-        map[c.key] || ConverterPosition.create(:converter_key => c.key)
-    end
   end
 
   def graph_to_json(graph)
@@ -71,6 +67,10 @@ private
       end
       hsh.merge c.key => attr_hash
     end
+  end
+
+  def positions
+    ConverterPositions.new(Rails.root.join('config/converter_positions.yml'))
   end
 
   def auto_number(n)

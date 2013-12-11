@@ -48,7 +48,9 @@ Etm::Application.routes.draw do
       get '', to: 'pages#index'
 
       # The Graphviz
-      resource :layout, :except => [:new, :index, :create, :destroy]
+      resource :layout, :except => [:new, :index, :create, :destroy] do
+        member { get 'yaml' }
+      end
 
       resources :gqueries, :only => [:index, :show] do
         get :result, :on => :member

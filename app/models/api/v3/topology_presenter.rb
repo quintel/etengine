@@ -14,11 +14,6 @@ module Api
         @scenario = scenario
         @gql = @scenario.gql(prepare: true)
         @converters = @gql.present_graph.converters
-        @positions = {}
-
-        ConverterPosition.all.each do |pos|
-          @positions[pos.key] = pos
-        end
       end
 
       # Creates a Hash suitable for conversion to JSON by Rails.
@@ -39,14 +34,14 @@ module Api
 
       def converters
         @converters.map do |c|
-          position = @positions[c.key] || ConverterPosition.new(key: c.key)
+          position = positions.find(c)
 
           {
             key:               c.key,
-            x:                 position.x_or_default,
-            y:                 position.y_or_default(c),
-            fill_color:        position.fill_color(c),
-            stroke_color:      position.stroke_color,
+            x:                 position[:x],
+            y:                 position[:y],
+            fill_color:        ConverterPositions::FILL_COLORS[c.sector_key],
+            stroke_color:      '#999',
             sector:            c.sector_key,
             use:               c.use_key,
             summary_available: (c.groups & GROUPS_WITH_EXTRA_INFO).any?
@@ -64,6 +59,11 @@ module Api
             type: l.link_type
           }
         end
+      end
+
+      def positions
+        ConverterPositions.new(
+          Rails.root.join('config/converter_positions.yml'))
       end
     end
   end
