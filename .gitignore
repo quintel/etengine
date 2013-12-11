@@ -1,4 +1,3 @@
-gqlconsole/*
 bin/*
 db/dumps
 db/sphinx
