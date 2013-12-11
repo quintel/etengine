@@ -15,7 +15,7 @@
 = render 'initialize_graph'
 
 :javascript
-  function update_positions() {
+  function update_positions(callback) {
     $('#graph_saving').text('Saving...').show();
     $.ajax({
       type: 'PUT',
@@ -24,17 +24,32 @@
       success: function(data) {
         $('#graph_saving').fadeOut();
         GRAPH.updated_coordinates = {};
-        },
+
+        if (callback) {
+          callback();
+        }
+      },
       error: function(data) { $('#graph_saving').text('ERROR'); }
     });
 
     return false;
   };
 
+  function update_and_download() {
+    update_positions(function() {
+      window.location.pathname =
+        window.location.pathname.replace(/edit$/, 'yaml');
+    });
+
+    return false;
+  }
+
 
   GRAPH.enableDragging();
 
-#options{:style => 'position: fixed; height: 25px; width: 250px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
+#options{:style => 'position: fixed; height: 25px; width: 450px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
+  = link_to 'Save and download YAML', 'javascript:update_and_download()'
+  |
   = link_to 'Save', 'javascript:update_positions()'
   |
   = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'

@@ -5,15 +5,15 @@ var GRAPH = new Graph();
 converter_keys = @converters.map(&:key)
 
 @converters.each do |converter|
-  position = @positions[converter.key]
+  position = positions.find(converter)
   params = [converter.key,
-            position[:x] || 100,
-            position.y_or_default(converter),
+            position[:x],
+            position[:y],
             converter.sector_key,
             converter.use_key,
-            (position.hidden == true),
-            position.fill_color(converter),
-            position.stroke_color(converter)]
+            false,
+            ConverterPositions::FILL_COLORS[converter.sector_key],
+            '#999']
 -%>
 <%= "new Converter(#{params.to_json});".html_safe %>
 <% end %>
