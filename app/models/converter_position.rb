@@ -40,11 +40,11 @@ class ConverterPosition
     end
   end
 
-  def stroke_color(converter)
+  def stroke_color
     '#999'
   end
 
-  def x_or_default(converter)
+  def x_or_default
     x || 100
   end
 
