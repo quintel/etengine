@@ -1,19 +1,6 @@
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
+
 require File.expand_path('../config/application', __FILE__)
-require 'rake'
 
 Etm::Application.load_tasks
-
-require 'rake'
-require 'rake/testtask'
-require 'rdoc/task'
-require 'yard'
-
-# needed for rake yard
-YARD::Rake::YardocTask.new do |t|
-end
-
-desc "Runs annotate on all models, incl. app/pkg"
-task :annotate do
-  system "annotate -d"
-  system "annotate -p before -e tests, fixtures"
-end
