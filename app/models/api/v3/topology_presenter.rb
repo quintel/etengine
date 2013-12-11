@@ -39,18 +39,16 @@ module Api
 
       def converters
         @converters.map do |c|
-          # I'd rather use the converter key
-          excel_id = c.excel_id.to_i
-          position = @positions[excel_id] || ConverterPosition.new
+          position = @positions[c.key] || ConverterPosition.new(key: c.key)
 
           {
-            key: c.key,
-            x: position.x_or_default,
-            y: position.y_or_default(c),
-            fill_color: position.fill_color(c),
-            stroke_color: position.stroke_color,
-            sector: c.sector_key,
-            use: c.use_key,
+            key:               c.key,
+            x:                 position.x_or_default,
+            y:                 position.y_or_default(c),
+            fill_color:        position.fill_color(c),
+            stroke_color:      position.stroke_color,
+            sector:            c.sector_key,
+            use:               c.use_key,
             summary_available: (c.groups & GROUPS_WITH_EXTRA_INFO).any?
           }
 
