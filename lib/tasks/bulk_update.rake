@@ -27,9 +27,9 @@ class BulkUpdateHelpers
 
     def save_preset(preset, user_values, dry_run)
       return show_diff(preset, user_values) if dry_run
-      
+
       @file_data ||= get_file_data
-      
+
       preset_file_path = @file_data[preset.id][:path]
       preset = YAML::load_file(preset_file_path).with_indifferent_access
       preset[:user_values] = user_values
@@ -166,8 +166,24 @@ namespace :bulk_update do
 
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
-      
 
+      # Set demand growth in chemical industry to the values in the other industry:
+      inputs[:industry_useful_demand_for_chemical_electricity] = inputs[:industry_useful_demand_electricity] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_electricity]
+      inputs[:industry_useful_demand_for_chemical_useable_heat] = inputs[:industry_useful_demand_useable_heat] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_useable_heat]
+      inputs[:industry_useful_demand_for_chemical_crude_oil_non_energetic] = inputs[:industry_useful_demand_crude_oil_non_energetic] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_crude_oil_non_energetic]
+      inputs[:industry_useful_demand_for_chemical_network_gas_non_energetic] = inputs[:industry_useful_demand_network_gas_non_energetic] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_network_gas_non_energetic]
+      inputs[:industry_useful_demand_for_chemical_other_non_energetic] = inputs[:industry_useful_demand_network_gas_non_energetic] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_other_non_energetic]
+
+      # Set efficiency improvement in chemical industry to the values in the other industry:
+      inputs[:industry_useful_demand_for_chemical_electricity_efficiency] = inputs[:industry_useful_demand_electricity_efficiency] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_electricity_efficiency]
+      inputs[:industry_useful_demand_for_chemical_useable_heat_efficiency] = inputs[:industry_useful_demand_useable_heat_efficiency] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_useable_heat_efficiency]
+
+      # Set heat shares in chemical industry to the values in the other industry:
+      inputs[:industry_chemicals_burner_network_gas_share] = inputs[:industry_burner_network_gas_share] || INPUT_DEFAULTS[:industry_chemicals_burner_network_gas_share]
+      inputs[:industry_chemicals_burner_crude_oil_share] = inputs[:industry_burner_crude_oil_share] || INPUT_DEFAULTS[:industry_chemicals_burner_crude_oil_share]
+      inputs[:industry_chemicals_burner_coal_share] = inputs[:industry_burner_coal_share] || INPUT_DEFAULTS[:industry_chemicals_burner_coal_share]
+      inputs[:industry_chemicals_burner_wood_pellets_share] = inputs[:industry_burner_wood_pellets_share] || INPUT_DEFAULTS[:industry_chemicals_burner_wood_pellets_share]
+      inputs[:industry_final_demand_for_chemical_steam_hot_water_share] = inputs[:industry_final_demand_steam_hot_water_share] || INPUT_DEFAULTS[:industry_final_demand_for_chemical_steam_hot_water_share]
 
       ######################  CHECKS ##########################
 
@@ -359,6 +375,40 @@ namespace :bulk_update do
       # Check if the share group adds up to 100% AFTER scaling
       if !(sum).between?(99.99, 100.01)
         puts "> ERROR! Share group of Industry Heat is not 100% in scenario, but is " + (sum).to_s
+        exit(1)
+      end
+
+      #Share group of chemical industry heating
+      share_group_inputs = [
+      :industry_chemicals_burner_network_gas_share,
+      :industry_chemicals_burner_crude_oil_share,
+      :industry_chemicals_burner_coal_share,
+      :industry_chemicals_burner_wood_pellets_share,
+      :industry_final_demand_for_chemical_steam_hot_water_share
+      ]
+
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% BEFORE scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> Warning! Share group of Chemical industry heat is not 100% in scenario, but is " + (sum).to_s
+      end
+
+      # Scaling the group
+      scale_factor = sum / 100.0
+      sum = 0.0
+      share_group_inputs.each do |element|
+        inputs[element] /= scale_factor
+        sum = sum + inputs[element]
+      end
+
+      # Check if the share group adds up to 100% AFTER scaling
+      if !(sum).between?(99.99, 100.01)
+        puts "> ERROR! Share group of Chemical industry heat is not 100% in scenario, but is " + (sum).to_s
         exit(1)
       end
 
