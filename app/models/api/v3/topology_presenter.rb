@@ -8,7 +8,7 @@ module Api
         @positions = {}
 
         ConverterPosition.all.each do |pos|
-          @positions[pos.converter_key] = pos
+          @positions[pos.key] = pos
         end
       end
 
