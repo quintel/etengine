@@ -45,7 +45,7 @@ module Api
 
           {
             key: c.key,
-            x: position.x_or_default
+            x: position.x_or_default,
             y: position.y_or_default(c),
             fill_color: position.fill_color(c),
             stroke_color: position.stroke_color,
