@@ -1,6 +1,15 @@
 module Api
   module V3
     class TopologyPresenter
+
+      # converter groups that have the converter summary table
+      GROUPS_WITH_EXTRA_INFO = [
+        :cost_traditional_heat,
+        :cost_electricity_production,
+        :cost_heat_pumps,
+        :cost_chps
+      ]
+
       def initialize(scenario)
         @scenario = scenario
         @gql = @scenario.gql(prepare: true)
@@ -24,30 +33,27 @@ module Api
         json
       end
 
+      #######
       private
+      #######
 
       def converters
-        # converter groups that have the converter summary table
-        groups_with_extra_info = [
-          :cost_traditional_heat,
-          :cost_electricity_production,
-          :cost_heat_pumps,
-          :cost_chps
-        ]
         @converters.map do |c|
           # I'd rather use the converter key
           excel_id = c.excel_id.to_i
           position = @positions[excel_id] || ConverterPosition.new
+
           {
             key: c.key,
-            x: position.x || 100,
+            x: position.x_or_default
             y: position.y_or_default(c),
             fill_color: position.fill_color(c),
-            stroke_color: position.stroke_color(c),
+            stroke_color: position.stroke_color,
             sector: c.sector_key,
             use: c.use_key,
-            summary_available: (c.groups & groups_with_extra_info).any?
+            summary_available: (c.groups & GROUPS_WITH_EXTRA_INFO).any?
           }
+
         end
       end
 
