@@ -168,22 +168,22 @@ namespace :bulk_update do
       ############################# START ##############################
 
       # Set demand growth in chemical industry to the values in the other industry:
-      inputs[:industry_useful_demand_for_chemical_electricity] = inputs[:industry_useful_demand_electricity]
-      inputs[:industry_useful_demand_for_chemical_useable_heat] = inputs[:industry_useful_demand_useable_heat]
-      inputs[:industry_useful_demand_for_chemical_crude_oil_non_energetic] = inputs[:industry_useful_demand_crude_oil_non_energetic]
-      inputs[:industry_useful_demand_for_chemical_network_gas_non_energetic] = inputs[:industry_useful_demand_network_gas_non_energetic]
-      inputs[:industry_useful_demand_for_chemical_other_non_energetic] = inputs[:industry_useful_demand_network_gas_non_energetic]
+      inputs[:industry_useful_demand_for_chemical_electricity] = inputs[:industry_useful_demand_electricity] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_electricity]
+      inputs[:industry_useful_demand_for_chemical_useable_heat] = inputs[:industry_useful_demand_useable_heat] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_useable_heat]
+      inputs[:industry_useful_demand_for_chemical_crude_oil_non_energetic] = inputs[:industry_useful_demand_crude_oil_non_energetic] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_crude_oil_non_energetic]
+      inputs[:industry_useful_demand_for_chemical_network_gas_non_energetic] = inputs[:industry_useful_demand_network_gas_non_energetic] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_network_gas_non_energetic]
+      inputs[:industry_useful_demand_for_chemical_other_non_energetic] = inputs[:industry_useful_demand_network_gas_non_energetic] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_other_non_energetic]
 
       # Set efficiency improvement in chemical industry to the values in the other industry:
-      inputs[:industry_useful_demand_for_chemical_electricity_efficiency] = inputs[:industry_useful_demand_electricity_efficiency]
-      inputs[:industry_useful_demand_for_chemical_useable_heat_efficiency] = inputs[:industry_useful_demand_useable_heat_efficiency]
+      inputs[:industry_useful_demand_for_chemical_electricity_efficiency] = inputs[:industry_useful_demand_electricity_efficiency] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_electricity_efficiency]
+      inputs[:industry_useful_demand_for_chemical_useable_heat_efficiency] = inputs[:industry_useful_demand_useable_heat_efficiency] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_useable_heat_efficiency]
 
       # Set heat shares in chemical industry to the values in the other industry:
-      inputs[:industry_chemicals_burner_network_gas_share] = inputs[:industry_burner_network_gas_share]
-      inputs[:industry_chemicals_burner_crude_oil_share] = inputs[:industry_burner_crude_oil_share]
-      inputs[:industry_chemicals_burner_coal_share] = inputs[:industry_burner_coal_share]
-      inputs[:industry_chemicals_burner_wood_pellets_share] = inputs[:industry_burner_wood_pellets_share]
-      inputs[:industry_final_demand_for_chemical_steam_hot_water_share] = inputs[:industry_final_demand_steam_hot_water_share]
+      inputs[:industry_chemicals_burner_network_gas_share] = inputs[:industry_burner_network_gas_share] || INPUT_DEFAULTS[:industry_chemicals_burner_network_gas_share]
+      inputs[:industry_chemicals_burner_crude_oil_share] = inputs[:industry_burner_crude_oil_share] || INPUT_DEFAULTS[:industry_chemicals_burner_crude_oil_share]
+      inputs[:industry_chemicals_burner_coal_share] = inputs[:industry_burner_coal_share] || INPUT_DEFAULTS[:industry_chemicals_burner_coal_share]
+      inputs[:industry_chemicals_burner_wood_pellets_share] = inputs[:industry_burner_wood_pellets_share] || INPUT_DEFAULTS[:industry_chemicals_burner_wood_pellets_share]
+      inputs[:industry_final_demand_for_chemical_steam_hot_water_share] = inputs[:industry_final_demand_steam_hot_water_share] || INPUT_DEFAULTS[:industry_final_demand_for_chemical_steam_hot_water_share]
 
       ######################  CHECKS ##########################
 
