@@ -16,7 +16,7 @@ module Qernel
     let(:supply_two) { graph.converters.detect { |c| c.key == :supply_two } }
 
     before do
-      graph.area.stub(:number_households).and_return(200)
+      graph.area.stub(:number_of_residences).and_return(200)
 
       supply_one.converter_api = DemandDrivenConverterApi.new(supply_one)
       supply_two.converter_api = DemandDrivenConverterApi.new(supply_two)

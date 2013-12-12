@@ -144,7 +144,7 @@ module Gql::Runtime
       #
       # Examples
       #
-      #   AREA(number_households) => 7349500.0
+      #   AREA(number_of_residences) => 7349500.0
       #
       def AREA(*keys)
         keys.empty? ? scope.graph.area : scope.area(keys.first)

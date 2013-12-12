@@ -49,7 +49,7 @@ module Qernel
     # Finally, the number of units is adjusted according to how many
     # households are supplied with heat. For example, if 50% of households are
     # supplied with energy from the converter, but each unit provides energy
-    # for 100 homes, the number_of_units will equal 50% of number_households
+    # for 100 homes, the number_of_units will equal 50% of number_of_residences
     # divided by 100.
     #
     def number_of_units
@@ -63,7 +63,7 @@ module Qernel
           return 0.0 if heat_links.empty?
 
           tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
-          units      = tech_share * (area.number_households || 0)
+          units      = tech_share * (area.number_of_residences || 0)
           supplied   = households_supplied_per_unit
 
           # Sanity check; if households_supplied_per_unit is zero, it may
