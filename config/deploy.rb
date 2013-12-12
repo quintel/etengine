@@ -1,3 +1,6 @@
+# require 'dotenv'
+# Dotenv.load
+
 set :application, "etengine"
 set :application_key, "etengine"
 set :stage, :production
@@ -8,6 +11,14 @@ set :deploy_to, "/u/apps/etengine"
 set(:unicorn_bin) { "#{current_path}/bin/unicorn" }
 set(:unicorn_pid) { "#{current_path}/tmp/pids/unicorn.pid" }
 
+# Reads the remote .env file to set the Airbrake key locally in Capistrano.
+def fetch_remote_airbrake_key
+  @airbrake_api_key ||= begin
+    key = capture("cat #{shared_path}/.env").match(/^AIRBRAKE_API_KEY=(.+)$/)
+    key && key[1]
+  end
+end
+
 task :production do
   set :domain, "et-engine.com"
   set :branch, fetch(:branch, "production")
@@ -15,8 +26,10 @@ task :production do
   set :db_host, "127.0.0.1"
   set :db_name, "etengine"
   set :db_user, "root"
-  set :airbrake_key, "c7aceee5954aea78f93e7ca4b22439c7"
+
   server domain, :web, :app, :db, :primary => true
+
+  set :airbrake_key, fetch_remote_airbrake_key
 end
 
 task :staging do
@@ -26,8 +39,15 @@ task :staging do
   set :db_host, "127.0.0.1"
   set :db_name, 'etengine_staging'
   set :db_user, "root"
-  set :airbrake_key, "e483e275c8425821ec21580e0ffefe9d"
+
   server domain, :web, :app, :db, :primary => true
+
+  set :airbrake_key, fetch_remote_airbrake_key
+end
+
+task :show do
+  puts domain
+  puts airbrake_key
 end
 
 set :user, 'ubuntu'
@@ -39,4 +59,3 @@ ssh_options[:forward_agent] = true
 set :use_sudo, false
 set :local_db_name, 'etengine_dev'
 set :bundle_flags, '--deployment --quiet --binstubs --shebang ruby-local-exec'
-

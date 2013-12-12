@@ -2,6 +2,7 @@ namespace :deploy do
   task :app_config do
     run "cd #{current_release} && rake deploy:app_config"
     run "ln -sf #{shared_path}/config/database.yml #{release_path}/config/"
+    run "ln -sf #{shared_path}/.env #{release_path}/.env"
   end # setup_config
 
   desc <<-DESC
