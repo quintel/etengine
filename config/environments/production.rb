@@ -68,7 +68,7 @@ Etm::Application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Mail options for Devise.
-  config.action_mailer.default_url_options = { :host => 'pro.et-model.com' }
+  config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found).

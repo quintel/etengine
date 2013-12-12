@@ -22,6 +22,7 @@ gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'default_value_for'
 gem 'kaminari'
+gem 'dotenv-rails', groups: [:development, :test, :production]
 
 # API
 gem 'rest-client'
