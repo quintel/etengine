@@ -11,23 +11,39 @@ set :deploy_to, "/u/apps/etengine"
 set(:unicorn_bin) { "#{current_path}/bin/unicorn" }
 set(:unicorn_pid) { "#{current_path}/tmp/pids/unicorn.pid" }
 
+# Reads and returns the contents of a remote +path+, caching it in case of
+# multiple calls.
+def remote_file(path)
+  @remote_files ||= {}
+  @remote_files[path] ||= capture("cat #{ path }")
+end
+
 # Reads the remote .env file to set the Airbrake key locally in Capistrano.
 def fetch_remote_airbrake_key
-  @airbrake_api_key ||= begin
-    key = capture("cat #{shared_path}/.env").match(/^AIRBRAKE_API_KEY=(.+)$/)
-    key && key[1]
-  end
+  key = remote_file("#{shared_path}/.env").match(/^AIRBRAKE_API_KEY=(.+)$/)
+  key && key[1]
+end
+
+# Reads the remote database.yml file to read the value of an attribute. If a
+# matching environment variable is set (prefixed with "DB_"), it will be used
+# instead.
+def remote_db_config(key)
+  ENV["DB_#{ key.to_s.upcase }"] ||
+    YAML.load(
+      remote_file("#{shared_path}/config/database.yml")
+    )[stage.to_s][key.to_s]
 end
 
 task :production do
   set :domain, "et-engine.com"
   set :branch, fetch(:branch, "production")
-  set :db_pass, "1TObSSWD54mmRj5fJTj6"
-  set :db_host, "127.0.0.1"
-  set :db_name, "etengine"
-  set :db_user, "root"
 
   server domain, :web, :app, :db, :primary => true
+
+  set :db_host, remote_db_config(:host) || '127.0.0.1'
+  set :db_pass, remote_db_config(:password)
+  set :db_name, remote_db_config(:database)
+  set :db_user, remote_db_config(:username)
 
   set :airbrake_key, fetch_remote_airbrake_key
 end
@@ -35,19 +51,15 @@ end
 task :staging do
   set :domain, "beta.et-engine.com"
   set :branch, fetch(:branch, "staging")
-  set :db_pass, "Ce9pQnEDjMQZ139z_ldV"
-  set :db_host, "127.0.0.1"
-  set :db_name, 'etengine_staging'
-  set :db_user, "root"
 
   server domain, :web, :app, :db, :primary => true
 
-  set :airbrake_key, fetch_remote_airbrake_key
-end
+  set :db_host, remote_db_config(:host) || '127.0.0.1'
+  set :db_pass, remote_db_config(:password)
+  set :db_name, remote_db_config(:database)
+  set :db_user, remote_db_config(:username)
 
-task :show do
-  puts domain
-  puts airbrake_key
+  set :airbrake_key, fetch_remote_airbrake_key
 end
 
 set :user, 'ubuntu'
