@@ -1,0 +1,28 @@
+development:
+  adapter: mysql2
+  database: etengine_dev
+  host: 127.0.0.1
+  username: root
+  password: 
+  encoding: utf8
+  timeout: 5000
+
+test:
+  adapter: mysql2
+  database: etengine_test
+  host: 127.0.0.1
+  username: root
+  password: 
+  encoding: utf8
+  timeout: 5000
+  pool: 5
+
+production:
+  adapter: mysql2
+  database: etengine_prod
+  host: 127.0.0.1
+  username: root
+  password: 
+  encoding: utf8
+  timeout: 5000
+  pool: 5
