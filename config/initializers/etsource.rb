@@ -1,10 +1,8 @@
 raw_config = File.read("#{Rails.root}/config/config.yml")
 APP_CONFIG = YAML.load(raw_config)[Rails.env].with_indifferent_access
 
-if APP_CONFIG[:airbrake_api_key].present? && !APP_CONFIG[:standalone]
-  Airbrake.configure do |config|
-    config.api_key = APP_CONFIG[:airbrake_api_key]
-  end
+if ENV['AIRBRAKE_API_KEY'].present? && ! APP_CONFIG[:standalone]
+  Airbrake.configure { |config| config.api_key = ENV['AIRBRAKE_API_KEY'] }
 end
 
 # Sort out the ETSource paths

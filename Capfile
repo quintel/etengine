@@ -1,5 +1,6 @@
 require 'bundler/capistrano'
 require 'airbrake/capistrano'
+# require 'dotenv/capistrano'
 require 'capistrano-unicorn'
 
 load 'deploy'
