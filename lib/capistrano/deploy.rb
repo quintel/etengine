@@ -3,6 +3,9 @@ namespace :deploy do
     run "cd #{current_release} && rake deploy:app_config"
     run "ln -sf #{shared_path}/config/database.yml #{release_path}/config/"
     run "ln -sf #{shared_path}/.env #{release_path}/.env"
+
+    run "ln -sf #{shared_path}/config/.etsource_password " \
+        "#{release_path}/config/.etsource_password"
   end # setup_config
 
   desc <<-DESC
