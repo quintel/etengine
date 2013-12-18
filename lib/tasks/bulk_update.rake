@@ -1,19 +1,3 @@
-require_relative 'input_defaults'
-
-begin
-  require 'highline/import'
-rescue LoadError
-  fail "You need to install the Highline gem: gem install highline"
-end
-
-begin
-  require 'term/ansicolor'
-rescue LoadError
-  fail "You need to install the ANSIColor gem: gem install term-ansicolor"
-end
-
-include Term::ANSIColor
-
 class BulkUpdateHelpers
   class << self
     def save(object, user_values,  dry_run = true)
@@ -75,8 +59,17 @@ class BulkUpdateHelpers
 end
 
 namespace :bulk_update do
+  task preamble: :environment do
+    require_relative 'input_defaults'
+
+    require 'highline/import'
+    require 'term/ansicolor'
+
+    include Term::ANSIColor
+  end
+
   desc "This shows the changes that would be applied to gqueries. Pass FORCE=TRUE to update records"
-  task :gquery_replace => :environment do
+  task :gquery_replace => 'bulk_update:preamble' do
     bootstrap
 
     @gqueries = Gquery.contains(@from)
@@ -94,7 +87,7 @@ namespace :bulk_update do
   end
 
   desc "This shows the changes that would be applied to inputs. Pass FORCE=TRUE to update records"
-  task :input_replace => :environment do
+  task :input_replace => 'bulk_update:preamble' do
     bootstrap
     @inputs = Input.embedded_gql_contains(@from)
     @inputs.each do |i|
@@ -136,7 +129,7 @@ namespace :bulk_update do
   end
 
   desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
-  task :update_scenarios => :environment do
+  task :update_scenarios => 'bulk_update:preamble' do
     @dry_run = !ENV['PERFORM']
 
     if @dry_run

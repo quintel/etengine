@@ -43,6 +43,9 @@ gem 'atlas',         ref: '61c562b',   github:  'quintel/atlas'
 gem 'mysql2',         '~>0.3.11'
 gem 'dalli'
 
+gem 'term-ansicolor', '1.0.7', require: false
+gem 'highline',                require: false
+
 group :development do
   gem 'quiet_assets'
   gem 'better_errors'
