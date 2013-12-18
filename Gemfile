@@ -20,44 +20,30 @@ gem 'devise'
 gem 'cancan'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
-gem 'default_value_for'
 gem 'kaminari'
+
 gem 'dotenv-rails', groups: [:development, :test, :production]
 
 # API
 gem 'rest-client'
 
 # for etsource
-gem 'git',                            git: 'git://github.com/bradhe/ruby-git.git'
-gem 'activerecord-import'
+gem 'git',                            github: 'bradhe/ruby-git'
 gem 'fnv'
-gem 'ruby-progressbar'
 gem 'msgpack'
 
 # own gems
 gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
 gem 'merit',         '>=0.1.0',        git:     'git@github.com:quintel/merit.git'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
-gem 'refinery',      ref: 'a0dcae9',   git:     'git@github.com:quintel/refinery.git'
-gem 'atlas',         ref: '61c562b',   git:     'git@github.com:quintel/atlas.git'
+gem 'refinery',      ref: 'a0dcae9',   github:  'quintel/refinery'
+gem 'atlas',         ref: '61c562b',   github:  'quintel/atlas'
 
 # system gems
 gem 'mysql2',         '~>0.3.11'
 gem 'dalli'
-gem 'term-ansicolor', '1.0.7',    require: false
-gem 'highline',                   require: false
-gem 'rubyzip',        '0.9.4'
-gem 'fileutils'
-
-# documentation gems. Needed on production too for dynamically generated docs.
-group :development, :production do
-  gem 'yard',      '~> 0.7.2'
-  gem 'rdiscount'
-end
 
 group :development do
-  gem 'annotate'
-  gem 'ruby-prof'
   gem 'quiet_assets'
   gem 'better_errors'
   gem 'listen'
@@ -68,7 +54,6 @@ end
 
 group :test, :development do
   gem 'rspec-rails', '~> 2.12'
-  gem 'ruby-prof'
   gem 'pry-rails'
   gem 'pry-remote'
   gem 'pry-stack_explorer'
@@ -84,10 +69,6 @@ group :test do
   gem 'simplecov', '~> 0.7.1', require: false
 end
 
-group :darwin do
-  gem 'rb-fsevent'
-end
-
 group :production do
   gem 'unicorn'
   gem 'airbrake'
@@ -96,6 +77,5 @@ end
 group :assets do
   gem 'sass-rails'
   gem 'therubyracer', '>= 0.12.0'
-  gem 'libv8',        '>= 3.16.14.3'
   gem 'coffee-rails'
 end

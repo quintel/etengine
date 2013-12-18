@@ -1,6 +1,17 @@
 require_relative 'input_defaults'
-require 'highline/import'
-require 'term/ansicolor'
+
+begin
+  require 'highline/import'
+rescue LoadError
+  fail "You need to install the Highline gem: gem install highline"
+end
+
+begin
+  require 'term/ansicolor'
+rescue LoadError
+  fail "You need to install the ANSIColor gem: gem install term-ansicolor"
+end
+
 include Term::ANSIColor
 
 class BulkUpdateHelpers
