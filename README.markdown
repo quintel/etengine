@@ -1,18 +1,49 @@
 # Energy Transition Engine (ETE)
 
 This is the source code for the Calculation Engine that is used by the
-[Energy Transition Model](http://energytranstionmodel.com) and it's various
+[Energy Transition Model](http://energytranstionmodel.com) and its various
 interfaces (clients).
 
 It is an online web app that lets you create a future energy scenario for
-various countries.  This software is [Open Source](LICENSE.txt), so you can
+various countries.  This software is [open source](LICENSE.txt), so you can
 fork it and alter at your will.
+
+ETEngine does not contain an easy-to-use frontend for creating and editing
+these energy scenarios; that role is instead fulfilled by separate applications
+such as [ETModel][etmodel], [ETFlex][etflex], and the [EnergyMixer][energymixer],
+which each use ETEngine's REST API for manipulating and calculating scenarios.
 
 ![build_status](https://semaphoreapp.com/api/v1/projects/f64502fb2273b9a2c16b383cb2ff5b993911d751/45790/shields_badge.png)
 
 ## License
 
 The ETE is released under the [MIT License](LICENSE.txt).
+
+## Installation
+
+Installing ETEngine on a local machine can be a bit involved, owing to the
+number of dependencies. Fortunately, most can be installed automatically using
+Ruby's "Bundler" library, which is required to use ETEngine.
+
+1. Install the "Graphviz" library; for Mac users with [Homebrew][homebrew], this
+   is as simple as `brew install graphviz`.
+
+2. Run `bundle install` to install the dependencies required by ETEngine.
+
+3. Copy "config/config.sample.yml" to "config/config.yml", and
+   "config/database.sample.yml" to "config/database.yml", making any changes --
+   particularly to the database configuration -- as you see fit.
+
+4. Clone a copy of [ETSource][etsource] –– which contains the data for each
+   region. Edit "config/config.yml" and enter the ETSource directory into the
+   "etsource_export" and "etsource_working_copy" options.
+
+5. Create the database you specified in your "database.yml" file, and run
+   `bundle exec rake db:setup db:seed` to create the tables and add an
+   administrator account.
+
+6. You're now ready-to-go! Fire up the Rails process with `bundle exec rails s`
+   or use [Pow][pow].
 
 ## Technical Design
 
@@ -52,7 +83,7 @@ This means that the user wants to 'set' the number of nuclear power plants to `2
 in his/her current scenario.
 
 The current set of inputs can be found on
-[ETSource][ETSource].
+[ETSource][etsource].
 
 
 Every times the user requests some output, **all** the inputs that have been
@@ -100,7 +131,7 @@ ETEngine, it will receive the following feedback:
 
 A **gquery** is nothing more then a stored statement. These statements are
 written in our own language called the *Graph Query Language* (GQL) and
-a recent list can be found on [ETSource][ETSource].
+a recent list can be found on [ETSource][etsource].
 
 ## Installation
 
@@ -176,4 +207,9 @@ understand how the etsource works.
 
 The result you can find in: etsource/models/sample
 
-[ETSource]: http://github.com/quintel/etsource  "ETSource: database for the ETM."
+[etsource]:    http://github.com/quintel/etsource  "ETSource: database for the ETM."
+[etmodel]:     http://github.com/quintel/etmodel
+[etflex]:      http://github.com/quintel/etflex
+[energymixer]: http://github.com/quintel/energymixer
+[homebrew]:    http://brew.sh
+[pow]:         http://pow.cx
