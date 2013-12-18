@@ -23,6 +23,7 @@ module Qernel
     delegated_calculation :primary_demand_of
     delegated_calculation :primary_demand_of_carrier
     delegated_calculation :sustainability_share
+    delegated_calculation :dependent_supply_of_carrier
 
     # Accessors ----------------------------------------------------------------
 
