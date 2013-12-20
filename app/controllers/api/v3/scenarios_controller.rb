@@ -24,12 +24,9 @@ module Api
         ids = params[:id].split(',')
 
         @scenarios = ids.map do |id|
-          scenario  = Preset.get(id).try(:to_scenario) ||
-                      Scenario.find_by_id(id)
-          presenter = ScenarioPresenter.new(self, scenario, params)
-
-          scenario ? presenter : { id: id, errors: ["Scenario not found"] }
-        end
+          scenario = Preset.get(id).try(:to_scenario) || Scenario.find_by_id(id)
+          scenario ? ScenarioPresenter.new(self, scenario, params) : nil
+        end.compact
 
         render json: @scenarios
       end
