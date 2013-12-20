@@ -20,8 +20,10 @@ module Api
       # @return [Hash]
       #
       def as_json(*)
-        { scenario: ScenarioPresenter.new(@controller, @scenario, @detailed),
-          gqueries: @results }
+        scenario_presenter = ScenarioPresenter.new(
+          @controller, @updater.scenario, detailed: @detailed)
+
+        { scenario: scenario_presenter, gqueries: @results }
       end
 
       # Returns all of the errors with the user request. For interop with the
