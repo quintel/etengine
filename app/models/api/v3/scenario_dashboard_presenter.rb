@@ -21,7 +21,7 @@ module Api
       #
       def as_json(*)
         scenario_presenter = ScenarioPresenter.new(
-          @controller, @updater.scenario, detailed: @detailed)
+          @controller, @scenario, detailed: @detailed)
 
         { scenario: scenario_presenter, gqueries: @results }
       end
