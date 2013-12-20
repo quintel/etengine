@@ -10,7 +10,6 @@ class Input
     :id,
     :key,
     :comments,
-    :factor,
     :priority,
     :label,
     :label_query,
@@ -234,7 +233,7 @@ class Input
         gql_or_scenario.query(@start_value_gql)
       end
 
-      start.nil? ? min_value_for(gql_or_scenario) : start * factor
+      start || min_value_for(gql_or_scenario)
     else
       @start_value
     end
@@ -252,8 +251,6 @@ class Input
   def min_value_for(gql_or_scenario)
     if gql_or_scenario.is_a?(Scenario)
       Input.cache.read(gql_or_scenario, self)[:min]
-    elsif area_value = area_input_value(gql_or_scenario.scenario, :min)
-      area_value * factor
     elsif @min_value_gql.present?
       wrap_gql_errors(:min) { gql_or_scenario.query(@min_value_gql) }
     else
@@ -273,8 +270,6 @@ class Input
   def max_value_for(gql_or_scenario)
     if gql_or_scenario.is_a?(Scenario)
       Input.cache.read(gql_or_scenario, self)[:max]
-    elsif area_value = area_input_value(gql_or_scenario.scenario, :max)
-      area_value * factor
     elsif @max_value_gql.present?
       wrap_gql_errors(:max) { gql_or_scenario.query(@max_value_gql) }
     else
@@ -305,27 +300,7 @@ class Input
 
     scenario = gql_or_scenario.scenario
 
-    area_input_value(scenario, :disabled) ||
-      ( dependent_on.present? && ! scenario.area[dependent_on] )
-  end
-
-  # Retrieves a setting for this input which is defined in the area. This
-  # allows area settings to override the normal min, max, and disabled values.
-  #
-  # @param [Scenario] scenario
-  #   The scenario, so that we can determine which area to query.
-  # @param [#to_s] attribute
-  #   The attribute you want to retrieve. One of 'min', 'max', or 'disabled'.
-  #
-  # @return [Numeric, true, false, nil]
-  #   Returns a numeric when querying the minimum and maximum values, true or
-  #   false for the "disabled" status. Will always return nil if the area
-  #   does not have a setting for the input.
-  #
-  def area_input_value(scenario, attribute)
-    if values = scenario.area_input_values[id]
-      values[attribute.to_s]
-    end
+    dependent_on.present? && ! scenario.area[dependent_on]
   end
 
   # @return [String]
