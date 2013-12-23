@@ -17,6 +17,13 @@ GIT
       virtus (~> 0.5.4)
 
 GIT
+  remote: git://github.com/quintel/merit.git
+  revision: 996366aeabf56e7fd10479570cac4051d6b2c273
+  specs:
+    merit (0.1.0)
+      terminal-table
+
+GIT
   remote: git://github.com/quintel/osmosis.git
   revision: ac8a371a76fe9bafd72edca03a8b1f3891abcf8d
   specs:
@@ -43,13 +50,6 @@ GIT
   revision: f1f7c67a7611768314fb8c04368f90484886efb5
   specs:
     deep_clone (0.0.3)
-
-GIT
-  remote: git@github.com:quintel/merit.git
-  revision: dc578a0b743b356d8917a4acb84578c243ccdb85
-  specs:
-    merit (0.1.0)
-      terminal-table
 
 GEM
   remote: http://rubygems.org/
