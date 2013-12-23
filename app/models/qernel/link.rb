@@ -211,8 +211,6 @@ module Qernel
       lft_converter.input(@carrier)
     end
 
-    protected :lft_input
-
     # The slot from where the energy for this link comes, irrespective of the
     # link's "reversed" setting.
     #
@@ -220,8 +218,6 @@ module Qernel
     def rgt_output
       rgt_converter.output(@carrier)
     end
-
-    protected :rgt_output
 
     # The slot from where the energy for this link comes, for calculation
     # purposes. If the link is reversed it will instead return the slot which

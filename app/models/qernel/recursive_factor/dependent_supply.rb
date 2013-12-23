@@ -84,7 +84,7 @@ module Qernel::RecursiveFactor::DependentSupply
         # supply node is not in the primary_energy_demand group; however we
         # don't want to ignore the node, but instead use its demand value.
         factor = factor_for_primary_demand(link)
-        factor.zero? ? 1.0 : factor
+        factor.zero? ? link.rgt_output.conversion : factor
       else
         # There are more +carrier_key+ links to be traversed...
         nil
