@@ -34,7 +34,7 @@ module MechanicalTurkHelper
   end
 
   # when passing a dynamically created input, make sure
-  # to assign lookup_id and update_period.
+  # to assign key and update_period.
   def move_slider(input, value)
     @proxy.move_slider(input, value)
   end

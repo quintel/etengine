@@ -5,10 +5,6 @@
 #   class Foo
 #      include InMemoryRecord
 #
-#     def lookup_id
-#       self.key
-#     end
-#
 #      def self.load_records
 #        # code that loads and returns an array of Foo records
 #      end
@@ -55,7 +51,7 @@ module InMemoryRecord
     end
 
     def add(obj)
-      records[obj.lookup_id] = obj
+      records[obj.key.to_s] = obj
       obj
     end
   end

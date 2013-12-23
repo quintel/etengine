@@ -7,7 +7,6 @@ class Input
                                 :inclusion => %w[present future both before]
 
   ATTRIBUTES = [
-    :id,
     :key,
     :comments,
     :priority,
@@ -25,7 +24,6 @@ class Input
     :update_period,
     :update_type,
     :dependent_on,
-    :lookup_id,
     :step_value
   ]
 
@@ -37,14 +35,18 @@ class Input
     end
   end
 
+  def key=(new_key)
+    new_key && (@key = new_key.to_s)
+  end
+
+  def self.get(key)
+    super(key.to_s)
+  end
+
   def self.load_records
-    h = {}
-    Etsource::Loader.instance.inputs.each do |input|
-      h[input.lookup_id]      = input
-      h[input.lookup_id.to_s] = input
-      h[input.key]            = input
-    end
-    h
+    Hash[ Etsource::Loader.instance.inputs.map do |input|
+      [input.key.to_s, input]
+    end ]
   end
 
   def self.with_share_group
@@ -116,7 +118,7 @@ class Input
 
   # make as_json work
   def id
-    self.lookup_id
+    self.key
   end
 
   def as_json(options={})
@@ -127,7 +129,7 @@ class Input
 
   def client_values(gql)
     {
-      lookup_id => {
+      key => {
         :max_value   => max_value_for(gql),
         :min_value   => min_value_for(gql),
         :start_value => start_value_for(gql),
@@ -148,7 +150,7 @@ class Input
         hsh.merge input.client_values(gql)
       rescue => ex
         Airbrake.notify(
-          :error_message => "Input#static_values for input #{input.lookup_id} failed: #{ex}",
+          :error_message => "Input#static_values for input #{input.key} failed: #{ex}",
           :backtrace => caller,
           :parameters => {:input => input, :api_scenario => gql.scenario }) unless
            APP_CONFIG[:standalone]
@@ -163,12 +165,12 @@ class Input
   def self.dynamic_start_values(gql)
     Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
       begin
-        hsh.merge input.lookup_id => {
+        hsh.merge input.key => {
           :start_value => input.start_value_for(gql)
         }
       rescue => ex
         Airbrake.notify(
-          :error_message => "Input#dynamic_start_values for input #{input.lookup_id} failed for api_session_id #{gql.scenario.id}",
+          :error_message => "Input#dynamic_start_values for input #{input.key} failed for api_session_id #{gql.scenario.id}",
           :backtrace => caller,
         :parameters => {:input => input, :api_scenario => gql.scenario }) unless APP_CONFIG[:standalone]
         hsh
@@ -307,7 +309,7 @@ class Input
   #   A human-readable version of the Input for debugging.
   #
   def inspect
-    "#<Input id=#{ id.inspect } key=#{ key.inspect }>"
+    "#<Input #{ key.inspect }>"
   end
 
   # Runs the given block, wrapping any errors raised in an exception which

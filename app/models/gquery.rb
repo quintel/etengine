@@ -7,7 +7,10 @@ class Gquery
   include InMemoryRecord
   extend ActiveModel::Naming
 
-  attr_accessor :key, :description, :query, :unit, :deprecated_key, :file_path, :group_key
+  attr_reader   :key
+
+  attr_accessor :description, :query, :unit, :deprecated_key,
+                :file_path, :group_key
 
   def initialize(attributes={})
     attributes && attributes.each do |name, value|
@@ -20,29 +23,29 @@ class Gquery
   end
 
   def self.load_records
-    h = {}
-    Etsource::Loader.instance.gqueries.each do |gquery|
-      h[gquery.key] = gquery
-      h[gquery.lookup_id.to_s] = gquery
-      h[gquery.deprecated_key] = gquery
+    Etsource::Loader.instance.gqueries.each_with_object({}) do |gquery, data|
+      data[gquery.key.to_s] = gquery
+
+      if gquery.deprecated_key
+        data[gquery.deprecated_key.to_s] = gquery
+      end
     end
-    h
   end
 
   GQL_MODIFIERS = %(present future historic stored)
   GQL_MODIFIER_REGEXP = /^([a-z_]+)\:/
 
   def id
-    lookup_id
+    key
   end
 
-  def lookup_id
-    @lookup_id ||= Hashpipe.hash(key)
+  def key=(new_key)
+    new_key && (@key = new_key.to_s)
   end
 
-  # As a tribute to Ed Posnak I leave the following comment where it is.
-  # ejp- cleaning algorithm is encapsulated in Gql:Gquery::Preparser
-
+  def self.get(key)
+    super(key.to_s)
+  end
 
   # Returns the sanitized query string as a lambda.
   #

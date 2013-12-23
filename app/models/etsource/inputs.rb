@@ -7,9 +7,9 @@ module Etsource
 
     def import
       Atlas::Input.all.map do |input|
-        attributes = input.to_hash
-        attributes[:lookup_id] ||= attributes.delete(:id)
+        attributes       = input.to_hash
         attributes[:key] = input.key.to_s
+
         Input.new(attributes)
       end
     end

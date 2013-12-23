@@ -20,7 +20,7 @@ describe Data::GqueriesController, :etsource_fixture do
 
   describe "GET show" do
     it "should be successful" do
-      get :show, :id => gquery.lookup_id, :api_scenario_id =>'latest'
+      get :show, :id => gquery.key, :api_scenario_id =>'latest'
       response.should render_template(:show)
     end
   end

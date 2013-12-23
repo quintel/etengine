@@ -6,8 +6,8 @@ describe Api::V3::ScenariosController do
   
   before do
     Input.stub(:records).and_return({
-      'foo' => FactoryGirl.build(:input),
-      'bar' => FactoryGirl.build(:input)
+      'foo' => FactoryGirl.build(:input, key: :foo),
+      'bar' => FactoryGirl.build(:input, key: :bar)
     })
 
     Input.stub(:all).and_return(Input.records.values)

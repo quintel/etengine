@@ -1,5 +1,4 @@
 # updates lft converter with the negative user value
-- id = 1
 - key = foo_demand
 - unit = PJ
 - update_period = future

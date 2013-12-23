@@ -30,7 +30,6 @@ class Data::DebugController < Data::BaseController
           Atlas::Parser::TextToHash::Base.new(params[:input_doc]).to_hash)
       ).to_hash
 
-      attributes[:lookup_id] ||= attributes.delete(:id)
       attributes.delete(:key)
 
       input      = Input.new(attributes)

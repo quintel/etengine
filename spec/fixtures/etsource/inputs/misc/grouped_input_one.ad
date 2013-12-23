@@ -1,5 +1,4 @@
 # An input which belongs to a group.
-- id = 5
 - key = grouped_input_one
 - share_group = grouped
 - start_value = 100

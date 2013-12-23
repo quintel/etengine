@@ -75,7 +75,7 @@ module MechanicalTurk
     end
 
     # when passing a dynamically created input, make sure
-    # to assign lookup_id and update_period.
+    # to assign key and update_period.
     def move_slider(id, value)
       input = case id
               when Input then id
@@ -83,7 +83,7 @@ module MechanicalTurk
               end
 
       if input
-        @user_values_log[input.id] = value
+        @user_values_log[input.key] = value
         scenario.update_input(input, value)
       else
         puts "no input found with id #{id.inspect}"

@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :input do
-    sequence(:lookup_id)
-    key { "input-#{ lookup_id }" }
+    sequence(:key) { |n| "input-#{ n }" }
     min_value 0
     max_value 100
     start_value 10

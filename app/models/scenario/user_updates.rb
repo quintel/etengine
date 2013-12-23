@@ -42,7 +42,7 @@ module Scenario::UserUpdates
     params.each_pair do |input_id, value|
       if input = Input.get(input_id)
         if value == 'reset'
-          delete_from_user_values(input.lookup_id)
+          delete_from_user_values(input.key)
         elsif typed_value = value.to_f
           update_input(input, typed_value)
         end
@@ -61,7 +61,7 @@ module Scenario::UserUpdates
   # @tested 2010-12-06 seb
   #
   def update_input(input, value)
-    key = input.lookup_id
+    key = input.key
     self.user_values.merge! key => value
     value
   end
