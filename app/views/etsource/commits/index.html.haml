@@ -29,8 +29,6 @@
 
 .row
   .span16
-    - require_newer_than = Time.parse('2013-11-13 14:42:00 +0000')
-
     - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
       %strong Looks like you're loading etsource from the local working copy
     - else
@@ -50,7 +48,7 @@
                 .wait Please wait&hellip;
               - else
                 - cache("etsource.status.#{ commit.sha }") do
-                  - if commit.gcommit.date >= require_newer_than && commit.can_import?
+                  - if commit.can_import?
                     %a.import{ href: import_etsource_commit_path(:id => commit.sha) } Import
                   - else
                     .incompatible(title="Incompatible due to non-matching dependencies") Incompatible
