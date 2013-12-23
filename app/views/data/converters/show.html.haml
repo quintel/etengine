@@ -11,7 +11,6 @@
     .page-header
       %h1
         = converter_key
-        %small== ID: #{@converter_present.excel_id}
         = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
 
