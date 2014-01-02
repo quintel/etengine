@@ -9,7 +9,7 @@ module Api
       ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :electricity_output_capacity =>
-            {label: 'Nominal electrical capacity', unit:'MW'},
+            {label: 'Electrical capacity', unit:'MW'},
           :electricity_output_conversion  =>
             {label: 'Electrical efficiency', unit: '%'},
           :full_load_hours  =>
@@ -33,7 +33,7 @@ module Api
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
           :part_ets  =>
-            {label: 'Do emissions have to be paid for through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
           :land_use_per_unit  =>
@@ -50,7 +50,7 @@ module Api
       HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :heat_output_capacity =>
-            {label: 'Nominal heat capacity', unit:'MW'},
+            {label: 'Heat capacity', unit:'MW'},
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :heat_output_conversion  =>
@@ -72,7 +72,7 @@ module Api
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
           :part_ets  =>
-            {label: 'Do emissions have to be paid for through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
           :land_use_per_unit  =>
@@ -87,7 +87,7 @@ module Api
       HEAT_PUMP_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :heat_output_capacity =>
-            {label: 'Nominal heat capacity', unit:'MW'},
+            {label: 'Heat capacity', unit:'MW'},
           :coefficient_of_performance =>
             {label: 'Coefficient of Performance',  unit:''},
           :full_load_hours  =>
@@ -111,7 +111,7 @@ module Api
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
           :part_ets  =>
-            {label: 'Do emissions have to be paid for through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
           :land_use_per_unit  =>
@@ -126,9 +126,9 @@ module Api
       CHP_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :electricity_output_capacity =>
-            {label: 'Nominal electrical capacity', unit: 'MW'},
+            {label: 'Electrical capacity', unit: 'MW'},
           :heat_output_capacity =>
-            {label: 'Nominal heat capacity', unit: 'MW'},
+            {label: 'Heat capacity', unit: 'MW'},
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :electricity_output_conversion =>
@@ -152,7 +152,7 @@ module Api
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
           :part_ets  =>
-            {label: 'Do emissions have to be paid for through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
           :land_use_per_unit  =>
