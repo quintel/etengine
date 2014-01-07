@@ -38,9 +38,9 @@ Etm::Application.routes.draw do
   end
 
   namespace :data do
-    get '/redirect'    => "base#redirect", :as => 'redirect'
-    get '/restart'     => 'pages#restart', :as => 'restart'
-    get '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
+    get  '/redirect'    => "base#redirect", :as => 'redirect'
+    post '/restart'     => 'pages#restart', :as => 'restart'
+    post '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     scope '/:api_scenario_id' do
       root :to => "pages#index", :api_scenario_id => 'latest'
