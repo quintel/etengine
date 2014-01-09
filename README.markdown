@@ -158,13 +158,6 @@ you have to follow these steps to run ET-Engine.
 * Press 'import' (the latest commit or another one if you like that better)
 * you're done!
 
-### Dealing with encrypted energy_balance.gpg
-When trying to run etengine locally, you need to acces the energy\_balance file (in etsource/datasets/COUNTRY/). The default energy\_balance file is encrypted as a gpg file. The easiest way to get your local etenging running, is to do the following:
-* Clone etdataset in your Projects folder: `git clone git@github.com:quintel/etdataset.git`
-* Go the Projects/etengine and run `rake import`
-* This will create the required (readable) energy_balance.csv file
-* Start up the local rails server (or POW) as mentioned above
-
 ### Auto-reloading your changes to etsource
 
 Sometimes you want to play around or tweak some gqueries. Then, you don't
