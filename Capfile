@@ -17,3 +17,6 @@ after 'deploy:update_code', 'deploy:etsource'
 after 'deploy:restart',     'unicorn:restart'    # Reload Unicorn.
 after 'deploy:restart',     'memcached:flush'    # Clear caches.
 after 'deploy',             'deploy:cleanup'
+
+after 'deploy:start',       'unicorn:start'
+after 'deploy:stop',        'unicorn:stop'
