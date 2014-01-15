@@ -2,17 +2,26 @@
 # we should decide what to do with them. At the moment I'm just showing them on the log. We could
 # save them to a separate log file or store them externally and use a gquery counter.
 #
-GqlLogger = Logger.new(Rails.root.join('log/gql.log'), 5, 1_048_576)
-GqlWarnings = Logger.new(Rails.root.join('log/warnings.log'), 5, 1_048_576)
+
+if Rails.root.join('log').directory?
+  GqlLogger   = Logger.new(Rails.root.join('log/gql.log'), 5, 1_048_576)
+  GqlWarnings = Logger.new(Rails.root.join('log/warnings.log'), 5, 1_048_576)
+
+  # For quick debugging sessions
+  DebugLogger = Logger.new(Rails.root.join('log/debug.log'), 5, 1_048_576)
+else
+  # This only happens during a cold deploy, when running a setup Rake task
+  # before the shared directories are symlinked.
+  GqlLogger   = Logger.new($stderr)
+  GqlWarnings = Logger.new($stderr)
+  DebugLogger = Logger.new($stderr)
+end
 
 GqlWarnings.formatter = GqlLogger.formatter =
   proc do |severity, datetime, progname, message|
     progname = " #{ progname }" unless progname.nil?
     "[#{ datetime }#{ progname }] #{ message }\n"
   end
-
-# For quick debugging sessions
-DebugLogger = Logger.new(Rails.root.join('log/debug.log'), 5, 1_048_576)
 
 ActiveSupport::Notifications.subscribe 'gql.gquery.deprecated' do |name, start, finish, id, payload|
   GqlLogger.info "gql.gquery.deprecated: #{payload}"

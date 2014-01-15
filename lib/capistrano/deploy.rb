@@ -1,6 +1,6 @@
 namespace :deploy do
   task :app_config do
-    run "cd #{current_release} && rake deploy:app_config"
+    run "cd #{current_release} && bundle exec rake deploy:app_config"
     run "ln -sf #{shared_path}/config/database.yml #{release_path}/config/"
     run "ln -sf #{shared_path}/.env #{release_path}/.env"
 
@@ -31,11 +31,23 @@ namespace :deploy do
       old_release = current_release
     end
 
-    rev = ENV['ETSOURCE_REV'] ||
-      capture("cat #{old_release}/tmp/etsource/REVISION")
+    rev =
+      if ENV['ETSOURCE_REV']
+        ENV['ETSOURCE_REV']
+      elsif File.exist?("#{old_release}/tmp/etsource/REVISION")
+        capture("cat #{old_release}/tmp/etsource/REVISION")
+      else
+        raise <<-MESSAGE.strip_heredoc
+          Unknown existing ETSource version, and no ETSOURCE_REV was provided.
+          If this is a cold deploy, be sure to tell ETEngine which version of
+          ETSource to use by supplying the ETSOURCE_REV.
+
+          ETSOURCE_REV=some_commit_id cap deploy:cold
+        MESSAGE
+      end
 
     run "cd #{current_release} && " \
         "RAILS_ENV=#{rails_env} REV=#{rev.strip} " \
-        "rake deploy:load_etsource deploy:calculate_datasets"
+        "bundle exec rake deploy:load_etsource deploy:calculate_datasets"
   end # load_etsource
 end # deploy
