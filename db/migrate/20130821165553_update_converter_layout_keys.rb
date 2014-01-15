@@ -452,7 +452,7 @@ __END__
 602: :buildings_final_demand_for_space_heating_wood_pellets
 603: :buildings_final_demand_for_space_heating_solar
 604: :buildings_final_demand_for_space_heating_electricity
-605: :buildings_final_demand_for_space_heating_monetized_heat
+605: :buildings_final_demand_for_space_heating_heat
 606: :buildings_final_demand_for_cooling_gas
 607: :buildings_final_demand_for_cooling_electricity
 608: :buildings_final_demand_for_lighting_electricity
