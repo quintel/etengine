@@ -37,7 +37,7 @@ namespace :deploy do
       elsif File.exist?("#{old_release}/tmp/etsource/REVISION")
         capture("cat #{old_release}/tmp/etsource/REVISION")
       else
-        raise <<-MESSAGE.strip_heredoc
+        raise <<-MESSAGE.gsub(/^\s+/, '')
           Unknown existing ETSource version, and no ETSOURCE_REV was provided.
           If this is a cold deploy, be sure to tell ETEngine which version of
           ETSource to use by supplying the ETSOURCE_REV.
