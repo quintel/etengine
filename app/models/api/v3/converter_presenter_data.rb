@@ -55,7 +55,7 @@ module Api
               formatter: FORMAT_1DP },
           :technical_lifetime  =>
             { label: 'Technical lifetime', unit: 'years',
-              formatter: -> (n) { n.to_i } }
+              formatter: ->(n) { n.to_i } }
         }
       }
 
