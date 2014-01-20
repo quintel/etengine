@@ -129,16 +129,10 @@ module Qernel::Plugins
 
       def add_total_demand
         user = ::Merit::User.new(
-          key:
-            :total_demand,
-          total_consumption:
-            graph.graph_query.final_demand_for_electricity +
-            graph.graph_query.energy_sector_final_demand_for_electricity +
-            graph.graph_query.electricity_losses_if_export_is_zero
+          key: :total_demand,
+          total_consumption: graph.graph_query.total_demand_for_electricity
         )
         @m.add user
-      rescue Exception => e
-        raise "Merit order: error adding total_demand: #{e.message}"
       end
 
       # ---- Converters ------------------------------------------------------

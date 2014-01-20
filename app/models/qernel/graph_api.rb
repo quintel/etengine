@@ -75,6 +75,59 @@ class GraphApi
     graph.group_converters(:final_demand_cbs).map(&:converter_api).map(&:input_of_electricity).compact.sum
   end
 
+  # Public: The demand of electricity in the entire graph, including use in the
+  # energy sector and losses caused by no exports.
+  #
+  # Returns a numeric.
+  def total_demand_for_electricity
+    final_demand_for_electricity +
+      energy_sector_final_demand_for_electricity +
+      electricity_losses_if_export_is_zero
+  end
+
+  # @return [Integer] Difference between start_year and end_year
+  #
+  def number_of_years
+    graph.number_of_years
+  end
+
+  def converter(key)
+    graph.converter(key).query
+  end
+
+  # Public: Given a maximum per-hour load +capacity+, determines the proportion
+  # of hours where demand exceeds production capacity.
+  #
+  # For example
+  #
+  #   converter.loss_of_load_probability(100)
+  #   # => 130
+  #   # This means that for 130 hours in the year, demand exceeded available
+  #   # supply of 100 MW.
+  #
+  # Returns a Integer representing the number of hours where capacity was
+  # exceeded.
+  def loss_of_load_probability(capacity)
+    demand_curve.count { |point| point > capacity }
+  end
+
+  #######
+  private
+  #######
+
+  # Internal: Takes the merit order load curve, and multiplies each point by the
+  # demand of the converter, yielding the load on the converter over time.
+  #
+  # Returns an array, each value a Numeric representing the converter demand in
+  # a one-hour period.
+  def demand_curve
+    demand = total_demand_for_electricity
+
+    Atlas::Dataset.find(area.area_code)
+      .load_profile(:total_demand)
+      .values.map { |point| point * demand }
+  end
+
   # Demand of electricity of the energy sector itself 
   # (not included in final_demand_for_electricity)
   def energy_sector_final_demand_for_electricity
@@ -133,16 +186,6 @@ class GraphApi
     conversion_electricity = converter.output(:electricity).conversion
 
     (transformer_demand + own_use_of_sector) * conversion_loss / conversion_electricity
-  end
-
-  # @return [Integer] Difference between start_year and end_year
-  #
-  def number_of_years
-    graph.number_of_years
-  end
-
-  def converter(key)
-    graph.converter(key).query
   end
 
 end

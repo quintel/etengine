@@ -52,14 +52,8 @@ module Qernel::Plugins::MeritOrder
 
         @graph.stub(:converter){ @converter }
         @graph.stub_chain(:area, :area_code) { :nl }
-        @graph.stub_chain(:graph_query, :final_demand_for_electricity) do
-          100
-        end
-        @graph.stub_chain(:graph_query, :energy_sector_final_demand_for_electricity) do
-          17
-        end
-        @graph.stub_chain(:graph_query, :electricity_losses_if_export_is_zero) do
-          23
+        @graph.stub_chain(:graph_query, :total_demand_for_electricity) do
+          140
         end
         @mo = MeritOrderInjector.new(@graph)
       end

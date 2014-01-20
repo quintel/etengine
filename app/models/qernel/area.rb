@@ -78,7 +78,10 @@ module Qernel
       :use_network_calculations,
       :enabled,
       :ventilation_rate,
-      :analysis_year
+      :analysis_year,
+      :capacity_credit_wind_constant_p1,
+      :capacity_credit_wind_constant_p2,
+      :capacity_credit_wind_constant_q1
     ]
 
     dataset_accessors ATTRIBUTES_USED
