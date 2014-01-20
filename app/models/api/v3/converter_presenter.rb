@@ -38,8 +38,8 @@ module Api
             next unless (pres || fut)
             next if pres <= 0.0 && opts[:hide_if_zero]
 
-            pres = opts[:formatter].call(pres) if opts[:formatter]
-            fut =  opts[:formatter].call(fut) if opts[:formatter]
+            pres = opts[:formatter].call(pres).to_s if opts[:formatter]
+            fut =  opts[:formatter].call(fut).to_s if opts[:formatter]
 
             json[:data][group_label][attr] = {
               :present => pres,
