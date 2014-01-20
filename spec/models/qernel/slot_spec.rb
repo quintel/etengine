@@ -40,14 +40,6 @@ module Qernel
         end
       end
 
-      context 'when type=carrier_efficient' do
-        it 'should be a carrier-efficient slot' do
-          slot = Qernel::Slot.factory(:carrier_efficient,
-            1, converter, Qernel::Carrier.new(key: :loss), :output)
-
-          slot.should be_a(Qernel::Slot::CarrierEfficient)
-        end
-      end
     end
   end
 end

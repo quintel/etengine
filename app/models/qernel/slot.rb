@@ -31,10 +31,9 @@ class Slot
   #
   def self.factory(type, id, converter, carrier, direction = :input)
     klass = case type
-      when :loss              then Slot::Loss
-      when :elastic           then Slot::Elastic
-      when :carrier_efficient then Slot::CarrierEfficient
-      else                         Slot
+      when :loss    then Slot::Loss
+      when :elastic then Slot::Elastic
+      else               Slot
     end
 
     klass.new(id, converter, carrier, direction)
