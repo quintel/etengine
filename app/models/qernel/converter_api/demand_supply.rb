@@ -117,5 +117,43 @@ class Qernel::ConverterApi
     end
   end
 
+  # Public: Takes the merit order load curve, and multiplies each point by the
+  # demand of the converter, yielding the load on the converter over time.
+  #
+  # Returns an array, each value a Numeric representing the converter demand in
+  # a one-hour period.
+  def demand_curve
+    fetch_and_rescue(:demand_curve) do
+      dataset = Atlas::Dataset.find(area.area_code)
+      mo_info = Atlas::Node.find(key).merit_order
+
+      if mo_info && mo_info.group
+        dataset.load_profile(mo_info.group).
+          values.map { |point| point * demand }
+      else
+        [] # This converter does not belong to a merit order group.
+      end
+    end
+  end
+
+  # Public: Given a maximum per-hour load +limit+, determines the proportion of
+  # hours where demand exceeds production capacity.
+  #
+  # For example
+  #
+  #   converter.loss_of_load_probability(10)
+  #   # => 0.05
+  #   # This means that 5% of the year, the demand on the node exceeds the
+  #   # given production capacity(10MJ).
+  #
+  # Returns a Float. 0.0 is returned if the converter does not belong to a merit
+  # order group.
+  def loss_of_load_probability(limit)
+    if demand_curve.length > 0
+      demand_curve.count { |point| point > limit } / demand_curve.length
+    else
+      0.0
+    end
+  end
 
 end
