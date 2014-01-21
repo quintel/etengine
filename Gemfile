@@ -9,7 +9,7 @@ gem 'json',         '~> 1.8.1'
 gem 'gravatar_image_tag'
 
 # Ruby gems
-gem 'deep_clone',             github: 'quintel/ruby-deepclone'
+gem 'ruby_deep_clone',        github: 'balmma/ruby-deepclone', require: 'deep_clone'
 gem 'distribution', '~> 0.6'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
