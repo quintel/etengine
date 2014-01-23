@@ -8,10 +8,11 @@ class Preset
   include ActiveModel::Serializers::Xml
 
 
-  COLUMNS = [:id, :key, :user_values, :end_year, :area_code, :use_fce, :title,
+  COLUMNS = [:id, :user_values, :end_year, :area_code, :use_fce, :title,
     :description, :in_start_menu, :ordering, :display_group, :created_at]
 
   attr_accessor *COLUMNS
+  attr_accessor :key
 
   def initialize(attributes = {})
     attributes = attributes.slice(*COLUMNS)
