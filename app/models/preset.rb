@@ -15,6 +15,8 @@ class Preset
   attr_accessor :key
 
   def initialize(attributes = {})
+    self.key = attributes[:key]
+
     attributes = attributes.slice(*COLUMNS)
 
     attributes.each do |key, value|
