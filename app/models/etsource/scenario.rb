@@ -5,7 +5,9 @@ module Etsource
     end
 
     def presets
-      Atlas::Preset.all.map { |preset| Preset.new(preset.attributes) }
+      Atlas::Preset.all.map do |preset|
+        Preset.new(preset.attributes.merge(key: preset.key))
+      end
     end
 
   end

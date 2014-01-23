@@ -23,15 +23,10 @@ class BulkUpdateHelpers
     def save_preset(preset, user_values, dry_run)
       return show_diff(preset, user_values) if dry_run
 
-      @file_data ||= get_file_data
+      atl_preset = Atlas::Preset.find(preset.key)
 
-      preset_file_path = @file_data[preset.id][:path]
-      preset = YAML::load_file(preset_file_path).with_indifferent_access
-      preset[:user_values] = user_values
-
-      File.open(preset_file_path, 'w') do |f|
-        f << YAML::dump(preset)
-      end
+      atl_preset.user_values = user_values
+      atl_preset.save(false)
     end
 
     def save_scenario(scenario, user_values, dry_run)
