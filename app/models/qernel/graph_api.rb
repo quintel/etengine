@@ -85,6 +85,18 @@ class GraphApi
       electricity_losses_if_export_is_zero
   end
 
+  # Public: The demand of electricity in the entire graph, including use in the
+  # energy sector and losses (present).
+  # This function is custom made for the LOLE calculation.
+  #
+  # Returns a numeric.
+  def total_demand_for_electricity_lole
+    final_demand_for_electricity +
+      energy_sector_final_demand_for_electricity +
+      electricity_losses_hv_network_present
+  end
+
+
   # @return [Integer] Difference between start_year and end_year
   #
   def number_of_years
@@ -100,14 +112,14 @@ class GraphApi
   #
   # For example
   #
-  #   converter.loss_of_load_probability(100)
+  #   converter.loss_of_load_expectation(100)
   #   # => 130
   #   # This means that for 130 hours in the year, demand exceeded available
   #   # supply of 100 MW.
   #
   # Returns a Integer representing the number of hours where capacity was
   # exceeded.
-  def loss_of_load_probability(capacity)
+  def loss_of_load_expectation(capacity)
     demand_curve.count { |point| point > capacity }
   end
 
@@ -121,7 +133,7 @@ class GraphApi
   # Returns an array, each value a Numeric representing the converter demand in
   # a one-hour period.
   def demand_curve
-    demand = total_demand_for_electricity
+    demand = total_demand_for_electricity_lole
 
     Atlas::Dataset.find(area.area_code)
       .load_profile(:total_demand)
@@ -132,6 +144,11 @@ class GraphApi
   # (not included in final_demand_for_electricity)
   def energy_sector_final_demand_for_electricity
     graph.converter(:energy_power_sector_own_use_electricity).demand
+  end
+
+  # Losses of the HV network (PRESENT value)
+  def electricity_losses_hv_network_present
+    PRESENT_VALUE(graph.converter(:energy_power_hv_network_loss).demand) # DEBT @antw please see if you can make this work...
   end
 
   # Computes the electricity losses AS IF there were no exports.
