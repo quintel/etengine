@@ -96,7 +96,6 @@ class GraphApi
       electricity_losses_hv_network_present
   end
 
-
   # @return [Integer] Difference between start_year and end_year
   #
   def number_of_years
@@ -107,20 +106,21 @@ class GraphApi
     graph.converter(key).query
   end
 
-  # Public: Given a maximum per-hour load +capacity+, determines the proportion
-  # of hours where demand exceeds production capacity.
+  # Public: Given a +demand+ placed on the graph, and a maximum per-hour load
+  # +capacity+, determines the proportion of hours where demand exceeds
+  # production capacity.
   #
   # For example
   #
-  #   converter.loss_of_load_expectation(100)
+  #   converter.loss_of_load_expectation(120, 100)
   #   # => 130
-  #   # This means that for 130 hours in the year, demand exceeded available
-  #   # supply of 100 MW.
+  #   # This means that for 130 hours in the year, the demand (120 MW) demand
+  #   # exceeded available supply of 100 MW.
   #
   # Returns a Integer representing the number of hours where capacity was
   # exceeded.
-  def loss_of_load_expectation(capacity)
-    demand_curve.count { |point| point > capacity }
+  def loss_of_load_expectation(demand, capacity)
+    demand_curve(demand).count { |point| point > capacity }
   end
 
   #######
@@ -130,10 +130,13 @@ class GraphApi
   # Internal: Takes the merit order load curve, and multiplies each point by the
   # demand of the converter, yielding the load on the converter over time.
   #
+  # An optional +demand+ parameter can be used to build the curve, instead of
+  # using the default "total_demand_for_electricity" value.
+  #
   # Returns an array, each value a Numeric representing the converter demand in
   # a one-hour period.
-  def demand_curve
-    demand = total_demand_for_electricity_lole
+  def demand_curve(demand = nil)
+    demand ||= total_demand_for_electricity
 
     Atlas::Dataset.find(area.area_code)
       .load_profile(:total_demand)
@@ -144,11 +147,6 @@ class GraphApi
   # (not included in final_demand_for_electricity)
   def energy_sector_final_demand_for_electricity
     graph.converter(:energy_power_sector_own_use_electricity).demand
-  end
-
-  # Losses of the HV network (PRESENT value)
-  def electricity_losses_hv_network_present
-    PRESENT_VALUE(graph.converter(:energy_power_hv_network_loss).demand) # DEBT @antw please see if you can make this work...
   end
 
   # Computes the electricity losses AS IF there were no exports.
