@@ -123,11 +123,7 @@ class GraphApi
     demand_curve(demand).count { |point| point > capacity }
   end
 
-  #######
-  private
-  #######
-
-  # Internal: Takes the merit order load curve, and multiplies each point by the
+  # Public: Takes the merit order load curve, and multiplies each point by the
   # demand of the converter, yielding the load on the converter over time.
   #
   # An optional +demand+ parameter can be used to build the curve, instead of
@@ -142,6 +138,10 @@ class GraphApi
       .load_profile(:total_demand)
       .values.map { |point| point * demand }
   end
+
+  #######
+  private
+  #######
 
   # Demand of electricity of the energy sector itself 
   # (not included in final_demand_for_electricity)
