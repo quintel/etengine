@@ -175,7 +175,7 @@ namespace :bulk_update do
 
       # Set efficiency improvement in chemical industry to the values in the other industry:
       inputs[:industry_useful_demand_for_chemical_electricity_efficiency] = inputs[:industry_useful_demand_electricity_efficiency] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_electricity_efficiency]
-      inputs[:industry_useful_demand_for_chemical_useable_heat_efficiency] = inputs[:industry_useful_demand_useable_heat_efficiency] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_useable_heat_efficiency]
+      inputs[:industry_useful_demand_for_chemical_useable_heat_efficiency] = inputs[:industry_useful_demand_useable_heat_efficiencty] || INPUT_DEFAULTS[:industry_useful_demand_for_chemical_useable_heat_efficiency]
 
       # Set heat shares in chemical industry to the values in the other industry:
       inputs[:industry_chemicals_burner_network_gas_share] = inputs[:industry_burner_network_gas_share] || INPUT_DEFAULTS[:industry_chemicals_burner_network_gas_share]
