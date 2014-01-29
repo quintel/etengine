@@ -14,8 +14,11 @@ namespace :deploy do
 
     # Server-specific configuration is stored in config.local.yml in the
     # deployment "shared/config" directory.
-    local  = YAML.load_file(local_path)['production']
-    config = { 'production' => defaults['production'].merge(local) }
+
+    local  = YAML.load_file(local_path)
+    config = {}
+
+    local.keys.each { |env| config[env] = defaults[env].merge(local[env]) }
 
     File.write(root.join('config/config.yml'), YAML.dump(config))
   end # app_config

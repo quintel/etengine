@@ -3,8 +3,6 @@
 
 set :application, "etengine"
 set :application_key, "etengine"
-set :stage, :production
-set :server_type, 'production'
 
 set :deploy_to, "/u/apps/etengine"
 
@@ -31,12 +29,13 @@ def remote_db_config(key)
   ENV["DB_#{ key.to_s.upcase }"] ||
     YAML.load(
       remote_file("#{shared_path}/config/database.yml")
-    )[stage.to_s][key.to_s]
+    )[rails_env.to_s][key.to_s]
 end
 
 task :production do
   set :domain, "et-engine.com"
   set :branch, fetch(:branch, "production")
+  set :rails_env, 'production'
 
   server domain, :web, :app, :db, :primary => true
 
@@ -51,6 +50,7 @@ end
 task :staging do
   set :domain, "beta.et-engine.com"
   set :branch, fetch(:branch, "staging")
+  set :rails_env, 'staging'
 
   server domain, :web, :app, :db, :primary => true
 

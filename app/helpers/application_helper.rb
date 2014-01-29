@@ -56,10 +56,4 @@ module ApplicationHelper
       "translation missing, #{I18n.locale.to_s.split('-').first} #{key}"
     end
   end
-
-  # Used in the admin section to show a warning header
-  #
-  def live_server?
-    APP_CONFIG[:live_server]
-  end
 end
