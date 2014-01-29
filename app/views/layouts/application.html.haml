@@ -80,7 +80,7 @@
               %a.close x
               %p= msg
 
-      - if live_server?
+      - if Rails.env.production?
         .alert.alert-danger This is the production server!
       - else
         .alert.alert-success This is a local or beta server

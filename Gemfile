@@ -22,7 +22,7 @@ gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
 
-gem 'dotenv-rails', groups: [:development, :test, :production]
+gem 'dotenv-rails', groups: [:development, :test, :production, :staging]
 
 # API
 gem 'rest-client'
@@ -72,7 +72,7 @@ group :test do
   gem 'simplecov', '~> 0.7.1', require: false
 end
 
-group :production do
+group :production, :staging do
   gem 'unicorn'
   gem 'airbrake'
 end
