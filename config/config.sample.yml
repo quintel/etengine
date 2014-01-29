@@ -48,10 +48,13 @@ development: &DEV
   # always show it.
   show_backtrace: false
 
-production:
+production: &PRODUCTION
   <<: *DEV
   etsource_lazy_load_dataset: false
   etsource_export: tmp/etsource
+
+staging:
+  <<: *PRODUCTION
 
 test: &TEST
   <<: *DEV
