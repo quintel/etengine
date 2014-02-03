@@ -235,13 +235,13 @@ class Qernel::ConverterApi
   # Unlike the co2_emissions_costs (defined above), this function does not
   # explicity depend on the production of the plant.
   #
-  # DEBT: rename co2_free and part_ets
+  # DEBT: rename free_co2_factor and part_ets
   #
   # @return [Float] 
   def co2_emissions_costs_per_typical_input
     fetch_and_rescue(:co2_emissions_costs_per_typical_input) do
       weighted_carrier_co2_per_mj * area.co2_price *
-      (1 - area.co2_percentage_free) * part_ets * ((1 - co2_free)) 
+      (1 - area.co2_percentage_free) * part_ets * ((1 - free_co2_factor)) 
     end
   end
   unit_for_calculation "co2_emissions_costs_per_typical_input", 'euro / MJ'

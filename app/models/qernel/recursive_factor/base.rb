@@ -64,7 +64,7 @@ module Qernel::RecursiveFactor::Base
         loss_compensation_factor = parent.loss_compensation_factor
 
         # What part is considered to be contributing to the outcome?
-        # (e.g. 80% when co2_free is 20%). This is 100% when the
+        # (e.g. 80% when free_co2_factor is 20%). This is 100% when the
         # converter_share method is nil.
         converter_share = converter_share(converter_share_method)
 

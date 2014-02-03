@@ -12,7 +12,7 @@ module Qernel
       :operational => {
         :electricity_output_capacity => ['', 'MWe'],
         :heat_output_capacity => ['', 'MWth'],
-        :co2_free => ['', ''],
+        :free_co2_factor => ['', ''],
         :construction_time => ['', ''],
         :electrical_efficiency_when_using_coal => ['', ''],
         :electrical_efficiency_when_using_wood_pellets => ['', ''],
