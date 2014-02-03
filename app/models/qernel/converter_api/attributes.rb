@@ -19,7 +19,7 @@ module Qernel
         :full_load_hours => ['', ''],
         :households_supplied_per_unit => ['', ''],
         :land_use_per_unit => ['', ''],
-        :part_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
+        :takes_part_in_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
         :technical_lifetime => ['Technical lifetime', 'year'],
         :typical_input_capacity => ['', 'MWinput']
       },
