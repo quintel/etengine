@@ -28,7 +28,7 @@ module Qernel::RecursiveFactor::Base
   # strategy_method        - The method name that controls the flow.
   #
   # converter_share_method - Additional method_name that gives a weight to a
-  #                          converter. For example, use #co2_free_factor to
+  #                          converter. For example, use #co2_factor to
   #                          exclude converters that have co2 filters.
   #
   # link                   - The link through which we called the
@@ -101,7 +101,7 @@ module Qernel::RecursiveFactor::Base
   # strategy_method        - The method name that controls the flow.
   #
   # converter_share_method - Additional method_name that gives a weight to a
-  #                          converter. For example, use #co2_free_factor to
+  #                          converter. For example, use #co2_factor to
   #                          exclude converters that have co2 filters.
   #
   # link                   - The link through which we called the
