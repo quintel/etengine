@@ -60,7 +60,6 @@ INPUT_DEFAULTS = {
 :employment_economic_multiplier => 1.0,
 :employment_fraction_production => 50.0,
 :employment_local_fraction => 20.0,
-:energy_import_steam_hot_water_preset_demands => 0.0,
 :energy_mixer_for_gas_power_fuel_bio_oil_share => 0.0,
 :energy_mixer_for_gas_power_fuel_crude_oil_share => 18.1761405,
 :energy_mixer_for_gas_power_fuel_natural_gas_share => 81.8238595,
