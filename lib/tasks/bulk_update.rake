@@ -166,7 +166,8 @@ namespace :bulk_update do
       ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
       ############################# START ##############################
 
-
+      # Rename industry_useful_demand_useable_heat_efficiencty into industry_useful_demand_useable_heat_efficiency
+      inputs.key?(:industry_useful_demand_useable_heat_efficiencty) && (inputs[:industry_useful_demand_useable_heat_efficiency] = inputs.delete(:industry_useful_demand_useable_heat_efficiencty))
 
       ######################  CHECKS ##########################
 
