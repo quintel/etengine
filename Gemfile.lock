@@ -142,7 +142,7 @@ GEM
     ffi (1.9.3)
     fnv (0.2.0)
     formatador (0.2.4)
-    gctools (0.2.2)
+    gctools (0.2.3)
     gravatar_image_tag (1.2.0)
     guard (2.2.4)
       formatador (>= 0.2.4)
