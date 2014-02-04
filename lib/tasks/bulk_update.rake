@@ -168,6 +168,7 @@ namespace :bulk_update do
 
       # Rename industry_useful_demand_useable_heat_efficiencty into industry_useful_demand_useable_heat_efficiency
       inputs.key?(:industry_useful_demand_useable_heat_efficiencty) && (inputs[:industry_useful_demand_useable_heat_efficiency] = inputs.delete(:industry_useful_demand_useable_heat_efficiencty))
+      puts "Renamed input industry_useful_demand_useable_heat_efficiencty to industry_useful_demand_useable_heat_efficiency."
 
       ######################  CHECKS ##########################
 
