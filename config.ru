@@ -2,6 +2,11 @@
 
 require ::File.expand_path('../config/environment',  __FILE__)
 
+if defined?(Unicorn::HttpRequest)
+  require 'gctools/oobgc'
+  use GC::OOB::UnicornMiddleware
+end
+
 use Rack::Cors do
   allow do
     origins '*'

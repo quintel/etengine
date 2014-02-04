@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   # include ApplicationController::PerformanceProfiling
-  include ApplicationController::GcDisabling
   include ApplicationController::ClientIdentification
 
   helper :all
