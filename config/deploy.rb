@@ -64,7 +64,7 @@ end
 
 set :user, 'ubuntu'
 set :scm, :git
-set :repository, "git@github.com:quintel/etengine.git"
+set :repository, "https://github.com/quintel/etengine.git"
 set :deploy_via, :remote_cache
 set :chmod755, "app config db lib public vendor script script/* public/disp*"  	# Some files that will need proper permissions set :use_sudo, false
 ssh_options[:forward_agent] = true
