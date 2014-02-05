@@ -191,7 +191,7 @@ module Qernel
     describe '#co2_emissions_costs_per_typical_input' do
       it "should calculate when everything is set" do
         pending "correct syntax of spec"
-        # @c.with typical_input: 500, weighted_carrier_co2_per_mj: 1, area.co2_price: 1, area.co2_percentage_free: 0, part_ets: 1, co2_free: 0
+        # @c.with typical_input: 500, weighted_carrier_co2_per_mj: 1, area.co2_price: 1, area.co2_percentage_free: 0, takes_part_in_ets: 1, free_co2_factor: 0
         # @c.converter_api.co2_emissions_costs_per_typical_input.should == 500
       end
       

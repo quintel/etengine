@@ -157,8 +157,8 @@ module Gql::Runtime
       #   MAP(L(foo, bar), demand) # => [100, 200]
       #
       # @example Composed attributes add "" or ''
-      #   MAP(L(foo), 'demand * (3.0 + co2_free)')
-      #   MAP(L(foo), "demand * (3.0 + co2_free)")
+      #   MAP(L(foo), 'demand * (3.0 + free_co2_factor)')
+      #   MAP(L(foo), "demand * (3.0 + free_co2_factor)")
       #
       # @example GQL functions as arguments
       #   MAP(L(foo), primary_demand_of(CARRIER(electricity)))

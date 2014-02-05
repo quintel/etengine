@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: 5e37cc60c2ca9de121882bd9fa8ee90b510a62b4
-  ref: 5e37cc6
+  revision: b555020db7ef17d34b3c40a25a51fa41a5f537b6
+  ref: b555020
   specs:
     atlas (0.0.2)
       activemodel
@@ -84,7 +84,7 @@ GEM
       json
     arel (4.0.1)
     atomic (1.1.14)
-    backports (3.4.0)
+    backports (3.5.0)
     bcrypt-ruby (3.1.2)
     better_errors (1.0.1)
       coderay (>= 1.0.0)

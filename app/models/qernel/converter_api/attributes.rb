@@ -12,14 +12,14 @@ module Qernel
       :operational => {
         :electricity_output_capacity => ['', 'MWe'],
         :heat_output_capacity => ['', 'MWth'],
-        :co2_free => ['', ''],
+        :free_co2_factor => ['', ''],
         :construction_time => ['', ''],
         :electrical_efficiency_when_using_coal => ['', ''],
         :electrical_efficiency_when_using_wood_pellets => ['', ''],
         :full_load_hours => ['', ''],
         :households_supplied_per_unit => ['', ''],
         :land_use_per_unit => ['', ''],
-        :part_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
+        :takes_part_in_ets => ['Do emissions have to be paid for through the ETS?', 'yes=1 / no=0'],
         :technical_lifetime => ['Technical lifetime', 'year'],
         :typical_input_capacity => ['', 'MWinput']
       },

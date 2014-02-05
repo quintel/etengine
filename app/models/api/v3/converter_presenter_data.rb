@@ -44,7 +44,7 @@ module Api
               formatter: ->(n) { n.to_i } },
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
-          :part_ets  =>
+          :takes_part_in_ets  =>
             {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
@@ -86,7 +86,7 @@ module Api
             {label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour'},
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
-          :part_ets  =>
+          :takes_part_in_ets  =>
             {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
@@ -125,7 +125,7 @@ module Api
             {label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour'},
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
-          :part_ets  =>
+          :takes_part_in_ets  =>
             {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
@@ -173,7 +173,7 @@ module Api
               formatter: ->(n) { n.to_i } },
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
-          :part_ets  =>
+          :takes_part_in_ets  =>
             {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
         },
         :other => {
