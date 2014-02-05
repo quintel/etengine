@@ -76,6 +76,7 @@ group :production, :staging do
   gem 'unicorn'
   gem 'gctools', require: false
   gem 'airbrake'
+  gem 'newrelic_rpm'
 end
 
 group :assets do

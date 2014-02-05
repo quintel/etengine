@@ -2,6 +2,7 @@ namespace :deploy do
   task :app_config do
     run "cd #{current_release} && bundle exec rake deploy:app_config"
     run "ln -sf #{shared_path}/config/database.yml #{release_path}/config/"
+    run "ln -sf #{shared_path}/config/newrelic.yml #{release_path}/config/"
     run "ln -sf #{shared_path}/.env #{release_path}/.env"
 
     run "ln -sf #{shared_path}/config/.etsource_password " \

@@ -50,3 +50,4 @@ etsource_export
 *.sublime-project
 *.sublime-workspace
 .powenv
+config/newrelic.yml

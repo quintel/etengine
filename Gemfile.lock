@@ -189,6 +189,7 @@ GEM
     net-ssh (2.7.0)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
+    newrelic_rpm (3.7.2.192)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
     pry (0.9.12.4)
@@ -331,6 +332,7 @@ DEPENDENCIES
   merit (>= 0.1.0)!
   msgpack
   mysql2 (~> 0.3.11)
+  newrelic_rpm
   osmosis!
   pry-debugger
   pry-rails
