@@ -85,17 +85,6 @@ class GraphApi
       electricity_losses_if_export_is_zero
   end
 
-  # Public: The demand of electricity in the entire graph, including use in the
-  # energy sector and losses (present).
-  # This function is custom made for the LOLE calculation.
-  #
-  # Returns a numeric.
-  def total_demand_for_electricity_lole
-    final_demand_for_electricity +
-      energy_sector_final_demand_for_electricity +
-      electricity_losses_hv_network_present
-  end
-
   # @return [Integer] Difference between start_year and end_year
   #
   def number_of_years
