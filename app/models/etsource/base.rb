@@ -73,7 +73,22 @@ module Etsource
     end
 
     def refresh
-      system "cd #{@base_dir} && git pull"
+      git.fetch
+
+      branches  = git.branches
+      return_to = detached_branch? ? 'master' : current_branch
+
+      branches.local.each do |branch|
+        if branches["remotes/origin/#{ branch.to_s }"]
+          git.checkout(branch)
+          git.reset_hard("origin/#{ branch.to_s }")
+          puts "RESET #{ branch.to_s }"
+        else
+          puts "NO REMOTE #{ branch.to_s }"
+        end
+      end
+
+      git.checkout(return_to)
     end
 
     # branch operations
