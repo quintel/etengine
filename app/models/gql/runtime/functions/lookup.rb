@@ -150,14 +150,17 @@ module Gql::Runtime
         keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
 
-      # Returns the start_value defined in fce_values.yml
+      # Returns the share of an "origin" for a FCE-enabled carrier.
       #
       # @example
       #      FCE_START_VALUE(CARRIER(coal), australia)
       #      FCE_START_VALUE(CARRIER(coal), "australia")
       #
       def FCE_START_VALUE(carrier, country)
-        scope.graph.fce_start_value(carrier, country)
+        carrier = carrier.first if carrier.is_a?(Array)
+        carrier = carrier.key   if carrier.is_a?(Qernel::Carrier)
+
+        scope.graph.fce.share_of(carrier, country)
       end
     end
   end

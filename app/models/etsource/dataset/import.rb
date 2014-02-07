@@ -117,21 +117,7 @@ module Etsource
     # Returns a hash, each key-pair being a carrier.
     def load_carrier_data
       Atlas::Carrier.all.each_with_object({}) do |carrier, data|
-        attributes = carrier.to_hash
-
-        if attributes[:fce].none?
-          attributes.delete(:fce)
-        else
-          # FCE data comes from Atlas in the form of a Hash, but ETEngine
-          # expects an array where each value is hash containing data for
-          # each source country.
-          attributes[:fce] = attributes[:fce].map do |source, fce_attributes|
-            fce_attributes[:origin_country] = source.to_s
-            fce_attributes
-          end
-        end
-
-        data[carrier.key] = attributes
+        data[carrier.key] = carrier.to_hash
       end
     end
 

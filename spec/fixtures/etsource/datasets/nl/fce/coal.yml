@@ -1,0 +1,63 @@
+---
+:australia:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.00312408
+  :co2_treatment_per_mj: 0.00054969
+  :co2_transportation_per_mj: 0.00033996
+  :co2_conversion_per_mj: 0.088163
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.153
+
+:east_asia:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.00485538
+  :co2_treatment_per_mj: 0.00126224
+  :co2_transportation_per_mj: 0.00037335
+  :co2_conversion_per_mj: 0.0983293
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.124
+
+:eastern_europe:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.0107564
+  :co2_treatment_per_mj: 0.00158152
+  :co2_transportation_per_mj: 0.00127921
+  :co2_conversion_per_mj: 0.103616
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.088
+
+:north_america:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.00365593
+  :co2_treatment_per_mj: 0.00080711
+  :co2_transportation_per_mj: 0.00021007
+  :co2_conversion_per_mj: 0.0874464
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.169
+
+:russia:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.0119648
+  :co2_treatment_per_mj: 0.00206805
+  :co2_transportation_per_mj: 0.00024298
+  :co2_conversion_per_mj: 0.0992456
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.0
+
+:south_africa:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.00412425
+  :co2_treatment_per_mj: 0.00059815
+  :co2_transportation_per_mj: 0.00026328
+  :co2_conversion_per_mj: 0.0901655
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.263
+
+:south_america:
+  :co2_exploration_per_mj: 0.0
+  :co2_extraction_per_mj: 0.00051643
+  :co2_treatment_per_mj: 0.00032445
+  :co2_transportation_per_mj: 0.00028475
+  :co2_conversion_per_mj: 0.0954937
+  :co2_waste_treatment_per_mj: 0.0
+  :start_value: 0.203

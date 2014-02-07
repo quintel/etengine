@@ -37,7 +37,7 @@ class GraphApi
   end
 
   def fce_enabled?
-    graph.fce_enabled?
+    graph.use_fce
   end
 
   def area

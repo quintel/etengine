@@ -23,7 +23,7 @@ class Graph
 
   # Concerns (Required Plugin)
   include Plugins::MeritOrder
-  include Plugins::Fce
+  include Plugins::FCE
   include Plugins::MaxDemandRecursive
   include Plugins::ResettableSlots
 
