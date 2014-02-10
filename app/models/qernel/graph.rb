@@ -174,8 +174,8 @@ class Graph
 
   def carriers
     # The list of carriers is retrieved by looking at all slots, not just
-    # links, so that "orphan" carriers used only for initial input (e.g.
-    # imported_steam_hot_water) get included.
+    # links, so that "orphan" carriers used only for initial input also
+    # get included.
     @carriers ||= converters.each_with_object(Set.new) do |converter, carriers|
       converter.slots.each { |slot| carriers.add slot.carrier }
     end.freeze
