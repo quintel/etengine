@@ -30,4 +30,5 @@
         %td= @gquery.try :unit
 
 - rescue => e
-  %pre= e.inspect
+  %h4= e.to_s
+  ~ "<pre>#{ e.backtrace.join("\n") }</pre>".html_safe
