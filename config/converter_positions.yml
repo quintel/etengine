@@ -1154,7 +1154,7 @@
 :buildings_final_demand_for_space_heating_electricity:
   :x: 2320
   :y: 6120
-:buildings_final_demand_for_space_heating_heat:
+:buildings_final_demand_for_space_heating_steam_hot_water:
   :x: 2320
   :y: 6240
 :buildings_final_demand_for_space_heating_coal:
