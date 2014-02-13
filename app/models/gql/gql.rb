@@ -191,8 +191,6 @@ class Gql
         send("query_#{strategy}", query)
       end
     end
-  rescue Exception => e
-    raise "Error running #{key}: #{e.inspect}"
   end
 
   # Connects datasets to a present and future graph.

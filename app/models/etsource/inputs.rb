@@ -7,8 +7,9 @@ module Etsource
 
     def import
       Atlas::Input.all.map do |input|
-        attributes       = input.to_hash
-        attributes[:key] = input.key.to_s
+        attributes             = input.to_hash
+        attributes[:key]       = input.key.to_s
+        attributes[:file_path] = input.path
 
         Input.new(attributes)
       end

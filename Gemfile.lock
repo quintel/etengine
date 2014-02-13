@@ -47,10 +47,9 @@ GIT
 
 GIT
   remote: git://github.com/quintel/rubel.git
-  revision: d2ab7738766c79e51685ea8e7e91aa44bc3ac3c5
-  ref: d2ab773
+  revision: ad3d44ef4304da6a98db3ec42747a7af9e7e64c7
   specs:
-    rubel (0.0.4)
+    rubel (0.1.0)
 
 GEM
   remote: http://rubygems.org/
@@ -356,7 +355,7 @@ DEPENDENCIES
   refinery!
   rest-client
   rspec-rails (~> 2.12)
-  rubel!
+  rubel (>= 0.1.0)!
   ruby-graphviz
   ruby_deep_clone!
   sass-rails

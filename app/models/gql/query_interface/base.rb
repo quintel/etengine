@@ -14,13 +14,13 @@ module Gql
 
     def query(obj, input_value = nil)
       case obj
-      when Gquery then subquery(obj.key) # sending it to subquery allows for caching of gqueries
-      when Input  then execute_input(obj, input_value)
-      when Symbol then subquery(obj.to_s)
-      when String then rubel_execute(Gquery.rubel_proc(obj))
-      when Proc   then rubel_execute(obj)
+      when Gquery        then subquery(obj.key) # sending it to subquery allows for caching of gqueries
+      when Input         then execute_input(obj, input_value)
+      when Symbol        then subquery(obj)
+      when String        then rubel_execute(Command.new(obj))
+      when Command, Proc then rubel_execute(obj)
       else
-        raise ::Gql::GqlError.new("Gql::QueryInterface.query query is not valid: #{obj.inspect}.")
+        fail GqlError.new("Cannot execute a query with #{ obj.inspect }")
       end
     end
 
@@ -31,7 +31,7 @@ module Gql
     #
     def subquery(gquery_key)
       if gquery = get_gquery(gquery_key)
-        rubel_execute(gquery.rubel)
+        rubel_execute(gquery.command)
       else
         nil
       end
@@ -41,9 +41,7 @@ module Gql
       @input_key   = input.key   # used for the logger
       self.input_value = value.to_s
       self.input_value = "#{self.input_value}#{input.update_type}" unless self.input_value.include?('%')
-      rubel_execute(input.rubel) if input.rubel
-    rescue => e
-      raise "UPDATE: #{input.key}:\n #{e.inspect}"
+      rubel_execute(input.command)
     ensure
       self.input_value = nil
     end
@@ -58,6 +56,8 @@ module Gql
 
     def rubel_execute(obj)
       @rubel.execute(obj)
+    rescue => ex
+      raise(obj.is_a?(Command) ? CommandError.new(obj, ex) : ex)
     end
   end
 
