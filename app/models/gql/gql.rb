@@ -318,6 +318,14 @@ class Gql
     future.query(query)
   end
 
+  def inspect
+    if @scenario
+      "#<#{ self.class.name } #{ @scenario.area_code }@#{ @scenario.end_year }>"
+    else
+      "#<#{ self.class.name } (unknown scenario)>"
+    end
+  end
+
 end
 
 end
