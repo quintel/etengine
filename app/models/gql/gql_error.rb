@@ -15,7 +15,7 @@ module Gql
     NO_DELEGATE = [*Object.methods, :exception, :set_backtrace]
 
     # Delegate everything else back to the original exception.
-    (GqlError.public_instance_methods - NO_DELEGATE).each do |meth|
+    (GqlError.public_instance_methods - NO_DELEGATE + [:to_s]).each do |meth|
       def_delegator(:@original, meth)
     end
 
