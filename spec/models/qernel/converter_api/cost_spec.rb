@@ -40,13 +40,12 @@ module Qernel
       end
 
       it "should raise error when incomplete" do
-        pending "Data validations of Converters upon loading / importing" do
-          @c.with electricity_output_conversion: 0.4,
-                  electricity_output_capacity: nil,
-                  heat_and_cold_output_conversion: nil,
-                  heat_output_capacity: 400
-          expect { @c.converter_api.input_capacity }.to raise_error
-        end
+        @c.with electricity_output_conversion: 0.4,
+                electricity_output_capacity: nil,
+                heat_and_cold_output_conversion: nil,
+                heat_output_capacity: 400
+
+        expect { @c.converter_api.input_capacity }.to raise_error
       end
 
       it "should raise error when capicity-e/eff-e != capacity-h/eff-h" do

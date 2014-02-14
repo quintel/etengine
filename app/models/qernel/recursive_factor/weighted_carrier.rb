@@ -8,7 +8,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
   # A.carrier_cost_per_mj == 0.4*0.85 + 0.6 * 1.0
   #
   def weighted_carrier_cost_per_mj
-    fetch_and_rescue(:weighted_carrier_cost_per_mj) do
+    fetch(:weighted_carrier_cost_per_mj) do
       recursive_factor_without_losses(:weighted_carrier_cost_per_mj_factor)
     end
   end
@@ -32,7 +32,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
   # Same as weighted_carrier_cost_per_mj but for co2
   #
   def weighted_carrier_co2_per_mj
-    fetch_and_rescue(:weighted_carrier_co2_per_mj) do
+    fetch(:weighted_carrier_co2_per_mj) do
       recursive_factor_without_losses(:weighted_carrier_co2_per_mj_factor)
     end
   end

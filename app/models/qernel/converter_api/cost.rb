@@ -26,7 +26,7 @@ class Qernel::ConverterApi
   #
   # DEBT: move to another file when cleaning up Converter API
   def input_capacity
-    fetch_and_rescue(:input_capacity) do
+    fetch(:input_capacity) do
       electric_based_input_capacity ||
         heat_based_input_capacity ||
         cooling_based_input_capacity ||
@@ -46,7 +46,7 @@ class Qernel::ConverterApi
   # Used in the scatter plot for costs
   #
   def total_initial_investment
-    fetch_and_rescue(:total_initial_investment) do
+    fetch(:total_initial_investment) do
       initial_investment + ccs_investment + cost_of_installing
     end
   end
@@ -64,7 +64,7 @@ class Qernel::ConverterApi
   #
   #
   def total_investment_over_lifetime
-    fetch_and_rescue(:total_investment_over_lifetime) do
+    fetch(:total_investment_over_lifetime) do
       total_initial_investment + decommissioning_costs
     end
   end
@@ -84,8 +84,10 @@ class Qernel::ConverterApi
   # @return [Float] total costs for one plant
   #
   def total_costs
-    fetch_and_rescue(:total_costs) do
-      fixed_costs + variable_costs
+    fetch(:total_costs) do
+      if fixed_costs && variable_costs
+        fixed_costs + variable_costs
+      end
     end
   end
   unit_for_calculation "total_costs", 'euro / plant / year'
@@ -106,7 +108,7 @@ class Qernel::ConverterApi
   # @return [Float] total fixed costs for one plant
   #
   def fixed_costs
-    fetch_and_rescue(:fixed_costs) do
+    fetch(:fixed_costs) do
       cost_of_capital + depreciation_costs +
         fixed_operation_and_maintenance_costs_per_year
     end
@@ -125,7 +127,7 @@ class Qernel::ConverterApi
   # @return [Float] yearly cost of capital for one plant
   #
   def cost_of_capital
-    fetch_and_rescue(:cost_of_capital) do
+    fetch(:cost_of_capital) do
       average_investment * wacc *
         (construction_time + technical_lifetime) /
           technical_lifetime
@@ -142,7 +144,7 @@ class Qernel::ConverterApi
   # straight-line depreciation method
   #
   def depreciation_costs
-    fetch_and_rescue(:depreciation_costs) do
+    fetch(:depreciation_costs) do
       total_investment_over_lifetime / technical_lifetime
     end
   end
@@ -183,9 +185,7 @@ class Qernel::ConverterApi
   # @return [Float] the total variable costs of one plant
   #
   def variable_costs
-    fetch_and_rescue(:variable_costs) do
-      typical_input * variable_costs_per_typical_input
-    end
+    fetch(:variable_costs) { typical_input * variable_costs_per_typical_input }
   end
   unit_for_calculation "variable_costs", 'euro / plant / year'
 
@@ -195,7 +195,7 @@ class Qernel::ConverterApi
   #
   # @return [Float] 
   def variable_costs_per_typical_input
-    fetch_and_rescue(:variable_costs_per_typical_input) do
+    fetch(:variable_costs_per_typical_input) do
       (weighted_carrier_cost_per_mj + 
        co2_emissions_costs_per_typical_input +
        variable_operation_and_maintenance_costs_per_typical_input)
@@ -209,9 +209,7 @@ class Qernel::ConverterApi
   # @return [Float] the yearly fuel costs for one single plant
   #
   def fuel_costs
-    fetch_and_rescue(:fuel_costs) do
-      typical_input * weighted_carrier_cost_per_mj
-    end
+    fetch(:fuel_costs) {typical_input * weighted_carrier_cost_per_mj }
   end
   unit_for_calculation "fuel_costs", 'euro / plant / year'
 
@@ -225,7 +223,7 @@ class Qernel::ConverterApi
   # @return [Float] the yearly costs for co2 emissions for one plant
   #
   def co2_emissions_costs
-    fetch_and_rescue(:co2_emissions_costs) do
+    fetch(:co2_emissions_costs) do
       typical_input * co2_emissions_costs_per_typical_input
     end
   end
@@ -239,7 +237,7 @@ class Qernel::ConverterApi
   #
   # @return [Float] 
   def co2_emissions_costs_per_typical_input
-    fetch_and_rescue(:co2_emissions_costs_per_typical_input) do
+    fetch(:co2_emissions_costs_per_typical_input) do
       weighted_carrier_co2_per_mj * area.co2_price *
       (1 - area.co2_percentage_free) * takes_part_in_ets * ((1 - free_co2_factor)) 
     end
@@ -254,8 +252,8 @@ class Qernel::ConverterApi
   # @return [Float] Yearly variable operation and maintenance costs per plant
   #
   def variable_operation_and_maintenance_costs
-    fetch_and_rescue(:variable_operation_and_maintenance_costs) do
-      typical_input * 
+    fetch(:variable_operation_and_maintenance_costs) do
+      typical_input *
       variable_operation_and_maintenance_costs_per_typical_input
     end
   end
@@ -270,7 +268,7 @@ class Qernel::ConverterApi
   # input
   #
   def variable_operation_and_maintenance_costs_per_typical_input
-    fetch_and_rescue(:variable_operation_and_maintenance_costs_per_typical_input) do
+    fetch(:variable_operation_and_maintenance_costs_per_typical_input) do
       (variable_operation_and_maintenance_costs_per_full_load_hour +
       variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour) /
       (input_capacity * 3600.0)
@@ -285,9 +283,7 @@ class Qernel::ConverterApi
   # Used to determine cost of capital
   #
   def average_investment
-    fetch_and_rescue(:average_investment) do
-      (total_investment_over_lifetime) / 2
-    end
+    fetch(:average_investment) { (total_investment_over_lifetime) / 2 }
   end
   unit_for_calculation "average_investment", 'euro / plant / year'
 
@@ -299,11 +295,9 @@ class Qernel::ConverterApi
   # DEBT: move to another file when cleaning up Converter API
   #
   def electric_based_input_capacity
-    fetch_and_rescue(:electric_based_input_capacity) do
+    fetch(:electric_based_input_capacity) do
       if electricity_output_conversion && electricity_output_conversion > 0
         electricity_output_capacity / electricity_output_conversion
-      else
-        nil
       end
     end
   end
@@ -317,11 +311,9 @@ class Qernel::ConverterApi
   # DEBT: move to another file when cleaning up Converter API
   #
   def heat_based_input_capacity
-    fetch_and_rescue(:heat_based_input_capacity) do
+    fetch(:heat_based_input_capacity) do
       if heat_output_conversion && heat_output_conversion > 0
         heat_output_capacity / heat_output_conversion
-      else
-        nil
       end
     end
   end
@@ -340,11 +332,9 @@ class Qernel::ConverterApi
   # DEBT: move to another file when cleaning up Converter API
   #
   def cooling_based_input_capacity
-    fetch_and_rescue(:cooling_based_input_capacity) do
+    fetch(:cooling_based_input_capacity) do
       if cooling_output_conversion && cooling_output_conversion > 0
         heat_output_capacity / cooling_output_conversion
-      else
-        nil
       end
     end
   end
@@ -359,7 +349,7 @@ class Qernel::ConverterApi
   # DEBT: move to another file when cleaning up Converter API
   #
   def typical_electricity_output
-    fetch_and_rescue(:typical_electricity_output) do
+    fetch(:typical_electricity_output) do
       typical_input * electricity_output_conversion
     end
   end
@@ -374,7 +364,7 @@ class Qernel::ConverterApi
   # DEBT: move to another file when cleaning up Converter API
   #
   def typical_heat_output
-    fetch_and_rescue(:typical_heat_output) do
+    fetch(:typical_heat_output) do
       typical_input * heat_and_cold_output_conversion
     end
   end
@@ -389,9 +379,7 @@ class Qernel::ConverterApi
   # DEBT: move to another file when cleaning up Converter API
   #
   def typical_input
-    fetch_and_rescue(:typical_input) do
-      input_capacity * full_load_seconds
-    end
+    fetch(:typical_input) { input_capacity * full_load_seconds }
   end
   unit_for_calculation "typical_input", 'MJ / year'
 end

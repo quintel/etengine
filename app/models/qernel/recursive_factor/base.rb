@@ -233,7 +233,7 @@ module Qernel::RecursiveFactor::Base
   #
   # Returns a float.
   def loss_compensation_factor
-    fetch_and_rescue(:loss_compensation_factor) do
+    fetch(:loss_compensation_factor) do
       loss_conversion = loss_output_conversion
       (loss_conversion == 1.0) ? 0.0 : (1.0 / (1.0 - loss_conversion))
     end
