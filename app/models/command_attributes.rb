@@ -14,7 +14,7 @@ module CommandAttributes
       cmd.metadata.file = file_path
 
       # Determine the line number on which the attribute is defined:
-      lines  = file_path.read.lines
+      lines  = file_path.read.lines.to_a
       lineno = lines.index { |line| line.match(/^- #{ attribute }/) } + 1
 
       # If it's a multi-line attribute, the query begins on the line
