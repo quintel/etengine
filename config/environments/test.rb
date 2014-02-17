@@ -21,6 +21,8 @@ Etm::Application.configure do
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
 
+  config.cache_store = :memory_store, { size: 16 * (1024 ** 3) } # 16 Mb
+
   # Disable request forgery protection in test environment
   config.action_controller.allow_forgery_protection    = false
 
