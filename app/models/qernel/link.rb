@@ -196,7 +196,10 @@ module Qernel
         # To fix https://github.com/dennisschoenmakers/etengine/issues/178
         # we have to change the following line:
         if flexible?
-          self.share = 1.0 - lft_input.links.map(&:share).compact.sum.to_f
+          others = lft_input.links.map(&:share).compact.sum.to_f
+
+          # Disallow a negative energy flow.
+          self.share = others > 1 ? 0.0 : 1.0 - others
         end
       end
     end
