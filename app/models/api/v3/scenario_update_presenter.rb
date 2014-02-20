@@ -82,7 +82,7 @@ module Api
         end
       rescue Exception => exception
         # An error while setting up the graph.
-        @errors.push(exception.message)
+        @errors.push(([exception.message] + exception.backtrace).join("\n"))
       end
 
       # Performs an individual query.
