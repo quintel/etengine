@@ -82,9 +82,6 @@ module Etsource
         if branches["remotes/origin/#{ branch.to_s }"]
           git.checkout(branch)
           git.reset_hard("origin/#{ branch.to_s }")
-          puts "RESET #{ branch.to_s }"
-        else
-          puts "NO REMOTE #{ branch.to_s }"
         end
       end
 
