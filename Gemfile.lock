@@ -18,7 +18,6 @@ GIT
     atlas (0.0.2)
       activemodel
       activesupport
-      rubel (>= 0.0.3)
       turbine-graph (>= 0.1)
       virtus (~> 0.5.4)
 
