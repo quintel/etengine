@@ -100,7 +100,8 @@ module Api
       rescue Exception => exception
         # TODO Exception is *way* too low level to be rescued; we could do
         #      with a GraphError exception for "acceptable" graph errors.
-        @errors.push("#{ query.key }/#{ period } - #{ exception.message }")
+        @errors.push("#{ query.key }/#{ period } - #{ exception.message } | " \
+                     "#{ exception.backtrace.join("\n") }")
         nil
       end
 
