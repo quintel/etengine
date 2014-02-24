@@ -45,7 +45,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
     return nil if !right_dead_end? # or !primary_energy_demand?
     # We return nil when we want to continue traversing. So typically this is until
     # we hit a dead end. Alternatively (for final_demand) we could stop when we hit
-    # a converter that is final_demand_cbs?
+    # a converter that is final_demand_group?
     factor_for_primary_demand(link)
   end
 
