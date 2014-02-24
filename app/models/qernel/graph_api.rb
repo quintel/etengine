@@ -72,7 +72,7 @@ class GraphApi
 
   # Demand of electricity for all final demand converters
   def final_demand_for_electricity
-    graph.group_converters(:final_demand_cbs).map(&:converter_api).map(&:input_of_electricity).compact.sum
+    graph.group_converters(:final_demand_group).map(&:converter_api).map(&:input_of_electricity).compact.sum
   end
 
   # Public: The demand of electricity in the entire graph, including use in the
