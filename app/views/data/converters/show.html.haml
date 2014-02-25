@@ -13,6 +13,7 @@
         = converter_key
         = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
+      = link_to 'View document', link_to_node_file(@converter_future)
 
 .row-fluid
   .span12

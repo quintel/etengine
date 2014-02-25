@@ -118,4 +118,27 @@ module DataHelper
 
     link ? link_to(name, link) : name
   end
+
+  def link_to_node_file(converter)
+    doc = Atlas::Node.find(converter.key)
+    rev = Etsource::Base.instance.get_latest_import_sha
+
+    rev = 'HEAD' if rev.blank?
+
+    "https://github.com/quintel/etsource/blob/#{ rev }/" \
+    "#{ doc.path.relative_path_from(Atlas.data_dir) }"
+  end
+
+  def link_to_edge_file(link)
+    key = Atlas::Edge.key(
+      link.rgt_converter.key, link.lft_converter.key, link.carrier.key)
+
+    doc = Atlas::Edge.find(key)
+    rev = Etsource::Base.instance.get_latest_import_sha
+
+    rev = 'HEAD' if rev.blank?
+
+    "https://github.com/quintel/etsource/blob/#{ rev }/" \
+    "#{ doc.path.relative_path_from(Atlas.data_dir) }"
+  end
 end

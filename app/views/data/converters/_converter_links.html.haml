@@ -27,7 +27,10 @@
                       %tbody
                         - output_slot.links.each_with_index do |output_link, i|
                           %tr
-                            %td= link_to output_link.lft_converter.key, data_converter_path(:id => output_link.lft_converter)
+                            %td
+                              = link_to output_link.lft_converter.key, data_converter_path(:id => output_link.lft_converter)
+                              %span(style="font-size: 11px")
+                                = link_to '(doc)', link_to_edge_file(output_link)
                             %td{:title => output_link.value}= auto_number output_link.value
                             %td{:title => output_link.share}= "#{(100.0 * output_link.parent_share).round(2)} %" unless output_slot.external_value == 0
                             %td
@@ -81,4 +84,7 @@
                                   Max Demand:
                                   %strong= auto_number input_link.max_demand
                             %td{:title => input_link.value}= auto_number input_link.value
-                            %td= link_to input_link.rgt_converter.key, data_converter_path(:id => input_link.rgt_converter)
+                            %td
+                              = link_to input_link.rgt_converter.key, data_converter_path(:id => input_link.rgt_converter)
+                              %span(style="font-size: 11px")
+                                = link_to '(doc)', link_to_edge_file(input_link)
