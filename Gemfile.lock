@@ -48,6 +48,7 @@ GIT
 GIT
   remote: git://github.com/quintel/rubel.git
   revision: d2ab7738766c79e51685ea8e7e91aa44bc3ac3c5
+  ref: d2ab773
   specs:
     rubel (0.0.4)
 
@@ -84,7 +85,7 @@ GEM
       json
     arel (4.0.1)
     atomic (1.1.14)
-    backports (3.5.0)
+    backports (3.6.0)
     bcrypt-ruby (3.1.2)
     better_errors (1.0.1)
       coderay (>= 1.0.0)
@@ -180,7 +181,7 @@ GEM
     mime-types (1.25.1)
     minitest (4.7.5)
     msgpack (0.5.7)
-    multi_json (1.8.2)
+    multi_json (1.8.4)
     mysql2 (0.3.14)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
@@ -344,7 +345,7 @@ DEPENDENCIES
   refinery!
   rest-client
   rspec-rails (~> 2.12)
-  rubel (>= 0.0.3)!
+  rubel!
   ruby-graphviz
   ruby_deep_clone!
   sass-rails

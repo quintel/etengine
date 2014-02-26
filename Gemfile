@@ -33,7 +33,7 @@ gem 'fnv'
 gem 'msgpack'
 
 # own gems
-gem 'rubel',         '>= 0.0.3',       github:  'quintel/rubel'
+gem 'rubel',         ref: 'd2ab773',   github:  'quintel/rubel'
 gem 'merit',         '>=0.1.0',        github:  'quintel/merit'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
 gem 'refinery',      ref: 'a0dcae9',   github:  'quintel/refinery'
