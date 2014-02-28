@@ -111,7 +111,6 @@ class Slot
     end
   end
 
-
   # --------- Slot Types ------------------------------------------------------
 
   # @return [Boolean] Is Slot an input (on the left side of converter)
@@ -204,8 +203,14 @@ class Slot
   # @return [Float, nil] nil if not all links have values
   #
   def external_value
-    values = links.map(&:value)
-    values.compact.sum.to_f
+    link_demand = links.map(&:value).compact.sum.to_f
+
+    if has_reversed_shares?
+      Rails.logger.info "O_O #{ reversed_share_compensation.inspect } -> #{ self }"
+      link_demand / reversed_share_compensation
+    else
+      link_demand
+    end
   end
 
   # Used for calculation of flexible links.
@@ -269,6 +274,47 @@ class Slot
       nil
     end
   end
+
+  # --------- Reversed Shares -------------------------------------------------
+
+  # Internal: Returns if the slot has any reversed share links.
+  #
+  # Returns true or false.
+  def has_reversed_shares?
+    if defined?(@has_reversed_shares)
+      @has_reversed_shares
+    else
+      @has_reversed_shares = links.any? do |link|
+        link.reversed? && link.link_type == :share
+      end
+    end
+  end
+
+  private :has_reversed_shares?
+
+  # Internal: Determines by how much the external value needs to be adjusted in
+  # order to account for uncalculated reversed share links.
+  #
+  # If the slot has a mix of forwards and reversed share links, the reversed
+  # links aren't calculated until after the converter demans is known. That is
+  # too late, since the converter demand won't account for the reversed
+  # shares. Such slots require their external_value adjusting so that the
+  # reversed shares are included.
+  #
+  # Returns a float.
+  def reversed_share_compensation
+    comp_share = links.reduce(0.0) do |comp, link|
+      if link.reversed? && link.link_type == :share && link.value.nil?
+        comp + link.share
+      else
+        comp
+      end
+    end
+
+    comp_share >= 1.0 ? 1.0 : 1.0 - comp_share
+  end
+
+  private :reversed_share_compensation
 
   # --------- Debug -----------------------------------------------------------
 
