@@ -13,7 +13,7 @@ class Data::LayoutsController < Data::BaseController
   end
 
   def yaml
-    response.headers['Content-Disposition'] = 'attachment; filename="converter_positions.yaml"'
+    response.headers['Content-Disposition'] = 'attachment; filename="converter_positions.yml"'
     response.headers['Content-Type']        = 'application/x-yaml'
 
     render text: positions.to_yaml
