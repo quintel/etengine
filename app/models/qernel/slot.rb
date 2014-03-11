@@ -206,7 +206,6 @@ class Slot
     link_demand = links.map(&:value).compact.sum.to_f
 
     if has_reversed_shares?
-      Rails.logger.info "O_O #{ reversed_share_compensation.inspect } -> #{ self }"
       link_demand / reversed_share_compensation
     else
       link_demand
