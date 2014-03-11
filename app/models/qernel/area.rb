@@ -81,7 +81,10 @@ module Qernel
       :analysis_year,
       :capacity_credit_wind_constant_p1,
       :capacity_credit_wind_constant_p2,
-      :capacity_credit_wind_constant_q1
+      :capacity_credit_wind_constant_q1,
+      :investment_hv_net_low,
+      :investment_hv_net_high,
+      :investment_hv_net_per_turbine
     ]
 
     dataset_accessors ATTRIBUTES_USED
