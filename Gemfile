@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-gem 'rails',        '~> 4.0.2'
+gem 'rails',        '~> 4.0.3'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
