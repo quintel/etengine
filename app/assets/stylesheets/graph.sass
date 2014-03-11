@@ -1,3 +1,15 @@
+@keyframes link-glow
+  from
+    color: #1949c4
+  to
+    color: #5fa021
+
+@-webkit-keyframes link-glow
+  from
+    color: #1949c4
+  to
+    color: #5fa021
+
 body
   font-family: Helvetica, Arial
   #instructions
@@ -14,4 +26,11 @@ body
   #canvas
     width: 100%
     height: 100%
-
+  #options
+    a
+      color: #1949c4
+      &.glow
+        color: #4e8816
+        font-weight: bold
+        animation: link-glow 2s
+        -webkit-animation: link-glow .5s infinite alternate
