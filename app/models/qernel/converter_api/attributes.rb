@@ -47,7 +47,6 @@ module Qernel
         :simult_se => ['', ''],
         :simult_wd => ['', ''],
         :simult_we => ['', ''],
-        :peak_load_units => ['', ''],
         :peak_load_units_present => ['', '']
       },
 
