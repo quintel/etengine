@@ -127,15 +127,11 @@ module Qernel
 
     describe '#depreciation_costs' do
       it "should calculate when everything is set" do
-        @c.with total_investment_over_lifetime: 100, residual_value: 10, technical_lifetime: 10
+        @c.with total_investment_over_lifetime: 100, technical_lifetime: 10
         @c.converter_api.send(:depreciation_costs).should == 9
       end
 
-      it "should raise error when total_investment_costs - residual_value < 0" do
-        pending "error raising"
-      end
-
-      it "should assume 0 when residual_value is nil" do
+      it "should raise error when total_investment_costs < 0" do
         pending "error raising"
       end
 
@@ -168,7 +164,7 @@ module Qernel
 
     describe "#fuel_costs" do
       it "should calculate when everything is set" do
-        @c.with total_investment_over_lifetime: 100, residual_value: 10, technical_lifetime: 10
+        @c.with total_investment_over_lifetime: 100, technical_lifetime: 10
         @c.converter_api.send(:depreciation_costs).should == 9
       end
 

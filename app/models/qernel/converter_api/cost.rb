@@ -143,7 +143,7 @@ class Qernel::ConverterApi
   #
   def depreciation_costs
     fetch_and_rescue(:depreciation_costs) do
-      (total_investment_over_lifetime - residual_value) / technical_lifetime
+      total_investment_over_lifetime / technical_lifetime
     end
   end
   unit_for_calculation "depreciation_costs", 'euro / plant / year'
