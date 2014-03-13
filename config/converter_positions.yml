@@ -360,7 +360,7 @@
   :x: 7020
   :y: 3920
 :energy_distribution_crude_oil:
-  :x: 7020
+  :x: 7340
   :y: 3320
 :energy_distribution_bio_residues_for_firing:
   :x: 7020
@@ -369,7 +369,7 @@
   :x: 7060
   :y: 3160
 :energy_distribution_coal:
-  :x: 7020
+  :x: 7340
   :y: 3380
 :energy_treatment_uranium_oxide:
   :x: 7280
@@ -381,8 +381,8 @@
   :x: 5520
   :y: 2380
 :energy_distribution_crude_oil_loss:
-  :x: 6760
-  :y: 3220
+  :x: 7120
+  :y: 3240
 :energy_distribution_network_gas_loss:
   :x: 6520
   :y: 3720
@@ -399,7 +399,7 @@
   :x: 4660
   :y: 3400
 :energy_distribution_lignite:
-  :x: 7020
+  :x: 7340
   :y: 3440
 :energy_distribution_waste_mix:
   :x: 7020
@@ -441,7 +441,7 @@
   :x: 700
   :y: 8480
 :energy_national_gas_network_natural_gas:
-  :x: 6860
+  :x: 6760
   :y: 4280
 :energy_treatment_natural_gas:
   :x: 7320
@@ -1625,3 +1625,9 @@
 :transport_final_demand_for_aviation_bio_ethanol:
   :x: 2320
   :y: 4540
+:energy_refinery_crude_oil:
+  :x: 6920
+  :y: 3320
+:energy_refinery_own_use_crude_oil:
+  :x: 6720
+  :y: 3220
