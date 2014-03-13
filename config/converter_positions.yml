@@ -855,14 +855,14 @@
   :x: 7700
   :y: 3040
 :energy_export_uranium_oxide:
-  :x: 2320
-  :y: 11440
+  :x: 2480
+  :y: 11060
 :energy_export_crude_oil:
-  :x: 2320
-  :y: 10540
+  :x: 2480
+  :y: 10520
 :energy_export_network_gas:
-  :x: 2320
-  :y: 10840
+  :x: 2480
+  :y: 10640
 :energy_export_diesel:
   :x: 2320
   :y: 10720
@@ -876,23 +876,23 @@
   :x: 2320
   :y: 10780
 :energy_export_greengas:
-  :x: 2320
-  :y: 11320
+  :x: 2480
+  :y: 11000
 :energy_export_coal:
-  :x: 2320
-  :y: 10360
+  :x: 2480
+  :y: 10580
 :energy_export_bio_oil:
-  :x: 2320
-  :y: 10960
+  :x: 2480
+  :y: 10760
 :energy_export_waste_mix:
   :x: 2320
   :y: 11380
 :energy_export_biodiesel:
-  :x: 2320
-  :y: 11080
+  :x: 2480
+  :y: 10880
 :energy_export_bio_ethanol:
-  :x: 2320
-  :y: 11140
+  :x: 2480
+  :y: 10940
 :energy_export_algae_diesel:
   :x: 2320
   :y: 11260
@@ -1236,8 +1236,8 @@
   :x: 3920
   :y: 10120
 :energy_export_coal_gas:
-  :x: 2320
-  :y: 10480
+  :x: 2480
+  :y: 10400
 :energy_export_cokes:
   :x: 2320
   :y: 10420
@@ -1497,14 +1497,14 @@
   :x: 1520
   :y: 2680
 :energy_export_torrified_biomass_pellets:
-  :x: 2320
-  :y: 10900
+  :x: 2480
+  :y: 10700
 :energy_export_lignite:
-  :x: 2320
-  :y: 10300
+  :x: 2480
+  :y: 10460
 :energy_export_wood_pellets:
-  :x: 2320
-  :y: 11020
+  :x: 2480
+  :y: 10820
 :energy_import_lignite:
   :x: 7700
   :y: 4400
@@ -1556,3 +1556,72 @@
 :energy_chp_ultra_supercritical_cofiring_coal:
   :x: 6240
   :y: 2080
+:industry_useful_demand_for_chemical_crude_oil_non_energetic:
+  :x: 720
+  :y: 11140
+:industry_useful_demand_for_chemical_useable_heat:
+  :x: 720
+  :y: 10800
+:industry_chemicals_burner_wood_pellets:
+  :x: 1520
+  :y: 10680
+:industry_chemicals_burner_network_gas:
+  :x: 1520
+  :y: 10620
+:industry_final_demand_for_chemical_network_gas:
+  :x: 2120
+  :y: 10620
+:industry_useful_demand_for_chemical_coal_non_energetic:
+  :x: 720
+  :y: 10960
+:industry_final_demand_for_chemical_steam_hot_water:
+  :x: 2120
+  :y: 10800
+:industry_final_demand_for_chemical_crude_oil_non_energetic:
+  :x: 2120
+  :y: 11140
+:industry_useful_demand_for_chemical_electricity:
+  :x: 720
+  :y: 10500
+:industry_final_demand_for_chemical_electricity:
+  :x: 2120
+  :y: 10500
+:industry_useful_demand_for_chemical_wood_pellets_non_energetic:
+  :x: 720
+  :y: 11080
+:industry_final_demand_for_chemical_wood_pellets_non_energetic:
+  :x: 2120
+  :y: 11080
+:industry_final_demand_for_chemical_wood_pellets:
+  :x: 2120
+  :y: 10680
+:industry_final_demand_for_chemical_coal_non_energetic:
+  :x: 2120
+  :y: 10960
+:industry_chemicals_burner_coal:
+  :x: 1520
+  :y: 10560
+:industry_final_demand_for_chemical_coal:
+  :x: 2120
+  :y: 10560
+:industry_useful_demand_for_chemical_network_gas_non_energetic:
+  :x: 720
+  :y: 11020
+:industry_final_demand_for_chemical_network_gas_non_energetic:
+  :x: 2120
+  :y: 11020
+:industry_chemicals_burner_crude_oil:
+  :x: 1520
+  :y: 10740
+:industry_final_demand_for_chemical_crude_oil:
+  :x: 2120
+  :y: 10740
+:energy_export_non_biogenic_waste:
+  :x: 600
+  :y: 3060
+:energy_export_biogenic_waste:
+  :x: 620
+  :y: 3240
+:transport_final_demand_for_aviation_bio_ethanol:
+  :x: 2320
+  :y: 4540
