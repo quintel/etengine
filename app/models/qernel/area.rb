@@ -5,10 +5,8 @@ module Qernel
 
     # Attributes defined in ETSource should not be defined here, but in the
     # Atlas "Dataset" class.
-    ATTRIBUTES_USED = [
-      *Atlas::Dataset.attribute_set.map(&:name) - [:id, :parent_id],
-      :cold_network_potential
-    ]
+    ATTRIBUTES_USED =
+      Atlas::Dataset.attribute_set.map(&:name) - [:id, :parent_id]
 
     dataset_accessors ATTRIBUTES_USED
 
