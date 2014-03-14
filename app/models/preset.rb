@@ -7,9 +7,7 @@ class Preset
   include ActiveModel::Serializers::JSON
   include ActiveModel::Serializers::Xml
 
-
-  COLUMNS = [:id, :user_values, :end_year, :area_code, :use_fce, :title,
-    :description, :in_start_menu, :ordering, :display_group, :created_at]
+  COLUMNS = Atlas::Preset.attribute_set.map(&:name)
 
   attr_accessor *COLUMNS
   attr_accessor :key

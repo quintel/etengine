@@ -8,9 +8,8 @@ class Gquery
   extend ActiveModel::Naming
 
   attr_reader   :key
-
-  attr_accessor :description, :query, :unit, :deprecated_key,
-                :file_path, :group_key
+  attr_accessor :description, :file_path, :group_key
+  attr_accessor *Atlas::Gquery.attribute_set.map(&:name)
 
   def initialize(attributes={})
     attributes && attributes.each do |name, value|

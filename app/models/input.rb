@@ -4,27 +4,11 @@ class Input
   include ActiveModel::Validations
 
   validates :update_period, :presence => true,
-                                :inclusion => %w[present future both before]
+                            :inclusion => %w[present future both before]
 
   ATTRIBUTES = [
-    :key,
-    :comments,
-    :priority,
-    :label,
-    :label_query,
-    :max_value,
-    :max_value_gql,
-    :min_value,
-    :min_value_gql,
-    :query,
-    :share_group,
-    :start_value,
-    :start_value_gql,
-    :unit,
-    :update_period,
-    :update_type,
-    :dependent_on,
-    :step_value
+    *Atlas::Input.attribute_set.map(&:name) - [:default_unit, :factor],
+    :key
   ]
 
   attr_accessor *ATTRIBUTES
