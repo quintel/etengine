@@ -114,15 +114,6 @@ class Scenario < ActiveRecord::Base
     Area.get(area_code)
   end
 
-  def area_input_values
-    hash = area[:input_values]
-    if hash.present?
-      YAML::load(hash).with_indifferent_access
-    else
-      {}
-    end
-  end
-
   # Public: The year on which the analysis for the scenario's area is based.
   #
   # Returns an integer.

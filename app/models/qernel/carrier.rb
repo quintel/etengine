@@ -15,16 +15,7 @@ class Carrier
     :co2_waste_treatment_per_mj
   ].freeze
 
-  DATASET_ATTRIBUTES = [
-    :cost_per_mj,
-    :sustainable,
-    :typical_production_per_km2,
-    :kg_per_liter,
-    :mj_per_kg,
-    :infinite, # infinite getter is overwritten below for legacy reason.
-    :graphviz_color,
-    *CO2_FCE_COMPONENTS
-  ]
+  DATASET_ATTRIBUTES = Atlas::Carrier.attribute_set.map(&:name)
 
   dataset_accessors DATASET_ATTRIBUTES
 
