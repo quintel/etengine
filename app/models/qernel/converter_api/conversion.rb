@@ -65,10 +65,6 @@ class Qernel::ConverterApi
     convert_to decommissioning_costs, unit
   end
 
-  def residual_value_per(unit)
-    convert_to residual_value, unit
-  end
-
   # CONVERTER METHODS TO CONVERT
   def total_costs_per(unit)
     convert_to total_costs, unit

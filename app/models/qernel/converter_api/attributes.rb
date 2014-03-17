@@ -29,7 +29,6 @@ module Qernel
         :ccs_investment => ['', 'euro / unit'],
         :cost_of_installing => ['', 'euro / unit'],
         :decommissioning_costs => ['', 'euro / unit'],
-        :residual_value => ['', 'euro / unit'],
         :fixed_operation_and_maintenance_costs_per_year => ['', 'euro / unit / year'],
         :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
         :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
@@ -47,7 +46,6 @@ module Qernel
         :simult_se => ['', ''],
         :simult_wd => ['', ''],
         :simult_we => ['', ''],
-        :peak_load_units => ['', ''],
         :peak_load_units_present => ['', '']
       },
 

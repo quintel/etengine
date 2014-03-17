@@ -76,8 +76,6 @@ module Api
             {label: 'Initial purchase price', unit: 'EUR'},
           'cost_of_installing_per(:plant)' =>
             {label: 'Cost of installing', unit:'EUR'},
-          'residual_value_per(:plant)' =>
-            {label: 'Residual value after lifetime', unit:'EUR'},
           'decommissioning_costs_per(:plant)' =>
             {label: 'Decommissioning costs', unit:'EUR'},
           'fixed_operation_and_maintenance_costs_per(:plant)' =>
@@ -115,8 +113,6 @@ module Api
             {label: 'Initial purchase price', unit: 'EUR'},
           'cost_of_installing_per(:plant)' =>
             {label: 'Cost of installing', unit:'EUR'},
-          'residual_value_per(:plant)' =>
-            {label: 'Residual value after lifetime', unit:'EUR'},
           'decommissioning_costs_per(:plant)' =>
             {label: 'Decommissioning costs', unit:'EUR'},
           'fixed_operation_and_maintenance_costs_per(:plant)' =>
