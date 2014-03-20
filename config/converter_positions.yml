@@ -1631,3 +1631,9 @@
 :energy_refinery_own_use_crude_oil:
   :x: 6720
   :y: 3220
+:energy_power_engine_network_gas:
+  :x: 6240
+  :y: 3340
+:agriculture_final_demand_wood_pellets:
+  :x: 2700
+  :y: 5420

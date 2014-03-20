@@ -209,6 +209,7 @@ INPUT_DEFAULTS = {
 :number_of_energy_power_combined_cycle_coal => 0.32244177018425574,
 :number_of_energy_power_combined_cycle_network_gas => 7.692219387755102,
 :number_of_energy_power_engine_diesel => 0.0,
+:number_of_energy_power_engine_network_gas => 0.0,
 :number_of_energy_power_geothermal => 0.0,
 :number_of_energy_power_hydro_mountain => 0.0,
 :number_of_energy_power_hydro_river => 2.2799999999777776,
