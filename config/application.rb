@@ -73,6 +73,7 @@ module Etm
 
   require 'lib/instrumentable'
   require 'lib/converter_positions'
+  require 'app/models/qernel/errors'
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end
