@@ -13,7 +13,7 @@ module Qernel
     # How many seconds a year the converter runs at full load. Varies
     # depending on the demand.
     def full_load_seconds
-      fetch_and_rescue(:full_load_seconds) do
+      fetch(:full_load_seconds) do
         begin
           supply = nominal_capacity_heat_output_per_unit * number_of_units
           if supply.zero?
@@ -53,7 +53,7 @@ module Qernel
     # divided by 100.
     #
     def number_of_units
-      fetch_and_rescue(:number_of_units) do
+      fetch(:number_of_units) do
         begin
           heat_links = converter.output_links.select do |link|
             link.carrier && (

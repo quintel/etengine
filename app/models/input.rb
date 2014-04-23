@@ -1,7 +1,9 @@
 class Input
   include InMemoryRecord
-  extend ActiveModel::Naming
+  include CommandAttributes
   include ActiveModel::Validations
+
+  extend ActiveModel::Naming
 
   validates :update_period, :presence => true,
                             :inclusion => %w[present future both before]
@@ -12,6 +14,7 @@ class Input
   ]
 
   attr_accessor *ATTRIBUTES
+  attr_accessor :file_path
 
   def initialize(attrs={})
     attrs && attrs.each do |name, value|
@@ -62,30 +65,10 @@ class Input
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  # Internal: Fetches the Rubel proc used to execute the input statement on
-  # the graph.
-  #
-  # These procs are memoized by NastyCache; the cache=false option prevents
-  # the proc from being serialized into Memcache (since this would come with
-  # an unnecessary performance hit) and ensures that it remains "in-process".
-  #
-  # input - The input whose Rubel proc you want.
-  #
-  # Returns a Proc.
-  def self.memoized_rubel_proc_for(input)
-    NastyCache.instance.fetch("inputs.rubel.#{ input.key }", cache: false) do
-      input.rubel_proc
-    end
-  end
-
-  def rubel
-    # use memoized_rubel_proc_for for faster updates (50% increase)
-    # rubel_proc
-    self.class.memoized_rubel_proc_for(self)
-  end
-
-  def rubel_proc
-    query and Gquery.rubel_proc(query)
+  # Public: The GQL::Command which represents the string held in the +query+
+  # attribute.
+  def command
+    @command ||= command_for(:query)
   end
 
   def before_update?

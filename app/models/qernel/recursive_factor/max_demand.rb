@@ -5,7 +5,7 @@ module Qernel::RecursiveFactor::MaxDemand
   # Note: this method overwrites the max_demand attribute!
   #
   def max_demand_recursive!
-    fetch_and_rescue(:"max_demand_recursive!") do
+    fetch(:"max_demand_recursive!") do
       if query.max_demand && query.max_demand != 'recursive'
         query.max_demand
       elsif has_loop?

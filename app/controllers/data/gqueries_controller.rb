@@ -23,9 +23,11 @@ class Data::GqueriesController < Data::BaseController
   end
 
   def result
-    raw_query = params[:id] ? Gquery.find(params[:id]).query : (params[:query] ? params[:query] : '')
-    @query = Gquery.convert_to_rubel!(raw_query)
-    render 'result'
+    if params[:id]
+      @query = Gquery.find(params[:id]).command
+    else
+      @query = Gql::Command.new(params[:query] ? params[:query] : '')
+    end
   end
 
   #######

@@ -68,9 +68,7 @@ class Carrier
   #
   def co2_per_mj
     # can be overwritten by Fce plugin
-    fetch_and_rescue(:co2_per_mj) do
-      co2_conversion_per_mj
-    end
+    fetch(:co2_per_mj) { co2_conversion_per_mj }
   end
 
   def merit_order_co2_per_mj

@@ -5,6 +5,8 @@
 #
 class Gquery
   include InMemoryRecord
+  include CommandAttributes
+
   extend ActiveModel::Naming
 
   attr_reader   :key
@@ -46,41 +48,10 @@ class Gquery
     super(key.to_s)
   end
 
-  # Returns the sanitized query string as a lambda.
-  #
-  # @example
-  #   q = Gquery.all.first.rubel
-  #   gql.present.query( q )
-  #
-  # @return [lambda]
-  #
-  def rubel
-    @rubel_proc ||= self.class.rubel_proc(query)
-  end
-
-  # Returns the sanitized gql query string as a lambda.
-  # It passes it through the Rubel sandbox for another security
-  # layer (make it harder to access classes and modules).
-  #
-  # @example
-  #   q = Gquery.rubel_proc("SUM(1,2)")
-  #   # => lambda { SUM(1,2) }
-  #   gql.present.query( q )
-  #   # => 3
-  #
-  # @return [lambda]
-  #
-  def self.rubel_proc(str)
-    @rubel ||= Gql::Runtime::Sandbox.new
-    @rubel.sanitized_proc(convert_to_rubel!(str.dup))
-  end
-
-  # sanitize query string. removes gquery related stuff
-  # like future/present: gql modifier strings.
-  def self.convert_to_rubel!(string)
-    string.gsub!(/[\n\s\t]/, '')
-    string.gsub!(/^[a-z]+\:/,'')
-    string
+  # Public: The GQL::Command which represents the string held in the +query+
+  # attribute.
+  def command
+    @command ||= command_for(:query)
   end
 
   def converters?

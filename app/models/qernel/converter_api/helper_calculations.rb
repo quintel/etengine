@@ -9,7 +9,7 @@ class Qernel::ConverterApi
     if dataset_get(:number_of_units)
       dataset_get(:number_of_units)
     else
-      fetch_and_rescue(:number_of_units) do
+      fetch(:number_of_units) do
         # #to_i also checks if it is nil
         if input_capacity.nil? || input_capacity.zero? ||
               full_load_seconds.nil? || full_load_seconds.zero?
@@ -42,11 +42,11 @@ class Qernel::ConverterApi
   #   The number of buildings supplied with energy by this converter.
   #
   def households_supplied_per_unit
-    fetch_and_rescue(:households_supplied_per_unit) { 1.0 }
+    fetch(:households_supplied_per_unit) { 1.0 }
   end
 
   def sustainable_input_factor
-    fetch_and_rescue(:sustainable_input_factor) do
+    fetch(:sustainable_input_factor) do
       converter.inputs.map{|slot| (slot.carrier.sustainable || 0.0) * slot.conversion }.compact.sum
     end
   end
@@ -54,7 +54,7 @@ class Qernel::ConverterApi
 
   #TODO: this method returns a share. But the name presumes it is not!
   def useful_output
-    fetch_and_rescue(:useful_output) do
+    fetch(:useful_output) do
       [ converter.output(:electricity),
         converter.output(:useable_heat),
         converter.output(:steam_hot_water)

@@ -159,15 +159,16 @@ module Qernel::DatasetAttributes
     @observe_get          = true
   end
 
-  # Function memoizes a block, and returns nil when it catches an exception.
+  # Function memoizes a block to the dataset hash.
+  #
   # Functions and dataset attributes share the same dataset hash. So make sure
-  # the function keys (fetch_and_rescue(:i_am_a_key) {...} ) do not overlap with
+  # the function keys (fetch(:i_am_a_key) {...} ) do not overlap with
   # dataset_attributes.
   #
   # @example Default usage
   #
   #   def total_costs_of_co2
-  #     fetch_and_rescue(:total_costs_of_co2) do
+  #     fetch(:total_costs_of_co2) do
   #       # ...
   #     end
   #   end
@@ -176,33 +177,14 @@ module Qernel::DatasetAttributes
   #
   #   def total_costs_of_co2
   #     @counter ||= 0
-  #     fetch_and_rescue(:total_costs_of_co2) do
+  #     fetch(:total_costs_of_co2) do
   #       @counter += 1
   #     end
   #   end
   #   # => 1
   #   # => 1
   #
-  # @example Returns nil when exception happens
-  #
-  #   def total_costs_of_co2
-  #     fetch_and_rescue(:total_costs_of_co2) do
-  #       nil * 3.0
-  #     end
-  #   end
-  #   # => nil
-  #
-  # @example Returns second parameter when exception happens
-  #
-  #   def total_costs_of_co2
-  #     fetch_and_rescue(:total_costs_of_co2, 0.0) do
-  #       nil * 3.0
-  #     end
-  #   end
-  #   # => 0.0
-  #
-  #
-  def fetch_and_rescue(attr_name, rescue_with = nil)
+  def fetch(attr_name)
     # check if we have a memoized result already.
     if dataset_attributes.has_key?(attr_name)
       # are we in the debugger mode?
@@ -218,20 +200,11 @@ module Qernel::DatasetAttributes
       if observe_get
         # in debug mode we call #log with a block, which stores the value
         # in the log and returns it back.
-        log :method, attr_name do
-          begin
-            dataset_attributes[attr_name] = yield
-          rescue => e
-            # We have an exception, most likely a nil value. log the error
-            # with message and apply the value defined in rescue_with param
-            log :error, attr_name, e
-            dataset_attributes[attr_name] = rescue_with
-          end
-        end
+        log(:method, attr_name) { dataset_attributes[attr_name] = yield }
       else
         # if not in debug mode, simply yield the value. Do not log the exceptions
         # but simply return the rescue_with value
-        dataset_attributes[attr_name] = yield rescue rescue_with
+        dataset_attributes[attr_name] = yield
       end
     end
   end

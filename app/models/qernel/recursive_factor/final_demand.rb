@@ -2,7 +2,7 @@ module Qernel::RecursiveFactor::FinalDemand
 
 
   def final_demand
-    fetch_and_rescue(:final_demand) do
+    fetch(:final_demand) do
       (self.demand || 0.0) * recursive_factor(:final_demand_factor)
     end
   end

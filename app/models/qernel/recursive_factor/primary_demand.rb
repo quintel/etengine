@@ -8,7 +8,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
   # It uses primary_energy_demand? to determine if primary or not.
   #
   def primary_demand
-    fetch_and_rescue(:primary_demand) do
+    fetch(:primary_demand) do
       primary_demand_share = recursive_factor(:primary_demand_factor)
       (self.demand || 0.0) * (primary_demand_share)
     end

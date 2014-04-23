@@ -50,10 +50,9 @@ Ruby's "Bundler" library, which is required to use ETEngine.
 ### Caching
 
 The ETEngine uses heavily caching of calculated values by using the
-[fetch_and_rescue](https://github.com/quintel/etengine/blob/51b321f6d43a2d2a626aa268845b775fca051ae0/app/models/qernel/dataset_attributes.rb#L205-L237)
-function that stores and retrieves calculated values and makes sure
-that possible errors do not block execution. This also has serious
-drawbacks, but is necessary to keep performance up.
+[fetch](https://github.com/quintel/etengine/blob/51b321f6d43a2d2a626aa268845b775fca051ae0/app/models/qernel/dataset_attributes.rb#L205-L237)
+function that stores and retrieves calculated values. This has some drawbacks,
+but is necessary to keep performance up.
 
 ### Scenario
 

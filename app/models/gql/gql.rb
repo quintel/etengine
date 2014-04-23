@@ -191,8 +191,6 @@ class Gql
         send("query_#{strategy}", query)
       end
     end
-  rescue Exception => e
-    raise "Error running #{key}: #{e.inspect}"
   end
 
   # Connects datasets to a present and future graph.
@@ -318,6 +316,14 @@ class Gql
   #
   def query_future(query)
     future.query(query)
+  end
+
+  def inspect
+    if @scenario
+      "#<#{ self.class.name } #{ @scenario.area_code }@#{ @scenario.end_year }>"
+    else
+      "#<#{ self.class.name } (unknown scenario)>"
+    end
   end
 
 end
