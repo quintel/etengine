@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-gem 'rails',        '~> 4.0.3'
+gem 'rails',        '~> 4.1.0'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
@@ -47,6 +47,7 @@ gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
 
 group :development do
+  gem 'spring'
   gem 'quiet_assets'
   gem 'better_errors'
   gem 'listen'
@@ -68,7 +69,7 @@ end
 
 group :test do
   gem 'factory_girl_rails'
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers',      require: false
   gem 'simplecov', '~> 0.7.1', require: false
 end
 
