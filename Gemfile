@@ -33,11 +33,11 @@ gem 'fnv'
 gem 'msgpack'
 
 # own gems
-gem 'rubel',         '>= 0.1.0',       github:  'quintel/rubel'
+gem 'rubel',         ref: 'ad3d44ef',  github:  'quintel/rubel'
 gem 'merit',         '>=0.1.0',        github:  'quintel/merit'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
 gem 'refinery',      ref: 'f29ead1',   github:  'quintel/refinery'
-gem 'atlas',         ref: '8828195',   github:  'quintel/atlas'
+gem 'atlas',         ref: 'ee24e16',   github:  'quintel/atlas'
 
 # system gems
 gem 'mysql2',         '~>0.3.11'

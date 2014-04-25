@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: 882819571337f9eda4929b071e1c890448ebb35c
-  ref: 8828195
+  revision: ee24e16068c618eb991f59b34446d8209a3e4d02
+  ref: ee24e16
   specs:
     atlas (0.0.2)
       activemodel
@@ -47,6 +47,7 @@ GIT
 GIT
   remote: git://github.com/quintel/rubel.git
   revision: ad3d44ef4304da6a98db3ec42747a7af9e7e64c7
+  ref: ad3d44ef
   specs:
     rubel (0.1.0)
 
@@ -354,7 +355,7 @@ DEPENDENCIES
   refinery!
   rest-client
   rspec-rails (~> 2.12)
-  rubel (>= 0.1.0)!
+  rubel!
   ruby-graphviz
   ruby_deep_clone!
   sass-rails
