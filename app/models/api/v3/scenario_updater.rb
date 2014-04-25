@@ -112,7 +112,7 @@ module Api
             end.join(' ')
 
             errors.add(:base,
-              "#{ group.inspect } group does not balance: group sums to " \
+              "#{ group.to_s.inspect } group does not balance: group sums to " \
               "#{ values.sum } using #{ info }")
           end
         end
