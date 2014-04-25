@@ -110,7 +110,7 @@ module Gql
 
     # Internal: Removes extra "artifacts" from the source.
     def clean(string)
-      cleaned = string.dup
+      cleaned = (string || '').dup
 
       cleaned.gsub!(/[\n\s\t]/, '')
       cleaned.gsub!(/^[a-z]+\:/,'')
