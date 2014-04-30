@@ -4,8 +4,9 @@ module Api
     # converter detail popup. The API converter detail requests shows this stuff
     #
     module ConverterPresenterData
-      FORMAT_KILO = ->(n) { (n / 1000).to_i }
-      FORMAT_1DP  = ->(n) { '%.1f' % n }
+      FORMAT_KILO           = ->(n) { (n / 1000).to_i }
+      FORMAT_1DP            = ->(n) { '%.1f' % n }
+      FORMAT_FAC_TO_PERCENT = ->(n) { FORMAT_1DP.call(n * 100) }
 
       # If the converter belongs to the :cost_electricity_production group then
       # add these
@@ -16,12 +17,12 @@ module Api
               formatter: FORMAT_1DP },
           :electricity_output_conversion  =>
             { label: 'Electrical efficiency', unit: '%',
-              formatter: FORMAT_1DP },
+              formatter: FORMAT_FAC_TO_PERCENT },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :heat_output_conversion  =>
             { label: 'Heat efficiency', unit: '%',
-              formatter: FORMAT_1DP }
+              formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
           'initial_investment_per(:mw_electricity)' =>
@@ -69,7 +70,8 @@ module Api
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :heat_output_conversion  =>
-            {label: 'Heat efficiency', unit: '%'}
+            { label: 'Heat efficiency', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
           'initial_investment_per(:plant)' =>
@@ -106,7 +108,8 @@ module Api
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :heat_and_cold_output_conversion  =>
-            {label: 'Efficiency (after COP)', unit: '%'}
+            { label: 'Efficiency (after COP)', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
           'initial_investment_per(:plant)' =>
@@ -141,12 +144,12 @@ module Api
               formatter: FORMAT_1DP },
           :electricity_output_conversion  =>
             { label: 'Electrical efficiency', unit: '%',
-              formatter: FORMAT_1DP },
+              formatter: FORMAT_FAC_TO_PERCENT },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :heat_output_conversion  =>
             { label: 'Heat efficiency', unit: '%',
-              formatter: FORMAT_1DP }
+              formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
           'initial_investment_per(:mw_electricity)' =>
