@@ -162,6 +162,43 @@ module Gql::Runtime
 
         scope.graph.fce.share_of(carrier, country)
       end
+
+      # Returns a time curve, as stored in the ETSource CSV files, as a hash
+      # where each key is a year, and each value is in PJ. You need to specify
+      # the name of the time curve and attribute to be read.
+      #
+      # Only includes from years up to and including the scenario end year.
+      #
+      # curve     - The name of the time curve to look up. This will match the
+      #             name of the CSV in ETSource, minus the "_time_curve" suffix.
+      # attribute - Time curves may describe more than one attribute (such as
+      #             "preset_demand" and "max_demand"). Specify the attribute to
+      #             look up.
+      #
+      # For example:
+      #
+      #   TIME_CURVE(energy_extraction_coal, preset_demand)
+      #   # => { 2010 => 1.0, 2011 => 42.0, 2012 => 1337.0, ... }
+      #
+      # Returns a hash.
+      def TIME_CURVE(curve, attribute)
+        unless data = scope.graph.time_curves[curve]
+          fail Gql::TimeCurveError.new(curve)
+        end
+
+        unless data.key?(attribute)
+          fail Gql::TimeCurveError.new(curve, attribute)
+        end
+
+        applicable_years = data[attribute].select do |year, *|
+          year <= scope.scenario.end_year
+        end
+
+        applicable_years.each_with_object({}) do |(year, joules), data|
+          data[year] = joules / 1_000_000_000_000
+        end
+      end
     end
+
   end
 end

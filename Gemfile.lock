@@ -46,10 +46,10 @@ GIT
 
 GIT
   remote: git://github.com/quintel/rubel.git
-  revision: ad3d44ef4304da6a98db3ec42747a7af9e7e64c7
-  ref: ad3d44ef
+  revision: e36554afd5f6bce2e3c2cb3ae6a48604b87a66f5
+  ref: e36554a
   specs:
-    rubel (0.1.0)
+    rubel (0.1.1)
 
 GEM
   remote: http://rubygems.org/

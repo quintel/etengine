@@ -53,4 +53,15 @@ module Gql
     end
   end
 
+  class TimeCurveError < GqlError
+    def initialize(curve, attribute = nil)
+      if attribute
+        super "No attribute named #{ attribute.inspect } in the " \
+              "#{ curve.inspect } curve"
+      else
+        super "No such time curve: #{ curve.inspect }"
+      end
+    end
+  end
+
 end
