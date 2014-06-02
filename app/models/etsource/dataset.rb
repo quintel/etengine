@@ -25,9 +25,11 @@ module Etsource
     end
 
     def self.region_codes
-      @region_codes ||= Atlas::Dataset.all
-        .select { |dataset| dataset.enabled[:etengine] }
-        .map    { |dataset| dataset.key.to_s }
+      NastyCache.instance.fetch('region_codes') do
+        Atlas::Dataset.all
+          .select { |dataset| dataset.enabled[:etengine] }
+          .map    { |dataset| dataset.key.to_s }
+      end
     end
   end
 end
