@@ -93,8 +93,17 @@ namespace :deploy do
       MESSAGE
     end
 
-    Etsource::Dataset::Import.loader.reload! do |region_code|
-      puts "Calculated #{ region_code.inspect }"
+    Etsource::Dataset::Import.loader.reload! do |region_code, calculator|
+      print "Calculating #{ region_code.inspect }... "
+
+      begin
+        calculator.call
+      rescue StandardError => ex
+        puts ''
+        raise ex
+      end
+
+      puts 'done.'
     end
   end # calculate_datasets
 end # deploy

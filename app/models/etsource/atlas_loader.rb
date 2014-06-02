@@ -105,9 +105,16 @@ module Etsource
       #
       # data - A Ruby hash to be converted to a string for storage on disk.
       #
-      # Returns a String..
+      # Returns a String.
       def dump(data)
         MessagePack.pack(data)
+      end
+
+      # Internal: Determines if a region has been calculated.
+      #
+      # Returns true or false.
+      def calculated?(dataset_key)
+        data_path(dataset_key).file?
       end
     end # Base
 
@@ -124,8 +131,13 @@ module Etsource
         super
 
         Etsource::Dataset.region_codes.each do |code|
-          calculate!(code)
-          yield code if block_given?
+          calculator = ->{ calculate!(code) }
+
+          yield(code, calculator) if block_given?
+
+          # In case the user failed to call the calculator in their block, or if
+          # no block was given.
+          calculator.call unless calculated?(code)
         end
       end
     end # PreCalculated
