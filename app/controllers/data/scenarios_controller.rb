@@ -4,8 +4,7 @@ class Data::ScenariosController < Data::BaseController
   before_filter :find_scenario, :only => [:show, :edit, :update]
 
   def index
-    base = Scenario.scoped
-    base = base.recent_first
+    base = Scenario.recent_first
     if params[:q]
       if params[:q] =~ /^\d+$/
         base = base.by_id(params[:q])
