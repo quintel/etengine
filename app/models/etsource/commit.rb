@@ -115,7 +115,7 @@ module Etsource
     # section for the chosen gem.
     def gemfile_revision(gem)
       part = gemfile.split("\n\n").find do |str|
-        str.include?("remote: git@github.com:quintel/#{ gem }.git")
+        str.match(%r{remote:.*github.com[/:]quintel/#{Regexp.escape(gem)}.git})
       end
 
       part.match(/revision: ([a-f0-9]+)$/)[1]
