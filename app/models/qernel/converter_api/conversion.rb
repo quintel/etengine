@@ -138,7 +138,7 @@ class Qernel::ConverterApi
   # @return [Float] Cost converted to Cost per Unit
   #
   def convert_to(cost, unit)
-    case unit
+    value = case unit
 
     # Plant and Converter
     when :plant
@@ -170,6 +170,8 @@ class Qernel::ConverterApi
     else
       raise ArgumentError, "#{unit} unknown! Cannot convert."
     end
+
+    value == Float::INFINITY ? 0.0 : value
   end
 
 end
