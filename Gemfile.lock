@@ -23,9 +23,10 @@ GIT
 
 GIT
   remote: git://github.com/quintel/merit.git
-  revision: 996366aeabf56e7fd10479570cac4051d6b2c273
+  revision: f4beb8821bd8c46a4d59c63ad456153af943bc69
+  ref: f4beb88
   specs:
-    merit (0.1.0)
+    quintel_merit (0.1.0)
       terminal-table
 
 GIT
@@ -340,7 +341,6 @@ DEPENDENCIES
   json (~> 1.8.1)
   kaminari
   listen
-  merit (>= 0.1.0)!
   msgpack
   mysql2 (~> 0.3.11)
   newrelic_rpm
@@ -350,6 +350,7 @@ DEPENDENCIES
   pry-remote
   pry-stack_explorer
   quiet_assets
+  quintel_merit!
   rack-cors
   rails (~> 4.1.0)
   refinery!
