@@ -167,7 +167,7 @@ namespace :bulk_update do
       ############################# START ##############################
 
       # Add new input if it does not yet exist
-      inputs[:number_of_energy_power_engine_network_gas] = INPUT_DEFAULTS[:number_of_energy_power_engine_network_gas] if inputs[element].nil?
+      inputs[:number_of_energy_power_engine_network_gas] = INPUT_DEFAULTS[:number_of_energy_power_engine_network_gas] if inputs[:number_of_energy_power_engine_network_gas].nil?
 
       ######################  CHECKS ##########################
 
