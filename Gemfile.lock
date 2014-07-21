@@ -37,8 +37,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/refinery.git
-  revision: 0c141323005db8068d6252b1a3708f7d2de458f2
-  ref: 0c14132
+  revision: 9e08b098fd5ce2c5af04a4e6e1b29d884e63dc84
+  ref: 9e08b09
   specs:
     refinery (0.0.1)
       ruby-graphviz
@@ -259,7 +259,7 @@ GEM
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
-    ruby-graphviz (1.0.9)
+    ruby-graphviz (1.2.1)
     sass (3.2.19)
     sass-rails (4.0.3)
       railties (>= 4.0.0, < 5.0)
