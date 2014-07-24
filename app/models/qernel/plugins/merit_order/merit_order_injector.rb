@@ -186,7 +186,7 @@ module Qernel::Plugins
       def calculate_merit_order
         return if dispatchable_producers.empty?
         instrument("qernel.merit_order: calculate_merit_order") do
-          @m.calculate
+          Merit.within_area(@graph.area.area_code.to_sym) { @m.calculate }
         end
       end
 
