@@ -79,8 +79,11 @@ namespace :merit do
     write_curve.call('price.csv',  injector.m.price_curve)
     write_curve.call('demand.csv', user.load_curve)
 
-    File.write(dir.join('total_demand.txt'), "#{ user.total_consumption }\n")
-    File.write(dir.join('area.txt'), "#{ area.downcase }\n")
+    File.write(dir.join('archive-info.yml'), YAML.dump(
+      area:          area.downcase,
+      calculated_at: Time.now.utc,
+      total_demand:  user.total_consumption
+    ))
 
     puts "Data dumped to ./#{ dir.relative_path_from(Rails.root) }"
     puts
