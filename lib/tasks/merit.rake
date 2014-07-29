@@ -10,13 +10,40 @@ namespace :merit do
   #   # Export a default DE scenario:
   #   rake merit:archive AREA=de
   #
-  #   # Export data for a specific scenario in the database:
+  #   # Export data for a specific scenario in the database OR preset ID:
   #   rake merit:archive SCENARIO=23548
+  #
+  #   # Export data for a preset (by ID):
+  #   rake merit:archive PRESET=2996
+  #
+  #   # Export data for a preset (by key):
+  #   rake merit:archive PRESET=80_procent_co2_reductie
   task archive: :environment do
-    if ENV['SCENARIO']
-      scenario = Scenario.find(ENV['SCENARIO'].to_i)
+    env = ENV.to_h.slice('PRESET', 'SCENARIO', 'AREA')
+
+    if env['PRESET']
+      if env['PRESET'].match(/^\d+$/)
+        env['SCENARIO'] = env['PRESET']
+      else
+        env['SCENARIO'] = Atlas::Preset.find(env['PRESET']).id
+      end
+    end
+
+    if env['SCENARIO']
+      scenario_id = env['SCENARIO'].to_i
+
+      if preset = Preset.get(scenario_id)
+        puts "Creating archive using preset ##{ preset.id } (#{ preset.key })"
+        scenario = Scenario.default(scenario_id: scenario_id)
+      else
+        puts "Creating archive using scenario ##{ scenario_id }"
+        scenario = Scenario.find(scenario_id)
+      end
     else
-      scenario = Scenario.default(area_code: ENV['AREA'] || 'nl')
+      puts "Creating archive with a new " \
+           "#{ (env['AREA'] || 'NL').upcase } scenario"
+
+      scenario = Scenario.default(area_code: (env['AREA'] || 'nl').downcase)
     end
 
     # Disable the merit order processing during graph calculation; we're doing
@@ -36,8 +63,14 @@ namespace :merit do
     # Save the data.
     area  = scenario.area_code.upcase
     stamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-    stamp = "#{ scenario.id }_#{ stamp }" if scenario.id
-    dir   = Rails.root.join('tmp/convergence').join("#{ area }_#{ stamp }")
+
+    if scenario.id
+      stamp = "#{ scenario.id }_#{ stamp }"
+    elsif Preset.get(scenario_id)
+      stamp = "#{ Preset.get(scenario_id).key }_#{ stamp }"
+    end
+
+    dir = Rails.root.join('tmp/convergence').join("#{ area }_#{ stamp }")
 
     FileUtils.mkdir_p(dir.join('producers'))
 
