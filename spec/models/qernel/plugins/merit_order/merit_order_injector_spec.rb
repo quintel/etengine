@@ -42,11 +42,11 @@ module Qernel::Plugins::MeritOrder
         @converter_api.stub(:fixed_costs){ 1 }
         @converter_api.stub(:fixed_operation_and_maintenance_costs_per_year){ 1 }
         @converter_api.stub(:load_profile_key){ :solar_pv }
-        @converter_api.stub(:full_load_hours){ :foo }
+        @converter_api.stub(:full_load_hours){ 365 * 24 }
         @converter_api.stub(:installed_production_capacity_in_mw_electricity){ 123 }
 
         @converter = double("Converter")
-        @converter.stub(:key){ :foo }
+        @converter.stub(:key){ SecureRandom.uuid }
         @converter.stub(:converter_api){ @converter_api }
         @converter.stub(:output){ 123 }
 
@@ -65,13 +65,29 @@ module Qernel::Plugins::MeritOrder
       end
 
       it "should calculate values" do
-        @mo.should_receive(:calculate_merit_order)
+        expect(@mo).to receive(:calculate_merit_order).and_call_original
+
         @mo.run
+      end
+
+      it 'should inject values' do
+        expect(@mo).to receive(:calculate_merit_order).and_call_original
+        expect(@converter_api).to receive(:[]=).at_least(:once)
+        expect(@converter_api).to receive(:demand=).at_least(:once)
+
+        @mo.run
+        @mo.inject_values
       end
 
       it 'should use the merit order data for the graph region' do
         @graph.stub_chain(:area, :area_code) { :eu }
-        Merit.should_receive(:within_area).with(:eu).at_least(:once).and_call_original
+
+        eu = Atlas::Dataset.find(:eu)
+        nl = Atlas::Dataset.find(:nl)
+
+        expect(eu).to receive(:load_profile).at_least(:once).and_call_original
+        expect(nl).to_not receive(:load_profile)
+        expect(@mo).to receive(:calculate_merit_order).and_call_original
 
         @mo.run
       end

@@ -41,7 +41,7 @@ module Qernel::Plugins
       # Called by the graph between the two calculation loops.
       #
       def inject_values
-        @m.dispatchables.each do |dispatchable|
+        @m.participants.dispatchables.each do |dispatchable|
           converter = graph.converter(dispatchable.key).converter_api
 
           flh = dispatchable.full_load_hours
@@ -65,13 +65,12 @@ module Qernel::Plugins
       end
 
       def setup_items
-        Merit.within_area(@graph.area.area_code.to_sym) do
-          @m = ::Merit::Order.new
-          add_volatile_producers
-          add_must_run_producers
-          add_dispatchable_producers
-          add_total_demand
-        end
+        @m = ::Merit::Order.new
+
+        add_volatile_producers
+        add_must_run_producers
+        add_dispatchable_producers
+        add_total_demand
       end
 
       #######
@@ -97,39 +96,35 @@ module Qernel::Plugins
           when :must_run     then ::Merit::MustRunProducer
         end
 
-        begin
-          c = p.converter_api
-          attrs = {
-            key: p.key,
-            marginal_costs: c.variable_costs_per(:mwh_electricity),
-            output_capacity_per_unit:
-              c.electricity_output_conversion * c.input_capacity,
-            number_of_units: c.number_of_units,
-            availability: c.availability,
-            fixed_costs_per_unit: c.send(:fixed_costs),
-            fixed_om_costs_per_unit:
-              c.send(:fixed_operation_and_maintenance_costs_per_year)
-          }
-          if type == :must_run || type == :volatile
-            attrs[:load_profile_key] = c.load_profile_key
-            attrs[:full_load_hours]  = c.full_load_hours
-          end
-          producer = klass.new(attrs)
+        c = p.converter_api
+        attrs = {
+          key: p.key,
+          marginal_costs: c.variable_costs_per(:mwh_electricity),
+          output_capacity_per_unit:
+            c.electricity_output_conversion * c.input_capacity,
+          number_of_units: c.number_of_units,
+          availability: c.availability,
+          fixed_costs_per_unit: c.send(:fixed_costs),
+          fixed_om_costs_per_unit:
+            c.send(:fixed_operation_and_maintenance_costs_per_year)
+        }
+        if type == :must_run || type == :volatile
+          attrs[:load_profile]    = load_profile(c.load_profile_key)
+          attrs[:full_load_hours] = c.full_load_hours
+        end
+        producer = klass.new(attrs)
 
-          # When `@skip_unknown_producers` == true, we want to skip those
-          # producers whose marginal_costs is NaN.
-          unless @skip_unknown_producers && attrs[:marginal_costs].nan?
-            @m.add producer
-          end
-
-        rescue Exception => e
-          raise "Merit order: error adding #{type} #{p.key}: #{e.message}"
+        # When `@skip_unknown_producers` == true, we want to skip those
+        # producers whose marginal_costs is NaN.
+        unless @skip_unknown_producers && attrs[:marginal_costs].nan?
+          @m.add producer
         end
       end
 
       def add_total_demand
-        user = ::Merit::User.new(
+        user = ::Merit::User.create(
           key: :total_demand,
+          load_profile: load_profile(:total_demand),
           total_consumption: graph.graph_query.total_demand_for_electricity
         )
         @m.add user
@@ -185,9 +180,16 @@ module Qernel::Plugins
 
       def calculate_merit_order
         return if dispatchable_producers.empty?
+
         instrument("qernel.merit_order: calculate_merit_order") do
-          Merit.within_area(@graph.area.area_code.to_sym) { @m.calculate }
+          @m.calculate
         end
+      end
+
+      # Returns the load profile identified by the +key+.
+      def load_profile(key)
+        @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
+        @dataset.load_profile(key)
       end
 
     end # class MeritOrderInjector
