@@ -134,6 +134,11 @@ class NastyCache
     log("NastyCache(#{Process.pid})#expire: timestamp: #{local_timestamp} (local) / #{global_timestamp} (global)")
     @local_timestamp = global_timestamp
     log("NastyCache#expire: #{ @cache_store.length } keys")
+
+    # In production, load profiles are cached. Wipe that cache by creating a new
+    # reader of the same type.
+    Merit::LoadProfile.reader = Merit::LoadProfile.reader.class.new
+
     @cache_store = {}
   end
 
