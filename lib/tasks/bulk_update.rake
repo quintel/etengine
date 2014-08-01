@@ -9,9 +9,20 @@ class BulkUpdateHelpers
     end
 
     def show_diff(object, user_values)
-      object.user_values.each do |key, value|
-        if value != user_values[key]
-          puts "Different value in #{key}: #{value} => #{user_values[value]}"
+      keys = (
+        object.user_values.keys.map(&:to_sym) +
+        user_values.keys.map(&:to_sym)
+      ).compact
+
+      keys.each do |key|
+        original = object.user_values[key]
+        updated  = user_values[key]
+
+        if original != updated
+          f_original = original.nil? ? 'nil' : original.to_f
+          f_updated  = updated.nil? ? 'nil' : updated.to_f
+
+          puts "Different value in #{key}: #{f_original} -> #{f_updated}"
         end
       end
     end
@@ -55,8 +66,6 @@ end
 
 namespace :bulk_update do
   task preamble: :environment do
-    require_relative 'input_defaults'
-
     require 'highline/import'
     require 'term/ansicolor'
 
@@ -124,7 +133,7 @@ namespace :bulk_update do
   end
 
   desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
-  task :update_scenarios => 'bulk_update:preamble' do
+  task :update_scenarios => ['bulk_update:preamble', 'inputs:dump'] do
     @dry_run = !ENV['PERFORM']
 
     if @dry_run
@@ -157,248 +166,22 @@ namespace :bulk_update do
       end
 
       begin
-        inputs = s.user_values
+        inputs = s.user_values.symbolize_keys
       rescue
         puts "> Error! cannot load user_values"
         next
       end
 
-      ######## CODE BELOW CHANGES / CHECKS INPUTS OF SCENARIOS #########
-      ############################# START ##############################
+      rec = Atlas::ScenarioReconciler.new(
+        inputs,
+        YAML.load_file(Rails.root.join("tmp/input_values/#{ s.area_code }.yml"))
+      )
 
-      # Add new input if it does not yet exist
-      inputs[:number_of_energy_power_engine_network_gas] = INPUT_DEFAULTS[:number_of_energy_power_engine_network_gas] if inputs[:number_of_energy_power_engine_network_gas].nil?
-
-      ######################  CHECKS ##########################
-
-      # HHs warm water group
-      share_group_inputs = [
-        :households_water_heater_wood_pellets_share,
-        :households_water_heater_coal_share,
-        :households_water_heater_resistive_electricity_share,
-        :households_water_heater_fuel_cell_chp_network_gas_share,
-        :households_water_heater_combined_network_gas_share,
-        :households_water_heater_network_gas_share,
-        :households_water_heater_district_heating_steam_hot_water_share,
-        :households_water_heater_micro_chp_network_gas_share,
-        :households_water_heater_crude_oil_share,
-        :households_water_heater_heatpump_air_water_electricity_share,
-        :households_water_heater_heatpump_ground_water_electricity_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> Warning! Share group of HHs warm water is not 100% in scenario, but is " + (sum).to_s
-      end
-
-      # Scaling the group
-      scale_factor = sum / 100.0
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] /= scale_factor
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% AFTER scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> ERROR! Share group of HHs warm water is not 100% in scenario, but is " + (sum).to_s
-        exit(1)
-      end
-
-      # HHs space heating group
-      share_group_inputs = [
-      :households_space_heater_heatpump_air_water_electricity_share,
-      :households_space_heater_micro_chp_network_gas_share,
-      :households_space_heater_electricity_share,
-      :households_space_heater_crude_oil_share,
-      :households_space_heater_combined_network_gas_share,
-      :households_space_heater_heatpump_ground_water_electricity_share,
-      :households_space_heater_wood_pellets_share,
-      :households_space_heater_coal_share,
-      :households_space_heater_network_gas_share,
-      :households_space_heater_district_heating_steam_hot_water_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> Warning! Share group of HHs heating is not 100% in scenario, but is " + (sum).to_s
-
-        # default_sum = 0.0
-        # puts "Defaults add up to:"
-        # share_group_inputs.each do |element|
-        #   puts "#{element}: #{INPUT_DEFAULTS[element]}"
-        #   default_sum += INPUT_DEFAULTS[element]
-        # end
-        # puts "Sum: #{default_sum}"
-      end
-
-      # Scaling the group
-      scale_factor = sum / 100.0
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] /= scale_factor
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% AFTER scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> ERROR! Share group of HHs space heating is not 100% in scenario, but is " + (sum).to_s
-        exit(1)
-      end
-
-      # HHs district heating group
-      share_group_inputs = [
-        :households_collective_chp_network_gas_share,
-        :households_collective_chp_wood_pellets_share,
-        :households_collective_chp_biogas_share,
-        :households_collective_geothermal_share,
-        :households_heat_network_connection_steam_hot_water_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> Warning! Share group of Households district heating is not 100% in scenario, but is " + (sum).to_s
-
-        # Setting to defaults!
-        puts "Setting Households district heating group to defaults!"
-        share_group_inputs.each do |element|
-          inputs[element] = INPUT_DEFAULTS[element]
-        end
-      end
-
-      # Buildings district heating group
-      share_group_inputs = [
-        :buildings_chp_engine_biogas_share,
-        :buildings_collective_chp_wood_pellets_share,
-        :buildings_collective_chp_network_gas_share,
-        :buildings_heat_network_connection_steam_hot_water_share,
-        :buildings_collective_geothermal_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> Warning! Share group of Buildings district heating is not 100% in scenario, but is " + (sum).to_s
-
-        # Setting to defaults!
-        puts "Setting Buildings district heating group to defaults!"
-        share_group_inputs.each do |element|
-          inputs[element] = INPUT_DEFAULTS[element]
-        end
-      end
-
-      #Share group of HHs cooling
-      share_group_inputs = [
-      :households_cooling_heatpump_ground_water_electricity_share,
-      :households_cooling_heatpump_air_water_electricity_share,
-      :households_cooling_airconditioning_electricity_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-          puts "> Warning! Share group of HHs cooling is not 100% in scenario, but is " + (sum).to_s
-      end
-
-      #Share group of industry heating
-      share_group_inputs = [
-      :industry_burner_network_gas_share,
-      :industry_burner_crude_oil_share,
-      :industry_burner_coal_share,
-      :industry_burner_wood_pellets_share,
-      :industry_final_demand_steam_hot_water_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> Warning! Share group of Industry Heat is not 100% in scenario, but is " + (sum).to_s
-      end
-
-      # Scaling the group
-      scale_factor = sum / 100.0
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] /= scale_factor
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% AFTER scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> ERROR! Share group of Industry Heat is not 100% in scenario, but is " + (sum).to_s
-        exit(1)
-      end
-
-      #Share group of chemical industry heating
-      share_group_inputs = [
-      :industry_chemicals_burner_network_gas_share,
-      :industry_chemicals_burner_crude_oil_share,
-      :industry_chemicals_burner_coal_share,
-      :industry_chemicals_burner_wood_pellets_share,
-      :industry_final_demand_for_chemical_steam_hot_water_share
-      ]
-
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] = INPUT_DEFAULTS[element] if inputs[element].nil?
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% BEFORE scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> Warning! Share group of Chemical industry heat is not 100% in scenario, but is " + (sum).to_s
-      end
-
-      # Scaling the group
-      scale_factor = sum / 100.0
-      sum = 0.0
-      share_group_inputs.each do |element|
-        inputs[element] /= scale_factor
-        sum = sum + inputs[element]
-      end
-
-      # Check if the share group adds up to 100% AFTER scaling
-      if !(sum).between?(99.99, 100.01)
-        puts "> ERROR! Share group of Chemical industry heat is not 100% in scenario, but is " + (sum).to_s
-        exit(1)
-      end
+      inputs = inputs.merge(rec.to_h).with_indifferent_access
 
       # Rounding all inputs
       inputs.each do |x|
-        x[1] =x[1].to_f.round(1) unless x[1].nil?
+        x[1] = x[1].to_f.round(1) unless x[1].nil?
       end
 
       puts "==========="
