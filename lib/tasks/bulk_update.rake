@@ -1,10 +1,11 @@
 class BulkUpdateHelpers
   class << self
-    def save(object, user_values,  dry_run = true)
-      if object.is_a?(Preset)
-        save_preset(object, user_values, dry_run)
-      elsif object.is_a?(Scenario)
-        save_scenario(object, user_values, dry_run)
+    def save(scenario, user_values,  dry_run = true)
+      return show_diff(scenario, user_values) if dry_run
+
+      if user_values != scenario.user_values
+        scenario.update_attributes(:user_values => user_values)
+        true
       end
     end
 
@@ -25,41 +26,6 @@ class BulkUpdateHelpers
           puts "Different value in #{key}: #{f_original} -> #{f_updated}"
         end
       end
-    end
-
-    #######
-    private
-    #######
-
-    def save_preset(preset, user_values, dry_run)
-      return show_diff(preset, user_values) if dry_run
-
-      atl_preset = Atlas::Preset.find(preset.key)
-
-      atl_preset.user_values = user_values
-      atl_preset.save(false)
-    end
-
-    def save_scenario(scenario, user_values, dry_run)
-      return show_diff(scenario, user_values) if dry_run
-
-      puts "> Saving!"
-      scenario.update_attributes(:user_values => user_values)
-    end
-
-    def preset_dir
-      @preset_dir ||= File.join(Etsource::Base.instance.base_dir, 'presets')
-    end
-
-    # Returns Hash containing key-value pairs with ID and path of individual
-    # presets
-    def get_file_data
-      file_data = {}
-      Dir.glob("#{preset_dir}/**/*.yml").each do |f|
-        file = YAML::load_file(f).with_indifferent_access
-        file_data[file[:id]] = { path: f }
-      end
-      file_data
     end
   end
 end
@@ -132,7 +98,7 @@ namespace :bulk_update do
     text.gsub(token, token.red)
   end
 
-  desc 'Updates the scenarios. Add PRESETS=1 to only update preset scenarios'
+  desc 'Updates the scenarios.'
   task :update_scenarios => ['bulk_update:preamble', 'inputs:dump'] do
     @dry_run = !ENV['PERFORM']
 
@@ -148,18 +114,30 @@ namespace :bulk_update do
       end
     end
 
-    update_block = proc { |s|
-      puts "#{s.class} ##{s.id}: #{s.title}"
+    defaults_dir   = Rails.root.join("tmp/input_values")
+    defaults_files = Pathname.glob(defaults_dir.join('*.yml'))
 
-      #skip scenario if not nl
-      next unless s.area_code == "nl"
+    @defaults = defaults_files.each_with_object({}) do |path, data|
+      data[path.basename('.yml').to_s.to_sym] = YAML.load_file(path)
+    end
+
+    update_block = -> (s, reporter = nil) {
+      puts "#{s.class} ##{s.id}: #{s.title}" if @dry_run
 
       # cleanup unused scenarios
-      if s.is_a?(Scenario) && (s.area_code.blank? || (s.title == "API" && s.updated_at  < 14.day.ago ) || s.source == "Mechanical Turk")
+      if s.area_code.blank? ||
+            # Deleted region.
+            @defaults[s.area_code.to_sym].nil? ||
+            # Old scenario.
+            (!s.protected? && s.title == "API" && s.updated_at < 365.days.ago ) ||
+            # Internal use.
+            s.source == "Mechanical Turk" ||
+            # Very old scenario.
+            s.user_values.keys.any? { |k| k.is_a?(Numeric) }
         if @dry_run
           puts "> Would be removed, but this is a dry run"
         else
-          puts "> REMOVING"
+          reporter.inc(:removed) if reporter
           s.destroy
         end
         next
@@ -168,15 +146,11 @@ namespace :bulk_update do
       begin
         inputs = s.user_values.symbolize_keys
       rescue
-        puts "> Error! cannot load user_values"
+        reporter.inc(:failed) if reporter
         next
       end
 
-      rec = Atlas::ScenarioReconciler.new(
-        inputs,
-        YAML.load_file(Rails.root.join("tmp/input_values/#{ s.area_code }.yml"))
-      )
-
+      rec = Atlas::ScenarioReconciler.new(inputs, @defaults[s.area_code.to_sym])
       inputs = inputs.merge(rec.to_h).with_indifferent_access
 
       # Rounding all inputs
@@ -184,32 +158,40 @@ namespace :bulk_update do
         x[1] = x[1].to_f.round(1) unless x[1].nil?
       end
 
-      puts "==========="
+      puts "===========" if @dry_run
 
       ######################## END ############################
-      BulkUpdateHelpers.save(s, inputs, @dry_run)
+      if BulkUpdateHelpers.save(s, inputs, @dry_run)
+        reporter.inc(:updated) if reporter
+      else
+        reporter.inc(:unchanged) if reporter
+      end
     }
 
-    if !ENV['PRESETS'] && !ENV['SCENARIOS']
+    if ! ENV['PERFORM']
       puts "Help:"
       puts "-----"
       puts "Append the following options to the rake command:"
-      puts "PRESETS=1       Run on the presets"
-      puts "SCENARIOS=1     Run on the scenarios"
-      puts "PERFORM=1       Run the actions (as in, don't do a dry run)"
+      puts "PERFORM=1  Run the actions (as in, don't do a dry run)"
     end
 
-    # Update presets
-    if !!ENV['PRESETS']
-      Preset.all.each do |preset|
-        update_block.call preset
+
+    groups = { unchanged: :green, updated: :yellow,
+               removed: :yellow, failed: :red }
+
+    title  = 'Updating scenarios'
+
+    reporter = Atlas::Term::Reporter.new(title, groups)
+
+    Scenario.order('id').find_each(:batch_size => 100) do |scenario|
+      begin
+        update_block.call(scenario, @dry_run ? nil : reporter)
+      rescue Exception => ex
+        puts "#{ ex.class } raised processing: ##{ scenario.id }"
+        raise ex
       end
     end
 
-    if !!ENV['SCENARIOS']
-      Scenario.order('id').find_each(:batch_size => 100) do |scenario|
-        update_block.call scenario
-      end
-    end
-  end
-end
+    reporter.send(:refresh!, true) unless @dry_run
+  end # update_scenarios
+end # bulk_update
