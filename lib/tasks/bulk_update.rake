@@ -121,7 +121,7 @@ namespace :bulk_update do
       data[path.basename('.yml').to_s.to_sym] = YAML.load_file(path)
     end
 
-    update_block = -> (s, reporter = nil) {
+    update_block = lambda { |s, reporter|
       puts "#{s.class} ##{s.id}: #{s.title}" if @dry_run
 
       # cleanup unused scenarios
