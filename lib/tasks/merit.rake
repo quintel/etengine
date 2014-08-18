@@ -82,9 +82,9 @@ namespace :merit do
       fixed_costs_per_unit fixed_om_costs_per_unit
     )
 
-    additional_keys = %w( full_load_hours load_profile_key )
+    additional_keys = %w( full_load_hours )
 
-    injector.m.producers.each do |producer|
+    injector.m.participants.producers.each do |producer|
       data = dispatchable_keys.each_with_object({}) do |key, data|
         data[key.to_sym] = producer.public_send(key)
       end
@@ -93,6 +93,9 @@ namespace :merit do
         additional_keys.each do |key|
           data[key.to_sym] = producer.public_send(key)
         end
+
+        data[:load_profile_key] = graph.converter(producer.key).
+          converter_api.load_profile_key
       end
 
       data[:type] = producer.class.name.split('::').last
@@ -107,7 +110,7 @@ namespace :merit do
       File.write(dir.join(path), curve.to_a.map { |line| "#{ line }\n" }.join)
     end
 
-    user = injector.m.participant(:total_demand)
+    user = injector.m.participants[:total_demand]
 
     write_curve.call('price.csv',  injector.m.price_curve)
     write_curve.call('demand.csv', user.load_curve)
@@ -115,7 +118,7 @@ namespace :merit do
     File.write(dir.join('archive-info.yml'), YAML.dump(
       area:          area.downcase,
       calculated_at: Time.now.utc,
-      total_demand:  user.total_consumption
+      total_demand:  user.load_curve.reduce(:+) * 3600
     ))
 
     puts "Data dumped to ./#{ dir.relative_path_from(Rails.root) }"
