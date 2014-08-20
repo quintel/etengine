@@ -21,11 +21,13 @@ module Qernel::RecursiveFactor::WeightedCarrier
     if link
       if (link.carrier.electricity? || link.carrier.steam_hot_water?)
         0.0
+      elsif link.carrier.cost_per_mj || right_dead_end?
+        link.carrier.cost_per_mj
       else
-        right_dead_end? ? link.carrier.cost_per_mj : nil
+        nil # continue to the right
       end
     else
-      nil
+      nil # continue to the right
     end
   end
 
