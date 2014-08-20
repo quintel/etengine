@@ -41,7 +41,10 @@ module Qernel::Plugins
       # Called by the graph between the two calculation loops.
       #
       def inject_values
-        @m.participants.dispatchables.each do |dispatchable|
+        dispatchables = @m.participants.dispatchables
+        dispatchables = dispatchables.sort_by(&:marginal_costs)
+
+        dispatchables.each_with_index do |dispatchable, position|
           converter = graph.converter(dispatchable.key).converter_api
 
           flh = dispatchable.full_load_hours
@@ -53,7 +56,7 @@ module Qernel::Plugins
           converter[:marginal_costs]       = dispatchable.marginal_costs
           converter[:number_of_units]      = dispatchable.number_of_units
           converter[:profitability]        = dispatchable.profitability
-          converter[:merit_order_position] = dispatchable.position
+          converter[:merit_order_position] = position + 1
           converter[:profit_per_mwh_electricity] = dispatchable.profit_per_mwh_electricity
 
           # TODO: should this be moved to gem, too?
