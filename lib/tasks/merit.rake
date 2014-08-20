@@ -53,9 +53,10 @@ namespace :merit do
     graph = scenario.gql.future_graph
 
     # Why does the Injector check this when the graph has already done so? :/
-    def graph.use_merit_order_demands?
-      true
-    end
+    def graph.use_merit_order_demands? ; true ;end
+
+    # Workaround in case start year == end year.
+    def graph.future? ; true ;end
 
     injector = Qernel::Plugins::MeritOrder::MeritOrderInjector.new(graph)
     injector.run
