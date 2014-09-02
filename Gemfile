@@ -59,12 +59,11 @@ end
 group :test, :development do
   gem 'rspec-rails', '~> 2.12'
   gem 'pry-rails'
-  gem 'pry-remote'
-  gem 'pry-stack_explorer'
-  gem 'pry-debugger'
   gem 'guard'
   gem 'guard-rspec'
   gem 'watchr'
+
+  gem 'pry-byebug', platforms: [:mri_20, :mri_21]
 end
 
 group :test do
