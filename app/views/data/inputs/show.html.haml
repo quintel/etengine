@@ -11,4 +11,12 @@
       - Input::ATTRIBUTES.each do |attr|
         %tr
           %td= attr
-          %td= highlight @input.send(attr).to_s, params[:highlight]
+          - value = @input.send(attr)
+
+          - if value.present? && (attr == :query || attr.to_s.end_with?('_gql'))
+            %td
+              %pre.ruby.highlight
+                = preserve do
+                  = value
+          - else
+            %td= highlight @input.send(attr).to_s, params[:highlight]

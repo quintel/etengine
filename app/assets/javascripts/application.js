@@ -5,6 +5,7 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require jquery.tablesorter.min
+//= require highlight.pack
 $(document).ready(function() {
   $("#api_scenario_selector select").change(function(e){
     e.preventDefault();
@@ -38,6 +39,10 @@ $(document).ready(function() {
 
   $('.gql_operator').mouseout(function(ev) {
     $(this).next().css('background', 'none');
+  });
+
+  $('pre.highlight').each(function(i, block) {
+    hljs.highlightBlock(block);
   });
 
   // sort by energy balance group and by position

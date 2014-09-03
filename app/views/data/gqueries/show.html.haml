@@ -9,8 +9,9 @@
 
     %h2 GQL Statment
 
-    %pre.gql.linenums
-      = color_syntaxed_gquery @gquery.query
+    %pre.highlight.ruby
+      = preserve do
+        = color_syntaxed_gquery @gquery.query
 
     %h2 Result
     - @query = @gquery.query

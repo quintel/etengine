@@ -1,32 +1,36 @@
 - begin
   - result = @gql.query(@query)
   - if result.respond_to?(:present_year)
-    %table.table.table-bordered
+    %table.table.table-bordered.results
       %tr
-        %td.span1
+        %td.span1.year
           = result.present_year
           = clippy(result.present_value)
         %td.tal
-          - if result.present_value.is_a?(String)
-            %pre= result.present_value
-          - else
-            = result.present_value
-        %td.span1= @gquery.andand.unit
+          %pre
+            = preserve do
+              = format_result(result.present_value).html_safe
+        - if @gquery
+          %td.span1= @gquery.andand.unit
       %tr
-        %td
+        %td.year
           = result.future_year
           = clippy(result.future_value)
         %td.tal
-          - if result.future_value.is_a?(String)
-            %pre= result.future_value
-          - else
-            = result.future_value
-        %td= @gquery.andand.unit
+          %pre
+            = preserve do
+              = format_result(result.future_value).html_safe
+        - if @gquery
+          %td= @gquery.andand.unit
   - else
     %table.table.table-bordered
       %tr
-        %td No Year
-        %td.tar= result
+        %td.year No Year
+        %td.tal
+          %pre
+            = preserve do
+              = format_result(result).html_safe
+      - if @gquery
         %td= @gquery.try :unit
 
 - rescue => e
