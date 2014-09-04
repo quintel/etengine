@@ -22,6 +22,10 @@ gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
 
+gem 'sass-rails'
+gem 'therubyracer', '>= 0.12.0'
+gem 'coffee-rails'
+
 gem 'dotenv-rails', groups: [:development, :test, :production, :staging]
 
 # API
@@ -52,8 +56,11 @@ group :development do
   gem 'better_errors'
   gem 'listen'
 
-  gem 'capistrano',         require: false
-  gem 'capistrano-unicorn', require: false
+  gem 'capistrano',             '~> 3.0',   require: false
+  gem 'capistrano-rbenv',       '~> 2.0',   require: false
+  gem 'capistrano-rails',       '~> 1.1',   require: false
+  gem 'capistrano-bundler',     '~> 1.1',   require: false
+  gem 'capistrano3-unicorn',    '~> 0.2',   require: false
 end
 
 group :test, :development do
@@ -77,10 +84,4 @@ group :production, :staging do
   gem 'gctools', require: false
   gem 'airbrake'
   gem 'newrelic_rpm'
-end
-
-group :assets do
-  gem 'sass-rails'
-  gem 'therubyracer', '>= 0.12.0'
-  gem 'coffee-rails'
 end

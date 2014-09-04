@@ -1,22 +1,26 @@
-require 'bundler/capistrano'
-require 'airbrake/capistrano'
-# require 'dotenv/capistrano'
-require 'capistrano-unicorn'
+# Load DSL and Setup Up Stages
+require 'capistrano/setup'
 
-load 'deploy'
+# Includes default deployment tasks
+require 'capistrano/deploy'
 
-load 'lib/capistrano/db_recipes'
-load 'lib/capistrano/memcached'
-load 'lib/capistrano/deploy'
-load 'deploy/assets'
+# Includes tasks from other gems included in your Gemfile
+#
+# For documentation on these, see for example:
+#
+#   https://github.com/capistrano/rvm
+#   https://github.com/capistrano/rbenv
+#   https://github.com/capistrano/chruby
+#   https://github.com/capistrano/bundler
+#   https://github.com/capistrano/rails
+#
+# require 'capistrano/rvm'
+require 'capistrano/rbenv'
+# require 'capistrano/chruby'
+require 'capistrano/bundler'
+require 'capistrano/rails/assets'
+require 'capistrano/rails/migrations'
+require 'capistrano3/unicorn'
 
-load 'config/deploy'
-
-after 'bundle:install',     'deploy:app_config'  # Config and ETSource.
-after 'deploy:update_code', 'deploy:etsource'
-after 'deploy:restart',     'unicorn:restart'    # Reload Unicorn.
-after 'deploy:restart',     'memcached:flush'    # Clear caches.
-after 'deploy',             'deploy:cleanup'
-
-after 'deploy:start',       'unicorn:start'
-after 'deploy:stop',        'unicorn:stop'
+# Loads custom tasks from `lib/capistrano/tasks' if you have any defined.
+Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }

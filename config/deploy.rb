@@ -1,73 +1,63 @@
-# require 'dotenv'
-# Dotenv.load
+# config valid only for Capistrano 3.1
+lock '3.2.1'
 
-set :application, "etengine"
-set :application_key, "etengine"
+set :log_level, 'info'
 
-set :deploy_to, "/u/apps/etengine"
+set :application, 'etengine'
+set :repo_url, 'https://github.com/quintel/etengine.git'
 
-set(:unicorn_bin) { "#{current_path}/bin/unicorn" }
-set(:unicorn_pid) { "#{current_path}/tmp/pids/unicorn.pid" }
+# Set up rbenv
+set :rbenv_type, :user
+set :rbenv_ruby, '2.1.1'
+set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
+set :rbenv_map_bins, %w{rake gem bundle ruby rails}
 
-# Reads and returns the contents of a remote +path+, caching it in case of
-# multiple calls.
-def remote_file(path)
-  @remote_files ||= {}
-  @remote_files[path] ||= capture("cat #{ path }")
+# Default branch is :master
+# ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
+
+# Default deploy_to directory is /var/www/my_app
+# set :deploy_to, "/var/www/#{fetch(:application)}"
+
+# Default value for :scm is :git
+# set :scm, :git
+
+# Default value for :format is :pretty
+# set :format, :pretty
+
+# Default value for :log_level is :debug
+# set :log_level, :debug
+
+# Default value for :pty is false
+# set :pty, true
+
+# Default value for :linked_files is []
+set :linked_files,
+  %w{ config/database.yml config/newrelic.yml config/.etsource_password .env }
+
+# Default value for linked_dirs is []
+set :linked_dirs,
+  %w{ bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system }
+
+# Default value for default_env is {}
+# set :default_env, { path: "/opt/ruby/bin:$PATH" }
+
+# Default value for keep_releases is 5
+# set :keep_releases, 5
+
+namespace :deploy do
+
+  desc 'Restart application'
+  task :restart do
+    invoke 'unicorn:restart'
+  end
+
+  after  'bundler:install',   'deploy:app_config'
+  before 'deploy:publishing', 'deploy:etsource'
+
+  after :publishing, :restart
+
+  after :restart, :clear_cache do
+    invoke 'memcached:flush'
+  end
+
 end
-
-# Reads the remote .env file to set the Airbrake key locally in Capistrano.
-def fetch_remote_airbrake_key
-  key = remote_file("#{shared_path}/.env").match(/^AIRBRAKE_API_KEY=(.+)$/)
-  key && key[1]
-end
-
-# Reads the remote database.yml file to read the value of an attribute. If a
-# matching environment variable is set (prefixed with "DB_"), it will be used
-# instead.
-def remote_db_config(key)
-  ENV["DB_#{ key.to_s.upcase }"] ||
-    YAML.load(
-      remote_file("#{shared_path}/config/database.yml")
-    )[rails_env.to_s][key.to_s]
-end
-
-task :production do
-  set :domain, "et-engine.com"
-  set :branch, fetch(:branch, "production")
-  set :rails_env, 'production'
-
-  server domain, :web, :app, :db, :primary => true
-
-  set :db_host, remote_db_config(:host) || '127.0.0.1'
-  set :db_pass, remote_db_config(:password)
-  set :db_name, remote_db_config(:database)
-  set :db_user, remote_db_config(:username)
-
-  set :airbrake_key, fetch_remote_airbrake_key
-end
-
-task :staging do
-  set :domain, "beta.et-engine.com"
-  set :branch, fetch(:branch, "staging")
-  set :rails_env, 'staging'
-
-  server domain, :web, :app, :db, :primary => true
-
-  set :db_host, remote_db_config(:host) || '127.0.0.1'
-  set :db_pass, remote_db_config(:password)
-  set :db_name, remote_db_config(:database)
-  set :db_user, remote_db_config(:username)
-
-  set :airbrake_key, fetch_remote_airbrake_key
-end
-
-set :user, 'ubuntu'
-set :scm, :git
-set :repository, "https://github.com/quintel/etengine.git"
-set :deploy_via, :remote_cache
-set :chmod755, "app config db lib public vendor script script/* public/disp*"  	# Some files that will need proper permissions set :use_sudo, false
-ssh_options[:forward_agent] = true
-set :use_sudo, false
-set :local_db_name, 'etengine_dev'
-set :bundle_flags, '--deployment --quiet --binstubs --shebang ruby-local-exec'
