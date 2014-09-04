@@ -81,8 +81,7 @@ class GraphApi
   # Returns a numeric.
   def total_demand_for_electricity
     final_demand_for_electricity +
-      energy_sector_final_demand_for_electricity +
-      electricity_losses_if_export_is_zero
+    electricity_losses_if_export_is_zero
   end
 
   # @return [Integer] Difference between start_year and end_year
@@ -134,7 +133,7 @@ class GraphApi
 
   # Demand of electricity of the energy sector itself 
   # (not included in final_demand_for_electricity)
-  def energy_sector_final_demand_for_electricity
+  def energy_sector_own_use_electricity
     graph.converter(:energy_power_sector_own_use_electricity).demand
   end
 
@@ -184,7 +183,7 @@ class GraphApi
   # returns [Float] the network losses for the electricity net.
   def electricity_losses_if_export_is_zero
     transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
-    own_use_of_sector      = energy_sector_final_demand_for_electricity
+    own_use_of_sector      = energy_sector_own_use_electricity
     converter              = graph.converter(:energy_power_hv_network_electricity)
     conversion_loss        = converter.output(:loss).conversion
     conversion_electricity = converter.output(:electricity).conversion
