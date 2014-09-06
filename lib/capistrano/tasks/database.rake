@@ -33,6 +33,8 @@ task db2local: ['deploy:set_rails_env'] do
       system "mysql #{ credentials } #{ database } < #{ filename.chomp('.gz') }"
 
       system "rm #{ filename.chomp('.gz') }"
+
+      info 'Finished importing database'
     end
   end
 end
