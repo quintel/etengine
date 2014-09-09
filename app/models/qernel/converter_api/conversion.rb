@@ -171,7 +171,7 @@ class Qernel::ConverterApi
       raise ArgumentError, "#{unit} unknown! Cannot convert."
     end
 
-    value == Float::INFINITY ? 0.0 : value
+    (value && value.to_f == Float::INFINITY) ? 0.0 : value
   end
 
 end
