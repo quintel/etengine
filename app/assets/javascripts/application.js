@@ -72,10 +72,32 @@ $(document).ready(function() {
       $(this).css('width', '' + width + 'px').text('Importing...');
   });
 
+  // Present / Future Edge Swapper
+
+  function supports_html5_storage() {
+      try {
+          return 'localStorage' in window && window['localStorage'] !== null;
+      } catch (e) {
+          return false;
+      }
+  }
+
   $('.future-edges h2 a, .present-edges h2 a').click(function(event) {
     $('.future-edges').toggle();
     $('.present-edges').toggle();
 
+    if (supports_html5_storage()) {
+        localStorage.setItem(
+            'presentEdges', $('.present-edges').is(':visible')
+        );
+    }
+
     event.preventDefault();
   });
+
+  if (supports_html5_storage()) {
+      if (localStorage.getItem('presentEdges') === 'true') {
+          $('.future-edges h2 a').click();
+      }
+  }
 });
