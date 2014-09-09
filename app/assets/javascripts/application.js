@@ -71,4 +71,11 @@ $(document).ready(function() {
 
       $(this).css('width', '' + width + 'px').text('Importing...');
   });
+
+  $('.future-edges a, .present-edges a').click(function(event) {
+    $('.future-edges').toggle();
+    $('.present-edges').toggle();
+
+    event.preventDefault();
+  });
 });

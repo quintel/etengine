@@ -45,11 +45,21 @@
               - Input.with_queries_containing(converter_key).each do |input|
                 %li= link_to input.key, data_input_path(:id => input.id, :highlight => converter_key)
 
-.row-fluid
+.row-fluid.future-edges
   .span12
     .page-header
-      %h2 Future Input / Outputs
-    = render 'converter_links'
+      %h2
+        Future Input / Outputs
+        = link_to 'Show present values'
+    = render 'converter_links', c: @converter_future
+
+.row-fluid.present-edges(style="display:none")
+  .span12
+    .page-header
+      %h2
+        Present Input / Outputs
+        = link_to 'Show future values'
+    = render 'converter_links', c: @converter_present
 
 - if @presenter.attributes_and_methods_to_show.any?
   .row-fluid
