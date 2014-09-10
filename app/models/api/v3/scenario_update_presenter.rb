@@ -112,7 +112,7 @@ module Api
       #
       # Returns true or false.
       def nan?(value)
-        value.is_a?(Numeric) && value.nan?
+        value.is_a?(Float) && value.nan?
       end
 
     end # ScenarioUpdatePresenter
