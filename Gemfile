@@ -41,7 +41,7 @@ gem 'rubel',         ref: 'e36554a',   github:  'quintel/rubel'
 gem 'quintel_merit', ref: '4e643be',   github:  'quintel/merit'
 gem 'turbine-graph', '>=0.1',          require: 'turbine'
 gem 'refinery',      ref: '9e08b09',   github:  'quintel/refinery'
-gem 'atlas',         ref: 'e5ddbe0',   github:  'quintel/atlas'
+gem 'atlas',         ref: '64730b7',   github:  'quintel/atlas'
 
 # system gems
 gem 'mysql2',         '~>0.3.11'
