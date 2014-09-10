@@ -76,6 +76,9 @@ module Api
           present = perform_query(gql, :present, query)
           future  = perform_query(gql, :future,  query)
 
+          present = 0.0 if nan?(present)
+          future  = 0.0 if nan?(future)
+
           results[query.key] = {
             present: present, future: future, unit: query.unit
           }
@@ -103,6 +106,13 @@ module Api
         @errors.push("#{ query.key }/#{ period } - #{ exception.message } | " \
                      "#{ exception.backtrace.join("\n") }")
         nil
+      end
+
+      # Internal: Tests if a value NaN.
+      #
+      # Returns true or false.
+      def nan?(value)
+        value.is_a?(Numeric) && value.nan?
       end
 
     end # ScenarioUpdatePresenter
