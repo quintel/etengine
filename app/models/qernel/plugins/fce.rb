@@ -93,7 +93,7 @@ module Qernel::Plugins
           share = share_of(carrier, origin)
 
           # Iterating through each "origin" in the FCE data.
-          co2_attributes_for_calculation.each do |attr|
+          Qernel::Carrier::CO2_FCE_COMPONENTS.each do |attr|
             data[attr] ||= 0.0
             data[attr] += profile[attr] * share
           end
