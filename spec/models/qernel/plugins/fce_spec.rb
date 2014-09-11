@@ -34,9 +34,9 @@ describe Qernel::Plugins::FCE::FCECalculator do
   describe 'with FCE disabled' do
     let(:calculator) { Qernel::Plugins::FCE::FCECalculator.new(:nl, false) }
 
-    it 'only calculates two attributes when the carrier has a profile' do
+    it 'calculates all attributes when the carrier has a profile' do
       expect(calculator.calculate_carrier(:coal).keys).
-        to eq([:co2_conversion_per_mj, :co2_per_mj])
+        to eq(Qernel::Carrier::CO2_FCE_COMPONENTS + [:co2_per_mj])
     end
 
     it 'only calculates the co2_per_mj attribute for carriers with no profile' do
