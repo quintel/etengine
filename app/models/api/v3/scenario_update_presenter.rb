@@ -76,9 +76,6 @@ module Api
           present = perform_query(gql, :present, query)
           future  = perform_query(gql, :future,  query)
 
-          present = 0.0 if nan?(present)
-          future  = 0.0 if nan?(future)
-
           results[query.key] = {
             present: present, future: future, unit: query.unit
           }
@@ -99,7 +96,17 @@ module Api
       #  return boolean values, so false must be preserved
       #
       def perform_query(gql, period, query)
-        gql.public_send(:"query_#{ period }", query)
+        value = gql.public_send(:"query_#{ period }", query)
+
+        if nan?(value)
+          0.0
+        elsif value.is_a?(BigDecimal)
+          # Rails 4.1 JSON encodes BigDecimal as a string. This is not part of
+          # the ETEngine APIv3 spec.
+          value.to_f
+        else
+          value
+        end
       rescue Exception => exception
         # TODO Exception is *way* too low level to be rescued; we could do
         #      with a GraphError exception for "acceptable" graph errors.
