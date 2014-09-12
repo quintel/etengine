@@ -1,8 +1,9 @@
-- id = 2999
-- title = Test Preset
+- id = 3000
+- title = Hidden Preset
 - end_year = 2040
 - area_code = nl
 - use_fce = false
+- in_start_menu = false
 - display_group = Keizersgracht
 - user_values.foo_demand = 10
 - user_values.input_2 = 20

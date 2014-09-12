@@ -5,7 +5,7 @@ describe 'APIv3 Presets', :etsource_fixture do
     get 'api/v3/scenarios/templates'
 
     json = JSON.parse(response.body)
-    json.should have(Preset.all.length).presets
+    json.should have(Preset.visible.length).presets
 
     preset = Preset.all.first
     data   = json.first

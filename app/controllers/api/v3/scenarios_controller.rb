@@ -52,7 +52,7 @@ module Api
       # page.
       #
       def templates
-        render json: Preset.all.map { |ps| PresetPresenter.new(self, ps) }
+        render(json: Preset.visible.map { |ps| PresetPresenter.new(self, ps) })
       end
 
       # POST /api/v3/scenarios

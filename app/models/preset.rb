@@ -12,6 +12,11 @@ class Preset
   attr_accessor *COLUMNS
   attr_accessor :key
 
+  # Returns an array of all presets which are visible to end-users.
+  def self.visible
+    all.reject { |p| p.in_start_menu == false }
+  end
+
   def initialize(attributes = {})
     self.key = attributes[:key]
 
