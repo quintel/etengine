@@ -1121,7 +1121,7 @@
 :buildings_final_demand_for_appliances_crude_oil:
   :x: 2320
   :y: 7520
-:buildings_final_demand_for_appliances_gas:
+:buildings_final_demand_for_appliances_network_gas:
   :x: 2320
   :y: 7580
 :buildings_final_demand_for_appliances_wood_pellets:
@@ -1133,7 +1133,7 @@
 :buildings_final_demand_for_lighting_electricity:
   :x: 2320
   :y: 7300
-:buildings_final_demand_for_cooling_gas:
+:buildings_final_demand_for_cooling_network_gas:
   :x: 2320
   :y: 6360
 :buildings_final_demand_for_cooling_electricity:
@@ -1142,7 +1142,7 @@
 :buildings_final_demand_for_space_heating_crude_oil:
   :x: 2320
   :y: 5820
-:buildings_final_demand_for_space_heating_gas:
+:buildings_final_demand_for_space_heating_network_gas:
   :x: 2320
   :y: 5880
 :buildings_final_demand_for_space_heating_wood_pellets:
