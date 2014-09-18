@@ -81,7 +81,8 @@ class GraphApi
   # Returns a numeric.
   def total_demand_for_electricity
     final_demand_for_electricity +
-    electricity_losses_if_export_is_zero
+    electricity_losses_if_export_is_zero -
+    reduction_in_own_use_if_export_is_zero
   end
 
   # @return [Integer] Difference between start_year and end_year
@@ -131,11 +132,6 @@ class GraphApi
   private
   #######
 
-  # Demand of electricity of the energy sector itself 
-  # (not included in final_demand_for_electricity)
-  def energy_sector_own_use_electricity
-    graph.converter(:energy_power_sector_own_use_electricity).demand
-  end
 
   # Computes the electricity losses AS IF there were no exports.
   # This is accomplished by using the (fixed) conversion efficiencies
@@ -183,12 +179,42 @@ class GraphApi
   # returns [Float] the network losses for the electricity net.
   def electricity_losses_if_export_is_zero
     transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
-    own_use_of_sector      = energy_sector_own_use_electricity
     converter              = graph.converter(:energy_power_hv_network_electricity)
     conversion_loss        = converter.output(:loss).conversion
     conversion_electricity = converter.output(:electricity).conversion
+    own_use                = graph.converter(:energy_power_sector_own_use_electricity).demand
+    own_use_fraction       = own_use / (converter.demand * conversion_electricity)
 
-    (transformer_demand + own_use_of_sector) * conversion_loss / conversion_electricity
+    transformer_demand * conversion_loss / (1.0 - conversion_loss - conversion_electricity * own_use_fraction)
+  end
+
+  # Correction factor for the own use of electricity of the energy sector 
+  # if export is zero.
+  #
+  # The own use converter (energy_power_sector_own_use_electricity) is included 
+  # in the final_demand_for_electricity function because it is part of the
+  # final_demand_group.
+  #
+  # Similar to the loss of the hv network, 
+  # energy_power_sector_own_use_electricity has a demand that depends on the 
+  # total demand of energy_power_hv_network_electricity.
+  #
+  # NOTE: This is ONLY correct if import and export are NOT taken into account
+  # in the MO module.
+  #
+  # returns [Float] the reduction of demand in 
+  # energy_power_sector_own_use_electricity AS IF export == 0.
+  def reduction_in_own_use_if_export_is_zero
+    own_use                     = graph.converter(:energy_power_sector_own_use_electricity).demand
+    hv_network                  = graph.converter(:energy_power_hv_network_electricity)
+    conversion_loss             = hv_network.output(:loss).conversion
+    conversion_electricity      = hv_network.output(:electricity).conversion
+    own_use_fraction            = own_use / (hv_network.demand * conversion_electricity)
+    transformer_demand          = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+    hv_demand_if_export_is_zero = transformer_demand / (1.0 - conversion_loss - conversion_electricity * own_use_fraction)
+    own_use_if_export_is_zero   = hv_demand_if_export_is_zero * own_use_fraction * conversion_electricity
+
+    own_use - own_use_if_export_is_zero
   end
 
 end
