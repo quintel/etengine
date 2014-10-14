@@ -79,13 +79,17 @@ module Api
 
         @scenario = Scenario.new(attrs)
 
-        if @scenario.save
-          # With HTTP 201 nginx doesn't set content-length or chunked encoding
-          # headers
-          render json: ScenarioPresenter.new(self, @scenario, params)
-        else
-          render json: { errors: @scenario.errors }, status: 422
+        Scenario.transaction do
+          @scenario.save!
+
+          if scaler_attributes
+            @scenario.create_scaler!(scaler_attributes)
+          end
         end
+
+        render json: ScenarioPresenter.new(self, @scenario, params)
+      rescue ActiveRecord::RecordInvalid
+        render json: { errors: @scenario.errors }, status: 422
       end
 
       # PUT-PATCH /api/v3/scenarios/:id
@@ -198,6 +202,15 @@ module Api
           :country, :region, :preset_scenario_id, :use_fce, :protected,
           :scenario_id, :source, :user_values
         )
+      end
+
+      # Internal: Attributes for creating a scaled scenario.
+      #
+      # Returns a hash.
+      def scaler_attributes
+        if params[:scenario] && params[:scenario][:scale]
+          params[:scenario].require(:scale).permit(:area_attribute, :value)
+        end
       end
 
     end

@@ -45,6 +45,7 @@ module Api
             balanced_values: balanced_values,
             user_values:     user_values
         ))
+
         valid? ? @scenario.save(validate: false) : false
       end
 
@@ -80,7 +81,7 @@ module Api
       #
       def validate_user_values
         provided_values_without_resets.each do |key, value|
-          input = Input.cache.read(@scenario, Input.get(key))
+          input = Input.cache(@scenario).read(@scenario, Input.get(key))
 
           if input.blank?
             errors.add(:base, "Input #{key} does not exist")
@@ -97,7 +98,7 @@ module Api
       def validate_groups_balance
         each_group(provided_values) do |group, inputs|
           values = inputs.map do |input|
-            input_cache = Input.cache.read(@scenario, input)
+            input_cache = Input.cache(@scenario).read(@scenario, input)
 
             next if input_cache[:disabled]
 

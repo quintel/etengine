@@ -126,4 +126,42 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
+  context 'when scaling the area' do
+    context 'with all valid attributes' do
+      before do
+        post 'api/v3/scenarios', scenario: {
+          scale: { area_attribute: 'number_of_residences', value: 500_000 } }
+      end
+
+      it 'should be successful' do
+        response.status.should eql(200)
+      end
+
+      it 'should save the custom scaling' do
+        scenario = Scenario.find(JSON.parse(response.body)['id'])
+
+        expect(scenario.scaler).to_not be_nil
+        expect(scenario.scaler.area_attribute).to eq('number_of_residences')
+        expect(scenario.scaler.value).to eq(500_000)
+      end
+    end # with all valid attributes
+
+    context 'with an invalid attribute' do
+      before do
+        post 'api/v3/scenarios', scenario: {
+          scale: { area_attribute: :illegal, value: 500_000 } }
+      end
+
+      it 'should not save the scenario' do
+        running_this = -> {
+          post 'api/v3/scenarios', scenario: {
+            scale: { area_attribute: :illegal, value: 500_000 } }
+        }
+
+        expect(&running_this).to_not change { Scenario.count }
+        response.status.should eql(422)
+      end
+    end
+  end
+
 end

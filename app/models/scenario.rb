@@ -37,7 +37,8 @@ class Scenario < ActiveRecord::Base
   store :balanced_values
 
   belongs_to :user
-  has_one               :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
+  has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
+  has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
 
   validates_presence_of :title, :on => :create, :message => "Please provide a title"
   validates             :area_code, :presence => true

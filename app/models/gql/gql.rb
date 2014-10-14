@@ -95,8 +95,10 @@ class Gql
   #
   def dataset_clone
     instrument("gql.performance.dataset_clone") do
-      DeepClone.clone @dataset 
-      # Marshal.load(Marshal.dump(@dataset))
+      dataset = DeepClone.clone(@dataset)
+      scaler  = @scenario.scaler
+
+      scaler ? scaler.scale_dataset!(dataset) : dataset
     end
   end
 

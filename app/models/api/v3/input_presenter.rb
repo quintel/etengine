@@ -40,7 +40,7 @@ module Api
       def as_json(*)
         json     = Hash.new
 
-        values   = Input.cache.read(@scenario, @input)
+        values   = Input.cache(@scenario).read(@scenario, @input)
 
         user_values      = HashWithIndifferentAccess.new(@scenario.user_values)
         balanced_values  = HashWithIndifferentAccess.new(@scenario.balanced_values)
@@ -58,7 +58,12 @@ module Api
         json[:share_group] = @input.share_group if @input.share_group.present?
 
         if @extra_attributes
-          json[:step] = @input.step_value
+          if @scenario.scaler
+            json[:step] = @scenario.scaler.input_step(@input)
+          else
+            json[:step] = @input.step_value
+          end
+
           json[:code] = @input.key
           json[:unit] = @input.unit
         end

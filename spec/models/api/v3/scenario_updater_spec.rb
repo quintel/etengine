@@ -302,6 +302,43 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
   end
 
+  # ----------------------------------------------------------------------------
+
+  context 'Setting an input in a scaled scenario' do
+    let(:scenario) do
+      ScenarioScaling.create!(
+        scenario:       super(),
+        area_attribute: 'number_of_residences',
+        value:          1_000_000
+      ).scenario
+    end
+
+    context 'when the input value is within the acceptable range' do
+      let(:params) { {
+        autobalance: false,
+        scenario: { user_values: {
+          # 5.0 is not an acceptable value in a non-scaled scenario (10.0 is
+          # the minimum).
+          'input_2' => '5.0'
+        } }
+      } }
+
+      it_should_behave_like 'a successful scenario update'
+    end
+
+    context 'when the input value is not within the acceptable range' do
+      let(:params) { {
+        autobalance: false,
+        scenario: { user_values: {
+          # 50000 is an acceptable value in a non-scaled scenario.
+          'input_2' => '50000'
+        } }
+      } }
+
+      it_should_behave_like 'a failed scenario update'
+    end
+  end
+
   # --------------------------------------------------------------------------
 
   context 'Updating grouped inputs without the balancer' do

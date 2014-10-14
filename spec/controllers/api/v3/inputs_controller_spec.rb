@@ -99,6 +99,37 @@ describe Api::V3::InputsController do
         json[static_input.key].should_not have_key('user')
       end
     end # "user" attribute
+
+    context 'with a scaled scenario' do
+      before do
+        ScenarioScaling.create(
+          scenario:       scenario,
+          area_attribute: 'number_of_residences',
+          value:          1_000_000)
+      end
+
+      let(:divisor) do
+        Atlas::Dataset.find(:nl).number_of_residences / 1_000_000
+      end
+
+      it 'scales static input values' do
+        json[static_input.key].should include(
+          'min'     =>  5 / divisor,
+          'max'     => 15 / divisor,
+          'default' => 10 / divisor
+        )
+      end
+
+      it 'scales GQL-based input values' do
+        # GQL inputs are also scaled, since the values come from a "full-size"
+        # region graph.
+        json[gql_input.key].should include(
+          'min'     =>  4 / divisor,
+          'max'     => 16 / divisor,
+          'default' =>  8 / divisor
+        )
+      end
+    end # with a scaled scenario
   end # GET /api/v3/scenarios/:scenario_id/inputs
 
  # ---------------------------------------------------------------------------

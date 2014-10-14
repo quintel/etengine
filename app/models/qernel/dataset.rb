@@ -23,7 +23,8 @@ class Dataset
       Rails.logger.warn("Qernel::Dataset initialized without a id. Can lead to conflicts with Gquery Caching.")
     end
     @id = id
-    @data = {:graph => {:graph => {}}}
+
+    @data = { graph: { graph: {} }, area: { area_data: {} } }
   end
 
   def time_curves
