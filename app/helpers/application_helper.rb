@@ -33,6 +33,9 @@ module ApplicationHelper
     if result.is_a?(Array)
       lines = result.map { |el| format_result(el, indent + 1) }
       return "#{ lead }[\n#{ lines.join(",\n") }\n#{ lead }]"
+    elsif result.is_a?(String) && indent.zero?
+      # Raw string result (TXT_TABLE, etc).
+      return result.lines.map { |line| "#{ lead }#{ line }" }.join("\n")
     end
 
     line = case result
