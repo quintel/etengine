@@ -1,19 +1,17 @@
 = render 'subnav'
 
-
 .row
   .span12
-    .page-header
-      %h2 Test GQL
-    %p
-      = form_tag test_data_gqueries_path do |f|
-        = text_area_tag :query, params[:query], :class => 'span8', :style => "height: 200px"
-        %p
-          = submit_tag 'Run GQL', :class => 'btn btn-primary'
-          = submit_tag 'Debug', :class => 'btn btn'
+    %h2(style="margin-bottom: .5em") Test GQL
+
+    = form_tag test_data_gqueries_path do |f|
+      = text_area_tag :query, params[:query]
+      %p
+        = submit_tag 'Run GQL', :class => 'btn btn-primary btn-large'
+        = submit_tag 'Debug', :class => 'btn btn-large'
 
 - if @query    
   .row
     .span11
-      %h3 Result
+      %h2(style="margin-bottom: .5em") Result
       = render 'result'
