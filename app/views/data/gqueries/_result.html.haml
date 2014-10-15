@@ -1,37 +1,11 @@
 - begin
   - result = @gql.query(@query)
-  - if result.respond_to?(:present_year)
-    %table.table.table-bordered.results
-      %tr
-        %td.span1.year
-          = result.present_year
-          = clippy(result.present_value)
-        %td.tal
-          %pre
-            = preserve do
-              = format_result(result.present_value).html_safe
-        - if @gquery
-          %td.span1= @gquery.andand.unit
-      %tr
-        %td.year
-          = result.future_year
-          = clippy(result.future_value)
-        %td.tal
-          %pre
-            = preserve do
-              = format_result(result.future_value).html_safe
-        - if @gquery
-          %td= @gquery.andand.unit
-  - else
-    %table.table.table-bordered
-      %tr
-        %td.year No Year
-        %td.tal
-          %pre
-            = preserve do
-              = format_result(result).html_safe
-      - if @gquery
-        %td= @gquery.try :unit
+  %table.table.table-bordered.results
+    - if result.respond_to?(:present_year)
+      = render(partial: 'year_result', locals: { year: result.present_year, value: result.present_value })
+      = render(partial: 'year_result', locals: { year: result.future_year, value: result.future_value })
+    - else
+      = render(partial: 'year_result', locals: { year: 'No year', value: result })
 
 - rescue => e
   %h4== #{ e.class.name }: #{ e.to_s }

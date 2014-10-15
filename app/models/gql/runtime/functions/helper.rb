@@ -55,8 +55,7 @@ module Gql::Runtime
       # )
       #
       def TXT_TABLE(objects, *arguments)
-        table_data(objects, *arguments).
-          to_table(:first_row_is_head => true).to_s
+        DebugTable.new(objects, arguments, :txt)
       end
 
       # TXT_TABLE( converters ; attribute_1 ; attribute_2 ; ... )
@@ -67,8 +66,7 @@ module Gql::Runtime
       # )
       #
       def EXCEL_TABLE(objects, *arguments)
-        table_data(objects, *arguments).
-          map{ |row| row.join("\t") }.join("\n")
+        DebugTable.new(objects, arguments, :tsv)
       end
 
       #######

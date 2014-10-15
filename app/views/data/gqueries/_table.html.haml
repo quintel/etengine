@@ -1,0 +1,33 @@
+.table-raw-switcher
+  .btn-toolbar(role="toolbar")
+    .btn-group
+      %button.btn.btn-small.btn-primary.disabled(data-show="table") Table
+    .btn-group
+      %button.btn.btn-small(data-show="txt") Text
+      %button.btn.btn-small(data-show="csv") CSV
+      %button.btn.btn-small(data-show="tsv") TSV
+
+.debug-table-wrapper.table
+  %table.debug-table
+    %thead
+      %tr
+        - table.data[0].each do |column|
+          %th= column
+    - if table.data.length > 1
+      %tbody
+        - table.data[1..-1].each do |row|
+          %tr
+            - row.each do |value|
+              %td= value
+
+%textarea.txt{ :readonly => "readonly", :rows => table.to_txt.lines.length }
+  = preserve do
+    = table.to_txt
+
+%textarea.csv{ :readonly => "readonly", :rows => table.to_csv.lines.length }
+  = preserve do
+    = table.to_csv
+
+%textarea.tsv{ :readonly => "readonly", :rows => table.to_tsv.lines.length }
+  = preserve do
+    = table.to_tsv

@@ -6,6 +6,7 @@
 //= require bootstrap
 //= require jquery.tablesorter.min
 //= require highlight.pack
+//= require jquery.floatThead.min
 $(document).ready(function() {
   $("#api_scenario_selector select").change(function(e){
     e.preventDefault();
@@ -29,6 +30,36 @@ $(document).ready(function() {
     $.post('/api/v3/scenarios/', params, function(data, _ts, jqXHR) {
       location.href = "/data/"+data.id;
     })
+  });
+
+  var $table = $('.debug-table');
+
+  $table.floatThead({
+    useAbsolutePositioning: true,
+    scrollContainer: function($table){
+      return $table.closest('.debug-table-wrapper');
+    }
+  });
+
+  $('.table-raw-switcher button').click(function() {
+    element = $(this);
+    parent  = element.closest('.tal');
+
+    parent.find('.table, .csv, .tsv, .txt').hide();
+    parent.find('.' + element.data('show')).show();
+
+    parent.find('button').removeClass('btn-primary disabled');
+    element.addClass('btn-primary disabled');
+
+    if(element.data('show') === 'table') {
+      $table.floatThead('reflow');
+    } else {
+      $table.floatThead('destroy');
+    }
+  });
+
+  $('textarea.txt, textarea.csv, textarea.tsv').click(function() {
+    $(this).select();
   });
 
   $('.gql_operator').mouseover(function(ev) {

@@ -32,10 +32,7 @@ module ApplicationHelper
 
     if result.is_a?(Array)
       lines = result.map { |el| format_result(el, indent + 1) }
-      return "#{ lead }[\n#{ lines.join(",\n") }\n#{ lead }]"
-    elsif result.is_a?(String) && indent.zero?
-      # Raw string result (TXT_TABLE, etc).
-      return result.lines.map { |line| "#{ lead }#{ line }" }.join("\n")
+      return "#{ lead }[\n#{ lines.join(",\n") }\n#{ lead }]".html_safe
     end
 
     line = case result
@@ -49,7 +46,7 @@ module ApplicationHelper
       "<span class='nb'>#{ h(result.inspect) }</span>"
     end
 
-    "#{ lead }#{ line }"
+    "#{ lead }#{ line }".html_safe
   end
 
   def color_syntaxed_gquery(q)

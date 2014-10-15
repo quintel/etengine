@@ -1,0 +1,20 @@
+%tr
+  %td.span1.year
+    = year
+
+    - if value.is_a?(DebugTable)
+      .spacing &nbsp;
+    - else
+      = clippy(value.to_s)
+
+  - if value.is_a?(DebugTable)
+    %td.tal.table
+      = render(partial: 'data/gqueries/table', locals: { table: value })
+  - else
+    %td.tal
+      %pre
+        = preserve do
+          = format_result(value)
+
+  - if @gquery
+    %td.span1= @gquery.andand.unit
