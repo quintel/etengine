@@ -4,7 +4,7 @@
   .span12
     %h2(style="margin-bottom: .5em") Test GQL
 
-    = form_tag test_data_gqueries_path do |f|
+    = form_tag test_data_gqueries_path, class: 'gql-debug' do |f|
       = text_area_tag :query, params[:query]
       %p
         = submit_tag 'Run GQL', :class => 'btn btn-primary btn-large'
