@@ -162,16 +162,16 @@ table.results tbody td .debug-table
     padding: 5px 10px
     white-space: nowrap
 
+  thead th.tablesorter-header:after
+    margin-top: -10px
+
+  thead th.tablesorter-headerSortUp, thead th.tablesorter-headerSortDown
+    background: linear-gradient(#eee, white)
+
+    &:after
+      visibility: visible !important
+
 .results .tal.table textarea
   box-shadow: none
   display: none
   min-width: 712px
-
-table th.tablesorter-header:after
-  margin-top: -10px
-
-table th.tablesorter-headerSortUp, table th.tablesorter-headerSortDown
-  background: linear-gradient(#eee, white)
-
-  &:after
-    visibility: visible !important
