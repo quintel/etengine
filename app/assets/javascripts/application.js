@@ -34,6 +34,8 @@ $(document).ready(function() {
 
   var $table = $('.debug-table');
 
+  $table.tablesorter();
+
   $table.floatThead({
     useAbsolutePositioning: true,
     scrollContainer: function($table){

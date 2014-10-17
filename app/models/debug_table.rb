@@ -1,6 +1,8 @@
 class DebugTable
+  attr_reader :objects
+
   def initialize(objects, arguments, format = :txt)
-    @objects   = objects
+    @objects   = Array(objects)
     @arguments = arguments
     @format    = format
   end
@@ -24,7 +26,7 @@ class DebugTable
   def data
     return @data if @data
 
-    rows = [[*@arguments]]
+    rows = [@arguments]
 
     rows += @objects.flatten.uniq.map do |obj|
       @arguments.map do |argument|

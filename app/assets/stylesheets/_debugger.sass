@@ -38,14 +38,14 @@ form.gql-debug
     width: 839px
 
 table.results
-  tr:hover td
-    background: none
   tbody:first-child tr:first-child td:first-child
     border-radius: 0
   tbody .year, tbody tr:hover td.year
-    background: linear-gradient(#eee, white 30px)
     font-size: 16px
     line-height: 20px
+  tbody th, tbody td
+    background: linear-gradient(#eee, white 30px)
+    border-radius: 0
   .spacing
     width: 110px
 
@@ -97,8 +97,8 @@ pre.highlight
       text-decoration: none
 
 .table-raw-switcher
-  background: #eee
-  background: linear-gradient(#eee, white 30px)
+  // background: #eee
+  // background: linear-gradient(#eee, white 30px)
   border-bottom: 1px solid #ddd
   font-size: 12px
   line-height: 1
@@ -121,10 +121,21 @@ pre.highlight
 .results td.table
   padding: 0
 
-.debug-table
+table.results tbody td .debug-table
   font-size: 12px
   margin: 0
   width: 100%
+
+  td
+    background: white
+
+  td.numeric
+    font: 12px Menlo, Monaco, Consolas, "Courier New", monospace
+    padding: 7px 10px 3px
+    text-align: right
+
+  td.converter a
+    color: black
 
   &.floatThead-table
     border-top: none !important
@@ -141,6 +152,9 @@ pre.highlight
 
   thead th
     background: linear-gradient(white, #eee)
+    color: #777
+    font-size: 11px
+    text-transform: uppercase
 
   thead th, tbody td
     border-bottom: 1px solid #ddd
@@ -152,3 +166,12 @@ pre.highlight
   box-shadow: none
   display: none
   min-width: 712px
+
+table th.tablesorter-header:after
+  margin-top: -10px
+
+table th.tablesorter-headerSortUp, table th.tablesorter-headerSortDown
+  background: linear-gradient(#eee, white)
+
+  &:after
+    visibility: visible !important
