@@ -13,12 +13,15 @@ th.attribute_group, th.calculation_group {
 }
 
 .navbar .navbar-inner  {
-  -webkit-border-radius: 0
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
 }
 
 .navbar a.brand {
   padding-top: 11px;
   font-size: 16px;
+  font-weight: 400;
 }
 
 .navbar .navbar-search {
@@ -26,8 +29,8 @@ th.attribute_group, th.calculation_group {
 
   input {
     font-size: 12px;
-    margin-top: 4px;
-    padding-top: 4px;
+    margin-top: 5px;
+    padding-top: 3px;
     padding-bottom: 1px;
     width: 80px;
     transition: all .2s ease-out;
@@ -35,7 +38,7 @@ th.attribute_group, th.calculation_group {
     &:active, &:focus, &.focused {
       border: 1px solid #151515;
       color: #333;
-      padding: 4px 9px 1px;
+      padding: 3px 9px 1px;
       text-shadow: none;
       background-color: white;
       outline: 0;
@@ -62,8 +65,8 @@ th.attribute_group, th.calculation_group {
   -ms-transition: none;
   -o-transition: none;
   transition: none;
-  height: 26px;
-  margin-top: 6px;
+  height: 24px;
+  margin-top: 8px;
   font-size: 12px;
 }
 
