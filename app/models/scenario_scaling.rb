@@ -61,6 +61,13 @@ class ScenarioScaling < ActiveRecord::Base
     end
   end
 
+  # Public: Converts the scaling to a hash which can be serialized as JSON.
+  #
+  # Returns a Hash.
+  def as_json(*)
+    super(only: [:area_attribute, :value])
+  end
+
   # Public: A human-readable version of the scenario scaling.
   #
   # Returns a string.
