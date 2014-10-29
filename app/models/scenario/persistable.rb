@@ -29,6 +29,11 @@ module Scenario::Persistable
       self.balanced_values.reverse_merge!(preset.balanced_values.clone)
     end
 
+    if preset.respond_to?(:scaler) && preset.scaler
+      self.scaler = ScenarioScaling.new(
+        preset.scaler.attributes.slice('area_attribute', 'value'))
+    end
+
     self.end_year    = preset.end_year
     self.area_code   = preset.area_code
     self.use_fce     = preset.use_fce

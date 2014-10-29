@@ -193,6 +193,21 @@ describe Scenario do
     it 'should copy the balanced values' do
       scenario.balanced_values.should eql(preset.balanced_values)
     end
+
+    it 'should copy the scaler attributes' do
+      ScenarioScaling.create!(
+        scenario:       preset,
+        area_attribute: 'number_of_residences',
+        value:          1000
+      )
+
+      expect(scenario.scaler).to_not be_nil
+      expect(scenario.scaler.id).to_not eq(preset.scaler.id)
+
+      expect(scenario.scaler.area_attribute).to eq('number_of_residences')
+      expect(scenario.scaler.value).to eq(1000)
+      expect(scenario.scaler.scenario).to eq(scenario) # Not `preset`.
+    end
   end
 
   describe 'dup' do
