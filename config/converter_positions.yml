@@ -263,7 +263,7 @@
 :energy_extraction_natural_gas:
   :x: 7700
   :y: 4280
-:energy_production_bio_residues_for_firing:
+:energy_production_woody_biomass:
   :x: 7700
   :y: 3620
 :households_useful_demand_for_space_heating_after_insulation:
@@ -362,7 +362,7 @@
 :energy_distribution_crude_oil:
   :x: 7340
   :y: 3320
-:energy_distribution_bio_residues_for_firing:
+:energy_distribution_woody_biomass:
   :x: 7020
   :y: 3620
 :energy_distribution_greengas:
