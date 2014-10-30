@@ -11,17 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131209134003) do
+ActiveRecord::Schema.define(version: 20141030094552) do
 
   create_table "fce_values", force: true do |t|
     t.string   "using_country"
     t.string   "origin_country"
-    t.float    "co2_exploration_per_mj"
-    t.float    "co2_extraction_per_mj"
-    t.float    "co2_treatment_per_mj"
-    t.float    "co2_transportation_per_mj"
-    t.float    "co2_conversion_per_mj"
-    t.float    "co2_waste_treatment_per_mj"
+    t.float    "co2_exploration_per_mj",     limit: 24
+    t.float    "co2_extraction_per_mj",      limit: 24
+    t.float    "co2_treatment_per_mj",       limit: 24
+    t.float    "co2_transportation_per_mj",  limit: 24
+    t.float    "co2_conversion_per_mj",      limit: 24
+    t.float    "co2_waste_treatment_per_mj", limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "carrier"
@@ -60,6 +60,14 @@ ActiveRecord::Schema.define(version: 20131209134003) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "scenario_scalings", force: true do |t|
+    t.integer "scenario_id"
+    t.string  "area_attribute"
+    t.float   "value",          limit: 24
+  end
+
+  add_index "scenario_scalings", ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true, using: :btree
 
   create_table "scenarios", force: true do |t|
     t.string   "author"
