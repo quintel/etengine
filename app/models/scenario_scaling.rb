@@ -86,7 +86,6 @@ class ScenarioScaling < ActiveRecord::Base
       # Nodes
       scale_hash_value(element, :preset_demand)
       scale_hash_value(element, :demand_expected_value)
-      scale_hash_value(element, :full_load_hours)
       scale_hash_value(element, :number_of_units)
 
       # Edges
