@@ -68,13 +68,6 @@ describe ScenarioScaling do
       expect(graph[:a][:max_demand]).to eq(100 / divisor)
     end
 
-    it 'scales node "full_load_hours"' do
-      graph[:a] = { full_load_hours: 100 }
-      scaling.scale_dataset!(dataset)
-
-      expect(graph[:a][:full_load_hours]).to eq(100 / divisor)
-    end
-
     it 'scales node "number_of_units"' do
       graph[:a] = { number_of_units: 100 }
       scaling.scale_dataset!(dataset)
