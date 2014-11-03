@@ -57,7 +57,7 @@ class UsersController < ApplicationController
   def user_attributes
     params.require(:user).permit(
       :company_school, :email, :group, :heared_first_at, :name,
-      :phone_number, :send_score, :trackable
+      :phone_number, :send_score, :trackable, :password, :password_confirmation
     )
   end
 end
