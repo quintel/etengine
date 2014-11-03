@@ -58,7 +58,6 @@ module Qernel
       :security_of_supply => {
         :availability => ['', ''],
         :capacity_credit => ['', ''],
-        :variability => ['', ''],
         :part_load_operating_point => ['', ''],
         :part_load_efficiency_penalty => ['', ''],
         :forecasting_error => ['', '']
