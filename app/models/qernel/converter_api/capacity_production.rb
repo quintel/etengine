@@ -87,6 +87,13 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "typical_electricity_production_per_unit", 'MJ'
 
+  def maximum_yearly_electricity_production_per_unit
+    fetch(:typical_electricity_production_per_unit) do
+      typical_electricity_production_capacity * availability * 8760 * 3600
+    end
+  end
+  unit_for_calculation "maximum_yearly_electricity_production_per_unit", 'MJ'
+
   def installed_production_capacity_in_mw_electricity
     fetch(:installed_production_capacity_in_mw_electricity) do
       electricity_output_conversion * input_capacity * number_of_units
