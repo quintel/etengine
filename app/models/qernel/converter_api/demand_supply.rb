@@ -92,7 +92,6 @@ class Qernel::ConverterApi
     output_of_carrier(carrier)
   end
 
-
   def input_of(*carriers)
     carriers.flatten.map do |c|
       key = c.respond_to?(:key) ? c.key : c
@@ -109,13 +108,5 @@ class Qernel::ConverterApi
     Rails.logger.info('supply_of_* is deprecated. Use input_of_* instead')
     input_of_carrier(carrier)
   end
-
-  def electricity_output_efficiency
-    fetch(:electricity_output_efficiency) do
-      c = converter.output(:electricity)
-      c and c.conversion
-    end
-  end
-
 
 end
