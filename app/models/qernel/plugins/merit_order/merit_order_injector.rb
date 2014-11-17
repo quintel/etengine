@@ -185,21 +185,22 @@ module Qernel::Plugins
 
       # Returns a hash of attributes to be given to the Merit::Producer.
       def attributes_for(type, conv)
-        attributes = { key: conv.key }
+        attributes = {
+          key:
+            conv.key,
+          output_capacity_per_unit:
+            conv.electricity_output_conversion * conv.input_capacity,
+          number_of_units:
+            conv.number_of_units,
+          availability:
+            conv.availability
+        }
 
         if graph.use_merit_order_demands?
           # We only need to set cost data if we plan on running the Merit order.
           attributes.merge!(
-            key:
-              conv.key,
             marginal_costs:
               conv.variable_costs_per(:mwh_electricity),
-            output_capacity_per_unit:
-              conv.electricity_output_conversion * conv.input_capacity,
-            number_of_units:
-              conv.number_of_units,
-            availability:
-              conv.availability,
             fixed_costs_per_unit:
               conv.send(:fixed_costs),
             fixed_om_costs_per_unit:
