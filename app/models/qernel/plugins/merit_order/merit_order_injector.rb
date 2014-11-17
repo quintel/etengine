@@ -31,9 +31,9 @@ module Qernel::Plugins
       end
 
       def run
-        if graph.use_merit_order_demands? && graph.future?
+        if graph.future?
           setup_items
-          calculate_merit_order
+          calculate_merit_order if graph.use_merit_order_demands?
         end
       end
 
@@ -63,12 +63,11 @@ module Qernel::Plugins
           converter.demand = fls *
                              converter.input_capacity *
                              dispatchable.number_of_units
-
         end
       end
 
       def setup_items
-        @m = ::Merit::Order.new
+        @m = graph.merit
 
         add_volatile_producers
         add_must_run_producers
@@ -99,38 +98,27 @@ module Qernel::Plugins
           when :must_run     then ::Merit::MustRunProducer
         end
 
-        c = p.converter_api
-        attrs = {
-          key: p.key,
-          marginal_costs: c.variable_costs_per(:mwh_electricity),
-          output_capacity_per_unit:
-            c.electricity_output_conversion * c.input_capacity,
-          number_of_units: c.number_of_units,
-          availability: c.availability,
-          fixed_costs_per_unit: c.send(:fixed_costs),
-          fixed_om_costs_per_unit:
-            c.send(:fixed_operation_and_maintenance_costs_per_year)
-        }
-        if type == :must_run || type == :volatile
-          attrs[:load_profile]    = load_profile(c.load_profile_key)
-          attrs[:full_load_hours] = c.full_load_hours
-        end
-        producer = klass.new(attrs)
+        attributes = attributes_for(type, p.converter_api)
 
         # When `@skip_unknown_producers` == true, we want to skip those
         # producers whose marginal_costs is NaN.
-        unless @skip_unknown_producers && attrs[:marginal_costs].nan?
-          @m.add producer
+        unless @skip_unknown_producers && attributes[:marginal_costs].nan?
+          @m.add(klass.new(attributes))
         end
       end
 
       def add_total_demand
-        user = ::Merit::User.create(
-          key: :total_demand,
-          load_profile: load_profile(:total_demand),
-          total_consumption: graph.graph_query.total_demand_for_electricity
-        )
-        @m.add user
+        @m.add(::Merit::User.create(
+          key:               :total_demand,
+          load_profile:      load_profile(:total_demand),
+          total_consumption:
+            (if graph.use_merit_order_demands?
+              graph.graph_query.total_demand_for_electricity
+            else
+              # Not needed when we aren't running the M/O.
+              0.0
+            end)
+        ))
       end
 
       # ---- Converters ------------------------------------------------------
@@ -193,6 +181,42 @@ module Qernel::Plugins
       def load_profile(key)
         @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
         @dataset.load_profile(key)
+      end
+
+      # Returns a hash of attributes to be given to the Merit::Producer.
+      def attributes_for(type, conv)
+        attributes = { key: conv.key }
+
+        if graph.use_merit_order_demands?
+          # We only need to set cost data if we plan on running the Merit order.
+          attributes.merge!(
+            key:
+              conv.key,
+            marginal_costs:
+              conv.variable_costs_per(:mwh_electricity),
+            output_capacity_per_unit:
+              conv.electricity_output_conversion * conv.input_capacity,
+            number_of_units:
+              conv.number_of_units,
+            availability:
+              conv.availability,
+            fixed_costs_per_unit:
+              conv.send(:fixed_costs),
+            fixed_om_costs_per_unit:
+              conv.send(:fixed_operation_and_maintenance_costs_per_year)
+          )
+        else
+          # The marginal costs attribute is not optional, but it is an
+          # unnecessary calculation when the Merit order is not being run.
+          attributes[:marginal_costs] = 0.0
+        end
+
+        if type == :must_run || type == :volatile
+          attributes[:load_profile]    = load_profile(conv.load_profile_key)
+          attributes[:full_load_hours] = conv.full_load_hours
+        end
+
+        attributes
       end
 
     end # class MeritOrderInjector

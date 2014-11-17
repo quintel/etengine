@@ -98,6 +98,13 @@ class GraphApi
   # +capacity+, determines the proportion of hours where demand exceeds
   # production capacity.
   #
+  # demand_curve - The "total demand" curve describing total energy demand
+  #                throughout the year.
+  # capacity     - The total installed capacity, in MWh.
+  # excludes     - Converters keys whose profiled demands should be subtracted
+  #                from  the total demand curve prior to calculating LOLE. See
+  #                merit#123 for an example of why this may be desirable.
+  #
   # For example
   #
   #   converter.loss_of_load_expectation(120, 100)
@@ -107,8 +114,12 @@ class GraphApi
   #
   # Returns a Integer representing the number of hours where capacity was
   # exceeded.
-  def loss_of_load_expectation(demand, capacity)
-    demand_curve(demand).count { |point| point > capacity }
+  def loss_of_load_expectation(demand, capacity, excludes = [])
+    if graph.present?
+      0
+    else
+      graph.merit.lole.expectation(demand_curve(demand), capacity, excludes)
+    end
   end
 
   # Public: Takes the merit order load curve, and multiplies each point by the
@@ -120,11 +131,13 @@ class GraphApi
   # Returns an array, each value a Numeric representing the converter demand in
   # a one-hour period.
   def demand_curve(demand = nil)
-    demand ||= total_demand_for_electricity
-
-    Atlas::Dataset.find(area.area_code)
-      .load_profile(:total_demand)
-      .values.map { |point| point * demand }
+    if graph.present?
+      []
+    else
+      graph.merit.lole.demand_curve(
+        Atlas::Dataset.find(area.area_code).load_profile(:total_demand), demand
+      )
+    end
   end
 
   #######

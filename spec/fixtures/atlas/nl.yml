@@ -9,6 +9,7 @@
     :input:
       :electricity: 1.0
   :foo:
+    :full_load_hours: 1.0
     :demand: 1.0e-04
     :input:
       :electricity: 1.0
@@ -85,9 +86,11 @@
 
   :must_run_1:
     :demand: 1.0e-04
+    :full_load_hours: 1.0
     :availability: 1.0
   :must_run_2:
     :demand: 5.0e-04
+    :full_load_hours: 1.0
     :availability: 1.0
   :must_run_3:
     :demand: 1.0e-03

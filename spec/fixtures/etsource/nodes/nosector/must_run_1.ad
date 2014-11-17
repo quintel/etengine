@@ -2,3 +2,4 @@
 - availability = 1.0
 - preset_demand = 100.0
 - merit_order.type = must_run
+- merit_order.group = solar_pv

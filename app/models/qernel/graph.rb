@@ -281,23 +281,29 @@ class Graph
       instrument("gql.performance.calculate") do
 
         if use_merit_order_demands? && future?
-          dataset_copy = DeepClone.clone @dataset #Marshal.load(Marshal.dump(@dataset))
+          dataset_copy = DeepClone.clone(@dataset)
         end
 
         calculation_loop # the initial loop
 
-        if use_merit_order_demands? && future?
+        if future?
           mo = Plugins::MeritOrder::MeritOrderInjector.new(self)
           mo.run
-          goals_copy = goals
-          # detaching the dataset clears the goals - which is the correct
-          # behaviour, but with the double calculation loop required by MO
-          # they should be restored
-          detach_dataset!
-          self.dataset = dataset_copy
-          self.goals   = goals_copy
-          mo.inject_values
-          calculation_loop
+
+          if use_merit_order_demands?
+            goals_copy = goals
+
+            # detaching the dataset clears the goals - which is the correct
+            # behaviour, but with the double calculation loop required by MO
+            # they should be restored
+            detach_dataset!
+
+            self.dataset = dataset_copy
+            self.goals   = goals_copy
+
+            mo.inject_values
+            calculation_loop
+          end
         end
       end
     end
