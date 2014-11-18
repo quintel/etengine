@@ -158,11 +158,11 @@ module Gql::Runtime
       end
 
       def flatten_compact(arr)
-        arr.tap(&:flatten!).tap(&:compact!)
+        arr.map(&Kernel.method(:Array)).tap(&:flatten!).tap(&:compact!)
       end
 
       def flatten_uniq(arr)
-        arr.tap(&:flatten!).tap(&:uniq!)
+        arr.map(&Kernel.method(:Array)).tap(&:flatten!).tap(&:uniq!)
       end
     end
   end
