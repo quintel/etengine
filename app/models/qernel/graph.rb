@@ -286,24 +286,22 @@ class Graph
 
         calculation_loop # the initial loop
 
-        if future?
-          mo = Plugins::MeritOrder::MeritOrderInjector.new(self)
-          mo.run
+        mo = Plugins::MeritOrder::MeritOrderInjector.new(self)
+        mo.run
 
-          if use_merit_order_demands?
-            goals_copy = goals
+        if use_merit_order_demands?
+          goals_copy = goals
 
-            # detaching the dataset clears the goals - which is the correct
-            # behaviour, but with the double calculation loop required by MO
-            # they should be restored
-            detach_dataset!
+          # detaching the dataset clears the goals - which is the correct
+          # behaviour, but with the double calculation loop required by MO
+          # they should be restored
+          detach_dataset!
 
-            self.dataset = dataset_copy
-            self.goals   = goals_copy
+          self.dataset = dataset_copy
+          self.goals   = goals_copy
 
-            mo.inject_values
-            calculation_loop
-          end
+          mo.inject_values
+          calculation_loop
         end
       end
     end

@@ -28,13 +28,12 @@ module Qernel::Plugins
       def initialize(graph, skip_unknown_producers = false)
         @graph = graph
         @skip_unknown_producers = skip_unknown_producers
+        @full_run = graph.use_merit_order_demands?
       end
 
       def run
-        if graph.future?
-          setup_items
-          calculate_merit_order if graph.use_merit_order_demands?
-        end
+        setup_items
+        calculate_merit_order if @full_run
       end
 
       # Updates the converters with the results of the MO calculation.
@@ -112,7 +111,7 @@ module Qernel::Plugins
           key:               :total_demand,
           load_profile:      load_profile(:total_demand),
           total_consumption:
-            (if graph.use_merit_order_demands?
+            (if @full_run
               graph.graph_query.total_demand_for_electricity
             else
               # Not needed when we aren't running the M/O.
@@ -196,7 +195,7 @@ module Qernel::Plugins
             conv.availability
         }
 
-        if graph.use_merit_order_demands?
+        if @full_run
           # We only need to set cost data if we plan on running the Merit order.
           attributes.merge!(
             marginal_costs:

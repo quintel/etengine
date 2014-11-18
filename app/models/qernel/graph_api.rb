@@ -115,11 +115,7 @@ class GraphApi
   # Returns a Integer representing the number of hours where capacity was
   # exceeded.
   def loss_of_load_expectation(demand, capacity, excludes = [])
-    if graph.present?
-      0
-    else
-      graph.merit.lole.expectation(demand_curve(demand), capacity, excludes)
-    end
+    graph.merit.lole.expectation(demand_curve(demand), capacity, excludes)
   end
 
   # Public: Takes the merit order load curve, and multiplies each point by the
@@ -131,13 +127,9 @@ class GraphApi
   # Returns an array, each value a Numeric representing the converter demand in
   # a one-hour period.
   def demand_curve(demand = nil)
-    if graph.present?
-      []
-    else
-      graph.merit.lole.demand_curve(
-        Atlas::Dataset.find(area.area_code).load_profile(:total_demand), demand
-      )
-    end
+    graph.merit.lole.demand_curve(
+      Atlas::Dataset.find(area.area_code).load_profile(:total_demand), demand
+    )
   end
 
   #######
