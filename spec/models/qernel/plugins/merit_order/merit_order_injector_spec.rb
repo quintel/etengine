@@ -7,12 +7,12 @@ module Qernel::Plugins::MeritOrder
       Rails.cache.clear
     end
 
-    it "should not run on present graph" do
+    it "should be set up, but not run on present graph" do
       @graph.stub(:future?){ false }
-      @graph.stub(:use_merit_order_demands?){ true }
+      @graph.stub(:use_merit_order_demands?){ false }
 
       m = MeritOrderInjector.new(@graph)
-      m.should_not_receive(:setup_items)
+      m.should_receive(:setup_items)
       m.should_not_receive(:calculate_merit_order)
 
       m.run
@@ -36,7 +36,7 @@ module Qernel::Plugins::MeritOrder
         @graph.stub(:use_merit_order_demands?){ true }
 
         @converter_api = double("ConverterApi")
-        @converter_api.stub(:load_profile_key=){ true }
+        @converter_api.stub(:load_profile_key=){ :solar_pv }
         @converter_api.stub(:key){ :"entropy#{ FactoryGirl.generate(:converter_key_id) }" }
         @converter_api.stub(:variable_costs_per){ 1 }
         @converter_api.stub(:electricity_output_conversion){ 1 }
