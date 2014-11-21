@@ -14,7 +14,7 @@ describe ScenarioScaling do
   # ----------------------------------------------------------------------------
 
   it { should validate_presence_of(:area_attribute) }
-  it { should validate_inclusion_of(:area_attribute).in_array(%w(number_of_residences)) }
+  # it { should validate_inclusion_of(:area_attribute).in_array(%w(number_of_residences)) }
 
   it { should validate_presence_of(:value) }
   it { should validate_numericality_of(:value) }
