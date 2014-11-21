@@ -314,7 +314,7 @@ module Gql::Runtime
         carrier = carrier.first if carrier.is_a?(Array)
         carrier = carrier.key   if carrier.is_a?(Qernel::Carrier)
 
-        scope.graph.fce.update(carrier, origin, user_input)
+        scope.graph.plugin(:fce).update(carrier, origin, user_input)
       end
     end
 

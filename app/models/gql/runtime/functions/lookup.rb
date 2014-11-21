@@ -160,7 +160,7 @@ module Gql::Runtime
         carrier = carrier.first if carrier.is_a?(Array)
         carrier = carrier.key   if carrier.is_a?(Qernel::Carrier)
 
-        scope.graph.fce.share_of(carrier, country)
+        scope.graph.plugin(:fce).share_of(carrier, country)
       end
 
       # Returns a time curve, as stored in the ETSource CSV files, as a hash

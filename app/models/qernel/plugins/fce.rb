@@ -7,8 +7,12 @@ module Qernel::Plugins
   #   # Updating coal carrier with an input gquery
   #   GRAPH().update_fce(CARRIER(coal), east_asia, USER_INPUT() / 100)
   #
-  module FCE
-    extend ActiveSupport::Concern
+  class FCE
+    include Plugin
+
+    delegate :update, :share_of, :calculate_carrier, to: :calculator
+
+    after :calculation, :inject
 
     # Keys of carriers whose CO2 attributes should be calculated by the FCE
     # plugin.
@@ -17,6 +21,26 @@ module Qernel::Plugins
       :greengas,  :natural_gas, :uranium_oxide, :wood_pellets
     ].freeze
 
+    def calculator
+      @calculator ||= FCECalculator.new(@graph.area.area_code, @graph.use_fce)
+    end
+
+    # Internal: After the graph has been calculated, adjusts FCE-related
+    # attributes on appropriate carriers.
+    #
+    # Returns nothing.
+    def inject
+      # Calculate FCE attributes for each carrier.
+      FCE_CARRIERS.each do |carrier_key|
+        next unless qcarrier = @graph.carrier(carrier_key)
+
+        calculator.calculate_carrier(carrier_key).each do |attribute, value|
+          qcarrier[attribute] = value
+        end
+      end
+    end
+
+    # Calculates FCE-related values.
     class FCECalculator
       def initialize(area_code, enabled = false)
         @fce_enabled = enabled
@@ -122,28 +146,5 @@ module Qernel::Plugins
         end
       end
     end # FCECalculator
-
-    # Internal: The FCECalculator used to compute the CO2 attributes of FCE
-    # carriers.
-    #
-    # Returns an FCECalculator.
-    def fce
-      dataset_get(:fce_calculator) ||
-        dataset_set(:fce_calculator, FCECalculator.new(area.area_code, use_fce))
-    end
-
-    included do |variable|
-      set_callback(:calculate, :after) do
-        # Calculate FCE attributes for each carrier.
-        FCE_CARRIERS.each do |carrier_key|
-          next unless qcarrier = carrier(carrier_key)
-
-          fce.calculate_carrier(carrier_key).each do |attribute, value|
-            qcarrier[attribute] = value
-          end
-        end
-      end
-    end
-
   end # FCE
 end # Qernel::Plugins

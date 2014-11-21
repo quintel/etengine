@@ -5,21 +5,19 @@ module Qernel::Plugins
   # Issue: https://github.com/dennisschoenmakers/etengine/issues/332
   # Issue: https://github.com/dennisschoenmakers/etengine/issues/331
   #
-  # It uses the recursive_factor to calculate it's value.
-  module MaxDemandRecursive
-    extend ActiveSupport::Concern
+  # It uses the recursive_factor to calculate its value.
+  class MaxDemandRecursive
+    include Plugin
 
-    included do |variable|
-      set_callback :calculate, :before, :calculate_max_demand_recursive
-    end
+    # Use the same string each time to save on GC.
+    RECURSIVE = 'recursive'.freeze
+
+    before :calculation, :calculate_max_demand_recursive
 
     def calculate_max_demand_recursive
-      instrument("qernel.calculate_max_demand_recursive") do
-        converters.each do |c|
-          c.max_demand_recursive! if c.query.max_demand == 'recursive'
-        end
+      @graph.converters.each do |c|
+        c.max_demand_recursive! if c.query.max_demand == RECURSIVE
       end
     end
-    
-  end
-end
+  end # MaxDemandRecursive
+end # Qernel::Plugins
