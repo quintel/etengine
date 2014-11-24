@@ -44,6 +44,7 @@ class ScenarioScaling < ActiveRecord::Base
   def scale_dataset!(dataset)
     scale_graph_dataset!(dataset.data[:graph])
     scale_area_dataset!(dataset.data[:area][:area_data])
+    scale_time_curves!(dataset.data[:time_curves])
 
     dataset
   end
@@ -108,6 +109,14 @@ class ScenarioScaling < ActiveRecord::Base
     end
 
     data
+  end
+
+  def scale_time_curves!(data)
+    data.each_value do |curves|
+      curves.each_value do |points|
+        points.each_key { |year| scale_hash_value(points, year) }
+      end
+    end
   end
 
   def scale_hash_value(hash, key)
