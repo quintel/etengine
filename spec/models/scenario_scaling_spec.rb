@@ -35,6 +35,10 @@ describe ScenarioScaling do
     it 'is false when the input unit is x' do
       expect(ScenarioScaling.scale_input?(Input.new(unit: 'x'))).to be_false
     end
+
+    it 'is false when the input unit is "m^2K/W"' do
+      expect(ScenarioScaling.scale_input?(Input.new(unit: 'm^2K/W'))).to be_false
+    end
   end # .scale_input?
 
   describe '#scale' do

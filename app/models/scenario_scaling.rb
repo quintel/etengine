@@ -5,7 +5,7 @@ class ScenarioScaling < ActiveRecord::Base
     .select { |attr| attr.options[:proportional] }.map(&:name).freeze
 
   # Inputs whose unit is in this array will not be scaled.
-  UNSCALEABLE_INPUT_UNITS = %w( % x ).freeze
+  UNSCALEABLE_INPUT_UNITS = %w( % x m^2K/W ).freeze
 
   belongs_to :scenario, inverse_of: :scaler
 
