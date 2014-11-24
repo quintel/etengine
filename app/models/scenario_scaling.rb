@@ -112,6 +112,8 @@ class ScenarioScaling < ActiveRecord::Base
   end
 
   def scale_time_curves!(data)
+    return unless data
+
     data.each_value do |curves|
       curves.each_value do |points|
         points.each_key { |year| scale_hash_value(points, year) }
