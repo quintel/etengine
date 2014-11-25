@@ -139,6 +139,19 @@ describe ScenarioScaling do
         expect(area[key]).to eq(original[key])
       end
     end
-
   end # #scale_area_dataset!
+
+  describe 'disabled sectors' do
+    let(:area) do
+      Scenario.default(scaler: scaling).gql.future.graph.area
+    end
+
+    it 'includes :agriculture' do
+      expect(area.disabled_sectors).to include(:agriculture)
+    end
+
+    it 'includes :industry' do
+      expect(area.disabled_sectors).to include(:industry)
+    end
+  end # disabled sectors
 end # ScenarioScaling

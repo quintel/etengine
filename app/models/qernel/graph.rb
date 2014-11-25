@@ -20,7 +20,8 @@ class Graph
   define_callbacks :calculate,
                    :calculate_initial_loop
 
-  PLUGINS = [ Plugins::SimpleMeritOrder,
+  PLUGINS = [ Plugins::DisableSectors,
+              Plugins::SimpleMeritOrder,
               Plugins::MeritOrder,
               Plugins::FCE,
               Plugins::MaxDemandRecursive,
@@ -69,7 +70,7 @@ class Graph
   # during calculation of the graph. Returns nil if no such plugin exists, or if
   # it wasn't used in this scenario.
   def plugin(name)
-    lifecycle.plugin[name.to_sym]
+    lifecycle.plugins[name.to_sym]
   end
 
   # Assigns self to the graph variables of every qernel objects. The qernel

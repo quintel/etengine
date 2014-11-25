@@ -9,6 +9,7 @@ module Qernel
       Atlas::Dataset.attribute_set.map(&:name) - [:id, :parent_id]
 
     dataset_accessors ATTRIBUTES_USED
+    dataset_accessors :disabled_sectors
 
     attr_accessor :graph
     attr_reader :dataset_key, :key
@@ -25,6 +26,10 @@ module Qernel
 
     def inspect
       "<Area #{area_code}>"
+    end
+
+    def disabled_sectors
+      dataset_get(:disabled_sectors) || []
     end
 
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
