@@ -209,7 +209,10 @@ module Api
       # Returns a hash.
       def scaler_attributes
         if params[:scenario] && params[:scenario][:scale]
-          params[:scenario].require(:scale).permit(:area_attribute, :value)
+          params[:scenario].require(:scale).permit(
+            :area_attribute, :value,
+            :has_agriculture, :has_industry
+          )
         end
       end
 

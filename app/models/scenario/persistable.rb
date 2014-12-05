@@ -31,7 +31,7 @@ module Scenario::Persistable
 
     if preset.respond_to?(:scaler) && preset.scaler
       self.scaler = ScenarioScaling.new(
-        preset.scaler.attributes.slice('area_attribute', 'value'))
+        preset.scaler.attributes.except('id', 'scenario_id'))
     end
 
     self.end_year    = preset.end_year

@@ -7,9 +7,6 @@ class ScenarioScaling < ActiveRecord::Base
   # Inputs whose unit is in this array will not be scaled.
   UNSCALEABLE_INPUT_UNITS = %w( % x m^2K/W ).freeze
 
-  # Sectors whose converters are set to zero demand.
-  DISABLED_SECTORS = [:agriculture, :industry].freeze
-
   belongs_to :scenario, inverse_of: :scaler
 
   validates :area_attribute,
@@ -44,7 +41,8 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns an array.
   def disabled_sectors
-    DISABLED_SECTORS
+    [ has_agriculture? ? nil : :agriculture,
+      has_industry?    ? nil : :industry ].compact
   end
 
   # Public: Given a dataset hash, scaled the values therein for the smaller
@@ -77,7 +75,7 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns a Hash.
   def as_json(*)
-    super(only: [:area_attribute, :value])
+    super(only: [:area_attribute, :value, :has_agriculture, :has_industry])
   end
 
   # Public: A human-readable version of the scenario scaling.
