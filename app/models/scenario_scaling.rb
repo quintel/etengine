@@ -42,6 +42,7 @@ class ScenarioScaling < ActiveRecord::Base
   # Returns an array.
   def disabled_sectors
     [ has_agriculture? ? nil : :agriculture,
+      has_energy?      ? nil : :energy,
       has_industry?    ? nil : :industry ].compact
   end
 
@@ -85,6 +86,10 @@ class ScenarioScaling < ActiveRecord::Base
     "#<ScenarioScaling #{ area_attribute.inspect } (" \
       "#{ scenario.area[area_attribute].inspect } -> " \
       "#{ value.to_f.inspect })>"
+  end
+
+  def input_cache
+    @input_cache ||= Input::ScaledInputs.new(Input.cache, scenario.gql)
   end
 
   #######

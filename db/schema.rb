@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141205101327) do
+ActiveRecord::Schema.define(version: 20141208113605) do
 
   create_table "fce_values", force: true do |t|
     t.string   "using_country"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 20141205101327) do
     t.float   "value",           limit: 24
     t.boolean "has_agriculture",            default: false, null: false
     t.boolean "has_industry",               default: false, null: false
+    t.boolean "has_energy",                 default: true,  null: false
   end
 
   add_index "scenario_scalings", ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true, using: :btree

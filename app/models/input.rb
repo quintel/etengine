@@ -316,7 +316,7 @@ class Input
   # and the values in the cache will be scaled to fit the scaled area.
   def self.cache(scenario = nil)
     if scenario && scenario.scaler
-      @_scaled ||= Input::ScaledInputs.new(cache(nil))
+      scenario.scaler.input_cache
     else
       @_cache ||= Input::Cache.new
     end
@@ -421,8 +421,9 @@ class Input
   class ScaledInputs
     # Public: Creates a ScaledInputs class, using the given Input::Cache as a
     # source for the original input values.
-    def initialize(cache)
+    def initialize(cache, gql)
       @cache = cache
+      @gql   = gql
     end
 
     # Public: Retrieves the hash containing all of the scaled input attributes.
@@ -434,7 +435,7 @@ class Input
     #
     # Returns a hash.
     def read(scenario, input)
-      values = @cache.read(scenario, input)
+      values = @cache.send(:values_for, input, @gql)
 
       if ScenarioScaling.scale_input?(input)
         scaler = scenario.scaler

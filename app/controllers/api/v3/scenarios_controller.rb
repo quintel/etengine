@@ -211,7 +211,7 @@ module Api
         if params[:scenario] && params[:scenario][:scale]
           params[:scenario].require(:scale).permit(
             :area_attribute, :value,
-            :has_agriculture, :has_industry
+            :has_agriculture, :has_energy, :has_industry
           )
         end
       end
