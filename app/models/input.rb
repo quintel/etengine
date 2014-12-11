@@ -435,7 +435,28 @@ class Input
     #
     # Returns a hash.
     def read(scenario, input)
-      @cache.send(:values_for, input, @gql)
+      values = @cache.send(:values_for, input, @gql)
+
+      if ScenarioScaling.scale_input?(input)
+        scaler = scenario.scaler
+        scaled = { step: scaler.input_step(input) }
+
+        unless input.min_value_gql
+          scaled[:min] = scaler.scale(values[:min])
+        end
+
+        unless input.max_value_gql
+          scaled[:max] = scaler.scale(values[:max])
+        end
+
+        unless input.start_value_gql
+          scaled[:default] = scaler.scale(values[:default])
+        end
+
+        values.merge(scaled)
+      else
+        values
+      end
     end
   end # ScaledInputs
 

@@ -120,13 +120,13 @@ describe Api::V3::InputsController do
         )
       end
 
-      it 'scales GQL-based input values' do
-        # GQL inputs are also scaled, since the values come from a "full-size"
-        # region graph.
+      it 'does not scale GQL-based input values' do
+        # GQL inputs are not scaled, since they use the local graph to compute
+        # their values.
         json[gql_input.key].should include(
-          'min'     =>  4 / divisor,
-          'max'     => 16 / divisor,
-          'default' =>  8 / divisor
+          'min'     =>  4,
+          'max'     => 16,
+          'default' =>  8
         )
       end
     end # with a scaled scenario

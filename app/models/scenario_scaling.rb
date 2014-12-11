@@ -4,12 +4,22 @@ class ScenarioScaling < ActiveRecord::Base
   SCALEABLE_AREA_ATTRS = Atlas::Dataset.attribute_set
     .select { |attr| attr.options[:proportional] }.map(&:name).freeze
 
+  # Inputs whose unit is in this array will not be scaled.
+  UNSCALEABLE_INPUT_UNITS = %w( % x m^2K/W ).freeze
+
   belongs_to :scenario, inverse_of: :scaler
 
   validates :area_attribute,
     presence: true, inclusion: { in: %w( number_of_residences ) }
 
   validates :value, presence: true, numericality: true
+
+  # Public: Determines if the given input should have it's values scaled.
+  #
+  # Returns true or false.
+  def self.scale_input?(input)
+    ! UNSCALEABLE_INPUT_UNITS.include?(input.unit)
+  end
 
   # Public: The number by which attributes will be scaled to fit the smaller
   # region.
@@ -47,6 +57,19 @@ class ScenarioScaling < ActiveRecord::Base
     scale_time_curves!(dataset.data[:time_curves])
 
     dataset
+  end
+
+  # Public: Given a hash of input min, max, step, etc, values, adjusts the step
+  # values of inputs whose unit is relative to the size of the region.
+  #
+  # Returns a hash.
+  def input_step(input)
+    if input.step_value && self.class.scale_input?(input)
+      @input_divisor ||= 10 ** Math.log10(1 / multiplier).ceil
+      input.step_value / @input_divisor
+    else
+      input.step_value
+    end
   end
 
   # Public: Converts the scaling to a hash which can be serialized as JSON.
