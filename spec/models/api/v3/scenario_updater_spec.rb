@@ -313,7 +313,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       ).scenario
     end
 
-    context 'when the input value is within the acceptable range' do
+    context 'when the input value is within the acceptable range', :focus do
       let(:params) { {
         autobalance: false,
         scenario: { user_values: {

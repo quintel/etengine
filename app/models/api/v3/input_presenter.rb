@@ -58,12 +58,7 @@ module Api
         json[:share_group] = @input.share_group if @input.share_group.present?
 
         if @extra_attributes
-          if @scenario.scaler
-            json[:step] = @scenario.scaler.input_step(@input)
-          else
-            json[:step] = @input.step_value
-          end
-
+          json[:step] = @input.step_value
           json[:code] = @input.key
           json[:unit] = @input.unit
         end

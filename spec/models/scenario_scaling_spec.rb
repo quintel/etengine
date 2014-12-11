@@ -14,32 +14,9 @@ describe ScenarioScaling do
   # ----------------------------------------------------------------------------
 
   it { should validate_presence_of(:area_attribute) }
-  # it { should validate_inclusion_of(:area_attribute).in_array(%w(number_of_residences)) }
 
   it { should validate_presence_of(:value) }
   it { should validate_numericality_of(:value) }
-
-  describe '.scale_input?' do
-    it 'is true when the input has no unit' do
-      expect(ScenarioScaling.scale_input?(Input.new(unit: nil))).to be_true
-    end
-
-    it 'is true when the input unit is km' do
-      expect(ScenarioScaling.scale_input?(Input.new(unit: 'km'))).to be_true
-    end
-
-    it 'is false when the input unit is %' do
-      expect(ScenarioScaling.scale_input?(Input.new(unit: '%'))).to be_false
-    end
-
-    it 'is false when the input unit is x' do
-      expect(ScenarioScaling.scale_input?(Input.new(unit: 'x'))).to be_false
-    end
-
-    it 'is false when the input unit is "m^2K/W"' do
-      expect(ScenarioScaling.scale_input?(Input.new(unit: 'm^2K/W'))).to be_false
-    end
-  end # .scale_input?
 
   describe '#scale' do
     it 'scales a number to fit the area' do
