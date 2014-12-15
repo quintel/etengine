@@ -33,7 +33,10 @@ module Etsource
 
       def reload!
         Rails.cache.clear
-        NastyCache.instance.expire!
+
+        NastyCache.instance.expire!(
+          keep_atlas_dataset: ! APP_CONFIG[:etsource_lazy_load_dataset])
+
         NastyCache.instance.expire_local!
 
         Atlas::ActiveDocument::Manager.clear_all!
