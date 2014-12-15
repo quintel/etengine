@@ -58,7 +58,7 @@ module Api
         json[:share_group] = @input.share_group if @input.share_group.present?
 
         if @extra_attributes
-          json[:step] = @input.step_value
+          json[:step] = values[:step] || @input.step_value
           json[:code] = @input.key
           json[:unit] = @input.unit
         end
