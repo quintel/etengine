@@ -9,8 +9,9 @@ class ScenarioScaling < ActiveRecord::Base
 
   belongs_to :scenario, inverse_of: :scaler
 
-  validates :area_attribute,
-    presence: true, inclusion: { in: %w( number_of_residences ) }
+  validates :area_attribute, presence: true, inclusion: {
+    in: %w( number_of_residences number_of_inhabitants )
+  }
 
   validates :value, presence: true, numericality: true
 
