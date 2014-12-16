@@ -1,6 +1,8 @@
 class Data::ConvertersController < Data::BaseController
   layout 'application'
 
+  skip_authorize_resource :only => :show
+
   def index
     all = @gql.present_graph.converters
     all.select!{|c| c.key.to_s.include?(params[:q])} if params[:q]
