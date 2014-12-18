@@ -162,6 +162,74 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         response.status.should eql(422)
       end
     end
-  end
+
+    context 'with a preset' do
+      before do
+        post 'api/v3/scenarios', scenario: {
+          scenario_id: preset.id,
+          scale: { area_attribute: 'number_of_residences', value: 500_000 }
+        }
+      end
+
+      let(:preset) { Preset.all.detect {|p| p.key == :test } }
+      let(:json)   { JSON.parse(response.body) }
+      let(:multi)  { 500_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
+
+      it 'should be successful' do
+        response.status.should eql(200)
+      end
+
+      it 'should scale the user values' do
+        scenario = Scenario.find(json['id'])
+
+        expect(scenario.user_values['foo_demand']).
+          to eq(preset.user_values[:foo_demand] * multi)
+
+        expect(scenario.user_values['input_2']).
+          to eq(preset.user_values[:input_2] * multi)
+
+        # Input 3 is a non-scaled input
+        expect(scenario.user_values['input_3']).
+          to eq(preset.user_values[:input_3])
+      end
+    end # with a preset
+
+    context 'with an already-scaled scenario' do
+      let(:preset) { Preset.all.detect {|p| p.key == :test } }
+
+      before do
+        post 'api/v3/scenarios', scenario: {
+          scenario_id: preset.id,
+          scale: { area_attribute: 'number_of_residences', value: 500_000 }
+        }
+
+        post 'api/v3/scenarios', scenario: {
+          scenario_id: Scenario.last.id,
+          scale: { area_attribute: 'number_of_residences', value: 250_000 }
+        }
+      end
+
+      let(:json)  { JSON.parse(response.body) }
+      let(:multi) { 250_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
+
+      it 'should be successful' do
+        response.status.should eql(200)
+      end
+
+      it 'should scale the user values' do
+        scenario = Scenario.find(json['id'])
+
+        expect(scenario.user_values['foo_demand']).
+          to eq(preset.user_values[:foo_demand] * multi)
+
+        expect(scenario.user_values['input_2']).
+          to eq(preset.user_values[:input_2] * multi)
+
+        # Input 3 is a non-scaled input
+        expect(scenario.user_values['input_3']).
+          to eq(preset.user_values[:input_3])
+      end
+    end # with an already-scaled scenario
+  end # when scaling the area
 
 end

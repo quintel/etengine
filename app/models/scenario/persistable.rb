@@ -23,19 +23,65 @@ module Scenario::Persistable
   # @untested 2010-12-06 seb
   #
   def copy_scenario_state(preset)
-    self.user_values.reverse_merge!(preset.user_values.clone)
+    source_user_values = preset.user_values.clone
+    source_bal_values  = (vals = preset.try(:balanced_values)) && vals.clone
+    other_scaler       = preset.respond_to?(:scaler) && preset.scaler
 
-    if preset.respond_to?(:balanced_values)
-      self.balanced_values.reverse_merge!(preset.balanced_values.clone)
+    # If this scenario has a custom scaling (different from that in the source
+    # preset), we have to re-scale the value of each input so that it makes
+    # sense when used in the newly-sized area.
+    if self.scaler
+      source_user_values = rescale_inputs(
+        source_user_values, other_scaler, self.scaler)
+
+      source_bal_values = rescale_inputs(
+        source_bal_values || {}, other_scaler, self.scaler)
     end
 
-    if preset.respond_to?(:scaler) && preset.scaler
+    self.user_values.reverse_merge!(source_user_values)
+
+    if source_bal_values
+      self.balanced_values.reverse_merge!(source_bal_values)
+    end
+
+    # Set the same scaler as the source scenario, except when the user has
+    # specified a custom scaling.
+    if other_scaler && ! self.scaler
       self.scaler = ScenarioScaling.new(
-        preset.scaler.attributes.except('id', 'scenario_id'))
+        other_scaler.attributes.except('id', 'scenario_id'))
     end
 
-    self.end_year    = preset.end_year
-    self.area_code   = preset.area_code
-    self.use_fce     = preset.use_fce
+    self.end_year  = preset.end_year
+    self.area_code = preset.area_code
+    self.use_fce   = preset.use_fce
+  end
+
+  #######
+  private
+  #######
+
+  # Internal: Given a collection of inputs, scales the values so that they fit
+  # in the new scenario.
+  #
+  # Returns a hash.
+  def rescale_inputs(collection, source_scaler, dest_scaler)
+    collection.each_with_object({}) do |(key, value), data|
+      if ScenarioScaling.scale_input?(Input.get(key.to_sym))
+        data[key] = rescale_input(value, source_scaler, dest_scaler)
+      else
+        data[key] = value
+      end
+    end
+  end
+
+  # Internal: See `rescale_inputs`.
+  #
+  # Returns a numeric.
+  def rescale_input(value, source_scaler, dest_scaler)
+    if source_scaler
+      dest_scaler.scale(source_scaler.descale(value))
+    else
+      dest_scaler.scale(value)
+    end
   end
 end

@@ -45,6 +45,8 @@ class Scenario < ActiveRecord::Base
   validates :area_code, :inclusion => {:in => Etsource::Dataset.region_codes}
   validates :end_year, :numericality => true
 
+  validates_associated :scaler, on: :create
+
   scope :in_start_menu, ->    { where(:in_start_menu => true) }
   scope :by_name,       ->(q) { where("title LIKE ?", "%#{q}%")}
   scope :by_id,         ->(q) { where(id: q)}

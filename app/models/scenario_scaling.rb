@@ -37,6 +37,14 @@ class ScenarioScaling < ActiveRecord::Base
     value.to_f * multiplier
   end
 
+  # Public: Given a scaled number, returns the value as it would be in a
+  # full-size scenario.
+  #
+  # Returns a numeric.
+  def descale(value)
+    value.to_f / multiplier
+  end
+
   # Public: An array of sectors; converters in these sectors will have their
   # demands set to zero by the graph.
   #

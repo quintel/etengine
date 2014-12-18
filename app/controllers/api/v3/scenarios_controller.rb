@@ -77,14 +77,18 @@ module Api
           attrs.delete(:user_values)
         end
 
-        @scenario = Scenario.new(attrs)
+        @scenario = Scenario.new
+
+        if scaler_attributes
+          @scenario.build_scaler(scaler_attributes)
+        end
+
+        # The scaler needs to be in place before assigning attributes when the
+        # scenario inherits from a preset.
+        @scenario.attributes = attrs
 
         Scenario.transaction do
           @scenario.save!
-
-          if scaler_attributes
-            @scenario.create_scaler!(scaler_attributes)
-          end
         end
 
         render json: ScenarioPresenter.new(self, @scenario, params)
