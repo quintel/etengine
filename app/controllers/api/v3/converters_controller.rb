@@ -15,6 +15,25 @@ module Api
         render :json => @converter
       end
 
+      # POST /api/v3/converters/:id/stats
+      #
+      # Returns a breakdown of some converter statistics used by ETLoader to
+      # calculate network loads in testing grounds.
+      #
+      # As converter keys can be quite long, and the request may include tens of
+      # converter keys, the request is to be sent as POST with a JSON payload
+      # with the following schema:
+      #
+      # { "keys": [ "key1", "key2", "...", "keyN" ] }
+      def stats
+        keys = params.require(:keys)
+        gql  = @scenario.gql(prepare: true)
+
+        render json: { nodes: Hash[keys.map do |key|
+          [ key, ConverterStatsPresenter.new(key.to_sym, gql) ]
+        end] }
+      end
+
       # returns the converter topology coordinates, using the old
       # converter_positions table
       #
