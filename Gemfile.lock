@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: 694bcb3125633074b15ef19647cca2c56a82d746
-  ref: 694bcb3
+  revision: 0279e37aac1323431d476f8b9ea8cfce40244586
+  ref: 0279e37
   specs:
     atlas (1.0.0)
       activemodel
@@ -177,7 +177,7 @@ GEM
     highline (1.6.21)
     hike (1.2.3)
     i18n (0.6.11)
-    ice_nine (0.11.0)
+    ice_nine (0.11.1)
     jquery-rails (2.0.3)
       railties (>= 3.1.0, < 5.0)
       thor (~> 0.14)
@@ -314,7 +314,7 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
-    virtus (1.0.3)
+    virtus (1.0.4)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
