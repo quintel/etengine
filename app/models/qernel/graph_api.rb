@@ -33,7 +33,7 @@ class GraphApi
   end
 
   def use_merit_order_demands?
-    graph.use_merit_order_demands?
+    Qernel::Plugins::MeritOrder.enabled?(graph)
   end
 
   def fce_enabled?
