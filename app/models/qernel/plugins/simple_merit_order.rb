@@ -7,7 +7,7 @@ module Qernel::Plugins
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
     # suffice.
-    PRODUCER_TYPES = [ :must_run, :volatiles ].freeze
+    PRODUCER_TYPES = [ :must_run, :volatile ].freeze
 
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
