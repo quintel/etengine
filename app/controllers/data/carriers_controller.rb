@@ -6,6 +6,7 @@ class Data::CarriersController < Data::BaseController
   end
 
   def show
-    @carrier = @gql.present_graph.carrier(params[:id].to_sym)
+    @present_carrier = @gql.present_graph.carrier(params[:id].to_sym)
+    @future_carrier  = @gql.future_graph.carrier(params[:id].to_sym)
   end
 end

@@ -3,14 +3,20 @@
 .row
   .span12
     .page-header
-      %h2= @carrier.key
+      %h2= @present_carrier.key
 
 
     = notice_message
 
     %table.table.table-condensed
+      %thead
+        %tr
+          %th Attribute
+          %th Present
+          %th Future
       %tbody
         - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
           %tr
             %th= key
-            %td= @carrier[key]
+            %td= @present_carrier[key]
+            %td= @future_carrier[key]
