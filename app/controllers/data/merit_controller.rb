@@ -6,14 +6,10 @@ class Data::MeritController < Data::BaseController
 
   def download
 
-    moi = Qernel::Plugins::MeritOrder::MeritOrderInjector.new(@gql.future_graph, true)
-    moi.setup_items
-    moi.send(:calculate_merit_order)
+    order = Qernel::Plugins::MeritOrder.new(@gql.future_graph).order.calculate
 
     contents = CSV.generate do |csv|
-      moi.m.load_curves.each do |row|
-        csv << row
-      end
+      order.load_curves.each { |row| csv << row }
     end
 
     send_data(contents, type: 'test/csv', filename: 'load_curves.csv')
