@@ -1,14 +1,37 @@
+require 'csv'
+
 namespace :csv_scenarios do
   desc "Creates new scenarios from slider settings csv files"
-  task :load do
+  task load: :environment do
+
+    puts 'This will create new scenarios blah blah blah'
 
     Dir.glob("#{ Rails.root }/db/csv/*.csv") do |csv_file|
-      scenario = Scenario.create
-      # create the scenario and fill the metadata
-        CSV.foreach(csv_file, converters: :all) do |row|
-          # read in key/value pairs
+
+      file_name = File.basename(csv_file, '.csv').split("_")
+      author_name = "#{ file_name[2].capitalize } #{ file_name[3].capitalize }"
+      title_name = "#{ file_name[0].capitalize }_#{ file_name[1] }"
+
+      user_edits = Hash.new
+
+      CSV.foreach(csv_file, converters: :all) do |row|
+        user_edits[row[0]] = row[1].to_f
       end
+
+      puts "Scenario #{ title_name } by #{ author_name } created."
+
+      scenario = Scenario.create(author: author_name,
+                                 title: title_name,
+                                 end_year: file_name[1].to_i,
+                                 area_code: 'nl',
+                                 use_fce: false,
+                                 user_values: user_edits
+                                )
+
+      puts "Scenario #{ title_name } by #{ author_name } successfully saved!" 
     end
+
+    puts "All scenarios successfully saved - good job!" 
   end
 end
 
