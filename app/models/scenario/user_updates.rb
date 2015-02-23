@@ -75,11 +75,11 @@ module Scenario::UserUpdates
 
   # These two methods are only used in the edit scenario form
   def user_values_as_yaml
-    user_values.to_yaml
+    user_values.to_hash.to_yaml
   end
 
   def user_values_as_yaml=(values)
-    self.user_values = YAML::load(values)
+    self.user_values = YAML::load(values).with_indifferent_access
   end
 
   #######

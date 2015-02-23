@@ -71,7 +71,7 @@ Etm::Application.routes.draw do
       resources :query_table_cells, :except => [:show, :index]
       resources :inputs, :only => [:index, :show]
 
-      resources :scenarios, :only => [:index, :show, :edit, :update, :new] do
+      resources :scenarios, :only => [:index, :show, :edit, :update, :new, :create] do
         put :fix, :on => :member
       end
 

@@ -18,7 +18,17 @@ class Data::ScenariosController < Data::BaseController
   end
 
   def new
-    @scenario = Scenario.new
+    @scenario = Scenario.new(Scenario.default_attributes)
+  end
+
+  def create
+    @scenario = Scenario.new(scenario_attributes.merge(source: 'ETEngine Admin UI'))
+
+    if @scenario.save
+      redirect_to data_scenario_path(:id => @scenario.id), :notice => 'Scenario created'
+    else
+      render :new
+    end
   end
 
   def show
@@ -32,7 +42,7 @@ class Data::ScenariosController < Data::BaseController
   end
 
   def update
-    if @scenario.update_attributes(params[:scenario])
+    if @scenario.update_attributes(scenario_attributes)
       redirect_to data_scenario_path(:id => @scenario.id), :notice => 'Scenario updated'
     else
       render :edit
@@ -47,5 +57,12 @@ class Data::ScenariosController < Data::BaseController
     else
       @scenario = Scenario.find params[:id]
     end
+  end
+
+  def scenario_attributes
+    attrs = params.require(:scenario).permit!
+    attrs[:protected] = attrs[:protected] == '1'
+
+    attrs
   end
 end

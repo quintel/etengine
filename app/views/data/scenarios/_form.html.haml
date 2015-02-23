@@ -3,9 +3,16 @@
   = f.input :title
   = f.input :author
   = f.input :description
-  = f.input :in_start_menu
   = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
   = f.input :end_year
-  = f.input :area_code, :hint => "make sure you got it right"
+  = f.input :area_code, collection: Etsource::Dataset.region_codes.map { |d| [d.upcase, d] }
   = f.input :user_values_as_yaml, :as => :text, :hint => "Position (values) of all the sliders"
   = f.button :submit
+
+  :css
+    #scenario_user_values_as_yaml {
+      font-family: monospace;
+      width: 800px;
+      height: 300px;
+      margin-right: 10px;
+    }
