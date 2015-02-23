@@ -4,13 +4,13 @@ namespace :csv_scenarios do
   desc "Creates new scenarios from csv files containing user settings"
   task load: :environment do
 
-    Dir.glob("#{ Rails.root }/db/csv/*.csv") do |csv_file|
+    puts 'This will add new scenarios to the database'
+    puts 'Are you sure you want to continue? (y/N)'
 
-      puts 'This will add new scenarios to the database'
-      puts 'Are you sure you want to continue? (y/N)'
+    answer = STDIN.gets.chomp
+    exit unless answer.downcase == 'y'
 
-      answer = STDIN.gets.chomp
-      exit unless answer.downcase == 'y'
+    Dir.glob("#{ Rails.root }/config/csv_scenarios/*.csv") do |csv_file|
 
       file_name = File.basename(csv_file, '.csv').split("_")
 
