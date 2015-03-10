@@ -1,6 +1,6 @@
 namespace :merit do
-  # Exports data about a Merit Order run into tmp/convergence. The final output
-  # path will include the scenario area and date.
+  # Exports data about a Merit Order run into tmp/merit-archive. The final
+  # output path will include the scenario area and date.
   #
   # Examples:
   #
@@ -48,18 +48,17 @@ namespace :merit do
 
     # Disable the merit order processing during graph calculation; we're doing
     # to do it manually.
-    scenario.user_values['settings_enable_merit_order'] = false
+    # scenario.user_values['settings_enable_merit_order'] = false
 
     graph = scenario.gql.future_graph
 
     # Why does the Injector check this when the graph has already done so? :/
-    def graph.use_merit_order_demands? ; true ;end
+    # def graph.use_merit_order_demands? ; true ;end
 
-    # Workaround in case start year == end year.
-    def graph.future? ; true ;end
+    # # Workaround in case start year == end year.
+    # def graph.future? ; true ;end
 
-    injector = Qernel::Plugins::MeritOrder::MeritOrderInjector.new(graph)
-    injector.run
+    order = Qernel::Plugins::MeritOrder.new(graph).order.calculate
 
     # Save the data.
     area  = scenario.area_code.upcase
@@ -71,7 +70,7 @@ namespace :merit do
       stamp = "#{ Preset.get(scenario_id).key }_#{ stamp }"
     end
 
-    dir = Rails.root.join('tmp/convergence').join("#{ area }_#{ stamp }")
+    dir = Rails.root.join('tmp/merit-archive').join("#{ area }_#{ stamp }")
 
     FileUtils.mkdir_p(dir.join('producers'))
 
@@ -85,7 +84,7 @@ namespace :merit do
 
     additional_keys = %w( full_load_hours )
 
-    injector.m.participants.producers.each do |producer|
+    order.participants.producers.each do |producer|
       data = dispatchable_keys.each_with_object({}) do |key, data|
         data[key.to_sym] = producer.public_send(key)
       end
@@ -111,9 +110,9 @@ namespace :merit do
       File.write(dir.join(path), curve.to_a.map { |line| "#{ line }\n" }.join)
     end
 
-    user = injector.m.participants[:total_demand]
+    user = order.participants[:total_demand]
 
-    write_curve.call('price.csv',  injector.m.price_curve)
+    write_curve.call('price.csv',  order.price_curve)
     write_curve.call('demand.csv', user.load_curve)
 
     File.write(dir.join('archive-info.yml'), YAML.dump(
