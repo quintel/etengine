@@ -46,17 +46,7 @@ namespace :merit do
       scenario = Scenario.default(area_code: (env['AREA'] || 'nl').downcase)
     end
 
-    # Disable the merit order processing during graph calculation; we're doing
-    # to do it manually.
-    # scenario.user_values['settings_enable_merit_order'] = false
-
     graph = scenario.gql.future_graph
-
-    # Why does the Injector check this when the graph has already done so? :/
-    # def graph.use_merit_order_demands? ; true ;end
-
-    # # Workaround in case start year == end year.
-    # def graph.future? ; true ;end
 
     order = Qernel::Plugins::MeritOrder.new(graph).order.calculate
 
