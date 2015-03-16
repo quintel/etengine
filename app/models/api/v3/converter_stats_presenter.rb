@@ -1,7 +1,11 @@
 module Api
   module V3
     class ConverterStatsPresenter
-      ATTRIBUTES = [:number_of_units].freeze
+      ATTRIBUTES = [
+        :demand,
+        :electricity_output_capacity,
+        :number_of_units
+      ].freeze
 
       attr_reader :key
 
