@@ -177,8 +177,8 @@ describe Scenario do
     let(:preset) do
       FactoryGirl.create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
-        user_values:     { 'one' => 1 },
-        balanced_values: { 'two' => 2 }
+        user_values:     { 'grouped_input_one' => 1 },
+        balanced_values: { 'grouped_input_two' => 2 }
       })
     end
 
@@ -207,6 +207,45 @@ describe Scenario do
       expect(scenario.scaler.area_attribute).to eq('number_of_residences')
       expect(scenario.scaler.value).to eq(1000)
       expect(scenario.scaler.scenario).to eq(scenario) # Not `preset`.
+    end
+  end
+
+  describe 'cloning a scaled scenario to an unscaled scenario' do
+    let(:preset) do
+      FactoryGirl.create(:scenario, {
+        id:              99999, # Avoid a collision with a preset ID
+        user_values:     { 'grouped_input_one' => 2 },
+        balanced_values: { 'grouped_input_two' => 8 },
+
+        scaler: ScenarioScaling.create!(
+          area_attribute: 'number_of_residences',
+          value:          1000
+        )
+      })
+    end
+
+    let(:scenario) do
+      Scenario.create(title: '1', scenario_id: preset.id, scaler: nil)
+    end
+
+    let(:multiplier) { Atlas::Dataset.find(:nl).number_of_residences / 1000 }
+
+    it 'creates the scenario' do
+      expect(scenario).to_not be_new_record
+    end
+
+    it 'sets no scaler' do
+      expect(scenario.scaler).to be_nil
+    end
+
+    it 'adjusts the input values to fit the full-size region' do
+      expect(scenario.user_values).
+        to eq({'grouped_input_one' => 2 * multiplier})
+    end
+
+    it 'adjusts the balanced values to fit the full-size region' do
+      expect(scenario.balanced_values).
+        to eq({'grouped_input_two' => 8 * multiplier})
     end
   end
 
