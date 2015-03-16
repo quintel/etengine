@@ -73,7 +73,7 @@ class Scenario < ActiveRecord::Base
       ], Date.today - 5)
   end)
 
-  attr_accessor :input_errors, :ordering, :display_group
+  attr_accessor :input_errors, :ordering, :display_group, :descale
 
   before_create do |scenario|
     if preset = scenario.preset_scenario

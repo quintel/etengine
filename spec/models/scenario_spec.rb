@@ -225,7 +225,12 @@ describe Scenario do
     end
 
     let(:scenario) do
-      Scenario.create(title: '1', scenario_id: preset.id, scaler: nil)
+      scenario = Scenario.new(title: '1')
+      scenario.descale     = true
+      scenario.scenario_id = preset.id
+      scenario.save!
+
+      scenario
     end
 
     let(:multiplier) { Atlas::Dataset.find(:nl).number_of_residences / 1000 }

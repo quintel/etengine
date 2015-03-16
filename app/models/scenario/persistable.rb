@@ -30,7 +30,7 @@ module Scenario::Persistable
     # If this scenario has a custom scaling (different from that in the source
     # preset), we have to re-scale the value of each input so that it makes
     # sense when used in the newly-sized area.
-    if self.scaler || other_scaler
+    if self.scaler || (self.descale && other_scaler)
       source_user_values = rescale_inputs(
         source_user_values, other_scaler, self.scaler)
 
@@ -46,7 +46,7 @@ module Scenario::Persistable
 
     # Set the same scaler as the source scenario, except when the user has
     # specified a custom scaling.
-    if other_scaler && ! self.scaler
+    if other_scaler && ! self.scaler && ! self.descale
       self.scaler = ScenarioScaling.new(
         other_scaler.attributes.except('id', 'scenario_id'))
     end

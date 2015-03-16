@@ -79,12 +79,13 @@ module Api
 
         @scenario = Scenario.new
 
-        if scaler_attributes
+        if scaler_attributes && ! attrs[:descale]
           @scenario.build_scaler(scaler_attributes)
         end
 
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
+        @scenario.descale    = attrs[:descale]
         @scenario.attributes = attrs
 
         Scenario.transaction do
@@ -201,11 +202,15 @@ module Api
       #
       # Returns a hash.
       def scenario_attributes
-        (params[:scenario] || {}).slice(
+        attrs = (params[:scenario] || {}).slice(
           :author, :title, :description, :user_values, :end_year, :area_code,
           :country, :region, :preset_scenario_id, :use_fce, :protected,
-          :scenario_id, :source, :user_values
+          :scenario_id, :source, :user_values, :descale
         )
+
+        attrs['descale'] = attrs['descale'] == 'true'
+
+        attrs
       end
 
       # Internal: Attributes for creating a scaled scenario.
