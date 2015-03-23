@@ -4,6 +4,7 @@ module Api
       ATTRIBUTES = [
         :demand,
         :electricity_output_capacity,
+        :input_capacity,
         :number_of_units
       ].freeze
 
