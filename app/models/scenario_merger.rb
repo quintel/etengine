@@ -1,6 +1,8 @@
 class ScenarioMerger
   include ActiveModel::Validations
 
+  Error = Class.new(RuntimeError)
+
   validate :scenarios_have_matching_areas
   validate :scenarios_have_matching_end_years
   validate :scenarios_are_not_scaled
@@ -30,10 +32,10 @@ class ScenarioMerger
   #
   def initialize(scenarios)
     if scenarios.blank?
-      fail "Cannot create a #{ self.class.name } with no scenarios"
+      fail Error, 'You must provide at least one scenario'
     end
 
-    @scenarios = scenarios.map(&:first)
+    @scenarios   = scenarios.map(&:first)
 
     weights      = scenarios.map(&:last).compact
     total_weight = weights.sum.to_f
@@ -150,5 +152,22 @@ class ScenarioMerger
     if @scenarios.any? { |scenario| scenario.scaler.present? }
       errors.add(:base, 'Cannot merge scenarios which have been scaled down')
     end
+  end
+
+  # Public: Given an array of scenarios to merge (with each member in the form
+  # {:scenario_id, :weight}) creates a ScenarioMerger.
+  #
+  # Returns a ScenarioMerger.
+  def self.from_params(params)
+    params = params[:scenarios] || []
+
+    scenario_ids = params.map { |p| p[:scenario_id].presence }.compact
+    scenarios    = Scenario.where(id: scenario_ids).index_by { |s| s.id.to_s }
+
+    ScenarioMerger.new(params.map do |details|
+      if scenario = scenarios[details[:scenario_id]]
+        [ scenario, details[:weight].presence.try(:to_f) ]
+      end
+    end.compact)
   end
 end

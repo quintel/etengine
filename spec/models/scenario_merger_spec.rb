@@ -121,14 +121,14 @@ describe ScenarioMerger do
   context 'given no scenarios' do
     it 'raises an error' do
       expect { ScenarioMerger.new([]) }
-        .to raise_error('Cannot create a ScenarioMerger with no scenarios')
+        .to raise_error('You must provide at least one scenario')
     end
   end # given no scenarios
 
   context 'given nil' do
     it 'raises an error' do
       expect { ScenarioMerger.new(nil) }
-        .to raise_error('Cannot create a ScenarioMerger with no scenarios')
+        .to raise_error('You must provide at least one scenario')
     end
   end # given nil
 end # ScenarioMerger

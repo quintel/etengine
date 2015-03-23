@@ -152,6 +152,25 @@ module Api
         end
       end
 
+      # GET /api/v3/scenarios/merge
+      #
+      # Merges two or more scenarios.
+      #
+      def merge
+        merge_params = params.permit(scenarios: [:scenario_id, :weight])
+
+        if (merger = ScenarioMerger.from_params(merge_params)).valid?
+          scenario = merger.merged_scenario
+          scenario.save
+
+          redirect_to api_v3_scenario_url(scenario)
+        else
+          render json: { errors: merger.errors }, status: 422
+        end
+      rescue ScenarioMerger::Error => ex
+        render json: { errors: { base: [ex.message] } }, status: 400
+      end
+
       # GET /api/v3/scenarios/:id/sandbox
       #
       # Returns the gql details in JSON format. If the scenario is missing

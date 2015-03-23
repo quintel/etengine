@@ -12,9 +12,12 @@ Etm::Application.routes.draw do
       resources :areas, :only => [:index, :show]
       resources :scenarios, :only => [:show, :create, :update] do
         member do
-          get :batch
-          get :sandbox
-          put :dashboard
+          get  :batch
+          get  :sandbox
+          put  :dashboard
+        end
+        collection do
+          post :merge
         end
         get :templates, :on => :collection
         resources :converters, :only => :show do
