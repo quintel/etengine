@@ -37,9 +37,9 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
       expect(merged.balanced_values).to eq('grouped_input_two' => 62.5)
     end
 
-    it 'redirects to the scenario' do
+    it 'responds with the scenario' do
       request
-      expect(response).to redirect_to(api_v3_scenario_url(merged))
+      expect(json).to have_key('id')
     end
   end # with two scenarios
 
@@ -55,9 +55,9 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
       expect { request }.to change { Scenario.count }.by(1)
     end
 
-    it 'redirects to the scenario' do
+    it 'responds with the scenario' do
       request
-      expect(response).to redirect_to(api_v3_scenario_url(merged))
+      expect(json).to have_key('id')
     end
   end # with two scenarios and a missing weight
 
@@ -85,9 +85,9 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
       expect { request }.to change { Scenario.count }.by(1)
     end
 
-    it 'redirects to the scenario' do
+    it 'responds with the scenario' do
       request
-      expect(response).to redirect_to(api_v3_scenario_url(merged))
+      expect(json).to have_key('id')
     end
   end # with only one scenario
 

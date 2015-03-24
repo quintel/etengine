@@ -163,7 +163,8 @@ module Api
           scenario = merger.merged_scenario
           scenario.save
 
-          redirect_to api_v3_scenario_url(scenario)
+          # redirect_to api_v3_scenario_url(scenario)
+          render json: ScenarioPresenter.new(self, scenario, params)
         else
           render json: { errors: merger.errors }, status: 422
         end
