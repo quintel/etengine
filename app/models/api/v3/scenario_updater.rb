@@ -191,26 +191,46 @@ module Api
             end
 
             if @data[:autobalance] != 'false' && @data[:autobalance] != false
-              subordinates = Hash.new
-
               each_group(provided_values) do |_, inputs|
-                begin
-                  subordinates.merge!(
-                    Balancer.new(inputs).balance(@scenario, user_values))
-                rescue Balancer::BalancerError
-                  # It is acceptable for a balancer to fail; validation will
-                  # catch it and notify the user.
-                  #
-                  # TODO Notify Airbrake?
+                if balanced_group = balance_group(inputs)
+                  balanced.merge!(balanced_group)
                 end
               end
-
-              balanced.merge!(subordinates)
             end
 
             balanced
           end
         end
+      end
+
+      # Internal: Given a group of inputs belonging to a common share group,
+      # balances the values provided by the user, with inputs which do not have
+      # an explicit user value, in order that the group still sums to 100.
+      #
+      # Returns a hash of balanced values.
+      def balance_group(inputs)
+        if @data[:force_balance]
+          balancer_values = provided_values
+
+          # Force balancing deletes all values previously provided for
+          # the group and permits their use in the balancer.
+          inputs.each do |input|
+            unless provided_values.key?(input.key)
+              user_values.delete(input.key)
+            end
+          end
+
+          Balancer.new(inputs).balance(@scenario, provided_values)
+        else
+          # "Normal" balancing prevents modifications to values for which the
+          # user has provided an explicit value.
+          Balancer.new(inputs).balance(@scenario, user_values)
+        end
+      rescue Balancer::BalancerError
+        # It is acceptable for a balancer to fail; validation will
+        # catch it and notify the user.
+        #
+        # TODO Notify Airbrake?
       end
 
       # Given a collection of user values, yields the name of each group to
