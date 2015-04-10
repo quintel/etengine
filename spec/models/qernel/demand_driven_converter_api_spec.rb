@@ -52,11 +52,11 @@ module Qernel
           end
         end
 
-        it 'should be 50.0 when the converter has a 25% share' do
+        it 'should be 2.0 when the converter has a 25% share' do
           supply_one.converter_api.number_of_units.should eql(2.0)
         end
 
-        it 'should be 150.0 when the converter has a 75% share' do
+        it 'should be 6.0 when the converter has a 75% share' do
           supply_two.converter_api.number_of_units.should eql(6.0)
         end
       end
