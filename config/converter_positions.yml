@@ -1640,3 +1640,6 @@
 :households_flexibility_p2p_electricity:
   :x: 3920
   :y: 1000
+:households_flexibility_p2h_electricity:
+  :x: 1080
+  :y: 1020
