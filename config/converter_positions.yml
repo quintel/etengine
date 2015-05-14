@@ -1643,3 +1643,6 @@
 :households_flexibility_p2h_electricity:
   :x: 1080
   :y: 1020
+:energy_flexibility_p2g_electricity:
+  :x: 7320
+  :y: 4220
