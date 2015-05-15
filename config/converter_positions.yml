@@ -1637,3 +1637,12 @@
 :agriculture_final_demand_wood_pellets:
   :x: 2700
   :y: 5420
+:households_flexibility_p2p_electricity:
+  :x: 3920
+  :y: 1000
+:households_flexibility_p2h_electricity:
+  :x: 1080
+  :y: 1020
+:energy_flexibility_p2g_electricity:
+  :x: 7320
+  :y: 4220
