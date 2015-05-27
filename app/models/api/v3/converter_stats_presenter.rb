@@ -5,7 +5,8 @@ module Api
         :demand,
         :electricity_output_capacity,
         :input_capacity,
-        :number_of_units
+        :number_of_units,
+        :storage
       ].freeze
 
       attr_reader :key
