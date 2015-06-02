@@ -73,9 +73,10 @@ module Qernel::Plugins
     # Returns a hash.
     def producer_attributes(type, conv)
       attributes = super
+      marginal_cost = conv.variable_costs_per(:mwh_electricity)
 
       attributes[:marginal_costs] =
-        conv.variable_costs_per(:mwh_electricity)
+        (marginal_cost && marginal_cost.nan?) ? Float::INFINITY : marginal_cost
 
       attributes[:fixed_costs_per_unit] =
         conv.send(:fixed_costs)
