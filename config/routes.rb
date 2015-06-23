@@ -17,6 +17,7 @@ Etm::Application.routes.draw do
           put  :dashboard
         end
         collection do
+          get  :scaled
           post :merge
         end
         get :templates, :on => :collection

@@ -31,6 +31,16 @@ module Api
         render json: @scenarios
       end
 
+      def scaled
+        scenarios = Scenario.joins(:scaler)
+
+        @scenarios = scenarios.map do |scenario|
+          ScenarioPresenter.new(self, scenario, params)
+        end
+
+        render json: @scenarios
+      end
+
       def dashboard
         presenter = nil
 

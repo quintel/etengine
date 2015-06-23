@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Api::V3::ScenariosController do
   let(:scenario) { FactoryGirl.create(:scenario) }
   let(:scenarios) { 5.times.map { FactoryGirl.create(:scenario) } }
-  
+
   before do
     Input.stub(:records).and_return({
       'foo' => FactoryGirl.build(:input, key: :foo),
@@ -31,6 +31,20 @@ describe Api::V3::ScenariosController do
       assigns(:scenarios).each do |scenario|
         expect(scenario).to be_a(Api::V3::ScenarioPresenter)
       end
+    end
+  end
+
+  describe "GET scaled.json" do
+    before do
+      get :scaled, format: :json
+    end
+
+    it "responds succesfully" do
+      expect(response).to be_success
+    end
+
+    it 'assigns scenarios with an array' do
+      assigns(:scenarios).should be_a(Array)
     end
   end
 
