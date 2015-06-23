@@ -17,14 +17,6 @@ describe NastyCache do
     @cache.set("to_be_expired", "foo")
   }
 
-  describe "SingleTon" do
-    it 'is the same instance every time' do
-      a = NastyCache.instance
-      b = NastyCache.instance
-      a.should == b
-    end
-  end
-
   specify { @cache.get("new_key").should be_nil }
 
   it "should set and get" do
@@ -33,7 +25,7 @@ describe NastyCache do
   end
 
   it "should fetch a block" do
-    @cache.fetch("foo2") do 
+    @cache.fetch("foo2") do
       'bar'
     end
     @cache.get("foo2").should == "bar"
