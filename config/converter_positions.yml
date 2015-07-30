@@ -1646,3 +1646,9 @@
 :energy_flexibility_p2g_electricity:
   :x: 7320
   :y: 4220
+:households_useful_demand_for_hot_water_for_houses_with_p2h:
+  :x: 900
+  :y: 1200
+:households_useful_demand_for_hot_water_after_solar_heater_and_p2h:
+  :x: 1060
+  :y: 1380
