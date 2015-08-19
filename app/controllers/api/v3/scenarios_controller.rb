@@ -3,8 +3,8 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_filter :find_scenario, :only => [:update, :sandbox]
-      before_filter :find_preset_or_scenario, :only => [:show, :dashboard]
+      before_filter :find_scenario, only: [:update, :sandbox]
+      before_filter :find_preset_or_scenario, only: [:show, :merit, :dashboard]
 
       # GET /api/v3/scenarios/:id
       #
@@ -13,6 +13,15 @@ module Api
       #
       def show
         render json: ScenarioPresenter.new(self, @scenario, params)
+      end
+
+      # GET /api/v3/scenarios/:id/merit
+      #
+      # Returns data needed to set up and run an external merit order. Contains
+      # information about each producer in the scenario, and the load profiles.
+      #
+      def merit
+        render json: MeritConfigPresenter.new(@scenario.gql.future_graph)
       end
 
       # GET /api/v3/scenarios/:id1,:id2,:id3,...,:id20/batch
