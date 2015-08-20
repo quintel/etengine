@@ -3,11 +3,11 @@ class RenameOtherIndustryInputs < ActiveRecord::Migration
     industry_useful_demand_crude_oil_non_energetic:
       :industry_useful_demand_for_other_crude_oil_non_energetic,
 
-    industry_useful_demand_for_other_useable_heat:
+    industry_useful_demand_useable_heat_efficiency:
       :industry_useful_demand_for_other_useable_heat_efficiency,
 
     industry_useful_demand_useable_heat:
-      :industry_useful_demand_useable_heat_efficiency,
+      :industry_useful_demand_for_other_useable_heat,
 
     industry_useful_demand_network_gas_non_energetic:
       :industry_useful_demand_for_other_network_gas_non_energetic,
