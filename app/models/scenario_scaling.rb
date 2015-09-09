@@ -111,20 +111,13 @@ class ScenarioScaling < ActiveRecord::Base
   end
 
   def set_base_with(base_scenario)
-    self.base_value = (if area_attribute == 'number_of_residences'
-      # See quintel/etmodel#1895
-      old =
-        input_value(base_scenario, 'households_number_of_old_houses', 1e6) ||
-        base_scenario.area['number_of_old_residences']
+    graph = base_scenario.gql(prepare: false) do |gql|
+      gql.init_datasets
+      gql.update_present
+      gql.update_future
+    end.future
 
-      new =
-        input_value(base_scenario, 'households_number_of_new_houses', 1e6) ||
-        base_scenario.area['number_of_new_residences']
-
-      old + new
-    else
-      base_scenario.area[attribute]
-    end)
+    self.base_value = graph.area(area_attribute)
   end
 
   #######
