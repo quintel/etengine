@@ -27,7 +27,7 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns a Float.
   def multiplier
-    @multiplier ||= value.to_f / scenario.area[area_attribute]
+    @multiplier ||= value.to_f / base_value
   end
 
   # Public: Given a number, scales it to fit the reduced-area scenario.
@@ -104,6 +104,29 @@ class ScenarioScaling < ActiveRecord::Base
     @input_cache ||= Input::ScaledInputs.new(Input.cache, scenario.gql)
   end
 
+  # Public: Returns the value of the scaling attribute in the original unscaled
+  # scenario.
+  def base_value
+    super || scenario.area[area_attribute]
+  end
+
+  def set_base_with(base_scenario)
+    self.base_value = (if area_attribute == 'number_of_residences'
+      # See quintel/etmodel#1895
+      old =
+        input_value(base_scenario, 'households_number_of_old_houses', 1e6) ||
+        base_scenario.area['number_of_old_residences']
+
+      new =
+        input_value(base_scenario, 'households_number_of_new_houses', 1e6) ||
+        base_scenario.area['number_of_new_residences']
+
+      old + new
+    else
+      base_scenario.area[attribute]
+    end)
+  end
+
   #######
   private
   #######
@@ -152,5 +175,9 @@ class ScenarioScaling < ActiveRecord::Base
 
   def scale_hash_value(hash, key)
     hash[key] && hash[key] *= multiplier
+  end
+
+  def input_value(scenario, key, multiplier = 1.0)
+    scenario.user_values[key] && scenario.user_values[key] * multiplier
   end
 end # ScenarioScaling

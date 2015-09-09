@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150820082203) do
+ActiveRecord::Schema.define(version: 20150909150707) do
 
   create_table "fce_values", force: true do |t|
     t.string   "using_country"
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 20150820082203) do
     t.integer "scenario_id"
     t.string  "area_attribute"
     t.float   "value",           limit: 24
+    t.float   "base_value",      limit: 24
     t.boolean "has_agriculture",            default: false, null: false
     t.boolean "has_industry",               default: false, null: false
     t.boolean "has_energy",                 default: true,  null: false
