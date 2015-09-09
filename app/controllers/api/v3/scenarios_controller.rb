@@ -83,10 +83,12 @@ module Api
           scaler = @scenario.build_scaler(scaler_attributes)
 
           if parent_id = attrs[:scenario_id] || attrs[:preset_scenario_id]
-            if (parent = Scenario.find(parent_id)).scaler
-              scaler.base_value = parent.scaler.base_value
-            else
-              scaler.set_base_with(parent)
+            if parent = Scenario.find_by_id(parent_id)
+              if parent.scaler
+                scaler.base_value = parent.scaler.base_value
+              else
+                scaler.set_base_with(parent)
+              end
             end
           end
         end
