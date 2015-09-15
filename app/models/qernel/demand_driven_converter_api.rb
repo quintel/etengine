@@ -13,19 +13,14 @@ module Qernel
     # How many seconds a year the converter runs at full load. Varies
     # depending on the demand.
     def full_load_seconds
-      fetch(:full_load_seconds) do
-        begin
-          supply = nominal_capacity_heat_output_per_unit * number_of_units
-          if supply.zero?
-            0.0
-          else
-            [ demand_of_steam_hot_water,
-              demand_of_useable_heat ].compact.sum / supply
-          end
-        rescue
-          nil
-        end
-      end
+      supply = nominal_capacity_heat_output_per_unit * number_of_units
+
+      return 0.0 if supply.zero?
+
+      ( (demand_of_steam_hot_water || 0.0) +
+        (demand_of_useable_heat || 0.0) ) / supply
+    rescue
+      nil
     end
 
     # How many hours a year the converter runs at full load. Varies depending

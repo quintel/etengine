@@ -62,7 +62,7 @@ class Qernel::ConverterApi
   # How many seconds a year the converters runs at full load.
   # This is useful because MJ is MW per second.
   def full_load_seconds
-    fetch(:full_load_seconds) { full_load_hours * SECS_PER_HOUR }
+    full_load_hours * SECS_PER_HOUR
   end
   unit_for_calculation "full_load_seconds", 'seconds'
 
