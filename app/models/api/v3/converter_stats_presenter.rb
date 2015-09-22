@@ -6,7 +6,9 @@ module Api
         :electricity_output_capacity,
         :input_capacity,
         :number_of_units,
-        :storage
+        :storage,
+        :initial_investment,
+        :technical_lifetime
       ].freeze
 
       attr_reader :key
