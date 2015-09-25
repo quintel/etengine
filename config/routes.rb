@@ -94,6 +94,7 @@ Etm::Application.routes.draw do
 
       get '/merit' => 'merit#index'
       get '/merit/download' => 'merit#download', as: :merit_download
+      get '/merit/download_prices' => 'merit#prices', as: :merit_price_download
 
       get 'search' => 'search#index', :as => :search
     end
