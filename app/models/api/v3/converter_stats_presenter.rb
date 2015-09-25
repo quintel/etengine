@@ -8,7 +8,8 @@ module Api
         :number_of_units,
         :storage,
         :initial_investment,
-        :technical_lifetime
+        :technical_lifetime,
+        :coefficient_of_performance
       ].freeze
 
       attr_reader :key
