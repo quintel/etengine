@@ -9,7 +9,11 @@ module Api
         :storage,
         :initial_investment,
         :technical_lifetime,
-        :coefficient_of_performance
+        :coefficient_of_performance,
+        :full_load_hours,
+        :fixed_operation_and_maintenance_costs_per_year,
+        :variable_operation_and_maintenance_costs_per_full_load_hour,
+        :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour
       ].freeze
 
       attr_reader :key
