@@ -1513,13 +1513,13 @@
   :y: 4520
 :energy_import_coal_gas:
   :x: 7700
-  :y: 4580
+  :y: 4660
 :energy_import_coal:
   :x: 7700
   :y: 4460
 :energy_import_lng:
   :x: 7700
-  :y: 4640
+  :y: 4540
 :environment_air_wind:
   :x: 7700
   :y: 5300
@@ -1652,3 +1652,33 @@
 :households_useful_demand_for_hot_water_after_solar_heater_and_p2h:
   :x: 1060
   :y: 1380
+:transport_useful_demand_ship_kms:
+  :x: 720
+  :y: 4660
+:transport_ship_using_diesel_mix:
+  :x: 1520
+  :y: 4620
+:transport_ship_using_lng:
+  :x: 1520
+  :y: 4680
+:transport_final_demand_for_shipping_lng:
+  :x: 2320
+  :y: 4840
+:transport_shipping_mixer_diesel:
+  :x: 1960
+  :y: 4620
+:energy_regasification_lng:
+  :x: 7320
+  :y: 4360
+:transport_truck_using_lng:
+  :x: 1520
+  :y: 4080
+:transport_final_demand_for_road_lng:
+  :x: 2320
+  :y: 3880
+:transport_final_demand_lng:
+  :x: 3120
+  :y: 4460
+:energy_distribution_lng:
+  :x: 7420
+  :y: 4540
