@@ -74,12 +74,6 @@
 :transport_train_using_electricity:
   :x: 1520
   :y: 4280
-:transport_ship_using_biodiesel:
-  :x: 1520
-  :y: 4780
-:transport_ship_using_diesel:
-  :x: 1520
-  :y: 4660
 :transport_car_using_compressed_natural_gas:
   :x: 1520
   :y: 3640
@@ -1094,9 +1088,6 @@
 :transport_plane_using_kerosene:
   :x: 1520
   :y: 4480
-:transport_ship_using_heavy_fuel_oil:
-  :x: 1520
-  :y: 4720
 :other_heater_district_heating_steam_hot_water:
   :x: 1520
   :y: 8360
