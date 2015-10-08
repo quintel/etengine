@@ -1671,5 +1671,32 @@
   :x: 3120
   :y: 4460
 :energy_distribution_lng:
-  :x: 7420
+  :x: 7500
   :y: 4540
+:transport_ship_using_lng_mix:
+  :x: 1520
+  :y: 4680
+:transport_shipping_mixer_lng:
+  :x: 1960
+  :y: 4680
+:transport_final_demand_for_shipping_bio_lng:
+  :x: 2320
+  :y: 4900
+:transport_truck_using_lng_mix:
+  :x: 1520
+  :y: 4080
+:transport_road_mixer_lng:
+  :x: 1960
+  :y: 3700
+:transport_final_demand_for_road_bio_lng:
+  :x: 2320
+  :y: 3940
+:transport_final_demand_bio_lng:
+  :x: 3120
+  :y: 4520
+:energy_distribution_bio_lng:
+  :x: 7500
+  :y: 4600
+:energy_import_bio_lng:
+  :x: 7700
+  :y: 4600
