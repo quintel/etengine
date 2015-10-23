@@ -1700,3 +1700,6 @@
 :energy_import_bio_lng:
   :x: 7700
   :y: 4600
+:energy_regasification_bio_lng:
+  :x: 7320
+  :y: 4420
