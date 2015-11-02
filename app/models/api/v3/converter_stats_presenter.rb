@@ -22,6 +22,10 @@ module Api
         @key = key
         @gql = gql
 
+        unless @gql.present_graph.converter(@key)
+          fail "Missing converter: #{ @key }"
+        end
+
         @present = @gql.present_graph.converter(@key).converter_api
         @future  = @gql.future_graph.converter(@key).converter_api
       end
