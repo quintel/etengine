@@ -11,7 +11,7 @@
     - gql = scenario.gql(prepare: false)
     - gql_initialize_time = Time.now - gql_initialize_time
     - gql_prepare_time = Time.now
-    - gql.prepare rescue ''
+    - gql.prepare
     - gql_prepare_time = Time.now - gql_prepare_time
 
     .span10
