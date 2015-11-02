@@ -56,7 +56,7 @@ module Gql
 
     def rubel_execute(obj)
       @rubel.execute(obj)
-    rescue => ex
+    rescue StandardError, SyntaxError => ex
       raise(obj.is_a?(Command) ? CommandError.new(obj, ex) : ex)
     end
   end

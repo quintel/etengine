@@ -37,11 +37,12 @@ module Gql
     # Returns an array of strings.
     def backtrace
       trace = @original.backtrace.dup
+      index = trace.index { |line| line.start_with?('(eval)') }
 
-      index  = trace.index { |line| line.start_with?('(eval)') }
-      lineno = trace[index].match(/^\(eval\):(\d+)/)[1].to_i
-
-      trace[index] = @command.exception_trace(lineno)
+      if index
+        lineno = trace[index].match(/^\(eval\):(\d+)/)[1].to_i
+        trace[index] = @command.exception_trace(lineno)
+      end
 
       trace
     end
