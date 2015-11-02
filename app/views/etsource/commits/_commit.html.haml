@@ -1,7 +1,7 @@
 - repo ||= 'etsource'
 
 .details
-  = gravatar_image_tag(commit.author.email, size: 140, class: 'avatar', gravatar: { default: 'http://beta.et-engine.com/assets/quintel-avatar.png' })
+  = gravatar_image_tag(commit.author.email, size: 140, class: 'avatar', gravatar: { default: asset_url('quintel-avatar.png') })
   %span.message
     %a.sha{ href: "https://github.com/quintel/#{ repo }/commit/#{ commit.sha }" }
       = truncate(commit.message.split("\n").first, length: 80)
