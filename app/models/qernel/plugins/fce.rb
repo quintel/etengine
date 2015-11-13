@@ -18,7 +18,7 @@ module Qernel::Plugins
     # plugin.
     FCE_CARRIERS = [
       :biodiesel, :bio_ethanol, :coal,          :crude_oil,
-      :greengas,  :natural_gas, :uranium_oxide, :wood_pellets
+      :greengas,  :natural_gas, :lng, :uranium_oxide, :wood_pellets
     ].freeze
 
     def calculator
