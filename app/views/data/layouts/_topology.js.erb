@@ -33,3 +33,35 @@ converter_keys = @converters.map(&:key)
 <% end %>
 
 GRAPH.draw();
+
+if ('btoa' in window) {
+  var instructionsEl = $('#instructions');
+  var link = $('<a href="#">Download SVG</a>')
+
+  instructionsEl.find('ul').append($('<li></li>').append(link));
+
+  link.click(function(event) {
+    event.preventDefault();
+
+    var a = document.createElement('a'),
+      content = $('svg').html(),
+      encoded;
+
+    content = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' +
+      content.replace(/ë/, 'e') + '</svg>';
+
+    encoded = btoa(content);
+
+    a.href = 'data:image/svg+xml;base64,\n' + encoded;
+
+    a.setAttribute('href-lang', 'image/svg+xml');
+    a.setAttribute('download', 'graph.svg');
+
+    document.body.appendChild(a);
+
+    setTimeout(function() {
+      a.click();
+      document.body.removeChild(a);
+    }, 66);
+  });
+}
