@@ -320,12 +320,6 @@
 :transport_useful_demand_trains:
   :x: 720
   :y: 4220
-:transport_useful_demand_ships:
-  :x: 720
-  :y: 4720
-:buildings_cooling_collective_cooling_network_electricity:
-  :x: 1520
-  :y: 6540
 :agriculture_useful_demand_useable_heat:
   :x: 660
   :y: 5340
@@ -1649,9 +1643,6 @@
 :transport_ship_using_diesel_mix:
   :x: 1520
   :y: 4620
-:transport_ship_using_lng:
-  :x: 1520
-  :y: 4680
 :transport_final_demand_for_shipping_lng:
   :x: 2320
   :y: 4840
@@ -1661,9 +1652,6 @@
 :energy_regasification_lng:
   :x: 7320
   :y: 4360
-:transport_truck_using_lng:
-  :x: 1520
-  :y: 4080
 :transport_final_demand_for_road_lng:
   :x: 2320
   :y: 3880
