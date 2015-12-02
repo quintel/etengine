@@ -136,6 +136,7 @@ a recent list can be found on [ETSource][etsource].
 
 Assuming you can run a 'normal' rails application on your local machine,
 you have to follow these steps to run ET-Engine.
+
 * `bundle install` to install dependencies if you haven't done already
 * `bundle exec rake db:create` to create your database
 * `bundle exec cap staging db2local` to fill your database with records from staging
@@ -154,6 +155,7 @@ you have to follow these steps to run ET-Engine.
 * fire up your local rails server (use `rails s` on the console or use
   [pow](http://pow.cx)
 * go to `http://etengine.dev/etsource` or equivalent
+* (if you run into an dataset error, check out this [explanation](https://github.com/quintel/etsource#csv-documents "Explanation on etsource CSV files") on CSV files)
 * Press 'import' (the latest commit or another one if you like that better)
 * you're done!
 
