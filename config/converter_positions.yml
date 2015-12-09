@@ -289,10 +289,10 @@
   :y: 520
 :households_water_heater_crude_oil:
   :x: 1520
-  :y: 1140
+  :y: 1080
 :households_water_heater_coal:
   :x: 1520
-  :y: 1080
+  :y: 1020
 :households_old_houses_heating_savings_from_insulation:
   :x: 320
   :y: 640
@@ -301,7 +301,7 @@
   :y: 580
 :households_water_heater_wood_pellets:
   :x: 1520
-  :y: 1440
+  :y: 1380
 :transport_useful_demand_truck_kms:
   :x: 720
   :y: 3920
@@ -619,28 +619,28 @@
   :y: 940
 :households_water_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 1560
+  :y: 1500
 :households_water_heater_resistive_electricity:
   :x: 1520
-  :y: 1500
+  :y: 1440
 :households_space_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 740
+  :y: 680
 :households_space_heater_electricity:
   :x: 1520
-  :y: 680
+  :y: 620
 :households_space_heater_combined_network_gas:
   :x: 1520
   :y: 440
 :households_space_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 800
+  :y: 740
 :households_water_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 1680
+  :y: 1620
 :households_water_heater_combined_network_gas:
   :x: 1520
-  :y: 1260
+  :y: 1200
 :households_final_demand_wood_pellets:
   :x: 3120
   :y: 940
@@ -658,7 +658,7 @@
   :y: 1120
 :households_space_heater_wood_pellets:
   :x: 1520
-  :y: 620
+  :y: 560
 :households_space_heater_coal:
   :x: 1520
   :y: 260
@@ -676,22 +676,22 @@
   :y: 180
 :households_water_heater_network_gas:
   :x: 1520
-  :y: 1200
+  :y: 1140
 :households_water_heater_micro_chp_network_gas:
   :x: 1520
-  :y: 1320
+  :y: 1260
 :households_space_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 860
+  :y: 800
 :households_space_heater_micro_chp_network_gas:
   :x: 1520
-  :y: 560
+  :y: 500
 :households_space_heater_network_gas:
   :x: 1520
   :y: 380
 :households_water_heater_fuel_cell_chp_network_gas:
   :x: 1520
-  :y: 1380
+  :y: 1320
 :energy_power_ultra_supercritical_coal:
   :x: 6240
   :y: 2500
@@ -1168,7 +1168,7 @@
   :y: 1200
 :households_water_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1620
+  :y: 1560
 :industry_aluminium_production:
   :x: 720
   :y: 9700
@@ -1691,3 +1691,15 @@
 :energy_regasification_bio_lng:
   :x: 7320
   :y: 4420
+:households_space_heater_hybrid_heatpump_collector_useable_heat:
+  :x: 1520
+  :y: 860
+:households_space_heater_hybrid_heatpump_air_water_electricity:
+  :x: 1520
+  :y: 860
+:households_space_heater_hybrid_heatpump_combined_network_gas:
+  :x: 1920
+  :y: 860
+:households_water_heater_hybrid_heatpump_air_water_electricity:
+  :x: 1520
+  :y: 1680
