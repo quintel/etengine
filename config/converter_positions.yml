@@ -401,9 +401,6 @@
 :energy_power_hydro_mountain_pumped:
   :x: 5520
   :y: 2320
-:households_useful_demand_for_hot_water_after_solar_heater_and_add_on:
-  :x: 1100
-  :y: 1380
 :households_cooker_wood_pellets:
   :x: 1520
   :y: 1820
@@ -665,9 +662,6 @@
 :households_space_heater_crude_oil:
   :x: 1520
   :y: 320
-:households_space_heater_heatpump_add_on_electricity:
-  :x: 1080
-  :y: 940
 :households_cooling_heatpump_ground_water_electricity:
   :x: 1520
   :y: 120
@@ -1160,12 +1154,6 @@
 :households_useful_demand_for_hot_water_for_houses_with_solar_heater:
   :x: 520
   :y: 1200
-:households_useful_demand_for_space_heating_after_insulation_for_houses_with_add_on:
-  :x: 920
-  :y: 700
-:households_useful_demand_for_hot_water_for_houses_with_add_on:
-  :x: 920
-  :y: 1200
 :households_water_heater_heatpump_air_water_electricity:
   :x: 1520
   :y: 1560
@@ -1451,9 +1439,6 @@
 :industry_final_demand_for_other_wood_pellets:
   :x: 2000
   :y: 9040
-:households_useful_demand_for_space_heating_after_insulation_and_solar_heater_and_add_on:
-  :x: 1120
-  :y: 540
 :industry_aluminium_burner_network_gas:
   :x: 1800
   :y: 9680
