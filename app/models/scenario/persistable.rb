@@ -66,7 +66,12 @@ module Scenario::Persistable
   # Returns a hash.
   def rescale_inputs(collection, source_scaler, dest_scaler)
     collection.each_with_object({}) do |(key, value), data|
-      if ScenarioScaling.scale_input?(Input.get(key.to_sym))
+      input = Input.get(key.to_sym)
+
+      # Old scenarios may use inputs which no longer exist; skip them.
+      next unless input
+
+      if ScenarioScaling.scale_input?(input)
         data[key] = rescale_input(value, source_scaler, dest_scaler)
       else
         data[key] = value

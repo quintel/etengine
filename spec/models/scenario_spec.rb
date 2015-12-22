@@ -252,6 +252,21 @@ describe Scenario do
       expect(scenario.balanced_values).
         to eq({'grouped_input_two' => 8 * multiplier})
     end
+
+    context 'with a non-existent input' do
+      before do
+        preset.user_values['invalid'] = 5.0
+        preset.save!
+      end
+
+      it 'does not raise an error' do
+        expect { scenario }.to_not raise_error
+      end
+
+      it 'skips the input' do
+        expect(scenario.user_values.keys).to_not include('invalid')
+      end
+    end
   end
 
   describe 'dup' do
