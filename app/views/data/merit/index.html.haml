@@ -3,8 +3,10 @@
 %h1
   Merit Order
 
-%p
-  = link_to "Download CSV with load curves for the current scenario",
-    data_merit_download_path
-  = link_to "Download CSV with price curves for the current scenario",
-    data_merit_price_download_path
+%ul(style="margin-top: 1em; font-size: 14px")
+  %li(style="margin-bottom: .25em")
+    = link_to "Participant load curves",
+      api_v3_scenario_merit_download_path(scenario_id: @api_scenario.id, format: 'csv')
+  %li
+    = link_to "Price curves",
+      api_v3_scenario_merit_price_download_path(scenario_id: @api_scenario.id, format: 'csv')

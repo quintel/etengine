@@ -26,6 +26,9 @@ Etm::Application.routes.draw do
           post :stats,    :on => :collection
         end
         resources :inputs, :only => [:index, :show]
+
+        get 'merit/loads' => 'merit#load_curves', as: :merit_download
+        get 'merit/price' => 'merit#price_curve', as: :merit_price_download
       end
       resources :converters, :only => :show do
         get :topology, :on => :collection
@@ -93,8 +96,12 @@ Etm::Application.routes.draw do
       get '/gql/warnings' => "gql#warnings", :as => :gql_warnings
 
       get '/merit' => 'merit#index'
-      get '/merit/download' => 'merit#download', as: :merit_download
-      get '/merit/download_prices' => 'merit#prices', as: :merit_price_download
+
+      get '/merit/download',
+        to: redirect("api/v3/scenarios/%{api_scenario_id}/merit/loads.csv")
+
+      get '/merit/download_prices',
+        to: redirect("api/v3/scenarios/%{api_scenario_id}/merit/price.csv")
 
       get 'search' => 'search#index', :as => :search
     end
