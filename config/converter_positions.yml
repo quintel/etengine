@@ -1699,7 +1699,22 @@
   :y: 3800
 :energy_distribution_hydrogen:
   :x: 5600
-  :y: 6000
+  :y: 5900
 :energy_steam_methane_reformer_hydrogen:
   :x: 6400
   :y: 6000
+:energy_compressor_hydrogen:
+  :x: 3300
+  :y: 3800
+:energy_biomass_gasification_ccs_hydrogen:
+  :x: 6400
+  :y: 5800
+:energy_biomass_gasification_hydrogen:
+  :x: 6400
+  :y: 5860
+:energy_local_electrolysis_hydrogen:
+  :x: 3500
+  :y: 3580
+:energy_steam_methane_reformer_ccs_hydrogen:
+  :x: 6400
+  :y: 5940
