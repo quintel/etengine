@@ -24,6 +24,16 @@ describe Input do
       it 'should return the value when given Scenario' do
         input.min_value_for(scenario).should eql(2)
       end
+
+      it 'should return scaled values when the scenario is scaled' do
+        scenario.create_scaler!(
+          area_attribute: 'number_of_residences',
+          value: 10000
+        )
+
+        input.min_value_for(scenario).
+          should be_within(1e-9).of(2.0 / 7210388.0 * 10000)
+      end
     end
 
     describe 'max_value_for' do
@@ -34,6 +44,15 @@ describe Input do
       it 'should return the value when given Scenario' do
         input.max_value_for(scenario).should eql(10)
       end
+
+      it 'should return scaled values when the scenario is scaled' do
+        scenario.create_scaler!(
+          area_attribute: 'number_of_residences',
+          value: 10000
+        )
+
+        input.max_value_for(scenario).should eql(10.0 / 7210388.0 * 10000)
+      end
     end
 
     describe 'start_value_for' do
@@ -43,6 +62,15 @@ describe Input do
 
       it 'should return the value when given Scenario' do
         input.start_value_for(scenario).should eql(5)
+      end
+
+      it 'should return scaled values when the scenario is scaled' do
+        scenario.create_scaler!(
+          area_attribute: 'number_of_residences',
+          value: 10000
+        )
+
+        input.start_value_for(scenario).should eql(5.0 / 7210388.0 * 10000)
       end
     end
 

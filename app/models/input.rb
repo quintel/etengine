@@ -175,7 +175,7 @@ class Input
     return nil unless @label_query.present?
 
     if gql_or_scenario.is_a?(Scenario)
-      Input.cache.read(gql_or_scenario, self)[:label]
+      cache_for(gql_or_scenario).read(gql_or_scenario, self)[:label]
     else
       value = wrap_gql_errors(:label, true) do
         gql_or_scenario.query_present(@label_query)
@@ -196,7 +196,7 @@ class Input
   #
   def start_value_for(gql_or_scenario)
     if gql_or_scenario.is_a?(Scenario)
-      Input.cache.read(gql_or_scenario, self)[:default]
+      cache_for(gql_or_scenario).read(gql_or_scenario, self)[:default]
     elsif @start_value_gql.present?
       start = wrap_gql_errors(:start, true) do
         gql_or_scenario.query(@start_value_gql)
@@ -219,7 +219,7 @@ class Input
   #
   def min_value_for(gql_or_scenario)
     if gql_or_scenario.is_a?(Scenario)
-      Input.cache.read(gql_or_scenario, self)[:min]
+      cache_for(gql_or_scenario).read(gql_or_scenario, self)[:min]
     elsif @min_value_gql.present?
       wrap_gql_errors(:min) { gql_or_scenario.query(@min_value_gql) }
     else
@@ -238,7 +238,7 @@ class Input
   #
   def max_value_for(gql_or_scenario)
     if gql_or_scenario.is_a?(Scenario)
-      Input.cache.read(gql_or_scenario, self)[:max]
+      cache_for(gql_or_scenario).read(gql_or_scenario, self)[:max]
     elsif @max_value_gql.present?
       wrap_gql_errors(:max) { gql_or_scenario.query(@max_value_gql) }
     else
@@ -311,6 +311,14 @@ class Input
   private :wrap_gql_errors
 
   # Value Caching ------------------------------------------------------------
+
+  # Public: Returns the appropriate cache for fetching a scenarios values,
+  # depending on whether the scenario has been scaled.
+  #
+  # Returns an Input::Cache.
+  def cache_for(scenario)
+    scenario.scaler && scenario.scaler.input_cache || Input.cache
+  end
 
   # Public: Retrieves the current input value cache. Supply an optional scenario
   # and the values in the cache will be scaled to fit the scaled area.
