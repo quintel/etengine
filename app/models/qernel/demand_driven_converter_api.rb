@@ -48,7 +48,7 @@ module Qernel
     # divided by 100.
     #
     def number_of_units
-      fetch(:number_of_units) do
+      fetch(:number_of_units, false) do
         begin
           heat_links = converter.output_links.select do |link|
             link.carrier && (

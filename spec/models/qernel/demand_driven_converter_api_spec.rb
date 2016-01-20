@@ -60,6 +60,14 @@ module Qernel
           supply_two.converter_api.number_of_units.should eql(6.0)
         end
       end
+
+      describe 'when source data has a `nil` value' do
+        before {  supply_one.converter_api.dataset_set(:number_of_units, nil) }
+
+        it 'should ignore the nil and compute the value' do
+          supply_one.converter_api.number_of_units.should_not be_nil
+        end
+      end
     end # number_of_units
 
     # ------------------------------------------------------------------------

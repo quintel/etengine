@@ -184,9 +184,10 @@ module Qernel::DatasetAttributes
   #   # => 1
   #   # => 1
   #
-  def fetch(attr_name)
+  def fetch(attr_name, permit_nil = true)
     # check if we have a memoized result already.
-    if dataset_attributes.has_key?(attr_name)
+    if dataset_attributes.has_key?(attr_name) &&
+        (dataset_attributes[attr_name] || permit_nil)
       # are we in the debugger mode?
       if observe_get
         # log records the access and returns the value

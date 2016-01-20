@@ -27,5 +27,32 @@ module Qernel
         end
       end # when no dataset value is present
     end # households_supplied_per_unit
+
+    describe 'number_of_units' do
+
+      context 'when a value is set' do
+        before { converter.converter_api.number_of_units = 4.0 }
+
+        it 'returns the value' do
+          expect(converter.converter_api.number_of_units).to eq(4.0)
+        end
+      end
+
+      context 'when the value is set to nil' do
+        before do
+          converter.converter_api.number_of_units = nil
+
+          converter.converter_api.dataset_set(:input_capacity, 2.0)
+          converter.converter_api.dataset_set(:full_load_hours, 1.0 / 3600)
+          converter.converter_api.dataset_set(:demand, 4.0)
+        end
+
+        # This is the default case for most converters, which do not have a
+        # value provided in ETSource.
+        it 'computes the value' do
+          expect(converter.converter_api.number_of_units).to eq(2.0)
+        end
+      end
+    end
   end # Qernel::ConverterApi, helper calculations
 end # Qernel

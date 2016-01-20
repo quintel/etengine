@@ -9,7 +9,7 @@ class Qernel::ConverterApi
     if dataset_get(:number_of_units)
       dataset_get(:number_of_units)
     else
-      fetch(:number_of_units) do
+      fetch(:number_of_units, false) do
         # #to_i also checks if it is nil
         if input_capacity.nil? || input_capacity.zero? ||
               full_load_seconds.nil? || full_load_seconds.zero?
