@@ -1718,3 +1718,6 @@
 :energy_steam_methane_reformer_ccs_hydrogen:
   :x: 6400
   :y: 5940
+:energy_flexibility_curtailment_electricity:
+  :x: 5520
+  :y: 1940
