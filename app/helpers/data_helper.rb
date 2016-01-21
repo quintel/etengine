@@ -141,4 +141,8 @@ module DataHelper
     "https://github.com/quintel/etsource/blob/#{ rev }/" \
     "#{ doc.path.relative_path_from(Atlas.data_dir) }"
   end
+
+  def kms_slot?(slot)
+    slot.carrier.key.to_s.match(/_kms\b/)
+  end
 end

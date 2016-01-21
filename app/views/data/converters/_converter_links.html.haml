@@ -37,7 +37,11 @@
                               - if output_link.reversed?
                                 %span(style="color: #999") (rev.)
                   %td.centered{:title => output_slot.class.name}= output_slot.carrier.key
-                  %td.centered{:title => output_slot.conversion}= "#{(100.0 * output_slot.conversion).round(2)} %" unless output_slot.conversion.nil?
+                  %td.centered{:title => output_slot.conversion}
+                    - if output_slot.conversion
+                      == #{ (100.0 * output_slot.conversion).round(2) } %
+                      - if kms_slot?(output_slot)
+                        .slot-unit== (#{ output_slot.conversion.round(3) } km/MJ)
       %td
       %td
         %table.table.table-condensed.table-bordered
