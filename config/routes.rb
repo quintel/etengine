@@ -26,6 +26,12 @@ Etm::Application.routes.draw do
           post :stats,    :on => :collection
         end
         resources :inputs, :only => [:index, :show]
+        resource :flexibility_order, only: [] do
+          collection do
+            post :set
+            get :get
+          end
+        end
 
         get 'merit/loads' => 'merit#load_curves', as: :merit_download
         get 'merit/price' => 'merit#price_curve', as: :merit_price_download
@@ -68,7 +74,6 @@ Etm::Application.routes.draw do
           get :result
         end
       end
-
 
       resources :converters, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
