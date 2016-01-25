@@ -203,6 +203,7 @@ module Api
 
         # custom stuff, trying to keep the view simple
         if uses_coal_and_wood_pellets?
+          out = out.dup
           out[:current_fuel_input_mix] = {}
           fuel_mix = {}
           @converter.input_links.each do |link|
