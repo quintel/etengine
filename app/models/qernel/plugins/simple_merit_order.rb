@@ -49,6 +49,7 @@ module Qernel::Plugins
             when :dispatchable then ::Merit::DispatchableProducer
             when :volatile     then ::Merit::VolatileProducer
             when :must_run     then ::Merit::MustRunProducer
+            when :flex         then flex_class(producer)
           end
 
           attributes = producer_attributes(type, producer.converter_api)
@@ -115,9 +116,35 @@ module Qernel::Plugins
       if type == :must_run || type == :volatile
         attributes[:load_profile] = dataset.load_profile(conv.load_profile_key)
         attributes[:full_load_hours] = conv.full_load_hours
+      elsif type == :flex
+        # attributes[:volume] = 10.0
+        attributes.merge!(flex_attributes(conv))
       end
 
       attributes
+    end
+
+    # Internal: Extracts from a converter values which are required for the
+    # correct calculation of flexible technologies in the merit order.
+    #
+    # Returns a hash.
+    def flex_attributes(_conv)
+      {}
+    end
+
+    # Internal Given a converter representing a flexible technology, returns
+    # the correct Merit class to represent it in the merit order.
+    #
+    # Returns a Merit::Participant.
+    def flex_class(producer)
+      case producer.converter_api.load_profile_key.to_sym
+        when :power_to_power, :power_to_heat, :electric_vehicle
+          ::Merit::Flex::Storage
+        when :power_to_gas, :export
+          ::Merit::Flex::BlackHole
+        else
+          ::Merit::Flex::Base
+      end
     end
   end # SimpleMeritOrder
 end # Qernel::Plugins

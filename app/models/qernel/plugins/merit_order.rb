@@ -7,7 +7,7 @@ module Qernel::Plugins
   # back to the graph, and the graph will be recalculated.
   class MeritOrder < SimpleMeritOrder
     # A list of types of merit order producers to be supplied to the M/O.
-    PRODUCER_TYPES = [ :must_run, :volatile, :dispatchable ].freeze
+    PRODUCER_TYPES = [:must_run, :volatile, :dispatchable, :flex].freeze
 
     before :first_calculation, :clone_dataset
     after  :first_calculation, :setup
@@ -87,6 +87,26 @@ module Qernel::Plugins
       attributes
     end
 
+    def flex_attributes(conv)
+      subtype = conv.load_profile_key.to_sym
+
+      attributes = super
+
+      attributes[:volume_per_unit] =
+        conv.dataset_get(:storage).volume / 1_000_000 # Wh to Mwh
+
+      # Default is to multiply the input capacity by the electricity output
+      # conversion. This doesn't work, because the flex converters have a
+      # dependant electricity link and the conversion will be zero the first
+      # time the graph is calculated.
+      attributes[:output_capacity_per_unit] = conv.input_capacity
+
+      # Default for P2P is 0.0?
+      attributes[:availability] = 1.0
+
+      attributes
+    end
+
     # Internal: Takes loads and costs from the calculated Merit order, and
     # installs them on the appropriate converters in the graph. The updated
     # values will be used in the recalculated graph.
@@ -97,6 +117,8 @@ module Qernel::Plugins
         .dispatchables.sort_by(&:marginal_costs)
 
       dispatchables.each_with_index do |dispatchable, position|
+        next if dispatchable.is_a?(Merit::Flex::Base)
+
         converter = @graph.converter(dispatchable.key).converter_api
 
         flh = dispatchable.full_load_hours
@@ -115,9 +137,23 @@ module Qernel::Plugins
 
         converter.demand =
           fls * converter.input_capacity * dispatchable.number_of_units
-
-        nil
       end
+
+      @order.participants.flex.each do |flex|
+        converter = @graph.converter(flex.key).converter_api
+
+        flh = flex.full_load_hours
+        flh = 0.0 if flh < 0 || flh.nan? || flh.nil?
+        fls = flh * 3600
+
+        converter[:full_load_hours]      = flh
+        converter[:full_load_seconds]    = fls
+
+        converter.demand =
+          fls * converter.input_capacity * flex.number_of_units
+      end
+
+      nil
     end
   end # MeritOrder
 end # Qernel::Plugins
