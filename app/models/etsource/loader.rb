@@ -33,7 +33,7 @@ module Etsource
     #   be independent to reduce bugs.
     def graph(country = nil)
       instrument("etsource.loader: graph") do
-        graph = DeepClone.clone optimized_graph 
+        graph = DeepClone.clone optimized_graph
         graph.dataset = dataset(country) if country
         graph
       end
@@ -45,8 +45,11 @@ module Etsource
     end
 
     def area_attributes(area_code)
-      @area_attributes[area_code] ||=
-        Atlas::Dataset.find(area_code).to_hash.with_indifferent_access
+      @area_attributes[area_code] ||= begin
+        area_attr = Atlas::Dataset.find(area_code).to_hash
+        area_attr['last_updated_at'] = @etsource.last_updated_at("datasets/#{area_code}")
+        area_attr.with_indifferent_access
+      end
     end
 
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
