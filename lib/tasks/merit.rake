@@ -1,23 +1,27 @@
 namespace :merit do
-  # Exports data about a Merit Order run into tmp/merit-archive. The final
-  # output path will include the scenario area and date.
-  #
-  # Examples:
-  #
-  #   # Export a default NL scenario:
-  #   rake merit:archive
-  #
-  #   # Export a default DE scenario:
-  #   rake merit:archive AREA=de
-  #
-  #   # Export data for a specific scenario in the database OR preset ID:
-  #   rake merit:archive SCENARIO=23548
-  #
-  #   # Export data for a preset (by ID):
-  #   rake merit:archive PRESET=2996
-  #
-  #   # Export data for a preset (by key):
-  #   rake merit:archive PRESET=80_procent_co2_reductie
+  desc <<-DESC
+    Dumps data about Merit Order runs
+
+    Exports data about a Merit Order run into tmp/merit-archive. The final
+    output path will include the scenario area and date.
+
+    Examples:
+
+      # Export a default NL scenario:
+      rake merit:archive
+
+      # Export a default DE scenario:
+      rake merit:archive AREA=de
+
+      # Export data for a specific scenario in the database OR preset ID:
+      rake merit:archive SCENARIO=23548
+
+      # Export data for a preset (by ID):
+      rake merit:archive PRESET=2996
+
+      # Export data for a preset (by key):
+      rake merit:archive PRESET=80_procent_co2_reductie
+  DESC
   task archive: :environment do
     env = ENV.to_h.slice('PRESET', 'SCENARIO', 'AREA')
 
