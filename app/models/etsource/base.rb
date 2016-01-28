@@ -116,6 +116,13 @@ module Etsource
       nil
     end
 
+    def last_updated_at(folder)
+      if latest_import_sha = get_latest_import_sha
+        git.gcommit(latest_import_sha)
+          .log(1).object(folder).map(&:date).first
+      end
+    end
+
     private
 
     def import_sha_file
