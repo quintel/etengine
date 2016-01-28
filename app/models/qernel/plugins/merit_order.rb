@@ -73,16 +73,19 @@ module Qernel::Plugins
     # Returns a hash.
     def producer_attributes(type, conv)
       attributes = super
-      marginal_cost = conv.variable_costs_per(:mwh_electricity)
 
-      attributes[:marginal_costs] =
-        (marginal_cost && marginal_cost.nan?) ? Float::INFINITY : marginal_cost
+      unless type == :flex
+        marginal_cost = conv.variable_costs_per(:mwh_electricity)
 
-      attributes[:fixed_costs_per_unit] =
-        conv.send(:fixed_costs)
+        attributes[:marginal_costs] =
+          (marginal_cost && marginal_cost.nan?) ? Float::INFINITY : marginal_cost
 
-      attributes[:fixed_om_costs_per_unit] =
-        conv.send(:fixed_operation_and_maintenance_costs_per_year)
+        attributes[:fixed_costs_per_unit] =
+          conv.send(:fixed_costs)
+
+        attributes[:fixed_om_costs_per_unit] =
+          conv.send(:fixed_operation_and_maintenance_costs_per_year)
+      end
 
       attributes
     end
@@ -92,8 +95,11 @@ module Qernel::Plugins
 
       attributes = super
 
-      attributes[:volume_per_unit] =
-        conv.dataset_get(:storage).volume / 1_000_000 # Wh to Mwh
+      if conv.dataset_get(:storage)
+        # Non-storage flexible technologies do not have a volume.
+        attributes[:volume_per_unit] =
+          conv.dataset_get(:storage).volume / 1_000_000 # Wh to Mwh
+      end
 
       # Default is to multiply the input capacity by the electricity output
       # conversion. This doesn't work, because the flex converters have a
@@ -103,6 +109,13 @@ module Qernel::Plugins
 
       # Default for P2P is 0.0?
       attributes[:availability] = 1.0
+
+      # TODO Refactor into a separate class.
+      #
+      # e.g. FlexAttributes.for(converter)
+      if subtype == :power_to_gas
+        attributes[:volume_per_unit] = Float::INFINITY
+      end
 
       attributes
     end
