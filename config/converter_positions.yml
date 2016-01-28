@@ -76,22 +76,22 @@
   :y: 4280
 :transport_car_using_compressed_natural_gas:
   :x: 1520
-  :y: 3640
+  :y: 3580
 :transport_truck_using_compressed_natural_gas:
   :x: 1520
   :y: 3960
 :transport_car_using_lpg:
   :x: 1520
-  :y: 3460
+  :y: 3400
 :transport_car_using_gasoline_mix:
   :x: 1520
-  :y: 3520
+  :y: 3460
 :transport_car_using_diesel_mix:
   :x: 1520
-  :y: 3580
+  :y: 3520
 :transport_car_using_electricity:
   :x: 1520
-  :y: 3700
+  :y: 3640
 :transport_truck_using_gasoline_mix:
   :x: 1520
   :y: 3840
@@ -1721,3 +1721,6 @@
 :energy_flexibility_curtailment_electricity:
   :x: 5520
   :y: 1940
+:transport_car_flexibility_p2p_electricity:
+  :x: 1520
+  :y: 3700
