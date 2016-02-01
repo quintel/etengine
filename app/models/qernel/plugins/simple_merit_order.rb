@@ -7,7 +7,7 @@ module Qernel::Plugins
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
     # suffice.
-    PRODUCER_TYPES = [ :must_run, :volatile ].freeze
+    PARTICIPANT_TYPES = [ :must_run, :volatile ].freeze
 
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
@@ -21,6 +21,26 @@ module Qernel::Plugins
     # Returns a symbol.
     def self.plugin_name
       :merit
+    end
+
+    def initialize(graph)
+      super
+    end
+
+    def adapters
+      return @adapters if @adapters
+
+      @adapters = []
+
+      self.class::PARTICIPANT_TYPES.each do |type|
+        converters(type).each do |converter|
+          @adapters.push(Qernel::Plugins::Merit::Adapter.adapter_for(
+            converter, @graph, dataset
+          ))
+        end
+      end
+
+      @adapters
     end
 
     # Public: Returns the Merit Order instance. The simple version of the M/O
@@ -41,21 +61,10 @@ module Qernel::Plugins
     # supply additional information so that we can determine cost and
     # profitability.
     def setup
-      @order = Merit::Order.new
+      @order = ::Merit::Order.new
 
-      self.class::PRODUCER_TYPES.each do |type|
-        producers(type).each do |producer|
-          klass = case type
-            when :dispatchable then ::Merit::DispatchableProducer
-            when :volatile     then ::Merit::VolatileProducer
-            when :must_run     then ::Merit::MustRunProducer
-            when :flex         then flex_class(producer)
-          end
-
-          attributes = producer_attributes(type, producer.converter_api)
-
-          @order.add(klass.new(attributes))
-        end
+      adapters.each do |adapter|
+        @order.add(adapter.participant)
       end
 
       @order.add(::Merit::User.create(
@@ -85,65 +94,12 @@ module Qernel::Plugins
     # order +type+ (defined in PRODUCER_TYPES).
     #
     # Returns an array.
-    def producers(type)
+    def converters(type)
       (Etsource::MeritOrder.new.import[type.to_s] || {}).map do |key, profile|
         converter = @graph.converter(key)
         converter.converter_api.load_profile_key = profile
 
         converter
-      end
-    end
-
-    # Internal: Given a Merit order participant +type+ and the associated
-    # Converter, +conv+, from the graph, returns a hash of attributes required
-    # to set up the Participant object in the Merit order.
-    #
-    # Returns a hash.
-    def producer_attributes(type, conv)
-      output_cap = conv.electricity_output_conversion * conv.input_capacity
-
-      attributes = {
-        key:                      conv.key,
-        output_capacity_per_unit: output_cap,
-        number_of_units:          conv.number_of_units,
-        availability:             conv.availability,
-
-        # The marginal costs attribute is not optional, but it is an
-        # unnecessary calculation when the Merit order is not being run.
-        marginal_costs:           0.0
-      }
-
-      if type == :must_run || type == :volatile
-        attributes[:load_profile] = dataset.load_profile(conv.load_profile_key)
-        attributes[:full_load_hours] = conv.full_load_hours
-      elsif type == :flex
-        # attributes[:volume] = 10.0
-        attributes.merge!(flex_attributes(conv))
-      end
-
-      attributes
-    end
-
-    # Internal: Extracts from a converter values which are required for the
-    # correct calculation of flexible technologies in the merit order.
-    #
-    # Returns a hash.
-    def flex_attributes(_conv)
-      {}
-    end
-
-    # Internal Given a converter representing a flexible technology, returns
-    # the correct Merit class to represent it in the merit order.
-    #
-    # Returns a Merit::Participant.
-    def flex_class(producer)
-      case producer.converter_api.load_profile_key.to_sym
-        when :power_to_power, :power_to_heat, :electric_vehicle
-          ::Merit::Flex::Storage
-        when :power_to_gas, :export
-          ::Merit::Flex::BlackHole
-        else
-          ::Merit::Flex::Base
       end
     end
   end # SimpleMeritOrder
