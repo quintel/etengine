@@ -8,6 +8,8 @@ module Qernel::Plugins
         case converter.dataset_get(:merit_order).group.to_sym
           when :power_to_power, :power_to_heat, :electric_vehicle
             StorageAdapter
+          when :curtailment, :export
+            CurtailmentAdapter
           else
             self
         end
@@ -53,11 +55,7 @@ module Qernel::Plugins
       end
 
       def producer_class
-        if @config.group == :power_to_gas || @config.group == :export
-          ::Merit::Flex::BlackHole
-        else
-          ::Merit::Flex::Base
-        end
+        ::Merit::Flex::Base
       end
 
       # Internal: The converter on which to set a demand.
