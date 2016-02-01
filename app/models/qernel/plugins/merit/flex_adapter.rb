@@ -14,6 +14,7 @@ module Qernel::Plugins
       end
 
       def inject!
+        target          = target_api
         full_load_hours = participant.full_load_hours
 
         if ! full_load_hours || full_load_hours.nan?
@@ -22,10 +23,10 @@ module Qernel::Plugins
           full_load_seconds = full_load_hours * 3600
         end
 
-        @converter[:full_load_hours]   = full_load_hours
-        @converter[:full_load_seconds] = full_load_seconds
+        target[:full_load_hours]   = full_load_hours
+        target[:full_load_seconds] = full_load_seconds
 
-        @converter.demand =
+        target.demand =
           full_load_seconds *
           @converter.input_capacity *
           participant.number_of_units
@@ -56,6 +57,21 @@ module Qernel::Plugins
           ::Merit::Flex::BlackHole
         else
           ::Merit::Flex::Base
+        end
+      end
+
+      # Internal: The converter on which to set a demand.
+      #
+      # Some flexible converter set their demands on a different converter (EV
+      # sets a demand on the separate EV P2P converter, instead of itself). This
+      # method returns the converter on which to set the demand.
+      #
+      # Returns a Qernel::ConverterApi.
+      def target_api
+        if @config.target.present?
+          @graph.converter(@config.target).converter_api
+        else
+          @converter
         end
       end
     end # FlexAdapter
