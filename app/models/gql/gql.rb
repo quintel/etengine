@@ -256,6 +256,9 @@ class Gql
 
     @present_graph.use_fce = @scenario.use_fce
     @future_graph.use_fce = @scenario.use_fce
+
+    @future_graph.flexibility_order = @present_graph.flexibility_order =
+      @scenario.flexibility_order.try(:order) || FlexibilityOrder.default_order
   end
 
   def update_graphs

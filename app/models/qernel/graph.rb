@@ -34,6 +34,7 @@ class Graph
   dataset_accessors :calculated,
                     :year,
                     :use_fce,
+                    :flexibility_order,
                     :use_merit_order_demands,
                     # graphs do not know the number of years, that is defined
                     # in scenario and assigned in a 2nd step by the gql.

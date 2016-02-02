@@ -33,7 +33,10 @@ module Qernel::Plugins
       @adapters = []
 
       self.class::PARTICIPANT_TYPES.each do |type|
-        converters(type).each do |converter|
+        models = converters(type)
+        models = sort_flexibles(models) if type == :flex
+
+        models.each do |converter|
           @adapters.push(Qernel::Plugins::Merit::Adapter.adapter_for(
             converter, @graph, dataset
           ))
@@ -100,6 +103,14 @@ module Qernel::Plugins
         converter.converter_api.load_profile_key = profile
 
         converter
+      end
+    end
+
+    def sort_flexibles(converters)
+      order = @graph.flexibility_order.map(&:to_sym)
+
+      converters.sort_by do |conv|
+        order.index(conv.dataset_get(:merit_order).group) || Float::INFINITY
       end
     end
   end # SimpleMeritOrder
