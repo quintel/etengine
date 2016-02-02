@@ -6,8 +6,10 @@ module Qernel::Plugins
     class FlexAdapter < Adapter
       def self.factory(converter, graph, dataset)
         case converter.dataset_get(:merit_order).group.to_sym
-          when :power_to_power, :power_to_heat, :electric_vehicle
+          when :power_to_power, :electric_vehicle
             StorageAdapter
+          when :power_to_heat
+            PowerToHeatAdapter
           when :curtailment, :export
             CurtailmentAdapter
           else
