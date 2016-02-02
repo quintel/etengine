@@ -23,7 +23,9 @@ module Qernel
         :technical_lifetime => ['Technical lifetime', 'year'],
         :typical_input_capacity => ['', 'MWinput'],
         :output_capacity => ['', 'MW'],
-        :reserved_fraction => ['', '']
+        :reserved_fraction => ['', ''],
+        :input_efficiency => ['', ''],
+        :output_efficiency => ['', '']
       },
 
       :cost => {

@@ -14,6 +14,9 @@ module Qernel::Plugins
           (@converter.dataset_get(:storage).volume / 1_000_000) * # Wh to Mwh
           (1 - (@converter.reserved_fraction || 0.0))
 
+        attrs[:input_efficiency]  = @converter.input_efficiency
+        attrs[:output_efficiency] = @converter.output_efficiency
+
         attrs
       end
 
