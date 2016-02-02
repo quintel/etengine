@@ -23,8 +23,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/merit.git
-  revision: b239ca77507dc96288901b86fe7eefd77807f7f2
-  ref: b239ca7
+  revision: b341c3bc398acaa250ce9de0fe78efb544ad419d
+  ref: b341c3b
   specs:
     quintel_merit (0.1.0)
       terminal-table
@@ -295,7 +295,7 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     term-ansicolor (1.0.7)
-    terminal-table (1.4.5)
+    terminal-table (1.5.2)
     text-table (1.2.3)
     therubyracer (0.12.1)
       libv8 (~> 3.16.14.0)
