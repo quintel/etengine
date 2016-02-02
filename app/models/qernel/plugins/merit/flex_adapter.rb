@@ -49,10 +49,6 @@ module Qernel::Plugins
           @converter.output_capacity ||
           @converter.input_capacity
 
-        # TODO Temporary; some flex techs have a hard-coded availability of 0.0
-        #      which results in them never running.
-        attrs[:availability] = 1.0
-
         attrs
       end
 
