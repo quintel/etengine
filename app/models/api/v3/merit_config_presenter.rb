@@ -37,7 +37,7 @@ module Api
         area  = Atlas::Dataset.find(@graph.area.area_code)
 
         order.participants.producers.each do |producer|
-          if producer.number_of_units > 0
+          if producer.number_of_units > 0 && ! producer.is_a?(Merit::Flex::Base)
             data[:participants].push(participant_data(producer))
           end
         end.compact
