@@ -86,7 +86,7 @@ module Qernel::Plugins
       @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
     end
 
-    # Internal: Ahe total electricity demand, joules, across the graph.
+    # Internal: The total electricity demand, joules, across the graph.
     #
     # Returns a float.
     def total_demand
