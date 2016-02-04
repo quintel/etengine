@@ -269,6 +269,8 @@ class Qernel::ConverterApi
   #
   def variable_operation_and_maintenance_costs_per_typical_input
     fetch(:variable_operation_and_maintenance_costs_per_typical_input) do
+      return 0.0 if input_capacity.zero?
+
       (variable_operation_and_maintenance_costs_per_full_load_hour +
       variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour) /
       (input_capacity * 3600.0)
