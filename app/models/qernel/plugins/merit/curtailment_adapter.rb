@@ -29,9 +29,10 @@ module Qernel::Plugins
           attrs[:input_capacity_per_unit]  = Float::INFINITY
           attrs[:output_capacity_per_unit] = Float::INFINITY
         else
+          # TODO Can this be set in FlexAdapter?
           attrs[:input_capacity_per_unit] =
-            attrs[:output_capacity_per_unit] =
-            @converter.network_capacity_available_in_mw
+            @converter.input_capacity ||
+            @converter.output_capacity
         end
 
         attrs[:number_of_units] = 1.0
