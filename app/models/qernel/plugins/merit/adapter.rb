@@ -7,7 +7,7 @@ module Qernel::Plugins
       def self.adapter_for(converter, graph, dataset)
         klass = case converter.dataset_get(:merit_order).type.to_sym
           when :dispatchable
-            ProducerAdapter
+            ProducerAdapter.factory(converter, graph, dataset)
           when :volatile, :must_run
             AlwaysOnAdapter
           when :flex
@@ -41,7 +41,7 @@ module Qernel::Plugins
       # to set up the Participant object in the Merit order.
       #
       # Returns a hash.
-      def producer_attributes #(type, conv)
+      def producer_attributes
         {
           key:                       @converter.key,
           number_of_units:           @converter.number_of_units,

@@ -1,6 +1,11 @@
 module Qernel::Plugins
   module Merit
     class ProducerAdapter < Adapter
+      def self.factory(converter, graph, dataset)
+        group = converter.dataset_get(:merit_order).group
+        (group && group.to_sym == :import) ? ImportAdapter : self
+      end
+
       def inject!
         full_load_hours = participant.full_load_hours
 
