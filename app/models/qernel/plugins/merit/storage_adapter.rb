@@ -14,14 +14,19 @@ module Qernel::Plugins
           @converter.dataset_get(:storage).volume *
           (1 - (@converter.reserved_fraction || 0.0))
 
-        attrs[:input_efficiency]  = @converter.input_efficiency
-        attrs[:output_efficiency] = @converter.output_efficiency
+        attrs[:input_efficiency]  = input_efficiency
+        attrs[:output_efficiency] = output_efficiency
 
         attrs
       end
 
       def producer_class
         ::Merit::Flex::Storage
+      end
+
+      def input_efficiency
+        slots = target_api.converter.inputs.reject(&:loss?)
+        1 / (slots.any? ? slots.sum(&:conversion) : 1.0)
       end
     end # StorageAdapter
   end # Merit

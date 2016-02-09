@@ -19,7 +19,7 @@ module Qernel::Plugins
 
       def inject!
         target          = target_api
-        full_load_hours = participant.full_load_hours
+        full_load_hours = participant.full_load_hours / output_efficiency
 
         if ! full_load_hours || full_load_hours.nan?
           full_load_seconds = full_load_hours = 0.0
@@ -50,6 +50,11 @@ module Qernel::Plugins
           @converter.input_capacity
 
         attrs
+      end
+
+      def output_efficiency
+        slots = target_api.converter.outputs.reject(&:loss?)
+        slots.any? ? slots.sum(&:conversion) : 1.0
       end
 
       def producer_class
