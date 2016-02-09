@@ -1704,8 +1704,8 @@
   :x: 6400
   :y: 6000
 :energy_compressor_hydrogen:
-  :x: 3300
-  :y: 3800
+  :x: 3280
+  :y: 3680
 :energy_biomass_gasification_ccs_hydrogen:
   :x: 6400
   :y: 5800
@@ -1713,8 +1713,8 @@
   :x: 6400
   :y: 5860
 :energy_local_electrolysis_hydrogen:
-  :x: 3500
-  :y: 3580
+  :x: 4320
+  :y: 3620
 :energy_steam_methane_reformer_ccs_hydrogen:
   :x: 6400
   :y: 5940
@@ -1724,3 +1724,12 @@
 :transport_car_flexibility_p2p_electricity:
   :x: 1520
   :y: 3700
+:energy_locally_available_hydrogen_after_p2g:
+  :x: 3460
+  :y: 3680
+:energy_export_hydrogen:
+  :x: 600
+  :y: 2940
+:energy_locally_available_hydrogen_before_p2g:
+  :x: 4140
+  :y: 3680
