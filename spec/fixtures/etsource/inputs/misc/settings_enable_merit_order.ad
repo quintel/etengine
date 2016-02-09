@@ -1,7 +1,8 @@
-- query = UPDATE(GRAPH(graph), use_merit_order_demands, USER_INPUT())
+- query = UPDATE(AREA(), use_merit_order_demands, USER_INPUT() != 0.0)
 - priority = 0
 - max_value = 1.0
 - min_value = 0.0
-- start_value = 0.0
+- start_value_gql = future:AREA(use_merit_order_demands) ? 1.0 : 0.0
 - step_value = 1.0
+- unit = x
 - update_period = both

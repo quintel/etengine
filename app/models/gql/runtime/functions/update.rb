@@ -145,8 +145,9 @@ module Gql::Runtime
             original_value = big_decimal(object[attribute_name].to_s)
 
             value = yield original_value, input_value
+            value = value.to_f if value != true && value != false
 
-            update_element_with(object, attribute_name, value.to_f)
+            update_element_with(object, attribute_name, value)
           else
             # this will not execute...
             raise "UPDATE: objects not found: #{value_terms}"

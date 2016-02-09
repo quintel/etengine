@@ -22,6 +22,7 @@
 - has_solar_csp = false
 - has_import_export = true
 - use_network_calculations = true
+- use_merit_order_demands = false
 - annual_infrastructure_cost_electricity = 1810.0
 - annual_infrastructure_cost_gas = 1452.0
 - areable_land = 19175.5

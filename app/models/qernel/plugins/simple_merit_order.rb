@@ -12,8 +12,7 @@ module Qernel::Plugins
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
     def self.enabled?(graph)
-      graph.present? ||
-        graph.dataset_get(:use_merit_order_demands).to_i != 1
+      graph.present? || ! graph.area.use_merit_order_demands
     end
 
     # Public: A unique name to represent the plugin.

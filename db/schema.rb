@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160120151021) do
+ActiveRecord::Schema.define(version: 20160209124332) do
 
   create_table "fce_values", force: true do |t|
     t.string   "using_country"

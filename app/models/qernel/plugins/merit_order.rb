@@ -18,7 +18,7 @@ module Qernel::Plugins
     # only when the "full" Merit order has been requested (otherwise
     # SimpleMeritOrder will be used instead).
     def self.enabled?(graph)
-      graph.future? && graph.dataset_get(:use_merit_order_demands).to_i == 1
+      graph.future? && graph.area.use_merit_order_demands
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we

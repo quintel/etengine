@@ -103,6 +103,7 @@ module Etsource
           NastyCache.instance.fetch_cached("optimized_graph") do
             g = unoptimized_graph
             g.dataset = dataset('nl')
+            g.area.dataset_set(:use_merit_order_demands, false)
             g.optimize_calculation_order
             g.detach_dataset!
             g
