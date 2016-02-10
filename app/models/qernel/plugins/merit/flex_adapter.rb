@@ -19,7 +19,7 @@ module Qernel::Plugins
 
       def inject!
         target          = target_api
-        full_load_hours = participant.full_load_hours / output_efficiency
+        full_load_hours = participant.full_load_hours * output_efficiency
 
         if ! full_load_hours || full_load_hours.nan?
           full_load_seconds = full_load_hours = 0.0

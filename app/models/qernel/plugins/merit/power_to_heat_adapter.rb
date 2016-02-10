@@ -5,7 +5,7 @@ module Qernel::Plugins
         target = target_api
 
         full_load_hours =
-          participant.production / output_efficiency / (
+          participant.production * output_efficiency / (
             participant.input_capacity_per_unit *
             participant.number_of_units *
             3600
