@@ -208,6 +208,36 @@ describe Scenario do
       expect(scenario.scaler.value).to eq(1000)
       expect(scenario.scaler.scenario).to eq(scenario) # Not `preset`.
     end
+
+    context 'with no preset flexibility order' do
+      it 'should create no flexibilty order' do
+        expect(scenario.flexibility_order).to be_nil
+      end
+    end
+
+    context 'with a preset flexibility order' do
+      let(:techs) do
+        %w(
+          power_to_heat
+          export
+          power_to_gas
+          power_to_power
+          electric_vehicle
+        )
+      end
+
+      let!(:order) do
+        FlexibilityOrder.create!(scenario: preset, order: techs)
+      end
+
+      it 'copies the flexibility order attributes' do
+        expect(scenario.flexibility_order).to_not be_nil
+        expect(scenario.flexibility_order.id).to_not eq(preset.flexibility_order.id)
+
+        expect(scenario.flexibility_order.order).to eq(techs)
+        expect(scenario.flexibility_order.scenario).to eq(scenario) # Not `preset`.
+      end
+    end
   end
 
   describe 'cloning a scaled scenario to an unscaled scenario' do

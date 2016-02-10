@@ -9,6 +9,8 @@ class FlexibilityOrder < ActiveRecord::Base
 
   serialize :order, Array
 
+  belongs_to :scenario
+
   def self.default_order
     GROUPS
   end

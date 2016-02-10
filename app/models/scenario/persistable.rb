@@ -51,6 +51,8 @@ module Scenario::Persistable
         other_scaler.attributes.except('id', 'scenario_id'))
     end
 
+    self.flexibility_order = cloned_flexibility_order(preset)
+
     self.end_year  = preset.end_year
     self.area_code = preset.area_code
     self.use_fce   = preset.use_fce
@@ -88,6 +90,16 @@ module Scenario::Persistable
       dest_scaler ? dest_scaler.scale(descaled) : descaled
     else dest_scaler
       dest_scaler.scale(value)
+    end
+  end
+
+  # Internal: If the source preset has a flexibility order, clones it onto the
+  # new scenario.
+  #
+  # Returns a flexibility order or nil.
+  def cloned_flexibility_order(preset)
+    if order = preset.try(:flexibility_order)
+      FlexibilityOrder.new(order.attributes.except('id', 'scenario_id'))
     end
   end
 end
