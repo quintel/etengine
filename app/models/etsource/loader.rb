@@ -101,12 +101,20 @@ module Etsource
       instrument("etsource.loader: optimized_graph") do
         if @etsource.cache_topology?
           NastyCache.instance.fetch_cached("optimized_graph") do
-            g = unoptimized_graph
-            g.dataset = dataset('nl')
-            g.area.dataset_set(:use_merit_order_demands, false)
-            g.optimize_calculation_order
-            g.detach_dataset!
-            g
+            graph = unoptimized_graph
+            graph.dataset = dataset('nl')
+
+            merit = graph.area.dataset_get(:use_merit_order_demands)
+
+            begin
+              graph.area.dataset_set(:use_merit_order_demands, false)
+              graph.optimize_calculation_order
+            ensure
+              graph.area.dataset_set(:use_merit_order_demands, merit)
+            end
+
+            graph.detach_dataset!
+            graph
           end
         else
           unoptimized_graph
