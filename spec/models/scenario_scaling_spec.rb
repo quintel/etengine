@@ -17,6 +17,7 @@ describe ScenarioScaling do
 
   it { should validate_presence_of(:value) }
   it { should validate_numericality_of(:value) }
+  it { should validate_uniqueness_of(:scenario_id) }
 
   describe '#scale' do
     it 'scales a number to fit the area' do

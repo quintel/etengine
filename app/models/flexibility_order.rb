@@ -11,6 +11,8 @@ class FlexibilityOrder < ActiveRecord::Base
 
   belongs_to :scenario
 
+  validates :scenario_id, uniqueness: true
+
   def self.default_order
     GROUPS
   end

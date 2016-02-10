@@ -14,6 +14,7 @@ class ScenarioScaling < ActiveRecord::Base
   }
 
   validates :value, presence: true, numericality: true
+  validates :scenario_id, uniqueness: true
 
   # Public: Determines if the given input should have it's values scaled.
   #
