@@ -69,7 +69,25 @@ module Qernel::Plugins
     #
     # Returns nothing.
     def inject_values!
-      @adapters.each(&:inject!)
+      each_adapter(&:inject!)
+      set_dispatchable_positions!
+    end
+
+    # Internal: Sets the position of each dispatchable in the merit order -
+    # according to their marginal cost - so that this may be communicated to
+    # other applications.
+    #
+    # Returns nothing.
+    def set_dispatchable_positions!
+      dispatchables = @order.participants.dispatchables.reject do |participant|
+        # Flexible technologies are classed as dispatchable but should not be
+        # assigned a position.
+        adapter(participant.key).config.type != :dispatchable
+      end
+
+      dispatchables.each.with_index do |participant, position|
+        adapter(participant.key).converter[:merit_order_position] = position + 1
+      end
     end
   end # MeritOrder
 end # Qernel::Plugins

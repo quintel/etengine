@@ -29,16 +29,17 @@ module Qernel::Plugins
     def adapters
       return @adapters if @adapters
 
-      @adapters = []
+      @adapters = {}
 
       self.class::PARTICIPANT_TYPES.each do |type|
         models = converters(type)
         models = sort_flexibles(models) if type == :flex
 
         models.each do |converter|
-          @adapters.push(Qernel::Plugins::Merit::Adapter.adapter_for(
-            converter, @graph, dataset
-          ))
+          @adapters[converter.key] =
+            Qernel::Plugins::Merit::Adapter.adapter_for(
+              converter, @graph, dataset
+            )
         end
       end
 
@@ -65,7 +66,7 @@ module Qernel::Plugins
     def setup
       @order = ::Merit::Order.new
 
-      adapters.each do |adapter|
+      each_adapter do |adapter|
         @order.add(adapter.participant)
       end
 
@@ -105,6 +106,24 @@ module Qernel::Plugins
       end
     end
 
+    # Internal: Fetches the adapter matching the given participant `key`.
+    #
+    # Returns a Plugins::Merit::Adapter or nil.
+    def adapter(key)
+      adapters[key]
+    end
+
+    # Internal: Iterates through each adapter.
+    #
+    # Returns nothing.
+    def each_adapter
+      adapters.each { |_, adapter| yield(adapter) }
+    end
+
+    # Internal: Given the flexible merit order participant converters, sorts
+    # them to match to FlexibilityOrder assigned to the current scenario.
+    #
+    # Returns an array of Qernel::Converter.
     def sort_flexibles(converters)
       order = @graph.flexibility_order.map(&:to_sym)
 

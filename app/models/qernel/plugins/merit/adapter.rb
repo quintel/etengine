@@ -2,7 +2,7 @@ module Qernel::Plugins
   module Merit
     # Converts a Qernel::Converter to a Merit participant and back again.
     class Adapter
-      attr_reader :converter
+      attr_reader :converter, :config
 
       def self.adapter_for(converter, graph, dataset)
         klass = case converter.dataset_get(:merit_order).type.to_sym
