@@ -992,9 +992,6 @@
 :transport_final_demand_heavy_fuel_oil:
   :x: 3120
   :y: 4160
-:transport_final_demand_network_gas:
-  :x: 3120
-  :y: 4220
 :transport_final_demand_bio_ethanol:
   :x: 3120
   :y: 4280
@@ -1019,9 +1016,6 @@
 :transport_final_demand_for_road_diesel:
   :x: 2320
   :y: 3580
-:transport_final_demand_for_road_network_gas:
-  :x: 2320
-  :y: 3640
 :transport_final_demand_for_road_bio_ethanol:
   :x: 2320
   :y: 3700
@@ -1061,9 +1055,6 @@
 :transport_road_mixer_diesel:
   :x: 1960
   :y: 3580
-:transport_road_compressor_network_gas:
-  :x: 1960
-  :y: 3640
 :transport_rail_mixer_diesel:
   :x: 1960
   :y: 4220
@@ -1733,3 +1724,15 @@
 :energy_locally_available_hydrogen_before_p2g:
   :x: 4140
   :y: 3680
+:transport_road_mixer_compressed_network_gas:
+  :x: 1960
+  :y: 3640
+:transport_final_demand_for_road_compressed_network_gas:
+  :x: 2320
+  :y: 3640
+:transport_final_demand_compressed_network_gas:
+  :x: 3120
+  :y: 4220
+:energy_compressor_network_gas:
+  :x: 3420
+  :y: 4220
