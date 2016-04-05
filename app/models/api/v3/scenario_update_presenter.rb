@@ -98,15 +98,11 @@ module Api
       def perform_query(gql, period, query)
         value = gql.public_send(:"query_#{ period }", query)
 
-        if nan?(value)
-          0.0
-        elsif value.is_a?(BigDecimal)
-          # Rails 4.1 JSON encodes BigDecimal as a string. This is not part of
-          # the ETEngine APIv3 spec.
-          value.to_f
-        else
-          value
-        end
+        # Rails 4.1 JSON encodes BigDecimal as a string. This is not part of
+        # the ETEngine APIv3 spec.
+        value = value.to_f if value.is_a?(BigDecimal)
+
+        nan?(value) ? 0.0 : value
       rescue Exception => exception
         # TODO Exception is *way* too low level to be rescued; we could do
         #      with a GraphError exception for "acceptable" graph errors.
