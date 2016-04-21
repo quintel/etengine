@@ -198,6 +198,28 @@ module Gql::Runtime
           data[year] = joules / 1_000_000_000_000
         end
       end
+
+      # Retrieves the merit order price curve
+      def MERIT_PRICE_CURVE
+        if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
+          scope.graph.plugin(:merit).order.price_curve.to_a
+        else
+          []
+        end
+      end
+
+      # Retrieves the merit load curves
+      def MERIT_LOAD_CURVES(part_key)
+        if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
+          if participant = scope.graph.plugin(:merit).order.participants[part_key]
+            participant.load_curve.to_a
+          else
+            fail "No such merit order participant: #{ part_key.inspect }"
+          end
+        else
+          []
+        end
+      end
     end
 
   end
