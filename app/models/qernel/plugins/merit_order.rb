@@ -14,9 +14,9 @@ module Qernel::Plugins
     after  :first_calculation, :run
     before :recalculation,     :inject
 
-    # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
-    # only when the "full" Merit order has been requested (otherwise
-    # SimpleMeritOrder will be used instead).
+    # Public: The MeritOrder plugin is enabled only on future graphs, and only
+    # when the "full" Merit order has been requested (otherwise SimpleMeritOrder
+    # will be used instead).
     def self.enabled?(graph)
       graph.future? && graph.area.use_merit_order_demands
     end
