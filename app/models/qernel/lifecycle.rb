@@ -27,6 +27,9 @@ module Qernel
 
       while @must_recalculate
         with_callback(:recalculation) { do_calculation }
+
+        # Ensure that this Lifecycle is retained.
+        @graph.dataset_set(:lifecycle, self)
       end
     end
 
