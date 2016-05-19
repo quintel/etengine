@@ -24,13 +24,18 @@ module Api
       # converter keys, the request is to be sent as POST with a JSON payload
       # with the following schema:
       #
-      # { "keys": [ "key1", "key2", "...", "keyN" ] }
+      # { "keys": {
+      #   "key1": [ .. ],
+      #   "key2": [ .. ],
+      #   "...",
+      #   "keyN": [ .. ]
+      # }
       def stats
         keys = params.require(:keys)
         gql  = @scenario.gql(prepare: true)
 
-        render json: { nodes: Hash[keys.map do |key|
-          [ key, ConverterStatsPresenter.new(key.to_sym, gql) ]
+        render json: { nodes: Hash[keys.map do |key, graph_attributes|
+          [ key, ConverterStatsPresenter.new(key.to_sym, gql, graph_attributes) ]
         end] }
       end
 
