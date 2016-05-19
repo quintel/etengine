@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: 2dd7c1b743c88e4bd786e71e22c7a5d42608e7ee
-  ref: 2dd7c1b
+  revision: 5077e5609d650f78b1abf3a00ca71006d0636a2d
+  ref: 5077e56
   specs:
     atlas (1.0.0)
       activemodel
@@ -181,7 +181,7 @@ GEM
     jquery-rails (2.0.3)
       railties (>= 3.1.0, < 5.0)
       thor (~> 0.14)
-    json (1.8.2)
+    json (1.8.3)
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -198,7 +198,7 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.2)
     mime-types (1.25.1)
-    minitest (5.6.1)
+    minitest (5.9.0)
     msgpack (0.5.8)
     multi_json (1.10.1)
     mysql2 (0.3.15)
@@ -384,4 +384,4 @@ DEPENDENCIES
   watchr
 
 BUNDLED WITH
-   1.11.1
+   1.12.3
