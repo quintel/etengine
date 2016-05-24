@@ -173,6 +173,17 @@ describe Scenario do
     end
   end
 
+  describe 'with a preset Preset' do
+    let(:preset)   { Preset.get(2999) }
+    let(:scenario) { Scenario.new(scenario_id: preset.id) }
+
+    describe '#parent' do
+      it 'should retrieve a copy of the parent' do
+        expect(scenario.parent).to eq(preset.to_scenario)
+      end
+    end
+  end # with a preset Preset
+
   describe 'with a preset scenario' do
     let(:preset) do
       FactoryGirl.create(:scenario, {
@@ -184,6 +195,10 @@ describe Scenario do
 
     let(:scenario) do
       Scenario.new(scenario_id: preset.id)
+    end
+
+    it 'should retrieve the parent' do
+      expect(scenario.parent).to eq(preset)
     end
 
     it 'should copy the user values' do

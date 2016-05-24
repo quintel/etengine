@@ -57,6 +57,13 @@ module Api
 
         json[:share_group] = @input.share_group if @input.share_group.present?
 
+        if parent = @scenario.parent
+          json[:default] =
+            HashWithIndifferentAccess.new(parent.user_values)[@input.key] ||
+            HashWithIndifferentAccess.new(parent.balanced_values)[@input.key] ||
+            json[:default]
+        end
+
         if @extra_attributes
           json[:step] = values[:step] || @input.step_value
           json[:code] = @input.key

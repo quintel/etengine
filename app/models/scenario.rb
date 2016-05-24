@@ -184,6 +184,22 @@ class Scenario < ActiveRecord::Base
     end
   end
 
+  # Public: Returns the parent preset or scenario.
+  #
+  # Use this over `parent_scenario` since `parent_scenario` will not check for
+  # the existence of a preset.
+  #
+  # Returns a Scenario, or nil.
+  def parent
+    unless defined?(@parent)
+      @parent = preset_scenario_id &&
+        ( Preset.get(preset_scenario_id).try(:to_scenario) ||
+          Scenario.find(preset_scenario_id) )
+    end
+
+    @parent
+  end
+
   # a identifier for the scenario selector drop down in data.
   # => "#32341 - nl 2040 (2011-01-11)"
   def identifier
