@@ -146,6 +146,13 @@ module Qernel
       end
     end
 
+    describe '#marginal_heat_costs' do
+      it "should calculate correctly when values are given" do
+        @c.with variable_costs_per_typical_input: 100, heat_output_conversion: 0.5
+        @c.converter_api.send(:marginal_heat_costs).should == 720000.0
+      end
+    end
+
     describe '#variable_costs' do
       it "should calculate correctly when values are given" do
         @c.with variable_costs_per_typical_input: 300, typical_input: 2
