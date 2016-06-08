@@ -70,6 +70,26 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "total_investment_over_lifetime", 'euro / plant'
 
+  ##################
+  # Marginal Costs #
+  ##################
+
+  # Calculates the marginal costs for a plant in euro per MWh produced
+  # electricity. This is the same as the variable costs per typical input
+  # divided through electricity_output_conversion (times SECS_PER_HOUR to
+  # convert from euro / MJ to euro / MWh).
+  # The marginal costs are the **extra** costs made if an **extra** unit
+  # of electricity is produced. It is, in essence, the slope of the cost
+  # curve where cost (in euro) is plotted versus total production (in MWh).
+  #
+  # @return [Float] marginal costs per MWh (produced electricity)
+  #
+  def marginal_costs
+    variable_costs_per_typical_input *
+    SECS_PER_HOUR / electricity_output_conversion
+  end
+  unit_for_calculation "marginal_costs", 'euro / MWh'
+
   #########
   private
   #########
@@ -151,26 +171,6 @@ class Qernel::ConverterApi
   unit_for_calculation "depreciation_costs", 'euro / plant / year'
 
   ##################
-  # Marginal Costs #
-  ##################
-
-  # Calculates the marginal costs for a plant in euro per MWh produced
-  # electricity. This is the same as the variable costs per typical input 
-  # divided through electricity_output_conversion (times SECS_PER_HOUR to 
-  # convert from euro / MJ to euro / MWh).
-  # The marginal costs are the **extra** costs made if an **extra** unit
-  # of electricity is produced. It is, in essence, the slope of the cost 
-  # curve where cost (in euro) is plotted versus total production (in MWh).
-  #
-  # @return [Float] marginal costs per MWh (produced electricity)
-  #
-  def marginal_costs
-    variable_costs_per_typical_input * 
-    SECS_PER_HOUR / electricity_output_conversion
-  end
-  unit_for_calculation "marginal_costs", 'euro / MWh'
-
-  ##################
   # Variable Costs #
   ##################
 
@@ -189,14 +189,14 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "variable_costs", 'euro / plant / year'
 
-  # Calculates the variable costs per typical input (in MJ). 
+  # Calculates the variable costs per typical input (in MJ).
   # Unlike the variable_costs (defined above), this function does not
   # explicity depend on the production of the plant.
   #
-  # @return [Float] 
+  # @return [Float]
   def variable_costs_per_typical_input
     fetch(:variable_costs_per_typical_input) do
-      (weighted_carrier_cost_per_mj + 
+      (weighted_carrier_cost_per_mj +
        co2_emissions_costs_per_typical_input +
        variable_operation_and_maintenance_costs_per_typical_input)
     end
@@ -229,17 +229,17 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "co2_emissions_costs", 'euro / plant / year'
 
-  # Calculates the CO2 emission costs per typical input (in MJ). 
+  # Calculates the CO2 emission costs per typical input (in MJ).
   # Unlike the co2_emissions_costs (defined above), this function does not
   # explicity depend on the production of the plant.
   #
   # DEBT: rename free_co2_factor and takes_part_in_ets
   #
-  # @return [Float] 
+  # @return [Float]
   def co2_emissions_costs_per_typical_input
     fetch(:co2_emissions_costs_per_typical_input) do
       weighted_carrier_co2_per_mj * area.co2_price *
-      (1 - area.co2_percentage_free) * takes_part_in_ets * ((1 - free_co2_factor)) 
+      (1 - area.co2_percentage_free) * takes_part_in_ets * ((1 - free_co2_factor))
     end
   end
   unit_for_calculation "co2_emissions_costs_per_typical_input", 'euro / MJ'
@@ -259,12 +259,12 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "variable_operation_and_maintenance_costs", 'euro / plant / year'
 
-  # Calculates the variable_operation_and_maintenance_costs per typical input 
+  # Calculates the variable_operation_and_maintenance_costs per typical input
   # (in MJ).
-  # Unlike the variable_operation_and_maintenance_costs (defined above), this 
+  # Unlike the variable_operation_and_maintenance_costs (defined above), this
   # function does not explicity depend on the production of the plant.
   #
-  # @return [Float] Yearly variable operation and maintenance costs per typical 
+  # @return [Float] Yearly variable operation and maintenance costs per typical
   # input
   #
   def variable_operation_and_maintenance_costs_per_typical_input
