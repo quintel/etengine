@@ -1736,3 +1736,6 @@
 :energy_compressor_network_gas:
   :x: 3420
   :y: 4220
+:energy_power_hv_network_shortage:
+  :x: 6240
+  :y: 1760
