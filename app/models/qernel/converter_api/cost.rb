@@ -90,6 +90,22 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "marginal_costs", 'euro / MWh'
 
+  # Calculates the marginal costs for a plant in euro per MWh produced
+  # heat. This is the same as the variable costs per typical input
+  # divided through heat_output_conversion (times SECS_PER_HOUR to
+  # convert from euro / MJ to euro / MWh).
+  # The marginal costs are the **extra** costs made if an **extra** unit
+  # of heat is produced. It is, in essence, the slope of the cost
+  # curve where cost (in euro) is plotted versus total production (in MWh).
+  #
+  # @return [Float] marginal costs per MWh (produced heat)
+  #
+  def marginal_heat_costs
+    variable_costs_per_typical_input *
+    SECS_PER_HOUR / heat_output_conversion
+  end
+  unit_for_calculation "marginal_heat_costs", 'euro / MWh'
+
   #########
   private
   #########
@@ -169,26 +185,6 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "depreciation_costs", 'euro / plant / year'
-
-  ##################
-  # Marginal Costs #
-  ##################
-
-  # Calculates the marginal costs for a plant in euro per MWh produced
-  # heat. This is the same as the variable costs per typical input 
-  # divided through heat_output_conversion (times SECS_PER_HOUR to 
-  # convert from euro / MJ to euro / MWh).
-  # The marginal costs are the **extra** costs made if an **extra** unit
-  # of heat is produced. It is, in essence, the slope of the cost 
-  # curve where cost (in euro) is plotted versus total production (in MWh).
-  #
-  # @return [Float] marginal costs per MWh (produced heat)
-  #
-  def marginal_heat_costs
-    variable_costs_per_typical_input * 
-    SECS_PER_HOUR / heat_output_conversion
-  end
-  unit_for_calculation "marginal_heat_costs", 'euro / MWh'
 
   ##################
   # Variable Costs #
