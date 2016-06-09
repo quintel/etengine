@@ -44,7 +44,6 @@ class Qernel::ConverterApi
   # the additional cost for CCS (if applicable)
   #
   # Used in the scatter plot for costs
-  #
   def total_initial_investment
     fetch(:total_initial_investment) do
       initial_investment + ccs_investment + cost_of_installing
@@ -61,8 +60,6 @@ class Qernel::ConverterApi
   # paid up front. This is also the case in the Netherlands.
   #
   # Used to calculate yearly depreciation costs
-  #
-  #
   def total_investment_over_lifetime
     fetch(:total_investment_over_lifetime) do
       total_initial_investment + decommissioning_costs
@@ -74,41 +71,39 @@ class Qernel::ConverterApi
   # Marginal Costs #
   ##################
 
-  # Calculates the marginal costs for a plant in euro per MWh produced
+  # Calculates the marginal costs for a plant in euro per MWh of produced
   # electricity. This is the same as the variable costs per typical input
   # divided through electricity_output_conversion (times SECS_PER_HOUR to
   # convert from euro / MJ to euro / MWh).
-  # The marginal costs are the **extra** costs made if an **extra** unit
-  # of electricity is produced. It is, in essence, the slope of the cost
-  # curve where cost (in euro) is plotted versus total production (in MWh).
+  #
+  # The marginal costs are the **extra** costs made if an **extra** unit of
+  # electricity is produced. It is, in essence, the slope of the cost curve
+  # where cost (in euro) is plotted versus total production (in MWh).
   #
   # @return [Float] marginal costs per MWh (produced electricity)
-  #
   def marginal_costs
     variable_costs_per_typical_input *
     SECS_PER_HOUR / electricity_output_conversion
   end
   unit_for_calculation "marginal_costs", 'euro / MWh'
 
-  # Calculates the marginal costs for a plant in euro per MWh produced
-  # heat. This is the same as the variable costs per typical input
-  # divided through heat_output_conversion (times SECS_PER_HOUR to
-  # convert from euro / MJ to euro / MWh).
-  # The marginal costs are the **extra** costs made if an **extra** unit
-  # of heat is produced. It is, in essence, the slope of the cost
-  # curve where cost (in euro) is plotted versus total production (in MWh).
+  # Calculates the marginal costs for a plant in euro per MWh of produced heat.
+  # This is the same as the variable costs per typical input divided through
+  # heat_output_conversion (times SECS_PER_HOUR to convert from euro / MJ to
+  # euro / MWh).
+  #
+  # The marginal costs are the **extra** costs made if an **extra** unit of
+  # heat is produced. It is, in essence, the slope of the cost curve where cost
+  # (in euro) is plotted versus total production (in MWh).
   #
   # @return [Float] marginal costs per MWh (produced heat)
-  #
   def marginal_heat_costs
     variable_costs_per_typical_input *
     SECS_PER_HOUR / heat_output_conversion
   end
   unit_for_calculation "marginal_heat_costs", 'euro / MWh'
 
-  #########
   private
-  #########
 
   ##########################
   # Total Cost calculation #
@@ -118,7 +113,6 @@ class Qernel::ConverterApi
   # Total cost is made up of fixed costs and variable costs.
   #
   # @return [Float] total costs for one plant
-  #
   def total_costs
     fetch(:total_costs) do
       if fixed_costs && variable_costs
@@ -142,7 +136,6 @@ class Qernel::ConverterApi
   # a method to convert to different other cost units however.
   #
   # @return [Float] total fixed costs for one plant
-  #
   def fixed_costs
     fetch(:fixed_costs) do
       cost_of_capital + depreciation_costs +
@@ -161,7 +154,6 @@ class Qernel::ConverterApi
   # Used in the calculation of fixed costs
   #
   # @return [Float] yearly cost of capital for one plant
-  #
   def cost_of_capital
     fetch(:cost_of_capital) do
       average_investment * wacc *
@@ -178,7 +170,6 @@ class Qernel::ConverterApi
   #
   # @return [Float] yearly depreciation costs of the plant using the
   # straight-line depreciation method
-  #
   def depreciation_costs
     fetch(:depreciation_costs) do
       total_investment_over_lifetime / technical_lifetime
@@ -199,7 +190,6 @@ class Qernel::ConverterApi
   # and variable operation and mainentance costs
   #
   # @return [Float] the total variable costs of one plant
-  #
   def variable_costs
     fetch(:variable_costs) { typical_input * variable_costs_per_typical_input }
   end
@@ -223,21 +213,14 @@ class Qernel::ConverterApi
   # for one plant and the weighted costs of this/these carrier(s) per mj.
   #
   # @return [Float] the yearly fuel costs for one single plant
-  #
   def fuel_costs
     fetch(:fuel_costs) {typical_input * weighted_carrier_cost_per_mj }
   end
   unit_for_calculation "fuel_costs", 'euro / plant / year'
 
-  # This method determines the costs of co2 emissions by doing:
-  # Typical input of fuel in mj * the amount of co2 per mj fuel *
-  # the co2 price * how much co2 is given away for free *
-  # Is this converter part of the ETS? *
-  # how much co2 is not counted (non-energetic or CCS plants)
-  #
+  # This method determines the costs of co2 emissions.
   #
   # @return [Float] the yearly costs for co2 emissions for one plant
-  #
   def co2_emissions_costs
     fetch(:co2_emissions_costs) do
       typical_input * co2_emissions_costs_per_typical_input
@@ -245,9 +228,9 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "co2_emissions_costs", 'euro / plant / year'
 
-  # Calculates the CO2 emission costs per typical input (in MJ).
-  # Unlike the co2_emissions_costs (defined above), this function does not
-  # explicity depend on the production of the plant.
+  # Calculates the CO2 emission costs per typical input (in MJ). Unlike the
+  # co2_emissions_costs (defined above), this function does not  explicity
+  # depend on the production of the plant.
   #
   # DEBT: rename free_co2_factor and takes_part_in_ets
   #
@@ -266,7 +249,6 @@ class Qernel::ConverterApi
   # a variable O&M costs component, but only CCS plants have CCS O&M costs.
   #
   # @return [Float] Yearly variable operation and maintenance costs per plant
-  #
   def variable_operation_and_maintenance_costs
     fetch(:variable_operation_and_maintenance_costs) do
       typical_input *
@@ -277,12 +259,12 @@ class Qernel::ConverterApi
 
   # Calculates the variable_operation_and_maintenance_costs per typical input
   # (in MJ).
+  #
   # Unlike the variable_operation_and_maintenance_costs (defined above), this
   # function does not explicity depend on the production of the plant.
   #
   # @return [Float] Yearly variable operation and maintenance costs per typical
   # input
-  #
   def variable_operation_and_maintenance_costs_per_typical_input
     fetch(:variable_operation_and_maintenance_costs_per_typical_input) do
       return 0.0 if input_capacity.zero?
@@ -294,24 +276,22 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "variable_operation_and_maintenance_costs_per_typical_input", 'euro / MJ'
 
-  # The average yearly installment of capital cost repayments, assuming
-  # a linear repayment scheme. That is why divided by 2, to be at 50% between
-  # initial cost and 0.
+  # The average yearly installment of capital cost repayments, assuming a linear
+  # repayment scheme. That is why divided by 2, to be at 50% between initial
+  # cost and 0.
   #
   # Used to determine cost of capital
-  #
   def average_investment
     fetch(:average_investment) { (total_investment_over_lifetime) / 2 }
   end
   unit_for_calculation "average_investment", 'euro / plant / year'
 
-  # This method calculates the input capacity of a plant based on the
-  # electrical output capacity and electrical efficiency of the converter
+  # This method calculates the input capacity of a plant based on the electrical
+  # output capacity and electrical efficiency of the converter.
+  #
+  # DEBT: move to another file when cleaning up Converter API.
   #
   # @return [Float] the typical input capacity of a plant in MWinput
-  #
-  # DEBT: move to another file when cleaning up Converter API
-  #
   def electric_based_input_capacity
     fetch(:electric_based_input_capacity) do
       if electricity_output_conversion && electricity_output_conversion > 0
@@ -321,13 +301,12 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "electric_based_input_capacity", 'MWinput'
 
-  # This method calculates the input capacity of a plant based on the
-  # heat output capacity and heat efficiency of the converter
+  # This method calculates the input capacity of a plant based on the heat
+  # output capacity and heat efficiency of the converter.
+  #
+  # DEBT: move to another file when cleaning up Converter API.
   #
   # @return [Float] the typical input capacity of a plant in MWinput
-  #
-  # DEBT: move to another file when cleaning up Converter API
-  #
   def heat_based_input_capacity
     fetch(:heat_based_input_capacity) do
       if heat_output_conversion && heat_output_conversion > 0
@@ -348,7 +327,6 @@ class Qernel::ConverterApi
   # capacity and the cooling efficiency of the plant
   #
   # DEBT: move to another file when cleaning up Converter API
-  #
   def cooling_based_input_capacity
     fetch(:cooling_based_input_capacity) do
       if cooling_output_conversion && cooling_output_conversion > 0
@@ -362,10 +340,9 @@ class Qernel::ConverterApi
   #
   # Used for conversion of plant to other units
   #
-  # @return [Float] Typical electricity output in MJ
-  #
   # DEBT: move to another file when cleaning up Converter API
   #
+  # @return [Float] Typical electricity output in MJ
   def typical_electricity_output
     fetch(:typical_electricity_output) do
       typical_input * electricity_output_conversion
@@ -377,10 +354,9 @@ class Qernel::ConverterApi
   #
   # Used for conversion of plant to other units
   #
-  # @return [Float] Typical heat output in MJ
-  #
   # DEBT: move to another file when cleaning up Converter API
   #
+  # @return [Float] Typical heat output in MJ
   def typical_heat_output
     fetch(:typical_heat_output) do
       typical_input * heat_and_cold_output_conversion
@@ -392,10 +368,9 @@ class Qernel::ConverterApi
   #
   # Used for variable costs: fuel costs and CO2 emissions costs
   #
-  # @return [Float] Typical fuel input of one plant in MJ
-  #
   # DEBT: move to another file when cleaning up Converter API
   #
+  # @return [Float] Typical fuel input of one plant in MJ
   def typical_input
     fetch(:typical_input) { input_capacity * full_load_seconds }
   end
