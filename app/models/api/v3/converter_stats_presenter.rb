@@ -18,7 +18,7 @@ module Api
 
       ATTRIBUTES = {
         heat_output_capacity: nil,
-        marginal_costs: nil,
+        marginal_heat_costs: nil,
 
         fixed_operation_and_maintenance_costs_per_year_per_mw: -> conv {
           conv.fixed_operation_and_maintenance_costs_per(:mw_heat)
