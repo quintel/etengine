@@ -36,14 +36,7 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
-        marginal_cost = @converter.variable_costs_per(:mwh_electricity)
-
-        attrs[:marginal_costs] =
-          if marginal_cost && marginal_cost.nan?
-            Float::INFINITY
-          else
-            marginal_cost
-          end
+        attrs[:marginal_costs] = @converter.marginal_costs
 
         attrs[:output_capacity_per_unit] =
           @converter.electricity_output_conversion * @converter.input_capacity
