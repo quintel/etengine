@@ -5,7 +5,7 @@ module Qernel::Plugins
     before(:each) do
       converters = gql.present.graph.converters + gql.future.graph.converters
       attrs      = [ :electricity_output_conversion, :input_capacity,
-                     :mwh_electricity, :fixed_costs, :variable_costs_per,
+                     :mwh_electricity, :fixed_costs, :marginal_costs,
                      :fixed_operation_and_maintenance_costs_per_year,
                      :number_of_units, :full_load_hours, :availability ]
 
