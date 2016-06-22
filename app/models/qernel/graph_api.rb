@@ -119,6 +119,11 @@ class GraphApi
       demand_curve(demand), capacity, excludes)
   end
 
+  # Public: number of excess load events
+  def number_of_excess_events(duration)
+    graph.plugin(:merit).order.excess.number_of_events(duration)
+  end
+
   # Public: Takes the merit order load curve, and multiplies each point by the
   # demand of the converter, yielding the load on the converter over time.
   #
@@ -137,7 +142,7 @@ class GraphApi
   private
   #######
 
-  # Demand of electricity of the energy sector itself 
+  # Demand of electricity of the energy sector itself
   # (not included in final_demand_for_electricity)
   def energy_sector_own_use_electricity
     graph.converter(:energy_power_sector_own_use_electricity).demand
