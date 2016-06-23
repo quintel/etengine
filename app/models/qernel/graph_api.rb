@@ -119,9 +119,22 @@ class GraphApi
       demand_curve(demand), capacity, excludes)
   end
 
-  # Public: number of excess load events
-  def number_of_excess_events(duration)
-    graph.plugin(:merit).order.excess.number_of_events(duration)
+  # Public: Returns number of excess load events for a certain duration.
+  # Takes one single duration as an Integer or Float
+  #
+  def number_of_excess_events(duration, excludes = [])
+    graph.plugin(:merit).order.excess
+      .exclude(excludes)
+      .number_of_events(duration)
+  end
+
+  # Public: Returns number of excess load events for multiple durations
+  # Takes a set of durations in an Array
+  #
+  def group_of_excess_events(durations = [], excludes = [])
+    graph.plugin(:merit).order.excess
+      .exclude(excludes)
+      .event_groups(durations)
   end
 
   # Public: Takes the merit order load curve, and multiplies each point by the
