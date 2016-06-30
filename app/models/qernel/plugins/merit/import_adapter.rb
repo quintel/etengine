@@ -20,11 +20,11 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
-        # Fake high marginal cost to ensure that import is sorted last. Merit
-        # will ignore this price.
+        # The marginal cost of the import producer is 1 EUR more than the the
+        # most expensive participant.
         #
-        # TODO Remove, and add a way to force a participant to be last.
-        attrs[:marginal_costs]           = 999_999_999_999.99
+        # See https://github.com/quintel/merit/issues/143
+        attrs[:marginal_costs]           = max_marginal_cost + 1.0
         attrs[:number_of_units]          = 1.0
         attrs[:output_capacity_per_unit] = @converter.electricity_output_capacity
 
@@ -33,6 +33,29 @@ module Qernel::Plugins
 
       def producer_class
         ::Merit::DispatchableProducer
+      end
+
+      # Internal: Determines the marginal cost of the most expensive merit order
+      # participant.
+      #
+      # Returns a Float.
+      def max_marginal_cost
+        types = @graph.plugin(:merit).participant_types
+
+        mo_converters = @graph.converters.select do |conv|
+          conv.dataset_get(:merit_order) &&
+            conv.query.number_of_units > 0 &&
+            types.include?(conv.dataset_get(:merit_order).type)
+        end
+
+        mo_converters.map do |conv|
+          begin
+            cost = conv.query.marginal_costs
+            cost.nan? ? 0.0 : cost
+          rescue
+            0.0
+          end
+        end.max
       end
     end # ImportAdapter
   end # Merit
