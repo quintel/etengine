@@ -6,8 +6,6 @@ module Qernel::Plugins
   # After the merit order has been calculated, it's producer loads are assigned
   # back to the graph, and the graph will be recalculated.
   class MeritOrder < SimpleMeritOrder
-    # A list of types of merit order producers to be supplied to the M/O.
-    PARTICIPANT_TYPES = [:must_run, :volatile, :dispatchable, :flex].freeze
 
     before :first_calculation, :clone_dataset
     after  :first_calculation, :setup
@@ -19,6 +17,11 @@ module Qernel::Plugins
     # will be used instead).
     def self.enabled?(graph)
       graph.future? && graph.area.use_merit_order_demands
+    end
+
+    # A list of types of merit order producers to be supplied to the M/O.
+    def participant_types
+      [:must_run, :volatile, :dispatchable, :flex].freeze
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we

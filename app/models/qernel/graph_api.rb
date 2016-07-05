@@ -128,6 +128,7 @@ class GraphApi
   # Public: Returns number of excess load events for a certain duration.
   # Takes one single duration as an Integer or Float
   #
+  # Returns an Integer
   def number_of_excess_events(duration, excludes = [])
     graph.plugin(:merit).order.excess(excludes).number_of_events(duration)
   end
@@ -135,8 +136,16 @@ class GraphApi
   # Public: Returns number of excess load events for multiple durations
   # Takes a set of durations in an Array
   #
+  # Returns an Array
   def group_of_excess_events(durations = [], excludes = [])
     graph.plugin(:merit).order.excess(excludes).event_groups(durations)
+  end
+
+  # Public: Returns number of blackout hours
+  #
+  # Returns an Integer
+  def number_of_blackout_hours
+    graph.plugin(:merit).order.blackout.number_of_hours
   end
 
   # Public: Takes the merit order load curve, and multiplies each point by the

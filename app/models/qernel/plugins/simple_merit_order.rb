@@ -5,10 +5,6 @@ module Qernel::Plugins
   class SimpleMeritOrder
     include Plugin
 
-    # Simple-mode does not need a full-run, and profiles for must-runs will
-    # suffice.
-    PARTICIPANT_TYPES = [ :must_run, :volatile ].freeze
-
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
     def self.enabled?(graph)
@@ -26,12 +22,18 @@ module Qernel::Plugins
       super
     end
 
+    # Simple-mode does not need a full-run, and profiles for must-runs will
+    # suffice.
+    def participant_types
+      [:must_run, :volatile].freeze
+    end
+
     def adapters
       return @adapters if @adapters
 
       @adapters = {}
 
-      self.class::PARTICIPANT_TYPES.each do |type|
+      participant_types.each do |type|
         models = converters(type)
         models = sort_flexibles(models) if type == :flex
 
