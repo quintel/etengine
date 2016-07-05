@@ -37,7 +37,7 @@ module Api
         area  = Atlas::Dataset.find(@graph.area.area_code)
 
         order.participants.producers.each do |producer|
-          if producer.number_of_units > 0 && ! producer.is_a?(Merit::Flex::Base)
+          if include_producer?(producer)
             data[:participants].push(participant_data(producer))
           end
         end.compact
@@ -78,6 +78,15 @@ module Api
         else
           DISPATCHABLE_KEYS
         end
+      end
+
+      def include_producer?(producer)
+        return false unless producer.number_of_units > 0
+        return false if     producer.is_a?(Merit::Flex::Base)
+
+        # Exclude import which has no profile.
+        group = @graph.converter(producer.key).dataset_get(:merit_order).group
+        group && group.to_sym != :import
       end
     end # MeritSummaryPresenter
   end # V3
