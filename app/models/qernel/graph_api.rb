@@ -141,6 +141,13 @@ class GraphApi
     graph.plugin(:merit).order.excess(excludes).event_groups(durations)
   end
 
+  # Public: Returns total number of hours there was excess
+  #
+  # Returns an Integer
+  def total_number_of_excess_events(excludes = [])
+    graph.plugin(:merit).order.excess(excludes).total_number_of_events
+  end
+
   # Public: Returns number of blackout hours
   #
   # Returns an Integer
