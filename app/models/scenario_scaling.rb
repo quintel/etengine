@@ -86,7 +86,7 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns a Hash.
   def as_json(*)
-    super(only: [:area_attribute, :value, :has_agriculture, :has_industry])
+    super(except: [:id, :scenario_id])
   end
 
   # Public: A human-readable version of the scenario scaling.
