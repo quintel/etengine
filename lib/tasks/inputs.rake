@@ -1,4 +1,5 @@
 namespace :inputs do
+  desc "Computes input min, max, start values; saves to YAML"
   task dump: :environment do
     Atlas::Dataset.all.each do |dataset|
       next unless dataset.enabled[:etengine]
