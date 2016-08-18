@@ -2237,3 +2237,9 @@
 :industry_useful_demand_for_other_machinery_crude_oil:
   :x: 720
   :y: 14500
+:industry_useful_demand_for_other_ict_electricity:
+  :x: 720
+  :y: 9400
+:industry_final_demand_for_other_ict_electricity:
+  :x: 2100
+  :y: 9400
