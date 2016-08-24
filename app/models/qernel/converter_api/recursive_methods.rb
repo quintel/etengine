@@ -37,7 +37,7 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "weighted_carrier_co2_per_mj", 'kg'
 
-    def weighted_carrier_co2_per_mj_incl_losses
+  def weighted_carrier_co2_per_mj_incl_losses
     converter.weighted_carrier_co2_per_mj_incl_losses
   end
   unit_for_calculation "weighted_carrier_co2_per_mj_incl_losses", 'kg'
