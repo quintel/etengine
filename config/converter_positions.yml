@@ -801,17 +801,17 @@
   :x: 3200
   :y: 10720
 :energy_export_diesel:
-  :x: 2320
-  :y: 10720
+  :x: 3200
+  :y: 11320
 :energy_export_gasoline:
-  :x: 2320
-  :y: 10600
+  :x: 3200
+  :y: 11200
 :energy_export_kerosene:
-  :x: 2320
-  :y: 10660
+  :x: 3200
+  :y: 11260
 :energy_export_lpg:
-  :x: 2320
-  :y: 10780
+  :x: 3200
+  :y: 11380
 :energy_export_greengas:
   :x: 3200
   :y: 11080
@@ -2237,6 +2237,30 @@
 :industry_useful_demand_for_other_machinery_crude_oil:
   :x: 720
   :y: 14500
+:industry_refinery_transformation_crude_oil:
+  :x: 480
+  :y: 10780
+:energy_production_oil_products:
+  :x: 2460
+  :y: 11260
+:energy_production_refinery_gas:
+  :x: 2460
+  :y: 11200
+:industry_locally_available_crude_oil_non_energetic_for_chemical:
+  :x: 2020
+  :y: 11420
+:energy_export_oil_products:
+  :x: 3200
+  :y: 11500
+:industry_locally_available_refinery_gas_for_chemical:
+  :x: 2020
+  :y: 11360
+:energy_export_heavy_fuel_oil:
+  :x: 3200
+  :y: 11440
+:energy_import_heavy_fuel_oil:
+  :x: 7200
+  :y: 6540
 :industry_useful_demand_for_other_ict_electricity:
   :x: 720
   :y: 9400

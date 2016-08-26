@@ -14,7 +14,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
   end
 
   def weighted_carrier_cost_per_mj_factor(link)
-    # because electricity and steam_hot_water are calculated seperately 
+    # because electricity and steam_hot_water are calculated seperately
     # these are excluded from this calculation
     # old: if right_dead_end? and link
     # new: always 0 for elec and steam_hw
