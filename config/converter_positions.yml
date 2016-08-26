@@ -2261,3 +2261,9 @@
 :energy_import_heavy_fuel_oil:
   :x: 7200
   :y: 6540
+:industry_useful_demand_for_other_ict_electricity:
+  :x: 720
+  :y: 9400
+:industry_final_demand_for_other_ict_electricity:
+  :x: 2100
+  :y: 9400

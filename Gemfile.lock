@@ -12,12 +12,12 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: 4043293f4f2395efa8638d9d7b4a3b721bd439d9
-  ref: 4043293
+  revision: ce45457b7ec58365c7f675f1925bc1c261e8ecdf
+  ref: ce45457
   specs:
     atlas (1.0.0)
-      activemodel
-      activesupport
+      activemodel (~> 4.0)
+      activesupport (~> 4.0)
       turbine-graph (>= 0.1)
       virtus (~> 1.0)
 
@@ -384,4 +384,4 @@ DEPENDENCIES
   watchr
 
 BUNDLED WITH
-   1.12.3
+   1.12.5
