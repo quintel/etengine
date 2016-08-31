@@ -2045,15 +2045,9 @@
 :industry_final_demand_for_other_wood_pellets_non_energetic:
   :x: 2120
   :y: 13540
-:industry_useful_demand_for_other_paper_coal:
-  :x: 720
-  :y: 16740
 :industry_final_demand_for_other_paper_coal:
   :x: 1520
   :y: 16740
-:industry_useful_demand_for_other_paper_crude_oil:
-  :x: 720
-  :y: 16920
 :industry_final_demand_for_other_paper_crude_oil:
   :x: 1520
   :y: 16920
@@ -2063,9 +2057,6 @@
 :industry_final_demand_for_other_paper_electricity:
   :x: 1520
   :y: 16620
-:industry_useful_demand_for_other_paper_network_gas:
-  :x: 720
-  :y: 16800
 :industry_final_demand_for_other_paper_network_gas:
   :x: 1520
   :y: 16800
@@ -2075,9 +2066,6 @@
 :industry_final_demand_for_other_paper_steam_hot_water:
   :x: 1520
   :y: 16980
-:industry_useful_demand_for_other_paper_wood_pellets:
-  :x: 720
-  :y: 16860
 :industry_final_demand_for_other_paper_wood_pellets:
   :x: 1520
   :y: 16860
@@ -2192,15 +2180,9 @@
 :industry_final_demand_for_other_construction_wood_pellets:
   :x: 1520
   :y: 13140
-:industry_useful_demand_for_other_food_coal:
-  :x: 720
-  :y: 13800
 :industry_final_demand_for_other_food_coal:
   :x: 1520
   :y: 13800
-:industry_useful_demand_for_other_food_crude_oil:
-  :x: 720
-  :y: 13920
 :industry_final_demand_for_other_food_crude_oil:
   :x: 1520
   :y: 13920
@@ -2210,9 +2192,6 @@
 :industry_final_demand_for_other_food_electricity:
   :x: 1520
   :y: 13700
-:industry_useful_demand_for_other_food_network_gas:
-  :x: 720
-  :y: 13860
 :industry_final_demand_for_other_food_network_gas:
   :x: 1520
   :y: 13860
@@ -2222,9 +2201,6 @@
 :industry_final_demand_for_other_food_steam_hot_water:
   :x: 1520
   :y: 14040
-:industry_useful_demand_for_other_food_wood_pellets:
-  :x: 720
-  :y: 13980
 :industry_final_demand_for_other_food_wood_pellets:
   :x: 1520
   :y: 13980
@@ -2267,3 +2243,39 @@
 :industry_final_demand_for_other_ict_electricity:
   :x: 2100
   :y: 9400
+:industry_locally_available_hydrogen_before_p2g:
+  :x: 100
+  :y: 9000
+:industry_locally_available_hydrogen_after_p2g:
+  :x: 100
+  :y: 9020
+:industry_other_food_burner_coal:
+  :x: 1160
+  :y: 13800
+:industry_other_food_burner_crude_oil:
+  :x: 1160
+  :y: 13920
+:industry_other_food_burner_network_gas:
+  :x: 1160
+  :y: 13860
+:industry_other_food_burner_wood_pellets:
+  :x: 1160
+  :y: 13980
+:industry_other_paper_burner_coal:
+  :x: 1140
+  :y: 16740
+:industry_other_paper_burner_crude_oil:
+  :x: 1140
+  :y: 16920
+:industry_other_paper_burner_network_gas:
+  :x: 1140
+  :y: 16800
+:industry_other_paper_burner_wood_pellets:
+  :x: 1140
+  :y: 16860
+:industry_other_food_heater_electricity:
+  :x: 1160
+  :y: 13740
+:industry_other_paper_heater_electricity:
+  :x: 1140
+  :y: 16680
