@@ -29,18 +29,6 @@
 :energy_distribution_algae_diesel:
   :x: 5600
   :y: 6740
-:energy_production_kerosene:
-  :x: 6400
-  :y: 6300
-:energy_production_gasoline:
-  :x: 6400
-  :y: 6220
-:energy_production_diesel:
-  :x: 6400
-  :y: 6380
-:energy_production_lpg:
-  :x: 6400
-  :y: 6160
 :energy_distribution_lpg:
   :x: 5600
   :y: 6160
@@ -958,9 +946,6 @@
   :y: 4400
 :energy_distribution_heavy_fuel_oil:
   :x: 5600
-  :y: 6440
-:energy_production_heavy_fuel_oil:
-  :x: 6400
   :y: 6440
 :transport_final_demand_for_road_lpg:
   :x: 2320
@@ -2216,12 +2201,6 @@
 :industry_refinery_transformation_crude_oil:
   :x: 480
   :y: 10780
-:energy_production_oil_products:
-  :x: 2460
-  :y: 11260
-:energy_production_refinery_gas:
-  :x: 2460
-  :y: 11200
 :industry_locally_available_crude_oil_non_energetic_for_chemical:
   :x: 2020
   :y: 11420
