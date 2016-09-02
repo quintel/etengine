@@ -52,7 +52,8 @@ describe Api::V3::FlexibilityOrdersController do
     get :get, scenario_id: -1
 
     expect(JSON.parse(response.body)['order']).to eq(%w(
-      power_to_power electric_vehicle power_to_gas power_to_heat export
+      power_to_power electric_vehicle power_to_gas
+      power_to_gas_industry power_to_heat export
     ))
   end
 end

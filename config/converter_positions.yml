@@ -2223,11 +2223,11 @@
   :x: 2100
   :y: 9400
 :industry_locally_available_hydrogen_before_p2g:
-  :x: 100
-  :y: 9000
+  :x: 320
+  :y: 11480
 :industry_locally_available_hydrogen_after_p2g:
-  :x: 100
-  :y: 9020
+  :x: 160
+  :y: 11640
 :industry_other_food_burner_coal:
   :x: 1160
   :y: 13800
@@ -2258,3 +2258,12 @@
 :industry_other_paper_heater_electricity:
   :x: 1140
   :y: 16680
+:industry_chemicals_fertilizers_haber_bosch_process_hydrogen:
+  :x: 40
+  :y: 11480
+:industry_flexibility_p2g_electricity:
+  :x: 580
+  :y: 11640
+:industry_chemicals_fertilizers_steam_methane_reformer_hydrogen:
+  :x: 580
+  :y: 11480
