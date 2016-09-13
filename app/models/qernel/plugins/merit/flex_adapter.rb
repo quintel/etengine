@@ -8,6 +8,8 @@ module Qernel::Plugins
         case converter.dataset_get(:merit_order).group.to_sym
           when :power_to_power, :electric_vehicle
             StorageAdapter
+          when :power_to_gas, :power_to_gas_industry
+            PowerToGasAdapter
           when :power_to_heat
             PowerToHeatAdapter
           when :curtailment, :export
