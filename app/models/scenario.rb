@@ -41,10 +41,10 @@ class Scenario < ActiveRecord::Base
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :flexibility_order, dependent: :destroy
 
-  validates_presence_of :title, :on => :create, :message => "Please provide a title"
-  validates             :area_code, :presence => true
-  validates :area_code, :inclusion => {:in => Etsource::Dataset.region_codes}
-  validates :end_year, :numericality => true
+  validates_presence_of :title, on: :create, message: 'Please provide a title'
+  validates             :area_code, presence: true
+  validates :area_code, inclusion: { in: ->(*) { Etsource::Dataset.region_codes } }
+  validates :end_year,  numericality: true
 
   validates_associated :scaler, on: :create
 
