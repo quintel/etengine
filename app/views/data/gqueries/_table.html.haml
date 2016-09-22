@@ -19,7 +19,8 @@
           %tr
             - row.each_with_index do |value, col_idx|
               - if value.is_a?(Numeric)
-                %td.numeric{ title: value }= number_with_delimiter(value, separator: '.', delimiter: ',')
+                %td.numeric{ title: value }
+                  = number_with_precision(value, precision: 10, separator: '.', delimiter: ',', strip_insignificant_zeros: true)
               - elsif table.objects[row_idx].is_a?(Qernel::Converter) && table.data[0][col_idx] == :key
                 %td.converter
                   = link_to(value, data_converter_path(id: value))
