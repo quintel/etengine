@@ -40,10 +40,16 @@ module Qernel::RecursiveFactor::WeightedCarrier
   end
 
   def weighted_carrier_co2_per_mj_factor(link)
-    if right_dead_end? and link
-      link.carrier.co2_conversion_per_mj
+    # because electricity and steam_hot_water have no intrinsic co2
+    # these are excluded from this calculation
+    if link
+      if link.carrier.co2_conversion_per_mj || right_dead_end?
+        link.carrier.co2_conversion_per_mj
+      else
+        nil # continue to the right
+      end
     else
-      nil
+      nil # continue to the right
     end
   end
 
