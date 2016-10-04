@@ -16,6 +16,14 @@ class ScenarioScaling < ActiveRecord::Base
   validates :value, presence: true, numericality: true
   validates :scenario_id, uniqueness: true
 
+  # Public: Given al Atlas::Preset::Scaling, creates a ScenarioScaling with the
+  # same attributes.
+  #
+  # Returns a ScenarioScaling.
+  def self.from_atlas_scaling(scaling)
+    new(scaling.attributes)
+  end
+
   # Public: Determines if the given input should have it's values scaled.
   #
   # Returns true or false.

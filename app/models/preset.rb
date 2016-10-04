@@ -27,6 +27,10 @@ class Preset
     end
   end
 
+  def scaler
+    @scaling && ScenarioScaling.new(@scaling.attributes)
+  end
+
   # Public: The year on which the analysis for the preset's area is based.
   #
   # Returns an integer.

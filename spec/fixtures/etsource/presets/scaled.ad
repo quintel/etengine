@@ -1,0 +1,15 @@
+- id = 6000
+- title = Scaled Preset
+- end_year = 2040
+- area_code = nl
+- use_fce = false
+- display_group = Keizersgracht
+- user_values.foo_demand = 10.0
+- user_values.input_2 = 20.0
+- user_values.input_3 = 30.0
+- scaling.area_attribute = number_of_residences
+- scaling.base_value = 8000000.0
+- scaling.has_agriculture = true
+- scaling.has_energy = true
+- scaling.has_industry = false
+- scaling.value = 100.0

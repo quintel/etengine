@@ -30,6 +30,7 @@ module Api
         json[:url]            = @controller.api_v3_scenario_url(@resource)
         json[:ordering]       = @resource.ordering
         json[:display_group]  = @resource.display_group
+        json[:scaling]        = @resource.scaler
 
         json
       end

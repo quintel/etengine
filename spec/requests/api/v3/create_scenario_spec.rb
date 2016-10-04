@@ -126,6 +126,26 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
+  context 'when inheriting a scaled preset' do
+    before do
+      post 'api/v3/scenarios', scenario: { scenario_id: Preset.get(6000).id }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'should be successful' do
+      response.status.should eql(200)
+    end
+
+    it 'should copy the scaling data' do
+      scenario = Scenario.find(JSON.parse(response.body)['id'])
+
+      expect(scenario.scaler).to_not be_nil
+      expect(scenario.scaler.area_attribute).to eq('number_of_residences')
+      expect(scenario.scaler.value).to eq(100)
+    end
+  end
+
   context 'when scaling the area' do
     context 'with all valid attributes' do
       before do

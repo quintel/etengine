@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: c62eec85fbc8d2b2d899d3f30564bee6daa1d0ff
-  ref: c62eec8
+  revision: c58d46cfbc995ec361ab2bc1559fe13944528f18
+  ref: c58d46c
   specs:
     atlas (1.0.0)
       activemodel (~> 4.0)
@@ -186,7 +186,7 @@ GEM
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
     kgio (2.9.2)
-    libv8 (3.16.14.7)
+    libv8 (3.16.14.15)
     listen (2.7.1)
       celluloid (>= 0.15.2)
       celluloid-io (>= 0.15.0)
@@ -198,7 +198,7 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.2)
     mime-types (1.25.1)
-    minitest (5.9.0)
+    minitest (5.9.1)
     msgpack (0.5.8)
     multi_json (1.10.1)
     mysql2 (0.3.15)
@@ -386,4 +386,4 @@ DEPENDENCIES
   watchr
 
 BUNDLED WITH
-   1.12.5
+   1.13.2

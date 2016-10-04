@@ -25,7 +25,7 @@ module Scenario::Persistable
   def copy_scenario_state(preset)
     source_user_values = preset.user_values.clone
     source_bal_values  = (vals = preset.try(:balanced_values)) && vals.clone
-    other_scaler       = preset.respond_to?(:scaler) && preset.scaler
+    other_scaler       = preset.scaler
 
     # If this scenario has a custom scaling (different from that in the source
     # preset), we have to re-scale the value of each input so that it makes
