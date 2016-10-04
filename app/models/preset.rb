@@ -8,6 +8,7 @@ class Preset
   include ActiveModel::Serializers::Xml
 
   COLUMNS = Atlas::Preset.attribute_set.map(&:name)
+  SCALING_COLUMNS = Atlas::Preset::Scaling.attribute_set.map(&:name).freeze
 
   attr_accessor *COLUMNS
   attr_accessor :key
@@ -15,6 +16,16 @@ class Preset
   # Returns an array of all presets which are visible to end-users.
   def self.visible
     all.reject { |p| p.in_start_menu == false }
+  end
+
+  def self.from_scenario(scenario)
+    attrs = scenario.attributes.symbolize_keys
+
+    if scenario.scaler
+      attrs[:scaling] = Atlas::Preset::Scaling.new(scenario.scaler.attributes)
+    end
+
+    Preset.new(attrs)
   end
 
   def initialize(attributes = {})
@@ -42,10 +53,13 @@ class Preset
   def to_scenario
     attrs = attributes
     id = attrs.delete(:id)
-    # DANGER: Mark the scenarios as frozen or unsaveable to avoid disaster!
-    Scenario.new(attrs).tap{|scenario| scenario.id = id }
-    # DANGER: Mark the scenarios as frozen or unsaveable to avoid disaster!
-    # Scenario.new(attrs).tap{|scenario| scenario.id = id; scenario.readonly! }
+
+    Scenario.new(attrs.except(:scaling)).tap do |scenario|
+      scenario.id = id
+      scenario.scaler = scaler.dup if scaler
+
+      scenario.readonly!
+    end
   end
 
   def attributes(attrs = {})
@@ -70,5 +84,19 @@ class Preset
 
   def to_param
     id.to_s
+  end
+
+  # Public: Converts the Preset to a string representing its contents in the
+  # ActiveDocument format.
+  #
+  # Returns a String.
+  def to_active_document
+    attrs = attributes
+
+    if scaler
+      attrs[:scaling] = scaler.attributes.symbolize_keys.slice(*SCALING_COLUMNS)
+    end
+
+    "#{ Atlas::HashToTextParser.new(attrs.compact).to_text }\n"
   end
 end

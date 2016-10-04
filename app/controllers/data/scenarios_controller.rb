@@ -34,7 +34,13 @@ class Data::ScenariosController < Data::BaseController
   def show
     respond_to do |format|
       format.html
-      format.yml { render :text =>  @scenario.to_yaml, :content_type => "application/x-yaml"}
+
+      format.ad do
+        render(
+          text: Preset.from_scenario(@scenario).to_active_document,
+          content_type: 'text/x-active-document'
+        )
+      end
     end
   end
 

@@ -7,3 +7,4 @@
 # We use SVG for the GraphViz
 Mime::Type.register "image/svg+xml", :svg
 Mime::Type.register "application/x-yaml", :yml
+Mime::Type.register "text/x-active-document", :ad
