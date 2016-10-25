@@ -70,10 +70,20 @@ module Qernel
     describe 'primary_demand' do
       it 'returns the right converter value, minus conversions' do
         supplier.should_receive(:primary_demand).and_return(40.0)
+        supplier.should_receive(:loss_compensation_factor).and_return(1.0)
         link.output.should_receive(:conversion).and_return(0.5)
         link.should_receive(:parent_share).and_return(0.25)
 
         expect(link.primary_demand).to eq(5.0)
+      end
+
+      it 'returns the right converter value, minus conversions adjusting for loss' do
+        supplier.should_receive(:primary_demand).and_return(40.0)
+        supplier.should_receive(:loss_compensation_factor).and_return(1.5)
+        link.output.should_receive(:conversion).and_return(0.5)
+        link.should_receive(:parent_share).and_return(0.25)
+
+        expect(link.primary_demand).to eq(7.5)
       end
 
       it 'returns nil if the parent converter value is nil' do
@@ -87,6 +97,7 @@ module Qernel
         supplier.should_receive(:primary_demand_of_carrier).
           with(:coal).and_return(40.0)
 
+        supplier.should_receive(:loss_compensation_factor).and_return(1.0)
         link.output.should_receive(:conversion).and_return(0.5)
         link.should_receive(:parent_share).and_return(0.25)
 
@@ -100,6 +111,18 @@ module Qernel
         expect(link.primary_demand_of_carrier(:coal)).to be_nil
       end
     end # primary_demand_of_carrier
+
+    describe 'sustainability_share' do
+      it 'returns the right converter value, minus conversions' do
+        supplier.should_receive(:sustainability_share).and_return(0.5)
+
+        supplier.should_not_receive(:loss_compensation_factor)
+        link.output.should_receive(:conversion).and_return(0.5)
+        link.should_receive(:parent_share).and_return(0.25)
+
+        expect(link.sustainability_share).to eq(0.5 * 0.5 * 0.25)
+      end
+    end # sustainability_share
 
     describe 'energetic?' do
       it 'returns true if the consumer node is energetic' do

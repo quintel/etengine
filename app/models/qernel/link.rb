@@ -7,8 +7,10 @@ module Qernel
     # the value according to the slot conversion and parent share.
     #
     # Returns nothing.
-    def self.delegated_calculation(name)
-      define_method(name) { |*args| delegated_calculation(name, *args) }
+    def self.delegated_calculation(name, lossless = false)
+      define_method(name) do |*args|
+        delegated_calculation(name, lossless, *args)
+      end
     end
 
     # Dataset ------------------------------------------------------------------
@@ -19,11 +21,11 @@ module Qernel
 
     def self.dataset_group; :graph; end
 
-    delegated_calculation :primary_demand
-    delegated_calculation :primary_demand_of
-    delegated_calculation :primary_demand_of_carrier
+    delegated_calculation :primary_demand, true
+    delegated_calculation :primary_demand_of, true
+    delegated_calculation :primary_demand_of_carrier, true
     delegated_calculation :sustainability_share
-    delegated_calculation :dependent_supply_of_carrier
+    delegated_calculation :dependent_supply_of_carrier, true
 
     # Accessors ----------------------------------------------------------------
 
@@ -165,9 +167,12 @@ module Qernel
     # *args       - Additional arguments to be passed to the calculation method.
     #
     # Returns a number, or nil if the calculation returned nil.
-    def delegated_calculation(calculation, *args)
-      if value = rgt_converter.query.send(calculation, *args)
-        value * output.conversion * parent_share
+    def delegated_calculation(calculation, lossless = false, *args)
+      value = rgt_converter.query.send(calculation, *args)
+
+      if value
+        loss_comp = lossless ? rgt_converter.loss_compensation_factor : 1.0
+        value * (output.conversion * loss_comp) * parent_share
       end
     end
 
