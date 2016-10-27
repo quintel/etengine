@@ -99,12 +99,15 @@ class Slot
       active_links.select(&:constant?).each(&:calculate)
       active_links.select(&:share?).each(&:calculate)
 
-      # Calculate flexible links with boundaries first. Because
-      # without boundaries a link takes everything.
-      flexible_links = active_links.select(&:flexible?)
-      flexible_links.select(&:max_demand).sort_by(&:priority).each(&:calculate)
-      flexible_links.reject(&:max_demand).sort_by(&:priority).each(&:calculate)
+      active_links.
+        select(&:flexible?).
+        # Sort by priority, higher numbers first.
+        sort_by(&:priority).reverse.
+        # Calculate edges with a max_demand first
+        partition { |link| link.max_demand.present? }.
+        flatten.each(&:calculate)
     end
+
     if output?
       links.select(&:reversed?).each(&:calculate)
       links.select(&:dependent?).each(&:calculate)

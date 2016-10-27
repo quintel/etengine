@@ -142,7 +142,7 @@ module Qernel
     end
 
     def priority
-      dataset_get(:priority) || 1_000_000
+      dataset_get(:priority) || -Float::INFINITY
     end
 
     # Public: The share of energy from the parent converter carried away by this
