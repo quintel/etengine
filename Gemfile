@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-ruby '2.1.2'
+ruby '2.1.9'
 
 gem 'rails',        '~> 4.1.0'
 gem 'jquery-rails', '~> 2.0.2'
