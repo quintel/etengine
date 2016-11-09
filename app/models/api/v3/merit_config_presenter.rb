@@ -86,7 +86,7 @@ module Api
 
         # Exclude import which has no profile.
         group = @graph.converter(producer.key).dataset_get(:merit_order).group
-        (group && group.to_sym != :import) || true
+        group ? group.to_sym != :import : true
       end
     end # MeritSummaryPresenter
   end # V3
