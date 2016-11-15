@@ -31,8 +31,10 @@ set :rbenv_map_bins, %w{rake gem bundle ruby rails}
 # set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files,
-  %w{ config/database.yml config/newrelic.yml config/.etsource_password .env }
+set :linked_files, %w{
+  config/database.yml config/email.yml config/newrelic.yml
+  config/.etsource_password .env
+}
 
 # Default value for linked_dirs is []
 set :linked_dirs,

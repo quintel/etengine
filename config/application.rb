@@ -51,6 +51,13 @@ module Etm
     config.assets.enabled = true
     config.assets.precompile += ['graph.js', 'graph.css']
 
+    # Mail
+
+    if (email_conf = Rails.root.join('config/email.yml')).file?
+      config.action_mailer.smtp_settings =
+        YAML.load_file(email_conf)[Rails.env].symbolize_keys
+    end
+
     # Add this for Spork
     if Rails.env.test?
       initializer :after => :initialize_dependency_mechanism do
