@@ -22,28 +22,49 @@ The ETE is released under the [MIT License](LICENSE.txt).
 ## Installation
 
 Installing ETEngine on a local machine can be a bit involved, owing to the
-number of dependencies. Fortunately, most can be installed automatically using
-Ruby's "Bundler" library, which is required to use ETEngine.
+number of dependencies. Assuming you can run a 'normal' rails application on your local machine,
+you have to follow these steps to run ET-Engine.
 
-1. Install the "Graphviz" library; for Mac users with [Homebrew][homebrew], this
-   is as simple as `brew install graphviz`.
+1. Install the "Graphviz" library
+   * Mac users with [Homebrew][homebrew]: `brew install graphviz`
+   * Ubuntu: `sudo apt-get install graphviz libgraphviz-dev`
 
-2. Run `bundle install` to install the dependencies required by ETEngine.
+1. Install "MySQL" server
+   * Mac: Install latest version using the [Native Package][mysql] (choose the 64-bit DMG version)
+   * Ubuntu: `sudo apt-get install mysql-server-5.5 libmysqlclient-dev`
 
-3. Copy "config/config.sample.yml" to "config/config.yml", and
-   "config/database.sample.yml" to "config/database.yml", making any changes --
-   particularly to the database configuration -- as you see fit.
+1. Clone this repository with `git clone git@github.com:quintel/etengine.git`
 
-4. Clone a copy of [ETSource][etsource] –– which contains the data for each
-   region. Edit "config/config.yml" and enter the ETSource directory into the
-   "etsource_export" and "etsource_working_copy" options.
+1. Run `bundle install` to install the dependencies required by ETEngine.
 
-5. Create the database you specified in your "database.yml" file, and run
-   `bundle exec rake db:setup db:seed` to create the tables and add an
-   administrator account.
+1. Create your personal configuration files from the samples with
+   ```
+   cp -vn config/database.sample.yml config/database.yml
+   cp -vn config/config.sample.yml config/config.yml
+   ```
+   Then make any changes -- particularly to the database configuration -- as you see fit.
+   * Probably set "standalone" to `true` in "config/config.yml"
 
-6. You're now ready-to-go! Fire up the Rails process with `bundle exec rails s`
+1. Clone a copy of [ETSource][etsource] –– which contains the data for each
+   region:
+   1. `cd ..; git clone git@github.com:quintel/etsource.git`
+   1. `cd etsource; bundle install`
+   1. `rake decrypt` –– to decrypt the energy balance data files
+   1. Edit "config/config.yml" and enter the ETSource directory into the
+   "etsource_export" and "etsource_working_copy" options –– or leave at default if possible.
+
+
+1. Create the database you specified in your "database.yml" file, and
+   1. run `bundle exec rake db:setup db:seed` to create the tables and add an
+      administrator account –– whose name and password will be output at the end –– OR
+   1. run `bundle exec rake db:create` to create your database and
+      `bundle exec cap staging db2local` to fill your database with records from staging server
+
+1. You're now ready-to-go! Fire up the Rails process with `rails s`
    or use [Pow][pow].
+
+1. If you run into an dataset error, check out this
+   [explanation](https://github.com/quintel/etsource#csv-documents "Explanation on etsource CSV files") on CSV files
 
 ## Technical Design
 
@@ -132,33 +153,6 @@ A **gquery** is nothing more then a stored statement. These statements are
 written in our own language called the *Graph Query Language* (GQL) and
 a recent list can be found on [ETSource][etsource].
 
-## Installation
-
-Assuming you can run a 'normal' rails application on your local machine,
-you have to follow these steps to run ET-Engine.
-
-* `bundle install` to install dependencies if you haven't done already
-* `bundle exec rake db:create` to create your database
-* `bundle exec cap staging db2local` to fill your database with records from staging
-  server
-* create a directory to clone etsource into, I advise to use
-  a dedicated etsource copy in the etengine root folder:
-  `git clone git@github.com:quintel/etsource.git`
-* create an empty directory as a working copy for your etsource directory
-  `mkdir etsource_export`
-* `cd config`
-* `cp config.sample.yml config.yml; cp database.sample.yml database.yml`
-* open up these two files in your favorite text-editor and fill in the
-  details of the directories you just created. You can leave the defaults as
-  they are, unless you want something else
-* make sure you have memcached running (using `memcached -d`)
-* fire up your local rails server (use `rails s` on the console or use
-  [pow](http://pow.cx)
-* go to `http://etengine.dev/etsource` or equivalent
-* (if you run into an dataset error, check out this [explanation](https://github.com/quintel/etsource#csv-documents "Explanation on etsource CSV files") on CSV files)
-* Press 'import' (the latest commit or another one if you like that better)
-* you're done!
-
 ### Auto-reloading your changes to etsource
 
 Sometimes you want to play around or tweak some gqueries. Then, you don't
@@ -214,3 +208,4 @@ The result you can find in: etsource/models/sample
 [energymixer]: http://github.com/quintel/energymixer
 [homebrew]:    http://brew.sh
 [pow]:         http://pow.cx
+[mysql]:       http://dev.mysql.com/downloads/mysql/5.5.html#macosx-dmg
