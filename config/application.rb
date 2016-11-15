@@ -54,8 +54,13 @@ module Etm
     # Mail
 
     if (email_conf = Rails.root.join('config/email.yml')).file?
-      config.action_mailer.smtp_settings =
-        YAML.load_file(email_conf)[Rails.env].symbolize_keys
+      email_env_conf = YAML.load_file(email_conf)[Rails.env]
+
+      if email_env_conf
+        config.action_mailer.smtp_settings = email_env_conf.symbolize_keys
+      else
+        raise "Missing e-mail settings for #{ Rails.env.inspect } environment"
+      end
     end
 
     # Add this for Spork
