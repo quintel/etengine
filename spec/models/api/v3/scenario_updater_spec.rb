@@ -140,6 +140,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     before do
       scenario.user_values = { 'foo_demand' => '5.0' }
+      scenario.balanced_values = { 'input_2' => '5.0' }
       scenario.save!
     end
 
@@ -147,7 +148,12 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     it 'removes all input values' do
       updater.apply
-      scenario.reload.user_values.should be_blank
+      scenario.reload.user_values.should eq({})
+    end
+
+    it 'removes all balanced values' do
+      updater.apply
+      scenario.reload.balanced_values.should eq({})
     end
   end # Resetting an entire scenario
 
@@ -164,6 +170,9 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
         'foo_demand' => 5.0,
         'bar_demand' => 25.5
       }
+
+      scenario.balanced_values = { 'input_2' => '5.0' }
+
       scenario.save!
     end
 
@@ -177,6 +186,11 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     it 'removes unspecified input values' do
       updater.apply
       scenario.reload.user_values.should_not have_key('bar_demand')
+    end
+
+    it 'removes all balanced values' do
+      updater.apply
+      scenario.reload.balanced_values.should eq({})
     end
   end # Resetting an entire scenario, while providing new values
 
