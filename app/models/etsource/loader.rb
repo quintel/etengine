@@ -46,8 +46,11 @@ module Etsource
 
     def area_attributes(area_code)
       @area_attributes[area_code] ||= begin
-        area_attr = Atlas::Dataset.find(area_code).to_hash
+        area = Atlas::Dataset.find(area_code)
+        area_attr = area.to_hash
+        area_attr[:is_derived] = true if area.is_a?(Atlas::Dataset::DerivedDataset)
         area_attr['last_updated_at'] = @etsource.last_updated_at("datasets/#{area_code}")
+
         area_attr.with_indifferent_access
       end
     end
