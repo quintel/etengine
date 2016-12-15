@@ -14,22 +14,18 @@ module Qernel::Plugins
       disabled = @graph.area.disabled_sectors
 
       @graph.converters.each do |converter|
-        if disabled.include?(converter.sector_key)
-          if converter.sector_key == :energy
-            if converter.dataset_get(:number_of_units)
-              converter.dataset_set(:number_of_units, 0.0)
-            end
+        next unless disabled.include?(converter.sector_key)
 
-            if converter.preset_demand
-              converter.preset_demand = 0.0
-            end
-          else
-            converter.demand = converter.preset_demand = 0.0
-          end
+        if converter.dataset_get(:number_of_units)
+          converter.dataset_set(:number_of_units, 0.0)
+        end
 
-          converter.input_links.each do |link|
-            link.share = 0.0 if link.link_type == :constant
-          end
+        if converter.sector_key != :energy || converter.preset_demand
+          converter.demand = converter.preset_demand = 0.0
+        end
+
+        converter.input_links.each do |link|
+          link.share = 0.0 if link.link_type == :constant
         end
       end
     end
