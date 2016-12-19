@@ -64,8 +64,8 @@ class Gql
       # they stay in memory forever. So we need two different graph objects
       # (and nested objects) for present/future.
       loader    = Etsource::Loader.instance
-      @present_graph = loader.graph
-      @future_graph  = loader.graph
+      @present_graph = loader.graph(@scenario.area_code)
+      @future_graph  = loader.graph(@scenario.area_code)
       # Assign the dataset. It is not yet assigned to the present/future
       # graphs yet, which will happen with #init_datasets or #prepare. This
       # allows for more flexibility with caching. The @dataset will hold

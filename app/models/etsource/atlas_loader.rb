@@ -52,13 +52,12 @@ module Etsource
       # Returns nothing.
       def calculate!(dataset_key)
         instrument("etsource.loader: atlas+ref(#{ dataset_key.inspect })") do
-          graph   = Atlas::GraphBuilder.build
           dataset = Atlas::Dataset.find(dataset_key)
-          runner  = Atlas::Runner.new(dataset, graph)
+          runner  = Atlas::Runner.new(dataset)
 
           runner.calculate
 
-          contents = dump(Atlas::Exporter.dump(runner.refinery_graph))
+          contents = dump(Atlas::FullExporter.dump(runner.refinery_graph))
           location = data_path(dataset_key)
 
           FileUtils.mkdir_p(location.dirname)

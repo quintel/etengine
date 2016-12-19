@@ -158,16 +158,17 @@ class Scenario < ActiveRecord::Base
   #
   def gql(options = {}, &block)
     unless @gql
-
       if block_given?
         @gql = Gql::Gql.new(self, &block)
       else
         @gql = Gql::Gql.new(self)
         @gql.prepare if options.fetch(:prepare, true)
       end
+
       @gql.sandbox_mode = options.fetch(:sandbox_mode, :sandbox)
     end
-   @gql
+
+    @gql
   end
 
   def save_as_scenario(params = {})
