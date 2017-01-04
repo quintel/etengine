@@ -182,7 +182,7 @@ module Api
           if user_values.blank?
             Hash.new
           else
-            balanced = (@scenario.balanced_values || {}).dup
+            balanced = reset? ? {} : (@scenario.balanced_values || {}).dup
 
             # Remove balanced values for the entire groups which the user is
             # updating otherwise the group won't validate.
