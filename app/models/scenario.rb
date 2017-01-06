@@ -167,7 +167,7 @@ class Scenario < ActiveRecord::Base
       end
       @gql.sandbox_mode = options.fetch(:sandbox_mode, :sandbox)
     end
-   @gql
+    @gql
   end
 
   def save_as_scenario(params = {})
