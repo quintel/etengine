@@ -52,9 +52,8 @@ module Etsource
       # Returns nothing.
       def calculate!(dataset_key)
         instrument("etsource.loader: atlas+ref(#{ dataset_key.inspect })") do
-          graph   = Atlas::GraphBuilder.build
           dataset = Atlas::Dataset.find(dataset_key)
-          runner  = Atlas::Runner.new(dataset, graph)
+          runner  = Atlas::Runner.new(dataset)
 
           runner.calculate
 
