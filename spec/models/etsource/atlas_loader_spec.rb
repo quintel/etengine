@@ -38,7 +38,7 @@ module Etsource
 
       context 'expire_all!' do
         it 'removes the dataset files' do
-          expect(dir.children.length).to eq(1)
+          expect(dir.children.length).to eq(2)
           loader.expire_all!
           expect(dir.children.length).to be_zero
         end
