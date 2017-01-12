@@ -24,6 +24,14 @@ class ScenarioScaling < ActiveRecord::Base
     new(scaling.attributes)
   end
 
+  def self.from_scenario(scenario)
+    if scenario.area[:derived]
+      from_atlas_scaling(scenario.area[:scaling])
+    else
+      scenario.scaler
+    end
+  end
+
   # Public: Determines if the given input should have it's values scaled.
   #
   # Returns true or false.
@@ -104,13 +112,6 @@ class ScenarioScaling < ActiveRecord::Base
     "#<ScenarioScaling #{ area_attribute.inspect } (" \
       "#{ scenario.area[area_attribute].inspect } -> " \
       "#{ value.to_f.inspect })>"
-  end
-
-  # Public: Stores a cache of input values for the scenario.
-  #
-  # Returns an Input::ScaledInputs.
-  def input_cache
-    @input_cache ||= Input::ScaledInputs.new(Input.cache, scenario.gql)
   end
 
   # Public: Returns the value of the scaling attribute in the original unscaled
