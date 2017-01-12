@@ -73,10 +73,11 @@
 - residences_roof_surface_available_for_pv = 266.7
 - buildings_roof_surface_available_for_pv = 133.3
 - base_dataset = nl
+- technical_lifetime_insulation = 30.0
 - scaling.area_attribute = number_of_residences
 - scaling.base_value = 7449298
 - scaling.has_agriculture =
 - scaling.has_energy =
 - scaling.has_industry =
-- scaling.value = 7449298
+- scaling.value = 1000
 - init.foo_demand = 50.0
