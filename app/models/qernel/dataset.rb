@@ -30,17 +30,5 @@ module Qernel
     def time_curves
       @data[:time_curves]
     end
-
-    def initializer_inputs
-      Hash[inputs.map do |key, val|
-        [Input.records.fetch(key.to_s), val]
-      end]
-    end
-
-    private
-
-    def inputs
-      @data[:area][:area_data][:init] || {}
-    end
   end
 end
