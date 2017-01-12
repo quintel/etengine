@@ -16,61 +16,90 @@ describe Input do
       })
     end
 
-    describe 'min_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        input.min_value_for(gql).should eql(2)
+    # Unscaled scenario
+    context 'with an unscaled scenario' do
+      describe 'min_value_for' do
+        it 'should return the value when given Gql::Gql' do
+          expect(input.min_value_for(gql)).to eq(2)
+        end
+
+        it 'should return the value when given Scenario' do
+          expect(input.min_value_for(scenario)).to eq(2)
+        end
       end
 
-      it 'should return the value when given Scenario' do
-        input.min_value_for(scenario).should eql(2)
+      describe 'max_value_for' do
+        it 'should return the value when given Gql::Gql' do
+          expect(input.max_value_for(gql)).to eq(10)
+        end
+
+        it 'should return the value when given Scenario' do
+          expect(input.max_value_for(scenario)).to eq(10)
+        end
       end
 
-      it 'should return scaled values when the scenario is scaled' do
-        scenario.create_scaler!(
-          area_attribute: 'number_of_residences',
-          value: 10000
-        )
+      describe 'start_value_for' do
+        it 'should return the value when given Gql::Gql' do
+          expect(input.start_value_for(gql)).to eq(5)
+        end
 
-        input.min_value_for(scenario).
-          should be_within(1e-9).of(2.0 / 7210388.0 * 10000)
-      end
-    end
-
-    describe 'max_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        input.max_value_for(gql).should eql(10)
-      end
-
-      it 'should return the value when given Scenario' do
-        input.max_value_for(scenario).should eql(10)
-      end
-
-      it 'should return scaled values when the scenario is scaled' do
-        scenario.create_scaler!(
-          area_attribute: 'number_of_residences',
-          value: 10000
-        )
-
-        input.max_value_for(scenario).should eql(10.0 / 7210388.0 * 10000)
+        it 'should return the value when given Scenario' do
+          expect(input.start_value_for(scenario)).to eq(5)
+        end
       end
     end
 
-    describe 'start_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        input.start_value_for(gql).should eql(5)
-      end
-
-      it 'should return the value when given Scenario' do
-        input.start_value_for(scenario).should eql(5)
-      end
-
-      it 'should return scaled values when the scenario is scaled' do
+    # Scaled scenario to 10.000 households
+    context 'with a scenario scaled to 10.000 households' do
+      before do
         scenario.create_scaler!(
           area_attribute: 'number_of_residences',
           value: 10000
         )
+      end
 
-        input.start_value_for(scenario).should eql(5.0 / 7210388.0 * 10000)
+      describe 'min_value_for' do
+        it 'should return the value when given Scenario' do
+          expect(input.min_value_for(scenario)).
+            to be_within(1e-9).of(2.0 / 7210388.0 * 10000)
+        end
+      end
+
+      describe 'max_value_for' do
+        it 'should return the value when given Scenario' do
+          input.max_value_for(scenario).should eql(10.0 / 7210388.0 * 10000)
+        end
+      end
+
+      describe 'start_value_for' do
+        it 'should return the value when given Scenario' do
+          input.start_value_for(scenario).should eql(5.0 / 7210388.0 * 10000)
+        end
+      end
+    end
+
+    # Scenario with derived dataset to 1000 households
+    context 'with a derived dataset scaled to 1000 households' do
+      before { scenario.update_attribute(:area_code, :ameland) }
+
+      describe 'min_value_for' do
+        it 'should return the value when given Scenario' do
+          input.min_value_for(scenario).
+            should be_within(1e-9).of(2.0 / 7449298.0 * 1000)
+        end
+      end
+
+      describe 'max_value_for' do
+        it 'should return scaled value when given Scenario' do
+          input.max_value_for(scenario).
+            should be_within(1e-9).of(10.0 / 7449298.0 * 1000)
+        end
+      end
+
+      describe 'start_value_for' do
+        it 'should return scaled value when given Scenario' do
+          input.start_value_for(scenario).should eql(5.0 / 7449298.0 * 1000)
+        end
       end
     end
 

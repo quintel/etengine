@@ -118,6 +118,10 @@ class Scenario < ActiveRecord::Base
     Area.get(area_code)
   end
 
+  def scaled?
+    scaler.present? || area[:derived]
+  end
+
   # Public: The year on which the analysis for the scenario's area is based.
   #
   # Returns an integer.

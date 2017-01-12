@@ -321,14 +321,14 @@ class Input
   #
   # Returns an Input::Cache.
   def cache_for(scenario)
-    scenario.scaler && scenario.scaler.input_cache || Input.cache
+    Input.cache(scenario)
   end
 
   # Public: Retrieves the current input value cache. Supply an optional scenario
   # and the values in the cache will be scaled to fit the scaled area.
   def self.cache(scenario = nil)
-    if scenario && scenario.scaler
-      scenario.scaler.input_cache
+    if scenario && scenario.scaled?
+      @input_cache ||= Input::ScaledInputs.new(Input::Cache.new, scenario.gql)
     else
       @_cache ||= Input::Cache.new
     end
@@ -450,7 +450,7 @@ class Input
       values = @cache.send(:values_for, input, @gql)
 
       if ScenarioScaling.scale_input?(input)
-        scaler = scenario.scaler
+        scaler = ScenarioScaling.from_scenario(scenario)
         scaled = { step: scaler.input_step(input) }
 
         unless input.min_value_gql
