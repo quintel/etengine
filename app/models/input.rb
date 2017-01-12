@@ -30,6 +30,10 @@ class Input
     super(key.to_s)
   end
 
+  def self.fetch(key)
+    super(key.to_s)
+  end
+
   def self.load_records
     Hash[ Etsource::Loader.instance.inputs.map do |input|
       [input.key.to_s, input]
