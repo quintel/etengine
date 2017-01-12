@@ -1,5 +1,5 @@
 # InMemoryRecord adds a few helper methods for models that you want to persist
-# in memory, but not necessarly in a database. 
+# in memory, but not necessarly in a database.
 #
 # @example
 #   class Foo
@@ -13,7 +13,7 @@
 #   Foo.records     # => {"id_1": <Foo>, "id_2": <Foo>}
 #   Foo.all         # => [<Foo>, <Foo>]
 #   Foo.get("id_1") # => <Foo>
-# 
+#
 #
 module InMemoryRecord
   extend ActiveSupport::Concern
@@ -28,18 +28,18 @@ module InMemoryRecord
     end
 
     def all
-      # self.name => self.class.name 
+      # self.name => self.class.name
       NastyCache.instance.fetch("#{self.name}#all") do
         records.values.uniq
       end
     end
 
     # records is a hash of key => object
-    # there can be multiple keys for one object. 
+    # there can be multiple keys for one object.
     # The following keys are removed: nil, ""
     def records
       NastyCache.instance.fetch("#{self.name}#records") do
-        load_records.tap do |records| 
+        load_records.tap do |records|
           records.delete(nil)
           records.delete("")
         end
@@ -48,6 +48,10 @@ module InMemoryRecord
 
     def get(key)
       records[key]
+    end
+
+    def fetch(key)
+      records.fetch(key)
     end
 
     def add(obj)
