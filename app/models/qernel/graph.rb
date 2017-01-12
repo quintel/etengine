@@ -402,6 +402,17 @@ class Graph
     @graph_query ||= GraphApi.new(self)
   end
 
+  def initializer_inputs
+    if init = area.init
+      init.
+        map { |key, val| [Input.fetch(key), val] }.
+        sort_by { |input, _| input.priority }.
+        reverse
+    else
+      []
+    end
+  end
+
 public
 
   # ====== Methods only used for Testing =============================

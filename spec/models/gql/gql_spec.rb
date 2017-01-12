@@ -17,10 +17,11 @@ describe Gql::Gql do
   end
 
   describe "with incorrect initial inputs" do
-    before {
-      gql.dataset.stub(:inputs)
-        .and_return(non_existing_initializer_input: 5)
-    }
+    before do
+      gql.prepare
+      gql.present.graph.area.stub(:init).
+        and_return({non_existing_initializer_input: 5})
+    end
 
     it 'raises an error' do
       expect { gql.prepare }.to raise_error(KeyError)

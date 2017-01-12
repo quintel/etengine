@@ -340,7 +340,7 @@ module Gql
         apply_initializer_inputs(:future)
       else
         instrument("gql.performance.#{graph}.apply_initializer_inputs") do
-          @dataset.initializer_inputs.each_pair do |input, val|
+          present.graph.initializer_inputs.each do |input, val|
             update_graph(graph, input, val)
           end
         end
