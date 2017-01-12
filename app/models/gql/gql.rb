@@ -75,7 +75,6 @@ module Gql
 
         if block_given?
           self.init_datasets
-          self.update_initializer_inputs
           self.update_graphs
           yield self
           self.calculate_graphs
@@ -211,7 +210,6 @@ module Gql
     def prepare
       log = 'gql.performance.'
       instrument(log+'init_datasets')             { init_datasets }
-      instrument(log+'update_initializer_inputs') { update_initializer_inputs }
       instrument(log+'update_graphs')             { update_graphs }
       instrument(log+'calculate_graphs')          { calculate_graphs }
     end
@@ -244,6 +242,7 @@ module Gql
       present_graph.dataset ||= dataset_clone
       future_graph.dataset = dataset_clone
       assign_attributes_from_scenario
+      apply_initializer_inputs
     end
 
     # Inside GQL, functions and Gqueries we had some references to
@@ -333,16 +332,18 @@ module Gql
       end
     end
 
-    def update_initializer_inputs
-      apply_initializer_inputs(present)
-      apply_initializer_inputs(future)
-    end
-
     private
 
-    def apply_initializer_inputs(graph)
-      @dataset.initializer_inputs.each_pair do |input, val|
-        update_graph(graph, input, val)
+    def apply_initializer_inputs(graph = nil)
+      unless graph
+        apply_initializer_inputs(:present)
+        apply_initializer_inputs(:future)
+      else
+        instrument("gql.performance.#{graph}.apply_initializer_inputs") do
+          @dataset.initializer_inputs.each_pair do |input, val|
+            update_graph(graph, input, val)
+          end
+        end
       end
     end
   end
