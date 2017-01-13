@@ -402,6 +402,18 @@ class Graph
     @graph_query ||= GraphApi.new(self)
   end
 
+  def initializer_inputs
+    decorated_inputs.
+      sort_by { |input, _| input.priority }.
+      reverse
+  end
+
+  def decorated_inputs
+    (area.init || {}).map do |input_key, input_value|
+      [Input.fetch(input_key), input_value]
+    end
+  end
+
 public
 
   # ====== Methods only used for Testing =============================
