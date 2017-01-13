@@ -334,15 +334,15 @@ module Gql
 
     private
 
-    def apply_initializer_inputs(graph = nil)
-      unless graph
-        apply_initializer_inputs(:present)
-        apply_initializer_inputs(:future)
-      else
-        instrument("gql.performance.#{graph}.apply_initializer_inputs") do
-          present.graph.initializer_inputs.each do |input, val|
-            update_graph(graph, input, val)
-          end
+    def apply_initializer_inputs
+      set_initializer_inputs(:present)
+      set_initializer_inputs(:future)
+    end
+
+    def set_initializer_inputs(graph)
+      instrument("gql.performance.#{graph}.set_initializer_inputs") do
+        present.graph.initializer_inputs.each do |input, val|
+          update_graph(graph, input, val)
         end
       end
     end

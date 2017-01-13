@@ -403,13 +403,14 @@ class Graph
   end
 
   def initializer_inputs
-    if init = area.init
-      init.
-        map { |key, val| [Input.fetch(key), val] }.
-        sort_by { |input, _| input.priority }.
-        reverse
-    else
-      []
+    decorated_inputs.
+      sort_by { |input, _| input.priority }.
+      reverse
+  end
+
+  def decorated_inputs
+    (area.init || {}).map do |input_key, input_value|
+      [Input.fetch(input_key), input_value]
     end
   end
 
