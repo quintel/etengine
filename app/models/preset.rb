@@ -21,8 +21,10 @@ class Preset
   def self.from_scenario(scenario)
     attrs = scenario.attributes.symbolize_keys
 
-    if scenario.scaler
-      attrs[:scaling] = Atlas::Preset::Scaling.new(scenario.scaler.attributes)
+    if scenario.scaled?
+      attrs[:scaling] = Atlas::Preset::Scaling.new(
+        ScenarioScaling.from_scenario(scenario).attributes
+      )
     end
 
     Preset.new(attrs)
