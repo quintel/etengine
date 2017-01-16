@@ -186,7 +186,7 @@ GEM
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
     kgio (2.9.2)
-    libv8 (3.16.14.15)
+    libv8 (3.16.14.17)
     listen (2.7.1)
       celluloid (>= 0.15.2)
       celluloid-io (>= 0.15.0)
@@ -389,4 +389,4 @@ RUBY VERSION
    ruby 2.1.9p490
 
 BUNDLED WITH
-   1.13.6
+   1.13.7
