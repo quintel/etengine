@@ -45,12 +45,6 @@ module Api
 
         json
       end
-
-      private
-
-      def scaling_for(resource)
-        ScenarioScaling.from_scenario(resource)
-      end
     end # ScenarioPresenter
   end # V3
 end # Api

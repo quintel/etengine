@@ -272,7 +272,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
         it 'should not change the user values' do
           scenario = Scenario.find(json['id'])
-          attrs    = %w( foo_demand input_2 input_3 )
 
           expect(scenario.user_values['foo_demand']).
             to eq(preset.user_values[:foo_demand])
@@ -318,6 +317,63 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         end
       end # retaining existing scaling
     end # with an already-scaled scenario
+
+    context "with a derived dataset" do
+      context "(providing a derived area code)" do
+        before do
+          post 'api/v3/scenarios', scenario: {
+            area_code: 'ameland',
+            user_values: {
+              foo_demand: 100.0
+            }
+          }
+
+          post 'api/v3/scenarios', scenario: {
+            scenario_id: Scenario.last.id,
+            area_code: 'ameland',
+            scale: { area_attribute: 'number_of_residences', value: 100 }
+          }
+        end
+
+        let(:json) { JSON.parse(response.body) }
+        let(:multi) { 100 / Atlas::Dataset.find(:ameland).number_of_residences.to_f }
+
+        it 'should be successful' do
+          response.status.should eql(200)
+        end
+
+        it 'should retain the scaled user values' do
+          unscaled = Scenario.first
+          scaled   = Scenario.last
+
+          expect(scaled.user_values['foo_demand']).
+            to eq(unscaled.user_values[:foo_demand].to_f * multi)
+        end
+      end
+
+      context "(descale with a derived area code)" do
+        before do
+          post 'api/v3/scenarios', scenario: {
+            area_code: 'ameland',
+            scale: { area_attribute: 'number_of_residences', value: 500_000 }
+          }
+
+          post 'api/v3/scenarios', scenario: {
+            scenario_id: Scenario.last.id, descale: true
+          }
+        end
+
+        let(:json) { JSON.parse(response.body) }
+
+        it 'should be successful' do
+          response.status.should eql(200)
+        end
+
+        it 'should create a second scenario from the base dataset' do
+          expect(Scenario.count).to eq(2)
+        end
+      end
+    end # with a derived dataset
   end # when scaling the area
 
 end
