@@ -25,11 +25,8 @@ class ScenarioScaling < ActiveRecord::Base
   end
 
   def self.from_scenario(scenario)
-    if scenario.area[:derived]
-      from_atlas_scaling(scenario.area[:scaling])
-    else
-      scenario.scaler
-    end
+    scenario.scaler ||
+      (scenario.area[:derived] && from_atlas_scaling(scenario.area[:scaling]))
   end
 
   # Public: Determines if the given input should have it's values scaled.
@@ -89,12 +86,11 @@ class ScenarioScaling < ActiveRecord::Base
   # values of inputs whose unit is relative to the size of the region.
   #
   # Returns a hash.
-  def input_step(input)
-    if input.step_value && self.class.scale_input?(input)
+  def input_step(step_value)
+    if step_value
       @input_divisor ||= 10 ** Math.log10(1 / multiplier).ceil
-      input.step_value / @input_divisor
-    else
-      input.step_value
+
+      step_value / @input_divisor
     end
   end
 
@@ -118,6 +114,10 @@ class ScenarioScaling < ActiveRecord::Base
   # scenario.
   def base_value
     super || scenario.area[area_attribute]
+  end
+
+  def input_cache
+    @input_cache ||= Input::ScaledInputs.new(Input.cache, scenario.gql)
   end
 
   def set_base_with(base_scenario)
