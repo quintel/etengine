@@ -119,11 +119,7 @@ class Scenario < ActiveRecord::Base
   end
 
   def scaled?
-    scaler.present? || derived?
-  end
-
-  def derived?
-    Area.derived?(area_code)
+    scaler.present? || Area.derived?(area_code)
   end
 
   # Public: The year on which the analysis for the scenario's area is based.

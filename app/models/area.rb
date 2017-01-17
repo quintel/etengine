@@ -5,7 +5,6 @@ class Area
   end
 
   def self.derived?(area_code)
-    Atlas::Dataset.exists?(area_code) &&
-      get(area_code).fetch(:derived)
+    Atlas::Dataset.exists?(area_code) && get(area_code).fetch(:derived)
   end
 end
