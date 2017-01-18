@@ -25,10 +25,10 @@ class ScenarioScaling < ActiveRecord::Base
   end
 
   def self.from_scenario(scenario)
-    if scenario.area[:derived]
-      from_atlas_scaling(scenario.area[:scaling])
-    else
+    if scenario.scaler
       scenario.scaler
+    elsif Area.derived?(scenario.area_code)
+      from_atlas_scaling(scenario.area[:scaling])
     end
   end
 
