@@ -11,6 +11,7 @@ module Api
           # attribute which tells it if the region may be chosen.
           area_data[:useable] = area_data[:enabled][:etmodel]
           area_data.delete(:enabled)
+          area_data.delete(:init)
 
           area_data
         end
