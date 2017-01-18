@@ -88,7 +88,7 @@ module Api
 
         @scenario = Scenario.new
 
-        if scaler_attributes && ! attrs[:descale] && ! Area.derived?(attrs.fetch(:area_code))
+        if scaler_attributes && ! attrs[:descale]
           scaler = @scenario.build_scaler(scaler_attributes)
 
           if parent_id = attrs[:scenario_id] || attrs[:preset_scenario_id]
