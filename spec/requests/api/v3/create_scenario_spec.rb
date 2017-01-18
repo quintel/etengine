@@ -318,6 +318,25 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         end
       end # retaining existing scaling
     end # with an already-scaled scenario
+
+    context "with a derived dataset" do
+      before do
+        post 'api/v3/scenarios', scenario: {
+          area_code: 'ameland',
+          scale: { area_attribute: 'number_of_residences', value: 500_000 }
+        }
+      end
+
+      let(:json) { JSON.parse(response.body) }
+
+      it 'should be successful' do
+        response.status.should eql(200)
+      end
+
+      it 'should not create a scenario scaling' do
+        expect(ScenarioScaling.count).to eq(0)
+      end
+    end # with a derived dataset
   end # when scaling the area
 
 end
