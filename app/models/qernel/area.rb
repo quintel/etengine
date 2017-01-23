@@ -1,5 +1,4 @@
 module Qernel
-
   class Area
     include DatasetAttributes
 
