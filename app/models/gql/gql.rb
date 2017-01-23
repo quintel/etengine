@@ -209,9 +209,9 @@ module Gql
     #
     def prepare
       log = 'gql.performance.'
-      instrument(log+'init_datasets')             { init_datasets }
-      instrument(log+'update_graphs')             { update_graphs }
-      instrument(log+'calculate_graphs')          { calculate_graphs }
+      instrument(log+'init_datasets')    { init_datasets }
+      instrument(log+'update_graphs')    { update_graphs }
+      instrument(log+'calculate_graphs') { calculate_graphs }
     end
 
     # Runs an array of gqueries. The gquery list might be expressed in all the formats accepted
@@ -354,8 +354,8 @@ module Gql
 
     def set_initializer_inputs(graph)
       instrument("gql.performance.#{graph}.set_initializer_inputs") do
-        present.graph.initializer_inputs.each do |input, val|
-          update_graph(graph, input, val)
+        present.graph.initializer_inputs.each do |input, value|
+          update_graph(graph, input, value)
         end
       end
     end
