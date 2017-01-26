@@ -405,9 +405,7 @@ class Graph
   end
 
   def initializer_inputs
-    decorated_inputs.
-      sort_by { |input, _| input.priority }.
-      reverse
+    decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
   end
 
   def decorated_inputs
