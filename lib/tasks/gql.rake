@@ -136,7 +136,6 @@ namespace :gql do
   end
 
   def init_environment
-    GC.disable
     Rails.cache.clear
     # Use etsource git repository per default
     # Use different directory by passing ETSOURCE_DIR=...
@@ -168,11 +167,17 @@ namespace :gql do
   end
 
   def load_scenario
-    if settings = load_settings
-      settings = settings[:settings].with_indifferent_access
-      scenario = Scenario.new(Scenario.new_attributes(settings))
+    if scenario_id = ENV['SCENARIO_ID']
+      scenario = Scenario.find(Integer(scenario_id))
+      puts "** Using scenario #{scenario.identifier}"
+      scenario
     else
-      scenario = Scenario.default
+      if settings = load_settings
+        settings = settings[:settings].with_indifferent_access
+        Scenario.new(Scenario.new_attributes(settings))
+      else
+        Scenario.default
+      end
     end
   end
 
