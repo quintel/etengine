@@ -201,13 +201,20 @@ module Qernel::DatasetAttributes
       if observe_get
         # in debug mode we call #log with a block, which stores the value
         # in the log and returns it back.
-        log(:method, attr_name) { dataset_attributes[attr_name] = yield }
+        log(:method, attr_name) { fetch_set(attr_name, yield) }
       else
         # if not in debug mode, simply yield the value. Do not log the exceptions
         # but simply return the rescue_with value
-        dataset_attributes[attr_name] = yield
+        fetch_set(attr_name, yield)
       end
     end
+  end
+
+  def fetch_set(attr_name, value)
+    if graph && graph.cache_dataset_fetch?
+      dataset_attributes[attr_name] = value
+    end
+    value
   end
 
   def log(type, attr_name, value = nil, &block)
