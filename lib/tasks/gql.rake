@@ -136,7 +136,6 @@ namespace :gql do
   end
 
   def init_environment
-    GC.disable
     Rails.cache.clear
     # Use etsource git repository per default
     # Use different directory by passing ETSOURCE_DIR=...
