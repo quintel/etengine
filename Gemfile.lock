@@ -11,17 +11,6 @@ GIT
     git (1.2.5)
 
 GIT
-  remote: git://github.com/quintel/atlas.git
-  revision: 1a67953fc974177bad9eb194750d4677b4b99880
-  ref: 1a67953
-  specs:
-    atlas (1.0.0)
-      activemodel (~> 4.0)
-      activesupport (~> 4.0)
-      turbine-graph (>= 0.1)
-      virtus (~> 1.0)
-
-GIT
   remote: git://github.com/quintel/merit.git
   revision: b9a2147522c7c510ab198abc26dc22416ba157c0
   ref: b9a2147
@@ -51,6 +40,15 @@ GIT
   ref: e36554a
   specs:
     rubel (0.1.1)
+
+PATH
+  remote: ../atlas
+  specs:
+    atlas (1.0.0)
+      activemodel (~> 4.0)
+      activesupport (~> 4.0)
+      turbine-graph (>= 0.1)
+      virtus (~> 1.0)
 
 GEM
   remote: http://rubygems.org/
