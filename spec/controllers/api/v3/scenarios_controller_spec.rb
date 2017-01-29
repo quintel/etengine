@@ -3,11 +3,11 @@ require 'spec_helper'
 describe Api::V3::ScenariosController do
   let(:scenario) { FactoryGirl.create(:scenario) }
   let(:scenarios) { 5.times.map { FactoryGirl.create(:scenario) } }
-  
+
   before do
     Input.stub(:records).and_return({
-      'foo' => FactoryGirl.build(:input, key: :foo),
-      'bar' => FactoryGirl.build(:input, key: :bar)
+      'foo' => FactoryGirl.build(:input, key: :foo, priority: 0),
+      'bar' => FactoryGirl.build(:input, key: :bar, priority: 0)
     })
 
     Input.stub(:all).and_return(Input.records.values)

@@ -263,10 +263,12 @@ module Gql
     end
 
     def update_graphs
-      # 2011-08-15: the present has to be prepared first. otherwise
-      # updating the future won't work (we need the present values)
-      update_present
-      update_future
+      with_disabled_dataset_fetch_cache do
+        # 2011-08-15: the present has to be prepared first. otherwise
+        # updating the future won't work (we need the present values)
+        update_present
+        update_future
+      end
     end
 
     def calculate_graphs
@@ -335,8 +337,19 @@ module Gql
     private
 
     def apply_initializer_inputs
-      set_initializer_inputs(:present)
-      set_initializer_inputs(:future)
+      with_disabled_dataset_fetch_cache do
+        set_initializer_inputs(:present)
+        set_initializer_inputs(:future)
+      end
+    end
+
+    def with_disabled_dataset_fetch_cache
+      present.graph.cache_dataset_fetch = false
+      future.graph.cache_dataset_fetch = false
+      yield
+    ensure
+      present.graph.cache_dataset_fetch = true
+      future.graph.cache_dataset_fetch = true
     end
 
     def set_initializer_inputs(graph)

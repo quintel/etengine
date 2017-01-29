@@ -48,7 +48,7 @@ class Graph
   end
 
   attr_reader :converters, :logger
-  attr_writer :goals
+  attr_writer :goals, :cache_dataset_fetch
 
   attr_accessor :dataset,
                 :finished_converters,
@@ -64,6 +64,8 @@ class Graph
     @links_by_group      = {}
 
     self.converters = converters
+
+    self.cache_dataset_fetch = true
   end
 
   # Public: Returns the plugin identified by the given +name+ which was used
@@ -403,15 +405,17 @@ class Graph
   end
 
   def initializer_inputs
-    decorated_inputs.
-      sort_by { |input, _| input.priority }.
-      reverse
+    decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
   end
 
   def decorated_inputs
     (area.init || {}).map do |input_key, input_value|
       [Input.fetch(input_key), input_value]
     end
+  end
+
+  def cache_dataset_fetch?
+    @cache_dataset_fetch
   end
 
 public

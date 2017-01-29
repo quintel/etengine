@@ -15,15 +15,15 @@ describe 'Updating inputs with API v3' do
   before do
     Input.stub(:records).and_return({
       'balanced_one' =>
-        FactoryGirl.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped'),
+        FactoryGirl.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped', priority: 0),
       'balanced_two' =>
-        FactoryGirl.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped'),
+        FactoryGirl.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped', priority: 0),
       'unrelated_one' =>
-        FactoryGirl.build(:input, key: 'unrelated_one', share_group: 'diode'),
+        FactoryGirl.build(:input, key: 'unrelated_one', share_group: 'diode', priority: 0),
       'unrelated_two' =>
-        FactoryGirl.build(:input, key: 'unrelated_two', share_group: 'diode'),
+        FactoryGirl.build(:input, key: 'unrelated_two', share_group: 'diode', priority: 0),
       'nongrouped' =>
-        FactoryGirl.build(:input, key: 'nongrouped')
+        FactoryGirl.build(:input, key: 'nongrouped', priority: 0)
     })
 
     Input.stub(:all).and_return(Input.records.values)

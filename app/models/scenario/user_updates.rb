@@ -93,7 +93,7 @@ module Scenario::UserUpdates
   def inputs
     @inputs ||=
       combined_values.map { |key, _| Input.get(key) }.
-      compact.sort_by(&:priority).reverse
+      compact.sort_by { |input| [-input.priority, input.key] }
   end
 
   # Internal: A hash of inputs, and the values to be set on the named graph.
