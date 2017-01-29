@@ -90,7 +90,9 @@ describe "API v3scenario life cycle", :etsource_fixture do
     put url, :gqueries => ['foo_demand']
 
     result = JSON.parse(response.body)['gqueries']
-    result['foo_demand']['future'].should == 10.0
+    # First, set to 10 by applying foo_demand = 10
+    # Then, set to 30 by applying input_3 = 30
+    result['foo_demand']['future'].should == 30.0
 
     # ---- reset -----------------------------------------------------------------
 
