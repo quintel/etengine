@@ -5,7 +5,7 @@ module Qernel
     # Attributes defined in ETSource should not be defined here, but in the
     # Atlas "Dataset" class.
     ATTRIBUTES_USED =
-      [Atlas::Dataset::FullDataset, Atlas::Dataset::DerivedDataset].
+      [Atlas::Dataset::Full, Atlas::Dataset::Derived].
         map { |klass| klass.attribute_set.map(&:name) }.
         flatten -
         [:id, :parent_id]
