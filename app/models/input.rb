@@ -1,9 +1,5 @@
 class Input
-  include InMemoryRecord
-  include CommandAttributes
-  include ActiveModel::Validations
-
-  extend ActiveModel::Naming
+  include Common
 
   validates :update_period, :presence => true,
                             :inclusion => %w[present future both before]
@@ -14,17 +10,6 @@ class Input
   ]
 
   attr_accessor *ATTRIBUTES
-  attr_accessor :file_path
-
-  def initialize(attrs={})
-    attrs && attrs.each do |name, value|
-      send("#{name}=", value) if respond_to? name.to_sym
-    end
-  end
-
-  def key=(new_key)
-    new_key && (@key = new_key.to_s)
-  end
 
   def self.get(key)
     super(key.to_s)
@@ -34,10 +19,8 @@ class Input
     super(key.to_s)
   end
 
-  def self.load_records
-    Hash[ Etsource::Loader.instance.inputs.map do |input|
-      [input.key.to_s, input]
-    end ]
+  def self.inputs
+    Etsource::Loader.instance.inputs
   end
 
   def self.with_share_group
@@ -67,12 +50,6 @@ class Input
 
   def self.inputs_grouped
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
-  end
-
-  # Public: The GQL::Command which represents the string held in the +query+
-  # attribute.
-  def command
-    @command ||= command_for(:query)
   end
 
   def before_update?

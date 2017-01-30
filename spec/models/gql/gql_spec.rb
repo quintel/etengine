@@ -15,16 +15,4 @@ describe Gql::Gql do
       expect(gql.future.graph.converter(:foo).demand).to eq(50.0)
     end
   end
-
-  describe "with incorrect initial inputs" do
-    before do
-      gql.prepare
-      gql.present.graph.area.stub(:init).
-        and_return({non_existing_initializer_input: 5})
-    end
-
-    it 'raises an error' do
-      expect { gql.prepare }.to raise_error(KeyError)
-    end
-  end
 end
