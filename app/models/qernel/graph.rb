@@ -410,7 +410,7 @@ class Graph
 
   def decorated_inputs
     (area.init || {}).map do |input_key, input_value|
-      [Input.fetch(input_key), input_value]
+      [InitializerInput.fetch(input_key), input_value]
     end
   end
 
