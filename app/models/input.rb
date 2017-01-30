@@ -1,4 +1,6 @@
-class Input < BaseInput
+class Input
+  include Common
+
   validates :update_period, :presence => true,
                             :inclusion => %w[present future both before]
 
@@ -8,6 +10,14 @@ class Input < BaseInput
   ]
 
   attr_accessor *ATTRIBUTES
+
+  def self.get(key)
+    super(key.to_s)
+  end
+
+  def self.fetch(key)
+    super(key.to_s)
+  end
 
   def self.inputs
     Etsource::Loader.instance.inputs
