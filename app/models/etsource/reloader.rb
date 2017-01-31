@@ -31,6 +31,13 @@ module Etsource
         true
       end
 
+      def stop!
+        if @listener
+          @listener.stop
+          @listener = nil
+        end
+      end
+
       def reload!
         Rails.cache.clear
 

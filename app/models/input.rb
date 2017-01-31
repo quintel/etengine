@@ -1,9 +1,5 @@
 class Input
-  include InMemoryRecord
-  include CommandAttributes
-  include ActiveModel::Validations
-
-  extend ActiveModel::Naming
+  include Common
 
   validates :update_period, :presence => true,
                             :inclusion => %w[present future both before]
@@ -14,26 +10,9 @@ class Input
   ]
 
   attr_accessor *ATTRIBUTES
-  attr_accessor :file_path
 
-  def initialize(attrs={})
-    attrs && attrs.each do |name, value|
-      send("#{name}=", value) if respond_to? name.to_sym
-    end
-  end
-
-  def key=(new_key)
-    new_key && (@key = new_key.to_s)
-  end
-
-  def self.get(key)
-    super(key.to_s)
-  end
-
-  def self.load_records
-    Hash[ Etsource::Loader.instance.inputs.map do |input|
-      [input.key.to_s, input]
-    end ]
+  def self.inputs
+    Etsource::Loader.instance.inputs
   end
 
   def self.with_share_group
@@ -65,12 +44,6 @@ class Input
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  # Public: The GQL::Command which represents the string held in the +query+
-  # attribute.
-  def command
-    @command ||= command_for(:query)
-  end
-
   def before_update?
     update_period == 'before'
   end
@@ -92,57 +65,6 @@ class Input
     super(
       :methods => [:id, :max_value, :min_value, :start_value]
     )
-  end
-
-  def client_values(gql)
-    {
-      key => {
-        :max_value   => max_value_for(gql),
-        :min_value   => min_value_for(gql),
-        :start_value => start_value_for(gql),
-        :full_label  => full_label_for(gql),
-        :disabled    => disabled_in_current_area?(gql)
-      }
-    }
-  end
-
-  # This creates a giant hash with all value-related attributes of the inputs. Some inputs
-  # require dynamic values, though. Check #dynamic_start_values
-  #
-  # @param [Gql::Gql the gql the query should run against]
-  #
-  def self.static_values(gql)
-    Input.all.inject({}) do |hsh, input|
-      begin
-        hsh.merge input.client_values(gql)
-      rescue => ex
-        Airbrake.notify(
-          :error_message => "Input#static_values for input #{input.key} failed: #{ex}",
-          :backtrace => caller,
-          :parameters => {:input => input, :api_scenario => gql.scenario }) unless
-           APP_CONFIG[:standalone]
-
-        hsh
-      end
-    end
-  end
-
-  # See #static_values
-  #
-  def self.dynamic_start_values(gql)
-    Input.all.select(&:dynamic_start_value?).inject({}) do |hsh, input|
-      begin
-        hsh.merge input.key => {
-          :start_value => input.start_value_for(gql)
-        }
-      rescue => ex
-        Airbrake.notify(
-          :error_message => "Input#dynamic_start_values for input #{input.key} failed for api_session_id #{gql.scenario.id}",
-          :backtrace => caller,
-        :parameters => {:input => input, :api_scenario => gql.scenario }) unless APP_CONFIG[:standalone]
-        hsh
-      end
-    end
   end
 
   # Returns the label shown alongside the input name in ETM.
@@ -246,10 +168,6 @@ class Input
     end
   end
 
-  def dynamic_start_value?
-    @start_value_gql && @start_value_gql.match(/^future:/) != nil
-  end
-
   # Area Dependent Min / Max / Disabled Settings -----------------------------
 
   # Returns if the Input is disabled in the area of the given scenario or
@@ -317,7 +235,7 @@ class Input
   #
   # Returns an Input::Cache.
   def cache_for(scenario)
-    scenario.scaler && scenario.scaler.input_cache || Input.cache
+    Input.cache(scenario)
   end
 
   # Public: Retrieves the current input value cache. Supply an optional scenario
@@ -326,147 +244,9 @@ class Input
     if scenario && scenario.scaler
       scenario.scaler.input_cache
     else
-      @_cache ||= Input::Cache.new
+      @_cache ||= Cache.new
     end
   end
-
-  class Cache
-    # Retrieves the hash containing all of the input attributes.
-    #
-    # If no values for the area and year are already cached, the entire input
-    # collection values will be calculated and cached.
-    #
-    # @param [Scenario] scenario
-    #   A scenario with an area code and end year.
-    # @param [Input] input
-    #   The input whose values are to be retrieved.
-    #
-    def read(scenario, input)
-      cache_key = input_cache_key(scenario, input)
-
-      Rails.cache.read(cache_key) ||
-        ( warm_values_for(scenario) && Rails.cache.read(cache_key) )
-    end
-
-    #######
-    private
-    #######
-
-    # Sets the hash containing all of the input attributes.
-    #
-    # @param [Scenario] scenario
-    #   A scenario with an area code and end year.
-    # @param [Input] input
-    #   The input whose values are to be set.
-    # @param [Hash{Symbol=>Numeric}] values
-    #   Values for the input.
-    #
-    def set(scenario, input, values)
-      Rails.cache.write(input_cache_key(scenario, input), values)
-    end
-
-    # Given a scenario, pre-calculates the values for each input using the
-    # scenario area and end year, and stores them in memcache for fast
-    # retrieval later.
-    #
-    # @param [Scenario] scenario
-    #   A scenario with an area code and end year. All other attributes are
-    #   ignored.
-    #
-    def warm_values_for(scenario)
-      attributes = scenario.attributes.slice('area_code', 'end_year')
-      gql        = Scenario.new(attributes).gql
-
-      Input.all.each do |input|
-        set(scenario, input, values_for(input, gql))
-      end
-    end
-
-    # Returns the values which should be cached for an input.
-    #
-    # @param [Input] input
-    #   The input whose values are to be cached.
-    # @param [Gql::Gql] gql
-    #   GQL instance for calculating values.
-    #
-    def values_for(input, gql)
-      values = {
-        min:      input.min_value_for(gql),
-        max:      input.max_value_for(gql),
-        default:  input.start_value_for(gql),
-        label:    input.label_value_for(gql),
-        disabled: input.disabled_in_current_area?(gql)
-      }
-
-      required_numerics = values.slice(:min, :max, :default).values
-
-      if required_numerics.any? { |value| ! value.kind_of?(Numeric) }
-        { disabled: true, error: 'Non-numeric GQL value' }
-      else
-        values
-      end
-    end
-
-    # Given a scenario, returns the key used to store cached minimum, maximum,
-    # and start values.
-    #
-    # @param [Scenario] scenario
-    #   The scenario containing an area code and end year.
-    # @param [Input] input
-    #   The input whose key you want.
-    #
-    def input_cache_key(scenario, input)
-      area = scenario.area_code || :unknown
-      year = scenario.end_year  || :unknown
-      key  = input.kind_of?(Input) ? input.key : input
-
-      "#{ area }.#{ year }.inputs.#{ key }.values"
-    end
-  end # Cache
-
-  # An Input::Cache-compatible class which takes the cached values and scaled
-  # min, max, and default values to fit a scaled scenario.
-  class ScaledInputs
-    # Public: Creates a ScaledInputs class, using the given Input::Cache as a
-    # source for the original input values.
-    def initialize(cache, gql)
-      @cache = cache
-      @gql   = gql
-    end
-
-    # Public: Retrieves the hash containing all of the scaled input attributes.
-    #
-    # See Input::Cache#read
-    #
-    # scenario - A scenario with an area code and end year.
-    # input    - The input whose values are to be retrieved.
-    #
-    # Returns a hash.
-    def read(scenario, input)
-      values = @cache.send(:values_for, input, @gql)
-
-      if ScenarioScaling.scale_input?(input)
-        scaler = scenario.scaler
-        scaled = { step: scaler.input_step(input) }
-
-        unless input.min_value_gql
-          scaled[:min] = scaler.scale(values[:min])
-        end
-
-        unless input.max_value_gql
-          scaled[:max] = scaler.scale(values[:max])
-        end
-
-        unless input.start_value_gql
-          scaled[:default] = scaler.scale(values[:default])
-        end
-
-        values.merge(scaled)
-      else
-        values
-      end
-    end
-  end # ScaledInputs
 
   # Errors -------------------------------------------------------------------
 

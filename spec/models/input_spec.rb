@@ -12,65 +12,159 @@ describe Input do
         key:         'test-input',
         start_value:  5,
         min_value:    2,
-        max_value:   10
+        max_value:    10,
+        step_value:   1.0
       })
     end
 
-    describe 'min_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        input.min_value_for(gql).should eql(2)
+    # Unscaled scenario
+    context 'with an unscaled scenario' do
+      describe 'min_value_for' do
+        it 'should return 2 when given Gql::Gql' do
+          expect(input.min_value_for(gql)).to eq(2)
+        end
+
+        it 'should return the value when given Scenario' do
+          expect(input.min_value_for(scenario)).to eq(2)
+        end
       end
 
-      it 'should return the value when given Scenario' do
-        input.min_value_for(scenario).should eql(2)
+      describe 'max_value_for' do
+        it 'should return the value when given Gql::Gql' do
+          expect(input.max_value_for(gql)).to eq(10)
+        end
+
+        it 'should return the value when given Scenario' do
+          expect(input.max_value_for(scenario)).to eq(10)
+        end
       end
 
-      it 'should return scaled values when the scenario is scaled' do
-        scenario.create_scaler!(
-          area_attribute: 'number_of_residences',
-          value: 10000
-        )
+      describe 'start_value_for' do
+        it 'should return the value when given Gql::Gql' do
+          expect(input.start_value_for(gql)).to eq(5)
+        end
 
-        input.min_value_for(scenario).
-          should be_within(1e-9).of(2.0 / 7210388.0 * 10000)
+        it 'should return the value when given Scenario' do
+          expect(input.start_value_for(scenario)).to eq(5)
+        end
+      end
+
+      describe 'step value' do
+        it 'should return the value when given Scenario' do
+          expect(input.step_value).to eq(1.0)
+        end
       end
     end
 
-    describe 'max_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        input.max_value_for(gql).should eql(10)
-      end
-
-      it 'should return the value when given Scenario' do
-        input.max_value_for(scenario).should eql(10)
-      end
-
-      it 'should return scaled values when the scenario is scaled' do
+    # Scaled scenario to 10.000 households
+    context 'with a scenario scaled to 10.000 households' do
+      before do
         scenario.create_scaler!(
           area_attribute: 'number_of_residences',
           value: 10000
         )
+      end
 
-        input.max_value_for(scenario).should eql(10.0 / 7210388.0 * 10000)
+      describe 'min_value_for' do
+        it 'should return the value when given Scenario' do
+          expect(input.min_value_for(scenario)).
+            to be_within(1e-9).of(2.0 / 7210388.0 * 10000)
+        end
+      end
+
+      describe 'max_value_for' do
+        it 'should return the value when given Scenario' do
+          expect(input.max_value_for(scenario)).to eq(10.0 / 7210388.0 * 10000)
+        end
+      end
+
+      describe 'start_value_for' do
+        it 'should return the value when given Scenario' do
+          expect(input.start_value_for(scenario)).to eq(5.0 / 7210388.0 * 10000)
+        end
+      end
+
+      describe 'step value' do
+        it 'should return the value when given Scenario' do
+          expect(
+            input.cache_for(scenario).read(scenario, input)[:step]
+          ).to eq(0.001)
+        end
       end
     end
 
-    describe 'start_value_for' do
-      it 'should return the value when given Gql::Gql' do
-        input.start_value_for(gql).should eql(5)
+    # Scenario with derived dataset to 1000 households
+    context 'with a derived dataset scaled to 1000 households' do
+      before { scenario.update_attribute(:area_code, :ameland) }
+
+      describe 'min_value_for' do
+        it 'should return the value when given Scenario' do
+          input.min_value_for(scenario).
+            should be_within(1e-9).of(2.0 / 7449298.0 * 1000)
+        end
       end
 
-      it 'should return the value when given Scenario' do
-        input.start_value_for(scenario).should eql(5)
+      describe 'max_value_for' do
+        it 'should return scaled value when given Scenario' do
+          input.max_value_for(scenario).
+            should be_within(1e-9).of(10.0 / 7449298.0 * 1000)
+        end
       end
 
-      it 'should return scaled values when the scenario is scaled' do
-        scenario.create_scaler!(
+      describe 'start_value_for' do
+        it 'should return scaled value when given Scenario' do
+          input.start_value_for(scenario).should eql(5.0 / 7449298.0 * 1000)
+        end
+      end
+
+      describe 'step value' do
+        it 'should return the value when given Scenario' do
+          expect(
+            input.cache_for(scenario).read(scenario, input)[:step]
+          ).to eq(0.0001)
+        end
+      end
+    end
+
+    # Scenario with derived dataset to 1000 households
+    # .. and scaled to 100 households
+    context 'with a derived dataset scaled to 1000 households scaled to 100 households' do
+      before {
+        scenario.update_attribute(:area_code, 'ameland')
+        scenario.create_scaler(
           area_attribute: 'number_of_residences',
-          value: 10000
+          value: 100
         )
+      }
 
-        input.start_value_for(scenario).should eql(5.0 / 7210388.0 * 10000)
+      describe 'min_value_for' do
+        it 'should return the value when given Scenario' do
+          input.key = "marked"
+          expect(input.min_value_for(scenario)).
+            to be_within(1e-9).of(2.0 / 7449298.0 * 100)
+        end
+      end
+
+      describe 'max_value_for' do
+        it 'should return scaled value when given Scenario' do
+          expect(input.max_value_for(scenario)).
+            to be_within(1e-9).of(10.0 / 7449298.0 * 100)
+        end
+      end
+
+      describe 'start_value_for' do
+        it 'should return scaled value when given Scenario' do
+          expect(input.start_value_for(scenario)).
+            to eq(5.0 / 7449298.0 * 100)
+        end
+      end
+
+      describe 'step value' do
+        it 'should return the value when given Scenario' do
+          expect(
+            input.cache_for(scenario).read(scenario, input)[:step]
+          ).to eq(0.00001)
+        end
       end
     end
 

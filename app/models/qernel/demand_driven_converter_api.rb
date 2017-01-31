@@ -58,6 +58,7 @@ module Qernel
           return 0.0 if heat_links.empty?
 
           tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
+          tech_share = 0.0 if tech_share.abs < 1e-6
           units      = tech_share * (area.number_of_residences || 0)
           supplied   = households_supplied_per_unit
 

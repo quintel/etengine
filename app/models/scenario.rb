@@ -118,6 +118,10 @@ class Scenario < ActiveRecord::Base
     Area.get(area_code)
   end
 
+  def scaled?
+    scaler.present? || Area.derived?(area_code)
+  end
+
   # Public: The year on which the analysis for the scenario's area is based.
   #
   # Returns an integer.
@@ -167,7 +171,7 @@ class Scenario < ActiveRecord::Base
       end
       @gql.sandbox_mode = options.fetch(:sandbox_mode, :sandbox)
     end
-   @gql
+    @gql
   end
 
   def save_as_scenario(params = {})

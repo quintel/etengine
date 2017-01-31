@@ -46,8 +46,11 @@ module Etsource
 
     def area_attributes(area_code)
       @area_attributes[area_code] ||= begin
-        area_attr = Atlas::Dataset.find(area_code).to_hash
+        area = Atlas::Dataset.find(area_code)
+        area_attr = area.to_hash
+        area_attr[:derived] = area.is_a?(Atlas::Dataset::Derived)
         area_attr['last_updated_at'] = @etsource.last_updated_at("datasets/#{area_code}")
+
         area_attr.with_indifferent_access
       end
     end
@@ -77,7 +80,15 @@ module Etsource
     def inputs
       instrument("etsource.loader: inputs") do
         cache("inputs") do
-          Inputs.new(@etsource).import
+          Inputs.new(@etsource, Atlas::Input, Input).import
+        end
+      end
+    end
+
+    def initializer_inputs
+      instrument("etsource.loader: initializer_inputs") do
+        cache("initializer_inputs") do
+          Inputs.new(@etsource, Atlas::InitializerInput, InitializerInput).import
         end
       end
     end
