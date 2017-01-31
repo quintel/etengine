@@ -80,7 +80,7 @@ module Etsource
     def inputs
       instrument("etsource.loader: inputs") do
         cache("inputs") do
-          Inputs.new(@etsource).import
+          Inputs.new(@etsource, Atlas::Input, Input).import
         end
       end
     end
@@ -88,7 +88,7 @@ module Etsource
     def initializer_inputs
       instrument("etsource.loader: initializer_inputs") do
         cache("initializer_inputs") do
-          Inputs.new(@etsource, Atlas::InitializerInput).import
+          Inputs.new(@etsource, Atlas::InitializerInput, InitializerInput).import
         end
       end
     end
