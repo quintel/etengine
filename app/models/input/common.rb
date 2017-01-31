@@ -1,9 +1,9 @@
 class Input
   module Common
     extend ActiveSupport::Concern
+    include InMemoryRecord
 
     included do
-      include InMemoryRecord
       include CommandAttributes
       include ActiveModel::Validations
 
@@ -27,6 +27,14 @@ class Input
         Hash[inputs.map do |input|
           [input.key.to_s, input]
         end]
+      end
+
+      def get(key)
+        super(key.to_s)
+      end
+
+      def fetch(key)
+        super(key.to_s)
       end
     end
 

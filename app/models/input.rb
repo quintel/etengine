@@ -11,14 +11,6 @@ class Input
 
   attr_accessor *ATTRIBUTES
 
-  def self.get(key)
-    super(key.to_s)
-  end
-
-  def self.fetch(key)
-    super(key.to_s)
-  end
-
   def self.inputs
     Etsource::Loader.instance.inputs
   end
