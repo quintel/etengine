@@ -326,6 +326,13 @@ describe Scenario do
       )
     end
 
+    before(:each) do
+      scenario.inputs_present
+      scenario.inputs_future
+      scenario.inputs_before
+      scenario.gql
+    end
+
     let(:dup) { scenario.dup }
 
     it 'clones the end year' do
@@ -353,7 +360,17 @@ describe Scenario do
     end
 
     it 'does not clone inputs_present' do
-      dup.inputs_present.should_not equal(scenario.inputs_present)
+      expect(dup.inputs_present).to_not equal(scenario.inputs_present)
+    end
+
+    it 'preserves inputs_present of the original' do
+      old_obj = scenario.inputs_present
+      dup
+      expect(scenario.inputs_present).to equal(old_obj)
+    end
+
+    it 're-generates the same inputs_present as for the original' do
+      expect(dup.inputs_present).to eq(scenario.inputs_present)
     end
 
     it 'does not clone inputs_before' do
