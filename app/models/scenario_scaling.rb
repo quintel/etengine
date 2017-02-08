@@ -9,12 +9,12 @@ class ScenarioScaling < ActiveRecord::Base
   CUSTOM_AREA_ATTRS = { use_network_calculations: false }.freeze
 
   # Inputs whose unit is in this array will not be scaled.
-  UNSCALEABLE_INPUT_UNITS = %w( % x m^2K/W degC ).freeze
+  UNSCALEABLE_INPUT_UNITS = %w(% x m^2K/W degC).freeze
 
   belongs_to :scenario, inverse_of: :scaler
 
   validates :area_attribute, presence: true, inclusion: {
-    in: %w( number_of_residences number_of_inhabitants )
+    in: %w(number_of_residences number_of_inhabitants)
   }
 
   validates :value, presence: true, numericality: true
@@ -91,11 +91,10 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns a hash.
   def input_step(step_value)
-    if step_value
-      @input_divisor ||= 10 ** Math.log10(1 / multiplier).ceil
+    return unless step_value
 
-      step_value / @input_divisor
-    end
+    @input_divisor ||= 10**Math.log10(1 / multiplier).ceil
+    step_value / @input_divisor
   end
 
   # Public: Converts the scaling to a hash which can be serialized as JSON.
@@ -134,9 +133,7 @@ class ScenarioScaling < ActiveRecord::Base
     self.base_value = graph.area(area_attribute)
   end
 
-  #######
   private
-  #######
 
   def scale_graph_dataset!(data)
     data.each do |_, element|
@@ -169,7 +166,7 @@ class ScenarioScaling < ActiveRecord::Base
     end
 
     data[:disabled_sectors] ||= []
-    data[:disabled_sectors] += self.disabled_sectors
+    data[:disabled_sectors] += disabled_sectors
 
     data
   end
