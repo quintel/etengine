@@ -111,10 +111,18 @@ describe ScenarioScaling do
     end
 
     (Atlas::Dataset.attribute_set.map(&:name) -
+     ScenarioScaling::CUSTOM_AREA_ATTRS.keys -
      ScenarioScaling::SCALEABLE_AREA_ATTRS).each do |key|
       it "does not scale #{ key }" do
         scaling.scale_dataset!(dataset)
         expect(area[key]).to eq(original[key])
+      end
+    end
+
+    ScenarioScaling::CUSTOM_AREA_ATTRS.each do |key, value|
+      it "sets #{ value } to #{ value.inspect }" do
+        scaling.scale_dataset!(dataset)
+        expect(area[key]).to eql(value)
       end
     end
   end # #scale_area_dataset!
