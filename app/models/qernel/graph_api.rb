@@ -66,18 +66,20 @@ class GraphApi
 
   # Demand of electricity for all final demand converters
   def final_demand_for_electricity
-    graph.group_converters(:final_demand_group)
-      .map(&:converter_api)
-      .map(&:input_of_electricity)
-      .compact.sum
+    group_demand_for_electricity(:final_demand_group)
   end
 
   # Demand of electricity for all converters which do not belong
   # to the final_demand_group but nevertheless consume electricity.
   def non_final_demand_for_electricity
-    graph.group_converters(:non_final_electricity_demand_converters)
-      .map(&:converter_api)
-      .map(&:input_of_electricity)
+    group_demand_for_electricity(:non_final_electricity_demand_converters)
+  end
+
+  # Demand of electricity for all converters which belong to the named group.
+  def group_demand_for_electricity(group)
+    graph
+      .group_converters(group)
+      .map { |conv| conv.converter_api.input_of_electricity }
       .compact.sum
   end
 

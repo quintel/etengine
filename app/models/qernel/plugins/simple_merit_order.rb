@@ -22,6 +22,10 @@ module Qernel::Plugins
       super
     end
 
+    def curves
+      @curves ||= Qernel::Plugins::Merit::Curves.new(@graph)
+    end
+
     # Simple-mode does not need a full-run, and profiles for must-runs will
     # suffice.
     def participant_types
