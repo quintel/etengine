@@ -37,6 +37,19 @@ module Qernel::Plugins
       lifecycle.must_recalculate!
     end
 
+    # Internal: Sets up the Merit::Order.
+    #
+    # Adds users to the merit order for consumers which need to follow a custom
+    # profile.
+    def setup
+      super
+
+      @order.add(::Merit::User.create(
+        key: :transport_car_using_electricity_demand,
+        load_curve: curves.ev_demand
+      ))
+    end
+
     # Internal: Takes the values from the "run" step and sets them on the
     # appropriate converters in the graph.
     def inject
@@ -63,7 +76,7 @@ module Qernel::Plugins
     #
     # Returns a float.
     def total_demand
-      @graph.graph_query.total_demand_for_electricity
+      @graph.graph_query.total_demand_for_electricity - curves.ev_demand.sum
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and
