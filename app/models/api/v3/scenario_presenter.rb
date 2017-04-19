@@ -39,6 +39,14 @@ module Api
           json.delete(:description)
         end
 
+        if Area.derived?(@resource.area_code)
+          json[:scaling] = ScenarioScaling.new(
+            scenario: @resource,
+            area_attribute: 'number_of_residences',
+            value: Area.get(@resource.area_code).fetch(:number_of_residences)
+          )
+        end
+
         if @inputs
           json[:inputs] = InputPresenter.collection(Input.all, @resource, true)
         end
