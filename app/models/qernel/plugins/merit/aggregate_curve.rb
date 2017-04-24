@@ -23,6 +23,8 @@ module Qernel::Plugins
       def aggregate(mix)
         length = mix.keys.first.length
 
+        return mix.values.first if length == 1
+
         mix.reduce(::Merit::Curve.new([], length)) do |memo, (prof, share)|
           memo + (prof * share)
         end
