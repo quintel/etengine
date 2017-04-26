@@ -71,3 +71,5 @@
 - electric_vehicle_profile_1 = 0.75
 - electric_vehicle_profile_2 = 0.25
 - electric_vehicle_profile_3 = 0.0
+- insulation_profile_fraction_old_houses = 0.25
+- insulation_profile_fraction_new_houses = 0.75

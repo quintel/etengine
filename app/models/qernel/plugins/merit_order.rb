@@ -76,7 +76,10 @@ module Qernel::Plugins
     #
     # Returns a float.
     def total_demand
-      @graph.graph_query.total_demand_for_electricity - curves.ev_demand.sum
+      @graph.graph_query.total_demand_for_electricity -
+        curves.ev_demand.sum -
+        curves.old_household_heat_demand.sum -
+        curves.new_household_heat_demand.sum
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and

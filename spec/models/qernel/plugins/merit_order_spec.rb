@@ -22,6 +22,11 @@ module Qernel::Plugins
       allow(gql.future.graph.query)
         .to receive(:total_demand_for_electricity)
         .and_return(100.0)
+
+      allow(gql.future.graph.query)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_household_heat_producers)
+        .and_return(0)
     end
 
     describe 'when the scenario has the MeritOrder disabled' do

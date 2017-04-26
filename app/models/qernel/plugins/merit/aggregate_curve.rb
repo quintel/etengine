@@ -17,6 +17,20 @@ module Qernel::Plugins
         aggregate(balanced_mix(curves)) * demand
       end
 
+      # Internal: Given a hash of load profile keys, returns a new hash where
+      # each key is the appropriate LoadProfile object. Missing load profiles
+      # are omitted.
+      #
+      # Returns a hash.
+      def mix(dataset, curves)
+        curves.each_with_object({}) do |(key, share), data|
+          path = dataset.load_profile_path(key)
+          next unless path.file?
+
+          data[::Merit::LoadProfile.load(path)] = share
+        end
+      end
+
       # Internal: Sums one or more profiles using the given profile mix.
       #
       # Returns Merit::Curve.

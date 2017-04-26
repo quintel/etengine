@@ -2,8 +2,6 @@ module Qernel::Plugins
   module Merit
     # Helper class for creating and fetching curves related to the merit order.
     class Curves
-      # InvalidMix = Class.new(RuntimeError)
-
       def initialize(graph)
         @graph = graph
       end
@@ -18,7 +16,8 @@ module Qernel::Plugins
       def ev_demand
         AggregateCurve.build(
           @graph.query.group_demand_for_electricity(:ev_demand),
-          mix(
+          AggregateCurve.mix(
+            dataset,
             ev1: @graph.area.electric_vehicle_profile_1,
             ev2: @graph.area.electric_vehicle_profile_2,
             ev3: @graph.area.electric_vehicle_profile_3
@@ -26,15 +25,22 @@ module Qernel::Plugins
         )
       end
 
+      # Public: Creates a profile describing the demand for electricity due to
+      # heating and cooling in old households.
+      def old_household_heat_demand
+        heat_demand.curve_for(:old, dataset)
+      end
+
+      # Public: Creates a profile describing the demand for electricity due to
+      # heating and cooling in new households.
+      def new_household_heat_demand
+        heat_demand.curve_for(:new, dataset)
+      end
+
       private
 
-      def mix(curves)
-        curves.each_with_object({}) do |(key, share), data|
-          path = dataset.load_profile_path(key)
-          next unless path.file?
-
-          data[::Merit::LoadProfile.load(path)] = share
-        end
+      def heat_demand
+        @heat_demand ||= HouseholdHeat.new(@graph)
       end
 
       def dataset
