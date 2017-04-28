@@ -37,7 +37,7 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(graph_api)
         .to receive(:group_demand_for_electricity)
-        .with(:ev_demand).and_return(ev_demand)
+        .with(:merit_ev_demand).and_return(ev_demand)
     end
 
     describe 'with a 50/50 mix' do
@@ -122,17 +122,17 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(graph)
         .to receive(:group_converters)
-        .with(:old_household_heat)
+        .with(:merit_old_household_heat)
         .and_return([old_houses])
 
       allow(graph)
         .to receive(:group_converters)
-        .with(:new_household_heat)
+        .with(:merit_new_household_heat)
         .and_return([new_houses])
 
       allow(graph_api)
         .to receive(:group_demand_for_electricity)
-        .with(:household_heat_producers).and_return(8760.0)
+        .with(:merit_household_heat_producers).and_return(8760.0)
     end
 
     context 'with a "share" of 0.25 (25/75 profile mix)' do
@@ -166,17 +166,17 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(graph)
         .to receive(:group_converters)
-        .with(:old_household_heat)
+        .with(:merit_old_household_heat)
         .and_return([old_houses])
 
       allow(graph)
         .to receive(:group_converters)
-        .with(:new_household_heat)
+        .with(:merit_new_household_heat)
         .and_return([new_houses])
 
       allow(graph_api)
         .to receive(:group_demand_for_electricity)
-        .with(:household_heat_producers).and_return(8760.0)
+        .with(:merit_household_heat_producers).and_return(8760.0)
     end
 
     context 'with a "share" of 0.75 (25/75 profile mix)' do

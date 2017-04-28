@@ -15,7 +15,7 @@ module Qernel::Plugins
       # Returns a Merit::Curve.
       def ev_demand
         AggregateCurve.build(
-          @graph.query.group_demand_for_electricity(:ev_demand),
+          @graph.query.group_demand_for_electricity(:merit_ev_demand),
           AggregateCurve.mix(
             dataset,
             ev1: @graph.area.electric_vehicle_profile_1,

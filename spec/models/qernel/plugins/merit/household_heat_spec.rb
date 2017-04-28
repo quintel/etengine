@@ -15,15 +15,15 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
     new_house = double('New household', demand: new_household_demand)
 
     allow(graph).to receive(:group_converters)
-      .with(:old_household_heat)
+      .with(:merit_old_household_heat)
       .and_return([old_house])
 
     allow(graph).to receive(:group_converters)
-      .with(:new_household_heat)
+      .with(:merit_new_household_heat)
       .and_return([new_house])
 
     allow(api).to receive(:group_demand_for_electricity)
-      .with(:household_heat_producers)
+      .with(:merit_household_heat_producers)
       .and_return(electricity_demand)
 
     graph
