@@ -17,7 +17,7 @@ module Qernel::Plugins
 
       allow(gql.future.graph.query)
         .to receive(:group_demand_for_electricity)
-        .with(:ev_demand).and_return(ev_demand)
+        .with(:merit_ev_demand).and_return(ev_demand)
 
       allow(gql.future.graph.query)
         .to receive(:total_demand_for_electricity)

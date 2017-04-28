@@ -36,7 +36,9 @@ module Qernel::Plugins
       # Public: The total demand for electricity for heating technologies in
       # households.
       def demand_for_electricity
-        @graph.query.group_demand_for_electricity(:household_heat_producers)
+        @graph.query.group_demand_for_electricity(
+          :merit_household_heat_producers
+        )
       end
 
       # Public: The share of households which are classed as "old".
@@ -60,11 +62,11 @@ module Qernel::Plugins
       private
 
       def old_demand
-        @graph.group_converters(:old_household_heat).sum(&:demand)
+        @graph.group_converters(:merit_old_household_heat).sum(&:demand)
       end
 
       def new_demand
-        @graph.group_converters(:new_household_heat).sum(&:demand)
+        @graph.group_converters(:merit_new_household_heat).sum(&:demand)
       end
 
       def profile_share_for(type)
