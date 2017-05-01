@@ -43,11 +43,6 @@ module Qernel::Plugins
     # profile.
     def setup
       super
-
-      @order.add(::Merit::User.create(
-        key: :transport_car_using_electricity_demand,
-        load_curve: curves.ev_demand
-      ))
     end
 
     # Internal: Takes the values from the "run" step and sets them on the
@@ -72,14 +67,24 @@ module Qernel::Plugins
     private
     #######
 
+    # Internal: Merit::Curve describing demand.
+    def total_demand_curve
+      super +
+        curves.ev_demand +
+        curves.old_household_heat_demand +
+        curves.new_household_heat_demand
+    end
+
     # Internal: The total electricity demand, joules, across the graph.
     #
     # Returns a float.
     def total_demand
       @graph.graph_query.total_demand_for_electricity -
-        curves.ev_demand.sum -
-        curves.old_household_heat_demand.sum -
-        curves.new_household_heat_demand.sum
+        # Curves are in mWh; convert back to J.
+        (3600.0 * (
+          curves.ev_demand.sum -
+          curves.old_household_heat_demand.sum -
+          curves.new_household_heat_demand.sum))
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and

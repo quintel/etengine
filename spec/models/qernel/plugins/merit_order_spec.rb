@@ -2,8 +2,6 @@ require 'spec_helper'
 
 module Qernel::Plugins
   describe MeritOrder do
-    let(:ev_demand) { 8760.0 }
-
     before(:each) do
       converters = gql.present.graph.converters + gql.future.graph.converters
       attrs      = [ :electricity_output_conversion, :input_capacity,
@@ -16,12 +14,12 @@ module Qernel::Plugins
       end
 
       allow(gql.future.graph.query)
-        .to receive(:group_demand_for_electricity)
-        .with(:merit_ev_demand).and_return(ev_demand)
-
-      allow(gql.future.graph.query)
         .to receive(:total_demand_for_electricity)
         .and_return(100.0)
+
+      allow(gql.future.graph.query)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_ev_demand).and_return(0.0)
 
       allow(gql.future.graph.query)
         .to receive(:group_demand_for_electricity)
