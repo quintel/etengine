@@ -77,15 +77,22 @@ module Qernel::Plugins
       end
 
       @order.add(::Merit::User.create(
-        key:               :total_demand,
-        load_profile:      dataset.load_profile(:total_demand),
-        total_consumption: total_demand
+        key:        :total_demand,
+        load_curve: total_demand_curve
       ))
     end
 
     #######
     private
     #######
+
+    # Internal: A curve describing all demand which should be fulfilled by the
+    # merit order.
+    #
+    # Returns a Merit::Curve
+    def total_demand_curve
+      dataset.load_profile(:total_demand) * total_demand
+    end
 
     # Public: Returns the Atlas dataset for the current graph region.
     def dataset
