@@ -2,8 +2,25 @@ module Qernel::Plugins
   module Merit
     # Helper class for creating and fetching curves related to the merit order.
     class Curves
+      def self.curve_names
+        [
+          :ev_demand,
+          :household_hot_water_demand,
+          :old_household_space_heating_demand,
+          :new_household_space_heating_demand
+        ]
+      end
+
       def initialize(graph)
         @graph = graph
+      end
+
+      # Public: All dynamic curves combined into one.
+      #
+      # Returns a Merit::Curve.
+      def combined
+        @combined ||=
+          self.class.curve_names.map { |name| public_send(name) }.reduce(:+)
       end
 
       # Public: Creates a profile describing the demand for electricity by
@@ -14,7 +31,7 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def ev_demand
-        @ev_demand ||= AggregateCurve.build(
+        AggregateCurve.build(
           @graph.query.group_demand_for_electricity(:merit_ev_demand),
           AggregateCurve.mix(
             dataset,
@@ -30,7 +47,7 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def household_hot_water_demand
-        @hot_water_demand = AggregateCurve.build(
+        AggregateCurve.build(
           @graph.query.group_demand_for_electricity(
             :merit_household_hot_water_producers
           ),
@@ -41,13 +58,13 @@ module Qernel::Plugins
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in old households.
       def old_household_space_heating_demand
-        @old_sh_demand ||= heat_demand.curve_for(:old, dataset)
+        heat_demand.curve_for(:old, dataset)
       end
 
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in new households.
       def new_household_space_heating_demand
-        @new_sh_demand ||= heat_demand.curve_for(:new, dataset)
+        heat_demand.curve_for(:new, dataset)
       end
 
       private
