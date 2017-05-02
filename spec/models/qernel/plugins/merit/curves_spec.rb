@@ -198,4 +198,47 @@ describe 'Qernel::Plugins::Merit::Curves' do
       end
     end
   end # new household heat demand
+
+  describe 'household hot water demand' do
+    before do
+      allow(graph_api)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_household_hot_water_producers)
+        .and_return(hot_water_demand)
+    end
+
+    let(:curve) { curves.household_hot_water_demand }
+
+    context 'with hot water demand of 8760' do
+      let(:hot_water_demand) { 8760.0 }
+
+      it 'creates a profile with one entry per-hour' do
+        expect(curve.length).to eq(8760)
+      end
+
+      it 'scaled the profile by demand' do
+        expect(curve.take(4)).to eq([2.0, 0.0, 2.0, 0.0])
+      end
+
+      it 'has an area equal to demand' do
+        expect(curve.sum).to eq(8760)
+      end
+    end
+
+    context 'with no hot water demand' do
+      let(:hot_water_demand) { 0.0 }
+
+      it 'creates a profile with one entry per-hour' do
+        expect(curve.length).to eq(8760)
+      end
+
+      it 'scaled the profile by demand' do
+        expect(curve.take(4)).to eq([0.0, 0.0, 0.0, 0.0])
+      end
+
+      it 'has an area of zero' do
+        expect(curve.sum).to eq(0)
+      end
+    end
+  end # household hot water demand
 end

@@ -25,6 +25,19 @@ module Qernel::Plugins
         )
       end
 
+      # Public: Creates a profile describing the demand for electricity in
+      # households due to the use of hot water.
+      #
+      # Returns a Merit::Curve.
+      def household_hot_water_demand
+        @hot_water_demand = AggregateCurve.build(
+          @graph.query.group_demand_for_electricity(
+            :merit_household_hot_water_producers
+          ),
+          AggregateCurve.mix(dataset, dhw_normalized: 1.0)
+        )
+      end
+
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in old households.
       def old_household_heat_demand
