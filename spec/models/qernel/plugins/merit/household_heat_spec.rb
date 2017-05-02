@@ -23,7 +23,7 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
       .and_return([new_house])
 
     allow(api).to receive(:group_demand_for_electricity)
-      .with(:merit_household_heat_producers)
+      .with(:merit_household_space_heating_producers)
       .and_return(electricity_demand)
 
     graph

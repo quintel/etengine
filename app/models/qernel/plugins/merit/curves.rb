@@ -40,14 +40,14 @@ module Qernel::Plugins
 
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in old households.
-      def old_household_heat_demand
-        @old_household_heat_demand ||= heat_demand.curve_for(:old, dataset)
+      def old_household_space_heating_demand
+        @old_sh_demand ||= heat_demand.curve_for(:old, dataset)
       end
 
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in new households.
-      def new_household_heat_demand
-        @new_household_heat_demand ||= heat_demand.curve_for(:new, dataset)
+      def new_household_space_heating_demand
+        @new_sh_demand ||= heat_demand.curve_for(:new, dataset)
       end
 
       private

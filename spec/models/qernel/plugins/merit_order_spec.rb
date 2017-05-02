@@ -23,7 +23,12 @@ module Qernel::Plugins
 
       allow(gql.future.graph.query)
         .to receive(:group_demand_for_electricity)
-        .with(:merit_household_heat_producers)
+        .with(:merit_household_space_heating_producers)
+        .and_return(0)
+
+      allow(gql.future.graph.query)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_household_hot_water_producers)
         .and_return(0)
     end
 

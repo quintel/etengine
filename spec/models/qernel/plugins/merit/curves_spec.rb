@@ -132,12 +132,12 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(graph_api)
         .to receive(:group_demand_for_electricity)
-        .with(:merit_household_heat_producers).and_return(8760.0)
+        .with(:merit_household_space_heating_producers).and_return(8760.0)
     end
 
     context 'with a "share" of 0.25 (25/75 profile mix)' do
       it 'creates a combined profile' do
-        values = curves.old_household_heat_demand.to_a.take(4)
+        values = curves.old_household_space_heating_demand.to_a.take(4)
 
         # Old households alone would have a profile of [0.5, 1.5, ...], however
         # since new households account for only 45% of heat demand, the result
@@ -147,7 +147,7 @@ describe 'Qernel::Plugins::Merit::Curves' do
       end
 
       it 'has an area equal to demand' do
-        profile = curves.old_household_heat_demand
+        profile = curves.old_household_space_heating_demand
 
         # x1 * 0.4 = demand share
         expect(profile.sum).to be_within(1e05).of(8760.0 * 0.45)
@@ -176,12 +176,12 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(graph_api)
         .to receive(:group_demand_for_electricity)
-        .with(:merit_household_heat_producers).and_return(8760.0)
+        .with(:merit_household_space_heating_producers).and_return(8760.0)
     end
 
     context 'with a "share" of 0.75 (25/75 profile mix)' do
       it 'creates a combined profile' do
-        values = curves.new_household_heat_demand.to_a.take(4)
+        values = curves.new_household_space_heating_demand.to_a.take(4)
 
         # New households alone would have a profile of [1.5, 0.5, ...], however
         # since new households account for only 75% of heat demand, the result
@@ -191,7 +191,7 @@ describe 'Qernel::Plugins::Merit::Curves' do
       end
 
       it 'has an area equal to demand' do
-        profile = curves.new_household_heat_demand
+        profile = curves.new_household_space_heating_demand
 
         # x * 0.75 = demand share
         expect(profile.sum).to eql(8760.0 * 0.75)
