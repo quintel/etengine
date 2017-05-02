@@ -69,11 +69,7 @@ module Qernel::Plugins
 
     # Internal: Merit::Curve describing demand.
     def total_demand_curve
-      super +
-        curves.ev_demand +
-        curves.old_household_space_heating_demand +
-        curves.new_household_space_heating_demand +
-        curves.household_hot_water_demand
+      super + curves.combined
     end
 
     # Internal: The total electricity demand, joules, across the graph.
@@ -82,11 +78,7 @@ module Qernel::Plugins
     def total_demand
       @graph.graph_query.total_demand_for_electricity -
         # Curves are in mWh; convert back to J.
-        (3600.0 * (
-          curves.ev_demand.sum -
-          curves.old_household_space_heating_demand.sum -
-          curves.new_household_space_heating_demand.sum -
-          curves.household_hot_water_demand.sum))
+        (3600.0 * curves.combined.sum)
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and
