@@ -14,7 +14,7 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def ev_demand
-        AggregateCurve.build(
+        @ev_demand ||= AggregateCurve.build(
           @graph.query.group_demand_for_electricity(:merit_ev_demand),
           AggregateCurve.mix(
             dataset,
@@ -41,13 +41,13 @@ module Qernel::Plugins
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in old households.
       def old_household_heat_demand
-        heat_demand.curve_for(:old, dataset)
+        @old_household_heat_demand ||= heat_demand.curve_for(:old, dataset)
       end
 
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in new households.
       def new_household_heat_demand
-        heat_demand.curve_for(:new, dataset)
+        @new_household_heat_demand ||= heat_demand.curve_for(:new, dataset)
       end
 
       private
