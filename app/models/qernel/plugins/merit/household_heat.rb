@@ -37,7 +37,7 @@ module Qernel::Plugins
       # households.
       def demand_for_electricity
         @graph.query.group_demand_for_electricity(
-          :merit_household_heat_producers
+          :merit_household_space_heating_producers
         )
       end
 

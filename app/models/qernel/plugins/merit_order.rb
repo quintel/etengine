@@ -71,8 +71,8 @@ module Qernel::Plugins
     def total_demand_curve
       super +
         curves.ev_demand +
-        curves.old_household_heat_demand +
-        curves.new_household_heat_demand +
+        curves.old_household_space_heating_demand +
+        curves.new_household_space_heating_demand +
         curves.household_hot_water_demand
     end
 
@@ -84,8 +84,8 @@ module Qernel::Plugins
         # Curves are in mWh; convert back to J.
         (3600.0 * (
           curves.ev_demand.sum -
-          curves.old_household_heat_demand.sum -
-          curves.new_household_heat_demand.sum -
+          curves.old_household_space_heating_demand.sum -
+          curves.new_household_space_heating_demand.sum -
           curves.household_hot_water_demand.sum))
     end
 
