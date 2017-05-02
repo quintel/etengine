@@ -72,7 +72,8 @@ module Qernel::Plugins
       super +
         curves.ev_demand +
         curves.old_household_heat_demand +
-        curves.new_household_heat_demand
+        curves.new_household_heat_demand +
+        curves.household_hot_water_demand
     end
 
     # Internal: The total electricity demand, joules, across the graph.
@@ -84,7 +85,8 @@ module Qernel::Plugins
         (3600.0 * (
           curves.ev_demand.sum -
           curves.old_household_heat_demand.sum -
-          curves.new_household_heat_demand.sum))
+          curves.new_household_heat_demand.sum -
+          curves.household_hot_water_demand.sum))
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and
