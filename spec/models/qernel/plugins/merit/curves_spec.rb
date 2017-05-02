@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Qernel::Plugins::Merit::Curves' do
-  let(:ev_demand) { 1.0 }
+  let(:ev_demand) { 8760.0 }
   let(:ev_mix)    { [0.75, 0.25, 0] }
   let(:curves)    { Qernel::Plugins::Merit::Curves.new(graph) }
   let(:region)    { 'nl' }
@@ -46,15 +46,11 @@ describe 'Qernel::Plugins::Merit::Curves' do
       it 'creates a combined profile' do
         # ev1 = [1.0, 0.0, 1.0, 0.0, ...]
         # ev2 = [0.0, 1.0, 0.0, 1.0, ...]
-        profile = curves.ev_demand
-        values  = profile.to_a.take(4)
-
-        expect(values.map { |v| v * 8760 }).to eq([1.0, 1.0, 1.0, 1.0])
+        expect(curves.ev_demand.take(4)).to eq([1.0, 1.0, 1.0, 1.0])
       end
 
-      it 'has a sum of 1.0' do
-        profile = curves.ev_demand
-        expect(profile.to_a.sum).to be_within(1e-5).of(1.0)
+      it 'has an area equal to demand' do
+        expect(curves.ev_demand.sum).to eq(ev_demand)
       end
     end
 
@@ -62,15 +58,11 @@ describe 'Qernel::Plugins::Merit::Curves' do
       let(:ev_mix) { [0.75, 0.25, 0.0] }
 
       it 'creates a combined profile' do
-        profile = curves.ev_demand
-        values  = profile.to_a.take(4)
-
-        expect(values.map { |v| v * 8760 }).to eq([1.5, 0.5, 1.5, 0.5])
+        expect(curves.ev_demand.take(4)).to eq([1.5, 0.5, 1.5, 0.5])
       end
 
-      it 'has a sum of 1.0' do
-        profile = curves.ev_demand
-        expect(profile.to_a.sum).to be_within(1e-5).of(1.0)
+      it 'has an area equal to demand' do
+        expect(curves.ev_demand.sum).to eq(ev_demand)
       end
     end
 
@@ -78,19 +70,14 @@ describe 'Qernel::Plugins::Merit::Curves' do
       let(:ev_mix) { [0.3, 0.3, 0.4] }
 
       it 'creates a combined profile' do
-        profile = curves.ev_demand
-        values  = profile.to_a.take(4)
-
         # 8760 * 0.4 * 1.0 +             # 3504.0
         #   8760 * 0.3 * (2.0 / 8760) +  #    0.3
         #   8760 * 0.3 * (0.0 / 8760)    #    0.0
-
-        expect(values.map { |v| v * 8760 }).to eq([3504.6, 0.6, 0.6, 0.6])
+        expect(curves.ev_demand.take(4)).to eq([3504.6, 0.6, 0.6, 0.6])
       end
 
-      it 'has a sum of 1.0' do
-        profile = curves.ev_demand
-        expect(profile.to_a.sum).to be_within(1e-5).of(1.0)
+      it 'has an area equal to demand' do
+        expect(curves.ev_demand.sum).to be_within(1e-5).of(ev_demand)
       end
     end
 
@@ -98,15 +85,11 @@ describe 'Qernel::Plugins::Merit::Curves' do
       let(:region) { 'eu' }
 
       it 'creates a zeroed profile' do
-        profile = curves.ev_demand
-        values  = profile.to_a.take(4)
-
-        expect(values.map { |v| v * 8760 }).to eq([0.0, 0.0, 0.0, 0.0])
+        expect(curves.ev_demand.take(4)).to eq([0.0, 0.0, 0.0, 0.0])
       end
 
       it 'has a sum of 0.0' do
-        profile = curves.ev_demand
-        expect(profile.to_a.sum).to be_zero
+        expect(curves.ev_demand.sum).to be_zero
       end
     end
   end # electric vehicle profiles
@@ -137,7 +120,7 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
     context 'with a "share" of 0.25 (25/75 profile mix)' do
       it 'creates a combined profile' do
-        values = curves.old_household_space_heating_demand.to_a.take(4)
+        values = curves.old_household_space_heating_demand.take(4)
 
         # Old households alone would have a profile of [0.5, 1.5, ...], however
         # since new households account for only 45% of heat demand, the result
@@ -181,7 +164,7 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
     context 'with a "share" of 0.75 (25/75 profile mix)' do
       it 'creates a combined profile' do
-        values = curves.new_household_space_heating_demand.to_a.take(4)
+        values = curves.new_household_space_heating_demand.take(4)
 
         # New households alone would have a profile of [1.5, 0.5, ...], however
         # since new households account for only 75% of heat demand, the result
