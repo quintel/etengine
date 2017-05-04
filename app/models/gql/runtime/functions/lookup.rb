@@ -220,6 +220,19 @@ module Gql::Runtime
           []
         end
       end
+
+      # Public: Returns a demand curve which describes part of the total demand
+      # of the scenario. For example, :household_hot_water_demand returns the
+      # demand for electricity due to household hot water use.
+      #
+      # Returns an array.
+      def MERIT_DEMAND_COMPONENT(type)
+        unless Qernel::Plugins::Merit::Curves::CURVE_NAMES.include?(type.to_sym)
+          raise "Invalid merit demand component: #{ type.inspect }"
+        end
+
+        scope.graph.plugin(:merit).curves.public_send(type.to_sym).to_a
+      end
     end
 
   end
