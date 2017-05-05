@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe 'Qernel::Plugins::Merit::AggregateCurve' do
   let(:dataset) { Atlas::Dataset.find(:nl) }
-  let(:profile_one) { dataset.load_profile(:ev1) }
-  let(:profile_two) { dataset.load_profile(:ev2) }
+  let(:profile_one) { dataset.load_profile(:electric_vehicle_profile_1) }
+  let(:profile_two) { dataset.load_profile(:electric_vehicle_profile_2) }
 
   let(:mix) { { profile_one => 0.5, profile_two => 0.5 } }
   let(:demand) { 1.0 }
