@@ -63,22 +63,34 @@ module Qernel::Plugins
       inject_values!
     end
 
+    def setup
+      super
+
+      @order.add(::Merit::User.create(
+        key:        :household_hot_water,
+        load_curve: curves.household_hot_water_demand
+      ))
+    end
+
     #######
     private
     #######
 
     # Internal: Merit::Curve describing demand.
     def total_demand_curve
-      super + curves.combined
+      # Hot water demand is added as a separate user so that demand may be
+      # altered by P2H.
+      @total_demand_curve ||= super + curves.combined
     end
 
-    # Internal: The total electricity demand, joules, across the graph.
+    # Internal: The total electricity demand, joules, across the graph, minus
+    # demand from dynamic electricity curves.
     #
     # Returns a float.
     def total_demand
       @graph.graph_query.total_demand_for_electricity -
         # Curves are in mWh; convert back to J.
-        (3600.0 * curves.combined.sum)
+        (3600.0 * (curves.combined.sum + curves.household_hot_water_demand.sum))
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and

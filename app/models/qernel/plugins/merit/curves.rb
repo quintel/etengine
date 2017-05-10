@@ -5,7 +5,6 @@ module Qernel::Plugins
       def self.curve_names
         [
           :ev_demand,
-          :household_hot_water_demand,
           :old_household_space_heating_demand,
           :new_household_space_heating_demand
         ]
@@ -47,12 +46,48 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def household_hot_water_demand
-        AggregateCurve.build(
+        @hw_demand ||= AggregateCurve.build(
           @graph.query.group_demand_for_electricity(
             :merit_household_hot_water_producers
           ),
           AggregateCurve.mix(dataset, dhw_normalized: 1.0)
         )
+      end
+
+      # Public: Describes the weighted average coefficient of performance of the
+      # electric hot water producers.
+      #
+      # Returns a float.
+      def household_hot_water_cop
+        total = @graph.query.group_demand_for_electricity(
+          :merit_household_hot_water_producers
+        )
+
+        converters = @graph.group_converters(
+          :merit_household_hot_water_producers
+        )
+
+        converters.sum do |converter|
+          api = converter.converter_api
+          api.coefficient_of_performance * (api.input_of_electricity / total)
+        end
+      end
+
+      # Public: The share of electrical technologies among all household hot
+      # water producers.
+      #
+      # Returns a float.
+      def share_of_electricity_in_household_hot_water
+        producers = @graph.group_converters(
+          :merit_household_hot_water_producers
+        )
+
+        outputs = producers.flat_map do |conv|
+          conv.output(:useable_heat).links.map(&:lft_converter)
+        end.uniq
+
+        producers.map(&:converter_api).sum(&:output_of_useable_heat) /
+          outputs.map(&:converter_api).sum(&:input_of_useable_heat)
       end
 
       # Public: Creates a profile describing the demand for electricity due to
