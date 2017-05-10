@@ -109,10 +109,10 @@ module Qernel::Plugins
     #
     # Returns nothing.
     def set_dispatchable_positions!
-      dispatchables = @order.participants.dispatchables.reject do |participant|
+      dispatchables = @order.participants.dispatchables.select do |participant|
         # Flexible technologies are classed as dispatchable but should not be
         # assigned a position.
-        adapter(participant.key).config.type != :dispatchable
+        adapter(participant.key).config.type == :dispatchable
       end
 
       dispatchables.each.with_index do |participant, position|
