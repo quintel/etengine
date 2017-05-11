@@ -71,9 +71,9 @@ module Qernel::Plugins
 
       def profile_share_for(type)
         if type == :new
-          @graph.area.insulation_profile_fraction_new_houses
+          @graph.area.insulation_profile_fraction_new_houses || 0.0
         else
-          @graph.area.insulation_profile_fraction_old_houses
+          @graph.area.insulation_profile_fraction_old_houses || 1.0
         end
       end
     end
