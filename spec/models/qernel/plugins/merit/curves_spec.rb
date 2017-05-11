@@ -24,15 +24,15 @@ describe 'Qernel::Plugins::Merit::Curves' do
   describe 'electric car curves' do
     before do
       allow(area)
-        .to receive(:electric_vehicle_profile_1)
+        .to receive(:electric_vehicle_profile_1_share)
         .and_return(ev_mix[0])
 
       allow(area)
-        .to receive(:electric_vehicle_profile_2)
+        .to receive(:electric_vehicle_profile_2_share)
         .and_return(ev_mix[1])
 
       allow(area)
-        .to receive(:electric_vehicle_profile_3)
+        .to receive(:electric_vehicle_profile_3_share)
         .and_return(ev_mix[2])
 
       allow(graph_api)

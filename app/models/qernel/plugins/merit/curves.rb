@@ -34,9 +34,12 @@ module Qernel::Plugins
           @graph.query.group_demand_for_electricity(:merit_ev_demand),
           AggregateCurve.mix(
             dataset,
-            electric_vehicle_profile_1: @graph.area.electric_vehicle_profile_1,
-            electric_vehicle_profile_2: @graph.area.electric_vehicle_profile_2,
-            electric_vehicle_profile_3: @graph.area.electric_vehicle_profile_3
+            electric_vehicle_profile_1:
+              @graph.area.electric_vehicle_profile_1_share,
+            electric_vehicle_profile_2:
+              @graph.area.electric_vehicle_profile_2_share,
+            electric_vehicle_profile_3:
+              @graph.area.electric_vehicle_profile_3_share
           )
         )
       end
