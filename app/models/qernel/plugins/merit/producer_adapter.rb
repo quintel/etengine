@@ -17,13 +17,19 @@ module Qernel::Plugins
 
         @converter[:full_load_hours]   = full_load_hours
         @converter[:full_load_seconds] = full_load_seconds
-
-        @converter[:marginal_costs]    = participant.marginal_costs
         @converter[:number_of_units]   = participant.number_of_units
-        @converter[:profitability]     = participant.profitability
 
-        @converter[:profit_per_mwh_electricity] =
+        @converter.dataset_lazy_set(:marginal_costs) do
+          participant.marginal_costs
+        end
+
+        @converter.dataset_lazy_set(:profitability) do
+          participant.profitability
+        end
+
+        @converter.dataset_lazy_set(:profit_per_mwh_electricity) do
           participant.profit_per_mwh_electricity
+        end
 
         @converter.demand =
           full_load_seconds *
