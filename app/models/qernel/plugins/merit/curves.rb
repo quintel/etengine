@@ -2,13 +2,11 @@ module Qernel::Plugins
   module Merit
     # Helper class for creating and fetching curves related to the merit order.
     class Curves
-      def self.curve_names
-        [
-          :ev_demand,
-          :old_household_space_heating_demand,
-          :new_household_space_heating_demand
-        ]
-      end
+      CURVE_NAMES = [
+        :ev_demand,
+        :old_household_space_heating_demand,
+        :new_household_space_heating_demand
+      ].freeze
 
       def initialize(graph)
         @graph = graph
@@ -19,7 +17,7 @@ module Qernel::Plugins
       # Returns a Merit::Curve.
       def combined
         @combined ||=
-          self.class.curve_names.map { |name| public_send(name) }.reduce(:+)
+          Util.add_curves(CURVE_NAMES.map { |name| public_send(name) })
       end
 
       # Public: Creates a profile describing the demand for electricity by

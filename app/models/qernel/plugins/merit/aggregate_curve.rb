@@ -39,9 +39,13 @@ module Qernel::Plugins
 
         return mix.values.first if length == 1
 
-        mix.reduce(::Merit::Curve.new([], length)) do |memo, (prof, share)|
-          share > 0 ? memo + (prof * share) : memo
-        end
+        Util.add_curves(
+          mix.map { |prof, share| prof * share if share > 0 }.compact
+        )
+      end
+
+      def add_curves(length)
+        ::Merit::Curve.new(Array.new(length) { |index| yield(index) })
       end
 
       private_class_method :aggregate
