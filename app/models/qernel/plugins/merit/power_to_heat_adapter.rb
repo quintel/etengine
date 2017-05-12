@@ -31,6 +31,16 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
+        attrs[:decay] =
+          @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
+
+        # Do not emit anything; it has been converted to hot water.
+        attrs[:output_capacity_per_unit] = 0.0
+
+        attrs
+      end
+
+      def reserve_decay
         # Remove from the storage ("buffer") as much as possible to satisfy the
         # demand profile.
         decay = subtraction_profile
@@ -49,7 +59,7 @@ module Qernel::Plugins
         # only subtract demand from the next step.
         stop_at = elec_hw_demand.length - 2
 
-        attrs[:decay] = lambda do |point, available|
+        lambda do |point, available|
           wanted = decay.get(point)
 
           use = available > wanted ? wanted : available
@@ -75,11 +85,6 @@ module Qernel::Plugins
 
           use
         end
-
-        # Do not emit anything; it has been converted to hot water.
-        attrs[:output_capacity_per_unit] = 0.0
-
-        attrs
       end
 
       def subtraction_profile
