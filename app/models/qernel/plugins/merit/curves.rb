@@ -20,6 +20,15 @@ module Qernel::Plugins
           Util.add_curves(CURVE_NAMES.map { |name| public_send(name) })
       end
 
+      # Public: Returns the peak loads of explicitly modelled technologies.
+      #
+      # Returns a Hash
+      def peaks
+        @peaks ||= CurvePeakFinder.peaks(Util.add_curves(
+          [combined, household_hot_water_demand]
+        ))
+      end
+
       # Public: Creates a profile describing the demand for electricity by
       # electric vehicles.
       #
