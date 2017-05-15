@@ -70,11 +70,11 @@ module Qernel::Plugins
       end
 
       def profile_share_for(type)
-        if type == :new
-          @graph.area.insulation_profile_fraction_new_houses || 0.0
-        else
-          @graph.area.insulation_profile_fraction_old_houses || 1.0
-        end
+        min = @graph.area.insulation_level_old_houses_min
+        max = @graph.area.insulation_level_new_houses_max
+        actual = @graph.area.public_send(:"insulation_level_#{type}_houses")
+
+        (actual - min) / (max - min)
       end
     end
   end # Merit

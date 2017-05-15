@@ -11,6 +11,8 @@ module Qernel
         [:id, :parent_id]
 
     dataset_accessors ATTRIBUTES_USED
+    dataset_accessors :insulation_level_new_houses
+    dataset_accessors :insulation_level_old_houses
     dataset_accessors :disabled_sectors
 
     attr_accessor :graph
@@ -32,6 +34,14 @@ module Qernel
 
     def disabled_sectors
       dataset_get(:disabled_sectors) || []
+    end
+
+    def insulation_level_old_houses
+      fetch(:insulation_level_old_houses) { insulation_level_old_houses_min }
+    end
+
+    def insulation_level_new_houses
+      fetch(:insulation_level_new_houses) { insulation_level_new_houses_min }
     end
 
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
