@@ -157,6 +157,22 @@ class GraphApi
     graph.plugin(:merit).order.blackout.number_of_hours
   end
 
+  # Public: The peak load of electrical technologies modelled explicitly in the
+  # merit order (as opposed to those in the "total_demand" aggregate)
+  #
+  # period - A symbol or string: sd, se, wd, we.
+  #
+  # Returns a Float.
+  def peak_load_of_explicitly_modelled_lv_technologies(period)
+    period = period.to_sym
+
+    unless PEAK_LOAD_PERIODS.include?(period)
+      raise "Invalid peak load period: #{period}, should be sd, se, wd, or we"
+    end
+
+    graph.plugin(:merit).curves.peaks[period]
+  end
+
   # Public: Takes the merit order load curve, and multiplies each point by the
   # demand of the converter, yielding the load on the converter over time.
   #
