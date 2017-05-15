@@ -99,9 +99,9 @@ describe 'Qernel::Plugins::Merit::Curves' do
       old_houses = double('old households converter', demand: 4.5)
       new_houses = double('new households converter', demand: 5.5)
 
-      allow(area)
-        .to receive(:insulation_profile_fraction_old_houses)
-        .and_return(0.25)
+      allow(area).to receive(:insulation_level_old_houses_min).and_return(0.0)
+      allow(area).to receive(:insulation_level_new_houses_max).and_return(1.0)
+      allow(area).to receive(:insulation_level_old_houses).and_return(0.25)
 
       allow(graph)
         .to receive(:group_converters)
@@ -143,9 +143,9 @@ describe 'Qernel::Plugins::Merit::Curves' do
       old_houses = double('old households converter', demand: 1.0)
       new_houses = double('new households converter', demand: 3.0)
 
-      allow(area)
-        .to receive(:insulation_profile_fraction_new_houses)
-        .and_return(0.75)
+      allow(area).to receive(:insulation_level_old_houses_min).and_return(0.0)
+      allow(area).to receive(:insulation_level_new_houses_max).and_return(2.0)
+      allow(area).to receive(:insulation_level_new_houses).and_return(1.5)
 
       allow(graph)
         .to receive(:group_converters)
