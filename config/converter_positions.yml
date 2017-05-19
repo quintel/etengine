@@ -49,13 +49,13 @@
   :y: 4420
 :transport_train_using_diesel:
   :x: 1520
-  :y: 4220
+  :y: 4280
 :transport_train_using_coal:
   :x: 1520
-  :y: 4160
+  :y: 4220
 :transport_train_using_electricity:
   :x: 1520
-  :y: 4280
+  :y: 4340
 :transport_car_using_compressed_natural_gas:
   :x: 1520
   :y: 3580
@@ -301,7 +301,7 @@
   :y: 4540
 :transport_useful_demand_trains:
   :x: 720
-  :y: 4220
+  :y: 4280
 :agriculture_useful_demand_useable_heat:
   :x: 660
   :y: 5340
@@ -991,13 +991,13 @@
   :y: 4480
 :transport_road_mixer_gasoline:
   :x: 1960
-  :y: 3520
+  :y: 3660
 :transport_road_mixer_diesel:
   :x: 1960
-  :y: 3580
+  :y: 3740
 :transport_rail_mixer_diesel:
   :x: 1960
-  :y: 4220
+  :y: 4280
 :transport_final_demand_for_shipping_biodiesel:
   :x: 2320
   :y: 4780
@@ -1558,7 +1558,7 @@
   :y: 4080
 :transport_road_mixer_lng:
   :x: 1960
-  :y: 3700
+  :y: 3880
 :transport_final_demand_for_road_bio_lng:
   :x: 2320
   :y: 3940
@@ -1633,7 +1633,7 @@
   :y: 3680
 :transport_road_mixer_compressed_network_gas:
   :x: 1960
-  :y: 3640
+  :y: 3800
 :transport_final_demand_for_road_compressed_network_gas:
   :x: 2320
   :y: 3640
@@ -2267,3 +2267,6 @@
 :industry_chemicals_fertilizers_steam_methane_reformer_hydrogen:
   :x: 580
   :y: 11480
+:transport_truck_using_hydrogen:
+  :x: 1520
+  :y: 4140
