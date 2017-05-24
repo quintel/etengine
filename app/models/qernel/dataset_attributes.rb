@@ -95,10 +95,11 @@ module Qernel::DatasetAttributes
   end
 
   # For testing only
-    def with(hsh)
-      @dataset_attributes = hsh
-      self
-    end
+  def with(hsh)
+    reset_dataset_attributes
+    @dataset_attributes = hsh
+    self
+  end
 
   # The dataset belongs to the graph and the Qernel object belongs to the graph:
   # let's get the dataset then. This assumes that the Qernel object has already
@@ -121,11 +122,11 @@ module Qernel::DatasetAttributes
   end
 
   def reset_dataset_attributes
-    @dataset_attributes   = nil
-    @observe_set      = nil
-    @observe_get      = nil
-    @observe_get_keys = []
-    @observe_set_keys = []
+    @dataset_attributes = nil
+    @observe_set        = nil
+    @observe_get        = nil
+    @observe_get_keys   = []
+    @observe_set_keys   = []
   end
 
   # Here we make the object attributes a member of the object itself.
@@ -133,11 +134,8 @@ module Qernel::DatasetAttributes
   # made accessible with the attr_accessor at the beginning of this mixin)
   def assign_dataset_attributes
     if dataset
-      @dataset_attributes   = (dataset.data[dataset_group][dataset_key] ||= {})
-      @observe_set      = nil
-      @observe_get      = nil
-      @observe_get_keys = []
-      @observe_set_keys = []
+      reset_dataset_attributes
+      @dataset_attributes = (dataset.data[dataset_group][dataset_key] ||= {})
     end
   rescue => e
     raise "Qernel::Dataset: missing dataset item for #{dataset_group.inspect} #{dataset_key}. #{e.inspect}"
@@ -225,11 +223,31 @@ module Qernel::DatasetAttributes
     end
   end
 
+  # Public: Assigns a new value to the dataset using a lambda. The value will be
+  # set by calling the block the first time it is accessed.
+  #
+  # Useful if the value is expensive to calculate and often not needed.
+  #
+  # For example
+  #   thing.dataset_lazy_set(:demand) { 9001.0 })
+  #   thing.dataset_get(:demand) # => 9001.0
+  #
+  # Returns nothing.
+  def dataset_lazy_set(attr_name, &getter)
+    dataset_set(attr_name, getter)
+    lazy_attributes[attr_name] = true
+
+    nil
+  end
+
   # @param attr_name [Symbol]
   def dataset_set(attr_name, value)
     if observe_set
       log(:set, attr_name, value)
     end
+
+    lazy_attributes.delete(attr_name)
+
     dataset_attributes[attr_name] = value
   end
 
@@ -238,7 +256,12 @@ module Qernel::DatasetAttributes
     if observe_get
       log(:attr, attr_name, dataset_attributes[attr_name])
     end
-    dataset_attributes[attr_name]
+
+    if lazy_attributes.delete(attr_name)
+      dataset_attributes[attr_name] = dataset_attributes[attr_name].call
+    else
+      dataset_attributes[attr_name]
+    end
 
   rescue => e
     raise "#{dataset_key} #{attr_name} not found: #{e.message}"
@@ -250,5 +273,10 @@ module Qernel::DatasetAttributes
 
   def []=(attr_name, value)
     dataset_set(attr_name.to_sym, value)
+  end
+
+  def lazy_attributes
+    # Using a Set would be cleaner, but Hash is faster.
+    dataset_attributes[:_lazy] ||= {}
   end
 end

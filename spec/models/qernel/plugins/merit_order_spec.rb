@@ -13,8 +13,23 @@ module Qernel::Plugins
         converter.query.stub(attribute).and_return(1.0)
       end
 
-      gql.future.graph.query.
-        stub(:total_demand_for_electricity).and_return(100.0)
+      allow(gql.future.graph.query)
+        .to receive(:total_demand_for_electricity)
+        .and_return(100.0)
+
+      allow(gql.future.graph.query)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_ev_demand).and_return(0.0)
+
+      allow(gql.future.graph.query)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_household_space_heating_producers)
+        .and_return(0)
+
+      allow(gql.future.graph.query)
+        .to receive(:group_demand_for_electricity)
+        .with(:merit_household_hot_water_producers)
+        .and_return(0)
     end
 
     describe 'when the scenario has the MeritOrder disabled' do

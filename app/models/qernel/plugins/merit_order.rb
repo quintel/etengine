@@ -37,6 +37,14 @@ module Qernel::Plugins
       lifecycle.must_recalculate!
     end
 
+    # Internal: Sets up the Merit::Order.
+    #
+    # Adds users to the merit order for consumers which need to follow a custom
+    # profile.
+    def setup
+      super
+    end
+
     # Internal: Takes the values from the "run" step and sets them on the
     # appropriate converters in the graph.
     def inject
@@ -55,15 +63,34 @@ module Qernel::Plugins
       inject_values!
     end
 
+    def setup
+      super
+
+      @order.add(::Merit::User.create(
+        key:        :household_hot_water,
+        load_curve: curves.household_hot_water_demand
+      ))
+    end
+
     #######
     private
     #######
 
-    # Internal: The total electricity demand, joules, across the graph.
+    # Internal: Merit::Curve describing demand.
+    def total_demand_curve
+      # Hot water demand is added as a separate user so that demand may be
+      # altered by P2H.
+      @total_demand_curve ||= super + curves.combined
+    end
+
+    # Internal: The total electricity demand, joules, across the graph, minus
+    # demand from dynamic electricity curves.
     #
     # Returns a float.
     def total_demand
-      @graph.graph_query.total_demand_for_electricity
+      @graph.graph_query.total_demand_for_electricity -
+        # Curves are in mWh; convert back to J.
+        (3600.0 * (curves.combined.sum + curves.household_hot_water_demand.sum))
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and
@@ -82,10 +109,10 @@ module Qernel::Plugins
     #
     # Returns nothing.
     def set_dispatchable_positions!
-      dispatchables = @order.participants.dispatchables.reject do |participant|
+      dispatchables = @order.participants.dispatchables.select do |participant|
         # Flexible technologies are classed as dispatchable but should not be
         # assigned a position.
-        adapter(participant.key).config.type != :dispatchable
+        adapter(participant.key).config.type == :dispatchable
       end
 
       dispatchables.each.with_index do |participant, position|

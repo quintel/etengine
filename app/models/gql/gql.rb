@@ -95,10 +95,7 @@ module Gql
     #
     def dataset_clone
       instrument("gql.performance.dataset_clone") do
-        dataset = DeepClone.clone(@dataset)
-        scaler  = @scenario.scaler
-
-        scaler ? scaler.scale_dataset!(dataset) : dataset
+        DeepClone.clone(@dataset)
       end
     end
 
@@ -243,6 +240,7 @@ module Gql
       future_graph.dataset = dataset_clone
       assign_attributes_from_scenario
       apply_initializer_inputs
+      scale_dataset
     end
 
     # Inside GQL, functions and Gqueries we had some references to
@@ -260,6 +258,14 @@ module Gql
 
       @future_graph.flexibility_order = @present_graph.flexibility_order =
         @scenario.flexibility_order.try(:order) || FlexibilityOrder.default_order
+    end
+
+    def scale_dataset
+      [present_graph, future_graph].each do |graph|
+        if scaler = @scenario.scaler
+          graph.dataset = scaler.scale_dataset!(graph.dataset)
+        end
+      end
     end
 
     def update_graphs

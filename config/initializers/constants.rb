@@ -18,6 +18,10 @@ THOUSANDS = 1000.0
 #NIL = nil if !defined?(NIL)
 EURO_SIGN = '&euro;'
 
+# Periods in which peak loads are measured: sd = summer day, se = summer
+# evening, wd = winter day, we = winter evening.
+PEAK_LOAD_PERIODS = [:sd, :se, :wd, :we].freeze
+
 # 2011-12-09 GQL grammar does not allow "." inside V(...; ___ ).
 # So it is impossible to use floats, e.g. V(...; demand * 2.5)
 # or V(...; demand ** 2/3). (2/3 would return 0, because they are ints)

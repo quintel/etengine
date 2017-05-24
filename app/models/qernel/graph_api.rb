@@ -66,18 +66,20 @@ class GraphApi
 
   # Demand of electricity for all final demand converters
   def final_demand_for_electricity
-    graph.group_converters(:final_demand_group)
-      .map(&:converter_api)
-      .map(&:input_of_electricity)
-      .compact.sum
+    group_demand_for_electricity(:final_demand_group)
   end
 
   # Demand of electricity for all converters which do not belong
   # to the final_demand_group but nevertheless consume electricity.
   def non_final_demand_for_electricity
-    graph.group_converters(:non_final_electricity_demand_converters)
-      .map(&:converter_api)
-      .map(&:input_of_electricity)
+    group_demand_for_electricity(:non_final_electricity_demand_converters)
+  end
+
+  # Demand of electricity for all converters which belong to the named group.
+  def group_demand_for_electricity(group)
+    graph
+      .group_converters(group)
+      .map { |conv| conv.converter_api.input_of_electricity }
       .compact.sum
   end
 
@@ -153,6 +155,22 @@ class GraphApi
   # Returns an Integer
   def number_of_blackout_hours
     graph.plugin(:merit).order.blackout.number_of_hours
+  end
+
+  # Public: The peak load of electrical technologies modelled explicitly in the
+  # merit order (as opposed to those in the "total_demand" aggregate)
+  #
+  # period - A symbol or string: sd, se, wd, we.
+  #
+  # Returns a Float.
+  def peak_load_of_explicitly_modelled_lv_technologies(period)
+    period = period.to_sym
+
+    unless PEAK_LOAD_PERIODS.include?(period)
+      raise "Invalid peak load period: #{period}, should be sd, se, wd, or we"
+    end
+
+    graph.plugin(:merit).curves.peaks[period]
   end
 
   # Public: Takes the merit order load curve, and multiplies each point by the

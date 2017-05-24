@@ -12,19 +12,19 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: ff004b2b9316da4507fc02870519e68713e6ae6a
-  ref: ff004b2
+  revision: b1ba099ac7547f4b1209d3f4eb6b7109c8558033
+  ref: b1ba099
   specs:
     atlas (1.0.0)
-      activemodel (~> 4.0)
-      activesupport (~> 4.0)
+      activemodel (>= 4.0)
+      activesupport (>= 4.0)
       turbine-graph (>= 0.1)
       virtus (~> 1.0)
 
 GIT
   remote: git://github.com/quintel/merit.git
-  revision: b9a2147522c7c510ab198abc26dc22416ba157c0
-  ref: b9a2147
+  revision: d019226ad198e78fcb7c37685ea4c3ab0dc051d2
+  ref: d019226
   specs:
     quintel_merit (0.1.0)
       terminal-table
@@ -389,4 +389,4 @@ RUBY VERSION
    ruby 2.1.9p490
 
 BUNDLED WITH
-   1.13.7
+   1.14.6
