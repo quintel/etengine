@@ -32,12 +32,13 @@ module Qernel::RecursiveFactor::DependentSupply
   #
   # Returns a numeric.
   def dependent_supply_of_carriers(*carriers)
-     if demand && ! demand.zero?
-       demand * recursive_factor(
-         :dependent_supply_factor_of_carriers, nil, nil, carriers)
-     else
-       0.0
-     end
+    if demand && !demand.zero?
+      demand * recursive_factor(
+        :dependent_supply_factor_of_carriers, nil, nil, carriers
+      )
+    else
+      0.0
+    end
   end
 
   alias_method :dependent_supply_of_carrier, :dependent_supply_of_carriers
@@ -70,29 +71,24 @@ module Qernel::RecursiveFactor::DependentSupply
   def dependent_supply_factor_of_carriers(link, carriers)
     return nil unless link
 
-    if carriers.include?(link.carrier.key)
-      # Phase 2; we have found a link of the desired carrier.
-      dead_end = link.rgt_converter.inputs.none? do |slot|
-        carriers.include?(slot.carrier.key)
-      end
+    # Phase 1; we have yet to find a link of the desired carrier; continue
+    # traversing until we find one, or run out of links.
+    return nil unless carriers.include?(link.carrier.key)
 
-      if dead_end || primary_energy_demand?
-        # ... the supplier has no more links of this type, therefore we
-        # calculate the dependent supply factor and do not traverse further.
-        #
-        # If factor_for_primary_demand returns zero, it is simply because the
-        # supply node is not in the primary_energy_demand group; however we
-        # don't want to ignore the node, but instead use its demand value.
-        factor = factor_for_primary_demand(link)
-        factor.zero? ? link.rgt_output.conversion : factor
-      else
-        # There are more +carrier_key+ links to be traversed...
-        nil
-      end
-    else
-      # Phase 1; we have yet to find a link of the desired carrier; continue
-      # traversing until we find one, or run out of links.
-      nil
+    # Phase 2; we have found a link of the desired carrier.
+    dead_end = link.rgt_converter.inputs.none? do |slot|
+      carriers.include?(slot.carrier.key)
+    end
+
+    if dead_end || primary_energy_demand?
+      # ... the supplier has no more links of this type, therefore we
+      # calculate the dependent supply factor and do not traverse further.
+      #
+      # If factor_for_primary_demand returns zero, it is simply because the
+      # supply node is not in the primary_energy_demand group; however we
+      # don't want to ignore the node, but instead use its demand value.
+      factor = factor_for_primary_demand(link)
+      factor.zero? ? link.rgt_output.conversion : factor
     end
   end
 end # Qernel::RecursiveFactor::DependentDemand
