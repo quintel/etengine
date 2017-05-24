@@ -32,9 +32,11 @@ module Qernel::RecursiveFactor::Sustainable
 
   def sustainability_share_factor(link)
     if right_dead_end? and link
-      link.carrier.sustainable
-    else
-      nil
+      # If the converter has a sustainability share which has been explicitly
+      # set (through research data or a graph plugin), use that in preference to
+      # the carrier sustainability.
+      custom_share = query.dataset_get(:sustainability_share)
+      custom_share || link.carrier.sustainable
     end
   end
 
