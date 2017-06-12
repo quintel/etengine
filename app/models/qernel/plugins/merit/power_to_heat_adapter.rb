@@ -41,33 +41,25 @@ module Qernel::Plugins
       end
 
       def reserve_decay
-        # Remove from the storage ("buffer") as much as possible to satisfy the
-        # demand profile.
-        decay = subtraction_profile
         curves = @graph.plugin(:merit).curves
 
         elec_hw_demand = curves.household_hot_water_demand
+        elec_hw_share  = curves.share_of_electricity_in_household_hot_water
 
         elec_performance =
-          curves.household_hot_water_cop /
-          curves.share_of_electricity_in_household_hot_water
-
-        # producer_cop = curves.household_hot_water_cop
-        # producer_share = curves.share_of_electricity_in_household_hot_water
+          (1.0 / curves.household_hot_water_cop) * elec_hw_share
 
         # Demand is calculated by Merit before computing decay. Therefore we can
         # only subtract demand from the next step.
         stop_at = elec_hw_demand.length - 2
 
         lambda do |point, available|
-          wanted = decay.get(point)
-
-          use = available > wanted ? wanted : available
+          hw_demand = elec_hw_demand.get(point + 1)
+          wanted    = hw_demand / elec_performance
+          use       = available > wanted ? wanted : available
 
           # Subtract demand from the appropriate profiles.
           if point < stop_at && use > 0
-            hw_demand = elec_hw_demand.get(point + 1)
-
             # Defines electricity saved by not running the electrical hot water
             # producers. Needs to account for the share of electrical producers
             # (since P2H reduces all heat demand, not just that from elec.) and
@@ -85,17 +77,6 @@ module Qernel::Plugins
 
           use
         end
-      end
-
-      def subtraction_profile
-        demand_profile *
-          @graph.converter(@config.demand_source).converter_api.demand
-      end
-
-      def demand_profile
-        ::Merit::LoadProfile.load(
-          @dataset.load_profile_path(@config.demand_profile)
-        )
       end
     end # PowerToHeatAdapter
   end # Merit
