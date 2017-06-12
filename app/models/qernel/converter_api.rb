@@ -75,6 +75,8 @@ class ConverterApi
   def self.for_converter(converter)
     if converter.groups.include?(:demand_driven)
       DemandDrivenConverterApi.new(converter)
+    elsif converter.groups.include?(:inheritable_nou)
+      InheritableNouConverterApi.new(converter)
     else
       ConverterApi.new(converter)
     end
