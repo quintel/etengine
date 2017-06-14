@@ -62,7 +62,7 @@ class Input
         step:     input.step_value
       }
 
-      values = Scaler.new(input, scaler_for(gql), values).scale
+      values = Scaler.call(input, scaler_for(gql), values)
 
       required_numerics = values.slice(:min, :max, :default).values
 

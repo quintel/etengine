@@ -21,7 +21,7 @@ class Input
     def read(scenario, input)
       values = @cache.send(:values_for, input, @gql)
 
-      Scaler.new(input, scenario.scaler, values).scale
+      Scaler.call(input, scenario.scaler, values)
     end
   end # ScaledInputs
 end
