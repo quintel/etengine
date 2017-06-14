@@ -120,7 +120,14 @@ class ScenarioScaling < ActiveRecord::Base
   end
 
   def input_cache
-    @input_cache ||= Input::ScaledInputs.new(Input.cache, scenario.gql)
+    @input_cache ||= Input::ScaledInputs.new(
+      Input.cache,
+      scenario.dup.tap do |scen|
+        scen.user_values = {}
+        scen.balanced_values = {}
+        scen.scaler = scenario.scaler
+      end.gql
+    )
   end
 
   def set_base_with(base_scenario)
