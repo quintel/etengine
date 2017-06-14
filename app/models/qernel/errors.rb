@@ -29,10 +29,10 @@ module Qernel
   end
 
   IllegalZeroError = error_class(IllegalValueError) do |attr|
-    super('Zero', attr)
+    super(attr, 'Zero')
   end
 
   IllegalNegativeError = error_class(IllegalValueError) do |attr, value|
-    super("Negative value (#{ value })", attr)
+    super(attr, "Negative value (#{ value })")
   end
 end # Qernel

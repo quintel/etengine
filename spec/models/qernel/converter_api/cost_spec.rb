@@ -107,14 +107,6 @@ module Qernel
         expect { @api.send(:cost_of_capital) }.
           to raise_error(Qernel::IllegalZeroError)
       end
-
-      it "should raise error when construction time is zero" do
-        @c.with(attrs.merge(construction_time: 0.0))
-
-        expect { @api.send(:cost_of_capital) }.
-          to raise_error(Qernel::IllegalZeroError)
-      end
-
     end
 
     describe '#depreciation_costs' do

@@ -129,7 +129,6 @@ module Qernel
     def cost_of_capital
       fetch(:cost_of_capital) do
         raise(IllegalZeroError, :technical_lifetime) if technical_lifetime.zero?
-        raise(IllegalZeroError, :construction_time) if construction_time.zero?
 
         average_investment * wacc *
           (construction_time + technical_lifetime) /
