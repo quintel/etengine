@@ -128,7 +128,9 @@ module Qernel
     # Returns the yearly cost of capital for one plant.
     def cost_of_capital
       fetch(:cost_of_capital) do
-        raise(IllegalZeroError, :technical_lifetime) if technical_lifetime.zero?
+        if technical_lifetime.zero?
+          raise IllegalZeroError.new(self, :technical_lifetime)
+        end
 
         average_investment * wacc *
           (construction_time + technical_lifetime) /
@@ -144,13 +146,15 @@ module Qernel
     # Returns the yearly depreciation costs.
     def depreciation_costs
       fetch(:depreciation_costs) do
-        raise(IllegalZeroError, :technical_lifetime) if technical_lifetime.zero?
+        if technical_lifetime.zero?
+          raise IllegalZeroError.new(self, :technical_lifetime)
+        end
 
         investment = total_investment_over_lifetime
 
         if investment && investment <= 0
           raise IllegalNegativeError.new(
-            :total_investment_over_lifetime, investment
+            self, :total_investment_over_lifetime, investment
           )
         end
 
@@ -200,7 +204,7 @@ module Qernel
     def fuel_costs
       fetch(:fuel_costs) do
         if typical_input && typical_input < 0
-          raise IllegalNegativeError.new(:typical_input, typical_input)
+          raise IllegalNegativeError.new(self, :typical_input, typical_input)
         end
 
         typical_input * weighted_carrier_cost_per_mj

@@ -24,15 +24,16 @@ module Qernel
 
   # ----------------------------------------------------------------------------
 
-  IllegalValueError = error_class do |attr, value|
-    "#{ value } is not a legal value for the #{ attr } attribute"
+  IllegalValueError = error_class do |obj, attr, value|
+    "#{ value } is not a legal value for the #{ attr } attribute " \
+    "for #{ obj }"
   end
 
-  IllegalZeroError = error_class(IllegalValueError) do |attr|
-    super(attr, 'Zero')
+  IllegalZeroError = error_class(IllegalValueError) do |obj, attr|
+    super(obj, attr, 'Zero')
   end
 
-  IllegalNegativeError = error_class(IllegalValueError) do |attr, value|
-    super(attr, "Negative value (#{ value })")
+  IllegalNegativeError = error_class(IllegalValueError) do |obj, attr, value|
+    super(obj, attr, "Negative value (#{ value })")
   end
 end # Qernel
