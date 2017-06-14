@@ -75,7 +75,11 @@ class Qernel::ConverterApi
   # included!
   def input_of_fossil_carriers
     fetch(:input_of_fossil_carriers) do
-      input_of_coal + input_of_crude_oil + input_of_natural_gas + input_of_diesel + input_of_gasoline + input_of_gas_power_fuelmix
+      input_of_coal +
+        input_of_crude_oil +
+        input_of_natural_gas +
+        input_of_diesel +
+        input_of_gasoline
     end
   end
   unit_for_calculation "input_of_fossil_carriers", 'MJ'
