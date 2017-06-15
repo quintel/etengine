@@ -152,7 +152,7 @@ module Qernel
 
         investment = total_investment_over_lifetime
 
-        if investment && investment <= 0
+        if investment && investment < 0
           raise IllegalNegativeError.new(
             self, :total_investment_over_lifetime, investment
           )

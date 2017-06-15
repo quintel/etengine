@@ -127,11 +127,10 @@ module Qernel
           .to raise_error(Qernel::IllegalValueError)
       end
 
-      it "should raise error when total_investment_costs is zero" do
+      it "should not raise error when total_investment_costs is zero" do
         @c.with(attrs.merge(total_investment_over_lifetime: 0.0))
 
-        expect { @api.send(:depreciation_costs) }
-          .to raise_error(Qernel::IllegalValueError)
+        expect(@api.send(:depreciation_costs)).to be_zero
       end
 
       it "should raise error when total_investment_costs is nil" do
