@@ -184,27 +184,24 @@ module Qernel::DatasetAttributes
   #
   def fetch(attr_name, permit_nil = true)
     # check if we have a memoized result already.
-    if dataset_attributes.has_key?(attr_name) &&
-        (dataset_attributes[attr_name] || permit_nil)
+    if dataset_attributes.key?(attr_name) &&
+        ((val = dataset_get(attr_name)) || permit_nil)
       # are we in the debugger mode?
       if observe_get
         # log records the access and returns the value
-        log :method, attr_name, dataset_attributes[attr_name]
+        log :method, attr_name, val
       else
         # not debugger, so just return the memoized value
-        dataset_attributes[attr_name]
+        val
       end
+    elsif observe_get
+      # in debug mode we call #log with a block, which stores the value
+      # in the log and returns it back.
+      log(:method, attr_name) { fetch_set(attr_name, yield) }
     else
-      # function is called for the first time
-      if observe_get
-        # in debug mode we call #log with a block, which stores the value
-        # in the log and returns it back.
-        log(:method, attr_name) { fetch_set(attr_name, yield) }
-      else
-        # if not in debug mode, simply yield the value. Do not log the exceptions
-        # but simply return the rescue_with value
-        fetch_set(attr_name, yield)
-      end
+      # if not in debug mode, simply yield the value. Do not log the exceptions
+      # but simply return the rescue_with value
+      fetch_set(attr_name, yield)
     end
   end
 
