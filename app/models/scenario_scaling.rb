@@ -125,7 +125,7 @@ class ScenarioScaling < ActiveRecord::Base
       scenario.dup.tap do |scen|
         scen.user_values = {}
         scen.balanced_values = {}
-        scen.scaler = scenario.scaler
+        scen.scaler = scenario.scaler.dup
       end.gql
     )
   end
