@@ -123,12 +123,11 @@ module Etsource
     #
     # Returns true or false.
     def demand_attribute(node)
-      @demand_node_table ||=
-        Atlas::Node.all.each_with_object({}) do |atl_node, table|
-          table[node.key] = atl_node.groups.include?(:preset_demand)
-        end
-
-      @demand_node_table[node.key] ? :preset_demand : :demand_expected_value
+      if Atlas::Node.find(node.key).groups.include?(:preset_demand)
+        :preset_demand
+      else
+        :demand_expected_value
+      end
     end
 
     # Internal: Converts the attributes from a production-mode Atlas node and
