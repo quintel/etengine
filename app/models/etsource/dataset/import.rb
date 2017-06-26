@@ -1,21 +1,8 @@
-
 module Etsource
-  # ------ Static vs dynamic form yml  ------------------------------------------
+  # Loads data for a dataset defined in ETSource.
   #
-  # The ETsource dataset is split into static and dynamic ymls. The static ones
-  # don't rely on others and are loaded first. The dynamic form ymls are loaded
-  # after that, so it can access static dataset using #val and research input
-  # with #get.
-  #
-  # ------ Importing ETsource Transformer Files  ---------------------------------
-  #
-  # To make the ETsource dataset forms dynamic we pass the yml files through an
-  # ERB handler, and load the output with YAML::load.
-  # So that the dynamic yml.erb form templates (the suffix .erb is not needed), can
-  # access the values of the static datasets and the researchers form input, we
-  # add a binding to the yaml files to this Etsource::Dataset object. So calling
-  # #get within a yml will call Etsource::Dataset#get
-  #
+  # Note: Occurrences of `(some number) * 1_000_000`` are due to energy demands
+  # in the Atlas+Refinery data being expressed in PJ, while ETEngine uses MJ.
   class Dataset::Import
     attr_reader :country
 
@@ -42,34 +29,26 @@ module Etsource
       @loader = loader
     end
 
-    # ------------------------------------------------------------------------
-
     def initialize(country)
-      # DEBT: @etsource is only used for the base_dir, can be solved better.
-      @etsource = Etsource::Base.instance
-
       @country  = country
       @dataset  = Qernel::Dataset.new(Hashpipe.hash(country))
       @atlas_ds = Atlas::Dataset.find(@country)
-
-      @hsh = {}
     end
 
-    # Importing dataset and convert into the Qernel::Dataset format.
-    # The yml file is a flat (no nested key => values) hash. We move it to a nested hash
-    # and also have to convert the keys into a numeric using a hashing function (FNV 1a),
-    # the additional nesting of the hash, and hashing ids as strings are mostly for
-    # performance reasons.
+    # Public: Imports dataset information.
     #
+    # Returns a Qernel::Dataset.
     def import
       @dataset.data = load_dataset_hash
-      @dataset.data[:graph][:graph] = {:calculated => false}
+      @dataset.data[:graph][:graph] = { calculated: false }
 
       @dataset
     end
 
     # Return all the carrier keys we have defined in the dataset.
     # (used to dynamically generate some methods)
+    #
+    # Returns an array of symbols.
     def carrier_keys
       Atlas::Carrier.all.map(&:key)
     end
@@ -78,9 +57,7 @@ module Etsource
       load_dataset_hash({})
     end
 
-    #########
     protected
-    #########
 
     def load_dataset_hash
       { area:        load_region_data,
@@ -147,8 +124,8 @@ module Etsource
     # Returns true or false.
     def demand_attribute(node)
       @demand_node_table ||=
-        Atlas::Node.all.each_with_object({}) do |node, table|
-          table[node.key] = node.groups.include?(:preset_demand)
+        Atlas::Node.all.each_with_object({}) do |atl_node, table|
+          table[node.key] = atl_node.groups.include?(:preset_demand)
         end
 
       @demand_node_table[node.key] ? :preset_demand : :demand_expected_value
@@ -167,15 +144,15 @@ module Etsource
       attributes = node.attributes
       attributes.delete(:demand)
 
-      if (demand_attr = demand_attribute(node)) == :preset_demand
+      if demand_attribute(node) == :preset_demand
         attributes[:preset_demand] = val(node, :demand) * 1_000_000
-      elsif demand = node.demand
-        attributes[:demand_expected_value] = demand * 1_000_000
+      elsif node.demand
+        attributes[:demand_expected_value] = node.demand * 1_000_000
       end
 
       # Test that max_demand is numeric, since some old tests assign the value
       # to be "recursive".
-      if attributes[:max_demand].kind_of?(Numeric)
+      if attributes[:max_demand].is_a?(Numeric)
         attributes[:max_demand] *= 1_000_000
       end
 
@@ -219,11 +196,8 @@ module Etsource
       attributes = edge.attributes
 
       if edge.type == :share
-        if edge.reversed?
-          attributes[:share] = attributes[:parent_share]
-        else
-          attributes[:share] = attributes[:child_share]
-        end
+        attributes[:share] =
+          attributes[edge.reversed? ? :parent_share : :child_share]
       elsif edge.type == :constant
         attributes[:share] = attributes[:demand] * 1_000_000
       end
@@ -240,12 +214,8 @@ module Etsource
     #
     # Returns the value.
     def val(document, attribute)
-      unless value = document.public_send(attribute)
-        raise "#{ document.inspect } has no #{ attribute.inspect } value"
-      end
-
-      value
+      document.public_send(attribute) ||
+        raise("#{ document.inspect } has no #{ attribute.inspect } value")
     end
   end # Import
 end # Etsource
-
