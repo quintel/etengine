@@ -59,7 +59,7 @@ class ConverterApi
   attr_accessor :load_profile_key
 
   # dataset attributes of converter
-  dataset_accessors [:preset_demand, :demand, :storage]
+  dataset_accessors [:preset_demand, :demand, :storage, :fever]
 
   # Returns a ConverterApi instance based on the given Converter.
   #

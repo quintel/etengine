@@ -39,11 +39,12 @@ gem 'fnv'
 gem 'msgpack'
 
 # own gems
-gem 'rubel',         ref: 'e36554a',   github:  'quintel/rubel'
-gem 'quintel_merit', ref: 'c72ff2f',   github:  'quintel/merit'
-gem 'turbine-graph', '>=0.1',          require: 'turbine'
-gem 'refinery',      ref: '58c1138',   github: 'quintel/refinery'
-gem 'atlas',         ref: 'd3a3bce',   github: 'quintel/atlas'
+gem 'rubel',         ref: 'e36554a',  github: 'quintel/rubel'
+gem 'quintel_merit', ref: '8f1e90e',  github: 'quintel/merit'
+gem 'fever',         ref: 'master',   github: 'quintel/fever'
+gem 'turbine-graph', '>=0.1',         require: 'turbine'
+gem 'refinery',      ref: '58c1138',  github: 'quintel/refinery'
+gem 'atlas',         ref: 'e61d9e7',  github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2',         '~>0.3.11'

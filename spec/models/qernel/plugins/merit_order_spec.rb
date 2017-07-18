@@ -45,8 +45,8 @@ module Qernel::Plugins
         graph = gql.present.graph
         graph.calculate
 
-        expect(graph.lifecycle.plugins[:merit]).to be_a(SimpleMeritOrder)
-        expect(graph.lifecycle.plugins[:merit]).to_not be_a(MeritOrder)
+        expect(graph.plugin(:merit)).to be_a(SimpleMeritOrder)
+        expect(graph.plugin(:merit)).to_not be_a(MeritOrder)
       end
 
       it 'uses the SimpleMeritOrder plugin on the future graph' do
@@ -55,8 +55,8 @@ module Qernel::Plugins
         graph = gql.future.graph
         graph.calculate
 
-        expect(graph.lifecycle.plugins[:merit]).to be_a(SimpleMeritOrder)
-        expect(graph.lifecycle.plugins[:merit]).to_not be_a(MeritOrder)
+        expect(graph.plugin(:merit)).to be_a(SimpleMeritOrder)
+        expect(graph.plugin(:merit)).to_not be_a(MeritOrder)
       end
     end # when the scenario has the MeritOrder disabled
 
@@ -81,7 +81,7 @@ module Qernel::Plugins
 
         graph = gql.future.graph
 
-        expect(graph.lifecycle.plugins[:merit]).to be_a(MeritOrder)
+        expect(graph.plugin(:merit)).to be_a(MeritOrder)
       end
 
       it 'calculates the future graph twice' do
