@@ -22,7 +22,7 @@ class Graph
 
   PLUGINS = [ Plugins::DisableSectors,
               Plugins::SimpleMeritOrder,
-              Plugins::MeritOrder,
+              Plugins::TimeResolve,
               Plugins::FCE,
               Plugins::MaxDemandRecursive,
               Plugins::ResettableSlots ]
@@ -72,6 +72,11 @@ class Graph
   # during calculation of the graph. Returns nil if no such plugin exists, or if
   # it wasn't used in this scenario.
   def plugin(name)
+    # Temporary backwards compatibility.
+    if name.to_sym == :merit && lifecycle.plugins[:time_resolve]
+      return lifecycle.plugins[:time_resolve].merit
+    end
+
     lifecycle.plugins[name.to_sym]
   end
 

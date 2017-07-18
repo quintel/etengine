@@ -1,49 +1,55 @@
 module Qernel::Plugins
   module Merit
-    class HouseholdPowerToHeatAdapter < PowerToHeatAdapter
+    class HouseholdPowerToHeatAdapter < FlexAdapter
       private
+
+      class DelegatingBlackHole < ::Merit::Flex::BlackHole
+        def initialize(opts)
+          super
+          @delegate = opts[:delegate]
+        end
+
+        def assign_excess(frame, amount)
+          input_cap = @input_capacity + load_curve.get(frame)
+
+          amount = input_cap if input_cap < amount
+          stored = @delegate.store_excess(frame, amount)
+
+          load_curve.set(frame, load_curve.get(frame) - stored)
+
+          stored
+
+          # @delegate.store_excess(frame, amount)
+        end
+      end
+
+      def producer_attributes
+        attrs = super
+
+        attrs[:delegate] = @graph.plugin(:time_resolve).fever.calculator
+
+        # attrs[:decay] =
+        #   @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
+
+        # TODO Does input capacity /efficiency prevent the need to model input
+        # constraints in Fever?
+        attrs[:input_capacity_per_unit] = @converter.input_capacity
+
+        # Do not emit anything; it has been converted to hot water.
+        #
+        # TODO This may not be necessary since BlackHole always sets max_load_at
+        # to zero.
+        attrs[:output_capacity_per_unit] = 0.0
+
+        attrs
+      end
+
+      def producer_class
+        DelegatingBlackHole
+      end
 
       def excess_share
         1.0
-      end
-
-      def reserve_decay
-        curves = @graph.plugin(:merit).curves
-
-        elec_hw_demand = curves.household_hot_water_demand
-        elec_hw_share  = curves.share_of_electricity_in_household_hot_water
-
-        elec_performance =
-          (1.0 / curves.household_hot_water_cop) * elec_hw_share
-
-        # Demand is calculated by Merit before computing decay. Therefore we can
-        # only subtract demand from the next step.
-        stop_at = elec_hw_demand.length - 2
-
-        lambda do |point, available|
-          hw_demand = elec_hw_demand.get(point + 1)
-          wanted    = hw_demand / elec_performance
-          use       = available > wanted ? wanted : available
-
-          # Subtract demand from the appropriate profiles.
-          if point < stop_at && use > 0
-            # Defines electricity saved by not running the electrical hot water
-            # producers. Needs to account for the share of electrical producers
-            # (since P2H reduces all heat demand, not just that from elec.) and
-            # the difference in performance between P2H and other providers
-            # (e.g. one unit of heat may require 0.5 units of electricity).
-            elec_saving = use * elec_performance
-
-            if hw_demand < elec_saving
-              # More P2H available than needed, reduce demand to zero.
-              elec_hw_demand.set(point + 1, 0.0)
-            else
-              elec_hw_demand.set(point + 1, hw_demand - elec_saving)
-            end
-          end
-
-          use
-        end
       end
     end # PowerToHeatAdapter
   end # Merit

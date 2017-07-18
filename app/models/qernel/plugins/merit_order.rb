@@ -6,12 +6,6 @@ module Qernel::Plugins
   # After the merit order has been calculated, it's producer loads are assigned
   # back to the graph, and the graph will be recalculated.
   class MeritOrder < SimpleMeritOrder
-
-    before :first_calculation, :clone_dataset
-    after  :first_calculation, :setup
-    after  :first_calculation, :run
-    before :recalculation,     :inject
-
     # Public: The MeritOrder plugin is enabled only on future graphs, and only
     # when the "full" Merit order has been requested (otherwise SimpleMeritOrder
     # will be used instead).
@@ -43,28 +37,6 @@ module Qernel::Plugins
     # profile.
     def setup
       super
-    end
-
-    # Internal: Takes the values from the "run" step and sets them on the
-    # appropriate converters in the graph.
-    def inject
-      @order.calculate
-
-      # Detaching the dataset clears the goals. This would ordinarily be correct
-      # behaviour, but we need to preserve them for the second calculation.
-      goals = @graph.goals
-      @graph.detach_dataset!
-
-      @graph.dataset = @original_dataset
-      @graph.goals   = goals
-
-      # Any subsequent calculations (one of which) must have the merit order
-      # demands injected into the graph.
-      inject_values!
-    end
-
-    def setup
-      super
 
       @order.add(::Merit::User.create(
         key:        :household_hot_water,
@@ -72,9 +44,17 @@ module Qernel::Plugins
       ))
     end
 
-    #######
+    # Internal: Takes loads and costs from the calculated Merit order, and
+    # installs them on the appropriate converters in the graph. The updated
+    # values will be used in the recalculated graph.
+    #
+    # Returns nothing.
+    def inject_values!
+      each_adapter(&:inject!)
+      set_dispatchable_positions!
+    end
+
     private
-    #######
 
     # Internal: Merit::Curve describing demand.
     def total_demand_curve
@@ -91,16 +71,6 @@ module Qernel::Plugins
       @graph.graph_query.total_demand_for_electricity -
         # Curves are in mWh; convert back to J.
         (3600.0 * (curves.combined.sum + curves.household_hot_water_demand.sum))
-    end
-
-    # Internal: Takes loads and costs from the calculated Merit order, and
-    # installs them on the appropriate converters in the graph. The updated
-    # values will be used in the recalculated graph.
-    #
-    # Returns nothing.
-    def inject_values!
-      each_adapter(&:inject!)
-      set_dispatchable_positions!
     end
 
     # Internal: Sets the position of each dispatchable in the merit order -

@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: d3a3bce606dac168f313c1c3acdfd3c1e8e7e9bf
-  ref: d3a3bce
+  revision: e61d9e77315ed3df9e592584c1ca759d2b4d2fc5
+  ref: e61d9e7
   specs:
     atlas (1.0.0)
       activemodel (>= 4.0)
@@ -22,9 +22,16 @@ GIT
       virtus (~> 1.0)
 
 GIT
+  remote: git://github.com/quintel/fever.git
+  revision: c7f1631d9e1656bdd27f998a57431e0e860104e0
+  ref: master
+  specs:
+    fever (0.1.0)
+
+GIT
   remote: git://github.com/quintel/merit.git
-  revision: c72ff2f41fb5ba398e6bd883bfd129936da334c9
-  ref: c72ff2f
+  revision: 8f1e90e6fc4d9f6cfa34ec22647d6edcb84a93ac
+  ref: 8f1e90e
   specs:
     quintel_merit (0.1.0)
       terminal-table
@@ -345,6 +352,7 @@ DEPENDENCIES
   distribution (~> 0.6)
   dotenv-rails
   factory_girl_rails
+  fever!
   fnv
   gctools
   git!

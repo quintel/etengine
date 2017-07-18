@@ -73,7 +73,7 @@ module Qernel::Plugins
       # Internal: Sets up inheritance of hooks, ensuring that subclasses cannot
       # affect the hooks defined on the superclass.
       def inherited(child)
-        child.hooks = Hash[self.hooks.map { |key, hooks| [key, hook.dup] }]
+        child.hooks = Hash[self.hooks.map { |key, hook| [key, hook.dup] }]
         child.hooks.default_proc = proc { |hash, key| hash[key] = [] }
       end
 
