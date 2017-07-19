@@ -18,15 +18,15 @@ module Qernel::Plugins
           load_curve.set(frame, load_curve.get(frame) - stored)
 
           stored
-
-          # @delegate.store_excess(frame, amount)
         end
       end
 
       def producer_attributes
         attrs = super
 
-        attrs[:delegate] = @graph.plugin(:time_resolve).fever.calculator
+        # Yuck.
+        attrs[:delegate] =
+          @graph.plugin(:time_resolve).fever.group(:hot_water).calculator
 
         # attrs[:decay] =
         #   @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay

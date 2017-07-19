@@ -6,7 +6,7 @@ module Qernel::Plugins
       def participant
         @participant ||=
           ::Fever::Activity.new(
-            ::Fever::Producer.new(total_value(:heat_output_capacity)),
+            ::Fever::Producer.new(total_value(:heat_output_capacity) / 100),
             share: @converter.converter.output(:useable_heat).links.first.share
           )
       end

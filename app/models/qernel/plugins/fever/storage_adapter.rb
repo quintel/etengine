@@ -6,7 +6,10 @@ module Qernel::Plugins
       def participant
         @participant ||=
           ::Fever::Activity.new(
-            ::Fever::ReserveProducer.new(total_value(:output_capacity), reserve)
+            ::Fever::ReserveProducer.new(
+              total_value(:heat_output_capacity),
+              reserve
+            )
           )
       end
 
