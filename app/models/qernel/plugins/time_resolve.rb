@@ -63,10 +63,9 @@ module Qernel::Plugins
 
     def inject
       merit_calc = ::Merit::StepwiseCalculator.new.calculate(@merit.order)
-      fever_calc = @fever.calculator
 
       8760.times do |frame|
-        fever_calc.calculate_frame(frame)
+        @fever.calculate_frame(frame)
         merit_calc.call(frame)
       end
 

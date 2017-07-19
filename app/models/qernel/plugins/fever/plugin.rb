@@ -1,43 +1,35 @@
 module Qernel::Plugins
   module Fever
     class Plugin
+      TYPES = [:consumer, :storage, :producer].freeze
+
+      attr_reader :dataset
+      attr_reader :graph
+
       def initialize(graph)
         @graph = graph
+        @dataset = Atlas::Dataset.find(@graph.area.area_code)
       end
 
-      def calculator
-        setup unless @calculator
-        @calculator
-      end
+      # def calculators
+      #   setup unless @calculators
+      #   @calculators
+      # end
 
-      # Public: Returns the Atlas dataset for the current graph region.
-      def dataset
-        @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
+      def group(name)
+        @groups.find { |c| c.name == name }
       end
 
       def setup
-        @calculator =
-          if adapters.any?
-            ::Fever::Calculator.new(
-              adapters[:consumer].first.participant,
-              adapters[:storage].map(&:participant) +
-                adapters[:producer].map(&:participant)
-            )
-          else
-            ::Fever::Calculator.new(::Fever::Consumer.new([]), [])
-          end
+        @groups =
+          Etsource::Fever.data.keys.map { |group| Group.new(group, self) }
       end
 
-      # Internal: Returns an array of converters which are of the requested
-      # merit order +type+ (defined in PRODUCER_TYPES).
+      # Internal: Instructs each contained calculator to compute loads.
       #
-      # TODO Memoize this on Etsource like MeritOrder.
-      #
-      # Returns an array.
-      def converters(type)
-        Atlas::Node.all
-          .select { |n| n.fever && n.fever.type == type }
-          .map { |n| @graph.converter(n.key) }
+      # Returns nothing.
+      def calculate_frame(frame)
+        @groups.each { |calc| calc.calculate_frame(frame) }
       end
 
       # Internal: Takes loads and costs from the calculated Merit order, and
@@ -46,25 +38,13 @@ module Qernel::Plugins
       #
       # Returns nothing.
       def inject_values!
-        adapters.values.flatten.each(&:inject!)
+        adapters.each(&:inject!)
       end
 
       private
 
       def adapters
-        return @adapters if @adapters
-
-        @adapters = Hash.new { |h, k| h[k] = [] }
-
-        [:consumer, :storage, :producer].each do |type|
-          converters(type).each do |converter|
-            @adapters[type].push(Qernel::Plugins::Fever::Adapter.adapter_for(
-              converter, @graph, dataset
-            ))
-          end
-        end
-
-        @adapters
+        @groups.flat_map(&:adapters)
       end
     end # Plugin
   end # Fever
