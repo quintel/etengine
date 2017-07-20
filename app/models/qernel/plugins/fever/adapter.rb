@@ -3,6 +3,8 @@ module Qernel::Plugins
     # Base class which handles setting up the participant in Fever, and
     # converting data post-calculation to be added back to ETEngine.
     class Adapter
+      attr_reader :converter
+
       def self.adapter_for(converter, graph, dataset)
         type = converter.dataset_get(:fever).type.to_sym
 

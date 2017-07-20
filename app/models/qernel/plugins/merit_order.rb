@@ -38,10 +38,12 @@ module Qernel::Plugins
     def setup
       super
 
-      @order.add(::Merit::User.create(
-        key:        :household_hot_water,
-        load_curve: curves.household_hot_water_demand
-      ))
+      @graph.plugin(:time_resolve).fever.groups.each do |fgroup|
+        @order.add(::Merit::User.create(
+          key: :"fever_#{ fgroup.name }",
+          load_curve: fgroup.elec_demand_curve
+        ))
+      end
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and
