@@ -20,6 +20,13 @@ module Qernel::Plugins
         calculator.calculate_frame(frame)
       end
 
+      def elec_demand_curve
+        @elec_demand_curve ||=
+          Qernel::Plugins::Fever::ElectricityDemandCurve.new(
+            adapters.select { |a| a.converter.converter.input(:electricity) }
+          )
+      end
+
       def adapters
         adapters_by_type.values.flatten
       end

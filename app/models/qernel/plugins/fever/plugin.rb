@@ -15,6 +15,10 @@ module Qernel::Plugins
         @groups.find { |c| c.name == name }
       end
 
+      def groups
+        @groups || setup
+      end
+
       def setup
         @groups =
           Etsource::Fever.data.keys.map { |group| Group.new(group, self) }

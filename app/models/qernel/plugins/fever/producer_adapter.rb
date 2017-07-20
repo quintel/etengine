@@ -31,7 +31,7 @@ module Qernel::Plugins
       end
 
       def producer
-        ::Fever::Producer.new(total_value(:heat_output_capacity) / 100),
+        ::Fever::Producer.new(total_value(:heat_output_capacity))
       end
 
       def share
