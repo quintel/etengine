@@ -11,11 +11,6 @@ module Qernel::Plugins
         @dataset = Atlas::Dataset.find(@graph.area.area_code)
       end
 
-      # def calculators
-      #   setup unless @calculators
-      #   @calculators
-      # end
-
       def group(name)
         @groups.find { |c| c.name == name }
       end

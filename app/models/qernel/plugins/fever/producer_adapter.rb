@@ -5,10 +5,13 @@ module Qernel::Plugins
     class ProducerAdapter < Adapter
       def participant
         @participant ||=
-          ::Fever::Activity.new(
-            ::Fever::Producer.new(total_value(:heat_output_capacity) / 100),
-            share: @converter.converter.output(:useable_heat).links.first.share
-          )
+          if @config.defer_for && @config.defer_for > 0
+            ::Fever::DeferrableActivity.new(
+              producer, share: share, expire_after: @config.defer_for
+            )
+          else
+            ::Fever::Activity.new(producer, share: share)
+          end
       end
 
       def inject!
@@ -25,6 +28,14 @@ module Qernel::Plugins
       def output_efficiency
         slots = @converter.converter.outputs.reject(&:loss?)
         slots.any? ? slots.sum(&:conversion) : 1.0
+      end
+
+      def producer
+        ::Fever::Producer.new(total_value(:heat_output_capacity) / 100),
+      end
+
+      def share
+        @converter.converter.output(:useable_heat).links.first.share
       end
     end # ProducerAdapter
   end
