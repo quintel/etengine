@@ -25,20 +25,14 @@ module Qernel::Plugins
       # Public: The total demand for electricity for heating technologies for
       # households of the given type; :old or :new.
       def demand_of(type)
-        demand_for_electricity * share_of(type)
+        share_of(type) * @graph.converter(
+          :households_useful_demand_for_space_heating_after_insulation_and_solar_heater
+        ).converter_api.input_of(:useable_heat)
       end
 
       # Public: The share of households of the given type; :old or :new.
       def share_of(type)
         type == :new ? share_of_new_households : share_of_old_households
-      end
-
-      # Public: The total demand for electricity for heating technologies in
-      # households.
-      def demand_for_electricity
-        @graph.query.group_demand_for_electricity(
-          :merit_household_space_heating_producers
-        )
       end
 
       # Public: The share of households which are classed as "old".
@@ -79,4 +73,3 @@ module Qernel::Plugins
     end
   end # Merit
 end # Qernel::Plugins
-

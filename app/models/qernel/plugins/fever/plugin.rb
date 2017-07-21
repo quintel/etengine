@@ -19,6 +19,10 @@ module Qernel::Plugins
         @groups || setup
       end
 
+      def curves
+        @curves ||= Curves.new(@graph)
+      end
+
       def setup
         @groups =
           Etsource::Fever.data.keys.map { |group| Group.new(group, self) }
