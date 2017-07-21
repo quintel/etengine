@@ -4,8 +4,9 @@ module Qernel::Plugins
       attr_reader :name
 
       def initialize(name, plugin)
-        @name = name
-        @plugin = plugin
+        @name    = name
+        @graph   = plugin.graph
+        @dataset = plugin.dataset
       end
 
       def calculator
@@ -37,11 +38,7 @@ module Qernel::Plugins
         @adapters = Plugin::TYPES.each_with_object({}) do |type, data|
           data[type] =
             (Etsource::Fever.data[@name][type] || []).map do |node_key|
-              Adapter.adapter_for(
-                @plugin.graph.converter(node_key),
-                @plugin.graph,
-                @plugin.dataset
-              )
+              Adapter.adapter_for(@graph.converter(node_key), @graph, @dataset)
             end
         end
       end
