@@ -62,7 +62,7 @@ module Qernel::Plugins
     def total_demand_curve
       # Hot water demand is added as a separate user so that demand may be
       # altered by P2H.
-      @total_demand_curve ||= super + curves.combined
+      @total_demand_curve ||= super + curves.ev_demand
     end
 
     # Internal: The total electricity demand, joules, across the graph, minus
