@@ -1,11 +1,15 @@
 require 'spec_helper'
 
 describe Qernel::Plugins::Merit::HouseholdHeat do
-  let(:helper) { described_class.new(graph) }
+  let(:helper) do
+    helper = described_class.new(graph)
+    allow(helper).to receive(:demand_for_heat).and_return(heat_demand)
+    helper
+  end
 
   let(:old_household_demand) { 0.0 }
   let(:new_household_demand) { 0.0 }
-  let(:electricity_demand)   { 0.0 }
+  let(:heat_demand)   { 0.0 }
 
   let(:graph) do
     api   = double('Qernel::GraphApi')
@@ -22,22 +26,18 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
       .with(:merit_new_household_heat)
       .and_return([new_house])
 
-    allow(api).to receive(:group_demand_for_electricity)
-      .with(:merit_household_space_heating_producers)
-      .and_return(electricity_demand)
-
     graph
   end
 
   context 'with electricity demand of 1000' do
-    let(:electricity_demand) { 1000.0 }
+    let(:heat_demand) { 1000.0 }
 
     context 'with 100% new houses' do
       let(:new_household_demand) { 100.0 }
       let(:old_household_demand) { 0.0 }
 
       it 'has total electricity demand of 1000' do
-        expect(helper.demand_for_electricity).to eq(1000)
+        expect(helper.demand_for_heat).to eq(1000)
       end
 
       it 'has 0% share of old households' do
@@ -62,7 +62,7 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
       let(:old_household_demand) { 100.0 }
 
       it 'has total electricity demand of 1000' do
-        expect(helper.demand_for_electricity).to eq(1000)
+        expect(helper.demand_for_heat).to eq(1000)
       end
 
       it 'has 100% share of old households' do
@@ -87,7 +87,7 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
       let(:old_household_demand) { 40.0 }
 
       it 'has total electricity demand of 1000' do
-        expect(helper.demand_for_electricity).to eq(1000)
+        expect(helper.demand_for_heat).to eq(1000)
       end
 
       it 'has 40% share of old households' do
@@ -112,7 +112,7 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
       let(:old_household_demand) { 0.0 }
 
       it 'has total electricity demand of 1000' do
-        expect(helper.demand_for_electricity).to eq(1000)
+        expect(helper.demand_for_heat).to eq(1000)
       end
 
       it 'has 0% share of old households' do
@@ -134,14 +134,14 @@ describe Qernel::Plugins::Merit::HouseholdHeat do
   end # with electricity demand of 1000
 
   context 'with no electricity demand' do
-    let(:electricity_demand) { 0.0 }
+    let(:heat_demand) { 0.0 }
 
     context 'with 40% old houses, 60% new houses' do
       let(:new_household_demand) { 60.0 }
       let(:old_household_demand) { 40.0 }
 
       it 'has total electricity demand of zero' do
-        expect(helper.demand_for_electricity).to eq(0)
+        expect(helper.demand_for_heat).to eq(0)
       end
 
       it 'has 40% share of old households' do
