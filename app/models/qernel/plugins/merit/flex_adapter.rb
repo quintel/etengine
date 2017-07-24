@@ -10,8 +10,10 @@ module Qernel::Plugins
             StorageAdapter
           when :power_to_gas, :power_to_gas_industry
             PowerToGasAdapter
-          when :power_to_heat
+          when :power_to_heat_industry
             PowerToHeatAdapter
+          when :power_to_heat
+            HouseholdPowerToHeatAdapter
           when :curtailment, :export
             CurtailmentAdapter
           else

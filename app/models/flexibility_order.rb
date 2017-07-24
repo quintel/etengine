@@ -5,6 +5,7 @@ class FlexibilityOrder < ActiveRecord::Base
     power_to_gas
     power_to_gas_industry
     power_to_heat
+    power_to_heat_industry
     export
   ).map(&:freeze).freeze
 
