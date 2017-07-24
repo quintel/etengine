@@ -25,9 +25,7 @@ module Qernel::Plugins
       # Public: The total demand for electricity for heating technologies for
       # households of the given type; :old or :new.
       def demand_of(type)
-        share_of(type) * @graph.converter(
-          :households_useful_demand_for_space_heating_after_insulation_and_solar_heater
-        ).converter_api.input_of(:useable_heat)
+        share_of(type) * demand_for_heat
       end
 
       # Public: The share of households of the given type; :old or :new.
@@ -51,6 +49,15 @@ module Qernel::Plugins
           old = share_of_old_households
           old.zero? && new_demand.zero? ? 0.0 : 1.0 - old
         end
+      end
+
+      def demand_for_heat
+        @demand_for_heat ||=
+          Etsource::Fever.data.values
+            .flat_map { |nodes| nodes[:consumer] }
+            .sum do |key|
+              @graph.converter(key).converter_api.input_of(:useable_heat)
+            end
       end
 
       private

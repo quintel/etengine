@@ -113,9 +113,8 @@ describe 'Qernel::Plugins::Merit::Curves' do
         .with(:merit_new_household_heat)
         .and_return([new_houses])
 
-      allow(graph_api)
-        .to receive(:group_demand_for_electricity)
-        .with(:merit_household_space_heating_producers).and_return(8760.0)
+      allow(curves.send(:heat_demand))
+        .to receive(:demand_for_heat).and_return(8760.0)
     end
 
     context 'with a "share" of 0.25 (25/75 profile mix)' do
@@ -157,9 +156,8 @@ describe 'Qernel::Plugins::Merit::Curves' do
         .with(:merit_new_household_heat)
         .and_return([new_houses])
 
-      allow(graph_api)
-        .to receive(:group_demand_for_electricity)
-        .with(:merit_household_space_heating_producers).and_return(8760.0)
+      allow(curves.send(:heat_demand))
+        .to receive(:demand_for_heat).and_return(8760.0)
     end
 
     context 'with a "share" of 0.75 (25/75 profile mix)' do
