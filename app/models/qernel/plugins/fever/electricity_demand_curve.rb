@@ -15,7 +15,7 @@ module Qernel::Plugins
       end
 
       def get(frame)
-        @producers.sum { |prod, conv| prod.load_curve[frame] * conv }
+        @producers.sum { |prod, conv| prod.input_at(frame) * conv }
       end
 
       def [](frame)
