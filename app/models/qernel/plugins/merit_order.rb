@@ -70,9 +70,15 @@ module Qernel::Plugins
     #
     # Returns a float.
     def total_demand
+      fever_demands = @graph.plugin(:time_resolve).fever.groups.sum do |group|
+        group.adapters_by_type[:producer].sum do |adapt|
+          adapt.converter.input_of_electricity
+        end
+      end
+
       @graph.graph_query.total_demand_for_electricity -
         # Curves are in mWh; convert back to J.
-        (3600.0 * (curves.combined.sum + curves.household_hot_water_demand.sum))
+        (3600.0 * curves.ev_demand.sum + fever_demands)
     end
 
     # Internal: Sets the position of each dispatchable in the merit order -
