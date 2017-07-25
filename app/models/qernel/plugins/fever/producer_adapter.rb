@@ -31,7 +31,19 @@ module Qernel::Plugins
       end
 
       def producer
-        ::Fever::Producer.new(total_value(:heat_output_capacity))
+        if (st = @converter.dataset_get(:storage)) && st.volume > 0
+          ::Fever::BufferingProducer.new(
+            total_value(:heat_output_capacity), reserve
+          )
+        else
+          ::Fever::Producer.new(total_value(:heat_output_capacity))
+        end
+      end
+
+      def reserve
+        ::Merit::Flex::Reserve.new(
+          total_value { @converter.dataset_get(:storage).volume }
+        )
       end
 
       def share

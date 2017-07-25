@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: git://github.com/quintel/fever.git
-  revision: 60bea425a798ffc368dda512e3b7eacb9207b7bc
+  revision: 0f3fa348ff338ad77f9ac07c71c0a96389661fe8
   ref: master
   specs:
     fever (0.1.0)
