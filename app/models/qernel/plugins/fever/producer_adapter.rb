@@ -15,8 +15,14 @@ module Qernel::Plugins
       end
 
       def inject!
-        heat_production = participant.producer.load_curve.sum * 3600 # MWh -> MJ
-        full_load_hours = heat_production / total_value(:heat_output_capacity)
+        producer = participant.producer
+        heat_production = producer.load_curve.sum * 3600 # MWh -> MJ
+
+        if heat_production.zero?
+          full_load_hours = 0.0
+        else
+          full_load_hours = heat_production / producer.capacity
+        end
 
         @converter.demand              = heat_production / output_efficiency
         @converter[:full_load_hours]   = full_load_hours
