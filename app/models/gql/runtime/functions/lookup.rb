@@ -237,13 +237,28 @@ module Gql::Runtime
       #
       # Returns an array.
       def MERIT_DEMAND_COMPONENT(type)
-        unless Qernel::Plugins::Merit::Curves::CURVE_NAMES.include?(type.to_sym)
+        case type.to_sym
+        when :ev_demand then
+          scope.graph.plugin(:merit).curves.ev_demand.to_a
+        when :household_hot_water
+          fever_electricity_demand(:hot_water)
+        when :old_household_space_heating_demand
+          fever_electricity_demand(:space_heating)
+        when :new_household_space_heating_demand
+          [0.0] * 8760
+        else
           raise "Invalid merit demand component: #{ type.inspect }"
         end
+      end
 
-        scope.graph.plugin(:merit).curves.public_send(type.to_sym).to_a
+      private
+
+      def fever_electricity_demand(group)
+        return [] unless scope.graph.plugin(:time_resolve)
+
+        scope.graph.plugin(:time_resolve)
+          .fever.group(group).elec_demand_curve.to_a
       end
     end
-
   end
 end
