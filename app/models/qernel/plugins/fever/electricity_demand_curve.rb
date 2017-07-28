@@ -4,10 +4,7 @@ module Qernel::Plugins
     # Merit order demands.
     class ElectricityDemandCurve
       def initialize(adapters)
-        @producers = adapters.each_with_object({}) do |adapter, data|
-          data[adapter.participant.producer] =
-            adapter.converter.electricity_input_conversion
-        end
+        @producers = adapters.map { |adapter| adapter.participant.producer }
       end
 
       def to_a
@@ -15,7 +12,7 @@ module Qernel::Plugins
       end
 
       def get(frame)
-        @producers.sum { |prod, conv| prod.input_at(frame) * conv }
+        @producers.sum { |prod| prod.input_at(frame) }
       end
 
       def [](frame)

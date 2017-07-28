@@ -9,7 +9,7 @@ module Qernel::Plugins
         type = converter.dataset_get(:fever).type.to_sym
 
         klass = case type
-          when :producer then ProducerAdapter
+          when :producer then ProducerAdapter.factory(converter, graph, dataset)
           when :storage  then StorageAdapter
           when :consumer then ConsumerAdapter
           else raise "Unknown Fever type: #{ type }"

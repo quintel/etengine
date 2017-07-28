@@ -3,6 +3,18 @@ module Qernel::Plugins
     # Represents a Fever participant which will provide energy needed to meet
     # demand.
     class ProducerAdapter < Adapter
+      # Public: Returns an appropriate adapter class to represent the given
+      # converter in Fever.
+      #
+      # Returns an Adapter class.
+      def self.factory(converter, _graph, _dataset)
+        if converter.dataset_get(:fever).efficiency_based_on
+          VariableEfficiencyProducerAdapter
+        else
+          self
+        end
+      end
+
       def participant
         @participant ||=
           if @config.defer_for && @config.defer_for > 0
@@ -36,13 +48,22 @@ module Qernel::Plugins
         slots.any? ? slots.sum(&:conversion) : 1.0
       end
 
+      def input_efficiency
+        slots = @converter.converter.inputs.reject(&:loss?)
+        slots.any? ? slots.sum(&:conversion) : 1.0
+      end
+
       def producer
         if (st = @converter.dataset_get(:storage)) && st.volume > 0
           ::Fever::BufferingProducer.new(
-            total_value(:heat_output_capacity), reserve
+            total_value(:heat_output_capacity), reserve,
+            input_efficiency: input_efficiency
           )
         else
-          ::Fever::Producer.new(total_value(:heat_output_capacity))
+          ::Fever::Producer.new(
+            total_value(:heat_output_capacity),
+            input_efficiency: input_efficiency
+          )
         end
       end
 
