@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/atlas.git
-  revision: f69133a5b7a4f66509f971c28fa28b9362c90019
-  ref: f69133a
+  revision: 552c847eb8562a079c4728ffd554b72d23e72cd0
+  ref: 552c847
   specs:
     atlas (1.0.0)
       activemodel (>= 4.0)
@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: git://github.com/quintel/fever.git
-  revision: 0f3fa348ff338ad77f9ac07c71c0a96389661fe8
+  revision: 5e3a40c3487227768cc6c0ee3426ac9543b7a9fb
   ref: master
   specs:
     fever (0.1.0)

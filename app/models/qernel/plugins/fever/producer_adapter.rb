@@ -33,7 +33,7 @@ module Qernel::Plugins
         if heat_production.zero?
           full_load_hours = 0.0
         else
-          full_load_hours = heat_production / producer.capacity
+          full_load_hours = heat_production / total_value(:heat_output_capacity)
         end
 
         @converter.demand              = heat_production / output_efficiency
@@ -56,15 +56,36 @@ module Qernel::Plugins
       def producer
         if (st = @converter.dataset_get(:storage)) && st.volume > 0
           ::Fever::BufferingProducer.new(
-            total_value(:heat_output_capacity), reserve,
+            capacity, reserve,
             input_efficiency: input_efficiency
           )
         else
-          ::Fever::Producer.new(
-            total_value(:heat_output_capacity),
-            input_efficiency: input_efficiency
-          )
+          ::Fever::Producer.new(capacity, input_efficiency: input_efficiency)
         end
+      end
+
+      # Internal: The total capacity of the Fever participant in each frame.
+      #
+      # Returns an arrayish.
+      def capacity
+        return total_value(:heat_output_capacity) unless @config.alias_of
+
+        DelegatedCapacityCurve.new(
+          total_value(:heat_output_capacity),
+          aliased_producer
+        )
+      end
+
+      # Internal: The Fever participant is an alias of a producer in another
+      # group; fetch it!
+      def aliased_producer
+        alias_group = @graph.plugin(:time_resolve).fever.group(
+          @graph.converter(@config.alias_of).dataset_get(:fever).group
+        )
+
+        alias_group.adapters
+          .detect { |adapter| adapter.converter.key == @config.alias_of }
+          .participant.producer
       end
 
       def reserve
