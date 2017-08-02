@@ -48,12 +48,8 @@ module Qernel::Plugins
       end
 
       def subtraction_profile
-        demand_profile * (
-          @graph.converter(@config.demand_source).converter_api.demand / #
-          # Divide by the number of units since Merit will multiply the decay
-          # by the number of units.
-          @converter.number_of_units
-        )
+        demand_profile *
+          @graph.converter(@config.demand_source).converter_api.demand
       end
 
       def demand_profile
