@@ -31,6 +31,8 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
+        attrs[:excess_share] = excess_share
+
         attrs[:decay] =
           @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
 
@@ -54,6 +56,31 @@ module Qernel::Plugins
 
       def demand_profile
         @dataset.load_profile(@config.demand_profile)
+      end
+
+      # Internal: Participants belonging to a group with others should receive
+      # a share of excess proportional to their capacity.
+      #
+      # Returns a numeric.
+      def excess_share
+        self_cap = @converter.input_capacity * @converter.number_of_units
+        group_cap = 0.0
+
+        return 0.0 if self_cap.zero?
+
+        # Find all flex converters belonging to the same group.
+        @graph.plugin(:merit).each_adapter do |adapter|
+          aconf = adapter.config
+          conv = adapter.converter
+
+          next if aconf.group != @config.group || aconf.type != @config.type
+
+          group_cap += conv.input_capacity * conv.number_of_units
+        end
+
+        return 1.0 if group_cap.zero?
+
+        self_cap / group_cap
       end
     end # PowerToHeatAdapter
   end # Merit

@@ -82,6 +82,13 @@ module Qernel::Plugins
       ))
     end
 
+    # Internal: Iterates through each adapter.
+    #
+    # Returns nothing.
+    def each_adapter
+      adapters.each { |_, adapter| yield(adapter) }
+    end
+
     #######
     private
     #######
@@ -124,13 +131,6 @@ module Qernel::Plugins
     # Returns a Plugins::Merit::Adapter or nil.
     def adapter(key)
       adapters[key]
-    end
-
-    # Internal: Iterates through each adapter.
-    #
-    # Returns nothing.
-    def each_adapter
-      adapters.each { |_, adapter| yield(adapter) }
     end
 
     # Internal: Given the flexible merit order participant converters, sorts

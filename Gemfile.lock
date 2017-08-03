@@ -23,8 +23,8 @@ GIT
 
 GIT
   remote: git://github.com/quintel/merit.git
-  revision: 0b8ddfd4421b7930410912c09b6f7784ba389cba
-  ref: 0b8ddfd
+  revision: b2bf4d14c016a57c5bfdc43ee16efde5e39e5281
+  ref: b2bf4d1
   specs:
     quintel_merit (0.1.0)
       terminal-table
@@ -295,8 +295,8 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     term-ansicolor (1.0.7)
-    terminal-table (1.7.3)
-      unicode-display_width (~> 1.1.1)
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
     text-table (1.2.3)
     therubyracer (0.12.1)
       libv8 (~> 3.16.14.0)
@@ -311,7 +311,7 @@ GEM
     turbine-graph (0.1.3)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    unicode-display_width (1.1.1)
+    unicode-display_width (1.3.0)
     unicorn (4.8.2)
       kgio (~> 2.6)
       rack
