@@ -1720,10 +1720,10 @@
   :y: 12660
 :industry_useful_demand_for_chemical_other_electricity:
   :x: 720
-  :y: 12080
+  :y: 12040
 :industry_final_demand_for_chemical_other_electricity:
-  :x: 1520
-  :y: 12080
+  :x: 1500
+  :y: 12040
 :industry_useful_demand_for_chemical_other_network_gas_non_energetic:
   :x: 720
   :y: 12600
@@ -1794,16 +1794,16 @@
   :x: 720
   :y: 10560
 :industry_chemicals_refineries_burner_coal:
-  :x: 1140
+  :x: 1240
   :y: 10560
 :industry_chemicals_refineries_burner_crude_oil:
-  :x: 1140
+  :x: 1240
   :y: 10740
 :industry_chemicals_refineries_burner_network_gas:
-  :x: 1140
+  :x: 1240
   :y: 10620
 :industry_chemicals_refineries_burner_wood_pellets:
-  :x: 1140
+  :x: 1240
   :y: 10680
 :industry_final_demand_for_chemical_refineries_coal:
   :x: 1520
@@ -2047,7 +2047,7 @@
   :y: 16800
 :industry_useful_demand_for_other_paper_useable_heat:
   :x: 720
-  :y: 16980
+  :y: 16800
 :industry_final_demand_for_other_paper_steam_hot_water:
   :x: 1520
   :y: 16980
@@ -2181,8 +2181,8 @@
   :x: 1520
   :y: 13860
 :industry_useful_demand_for_other_food_useable_heat:
-  :x: 720
-  :y: 14040
+  :x: 740
+  :y: 13840
 :industry_final_demand_for_other_food_steam_hot_water:
   :x: 1520
   :y: 14040
@@ -2229,34 +2229,34 @@
   :x: 160
   :y: 11640
 :industry_other_food_burner_coal:
-  :x: 1160
+  :x: 1220
   :y: 13800
 :industry_other_food_burner_crude_oil:
-  :x: 1160
+  :x: 1220
   :y: 13920
 :industry_other_food_burner_network_gas:
-  :x: 1160
+  :x: 1220
   :y: 13860
 :industry_other_food_burner_wood_pellets:
-  :x: 1160
+  :x: 1220
   :y: 13980
 :industry_other_paper_burner_coal:
-  :x: 1140
+  :x: 1220
   :y: 16740
 :industry_other_paper_burner_crude_oil:
-  :x: 1140
+  :x: 1220
   :y: 16920
 :industry_other_paper_burner_network_gas:
-  :x: 1140
+  :x: 1220
   :y: 16800
 :industry_other_paper_burner_wood_pellets:
-  :x: 1140
+  :x: 1220
   :y: 16860
 :industry_other_food_heater_electricity:
-  :x: 1160
+  :x: 1220
   :y: 13740
 :industry_other_paper_heater_electricity:
-  :x: 1140
+  :x: 1220
   :y: 16680
 :industry_chemicals_fertilizers_haber_bosch_process_hydrogen:
   :x: 40
@@ -2270,3 +2270,33 @@
 :transport_truck_using_hydrogen:
   :x: 1520
   :y: 4140
+:industry_chemicals_other_heatpump_water_water_electricity:
+  :x: 1180
+  :y: 12080
+:industry_chemicals_other_steam_recompression_electricity:
+  :x: 1180
+  :y: 12140
+:industry_chemicals_other_flexibility_p2h_electricity:
+  :x: 940
+  :y: 12280
+:industry_useful_demand_for_chemical_other_useable_heat_after_p2h:
+  :x: 940
+  :y: 12200
+:industry_chemicals_refineries_flexibility_p2h_electricity:
+  :x: 920
+  :y: 10620
+:industry_other_food_flexibility_p2h_electricity:
+  :x: 920
+  :y: 13920
+:industry_other_paper_flexibility_p2h_electricity:
+  :x: 900
+  :y: 16880
+:industry_useful_demand_for_chemical_refineries_useable_heat_after_p2h:
+  :x: 920
+  :y: 10560
+:industry_useful_demand_for_other_food_useable_heat_after_p2h:
+  :x: 920
+  :y: 13840
+:industry_useful_demand_for_other_paper_useable_heat_after_p2h:
+  :x: 900
+  :y: 16800

@@ -31,6 +31,8 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
+        attrs[:excess_share] = excess_share
+
         attrs[:decay] =
           @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
 
@@ -41,42 +43,44 @@ module Qernel::Plugins
       end
 
       def reserve_decay
-        curves = @graph.plugin(:merit).curves
+        # Remove from the storage ("buffer") as much as possible to satisfy
+        # the demand profile.
+        decay = subtraction_profile
+        ->(point, _) { decay.get(point) }
+      end
 
-        elec_hw_demand = curves.household_hot_water_demand
-        elec_hw_share  = curves.share_of_electricity_in_household_hot_water
+      def subtraction_profile
+        demand_profile *
+          @graph.converter(@config.demand_source).converter_api.demand
+      end
 
-        elec_performance =
-          (1.0 / curves.household_hot_water_cop) * elec_hw_share
+      def demand_profile
+        @dataset.load_profile(@config.demand_profile)
+      end
 
-        # Demand is calculated by Merit before computing decay. Therefore we can
-        # only subtract demand from the next step.
-        stop_at = elec_hw_demand.length - 2
+      # Internal: Participants belonging to a group with others should receive
+      # a share of excess proportional to their capacity.
+      #
+      # Returns a numeric.
+      def excess_share
+        self_cap = @converter.input_capacity * @converter.number_of_units
+        group_cap = 0.0
 
-        lambda do |point, available|
-          hw_demand = elec_hw_demand.get(point + 1)
-          wanted    = hw_demand / elec_performance
-          use       = available > wanted ? wanted : available
+        return 0.0 if self_cap.zero?
 
-          # Subtract demand from the appropriate profiles.
-          if point < stop_at && use > 0
-            # Defines electricity saved by not running the electrical hot water
-            # producers. Needs to account for the share of electrical producers
-            # (since P2H reduces all heat demand, not just that from elec.) and
-            # the difference in performance between P2H and other providers
-            # (e.g. one unit of heat may require 0.5 units of electricity).
-            elec_saving = use * elec_performance
+        # Find all flex converters belonging to the same group.
+        @graph.plugin(:merit).each_adapter do |adapter|
+          aconf = adapter.config
+          conv = adapter.converter
 
-            if hw_demand < elec_saving
-              # More P2H available than needed, reduce demand to zero.
-              elec_hw_demand.set(point + 1, 0.0)
-            else
-              elec_hw_demand.set(point + 1, hw_demand - elec_saving)
-            end
-          end
+          next if aconf.group != @config.group || aconf.type != @config.type
 
-          use
+          group_cap += conv.input_capacity * conv.number_of_units
         end
+
+        return 1.0 if group_cap.zero?
+
+        self_cap / group_cap
       end
     end # PowerToHeatAdapter
   end # Merit
