@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel::Plugins
   module Fever
     # Represents a Fever participant which will provide energy needed to meet
@@ -8,7 +10,9 @@ module Qernel::Plugins
       #
       # Returns an Adapter class.
       def self.factory(converter, _graph, _dataset)
-        if converter.dataset_get(:fever).efficiency_based_on
+        if converter.key.to_s.include?('hybrid')
+          HHPAdapter
+        elsif converter.dataset_get(:fever).efficiency_based_on
           VariableEfficiencyProducerAdapter
         else
           self
@@ -41,6 +45,17 @@ module Qernel::Plugins
         @converter[:full_load_seconds] = full_load_hours * 3600
       end
 
+      def producer
+        if (st = @converter.dataset_get(:storage)) && st.volume > 0
+          ::Fever::BufferingProducer.new(
+            capacity, reserve,
+            input_efficiency: input_efficiency
+          )
+        else
+          ::Fever::Producer.new(capacity, input_efficiency: input_efficiency)
+        end
+      end
+
       private
 
       def output_efficiency
@@ -51,17 +66,6 @@ module Qernel::Plugins
       def input_efficiency
         slots = @converter.converter.inputs.reject(&:loss?)
         slots.any? ? slots.sum(&:conversion) : 1.0
-      end
-
-      def producer
-        if (st = @converter.dataset_get(:storage)) && st.volume > 0
-          ::Fever::BufferingProducer.new(
-            capacity, reserve,
-            input_efficiency: input_efficiency
-          )
-        else
-          ::Fever::Producer.new(capacity, input_efficiency: input_efficiency)
-        end
       end
 
       # Internal: The total capacity of the Fever participant in each frame.

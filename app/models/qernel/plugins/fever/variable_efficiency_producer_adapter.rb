@@ -4,21 +4,19 @@ module Qernel::Plugins
   module Fever
     class VariableEfficiencyProducerAdapter < ProducerAdapter
       def inject!
-        converter = @converter.converter
-
-        based_on       = converter.input(@config.efficiency_based_on)
-        balanced_with  = converter.input(@config.efficiency_balanced_with)
-        combined_share = based_on[:conversion] + balanced_with[:conversion]
+        share = combined_share
 
         super
 
-        efficiency = 1 / load_adjusted_input_efficiency
+        load_efficiency = load_adjusted_input_efficiency
 
-        based_on[:conversion]      = efficiency * combined_share
-        balanced_with[:conversion] = (1.0 - efficiency) * combined_share
+        unless load_efficiency.zero?
+          efficiency = 1 / load_efficiency
+
+          based_on_slot[:conversion]      = efficiency * share
+          balanced_with_slot[:conversion] = (1.0 - efficiency) * share
+        end
       end
-
-      private
 
       # Internal: Computes the actual efficiency of the heat pump over the year,
       # depending on when demand arose.
@@ -32,6 +30,25 @@ module Qernel::Plugins
           input = producer.input_at(index)
           input.zero? ? 0.0 : load / producer.input_at(index)
         end.sum / lcurve.length
+      end
+
+      # Internal: The slot whose efficiency varies depending on the temperature
+      # curve.
+      def based_on_slot
+        @converter.converter.input(@config.efficiency_based_on)
+      end
+
+      # Internal: The slot whose conversion will be adjusted according to the
+      # change in efficiency of the "based_on" slot.
+      def balanced_with_slot
+        @converter.converter.input(@config.efficiency_balanced_with)
+      end
+
+      private
+
+      # Internal: The share of the two inputs.
+      def combined_share
+        1.0 - (based_on_slot[:conversion] + balanced_with_slot[:conversion])
       end
 
       # Internal: The input efficiency curve to be used by the producer.
@@ -55,6 +72,18 @@ module Qernel::Plugins
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
         Qernel::Plugins::TimeResolve.load_profile(@dataset, 'air_temperature')
+      end
+
+      def capacity
+        heat_capacity = total_value(:heat_output_capacity)
+        converter = @converter.converter
+
+        # Producers with only two slots (the based_on and balanced_with) use the
+        # full output capacity; others with more input slots must adjust for the
+        # presence of the other inputs.
+        return heat_capacity if converter.inputs.length < 3
+
+        heat_capacity * combined_share
       end
     end
   end
