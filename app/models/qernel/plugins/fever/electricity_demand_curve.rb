@@ -3,8 +3,8 @@ module Qernel::Plugins
     # Reads from the electricity-based heat producers in Fever to detemine
     # Merit order demands.
     class ElectricityDemandCurve
-      def initialize(adapters)
-        @producers = adapters.map { |adapter| adapter.participant.producer }
+      def initialize(producers)
+        @producers = producers
       end
 
       def to_a

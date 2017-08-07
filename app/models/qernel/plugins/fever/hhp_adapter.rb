@@ -33,6 +33,13 @@ module Qernel::Plugins
         ::Fever::CompositeProducer.new([primary_component, secondary_component])
       end
 
+      def producer_for_carrier(carrier)
+        case carrier
+        when @config.efficiency_based_on then primary_component
+        when :network_gas                then secondary_component
+        end
+      end
+
       private
 
       # Internal: The Fever producer which will be the first one asked to

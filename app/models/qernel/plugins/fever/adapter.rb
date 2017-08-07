@@ -33,6 +33,10 @@ module Qernel::Plugins
         raise NotImplementedError
       end
 
+      def producer_for_carrier(_carrier)
+        raise NotImplementedError
+      end
+
       private
 
       # Internal: Fever expects totals -- not per-unit -- values. Using this
