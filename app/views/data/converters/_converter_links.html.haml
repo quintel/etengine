@@ -14,7 +14,7 @@
               %th Energy carrier
               %th Conversion efficiency
           %tbody
-            - c.outputs.each do |output_slot|
+            - c.outputs.sort_by { |c| c.carrier.key }.each do |output_slot|
               %tr
                 %td
                   - if output_slot.links.any?
@@ -26,7 +26,7 @@
                           %th Carrier share
                           %th Type
                       %tbody
-                        - output_slot.links.each_with_index do |output_link, i|
+                        - output_slot.links.sort_by { |s| s.lft_converter.key }.each_with_index do |output_link, i|
                           %tr
                             %td
                               = link_to output_link.lft_converter.key, data_converter_path(:id => output_link.lft_converter)
@@ -58,7 +58,7 @@
               %th.input-demand{ title: external_demand }
                 = auto_number external_demand
           %tbody
-            - c.inputs.each do |input_slot|
+            - c.inputs.sort_by { |c| c.carrier.key }.each do |input_slot|
               %tr
                 %td.centered{:title => input_slot.conversion}= "#{(100 * input_slot.conversion).round(2)} %"  unless input_slot.conversion.nil?
                 %td.centered{:title => input_slot.class.name}= input_slot.carrier.key
@@ -73,7 +73,7 @@
                           %th Energy flow (MJ)
                           %th Converter
                       %tbody
-                        - input_slot.links.sort_by(&:priority).reverse.each_with_index do |input_link, i|
+                        - input_slot.links.sort_by { |s| s.lft_converter.key }.each_with_index do |input_link, i|
                           %tr
                             %td
                               = input_link.link_type
