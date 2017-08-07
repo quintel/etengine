@@ -45,7 +45,7 @@ module Qernel::Plugins
       # producer cannot meet demand.
       def secondary_component
         @secondary_component ||= ::Fever::Producer.new(
-          total_value(:heat_output_capacity) * secondary_share
+          total_value { @config.capacity[:network_gas] }
         )
       end
 
@@ -59,7 +59,7 @@ module Qernel::Plugins
 
       # Internal: The share of the secondary component carrier.
       def secondary_share
-        1.0-@converter.converter.input(:network_gas).conversion
+        1.0 - @converter.converter.input(:network_gas).conversion
       end
 
       # Internal: Re-balances the efficiency of the (typically) electricity and
