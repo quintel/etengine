@@ -75,7 +75,13 @@ module Qernel::Plugins
       end
 
       def capacity
-        heat_capacity = total_value(:heat_output_capacity)
+        heat_capacity =
+          if @config.capacity.present?
+            total_value { @config.capacity[@config.efficiency_based_on] }
+          else
+            total_value(:heat_output_capacity)
+          end
+
         converter = @converter.converter
 
         # Producers with only two slots (the based_on and balanced_with) use the
