@@ -3,6 +3,11 @@ module Qernel::Plugins
     # An adapter which sets up a hybrid heat-pump to participate in Fever.
     class HHPAdapter < ProducerAdapter
       def inject!
+        if @converter.number_of_units.zero? ||
+            participant.producer.load_curve.all?(&:zero?)
+          return
+        end
+
         orig_sec_share = secondary_share
 
         # Sets the load-adjusted efficiency of the primary component carriers.
