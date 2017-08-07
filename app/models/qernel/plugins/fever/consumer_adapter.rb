@@ -17,6 +17,10 @@ module Qernel::Plugins
         @converter.demand = participant.load_curve.sum * 3600 # MWh -> MJ
       end
 
+      def producer_for_carrier(_carrier)
+        nil
+      end
+
       private
 
       def demand_curve

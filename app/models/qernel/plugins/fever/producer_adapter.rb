@@ -56,6 +56,10 @@ module Qernel::Plugins
         end
       end
 
+      def producer_for_carrier(carrier)
+        participant.producer if @converter.converter.input(carrier)
+      end
+
       private
 
       def output_efficiency
