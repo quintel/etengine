@@ -51,7 +51,7 @@ module Qernel::Plugins
         mo_converters.map do |conv|
           begin
             cost = conv.query.marginal_costs
-            cost.nan? ? 0.0 : cost
+            cost.nan? || cost == Float::INFINITY ? 0.0 : cost
           rescue
             0.0
           end
