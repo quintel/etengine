@@ -48,23 +48,25 @@ module Qernel::Plugins
 
       # Internal: The share of the two inputs.
       def combined_share
-        1.0 - (based_on_slot[:conversion] + balanced_with_slot[:conversion])
+        1.0 - (based_on_slot.conversion + balanced_with_slot.conversion)
       end
 
       # Internal: The input efficiency curve to be used by the producer.
       #
       # Returns an array.
       def input_efficiency
-        base_eff = @converter.electricity_input_conversion
+        @input_efficiency ||= begin
+          base_eff = based_on_slot.conversion
 
-        temperature_curve.map do |val|
-          case val
-          when -Float::INFINITY...-10 then 1 / (base_eff * 2.0)
-          when -10...0                then 1 / (base_eff * 1.6)
-          when 0...10                 then 1 / (base_eff * 1.2)
-          when 10...20                then 1 / (base_eff * 1.0)
-          when 20...30                then 1 / (base_eff * 0.8)
-          when 30..Float::INFINITY    then 1 / (base_eff * 0.6)
+          temperature_curve.map do |val|
+            case val
+            when -Float::INFINITY...-10 then 1 / (base_eff * 2.0)
+            when -10...0                then 1 / (base_eff * 1.6)
+            when 0...10                 then 1 / (base_eff * 1.2)
+            when 10...20                then 1 / (base_eff * 1.0)
+            when 20...30                then 1 / (base_eff * 0.8)
+            when 30..Float::INFINITY    then 1 / (base_eff * 0.6)
+            end
           end
         end
       end
@@ -75,13 +77,9 @@ module Qernel::Plugins
       end
 
       def capacity
-        heat_capacity =
-          if @config.capacity.present?
-            total_value { @config.capacity[@config.efficiency_based_on] }
-          else
-            total_value(:heat_output_capacity)
-          end
+        return efficiency_based_capacity if @config.capacity.present?
 
+        heat_capacity = total_value(:heat_output_capacity)
         converter = @converter.converter
 
         # Producers with only two slots (the based_on and balanced_with) use the
@@ -90,6 +88,19 @@ module Qernel::Plugins
         return heat_capacity if converter.inputs.length < 3
 
         heat_capacity * combined_share
+      end
+
+      # Internal: Producers with a "capacity" attribute assigned to the producer
+      # have a fixed input capacity, and the output capacity is a function of
+      # the input and the efficiency.
+      #
+      # Returns an array.
+      def efficiency_based_capacity
+        input_cap = total_value do
+          @config.capacity[@config.efficiency_based_on]
+        end
+
+        input_efficiency.map { |eff| input_cap * eff }
       end
     end
   end
