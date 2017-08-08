@@ -25,6 +25,10 @@ module Qernel::Plugins
         @config    = converter.dataset_get(:fever)
       end
 
+      def inspect
+        "#<#{ self.class.name } converter=#{ @converter.key }>"
+      end
+
       def participant
         raise NotImplementedError
       end
