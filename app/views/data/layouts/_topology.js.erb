@@ -12,7 +12,7 @@ converter_keys = @converters.map(&:key)
             converter.sector_key,
             converter.use_key,
             false,
-            ConverterPositions::FILL_COLORS[converter.sector_key],
+            ConverterPositions::FILL_COLORS[converter.sector_key] || '#FFF',
             '#999']
 -%>
 <%= "new Converter(#{params.to_json});".html_safe %>
