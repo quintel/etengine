@@ -145,4 +145,19 @@ module DataHelper
   def kms_slot?(slot)
     slot.carrier.key.to_s.match(/_kms\b/)
   end
+
+  def converter_flow(converter, direction)
+    slots = converter.public_send(direction == :inputs ? :inputs : :outputs)
+
+    return nil if slots.none?
+
+    slots.sum do |slot|
+      if slot.links.any?
+        slot.external_value
+      else
+        # Fallback for left-most or right-most slots with no links.
+        slot.converter.demand * slot.conversion
+      end
+    end
+  end
 end

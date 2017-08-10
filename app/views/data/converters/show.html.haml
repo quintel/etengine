@@ -20,6 +20,38 @@
     %h2 Details
     %table.table.table-condensed
       %tbody
+        %tr.converter-flows
+          %td Flows
+          %td
+            .energy
+              .present
+                %span.name Present
+                %span.output(title="Output flow")
+                  = auto_number converter_flow(@converter_present, :output)
+                &larr;
+                %span.demand(title="Demand")<
+                  = auto_number @converter_present.demand
+                &larr;
+                %span.input(title="Input flow")
+                  = auto_number converter_flow(@converter_present, :input)
+              .future
+                %span.name Future
+                %span.output(title="Output flow")
+                  = auto_number converter_flow(@converter_future, :output)
+                &larr;
+                %span.demand(title="Demand")<
+                  = auto_number @converter_future.demand
+                &larr;
+                %span.input(title="Input flow")
+                  = auto_number converter_flow(@converter_future, :input)
+            - delta = (@converter_future.demand / @converter_present.demand) * 100 - 100
+            - if delta.abs > 1e-5
+              .delta
+                - if delta > 0
+                  ⬆
+                - else
+                  ⬇
+                == #{ auto_number(delta) }%
         %tr
           %td Sector
           %td= @converter_present.sector_key

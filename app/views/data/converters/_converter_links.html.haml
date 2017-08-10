@@ -8,9 +8,8 @@
               %th.centered Links
               %th.centered{:colspan => 2}Outputs
             %tr
-              - external_demand = c.outputs.map(&:external_value).reduce(:+)
-              %th.output-demand{ title: external_demand }
-                = auto_number external_demand
+              %th.output-demand{ title: converter_flow(c, :output) }
+                = auto_number converter_flow(c, :output)
               %th Energy carrier
               %th Conversion efficiency
           %tbody
@@ -54,9 +53,8 @@
             %tr
               %th Input share
               %th Energy carrier
-              - external_demand = c.inputs.map(&:external_value).reduce(:+)
-              %th.input-demand{ title: external_demand }
-                = auto_number external_demand
+              %th.input-demand{ title: converter_flow(c, :input) }
+                = auto_number converter_flow(c, :input)
           %tbody
             - c.inputs.sort_by { |c| c.carrier.key }.each do |input_slot|
               %tr
