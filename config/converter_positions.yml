@@ -1722,7 +1722,7 @@
   :x: 720
   :y: 12040
 :industry_final_demand_for_chemical_other_electricity:
-  :x: 1500
+  :x: 1520
   :y: 12040
 :industry_useful_demand_for_chemical_other_network_gas_non_energetic:
   :x: 720
@@ -1735,31 +1735,31 @@
   :y: 12200
 :industry_chemicals_other_burner_coal:
   :x: 1180
-  :y: 12200
+  :y: 12240
 :industry_chemicals_other_burner_crude_oil:
   :x: 1180
-  :y: 12380
+  :y: 12420
 :industry_chemicals_other_burner_network_gas:
   :x: 1180
-  :y: 12260
+  :y: 12300
 :industry_chemicals_other_burner_wood_pellets:
   :x: 1180
-  :y: 12320
+  :y: 12360
 :industry_final_demand_for_chemical_other_coal:
   :x: 1520
-  :y: 12200
+  :y: 12240
 :industry_final_demand_for_chemical_other_crude_oil:
   :x: 1520
-  :y: 12380
+  :y: 12420
 :industry_final_demand_for_chemical_other_network_gas:
   :x: 1520
-  :y: 12260
+  :y: 12300
 :industry_final_demand_for_chemical_other_steam_hot_water:
   :x: 1520
-  :y: 12440
+  :y: 12180
 :industry_final_demand_for_chemical_other_wood_pellets:
   :x: 1520
-  :y: 12320
+  :y: 12360
 :industry_useful_demand_for_chemical_other_wood_pellets_non_energetic:
   :x: 720
   :y: 12720
@@ -2272,10 +2272,10 @@
   :y: 4140
 :industry_chemicals_other_heatpump_water_water_electricity:
   :x: 1180
-  :y: 12080
+  :y: 12120
 :industry_chemicals_other_steam_recompression_electricity:
   :x: 1180
-  :y: 12140
+  :y: 12180
 :industry_chemicals_other_flexibility_p2h_electricity:
   :x: 940
   :y: 12280
@@ -2300,3 +2300,6 @@
 :industry_useful_demand_for_other_paper_useable_heat_after_p2h:
   :x: 900
   :y: 16800
+:industry_chemicals_other_heater_electricity:
+  :x: 1180
+  :y: 12060
