@@ -112,4 +112,16 @@ describe Api::V3::ScenariosController do
     end
 
   end
+
+  describe 'dump' do
+    before do
+      @scenario = FactoryGirl.create(:scenario, :user_values => {'foo' => 23.0})
+    end
+
+    it 'dumps a CSV of a scenario' do
+      get :dump, id: @scenario.id
+
+      expect(response).to be_success
+    end
+  end
 end

@@ -28,14 +28,6 @@ module Api
 
       private
 
-      def send_csv(name)
-        send_data(
-          CSV.generate { |csv| yield csv },
-          type: 'text/csv',
-          filename: "#{ name }.#{ scenario.id }.csv"
-        )
-      end
-
       def merit_order
         @mo ||= Qernel::Plugins::MeritOrder.new(
           scenario.gql.future_graph
