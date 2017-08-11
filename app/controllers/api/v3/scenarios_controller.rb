@@ -6,7 +6,7 @@ module Api
       before_filter :find_scenario, only: [:update, :sandbox]
 
       before_filter :find_preset_or_scenario, only: [
-        :show, :merit, :dashboard, :application_demands
+        :show, :merit, :dashboard, :application_demands, :production_parameters
       ]
 
       # GET /api/v3/scenarios/:id
@@ -203,6 +203,18 @@ module Api
           ApplicationDemandsPresenter.new(@scenario).as_csv,
           type: 'text/csv',
           filename: "application_demands.#{ @scenario.id }.csv"
+        )
+      end
+
+      # GET /api/v3/scenarios/:id/production_parameters
+      #
+      # Returns a CSV file containing the capacities and costs of some
+      # electricity and heat producers.
+      def production_parameters
+        send_data(
+          ProductionParametersPresenter.new(@scenario).as_csv,
+          type: 'text/csv',
+          filename: "production_parameters.#{ @scenario.id }.csv"
         )
       end
 

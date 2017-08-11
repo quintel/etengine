@@ -1,2 +1,2 @@
-- groups = [final_demand_electricity]
+- groups = [final_demand_electricity, electricity_production]
 - preset_demand = 5000.0
