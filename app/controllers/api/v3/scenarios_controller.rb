@@ -2,8 +2,9 @@ module Api
   module V3
     class ScenariosController < BaseController
       respond_to :json
+      respond_to :csv, only: [:dump]
 
-      before_filter :find_scenario, only: [:update, :sandbox]
+      before_filter :find_scenario, only: [:update, :sandbox, :dump]
       before_filter :find_preset_or_scenario, only: [:show, :merit, :dashboard]
 
       # GET /api/v3/scenarios/:id
@@ -221,6 +222,20 @@ module Api
           end
 
         render json: json
+      end
+
+      # GET /api/v3/scenarios/:id/dump
+      #
+      # Returns a CSV dump of a scenario.
+      #
+      def dump
+        send_csv('dump') do |csv|
+          gquery = Gquery.get(:foo_demand)
+
+          @scenario.gql.query(gquery).each do |row|
+            csv << row
+          end
+        end
       end
 
       private

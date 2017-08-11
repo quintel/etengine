@@ -14,6 +14,16 @@ module Api
       rescue ActiveRecord::RecordNotFound
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
+
+      private
+
+      def send_csv(name)
+        send_data(
+          CSV.generate { |csv| yield csv },
+          type: 'text/csv',
+          filename: "#{ name }.#{ @scenario.id }.csv"
+        )
+      end
     end
   end
 end
