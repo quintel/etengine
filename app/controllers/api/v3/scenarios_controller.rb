@@ -4,7 +4,10 @@ module Api
       respond_to :json
 
       before_filter :find_scenario, only: [:update, :sandbox]
-      before_filter :find_preset_or_scenario, only: [:show, :merit, :dashboard]
+
+      before_filter :find_preset_or_scenario, only: [
+        :show, :merit, :dashboard, :application_demands
+      ]
 
       # GET /api/v3/scenarios/:id
       #
@@ -189,6 +192,18 @@ module Api
         end
       rescue ScenarioMerger::Error => ex
         render json: { errors: { base: [ex.message] } }, status: 400
+      end
+
+      # GET /api/v3/scenarios/:id/application_demands
+      #
+      # Returns a CSV file containing the primary and final demands of
+      # converters belonging to the application_group group.
+      def application_demands
+        send_data(
+          ApplicationDemandsPresenter.new(@scenario).as_csv,
+          type: 'text/csv',
+          filename: "application_demands.#{ @scenario.id }.csv"
+        )
       end
 
       # GET /api/v3/scenarios/:id/sandbox
