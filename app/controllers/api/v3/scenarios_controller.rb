@@ -3,7 +3,7 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_filter :find_scenario, only: [:update, :sandbox]
+      before_filter :find_scenario, only: [:update]
 
       before_filter :find_preset_or_scenario, only: [
         :show, :merit, :dashboard, :application_demands, :production_parameters
@@ -216,38 +216,6 @@ module Api
           type: 'text/csv',
           filename: "production_parameters.#{ @scenario.id }.csv"
         )
-      end
-
-      # GET /api/v3/scenarios/:id/sandbox
-      #
-      # Returns the gql details in JSON format. If the scenario is missing
-      # the action returns an empty hash and a 404 status code.
-      #
-      def sandbox
-        if params[:gql].present?
-          @query = params[:gql].gsub(/\s/,'')
-        else
-          render :json => {:errors => 'No gql'}, :status => 500 and return
-        end
-
-        begin
-          gql = @scenario.gql(prepare: true)
-          result = gql.query(@query)
-        rescue Exception => e
-          render :json => {:errors => [e.to_s]}, :status => 500 and return
-        end
-
-        json =
-          if result.respond_to?(:present_year)
-            { present_year:  result.present_year,
-              present_value: result.present_value,
-              future_year:   result.future_year,
-              future_value:  result.future_value }
-          else
-            { result: result }
-          end
-
-        render json: json
       end
 
       private

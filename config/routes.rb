@@ -13,7 +13,6 @@ Etm::Application.routes.draw do
       resources :scenarios, :only => [:show, :create, :update] do
         member do
           get :batch
-          get :sandbox
           get :application_demands
           get :production_parameters
           get :merit
