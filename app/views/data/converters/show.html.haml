@@ -27,23 +27,23 @@
               .present
                 %span.name Present
                 %span.output(title="Output flow")
-                  = auto_number converter_flow(@converter_present, :output)
+                  = auto_number converter_flow(@converter_present, :outputs)
                 &larr;
                 %span.demand(title="Demand")<
                   = auto_number @converter_present.demand
                 &larr;
                 %span.input(title="Input flow")
-                  = auto_number converter_flow(@converter_present, :input)
+                  = auto_number converter_flow(@converter_present, :inputs)
               .future
                 %span.name Future
                 %span.output(title="Output flow")
-                  = auto_number converter_flow(@converter_future, :output)
+                  = auto_number converter_flow(@converter_future, :outputs)
                 &larr;
                 %span.demand(title="Demand")<
                   = auto_number @converter_future.demand
                 &larr;
                 %span.input(title="Input flow")
-                  = auto_number converter_flow(@converter_future, :input)
+                  = auto_number converter_flow(@converter_future, :inputs)
             - delta = (@converter_future.demand / @converter_present.demand) * 100 - 100
             - if delta.abs > 1e-5
               .delta

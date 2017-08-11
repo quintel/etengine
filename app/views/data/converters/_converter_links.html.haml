@@ -8,8 +8,8 @@
               %th.centered Links
               %th.centered{:colspan => 2}Outputs
             %tr
-              %th.output-demand{ title: converter_flow(c, :output) }
-                = auto_number converter_flow(c, :output)
+              %th.output-demand{ title: converter_flow(c, :outputs) }
+                = auto_number converter_flow(c, :outputs)
               %th Energy carrier
               %th Conversion efficiency
           %tbody
@@ -53,8 +53,8 @@
             %tr
               %th Input share
               %th Energy carrier
-              %th.input-demand{ title: converter_flow(c, :input) }
-                = auto_number converter_flow(c, :input)
+              %th.input-demand{ title: converter_flow(c, :inputs) }
+                = auto_number converter_flow(c, :inputs)
           %tbody
             - c.inputs.sort_by { |c| c.carrier.key }.each do |input_slot|
               %tr
