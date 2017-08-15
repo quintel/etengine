@@ -3,6 +3,10 @@ module Qernel::Plugins
     class HouseholdPowerToHeatAdapter < PowerToHeatAdapter
       private
 
+      def excess_share
+        1.0
+      end
+
       def reserve_decay
         curves = @graph.plugin(:merit).curves
 

@@ -32,6 +32,7 @@ module Qernel::Plugins
         attrs = super
 
         attrs[:excess_share] = excess_share
+        attrs[:group] = @config.group
 
         attrs[:decay] =
           @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
