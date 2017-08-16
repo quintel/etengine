@@ -90,9 +90,11 @@ class Gquery
   end
 
   def self.name_or_query_contains(q)
+    escaped = Regexp.escape(q)
+
     all.select do |g|
       [:key, :query, :deprecated_key].any? do |attr|
-        g.send(attr).to_s.include? q
+        g.send(attr).to_s.match(/\b#{ escaped }\b/)
       end
     end
   end

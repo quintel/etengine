@@ -68,13 +68,13 @@
           %td Used in Gqueries
           %td
             %ol
-              - Gquery.name_or_query_contains(converter_key).each do |gquery|
+              - Gquery.name_or_query_contains(converter_key).sort_by(&:key).each do |gquery|
                 %li= link_to gquery.key, data_gquery_path(:id => gquery.id)
         %tr
           %td Used in Inputs
           %td
             %ol
-              - Input.with_queries_containing(converter_key).each do |input|
+              - Input.with_queries_containing(converter_key).sort_by(&:key).each do |input|
                 %li= link_to input.key, data_input_path(:id => input.id, :highlight => converter_key)
 
 .row-fluid.future-edges
