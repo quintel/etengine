@@ -19,6 +19,11 @@ module Qernel::Plugins
         end
       end
 
+      def initialize(*args)
+        super
+        @orig_production ||= @converter.output_of(:useable_heat)
+      end
+
       def participant
         @participant ||=
           if @config.defer_for && @config.defer_for > 0
@@ -34,6 +39,10 @@ module Qernel::Plugins
         producer = participant.producer
         heat_production = producer.load_curve.sum * 3600 # MWh -> MJ
 
+        # If production is mostly unchanged, don't set anything on the graph;
+        # floating point errors will otherwise result in a tiny deficit of heat.
+        return if (@orig_production - heat_production).abs < 1e5
+
         if heat_production.zero?
           full_load_hours = 0.0
         else
@@ -43,6 +52,15 @@ module Qernel::Plugins
         @converter.demand              = heat_production / output_efficiency
         @converter[:full_load_hours]   = full_load_hours
         @converter[:full_load_seconds] = full_load_hours * 3600
+
+        link = @converter.converter.output(:useable_heat).links.first
+
+        if link.lft_converter.key.to_s.include?('aggregator')
+          delta = @orig_production - heat_production
+
+          link.share =
+            @orig_production > 0 ? heat_production / @orig_production : 1.0
+        end
       end
 
       def producer
@@ -103,7 +121,13 @@ module Qernel::Plugins
       end
 
       def share
-        @converter.converter.output(:useable_heat).links.first.share
+        link = @converter.converter.output(:useable_heat).links.first
+
+        if link.lft_converter.key.to_s.include?('aggregator')
+          link.lft_converter.output(:useable_heat).links.first.share
+        else
+          link.share
+        end
       end
     end # ProducerAdapter
   end

@@ -10,11 +10,11 @@ module Qernel::Plugins
       end
 
       def participant
-        @participant ||=::Fever::Consumer.new(demand_curve.to_a)
+        @participant ||= ::Fever::Consumer.new(demand_curve.to_a)
       end
 
       def inject!
-        @converter.demand = participant.load_curve.sum * 3600 # MWh -> MJ
+        # Nothing to do.
       end
 
       def producer_for_carrier(_carrier)
