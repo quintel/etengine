@@ -52,12 +52,17 @@ module Qernel::Plugins
       end
 
       def demand_for_heat
-        @demand_for_heat ||=
-          Etsource::Fever.data.values
-            .flat_map { |nodes| nodes[:consumer] }
-            .sum do |key|
+        @demand_for_heat ||= begin
+          sh_group = Etsource::Fever.data[:space_heating]
+
+          if sh_group && sh_group[:consumer].present?
+            sh_group[:consumer].sum do |key|
               @graph.converter(key).converter_api.input_of(:useable_heat)
             end
+          else
+            0.0
+          end
+        end
       end
 
       private
