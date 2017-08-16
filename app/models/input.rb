@@ -28,10 +28,12 @@ class Input
   end
 
   def self.with_queries_containing(q)
+    escaped = Regexp.escape(q)
+
     all.select do |input|
       [:label_query, :query, :max_value_gql,
        :min_value_gql, :start_value_gql]. any? do |attr|
-        input.send(attr).to_s.include? q
+        input.send(attr).to_s.match(/\b#{ escaped }\b/)
       end
     end
   end
