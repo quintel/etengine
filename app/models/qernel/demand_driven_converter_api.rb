@@ -9,7 +9,6 @@ module Qernel
   # same number of appliances will exist, but that they will be used less
   # often.
   class DemandDrivenConverterApi < ConverterApi
-
     # How many seconds a year the converter runs at full load. Varies
     # depending on the demand.
     def full_load_seconds
@@ -50,10 +49,7 @@ module Qernel
     def number_of_units
       fetch(:number_of_units, false) do
         begin
-          heat_links = converter.output_links.select do |link|
-            link.carrier && (
-              link.useable_heat? || link.steam_hot_water? )
-          end
+          heat_links = demand_driven_links
 
           return 0.0 if heat_links.empty?
 
@@ -71,6 +67,31 @@ module Qernel
         rescue
           nil
         end
+      end
+    end
+
+    private
+
+    # Internal: Finds and memoizes the links used to determine the demand-driven
+    # attributes.
+    #
+    # If the node is connected with a single output link to an "aggregator"
+    # node, the aggregator's output links are instead used.
+    #
+    # Returns an array of links.
+    def demand_driven_links
+      suitable_links = demand_links_for(converter)
+
+      if suitable_links.any? && converter.groups.include?(:aggregator_producer)
+        return demand_links_for(suitable_links[0].lft_converter)
+      end
+
+      suitable_links
+    end
+
+    def demand_links_for(conv)
+      conv.output_links.select do |link|
+        link.carrier && (link.useable_heat? || link.steam_hot_water?)
       end
     end
 
