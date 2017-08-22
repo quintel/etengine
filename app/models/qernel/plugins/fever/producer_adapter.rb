@@ -55,9 +55,7 @@ module Qernel::Plugins
 
         link = @converter.converter.output(:useable_heat).links.first
 
-        if link.lft_converter.key.to_s.include?('aggregator')
-          delta = @orig_production - heat_production
-
+        if @converter.converter.groups.include?(:aggregator_producer)
           link.share =
             @orig_production > 0 ? heat_production / @orig_production : 1.0
         end
