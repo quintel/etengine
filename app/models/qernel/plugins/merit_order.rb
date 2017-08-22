@@ -77,8 +77,9 @@ module Qernel::Plugins
       end
 
       @graph.graph_query.total_demand_for_electricity -
-        # Curves are in mWh; convert back to J.
-        (3600.0 * curves.ev_demand.sum + fever_demands)
+        fever_demands -
+        # Curves are in MWh; convert back to J.
+        (3600.0 * curves.ev_demand.sum)
     end
 
     # Internal: Sets the position of each dispatchable in the merit order -
