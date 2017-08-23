@@ -94,11 +94,15 @@ module Qernel::Plugins
       #
       # Returns an array.
       def efficiency_based_capacity
+        cop_cutoff = @config.cop_cutoff || 1.0
+
         input_cap = total_value do
           @config.capacity[@config.efficiency_based_on]
         end
 
-        input_efficiency.map { |eff| input_cap * eff }
+        input_efficiency.map do |eff|
+          eff < cop_cutoff ? 0.0 : input_cap * eff
+        end
       end
     end
   end
