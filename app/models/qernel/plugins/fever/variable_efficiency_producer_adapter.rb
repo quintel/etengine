@@ -56,17 +56,15 @@ module Qernel::Plugins
       # Returns an array.
       def input_efficiency
         @input_efficiency ||= begin
-          base_eff = based_on_slot.conversion
+          base_cop   = @config.base_cop
+          per_degree = @config.cop_per_degree
 
           temperature_curve.map do |val|
-            case val
-            when -Float::INFINITY...-10 then 1 / (base_eff * 2.0)
-            when -10...0                then 1 / (base_eff * 1.6)
-            when 0...10                 then 1 / (base_eff * 1.2)
-            when 10...20                then 1 / (base_eff * 1.0)
-            when 20...30                then 1 / (base_eff * 0.8)
-            when 30..Float::INFINITY    then 1 / (base_eff * 0.6)
-            end
+            cop = base_cop + per_degree * val
+
+            # Coefficient of performance must not drop below 1.0 (where there is
+            # no "balanced_with" energy, and only "based_on" energy is used).
+            cop < 1.0 ? 1.0 : cop
           end
         end
       end
