@@ -66,7 +66,7 @@ module Qernel::Plugins
 
       # Internal: The share of the secondary component carrier.
       def secondary_share
-        1.0 - @converter.converter.input(:network_gas).conversion
+        @converter.converter.input(:network_gas).conversion
       end
 
       # Internal: Re-balances the efficiency of the (typically) electricity and
