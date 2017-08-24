@@ -48,7 +48,7 @@ module Qernel::Plugins
 
       # Internal: The share of the two inputs.
       def combined_share
-        1.0 - (based_on_slot.conversion + balanced_with_slot.conversion)
+        based_on_slot.conversion + balanced_with_slot.conversion
       end
 
       # Internal: The input efficiency curve to be used by the producer.
