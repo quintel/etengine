@@ -9,7 +9,7 @@ class ScenarioScaling < ActiveRecord::Base
   CUSTOM_AREA_ATTRS = { use_network_calculations: false }.freeze
 
   # Inputs whose unit is in this array will not be scaled.
-  UNSCALEABLE_INPUT_UNITS = %w(% x m^2K/W degC).freeze
+  UNSCALEABLE_INPUT_UNITS = %w[% x m^2K/W degC COP kWh].freeze
 
   belongs_to :scenario, inverse_of: :scaler
 
