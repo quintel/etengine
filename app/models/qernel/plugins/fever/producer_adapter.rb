@@ -39,10 +39,6 @@ module Qernel::Plugins
         producer = participant.producer
         heat_production = producer.load_curve.sum * 3600 # MWh -> MJ
 
-        # If production is mostly unchanged, don't set anything on the graph;
-        # floating point errors will otherwise result in a tiny deficit of heat.
-        return if (@orig_production - heat_production).abs < 1e5
-
         if heat_production.zero?
           full_load_hours = 0.0
         else
