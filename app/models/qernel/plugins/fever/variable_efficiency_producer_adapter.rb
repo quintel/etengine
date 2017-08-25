@@ -24,12 +24,20 @@ module Qernel::Plugins
       # Returns a numeric.
       def load_adjusted_input_efficiency
         producer = participant.producer
-        lcurve   = producer.load_curve
 
-        lcurve.map.with_index do |load, index|
+        efficiency = input_efficiency
+
+        sum_input = 0.0
+        sum_eff   = 0.0
+
+        ::Fever::FRAMES.times do |index|
           input = producer.input_at(index)
-          input.zero? ? 0.0 : load / producer.input_at(index)
-        end.sum / lcurve.length
+
+          sum_input += input
+          sum_eff   += input * efficiency[index]
+        end
+
+        sum_input.zero? ? 0.0 : sum_eff / sum_input
       end
 
       # Internal: The slot whose efficiency varies depending on the temperature
