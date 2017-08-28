@@ -51,17 +51,9 @@ module Qernel::Plugins
       # Internal: The Fever producer which will be used when the primary
       # producer cannot meet demand.
       def secondary_component
-        @secondary_component ||=
-          if (st = @converter.dataset_get(:storage)) && st.volume > 0
-            ::Fever::BufferingProducer.new(
-              total_value { @config.capacity[:network_gas] },
-              primary_component.reserve
-            )
-          else
-            ::Fever::Producer.new(
-              total_value { @config.capacity[:network_gas] }
-            )
-          end
+        @secondary_component ||= ::Fever::Producer.new(
+          total_value { @config.capacity[:network_gas] }
+        )
       end
 
       # Internal: The primary producer is typically a variable-efficiency heat
