@@ -3,9 +3,10 @@ module Qernel::Plugins
     class DelegatedCapacityCurve
       include Enumerable
 
-      def initialize(capacity, other)
-        @capacity = capacity
-        @other    = other
+      def initialize(capacity, other, efficiency = 1.0)
+        @capacity   = ::Fever.curve(capacity)
+        @efficiency = ::Fever.curve(efficiency)
+        @other      = other
       end
 
       # Internal: Prevents Fever from trying to coerce the object into an array.
@@ -27,7 +28,13 @@ module Qernel::Plugins
       end
 
       def [](frame)
-        remaining = @capacity - @other.load_at(frame)
+        # Subtract from the capacity the amount of energy used by the aliased
+        # producer *as if* it had been produced by the current producer. This
+        # ensures that the different efficiencies of each producer is correctly
+        # accounted for.
+        adjusted_used = @other.input_at(frame) * @efficiency[frame]
+
+        remaining = @capacity[frame] - adjusted_used
         remaining <= 0 ? 0.0 : remaining
       end
     end

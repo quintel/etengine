@@ -83,17 +83,26 @@ module Qernel::Plugins
       end
 
       def capacity
-        return efficiency_based_capacity if @config.capacity.present?
+        capacity =
+          if @config.capacity.present?
+            efficiency_based_capacity
+          else
+            heat_capacity = total_value(:heat_output_capacity)
+            converter = @converter.converter
 
-        heat_capacity = total_value(:heat_output_capacity)
-        converter = @converter.converter
+            heat_capacity *= combined_share if converter.inputs.length > 2
+            heat_capacity
+          end
 
-        # Producers with only two slots (the based_on and balanced_with) use the
-        # full output capacity; others with more input slots must adjust for the
-        # presence of the other inputs.
-        return heat_capacity if converter.inputs.length < 3
-
-        heat_capacity * combined_share
+        if @config.alias_of
+          DelegatedCapacityCurve.new(
+            capacity,
+            aliased_adapter.producer_for_carrier(@config.efficiency_based_on),
+            input_efficiency
+          )
+        else
+          capacity
+        end
       end
 
       # Internal: Producers with a "capacity" attribute assigned to the producer

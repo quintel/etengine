@@ -92,20 +92,20 @@ module Qernel::Plugins
 
         DelegatedCapacityCurve.new(
           total_value(:heat_output_capacity),
-          aliased_producer
+          aliased_adapter.participant.producer,
+          input_efficiency
         )
       end
 
       # Internal: The Fever participant is an alias of a producer in another
       # group; fetch it!
-      def aliased_producer
+      def aliased_adapter
         alias_group = @graph.plugin(:time_resolve).fever.group(
           @graph.converter(@config.alias_of).dataset_get(:fever).group
         )
 
         alias_group.adapters
           .detect { |adapter| adapter.converter.key == @config.alias_of }
-          .participant.producer
       end
 
       def reserve
