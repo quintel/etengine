@@ -175,7 +175,7 @@ module Qernel
 
     describe '#variable_costs_per_typical_input' do
       it "should calculate correctly when values are given" do
-        @c.with weighted_carrier_cost_per_mj: 200, co2_emissions_costs_per_typical_input: 300, 
+        @c.with weighted_carrier_cost_per_mj: 200, co2_emissions_costs_per_typical_input: 300,
         variable_operation_and_maintenance_costs_per_typical_input: 400
         @c.converter_api.send(:variable_costs_per_typical_input).should == 900
       end
@@ -235,7 +235,7 @@ module Qernel
 
     describe '#variable_operation_and_maintenance_costs_per_typical_input' do
       it "should calculate when everything is set" do
-        @c.with variable_operation_and_maintenance_costs_per_full_load_hour: 500, 
+        @c.with variable_operation_and_maintenance_costs_per_full_load_hour: 500,
         variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 400,
         input_capacity: 2
         @c.converter_api.send(:variable_operation_and_maintenance_costs_per_typical_input).should == 0.125
@@ -247,6 +247,11 @@ module Qernel
         @c.with initial_investment: 500, ccs_investment: 100, cost_of_installing: 66
         @c.converter_api.total_initial_investment.should == 666
       end
+
+      it "includes storage when present" do
+        @c.with initial_investment: 500, ccs_investment: 100, cost_of_installing: 66, storage_costs: 10
+        @c.converter_api.total_initial_investment.should == 676
+      end
     end
 
     describe '#total_investment_over_lifetime' do
@@ -255,6 +260,62 @@ module Qernel
         @c.converter_api.total_investment_over_lifetime.should == 15000
       end
     end
+
+    describe "#storage_costs" do
+      let(:storage) do
+        Atlas::StorageDetails.new(volume: volume, cost_per_mwh: cost)
+      end
+
+      before { @c.with(storage: storage) }
+
+      context 'when the converter has no storage' do
+        let(:storage) { nil }
+
+        it 'is zero' do
+          expect(@c.converter_api.storage_costs).to eq(0)
+        end
+      end
+
+      context 'with cost_per_mwh=10' do
+        let(:cost) { 10.0 }
+
+        context 'and volume=0' do
+          let(:volume) { 0.0 }
+
+          it 'is zero' do
+            expect(@c.converter_api.storage_costs).to eq(0)
+          end
+        end
+
+        context 'and volume=10' do
+          let(:volume) { 10.0 }
+
+          it 'is 100' do
+            expect(@c.converter_api.storage_costs).to eq(100)
+          end
+        end
+      end
+
+      context 'with cost_per_mwh = nil' do
+        let(:cost) { nil }
+
+        context 'and volume=0' do
+          let(:volume) { 0.0 }
+
+          it 'is zero' do
+            expect(@c.converter_api.storage_costs).to eq(0)
+          end
+        end
+
+        context 'and volume=10' do
+          let(:volume) { 10.0 }
+
+          it 'is zero' do
+            expect(@c.converter_api.storage_costs).to eq(0)
+          end
+        end
+      end
+    end # storage_costs
   end
 
 end

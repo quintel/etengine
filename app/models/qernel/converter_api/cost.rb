@@ -33,7 +33,7 @@ module Qernel
     # the additional cost for CCS (if applicable)
     def total_initial_investment
       fetch(:total_initial_investment) do
-        initial_investment + ccs_investment + cost_of_installing
+        initial_investment + ccs_investment + cost_of_installing + storage_costs
       end
     end
     unit_for_calculation 'total_initial_investment', 'euro / plant'
@@ -80,6 +80,20 @@ module Qernel
         SECS_PER_HOUR / heat_output_conversion
     end
     unit_for_calculation 'marginal_heat_costs', 'euro / MWh'
+
+    # Public: Calculates the cost of storage attached to the converter.
+    #
+    # Returns the total cost of storage for one plant.
+    def storage_costs
+      fetch(:storage_costs) do
+        if (storage = dataset_get(:storage))
+          (storage.volume || 0.0) * (storage.cost_per_mwh || 0.0)
+        else
+          0.0
+        end
+      end
+    end
+    unit_for_calculation 'storage_costs', 'euro / plant'
 
     private
 
