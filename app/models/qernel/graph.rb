@@ -258,6 +258,12 @@ class Graph
     @converters_hash[id]
   end
 
+  def link(id)
+    @links.detect do |link|
+      id == link.atlas_key
+    end
+  end
+
   # Graphviz
   def to_image
     g = GraphDiagram.new(self.converters)
@@ -410,13 +416,7 @@ class Graph
   end
 
   def initializer_inputs
-    decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
-  end
-
-  def decorated_inputs
-    (area.init || {}).map do |input_key, input_value|
-      [InitializerInput.fetch(input_key), input_value]
-    end
+    (area.initializer_inputs || {})
   end
 
   def cache_dataset_fetch?
@@ -451,9 +451,5 @@ public
       end
     end
   end
-
-
-
 end
-
 end

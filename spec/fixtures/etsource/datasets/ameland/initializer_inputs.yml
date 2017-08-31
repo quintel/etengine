@@ -1,0 +1,6 @@
+demand_setter:
+  foo: 50.0
+  baz: 50.0
+
+share_setter:
+  :"baz-foo@electricity": 0.5

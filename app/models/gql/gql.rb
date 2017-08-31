@@ -285,14 +285,21 @@ module Gql
 
     def update_present
       instrument('gql.performance.present.update_present') do
-        scenario.inputs_present.each { |input, value| update_graph(present, input, value) }
+        scenario.inputs_present.each do |input, value|
+          update_graph(present, input, value)
+        end
       end
     end
 
     def update_future
       instrument('gql.performance.future.update_future') do
-        scenario.inputs_before.each { |input, value| update_graph(future, input, value) }
-        scenario.inputs_future.each { |input, value| update_graph(future, input, value) }
+        scenario.inputs_before.each do |input, value|
+          update_graph(future, input, value)
+        end
+
+        scenario.inputs_future.each do |input, value|
+          update_graph(future, input, value)
+        end
       end
     end
 
@@ -344,8 +351,8 @@ module Gql
 
     def apply_initializer_inputs
       with_disabled_dataset_fetch_cache do
-        set_initializer_inputs(:present)
-        set_initializer_inputs(:future)
+        set_initializer_inputs(present_graph)
+        set_initializer_inputs(future_graph)
       end
     end
 
@@ -359,9 +366,13 @@ module Gql
     end
 
     def set_initializer_inputs(graph)
-      instrument("gql.performance.#{graph}.set_initializer_inputs") do
-        present.graph.initializer_inputs.each do |input, value|
-          update_graph(graph, input, value)
+      debug_line = graph.present? ? 'present' : 'future'
+
+      instrument("gql.performance.#{debug_line}.set_initializer_inputs") do
+        present.graph.initializer_inputs.each do |method, inputs|
+          inputs.each_pair do |graph_element, value|
+            GraphUpdater.call(graph, method, [graph_element, value])
+          end
         end
       end
     end

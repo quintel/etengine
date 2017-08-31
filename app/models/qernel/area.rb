@@ -9,7 +9,8 @@ module Qernel
     ATTRIBUTES_USED =
       [Atlas::Dataset::Full, Atlas::Dataset::Derived].
         map { |klass| klass.attribute_set.map(&:name) }.
-        flatten -
+        flatten +
+        [:initializer_inputs] -
         [:id, :parent_id]
 
     dataset_accessors ATTRIBUTES_USED

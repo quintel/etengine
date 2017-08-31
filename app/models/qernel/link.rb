@@ -87,6 +87,10 @@ module Qernel
       self
     end
 
+    def atlas_key
+      :"#{@rgt_converter.key}-#{@lft_converter.key}@#{@carrier.key}"
+    end
+
     # Public: The sector to which the link belongs. This is the same as the sector
     # of the child (consumer, "left-hand") converter.
     #

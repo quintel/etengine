@@ -85,14 +85,6 @@ module Etsource
       end
     end
 
-    def initializer_inputs
-      instrument("etsource.loader: initializer_inputs") do
-        cache("initializer_inputs") do
-          Inputs.new(@etsource, Atlas::InitializerInput, InitializerInput).import
-        end
-      end
-    end
-
   protected
 
     def cache(key, &block)

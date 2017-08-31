@@ -1,1 +1,2 @@
 - groups = []
+- initializer_inputs = [demand_setter]

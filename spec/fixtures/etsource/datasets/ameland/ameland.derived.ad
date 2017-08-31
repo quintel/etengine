@@ -80,5 +80,3 @@
 - scaling.has_energy =
 - scaling.has_industry =
 - scaling.value = 1000
-- init.foo_demand = 50.0
-- init.baz_demand = 50.0
