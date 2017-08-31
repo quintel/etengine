@@ -2313,8 +2313,8 @@
   :x: 1180
   :y: 1380
 :households_water_heater_deficit:
-  :x: 1360
-  :y: 1380
+  :x: 1400
+  :y: 1720
 :households_water_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
   :y: 1680
@@ -2355,8 +2355,8 @@
   :x: 1180
   :y: 560
 :households_space_heater_deficit:
-  :x: 1340
-  :y: 560
+  :x: 1380
+  :y: 920
 :households_water_heater_coal_aggregator:
   :x: 1180
   :y: 1020
