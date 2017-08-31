@@ -3,7 +3,7 @@ module Qernel::Plugins
     # An adapter which sets up a hybrid heat-pump to participate in Fever.
     class HHPAdapter < ProducerAdapter
       def inject!
-        if @converter.number_of_units.zero? ||
+        if @number_of_units.zero? ||
             participant.producer.load_curve.all?(&:zero?)
           return
         end

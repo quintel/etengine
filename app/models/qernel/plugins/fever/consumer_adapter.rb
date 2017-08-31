@@ -31,6 +31,10 @@ module Qernel::Plugins
           TimeResolve.load_profile(@dataset, @config.curve) * @converter.demand
         end
       end
+
+      def number_of_units
+        1.0
+      end
     end # ConsumerAdapter
   end
 end

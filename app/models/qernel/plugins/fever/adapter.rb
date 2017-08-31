@@ -23,6 +23,11 @@ module Qernel::Plugins
         @graph     = graph
         @dataset   = dataset
         @config    = converter.dataset_get(:fever)
+
+        # Store this now; technologies with a flexible edge will not have the
+        # share set when running inject! which results in the number_of_units
+        # being incorrectly set to 0.
+        number_of_units
       end
 
       def inspect
@@ -49,7 +54,11 @@ module Qernel::Plugins
       # Returns a numeric.
       def total_value(attribute = nil)
         per_unit = block_given? ? yield : @converter.public_send(attribute)
-        per_unit * @converter.number_of_units
+        per_unit * @number_of_units
+      end
+
+      def number_of_units
+        @number_of_units ||= @converter.number_of_units
       end
     end
   end # Fever
