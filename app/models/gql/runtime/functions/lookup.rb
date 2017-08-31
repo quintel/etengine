@@ -251,6 +251,67 @@ module Gql::Runtime
         end
       end
 
+      # Public: Describes the total demand of all consumers in the Fever plugin.
+      #
+      # Returns an array.
+      def FEVER_DEMAND
+        return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
+
+        plugin = scope.graph.plugin(:time_resolve).fever
+
+        curves = plugin.groups.flat_map do |group|
+          suppliers = group.adapters.reject do |adapter|
+            !adapter.participant.is_a?(::Fever::Consumer)
+          end
+
+          suppliers.map { |a| a.participant.demand_curve }
+        end
+
+        return [0.0] * 8760 if curves.none?
+
+        Array.new(8760) do |frame|
+          curves.sum { |curve| curve[frame] }
+        end
+      end
+
+      # Public: Describes the total production in the Fever plugin.
+      #
+      # Returns an array.
+      def FEVER_PRODUCTION
+        return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
+
+        plugin = scope.graph.plugin(:time_resolve).fever
+
+        curves = plugin.groups.flat_map do |group|
+          suppliers = group.adapters.reject do |adapter|
+            adapter.participant.is_a?(Fever::Consumer)
+          end
+
+          suppliers.map do |a|
+            input  = a.participant.producer.try(:input_load)
+            output = a.participant.producer.load_curve
+
+            if input
+              # In order to represent heat being produced - but stored for
+              # future use - the production curve takes the maximum of the input
+              # and output of each producer. This means that energy in a reserve
+              # is accounted for twice.
+              input.map.with_index do |val, index|
+                val > output[index] ? val : output[index]
+              end
+            else
+              output
+            end
+          end
+        end
+
+        return [0.0] * 8760 if curves.none?
+
+        Array.new(8760) do |frame|
+          curves.sum { |curve| curve[frame] }
+        end
+      end
+
       private
 
       def fever_electricity_demand(group)
