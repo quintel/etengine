@@ -1,10 +1,10 @@
 ---
 :households_useful_demand_light:
   :x: 720
-  :y: 2140
+  :y: 2180
 :households_useful_demand_cooking_useable_heat:
   :x: 720
-  :y: 1880
+  :y: 1920
 :households_appliances_dishwasher_electricity:
   :x: 1520
   :y: 2320
@@ -250,16 +250,16 @@
   :y: 60
 :households_cooker_induction_electricity:
   :x: 1520
-  :y: 2000
+  :y: 2040
 :households_cooker_halogen_electricity:
   :x: 1520
-  :y: 1940
+  :y: 1980
 :households_cooker_resistive_electricity:
   :x: 1520
-  :y: 1880
+  :y: 1920
 :households_cooker_network_gas:
   :x: 1520
-  :y: 1760
+  :y: 1800
 :households_collective_chp_wood_pellets:
   :x: 3920
   :y: 1180
@@ -385,19 +385,19 @@
   :y: 2320
 :households_cooker_wood_pellets:
   :x: 1520
-  :y: 1820
+  :y: 1860
 :households_locally_available_electricity:
   :x: 3420
   :y: 1060
 :households_lighting_incandescent_electricity:
   :x: 1520
-  :y: 2080
+  :y: 2120
 :households_lighting_efficient_fluorescent_electricity:
   :x: 1520
-  :y: 2140
+  :y: 2180
 :households_lighting_led_electricity:
   :x: 1520
-  :y: 2200
+  :y: 2240
 :households_useful_demand_hot_water:
   :x: 120
   :y: 1380
@@ -901,7 +901,7 @@
   :y: 1920
 :households_final_demand_for_lighting_electricity:
   :x: 2320
-  :y: 2140
+  :y: 2180
 :households_final_demand_for_appliances_electricity:
   :x: 2320
   :y: 2520
@@ -2313,8 +2313,8 @@
   :x: 1180
   :y: 1380
 :households_water_heater_deficit:
-  :x: 1400
-  :y: 1720
+  :x: 1520
+  :y: 1740
 :households_water_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
   :y: 1680
@@ -2355,7 +2355,7 @@
   :x: 1180
   :y: 560
 :households_space_heater_deficit:
-  :x: 1380
+  :x: 1520
   :y: 920
 :households_water_heater_coal_aggregator:
   :x: 1180
