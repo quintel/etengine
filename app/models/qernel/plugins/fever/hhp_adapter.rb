@@ -10,6 +10,8 @@ module Qernel::Plugins
 
         orig_sec_share = secondary_share
 
+        set_output_conversions!
+
         # Sets the load-adjusted efficiency of the primary component carriers.
         primary_adapter.inject!
 
@@ -91,6 +93,24 @@ module Qernel::Plugins
         slots.each do |slot|
           slot[:conversion] += secondary_delta * (slot.conversion / total_conv)
         end
+      end
+
+      # Internal: If the HHP has a variable output conversion (depends on the
+      # share of the inputs), adjust the conversion for what will be the new
+      # input shares.
+      def set_output_conversions!
+        output = Atlas::Node.find(@converter.key).output[:useable_heat]
+
+        return unless output.is_a?(Hash)
+
+        total_demand = participant.producer.load_curve.sum
+
+        new_conversion = output.sum do |(carrier, share)|
+          producer = producer_for_carrier(carrier.to_sym)
+          producer ? (producer.load_curve.sum / total_demand) * share : 0.0
+        end
+
+        @converter.converter.output(:useable_heat)[:conversion] = new_conversion
       end
     end
   end
