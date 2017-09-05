@@ -12,13 +12,12 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def curve_for(type, dataset)
+        type_share = profile_share_for(type)
+
         AggregateCurve.build(
           demand_of(type),
-          AggregateCurve.mix(
-            dataset,
-            insulated_household: profile_share_for(type),
-            non_insulated_household: 1.0 - profile_share_for(type)
-          )
+          curve_set.curve(:insulated_household) => type_share,
+          curve_set.curve(:non_insulated_household) => 1.0 - type_share
         )
       end
 
@@ -31,6 +30,19 @@ module Qernel::Plugins
       # Public: The share of households of the given type; :old or :new.
       def share_of(type)
         type == :new ? share_of_new_households : share_of_old_households
+      end
+
+      def curve_set
+        @curve_set ||=
+          if @graph.plugin(:time_resolve)
+            @graph.plugin(:time_resolve).curve_set('heat')
+          else
+            # If TimeResolve is disabled (as is the case when Merit is off),
+            # fall back to the default curves.
+            TimeResolve::CurveSet.with_dataset(
+              Atlas::Dataset.find(@graph.area.area_code), 'heat', 'default'
+            )
+          end
       end
 
       # Public: The share of households which are classed as "old".

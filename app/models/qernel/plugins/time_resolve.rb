@@ -82,5 +82,17 @@ module Qernel::Plugins
       @merit.send(:inject_values!)
       @fever.inject_values!
     end
+
+    def curve_set(name)
+      CurveSet.with_dataset(
+        @fever.dataset,
+        name,
+        if @graph.area.public_send("#{ name }_curve_set") == 1.0
+          '1987'
+        else
+          'default'
+        end
+      )
+    end
   end
 end

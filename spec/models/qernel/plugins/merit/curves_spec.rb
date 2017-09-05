@@ -115,6 +115,17 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(curves.send(:heat_demand))
         .to receive(:demand_for_heat).and_return(8760.0)
+
+      profiles = Qernel::Plugins::TimeResolve::CurveSet.with_dataset(
+        Atlas::Dataset.find(:nl), 'heat', 'default'
+      )
+
+      tr_plugin = double('time-resolve plugin', curve_set: profiles)
+
+      allow(graph)
+        .to receive(:plugin)
+        .with(:time_resolve)
+        .and_return(tr_plugin)
     end
 
     context 'with a "share" of 0.25 (25/75 profile mix)' do
@@ -158,6 +169,17 @@ describe 'Qernel::Plugins::Merit::Curves' do
 
       allow(curves.send(:heat_demand))
         .to receive(:demand_for_heat).and_return(8760.0)
+
+      profiles = Qernel::Plugins::TimeResolve::CurveSet.with_dataset(
+        Atlas::Dataset.find(:nl), 'heat', 'default'
+      )
+
+      tr_plugin = double('time-resolve plugin', curve_set: profiles)
+
+      allow(graph)
+        .to receive(:plugin)
+        .with(:time_resolve)
+        .and_return(tr_plugin)
     end
 
     context 'with a "share" of 0.75 (25/75 profile mix)' do
