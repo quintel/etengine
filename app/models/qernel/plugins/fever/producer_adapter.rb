@@ -37,7 +37,10 @@ module Qernel::Plugins
 
       def inject!
         producer = participant.producer
-        heat_production = producer.load_curve.sum * 3600 # MWh -> MJ
+
+        # MWh -> MJ
+        heat_production =
+          3600 * producer.load_curve.sum { |val| val > 0 ? val : 0 }
 
         if heat_production.zero?
           full_load_hours = 0.0
