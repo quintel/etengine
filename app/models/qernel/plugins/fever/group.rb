@@ -12,8 +12,7 @@ module Qernel::Plugins
       def calculator
         @calculator ||= ::Fever::Calculator.new(
           adapters_by_type[:consumer].first.participant,
-          adapters_by_type[:storage].map(&:participant) +
-            adapters_by_type[:producer].map(&:participant)
+          activities
         )
       end
 
@@ -26,6 +25,13 @@ module Qernel::Plugins
           Qernel::Plugins::Fever::ElectricityDemandCurve.new(
             adapters.map { |a| a.producer_for_carrier(:electricity) }.compact
           )
+      end
+
+      def activities
+        storage = adapters_by_type[:storage].map(&:participant)
+        producers = adapters_by_type[:producer].map(&:participant)
+
+        [storage, producers]
       end
 
       def adapters
