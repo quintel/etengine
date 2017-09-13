@@ -300,7 +300,7 @@ module Gql::Runtime
                 val > output[index] ? val : output[index]
               end
             else
-              output
+              output.map { |val| val > 0 ? val : 0.0 }
             end
           end
         end
