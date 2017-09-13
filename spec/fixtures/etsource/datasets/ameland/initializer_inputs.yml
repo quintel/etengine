@@ -4,3 +4,9 @@ demand_setter:
 
 share_setter:
   :"baz-foo@electricity": 0.5
+
+conversion_setter:
+  :"converter_fixture_for_slots@gas": 0.5
+
+reserved_fraction_setter:
+  baz: 1

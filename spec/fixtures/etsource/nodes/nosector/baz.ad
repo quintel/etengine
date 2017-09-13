@@ -1,2 +1,2 @@
 - groups = []
-- initializer_inputs = [demand_setter]
+- initializer_inputs = [demand_setter, reserved_fraction_setter]
