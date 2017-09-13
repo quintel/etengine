@@ -19,11 +19,6 @@ module Qernel::Plugins
         end
       end
 
-      def initialize(*args)
-        super
-        @orig_production ||= @converter.output_of(:useable_heat)
-      end
-
       def participant
         @participant ||=
           if @config.defer_for && @config.defer_for > 0
@@ -55,8 +50,8 @@ module Qernel::Plugins
         link = @converter.converter.output(:useable_heat).links.first
 
         if @converter.converter.groups.include?(:aggregator_producer)
-          link.share =
-            @orig_production > 0 ? heat_production / @orig_production : 1.0
+          demand = participant.demand * 3600
+          link.share = demand > 0 ? heat_production / demand : 1.0
         end
       end
 
