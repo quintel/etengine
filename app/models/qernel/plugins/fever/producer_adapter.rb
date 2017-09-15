@@ -75,8 +75,11 @@ module Qernel::Plugins
       end
 
       def input_efficiency
-        slots = @converter.converter.inputs.reject(&:loss?)
-        slots.any? ? slots.sum(&:conversion) : 1.0
+        slots = @converter.converter.inputs.reject do |slot|
+          slot.carrier.key == :ambient_heat
+        end
+
+        slots.any? ? 1.0 / slots.sum(&:conversion) : 1.0
       end
 
       # Internal: The total capacity of the Fever participant in each frame.
