@@ -288,19 +288,20 @@ module Gql::Runtime
           end
 
           suppliers.map do |a|
-            input  = a.participant.producer.try(:input_load)
-            output = a.participant.producer.load_curve
+            input  = a.participant.producer.input_curve
+            output = a.participant.producer.output_curve
 
-            if input
+            if input.object_id != output.object_id
               # In order to represent heat being produced - but stored for
               # future use - the production curve takes the maximum of the input
               # and output of each producer. This means that energy in a reserve
-              # is accounted for twice.
+              # is accounted for twice. Skip this when the input and output
+              # curves are the same object.
               input.map.with_index do |val, index|
                 val > output[index] ? val : output[index]
               end
             else
-              output.map { |val| val > 0 ? val : 0.0 }
+              output
             end
           end
         end

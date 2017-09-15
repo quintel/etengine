@@ -31,7 +31,7 @@ module Qernel::Plugins
         sum_eff   = 0.0
 
         ::Fever::FRAMES.times do |index|
-          input = producer.input_at(index)
+          input = producer.source_at(index)
 
           sum_input += input
           sum_eff   += input * efficiency[index]

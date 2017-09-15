@@ -12,7 +12,7 @@ module Qernel::Plugins
       end
 
       def get(frame)
-        @producers.sum { |prod| prod.input_at(frame) }
+        @producers.sum { |prod| prod.source_at(frame) }
       end
 
       def [](frame)

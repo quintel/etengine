@@ -4,7 +4,7 @@ module Qernel::Plugins
     class HHPAdapter < ProducerAdapter
       def inject!
         if @number_of_units.zero? ||
-            participant.producer.load_curve.all?(&:zero?)
+            participant.producer.output_curve.all?(&:zero?)
           return
         end
 
@@ -20,8 +20,8 @@ module Qernel::Plugins
         super
 
         # Set the conversion of the secondary component carrier.
-        sec_demand   = secondary_component.load_curve.sum
-        total_demand = primary_component.load_curve.sum + sec_demand
+        sec_demand   = secondary_component.output_curve.sum
+        total_demand = primary_component.output_curve.sum + sec_demand
         sec_share    = sec_demand / total_demand
 
         @converter.converter.input(:network_gas)[:conversion] = sec_share
@@ -103,11 +103,11 @@ module Qernel::Plugins
 
         return unless output.is_a?(Hash)
 
-        total_demand = participant.producer.load_curve.sum
+        total_demand = participant.producer.output_curve.sum
 
         new_conversion = output.sum do |(carrier, share)|
           producer = producer_for_carrier(carrier.to_sym)
-          producer ? (producer.load_curve.sum / total_demand) * share : 0.0
+          producer ? (producer.output_curve.sum / total_demand) * share : 0.0
         end
 
         @converter.converter.output(:useable_heat)[:conversion] = new_conversion
