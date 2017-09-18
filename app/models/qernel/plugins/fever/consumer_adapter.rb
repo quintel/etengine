@@ -26,7 +26,7 @@ module Qernel::Plugins
       def demand_curve
         if @config.curve.to_s.delete(' ') == 'dynamic:household_heat'
           # Yuck.
-          @graph.plugin(:time_resolve).fever.curves.household_heat
+          @graph.plugin(:time_resolve).fever.household_heat.demand_curve
         else
           TimeResolve.load_profile(@dataset, @config.curve) * @converter.demand
         end

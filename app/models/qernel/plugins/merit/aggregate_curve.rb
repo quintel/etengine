@@ -48,8 +48,6 @@ module Qernel::Plugins
         ::Merit::Curve.new(Array.new(length) { |index| yield(index) })
       end
 
-      private_class_method :aggregate
-
       # Internal: Ensures that a mix of profiles sum to 1.0.
       #
       # Returns a hash.

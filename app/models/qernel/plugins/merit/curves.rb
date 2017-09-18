@@ -4,12 +4,12 @@ module Qernel::Plugins
     class Curves
       CURVE_NAMES = [
         :ev_demand,
-        :old_household_space_heating_demand,
-        :new_household_space_heating_demand
+        :household_space_heating_demand
       ].freeze
 
-      def initialize(graph)
+      def initialize(graph, household_heat)
         @graph = graph
+        @household_heat = household_heat
       end
 
       # Public: All dynamic curves combined into one.
@@ -56,31 +56,16 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def household_hot_water_demand
-        @hw_demand ||= AggregateCurve.build(
-          @graph.query.group_demand_for_electricity(
-            :merit_household_hot_water_producers
-          ),
-          AggregateCurve.mix(dataset, dhw_normalized: 1.0)
-        )
-      end
-
-      # Public: Creates a profile describing the demand for electricity due to
-      # heating and cooling in old households.
-      def old_household_space_heating_demand
-        heat_demand.curve_for(:old, dataset)
+        @household_heat.hot_water_demand
       end
 
       # Public: Creates a profile describing the demand for electricity due to
       # heating and cooling in new households.
-      def new_household_space_heating_demand
-        heat_demand.curve_for(:new, dataset)
+      def household_space_heating_demand
+        @household_heat.space_heating_demand
       end
 
       private
-
-      def heat_demand
-        @heat_demand ||= HouseholdHeat.new(@graph)
-      end
 
       def dataset
         @dataset ||= Atlas::Dataset.find(@graph.area.area_code)

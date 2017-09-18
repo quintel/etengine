@@ -83,6 +83,10 @@ module Qernel::Plugins
       @fever.inject_values!
     end
 
+    def household_heat
+      @household_heat ||= HouseholdHeat.new(@graph, curve_set('heat'))
+    end
+
     def curve_set(name)
       CurveSet.with_dataset(
         @fever.dataset,

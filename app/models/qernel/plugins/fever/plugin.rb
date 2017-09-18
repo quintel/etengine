@@ -19,8 +19,11 @@ module Qernel::Plugins
         @groups || setup
       end
 
-      def curves
-        @curves ||= Curves.new(@graph)
+      def household_heat
+        @household_heat ||= HouseholdHeat.new(
+          @graph,
+          @graph.plugin(:time_resolve).curve_set('heat')
+        )
       end
 
       # Configures the Fever groups, ensuring that hot water is first since its

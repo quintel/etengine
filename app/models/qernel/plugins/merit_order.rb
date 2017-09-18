@@ -98,5 +98,9 @@ module Qernel::Plugins
         adapter(participant.key).converter[:merit_order_position] = position + 1
       end
     end
+
+    def household_heat
+      Merit::HouseholdHeat.new(@graph)
+    end
   end # MeritOrder
 end # Qernel::Plugins

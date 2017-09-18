@@ -23,7 +23,7 @@ module Qernel::Plugins
     end
 
     def curves
-      @curves ||= Qernel::Plugins::Merit::Curves.new(@graph)
+      @curves ||= Qernel::Plugins::Merit::Curves.new(@graph, household_heat)
     end
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
@@ -143,6 +143,13 @@ module Qernel::Plugins
       converters.sort_by do |conv|
         order.index(conv.dataset_get(:merit_order).group) || Float::INFINITY
       end
+    end
+
+    def household_heat
+      Merit::SimpleHouseholdHeat.new(
+        @graph,
+        TimeResolve::CurveSet.with_dataset(dataset, 'heat', 'default')
+      )
     end
   end # SimpleMeritOrder
 end # Qernel::Plugins

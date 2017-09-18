@@ -57,6 +57,8 @@ RSpec.configure do |config|
   config.include(Devise::TestHelpers, type: :controller)
   config.include(MechanicalTurkHelper)
 
+  config.include(HouseholdCurvesHelper, household_curves: true)
+
   # Prevent the static YML file from being deleted.
   config.before(:suite) do
     loader = ETSourceFixtureHelper::AtlasTestLoader.new(
