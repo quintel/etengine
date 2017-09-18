@@ -7,32 +7,24 @@ module Qernel::Plugins
     #
     # Unlike hot water, this curve is dynamic and depends on the share of new
     # and old households, and the amount of insulation installed in each.
-    class HouseholdHeat
-      def initialize(graph)
-        @graph = graph
+    module HouseholdHeat
+      def self.demand_curve(graph)
+        graph.plugin(:time_resolve).household_heat
+          .demand_curve(demand_for_heat(graph))
       end
-
-      def demand_curve
-        @graph.plugin(:time_resolve).household_heat
-          .demand_curve(demand_for_heat)
-      end
-
-      private
 
       # Internal: The total demand for useable heat in households.
-      def demand_for_heat
-        @demand_for_heat ||= begin
-          sh_group = Etsource::Fever.data[:space_heating]
+      def self.demand_for_heat(graph)
+        sh_group = Etsource::Fever.data[:space_heating]
 
-          if sh_group && sh_group[:consumer].present?
-            sh_group[:consumer].sum do |key|
-              @graph.converter(key).converter_api.input_of(:useable_heat)
-            end
-          else
-            0.0
-          end
+        return 0.0 unless sh_group && sh_group.key?(:consumer)
+
+        sh_group[:consumer].sum do |key|
+          graph.converter(key).converter_api.input_of(:useable_heat)
         end
       end
+
+      private_class_method :demand_for_heat
     end
   end # Fever
 end # Qernel::Plugins
