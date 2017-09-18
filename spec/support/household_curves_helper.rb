@@ -41,10 +41,12 @@ module HouseholdCurvesHelper
     # Set up household heat converters which determine the share of old to new
     # households.
 
-    allow(graph).to receive(:group_converters).with(:merit_old_household_heat)
+    allow(graph).to receive(:group_converters)
+      .with(Qernel::Plugins::TimeResolve::HouseholdHeat.group_name(:old))
       .and_return([double(Qernel::ConverterApi, demand: old_share)])
 
-    allow(graph).to receive(:group_converters).with(:merit_new_household_heat)
+    allow(graph).to receive(:group_converters)
+      .with(Qernel::Plugins::TimeResolve::HouseholdHeat.group_name(:new))
       .and_return([double(Qernel::ConverterApi, demand: 1 - old_share)])
 
     graph
