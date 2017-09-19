@@ -48,6 +48,6 @@ module GraphUpdater
   def self.set_unit(graph, node_name, value)
     node = graph.converter(node_name)
 
-    node.number_of_units = value
+    node.converter_api.number_of_units = value
   end
 end
