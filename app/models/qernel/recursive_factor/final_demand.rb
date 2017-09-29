@@ -19,8 +19,14 @@ module Qernel::RecursiveFactor::FinalDemand
   def final_demand_factor_of_carrier(link, carrier_key)
     link ||= output_links.first # in case we query a left-most converter
 
-    if link && final_demand_group?
+    return nil unless final_demand_group?
+
+    if link
       link.carrier.key == carrier_key ? 1.0 : 0.0
+    else
+      # Left-most node with no outputs may be a member of the final demand
+      # group. Look for an input matching the carrier, and use its conversion.
+      input(carrier_key).try(:conversion) || 0.0
     end
   end
 
