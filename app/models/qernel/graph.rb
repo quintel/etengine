@@ -416,7 +416,17 @@ class Graph
   end
 
   def initializer_inputs
-    (area.initializer_inputs || {})
+    if area.uses_deprecated_initializer_inputs
+      decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
+    else
+      (area.initializer_inputs || {})
+    end
+  end
+
+  def decorated_inputs
+    (area.init || {}).map do |input_key, input_value|
+      [InitializerInput.fetch(input_key), input_value]
+    end
   end
 
   def cache_dataset_fetch?
