@@ -17,7 +17,7 @@ module Qernel
 
     include DatasetAttributes
 
-    dataset_accessors :share, :value, :calculated, :country_specific
+    dataset_accessors :share, :value, :calculated, :country_specific, :atlas_key
 
     def self.dataset_group; :graph; end
 
@@ -85,10 +85,6 @@ module Qernel
     # Returns self.
     def query
       self
-    end
-
-    def atlas_key
-      :"#{@rgt_converter.key}-#{@lft_converter.key}@#{@carrier.key}"
     end
 
     # Public: The sector to which the link belongs. This is the same as the sector

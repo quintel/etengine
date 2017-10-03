@@ -193,6 +193,7 @@ module Etsource
     # Returns nothing.
     def import_edge!(edge, dataset)
       attributes = edge.attributes
+      attributes[:atlas_key] = edge.key
 
       if edge.type == :share
         attributes[:share] =
