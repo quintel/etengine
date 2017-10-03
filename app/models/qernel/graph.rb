@@ -415,15 +415,15 @@ class Graph
     @graph_query ||= GraphApi.new(self)
   end
 
-  def initializer_inputs
+  def graph_values
     if area.uses_deprecated_initializer_inputs
-      decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
+      initializer_inputs.sort_by { |input, _| [-input.priority, input.key] }
     else
-      (area.initializer_inputs || {})
+      (area.graph_values || {})
     end
   end
 
-  def decorated_inputs
+  def initializer_inputs
     (area.init || {}).map do |input_key, input_value|
       [InitializerInput.fetch(input_key), input_value]
     end

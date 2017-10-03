@@ -3,4 +3,4 @@
 - input.gas = 0.4
 - input.electricity =
 
-- initializer_inputs = [conversion_setter]
+- graph_methods = [conversion_setter]

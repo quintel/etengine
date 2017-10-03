@@ -351,8 +351,10 @@ module Gql
 
     def apply_initializer_inputs
       with_disabled_dataset_fetch_cache do
-        set_initializer_inputs(present_graph)
-        set_initializer_inputs(future_graph)
+        set_initializer_inputs(:present)
+        set_initializer_methods(present_graph)
+        set_initializer_inputs(:future)
+        set_initializer_methods(future_graph)
       end
     end
 
@@ -365,15 +367,25 @@ module Gql
       future.graph.cache_dataset_fetch = true
     end
 
-    def set_initializer_inputs(graph)
+    def set_initializer_methods(graph)
+      return if graph.area.uses_deprecated_initializer_inputs
+
       debug_line = graph.present? ? 'present' : 'future'
 
       instrument("gql.performance.#{debug_line}.set_initializer_inputs") do
-        present.graph.initializer_inputs.each do |method, inputs|
+        present.graph.graph_values.each do |method, inputs|
           inputs.each_pair do |graph_element, value|
             GraphUpdater.call(graph, method, [graph_element, value])
           end
         end
+      end
+    end
+
+    def set_initializer_inputs(graph)
+      return unless present_graph.area.uses_deprecated_initializer_inputs
+
+      present.graph.graph_values.each do |input, value|
+        update_graph(graph, input, value)
       end
     end
   end
