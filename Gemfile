@@ -9,6 +9,9 @@ gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
 gem 'rake',         '< 11.0'
 
+# https://stackoverflow.com/questions/35893584/nomethoderror-undefined-method-last-comment-after-upgrading-to-rake-11
+gem 'rake', '< 11.0'
+
 gem 'gravatar_image_tag'
 
 # Ruby gems
