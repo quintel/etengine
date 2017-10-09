@@ -1,5 +1,4 @@
-# config valid only for Capistrano 3.1
-lock '3.2.1'
+lock '3.9.1'
 
 set :log_level, 'info'
 
@@ -11,6 +10,8 @@ set :rbenv_type, :user
 set :rbenv_ruby, '2.1.9'
 set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
 set :rbenv_map_bins, %w{rake gem bundle ruby rails}
+
+set :bundle_binstubs, -> { shared_path.join('sbin') }
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
@@ -38,7 +39,7 @@ set :linked_files, %w{
 
 # Default value for linked_dirs is []
 set :linked_dirs,
-  %w{ bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system }
+  %w{ sbin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system }
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -47,12 +48,6 @@ set :linked_dirs,
 # set :keep_releases, 5
 
 namespace :deploy do
-
-  desc 'Restart application'
-  task :restart do
-    invoke 'unicorn:restart'
-  end
-
   after  'bundler:install',   'deploy:app_config'
   before 'deploy:publishing', 'deploy:etsource'
 
@@ -61,5 +56,4 @@ namespace :deploy do
   after :restart, :clear_cache do
     invoke 'memcached:flush'
   end
-
 end

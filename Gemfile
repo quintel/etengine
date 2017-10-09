@@ -61,11 +61,11 @@ group :development do
   gem 'binding_of_caller'
   gem 'listen'
 
-  gem 'capistrano',             '~> 3.0',   require: false
-  gem 'capistrano-rbenv',       '~> 2.0',   require: false
+  gem 'capistrano',             '~> 3.9',   require: false
+  gem 'capistrano-rbenv',       '~> 2.1',   require: false
   gem 'capistrano-rails',       '~> 1.1',   require: false
   gem 'capistrano-bundler',     '~> 1.1',   require: false
-  gem 'capistrano3-unicorn',    '~> 0.2',   require: false
+  gem 'capistrano3-puma',       '~> 3.1.1', require: false
 end
 
 group :test, :development do
@@ -85,7 +85,7 @@ group :test do
 end
 
 group :production, :staging do
-  gem 'unicorn'
+  gem 'puma'
   gem 'gctools', require: false
   gem 'airbrake'
   gem 'newrelic_rpm'

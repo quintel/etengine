@@ -8,7 +8,6 @@
 # role :web, %w{deploy@example.com}
 # role :db,  %w{deploy@example.com}
 
-
 # Extended Server Syntax
 # ======================
 # This can be used to drop a more detailed server definition into the
@@ -18,6 +17,19 @@
 server 'beta.et-engine.com', user: 'ubuntu', roles: %w{web app db}
 set :branch, 'master'
 
+# set :puma_config, (lambda do
+#   "#{ fetch(:current_dir) }/config/puma/#{ fetch(:rails_env) }.rb"
+# end)
+
+# Puma Options
+# ============
+# If these are changed, be sure to then run `cap $stage puma:config`; the config
+# on the server is not automatically updated when deploying.
+
+set :puma_threads, [1, 1]
+set :puma_workers, 4
+set :puma_init_active_record, true
+set :puma_preload_app, true
 
 # Custom SSH Options
 # ==================
