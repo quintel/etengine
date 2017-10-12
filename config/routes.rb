@@ -15,6 +15,7 @@ Etm::Application.routes.draw do
           get :batch
           get :application_demands
           get :production_parameters
+          get :energy_flow
           get :merit
           put :dashboard
         end

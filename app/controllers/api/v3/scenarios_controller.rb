@@ -6,7 +6,8 @@ module Api
       before_filter :find_scenario, only: [:update]
 
       before_filter :find_preset_or_scenario, only: [
-        :show, :merit, :dashboard, :application_demands, :production_parameters
+        :show, :merit, :dashboard, :application_demands,
+        :production_parameters, :energy_flow
       ]
 
       # GET /api/v3/scenarios/:id
@@ -215,6 +216,18 @@ module Api
           ProductionParametersPresenter.new(@scenario).as_csv,
           type: 'text/csv',
           filename: "production_parameters.#{ @scenario.id }.csv"
+        )
+      end
+
+      # GET /api/v3/scenarios/:id/energy_flow
+      #
+      # Returns a CSV file containing the energetic inputs and outputs of every
+      # converter in the graph.
+      def energy_flow
+        send_data(
+          ConverterFlowPresenter.new(@scenario).as_csv,
+          type: 'text/csv',
+          filename: "energy_flow.#{ @scenario.id }.csv"
         )
       end
 
