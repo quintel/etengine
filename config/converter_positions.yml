@@ -2303,6 +2303,7 @@
 :industry_chemicals_other_heater_electricity:
   :x: 1180
   :y: 12060
+<<<<<<< HEAD
 :households_water_heater_network_gas_aggregator:
   :x: 1180
   :y: 1140
@@ -2378,3 +2379,34 @@
 :households_water_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
   :y: 1500
+=======
+:bunkers_useful_demand_planes:
+  :x: 720
+  :y: 18760
+:bunkers_plane_using_bio_ethanol:
+  :x: 1520
+  :y: 18820
+:bunkers_demand_for_aviation_bio_ethanol:
+  :x: 2320
+  :y: 18820
+:bunkers_demand_bio_ethanol:
+  :x: 3120
+  :y: 18820
+:bunkers_plane_using_gasoline:
+  :x: 1520
+  :y: 18700
+:bunkers_demand_for_aviation_gasoline:
+  :x: 2320
+  :y: 18700
+:bunkers_demand_gasoline:
+  :x: 3120
+  :y: 18700
+:bunkers_plane_using_kerosene:
+  :x: 1520
+  :y: 18760
+:bunkers_demand_for_aviation_kerosene:
+  :x: 2320
+  :y: 18760
+:bunkers_demand_kerosene:
+  :x: 3120
+  :y: 18760
