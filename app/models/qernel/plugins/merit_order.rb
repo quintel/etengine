@@ -44,6 +44,11 @@ module Qernel::Plugins
           load_curve: fgroup.elec_demand_curve
         ))
       end
+
+      @order.add(::Merit::User.create(
+        key: :ev_demand,
+        load_curve: curves.ev_demand
+      ))
     end
 
     # Internal: Takes loads and costs from the calculated Merit order, and
@@ -57,13 +62,6 @@ module Qernel::Plugins
     end
 
     private
-
-    # Internal: Merit::Curve describing demand.
-    def total_demand_curve
-      # Hot water demand is added as a separate user so that demand may be
-      # altered by P2H.
-      @total_demand_curve ||= super + curves.ev_demand
-    end
 
     # Internal: The total electricity demand, joules, across the graph, minus
     # demand from dynamic electricity curves.
