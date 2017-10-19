@@ -17,7 +17,7 @@ module Qernel
       let(:child_two) { graph.converters.detect { |c| c.key == :child_two } }
 
       before do
-        parent.converter_api.stub(:number_of_units).and_return(20.0)
+        allow(parent.converter_api).to receive(:number_of_units).and_return(20.0)
 
         child_one.converter_api = InheritableNouConverterApi.new(child_one)
         child_two.converter_api = InheritableNouConverterApi.new(child_two)
@@ -30,11 +30,11 @@ module Qernel
       # ------------------------------------------------------------------------
 
       it 'has 5 units when the converter has a 25% share' do
-        child_one.converter_api.number_of_units.should eql(5.0)
+        expect(child_one.converter_api.number_of_units).to eql(5.0)
       end
 
       it 'has 15 units when the converter has a 75% share' do
-        child_two.converter_api.number_of_units.should eql(15.0)
+        expect(child_two.converter_api.number_of_units).to eql(15.0)
       end
 
       it 'denies setting number of units' do
@@ -57,7 +57,7 @@ module Qernel
       let(:child)  { graph.converters.detect { |c| c.key == :child_one } }
 
       before do
-        parent.converter_api.stub(:number_of_units).and_return(20.0)
+        allow(parent.converter_api).to receive(:number_of_units).and_return(20.0)
 
         child.converter_api = InheritableNouConverterApi.new(child)
         child.graph = graph
@@ -66,7 +66,7 @@ module Qernel
       # ------------------------------------------------------------------------
 
       it 'has 10 units when the converter has a 60% share' do
-        child.converter_api.number_of_units.should eql(6.0)
+        expect(child.converter_api.number_of_units).to eql(6.0)
       end
     end # when parent has 20 units and 0.5 parent slot conversion
 
@@ -105,7 +105,7 @@ module Qernel
       let(:child)  { graph.converters.detect { |c| c.key == :child } }
 
       before do
-        parent.converter_api.stub(:number_of_units).and_return(nil)
+        allow(parent.converter_api).to receive(:number_of_units).and_return(nil)
 
         child.converter_api = InheritableNouConverterApi.new(child)
         child.graph = graph
@@ -118,7 +118,7 @@ module Qernel
       end
 
       it 'returns a value once the parent has one' do
-        expect { parent.converter_api.stub(:number_of_units).and_return(20) }
+        expect { allow(parent.converter_api).to receive(:number_of_units).and_return(20) }
           .to change { child.converter_api.number_of_units }
           .from(nil).to(20)
       end

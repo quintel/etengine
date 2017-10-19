@@ -8,11 +8,11 @@ describe "Reversed Links" do
 
     it "updates the flexible demand when preset_demand is given" do
       # assert correct assignment
-      @gql.query_present("V(reversed_links_left,     demand)").should == 1500.0
-      @gql.query_present("V(reversed_links_middle_1, demand)").should == 1000.0
-      @gql.query_present("V(reversed_links_middle_3, demand)").should ==  100.0
+      expect(@gql.query_present("V(reversed_links_left,     demand)")).to eq(1500.0)
+      expect(@gql.query_present("V(reversed_links_middle_1, demand)")).to eq(1000.0)
+      expect(@gql.query_present("V(reversed_links_middle_3, demand)")).to eq(100.0)
 
-      @gql.query_present("V(reversed_links_middle_2, demand)").should ==  400.0
+      expect(@gql.query_present("V(reversed_links_middle_2, demand)")).to eq(400.0)
     end
 
     it "updates the flexible demand when preset_demand is nil" do
@@ -20,8 +20,8 @@ describe "Reversed Links" do
         gql.future_graph.converter(:reversed_links_left).preset_demand = nil
       end
 
-      gql.query_future("V(reversed_links_left,     demand)").should == 1100.0
-      gql.query_future("V(reversed_links_middle_2, demand)").should ==  0.0
+      expect(gql.query_future("V(reversed_links_left,     demand)")).to eq(1100.0)
+      expect(gql.query_future("V(reversed_links_middle_2, demand)")).to eq(0.0)
     end
 
   end

@@ -6,14 +6,14 @@ module Qernel
     describe 'when no type is specified' do
       it 'should use the default converter API' do
         api = Converter.new(id: 1).converter_api
-        api.should be_kind_of(Qernel::ConverterApi)
+        expect(api).to be_kind_of(Qernel::ConverterApi)
       end
     end
 
     describe 'when the type is :default' do
       it 'should use the default converter API' do
         api = Converter.new(id: 1, groups: [ :something ]).converter_api
-        api.should be_kind_of(Qernel::ConverterApi)
+        expect(api).to be_kind_of(Qernel::ConverterApi)
       end
     end
 
@@ -23,7 +23,7 @@ module Qernel
           id: 1, groups: [ :something, :demand_driven ]
         ).converter_api
 
-        api.should be_kind_of(Qernel::DemandDrivenConverterApi)
+        expect(api).to be_kind_of(Qernel::DemandDrivenConverterApi)
       end
     end
 

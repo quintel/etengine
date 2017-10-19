@@ -16,7 +16,7 @@ module Qernel
     let(:supply_two) { graph.converters.detect { |c| c.key == :supply_two } }
 
     before do
-      graph.area.stub(:number_of_residences).and_return(200)
+      allow(graph.area).to receive(:number_of_residences).and_return(200)
 
       supply_one.converter_api = DemandDrivenConverterApi.new(supply_one)
       supply_two.converter_api = DemandDrivenConverterApi.new(supply_two)
@@ -25,10 +25,10 @@ module Qernel
         converter.graph = graph
 
         api = converter.converter_api
-        api.stub(:nominal_capacity_heat_output_per_unit).and_return(20)
-        api.stub(:demand_of_hot_water).and_return(0)
-        api.stub(:demand_of_steam_hot_water).and_return(0)
-        api.stub(:demand_of_useable_heat).and_return(0)
+        allow(api).to receive(:nominal_capacity_heat_output_per_unit).and_return(20)
+        allow(api).to receive(:demand_of_hot_water).and_return(0)
+        allow(api).to receive(:demand_of_steam_hot_water).and_return(0)
+        allow(api).to receive(:demand_of_useable_heat).and_return(0)
       end
     end
 
@@ -37,11 +37,11 @@ module Qernel
     describe '#number_of_units' do
       describe 'when households_supplied_per_unit is 1' do
         it 'should be 50.0 when the converter has a 25% share' do
-          supply_one.converter_api.number_of_units.should eql(50.0)
+          expect(supply_one.converter_api.number_of_units).to eql(50.0)
         end
 
         it 'should be 150.0 when the converter has a 75% share' do
-          supply_two.converter_api.number_of_units.should eql(150.0)
+          expect(supply_two.converter_api.number_of_units).to eql(150.0)
         end
       end
 
@@ -53,11 +53,11 @@ module Qernel
         end
 
         it 'should be 2.0 when the converter has a 25% share' do
-          supply_one.converter_api.number_of_units.should eql(2.0)
+          expect(supply_one.converter_api.number_of_units).to eql(2.0)
         end
 
         it 'should be 6.0 when the converter has a 75% share' do
-          supply_two.converter_api.number_of_units.should eql(6.0)
+          expect(supply_two.converter_api.number_of_units).to eql(6.0)
         end
       end
 
@@ -65,7 +65,7 @@ module Qernel
         before {  supply_one.converter_api.dataset_set(:number_of_units, nil) }
 
         it 'should ignore the nil and compute the value' do
-          supply_one.converter_api.number_of_units.should_not be_nil
+          expect(supply_one.converter_api.number_of_units).not_to be_nil
         end
       end
     end # number_of_units
@@ -77,13 +77,13 @@ module Qernel
 
       context 'when households_supplied_per_unit is 1' do
         it 'should calculate' do
-          api.stub(:demand_of_useable_heat).and_return(50)
-          api.full_load_seconds.should eql(0.05)
+          allow(api).to receive(:demand_of_useable_heat).and_return(50)
+          expect(api.full_load_seconds).to eql(0.05)
         end
 
         it 'should scale with demand' do
-          api.stub(:demand_of_useable_heat).and_return(500)
-          api.full_load_seconds.should eql(0.5)
+          allow(api).to receive(:demand_of_useable_heat).and_return(500)
+          expect(api.full_load_seconds).to eql(0.5)
         end
       end
 
@@ -91,13 +91,13 @@ module Qernel
         before { supply_one.dataset_set(:households_supplied_per_unit, 25) }
 
         it 'should calculate' do
-          api.stub(:demand_of_useable_heat).and_return(50)
-          api.full_load_seconds.should eql(1.25)
+          allow(api).to receive(:demand_of_useable_heat).and_return(50)
+          expect(api.full_load_seconds).to eql(1.25)
         end
 
         it 'should scale with demand' do
-          api.stub(:demand_of_useable_heat).and_return(500)
-          api.full_load_seconds.should eql(12.5)
+          allow(api).to receive(:demand_of_useable_heat).and_return(500)
+          expect(api.full_load_seconds).to eql(12.5)
         end
       end
     end # full_load_seconds
@@ -108,17 +108,17 @@ module Qernel
       let(:api) { supply_one.converter_api }
 
       it 'should be based on full_load_seconds' do
-        api.stub(:demand_of_useable_heat).and_return(50)
+        allow(api).to receive(:demand_of_useable_heat).and_return(50)
         seconds = api.full_load_seconds
 
-        api.full_load_hours.should eql(seconds / 3600)
+        expect(api.full_load_hours).to eql(seconds / 3600)
       end
 
       it 'should scale with demand' do
-        api.stub(:demand_of_useable_heat).and_return(500)
+        allow(api).to receive(:demand_of_useable_heat).and_return(500)
         seconds = api.full_load_seconds
 
-        api.full_load_hours.should eql(seconds / 3600)
+        expect(api.full_load_hours).to eql(seconds / 3600)
       end
     end # full_load_hours
 

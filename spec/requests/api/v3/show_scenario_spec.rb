@@ -15,26 +15,26 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should be successful' do
-      response.status.should eql(200)
+      expect(response.status).to eql(200)
     end
 
     it 'should include the basic scenario data' do
-      json.should include('title'      => scenario.title)
-      json.should include('id'         => scenario.id)
-      json.should include('area_code'  => 'nl')
-      json.should include('start_year' => scenario.start_year)
-      json.should include('end_year'   => scenario.end_year)
-      json.should include('template'   => nil)
-      json.should include('source'     => nil)
+      expect(json).to include('title'      => scenario.title)
+      expect(json).to include('id'         => scenario.id)
+      expect(json).to include('area_code'  => 'nl')
+      expect(json).to include('start_year' => scenario.start_year)
+      expect(json).to include('end_year'   => scenario.end_year)
+      expect(json).to include('template'   => nil)
+      expect(json).to include('source'     => nil)
 
-      json.should have_key('created_at')
+      expect(json).to have_key('created_at')
 
-      json['url'].should match(%r{/scenarios/#{ scenario.id }$})
+      expect(json['url']).to match(%r{/scenarios/#{ scenario.id }$})
     end
 
     it 'should not include detailed attributes' do
-      json.should_not have_key('use_fce')
-      json.should_not have_key('description')
+      expect(json).not_to have_key('use_fce')
+      expect(json).not_to have_key('description')
     end
   end
 
@@ -44,25 +44,25 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should be successful' do
-      response.status.should eql(200)
+      expect(response.status).to eql(200)
     end
 
     it 'should include the basic scenario data' do
-      json.should include('title'      => scenario.title)
-      json.should include('id'         => scenario.id)
-      json.should include('area_code'  => 'nl')
-      json.should include('end_year'   => scenario.end_year)
-      json.should include('template'   => nil)
-      json.should include('source'     => nil)
+      expect(json).to include('title'      => scenario.title)
+      expect(json).to include('id'         => scenario.id)
+      expect(json).to include('area_code'  => 'nl')
+      expect(json).to include('end_year'   => scenario.end_year)
+      expect(json).to include('template'   => nil)
+      expect(json).to include('source'     => nil)
 
-      json.should have_key('created_at')
+      expect(json).to have_key('created_at')
 
-      json['url'].should match(%r{/scenarios/#{ scenario.id }$})
+      expect(json['url']).to match(%r{/scenarios/#{ scenario.id }$})
     end
 
     it 'should include detailed attributes' do
-      json.should include('use_fce'     => scenario.use_fce)
-      json.should include('description' => scenario.description)
+      expect(json).to include('use_fce'     => scenario.use_fce)
+      expect(json).to include('description' => scenario.description)
     end
   end
 
@@ -72,24 +72,24 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should be successful' do
-      response.status.should eql(200)
+      expect(response.status).to eql(200)
     end
 
     it 'should include the basic scenario data' do
-      json.should include('title'      => scenario.title)
-      json.should include('id'         => scenario.id)
-      json.should include('area_code'  => 'nl')
-      json.should include('end_year'   => scenario.end_year)
-      json.should include('template'   => nil)
-      json.should include('source'     => nil)
+      expect(json).to include('title'      => scenario.title)
+      expect(json).to include('id'         => scenario.id)
+      expect(json).to include('area_code'  => 'nl')
+      expect(json).to include('end_year'   => scenario.end_year)
+      expect(json).to include('template'   => nil)
+      expect(json).to include('source'     => nil)
 
-      json.should have_key('created_at')
+      expect(json).to have_key('created_at')
 
-      json['url'].should match(%r{/scenarios/#{ scenario.id }$})
+      expect(json['url']).to match(%r{/scenarios/#{ scenario.id }$})
     end
 
     it 'should include the inputs' do
-      json.should have_key('inputs')
+      expect(json).to have_key('inputs')
     end
   end
 

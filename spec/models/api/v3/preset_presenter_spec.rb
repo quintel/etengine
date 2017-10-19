@@ -8,18 +8,18 @@ describe Api::V3::PresetPresenter do
     Api::V3::PresetPresenter.new(controller, preset).as_json
   end
 
-  it { should include(id:          preset.id) }
-  it { should include(title:       preset.title) }
-  it { should include(area_code:   preset.area_code) }
-  it { should include(end_year:    preset.end_year) }
-  it { should include(description: preset.description) }
+  it { is_expected.to include(id:          preset.id) }
+  it { is_expected.to include(title:       preset.title) }
+  it { is_expected.to include(area_code:   preset.area_code) }
+  it { is_expected.to include(end_year:    preset.end_year) }
+  it { is_expected.to include(description: preset.description) }
 
-  it { should include(url: 'url') }
+  it { is_expected.to include(url: 'url') }
 
   it 'should ask the controller for the scenario URL' do
-    controller.should_receive(:api_v3_scenario_url).
+    expect(controller).to receive(:api_v3_scenario_url).
       with(preset).and_return('my_url')
 
-    subject[:url].should eql('my_url')
+    expect(subject[:url]).to eql('my_url')
   end
 end # Api::V3::PresetPresenter

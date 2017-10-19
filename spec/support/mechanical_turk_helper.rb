@@ -8,23 +8,23 @@ module MechanicalTurkHelper
     @proxy.print_comparison(endpoints)
   end
 
-  def the_value(cmd = example.description)
+  def the_value(cmd = RSpec.current_example.description)
     @proxy.the_value(cmd)
   end
 
-  def the_present(cmd = example.description)
+  def the_present(cmd = RSpec.current_example.description)
     @proxy.the_present(cmd)
   end
 
-  def the_future(cmd = example.description)
+  def the_future(cmd = RSpec.current_example.description)
     @proxy.the_future(cmd)
   end
 
-  def the_relative_increase(cmd = example.description)
+  def the_relative_increase(cmd = RSpec.current_example.description)
     @proxy.the_relative_increase(cmd)
   end
 
-  def the_absolute_increase(cmd = example.description)
+  def the_absolute_increase(cmd = RSpec.current_example.description)
     @proxy.the_absolute_increase(cmd)
   end
 

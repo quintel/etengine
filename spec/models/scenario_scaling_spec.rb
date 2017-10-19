@@ -13,11 +13,11 @@ describe ScenarioScaling do
 
   # ----------------------------------------------------------------------------
 
-  it { should validate_presence_of(:area_attribute) }
+  it { is_expected.to validate_presence_of(:area_attribute) }
 
-  it { should validate_presence_of(:value) }
-  it { should validate_numericality_of(:value) }
-  it { should validate_uniqueness_of(:scenario_id) }
+  it { is_expected.to validate_presence_of(:value) }
+  it { is_expected.to validate_numericality_of(:value) }
+  it { is_expected.to validate_uniqueness_of(:scenario_id) }
 
   describe '#scale' do
     it 'scales a number to fit the area' do

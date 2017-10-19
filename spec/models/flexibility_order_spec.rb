@@ -1,5 +1,5 @@
 require 'spec_helper'
 
 describe FlexibilityOrder do
-  it { should validate_uniqueness_of(:scenario_id) }
+  it { is_expected.to validate_uniqueness_of(:scenario_id) }
 end

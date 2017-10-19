@@ -16,8 +16,8 @@ module Qernel
             nil, 1, converter,
             Qernel::Carrier.new(key: :electricity), :output)
 
-          slot.should     be_a(Qernel::Slot)
-          slot.should_not be_a(Qernel::Slot::Elastic)
+          expect(slot).to     be_a(Qernel::Slot)
+          expect(slot).not_to be_a(Qernel::Slot::Elastic)
         end
       end
 
@@ -26,8 +26,8 @@ module Qernel
           slot = Qernel::Slot.factory(:invalid,
             1, converter, Qernel::Carrier.new(key: :loss), :input)
 
-          slot.should     be_a(Qernel::Slot)
-          slot.should_not be_a(Qernel::Slot::Elastic)
+          expect(slot).to     be_a(Qernel::Slot)
+          expect(slot).not_to be_a(Qernel::Slot::Elastic)
         end
       end
 
@@ -36,7 +36,7 @@ module Qernel
           slot = Qernel::Slot.factory(:elastic,
             1, converter, Qernel::Carrier.new(key: :loss), :output)
 
-          slot.should be_a(Qernel::Slot::Elastic)
+          expect(slot).to be_a(Qernel::Slot::Elastic)
         end
       end
 

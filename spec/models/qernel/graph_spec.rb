@@ -18,18 +18,20 @@ module Qernel
 
         subject { @graph }
 
-        its(:area) { should_not be_nil }
+        it 'has an area assigned' do
+          expect(subject.area).to_not be_nil
+        end
 
         it "should #reset_memoized_methods when adding converters" do
-          @graph.should_receive(:reset_memoized_methods)
+          expect(@graph).to receive(:reset_memoized_methods)
           @graph.converters = []
         end
 
-        pending "should assign graph to converters" do
+        skip "should assign graph to converters" do
           converter = Qernel::Converter.new(id: 1, key: 'foo')
 
           @graph.converters = [converter]
-          converter.graph.should == @graph
+          expect(converter.graph).to eq(@graph)
         end
       end
 
@@ -56,12 +58,12 @@ module Qernel
 
         context 'with an initial value of true' do
           it 'starts as true' do
-            expect(graph.cache_dataset_fetch?).to be_true
+            expect(graph.cache_dataset_fetch?).to be(true)
           end
 
           it 'is false during the block' do
             graph.without_dataset_caching do
-              expect(graph.cache_dataset_fetch?).to be_false
+              expect(graph.cache_dataset_fetch?).to be(false)
             end
           end
 
@@ -87,7 +89,7 @@ module Qernel
                 graph.without_dataset_caching do
                 end
 
-                expect(graph.cache_dataset_fetch?).to be_false
+                expect(graph.cache_dataset_fetch?).to be(false)
               end
             end
 
@@ -96,7 +98,7 @@ module Qernel
                 graph.without_dataset_caching {}
               end
 
-              expect(graph.cache_dataset_fetch?).to be_true
+              expect(graph.cache_dataset_fetch?).to be(true)
             end
           end
         end
@@ -106,13 +108,13 @@ module Qernel
 
           it 'is false during the block' do
             graph.without_dataset_caching do
-              expect(graph.cache_dataset_fetch?).to be_false
+              expect(graph.cache_dataset_fetch?).to be(false)
             end
           end
 
           it 'ends as false' do
             expect { graph.without_dataset_caching {} }
-              .not_to change { graph.cache_dataset_fetch? }.from(true)
+              .not_to change { graph.cache_dataset_fetch? }.from(false)
           end
 
           it 'ends as false when an exception is raised' do
@@ -129,7 +131,7 @@ module Qernel
       end
 
       describe Graph do
-        before do
+        before do |example|
           @g = GraphParser.new(example.description).build
           @g.converters.each do |converter|
             instance_variable_set("@#{converter.key}", converter)
@@ -156,8 +158,8 @@ module Qernel
             @rgt1.output_links.first.dataset_set(:max_demand, 30.0)
             @g.calculate
 
-            @rgt1.demand.should ==  30.0
-            @rgt2.demand.should ==  70.0
+            expect(@rgt1.demand).to eq(30.0)
+            expect(@rgt2.demand).to eq(70.0)
           end
 
           it "# flexible links have a default min_demand of 0.0
@@ -165,9 +167,9 @@ module Qernel
               mid      == f(1.0) ==> rgt2(nil)" do
             @g.calculate
 
-            @mid.demand.should ==  100.0
-            @rgt1.demand.should == 120.0
-            @rgt2.demand.should ==  0.0
+            expect(@mid.demand).to eq(100.0)
+            expect(@rgt1.demand).to eq(120.0)
+            expect(@rgt2.demand).to eq(0.0)
           end
 
           it "# flexible with carrier electricity have no such min_demand of 0.0
@@ -175,9 +177,9 @@ module Qernel
               electricity: mid      == f(1.0) ==> rgt2(nil)" do
             @g.calculate
 
-            @mid.demand.should ==  100.0
-            @rgt1.demand.should == 120.0
-            @rgt2.demand.should == -20.0
+            expect(@mid.demand).to eq(100.0)
+            expect(@rgt1.demand).to eq(120.0)
+            expect(@rgt2.demand).to eq(-20.0)
           end
 
           # seb: skip implementatio of min_demand because it'll
@@ -220,8 +222,8 @@ module Qernel
           it "bar[0.5]: lft(100) == s(1.0) ==> rgt1
               foo[0.5]: lft      == s(1.0) ==> rgt2" do
 
-            @rgt1.demand.should == 50.0
-            @rgt2.demand.should == 50.0
+            expect(@rgt1.demand).to eq(50.0)
+            expect(@rgt2.demand).to eq(50.0)
           end
 
           # ----- Share only ------------------------------------------------
@@ -229,8 +231,8 @@ module Qernel
           it "lft(100) == s(0.3) ==> rgt1(nil)
               lft      == s(0.7) ==> rgt2(nil)" do
 
-            @rgt1.demand.should == 30.0
-            @rgt2.demand.should == 70.0
+            expect(@rgt1.demand).to eq(30.0)
+            expect(@rgt2.demand).to eq(70.0)
           end
 
           # ----- Constant ------------------------------------------------
@@ -238,17 +240,17 @@ module Qernel
           it "mid(nil) == c(30) ==> rgt1
               mid      == c(20) ==> rgt2" do
 
-            @mid.demand.should ==  0.0
-            @rgt1.demand.should == 30.0
-            @rgt2.demand.should == 20.0
+            expect(@mid.demand).to eq(0.0)
+            expect(@rgt1.demand).to eq(30.0)
+            expect(@rgt2.demand).to eq(20.0)
           end
 
           it "mid(nil) == c(nil) ==> rgt1(80)
               mid      == c(nil) ==> rgt2(20)" do
 
-            @mid.demand.should == 100.0
-            @rgt1.demand.should == 80.0
-            @rgt2.demand.should == 20.0
+            expect(@mid.demand).to eq(100.0)
+            expect(@rgt1.demand).to eq(80.0)
+            expect(@rgt2.demand).to eq(20.0)
           end
 
           # ----- Flexible & Share  --------------------------------------
@@ -256,8 +258,8 @@ module Qernel
           it "mid(100) == s(0.8) ==> rgt1(nil)
               mid      == f(1.0) ==> rgt2(nil)" do
 
-            @rgt1.demand.should == 80.0
-            @rgt2.demand.should == 20.0
+            expect(@rgt1.demand).to eq(80.0)
+            expect(@rgt2.demand).to eq(20.0)
           end
 
           # ----- Flexible & Constant  --------------------------------------
@@ -266,9 +268,9 @@ module Qernel
               mid(nil) == c(80)  ==> rgt1(nil)
               mid      == f(1.0) ==> rgt2(nil)" do
 
-            @mid.demand.should == 0.0
-            @rgt1.demand.should == 80.0
-            @rgt2.demand.should == 0.0
+            expect(@mid.demand).to eq(0.0)
+            expect(@rgt1.demand).to eq(80.0)
+            expect(@rgt2.demand).to eq(0.0)
           end
 
           it "# This works, because mid gets demand from lft
@@ -276,21 +278,21 @@ module Qernel
               mid(nil) == c(80) ==> rgt1(nil)
               mid      == f(1)  ==> rgt2(nil)" do
 
-            @lft.demand.should ==  100.0
+            expect(@lft.demand).to eq(100.0)
 
-            @mid.demand.should ==  100.0
-            @rgt1.demand.should == 80.0
-            @rgt2.demand.should == 20.0
+            expect(@mid.demand).to eq(100.0)
+            expect(@rgt1.demand).to eq(80.0)
+            expect(@rgt2.demand).to eq(20.0)
           end
 
           it "# if constant share is nil, assign right demand to the mid
               mid(nil) == c(nil) ==> rgt1(80)
               mid      == f(1.0) ==> rgt2(nil)" do
 
-            @rgt1.demand.should == 80.0
+            expect(@rgt1.demand).to eq(80.0)
 
-            @mid.demand.should ==  80.0
-            @rgt2.demand.should ==  0.0
+            expect(@mid.demand).to eq(80.0)
+            expect(@rgt2.demand).to eq(0.0)
           end
 
 
@@ -302,11 +304,11 @@ module Qernel
               foo:   lft1(50)  == s(1)   ==> mid
               foo:   mid       == c(nil) ==> rgt1(70)" do
 
-            @rgt1.demand.should == 70.0
-            @lft1.demand.should == 50.0
+            expect(@rgt1.demand).to eq(70.0)
+            expect(@lft1.demand).to eq(50.0)
 
-            @mid.demand.should ==  70.0
-            @loss.demand.should == 20.0
+            expect(@mid.demand).to eq(70.0)
+            expect(@loss.demand).to eq(20.0)
           end
 
           it "# we don't want inversed_flexible to become negative
@@ -316,11 +318,11 @@ module Qernel
               foo:   mid       == c(nil) ==> rgt1(40)
               foo:   mid       == f(nil) ==> rgt2(30)" do
 
-            @lft1.demand.should == 100.0
-            @mid.demand.should ==  100.0
-            @rgt1.demand.should == 40.0
-            @rgt2.demand.should == 30.0
-            @loss.demand.should ==  0.0
+            expect(@lft1.demand).to eq(100.0)
+            expect(@mid.demand).to eq(100.0)
+            expect(@rgt1.demand).to eq(40.0)
+            expect(@rgt2.demand).to eq(30.0)
+            expect(@loss.demand).to eq(0.0)
           end
 
           it "# dependent consumes everything
@@ -329,12 +331,12 @@ module Qernel
               bar[1;0.5]: hw_demand(60)  == s(1.0) ==> mid
               foo:        mid            == c(nil) ==> rgt1(120)" do
 
-            @rgt1.demand.should == 120.0
-            @hw_demand.demand.should == 60.0
+            expect(@rgt1.demand).to eq(120.0)
+            expect(@hw_demand.demand).to eq(60.0)
 
-            @mid.demand.should == 120.0
-            @el_output.demand.should == 60.0
-            @loss.demand.should == 0.0
+            expect(@mid.demand).to eq(120.0)
+            expect(@el_output.demand).to eq(60.0)
+            expect(@loss.demand).to eq(0.0)
           end
 
           it "# dependent takes it's cut from the total demand (120)
@@ -344,12 +346,12 @@ module Qernel
               bar[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
               foo:        mid            == c(nil) ==> rgt1(120)" do
 
-            @rgt1.demand.should == 120.0
-            @hw_demand.demand.should == 50.0
+            expect(@rgt1.demand).to eq(120.0)
+            expect(@hw_demand.demand).to eq(50.0)
 
-            @mid.demand.should == 120.0
-            @el_output.demand.should == 60.0
-            @loss.demand.should == 10.0
+            expect(@mid.demand).to eq(120.0)
+            expect(@el_output.demand).to eq(60.0)
+            expect(@loss.demand).to eq(10.0)
           end
 
           # ----- Loops  --------------------------------------
@@ -359,23 +361,23 @@ module Qernel
               lft1(100) == s(1)   ==> mid
                                       mid == f(nil) ==> loss
                                       mid == c(nil) ==> rgt1( 40)" do
-            @lft1.demand.should == 100.0
-            @mid.demand.should ==  100.0
-            @rgt1.demand.should == 40.0
-            @loss.demand.should == 60.0
+            expect(@lft1.demand).to eq(100.0)
+            expect(@mid.demand).to eq(100.0)
+            expect(@rgt1.demand).to eq(40.0)
+            expect(@loss.demand).to eq(60.0)
           end
 
           # This does not work as expected
-          pending "# If right side is higher, fill up inversed_flexible link
+          skip "# If right side is higher, fill up inversed_flexible link
               # sb: HELP: but loss demand stays 0.0???
               loss(nil) == i(nil) ==> mid(nil)
               lft1(100) == s(1)   ==> mid
                                       mid == f(nil) ==> loss
                                       mid == c(nil) ==> rgt1(140)" do
-            @lft1.demand.should == 100.0
-            @mid.demand.should ==  140.0
-            @rgt1.demand.should == 140.0
-            @loss.demand.should ==  40.0
+            expect(@lft1.demand).to eq(100.0)
+            expect(@mid.demand).to eq(140.0)
+            expect(@rgt1.demand).to eq(140.0)
+            expect(@loss.demand).to eq(40.0)
           end
 
           # ----- Dependent  --------------------------------------
@@ -384,10 +386,10 @@ module Qernel
               foo[1.0;0.3]: el_output(nil) == d()  ==> chp(nil)
               foo:          chp(nil)       == s(1) ==> rgt(nil) " do
 
-            @hw_demand.demand.should == 70.0
-            @el_output.demand.should == 30.0
-            @chp.demand.should == 100.0
-            @rgt.demand.should == 100.0
+            expect(@hw_demand.demand).to eq(70.0)
+            expect(@el_output.demand).to eq(30.0)
+            expect(@chp.demand).to eq(100.0)
+            expect(@rgt.demand).to eq(100.0)
           end
 
           it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
@@ -395,11 +397,11 @@ module Qernel
               foo:          el_output      == f(nil) ==> rgt1
               #foo:          el_output      == s(0.6) ==> rgt2" do
 
-            @hw_demand.demand.should == 70.0
-            @chp.demand.should == 100.0
-            @el_output.demand.should == 40.0
+            expect(@hw_demand.demand).to eq(70.0)
+            expect(@chp.demand).to eq(100.0)
+            expect(@el_output.demand).to eq(40.0)
 
-            @rgt1.demand.should == 10.0
+            expect(@rgt1.demand).to eq(10.0)
           end
 
           it "# BUG/INCONSISTENCY
@@ -411,12 +413,12 @@ module Qernel
               foo:          el_output      == f(nil) ==> rgt1
               foo:          el_output      == s(0.6) ==> rgt2" do
 
-            @hw_demand.demand.should == 70.0
-            @chp.demand.should == 100.0
-            @el_output.demand.should == 40.0
+            expect(@hw_demand.demand).to eq(70.0)
+            expect(@chp.demand).to eq(100.0)
+            expect(@el_output.demand).to eq(40.0)
 
-            @rgt2.demand.should == 24.0
-            @rgt1.demand.should == 0.0
+            expect(@rgt2.demand).to eq(24.0)
+            expect(@rgt1.demand).to eq(0.0)
           end
 
 
@@ -434,28 +436,28 @@ module Qernel
           # ----- Reversed  --------------------------------------
 
           it "lft == s(1.0) ==< rgt(100)" do
-            @lft.demand.should == 100.0
-            @rgt.demand.should == 100.0
+            expect(@lft.demand).to eq(100.0)
+            expect(@rgt.demand).to eq(100.0)
           end
 
           it "lft == s(1.0) ==< rgt(100)
               lft == s(1.0) ==< rgt2(100)" do
 
-            @lft.demand.should == 200.0
+            expect(@lft.demand).to eq(200.0)
           end
 
           it "lft == s(1.0) ==< rgt(100)
               lft == f(nil) ==< rgt2(100)" do
 
-            @lft.demand.should == 200.0
+            expect(@lft.demand).to eq(200.0)
           end
 
           it "lft      == s(1.0) ==< rgt1(100)
               lft      == f(nil) ==< rgt2(100)
               lft2(50) == s(1.0) ==> rgt2" do
 
-            @lft.demand.should == 150.0
-            @rgt2.demand.should == 100.0
+            expect(@lft.demand).to eq(150.0)
+            expect(@rgt2.demand).to eq(100.0)
           end
 
           # ----- Reversed Dependent functionality  ------------------
@@ -467,10 +469,10 @@ module Qernel
                 foo[1.0;0.3]: el_output(nil) == s(1) ==< chp(nil)
                 foo:          chp(nil)       == s(1) ==> rgt(nil) " do
 
-              @hw_demand.demand.should == 70.0
-              @el_output.demand.should == 30.0
-              @chp.demand.should == 100.0
-              @rgt.demand.should == 100.0
+              expect(@hw_demand.demand).to eq(70.0)
+              expect(@el_output.demand).to eq(30.0)
+              expect(@chp.demand).to eq(100.0)
+              expect(@rgt.demand).to eq(100.0)
             end
 
             it "# dependent as reversed flexible
@@ -478,21 +480,21 @@ module Qernel
                 foo[1.0;0.3]: el_output(nil) == f(nil) ==< chp(nil)
                 foo:          chp(nil)       == s(1) ==> rgt(nil) " do
 
-              @hw_demand.demand.should == 70.0
-              @el_output.demand.should == 30.0
-              @chp.demand.should == 100.0
-              @rgt.demand.should == 100.0
+              expect(@hw_demand.demand).to eq(70.0)
+              expect(@el_output.demand).to eq(30.0)
+              expect(@chp.demand).to eq(100.0)
+              expect(@rgt.demand).to eq(100.0)
             end
 
             it "bar[1.0;0.7]: hw_demand(70)  == s(1.0) ==> chp
                 foo[1.0;0.3]: el_output(40)  == s(1.0) ==< chp
                 foo:          el_output      == f(nil) ==> rgt1" do
 
-              @hw_demand.demand.should == 70.0
-              @chp.demand.should == 100.0
-              @el_output.demand.should == 40.0
+              expect(@hw_demand.demand).to eq(70.0)
+              expect(@chp.demand).to eq(100.0)
+              expect(@el_output.demand).to eq(40.0)
 
-              @rgt1.demand.should == 10.0
+              expect(@rgt1.demand).to eq(10.0)
             end
 
             it "# BUG/INCONSISTENCY
@@ -504,12 +506,12 @@ module Qernel
                 foo:          el_output      == f(nil) ==> rgt1
                 foo:          el_output      == s(0.6) ==> rgt2" do
 
-              @hw_demand.demand.should == 70.0
-              @chp.demand.should == 100.0
-              @el_output.demand.should == 40.0
+              expect(@hw_demand.demand).to eq(70.0)
+              expect(@chp.demand).to eq(100.0)
+              expect(@el_output.demand).to eq(40.0)
 
-              @rgt2.demand.should == 24.0
-              @rgt1.demand.should == 0.0
+              expect(@rgt2.demand).to eq(24.0)
+              expect(@rgt1.demand).to eq(0.0)
             end
 
           end
@@ -542,34 +544,34 @@ module Qernel
         end
 
         it "should have reversed link" do
-          @l.should be_reversed
-          Calculation::Links.calculated_by_parent?(@l).should be_true
-          @l.input.should == @g.converter(:rgt).slots.first
-          @l.input.expected_external_value.should == 100.0
+          expect(@l).to be_reversed
+          expect(Calculation::Links.calculated_by_parent?(@l)).to be_truthy
+          expect(@l.input).to eq(@g.converter(:rgt).slots.first)
+          expect(@l.input.expected_external_value).to eq(100.0)
         end
 
         it "ready" do
-          @lft.input(:foo).passive_links.length.should == 1
-          @rgt.output(:foo).passive_links.length.should == 0
+          expect(@lft.input(:foo).passive_links.length).to eq(1)
+          expect(@rgt.output(:foo).passive_links.length).to eq(0)
         end
 
         it "should calculate link" do
-          @l.send(:calculate).should == 100.0
-          @l.value.should == 100.0
+          expect(@l.send(:calculate)).to eq(100.0)
+          expect(@l.value).to eq(100.0)
         end
 
         it "should calculate rgt slot" do
           @rgt.output(:foo).calculate
-          @l.value.should == 100.0
+          expect(@l.value).to eq(100.0)
         end
 
         it "lft slot not ready, rgt slot ready" do
-          @rgt.output(:foo).ready?.should be_true
-          @lft.input(:foo).ready?.should be_false
+          expect(@rgt.output(:foo).ready?).to be_truthy
+          expect(@lft.input(:foo).ready?).to be_falsey
         end
 
         it "should calculate link" do
-          @l.calculate.should == 100.0
+          expect(@l.calculate).to eq(100.0)
         end
 
         context "calculated" do
@@ -588,13 +590,13 @@ module Qernel
 
         describe "#goals" do
           it "should have no goals on initialize" do
-            @graph.goals.should be_empty
+            expect(@graph.goals).to be_empty
           end
 
           it "should return all goals" do
             goal = Goal.new(:foo)
             @graph.goals << goal
-            @graph.goals.should include(goal)
+            expect(@graph.goals).to include(goal)
           end
         end
 
@@ -602,19 +604,19 @@ module Qernel
           it "should get a goal by key" do
             goal = Goal.new(:foo)
             @graph.goals << goal
-            @graph.goal(:foo).should == goal
+            expect(@graph.goal(:foo)).to eq(goal)
           end
 
           it "should return nil if a goal is missing" do
-            @graph.goal(:bar).should be_nil
+            expect(@graph.goal(:bar)).to be_nil
           end
         end
 
         describe "#find_or_create_goal" do
           it "should create a goal object as needed" do
-            @graph.goals.should be_empty
-            @graph.find_or_create_goal(:foobar).should be_kind_of(Goal)
-            @graph.goals.size.should == 1
+            expect(@graph.goals).to be_empty
+            expect(@graph.find_or_create_goal(:foobar)).to be_kind_of(Goal)
+            expect(@graph.goals.size).to eq(1)
           end
         end
 

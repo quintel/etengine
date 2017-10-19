@@ -6,13 +6,32 @@ describe Scenario do
 
   describe "#default" do
     subject { Scenario.default }
-    its(:area_code) { should == 'nl'}
-    its(:user_values) { should == {} }
-    its(:end_year) { should == 2040 }
-    its(:start_year) { should == Atlas::Dataset.find(:nl).analysis_year }
+
+    describe '#area_code' do
+      subject { super().area_code }
+      it { is_expected.to eq('nl')}
+    end
+
+    describe '#user_values' do
+      subject { super().user_values }
+      it { is_expected.to eq({}) }
+    end
+
+    describe '#end_year' do
+      subject { super().end_year }
+      it { is_expected.to eq(2040) }
+    end
+
+    describe '#start_year' do
+      subject { super().start_year }
+      it { is_expected.to eq(Atlas::Dataset.find(:nl).analysis_year) }
+    end
 
     describe "#years" do
-      its(:years) { should == 29 }
+      describe '#years' do
+        subject { super().years }
+        it { is_expected.to eq(29) }
+      end
     end
   end
 
@@ -34,25 +53,33 @@ describe Scenario do
     context ":user_values = YAMLized object (when coming from db)" do
       before {@scenario = Scenario.new(:user_values => {:foo => :bar})}
       it "should unyaml,overwrite and return :user_values" do
-        @scenario.user_values.should == {'foo' => :bar}
-        @scenario.user_values[:foo].should == :bar
+        expect(@scenario.user_values).to eq({'foo' => :bar})
+        expect(@scenario.user_values[:foo]).to eq(:bar)
       end
 
     end
     context ":user_values = nil" do
       before {@scenario = Scenario.new(:user_values => nil)}
-      its(:user_values) { should == {} }
+
+      describe '#user_values' do
+        subject { super().user_values }
+        it { is_expected.to eq({}) }
+      end
     end
     context ":user_values = obj" do
       before {@scenario = Scenario.new(:user_values => {})}
-      its(:user_values) { should == {} }
+
+      describe '#user_values' do
+        subject { super().user_values }
+        it { is_expected.to eq({}) }
+      end
     end
   end
 
   describe '#input_value' do
     let(:input) { Input.new(key: 'my-input', start_value: 99.0) }
 
-    before { Input.stub(:all).and_return([input]) }
+    before { allow(Input).to receive(:all).and_return([input]) }
     before { Rails.cache.clear }
 
     context 'with a user value present' do
@@ -64,7 +91,7 @@ describe Scenario do
       end
 
       it 'returns the user value' do
-        scenario.input_value(input).should eql(20.0)
+        expect(scenario.input_value(input)).to eql(20.0)
       end
     end
 
@@ -74,7 +101,7 @@ describe Scenario do
       end
 
       it 'returns the balanced value' do
-        scenario.input_value(input).should eql(50.0)
+        expect(scenario.input_value(input)).to eql(50.0)
       end
     end
 
@@ -82,7 +109,7 @@ describe Scenario do
       let(:scenario) { FactoryGirl.create(:scenario) }
 
       it "returns the input's default value" do
-        scenario.input_value(input).should eql(99.0)
+        expect(scenario.input_value(input)).to eql(99.0)
       end
     end
 
@@ -97,15 +124,15 @@ describe Scenario do
   describe "#used_groups_add_up?" do
     before do
       @scenario = Scenario.default
-      Input.stub(:inputs_grouped).and_return({
+      allow(Input).to receive(:inputs_grouped).and_return({
         'share_group' => [
-          mock_model(Input, :id => 1, :key => 'element_1', :share_group => 'share_group'),
-          mock_model(Input, :id => 2, :key => 'element_2', :share_group => 'share_group'),
-          mock_model(Input, :id => 3, :key => 'element_3', :share_group => 'share_group')
+          double('Input', id: 1, share_group: 'share_group'),
+          double('Input', id: 2, share_group: 'share_group'),
+          double('Input', id: 3, share_group: 'share_group')
         ],
         'share_group_unused' => [
-          mock_model(Input, :id => 5, :key => 'element_5', :share_group => 'share_group_unused'),
-          mock_model(Input, :id => 6, :key => 'element_6', :share_group => 'share_group_unused'),
+          double('Input', id: 4, share_group: 'share_group_unused'),
+          double('Input', id: 5, share_group: 'share_group_unused')
         ]
       })
     end
@@ -113,33 +140,62 @@ describe Scenario do
 
     describe "#used_groups" do
       context "no user_values" do
-        its(:used_groups) { should be_empty }
+        describe '#used_groups' do
+          subject { super().used_groups }
+          it { is_expected.to be_empty }
+        end
       end
       context "with 1 user_values" do
         before { @scenario.user_values = {1 => 2}}
-        its(:used_groups) { should_not be_empty }
+
+        describe '#used_groups' do
+          subject { super().used_groups }
+          it { is_expected.not_to be_empty }
+        end
       end
     end
 
     describe "#used_groups_add_up?" do
       context "no user_values" do
-        its(:used_groups_add_up?) { should be_true }
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_truthy }
+        end
       end
 
       context "user_values but without groups" do
         before { @scenario.user_values = {10 => 2}}
-        its(:used_groups_add_up?) { should be_true }
+
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_truthy }
+        end
       end
 
       context "user_values that don't add up to 100" do
         before { @scenario.user_values = {1 => 50}}
-        its(:used_groups_add_up?) { should be_false }
-        its(:used_groups_not_adding_up) { should have(1).items }
+
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_falsey }
+        end
+
+        describe '#used_groups_not_adding_up' do
+          subject { super().used_groups_not_adding_up }
+
+          it 'has 1 item' do
+            expect(subject.length).to eq(1)
+          end
+        end
       end
 
       context "user_values that add up to 100" do
         before { @scenario.user_values = {1 => 50, 2 => 30, 3 => 20}}
-        its(:used_groups_add_up?) { should be_true }
+
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_truthy }
+        end
       end
 
       context "with balanced values which add up to 100" do
@@ -148,7 +204,10 @@ describe Scenario do
           @scenario.balanced_values = { 2 => 20, 3 => 30 }
         end
 
-        its(:used_groups_add_up?) { should be_true }
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_truthy }
+        end
       end
 
       context "with balanced values which do not add up to 100" do
@@ -157,8 +216,18 @@ describe Scenario do
           @scenario.balanced_values = { 2 => 20, 3 => 30 }
         end
 
-        its(:used_groups_add_up?)       { should be_false }
-        its(:used_groups_not_adding_up) { should have(1).items }
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_falsey }
+        end
+
+        describe '#used_groups_not_adding_up' do
+          subject { super().used_groups_not_adding_up }
+
+          it 'has 1 item' do
+            expect(subject.length).to eq(1)
+          end
+        end
       end
 
       context "with only balanced values which add up to 100" do
@@ -167,7 +236,10 @@ describe Scenario do
           @scenario.balanced_values = { 1 => 50, 2 => 20, 3 => 30 }
         end
 
-        its(:used_groups_add_up?) { should be_true }
+        describe '#used_groups_add_up?' do
+          subject { super().used_groups_add_up? }
+          it { is_expected.to be_truthy }
+        end
       end
 
     end
@@ -202,11 +274,11 @@ describe Scenario do
     end
 
     it 'should copy the user values' do
-      scenario.user_values.should eql(preset.user_values)
+      expect(scenario.user_values).to eql(preset.user_values)
     end
 
     it 'should copy the balanced values' do
-      scenario.balanced_values.should eql(preset.balanced_values)
+      expect(scenario.balanced_values).to eql(preset.balanced_values)
     end
 
     it 'should copy the scaler attributes' do
@@ -336,27 +408,27 @@ describe Scenario do
     let(:dup) { scenario.dup }
 
     it 'clones the end year' do
-      dup.end_year.should eql(2030)
+      expect(dup.end_year).to eql(2030)
     end
 
     it 'clones the area' do
-      dup.area_code.should eql('nl')
+      expect(dup.area_code).to eql('nl')
     end
 
     it 'clones the user values' do
-      dup.user_values.should eql(scenario.user_values)
+      expect(dup.user_values).to eql(scenario.user_values)
     end
 
     it 'clones balanced values' do
-      dup.balanced_values.should eql(scenario.balanced_values)
+      expect(dup.balanced_values).to eql(scenario.balanced_values)
     end
 
     it 'clones the FCE status' do
-      dup.use_fce.should be_true
+      expect(dup.use_fce).to be_truthy
     end
 
     it 'does not clone the scenario ID' do
-      dup.id.should be_nil
+      expect(dup.id).to be_nil
     end
 
     it 'does not clone inputs_present' do
@@ -374,11 +446,11 @@ describe Scenario do
     end
 
     it 'does not clone inputs_before' do
-      dup.inputs_before.should_not equal(scenario.inputs_before)
+      expect(dup.inputs_before).not_to equal(scenario.inputs_before)
     end
 
     it 'does not clone inputs_future' do
-      dup.inputs_future.should_not equal(scenario.inputs_future)
+      expect(dup.inputs_future).not_to equal(scenario.inputs_future)
     end
   end
 

@@ -37,7 +37,7 @@ describe Qernel::Slot::Elastic do
   end
 
   it 'is 1.0 when the converter has no other outputs' do
-    loss.stub(:siblings).and_return([])
+    allow(loss).to receive(:siblings).and_return([])
     expect(loss.conversion).to eql(1.0)
   end
 

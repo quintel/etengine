@@ -8,7 +8,7 @@ describe 'Etsource::SlotToken' do
     let(:line) { '(loss)-fusion' }
 
     it 'should create one SlotToken' do
-      expect(parsed).to have(1).member
+      expect(parsed.size).to eq(1)
     end
 
     it 'should set the carrier to be :loss' do
@@ -36,7 +36,7 @@ describe 'Etsource::SlotToken' do
     let(:line) { 'fusion-(loss)' }
 
     it 'should create one SlotToken' do
-      expect(parsed).to have(1).member
+      expect(parsed.size).to eq(1)
     end
 
     it 'should set the carrier to be :loss' do
@@ -64,7 +64,7 @@ describe 'Etsource::SlotToken' do
     let(:line) { '(loss)-fusion: {}' }
 
     it 'should create one SlotToken' do
-      expect(parsed).to have(1).member
+      expect(parsed.size).to eq(1)
     end
 
     it 'should set the carrier to be :loss' do
@@ -92,7 +92,7 @@ describe 'Etsource::SlotToken' do
     let(:line) { '(loss)-fusion: {type: :elastic}' }
 
     it 'should create one SlotToken' do
-      expect(parsed).to have(1).member
+      expect(parsed.size).to eq(1)
     end
 
     it 'should set the carrier to be :loss' do
@@ -120,7 +120,7 @@ describe 'Etsource::SlotToken' do
     let(:line) { '(loss)-fusion (electricity)-fusion: {type: :elastic}' }
 
     it 'should create two SlotTokens' do
-      expect(parsed).to have(2).members
+      expect(parsed.size).to eq(2)
     end
 
     it 'should set the carriers to be :loss and :electricity' do

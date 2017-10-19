@@ -94,7 +94,7 @@ describe Qernel::Converter, 'carrier dependent supply' do
         query("V(cpd_sink, dependent_supply_of_carrier(#{ carrier_key }))")
       end
 
-      expect(result < doubled).to be_true
+      expect(result < doubled).to be_truthy
     end
   end # called with multiple carriers
 end # Qernel::Converter, carrier dependent supply

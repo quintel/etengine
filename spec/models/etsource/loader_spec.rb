@@ -7,7 +7,7 @@ describe Etsource do
       dataset = Etsource::Loader.instance.dataset('nl')
     end
 
-    pending "loads gql" do
+    skip "loads gql" do
       before(:all) do
         @gql = Scenario.default.gql(prepare: true)
       end

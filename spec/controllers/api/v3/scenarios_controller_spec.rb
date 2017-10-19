@@ -5,28 +5,28 @@ describe Api::V3::ScenariosController do
   let(:scenarios) { 5.times.map { FactoryGirl.create(:scenario) } }
 
   before do
-    Input.stub(:records).and_return({
+    allow(Input).to receive(:records).and_return({
       'foo' => FactoryGirl.build(:input, key: :foo, priority: 0),
       'bar' => FactoryGirl.build(:input, key: :bar, priority: 0)
     })
 
-    Input.stub(:all).and_return(Input.records.values)
+    allow(Input).to receive(:all).and_return(Input.records.values)
   end
 
   describe "GET show.json" do
     it "should return a scenario info" do
       get :show, :id => scenario.id, :format => :json
-      response.should be_success
-      assigns(:scenario).should == scenario
+      expect(response).to be_success
+      expect(assigns(:scenario)).to eq(scenario)
     end
   end
 
   describe "GET batch.json" do
     it "should return the info of multiple scenarios" do
       get :batch, :id => [scenarios.map(&:id)].join(','), :format => :json
-      response.should be_success
+      expect(response).to be_success
 
-      assigns(:scenarios).should be_a(Array)
+      expect(assigns(:scenarios)).to be_a(Array)
 
       assigns(:scenarios).each do |scenario|
         expect(scenario).to be_a(Api::V3::ScenarioPresenter)
@@ -37,7 +37,7 @@ describe Api::V3::ScenariosController do
   describe "GET templates" do
     it "should return the homepage scenarios" do
       get :templates
-      response.should be_success
+      expect(response).to be_success
     end
 
     it "should not include in_start_menu=false scenarios" do
@@ -57,33 +57,33 @@ describe Api::V3::ScenariosController do
 
     it "should reset parameters" do
       put :update, :id => @scenario.id, :reset => true
-      response.should be_success
-      @scenario.reload.user_values.should == {}
+      expect(response).to be_success
+      expect(@scenario.reload.user_values).to eq({})
     end
 
     it "should merge parameters" do
       put :update, :id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}
-      response.should be_success
-      @scenario.reload.user_values.to_set.should == {'foo' => 23.0, 'bar' => 56.0}.to_set
+      expect(response).to be_success
+      expect(@scenario.reload.user_values.to_set).to eq({'foo' => 23.0, 'bar' => 56.0}.to_set)
     end
 
     it "should merge parameters resetting old values when needed" do
       put :update, :id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}, :reset => true
-      response.should be_success
-      @scenario.reload.user_values.to_set.should == {'bar' => 56.0}.to_set
+      expect(response).to be_success
+      expect(@scenario.reload.user_values.to_set).to eq({'bar' => 56.0}.to_set)
     end
 
     it "should update parameters" do
       put :update, :id => @scenario.id, :scenario => {:user_values => {'foo' => 56.0}}
-      response.should be_success
-      @scenario.reload.user_values.to_set.should == {'foo' => 56.0}.to_set
-      @scenario.reload.user_values.should == {'foo' => 56.0}
+      expect(response).to be_success
+      expect(@scenario.reload.user_values.to_set).to eq({'foo' => 56.0}.to_set)
+      expect(@scenario.reload.user_values).to eq({'foo' => 56.0})
     end
 
     it "shouldn't update end_year" do
       put :update, :id => @scenario.id, :scenario => {:end_year => 2050}
-      response.should be_success
-      @scenario.reload.end_year.should == 2040
+      expect(response).to be_success
+      expect(@scenario.reload.end_year).to eq(2040)
     end
 
     it "shouldn't update start_year" do
@@ -91,13 +91,13 @@ describe Api::V3::ScenariosController do
         put :update, :id => @scenario.id, :scenario => {:start_year => 2009}
       }.to_not change { @scenario.reload.start_year }
 
-      response.should be_success
+      expect(response).to be_success
     end
 
     it "shouldn't update area" do
       put :update, :id => @scenario.id, :scenario => {:area_code => 'de'}
-      response.should be_success
-      @scenario.reload.area_code.should == 'nl'
+      expect(response).to be_success
+      expect(@scenario.reload.area_code).to eq('nl')
     end
 
   end

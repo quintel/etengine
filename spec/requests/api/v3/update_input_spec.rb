@@ -13,7 +13,7 @@ describe 'Updating inputs with API v3' do
   end
 
   before do
-    Input.stub(:records).and_return({
+    allow(Input).to receive(:records).and_return({
       'balanced_one' =>
         FactoryGirl.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped', priority: 0),
       'balanced_two' =>
@@ -26,7 +26,7 @@ describe 'Updating inputs with API v3' do
         FactoryGirl.build(:input, key: 'nongrouped', priority: 0)
     })
 
-    Input.stub(:all).and_return(Input.records.values)
+    allow(Input).to receive(:all).and_return(Input.records.values)
   end
 
   def put_scenario(user_values = {}, params = {})
@@ -286,7 +286,7 @@ describe 'Updating inputs with API v3' do
         get "/api/v3/scenarios/#{ scenario.id }/inputs.json"
         inputs = JSON.parse(response.body)
 
-        inputs['balanced_two']['user'].should eql(90.0)
+        expect(inputs['balanced_two']['user']).to eql(90.0)
       end
 
       it_should_behave_like 'updating inputs'

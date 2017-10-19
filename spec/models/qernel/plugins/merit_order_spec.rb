@@ -10,7 +10,7 @@ module Qernel::Plugins
                      :number_of_units, :full_load_hours, :availability ]
 
       converters.product(attrs).each do |converter, attribute|
-        converter.query.stub(attribute).and_return(1.0)
+        allow(converter.query).to receive(attribute).and_return(1.0)
       end
 
       allow(gql.future.graph.query)

@@ -6,7 +6,7 @@ describe 'Balancer' do
 
   let(:subordinates) do
     Rails.cache.clear
-    Input.stub(:all).and_return(inputs)
+    allow(Input).to receive(:all).and_return(inputs)
 
     values   = masters.zip(inputs).map { |value, input| [input.key, value] }
     scenario = FactoryGirl.build(:scenario)
@@ -25,12 +25,12 @@ describe 'Balancer' do
       let(:masters) { [ 50 ] }
 
       it 'should set each subordinate to 25' do
-        subordinates.should include(inputs[1].key => 25)
-        subordinates.should include(inputs[2].key => 25)
+        expect(subordinates).to include(inputs[1].key => 25)
+        expect(subordinates).to include(inputs[2].key => 25)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -38,12 +38,12 @@ describe 'Balancer' do
       let(:masters) { [ 50, 15 ] }
 
       it 'should set the subordinate to 35' do
-        subordinates.should include(inputs[2].key => 35)
+        expect(subordinates).to include(inputs[2].key => 35)
       end
 
       it 'should not change the master values' do
-        subordinates.should_not have_key(inputs[0].key)
-        subordinates.should_not have_key(inputs[1].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[1].key)
       end
     end
 
@@ -51,7 +51,7 @@ describe 'Balancer' do
       let(:masters) { [ 50, 25, 25 ] }
 
       it 'should have no subordinate values' do
-        subordinates.should be_empty
+        expect(subordinates).to be_empty
       end
     end
 
@@ -86,8 +86,8 @@ describe 'Balancer' do
       let(:masters) { [] }
 
       it 'should have no subordinate values' do
-        subordinates.should be_kind_of(Hash)
-        subordinates.should be_empty
+        expect(subordinates).to be_kind_of(Hash)
+        expect(subordinates).to be_empty
       end
     end
 
@@ -106,7 +106,7 @@ describe 'Balancer' do
       let(:masters) { [ 38.0, 62.0 ] }
 
       it 'should not change the zero-delta input' do
-        subordinates.should include(inputs[2].key => 0.0)
+        expect(subordinates).to include(inputs[2].key => 0.0)
       end
     end # given values which balance
 
@@ -114,11 +114,11 @@ describe 'Balancer' do
       let(:masters) { [ 36.0 ] }
 
       it 'should set the subordinate value' do
-        subordinates.should include(inputs[1].key => 64.0)
+        expect(subordinates).to include(inputs[1].key => 64.0)
       end
 
       it 'should not change the zero-delta input' do
-        subordinates.should include(inputs[2].key => 0.0)
+        expect(subordinates).to include(inputs[2].key => 0.0)
       end
     end # given values which balance
 
@@ -144,15 +144,15 @@ describe 'Balancer' do
       let(:masters) { [ 70 ] }
 
       it 'should set the first subordinate to 20' do
-        subordinates.should include(inputs[1].key => 20)
+        expect(subordinates).to include(inputs[1].key => 20)
       end
 
       it 'should set the second subordinate to 10' do
-        subordinates.should include(inputs[2].key => 10)
+        expect(subordinates).to include(inputs[2].key => 10)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -160,15 +160,15 @@ describe 'Balancer' do
       let(:masters) { [ 0 ] }
 
       it 'should set the first subordinate to 55' do
-        subordinates.should include(inputs[1].key => 55)
+        expect(subordinates).to include(inputs[1].key => 55)
       end
 
       it 'should set the second subordinate to 45' do
-        subordinates.should include(inputs[2].key => 45)
+        expect(subordinates).to include(inputs[2].key => 45)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -176,12 +176,12 @@ describe 'Balancer' do
       let(:masters) { [ 40, 10 ] }
 
       it 'should set the subordinate to 50' do
-        subordinates.should include(inputs[2].key => 50)
+        expect(subordinates).to include(inputs[2].key => 50)
       end
 
       it 'should not change the master values' do
-        subordinates.should_not have_key(inputs[0].key)
-        subordinates.should_not have_key(inputs[1].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[1].key)
       end
     end
   end # With start:(50, 30, 20)
@@ -197,12 +197,12 @@ describe 'Balancer' do
       let(:masters) { [ -50 ] }
 
       it 'should set the subordinates to 75' do
-        subordinates.should include(inputs[1].key => 75)
-        subordinates.should include(inputs[2].key => 75)
+        expect(subordinates).to include(inputs[1].key => 75)
+        expect(subordinates).to include(inputs[2].key => 75)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -210,12 +210,12 @@ describe 'Balancer' do
       let(:masters) { [ 90, 40 ] }
 
       it 'should set the second subordinate to -30' do
-        subordinates.should include(inputs[2].key => -30)
+        expect(subordinates).to include(inputs[2].key => -30)
       end
 
       it 'should not change the master values' do
-        subordinates.should_not have_key(inputs[0].key)
-        subordinates.should_not have_key(inputs[1].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[1].key)
       end
     end
 
@@ -246,15 +246,15 @@ describe 'Balancer' do
       let(:masters) { [ 50 ] }
 
       it 'should set the first subordinate to 350' do
-        subordinates.should include(inputs[1].key => 350)
+        expect(subordinates).to include(inputs[1].key => 350)
       end
 
       it 'should set the second subordinate to 100' do
-        subordinates.should include(inputs[2].key => 100)
+        expect(subordinates).to include(inputs[2].key => 100)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -262,12 +262,12 @@ describe 'Balancer' do
       let(:masters) { [ 0, 300 ] }
 
       it 'should set the subordinate to 200' do
-        subordinates.should include(inputs[2].key => 200)
+        expect(subordinates).to include(inputs[2].key => 200)
       end
 
       it 'should not change the master values' do
-        subordinates.should_not have_key(inputs[0].key)
-        subordinates.should_not have_key(inputs[1].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[1].key)
       end
     end
   end # With equilibrium:500, min/max:(0/500), start:(250, 250, 0)
@@ -285,15 +285,15 @@ describe 'Balancer' do
       let(:masters) { [ 50 ] }
 
       it 'should set the first subordinate to 40' do
-        subordinates.should include(inputs[1].key => 40)
+        expect(subordinates).to include(inputs[1].key => 40)
       end
 
       it 'should set the second subordinate to 10' do
-        subordinates.should include(inputs[2].key => 10)
+        expect(subordinates).to include(inputs[2].key => 10)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -301,15 +301,15 @@ describe 'Balancer' do
       let(:masters) { [ 80 ] }
 
       it 'should set the first subordinate to 16' do
-        subordinates.should include(inputs[1].key => 16)
+        expect(subordinates).to include(inputs[1].key => 16)
       end
 
       it 'should set the second subordinate to 4' do
-        subordinates.should include(inputs[2].key => 4)
+        expect(subordinates).to include(inputs[2].key => 4)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
 
@@ -340,15 +340,15 @@ describe 'Balancer' do
       let(:masters) { [ 0.0004 ] }
 
       it 'should set the first subordinate to 0.00055' do
-        subordinates.should include(inputs[1].key => 0.00055)
+        expect(subordinates).to include(inputs[1].key => 0.00055)
       end
 
       it 'should set the second subordinate to 0.00005' do
-        subordinates.should include(inputs[2].key => 0.00005)
+        expect(subordinates).to include(inputs[2].key => 0.00005)
       end
 
       it 'should not change the master value' do
-        subordinates.should_not have_key(inputs[0].key)
+        expect(subordinates).not_to have_key(inputs[0].key)
       end
     end
   end # With min/max:(0/0.001), start:(0.0005, 0.0005, 0)

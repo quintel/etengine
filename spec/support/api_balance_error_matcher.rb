@@ -13,7 +13,7 @@ RSpec::Matchers.define :have_api_balance_error do
     end
   end
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     if @group.nil?
       'expected a group not to balance, but all did'
     else

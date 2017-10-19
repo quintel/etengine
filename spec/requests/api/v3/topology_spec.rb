@@ -13,6 +13,6 @@ describe 'APIv3 Topology Data' do
   end
 
   it 'should be successful' do
-    response.status.should eql(200)
+    expect(response.status).to eql(200)
   end
 end

@@ -11,7 +11,7 @@ module Qernel
     let(:api) { converter.query }
 
     before do
-      api.stub_chain(:graph, :area, :area_code).and_return('nl')
+      allow(api).to receive_message_chain(:graph, :area, :area_code).and_return('nl')
     end
 
     context 'general' do

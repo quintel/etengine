@@ -10,27 +10,27 @@ describe Qernel::ConverterApi do
 
     it "should calculate correctly when asked for :plant" do
       @c.with total_costs: 1000.0
-      @c.converter_api.total_costs_per(:plant).should == 1000.0
+      expect(@c.converter_api.total_costs_per(:plant)).to eq(1000.0)
     end
 
     it "should calculate correctly when asked for :converter" do
       @c.with total_costs: 1000.0, number_of_units: 10.0
-      @c.converter_api.total_costs_per(:converter).should == 10_000.0
+      expect(@c.converter_api.total_costs_per(:converter)).to eq(10_000.0)
     end
 
     it "should calculate correctly when asked for :mw_heat" do
       @c.with total_costs: 1000.0, heat_output_capacity: 200.0
-      @c.converter_api.total_costs_per(:mw_heat).should == 5.0
+      expect(@c.converter_api.total_costs_per(:mw_heat)).to eq(5.0)
     end
 
     it "should calculate correctly given integers when asked for :mw_heat" do
       @c.with total_costs: 1000, heat_output_capacity: 400
-      @c.converter_api.total_costs_per(:mw_heat).should == 2.5
+      expect(@c.converter_api.total_costs_per(:mw_heat)).to eq(2.5)
     end
 
     it "should calculate correctly when asked for :mwh_electricity" do
       @c.with total_costs: 1000.0, typical_electricity_output: 3600.0
-      @c.converter_api.total_costs_per(:mwh_electricity).should == 1000.0
+      expect(@c.converter_api.total_costs_per(:mwh_electricity)).to eq(1000.0)
     end
 
     it "should raise ArgumentError when asked for something weird" do

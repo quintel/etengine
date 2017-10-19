@@ -3,14 +3,14 @@ require 'spec_helper'
 describe Preset, :etsource_fixture do
   it "initializes" do
     preset = Preset.new(id: 1, user_values: {}, end_year: 2050, area_code: 'nl', foo_bar: 'has no effect')
-    preset.id.should          == 1
-    preset.user_values.should == {}
-    preset.end_year.should    == 2050
-    preset.area_code.should   == 'nl'
+    expect(preset.id).to          eq(1)
+    expect(preset.user_values).to eq({})
+    expect(preset.end_year).to    eq(2050)
+    expect(preset.area_code).to   eq('nl')
   end
 
   it "load records" do
-    Preset.all.map(&:id).include?(2999).should be_true
+    expect(Preset.all.map(&:id).include?(2999)).to be_truthy
   end
 
   it 'fetches the start_year' do

@@ -6,14 +6,14 @@ describe UsersController do
   describe "GET index" do
     it "should redirect non admins" do
       get :index
-      response.should be_redirect
+      expect(response).to be_redirect
     end
 
     it "should work for admins" do
       sign_in(admin)
       get :index
-      response.should be_success
-      response.should render_template(:index)
+      expect(response).to be_success
+      expect(response).to render_template(:index)
     end
   end
 

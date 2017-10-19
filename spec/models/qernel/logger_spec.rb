@@ -14,14 +14,14 @@ module Qernel
 
         tree = Logger.to_tree(logs)
         # 1 root element:
-        tree.length.should == 1
-        tree.first[0].should == {nesting: 1, id: 1}
+        expect(tree.length).to eq(1)
+        expect(tree.first[0]).to eq({nesting: 1, id: 1})
         root = tree.first[1]
         # 2 childs for root
-        root.length.should == 2
+        expect(root.length).to eq(2)
         # the leafs of the 2 children:
-        root.values.first.length.should == 2 # the two leafs with nesting 3( 31,121)
-        root.values.last.should == nil
+        expect(root.values.first.length).to eq(2) # the two leafs with nesting 3( 31,121)
+        expect(root.values.last).to eq(nil)
       end
     end
   end

@@ -15,7 +15,7 @@ module Qernel
     describe 'households_supplied_per_unit' do
       context 'when no dataset value is present' do
         it 'should default to 1' do
-          converter.converter_api.households_supplied_per_unit.should eql(1.0)
+          expect(converter.converter_api.households_supplied_per_unit).to eql(1.0)
         end
       end # when no dataset value is present
 
@@ -23,7 +23,7 @@ module Qernel
         before { converter.dataset_set(:households_supplied_per_unit, 20) }
 
         it 'should use the dataset value' do
-          converter.converter_api.households_supplied_per_unit.should eql(20)
+          expect(converter.converter_api.households_supplied_per_unit).to eql(20)
         end
       end # when no dataset value is present
     end # households_supplied_per_unit

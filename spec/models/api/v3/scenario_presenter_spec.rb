@@ -5,21 +5,21 @@ describe Api::V3::ScenarioPresenter do
   let(:scenario)   { FactoryGirl.create(:scenario, description: 'Hello!') }
 
   shared_examples_for 'a scenario presenter' do
-    it { should include(id:          scenario.id) }
-    it { should include(title:       scenario.title) }
-    it { should include(area_code:   scenario.area_code) }
-    it { should include(end_year:    scenario.end_year) }
-    it { should include(template:    scenario.preset_scenario_id) }
-    it { should include(source:      scenario.source) }
-    it { should include(created_at:  scenario.created_at) }
+    it { is_expected.to include(id:          scenario.id) }
+    it { is_expected.to include(title:       scenario.title) }
+    it { is_expected.to include(area_code:   scenario.area_code) }
+    it { is_expected.to include(end_year:    scenario.end_year) }
+    it { is_expected.to include(template:    scenario.preset_scenario_id) }
+    it { is_expected.to include(source:      scenario.source) }
+    it { is_expected.to include(created_at:  scenario.created_at) }
 
-    it { should include(url: 'url') }
+    it { is_expected.to include(url: 'url') }
 
     it 'should ask the controller for the scenario URL' do
-      controller.should_receive(:api_v3_scenario_url).
+      expect(controller).to receive(:api_v3_scenario_url).
         with(scenario).and_return('my_url')
 
-      subject[:url].should eql('my_url')
+      expect(subject[:url]).to eql('my_url')
     end
   end
 
@@ -30,9 +30,9 @@ describe Api::V3::ScenarioPresenter do
 
     it_should_behave_like 'a scenario presenter'
 
-    it { should_not have_key(:description) }
-    it { should_not have_key(:use_fce) }
-    it { should_not have_key(:inputs) }
+    it { is_expected.not_to have_key(:description) }
+    it { is_expected.not_to have_key(:use_fce) }
+    it { is_expected.not_to have_key(:inputs) }
   end
 
   context 'when "detailed=true"' do
@@ -43,8 +43,8 @@ describe Api::V3::ScenarioPresenter do
 
     it_should_behave_like 'a scenario presenter'
 
-    it { should include(use_fce:     scenario.use_fce) }
-    it { should include(description: 'Hello!') }
+    it { is_expected.to include(use_fce:     scenario.use_fce) }
+    it { is_expected.to include(description: 'Hello!') }
   end
 
   context 'when "include_inputs=true"' do

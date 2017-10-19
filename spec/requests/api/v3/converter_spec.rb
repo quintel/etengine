@@ -15,12 +15,12 @@ describe 'APIv3 Converter details' do
     end
 
     it 'should be successful' do
-      response.status.should eql(200)
+      expect(response.status).to eql(200)
     end
 
     it 'should include the basic converter info' do
-      json.should include('key' => 'foo')
-      json.should have_key('data')
+      expect(json).to include('key' => 'foo')
+      expect(json).to have_key('data')
     end
   end
 
@@ -30,7 +30,7 @@ describe 'APIv3 Converter details' do
     end
 
     it "should return 404" do
-      response.should be_not_found
+      expect(response).to be_not_found
     end
   end
 end

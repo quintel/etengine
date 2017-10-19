@@ -72,10 +72,8 @@ group :development do
 end
 
 group :test, :development do
-  gem 'rspec-rails', '~> 2.12'
+  gem 'rspec-rails', '~> 3.7'
   gem 'pry-rails'
-  gem 'guard'
-  gem 'guard-rspec'
   gem 'watchr'
 
   gem 'pry-byebug', platforms: [:mri_20, :mri_21]

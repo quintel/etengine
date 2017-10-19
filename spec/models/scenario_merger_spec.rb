@@ -56,8 +56,10 @@ describe ScenarioMerger do
     end
 
     it 'has an error about scaling' do
-      expect(merger.errors_on(:base)).
-        to include('Cannot merge scenarios which have been scaled down')
+      merger.valid?
+
+      expect(merger.errors[:base])
+        .to include('Cannot merge scenarios which have been scaled down')
     end
   end # given a scaled scenario
 
@@ -71,8 +73,10 @@ describe ScenarioMerger do
     end
 
     it 'has an error about end years' do
-      expect(merger.errors_on(:base)).
-        to include('One or more scenarios have differing end years')
+      merger.valid?
+
+      expect(merger.errors[:base])
+        .to include('One or more scenarios have differing end years')
     end
   end # given scenarios with different end years
 
@@ -86,8 +90,10 @@ describe ScenarioMerger do
     end
 
     it 'has an error about areas' do
-      expect(merger.errors_on(:base)).
-        to include('One or more scenarios have differing area codes')
+      merger.valid?
+
+      expect(merger.errors[:base])
+        .to include('One or more scenarios have differing area codes')
     end
   end # given scenarios with different areas
 

@@ -16,7 +16,6 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'shoulda/matchers'
-require 'rspec/autorun' # Required for Rcov to run.
 
 require 'factory_girl'
 
@@ -51,8 +50,7 @@ RSpec.configure do |config|
   config.filter_run(focus: true)
   config.run_all_when_everything_filtered = true
 
-  # Allow adding examples to a filter group with only a symbol.
-  config.treat_symbols_as_metadata_keys_with_true_values = true
+  config.infer_spec_type_from_file_location!
 
   config.include(Devise::TestHelpers, type: :controller)
   config.include(MechanicalTurkHelper)

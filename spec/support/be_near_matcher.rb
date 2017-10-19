@@ -11,11 +11,11 @@ RSpec::Matchers.define :be_within_a_percent do |expected|
     end
   end
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     "got: #{actual}. But should be near #{expected}"
   end
 
-  failure_message_for_should_not do |actual|
+  failure_message_when_negated do |actual|
     "got: #{actual}. But should not to be near #{expected}"
   end
 
@@ -27,7 +27,7 @@ end
 RSpec::Matchers.define :increase do
   match{ |actual| !actual.nil? && actual > 0.0 }
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     if actual == 0.0
       "expected an increase, but it decreased by: #{actual.inspect}"
     else
@@ -39,7 +39,7 @@ end
 RSpec::Matchers.define :decrease do
   match { |actual| !actual.nil? && actual < 0.0 }
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     if actual == 0.0
       "expected a decrease, but it stayed the same: #{actual.inspect}"
     else

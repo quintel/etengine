@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 describe "increase" do
-  specify { -1.0.should_not increase}
-  specify { 0.0.should_not increase}
-  specify { 1.0.should increase}
-  specify { nil.should_not increase}
+  specify { expect(-1.0).not_to increase}
+  specify { expect(0.0).not_to increase}
+  specify { expect(1.0).to increase}
+  specify { expect(nil).not_to increase}
 end
 
 describe "increase" do
-  specify { -1.0.should decrease}
-  specify { 0.0.should_not decrease}
-  specify { 1.0.should_not decrease}
-  specify { nil.should_not decrease}
+  specify { expect(-1.0).to decrease}
+  specify { expect(0.0).not_to decrease}
+  specify { expect(1.0).not_to decrease}
+  specify { expect(nil).not_to decrease}
 end
