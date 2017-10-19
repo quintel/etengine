@@ -17,7 +17,7 @@ module Qernel
 
     include DatasetAttributes
 
-    dataset_accessors :share, :value, :calculated, :country_specific
+    dataset_accessors :share, :value, :calculated, :country_specific, :atlas_key
 
     def self.dataset_group; :graph; end
 

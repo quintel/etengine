@@ -258,6 +258,12 @@ class Graph
     @converters_hash[id]
   end
 
+  def link(id)
+    @links.detect do |link|
+      id == link.atlas_key
+    end
+  end
+
   # Graphviz
   def to_image
     g = GraphDiagram.new(self.converters)
@@ -409,11 +415,15 @@ class Graph
     @graph_query ||= GraphApi.new(self)
   end
 
-  def initializer_inputs
-    decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
+  def graph_values
+    if area.uses_deprecated_initializer_inputs
+      initializer_inputs.sort_by { |input, _| [-input.priority, input.key] }
+    else
+      (area.graph_values || {})
+    end
   end
 
-  def decorated_inputs
+  def initializer_inputs
     (area.init || {}).map do |input_key, input_value|
       [InitializerInput.fetch(input_key), input_value]
     end
@@ -451,9 +461,5 @@ public
       end
     end
   end
-
-
-
 end
-
 end
