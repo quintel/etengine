@@ -147,7 +147,13 @@ module Gql::Runtime
             scope.update_object = object # for UPDATE_OBJECT()
             input_value    = input_value_proc.respond_to?(:call) ? input_value_proc.call : input_value_proc
             input_value    = input_value.first if input_value.is_a?(::Array)
-            original_value = big_decimal(object[attribute_name].to_s)
+            original_value = object[attribute_name]
+
+            if original_value.is_a?(Numeric)
+              original_value = big_decimal(original_value.to_s)
+            elsif original_value.nil?
+              original_value = 0.0
+            end
 
             value = yield original_value, input_value
             value = value.to_f if value != true && value != false

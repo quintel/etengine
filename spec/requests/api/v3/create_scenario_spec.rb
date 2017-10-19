@@ -7,7 +7,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'with valid parameters' do
     it 'should save the scenario' do
-      expect { post 'api/v3/scenarios' }.to change { Scenario.count }.by(1)
+      expect { post '/api/v3/scenarios' }.to change { Scenario.count }.by(1)
 
       response.status.should eql(200)
 
@@ -33,7 +33,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'should optionally include detailed params' do
       expect do
-        post 'api/v3/scenarios', detailed: true
+        post '/api/v3/scenarios', detailed: true
       end.to change { Scenario.count }.by(1)
 
       response.status.should eql(200)
@@ -49,7 +49,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'should optionally include inputs' do
       expect do
-        post 'api/v3/scenarios', include_inputs: true
+        post '/api/v3/scenarios', include_inputs: true
       end.to change { Scenario.count }.by(1)
 
       response.status.should eql(200)
@@ -62,7 +62,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'should save custom end years' do
       running_this = -> {
-        post 'api/v3/scenarios', scenario: { end_year: 2031 }
+        post '/api/v3/scenarios', scenario: { end_year: 2031 }
       }
 
       expect(&running_this).to change { Scenario.count }.by(1)
@@ -76,7 +76,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'should save custom end years' do
       pending 'awaiting reintroduction of non-NL regions' do
         running_this = -> {
-          post 'api/v3/scenarios', scenario: { area_code: 'uk' }
+          post '/api/v3/scenarios', scenario: { area_code: 'uk' }
         }
 
         expect(&running_this).to change { Scenario.count }.by(1)
@@ -92,7 +92,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   context 'with invalid parameters' do
     it 'should not save the scenario' do
       running_this = -> {
-        post 'api/v3/scenarios', scenario: { area_code: '' }
+        post '/api/v3/scenarios', scenario: { area_code: '' }
       }
 
       expect(&running_this).to_not change { Scenario.count }
@@ -107,7 +107,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'when inheriting a preset' do
     before do
-      post 'api/v3/scenarios', scenario: { scenario_id: Preset.all.first.id }
+      post '/api/v3/scenarios', scenario: { scenario_id: Preset.all.first.id }
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -128,7 +128,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'when inheriting a scaled preset' do
     before do
-      post 'api/v3/scenarios', scenario: { scenario_id: Preset.get(6000).id }
+      post '/api/v3/scenarios', scenario: { scenario_id: Preset.get(6000).id }
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -149,7 +149,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   context 'when scaling the area' do
     context 'with all valid attributes' do
       before do
-        post 'api/v3/scenarios', scenario: {
+        post '/api/v3/scenarios', scenario: {
           scale: { area_attribute: 'number_of_residences', value: 500_000 } }
       end
 
@@ -168,13 +168,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     context 'with an invalid attribute' do
       before do
-        post 'api/v3/scenarios', scenario: {
+        post '/api/v3/scenarios', scenario: {
           scale: { area_attribute: :illegal, value: 500_000 } }
       end
 
       it 'should not save the scenario' do
         running_this = -> {
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scale: { area_attribute: :illegal, value: 500_000 } }
         }
 
@@ -185,7 +185,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     context 'with a preset' do
       before do
-        post 'api/v3/scenarios', scenario: {
+        post '/api/v3/scenarios', scenario: {
           scenario_id: preset.id,
           scale: { area_attribute: 'number_of_residences', value: 500_000 }
         }
@@ -219,12 +219,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       context '(re-scaling)' do
         before do
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: preset.id,
             scale: { area_attribute: 'number_of_residences', value: 500_000 }
           }
 
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: Scenario.last.id,
             scale: { area_attribute: 'number_of_residences', value: 250_000 }
           }
@@ -254,12 +254,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       context '(un-scaling)' do
         before do
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: preset.id,
             scale: { area_attribute: 'number_of_residences', value: 500_000 }
           }
 
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: Scenario.last.id, descale: true
           }
         end
@@ -287,12 +287,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       context '(retaining existing scaling)' do
         before do
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: preset.id,
             scale: { area_attribute: 'number_of_residences', value: 500_000 }
           }
 
-          @scaled = post 'api/v3/scenarios', scenario: { scenario_id: Scenario.last.id }
+          @scaled = post '/api/v3/scenarios', scenario: { scenario_id: Scenario.last.id }
         end
 
         let(:json) { JSON.parse(response.body) }
@@ -321,14 +321,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     context "with a derived dataset" do
       context "(providing a derived area code)" do
         before do
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             area_code: 'ameland',
             user_values: {
               foo_demand: 100.0
             }
           }
 
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: Scenario.last.id,
             area_code: 'ameland',
             scale: { area_attribute: 'number_of_residences', value: 100 }
@@ -353,12 +353,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       context "(descale with a derived area code)" do
         before do
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             area_code: 'ameland',
             scale: { area_attribute: 'number_of_residences', value: 500_000 }
           }
 
-          post 'api/v3/scenarios', scenario: {
+          post '/api/v3/scenarios', scenario: {
             scenario_id: Scenario.last.id, descale: true
           }
         end

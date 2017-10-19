@@ -11,7 +11,7 @@ describe 'APIv3 Converter details' do
 
   context "an existing converter" do
     before do
-      get("api/v3/scenarios/#{ scenario.id }/converters/foo")
+      get("/api/v3/scenarios/#{ scenario.id }/converters/foo")
     end
 
     it 'should be successful' do
@@ -26,7 +26,7 @@ describe 'APIv3 Converter details' do
 
   context "a bad converter key" do
     before do
-      get("api/v3/scenarios/#{ scenario.id }/converters/rick_astley")
+      get("/api/v3/scenarios/#{ scenario.id }/converters/rick_astley")
     end
 
     it "should return 404" do

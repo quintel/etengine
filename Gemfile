@@ -1,9 +1,9 @@
 source 'http://rubygems.org'
 source 'http://gems.github.com'
 
-ruby '2.1.9'
+ruby '2.4.2'
 
-gem 'rails',        '~> 4.1.0'
+gem 'rails',        '~> 4.2.0'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
@@ -15,14 +15,14 @@ gem 'rake', '< 11.0'
 gem 'gravatar_image_tag'
 
 # Ruby gems
-gem 'ruby_deep_clone',        github: 'balmma/ruby-deepclone', require: 'deep_clone'
+gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
 gem 'distribution', '~> 0.6'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
 
 # Rails gem
 gem 'simple_form'
-gem 'devise'
+gem 'devise', '~> 3.5'
 gem 'cancan'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'

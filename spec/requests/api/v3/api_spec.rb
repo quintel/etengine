@@ -4,11 +4,11 @@ require "spec_helper"
 #
 describe "API v3scenario life cycle", :etsource_fixture do
   it "should create, update, persist" do
-    post 'api/v3/scenarios', :scenario => {:area_code => 'nl', :end_year => 2040}
+    post '/api/v3/scenarios', :scenario => {:area_code => 'nl', :end_year => 2040}
 
     scenario = JSON.parse(response.body)
     id = scenario['id']
-    url = "api/v3/scenarios/#{id}"
+    url = "/api/v3/scenarios/#{id}"
 
     scenario['id'].should_not be_blank
     scenario['area_code'].should == 'nl'
@@ -80,10 +80,10 @@ describe "API v3scenario life cycle", :etsource_fixture do
   end
 
   it "should reset the user_values, also the ones from a preset scenario" do
-    post 'api/v3/scenarios', :scenario => {:scenario_id => 2999}
+    post '/api/v3/scenarios', :scenario => {:scenario_id => 2999}
 
     scenario = JSON.parse(response.body)
-    url = "api/v3/scenarios/#{scenario['id']}"
+    url = "/api/v3/scenarios/#{scenario['id']}"
 
     # ---- test that presets have been applied -----------------------------------
 
@@ -107,14 +107,14 @@ describe "API v3scenario life cycle", :etsource_fixture do
   end
 
   it "should default to end_year 2040 and area_code 'nl' when creating a scenario" do
-    post 'api/v3/scenarios', :scenario => {}
+    post '/api/v3/scenarios', :scenario => {}
 
     scenario = JSON.parse(response.body)
     scenario['area_code'].should == 'nl'
     scenario['end_year'].should == 2040
 
     id = scenario['id']
-    url = "api/v3/scenarios/#{id}"
+    url = "/api/v3/scenarios/#{id}"
 
     # ---- fce disabled by default ------------------------------------------------
 

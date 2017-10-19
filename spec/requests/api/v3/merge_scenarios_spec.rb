@@ -24,7 +24,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   context 'with two scenarios' do
     let(:request) do
-      post('api/v3/scenarios/merge', scenarios: [
+      post('/api/v3/scenarios/merge', scenarios: [
         { scenario_id: scenario_one.id, weight: 3.0 },
         { scenario_id: scenario_two.id, weight: 1.0 }
       ])
@@ -45,7 +45,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   context 'with two scenarios and a missing weight' do
     let(:request) do
-      post('api/v3/scenarios/merge', scenarios: [
+      post('/api/v3/scenarios/merge', scenarios: [
         { scenario_id: scenario_one.id, weight: 3.0 },
         { scenario_id: scenario_two.id }
       ])
@@ -63,7 +63,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   context "with two scenarios one of which doesn't exist" do
     let(:request) do
-      post('api/v3/scenarios/merge', scenarios: [
+      post('/api/v3/scenarios/merge', scenarios: [
         { scenario_id: scenario_one.id, weight: 3.0 },
         { scenario_id: '-1',            weight: 1.0 }
       ])
@@ -76,7 +76,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   context 'with only one scenario' do
     let(:request) do
-      post('api/v3/scenarios/merge', scenarios: [
+      post('/api/v3/scenarios/merge', scenarios: [
         { scenario_id: scenario_one.id, weight: 3.0 }
       ])
     end
@@ -93,7 +93,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   context 'with no scenarios' do
     let(:request) do
-      post('api/v3/scenarios/merge', scenarios: [])
+      post('/api/v3/scenarios/merge', scenarios: [])
     end
 
     it 'does not create a new scenario' do
@@ -121,7 +121,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
     end
 
     let(:request) do
-      post('api/v3/scenarios/merge', scenarios: [
+      post('/api/v3/scenarios/merge', scenarios: [
         { scenario_id: scenario_one.id, weight: 3.0 },
         { scenario_id: scenario_two.id, weight: 1.0 }
       ])

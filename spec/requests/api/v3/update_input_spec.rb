@@ -32,7 +32,7 @@ describe 'Updating inputs with API v3' do
   def put_scenario(user_values = {}, params = {})
     user_values = Hash[user_values.map { |k, v| [ k.to_s, v.to_s ] }]
 
-    put "api/v3/scenarios/#{ scenario.id }",
+    put "/api/v3/scenarios/#{ scenario.id }",
       params.merge({ scenario: { user_values: user_values } })
 
     scenario.reload
@@ -283,7 +283,7 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'includes the balanaced value when requesting inputs.json' do
-        get "api/v3/scenarios/#{ scenario.id }/inputs.json"
+        get "/api/v3/scenarios/#{ scenario.id }/inputs.json"
         inputs = JSON.parse(response.body)
 
         inputs['balanced_two']['user'].should eql(90.0)

@@ -11,7 +11,7 @@ describe 'APIv3 Scenarios' do
 
   context 'with no "detailed" param' do
     before do
-      get("api/v3/scenarios/#{ scenario.id }")
+      get("/api/v3/scenarios/#{ scenario.id }")
     end
 
     it 'should be successful' do
@@ -40,7 +40,7 @@ describe 'APIv3 Scenarios' do
 
   context 'with the "detailed" param' do
     before do
-      get("api/v3/scenarios/#{ scenario.id }", detailed: true)
+      get("/api/v3/scenarios/#{ scenario.id }", detailed: true)
     end
 
     it 'should be successful' do
@@ -68,7 +68,7 @@ describe 'APIv3 Scenarios' do
 
   context 'with the "include_inputs" param' do
     before do
-      get("api/v3/scenarios/#{ scenario.id }", include_inputs: true)
+      get("/api/v3/scenarios/#{ scenario.id }", include_inputs: true)
     end
 
     it 'should be successful' do

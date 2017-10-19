@@ -34,13 +34,13 @@ describe Scenario do
     context ":user_values = YAMLized object (when coming from db)" do
       before {@scenario = Scenario.new(:user_values => {:foo => :bar})}
       it "should unyaml,overwrite and return :user_values" do
-        @scenario.user_values.should == {:foo => :bar}
+        @scenario.user_values.should == {'foo' => :bar}
         @scenario.user_values[:foo].should == :bar
       end
 
     end
     context ":user_values = nil" do
-      before {@scenario = Scenario.new(:user_values => {})}
+      before {@scenario = Scenario.new(:user_values => nil)}
       its(:user_values) { should == {} }
     end
     context ":user_values = obj" do
