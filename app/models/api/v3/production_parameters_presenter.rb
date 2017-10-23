@@ -26,6 +26,8 @@ module Api
             initial_investment_per_plant
             fixed_operation_and_maintenance_costs_per_year
             variable_operation_and_maintenance_costs_per_full_load_hour
+            wacc
+            technical_lifetime
           ]
 
           converters.each do |converter|
@@ -54,7 +56,9 @@ module Api
           converter.query.full_load_hours,
           converter.query.initial_investment_per(:plant),
           converter.query.fixed_operation_and_maintenance_costs_per_year,
-          converter.query.variable_operation_and_maintenance_costs_per_full_load_hour
+          converter.query.variable_operation_and_maintenance_costs_per_full_load_hour,
+          converter.query.wacc,
+          converter.query.technical_lifetime
         ]
       end
 
