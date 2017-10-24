@@ -350,12 +350,11 @@ module Gql
     end
 
     def with_disabled_dataset_fetch_cache
-      present.graph.cache_dataset_fetch = false
-      future.graph.cache_dataset_fetch = false
-      yield
-    ensure
-      present.graph.cache_dataset_fetch = true
-      future.graph.cache_dataset_fetch = true
+      present.graph.without_dataset_caching do
+        future.graph.without_dataset_caching do
+          yield
+        end
+      end
     end
 
     def set_initializer_inputs(graph)

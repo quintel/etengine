@@ -33,6 +33,101 @@ module Qernel
         end
       end
 
+      describe Graph, '#lifecycle' do
+        let(:graph) { Qernel::GraphParser.create("lft == s(1.0) ==< rgt(100)") }
+
+        it 'returns a Qernel::LifeCycle' do
+          expect(graph.lifecycle).to be_a(Qernel::Lifecycle)
+        end
+
+        it 'returns the same object on subsequent calls' do
+          expect(graph.lifecycle.object_id).to eq(graph.lifecycle.object_id)
+        end
+
+        it 'returns the same object when dataset caching is disabled' do
+          graph.without_dataset_caching do
+            expect(graph.lifecycle.object_id).to eq(graph.lifecycle.object_id)
+          end
+        end
+      end
+
+      describe Graph, '#without_dataset_caching' do
+        let(:graph) { Qernel::GraphParser.create("lft == s(1.0) ==< rgt(100)") }
+
+        context 'with an initial value of true' do
+          it 'starts as true' do
+            expect(graph.cache_dataset_fetch?).to be_true
+          end
+
+          it 'is false during the block' do
+            graph.without_dataset_caching do
+              expect(graph.cache_dataset_fetch?).to be_false
+            end
+          end
+
+          it 'ends as true' do
+            expect { graph.without_dataset_caching {} }
+              .not_to change { graph.cache_dataset_fetch? }.from(true)
+          end
+
+          it 'ends as true when an exception is raised' do
+            begin
+              expect { graph.without_dataset_caching { raise 'error' } }
+                .not_to change { graph.cache_dataset_fetch? }.from(true)
+            rescue RuntimeError
+              nil
+            else
+              throw 'Expected exception to be raised in block'
+            end
+          end
+
+          context 'and a nested value of false' do
+            it 'is false after the inner block' do
+              graph.without_dataset_caching do
+                graph.without_dataset_caching do
+                end
+
+                expect(graph.cache_dataset_fetch?).to be_false
+              end
+            end
+
+            it 'is true after the outer block' do
+              graph.without_dataset_caching do
+                graph.without_dataset_caching {}
+              end
+
+              expect(graph.cache_dataset_fetch?).to be_true
+            end
+          end
+        end
+
+        context 'with an initial value of false' do
+          before { graph.cache_dataset_fetch = false }
+
+          it 'is false during the block' do
+            graph.without_dataset_caching do
+              expect(graph.cache_dataset_fetch?).to be_false
+            end
+          end
+
+          it 'ends as false' do
+            expect { graph.without_dataset_caching {} }
+              .not_to change { graph.cache_dataset_fetch? }.from(true)
+          end
+
+          it 'ends as false when an exception is raised' do
+            begin
+              expect { graph.without_dataset_caching { raise 'error' } }
+                .not_to change { graph.cache_dataset_fetch? }.from(false)
+            rescue RuntimeError
+              nil
+            else
+              throw 'Expected exception to be raised in block'
+            end
+          end
+        end
+      end
+
       describe Graph do
         before do
           @g = GraphParser.new(example.description).build

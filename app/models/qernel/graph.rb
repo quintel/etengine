@@ -279,7 +279,9 @@ class Graph
   end
 
   def lifecycle
-    fetch(:lifecycle) { Lifecycle.new(self) }
+    # Bypass "fetch", which will not actually set the lifecycle onto the dataset
+    # during a "without_dataset_caching" block.
+    dataset_get(:lifecycle) || dataset_set(:lifecycle, Lifecycle.new(self))
   end
 
   # Calculates the Graph.
@@ -423,7 +425,20 @@ class Graph
     @cache_dataset_fetch
   end
 
-public
+  # Public: Disables dataset caching for the duration of the block.
+  #
+  # During execution, calls to 'fetch' for values which are not already present
+  # on the dataset will trigger the resulting values to be cached.
+  #
+  # Returns the value of the block.
+  def without_dataset_caching
+    previous_setting = @cache_dataset_fetch
+    @cache_dataset_fetch = false
+
+    yield
+  ensure
+    @cache_dataset_fetch = previous_setting
+  end
 
   # ====== Methods only used for Testing =============================
 
