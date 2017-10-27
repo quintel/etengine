@@ -2385,13 +2385,13 @@
   :y: 18760
 :bunkers_plane_using_bio_ethanol:
   :x: 1520
-  :y: 18820
+  :y: 18780
 :bunkers_demand_for_aviation_bio_ethanol:
   :x: 2320
-  :y: 18820
+  :y: 18700
 :bunkers_demand_bio_ethanol:
   :x: 3120
-  :y: 18820
+  :y: 18700
 :bunkers_plane_using_gasoline:
   :x: 1520
   :y: 18700
@@ -2403,10 +2403,55 @@
   :y: 18700
 :bunkers_plane_using_kerosene:
   :x: 1520
-  :y: 18760
+  :y: 18720
 :bunkers_demand_for_aviation_kerosene:
   :x: 2320
-  :y: 18760
+  :y: 18640
 :bunkers_demand_kerosene:
   :x: 3120
+  :y: 18640
+:bunkers_useful_demand_ships:
+  :x: 720
+  :y: 18860
+:bunkers_ship_using_heavy_fuel_oil:
+  :x: 1520
+  :y: 18840
+:bunkers_ship_using_lng:
+  :x: 1520
+  :y: 18900
+:bunkers_demand_for_shipping_lng:
+  :x: 2320
+  :y: 18820
+:bunkers_demand_lng:
+  :x: 3120
+  :y: 18820
+:bunkers_demand_for_shipping_heavy_fuel_oil:
+  :x: 2320
   :y: 18760
+:bunkers_demand_heavy_fuel_oil:
+  :x: 3120
+  :y: 18760
+:bunkers_final_demand_for_aviation_bio_ethanol:
+  :x: 2320
+  :y: 18780
+:bunkers_final_demand_bio_ethanol:
+  :x: 3120
+  :y: 18780
+:bunkers_final_demand_for_shipping_heavy_fuel_oil:
+  :x: 2320
+  :y: 18840
+:bunkers_final_demand_heavy_fuel_oil:
+  :x: 3120
+  :y: 18840
+:bunkers_final_demand_for_shipping_lng:
+  :x: 2320
+  :y: 18900
+:bunkers_final_demand_lng:
+  :x: 3120
+  :y: 18900
+:bunkers_final_demand_for_aviation_kerosene:
+  :x: 2320
+  :y: 18720
+:bunkers_final_demand_kerosene:
+  :x: 3120
+  :y: 18720
