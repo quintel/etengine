@@ -6,7 +6,9 @@ ADD Gemfile /etengine/Gemfile
 ADD Gemfile.lock /etengine/Gemfile.lock
 RUN bundle install
 ADD . /etengine
-ADD . /etsource
+ADD ../etsource /etsource
 WORKDIR /etengine
-RUN RAILS_ENV=production bundle exec rake assets:precompile --trace
+ENV RAILS_ENV production
+RUN bundle exec rake assets:precompile
+EXPOSE 3000
 CMD ["rails", "server", "-b", "0.0.0.0"]

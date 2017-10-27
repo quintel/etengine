@@ -12,8 +12,10 @@ services:
     ports:
     - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: 'etengine-dev-test'
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: ''
       MYSQL_DATABASE: etengine_dev
+    restart: always
     volumes:
       - mysql-data:/var/lib/mysql
 
@@ -23,7 +25,6 @@ services:
       context: "."
       dockerfile: Dockerfile
     command: rails server -b 0.0.0.0 -p 3000 -P /tmp/rails.pid
-    #working_dir: "/usr/src/app"
     volumes:
       - .:/etengine
       - rails-data:/usr/local/bundle
@@ -32,6 +33,4 @@ services:
     stdin_open: true
     tty: true
     links:
-    - db
-    depends_on:
     - db
