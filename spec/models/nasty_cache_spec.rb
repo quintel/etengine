@@ -2,7 +2,7 @@ require 'spec_helper'
 
 # Reopening NastyCache below appears to prevent Rails 4 from loading the file in
 # app/models; so we do it manually.
-require 'app/models/nasty_cache'
+require_relative '../../app/models/nasty_cache'
 
 class NastyCache
   # used to simulate two different server process
@@ -33,7 +33,7 @@ describe NastyCache do
   end
 
   it "should fetch a block" do
-    @cache.fetch("foo2") do 
+    @cache.fetch("foo2") do
       'bar'
     end
     expect(@cache.get("foo2")).to eq("bar")

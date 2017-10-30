@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Api::V3::FlexibilityOrdersController do
   let(:scenario_id) { 5 }
   let(:create_flexibility_order) {
-    post :set, scenario_id: scenario_id, flexibility_order: {
+    post :set, params: { scenario_id: scenario_id, flexibility_order: {
       order: ['p2h', 'p2g']
-    }
+    } }
   }
 
   describe "new flexibility order" do
@@ -42,14 +42,14 @@ describe Api::V3::FlexibilityOrdersController do
     end
 
     it 'grabs the current flexibility order' do
-      get :get, scenario_id: scenario_id
+      get :get, params: { scenario_id: scenario_id }
 
       expect(JSON.parse(response.body)['order']).to eq(['p2g', 'p2h'])
     end
   end
 
   it "grabs the default order" do
-    get :get, scenario_id: -1
+    get :get, params: { scenario_id: -1 }
 
     expect(JSON.parse(response.body)['order']).to eq(FlexibilityOrder::GROUPS)
   end

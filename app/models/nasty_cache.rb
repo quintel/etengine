@@ -1,17 +1,17 @@
 # Caches and persists an object across requests in the memory of the
-# server process. Use it when caching with memcached is too slow. 
+# server process. Use it when caching with memcached is too slow.
 #
-# Caveats: Using NastyCache local store with the Qernel Graph 
+# Caveats: Using NastyCache local store with the Qernel Graph
 #          makes the app NO LONGER THREADSAFE
 #
 # @example Add this to your application_controller.rb
 #
-#   before_filter :initialize_memory_cache
+#   before_action :initialize_memory_cache
 #
 #   def initialize_memory_cache
 #     NastyCache.instance.initialize_request
 #   end
-#    
+#
 # @example setting and getting
 #
 #   NastyCache.instance.set("large_blob", "foo")
@@ -33,10 +33,10 @@
 #     Rails.cache.fetch("NastyCache/local_timestamp/large_blob") do
 #       # ...
 #     end
-#   end 
+#   end
 #
 # @example expiring cache across server instances
-# 
+#
 #   NastyCache.instances.expire!
 #   # => This will expire all instances across server instances
 #   #    the next time they call #initialize_request.
@@ -68,7 +68,7 @@ class NastyCache
     end
   end
 
-  # Expires both local (@cache_store) and Rails.cache 
+  # Expires both local (@cache_store) and Rails.cache
   # this is equivalent of a server restart.
   def expire!(options = {})
     log("NastyCache(#{Process.pid})#expire!")
@@ -94,7 +94,7 @@ class NastyCache
       end
       set(key, value)
     end
-  end 
+  end
 
   # alias to fetch(key, cache: true)
   def fetch_cached(key, &block)

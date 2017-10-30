@@ -40,12 +40,12 @@ describe Carrier do
 
    context "#co2_per_mj" do
      skip it "should return the co2_combustion_per_mj attr as co2_per_mj when fce not used" do
-       get :show, :id => @api_scenario.id, :use_fce => false
+       get :show, params: { :id => @api_scenario.id, :use_fce => false }
        expect(@carrier.co2_per_mj).to be_near(9.6)
      end
 
      skip it "should sum all the co2 attrs when fce is used" do
-       get :show, :id => @api_scenario.id, :use_fce => true
+       get :show, params: { :id => @api_scenario.id, :use_fce => true }
        expect(@carrier.co2_per_mj).to be_near(13.6)
      end
    end

@@ -5,8 +5,8 @@ class ApplicationController < ActionController::Base
   helper :all
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
-  before_filter :initialize_memory_cache
-  before_filter :locale
+  before_action :initialize_memory_cache
+  before_action :locale
 
   rescue_from CanCan::AccessDenied do |exception|
     store_location
@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
     # update session if passed
     session[:locale] = params[:locale] if params[:locale]
     # set locale based on session or url
-    I18n.locale =  session[:locale] || 'en'
+    I18n.locale = session[:locale] || 'en'
   end
 
   ##
@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
         store_location
         flash[:notice] = "You must be logged out to access this page"
         redirect_to root_path
-        return false
+        throw(:abort)
       end
     end
 end

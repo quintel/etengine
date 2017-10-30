@@ -13,14 +13,14 @@ describe Data::GqueriesController, :etsource_fixture do
 
   describe "GET index" do
     it "should be successful" do
-      get :index, :api_scenario_id =>'latest'
+      get :index, params: { :api_scenario_id =>'latest' }
       expect(response).to render_template(:index)
     end
   end
 
   describe "GET show" do
     it "should be successful" do
-      get :show, :id => gquery.key, :api_scenario_id =>'latest'
+      get :show, params: { :id => gquery.key, :api_scenario_id =>'latest' }
       expect(response).to render_template(:show)
     end
   end

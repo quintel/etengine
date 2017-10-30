@@ -1,33 +1,9 @@
-# == Schema Information
-#
-# Table name: scenarios
-#
-#  id                 :integer(4)      not null, primary key
-#  author             :string(255)
-#  title              :string(255)
-#  description        :text
-#  created_at         :datetime
-#  updated_at         :datetime
-#  user_values        :text
-#  end_year           :integer(4)      default(2040)
-#  in_start_menu      :boolean(1)
-#  user_id            :integer(4)
-#  preset_scenario_id :integer(4)
-#  use_fce            :boolean(1)
-#  present_updated_at :datetime
-#  protected          :integer(1)
-#  area_code          :string(255)
-#  source             :string(255)
-#
+# frozen_string_literal: true
 
-# Useage:
+# Usage:
 # Getting the default scenario:
 #   Scenario.default
-#
-# A user updates a slider:
-#   scenario.update_input(input, 4.5)
-#
-class Scenario < ActiveRecord::Base
+class Scenario < ApplicationRecord
   include Scenario::UserUpdates
   include Scenario::Persistable
   include Scenario::InputGroups

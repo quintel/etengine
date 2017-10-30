@@ -10,7 +10,7 @@ describe Data::AreasController do
 
   describe "GET show" do
     it "should be successful" do
-      get :show, :api_scenario_id => 'latest'
+      get :show, params: { :api_scenario_id => 'latest' }
       expect(response).to render_template(:show)
     end
   end

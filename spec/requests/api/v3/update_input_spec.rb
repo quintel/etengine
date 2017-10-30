@@ -33,7 +33,7 @@ describe 'Updating inputs with API v3' do
     user_values = Hash[user_values.map { |k, v| [ k.to_s, v.to_s ] }]
 
     put "/api/v3/scenarios/#{ scenario.id }",
-      params.merge({ scenario: { user_values: user_values } })
+      params: params.merge({ scenario: { user_values: user_values } })
 
     scenario.reload
   end

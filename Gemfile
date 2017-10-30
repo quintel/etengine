@@ -3,8 +3,8 @@ source 'http://gems.github.com'
 
 ruby '2.4.2'
 
-gem 'rails',        '~> 4.2.0'
-gem 'jquery-rails', '~> 2.0.2'
+gem 'rails',        '~> 5.0.6'
+gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
 gem 'rake',         '< 11.0'
@@ -22,8 +22,8 @@ gem 'osmosis',                github: 'quintel/osmosis'
 
 # Rails gem
 gem 'simple_form'
-gem 'devise', '~> 3.5'
-gem 'cancan'
+gem 'devise', '~> 4.0'
+gem 'cancancan', '~> 2.0'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
@@ -59,7 +59,7 @@ gem 'highline',                require: false
 
 group :development do
   gem 'spring'
-  gem 'quiet_assets'
+  # gem 'quiet_assets'
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'listen'
@@ -72,16 +72,17 @@ group :development do
 end
 
 group :test, :development do
-  gem 'rspec-rails', '~> 3.7'
+  gem 'pry-byebug'
   gem 'pry-rails'
+  gem 'rspec-rails', '~> 3.7'
   gem 'watchr'
-
-  gem 'pry-byebug', platforms: [:mri_20, :mri_21]
 end
 
 group :test do
   gem 'factory_girl_rails'
-  gem 'shoulda-matchers',      require: false
+  gem 'rails-controller-testing'
+  gem 'shoulda-matchers'
+
   gem 'simplecov', '~> 0.7.1', require: false
 end
 

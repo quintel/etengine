@@ -1,6 +1,6 @@
 class Data::BaseController < ApplicationController
   layout 'data'
-  before_filter :initialize_gql
+  before_action :initialize_gql
 
   authorize_resource :class => false
 

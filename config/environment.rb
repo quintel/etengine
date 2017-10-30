@@ -1,7 +1,5 @@
-# Load the rails application
-require File.expand_path('../application', __FILE__)
-Encoding.default_external = Encoding::UTF_8
+# Load the rails application.
+require_relative 'application'
 
-
-# Initialize the rails application
-Etm::Application.initialize!
+# Initialize the rails application.
+Rails.application.initialize!

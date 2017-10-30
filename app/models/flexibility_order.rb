@@ -1,5 +1,7 @@
-class FlexibilityOrder < ActiveRecord::Base
-  GROUPS = %w(
+# frozen_string_literal: true
+
+class FlexibilityOrder < ApplicationRecord
+  GROUPS = %w[
     power_to_power
     electric_vehicle
     power_to_gas
@@ -8,7 +10,7 @@ class FlexibilityOrder < ActiveRecord::Base
     power_to_heat_industry
     power_to_kerosene
     export
-  ).map(&:freeze).freeze
+  ].map(&:freeze).freeze
 
   serialize :order, Array
 

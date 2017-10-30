@@ -1,7 +1,7 @@
 class Etsource::CommitsController < ApplicationController
   layout 'application'
 
-  before_filter :setup_etsource
+  before_action :setup_etsource
 
   helper_method :can_import?
   helper_method :import_in_progress?

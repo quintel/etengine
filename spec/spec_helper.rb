@@ -52,7 +52,7 @@ RSpec.configure do |config|
 
   config.infer_spec_type_from_file_location!
 
-  config.include(Devise::TestHelpers, type: :controller)
+  config.include(Devise::Test::ControllerHelpers, type: :controller)
   config.include(MechanicalTurkHelper)
 
   config.include(HouseholdCurvesHelper, household_curves: true)
@@ -68,5 +68,15 @@ RSpec.configure do |config|
 
     Etsource::Base.loader(fixture_path.to_s)
     Atlas.data_dir = fixture_path
+  end
+end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    # Choose a test framework:
+    with.test_framework :rspec
+
+    # Choose one or more libraries:
+    with.library :rails
   end
 end

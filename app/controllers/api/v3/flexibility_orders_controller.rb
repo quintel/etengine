@@ -1,7 +1,7 @@
 module Api
   module V3
     class FlexibilityOrdersController < BaseController
-      before_filter :find_flexibility_order
+      before_action :find_flexibility_order
 
       def set
         if @flexibility_order

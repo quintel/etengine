@@ -1,8 +1,8 @@
 class Data::GqueriesController < Data::BaseController
   layout 'application'
 
-  before_filter :find_model, :only => :show
-  skip_before_filter :initialize_gql, :only => [:index]
+  before_action :find_model, :only => :show
+  skip_before_action :initialize_gql, :only => [:index]
 
   def index
     all = Gquery.all

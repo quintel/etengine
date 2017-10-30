@@ -1,5 +1,4 @@
-Etm::Application.configure do
-
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 
   # In the development environment your application's code is reloaded on
@@ -37,8 +36,17 @@ Etm::Application.configure do
   # number of complex assets.
   config.assets.debug = true
 
-  require 'lib/gc_stats'
-  config.middleware.use "GCStats"
+  # Suppress logger output for asset requests.
+  config.assets.quiet = true
+
+  # Raises error for missing translations
+  # config.action_view.raise_on_missing_translations = true
+
+  require_relative '../../lib/gc_stats'
+  config.middleware.use 'GCStats'
+
+  # Use an evented file watcher to asynchronously detect changes in source code,
+  # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.after_initialize do
     Etsource::Reloader.start! if APP_CONFIG[:etsource_live_reload]

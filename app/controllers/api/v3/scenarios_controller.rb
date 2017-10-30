@@ -3,9 +3,9 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_filter :find_scenario, only: [:update]
+      before_action :find_scenario, only: [:update]
 
-      before_filter :find_preset_or_scenario, only: [
+      before_action :find_preset_or_scenario, only: [
         :show, :merit, :dashboard, :application_demands,
         :production_parameters, :energy_flow
       ]
@@ -16,7 +16,7 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
-        render json: ScenarioPresenter.new(self, @scenario, params)
+        render json: ScenarioPresenter.new(self, @scenario, filtered_params)
       end
 
       # GET /api/v3/scenarios/:id/merit
@@ -38,7 +38,7 @@ module Api
 
         @scenarios = ids.map do |id|
           scenario = Preset.get(id).try(:to_scenario) || Scenario.find_by_id(id)
-          scenario ? ScenarioPresenter.new(self, scenario, params) : nil
+          scenario ? ScenarioPresenter.new(self, scenario, filtered_params) : nil
         end.compact
 
         render json: @scenarios
@@ -48,7 +48,7 @@ module Api
         presenter = nil
 
         Scenario.transaction do
-          presenter = ScenarioDashboardPresenter.new(self, @scenario, params)
+          presenter = ScenarioDashboardPresenter.new(self, @scenario, filtered_params)
         end
 
         if presenter.errors.any?
@@ -90,6 +90,10 @@ module Api
           attrs.delete(:user_values)
         end
 
+        if attrs.key?(:user_values)
+          attrs[:user_values] = attrs[:user_values].transform_values(&:to_f)
+        end
+
         @scenario = Scenario.new
 
         if scaler_attributes && ! attrs[:descale]
@@ -115,7 +119,7 @@ module Api
           @scenario.save!
         end
 
-        render json: ScenarioPresenter.new(self, @scenario, params)
+        render json: ScenarioPresenter.new(self, @scenario, filtered_params)
       rescue ActiveRecord::RecordInvalid
         render json: { errors: @scenario.errors }, status: 422
       end
@@ -157,13 +161,15 @@ module Api
       # }
       #
       def update
-        updater_attrs = params.merge(scenario: scenario_attributes)
-        updater       = ScenarioUpdater.new(@scenario, updater_attrs)
+        updater       = ScenarioUpdater.new(@scenario, filtered_params)
         presenter     = nil
 
         Scenario.transaction do
           updater.apply
-          presenter = ScenarioUpdatePresenter.new(self, updater, params)
+
+          presenter = ScenarioUpdatePresenter.new(
+            self, updater, filtered_params
+          )
 
           raise ActiveRecord::Rollback if presenter.errors.any?
         end
@@ -187,7 +193,7 @@ module Api
           scenario.save
 
           # redirect_to api_v3_scenario_url(scenario)
-          render json: ScenarioPresenter.new(self, scenario, params)
+          render json: ScenarioPresenter.new(self, scenario, filtered_params)
         else
           render json: { errors: merger.errors }, status: 422
         end
@@ -245,19 +251,46 @@ module Api
         render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
 
+      # Internal: All the request parameters, filtered.
+      #
+      # Returns a ActionController::Parameters
+      def filtered_params
+        params.permit(
+          :autobalance, :force, :reset, :detailed, :include_inputs, gqueries: []
+        ).merge(scenario: scenario_attributes)
+      end
+
       # Internal: Cleaned up attributes for creating and updating scenarios.
       #
-      # Returns a hash.
+      # Returns a ActionController::Parameters.
       def scenario_attributes
-        attrs = (params[:scenario] || {}).slice(
-          :author, :title, :description, :user_values, :end_year, :area_code,
-          :country, :region, :preset_scenario_id, :use_fce, :protected,
-          :scenario_id, :source, :user_values, :descale
-        )
+        user_vals = filtered_user_values(params[:scenario])
 
-        attrs['descale'] = attrs['descale'] == 'true'
+        attrs = params.permit(scenario: %i[
+          area_code author country descale description end_year
+          preset_scenario_id protected region scenario_id source
+          title use_fce
+        ])
+
+        attrs = (attrs[:scenario] || {}).merge(user_values: user_vals)
+
+        attrs[:descale] = attrs[:descale] == 'true'
 
         attrs
+      end
+
+      # Internal: All the user values for a scenario, filtered.
+      #
+      # Returns a ActionController::Parameters
+      def filtered_user_values(scenario)
+        # return {} unless scenario && scenario[:user_values]
+        return {} unless scenario && scenario[:user_values]
+
+        scenario[:user_values]
+          .permit!
+          .to_h
+          .with_indifferent_access
+          # .transform_values(&:to_f)
       end
 
       # Internal: Attributes for creating a scaled scenario.

@@ -5,7 +5,7 @@ class Preset
   include InMemoryRecord
   include ActiveModel::Serialization
   include ActiveModel::Serializers::JSON
-  include ActiveModel::Serializers::Xml
+  # include ActiveModel::Serializers::Xml
 
   COLUMNS = Atlas::Preset.attribute_set.map(&:name)
   SCALING_COLUMNS = Atlas::Preset::Scaling.attribute_set.map(&:name).freeze

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -13,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 20171220132741) do
 
-  create_table "fce_values", force: true do |t|
+  create_table "fce_values", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string   "using_country"
     t.string   "origin_country"
     t.float    "co2_exploration_per_mj",     limit: 24
@@ -27,48 +26,46 @@ ActiveRecord::Schema.define(version: 20171220132741) do
     t.string   "carrier"
   end
 
-  create_table "flexibility_orders", force: true do |t|
+  create_table "flexibility_orders", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.integer "scenario_id"
-    t.text    "order"
+    t.text    "order",       limit: 65535
+    t.index ["scenario_id"], name: "index_flexibility_orders_on_scenario_id", unique: true, using: :btree
   end
 
-  add_index "flexibility_orders", ["scenario_id"], name: "index_flexibility_orders_on_scenario_id", unique: true, using: :btree
-
-  create_table "gquery_groups", force: true do |t|
+  create_table "gquery_groups", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "group_key"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "description"
+    t.text     "description", limit: 65535
   end
 
-  create_table "query_table_cells", force: true do |t|
+  create_table "query_table_cells", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.integer  "query_table_id"
     t.integer  "row"
     t.integer  "column"
     t.string   "name"
-    t.text     "gquery"
+    t.text     "gquery",         limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["query_table_id"], name: "index_query_table_cells_on_query_table_id", using: :btree
   end
 
-  add_index "query_table_cells", ["query_table_id"], name: "index_query_table_cells_on_query_table_id", using: :btree
-
-  create_table "query_tables", force: true do |t|
+  create_table "query_tables", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "name"
-    t.text     "description"
+    t.text     "description",  limit: 65535
     t.integer  "row_count"
     t.integer  "column_count"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "roles", force: true do |t|
+  create_table "roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "scenario_scalings", force: true do |t|
+  create_table "scenario_scalings", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.integer "scenario_id"
     t.string  "area_attribute"
     t.float   "value",           limit: 24
@@ -76,18 +73,17 @@ ActiveRecord::Schema.define(version: 20171220132741) do
     t.boolean "has_agriculture",            default: false, null: false
     t.boolean "has_industry",               default: false, null: false
     t.boolean "has_energy",                 default: true,  null: false
+    t.index ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true, using: :btree
   end
 
-  add_index "scenario_scalings", ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true, using: :btree
-
-  create_table "scenarios", force: true do |t|
+  create_table "scenarios", force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "author"
     t.string   "title"
-    t.text     "description"
+    t.text     "description",        limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "user_values"
-    t.integer  "end_year",                     default: 2040
+    t.text     "user_values",        limit: 65535
+    t.integer  "end_year",                         default: 2040
     t.boolean  "in_start_menu"
     t.integer  "user_id"
     t.integer  "preset_scenario_id"
@@ -96,10 +92,10 @@ ActiveRecord::Schema.define(version: 20171220132741) do
     t.integer  "protected",          limit: 1
     t.string   "area_code"
     t.string   "source"
-    t.text     "balanced_values"
+    t.text     "balanced_values",    limit: 65535
   end
 
-  create_table "users", force: true do |t|
+  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "name",                                   null: false
     t.string   "email",                                  null: false
     t.string   "company_school"
@@ -125,8 +121,7 @@ ActiveRecord::Schema.define(version: 20171220132741) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
+    t.index ["trackable"], name: "index_users_on_trackable", using: :btree
   end
-
-  add_index "users", ["trackable"], name: "index_users_on_trackable", using: :btree
 
 end

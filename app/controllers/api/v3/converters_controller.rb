@@ -1,8 +1,8 @@
 module Api
   module V3
     class ConvertersController < BaseController
-      before_filter :set_current_scenario
-      before_filter :find_converter, :only => :show
+      before_action :set_current_scenario
+      before_action :find_converter, :only => :show
 
       # GET /api/v3/converters/:id
       #

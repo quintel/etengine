@@ -17,7 +17,7 @@
           %th Group name
           %th Sum of input start values
         %tbody
-          - share_groups(area).each do |group|
+          - share_groups_for_area(area).each do |group|
             %tr{ class: group.ok? ? 'ok' : 'invalid' }
               %td= group.key
               %td= group.sum

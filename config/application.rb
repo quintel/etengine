@@ -1,16 +1,16 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'rails/all'
 
-if defined?(Bundler)
-  # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(:assets => %w(development test)))
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
-end
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
 
 module Etm
   class Application < Rails::Application
+    # Settings in config/environments/* take precedence over those specified here.
+    # Application configuration should go into files in config/initializers
+    # -- all .rb files in that directory are automatically loaded.
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
@@ -28,6 +28,10 @@ module Etm
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     config.i18n.enforce_available_locales = true
+
+    # Opt in to Rails 5.1 behaviour that calling #to_hash on parameters only
+    # includes filtered values.
+    config.action_controller.raise_on_unfiltered_parameters = true
 
     ## Pseudo-modules
     # I packaged some classes/files separate folders
@@ -71,9 +75,9 @@ module Etm
     end
   end
 
-  require 'lib/instrumentable'
-  require 'lib/converter_positions'
-  require 'app/models/qernel/errors'
+  require_relative '../lib/instrumentable'
+  require_relative '../lib/converter_positions'
+  require_relative '../app/models/qernel/errors'
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end

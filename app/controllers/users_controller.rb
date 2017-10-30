@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   authorize_resource :class => false
-  before_filter :find_user, :only => [:edit, :update, :destroy]
+  before_action :find_user, :only => [:edit, :update, :destroy]
 
   def index
     @users = User.all

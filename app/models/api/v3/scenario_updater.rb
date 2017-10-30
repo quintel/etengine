@@ -26,8 +26,8 @@ module Api
       #
       def initialize(scenario, params)
         @scenario      = scenario
-        @data          = (params || Hash.new).with_indifferent_access
-        @scenario_data = (@data[:scenario] || Hash.new).with_indifferent_access
+        @data          = (params.to_h || {}).with_indifferent_access
+        @scenario_data = (@data[:scenario] || {}).with_indifferent_access
       end
 
       # Applies the user changes to the scenario, saving the scenario back to

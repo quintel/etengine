@@ -1,9 +1,9 @@
 class Data::ChecksController < Data::BaseController
   layout 'application'
-  
+
   def loops
   end
-  
+
   def expected_demand
   end
 
@@ -44,7 +44,7 @@ class Data::ChecksController < Data::BaseController
 
   # @return [Array<Data::ShareGroupsController::ShareGroup>]
   #   Returns a ShareGroup for each one defined in ETsource.
-  def share_groups(area)
+  def share_groups_for_area(area)
     gql    = Scenario.new(area_code: area, end_year: 2050).gql
     groups = Input.all.map(&:share_group)
 
@@ -55,5 +55,5 @@ class Data::ChecksController < Data::BaseController
     groups.map { |group| ShareGroup.new(group, gql) }
   end
 
-  helper_method :share_groups
+  helper_method :share_groups_for_area
 end

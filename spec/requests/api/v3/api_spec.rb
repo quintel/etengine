@@ -4,7 +4,7 @@ require "spec_helper"
 #
 describe "API v3scenario life cycle", :etsource_fixture do
   it "should create, update, persist" do
-    post '/api/v3/scenarios', :scenario => {:area_code => 'nl', :end_year => 2040}
+    post '/api/v3/scenarios', params: {:scenario => {:area_code => 'nl', :end_year => 2040}}
 
     scenario = JSON.parse(response.body)
     id = scenario['id']
@@ -16,7 +16,7 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ----- no updates --------------------------------------------------------
 
-    put url, :gqueries => ['bar_demand']
+    put url, params: { :gqueries => ['bar_demand'] }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['bar_demand']['present']).to eq(60.0)
@@ -25,8 +25,10 @@ describe "API v3scenario life cycle", :etsource_fixture do
     # ----- update ------------------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'foo_demand' => '90'} },
-        :gqueries => %w[foo_demand bar_demand]
+        params: {
+          :scenario => {:user_values => {'foo_demand' => '90'} },
+          :gqueries => %w[foo_demand bar_demand]
+        }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['foo_demand']['future']).to eq(90.0)
@@ -35,8 +37,10 @@ describe "API v3scenario life cycle", :etsource_fixture do
     # ----- reset ------------------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'foo_demand' => 'reset'} },
-        :gqueries => %w[foo_demand bar_demand]
+        params: {
+          :scenario => {:user_values => {'foo_demand' => 'reset'} },
+          :gqueries => %w[foo_demand bar_demand]
+        }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['bar_demand']['future']).to eq(60.0)
@@ -45,9 +49,11 @@ describe "API v3scenario life cycle", :etsource_fixture do
     # ----- updating another --------------------------------------------------
 
     put url,
-        :scenario => {:user_values => {'input_2' => '20',
-                                       'foo_demand' => '80'}},
-        :gqueries => %w[foo_demand bar_demand]
+        params: {
+                                                 :scenario => {:user_values => {'input_2' => '20',
+                                                                            'foo_demand' => '80'}},
+                                             :gqueries => %w[foo_demand bar_demand]
+    }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['foo_demand']['future']).to eq(80.0)
@@ -55,8 +61,10 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ----- updating 3 again --------------------------------------------------
 
-    put url, :scenario => {:user_values => {'foo_demand' => '25'}},
-        :gqueries => %w[foo_demand bar_demand]
+    put url, params: {
+          :scenario => {:user_values => {'foo_demand' => '25'}},
+          :gqueries => %w[foo_demand bar_demand]
+        }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['foo_demand']['present']).to eq(100.0)
@@ -65,14 +73,14 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ---- using a bad input -----
 
-    put url, :scenario => {:user_values => {'paris_hilton' => '123'}}
+    put url, params: {:scenario => {:user_values => {'paris_hilton' => '123'}}}
 
     result = JSON.parse(response.body)
     expect(result["errors"][0]).to match(/does not exist/)
 
     # ---- using a bad gquery -----
 
-    put url, :gqueries => ['terminator']
+    put url, params: { :gqueries => ['terminator'] }
 
     result = JSON.parse(response.body)
     expect(result["errors"]).not_to be_empty
@@ -80,14 +88,14 @@ describe "API v3scenario life cycle", :etsource_fixture do
   end
 
   it "should reset the user_values, also the ones from a preset scenario" do
-    post '/api/v3/scenarios', :scenario => {:scenario_id => 2999}
+    post '/api/v3/scenarios', params: {:scenario => {:scenario_id => 2999}}
 
     scenario = JSON.parse(response.body)
     url = "/api/v3/scenarios/#{scenario['id']}"
 
     # ---- test that presets have been applied -----------------------------------
 
-    put url, :gqueries => ['foo_demand']
+    put url, params: { :gqueries => ['foo_demand'] }
 
     result = JSON.parse(response.body)['gqueries']
     # First, set to 10 by applying foo_demand = 10
@@ -96,18 +104,18 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ---- reset -----------------------------------------------------------------
 
-    put url, :reset => 1
+    put url, params: { :reset => 1 }
 
     # ---- query again -----------------------------------------------------------
 
-    put url, :gqueries => ['foo_demand']
+    put url, params: { :gqueries => ['foo_demand'] }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['foo_demand']['future']).to eq(100.0)
   end
 
   it "should default to end_year 2040 and area_code 'nl' when creating a scenario" do
-    post '/api/v3/scenarios', :scenario => {}
+    post '/api/v3/scenarios', params: {:scenario => {}}
 
     scenario = JSON.parse(response.body)
     expect(scenario['area_code']).to eq('nl')
@@ -118,7 +126,7 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ---- fce disabled by default ------------------------------------------------
 
-    put url, :gqueries => ['fce_enabled']
+    put url, params: { :gqueries => ['fce_enabled'] }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['fce_enabled']['present']).to eq(0.0)
@@ -126,8 +134,10 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ---- enable fce -------------------------------------------------------------
 
-    put url, :scenario => {:use_fce => 1},
-             :gqueries => ['fce_enabled']
+    put url, params: {
+               :scenario => {:use_fce => 1},
+               :gqueries => ['fce_enabled']
+             }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['fce_enabled']['present']).to eq(1)
@@ -135,8 +145,10 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     # ---- disable fce -------------------------------------------------------------
 
-    put url, :scenario => {:use_fce => 0},
-             :gqueries => ['fce_enabled']
+    put url, params: {
+               :scenario => {:use_fce => 0},
+               :gqueries => ['fce_enabled']
+             }
 
     result = JSON.parse(response.body)['gqueries']
     expect(result['fce_enabled']['present']).to eq(0)

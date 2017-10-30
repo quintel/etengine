@@ -1,4 +1,6 @@
-Etm::Application.routes.draw do
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
   devise_for :users
 
   root :to => 'pages#index'
@@ -89,9 +91,11 @@ Etm::Application.routes.draw do
         put :fix, :on => :member
       end
 
-      get '/share_groups' => 'share_groups#index'
-
-      get '/checks/:action' => 'checks'
+      get '/checks/share_groups' => 'checks#share_groups'
+      get '/checks/gquery_results' => 'checks#gquery_results'
+      get '/checks/loops' => 'checks#loops'
+      get '/checks/expected_demand' => 'checks#expected_demand'
+      get '/checks/index' => 'checks#index'
 
       get '/debug/merit_order' => 'debug#merit_order'
       get '/debug/calculation' => 'debug#calculation'

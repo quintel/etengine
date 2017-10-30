@@ -1,7 +1,7 @@
 class Data::ScenariosController < Data::BaseController
   layout 'application'
 
-  before_filter :find_scenario, :only => [:show, :edit, :update]
+  before_action :find_scenario, :only => [:show, :edit, :update]
 
   def index
     base = Scenario.recent_first

@@ -27,7 +27,7 @@ describe Api::V3::InputsController do
   # --------------------------------------------------------------------------
 
   describe 'GET /api/v3/scenarios/:scenario_id/inputs' do
-    let(:json) { JSON.parse(get(:index, id: scenario.id).body) }
+    let(:json) { JSON.parse(get(:index, params: { id: scenario.id }).body) }
 
     it 'should contain each input' do
       expect(json).to have_key(static_input.key)
@@ -141,7 +141,7 @@ describe Api::V3::InputsController do
        gql_input.key    => gql_input
      })
 
-     get(:show, scenario_id: scenario.id, id: static_input.key)
+     get(:show, params: { scenario_id: scenario.id, id: static_input.key })
      JSON.parse(response.body)
    end
 
@@ -214,7 +214,7 @@ describe Api::V3::InputsController do
      allow(Input).to receive(:all).and_return(Input.records.values)
 
      keys = "#{ static_input.key },#{ third_input.key }"
-     get(:show, scenario_id: scenario.id, id: keys)
+     get(:show, params: { scenario_id: scenario.id, id: keys })
      JSON.parse(response.body)
    end
 

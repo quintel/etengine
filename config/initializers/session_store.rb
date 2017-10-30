@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Cache store may be a symbol, or an array whose first value is a symbol.
 store_name, * = Etm::Application.config.cache_store
 
@@ -9,4 +11,4 @@ else
   session_store = :cookie_store
 end
 
-Etm::Application.config.session_store(session_store, key: '_etengine')
+Rails.application.config.session_store(session_store, key: '_etengine')

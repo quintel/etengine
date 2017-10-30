@@ -1,7 +1,7 @@
 module Api
   module V3
     class InputsController < ::Api::V3::BaseController
-      before_filter :set_current_scenario, :only => [:index, :show]
+      before_action :set_current_scenario, :only => [:index, :show]
 
       # GET /api/v3/inputs
       # GET /api/v3/scenarios/:scenario_id/inputs

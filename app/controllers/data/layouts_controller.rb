@@ -1,5 +1,5 @@
 class Data::LayoutsController < Data::BaseController
-  before_filter :find_models, :only => [:show, :edit]
+  before_action :find_models, :only => [:show, :edit]
 
   helper_method :attributes_for_json, :positions
 

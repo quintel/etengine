@@ -1,4 +1,4 @@
-require 'lib/devise/strategies/legacy_password'
+require_relative '../../lib/devise/strategies/legacy_password'
 
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
