@@ -27,7 +27,8 @@ th.attribute_group, th.calculation_group {
 .navbar .navbar-search {
   margin-top: 3px;
 
-  input {
+  input, .search-query {
+    border-radius: 5px;
     font-size: 12px;
     margin-top: 5px;
     padding-top: 3px;
@@ -44,6 +45,12 @@ th.attribute_group, th.calculation_group {
       outline: 0;
       width: 180px;
     }
+  }
+
+  .search-query {
+    background-color: #626262;
+    padding: 4px 10px !important;
+    border-width: 1px;
   }
 
   ::-webkit-input-placeholder { color: #bbb; }
