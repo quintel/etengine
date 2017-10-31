@@ -94,11 +94,15 @@ module Api
         end
 
         def user_values
-          @user ||= HashWithIndifferentAccess.new(@original.user_values)
+          @user ||= ActiveSupport::HashWithIndifferentAccess.new(
+            @original.user_values
+          )
         end
 
         def balanced_values
-          @balanced ||= HashWithIndifferentAccess.new(@original.balanced_values)
+          @balanced ||= ActiveSupport::HashWithIndifferentAccess.new(
+            @original.balanced_values
+          )
         end
 
         def parent

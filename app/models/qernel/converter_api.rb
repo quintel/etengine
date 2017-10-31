@@ -303,6 +303,8 @@ class ConverterApi
 
   # add all the attributes and methods that are modularized in calculator/
   # loads all the "open classes" in calculator
-  Dir["app/models/qernel/converter_api/*.rb"].sort.each {|file| require_dependency file }
+  Dir[Rails.root.join('app/models/qernel/converter_api/*.rb')].sort.each do |file|
+    require_dependency(file)
+  end
 end
 end

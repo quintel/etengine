@@ -6,9 +6,10 @@ store_name, * = Etm::Application.config.cache_store
 if store_name == :dalli_store
   # Dalli (Memcached) in production.
   require 'action_dispatch/middleware/session/dalli_store'
-  session_store = :dalli_store
-else
-  session_store = :cookie_store
-end
 
-Rails.application.config.session_store(session_store, key: '_etengine')
+  Rails.application.config.session_store(
+    ActionDispatch::Session::CacheStore, expire_after: 20.minutes
+  )
+else
+  Rails.application.config.session_store(:cookie_store, key: '_etengine')
+end

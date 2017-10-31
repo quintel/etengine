@@ -29,10 +29,6 @@ module Etm
     # config.i18n.default_locale = :de
     config.i18n.enforce_available_locales = true
 
-    # Opt in to Rails 5.1 behaviour that calling #to_hash on parameters only
-    # includes filtered values.
-    config.action_controller.raise_on_unfiltered_parameters = true
-
     ## Pseudo-modules
     # I packaged some classes/files separate folders
     # so we need to load them here. This is only for classes

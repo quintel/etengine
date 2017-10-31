@@ -3,9 +3,9 @@ source 'http://gems.github.com'
 
 ruby '2.4.2'
 
-gem 'rails',        '~> 5.0.6'
+gem 'rails',        '~> 5.1'
 gem 'jquery-rails', '~> 4.0'
-gem 'haml',         '~> 4.0'
+gem 'haml',         '~> 5.0'
 gem 'json',         '~> 1.8.1'
 gem 'rake',         '< 11.0'
 
