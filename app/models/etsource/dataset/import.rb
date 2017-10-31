@@ -35,14 +35,21 @@ module Etsource
       @atlas_ds = Atlas::Dataset.find(@country)
     end
 
+    # Public: Imports dataset information with the given dataset hash.
+    #
+    # Returns a Qernel::Dataset.
+    def import_data(data)
+      @dataset.data = data
+      @dataset.data[:graph][:graph] = { calculated: false }
+
+      @dataset
+    end
+
     # Public: Imports dataset information.
     #
     # Returns a Qernel::Dataset.
     def import
-      @dataset.data = load_dataset_hash
-      @dataset.data[:graph][:graph] = { calculated: false }
-
-      @dataset
+      import_data(load_dataset_hash)
     end
 
     # Return all the carrier keys we have defined in the dataset.

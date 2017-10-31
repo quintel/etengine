@@ -64,6 +64,16 @@ module Etsource
       end
     end
 
+    # Initializes a Qernel::Dataset with the given data. Used to speed up code
+    # reloading in development mode.
+    def warm_dataset_with_data(country, data)
+      return unless Rails.env.development?
+
+      cache("datasets/#{country}") do
+        ::Etsource::Dataset::Import.new(country).import_data(data)
+      end
+    end
+
     # Only used for the gql console dataset output
     def raw_hash(country)
       ::Etsource::Dataset::Import.new(country).raw_hash
