@@ -2224,7 +2224,7 @@
   :y: 9400
 :industry_locally_available_hydrogen_before_p2g:
   :x: 320
-  :y: 11480
+  :y: 11520
 :industry_locally_available_hydrogen_after_p2g:
   :x: 160
   :y: 11640
@@ -2260,7 +2260,7 @@
   :y: 16680
 :industry_chemicals_fertilizers_haber_bosch_process_hydrogen:
   :x: 40
-  :y: 11480
+  :y: 11400
 :industry_flexibility_p2g_electricity:
   :x: 580
   :y: 11640
@@ -2378,3 +2378,6 @@
 :households_water_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
   :y: 1500
+:industry_locally_available_useable_heat:
+  :x: 320
+  :y: 11440
