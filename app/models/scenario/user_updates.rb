@@ -79,7 +79,11 @@ module Scenario::UserUpdates
   end
 
   def user_values_as_yaml=(values)
-    self.user_values = YAML::load(values).with_indifferent_access
+    loaded = YAML.safe_load(values.to_s, [
+      ActiveSupport::HashWithIndifferentAccess, Symbol
+    ])
+
+    self.user_values = (loaded || {}).with_indifferent_access
   end
 
   #######
