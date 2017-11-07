@@ -2453,3 +2453,18 @@
 :bunkers_final_demand_kerosene:
   :x: 3120
   :y: 18720
+:bunkers_plane_using_bio_kerosene:
+  :x: 1520
+  :y: 18780
+:bunkers_final_demand_for_aviation_bio_kerosene:
+  :x: 2320
+  :y: 18780
+:bunkers_final_demand_bio_kerosene:
+  :x: 3120
+  :y: 18780
+:energy_distribution_bio_kerosene:
+  :x: 5600
+  :y: 6720
+:energy_import_bio_kerosene:
+  :x: 7200
+  :y: 6820
