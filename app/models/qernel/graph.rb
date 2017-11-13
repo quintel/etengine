@@ -54,7 +54,6 @@ class Graph
                 :finished_converters,
                 :area
 
-
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
     @logger = ::Qernel::Logger.new
@@ -466,9 +465,5 @@ class Graph
       end
     end
   end
-
-
-
 end
-
 end
