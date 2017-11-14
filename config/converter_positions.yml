@@ -2468,3 +2468,9 @@
 :energy_import_bio_kerosene:
   :x: 7200
   :y: 6820
+:bunkers_total_useful_demand_ships:
+  :x: 720
+  :y: 18920
+:bunkers_total_useful_demand_planes:
+  :x: 720
+  :y: 18700
