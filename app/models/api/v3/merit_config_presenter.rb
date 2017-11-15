@@ -57,9 +57,8 @@ module Api
           type:    participant_type(participant)
         }
 
-        attribute_keys(data).each_with_object(data) do |key, data|
-          value = participant.public_send(key)
-          data[key] = value == Float::INFINITY ? 0.0 : value
+        attribute_keys(data).each_with_object(data) do |key, hash|
+          hash[key] = format_value(participant.public_send(key))
         end
       end
 
@@ -87,6 +86,10 @@ module Api
         # Exclude import which has no profile.
         group = @graph.converter(producer.key).dataset_get(:merit_order).group
         group ? group.to_sym != :import : true
+      end
+
+      def format_value(value)
+        value.is_a?(Numeric) && value.to_f == Float::INFINITY ? 0.0 : value
       end
     end # MeritSummaryPresenter
   end # V3

@@ -28,6 +28,7 @@ module Api
             variable_operation_and_maintenance_costs_per_full_load_hour
             wacc
             technical_lifetime
+            total_investment_over_lifetime_per_converter
           ]
 
           converters.each do |converter|
@@ -58,7 +59,12 @@ module Api
           converter.query.fixed_operation_and_maintenance_costs_per_year,
           converter.query.variable_operation_and_maintenance_costs_per_full_load_hour,
           converter.query.wacc,
-          converter.query.technical_lifetime
+          converter.query.technical_lifetime,
+          begin
+            converter.query.total_investment_over_lifetime_per(:converter)
+          rescue StandardError
+            nil
+          end
         ]
       end
 

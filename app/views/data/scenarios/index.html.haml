@@ -4,12 +4,13 @@
   = form_tag data_scenarios_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
     = check_box_tag :in_start_menu, 1, params[:in_start_menu]
-    In start menu
+    = label_tag "In start menu", nil, for: "in_start_menu"
     = check_box_tag :protected, 1, params[:protected]
-    Protected
+    = label_tag "Protected", nil, for: "protected"
     = submit_tag "search", :class => 'btn'
 
-=link_to "create new scenario", new_data_scenario_path
+%p
+  = link_to "create new scenario", new_data_scenario_path, class: 'btn'
 
 %table.table.table-condensed
   %thead
