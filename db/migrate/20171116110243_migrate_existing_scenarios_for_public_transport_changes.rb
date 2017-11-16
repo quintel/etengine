@@ -1,6 +1,4 @@
 class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migration
-  require 'progress_bar'
-
   def up
     # Old input key -> new input key
     renamed = {
@@ -44,14 +42,26 @@ class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migratio
       'transport_truck_using_compressed_natural_gas_efficiency'
     ]
 
-    scenarios = Scenario.where("`user_values` IS NOT NULL AND `balanced_values` IS NOT NULL AND `user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' AND `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n'")
+    relevant_keys = (removed + assumptions.keys + renamed.keys)
 
-    bar = ProgressBar.new(scenarios.count)
+    scenarios = Scenario.where("(`user_values` IS NOT NULL OR `balanced_values` IS NOT NULL) AND (`user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' OR `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n')")
 
-    scenarios.each do |scenario|
+    puts "Need to migrate #{ scenarios.count } scenarios"
+
+    counter = 0
+    saved_counter = 0
+
+    scenarios.find_each do |scenario|
       %i(user_values balanced_values).each do |inputs_attribute|
+        # Step 0: Initializing
+        migrated = scenario.public_send(inputs_attribute)
+
+        overlap = (relevant_keys & migrated.keys)
+
+        next if overlap.empty?
+
         # Step 1: Translations
-        migrated = scenario.public_send(inputs_attribute).each_with_object({}) do |(key, val), obj|
+        migrated = migrated.each_with_object({}) do |(key, val), obj|
           obj[(renamed[key.to_s] || key.to_s).to_sym] = val
         end
 
@@ -80,16 +90,32 @@ class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migratio
         scenario.public_send("#{ inputs_attribute }=", migrated)
       end
 
-      if scenario.valid?
-        scenario.save
-        bar.increment!
-      else
-        a = "#{ DateTime.now } - #{ scenario.id } can't be migrated because '#{ scenario.errors.messages }'\n"
+      if scenario.changed?
+        if scenario.valid?
+          scenario.save
+        else
+          a = "#{ DateTime.now } - #{ scenario.id } can't be migrated because '#{ scenario.errors.messages }'\n"
 
-        File.open("#{ Rails.root }/log/scenarios.log", "a") { |f| f.write(a) }
+          File.open("#{ Rails.root }/log/scenarios.log", "a") { |f| f.write(a) }
 
+          scenario.save(validate: false)
+        end
+
+        saved_counter += 1
       end
+
+      if (counter % 5000) == 1
+        puts "At scenario #{ scenario.id } (#{ counter })"
+      end
+
+      if (saved_counter % 1000) == 1
+        puts "Migrated #{ saved_counter } scenarios"
+      end
+
+      counter += 1
     end
+
+    puts "In total migrated #{ saved_counter } scenarios"
   end
 
   def down
