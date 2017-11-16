@@ -2401,7 +2401,7 @@
   :y: 18700
 :bunkers_plane_using_kerosene:
   :x: 1520
-  :y: 18720
+  :y: 18760
 :bunkers_demand_for_aviation_kerosene:
   :x: 2320
   :y: 18640
@@ -2453,9 +2453,6 @@
 :bunkers_final_demand_kerosene:
   :x: 3120
   :y: 18720
-:bunkers_plane_using_bio_kerosene:
-  :x: 1520
-  :y: 18780
 :bunkers_final_demand_for_aviation_bio_kerosene:
   :x: 2320
   :y: 18780
@@ -2474,3 +2471,12 @@
 :bunkers_total_useful_demand_planes:
   :x: 720
   :y: 18700
+:bunkers_flexibility_p2l_electricity:
+  :x: 2040
+  :y: 18640
+:bunkers_locally_available_kerosene_after_p2l:
+  :x: 1780
+  :y: 18760
+:bunkers_aviation_mixer_kerosene:
+  :x: 2040
+  :y: 18760
