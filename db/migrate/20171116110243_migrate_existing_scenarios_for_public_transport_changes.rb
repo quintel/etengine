@@ -46,76 +46,61 @@ class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migratio
 
     scenarios = Scenario.where("(`user_values` IS NOT NULL OR `balanced_values` IS NOT NULL) AND (`user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' OR `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n')")
 
-    puts "Need to migrate #{ scenarios.count } scenarios"
+    total = scenarios.count
+    started = Time.now
+    changes = 0
 
-    counter = 0
-    saved_counter = 0
+    puts "Need to migrate #{ total } scenarios"
 
-    scenarios.find_each do |scenario|
+    scenarios.find_each.with_index do |scenario, idx|
+      puts "#{ idx }/#{ total } - #{ changes } changes" if (idx % 1000).zero?
+
+      changed = false
+
       %i(user_values balanced_values).each do |inputs_attribute|
         # Step 0: Initializing
         migrated = scenario.public_send(inputs_attribute)
 
-        overlap = (relevant_keys & migrated.keys)
-
-        next if overlap.empty?
-
         # Step 1: Translations
-        migrated = migrated.each_with_object({}) do |(key, val), obj|
-          obj[(renamed[key.to_s] || key.to_s).to_sym] = val
+        renamed.each do |old, new|
+          next unless migrated.key?(old)
+
+          changed = true
+          migrated[new] = migrated.delete(old)
         end
 
         # Step 2: include assumptions
-        migrated = migrated.each_with_object({}) do |(key, val), obj|
-          if assumed_key = assumptions[key.to_s]
-            obj[assumed_key.to_sym] = val
-          end
+        assumptions.each do |from, to|
+          next unless migrated.key?(from)
 
-          obj[key] = val
+          changed = true
+          migrated[to] = migrated[from]
         end
 
         # Step 3: Corrections for motorcycles
-        migrated = migrated.each_with_object({}) do |(key, val), obj|
-          if fix = corrections[key.to_s]
-            obj[fix] = (100.0 - val)
-          end
+        corrections.each do |from, to|
+          next unless migrated.key?(from)
 
-          obj[key] = val
+          changed = true
+          migrated[to] = 100.0 - migrated.delete(from)
         end
 
-        # Step 4: Remove old one's
-        migrated = migrated.except(*removed.map(&:to_sym))
+        # Step 4: Remove old ones
+        removed.each do |key|
+          next unless migrated.key?(key)
 
-        # Actual migration
-        scenario.public_send("#{ inputs_attribute }=", migrated)
-      end
-
-      if scenario.changed?
-        if scenario.valid?
-          scenario.save
-        else
-          a = "#{ DateTime.now } - #{ scenario.id } can't be migrated because '#{ scenario.errors.messages }'\n"
-
-          File.open("#{ Rails.root }/log/scenarios.log", "a") { |f| f.write(a) }
-
-          scenario.save(validate: false)
+          changed = true
+          migrated.delete(key)
         end
-
-        saved_counter += 1
       end
 
-      if (counter % 5000) == 1
-        puts "At scenario #{ scenario.id } (#{ counter })"
+      if changed
+        changes += 1
+        scenario.save(validate: false)
       end
-
-      if (saved_counter % 1000) == 1
-        puts "Migrated #{ saved_counter } scenarios"
-      end
-
-      counter += 1
     end
 
-    puts "In total migrated #{ saved_counter } scenarios"
+    puts "Finished #{ changes } changes"
   end
 
   def down
