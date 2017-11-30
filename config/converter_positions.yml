@@ -2545,13 +2545,10 @@
   :y: 5120
 :transport_freight_train_using_diesel_mix:
   :x: 1520
-  :y: 5020
+  :y: 5140
 :transport_freight_train_using_electricity:
   :x: 1520
   :y: 5080
-:transport_freight_train_using_diesel_mix:
-  :x: 1520
-  :y: 5140
 :transport_motorcycle_using_gasoline_mix:
   :x: 1520
   :y: 3640
@@ -2570,3 +2567,27 @@
 :transport_bus_using_compressed_natural_gas:
   :x: 1520
   :y: 4260
+:bunkers_flexibility_p2g_electricity:
+  :x: 2580
+  :y: 18320
+:bunkers_kerosene_production_p2l:
+  :x: 2320
+  :y: 18520
+:bunkers_p2l_direct_air_capture:
+  :x: 2580
+  :y: 18480
+:bunkers_p2l_point_source_CO:
+  :x: 2580
+  :y: 18580
+:bunkers_p2l_point_source_CO2:
+  :x: 2580
+  :y: 18640
+:bunkers_final_demand_for_p2l_electricity:
+  :x: 3120
+  :y: 18520
+:bunkers_p2l_burner_network_gas:
+  :x: 2880
+  :y: 18420
+:bunkers_final_demand_network_gas:
+  :x: 3120
+  :y: 18420
