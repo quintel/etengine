@@ -1,7 +1,7 @@
+ruby '2.4.2'
+
 source 'http://rubygems.org'
 source 'http://gems.github.com'
-
-ruby '2.4.2'
 
 gem 'rails',        '~> 5.1'
 gem 'jquery-rails', '~> 4.0'
