@@ -6,14 +6,14 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
   end
 
   let!(:scenario_one) do
-    FactoryGirl.create(:scenario, {
+    FactoryBot.create(:scenario, {
       user_values:     { 'grouped_input_one' => 25.0 },
       balanced_values: { 'grouped_input_two' => 75.0 }
     })
   end
 
   let!(:scenario_two) do
-    FactoryGirl.create(:scenario, {
+    FactoryBot.create(:scenario, {
       user_values:     { 'grouped_input_one' => 75.0 },
       balanced_values: { 'grouped_input_two' => 25.0 }
     })

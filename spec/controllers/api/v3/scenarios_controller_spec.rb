@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe Api::V3::ScenariosController do
-  let(:scenario) { FactoryGirl.create(:scenario) }
-  let(:scenarios) { 5.times.map { FactoryGirl.create(:scenario) } }
+  let(:scenario) { FactoryBot.create(:scenario) }
+  let(:scenarios) { 5.times.map { FactoryBot.create(:scenario) } }
 
   before do
     allow(Input).to receive(:records).and_return({
-      'foo' => FactoryGirl.build(:input, key: :foo, priority: 0),
-      'bar' => FactoryGirl.build(:input, key: :bar, priority: 0)
+      'foo' => FactoryBot.build(:input, key: :foo, priority: 0),
+      'bar' => FactoryBot.build(:input, key: :bar, priority: 0)
     })
 
     allow(Input).to receive(:all).and_return(Input.records.values)
@@ -52,7 +52,7 @@ describe Api::V3::ScenariosController do
 
   describe "PUT scenario" do
     before do
-      @scenario = FactoryGirl.create(:scenario, :user_values => {'foo' => 23.0})
+      @scenario = FactoryBot.create(:scenario, :user_values => {'foo' => 23.0})
     end
 
     it "should reset parameters" do

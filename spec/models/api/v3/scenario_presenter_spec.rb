@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::ScenarioPresenter do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
-  let(:scenario)   { FactoryGirl.create(:scenario, description: 'Hello!') }
+  let(:scenario)   { FactoryBot.create(:scenario, description: 'Hello!') }
 
   shared_examples_for 'a scenario presenter' do
     it { is_expected.to include(id:          scenario.id) }

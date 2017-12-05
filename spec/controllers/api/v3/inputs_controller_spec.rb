@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe Api::V3::InputsController do
-  let(:scenario) { FactoryGirl.create(:scenario) }
+  let(:scenario) { FactoryBot.create(:scenario) }
 
   let(:static_input) do
-    FactoryGirl.build(:input, {
+    FactoryBot.build(:input, {
       min_value:    5,
       max_value:   15,
       start_value: 10
@@ -12,7 +12,7 @@ describe Api::V3::InputsController do
   end
 
   let(:gql_input) do
-    FactoryGirl.build(:input, {
+    FactoryBot.build(:input, {
       start_value_gql: 'present:2 * 4',
       min_value_gql:   'present:2 * 2',
       max_value_gql:   'present:2 * 8'
@@ -202,7 +202,7 @@ describe Api::V3::InputsController do
  # ---------------------------------------------------------------------------
 
  describe 'GET /api/v3/scenarios/:scenario_id/inputs/:id,:id,...' do
-   let(:third_input) { FactoryGirl.build(:input) }
+   let(:third_input) { FactoryBot.build(:input) }
 
    let(:json) do
      allow(Input).to receive(:records).and_return({

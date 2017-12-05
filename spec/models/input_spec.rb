@@ -8,7 +8,7 @@ describe Input do
 
   context 'when the input has no GQL start, minimum, or maximum' do
     let(:input) do
-      FactoryGirl.build(:input, {
+      FactoryBot.build(:input, {
         key:         'test-input',
         start_value:  5,
         min_value:    2,
@@ -191,7 +191,7 @@ describe Input do
 
   context 'when the input has GQL start, minimum, and maximum' do
     let(:input) do
-      FactoryGirl.build(:input, {
+      FactoryBot.build(:input, {
         key:             'test-input',
         start_value:      5,
         start_value_gql: 'present:(5 * 5)',
@@ -257,7 +257,7 @@ describe Input do
 
   context 'when the input returns a non-numeric value' do
     let(:input) do
-      input = FactoryGirl.build(:input, {
+      input = FactoryBot.build(:input, {
         key:         'test-input',
         start_value:  5,
         min_value:    2,
@@ -283,7 +283,7 @@ describe Input do
 
   context 'when the input have nil GQL start, minimum, and maximum' do
     let(:input) do
-      FactoryGirl.build(:input, {
+      FactoryBot.build(:input, {
         key:             'test-input',
         start_value:      nil,
         start_value_gql: 'present:nil',

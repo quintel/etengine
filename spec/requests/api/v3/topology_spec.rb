@@ -6,7 +6,7 @@ describe 'APIv3 Topology Data' do
     Etsource::Base.loader('spec/fixtures/etsource')
   end
 
-  let(:scenario) { FactoryGirl.create(:scenario) }
+  let(:scenario) { FactoryBot.create(:scenario) }
 
   before do
     get("/api/v3/scenarios/#{ scenario.id }/converters/topology")

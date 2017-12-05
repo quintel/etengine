@@ -7,7 +7,6 @@ gem 'rails',        '~> 5.1'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json',         '~> 1.8.1'
-gem 'rake',         '< 11.0'
 
 # https://stackoverflow.com/questions/35893584/nomethoderror-undefined-method-last-comment-after-upgrading-to-rake-11
 gem 'rake', '< 11.0'
@@ -51,7 +50,7 @@ gem 'refinery',      ref: '9fe6ac4',  github: 'quintel/refinery'
 gem 'atlas',         ref: '85f7746',  github: 'quintel/atlas'
 
 # system gems
-gem 'mysql2',         '~>0.3.11'
+gem 'mysql2'
 gem 'dalli'
 
 gem 'term-ansicolor', '1.0.7', require: false
@@ -79,7 +78,7 @@ group :test, :development do
 end
 
 group :test do
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'shoulda-matchers'
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Gql::Gql do
-  let(:scenario) { FactoryGirl.create(:scenario, area_code: 'ameland') }
+  let(:scenario) { FactoryBot.create(:scenario, area_code: 'ameland') }
   let(:gql) { Gql::Gql.new(scenario) }
 
   describe "with correct initial inputs" do

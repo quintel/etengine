@@ -5,7 +5,7 @@ describe ScenarioScaling do
     ScenarioScaling.new(
       area_attribute: :number_of_residences,
       value:          500_000,
-      scenario:       FactoryGirl.build(:scenario)
+      scenario:       FactoryBot.build(:scenario)
     )
   end
 

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Data::ConvertersController do
-  let!(:admin) { FactoryGirl.create(:admin) }
+  let!(:admin) { FactoryBot.create(:admin) }
 
   before do
     sign_in(admin)
-    FactoryGirl.create :scenario
+    FactoryBot.create :scenario
   end
 
   describe "GET index" do

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :scenario do
     title "Some scenario"
     area_code "nl"

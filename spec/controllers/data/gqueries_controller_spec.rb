@@ -3,12 +3,12 @@ require 'spec_helper'
 describe Data::GqueriesController, :etsource_fixture do
   render_views
 
-  let!(:admin) { FactoryGirl.create :admin }
+  let!(:admin) { FactoryBot.create :admin }
   let!(:gquery) { Gquery.get('bar_demand') }
 
   before do
     sign_in(admin)
-    FactoryGirl.create :scenario
+    FactoryBot.create :scenario
   end
 
   describe "GET index" do

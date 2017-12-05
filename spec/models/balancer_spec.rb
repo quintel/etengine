@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Balancer' do
-  let(:inputs)      { FactoryGirl.build_list(:static_input, 3) }
+  let(:inputs)      { FactoryBot.build_list(:static_input, 3) }
   let(:equilibrium) { 100.0 }
 
   let(:subordinates) do
@@ -9,7 +9,7 @@ describe 'Balancer' do
     allow(Input).to receive(:all).and_return(inputs)
 
     values   = masters.zip(inputs).map { |value, input| [input.key, value] }
-    scenario = FactoryGirl.build(:scenario)
+    scenario = FactoryBot.build(:scenario)
 
     Balancer.new(inputs, equilibrium).balance(scenario, Hash[values])
   end
@@ -356,7 +356,7 @@ describe 'Balancer' do
   # --------------------------------------------------------------------------
 
   describe 'With irregular values' do
-    let(:inputs)  { FactoryGirl.build_list(:static_input, 5) }
+    let(:inputs)  { FactoryBot.build_list(:static_input, 5) }
 
     before do
       inputs[0].start_value = 89.99

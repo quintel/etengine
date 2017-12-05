@@ -84,7 +84,7 @@ describe Scenario do
 
     context 'with a user value present' do
       let(:scenario) do
-        FactoryGirl.create(:scenario, {
+        FactoryBot.create(:scenario, {
           user_values:     { 'my-input' => 20.0 },
           balanced_values: { 'my-input' => 50.0 }
         })
@@ -97,7 +97,7 @@ describe Scenario do
 
     context 'with a balanced value present' do
       let(:scenario) do
-        FactoryGirl.create(:scenario, balanced_values: { 'my-input' => 50.0 })
+        FactoryBot.create(:scenario, balanced_values: { 'my-input' => 50.0 })
       end
 
       it 'returns the balanced value' do
@@ -106,7 +106,7 @@ describe Scenario do
     end
 
     context 'with no user or balanced value' do
-      let(:scenario) { FactoryGirl.create(:scenario) }
+      let(:scenario) { FactoryBot.create(:scenario) }
 
       it "returns the input's default value" do
         expect(scenario.input_value(input)).to eql(99.0)
@@ -115,7 +115,7 @@ describe Scenario do
 
     context 'given nil' do
       it 'raises an error' do
-        expect { FactoryGirl.create(:scenario).input_value(nil) }.
+        expect { FactoryBot.create(:scenario).input_value(nil) }.
           to raise_error(/nil is not an input/)
       end
     end
@@ -258,7 +258,7 @@ describe Scenario do
 
   describe 'with a preset scenario' do
     let(:preset) do
-      FactoryGirl.create(:scenario, {
+      FactoryBot.create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
         user_values:     { 'grouped_input_one' => 1 },
         balanced_values: { 'grouped_input_two' => 2 }
@@ -329,7 +329,7 @@ describe Scenario do
 
   describe 'cloning a scaled scenario to an unscaled scenario' do
     let(:preset) do
-      FactoryGirl.create(:scenario, {
+      FactoryBot.create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
         user_values:     { 'grouped_input_one' => 2 },
         balanced_values: { 'grouped_input_two' => 8 },

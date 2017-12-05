@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Api::V3::ApplicationDemandsPresenter do
-  let(:scenario) { FactoryGirl.create(:scenario) }
+  let(:scenario) { FactoryBot.create(:scenario) }
 
   subject do
     CSV.parse(

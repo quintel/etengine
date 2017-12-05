@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::PresetPresenter do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
-  let(:preset)     { FactoryGirl.create(:scenario, description: 'Hello!') }
+  let(:preset)     { FactoryBot.create(:scenario, description: 'Hello!') }
 
   subject do
     Api::V3::PresetPresenter.new(controller, preset).as_json

@@ -47,7 +47,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
   # --------------------------------------------------------------------------
 
-  let(:scenario) { FactoryGirl.create(:scenario) }
+  let(:scenario) { FactoryBot.create(:scenario) }
   let(:updater)  { Api::V3::ScenarioUpdater.new(scenario, params) }
 
   # --------------------------------------------------------------------------

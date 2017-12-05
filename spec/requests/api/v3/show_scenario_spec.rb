@@ -6,7 +6,7 @@ describe 'APIv3 Scenarios' do
     Etsource::Base.loader('spec/fixtures/etsource')
   end
 
-  let(:scenario) { FactoryGirl.create(:scenario) }
+  let(:scenario) { FactoryBot.create(:scenario) }
   let(:json)     { JSON.parse(response.body) }
 
   context 'with no "detailed" param' do

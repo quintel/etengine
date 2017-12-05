@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :input do
     sequence(:key) { |n| "input-#{ n }" }
     min_value 0

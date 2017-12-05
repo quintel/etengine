@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe UsersController do
-  let(:admin) {FactoryGirl.create :admin}
+  let(:admin) {FactoryBot.create :admin}
 
   describe "GET index" do
     it "should redirect non admins" do

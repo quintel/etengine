@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :link do
     parent_id 2#  {|parent| parent.association(:converter) }
     converter_id 3#  {|child| child.association(:converter) }

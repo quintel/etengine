@@ -86,7 +86,7 @@ describe Preset, :etsource_fixture do
     let(:preset) { Preset.from_scenario(scenario) }
 
     context 'with an unscaled scenario' do
-      let(:scenario) { FactoryGirl.build(:scenario, user_values: { a: 1 }) }
+      let(:scenario) { FactoryBot.build(:scenario, user_values: { a: 1 }) }
 
       it 'sets user values' do
         expect(preset.user_values).to eq(scenario.user_values)
@@ -99,7 +99,7 @@ describe Preset, :etsource_fixture do
 
     context 'with a scaled scenario' do
       let(:scenario) do
-        FactoryGirl.build(:scenario, user_values: { a: 1 }).tap do |s|
+        FactoryBot.build(:scenario, user_values: { a: 1 }).tap do |s|
           s.scaler = ScenarioScaling.new(value: 300, base_value: 500)
         end
       end

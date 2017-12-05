@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe ScenarioMerger do
   let(:scenario_one) do
-    FactoryGirl.build(:scenario, {
+    FactoryBot.build(:scenario, {
       user_values:     { 'grouped_input_one' => 25.0 },
       balanced_values: { 'grouped_input_two' => 75.0 }
     })
   end
 
   let(:scenario_two) do
-    FactoryGirl.build(:scenario, {
+    FactoryBot.build(:scenario, {
       user_values:     { 'grouped_input_one' => 75.0 },
       balanced_values: { 'grouped_input_two' => 25.0 }
     })

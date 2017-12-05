@@ -7,7 +7,7 @@ describe 'Updating inputs with API v3' do
   end
 
   let(:scenario) do
-    FactoryGirl.create(:scenario,
+    FactoryBot.create(:scenario,
       user_values:     { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
   end
@@ -15,15 +15,15 @@ describe 'Updating inputs with API v3' do
   before do
     allow(Input).to receive(:records).and_return({
       'balanced_one' =>
-        FactoryGirl.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped', priority: 0),
+        FactoryBot.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped', priority: 0),
       'balanced_two' =>
-        FactoryGirl.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped', priority: 0),
+        FactoryBot.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped', priority: 0),
       'unrelated_one' =>
-        FactoryGirl.build(:input, key: 'unrelated_one', share_group: 'diode', priority: 0),
+        FactoryBot.build(:input, key: 'unrelated_one', share_group: 'diode', priority: 0),
       'unrelated_two' =>
-        FactoryGirl.build(:input, key: 'unrelated_two', share_group: 'diode', priority: 0),
+        FactoryBot.build(:input, key: 'unrelated_two', share_group: 'diode', priority: 0),
       'nongrouped' =>
-        FactoryGirl.build(:input, key: 'nongrouped', priority: 0)
+        FactoryBot.build(:input, key: 'nongrouped', priority: 0)
     })
 
     allow(Input).to receive(:all).and_return(Input.records.values)
