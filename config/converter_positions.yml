@@ -2568,26 +2568,32 @@
   :x: 1520
   :y: 4260
 :bunkers_flexibility_p2g_electricity:
-  :x: 2580
-  :y: 18320
+  :x: 2780
+  :y: 18340
 :bunkers_kerosene_production_p2l:
   :x: 2320
-  :y: 18520
+  :y: 18500
 :bunkers_p2l_direct_air_capture:
-  :x: 2580
-  :y: 18480
+  :x: 2780
+  :y: 18540
 :bunkers_p2l_point_source_CO:
-  :x: 2580
-  :y: 18580
+  :x: 2780
+  :y: 18600
 :bunkers_p2l_point_source_CO2:
-  :x: 2580
-  :y: 18640
+  :x: 2780
+  :y: 18660
 :bunkers_final_demand_for_p2l_electricity:
   :x: 3120
-  :y: 18520
+  :y: 18500
 :bunkers_p2l_burner_network_gas:
-  :x: 2880
+  :x: 2960
   :y: 18420
 :bunkers_final_demand_network_gas:
   :x: 3120
   :y: 18420
+:bunkers_p2l_mixer_co:
+  :x: 2600
+  :y: 18540
+:bunkers_final_demand_electricity:
+  :x: 3120
+  :y: 18500
