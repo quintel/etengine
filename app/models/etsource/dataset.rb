@@ -24,7 +24,9 @@ module Etsource
       ::Etsource::Dataset::Import.new(country).import
     end
 
-    def self.region_codes
+    def self.region_codes(refresh: false)
+      NastyCache.instance.delete('region_codes') if refresh
+
       NastyCache.instance.fetch('region_codes') do
         Atlas::Dataset.all
           .select { |dataset| dataset.enabled[:etengine] }
