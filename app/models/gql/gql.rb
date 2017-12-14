@@ -285,14 +285,21 @@ module Gql
 
     def update_present
       instrument('gql.performance.present.update_present') do
-        scenario.inputs_present.each { |input, value| update_graph(present, input, value) }
+        scenario.inputs_present.each do |input, value|
+          update_graph(present, input, value)
+        end
       end
     end
 
     def update_future
       instrument('gql.performance.future.update_future') do
-        scenario.inputs_before.each { |input, value| update_graph(future, input, value) }
-        scenario.inputs_future.each { |input, value| update_graph(future, input, value) }
+        scenario.inputs_before.each do |input, value|
+          update_graph(future, input, value)
+        end
+
+        scenario.inputs_future.each do |input, value|
+          update_graph(future, input, value)
+        end
       end
     end
 
@@ -358,10 +365,10 @@ module Gql
     end
 
     def set_initializer_inputs(graph)
-      instrument("gql.performance.#{graph}.set_initializer_inputs") do
-        present.graph.initializer_inputs.each do |input, value|
-          update_graph(graph, input, value)
-        end
+      return unless present_graph.area.uses_deprecated_initializer_inputs
+
+      present.graph.initializer_inputs.each do |input, value|
+        update_graph(graph, input, value)
       end
     end
   end
