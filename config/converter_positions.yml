@@ -46,43 +46,43 @@
   :y: 6220
 :transport_plane_using_gasoline:
   :x: 1520
-  :y: 4420
-:transport_train_using_diesel:
+  :y: 3900
+:transport_train_using_diesel_mix:
   :x: 1520
-  :y: 4280
+  :y: 4520
 :transport_train_using_coal:
   :x: 1520
-  :y: 4220
+  :y: 4460
 :transport_train_using_electricity:
   :x: 1520
-  :y: 4340
+  :y: 4580
 :transport_car_using_compressed_natural_gas:
   :x: 1520
-  :y: 3580
+  :y: 3460
 :transport_truck_using_compressed_natural_gas:
   :x: 1520
-  :y: 3960
+  :y: 4780
 :transport_car_using_lpg:
   :x: 1520
-  :y: 3400
+  :y: 3280
 :transport_car_using_gasoline_mix:
   :x: 1520
-  :y: 3460
+  :y: 3340
 :transport_car_using_diesel_mix:
   :x: 1520
-  :y: 3520
+  :y: 3400
 :transport_car_using_electricity:
   :x: 1520
-  :y: 3640
+  :y: 3520
 :transport_truck_using_gasoline_mix:
   :x: 1520
-  :y: 3840
+  :y: 4720
 :transport_truck_using_diesel_mix:
   :x: 1520
-  :y: 3900
+  :y: 4840
 :transport_truck_using_electricity:
   :x: 1520
-  :y: 4020
+  :y: 4960
 :buildings_useful_demand_for_appliances:
   :x: 720
   :y: 7580
@@ -295,22 +295,22 @@
   :y: 6380
 :transport_useful_demand_planes:
   :x: 720
-  :y: 4480
+  :y: 3960
 :transport_plane_using_bio_ethanol:
   :x: 1520
-  :y: 4540
+  :y: 4020
 :transport_useful_demand_trains:
   :x: 720
-  :y: 4280
+  :y: 4520
 :agriculture_useful_demand_useable_heat:
   :x: 660
-  :y: 5340
+  :y: 5440
 :agriculture_final_demand_for_heat_network_gas:
   :x: 1860
   :y: 5220
 :agriculture_useful_demand_electricity:
   :x: 660
-  :y: 5540
+  :y: 5660
 :agriculture_final_demand_for_heat_crude_oil:
   :x: 1860
   :y: 5280
@@ -481,7 +481,7 @@
   :y: 10260
 :transport_final_demand_crude_oil_non_energetic:
   :x: 3120
-  :y: 4880
+  :y: 5000
 :agriculture_final_demand_network_gas:
   :x: 2700
   :y: 5180
@@ -496,7 +496,7 @@
   :y: 5420
 :transport_useful_demand_crude_oil_non_energetic:
   :x: 720
-  :y: 4880
+  :y: 5320
 :environment_water:
   :x: 7240
   :y: 5320
@@ -715,19 +715,19 @@
   :y: 3760
 :agriculture_burner_wood_pellets:
   :x: 1060
-  :y: 5440
+  :y: 5540
 :agriculture_burner_crude_oil:
   :x: 1060
-  :y: 5320
+  :y: 5420
 :agriculture_burner_network_gas:
   :x: 1060
-  :y: 5260
+  :y: 5360
 :agriculture_heatpump_water_water_ts_electricity:
   :x: 1060
-  :y: 5500
+  :y: 5600
 :agriculture_geothermal:
   :x: 1060
-  :y: 5380
+  :y: 5480
 :energy_extraction_lignite:
   :x: 7700
   :y: 3440
@@ -979,10 +979,10 @@
   :y: 4340
 :transport_final_demand_for_shipping_diesel:
   :x: 2320
-  :y: 4660
+  :y: 4720
 :transport_final_demand_for_shipping_heavy_fuel_oil:
   :x: 2320
-  :y: 4720
+  :y: 4780
 :transport_final_demand_for_aviation_gasoline:
   :x: 2320
   :y: 4420
@@ -1000,13 +1000,13 @@
   :y: 4280
 :transport_final_demand_for_shipping_biodiesel:
   :x: 2320
-  :y: 4780
+  :y: 4840
 :transport_final_demand_for_aviation_biodiesel:
   :x: 2320
   :y: 4540
 :transport_plane_using_kerosene:
   :x: 1520
-  :y: 4480
+  :y: 3960
 :other_heater_district_heating_steam_hot_water:
   :x: 1520
   :y: 8360
@@ -1522,16 +1522,16 @@
   :y: 1380
 :transport_useful_demand_ship_kms:
   :x: 720
-  :y: 4660
+  :y: 4960
 :transport_ship_using_diesel_mix:
   :x: 1520
-  :y: 4620
+  :y: 5280
 :transport_final_demand_for_shipping_lng:
   :x: 2320
-  :y: 4840
+  :y: 4900
 :transport_shipping_mixer_diesel:
-  :x: 1960
-  :y: 4620
+  :x: 1920
+  :y: 4900
 :energy_regasification_lng:
   :x: 7320
   :y: 4360
@@ -1546,16 +1546,16 @@
   :y: 4540
 :transport_ship_using_lng_mix:
   :x: 1520
-  :y: 4680
+  :y: 5220
 :transport_shipping_mixer_lng:
-  :x: 1960
-  :y: 4680
+  :x: 1920
+  :y: 4960
 :transport_final_demand_for_shipping_bio_lng:
   :x: 2320
-  :y: 4900
+  :y: 4960
 :transport_truck_using_lng_mix:
   :x: 1520
-  :y: 4080
+  :y: 4900
 :transport_road_mixer_lng:
   :x: 1960
   :y: 3880
@@ -1588,7 +1588,7 @@
   :y: 1680
 :transport_car_using_hydrogen:
   :x: 1520
-  :y: 3760
+  :y: 3580
 :transport_final_demand_for_road_hydrogen:
   :x: 2320
   :y: 4000
@@ -1621,7 +1621,7 @@
   :y: 1940
 :transport_car_flexibility_p2p_electricity:
   :x: 1520
-  :y: 3700
+  :y: 3220
 :energy_locally_available_hydrogen_after_p2g:
   :x: 3460
   :y: 3680
@@ -2269,7 +2269,7 @@
   :y: 11460
 :transport_truck_using_hydrogen:
   :x: 1520
-  :y: 4140
+  :y: 5020
 :industry_chemicals_other_heatpump_water_water_electricity:
   :x: 1180
   :y: 12120
@@ -2483,3 +2483,120 @@
 :bunkers_aviation_mixer_kerosene:
   :x: 2040
   :y: 18760
+:transport_useful_demand_passenger_kms:
+  :x: 340
+  :y: 3920
+:transport_useful_demand_freight_kms:
+  :x: 340
+  :y: 4220
+:transport_useful_demand_freight_tonne_kms:
+  :x: 340
+  :y: 5020
+:transport_useful_demand_trucks:
+  :x: 720
+  :y: 4820
+:transport_useful_demand_cars:
+  :x: 720
+  :y: 3420
+:transport_useful_demand_ships:
+  :x: 720
+  :y: 5240
+:transport_useful_demand_busses:
+  :x: 720
+  :y: 4240
+:transport_bus_using_electricity:
+  :x: 1520
+  :y: 4140
+:transport_useful_demand_trams:
+  :x: 720
+  :y: 4640
+:transport_tram_using_electricity:
+  :x: 1520
+  :y: 4640
+:transport_useful_demand_motorcycles:
+  :x: 720
+  :y: 3700
+:transport_motorcycle_using_electricity:
+  :x: 1520
+  :y: 3700
+:transport_useful_demand_bicycles:
+  :x: 720
+  :y: 3820
+:transport_bicycle_using_electricity:
+  :x: 1520
+  :y: 3820
+:transport_bus_using_gasoline_mix:
+  :x: 1520
+  :y: 4080
+:transport_bicycle_using_human_energy:
+  :x: 1520
+  :y: 3760
+:transport_bus_using_diesel_mix:
+  :x: 1520
+  :y: 4200
+:transport_bus_using_compressed_network_gas:
+  :x: 1520
+  :y: 4260
+:transport_bus_using_lng_mix:
+  :x: 1520
+  :y: 4320
+:transport_bus_using_hydrogen:
+  :x: 1520
+  :y: 4380
+:transport_useful_demand_freight_trains:
+  :x: 720
+  :y: 5120
+:transport_freight_train_using_diesel_mix:
+  :x: 1520
+  :y: 5140
+:transport_freight_train_using_electricity:
+  :x: 1520
+  :y: 5080
+:transport_motorcycle_using_gasoline_mix:
+  :x: 1520
+  :y: 3640
+:transport_passenger_train_using_coal:
+  :x: 1520
+  :y: 4440
+:transport_passenger_train_using_diesel_mix:
+  :x: 1520
+  :y: 4560
+:transport_passenger_train_using_electricity:
+  :x: 1520
+  :y: 4500
+:transport_useful_demand_passenger_trains:
+  :x: 720
+  :y: 4500
+:transport_bus_using_compressed_natural_gas:
+  :x: 1520
+  :y: 4260
+:bunkers_flexibility_p2g_electricity:
+  :x: 2780
+  :y: 18340
+:bunkers_kerosene_production_p2l:
+  :x: 2320
+  :y: 18500
+:bunkers_p2l_direct_air_capture:
+  :x: 2780
+  :y: 18540
+:bunkers_p2l_point_source_CO:
+  :x: 2780
+  :y: 18600
+:bunkers_p2l_point_source_CO2:
+  :x: 2780
+  :y: 18660
+:bunkers_final_demand_for_p2l_electricity:
+  :x: 3120
+  :y: 18500
+:bunkers_p2l_burner_network_gas:
+  :x: 2960
+  :y: 18420
+:bunkers_final_demand_network_gas:
+  :x: 3120
+  :y: 18420
+:bunkers_p2l_mixer_co:
+  :x: 2600
+  :y: 18540
+:bunkers_final_demand_electricity:
+  :x: 3120
+  :y: 18500

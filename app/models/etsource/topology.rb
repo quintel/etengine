@@ -1,6 +1,5 @@
 module Etsource
   class Topology
-
     def initialize(etsource = Etsource::Base.instance)
       @etsource = etsource
     end
@@ -18,6 +17,7 @@ module Etsource
       establish_links!
 
       graph.assign_graph_to_qernel_objects
+
       graph
     end
 
@@ -190,5 +190,4 @@ module Etsource
       end
     end
   end
-
 end
