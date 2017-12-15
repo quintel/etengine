@@ -56,6 +56,35 @@ describe NastyCache do
     @cache.fetch_cached('cache_1_baz') { "bar" }.should == "bar"
   end
 
+  context 'delete' do
+    context 'when no value is set' do
+      it 'does nothing' do
+        @cache.delete('no')
+        expect(@cache.get('no')).to be_nil
+      end
+    end
+
+    context 'when an in-memory value is set' do
+      before { @cache.set('inmem', 1) }
+
+      it 'removes the in-memory value' do
+        expect { @cache.delete('inmem') }
+          .to change { @cache.get('inmem') }
+          .from(1).to(nil)
+      end
+    end
+
+    context 'when a Rails cache value is set' do
+      before { @cache.fetch_cached('rval') { 2 } }
+
+      it 'removes the in-memory value' do
+        expect { @cache.delete('rval') }
+          .to change { @cache.get('rval') }
+          .from(2).to(nil)
+      end
+    end
+  end
+
   context "two processes" do
     before {
       @cache_1 = NastyCache.new_process

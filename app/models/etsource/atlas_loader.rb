@@ -129,7 +129,7 @@ module Etsource
       def reload!
         super
 
-        Etsource::Dataset.region_codes.each do |code|
+        Etsource::Dataset.region_codes(refresh: true).each do |code|
           calculator = ->{ calculate!(code) }
 
           yield(code, calculator) if block_given?
