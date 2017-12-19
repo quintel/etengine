@@ -128,6 +128,12 @@ module Gql::Runtime
         end
       end
 
+      def UPDATE_WITH_NUMBER(*value_terms)
+        update_something_by(*value_terms) do |original_value, input_value|
+          input_value
+        end
+      end
+
       # @private
       def update_something_by(*value_terms)
         input_value_proc = value_terms.pop
