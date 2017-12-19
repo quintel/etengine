@@ -128,10 +128,9 @@ module Gql::Runtime
         end
       end
 
-      def UPDATE_WITH_NUMBER(*value_terms)
-        update_something_by(*value_terms) do |original_value, input_value|
-          input_value
-        end
+      # Same as UPDATE, but forcefully behaving as the :absolute strategy.
+      def UPDATE_ABSOLUTE(*value_terms)
+        update_something_by(*value_terms) { |_, input_value| input_value }
       end
 
       # @private
