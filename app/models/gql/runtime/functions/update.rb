@@ -128,6 +128,11 @@ module Gql::Runtime
         end
       end
 
+      # Same as UPDATE, but forcefully behaving as the :absolute strategy.
+      def UPDATE_ABSOLUTE(*value_terms)
+        update_something_by(*value_terms) { |_, input_value| input_value }
+      end
+
       # @private
       def update_something_by(*value_terms)
         input_value_proc = value_terms.pop
