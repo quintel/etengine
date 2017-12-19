@@ -2223,11 +2223,11 @@
   :x: 2100
   :y: 9400
 :industry_locally_available_hydrogen_before_p2g:
-  :x: 320
-  :y: 11480
+  :x: 340
+  :y: 11460
 :industry_locally_available_hydrogen_after_p2g:
-  :x: 160
-  :y: 11640
+  :x: 180
+  :y: 11460
 :industry_other_food_burner_coal:
   :x: 1220
   :y: 13800
@@ -2260,13 +2260,13 @@
   :y: 16680
 :industry_chemicals_fertilizers_haber_bosch_process_hydrogen:
   :x: 40
-  :y: 11480
+  :y: 11400
 :industry_flexibility_p2g_electricity:
-  :x: 580
-  :y: 11640
+  :x: 340
+  :y: 11540
 :industry_chemicals_fertilizers_steam_methane_reformer_hydrogen:
-  :x: 580
-  :y: 11480
+  :x: 520
+  :y: 11460
 :transport_truck_using_hydrogen:
   :x: 1520
   :y: 5020
@@ -2378,6 +2378,9 @@
 :households_water_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
   :y: 1500
+:industry_locally_available_useable_heat:
+  :x: 340
+  :y: 11400
 :bunkers_useful_demand_planes:
   :x: 720
   :y: 18760
@@ -2545,13 +2548,10 @@
   :y: 5120
 :transport_freight_train_using_diesel_mix:
   :x: 1520
-  :y: 5020
+  :y: 5140
 :transport_freight_train_using_electricity:
   :x: 1520
   :y: 5080
-:transport_freight_train_using_diesel_mix:
-  :x: 1520
-  :y: 5140
 :transport_motorcycle_using_gasoline_mix:
   :x: 1520
   :y: 3640
@@ -2570,3 +2570,33 @@
 :transport_bus_using_compressed_natural_gas:
   :x: 1520
   :y: 4260
+:bunkers_flexibility_p2g_electricity:
+  :x: 2780
+  :y: 18340
+:bunkers_kerosene_production_p2l:
+  :x: 2320
+  :y: 18500
+:bunkers_p2l_direct_air_capture:
+  :x: 2780
+  :y: 18540
+:bunkers_p2l_point_source_CO:
+  :x: 2780
+  :y: 18600
+:bunkers_p2l_point_source_CO2:
+  :x: 2780
+  :y: 18660
+:bunkers_final_demand_for_p2l_electricity:
+  :x: 3120
+  :y: 18500
+:bunkers_p2l_burner_network_gas:
+  :x: 2960
+  :y: 18420
+:bunkers_final_demand_network_gas:
+  :x: 3120
+  :y: 18420
+:bunkers_p2l_mixer_co:
+  :x: 2600
+  :y: 18540
+:bunkers_final_demand_electricity:
+  :x: 3120
+  :y: 18500

@@ -113,6 +113,11 @@ class NastyCache
     @cache_store[key] = value
   end
 
+  def delete(key)
+    @cache_store.delete(key)
+    Rails.cache.delete(rails_cache_key(key))
+  end
+
 ##############
 # protected
 ##############
