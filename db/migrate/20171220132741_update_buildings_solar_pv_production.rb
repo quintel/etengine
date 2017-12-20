@@ -67,7 +67,7 @@ class UpdateBuildingsSolarPvProduction < ActiveRecord::Migration
       scenarios.find_each.with_index do |scenario, index|
         if affected_scenario?(scenario)
           yield(scenario)
-          scenario.save!
+          scenario.save(validate: false)
         end
 
         say "| #{ index }" if (index % 500).zero? && !index.zero?
