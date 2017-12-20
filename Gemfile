@@ -7,6 +7,7 @@ gem 'rails',        '~> 4.1.0'
 gem 'jquery-rails', '~> 2.0.2'
 gem 'haml',         '~> 4.0'
 gem 'json',         '~> 1.8.1'
+gem 'rake',         '< 11.0'
 
 gem 'gravatar_image_tag'
 
