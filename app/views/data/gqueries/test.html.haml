@@ -10,8 +10,8 @@
         = submit_tag 'Run GQL', :class => 'btn btn-primary btn-large'
         = submit_tag 'Debug', :class => 'btn btn-large'
 
-- if @query    
+- if @result
   .row
     .span11
       %h2(style="margin-bottom: .5em") Result
-      = render 'result'
+      = render 'result', result: @result
