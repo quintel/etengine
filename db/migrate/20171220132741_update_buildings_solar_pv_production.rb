@@ -1,4 +1,4 @@
-class UpdateBuildingsSolarPvProduction < ActiveRecord::Migration
+class UpdateBuildingsSolarPvProduction < ActiveRecord::Migration[5.1]
   INPUTS = %w[
     buildings_solar_pv_solar_radiation_market_penetration
     number_of_buildings
