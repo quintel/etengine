@@ -11,15 +11,17 @@ class Data::GqueriesController < Data::BaseController
     @gqueries = Kaminari.paginate_array(all.sort_by(&:key)).page(params[:page]).per(50)
   end
 
+  # GET test
   def test
     if params[:commit] == "Debug"
       redirect_to data_debug_gql_path(gquery: params[:query])
-    else
-      @query = params[:query].gsub(/\s/,'') if params[:query].present?
+    elsif params[:query].present?
+      @result = @gql.query(params[:query].gsub(/\s/,''))
     end
   end
 
   def show
+    @result = @gql.query(@gquery.query)
   end
 
   def result
