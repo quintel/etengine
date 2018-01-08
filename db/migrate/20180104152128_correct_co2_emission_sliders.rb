@@ -1,7 +1,7 @@
-class CorrectCo2EmissionSliders < ActiveRecord::Migration
+class CorrectCo2EmissionSliders < ActiveRecord::Migration[5.1]
   KG_PER_MJ_IN_G_PER_KWH = 3600.0
 
-  def change
+  def up
     scenarios = Scenario.where(
       '(protected = ? OR created_at >= ?) AND source != ? AND title != ?',
       true, 1.month.ago, 'Mechanical Turk', 'test'
@@ -30,5 +30,9 @@ class CorrectCo2EmissionSliders < ActiveRecord::Migration
 
       count += 1
     end
+  end
+
+  def down
+    raise ActiveRecord::IrreversibleMigration
   end
 end
