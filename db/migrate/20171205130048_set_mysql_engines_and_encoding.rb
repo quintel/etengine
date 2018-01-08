@@ -4,6 +4,9 @@ class SetMysqlEnginesAndEncoding < ActiveRecord::Migration[5.1]
       return
     end
 
+    # https://stackoverflow.com/a/31474509
+    change_column :users, :trackable, :string, default: '0', limit: 191
+
     tables = %i(
       fce_values
       flexibility_orders
@@ -30,9 +33,6 @@ class SetMysqlEnginesAndEncoding < ActiveRecord::Migration[5.1]
         )
       end
     end
-
-    # https://stackoverflow.com/a/31474509
-    change_column :users, :trackable, :string, default: '0', limit: 191
   end
 
   def down
