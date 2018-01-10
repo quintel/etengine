@@ -185,6 +185,52 @@ module Api
         }
       }
 
+      # If the converter belongs to the :cost_electricity_production group then
+      # add these
+      FLEXIBILITY_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MW',
+              formatter: FORMAT_1DP },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        },
+        :cost => {
+          'initial_investment_per(:mw_electricity)' =>
+            { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
+              formatter: FORMAT_KILO },
+          'ccs_investment_per(:mw_electricity)' =>
+            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
+              formatter: FORMAT_KILO },
+          'decommissioning_costs_per(:mw_electricity)' =>
+            { label: 'Decommissioning costs', unit:'kEUR / MWe',
+              formatter: FORMAT_KILO },
+          'fixed_operation_and_maintenance_costs_per(:mw_electricity)' =>
+            { label: 'Fixed operation and maintenance costs', unit:'kEUR / MWe / year',
+              formatter: ->(n) { '%.2f' % (n / 1000) } },
+          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
+            { label: 'Variable operation and maintenance costs (excl CCS)', unit: 'EUR / full load hour',
+              formatter: ->(n) { n.to_i } },
+          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
+            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour',
+              formatter: ->(n) { n.to_i } },
+          :wacc  =>
+            {label: 'Weighted average cost of capital', unit: '%'},
+          :takes_part_in_ets  =>
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+        },
+        :other => {
+          :land_use_per_unit  =>
+            {label: 'Land use per unit', unit: 'km2'},
+          :construction_time  =>
+            { label: 'Construction time', unit: 'years',
+              formatter: FORMAT_1DP },
+          :technical_lifetime  =>
+            { label: 'Technical lifetime', unit: 'years',
+              formatter: ->(n) { n.to_i } }
+        }
+      }
+
       # some converters use extra attributes. Rather than messing up the views I
       # add the method here. I hope this will be removed
       def uses_coal_and_wood_pellets?
@@ -200,6 +246,7 @@ module Api
         out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.groups.include?(:cost_electricity_production)
         out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.groups.include?(:cost_heat_pumps)
         out = CHP_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_chps)
+        out = FLEXIBILITY_ATTRIBUTES_AND_METHODS            if @converter.groups.include?(:cost_flexibility)
 
         # custom stuff, trying to keep the view simple
         if uses_coal_and_wood_pellets?
