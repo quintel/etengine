@@ -185,7 +185,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_electricity_production group then
+      # If the converter belongs to the :cost_flexibility group then
       # add these
       FLEXIBILITY_ATTRIBUTES_AND_METHODS = {
         :technical => {
