@@ -7,7 +7,11 @@ module Api
         :cost_traditional_heat,
         :cost_electricity_production,
         :cost_heat_pumps,
-        :cost_chps
+        :cost_chps,
+        :cost_carbon_capturing,
+        :cost_p2g,
+        :cost_p2h,
+        :cost_p2kerosene
       ]
 
       def initialize(scenario)

@@ -149,6 +149,8 @@ class Qernel::ConverterApi
     # MW capacity
     when :mw_input
       cost / input_capacity.to_f
+    when :mw_typical_input_capacity
+      cost / typical_input_capacity.to_f
     when :mw_electricity
       cost / electricity_output_capacity.to_f
     when :mw_heat

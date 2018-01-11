@@ -185,6 +185,103 @@ module Api
         }
       }
 
+      FLEXIBILITY_COSTS_AND_OTHER = {
+        :cost => {
+          'initial_investment_per(:mw_typical_input_capacity)' =>
+            { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
+              formatter: FORMAT_KILO },
+          'ccs_investment_per(:mw_typical_input_capacity)' =>
+            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
+              formatter: FORMAT_KILO },
+          'decommissioning_costs_per(:mw_typical_input_capacity)' =>
+            { label: 'Decommissioning costs', unit:'kEUR / MWe',
+              formatter: FORMAT_KILO },
+          'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' =>
+            { label: 'Fixed operation and maintenance costs', unit:'kEUR / MWe / year',
+              formatter: ->(n) { '%.2f' % (n / 1000) } },
+          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
+            { label: 'Variable operation and maintenance costs (excl CCS)', unit: 'EUR / full load hour',
+              formatter: ->(n) { n.to_i } },
+          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
+            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour',
+              formatter: ->(n) { n.to_i } },
+          :wacc  =>
+            {label: 'Weighted average cost of capital', unit: '%'},
+          :takes_part_in_ets  =>
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+        },
+        :other => {
+          :land_use_per_unit  =>
+            {label: 'Land use per unit', unit: 'km2'},
+          :construction_time  =>
+            { label: 'Construction time', unit: 'years',
+              formatter: FORMAT_1DP },
+          :technical_lifetime  =>
+            { label: 'Technical lifetime', unit: 'years',
+              formatter: ->(n) { n.to_i } }
+        }
+      }
+
+      # If the converter belongs to the :cost_carbon_capturing group then
+      # add these
+      CARBON_CAPTURING_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MWe',
+              formatter: FORMAT_1DP },
+          :co_output_conversion=>
+            { label: 'Carbon monoxide output efficiency', unit: '%',
+            formatter: FORMAT_FAC_TO_PERCENT },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+      # If the converter belongs to the :cost_p2g group then
+      # add these
+      P2G_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MWe',
+              formatter: FORMAT_1DP },
+          :hydrogen_output_conversion=>
+            { label: 'Hydrogen output efficiency', unit: '%',
+            formatter: FORMAT_FAC_TO_PERCENT },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+      # If the converter belongs to the :cost_p2h group then
+      # add these
+      P2H_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MWe',
+              formatter: FORMAT_1DP },
+          :useable_heat_output_conversion=>
+            { label: 'Heat efficiency', unit: '%',
+            formatter: FORMAT_FAC_TO_PERCENT },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+      # If the converter belongs to the :cost_p2kerosene group then
+      # add these
+      P2KEROSENE_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MWe',
+              formatter: FORMAT_1DP },
+          :kerosene_output_conversion=>
+            { label: 'Kerosene output efficiency', unit: '%',
+            formatter: FORMAT_FAC_TO_PERCENT },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
       # some converters use extra attributes. Rather than messing up the views I
       # add the method here. I hope this will be removed
       def uses_coal_and_wood_pellets?
@@ -200,6 +297,10 @@ module Api
         out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.groups.include?(:cost_electricity_production)
         out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.groups.include?(:cost_heat_pumps)
         out = CHP_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_chps)
+        out = CARBON_CAPTURING_ATTRIBUTES_AND_METHODS       if @converter.groups.include?(:cost_carbon_capturing)
+        out = P2G_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_p2g)
+        out = P2H_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_p2h)
+        out = P2KEROSENE_ATTRIBUTES_AND_METHODS             if @converter.groups.include?(:cost_p2kerosene)
 
         # custom stuff, trying to keep the view simple
         if uses_coal_and_wood_pellets?
