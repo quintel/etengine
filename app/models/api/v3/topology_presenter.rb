@@ -10,7 +10,8 @@ module Api
         :cost_chps,
         :cost_carbon_capturing,
         :cost_p2g,
-        :cost_p2h
+        :cost_p2h,
+        :cost_p2kerosene
       ]
 
       def initialize(scenario)
