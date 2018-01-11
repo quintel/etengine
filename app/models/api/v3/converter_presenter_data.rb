@@ -185,19 +185,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_carbon_capturing group then
-      # add these
-      CARBON_CAPTURING_ATTRIBUTES_AND_METHODS = {
-        :technical => {
-          :typical_input_capacity =>
-            { label: 'Capacity', unit:'MWe',
-              formatter: FORMAT_1DP },
-          :co_output_conversion=>
-            { label: 'Carbon monoxide output efficiency', unit: '%',
-            formatter: FORMAT_FAC_TO_PERCENT },
-          :full_load_hours  =>
-            {label: 'Full load hours', unit: 'hour / year'},
-        },
+      FLEXIBILITY_COSTS_AND_OTHER = {
         :cost => {
           'initial_investment_per(:mw_typical_input_capacity)' =>
             { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
@@ -233,6 +221,21 @@ module Api
               formatter: ->(n) { n.to_i } }
         }
       }
+
+      # If the converter belongs to the :cost_carbon_capturing group then
+      # add these
+      CARBON_CAPTURING_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MWe',
+              formatter: FORMAT_1DP },
+          :co_output_conversion=>
+            { label: 'Carbon monoxide output efficiency', unit: '%',
+            formatter: FORMAT_FAC_TO_PERCENT },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
       # If the converter belongs to the :cost_p2g group then
       # add these
@@ -246,42 +249,8 @@ module Api
             formatter: FORMAT_FAC_TO_PERCENT },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
-        },
-        :cost => {
-          'initial_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'ccs_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'decommissioning_costs_per(:mw_typical_input_capacity)' =>
-            { label: 'Decommissioning costs', unit:'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' =>
-            { label: 'Fixed operation and maintenance costs', unit:'kEUR / MWe / year',
-              formatter: ->(n) { '%.2f' % (n / 1000) } },
-          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
-            { label: 'Variable operation and maintenance costs (excl CCS)', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
-            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :wacc  =>
-            {label: 'Weighted average cost of capital', unit: '%'},
-          :takes_part_in_ets  =>
-            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
-        },
-        :other => {
-          :land_use_per_unit  =>
-            {label: 'Land use per unit', unit: 'km2'},
-          :construction_time  =>
-            { label: 'Construction time', unit: 'years',
-              formatter: FORMAT_1DP },
-          :technical_lifetime  =>
-            { label: 'Technical lifetime', unit: 'years',
-              formatter: ->(n) { n.to_i } }
         }
-      }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
       # If the converter belongs to the :cost_p2h group then
       # add these
@@ -295,42 +264,8 @@ module Api
             formatter: FORMAT_FAC_TO_PERCENT },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
-        },
-        :cost => {
-          'initial_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'ccs_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'decommissioning_costs_per(:mw_typical_input_capacity)' =>
-            { label: 'Decommissioning costs', unit:'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' =>
-            { label: 'Fixed operation and maintenance costs', unit:'kEUR / MWe / year',
-              formatter: ->(n) { '%.2f' % (n / 1000) } },
-          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
-            { label: 'Variable operation and maintenance costs (excl CCS)', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
-            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :wacc  =>
-            {label: 'Weighted average cost of capital', unit: '%'},
-          :takes_part_in_ets  =>
-            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
-        },
-        :other => {
-          :land_use_per_unit  =>
-            {label: 'Land use per unit', unit: 'km2'},
-          :construction_time  =>
-            { label: 'Construction time', unit: 'years',
-              formatter: FORMAT_1DP },
-          :technical_lifetime  =>
-            { label: 'Technical lifetime', unit: 'years',
-              formatter: ->(n) { n.to_i } }
         }
-      }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
       # If the converter belongs to the :cost_p2kerosene group then
       # add these
@@ -344,42 +279,8 @@ module Api
             formatter: FORMAT_FAC_TO_PERCENT },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
-        },
-        :cost => {
-          'initial_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'ccs_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'decommissioning_costs_per(:mw_typical_input_capacity)' =>
-            { label: 'Decommissioning costs', unit:'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' =>
-            { label: 'Fixed operation and maintenance costs', unit:'kEUR / MWe / year',
-              formatter: ->(n) { '%.2f' % (n / 1000) } },
-          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
-            { label: 'Variable operation and maintenance costs (excl CCS)', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
-            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :wacc  =>
-            {label: 'Weighted average cost of capital', unit: '%'},
-          :takes_part_in_ets  =>
-            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
-        },
-        :other => {
-          :land_use_per_unit  =>
-            {label: 'Land use per unit', unit: 'km2'},
-          :construction_time  =>
-            { label: 'Construction time', unit: 'years',
-              formatter: FORMAT_1DP },
-          :technical_lifetime  =>
-            { label: 'Technical lifetime', unit: 'years',
-              formatter: ->(n) { n.to_i } }
         }
-      }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
       # some converters use extra attributes. Rather than messing up the views I
       # add the method here. I hope this will be removed
