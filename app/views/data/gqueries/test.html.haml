@@ -15,3 +15,8 @@
     .span11
       %h2(style="margin-bottom: .5em") Result
       = render 'result', result: @result
+- elsif @error
+  .row
+    .span11
+      %h2(style="margin-bottom: .5em") Error:
+      = render partial: 'error', locals: { error: @error }

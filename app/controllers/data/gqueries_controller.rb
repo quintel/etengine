@@ -16,7 +16,11 @@ class Data::GqueriesController < Data::BaseController
     if params[:commit] == "Debug"
       redirect_to data_debug_gql_path(gquery: params[:query])
     elsif params[:query].present?
-      @result = @gql.query(params[:query].gsub(/\s/,''))
+      begin
+        @result = @gql.query(params[:query].gsub(/\s/,''))
+      rescue Gql::CommandError => ex
+        @error = ex
+      end
     end
   end
 

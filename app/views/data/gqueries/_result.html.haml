@@ -7,5 +7,4 @@
       = render(partial: 'year_result', locals: { year: 'No year', value: result })
 
 - rescue => e
-  %h4== #{ e.class.name }: #{ e.to_s }
-  ~ "<pre>#{ e.backtrace.join("\n") }</pre>".html_safe
+  = render partial: 'error', locals: { error: e }
