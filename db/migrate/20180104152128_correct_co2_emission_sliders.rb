@@ -11,7 +11,7 @@ class CorrectCo2EmissionSliders < ActiveRecord::Migration[5.1]
 
     puts "Need to migrate: #{ scenarios.count } scenarios"
 
-    scenarios.find_each do |scenario|
+    scenarios.find_each(batch_size: 5) do |scenario|
       next unless scenario.valid?
 
       if count % 50 == 0
