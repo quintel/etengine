@@ -27,19 +27,15 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
 
       next if costs.empty?
 
-      if scenario.id > 122878
-        if migrated % 100
-          puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
-        end
-
-        costs.each_pair do |key, val|
-          scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
-        end
-
-        scenario.save(validate: false)
-
-        migrated += 1
+      if migrated % 100 == 0
+        puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
       end
+
+      costs.each_pair do |key, val|
+        scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
+      end
+
+      scenario.save(validate: false)
     end
   end
 
