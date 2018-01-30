@@ -22,7 +22,7 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
 
     migrated = 0
 
-    scenarios.find_each do |scenario|
+    scenarios.each do |scenario|
       costs = scenario.user_values.slice(*KEYS.keys)
 
       next if !scenario.valid? || costs.empty?
