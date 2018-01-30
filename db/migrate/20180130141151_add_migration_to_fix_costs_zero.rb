@@ -15,25 +15,7 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
       true, 1.month.ago, 'Mechanical Turk', 'test'
     )
 
-    # Step 2: Get all the start values for price_of_gas, price_of_oil, etc.
-    #
-    # This is per area
-    puts "#{ Time.now } | Calculating defaults"
-
-    defaults = scenarios.pluck(:area_code).uniq
-      .each_with_object({}) do |area_code, obj|
-        scenario = Scenario.new(area_code: area_code)
-
-        begin
-          gql = scenario.gql
-
-          obj[area_code] = KEYS.each_with_object({}) do |(key, gql_key), start|
-            start[key] = gql.present.query(gql_key)
-          end
-        rescue StandardError => e
-          puts "#{ e }"
-        end
-    end
+    defaults = JSON.parse(File.read(Rails.root.join("db", "migrate", "20180130141151_add_migration_to_fix_costs_zero", "defaults.json")))
 
     # Step 3: Setting some timers for logging
     puts "#{ Time.now } | Need to migrate #{ scenarios.count } scenarios"
@@ -45,11 +27,12 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
 
       next if !scenario.valid? || costs.empty?
 
+      if migrated % 100
+        puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
+      end
+
       costs.each_pair do |key, val|
-        if val.zero?
-          puts "#{ Time.now } | Migrating #{ scenario.id } | #{ key }"
-          scenario.user_values[key] = (defaults[scenario.area_code][key.to_sym] * (1 + (val / 100.0)))
-        end
+        scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
       end
 
       scenario.save
