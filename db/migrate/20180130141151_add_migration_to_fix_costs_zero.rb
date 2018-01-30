@@ -20,26 +20,26 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
     # Step 3: Setting some timers for logging
     puts "#{ Time.now } | Need to migrate #{ scenarios.count } scenarios"
 
-    raise 'HELL'
-    #migrated = 0
+    migrated = 0
 
-    #scenarios.each do |scenario|
-    #  costs = scenario.user_values.slice(*KEYS.keys)
+    scenarios.find_each(batch_size: 5) do |scenario|
+      raise 'HELL'
+      costs = scenario.user_values.slice(*KEYS.keys)
 
-    #  next if !scenario.valid? || costs.empty?
+      next if !scenario.valid? || costs.empty?
 
-    #  if migrated % 100
-    #    puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
-    #  end
+      if migrated % 100
+        puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
+      end
 
-    #  costs.each_pair do |key, val|
-    #    scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
-    #  end
+      costs.each_pair do |key, val|
+        scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
+      end
 
-    #  scenario.save
+      scenario.save
 
-    #  migrated += 1
-    #end
+      migrated += 1
+    end
   end
 
   def down
