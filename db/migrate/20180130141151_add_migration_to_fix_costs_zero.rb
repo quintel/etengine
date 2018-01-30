@@ -25,10 +25,7 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
     scenarios.find_each(batch_size: 5) do |scenario|
       costs = scenario.user_values.slice(*KEYS.keys)
 
-      puts costs
-      puts scenario.valid?
-
-      next if !scenario.valid? || costs.empty?
+      next if costs.empty?
 
       if migrated % 100
         puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
@@ -38,7 +35,7 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
         scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
       end
 
-      scenario.save
+      scenario.save(validate: false)
 
       migrated += 1
     end
