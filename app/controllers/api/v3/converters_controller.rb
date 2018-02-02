@@ -31,7 +31,7 @@ module Api
       #   "keyN": [ .. ]
       # }
       def stats
-        keys = params.require(:keys)
+        keys = permitted_params.to_h.fetch(:keys)
         gql  = @scenario.gql(prepare: true)
 
         render json: { nodes: Hash[keys.map do |key, graph_attributes|
@@ -54,6 +54,10 @@ module Api
         @converter = ConverterPresenter.new(key, @scenario)
       rescue Exception => e
         render :json => {:errors => [e.message]}, :status => 404 and return
+      end
+
+      def permitted_params
+        params.permit(:scenario_id, keys: {})
       end
     end
   end
