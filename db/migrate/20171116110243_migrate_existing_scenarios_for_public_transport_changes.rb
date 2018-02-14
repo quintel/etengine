@@ -1,4 +1,4 @@
-class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migration
+class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migration[5.1]
   def up
     # Old input key -> new input key
     renamed = {
@@ -44,7 +44,10 @@ class MigrateExistingScenariosForPublicTransportChanges < ActiveRecord::Migratio
 
     relevant_keys = (removed + assumptions.keys + renamed.keys)
 
-    scenarios = Scenario.where("(`user_values` IS NOT NULL OR `balanced_values` IS NOT NULL) AND (`user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' OR `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n')")
+    scenarios = Scenario.where(
+      '(protected = ? OR created_at >= ?) AND source != ? AND title != ?',
+      true, 1.month.ago, 'Mechanical Turk', 'test'
+    ).where("(`user_values` IS NOT NULL OR `balanced_values` IS NOT NULL) AND (`user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' OR `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n')")
 
     total = scenarios.count
     started = Time.now

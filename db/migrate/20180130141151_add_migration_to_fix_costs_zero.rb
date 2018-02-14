@@ -36,6 +36,7 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
       end
 
       scenario.save(validate: false)
+      migrated += 1
     end
   end
 

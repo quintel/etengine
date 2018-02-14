@@ -1,4 +1,4 @@
-class RemoveGroningenTenBoerScenarios < ActiveRecord::Migration
+class RemoveGroningenTenBoerScenarios < ActiveRecord::Migration[5.1]
   def up
     Scenario.where(area_code: 'groningen_ten_boer').destroy_all
   end
