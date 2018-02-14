@@ -15,8 +15,19 @@
 # server list. The second argument is a, or duck-types, Hash and is
 # used to set extended properties on the server.
 
-server 'et-engine.com', user: 'ubuntu', roles: %w{web app db}
-set :branch, 'production'
+server 'new.et-engine.com', user: 'deploy', roles: %w[web app db]
+set :branch, 'master'
+
+
+# Puma Options
+# ============
+# If these are changed, be sure to then run `cap $stage puma:config`; the config
+# on the server is not automatically updated when deploying.
+
+set :puma_threads, [1, 1]
+set :puma_workers, 8
+set :puma_init_active_record, true
+set :puma_preload_app, true
 
 
 # Custom SSH Options
