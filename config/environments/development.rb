@@ -49,6 +49,11 @@ Rails.application.configure do
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.after_initialize do
-    Etsource::Reloader.start! if APP_CONFIG[:etsource_live_reload]
+    # Start ETSource reloader only when running as a server (i.e., not as a rake
+    # task).
+    if (defined?(Rails::Server) || defined?(Puma)) &&
+          APP_CONFIG[:etsource_live_reload]
+      Etsource::Reloader.start!
+    end
   end
 end
