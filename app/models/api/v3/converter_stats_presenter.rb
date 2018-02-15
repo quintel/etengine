@@ -20,7 +20,7 @@ module Api
         heat_output_capacity: nil,
         marginal_heat_costs: nil,
 
-        :'storage.volume' => -> conv {
+        storage_volume: -> conv {
           conv.storage.volume
         },
 
