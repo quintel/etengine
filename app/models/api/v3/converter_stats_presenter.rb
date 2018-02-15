@@ -13,12 +13,16 @@ module Api
         full_load_hours: nil,
         fixed_operation_and_maintenance_costs_per_year: nil,
         variable_operation_and_maintenance_costs_per_full_load_hour: nil,
-        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: nil,
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: nil
       }
 
       ATTRIBUTES = {
         heat_output_capacity: nil,
         marginal_heat_costs: nil,
+
+        storage_volume: -> conv {
+          conv.storage.volume
+        },
 
         fixed_operation_and_maintenance_costs_per_year_per_mw: -> conv {
           conv.fixed_operation_and_maintenance_costs_per(:mw_heat)
