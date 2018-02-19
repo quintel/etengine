@@ -34,7 +34,6 @@ class ConverterPositions
 
   def update(with)
     with.each do |key, positions|
-      positions = positions.symbolize_keys
       data[key.to_sym] = { x: positions[:x].to_i, y: positions[:y].to_i }
     end
 
