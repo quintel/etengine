@@ -27,11 +27,15 @@ class AddMigrationToFixCostsZero < ActiveRecord::Migration[5.1]
 
       next if costs.empty?
 
+      # Skip for regions which don't exist
+      next unless defaults[scenario.area_code]
+
       if migrated % 100 == 0
         puts "#{ Time.now } | at #{ migrated } - #{ scenario.id }"
       end
 
       costs.each_pair do |key, val|
+        next unless defaults[scenario.area_code][key]
         scenario.user_values[key] = (defaults[scenario.area_code][key] * (1 + (val / 100.0)))
       end
 
