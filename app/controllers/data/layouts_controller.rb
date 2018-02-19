@@ -32,10 +32,10 @@ class Data::LayoutsController < Data::BaseController
 
   def update
     if params[:converter_positions].present?
-      positions.update(params[:converter_positions])
+      positions.update(params[:converter_positions].permit!)
     end
 
-    render :text => ''
+    render plain: '', layout: nil
   end
 
 private
