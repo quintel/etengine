@@ -1320,7 +1320,7 @@
   :x: 6240
   :y: 2020
 :buildings_useful_demand_for_space_heating:
-  :x: 20
+  :x: 40
   :y: 6080
 :energy_interconnector_imported_electricity:
   :x: 6240
@@ -2600,3 +2600,9 @@
 :bunkers_final_demand_electricity:
   :x: 3120
   :y: 18500
+:households_collective_heatpump_water_water_electricity:
+  :x: 3920
+  :y: 1420
+:buildings_collective_heatpump_water_water_electricity:
+  :x: 3920
+  :y: 7220
