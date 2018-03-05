@@ -195,16 +195,19 @@ module Qernel
       if self.value and slot_demand and slot_demand > 0
         self.share = self.value / slot_demand
       elsif value == 0.0
+        siblings_and_self = lft_input.links
+
         # if the value is 0.0, we have to set rules what links
         # get what shares. In order to have recursive_factors work properly.
-        self.share = 0.0 if constant?
         # To fix https://github.com/dennisschoenmakers/etengine/issues/178
         # we have to change the following line:
         if flexible?
-          others = lft_input.links.map(&:share).compact.sum.to_f
+          other_share = siblings_and_self.map(&:share).compact.sum.to_f
 
           # Disallow a negative energy flow.
-          self.share = others > 1 ? 0.0 : 1.0 - others
+          self.share = other_share > 1 ? 0.0 : 1.0 - other_share
+        elsif !share?
+          self.share = siblings_and_self.one? ? 1.0 : 0.0
         end
       end
     end
