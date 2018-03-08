@@ -73,9 +73,23 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "production_based_on_number_of_units", 'MJ'
 
+  def hydrogen_production_based_on_number_of_units
+    fetch(:production_based_on_number_of_units) do
+      number_of_units * typical_hydrogen_production_per_unit
+    end
+  end
+  unit_for_calculation "production_based_on_number_of_units", 'MJ'
+
   def typical_electricity_production_capacity
     fetch(:typical_electricity_production_capacity) do
       electricity_output_conversion * input_capacity
+    end
+  end
+  unit_for_calculation "typical_electricity_production_capacity", 'MW'
+
+  def typical_hydrogen_production_capacity
+    fetch(:typical_hydrogen_production_capacity) do
+      hydrogen_output_conversion * input_capacity
     end
   end
   unit_for_calculation "typical_electricity_production_capacity", 'MW'
@@ -86,6 +100,14 @@ class Qernel::ConverterApi
     end
   end
   unit_for_calculation "typical_electricity_production_per_unit", 'MJ'
+
+  def typical_hydrogen_production_per_unit
+    fetch(:typical_hydrogen_production_per_unit) do
+      typical_hydrogen_production_capacity * full_load_seconds
+    end
+  end
+  unit_for_calculation "typical_hydrogen_production_per_unit", 'MJ'
+
 
   def maximum_yearly_electricity_production_per_unit
     fetch(:typical_electricity_production_per_unit) do

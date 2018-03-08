@@ -145,6 +145,28 @@ class ConverterApi
     end
   end
 
+  # Updates a (hydrogen production plant) converter demand by its hydrogen output.
+  #
+  # That means we have to divide by the conversion of the hydrogen slot. So
+  # that the hydrogen output link receive that value, otherwise one part would
+  # go away to losses.
+  #
+  # UPDATE( ... , preset_demand_by_hydrogen_production, 1000)
+  #
+  #                   +--------+
+  #  1000 hydrogen---o|        |
+  #                   |  1030  |o----
+  #    30 loss-------o|        |
+  #                   +--------+
+  #
+  def preset_demand_by_hydrogen_production=(val)
+    if output_slot = converter.output(:hydrogen)
+      converter.preset_demand = val / output_slot.conversion
+    else
+      raise "UPDATE: preset_demand_by_hydrogen_production could not find an hydrogen output for #{key.inspect}"
+    end
+  end
+
   def primary_demand
     self.converter.primary_demand
   end
