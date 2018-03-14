@@ -15,7 +15,7 @@ module Qernel::Plugins
 
     # A list of types of merit order producers to be supplied to the M/O.
     def participant_types
-      [:must_run, :volatile, :dispatchable, :flex].freeze
+      [:must_run, :volatile, :dispatchable, :flex, :consumer].freeze
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
@@ -74,8 +74,17 @@ module Qernel::Plugins
         end
       end
 
+      individual_demands = each_adapter.sum do |adapter|
+        if adapter.config.type == :consumer
+          adapter.converter.input_of_electricity
+        else
+          0.0
+        end
+      end
+
       @graph.graph_query.total_demand_for_electricity -
         fever_demands -
+        individual_demands -
         # Curves are in MWh; convert back to J.
         (3600.0 * curves.ev_demand.sum)
     end

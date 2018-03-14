@@ -86,6 +86,7 @@ module Qernel::Plugins
     #
     # Returns nothing.
     def each_adapter
+      return enum_for(:each_adapter) unless block_given?
       adapters.each { |_, adapter| yield(adapter) }
     end
 

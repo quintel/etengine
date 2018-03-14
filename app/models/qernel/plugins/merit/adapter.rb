@@ -12,6 +12,8 @@ module Qernel::Plugins
             AlwaysOnAdapter
           when :flex
             FlexAdapter.factory(converter, graph, dataset)
+          when :consumer
+            ConsumerAdapter
           else
             self
         end

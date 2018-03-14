@@ -43,9 +43,12 @@ module Qernel::Plugins
         types = @graph.plugin(:merit).participant_types
 
         mo_converters = @graph.converters.select do |conv|
-          conv.dataset_get(:merit_order) &&
+          conf = conv.dataset_get(:merit_order)
+
+          conf &&
+            conf.type != :consumer &&
             conv.query.number_of_units > 0 &&
-            types.include?(conv.dataset_get(:merit_order).type)
+            types.include?(conf.type)
         end
 
         mo_converters.map do |conv|
