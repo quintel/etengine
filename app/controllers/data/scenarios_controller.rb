@@ -37,7 +37,8 @@ class Data::ScenariosController < Data::BaseController
 
       format.ad do
         render(
-          text: Preset.from_scenario(@scenario).to_active_document,
+          plain: Preset.from_scenario(@scenario).to_active_document,
+          layout: nil,
           content_type: 'text/x-active-document'
         )
       end
