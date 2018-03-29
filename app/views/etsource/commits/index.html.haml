@@ -1,9 +1,13 @@
 - if import_in_progress?
-  .span6.alert.alert-error
-    %h3(style="font-size: 16px")
+  .span6.alert.alert-error(style="padding: 8px 16px 16px")
+    %h3(style="font-size: 18px; margin: 0")
       Import in progress!
     A new ETSource commit is already being imported. Refresh this page in a
     minute to see the changes, and import another new version if you wish.
+
+- if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
+  %h4 Looks like you're loading ETSource from the local working copy.
+  %p Use Git to checkout your desired ETSource revision; imports are disabled.
 
 - if can_import?
   %section#search_box
@@ -15,27 +19,25 @@
             = submit_tag "Checkout", :class => 'btn'
             = submit_tag "Refresh", :class => 'btn btn-primary'
           Click "Checkout" to move to a different branch.
-      - if can_import?
-        .span6.alert.alert-info
-          %h3(style="font-size: 16px")
-            %a(style="color: #3a87ad" href="https://www.youtube.com/watch?v=gT9xuXQjxMM") Careful now!
-          The page may appear to hang after you click an "import" button. This
-          is normal, and <em>definitely</em> not a sign that the world is about
-          to end. During this time the Atlas and Refinery calculations are being
-          re-run for each region.
+      - if APP_CONFIG[:etsource_export] != APP_CONFIG[:etsource_working_copy]
+        .span6
+          %h4(style="margin-bottom: 20px")
+            Latest import:
+            %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha.try(:slice, 0, 10) || 'N/A'}
     - if @output
       .row
         %pre.git_output= @output
+  .row(style="width:1012px")
+    .span16.alert.alert-error.import-warning
+      .arrow
+      After pressing "Import" you might find that the page hangs for a while,
+      followed by "We're sorry, but something went wrong". This is due to the
+      import taking more than 60 seconds and is normal. Return to this page and
+      you should find that the import is continuing. The message will clear
+      after a few minutes.
 
 .row
   .span16
-    - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
-      %strong Looks like you're loading etsource from the local working copy
-    - else
-      %h4(style="margin-bottom: 20px")
-        Latest import:
-        %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha || 'N/A'}
-
     - @commits.group_by { |com| com.gcommit.date.to_date }.each do |date, commits|
       .commit-group
         %h4= date.to_formatted_s(:long)
@@ -46,6 +48,8 @@
                 .current ✓ &nbsp;Loaded
               - elsif import_in_progress?
                 .wait Please wait&hellip;
+              - elsif !can_import?
+                .wait Import disabled
               - else
                 - cache("etsource.status.#{ commit.sha }") do
                   - if commit.can_import?
