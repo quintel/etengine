@@ -2729,3 +2729,6 @@
 :energy_distribution_hydrogen_before_transport:
   :x: 5840
   :y: 5100
+:energy_production_excess_electricity:
+  :x: 7700
+  :y: 5040
