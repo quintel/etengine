@@ -2738,3 +2738,6 @@
 :energy_imported_hydrogen_distribution:
   :x: 6520
   :y: 5100
+:energy_hydrogen_curtailed_electricity:
+  :x: 6240
+  :y: 5120
