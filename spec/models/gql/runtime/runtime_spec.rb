@@ -17,10 +17,10 @@ module Gql
       it "should work when passing procs" do
         expect(@gql.query_present("QUERY_PRESENT( -> { GRAPH(year) } )")).to eq(2011)
         expect(@gql.query_future( "QUERY_PRESENT( -> { GRAPH(year) } )")).to eq(2011)
-        expect(@gql.query_present("QUERY_FUTURE(  -> { GRAPH(year) } )")).to eq(2040)
-        expect(@gql.query_future( "QUERY_FUTURE(  -> { GRAPH(year) } )")).to eq(2040)
+        expect(@gql.query_present("QUERY_FUTURE(  -> { GRAPH(year) } )")).to eq(2050)
+        expect(@gql.query_future( "QUERY_FUTURE(  -> { GRAPH(year) } )")).to eq(2050)
 
-        expect(@gql.query_future( "QUERY_DELTA(  -> { GRAPH(year) } )")).to eq(29)
+        expect(@gql.query_future( "QUERY_DELTA(  -> { GRAPH(year) } )")).to eq(39)
       end
 
       it "QUERY_DELTA for the present should always return 0.0" do

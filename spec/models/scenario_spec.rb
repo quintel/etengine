@@ -19,7 +19,7 @@ describe Scenario do
 
     describe '#end_year' do
       subject { super().end_year }
-      it { is_expected.to eq(2040) }
+      it { is_expected.to eq(2050) }
     end
 
     describe '#start_year' do
@@ -30,7 +30,7 @@ describe Scenario do
     describe "#years" do
       describe '#years' do
         subject { super().years }
-        it { is_expected.to eq(29) }
+        it { is_expected.to eq(39) }
       end
     end
   end

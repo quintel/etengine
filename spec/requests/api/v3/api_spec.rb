@@ -119,7 +119,7 @@ describe "API v3scenario life cycle", :etsource_fixture do
 
     scenario = JSON.parse(response.body)
     expect(scenario['area_code']).to eq('nl')
-    expect(scenario['end_year']).to eq(2040)
+    expect(scenario['end_year']).to eq(2050)
 
     id = scenario['id']
     url = "/api/v3/scenarios/#{id}"
