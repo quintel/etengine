@@ -38,12 +38,15 @@ module Qernel::RecursiveFactor::Sustainable
 
   def sustainable_factor(link)
     return nil unless right_dead_end?
+    return 0.0 unless primary_energy_demand?
 
     link ||= output_links.first
 
-    if infinite? && primary_energy_demand?
+    if query.dataset_get(:sustainability_share)
+      query.dataset_get(:sustainability_share)
+    elsif infinite?
       (1 - loss_output_conversion)
-    elsif primary_energy_demand? && link && link.carrier.sustainable
+    elsif link && link.carrier.sustainable
       link.carrier.sustainable
     else
       0.0
