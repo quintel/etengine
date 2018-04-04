@@ -63,6 +63,22 @@ module Gql::Runtime
         values
       end
 
+      # Public: Rounds numeric value to a given precision.
+      def ROUND(value, precision = 0)
+        value.round(precision)
+      end
+
+      # Public: Returns the largest number less than or equal to numeric value.
+      def FLOOR(value, precision = 0)
+        value.floor(precision)
+      end
+
+      # Public: Returns the smallest number greater than or equal to numeric
+      # value.
+      def CEIL(value, precision = 0)
+        value.ceil(precision)
+      end
+
       # NORMCDF(upper_boundary, mean, std_dev)
       def NORMCDF(*values)
         # lower_Boundary is always -Infinity
