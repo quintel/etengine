@@ -1,5 +1,7 @@
 %h4== #{error.class.name}:
-~ "<pre>#{error.to_s}</pre>".html_safe
+%pre
+  = error.to_s
 
 %h4 Backtrace
-~ "<pre class='backtrace'>#{error.backtrace.join("\n")}</pre>".html_safe
+%pre.backtrace
+  = error.backtrace.join("\n")
