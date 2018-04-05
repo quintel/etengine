@@ -187,6 +187,13 @@ class GraphApi
     )
   end
 
+  # Public: Builds a model of the electricity network.
+  #
+  # Returns an object responding to the name of each layer in the network.
+  def electricity_network
+    fetch(:electricity_network) { Closud.build(graph) }
+  end
+
   #######
   private
   #######

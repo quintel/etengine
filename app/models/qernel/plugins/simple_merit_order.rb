@@ -29,7 +29,7 @@ module Qernel::Plugins
     # Simple-mode does not need a full-run, and profiles for must-runs will
     # suffice.
     def participant_types
-      [:must_run, :volatile].freeze
+      [:must_run, :volatile, :consumer].freeze
     end
 
     def adapters

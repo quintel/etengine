@@ -8,7 +8,11 @@ module Qernel::Plugins
       end
 
       def to_a
-        Array.new(8760) { |frame| get(frame) }
+        Array.new(length) { |frame| get(frame) }
+      end
+
+      def length
+        8760
       end
 
       def get(frame)
