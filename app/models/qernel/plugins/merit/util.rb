@@ -17,8 +17,23 @@ module Qernel::Plugins
           when 2 then add_curves_2(*curves)
           when 3 then add_curves_3(*curves)
           when 4 then add_curves_4(*curves)
-          else curves.reduce(:+)
+          when 5 then add_curves_5(*curves)
+          when 10 then add_curves_10(*curves)
+          when 20 then add_curves_20(*curves)
+          else add_many(curves)
         end
+      end
+
+      # Internal: Adds an arbitrary number of curves together using the largest
+      # available adder methods.
+      private_class_method def add_many(curves)
+        while curves.length > 1
+          curves = curves
+            .each_slice(partition_size(curves))
+            .map { |partition| add_curves(partition) }
+        end
+
+        curves.first
       end
 
       # Internal: Creates a method which implements loop unrolling for adding
@@ -37,7 +52,7 @@ module Qernel::Plugins
       #   # end
       #
       # Returns the name of the generated method.
-      def define_curve_adder(num_curves)
+      private_class_method def define_curve_adder(num_curves)
         params = Array.new(num_curves) { |i| "c#{i}" }
         name = :"add_curves_#{num_curves}"
 
@@ -55,9 +70,22 @@ module Qernel::Plugins
         name
       end
 
+      private_class_method def partition_size(curves)
+        length = curves.length
+
+        case
+          when length >= 20 then 20
+          when length >= 10 then 10
+          else 5
+        end
+      end
+
       private_class_method define_curve_adder(2)
       private_class_method define_curve_adder(3)
       private_class_method define_curve_adder(4)
+      private_class_method define_curve_adder(5)
+      private_class_method define_curve_adder(10)
+      private_class_method define_curve_adder(20)
     end
   end
 end
