@@ -26,7 +26,7 @@ module Etsource
   #   Etsource::Reloader.start!
   #
   class Reloader
-    DIRS = %w( carriers datasets edges gqueries inputs nodes presets )
+    DIRS = %w[carriers config datasets edges gqueries inputs nodes presets]
 
     class << self
       def start!

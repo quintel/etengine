@@ -9,7 +9,7 @@ end
 
 gem 'bootsnap', require: false
 
-gem 'rails',        '~> 5.1.6'
+gem 'rails',        '~> 5.1'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json',         '~> 1.8.1'
@@ -21,6 +21,7 @@ gem 'gravatar_image_tag'
 
 # Ruby gems
 gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
+gem 'ice_nine'
 gem 'distribution', '~> 0.6'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
@@ -54,7 +55,7 @@ gem 'quintel_merit', ref: '0f33926',  github: 'quintel/merit'
 gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
-gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
+gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2'
