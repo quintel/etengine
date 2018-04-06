@@ -6,8 +6,13 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
+=======
+  revision: c41054c0831068553f4fd64a03f6b422d9ce4d3b
+  ref: c41054c
+>>>>>>> Add support for ETSource config files
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
@@ -396,6 +401,7 @@ DEPENDENCIES
   gravatar_image_tag
   haml (~> 5.0)
   highline
+  ice_nine
   jquery-rails (~> 4.0)
   json (~> 1.8.1)
   kaminari
