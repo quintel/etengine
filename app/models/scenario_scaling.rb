@@ -8,22 +8,6 @@ class ScenarioScaling < ActiveRecord::Base
   # original area setting.
   CUSTOM_AREA_ATTRS = { use_network_calculations: false }.freeze
 
-  # Inputs whose unit is in this array will not be scaled.
-  UNSCALEABLE_INPUT_UNITS = %w[
-    %
-    COP
-    degC
-    dollar
-    euro
-    euro/kWh
-    gCO2/KWh
-    hours
-    kWh
-    kg
-    m^2K/W
-    x
-  ].freeze
-
   belongs_to :scenario, inverse_of: :scaler
 
   validates :area_attribute, presence: true, inclusion: {
@@ -50,7 +34,7 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns true or false.
   def self.scale_input?(input)
-    ! UNSCALEABLE_INPUT_UNITS.include?(input.unit)
+    ! Etsource::Config.unscaleable_units.include?(input.unit)
   end
 
   # Public: The number by which attributes will be scaled to fit the smaller
