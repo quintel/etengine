@@ -1,0 +1,12 @@
+---
+# The list of units which should not be scaled down in small scenarios.
+- "%"
+- "COP"
+- "degC"
+- "dollar"
+- "euro"
+- "euro/kWh"
+- "gCO2/KWh"
+- "kWh"
+- "m^2K/W"
+- "x"
