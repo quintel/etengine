@@ -54,8 +54,7 @@ GIT
     rubel (0.1.1)
 
 GEM
-  remote: http://rubygems.org/
-  remote: http://gems.github.com/
+  remote: https://rubygems.org/
   specs:
     actioncable (5.1.4)
       actionpack (= 5.1.4)
