@@ -1,11 +1,11 @@
 GIT
-  remote: git://github.com/bradhe/ruby-git.git
+  remote: https://github.com/bradhe/ruby-git.git
   revision: de8e04d4e37a54136d4c74d1eb07642cb4849bba
   specs:
     git (1.2.5)
 
 GIT
-  remote: git://github.com/quintel/atlas.git
+  remote: https://github.com/quintel/atlas.git
   revision: 5d74d96d8fc2b29bafe61aa9b6b1a284454f6be8
   ref: 5d74d96
   specs:
@@ -16,14 +16,14 @@ GIT
       virtus (~> 1.0)
 
 GIT
-  remote: git://github.com/quintel/fever.git
+  remote: https://github.com/quintel/fever.git
   revision: e988f2ddb81c799a44bdd6582d379d11e67f62b1
   ref: e988f2d
   specs:
     fever (0.1.0)
 
 GIT
-  remote: git://github.com/quintel/merit.git
+  remote: https://github.com/quintel/merit.git
   revision: 8f1e90e6fc4d9f6cfa34ec22647d6edcb84a93ac
   ref: 8f1e90e
   specs:
@@ -31,13 +31,13 @@ GIT
       terminal-table
 
 GIT
-  remote: git://github.com/quintel/osmosis.git
+  remote: https://github.com/quintel/osmosis.git
   revision: 863794858f1638e786d20d6616631519da7d6277
   specs:
     osmosis (1.0.0)
 
 GIT
-  remote: git://github.com/quintel/refinery.git
+  remote: https://github.com/quintel/refinery.git
   revision: 9272d500c63e73a1a312a01c24fb56b94d489cd6
   ref: 9272d50
   specs:
@@ -47,7 +47,7 @@ GIT
       turbine-graph (>= 0.1.1)
 
 GIT
-  remote: git://github.com/quintel/rubel.git
+  remote: https://github.com/quintel/rubel.git
   revision: e36554afd5f6bce2e3c2cb3ae6a48604b87a66f5
   ref: e36554a
   specs:
