@@ -44,6 +44,7 @@ gem 'rest-client'
 gem 'git',                            github: 'bradhe/ruby-git'
 gem 'fnv'
 gem 'msgpack'
+gem 'parallel'
 
 # own gems
 gem 'rubel',         ref: 'e36554a',  github: 'quintel/rubel'
