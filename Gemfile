@@ -48,7 +48,7 @@ gem 'parallel'
 
 # own gems
 gem 'rubel',         ref: 'e36554a',  github: 'quintel/rubel'
-gem 'quintel_merit', ref: '8f1e90e',  github: 'quintel/merit'
+gem 'quintel_merit', ref: '40de6cb',  github: 'quintel/merit'
 gem 'fever',         ref: 'e988f2d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '9272d50',  github: 'quintel/refinery'

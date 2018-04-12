@@ -47,7 +47,7 @@ module Qernel::Plugins
       # Creates:
       #   # def add_curves_#{num_curves}(c0, c1, c2)
       #   #   ::Merit::Curve.new(Array.new(c0.length) do |index|
-      #   #     c0.get(index) + c1.get(index) + c2.get(index)
+      #   #     c0[index] + c1[index] + c2[index]
       #   #   end)
       #   # end
       #
@@ -62,7 +62,7 @@ module Qernel::Plugins
         instance_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{name}(#{params.join(param_separator)})
             ::Merit::Curve.new(Array.new(c0.length) do |index|
-              #{params.map { |p| "#{p}.get(index)" }.join(add_separator)}
+              #{params.map { |p| "#{p}[index]" }.join(add_separator)}
             end)
           end
         RUBY

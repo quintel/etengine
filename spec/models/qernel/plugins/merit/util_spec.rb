@@ -23,6 +23,48 @@ describe Qernel::Plugins::Merit::Util do
       end
     end # with two curves of [1, 2, 1, 2]
 
+    context 'with two arrays of [1, 2, 1, 2]' do
+      let(:result) do
+        Qernel::Plugins::Merit::Util.add_curves([
+          [1.0, 2.0] * 2,
+          [1.0, 2.0] * 2
+        ])
+      end
+
+      it 'returns a Merit::Curve' do
+        expect(result).to be_a(Merit::Curve)
+      end
+
+      it 'returns a curve with four elements' do
+        expect(result.length).to eq(4)
+      end
+
+      it 'returns a curve of [2, 4, 2, 4]' do
+        expect(result.take(4)).to eq([2, 4, 2, 4])
+      end
+    end # with two arrays of [1, 2, 1, 2]
+
+    context 'with an array and curve of [1, 2, 1, 2]' do
+      let(:result) do
+        Qernel::Plugins::Merit::Util.add_curves([
+          [1.0, 2.0] * 2,
+          Merit::Curve.new([1.0, 2.0] * 2)
+        ])
+      end
+
+      it 'returns a Merit::Curve' do
+        expect(result).to be_a(Merit::Curve)
+      end
+
+      it 'returns a curve with four elements' do
+        expect(result.length).to eq(4)
+      end
+
+      it 'returns a curve of [2, 4, 2, 4]' do
+        expect(result.take(4)).to eq([2, 4, 2, 4])
+      end
+    end # with two arrays of [1, 2, 1, 2]
+
     context 'with 26 curves alternating [1, 2, 1, 2] and [1, 2, 3, 4]' do
       let(:result) do
         c1 = Merit::Curve.new([1.0, 2.0, 1.0, 2.0])

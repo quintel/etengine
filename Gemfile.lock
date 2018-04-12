@@ -24,8 +24,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: 8f1e90e6fc4d9f6cfa34ec22647d6edcb84a93ac
-  ref: 8f1e90e
+  revision: 40de6cb028df9feeac41c7c211e6114d6e441df5
+  ref: 40de6cb
   specs:
     quintel_merit (0.1.0)
       terminal-table
