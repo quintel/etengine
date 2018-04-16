@@ -63,6 +63,8 @@ module Qernel
           config = converter.dataset_get(:merit_order)
           level = config.level
           type  = config.type == :consumer ? :consumers : :producers
+
+          next if level == :omit
         else
           level = PARTICIPANT_LEVELS[part.key] || :hv
           type = :consumers
