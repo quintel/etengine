@@ -21,7 +21,7 @@ module Qernel::RecursiveFactor::Sustainable
   #
   # A.sustainability_share == 0.4*0.85 + 0.6 * 1.0
   def sustainability_share
-    fetch(:sustainability_share, false) do
+    fetch(:sustainability_share_calc, false) do
       recursive_factor_without_losses(:sustainability_share_factor)
     end
   end
