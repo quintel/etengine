@@ -32,8 +32,15 @@ module Qernel::RecursiveFactor::Sustainable
     # If the converter has a sustainability share which has been explicitly
     # set (through research data or a graph plugin), use that in preference to
     # the carrier sustainability.
-    custom_share = query.dataset_get(:sustainability_share)
-    custom_share || link.carrier.sustainable
+    share = query.dataset_get(:sustainability_share) || link.carrier.sustainable
+
+    if link.input.conversion > 1.0
+      # Adjust for slots with a greater than 1.0 conversion, which typically
+      # indicates input loss in storage (such as P2P batteries).
+      share / link.input.conversion
+    else
+      share
+    end
   end
 
   def sustainable_factor(link)
