@@ -213,13 +213,13 @@ module Gql::Runtime
         return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
         parts = scope.graph.plugin(:merit).order.participants
 
-        SUM_CURVES(part_keys.map do |key|
+        SUM_CURVES(*(part_keys.map do |key|
           if parts.key?(key)
             parts[key].load_curve
           else
             raise "No such merit order participant: #{key.inspect}"
           end
-        end)
+        end))
       end
 
       # Adds the values in multiple curves.
@@ -229,7 +229,7 @@ module Gql::Runtime
       #
       # Returns an array.
       def SUM_CURVES(*curves)
-        Qernel::Plugins::Merit::Util.add_curves(curves.flatten!).to_a
+        Qernel::Plugins::Merit::Util.add_curves(curves).to_a
       end
 
       # Retrieves the total demand of all users in the merit order.
