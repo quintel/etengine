@@ -51,3 +51,4 @@ etsource_export
 *.sublime-workspace
 .powenv
 config/newrelic.yml
+query_script.rb
