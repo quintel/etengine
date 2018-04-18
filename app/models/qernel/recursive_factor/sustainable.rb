@@ -34,7 +34,7 @@ module Qernel::RecursiveFactor::Sustainable
     # the carrier sustainability.
     share = query.dataset_get(:sustainability_share) || link.carrier.sustainable
 
-    if link.input.conversion > 1.0
+    if share && link.input.conversion > 1.0
       # Adjust for slots with a greater than 1.0 conversion, which typically
       # indicates input loss in storage (such as P2P batteries).
       share / link.input.conversion
