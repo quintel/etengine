@@ -133,4 +133,10 @@ $(document).ready(function() {
           $('.future-edges h2 a').click();
       }
   }
+
+  $('.gql-debug #query').keyup(function(event) {
+      if (event.ctrlKey && event.keyCode === 13) {
+          $(event.target).parent('form').submit();
+      }
+  });
 });
