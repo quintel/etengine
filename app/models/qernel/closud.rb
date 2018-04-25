@@ -24,10 +24,9 @@ module Qernel
         name = layer_config[:name]
 
         previous = layers[name] = Layer.new(
-          consumers: participants[name][:consumers],
-          producers: participants[name][:producers],
           base: previous,
-          peak: layer_config[:peak]
+          peak: layer_config[:peak],
+          **participants[name]
         )
       end
 
@@ -47,14 +46,17 @@ module Qernel
     #
     #   partition_participants(graph)
     #   # => {
-    #   #      lv: { consumers: [...], producers: [...] },
-    #   #      mv: { consumers: [...], producers: [...] },
-    #   #      hv: { consumers: [...], producers: [...] }
+    #   #      lv: { consumers: [...], producers: [...], flexibles: [...] },
+    #   #      mv: { consumers: [...], producers: [...], flexibles: [...] },
+    #   #      hv: { consumers: [...], producers: [...], flexibles: [...] }
     #   #    }
     #
     private_class_method def partition_participants(graph)
       participants = graph.plugin(:merit).order.participants
-      by_level = Hash.new { |h, k| h[k] = { consumers: [], producers: [] } }
+
+      by_level = Hash.new do |h, k|
+        h[k] = { consumers: [], producers: [], flexibles: [] }
+      end
 
       participants.each do |part|
         converter = graph.converter(part.key)
@@ -62,7 +64,7 @@ module Qernel
         if converter
           config = converter.dataset_get(:merit_order)
           level = config.level
-          type  = config.type == :consumer ? :consumers : :producers
+          type = closud_type(config.type)
 
           next if level == :omit
         else
@@ -74,6 +76,15 @@ module Qernel
       end
 
       by_level
+    end
+
+    # Internal: Converts the merit config type to the appropriate Closud type.
+    private def closud_type(part_type)
+      case part_type
+      when :consumer then :consumers
+      when :flex     then :flexibles
+      else                :producers
+      end
     end
   end
 end
