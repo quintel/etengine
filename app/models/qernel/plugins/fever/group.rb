@@ -41,7 +41,7 @@ module Qernel::Plugins
       def elec_demand_curve
         @elec_demand_curve ||=
           Qernel::Plugins::Fever::ElectricityDemandCurve.new(
-            adapters.map { |a| a.producer_for_carrier(:electricity) }.compact
+            adapters.map { |a| a.producer_for_electricity_demand }.compact
           )
       end
 

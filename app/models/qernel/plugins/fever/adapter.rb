@@ -46,6 +46,12 @@ module Qernel::Plugins
         raise NotImplementedError
       end
 
+      # If the adapter has a producer whose demand should be included as part of
+      # the main fever demand curve, returns the producer.
+      def producer_for_electricity_demand
+        producer_for_carrier(:electricity)
+      end
+
       private
 
       # Internal: Fever expects totals -- not per-unit -- values. Using this

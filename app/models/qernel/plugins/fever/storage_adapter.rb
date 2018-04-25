@@ -3,6 +3,12 @@ module Qernel::Plugins
     # Represents a Fever participant which will store excess energy from
     # elsewhere, convert it to heat, and make it available for use later.
     class StorageAdapter < ProducerAdapter
+      # Prevents the demand of the producer being included twice in the Merit
+      # order: once as P2H and again in the Fever hot water curve.
+      def producer_for_electricity_demand
+        nil
+      end
+
       def participant
         @participant ||=
           ::Fever::Activity.new(
