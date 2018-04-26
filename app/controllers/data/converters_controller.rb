@@ -28,8 +28,8 @@ class Data::ConvertersController < Data::BaseController
 
     respond_to do |format|
       format.html { render :layout => true }
-      format.png  { render :text => diagram.to_png }
-      format.svg  { render :text => diagram.to_svg }
+      format.png  { render :plain => diagram.to_png }
+      format.svg  { render :plain => diagram.to_svg }
     end
   end
 
