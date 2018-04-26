@@ -232,6 +232,30 @@ module Gql::Runtime
         Qernel::Plugins::Merit::Util.add_curves(curves).to_a
       end
 
+      # Given a load curve for a flexible technology, extracts the loads which
+      # represent demand, ignoring periods of net supply.
+      #
+      # For example:
+      #   FLEXIBILITY_DEMAND_CURVE([-1, -2, 3, 0, 2, -2])
+      #   # => [1, 2, 0, 0, 0, 2]
+      #
+      # Returns an array.
+      def FLEX_DEMAND_CURVE(curve)
+        curve.map { |val| val < 0 ? -val : 0.0 }
+      end
+
+      # Given a load curve for a flexible technology, extracts the loads which
+      # represent supply, ignoring periods of net demand.
+      #
+      # For example:
+      #   FLEXIBILITY_DEMAND_CURVE([-1, -2, 3, 0, 2, -2])
+      #   # => [0, 0, 3, 0, 0, 2, 0]
+      #
+      # Returns an array.
+      def FLEX_SUPPLY_CURVE(curve)
+        curve.map { |val| val > 0 ? val : 0.0 }
+      end
+
       # Retrieves the total demand of all users in the merit order.
       def MERIT_DEMAND
         if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
