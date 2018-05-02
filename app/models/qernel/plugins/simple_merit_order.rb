@@ -77,7 +77,22 @@ module Qernel::Plugins
       end
 
       @order.add(::Merit::User.create(
-        key:        :total_demand,
+        key: :fever_hot_water,
+        load_curve: curves.household_hot_water_demand
+      ))
+
+      @order.add(::Merit::User.create(
+        key: :fever_space_heating,
+        load_curve: curves.household_space_heating_demand
+      ))
+
+      @order.add(::Merit::User.create(
+        key: :ev_demand,
+        load_curve: curves.ev_demand
+      ))
+
+      @order.add(::Merit::User.create(
+        key: :total_demand,
         load_curve: total_demand_curve
       ))
     end
@@ -111,7 +126,21 @@ module Qernel::Plugins
     #
     # Returns a float.
     def total_demand
-      0.0
+      # Remove from total demand the demand of any producer which is modelled as
+      # a separate Merit participant.
+      individual_demands = each_adapter.sum do |adapter|
+        if adapter.config.type == :consumer
+          adapter.converter.input_of_electricity
+        else
+          0.0
+        end
+      end
+
+      @graph.graph_query.total_demand_for_electricity -
+        individual_demands -
+        curves.demand_value(:hot_water) -
+        curves.demand_value(:space_heating) -
+        curves.demand_value(:ev)
     end
 
     # Internal: Returns an array of converters which are of the requested merit

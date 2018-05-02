@@ -8,14 +8,31 @@ module Qernel::Plugins
       end
 
       def space_heating_demand
-        fever_group(:space_heating).elec_demand_curve
+        curve(:space_heating)
       end
 
       def hot_water_demand
-        fever_group(:hot_water).elec_demand_curve
+        curve(:hot_water)
+      end
+
+      # Public: Returns the total amount of demand for the group matching
+      # +group_name+.
+      def demand_value(group_name)
+        group = fever_group(group_name)
+
+        return 0.0 unless group
+
+        group.adapters_by_type[:producer].sum do |adapt|
+          adapt.converter.input_of_electricity
+        end
       end
 
       private
+
+      def curve(group_name)
+        group = fever_group(group_name)
+        group && group.elec_demand_curve || ::Merit::Curve.new([0.0] * 8760)
+      end
 
       def fever_group(group_name)
         @graph.plugin(:time_resolve).fever.group(group_name)

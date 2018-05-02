@@ -38,7 +38,7 @@ module Qernel::Plugins
       # Returns a Merit::Curve.
       def ev_demand
         AggregateCurve.build(
-          @graph.query.group_demand_for_electricity(:merit_ev_demand),
+          demand_value(:ev),
           AggregateCurve.mix(
             dataset,
             electric_vehicle_profile_1:
@@ -63,6 +63,17 @@ module Qernel::Plugins
       # heating and cooling in new households.
       def household_space_heating_demand
         @household_heat.space_heating_demand
+      end
+
+      # Public: Returns the total demand of the curve matching the +curve_name+.
+      #
+      # Returns a numeric.
+      def demand_value(curve_name)
+        if curve_name == :ev
+          @graph.query.group_demand_for_electricity(:merit_ev_demand)
+        else
+          @household_heat.demand_value(curve_name)
+        end
       end
 
       private

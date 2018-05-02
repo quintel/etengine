@@ -31,26 +31,6 @@ module Qernel::Plugins
       lifecycle.must_recalculate!
     end
 
-    # Internal: Sets up the Merit::Order.
-    #
-    # Adds users to the merit order for consumers which need to follow a custom
-    # profile.
-    def setup
-      super
-
-      @graph.plugin(:time_resolve).fever.groups.each do |fgroup|
-        @order.add(::Merit::User.create(
-          key: :"fever_#{ fgroup.name }",
-          load_curve: fgroup.elec_demand_curve
-        ))
-      end
-
-      @order.add(::Merit::User.create(
-        key: :ev_demand,
-        load_curve: curves.ev_demand
-      ))
-    end
-
     # Internal: Takes loads and costs from the calculated Merit order, and
     # installs them on the appropriate converters in the graph. The updated
     # values will be used in the recalculated graph.
@@ -62,32 +42,6 @@ module Qernel::Plugins
     end
 
     private
-
-    # Internal: The total electricity demand, joules, across the graph, minus
-    # demand from dynamic electricity curves.
-    #
-    # Returns a float.
-    def total_demand
-      fever_demands = @graph.plugin(:time_resolve).fever.groups.sum do |group|
-        group.adapters_by_type[:producer].sum do |adapt|
-          adapt.converter.input_of_electricity
-        end
-      end
-
-      individual_demands = each_adapter.sum do |adapter|
-        if adapter.config.type == :consumer
-          adapter.converter.input_of_electricity
-        else
-          0.0
-        end
-      end
-
-      @graph.graph_query.total_demand_for_electricity -
-        fever_demands -
-        individual_demands -
-        # Curves are in MWh; convert back to J.
-        (3600.0 * curves.ev_demand.sum)
-    end
 
     # Internal: Sets the position of each dispatchable in the merit order -
     # according to their marginal cost - so that this may be communicated to
