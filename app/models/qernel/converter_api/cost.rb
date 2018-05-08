@@ -62,8 +62,10 @@ module Qernel
     #
     # Returns the marginal costs per MWh (produced electricity)
     def marginal_costs
-      variable_costs_per_typical_input *
-        SECS_PER_HOUR / electricity_output_conversion
+      fetch(:marginal_costs) do
+        variable_costs_per_typical_input *
+          SECS_PER_HOUR / electricity_output_conversion
+      end
     end
     unit_for_calculation 'marginal_costs', 'euro / MWh'
 

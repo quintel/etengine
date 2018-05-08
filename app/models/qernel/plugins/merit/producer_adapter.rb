@@ -20,7 +20,7 @@ module Qernel::Plugins
         @converter[:number_of_units]   = participant.number_of_units
 
         @converter.dataset_lazy_set(:marginal_costs) do
-          participant.marginal_costs
+          participant.marginal_costs.to_f
         end
 
         @converter.dataset_lazy_set(:profitability) do
