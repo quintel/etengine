@@ -130,17 +130,19 @@ module Qernel::Plugins
       # a separate Merit participant.
       individual_demands = each_adapter.sum do |adapter|
         if adapter.config.type == :consumer
-          adapter.converter.input_of_electricity
+          adapter.input_of_electricity
         else
           0.0
         end
       end
 
-      @graph.graph_query.total_demand_for_electricity -
+      demand = @graph.graph_query.total_demand_for_electricity -
         individual_demands -
         curves.demand_value(:hot_water) -
         curves.demand_value(:space_heating) -
         curves.demand_value(:ev)
+
+      demand < 0 ? 0.0 : demand
     end
 
     # Internal: Returns an array of converters which are of the requested merit

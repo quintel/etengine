@@ -6,12 +6,23 @@ module Qernel::Plugins
         @participant ||= ::Merit::User.create(
           key: @converter.key,
           load_profile: @dataset.load_profile(@config.group),
-          total_consumption: @converter.input_of_electricity
+          total_consumption: input_of_electricity
         )
       end
 
       def inject!
         # do nothing
+      end
+
+      def input_of_electricity
+        if @converter.converter.input(:electricity)
+          @converter.input_of_electricity
+        elsif @converter.converter.input(:loss)
+          # HV loss node does not have an electricity input.
+          @converter.input_of_loss
+        else
+          raise "No acceptable consumption input for #{@converter.key}"
+        end
       end
     end
   end
