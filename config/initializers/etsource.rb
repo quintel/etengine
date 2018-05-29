@@ -36,11 +36,6 @@ if ETSOURCE_DIR == ETSOURCE_EXPORT_DIR
   APP_CONFIG[:etsource_disable_export] = true
 end
 
-# On staging we might want to see the backtrace
-if Rails.env.production? && APP_CONFIG[:show_backtrace]
-  Etm::Application.config.consider_all_requests_local = true
-end
-
 if APP_CONFIG[:etsource_lazy_load_dataset]
   # Ensure any old lazy files (from the previous time the application was
   # loaded) are removed.
