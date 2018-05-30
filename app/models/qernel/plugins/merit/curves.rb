@@ -7,6 +7,18 @@ module Qernel::Plugins
         :household_space_heating_demand
       ].freeze
 
+      DYNAMIC_CURVES = {
+        ev_demand: %w[
+          electric_vehicle_profile_1
+          electric_vehicle_profile_2
+          electric_vehicle_profile_3
+        ],
+        solar_pv: %w[
+          solar_pv_profile_1
+          solar_pv_profile_2
+        ]
+      }.freeze
+
       def initialize(graph, household_heat)
         @graph = graph
         @household_heat = household_heat
@@ -29,6 +41,10 @@ module Qernel::Plugins
         ))
       end
 
+      def profile(name)
+        AggregateCurve.aggregate(mix_config(dataset, name))
+      end
+
       # Public: Creates a profile describing the demand for electricity by
       # electric vehicles.
       #
@@ -39,15 +55,7 @@ module Qernel::Plugins
       def ev_demand
         AggregateCurve.build(
           demand_value(:ev),
-          AggregateCurve.mix(
-            dataset,
-            electric_vehicle_profile_1:
-              @graph.area.electric_vehicle_profile_1_share,
-            electric_vehicle_profile_2:
-              @graph.area.electric_vehicle_profile_2_share,
-            electric_vehicle_profile_3:
-              @graph.area.electric_vehicle_profile_3_share
-          )
+          mix_config(dataset, :ev_demand)
         )
       end
 
@@ -80,6 +88,18 @@ module Qernel::Plugins
 
       def dataset
         @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
+      end
+
+      def mix_config(dataset, curve_name)
+        AggregateCurve.mix(dataset, curve_config(curve_name.to_sym))
+      end
+
+      def curve_config(name)
+        raise "No such dynamic curve: #{name}" unless DYNAMIC_CURVES.key?(name)
+
+        DYNAMIC_CURVES[name].each_with_object({}) do |attribute, conf|
+          conf[attribute] = @graph.area.public_send("#{attribute}_share")
+        end
       end
     end # Curves
   end # Merit
