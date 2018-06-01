@@ -24,6 +24,53 @@ module Qernel::Plugins
         end
       end
 
+      # Public: Given a curve, determines the full-load hours and amplifies the
+      # curve to represent a new target FLH.
+      #
+      # Returns a Merit::Curve.
+      def amplify_curve(input_curve, target)
+        tolerance = 1e-4 # Error tolerance in the final curve.
+        curve = input_curve.to_a
+
+        # Create a new curve representing each value as a fraction of the max.
+        curve_max = curve.max
+        curve = curve.map { |val| val / curve_max }
+        full_load_hours = curve.sum
+
+        if target < (full_load_hours - 1.0)
+          raise "Cannot amplify a curve of #{full_load_hours} hours to " \
+                "target #{target}; target must be larger than the original"
+        end
+
+        if (full_load_hours / target - 1.0).abs < tolerance
+          # Short-circuit if the curve is already close to the target.
+          return input_curve.dup
+        end
+
+        chop = chop_size = 0.5
+        chopped_curve = nil
+
+        # Iterate amplifying the curve until the resulting FLH matches the
+        # target. Iteratively shaves the peaks off the curve until the resulting
+        # shape (when normalized) matches the target.
+        30.times do
+          chopped_curve = curve.map { |val| val > chop ? chop : val }
+          flh = chopped_curve.sum / chop
+
+          break if (flh / target - 1.0).abs < tolerance
+
+          # Prepare the next iteration which will add or remove only half the
+          # amount of this iteration.
+          chop_size /= 2.0
+          chop += (flh > target ? chop_size : -chop_size)
+        end
+
+        new_sum = chopped_curve.sum
+
+        # Normalize to describe demand in MWh.
+        ::Merit::Curve.new(chopped_curve.map { |val| val / (3600.0 * new_sum) })
+      end
+
       # Internal: Adds an arbitrary number of curves together using the largest
       # available adder methods.
       private_class_method def add_many(curves)

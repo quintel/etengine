@@ -40,10 +40,6 @@ development: &DEV
   # analytics, airbrake etc.
   standalone: false
 
-  # Set to true if you want see the backtrace in production. Development will
-  # always show it.
-  show_backtrace: false
-
 production: &PRODUCTION
   <<: *DEV
   etsource_lazy_load_dataset: false
