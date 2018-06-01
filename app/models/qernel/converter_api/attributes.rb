@@ -46,11 +46,6 @@ module Qernel
         :network_capacity_available_in_mw => ['', ''],
         :network_capacity_used_in_mw => ['', ''],
         :network_expansion_costs_in_euro_per_mw => ['', ''],
-        :simult_sd => ['', ''],
-        :simult_se => ['', ''],
-        :simult_wd => ['', ''],
-        :simult_we => ['', ''],
-        :peak_load_units_present => ['', '']
       },
 
       :merit_order => {
