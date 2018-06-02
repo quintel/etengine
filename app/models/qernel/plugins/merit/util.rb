@@ -37,14 +37,14 @@ module Qernel::Plugins
         curve = curve.map { |val| val / curve_max }
         full_load_hours = curve.sum
 
-        if target < (full_load_hours - 1.0)
-          raise "Cannot amplify a curve of #{full_load_hours} hours to " \
-                "target #{target}; target must be larger than the original"
+        if target < (full_load_hours - 1.0) ||
+              (full_load_hours / target - 1.0).abs < tolerance
+          # Short circuit if the curve represents the same or more FLH than
+          # the target.
+          return input_curve.dup
         end
 
         if (full_load_hours / target - 1.0).abs < tolerance
-          # Short-circuit if the curve is already close to the target.
-          return input_curve.dup
         end
 
         chop = chop_size = 0.5

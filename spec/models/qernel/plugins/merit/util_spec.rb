@@ -142,8 +142,11 @@ describe Qernel::Plugins::Merit::Util do
           Qernel::Plugins::Merit::Util.amplify_curve(curve, 1.0)
         end
 
-        it 'raises an error' do
-          expect { result }.to raise_error(/cannot amplify/i)
+        it 'does not amplify the curve' do
+          max = result.max
+          flh = result.map { |val| val / max }.sum
+
+          expect(flh).to eq(2.5)
         end
       end
     end # with a curve of [0.25, 0.25, 0.5, 1.0] (2flh)
