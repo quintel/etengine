@@ -260,7 +260,7 @@ module Gql::Runtime
       def MERIT_DEMAND
         if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
           users = scope.graph.plugin(:merit).order.participants.users
-          users.map(&:load_curve).reduce(:+).to_a
+          SUM_CURVES(*users.map(&:load_curve))
         else
           []
         end
