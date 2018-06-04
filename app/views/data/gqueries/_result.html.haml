@@ -1,10 +1,10 @@
 - begin
   %table.table.table-bordered.results
     - if result.respond_to?(:present_year)
-      = render(partial: 'year_result', locals: { year: result.present_year, value: result.present_value })
-      = render(partial: 'year_result', locals: { year: result.future_year, value: result.future_value })
+      = render(partial: 'year_result', locals: { year: result.present_year, value: result.present_value, timing: result.present_time })
+      = render(partial: 'year_result', locals: { year: result.future_year, value: result.future_value, timing: result.future_time })
     - else
-      = render(partial: 'year_result', locals: { year: 'No year', value: result })
+      = render(partial: 'year_result', locals: { year: 'No year', value: result.first, timing: result.last })
 
 - rescue => e
   = render partial: 'error', locals: { error: e }

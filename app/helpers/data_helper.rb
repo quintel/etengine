@@ -160,4 +160,19 @@ module DataHelper
       end
     end
   end
+
+  def format_query_performance(time)
+    css_class = %w[timing]
+
+    if time > 0.1
+      css_class.push('error')
+    elsif time > 0.01
+      css_class.push('warning')
+    end
+
+    haml_tag "span.#{css_class.join('.')}" do
+      haml_concat (time * 1000).round(2)
+      haml_concat ' ms'
+    end
+  end
 end

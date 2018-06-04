@@ -15,20 +15,28 @@ class ResultSet < Array
   end
 
   def present_value
-    present.last
+    present[1]
   end
 
   def future_value
-    future.last
+    future[1]
   end
   alias target_value future_value
 
   def present_year
-    present.first
+    present[0]
   end
 
   def future_year
-    future.first
+    future[0]
+  end
+
+  def present_time
+    present[2] || 0.0
+  end
+
+  def future_time
+    future[2] || 0.0
   end
 
   def relative_increase_percent

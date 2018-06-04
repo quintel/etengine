@@ -147,7 +147,7 @@ module Gql
     # @param rescue_resultset [ResultSet] A ResultSet that is return in case of errors.
     # @return [ResultSet] Result query, depending on its gql_modifier
     #
-    def query(gquery_or_string, rescue_with = nil)
+    def query(gquery_or_string, rescue_with = nil, with_timing = false)
       if gquery_or_string.is_a?(::Gquery)
         modifier = gquery_or_string.gql_modifier
         query = gquery_or_string
@@ -158,7 +158,7 @@ module Gql
         query, modifier = gquery_or_string, nil
       end
 
-      query_with_modifier(query, modifier)
+      query_with_modifier(query, modifier, with_timing)
 
     rescue => e
       if rescue_with == :debug
@@ -180,14 +180,22 @@ module Gql
 
 
     # Run a query with the strategy defined in the parameter
-    def query_with_modifier(query, strategy)
+    def query_with_modifier(query, strategy, with_timing = false)
       key = query.respond_to?(:key) ? query.key : 'custom'
 
       instrument("gql.query.#{key}.#{strategy}") do
         if strategy.nil?
-          query_standard(query)
+          if with_timing
+            query_standard_with_timing(query)
+          else
+            query_standard(query)
+          end
         elsif Gquery::GQL_MODIFIERS.include?(strategy.strip)
-          send("query_#{strategy}", query)
+          if with_timing
+            with_timing { send("query_#{strategy}", query) }
+          else
+            send("query_#{strategy}", query)
+          end
         end
       end
     end
@@ -325,6 +333,18 @@ module Gql
       ]
     end
 
+    # Equivalent to query_standard, but also measures the time taken to execute
+    # each query.
+    def query_standard_with_timing(query)
+      present, p_time = with_timing { query_present(query) }
+      future, f_time = with_timing { query_future(query) }
+
+      ResultSet.create [
+        [scenario.start_year, present, p_time],
+        [scenario.end_year, future, f_time]
+      ]
+    end
+
     # @param query [String] The query
     # @return [Float] The result of the present graph
     #
@@ -370,6 +390,14 @@ module Gql
       present.graph.initializer_inputs.each do |input, value|
         update_graph(graph, input, value)
       end
+    end
+
+    def with_timing
+      before = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result = yield
+      after  = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+      [result, after - before]
     end
   end
 end

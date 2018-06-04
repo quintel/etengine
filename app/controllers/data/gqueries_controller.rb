@@ -17,7 +17,7 @@ class Data::GqueriesController < Data::BaseController
       redirect_to data_debug_gql_path(gquery: params[:query])
     elsif params[:query].present?
       begin
-        @result = @gql.query(params[:query].gsub(/\s/,''))
+        @result = @gql.query(params[:query].gsub(/\s/,''), nil, true)
       rescue Gql::CommandError => ex
         @error = ex
       end

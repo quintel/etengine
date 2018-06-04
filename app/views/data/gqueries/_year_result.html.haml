@@ -1,10 +1,11 @@
 %tr
-  %td.span1.year
-    = year
+  %td.span1.year(style="width: 110px")
+    %strong= year
 
     - if value.is_a?(DebugTable)
       .spacing &nbsp;
     - else
+      - format_query_performance(timing) unless timing.zero?
       = clippy(value.to_s)
 
   - if value.is_a?(DebugTable)

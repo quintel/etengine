@@ -209,3 +209,26 @@ table th.tablesorter-headerSortUp:after {
 .table tbody tr:hover th.attribute_group {
   background-color: #eee;
 }
+
+.results {
+  .year strong {
+    display: block
+  }
+
+  .timing {
+    color: #999;
+    font-size: 12px;
+    white-space: nowrap;
+
+    &.warning, &.error {
+      background: #f89406;
+      border-radius: 2px;
+      color: #fff;
+      padding: 2px 4px;
+    }
+
+    &.error {
+      background: #d64c4a;
+    }
+  }
+}
