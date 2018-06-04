@@ -75,7 +75,7 @@ module Scenario::UserUpdates
 
   # These two methods are only used in the edit scenario form
   def user_values_as_yaml
-    user_values.to_hash.to_yaml
+    @yaml_error ? @invalid_yaml_values : user_values.to_hash.to_yaml
   end
 
   def user_values_as_yaml=(values)
@@ -84,6 +84,18 @@ module Scenario::UserUpdates
     ])
 
     self.user_values = (loaded || {}).with_indifferent_access
+  rescue Psych::SyntaxError => ex
+    @invalid_yaml_values = values.to_s
+    @yaml_error = ex
+  end
+
+  def validate_no_yaml_error
+    if @yaml_error
+      errors.add(
+        :user_values_as_yaml,
+        "contains invalid YAML: #{@yaml_error.message}"
+      )
+    end
   end
 
   #######

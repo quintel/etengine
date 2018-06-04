@@ -22,6 +22,8 @@ class Scenario < ApplicationRecord
   validates :area_code, inclusion: { in: ->(*) { Etsource::Dataset.region_codes } }
   validates :end_year,  numericality: true
 
+  validate  :validate_no_yaml_error
+
   validates_associated :scaler, on: :create
 
   scope :in_start_menu, ->    { where(:in_start_menu => true) }
