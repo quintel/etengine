@@ -39,6 +39,8 @@ class DebugTable
           end
         rescue => e
           'error'
+        rescue SyntaxError => e
+          raise Gql::GqlError.new(e)
         end
       end
     end
