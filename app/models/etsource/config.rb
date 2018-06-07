@@ -22,6 +22,14 @@ module Etsource
       end
     end
 
+    # Public: Fetches the profile names used to build a dynamic curve. Raises
+    # KeyError if no such dynamic curve exists.
+    #
+    # Returns an array of strings.
+    def dynamic_curve(name)
+      read(:dynamic_curves).fetch(name.to_s)
+    end
+
     private_class_method def read(name)
       NastyCache.instance.fetch("etsource.config.#{name}") do
         IceNine.deep_freeze(Atlas::Config.read(name))

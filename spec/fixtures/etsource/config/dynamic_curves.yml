@@ -1,0 +1,50 @@
+---
+# Defines dynamic load profiles used by participants in the merit order.
+# Visitors may decide how to mix the profiles with a slider in the front end.
+#
+# For example:
+#
+#   ev_demand:
+#     - electric_vehicle_1
+#     - electric_vehicle_2
+#     - electric_vehicle_3
+#
+# The user may use a slider to set area attribute "electric_vehicle_1_share" to
+# 0.25, "electric_vehicle_2_share" to 0.3, and "electric_vehicle_3_share" to
+# 0.45; ETEngine will craft a new "ev_demand" curve containing a mix of the
+# three profiles with a share of 25%, 30%, and 45% respectively.
+#
+# In order for this profile to work, Atlas::Dataset must define the following
+# attributes:
+#
+#   attribute :electric_vehicle_1_share, Float, default: 1.0
+#   attribute :electric_vehicle_2_share, Float, default: 0.0
+#   attribute :electric_vehicle_3_share, Float, default: 0.0
+#
+# The profile may be assigned to a merit order participant by assigning
+# "dynamic: <profile_name>" to the node "merit.group" attribute. For example:
+#
+#   - merit.type = consumer
+#   - merit.group = dynamic: ev_demand
+#   - merit_order.level = lv
+
+ev_demand:
+  - electric_vehicle_profile_1
+  - electric_vehicle_profile_2
+  - electric_vehicle_profile_3
+
+solar_pv:
+  - solar_pv_profile_1
+  - solar_pv_profile_2
+
+wind_coastal:
+  - wind_coastal_min
+  - wind_coastal_max
+
+wind_inland:
+  - wind_inland_min
+  - wind_inland_max
+
+wind_offshore:
+  - wind_offshore_min
+  - wind_offshore_max
