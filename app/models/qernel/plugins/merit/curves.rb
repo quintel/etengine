@@ -7,18 +7,6 @@ module Qernel::Plugins
         :household_space_heating_demand
       ].freeze
 
-      DYNAMIC_CURVES = {
-        ev_demand: %w[
-          electric_vehicle_profile_1
-          electric_vehicle_profile_2
-          electric_vehicle_profile_3
-        ],
-        solar_pv: %w[
-          solar_pv_profile_1
-          solar_pv_profile_2
-        ]
-      }.freeze
-
       def initialize(graph, household_heat)
         @graph = graph
         @household_heat = household_heat
@@ -95,10 +83,10 @@ module Qernel::Plugins
       end
 
       def curve_config(name)
-        raise "No such dynamic curve: #{name}" unless DYNAMIC_CURVES.key?(name)
+        components = Etsource::Config.dynamic_curve(name)
 
-        DYNAMIC_CURVES[name].each_with_object({}) do |attribute, conf|
-          conf[attribute] = @graph.area.public_send("#{attribute}_share")
+        components.each_with_object({}) do |component, config|
+          config[component] = @graph.area.public_send("#{component}_share")
         end
       end
     end # Curves
