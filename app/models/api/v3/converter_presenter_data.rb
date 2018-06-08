@@ -29,7 +29,7 @@ module Api
             { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'ccs_investment_per(:mw_electricity)' =>
-            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
+            { label: 'Additional initial investment for CCS', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'decommissioning_costs_per(:mw_electricity)' =>
             { label: 'Decommissioning costs', unit:'kEUR / MWe',
@@ -185,6 +185,50 @@ module Api
         }
       }
 
+      # If the converter belongs to the :cost_hydrogen_production group then
+      # add these
+      HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capacity', unit:'MW input',
+              formatter: FORMAT_1DP },
+          :hydrogen_output_conversion  =>
+            { label: 'Hydrogen output efficiency', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT },
+          :full_load_hours  =>
+            { label: 'Full load hours', unit: 'hour / year'},
+          :free_co2_factor =>
+            { label: 'CCS capture rate', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT }
+        },
+        :cost => {
+          'initial_investment_per(:plant)' =>
+            { label: 'Investment costs', unit: 'EUR'},
+          'ccs_investment_per(:plant)' =>
+            { label: 'Additional initial investment for CCS', unit: 'EUR'},
+          'fixed_operation_and_maintenance_costs_per(:plant)' =>
+            { label: 'Fixed operation and maintenance costs', unit:'EUR / year'},
+          'variable_operation_and_maintenance_costs_per(:full_load_hour)'  =>
+            { label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour'},
+          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
+            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour'},
+          :wacc  =>
+            { label: 'Weighted average cost of capital', unit: '%'},
+          :takes_part_in_ets  =>
+            { label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+        },
+        :other => {
+          :land_use_per_unit  =>
+            { label: 'Land use per unit', unit: 'km2'},
+          :construction_time  =>
+            { label: 'Construction time', unit: 'years',
+              formatter: FORMAT_1DP },
+          :technical_lifetime  =>
+            { label: 'Technical lifetime', unit: 'years',
+              formatter: ->(n) { n.to_i } }
+        }
+      }
+
       FLEXIBILITY_COSTS_AND_OTHER = {
         :cost => {
           'initial_investment_per(:mw_typical_input_capacity)' =>
@@ -297,6 +341,7 @@ module Api
         out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.groups.include?(:cost_electricity_production)
         out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.groups.include?(:cost_heat_pumps)
         out = CHP_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_chps)
+        out = HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS    if @converter.groups.include?(:cost_hydrogen_production)
         out = CARBON_CAPTURING_ATTRIBUTES_AND_METHODS       if @converter.groups.include?(:cost_carbon_capturing)
         out = P2G_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_p2g)
         out = P2H_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_p2h)
