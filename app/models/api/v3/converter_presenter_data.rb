@@ -191,7 +191,7 @@ module Api
         :technical => {
           :typical_input_capacity =>
             { label: 'Capacity', unit:'MW input',
-              formatter: FORMAT_1DP },
+              formatter: ->(n) { n && FORMAT_1DP.call(n) } },
           :hydrogen_output_conversion  =>
             { label: 'Hydrogen output efficiency', unit: '%',
               formatter: FORMAT_FAC_TO_PERCENT },
