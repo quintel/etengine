@@ -42,12 +42,6 @@ module Qernel
         :profit_per_mwh_electricity => ['', 'eur/MWh']  # Used by merit order
       },
 
-      :network => {
-        :network_capacity_available_in_mw => ['', ''],
-        :network_capacity_used_in_mw => ['', ''],
-        :network_expansion_costs_in_euro_per_mw => ['', ''],
-      },
-
       :merit_order => {
         :merit_order_full_load_hours => ['', ''],
         :merit_order_capacity_factor => ['', ''],
