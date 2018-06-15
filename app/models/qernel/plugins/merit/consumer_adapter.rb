@@ -18,8 +18,9 @@ module Qernel::Plugins
         if @converter.converter.input(:electricity)
           @converter.input_of_electricity
         elsif @converter.converter.input(:loss)
-          # HV loss node does not have an electricity input.
-          @converter.input_of_loss
+          # HV loss node does not have an electricity input; use graph method
+          # which compensates for export.
+          @graph.query.electricity_losses_if_export_is_zero
         else
           raise "No acceptable consumption input for #{@converter.key}"
         end

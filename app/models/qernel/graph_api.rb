@@ -178,60 +178,38 @@ class GraphApi
     fetch(:electricity_network) { Closud.build(graph) }
   end
 
-  #######
-  private
-  #######
-
-  # Demand of electricity of the energy sector itself
-  # (not included in final_demand_for_electricity)
-  def energy_sector_own_use_electricity
-    graph.converter(:energy_power_sector_own_use_electricity).demand
-  end
-
   # Computes the electricity losses AS IF there were no exports.
+  #
   # This is accomplished by using the (fixed) conversion efficiencies
   # of the HV network for electricity (effE) and losses (effL) and the
   # expected total demand of the network IF the merit order is activated
   # (transformer_demand + export (== 0)).
   #
-  # +---------------------+
-  # |                     |
-  # |                     |
-  # |   export            <--------+
-  # |                     |        |
-  # |                     |        |
-  # +---------------------+        |
-  #                                |
-  # +---------------------+        |       +---------------------+
-  # |                     |        +-------+                     |
-  # |                     |                |                     |
-  # |   MV trafo +        <----------------+      HV network     |
-  # |   own_use_of_sector |                |                     |
-  # |                     |        +-------+                     |
-  # +---------------------+        |       +---------------------+
-  #                                |
-  # +---------------------+        |
-  # |                     |        |
-  # |                     |        |
-  # |   loss              <--------+
-  # |                     |
-  # |                     |
-  # +---------------------+
+  #              +--------+
+  #              | Export | <-+
+  #              +--------+   |
+  #                +------+   |
+  #                | Loss | <-+
+  #                +------+   |   +------------+
+  #                           +-- | HV Network |
+  #   +-------------------+   |   +------------+
+  #   | Own use of sector | <-+
+  #   +-------------------+   |
+  #      +----------------+   |
+  #      | MV transformer | <-+
+  #      +----------------+
   #
-  # To find the loss IF export is zero, we use the fact that the ratio of
-  # loss and electricity coming from the HV network is fixed.
-  # In math:
-  # loss / (transformer_demand + export) == effL / effE
+  # To find the loss IF export is zero, we use the fact that the ratio of loss
+  # and electricity coming from the HV network is fixed.
   #
-  # Setting export == 0 (as would be the case if the MO module is enabled)
-  # gives the loss:
+  #   loss / (transformer_demand + export) == effL / effE
   #
-  # loss = transformer_demand * effL / effE
+  # Setting export = 0 (as would be the case if the MO module is enabled) gives
+  # the loss:
   #
-  # NOTE: This is ONLY correct if import and export are NOT taken into account
-  # in the MO module.
+  #   loss = transformer_demand * effL / effE
   #
-  # returns [Float] the network losses for the electricity net.
+  # Returns a numeric: the network losses for the electricity net.
   def electricity_losses_if_export_is_zero
     transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
     own_use_of_sector      = energy_sector_own_use_electricity
@@ -240,6 +218,14 @@ class GraphApi
     conversion_electricity = converter.output(:electricity).conversion
 
     (transformer_demand + own_use_of_sector) * conversion_loss / conversion_electricity
+  end
+
+  private
+
+  # Demand of electricity of the energy sector itself
+  # (not included in final_demand_for_electricity)
+  def energy_sector_own_use_electricity
+    graph.converter(:energy_power_sector_own_use_electricity).demand
   end
 
 end
