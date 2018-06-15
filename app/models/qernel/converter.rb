@@ -79,7 +79,8 @@ class Converter
                :input_links,
                :groups,
                :sector_key,
-               :use_key
+               :use_key,
+               :presentation_group
 
   attr_accessor :converter_api, :key, :graph
 
@@ -125,6 +126,7 @@ class Converter
     @groups     = opts[:groups] || []
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
+    @presentation_group = opts[:presentation_group]
 
     @output_links, @input_links = [], []
     @output_hash, @input_hash = {}, {}
