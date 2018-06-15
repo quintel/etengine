@@ -24,8 +24,7 @@ module Api
         json[:key]                  = @key
         json[:sector]               = @present.sector_key
         json[:use]                  = @present.use_key
-        json[:groups]               = @present.groups
-
+        json[:presentation_group]   = @present.presentation_group
         json[:data] = {}
 
         attributes_and_methods_to_show.each_pair do |group, items|

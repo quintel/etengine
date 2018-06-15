@@ -8,7 +8,7 @@ module Api
       FORMAT_1DP            = ->(n) { '%.1f' % n }
       FORMAT_FAC_TO_PERCENT = ->(n) { FORMAT_1DP.call(n * 100) }
 
-      # If the converter belongs to the :cost_electricity_production group then
+      # If the converter belongs to the electricity_production presentation group then
       # add these
       ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -60,7 +60,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_traditional_heat group then
+      # If the converter belongs to the traditional_heat presentation group then
       # add these
       HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -97,7 +97,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_heat_pumps group then
+      # If the converter belongs to the heat_pumps presentation group then
       # add these
       HEAT_PUMP_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -135,7 +135,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_chps group then
+      # If the converter belongs to the chps presentation group then
       # add these
       CHP_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -185,7 +185,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_hydrogen_production group then
+      # If the converter belongs to the hydrogen_production presentation group then
       # add these
       HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -266,7 +266,7 @@ module Api
         }
       }
 
-      # If the converter belongs to the :cost_carbon_capturing group then
+      # If the converter belongs to the carbon_capturing presentation group then
       # add these
       CARBON_CAPTURING_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -281,7 +281,7 @@ module Api
         }
       }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
-      # If the converter belongs to the :cost_p2g group then
+      # If the converter belongs to the p2g presentation group then
       # add these
       P2G_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -296,7 +296,7 @@ module Api
         }
       }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
-      # If the converter belongs to the :cost_p2h group then
+      # If the converter belongs to the p2h presentation group then
       # add these
       P2H_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -311,7 +311,7 @@ module Api
         }
       }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
-      # If the converter belongs to the :cost_p2kerosene group then
+      # If the converter belongs to the p2kerosene presentation group then
       # add these
       P2KEROSENE_ATTRIBUTES_AND_METHODS = {
         :technical => {
@@ -337,15 +337,15 @@ module Api
       # details page, in the /data section and through the API (v3)
       def attributes_and_methods_to_show
         out = {}
-        out = HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS        if @converter.groups.include?(:cost_traditional_heat)
-        out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.groups.include?(:cost_electricity_production)
-        out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.groups.include?(:cost_heat_pumps)
-        out = CHP_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_chps)
-        out = HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS    if @converter.groups.include?(:cost_hydrogen_production)
-        out = CARBON_CAPTURING_ATTRIBUTES_AND_METHODS       if @converter.groups.include?(:cost_carbon_capturing)
-        out = P2G_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_p2g)
-        out = P2H_ATTRIBUTES_AND_METHODS                    if @converter.groups.include?(:cost_p2h)
-        out = P2KEROSENE_ATTRIBUTES_AND_METHODS             if @converter.groups.include?(:cost_p2kerosene)
+        out = HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS        if @converter.presentation_group == "traditional_heat"
+        out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.presentation_group == "electricity_production"
+        out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.presentation_group == "heat_pumps"
+        out = CHP_ATTRIBUTES_AND_METHODS                    if @converter.presentation_group == "chps"
+        out = HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS    if @converter.presentation_group == "hydrogen_production"
+        out = CARBON_CAPTURING_ATTRIBUTES_AND_METHODS       if @converter.presentation_group == "carbon_capturing"
+        out = P2G_ATTRIBUTES_AND_METHODS                    if @converter.presentation_group == "p2g"
+        out = P2H_ATTRIBUTES_AND_METHODS                    if @converter.presentation_group == "p2h"
+        out = P2KEROSENE_ATTRIBUTES_AND_METHODS             if @converter.presentation_group == "p2kerosene"
 
         # custom stuff, trying to keep the view simple
         if uses_coal_and_wood_pellets?

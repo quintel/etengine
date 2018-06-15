@@ -2,18 +2,6 @@ module Api
   module V3
     class TopologyPresenter
 
-      # converter groups that have the converter summary table
-      GROUPS_WITH_EXTRA_INFO = [
-        :cost_traditional_heat,
-        :cost_electricity_production,
-        :cost_heat_pumps,
-        :cost_chps,
-        :cost_carbon_capturing,
-        :cost_p2g,
-        :cost_p2h,
-        :cost_p2kerosene
-      ]
-
       def initialize(scenario)
         @scenario = scenario
         @gql = @scenario.gql(prepare: true)
@@ -47,8 +35,7 @@ module Api
             fill_color:        ConverterPositions::FILL_COLORS[c.sector_key],
             stroke_color:      '#999',
             sector:            c.sector_key,
-            use:               c.use_key,
-            summary_available: (c.groups & GROUPS_WITH_EXTRA_INFO).any?
+            use:               c.use_key
           }
 
         end

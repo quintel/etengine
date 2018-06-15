@@ -14,7 +14,8 @@ module Etsource
           key:                  node.key.to_sym,
           sector_id:            node.sector.to_sym,
           use_id:               node.use.try(:to_sym),
-          groups:               node.groups
+          groups:               node.groups,
+          presentation_group:   node.presentation_group
         )
       end
 
