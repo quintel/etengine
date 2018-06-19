@@ -106,12 +106,10 @@ class GraphApi
   # +capacity+, determines the proportion of hours where demand exceeds
   # production capacity.
   #
-  # demand_curve - The "total demand" curve describing total energy demand
-  #                throughout the year.
-  # capacity     - The total installed capacity, in MWh.
-  # excludes     - Converters keys whose profiled demands should be subtracted
-  #                from  the total demand curve prior to calculating LOLE. See
-  #                merit#123 for an example of why this may be desirable.
+  # capacity - The total installed capacity, in MWh.
+  # excludes - Converters keys whose profiled demands should be subtracted from
+  #            the total demand curve prior to calculating LOLE. See merit#123
+  #            for an example of why this may be desirable.
   #
   # For example
   #
@@ -122,9 +120,10 @@ class GraphApi
   #
   # Returns a Integer representing the number of hours where capacity was
   # exceeded.
-  def loss_of_load_expectation(demand, capacity, excludes = [])
+  def loss_of_load_expectation(capacity, excludes = [])
     graph.plugin(:merit).order.lole.expectation(
-      demand_curve(demand), capacity, excludes)
+      electricity_demand_curve, capacity, excludes
+    )
   end
 
   # Public: Returns number of excess load events for a certain duration.
@@ -157,18 +156,15 @@ class GraphApi
     graph.plugin(:merit).order.blackout.number_of_hours
   end
 
-  # Public: Takes the merit order load curve, and multiplies each point by the
-  # demand of the converter, yielding the load on the converter over time.
+  # Public: An array describing the total electricity demand in each hour.
   #
-  # An optional +demand+ parameter can be used to build the curve, instead of
-  # using the default "total_demand_for_electricity" value.
-  #
-  # Returns an array, each value a Numeric representing the converter demand in
-  # a one-hour period.
-  def demand_curve(demand = nil)
-    graph.plugin(:merit).order.lole.demand_curve(
-      Atlas::Dataset.find(area.area_code).load_profile(:total_demand), demand
-    )
+  # Returns an array of floats.
+  def electricity_demand_curve
+    fetch(:electricity_demand_curve) do
+      Plugins::Merit::Util.add_curves(
+        graph.plugin(:merit).order.participants.users.map(&:load_curve)
+      )
+    end
   end
 
   # Public: Builds a model of the electricity network.

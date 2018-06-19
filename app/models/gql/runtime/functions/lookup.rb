@@ -259,8 +259,7 @@ module Gql::Runtime
       # Retrieves the total demand of all users in the merit order.
       def MERIT_DEMAND
         if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
-          users = scope.graph.plugin(:merit).order.participants.users
-          SUM_CURVES(*users.map(&:load_curve))
+          GRAPH(:electricity_demand_curve)
         else
           []
         end
