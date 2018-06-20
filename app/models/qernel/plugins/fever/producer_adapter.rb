@@ -31,24 +31,26 @@ module Qernel::Plugins
       end
 
       def inject!
-        producer = participant.producer
-        heat_production = producer.output_curve.sum * 3600 # MWh -> MJ
+        producer   = participant.producer
+        production = producer.output_curve.sum
 
-        if heat_production.zero?
-          full_load_hours = 0.0
-        else
-          full_load_hours = heat_production / total_value(:heat_output_capacity)
-        end
+        full_load_hours =
+          if production.zero?
+            0.0
+          else
+            production / total_value(:heat_output_capacity)
+          end
 
-        @converter.demand              = heat_production / output_efficiency
+        @converter.demand = (production * 3600) / output_efficiency # MWh -> MJ
+
         @converter[:full_load_hours]   = full_load_hours
         @converter[:full_load_seconds] = full_load_hours * 3600
 
-        link = @converter.converter.output(:useable_heat).links.first
-
         if @converter.converter.groups.include?(:aggregator_producer)
-          demand = participant.demand * 3600
-          link.share = demand > 0 ? heat_production / demand : 1.0
+          demand = participant.demand
+          link   = @converter.converter.output(:useable_heat).links.first
+
+          link.share = demand > 0 ? production / demand : 1.0
         end
       end
 
