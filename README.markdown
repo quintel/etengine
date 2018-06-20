@@ -1,7 +1,7 @@
 # Energy Transition Engine (ETE)
 
 This is the source code for the Calculation Engine that is used by the
-[Energy Transition Model](http://energytranstionmodel.com) and its various
+[Energy Transition Model](http://energytransitionmodel.com) and its various
 interfaces (clients).
 
 It is an online web app that lets you create a future energy scenario for
