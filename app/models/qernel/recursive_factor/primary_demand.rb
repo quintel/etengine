@@ -73,19 +73,6 @@ module Qernel::RecursiveFactor::PrimaryDemand
     if infinite? && primary_energy_demand?
       (1 - loss_output_conversion)
 
-    # Special case is imported electricity, if we import, somebody else has
-    # to produce that electricity from primary energy. To take that into account
-    # we add a higher factor for imported_electricity.
-    elsif primary_energy_demand? &&
-        link && link.carrier.key == :imported_electricity
-      # if export should be 1, if its import should be 1.82
-      if demand > 0.0
-        # if demand greater then 0.0 electricity is imported
-        graph.area.import_electricity_primary_demand_factor
-      else
-        # energy gets exported.
-        graph.area.export_electricity_primary_demand_factor
-      end
     elsif primary_energy_demand? # Normal case.
       1.0
     else
