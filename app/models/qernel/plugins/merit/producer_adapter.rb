@@ -2,8 +2,13 @@ module Qernel::Plugins
   module Merit
     class ProducerAdapter < Adapter
       def self.factory(converter, graph, dataset)
-        group = converter.dataset_get(:merit_order).group
-        (group && group.to_sym == :import) ? ImportAdapter : self
+        case converter.dataset_get(:merit_order).type
+        when :must_run, :volatile
+          AlwaysOnAdapter
+        when :dispatchable
+          group = converter.dataset_get(:merit_order).group
+          group == :import ? ImportAdapter : DispatchableAdapter
+        end
       end
 
       def inject!
@@ -19,21 +24,9 @@ module Qernel::Plugins
         @converter[:full_load_seconds] = full_load_seconds
         @converter[:number_of_units]   = participant.number_of_units
 
-        @converter.dataset_lazy_set(:marginal_costs) do
-          participant.marginal_costs.to_f
-        end
-
-        @converter.dataset_lazy_set(:profitability) do
-          participant.profitability
-        end
-
-        @converter.dataset_lazy_set(:profit_per_mwh_electricity) do
-          participant.profit_per_mwh_electricity
-        end
-
         @converter.demand =
           full_load_seconds *
-          @converter.input_capacity *
+          flh_capacity *
           participant.number_of_units
       end
 
@@ -42,22 +35,28 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
-        attrs[:marginal_costs] = @converter.marginal_costs
-
-        attrs[:output_capacity_per_unit] =
-          @converter.electricity_output_conversion * @converter.input_capacity
-
-        attrs[:fixed_costs_per_unit] =
-          @converter.send(:fixed_costs)
-
-        attrs[:fixed_om_costs_per_unit] =
-          @converter.send(:fixed_operation_and_maintenance_costs_per_year)
+        attrs[:marginal_costs] = marginal_costs
+        attrs[:output_capacity_per_unit] = output_capacity_per_unit
 
         attrs
       end
 
       def producer_class
         ::Merit::DispatchableProducer
+      end
+
+      def marginal_costs
+        @converter.marginal_costs
+      end
+
+      def output_capacity_per_unit
+        @converter.electricity_output_conversion * @converter.input_capacity
+      end
+
+      # Internal: Capacity used to multiply full load seconds to determien the
+      # resulting annual demand of the producer.
+      def flh_capacity
+        @converter.input_capacity
       end
     end # ProducerAdapter
   end # Merit
