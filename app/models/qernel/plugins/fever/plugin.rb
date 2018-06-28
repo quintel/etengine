@@ -23,6 +23,10 @@ module Qernel::Plugins
         @sh_demand ||= HouseholdHeat.demand_curve(graph)
       end
 
+      def summary
+        @summary ||= Summary.new(self)
+      end
+
       # Configures the Fever groups, ensuring that hot water is first since its
       # producers may be used as aliases in other groups.
       def setup

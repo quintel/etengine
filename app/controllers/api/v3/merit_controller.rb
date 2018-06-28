@@ -2,7 +2,7 @@ module Api
   module V3
     class MeritController < BaseController
       respond_to :json
-      respond_to :csv, only: [:load_curves, :price_curve]
+      respond_to :csv, only: [:load_curves, :price_curve, :heat_curves]
 
       rescue_from ActiveRecord::RecordNotFound do
         render json: { errors: ['Scenario not found'] }, status: 404
@@ -23,6 +23,31 @@ module Api
       def price_curve
         send_csv('price') do |csv|
           merit_order.price_curve.each { |row| csv << [row] }
+        end
+      end
+
+      # Downloads the supply and demand of heat, including deficits and
+      # surpluses due to buffering and time-shifting.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/heat.csv
+      def heat_curves
+        summary = scenario.gql.future_graph.plugin(:time_resolve).fever.summary
+
+        rows = summary.production.zip(
+          summary.demand,
+          summary.surplus,
+          summary.deficit
+        )
+
+        send_csv('heat_demand') do |csv|
+          csv << [
+            'Production',
+            'Demand',
+            'Buffering and time-shifting',
+            'Deficit'
+          ]
+
+          rows.each { |row| csv << row.flatten }
         end
       end
 

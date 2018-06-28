@@ -39,6 +39,7 @@ Rails.application.routes.draw do
 
         get 'merit/loads' => 'merit#load_curves', as: :merit_download
         get 'merit/price' => 'merit#price_curve', as: :merit_price_download
+        get 'curves/heat' => 'merit#heat_curves', as: :curves_heat_download
       end
       resources :converters, :only => :show do
         get :topology, :on => :collection
