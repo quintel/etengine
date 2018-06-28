@@ -2,7 +2,7 @@ module Api
   module V3
     class CurvesController < BaseController
       respond_to :json
-      respond_to :csv, only: [:load_curves, :price_curve, :heat_curves]
+      respond_to :csv, only: %i[load_curves price_curve household_heat_curves]
 
       rescue_from ActiveRecord::RecordNotFound do
         render json: { errors: ['Scenario not found'] }, status: 404
@@ -29,8 +29,8 @@ module Api
       # Downloads the supply and demand of heat, including deficits and
       # surpluses due to buffering and time-shifting.
       #
-      # GET /api/v3/scenarios/:scenario_id/curves/heat.csv
-      def heat_curves
+      # GET /api/v3/scenarios/:scenario_id/curves/household_heat.csv
+      def household_heat_curves
         summary = scenario.gql.future_graph.plugin(:time_resolve).fever.summary
 
         rows = summary.production.zip(
@@ -39,7 +39,7 @@ module Api
           summary.deficit
         )
 
-        send_csv('heat_demand') do |csv|
+        send_csv('household_heat') do |csv|
           csv << [
             'Production',
             'Demand',
