@@ -37,9 +37,13 @@ Rails.application.routes.draw do
           end
         end
 
-        get 'merit/loads' => 'merit#load_curves', as: :merit_download
-        get 'merit/price' => 'merit#price_curve', as: :merit_price_download
-        get 'curves/heat' => 'merit#heat_curves', as: :curves_heat_download
+        get 'curves/loads', to: 'curves#load_curves', as: :merit_download
+        get 'curves/price', to: 'curves#price_curve', as: :merit_price_download
+        get 'curves/heat',  to: 'curves#heat_curves', as: :curves_heat_download
+
+        # Old paths for Merit downloads.
+        get 'merit/loads', to: redirect('api/v3/scenarios/%{scenario_id}/curves/loads')
+        get 'merit/price', to: redirect('api/v3/scenarios/%{scenario_id}/curves/price')
       end
       resources :converters, :only => :show do
         get :topology, :on => :collection

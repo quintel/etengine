@@ -1,6 +1,6 @@
 module Api
   module V3
-    class MeritController < BaseController
+    class CurvesController < BaseController
       respond_to :json
       respond_to :csv, only: [:load_curves, :price_curve, :heat_curves]
 
@@ -72,6 +72,6 @@ module Api
           Preset.get(params[:scenario_id]).try(:to_scenario) ||
           Scenario.find(params[:scenario_id])
       end
-    end # MeritController
+    end # CurvesController
   end # V3
 end # Api
