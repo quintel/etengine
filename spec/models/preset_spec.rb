@@ -29,6 +29,14 @@ describe Preset, :etsource_fixture do
       expect(scenario.user_values).to include foo_demand: 10
     end
 
+    it 'does not create a scaling' do
+      expect(scenario.scaler).to be_nil
+    end
+
+    it 'does not create a flexibility order' do
+      expect(scenario.flexibility_order).to be_nil
+    end
+
     context 'with a scaled preset' do
       let(:preset)   { Preset.get(6000) }
       let(:scenario) { Preset.get(6000).to_scenario }
@@ -44,6 +52,24 @@ describe Preset, :etsource_fixture do
       it 'sets the scaling value' do
         expect(scenario.scaler.value).to eq(preset.scaler.value)
         expect(scenario.scaler.base_value).to eq(preset.scaler.base_value)
+      end
+    end
+
+    context 'when the preset has a flexibility order' do
+      let(:preset)   { Preset.get(6001) }
+      let(:scenario) { Preset.get(6001).to_scenario }
+
+      it 'sets the flexibility order' do
+        expect(scenario.flexibility_order).to be_a(FlexibilityOrder)
+      end
+
+      it 'creates a flexibility order' do
+        expect(scenario.flexibility_order.id).to be_nil
+      end
+
+      it 'sets the scaling value' do
+        expect(scenario.flexibility_order.order)
+          .to eq(preset.flexibility_order.order)
       end
     end
   end
@@ -116,5 +142,30 @@ describe Preset, :etsource_fixture do
         expect(preset.scaler.attributes).to eq(scenario.scaler.attributes)
       end
     end # with a scaled scenario
+
+    context 'with no flexibility order' do
+      let(:scenario) { FactoryBot.build(:scenario, user_values: { a: 1 }) }
+
+      it 'has no flexibility order' do
+        expect(preset.flexibility_order).to be_blank
+      end
+    end # with no flexibility order
+
+    context 'with a flexibility order' do
+      let(:scenario) do
+        FactoryBot.build(:scenario, user_values: { a: 1 }).tap do |s|
+          s.flexibility_order =
+            FlexibilityOrder.new(order: FlexibilityOrder::GROUPS)
+        end
+      end
+
+      it 'has a flexibility order' do
+        expect(preset.flexibility_order).not_to be_blank
+      end
+
+      it 'sets the flexibility order values' do
+        expect(preset.flexibility_order.order).to eq(FlexibilityOrder::GROUPS)
+      end
+    end # with a flexibility order
   end # .from_scenario
 end

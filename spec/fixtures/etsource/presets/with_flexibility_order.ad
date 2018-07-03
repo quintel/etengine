@@ -1,0 +1,10 @@
+- id = 6001
+- title = Preset with flexibility order
+- end_year = 2040
+- area_code = nl
+- use_fce = false
+- display_group = Keizersgracht
+- user_values.foo_demand = 10.0
+- user_values.input_2 = 20.0
+- user_values.input_3 = 30.0
+- flexibility_order = [power_to_heat, power_to_power, electric_vehicle, export, curtailment]

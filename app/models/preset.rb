@@ -27,6 +27,10 @@ class Preset
       )
     end
 
+    if scenario.flexibility_order
+      attrs[:flexibility_order] = scenario.flexibility_order.order.dup
+    end
+
     Preset.new(attrs)
   end
 
@@ -44,6 +48,18 @@ class Preset
     @scaling && ScenarioScaling.new(@scaling.attributes)
   end
 
+  # Public: The preset flexibility order, if one is assigned.
+  #
+  # If Atlas returns an empty array, no custom flexibility order is set. In this
+  # case, a FlexibilityOrder is not returned and the app will use the defaults.
+  #
+  # Returns a FlexibilityOrder.
+  def flexibility_order
+    @flexibility_order &&
+      @flexibility_order.any? &&
+      FlexibilityOrder.new(order: @flexibility_order.dup)
+  end
+
   # Public: The year on which the analysis for the preset's area is based.
   #
   # Returns an integer.
@@ -56,9 +72,11 @@ class Preset
     attrs = attributes
     id = attrs.delete(:id)
 
-    Scenario.new(attrs.except(:scaling)).tap do |scenario|
+    Scenario.new(attrs.except(:scaling, :flexibility_order)).tap do |scenario|
       scenario.id = id
+
       scenario.scaler = scaler.dup if scaler
+      scenario.flexibility_order = flexibility_order.dup if flexibility_order
 
       scenario.readonly!
     end
@@ -97,6 +115,12 @@ class Preset
 
     if scaler
       attrs[:scaling] = scaler.attributes.symbolize_keys.slice(*SCALING_COLUMNS)
+    end
+
+    if flexibility_order
+      attrs[:flexibility_order] = flexibility_order.order
+    else
+      attrs.delete(:flexibility_order)
     end
 
     "#{ Atlas::HashToTextParser.new(attrs.compact).to_text }\n"

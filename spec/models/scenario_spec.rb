@@ -254,6 +254,20 @@ describe Scenario do
         expect(scenario.parent).to eq(preset.to_scenario)
       end
     end
+
+    context 'when the preset has a flexibility order' do
+      let(:atlas_preset) { Atlas::Preset.find(:with_flexibility_order) }
+      let(:preset) { Preset.get(atlas_preset.id) }
+
+      it 'assigns a flexibility order' do
+        expect(scenario.flexibility_order).to_not be_nil
+      end
+
+      it 'copies the flexibility order attributes' do
+        expect(scenario.flexibility_order.order)
+          .to eq(atlas_preset.flexibility_order)
+      end
+    end
   end # with a preset Preset
 
   describe 'with a preset scenario' do
