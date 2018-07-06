@@ -336,16 +336,29 @@ module Api
       # combines the *_VALUES hashes as needed. This is used in the converter
       # details page, in the /data section and through the API (v3)
       def attributes_and_methods_to_show
-        out = {}
-        out = HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS        if @converter.presentation_group == "traditional_heat"
-        out = ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS if @converter.presentation_group == "electricity_production"
-        out = HEAT_PUMP_ATTRIBUTES_AND_METHODS              if @converter.presentation_group == "heat_pumps"
-        out = CHP_ATTRIBUTES_AND_METHODS                    if @converter.presentation_group == "chps"
-        out = HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS    if @converter.presentation_group == "hydrogen_production"
-        out = CARBON_CAPTURING_ATTRIBUTES_AND_METHODS       if @converter.presentation_group == "carbon_capturing"
-        out = P2G_ATTRIBUTES_AND_METHODS                    if @converter.presentation_group == "p2g"
-        out = P2H_ATTRIBUTES_AND_METHODS                    if @converter.presentation_group == "p2h"
-        out = P2KEROSENE_ATTRIBUTES_AND_METHODS             if @converter.presentation_group == "p2kerosene"
+        out =
+          case @converter.presentation_group
+          when :traditional_heat
+            HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS
+          when :electricity_production
+            ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS
+          when :heat_pumps
+            HEAT_PUMP_ATTRIBUTES_AND_METHODS
+          when :chps
+            CHP_ATTRIBUTES_AND_METHODS
+          when :hydrogen_production
+            HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS
+          when :carbon_capturing
+            CARBON_CAPTURING_ATTRIBUTES_AND_METHODS
+          when :p2g
+            P2G_ATTRIBUTES_AND_METHODS
+          when :p2h
+            P2H_ATTRIBUTES_AND_METHODS
+          when :p2kerosene
+            P2KEROSENE_ATTRIBUTES_AND_METHODS
+          else
+            {}
+          end
 
         # custom stuff, trying to keep the view simple
         if uses_coal_and_wood_pellets?
