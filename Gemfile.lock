@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: d0417cac085e26e466e7ddc41b4dd75f4a4f9c25
-  ref: d0417ca
+  revision: 6d920b7443a937413c2228aedae732f4fd1a3abf
+  ref: 6d920b7
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
@@ -430,4 +430,4 @@ RUBY VERSION
    ruby 2.4.2p198
 
 BUNDLED WITH
-   1.16.2
+   1.16.3
