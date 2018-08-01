@@ -12,21 +12,25 @@ module NumbersHelper
     elsif abs_value > 100_000
       _nwp(value.to_f / 1_000, 0) + " K"
     elsif abs_value > 100
-      _nwp(value.to_f, 0)
+      _nwp(value.to_f, 1)
     elsif abs_value >= 1 && value < 100
       _nwp(value, 2)
     elsif abs_value > 0 && value < 1
       _nwp(value, 3)
-    elsif abs_value === 0
+    elsif abs_value == 0
       0
     else
-      value
+      _nwp(value, 1)
     end
   end
 
   def _nwp(value, precision)
-    number_with_precision value, :precision => precision,
-                                 :separator => '.',    # decimal separator
-                                 :delimiter => ','     # thousands separator
+    number_with_precision(
+      value,
+      precision: precision,
+      separator: '.',
+      delimiter: ',',
+      strip_insignificant_zeros: true
+    )
   end
 end
