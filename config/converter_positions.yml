@@ -2741,3 +2741,6 @@
 :energy_hydrogen_curtailed_electricity:
   :x: 6240
   :y: 5120
+:energy_flexibility_pumped_storage_electricity:
+  :x: 5520
+  :y: 1880
