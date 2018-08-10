@@ -28,6 +28,8 @@ module Etsource
 
         Rails.logger.info 'ETsource live reload: Listener started.'
 
+        Kernel.at_exit { stop! }
+
         true
       end
 
