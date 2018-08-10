@@ -1,3 +1,19 @@
+# Listen >=2.8 patch to silence duplicate directory errors.
+#
+# Error messages from Listen are due to symlinks within ETSource; we cannot
+# resolve this without significant work in ETSource to eliminate symlinks.
+#
+# See https://github.com/guard/listen/wiki/Duplicate-directory-errors
+module Listen
+  class Record
+    class SymlinkDetector
+      def _fail(_, _)
+        raise Error, "Don't watch locally-symlinked directory twice"
+      end
+    end
+  end
+end
+
 module Etsource
   # Watches for changes to ETsource files. Changes made to dataset, gquery,
   # input, or topology files will clear out the caches, forcing these files to
