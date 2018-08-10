@@ -110,6 +110,8 @@ GEM
       rack (>= 0.9.0)
     binding_of_caller (0.7.3)
       debug_inspector (>= 0.0.1)
+    bootsnap (1.3.1)
+      msgpack (~> 1.0)
     builder (3.2.3)
     byebug (9.1.0)
     cancancan (2.1.2)
@@ -373,6 +375,7 @@ DEPENDENCIES
   atlas!
   better_errors
   binding_of_caller
+  bootsnap
   cancancan (~> 2.0)
   capistrano (~> 3.9)
   capistrano-bundler (~> 1.1)

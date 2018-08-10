@@ -63,6 +63,7 @@ gem 'highline',                require: false
 
 group :development do
   gem 'spring'
+  gem 'bootsnap', require: false
   # gem 'quiet_assets'
   gem 'better_errors'
   gem 'binding_of_caller'
