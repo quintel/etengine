@@ -7,6 +7,8 @@ git_source(:github) do |repo_name|
   "https://github.com/#{ repo_name }.git"
 end
 
+gem 'bootsnap', require: false
+
 gem 'rails',        '~> 5.1'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
@@ -63,7 +65,6 @@ gem 'highline',                require: false
 
 group :development do
   gem 'spring'
-  gem 'bootsnap', require: false
   # gem 'quiet_assets'
   gem 'better_errors'
   gem 'binding_of_caller'
