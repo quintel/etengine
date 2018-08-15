@@ -170,9 +170,9 @@ module DataHelper
       css_class.push('warning')
     end
 
-    haml_tag "span.#{css_class.join('.')}" do
-      haml_concat (time * 1000).round(2)
-      haml_concat ' ms'
+    haml_tag("span.#{css_class.join('.')}") do
+      haml_concat((time * 1000).round(2))
+      haml_concat(' ms')
     end
   end
 end
