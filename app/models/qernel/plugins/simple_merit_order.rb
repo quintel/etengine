@@ -173,7 +173,7 @@ module Qernel::Plugins
       order = @graph.flexibility_order.map(&:to_sym)
 
       converters.sort_by do |conv|
-        order.index(conv.dataset_get(:merit_order).group) || Float::INFINITY
+        order.index(conv.merit_order.group) || Float::INFINITY
       end
     end
 

@@ -2,11 +2,11 @@ module Qernel::Plugins
   module Merit
     class ProducerAdapter < Adapter
       def self.factory(converter, graph, dataset)
-        case converter.dataset_get(:merit_order).type
+        case converter.merit_order.type
         when :must_run, :volatile
           AlwaysOnAdapter
         when :dispatchable
-          group = converter.dataset_get(:merit_order).group
+          group = converter.merit_order.group
           group == :import ? ImportAdapter : DispatchableAdapter
         end
       end

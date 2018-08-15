@@ -95,7 +95,14 @@ class Converter
   alias_method :lft_links, :output_links
   alias_method :rgt_links, :input_links
 
-  dataset_accessors [:demand, :preset_demand, :excel_id]
+  dataset_accessors %i[
+    demand
+    excel_id
+    fever
+    merit_order
+    preset_demand
+    storage
+  ]
 
   # --------- Micro-optimizing ------------------------------------------------
   #

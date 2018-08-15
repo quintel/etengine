@@ -62,7 +62,7 @@ module Qernel
         converter = graph.converter(part.key)
 
         if converter
-          config = converter.dataset_get(:merit_order)
+          config = converter.merit_order
           level = config.level
           type = closud_type(config.type)
 

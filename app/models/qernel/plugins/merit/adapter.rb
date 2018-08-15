@@ -5,7 +5,7 @@ module Qernel::Plugins
       attr_reader :converter, :config
 
       def self.adapter_for(converter, graph, dataset)
-        klass = case converter.dataset_get(:merit_order).type.to_sym
+        klass = case converter.merit_order.type.to_sym
           when :dispatchable, :volatile, :must_run
             ProducerAdapter.factory(converter, graph, dataset)
           when :flex
@@ -23,7 +23,7 @@ module Qernel::Plugins
         @converter = converter.converter_api
         @graph     = graph
         @dataset   = dataset
-        @config    = converter.dataset_get(:merit_order)
+        @config    = converter.merit_order
       end
 
       def participant
