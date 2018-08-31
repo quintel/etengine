@@ -28,6 +28,10 @@ module Qernel::Plugins
           full_load_seconds *
           flh_capacity *
           participant.number_of_units
+
+        @converter.dataset_lazy_set(:electricity_output_curve) do
+          participant.load_curve.to_a
+        end
       end
 
       private

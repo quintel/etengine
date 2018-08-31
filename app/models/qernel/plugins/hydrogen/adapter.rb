@@ -100,24 +100,42 @@ module Qernel::Plugins
           ::Merit::Curve.new(
             if @converter.demand.zero?
               [0.0] * 8760
+            elsif @converter.merit_order
+              merit_demand_profile
             else
-              # Use input of electricity since it's faster than summing the
-              # curve. It also has the nice effect whereby dividing the load
-              # curve (in MW) by demand (in MJ) produces a new load profile of
-              # values summing to 1/3600; effectively converting hydrogen output
-              # in MJ to MW.
-              total =
-                @converter.demand *
-                @converter.input(:electricity).conversion
-
-              @converter.query.electricity_input_curve.map do |value|
-                value.abs / total
-              end
+              raise "Unknown hydrogen profile: #{@config.profile.inspect}"
             end
           )
         else
           @context.dataset.load_profile(@config.profile)
         end
+      end
+
+      # Internal: Constructs a dynamic demand profile using the electricity load
+      # curve from the Merit order calculation.
+      #
+      # Determines the input or output of electricity using the converter demand
+      # and slot since it's faster than summing the curve. It also has the nice
+      # effect whereby dividing the load curve (in MW) by demand (in MJ)
+      # produces a new load profile of values summing to 1/3600; effectively
+      # converting hydrogen amount from MJ to MW.
+      #
+      # input_of_electricity and output_of_electricity helpers may not be used
+      # here as they require the graph to have been calcualted.
+      #
+      # Returns an array.
+      def merit_demand_profile
+        if @config.type == :producer
+          slot = @converter.input(:electricity)
+          curve = @converter.query.electricity_input_curve
+        else
+          slot = @converter.output(:electricity)
+          curve = @converter.query.electricity_output_curve
+        end
+
+        total = @converter.demand * slot.conversion
+
+        curve.map { |value| value.abs / total }
       end
     end
   end
