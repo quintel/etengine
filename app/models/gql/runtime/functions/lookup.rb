@@ -239,7 +239,7 @@ module Gql::Runtime
         curves = curves.compact
         return [] if curves.none?
 
-        return curves.first if curves.one?
+        return curves.first.to_a if curves.one?
 
         Qernel::Plugins::Merit::Util.add_curves(curves).to_a
       end

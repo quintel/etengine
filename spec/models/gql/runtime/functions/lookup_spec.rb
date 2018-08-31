@@ -11,6 +11,16 @@ module Gql::Runtime::Functions
     # SUM_CURVES
     # ----------
 
+    describe 'SUM_CURVES([[1]])' do
+      it('returns [1]') { expect(result).to eq([1]) }
+      it('returns an Array') { expect(result).to be_a(Array) }
+    end
+
+    describe 'SUM_CURVES([Merit.const_get(:Curve).new([1])])' do
+      it('returns [1]') { expect(result).to eq([1]) }
+      it('returns an Array') { expect(result).to be_a(Array) }
+    end
+
     describe 'SUM_CURVES([1, 2, 3])' do
       it('returns [1, 2, 3]') { expect(result).to eq([1, 2, 3]) }
     end
@@ -28,6 +38,10 @@ module Gql::Runtime::Functions
     end
 
     describe 'SUM_CURVES([nil, nil])' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'SUM_CURVES([[], []])' do
       it('returns []') { expect(result).to eq([]) }
     end
 
