@@ -70,6 +70,7 @@ class ConverterApi
     merit_order
     preset_demand
     storage
+    storage_curve
   ]
 
   # Returns a ConverterApi instance based on the given Converter.

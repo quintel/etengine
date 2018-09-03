@@ -24,9 +24,14 @@ module Qernel::Plugins
 
         # Set the storage volume.
         crd = calculator.cumulative_residual_demand
+        (crd_min, crd_max) = crd.minmax
 
         storage = @converter.dataset_get(:storage)
-        storage.send(:volume=, crd.max - crd.min)
+        storage.send(:volume=, crd_max - crd_min)
+
+        @converter.dataset_lazy_set(:storage_curve) do
+          crd.map { |val| val - crd_min }
+        end
 
         nil
       end
