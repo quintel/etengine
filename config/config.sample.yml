@@ -36,8 +36,8 @@ development: &DEV
   # http://beta.et-model.com/pages/refresh_gqueries
   client_refresh_url:
 
-  # set to true if the server won't have online access. this disables google
-  # analytics, airbrake etc.
+  # set to true if the server won't have online access. this disables Sentry,
+  # etc.
   standalone: false
 
 production: &PRODUCTION

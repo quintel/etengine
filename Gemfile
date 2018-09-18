@@ -63,6 +63,8 @@ gem 'dalli'
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
 
+gem 'sentry-raven'
+
 group :development do
   gem 'spring'
   # gem 'quiet_assets'
@@ -95,6 +97,5 @@ end
 group :production, :staging do
   gem 'puma'
   gem 'gctools', require: false
-  gem 'airbrake'
   gem 'newrelic_rpm'
 end
