@@ -11,6 +11,7 @@ module Qernel::Plugins
 
     attr_reader :merit
     attr_reader :fever
+    attr_reader :hydrogen
 
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
@@ -40,6 +41,7 @@ module Qernel::Plugins
       super
       @merit = MeritOrder.new(graph)
       @fever = Qernel::Plugins::Fever::Plugin.new(graph)
+      @hydrogen = Qernel::Plugins::Hydrogen::Plugin.new(graph)
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
@@ -59,6 +61,7 @@ module Qernel::Plugins
     def setup
       @fever.setup
       @merit.setup
+      @hydrogen.setup_static
     end
 
     def inject
@@ -81,6 +84,9 @@ module Qernel::Plugins
       # demands injected into the graph.
       @merit.send(:inject_values!)
       @fever.inject_values!
+
+      @hydrogen.setup_dynamic
+      @hydrogen.inject_values!
     end
 
     def household_heat

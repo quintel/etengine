@@ -61,10 +61,16 @@ class ConverterApi
   # dataset attributes of converter
   dataset_accessors %i[
     demand
+    electricity_input_curve
+    electricity_output_curve
     fever
+    hydrogen
+    hydrogen_input_curve
+    hydrogen_output_curve
     merit_order
     preset_demand
     storage
+    storage_curve
   ]
 
   # Returns a ConverterApi instance based on the given Converter.
