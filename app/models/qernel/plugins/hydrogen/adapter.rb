@@ -14,7 +14,7 @@ module Qernel::Plugins
           when :export
             ExportAdapter
           when :producer
-            ProducerAdapter
+            ProducerAdapter.factory(converter, context)
           when :import
             ImportAdapter
           when :storage

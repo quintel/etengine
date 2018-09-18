@@ -1,11 +1,16 @@
 module Qernel::Plugins
   module Hydrogen
     class Plugin
-      Context = Struct.new(:dataset, :plugin)
+      Context = Struct.new(:dataset, :plugin, :graph)
 
       def initialize(graph)
         @graph = graph
-        @context = Context.new(Atlas::Dataset.find(graph.area.area_code), self)
+
+        @context = Context.new(
+          Atlas::Dataset.find(graph.area.area_code),
+          self,
+          graph
+        )
       end
 
       # Public: Triggers the adapters whose demands are static.
