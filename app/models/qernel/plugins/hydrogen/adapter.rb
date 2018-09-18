@@ -34,21 +34,7 @@ module Qernel::Plugins
       end
 
       def setup(phase:)
-        if @converter.key == :energy_transport_hydrogen_compressed_trucks
-          Rails.logger.info "before-#{phase}: #{@carrier_demand}"
-        end
-
         @carrier_demand = calculate_carrier_demand if phase == demand_phase
-
-        if @converter.key == :energy_transport_hydrogen_compressed_trucks
-          Rails.logger.info "after-#{phase}: #{@carrier_demand}"
-        end
-
-        # if phase == demand_phase
-        #   Rails.logger.info("Y: #{@converter.key}")
-        # else
-        #   Rails.logger.info("N: #{@converter.key}")
-        # end
       end
 
       def carrier_demand
