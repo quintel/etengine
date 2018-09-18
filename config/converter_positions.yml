@@ -1834,10 +1834,10 @@
   :y: 18520
 :industry_useful_demand_for_other_wood_products_electricity:
   :x: 720
-  :y: 18220
+  :y: 18280
 :industry_final_demand_for_other_wood_products_electricity:
   :x: 1520
-  :y: 18220
+  :y: 18280
 :industry_useful_demand_for_other_wood_products_network_gas:
   :x: 720
   :y: 18400
@@ -1864,10 +1864,10 @@
   :y: 14500
 :industry_useful_demand_for_other_machinery_electricity:
   :x: 720
-  :y: 14220
+  :y: 14260
 :industry_final_demand_for_other_machinery_electricity:
   :x: 1520
-  :y: 14220
+  :y: 14260
 :industry_useful_demand_for_other_machinery_network_gas:
   :x: 720
   :y: 14380
@@ -1900,10 +1900,10 @@
   :y: 15020
 :industry_useful_demand_for_other_minerals_electricity:
   :x: 720
-  :y: 14740
+  :y: 14780
 :industry_final_demand_for_other_minerals_electricity:
   :x: 1520
-  :y: 14740
+  :y: 14780
 :industry_useful_demand_for_other_minerals_network_gas:
   :x: 720
   :y: 14900
@@ -1936,10 +1936,10 @@
   :y: 15560
 :industry_useful_demand_for_other_mining_electricity:
   :x: 720
-  :y: 15280
+  :y: 15320
 :industry_final_demand_for_other_mining_electricity:
   :x: 1520
-  :y: 15280
+  :y: 15320
 :industry_useful_demand_for_other_mining_network_gas:
   :x: 720
   :y: 15440
@@ -1990,10 +1990,10 @@
   :y: 13480
 :industry_useful_demand_for_other_non_specified_electricity:
   :x: 720
-  :y: 15800
+  :y: 15840
 :industry_final_demand_for_other_non_specified_electricity:
   :x: 1520
-  :y: 15800
+  :y: 15840
 :industry_useful_demand_for_other_non_specified_network_gas:
   :x: 720
   :y: 15960
@@ -2032,28 +2032,28 @@
   :y: 13540
 :industry_final_demand_for_other_paper_coal:
   :x: 1520
-  :y: 16740
+  :y: 13560
 :industry_final_demand_for_other_paper_crude_oil:
   :x: 1520
-  :y: 16920
+  :y: 13740
 :industry_useful_demand_for_other_paper_electricity:
   :x: 720
-  :y: 16620
+  :y: 13440
 :industry_final_demand_for_other_paper_electricity:
   :x: 1520
-  :y: 16620
+  :y: 13440
 :industry_final_demand_for_other_paper_network_gas:
   :x: 1520
-  :y: 16800
+  :y: 13620
 :industry_useful_demand_for_other_paper_useable_heat:
   :x: 720
-  :y: 16800
+  :y: 13620
 :industry_final_demand_for_other_paper_steam_hot_water:
   :x: 1520
-  :y: 17040
+  :y: 13860
 :industry_final_demand_for_other_paper_wood_pellets:
   :x: 1520
-  :y: 16860
+  :y: 13680
 :industry_useful_demand_for_other_textile_coal:
   :x: 720
   :y: 17260
@@ -2068,10 +2068,10 @@
   :y: 17440
 :industry_useful_demand_for_other_textile_electricity:
   :x: 720
-  :y: 17160
+  :y: 17200
 :industry_final_demand_for_other_textile_electricity:
   :x: 1520
-  :y: 17160
+  :y: 17200
 :industry_useful_demand_for_other_textile_network_gas:
   :x: 720
   :y: 17320
@@ -2104,10 +2104,10 @@
   :y: 17920
 :industry_useful_demand_for_other_transport_equipment_electricity:
   :x: 720
-  :y: 17680
+  :y: 17740
 :industry_final_demand_for_other_transport_equipment_electricity:
   :x: 1520
-  :y: 17680
+  :y: 17740
 :industry_useful_demand_for_other_transport_equipment_network_gas:
   :x: 720
   :y: 17860
@@ -2131,64 +2131,64 @@
   :y: 18340
 :industry_useful_demand_for_other_construction_coal:
   :x: 720
-  :y: 12980
+  :y: 16700
 :industry_final_demand_for_other_construction_coal:
   :x: 1520
-  :y: 12980
+  :y: 16700
 :industry_useful_demand_for_other_construction_crude_oil:
   :x: 720
-  :y: 13160
+  :y: 16880
 :industry_final_demand_for_other_construction_crude_oil:
   :x: 1520
-  :y: 13160
+  :y: 16880
 :industry_useful_demand_for_other_construction_electricity:
   :x: 720
-  :y: 12920
+  :y: 16640
 :industry_final_demand_for_other_construction_electricity:
   :x: 1520
-  :y: 12920
+  :y: 16640
 :industry_useful_demand_for_other_construction_network_gas:
   :x: 720
-  :y: 13040
+  :y: 16760
 :industry_final_demand_for_other_construction_network_gas:
   :x: 1520
-  :y: 13040
+  :y: 16760
 :industry_useful_demand_for_other_construction_useable_heat:
   :x: 720
-  :y: 13220
+  :y: 16940
 :industry_final_demand_for_other_construction_steam_hot_water:
   :x: 1520
-  :y: 13220
+  :y: 16940
 :industry_useful_demand_for_other_construction_wood_pellets:
   :x: 720
-  :y: 13100
+  :y: 16820
 :industry_final_demand_for_other_construction_wood_pellets:
   :x: 1520
-  :y: 13100
+  :y: 16820
 :industry_final_demand_for_other_food_coal:
   :x: 1520
-  :y: 13800
+  :y: 13020
 :industry_final_demand_for_other_food_crude_oil:
   :x: 1520
-  :y: 13920
+  :y: 13140
 :industry_useful_demand_for_other_food_electricity:
   :x: 720
-  :y: 13700
+  :y: 12920
 :industry_final_demand_for_other_food_electricity:
   :x: 1520
-  :y: 13700
+  :y: 12920
 :industry_final_demand_for_other_food_network_gas:
   :x: 1520
-  :y: 13860
+  :y: 13080
 :industry_useful_demand_for_other_food_useable_heat:
-  :x: 740
-  :y: 13840
+  :x: 720
+  :y: 13060
 :industry_final_demand_for_other_food_steam_hot_water:
   :x: 1520
-  :y: 14100
+  :y: 13320
 :industry_final_demand_for_other_food_wood_pellets:
   :x: 1520
-  :y: 13980
+  :y: 13200
 :industry_useful_demand_for_other_machinery_coal:
   :x: 720
   :y: 14320
@@ -2230,34 +2230,34 @@
   :y: 11460
 :industry_other_food_burner_coal:
   :x: 1220
-  :y: 13800
+  :y: 13020
 :industry_other_food_burner_crude_oil:
   :x: 1220
-  :y: 13920
+  :y: 13140
 :industry_other_food_burner_network_gas:
   :x: 1220
-  :y: 13860
+  :y: 13080
 :industry_other_food_burner_wood_pellets:
   :x: 1220
-  :y: 13980
+  :y: 13200
 :industry_other_paper_burner_coal:
   :x: 1220
-  :y: 16740
+  :y: 13560
 :industry_other_paper_burner_crude_oil:
   :x: 1220
-  :y: 16920
+  :y: 13740
 :industry_other_paper_burner_network_gas:
   :x: 1220
-  :y: 16800
+  :y: 13620
 :industry_other_paper_burner_wood_pellets:
   :x: 1220
-  :y: 16860
+  :y: 13680
 :industry_other_food_heater_electricity:
   :x: 1220
-  :y: 13740
+  :y: 12960
 :industry_other_paper_heater_electricity:
   :x: 1220
-  :y: 16680
+  :y: 13500
 :industry_chemicals_fertilizers_haber_bosch_process_hydrogen:
   :x: 0
   :y: 11340
@@ -2287,19 +2287,19 @@
   :y: 10620
 :industry_other_food_flexibility_p2h_electricity:
   :x: 920
-  :y: 13920
+  :y: 13140
 :industry_other_paper_flexibility_p2h_electricity:
   :x: 900
-  :y: 16880
+  :y: 13700
 :industry_useful_demand_for_chemical_refineries_useable_heat_after_p2h:
   :x: 920
   :y: 10560
 :industry_useful_demand_for_other_food_useable_heat_after_p2h:
   :x: 920
-  :y: 13840
+  :y: 13060
 :industry_useful_demand_for_other_paper_useable_heat_after_p2h:
   :x: 900
-  :y: 16800
+  :y: 13620
 :industry_chemicals_other_heater_electricity:
   :x: 1180
   :y: 12060
@@ -2662,7 +2662,7 @@
   :y: 10380
 :industry_final_demand_for_other_food_hydrogen:
   :x: 1520
-  :y: 14040
+  :y: 13260
 :industry_final_demand_for_other_hydrogen:
   :x: 2120
   :y: 13280
@@ -2671,7 +2671,7 @@
   :y: 10440
 :industry_other_food_burner_hydrogen:
   :x: 1220
-  :y: 14040
+  :y: 13260
 :industry_chemicals_other_burner_hydrogen:
   :x: 1180
   :y: 12480
@@ -2689,10 +2689,10 @@
   :y: 10800
 :industry_other_paper_burner_hydrogen:
   :x: 1220
-  :y: 16980
+  :y: 13800
 :industry_final_demand_for_other_paper_hydrogen:
   :x: 1520
-  :y: 16980
+  :y: 13800
 :industry_chemicals_fertilizers_burner_hydrogen:
   :x: 1140
   :y: 11580
