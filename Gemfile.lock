@@ -170,7 +170,7 @@ GEM
       railties (>= 3.0.0)
     faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.18)
+    ffi (1.9.25)
     fnv (0.2.0)
     gctools (0.2.4)
     globalid (0.4.1)
