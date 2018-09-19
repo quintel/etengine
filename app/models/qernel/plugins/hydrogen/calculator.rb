@@ -15,18 +15,20 @@ module Qernel::Plugins
 
       # Public: Curve summing demand and exports.
       def total_demand
-        @demand.zip(@export).map(&:sum)
+        zip_map(@demand, @export) { |demand, export| demand + export }
       end
 
       # Public: Curve summing supply and imports.
       def total_supply
-        @supply.zip(@import).map(&:sum)
+        zip_map(@supply, @import) { |supply, import| supply + import }
       end
 
-      # Public: Given a demand and supply curve, creates a new curve describing the
-      # excess of demand (positive) or of supply (negative).
+      # Public: Given a demand and supply curve, creates a new curve describing
+      # the excess of demand (positive) or of supply (negative).
       def residual_demand
-        total_demand.map(&:-@).zip(total_supply).map(&:sum)
+        zip_map(total_demand, total_supply) do |demand, supply|
+          -demand + supply
+        end
       end
 
       # Public: Given a curve creates a new curve where each value is the sum of
@@ -62,6 +64,27 @@ module Qernel::Plugins
         end
 
         volume
+      end
+
+      private
+
+      # Internal: Iterates through the value pairs of each array, creating a new
+      # array by executing the block on each pair.
+      #
+      # Returns an array.
+      def zip_map(left, right)
+        result = Array.new(left.length)
+
+        # Hold the current index and increment in each iteration: its faster to
+        # do this and prealloate the result array, than to create an empty array
+        # and push each result.
+        index = -1
+
+        left.zip(right) do |l_val, r_val|
+          result[index += 1] = yield(l_val, r_val)
+        end
+
+        result
       end
     end
   end
