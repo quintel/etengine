@@ -27,7 +27,8 @@ module Qernel::Plugins
       # the excess of demand (positive) or of supply (negative).
       def residual_demand
         zip_map(total_demand, total_supply) do |demand, supply|
-          -demand + supply
+          sum = -demand + supply
+          sum.abs < 1e-5 ? 0.0 : sum
         end
       end
 
