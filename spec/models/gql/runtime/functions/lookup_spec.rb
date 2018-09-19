@@ -72,5 +72,25 @@ module Gql::Runtime::Functions
     describe 'SUM_CURVES([1, 2], [3, 4], [5, 6])' do
       it('returns [9, 12]') { expect(result).to eq([9, 12]) }
     end
+
+    describe 'SUM_CURVES([ElectricityDemandCurve])' do
+      let(:result) do
+        producer = Class.new do
+          def source_at(frame)
+            frame.to_f
+          end
+        end.new
+
+        curve = Qernel::Plugins::Fever::ElectricityDemandCurve.new([producer])
+
+        gql.query_future(-> { SUM_CURVES(curve) })
+      end
+
+      it('returns [0, 1, 2, 3, ...]') do
+        expect(result.take(4)).to eq([0, 1, 2, 3])
+      end
+
+      it('returns an Array') { expect(result).to be_a(Array) }
+    end
   end
 end

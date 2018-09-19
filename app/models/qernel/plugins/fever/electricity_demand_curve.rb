@@ -3,6 +3,9 @@ module Qernel::Plugins
     # Reads from the electricity-based heat producers in Fever to detemine
     # Merit order demands.
     class ElectricityDemandCurve
+      include Enumerable
+      delegate :each, to: :to_a
+
       def initialize(producers)
         @producers = producers
       end
@@ -17,6 +20,10 @@ module Qernel::Plugins
 
       def get(frame)
         @producers.sum { |prod| prod.source_at(frame) }
+      end
+
+      def first
+        get(0)
       end
 
       def [](frame)
