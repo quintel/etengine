@@ -2,34 +2,30 @@ module Qernel::Plugins
   module Hydrogen
     class Calculator
       def initialize(demand, supply)
-        @demand = demand
-        @supply = supply
-
-        @import = [0.0] * 8760
-        @export = [0.0] * 8760
+        @total_demand = demand
+        @total_supply = supply
       end
 
       def inspect
-        "#<#{self.class} demand=#{total_demand.sum} supply=#{total_supply.sum}>"
-      end
-
-      # Public: Curve summing demand and exports.
-      def total_demand
-        zip_map(@demand, @export) { |demand, export| demand + export }
-      end
-
-      # Public: Curve summing supply and imports.
-      def total_supply
-        zip_map(@supply, @import) { |supply, import| supply + import }
+        "#<#{self.class} demand=#{@total_demand.sum} supply=#{@supply.sum}>"
       end
 
       # Public: Given a demand and supply curve, creates a new curve describing
       # the excess of demand (positive) or of supply (negative).
       def residual_demand
-        zip_map(total_demand, total_supply) do |demand, supply|
+        result = Array.new(@total_demand.length)
+
+        # Hold the current index and increment in each iteration: its faster to
+        # do this and prealloate the result array, than to create an empty array
+        # and push each result.
+        index = -1
+
+        @total_demand.zip(@total_supply) do |demand, supply|
           sum = -demand + supply
-          sum.abs < 1e-5 ? 0.0 : sum
+          result[index += 1] = sum.abs < 1e-5 ? 0.0 : sum
         end
+
+        result
       end
 
       # Public: Given a curve creates a new curve where each value is the sum of
