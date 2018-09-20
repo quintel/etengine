@@ -169,6 +169,10 @@ class Graph
     ! present?
   end
 
+  def period
+    @period ||= present? ? :present : :future
+  end
+
   def update_link_shares
     @finished_converters.map(&:input_links).flatten.each(&:update_share)
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Gql
   module QueryInterface::Base
     def input_value
@@ -30,10 +32,16 @@ module Gql
     # implemented inside submodules/mixins.
     #
     def subquery(gquery_key)
-      if gquery = get_gquery(gquery_key)
-        rubel_execute(gquery.command)
+      gquery = get_gquery(gquery_key)
+
+      return nil unless gquery
+
+      behavior = gquery.behavior
+
+      if behavior.period_supported?(graph.period)
+        behavior.process_result(rubel_execute(gquery.command))
       else
-        nil
+        behavior.fallback_value
       end
     end
 

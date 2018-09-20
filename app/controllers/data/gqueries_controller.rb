@@ -25,7 +25,7 @@ class Data::GqueriesController < Data::BaseController
   end
 
   def show
-    @result = @gql.query(@gquery.query)
+    @result = @gql.query(@gquery)
   end
 
   def result
