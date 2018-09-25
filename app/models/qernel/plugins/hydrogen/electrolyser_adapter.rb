@@ -53,8 +53,12 @@ module Qernel::Plugins
         @converter[:full_load_hours] =
           carrier_demand / (@hydrogen_capacity * 3600)
 
+        electricity_h2_share = @converter.demand / max_available_electricity
+
+        # Set share explicitly to 1.0 when the producer -> electrolyser share is
+        # very close to 1.0 (floating point errors).
         @converter.input(:electricity).links.first.share =
-          @converter.demand / max_available_electricity
+          (1 - electricity_h2_share).abs < 1e-4 ? 1.0 : electricity_h2_share
       end
 
       private
