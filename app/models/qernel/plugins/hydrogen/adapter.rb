@@ -146,9 +146,16 @@ module Qernel::Plugins
         else
           Merit::Util.amplify_curve(
             @context.dataset.load_profile("#{name}_baseline"),
-            @converter.converter_api.full_load_hours
+            full_load_hours
           )
         end
+      end
+
+      # Internal: The full load hours of the participant.
+      #
+      # Returns a numeric.
+      def full_load_hours
+        @converter.converter_api.full_load_hours
       end
     end
   end
