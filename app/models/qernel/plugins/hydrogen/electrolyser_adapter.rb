@@ -92,6 +92,14 @@ module Qernel::Plugins
       def calculate_carrier_demand
         demand_curve.sum * 3600
       end
+
+      # Internal: Amplified dynamic profiles must use the electricity producer
+      # FLH, as the electrolyser FLH may not be correct prior to calculating.
+      #
+      # Returns a numeric.
+      def full_load_hours
+        @producer.converter_api.full_load_hours
+      end
     end
   end
 end
