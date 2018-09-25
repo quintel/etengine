@@ -92,18 +92,6 @@ module Qernel::Plugins
       def calculate_carrier_demand
         demand_curve.sum * 3600
       end
-
-      def demand_profile
-        profile = @config.profile.to_s.delete(' ')
-
-        if profile == 'dynamic:solar_pv'
-          # Temporary special-case for solar PV which should interpolate
-          # between min and max curves.
-          @context.graph.plugin(:merit).curves.profile(profile[8..-1].to_sym)
-        else
-          super
-        end
-      end
     end
   end
 end
