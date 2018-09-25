@@ -78,20 +78,22 @@ module Qernel::Plugins
       #
       # Returns a Symbol.
       def demand_phase
-        @config.profile.to_s.strip.start_with?('dynamic') ? :dynamic : :static
+        @config.profile.to_s.strip.start_with?('self') ? :dynamic : :static
       end
 
+      # Internal: Creates the profile describing the shape of the converter
+      # demand throughout the year.
+      #
+      # Returns a Merit::Curve.
       def demand_profile
-        if @config.profile.to_s.delete(' ') == 'dynamic:self'
-          ::Merit::Curve.new(
-            if @converter.demand.zero?
-              [0.0] * 8760
-            elsif @converter.merit_order
-              merit_demand_profile
-            else
-              raise "Unknown hydrogen profile: #{@config.profile.inspect}"
-            end
-          )
+        profile_name = @config.profile.to_s.delete(' ')
+
+        if @converter.demand&.zero?
+          ::Merit::Curve.new([0.0] * 8760)
+        elsif profile_name.start_with?('self')
+          ::Merit::Curve.new(merit_demand_profile(profile_name[5..-1].to_sym))
+        elsif profile_name.start_with?('dynamic')
+          ::Merit::Curve.new(dynamic_demand_profile(profile_name[8..-1].to_sym))
         else
           @context.dataset.load_profile(@config.profile)
         end
@@ -110,18 +112,43 @@ module Qernel::Plugins
       # here as they require the graph to have been calcualted.
       #
       # Returns an array.
-      def merit_demand_profile
-        if @config.type == :producer
+      def merit_demand_profile(name)
+        unless @converter.merit_order
+          raise 'Cannot use "self: ..." hydrogen profile on non-Merit ' \
+                "participant: #{@converter.key}"
+        end
+
+        case name
+        when :electricity_input_curve
           slot = @converter.input(:electricity)
           curve = @converter.query.electricity_input_curve
-        else
+        when :electricity_output_curve
           slot = @converter.output(:electricity)
           curve = @converter.query.electricity_output_curve
+        else
+          raise %(Unknown hydrogen profile: "self: #{@config.profile}")
         end
 
         total = @converter.demand * slot.conversion
 
         curve.map { |value| value.abs / total }
+      end
+
+      # Internal: Creates a dynamic demand profile by interpolating between two
+      # or more curves, or by amplifying a baseline curve.
+      #
+      # Returns an array.
+      def dynamic_demand_profile(name)
+        if name == :solar_pv
+          # Temporary special-case for solar PV which should interpolate
+          # between min and max curves, rather than amplifying the min curve.
+          @context.graph.plugin(:merit).curves.profile(name)
+        else
+          Merit::Util.amplify_curve(
+            @context.dataset.load_profile("#{name}_baseline"),
+            @converter.converter_api.full_load_hours
+          )
+        end
       end
     end
   end
