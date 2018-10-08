@@ -2744,3 +2744,12 @@
 :energy_flexibility_pumped_storage_electricity:
   :x: 5520
   :y: 1880
+:energy_hydrogen_storage:
+  :x: 5840
+  :y: 4980
+:energy_imported_hydrogen_baseload:
+  :x: 6240
+  :y: 4780
+:energy_imported_hydrogen_backup:
+  :x: 6240
+  :y: 4720

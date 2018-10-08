@@ -54,7 +54,7 @@ gem 'quintel_merit', ref: '3faa2ab',  github: 'quintel/merit'
 gem 'fever',         ref: 'e988f2d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
-gem 'atlas',         ref: '3f116ac',  github: 'quintel/atlas'
+gem 'atlas',         ref: '8bdb2c9',  github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2'
@@ -62,6 +62,8 @@ gem 'dalli'
 
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
+
+gem 'sentry-raven'
 
 group :development do
   gem 'spring'
@@ -95,6 +97,5 @@ end
 group :production, :staging do
   gem 'puma'
   gem 'gctools', require: false
-  gem 'airbrake'
   gem 'newrelic_rpm'
 end

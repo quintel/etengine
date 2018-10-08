@@ -226,9 +226,21 @@ module Gql::Runtime
       #
       # For example:
       #   SUM_CURVES([1, 2], [3, 4]) # => [4, 6]
+      #   SUM_CURVES([[1, 2], [3, 4]]) # => [4, 6]
       #
       # Returns an array.
       def SUM_CURVES(*curves)
+        if curves.length == 1 && curves.first &&
+            !curves.first.first.is_a?(Numeric)
+          # Was given an array of curves as the sole argument.
+          curves = curves.first
+        end
+
+        curves = curves.compact
+        return [] if curves.none?
+
+        return curves.first.to_a if curves.one?
+
         Qernel::Plugins::Merit::Util.add_curves(curves).to_a
       end
 

@@ -99,6 +99,7 @@ class Converter
     demand
     excel_id
     fever
+    hydrogen
     merit_order
     preset_demand
     storage

@@ -164,12 +164,7 @@ module Gql
       if rescue_with == :debug
         ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
       elsif rescue_with == :airbrake
-        # TODO: This fails on offline setups. Convert to a notification
-        # TODO: something's broken here with airbrake 3.0.5:
-        # undefined method `backtrace' for #<Hash:0x007fda54900b88> ?!
-        # https://github.com/airbrake/airbrake/issues/19
-        Airbrake.notify(:error_message => e.message, :backtrace => caller) unless
-          APP_CONFIG[:standalone]
+        Raven.capture_exception(e) unless APP_CONFIG[:standalone]
         ResultSet::INVALID
       elsif rescue_with.present?
         rescue_with
@@ -227,7 +222,7 @@ module Gql
     #
     def query_multiple(gquery_keys)
       gquery_keys = gquery_keys - ["null", "undefined"]
-      rescue_with = Airbrake.configuration.api_key.present? ? :airbrake : :debug
+      rescue_with = Raven.configuration.capture_allowed? ? :airbrake : :debug
 
       gquery_keys.inject({}) do |hsh, key|
         result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
