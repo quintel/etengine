@@ -104,7 +104,10 @@ class Scenario < ApplicationRecord
   #
   # Returns an integer.
   def start_year
-    @start_year ||= Atlas::Dataset.find(area_code).analysis_year
+    @start_year ||=
+      (Atlas::Dataset.exists?(area_code) &&
+        Atlas::Dataset.find(area_code).analysis_year) ||
+      2015
   end
 
   def years

@@ -23,8 +23,22 @@ describe Scenario do
     end
 
     describe '#start_year' do
-      subject { super().start_year }
-      it { is_expected.to eq(Atlas::Dataset.find(:nl).analysis_year) }
+      let(:scenario) { subject }
+
+      it 'matches the dataset analysis year' do
+        expect(scenario.start_year)
+          .to eq(Atlas::Dataset.find(:nl).analysis_year)
+      end
+
+      describe 'when the dataset does not exist' do
+        let(:scenario) do
+          described_class.default.tap { |s| s.area_code = 'invalid'}
+        end
+
+        it 'returns 2015' do
+          expect(scenario.start_year).to eq(2015)
+        end
+      end
     end
 
     describe "#years" do
