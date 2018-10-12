@@ -4,6 +4,8 @@
 # Getting the default scenario:
 #   Scenario.default
 class Scenario < ApplicationRecord
+  extend Scenario::Migratable
+
   include Scenario::UserUpdates
   include Scenario::Persistable
   include Scenario::InputGroups

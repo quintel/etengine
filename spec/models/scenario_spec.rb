@@ -49,6 +49,116 @@ describe Scenario do
     end
   end
 
+  describe '#migratable' do
+    it 'returns all migratable scenarios from the past month' do
+      allow(described_class).to receive(:migratable_since)
+
+      described_class.migratable
+
+      expect(described_class)
+        .to have_received(:migratable_since).with(1.month.ago.to_date)
+    end
+  end
+
+  describe '#migratable_since' do
+    subject { described_class.migratable_since(since) }
+
+    let(:since) { 1.month.ago }
+
+    let!(:scenario) do
+      FactoryBot.create(
+        :scenario,
+        user_values: { a: 1 },
+        source: 'ETM',
+        title: 'Hello'
+      )
+    end
+
+    context 'with unprotected scenarios' do
+      it 'includes recent scenarios' do
+        is_expected.to include(scenario)
+      end
+
+      it 'includes scenarios with no source' do
+        scenario.update_attribute(:source, nil)
+        is_expected.to include(scenario)
+      end
+
+      it 'includes scenarios with no title' do
+        scenario.update_attribute(:title, nil)
+        is_expected.to include(scenario)
+      end
+
+      it 'omits recent scenarios where title="test"' do
+        scenario.update_attribute(:title, 'test')
+        is_expected.not_to include(scenario)
+      end
+
+      it 'omits recent scenarios where source="Mechanical Turk"' do
+        scenario.update_attribute(:source, 'Mechanical Turk')
+        is_expected.not_to include(scenario)
+      end
+
+      it 'omits scenarios updated prior to the "since" date' do
+        scenario.update_attribute(:updated_at, since - 1.hour)
+        is_expected.not_to include(scenario)
+      end
+
+      it 'omits scenarios with NULL user_values' do
+        scenario.update_attribute(:user_values, nil)
+        is_expected.not_to include(scenario)
+      end
+
+      it 'omits scenarios with empty user_values' do
+        scenario.update_attribute(:user_values, {})
+        is_expected.not_to include(scenario)
+      end
+    end
+
+    context 'with protected scenarios' do
+      before { scenario.update_attribute(:protected, true) }
+
+      it 'includes recent scenarios' do
+        is_expected.to include(scenario)
+      end
+
+      it 'includes scenarios with no source' do
+        scenario.update_attribute(:source, nil)
+        is_expected.to include(scenario)
+      end
+
+      it 'includes scenarios with no title' do
+        scenario.update_attribute(:title, nil)
+        is_expected.to include(scenario)
+      end
+
+      it 'omits recent scenarios where title="test"' do
+        scenario.update_attribute(:title, 'test')
+        is_expected.not_to include(scenario)
+      end
+
+      it 'omits recent scenarios where source="Mechanical Turk"' do
+        scenario.update_attribute(:source, 'Mechanical Turk')
+        is_expected.not_to include(scenario)
+      end
+
+      it 'incudes scenarios updated prior to the "since" date' do
+        scenario.update_attribute(:updated_at, since - 1.hour)
+        is_expected.to include(scenario)
+      end
+
+      it 'omits scenarios with NULL user_values' do
+        scenario.update_attribute(:user_values, nil)
+        is_expected.not_to include(scenario)
+      end
+
+      it 'omits scenarios with empty user_values' do
+        scenario.update_attribute(:user_values, {})
+        is_expected.not_to include(scenario)
+      end
+    end
+  end
+
   describe "user supplied parameters" do
     it "should not allow a bad area code" do
       s = Scenario.new(:area_code => '{}')
