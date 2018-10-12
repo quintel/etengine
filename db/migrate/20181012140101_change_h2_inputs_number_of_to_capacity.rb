@@ -67,12 +67,6 @@ class ChangeH2InputsNumberOfToCapacity < ActiveRecord::Migration[5.1]
   # All protected scenarios, and any unprotected scenarios since Jan 1st 2018
   # will be updated.
   def scenarios
-    Scenario.where(
-      '(protected = ? OR created_at >= ?) AND source != ? AND title != ?',
-      true, Time.new(2018, 1, 1), 'Mechanical Turk', 'test'
-    ).where(<<-SQL)
-      (`user_values` IS NOT NULL OR `balanced_values` IS NOT NULL) AND
-      (`user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' OR `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n')
-    SQL
+    Scenario.migratable_since(Date.new(2018, 1, 1))
   end
 end

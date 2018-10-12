@@ -11,14 +11,7 @@ class ChangeOtherIndustryInputsToPercentage < ActiveRecord::Migration[5.1]
     ].freeze
   ].freeze
 
-  NEW_INPUTS = %i[
-    industry_aggregated_other_industry_coal_percentage
-    industry_aggregated_other_industry_useable_heat_percentage
-    industry_aggregated_other_industry_electricity_percentage
-    industry_aggregated_other_industry_crude_oil_percentage
-    industry_aggregated_other_industry_network_gas_percentage
-    industry_aggregated_other_industry_wood_pellets_percentage
-  ].freeze
+  NEW_INPUT = :industry_useful_demand_for_aggregated_other
 
   def up
     total = scenarios.count
@@ -28,7 +21,9 @@ class ChangeOtherIndustryInputsToPercentage < ActiveRecord::Migration[5.1]
 
     scenarios.find_each.with_index do |scenario, index|
       updated = OLD_INPUTS.reduce(false) do |memo, (size_input, eff_input)|
-        update_input(scenario, size_input, eff_input) || memo
+        update_input(scenario, size_input, eff_input) ||
+          clean_inputs(scenario, size_input, eff_input) ||
+          memo
       end
 
       if updated
@@ -64,9 +59,7 @@ class ChangeOtherIndustryInputsToPercentage < ActiveRecord::Migration[5.1]
 
     new_value  = size * (((100.0 - efficiency) / 100)**(end_year - start_year))
 
-    NEW_INPUTS.each do |new_key|
-      scenario.user_values[new_key] = new_value
-    end
+    scenario.user_values[NEW_INPUT] = new_value
 
     true
   rescue Atlas::DocumentNotFoundError
@@ -74,15 +67,18 @@ class ChangeOtherIndustryInputsToPercentage < ActiveRecord::Migration[5.1]
     false
   end
 
+  # Remove the size and efficiency inputs if still present (the scenario set a
+  # value for one, but not the other).
+  #
+  # Returns true if any values were deleted; false otherwise.
+  def clean_inputs(scenario, size_input, efficiency_input)
+    deleted = scenario.user_values.delete(size_input)
+    scenario.user_values.delete(efficiency_input) || deleted
+  end
+
   # All protected scenarios, and any unprotected scenarios since Jan 1st 2018
   # will be updated.
   def scenarios
-    Scenario.where(
-      '(protected = ? OR created_at >= ?) AND source != ? AND title != ?',
-      true, Time.new(2018, 1, 1), 'Mechanical Turk', 'test'
-    ).where(<<-SQL)
-      (`user_values` IS NOT NULL OR `balanced_values` IS NOT NULL) AND
-      (`user_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n' OR `balanced_values` != '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess {}\n')
-    SQL
+    Scenario.migratable_since(Date.new(2018, 1, 1))
   end
 end
