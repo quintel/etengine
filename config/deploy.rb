@@ -1,6 +1,7 @@
 lock '3.10.1'
 
 set :log_level, 'info'
+set :pty, true
 
 set :application, 'etengine'
 set :repo_url, 'https://github.com/quintel/etengine.git'
