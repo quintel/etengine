@@ -132,9 +132,9 @@ module Gql::Runtime
       # @return [Numeric] The average of all values
       #
       def DIVIDE(*values)
-        a,b = values.tap(&:flatten!)
+        a, b = values.tap(&:flatten!)
 
-        if a == 0.0 || a == 0 || a.nil?
+        if a.nil? || b.nil? || a.zero? || b.zero?
           0.0
         else
           a.to_f / b
