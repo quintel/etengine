@@ -14,7 +14,9 @@ module Qernel::Plugins
       end
 
       def inject!
-        # Nothing to do.
+        @converter.dataset_lazy_set(:heat_input_curve) do
+          participant.producer.input_curve.to_a
+        end
       end
 
       def producer_for_carrier(_carrier)

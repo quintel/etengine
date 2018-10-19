@@ -64,6 +64,8 @@ class ConverterApi
     electricity_input_curve
     electricity_output_curve
     fever
+    heat_input_curve
+    heat_output_curve
     hydrogen
     hydrogen_input_curve
     hydrogen_output_curve
