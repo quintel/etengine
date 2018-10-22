@@ -175,4 +175,12 @@ module DataHelper
       haml_concat(' ms')
     end
   end
+
+  # Public: Returns if a converter "object attribute" (`merit_order`, `fever`,
+  # etc) identifies another converter.
+  #
+  # Returns true or false.
+  def object_attribute_is_converter?(name)
+    %i[alias_of delegate].include?(name)
+  end
 end
