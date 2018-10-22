@@ -13,4 +13,7 @@
                   %span.sub-attribute
                     == #{sub_key}: #{sub_value}
               - else
-                = value
+                - if object_attribute_is_converter?(key)
+                  = link_to value, data_converter_path(id: value)
+                - else
+                  = value
