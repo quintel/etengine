@@ -142,7 +142,7 @@ module Qernel::Plugins
         if name == :solar_pv
           # Temporary special-case for solar PV which should interpolate
           # between min and max curves, rather than amplifying the min curve.
-          @context.graph.plugin(:merit).curves.profile(name)
+          @context.graph.plugin(:merit).curves.profile(name, @converter)
         else
           Merit::Util.amplify_curve(
             @context.dataset.load_profile("#{name}_baseline"),

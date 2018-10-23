@@ -2,6 +2,8 @@ module Qernel::Plugins
   module Merit
     class CurtailmentAdapter < FlexAdapter
       def inject!
+        super
+
         elec_link = target_api.converter.input(:electricity).links.first
 
         # Figure out the electricity output efficiency of the HV network;
@@ -31,8 +33,8 @@ module Qernel::Plugins
         else
           # TODO Can this be set in FlexAdapter?
           attrs[:input_capacity_per_unit] =
-            @converter.input_capacity ||
-            @converter.output_capacity
+            source_api.input_capacity ||
+            source_api.output_capacity
         end
 
         attrs[:number_of_units] = 1.0

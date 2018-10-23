@@ -39,6 +39,7 @@ module Qernel
 class ConverterApi
   include MethodMetaData
   include DatasetAttributes
+  extend  DatasetCurveAttributes
   include CalculationUnits
 
   def self.dataset_group; :graph; end
@@ -61,19 +62,17 @@ class ConverterApi
   # dataset attributes of converter
   dataset_accessors %i[
     demand
-    electricity_input_curve
-    electricity_output_curve
     fever
-    heat_input_curve
-    heat_output_curve
     hydrogen
-    hydrogen_input_curve
-    hydrogen_output_curve
     merit_order
     preset_demand
     storage
-    storage_curve
   ]
+
+  dataset_curve_reader :storage_curve
+  dataset_carrier_curve_reader :electricity
+  dataset_carrier_curve_reader :hydrogen
+  dataset_carrier_curve_reader :heat
 
   # Returns a ConverterApi instance based on the given Converter.
   #

@@ -88,21 +88,6 @@ module Qernel::Plugins
       end
 
       @order.add(::Merit::User.create(
-        key: :fever_hot_water,
-        load_curve: curves.household_hot_water_demand
-      ))
-
-      @order.add(::Merit::User.create(
-        key: :fever_space_heating,
-        load_curve: curves.household_space_heating_demand
-      ))
-
-      @order.add(::Merit::User.create(
-        key: :ev_demand,
-        load_curve: curves.ev_demand
-      ))
-
-      @order.add(::Merit::User.create(
         key: :total_demand,
         load_curve: total_demand_curve
       ))
@@ -147,13 +132,14 @@ module Qernel::Plugins
         end
       end
 
+      # TODO Do we need to subtract the hot water and space heating demand?
+      # Aren't these individual demands now?
       demand = @graph.graph_query.total_demand_for_electricity -
         individual_demands -
         curves.demand_value(:hot_water) -
-        curves.demand_value(:space_heating) -
-        curves.demand_value(:ev)
+        curves.demand_value(:space_heating)
 
-      demand < 0 ? 0.0 : demand
+      demand.negative? ? 0.0 : demand
     end
 
     # Internal: Returns an array of converters which are of the requested merit
