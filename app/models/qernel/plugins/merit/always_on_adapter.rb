@@ -13,7 +13,7 @@ module Qernel::Plugins
       end
 
       def producer_class
-        case @config.type
+        case @config.subtype
         when :volatile then ::Merit::VolatileProducer
         when :must_run then ::Merit::MustRunProducer
         else

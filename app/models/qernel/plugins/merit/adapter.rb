@@ -6,12 +6,12 @@ module Qernel::Plugins
 
       def self.adapter_for(converter, graph, dataset)
         klass = case converter.merit_order.type.to_sym
-          when :dispatchable, :volatile, :must_run
+          when :producer
             ProducerAdapter.factory(converter, graph, dataset)
           when :flex
             FlexAdapter.factory(converter, graph, dataset)
           when :consumer
-            ConsumerAdapter
+            ConsumerAdapter.factory(converter, graph, dataset)
           else
             self
         end

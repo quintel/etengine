@@ -2,7 +2,7 @@ module Qernel::Plugins
   module Merit
     class ProducerAdapter < Adapter
       def self.factory(converter, graph, dataset)
-        case converter.merit_order.type
+        case converter.merit_order.subtype
         when :must_run, :volatile
           AlwaysOnAdapter
         when :dispatchable

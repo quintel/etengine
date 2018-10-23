@@ -28,8 +28,19 @@ module Qernel::Plugins
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
     # suffice.
+    #
+    # Returns an array of participant types. Each element is either a Symbol,
+    # specifying that all participants of the matching type should be included,
+    # or a 2-element array when limiting by subtype.
+    #
+    # For example:
+    #
+    #   # Specifies to include :producers whose subtype is :must_run and all
+    #   # consumers.
+    #   [%i[producer must_run], :consumer]
+    #
     def participant_types
-      [:must_run, :volatile, :consumer].freeze
+      [%i[producer must_run], %i[producer volatile], :consumer].freeze
     end
 
     def adapters
@@ -37,12 +48,12 @@ module Qernel::Plugins
 
       @adapters = {}
 
-      participant_types.each do |type|
-        models = converters(type)
+      participant_types.each do |(type, subtype)|
+        models = converters(type, subtype)
         models = sort_flexibles(models) if type == :flex
 
         models.each do |converter|
-          @adapters[converter.key] =
+          @adapters[converter.key] ||=
             Qernel::Plugins::Merit::Adapter.adapter_for(
               converter, @graph, dataset
             )
@@ -149,13 +160,16 @@ module Qernel::Plugins
     # order +type+ (defined in PRODUCER_TYPES).
     #
     # Returns an array.
-    def converters(type)
+    def converters(type, subtype)
       (Etsource::MeritOrder.new.import[type.to_s] || {}).map do |key, profile|
         converter = @graph.converter(key)
+
+        next if !subtype.nil? && converter.merit_order.subtype != subtype
+
         converter.converter_api.load_profile_key = profile
 
         converter
-      end
+      end.compact
     end
 
     # Internal: Fetches the adapter matching the given participant `key`.
