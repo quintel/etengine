@@ -20,17 +20,17 @@ module Qernel::Plugins
           full_load_seconds = full_load_hours * 3600
         end
 
-        @converter[:full_load_hours]   = full_load_hours
-        @converter[:full_load_seconds] = full_load_seconds
-        @converter[:number_of_units]   = participant.number_of_units
+        target_api[:full_load_hours]   = full_load_hours
+        target_api[:full_load_seconds] = full_load_seconds
+        target_api[:number_of_units]   = participant.number_of_units
 
-        @converter.demand =
+        target_api.demand =
           full_load_seconds *
           flh_capacity *
           participant.number_of_units
 
-        @converter.dataset_lazy_set(:electricity_output_curve) do
-          participant.load_curve.to_a
+        target_api.dataset_lazy_set(:electricity_output_curve) do
+          @participant.load_curve.to_a
         end
       end
 
@@ -50,17 +50,17 @@ module Qernel::Plugins
       end
 
       def marginal_costs
-        @converter.marginal_costs
+        source_api.marginal_costs
       end
 
       def output_capacity_per_unit
-        @converter.electricity_output_conversion * @converter.input_capacity
+        source_api.electricity_output_conversion * source_api.input_capacity
       end
 
       # Internal: Capacity used to multiply full load seconds to determien the
       # resulting annual demand of the producer.
       def flh_capacity
-        @converter.input_capacity
+        source_api.input_capacity
       end
     end # ProducerAdapter
   end # Merit

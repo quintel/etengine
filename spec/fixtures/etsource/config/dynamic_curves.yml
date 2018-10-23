@@ -5,9 +5,11 @@
 # For example:
 #
 #   ev_demand:
-#     - electric_vehicle_1
-#     - electric_vehicle_2
-#     - electric_vehicle_3
+#     type: interpolate
+#     curves:
+#       - electric_vehicle_1
+#       - electric_vehicle_2
+#       - electric_vehicle_3
 #
 # The user may use a slider to set area attribute "electric_vehicle_1_share" to
 # 0.25, "electric_vehicle_2_share" to 0.3, and "electric_vehicle_3_share" to
@@ -27,24 +29,36 @@
 #   - merit.type = consumer
 #   - merit.group = dynamic: ev_demand
 #   - merit_order.level = lv
+#
+# Alternatively, rather than interpolating between two or more curves, you may
+# define a single "baseline" curve and have ETEngine amplify the curve to the
+# user-assigned full-load hours of the node. For example:
+#
+#   solar_pv:
+#     type: amplify
+#     curve: solar_pv_baseline
 
 ev_demand:
-  - electric_vehicle_profile_1
-  - electric_vehicle_profile_2
-  - electric_vehicle_profile_3
+  type: interpolate
+  curves:
+    - electric_vehicle_profile_1
+    - electric_vehicle_profile_2
+    - electric_vehicle_profile_3
 
 solar_pv:
-  - solar_pv_profile_1
-  - solar_pv_profile_2
+  type: interpolate
+  curves:
+    - solar_pv_profile_1
+    - solar_pv_profile_2
 
 wind_coastal:
-  - wind_coastal_min
-  - wind_coastal_max
+  type: amplify
+  curve: wind_coastal_baseline
 
 wind_inland:
-  - wind_inland_min
-  - wind_inland_max
+  type: amplify
+  curve: wind_inland_baseline
 
 wind_offshore:
-  - wind_offshore_min
-  - wind_offshore_max
+  type: amplify
+  curve: wind_offshore_baseline

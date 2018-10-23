@@ -24,10 +24,7 @@ module Qernel::Plugins
       # Returns a hash.
       def mix(dataset, curves)
         curves.each_with_object({}) do |(key, share), data|
-          path = dataset.load_profile_path(key)
-          next unless path.file?
-
-          data[::Merit::LoadProfile.load(path)] = share
+          data[dataset.load_profile(key)] = share
         end
       end
 
@@ -48,6 +45,11 @@ module Qernel::Plugins
         ::Merit::Curve.new(Array.new(length) { |index| yield(index) })
       end
 
+      # Public: Returns a profile of all zeroes.
+      def zeroed_profile
+        ::Merit::Curve.new(Array.new(8760, 0.0))
+      end
+
       # Internal: Ensures that a mix of profiles sum to 1.0.
       #
       # Returns a hash.
@@ -64,12 +66,6 @@ module Qernel::Plugins
       end
 
       private_class_method :balanced_mix
-
-      def zeroed_profile
-        ::Merit::Curve.new(Array.new(8760, 0.0))
-      end
-
-      private_class_method :zeroed_profile
     end
   end
 end

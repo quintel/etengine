@@ -22,7 +22,6 @@ module Qernel::Plugins
       end
 
       def inject!
-        target          = target_api
         full_load_hours = participant.full_load_hours * output_efficiency
 
         if ! full_load_hours || full_load_hours.nan?
@@ -31,13 +30,21 @@ module Qernel::Plugins
           full_load_seconds = full_load_hours * 3600
         end
 
-        target[:full_load_hours]   = full_load_hours
-        target[:full_load_seconds] = full_load_seconds
+        target_api[:full_load_hours]   = full_load_hours
+        target_api[:full_load_seconds] = full_load_seconds
 
-        target.demand =
+        target_api.demand =
           full_load_seconds *
-          @converter.input_capacity *
+          source_api.input_capacity *
           participant.number_of_units
+
+        target_api.dataset_lazy_set(:electricity_input_curve) do
+          @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
+        end
+
+        target_api.dataset_lazy_set(:electricity_output_curve) do
+          @participant.load_curve.map { |v| v.positive? ? v : 0.0 }
+        end
       end
 
       private
@@ -45,39 +52,44 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
+        # attrs[:number_of_units] = delegate_api.number_of_units
+        # attrs[:availability]    = delegate_api.availability
+
         # Default is to multiply the input capacity by the electricity output
         # conversion. This doesn't work, because the flex converters have a
         # dependant electricity link and the conversion will be zero the first
         # time the graph is calculated.
         attrs[:output_capacity_per_unit] =
-          @converter.output_capacity ||
-          @converter.input_capacity
+          source_api.output_capacity ||
+          source_api.input_capacity
 
         attrs
+
+        # {
+        #   key:                       @converter.key,
+        #   number_of_units:           delegate_api.number_of_units,
+        #   availability:              delegate_api.availability,
+        #   marginal_costs:            0.0,
+
+        #   # Default is to multiply the input capacity by the electricity output
+        #   # conversion. This doesn't work, because the flex converters have a
+        #   # dependant electricity link and the conversion will be zero the first
+        #   # time the graph is calculated.
+        #   output_capacity_per_unit:
+        #     delegate_api.output_capacity || delegate_api.input_capacity
+        # }
       end
 
       def output_efficiency
-        slots = target_api.converter.outputs.reject(&:loss?)
+        # Most attributes come from the delegate, but this is not the case for
+        # output efficiency for which the participant may be assigned a
+        # different value than the delegate.
+        slots = @converter.converter.outputs.reject(&:loss?)
         slots.any? ? slots.sum(&:conversion) : 1.0
       end
 
       def producer_class
         ::Merit::Flex::Base
-      end
-
-      # Internal: The converter on which to set a demand.
-      #
-      # Some flexible converter set their demands on a different converter (EV
-      # sets a demand on the separate EV P2P converter, instead of itself). This
-      # method returns the converter on which to set the demand.
-      #
-      # Returns a Qernel::ConverterApi.
-      def target_api
-        if @config.target.present?
-          @graph.converter(@config.target).converter_api
-        else
-          @converter
-        end
       end
     end # FlexAdapter
   end # Merit

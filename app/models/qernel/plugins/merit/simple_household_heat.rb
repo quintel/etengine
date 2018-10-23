@@ -36,7 +36,7 @@ module Qernel::Plugins
         )
       end
 
-      # Public: Creates a curve describing the demadn for electricity in
+      # Public: Creates a curve describing the demand for electricity in
       # households due to space heating.
       #
       # Returns a Merit::Curve.

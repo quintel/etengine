@@ -12,8 +12,13 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
   end
 
   describe 'electric car curves' do
-    let(:ev_demand) { 8760.0 }
-    let(:ev_mix)    { [0.75, 0.25, 0] }
+    let(:converter) { instance_double('Qernel::Converter', demand: 8760) }
+    let(:ev_mix)  { [0.75, 0.25, 0] }
+    let(:profile) { curves.profile('dynamic: ev_demand', converter) }
+
+    # The profile is converted so as to sum to 1.0; this converts it to
+    # something more readable.
+    let(:normalized_profile) { profile * 8760 }
 
     before do
       allow(graph.area)
@@ -27,10 +32,6 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
       allow(graph.area)
         .to receive(:electric_vehicle_profile_3_share)
         .and_return(ev_mix[2])
-
-      allow(graph.query)
-        .to receive(:group_demand_for_electricity)
-        .with(:merit_ev_demand).and_return(ev_demand)
     end
 
     describe 'with a 50/50 mix' do
@@ -39,11 +40,11 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
       it 'creates a combined profile' do
         # ev1 = [1.0, 0.0, 1.0, 0.0, ...]
         # ev2 = [0.0, 1.0, 0.0, 1.0, ...]
-        expect(curves.ev_demand.take(4)).to eq([1.0, 1.0, 1.0, 1.0])
+        expect(normalized_profile.take(4)).to eq([1.0, 1.0, 1.0, 1.0])
       end
 
-      it 'has an area equal to demand' do
-        expect(curves.ev_demand.sum).to eq(ev_demand)
+      it 'has an area of 1' do
+        expect(profile.sum).to be_within(1e-8).of(1)
       end
     end
 
@@ -51,11 +52,11 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
       let(:ev_mix) { [0.75, 0.25, 0.0] }
 
       it 'creates a combined profile' do
-        expect(curves.ev_demand.take(4)).to eq([1.5, 0.5, 1.5, 0.5])
+        expect(normalized_profile.take(4)).to eq([1.5, 0.5, 1.5, 0.5])
       end
 
-      it 'has an area equal to demand' do
-        expect(curves.ev_demand.sum).to eq(ev_demand)
+      it 'has an area of 1' do
+        expect(profile.sum).to be_within(1e-8).of(1)
       end
     end
 
@@ -66,23 +67,19 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
         # 8760 * 0.4 * 1.0 +             # 3504.0
         #   8760 * 0.3 * (2.0 / 8760) +  #    0.3
         #   8760 * 0.3 * (0.0 / 8760)    #    0.0
-        expect(curves.ev_demand.take(4)).to eq([3504.6, 0.6, 0.6, 0.6])
+        expect(normalized_profile.take(4)).to eq([3504.6, 0.6, 0.6, 0.6])
       end
 
-      it 'has an area equal to demand' do
-        expect(curves.ev_demand.sum).to be_within(1e-5).of(ev_demand)
+      it 'has an area of 1' do
+        expect(profile.sum).to be_within(1e-8).of(1)
       end
     end
 
     describe 'when the dataset has no profiles' do
       let(:region) { :eu }
 
-      it 'creates a zeroed profile' do
-        expect(curves.ev_demand.take(4)).to eq([0.0, 0.0, 0.0, 0.0])
-      end
-
-      it 'has a sum of 0.0' do
-        expect(curves.ev_demand.sum).to be_zero
+      it 'raises an error' do
+        expect { normalized_profile }.to raise_error(Errno::ENOENT)
       end
     end
   end # electric vehicle profiles

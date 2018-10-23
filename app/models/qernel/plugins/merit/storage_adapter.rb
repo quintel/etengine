@@ -9,12 +9,12 @@ module Qernel::Plugins
         attrs[:reserve_class] = ::Merit::Flex::SimpleReserve
 
         attrs[:input_capacity_per_unit] =
-          @converter.input_capacity ||
-          @converter.output_capacity
+          source_api.input_capacity ||
+          source_api.output_capacity
 
         attrs[:volume_per_unit] =
-          @converter.dataset_get(:storage).volume *
-          (1 - (@converter.reserved_fraction || 0.0))
+          source_api.dataset_get(:storage).volume *
+          (1 - (source_api.reserved_fraction || 0.0))
 
         attrs[:input_efficiency]  = input_efficiency
         attrs[:output_efficiency] = output_efficiency
@@ -27,7 +27,7 @@ module Qernel::Plugins
       end
 
       def input_efficiency
-        slots = target_api.converter.inputs.reject(&:loss?)
+        slots = @converter.converter.inputs.reject(&:loss?)
         1 / (slots.any? ? slots.sum(&:conversion) : 1.0)
       end
     end # StorageAdapter

@@ -2,7 +2,7 @@ module Qernel::Plugins
   module Merit
     class PowerToHeatAdapter < StorageAdapter
       def inject!
-        target = target_api
+        super
 
         full_load_hours =
           participant.production * output_efficiency / (
@@ -17,12 +17,12 @@ module Qernel::Plugins
           full_load_seconds = full_load_hours * 3600
         end
 
-        target[:full_load_hours]   = full_load_hours
-        target[:full_load_seconds] = full_load_seconds
+        target_api[:full_load_hours]   = full_load_hours
+        target_api[:full_load_seconds] = full_load_seconds
 
-        target.demand =
+        target_api.demand =
           full_load_seconds *
-          @converter.input_capacity *
+          source_api.input_capacity *
           participant.number_of_units
       end
 
@@ -34,7 +34,7 @@ module Qernel::Plugins
         attrs[:excess_share] = excess_share
         attrs[:group] = @config.group
 
-        if @converter.number_of_units.positive?
+        if source_api.number_of_units.positive?
           # Swap back to the slower Reserve which supports decay.
           attrs[:reserve_class] = ::Merit::Flex::Reserve
           attrs[:decay] = reserve_decay
@@ -67,7 +67,7 @@ module Qernel::Plugins
       #
       # Returns a numeric.
       def excess_share
-        self_cap = @converter.input_capacity * @converter.number_of_units
+        self_cap = source_api.input_capacity * source_api.number_of_units
         group_cap = 0.0
 
         return 0.0 if self_cap.zero?

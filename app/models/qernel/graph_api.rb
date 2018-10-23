@@ -163,7 +163,7 @@ class GraphApi
     fetch(:electricity_demand_curve) do
       Plugins::Merit::Util.add_curves(
         graph.plugin(:merit).order.participants.users.map(&:load_curve)
-      )
+      ).to_a
     end
   end
 

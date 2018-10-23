@@ -208,20 +208,6 @@ module Gql::Runtime
         end
       end
 
-      # Retrieves the merit load curves
-      def MERIT_LOAD_CURVES(*part_keys)
-        return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
-        parts = scope.graph.plugin(:merit).order.participants
-
-        SUM_CURVES(*(part_keys.map do |key|
-          if parts.key?(key)
-            parts[key].load_curve
-          else
-            raise "No such merit order participant: #{key.inspect}"
-          end
-        end))
-      end
-
       # Adds the values in multiple curves.
       #
       # For example:
@@ -244,57 +230,12 @@ module Gql::Runtime
         Qernel::Plugins::Merit::Util.add_curves(curves).to_a
       end
 
-      # Given a load curve for a flexible technology, extracts the loads which
-      # represent demand, ignoring periods of net supply.
-      #
-      # For example:
-      #   FLEXIBILITY_DEMAND_CURVE([-1, -2, 3, 0, 2, -2])
-      #   # => [1, 2, 0, 0, 0, 2]
+      # Inverts a single curve by swapping positive numbers to be negative, and
+      # vice-versa.
       #
       # Returns an array.
-      def FLEX_DEMAND_CURVE(curve)
-        curve.map { |val| val < 0 ? -val : 0.0 }
-      end
-
-      # Given a load curve for a flexible technology, extracts the loads which
-      # represent supply, ignoring periods of net demand.
-      #
-      # For example:
-      #   FLEXIBILITY_DEMAND_CURVE([-1, -2, 3, 0, 2, -2])
-      #   # => [0, 0, 3, 0, 0, 2, 0]
-      #
-      # Returns an array.
-      def FLEX_SUPPLY_CURVE(curve)
-        curve.map { |val| val > 0 ? val : 0.0 }
-      end
-
-      # Retrieves the total demand of all users in the merit order.
-      def MERIT_DEMAND
-        if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
-          GRAPH(:electricity_demand_curve)
-        else
-          []
-        end
-      end
-
-      # Public: Returns a demand curve which describes part of the total demand
-      # of the scenario. For example, :household_hot_water_demand returns the
-      # demand for electricity due to household hot water use.
-      #
-      # Returns an array.
-      def MERIT_DEMAND_COMPONENT(type)
-        case type.to_sym
-        when :ev_demand then
-          scope.graph.plugin(:merit).curves.ev_demand.to_a
-        when :household_hot_water
-          fever_electricity_demand(:hot_water)
-        when :old_household_space_heating_demand
-          fever_electricity_demand(:space_heating)
-        when :new_household_space_heating_demand
-          [0.0] * 8760
-        else
-          raise "Invalid merit demand component: #{ type.inspect }"
-        end
+      def INVERT_CURVE(curve)
+        curve.map(&:-@)
       end
 
       # Public: Describes the total demand of all consumers in the Fever plugin.
@@ -313,15 +254,6 @@ module Gql::Runtime
         return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
 
         scope.graph.plugin(:time_resolve).fever.summary.production
-      end
-
-      private
-
-      def fever_electricity_demand(group)
-        return [] unless scope.graph.plugin(:time_resolve)
-
-        scope.graph.plugin(:time_resolve)
-          .fever.group(group).elec_demand_curve.to_a
       end
     end
   end

@@ -5,15 +5,15 @@ module Qernel::Plugins
       def inject!
         super
 
-        @converter.dataset_lazy_set(:marginal_costs) do
+        target_api.dataset_lazy_set(:marginal_costs) do
           participant.marginal_costs.to_f
         end
 
-        @converter.dataset_lazy_set(:profitability) do
+        target_api.dataset_lazy_set(:profitability) do
           participant.profitability
         end
 
-        @converter.dataset_lazy_set(:profit_per_mwh_electricity) do
+        target_api.dataset_lazy_set(:profit_per_mwh_electricity) do
           participant.profit_per_mwh_electricity
         end
       end
@@ -22,10 +22,10 @@ module Qernel::Plugins
         attrs = super
 
         attrs[:fixed_costs_per_unit] =
-          @converter.send(:fixed_costs)
+          source_api.send(:fixed_costs)
 
         attrs[:fixed_om_costs_per_unit] =
-          @converter.send(:fixed_operation_and_maintenance_costs_per_year)
+          source_api.send(:fixed_operation_and_maintenance_costs_per_year)
 
         attrs
       end
