@@ -56,10 +56,14 @@ gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
 <<<<<<< HEAD
+<<<<<<< HEAD
 gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
 >>>>>>> Add support for ETSource config files
+=======
+gem 'atlas',         ref: '1cc5ae3',  github: 'quintel/atlas'
+>>>>>>> Support new type/subtype Merit attributes
 
 # system gems
 gem 'mysql2'

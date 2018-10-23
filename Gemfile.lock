@@ -7,12 +7,17 @@ GIT
 GIT
   remote: https://github.com/quintel/atlas.git
 <<<<<<< HEAD
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
 =======
   revision: c41054c0831068553f4fd64a03f6b422d9ce4d3b
   ref: c41054c
 >>>>>>> Add support for ETSource config files
+=======
+  revision: 1cc5ae3d5f10ac392ad4e6a9079f3ee7a93e6243
+  ref: 1cc5ae3
+>>>>>>> Support new type/subtype Merit attributes
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)

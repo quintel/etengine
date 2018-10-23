@@ -4,17 +4,17 @@ module Qernel::Plugins
     # order. These technologies store excess for future use, or remove excess
     # via export or curtailment.
     class FlexAdapter < Adapter
-      def self.factory(converter, graph, dataset)
-        case converter.merit_order.group.to_sym
-          when :power_to_power, :electric_vehicle, :pumped_storage
+      def self.factory(converter, _graph, _dataset)
+        case converter.merit_order.subtype.to_sym
+          when :storage
             StorageAdapter
-          when :power_to_gas, :power_to_gas_industry
+          when :power_to_gas
             PowerToGasAdapter
           when :power_to_heat_industry
             PowerToHeatAdapter
           when :power_to_heat
             HouseholdPowerToHeatAdapter
-          when :curtailment, :export
+          when :curtailment
             CurtailmentAdapter
           else
             self

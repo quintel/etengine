@@ -2,6 +2,15 @@ module Qernel::Plugins
   module Merit
     # Converts a Qernel::Converter to a Merit user.
     class ConsumerAdapter < Adapter
+      def self.factory(converter, _graph, _dataset)
+        case converter.merit_order.subtype
+        when :pseudo
+          PseudoConsumerAdapter
+        else
+          self
+        end
+      end
+
       def participant
         @participant ||= ::Merit::User.create(
           key: @converter.key,
