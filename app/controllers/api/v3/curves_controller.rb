@@ -8,6 +8,8 @@ module Api
         render json: { errors: ['Scenario not found'] }, status: 404
       end
 
+      before_action :merit_required
+
       # Downloads the load on each participant in the merit order as a CSV.
       #
       # GET /api/v3/scenarios/:scenario_id/merit/loads.csv
@@ -53,6 +55,12 @@ module Api
 
       private
 
+      def merit_required
+        unless Qernel::Plugins::MeritOrder.enabled?(scenario.gql.future_graph)
+          render :merit_required, format: :html, layout: false
+        end
+      end
+
       def send_csv(name)
         send_data(
           CSV.generate { |csv| yield csv },
@@ -62,9 +70,7 @@ module Api
       end
 
       def merit_order
-        @mo ||= Qernel::Plugins::MeritOrder.new(
-          scenario.gql.future_graph
-        ).order.calculate
+        scenario.gql.future_graph.plugin(:merit).order
       end
 
       def scenario
