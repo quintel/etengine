@@ -44,6 +44,10 @@ Rails.application.routes.draw do
           to: 'curves#household_heat_curves',
           as: :curves_household_heat_download
 
+        get 'curves/hydrogen',
+          to: 'curves#hydrogen',
+          as: :curves_hydrogen_download
+
         # Old paths for Merit downloads.
         get 'merit/loads', to: redirect('api/v3/scenarios/%{scenario_id}/curves/loads')
         get 'merit/price', to: redirect('api/v3/scenarios/%{scenario_id}/curves/price')
