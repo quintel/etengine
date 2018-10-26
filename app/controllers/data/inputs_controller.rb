@@ -12,7 +12,7 @@ class Data::InputsController < Data::BaseController
 
   private
 
-    def find_input
-      @input = Input.get(params[:id])
-    end
+  def find_input
+    @input = Input.get(params[:id]) || render_not_found('input')
+  end
 end

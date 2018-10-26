@@ -19,8 +19,8 @@ class Data::ConvertersController < Data::BaseController
     @converter_future  = @gql.future_graph.graph.converter(key.to_sym)
 
     if @converter_present.nil?
-      flash[:error] = "No such converter: #{key}"
-      redirect_to data_converters_path and return
+      render_not_found('converter')
+      return
     end
 
     @converter_api  = @converter_present.converter_api

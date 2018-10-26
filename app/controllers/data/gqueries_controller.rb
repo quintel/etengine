@@ -41,7 +41,7 @@ class Data::GqueriesController < Data::BaseController
   #######
 
   def find_model
-    @gquery = Gquery.get(params[:id])
+    @gquery = Gquery.get(params[:id]) || render_not_found('gquery')
   end
 
 end
