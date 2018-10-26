@@ -53,6 +53,16 @@ module Api
         end
       end
 
+      # Downloads the total demand and supply for hydrogen, with additional
+      # columns for the storage demand and supply.
+      def hydrogen
+        presenter = Api::V3::HydrogenCSVPresenter.new(scenario.gql.future_graph)
+
+        send_csv('hydrogen') do |csv|
+          presenter.to_csv_rows.each { |row| csv << row }
+        end
+      end
+
       private
 
       def merit_required
