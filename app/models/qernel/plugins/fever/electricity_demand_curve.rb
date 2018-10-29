@@ -19,7 +19,7 @@ module Qernel::Plugins
       end
 
       def get(frame)
-        @producers.sum { |prod| prod.source_at(frame) }
+        self[frame]
       end
 
       def first
@@ -27,7 +27,7 @@ module Qernel::Plugins
       end
 
       def [](frame)
-        get(frame)
+        @producers.sum(0.0) { |prod| prod.source_at(frame) }
       end
 
       # For some reason, Merit calls curve#values#[]
