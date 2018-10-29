@@ -22,7 +22,7 @@ module Qernel::Plugins
       private
 
       def reserve
-        ::Merit::Flex::Reserve.new(
+        ::Merit::Flex::SimpleReserve.new(
           total_value { @converter.dataset_get(:storage).volume }
         )
       end

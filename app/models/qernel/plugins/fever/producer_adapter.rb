@@ -110,7 +110,7 @@ module Qernel::Plugins
 
       def reserve
         volume  = total_value { @converter.dataset_get(:storage).volume }
-        reserve = ::Merit::Flex::Reserve.new(volume)
+        reserve = ::Merit::Flex::SimpleReserve.new(volume)
 
         # Buffer starts full.
         reserve.add(0, volume)

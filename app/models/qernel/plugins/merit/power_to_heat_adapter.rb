@@ -34,8 +34,11 @@ module Qernel::Plugins
         attrs[:excess_share] = excess_share
         attrs[:group] = @config.group
 
-        attrs[:decay] =
-          @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
+        if @converter.number_of_units.positive?
+          # Swap back to the slower Reserve which supports decay.
+          attrs[:reserve_class] = ::Merit::Flex::Reserve
+          attrs[:decay] = reserve_decay
+        end
 
         # Do not emit anything; it has been converted to hot water.
         attrs[:output_capacity_per_unit] = 0.0

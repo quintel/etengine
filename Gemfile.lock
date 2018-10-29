@@ -17,15 +17,15 @@ GIT
 
 GIT
   remote: https://github.com/quintel/fever.git
-  revision: e988f2ddb81c799a44bdd6582d379d11e67f62b1
-  ref: e988f2d
+  revision: f80677d99dac64a8100bb84e44e6bc30e2b27821
+  ref: f80677d
   specs:
     fever (0.1.0)
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: 3faa2ab98e74dac33ce03a0870e26aa625eb654d
-  ref: 3faa2ab
+  revision: 0f33926703c99ae08cd31a09d8484aca908a68d4
+  ref: 0f33926
   specs:
     quintel_merit (0.1.0)
       terminal-table

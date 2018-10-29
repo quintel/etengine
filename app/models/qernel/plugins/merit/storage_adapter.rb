@@ -6,6 +6,8 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
+        attrs[:reserve_class] = ::Merit::Flex::SimpleReserve
+
         attrs[:input_capacity_per_unit] =
           @converter.input_capacity ||
           @converter.output_capacity
