@@ -15,11 +15,11 @@ module Qernel::Plugins
 
       # Internal: The total demand for useable heat in households.
       def self.demand_for_heat(graph)
-        sh_group = Etsource::Fever.data[:space_heating]
+        group = Etsource::Fever.group(:space_heating)
 
-        return 0.0 unless sh_group && sh_group.key?(:consumer)
+        return 0.0 unless group&.any_of_type?(:consumer)
 
-        sh_group[:consumer].sum do |key|
+        group.keys(:consumer).sum do |key|
           graph.converter(key).converter_api.input_of(:useable_heat)
         end
       end

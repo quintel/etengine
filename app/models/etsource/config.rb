@@ -30,6 +30,12 @@ module Etsource
       read(:dynamic_curves).fetch(name.to_s)
     end
 
+    # Public: Fetches the list of Fever groups, in the order in which they
+    # should be calculated.
+    def fever
+      read('fever').map(&:to_sym)
+    end
+
     private_class_method def read(name)
       NastyCache.instance.fetch("etsource.config.#{name}") do
         IceNine.deep_freeze(Atlas::Config.read(name))

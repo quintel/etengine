@@ -57,7 +57,7 @@ module Qernel::Plugins
 
         @adapters = Plugin::TYPES.each_with_object({}) do |type, data|
           data[type] =
-            (Etsource::Fever.data[@name][type] || []).map do |node_key|
+            Etsource::Fever.group(@name).keys(type).map do |node_key|
               Adapter.adapter_for(@graph.converter(node_key), @graph, @dataset)
             end
         end
