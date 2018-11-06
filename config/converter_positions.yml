@@ -243,8 +243,8 @@
   :x: 7780
   :y: 1300
 :households_useful_demand_for_space_heating_after_insulation:
-  :x: 320
-  :y: 540
+  :x: 300
+  :y: 560
 :households_old_houses_useful_demand_for_cooling:
   :x: 440
   :y: 60
@@ -1075,7 +1075,7 @@
   :y: 6800
 :households_useful_demand_for_space_heating_after_insulation_and_solar_heater:
   :x: 620
-  :y: 540
+  :y: 560
 :households_useful_demand_for_hot_water_after_solar_heater:
   :x: 600
   :y: 1380
@@ -2753,6 +2753,36 @@
 :energy_imported_hydrogen_backup:
   :x: 6240
   :y: 4720
+:households_detached_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 740
+:households_corner_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 560
+:households_semi_detached_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 660
+:households_semi_detached_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 720
+:households_terraced_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 460
+:households_apartments_useful_demand_for_heating:
+  :x: 60
+  :y: 360
+:households_apartments_heating_savings_from_insulation:
+  :x: 220
+  :y: 280
+:households_terraced_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 400
+:households_corner_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 640
+:households_detached_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 820
 :foreign_energy_torrefaction_wood:
   :x: 8000
   :y: 900
