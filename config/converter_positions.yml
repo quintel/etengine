@@ -1,19 +1,19 @@
 ---
 :households_useful_demand_light:
   :x: 720
-  :y: 2180
+  :y: 2320
 :households_useful_demand_cooking_useable_heat:
   :x: 720
-  :y: 1920
+  :y: 2020
 :households_appliances_dishwasher_electricity:
   :x: 1520
-  :y: 2320
+  :y: 2500
 :households_appliances_fridge_freezer_electricity:
   :x: 1520
-  :y: 2380
+  :y: 2560
 :households_appliances_washing_machine_electricity:
   :x: 1520
-  :y: 2440
+  :y: 2620
 :households_new_houses_useful_demand_for_cooling:
   :x: 440
   :y: 160
@@ -243,23 +243,23 @@
   :x: 7780
   :y: 1300
 :households_useful_demand_for_space_heating_after_insulation:
-  :x: 300
+  :x: 800
   :y: 560
 :households_old_houses_useful_demand_for_cooling:
   :x: 440
   :y: 60
 :households_cooker_induction_electricity:
   :x: 1520
-  :y: 2040
+  :y: 2140
 :households_cooker_halogen_electricity:
   :x: 1520
-  :y: 1980
+  :y: 2080
 :households_cooker_resistive_electricity:
   :x: 1520
-  :y: 1920
+  :y: 2020
 :households_cooker_network_gas:
   :x: 1520
-  :y: 1800
+  :y: 1900
 :households_collective_chp_wood_pellets:
   :x: 3920
   :y: 1180
@@ -271,10 +271,10 @@
   :y: 520
 :households_water_heater_crude_oil:
   :x: 1520
-  :y: 1080
+  :y: 1120
 :households_water_heater_coal:
   :x: 1520
-  :y: 1020
+  :y: 1060
 :households_old_houses_heating_savings_from_insulation:
   :x: 320
   :y: 640
@@ -283,7 +283,7 @@
   :y: 580
 :households_water_heater_wood_pellets:
   :x: 1520
-  :y: 1380
+  :y: 1420
 :transport_useful_demand_truck_kms:
   :x: 720
   :y: 3920
@@ -385,22 +385,22 @@
   :y: 2320
 :households_cooker_wood_pellets:
   :x: 1520
-  :y: 1860
+  :y: 1960
 :households_locally_available_electricity:
   :x: 3420
   :y: 1060
 :households_lighting_incandescent_electricity:
   :x: 1520
-  :y: 2120
+  :y: 2260
 :households_lighting_efficient_fluorescent_electricity:
   :x: 1520
-  :y: 2180
+  :y: 2320
 :households_lighting_led_electricity:
   :x: 1520
-  :y: 2240
+  :y: 2380
 :households_useful_demand_hot_water:
   :x: 120
-  :y: 1380
+  :y: 1420
 :households_useful_demand_for_cooling_after_insulation:
   :x: 720
   :y: 100
@@ -567,14 +567,14 @@
   :x: 6240
   :y: 4140
 :households_water_heater_solar_thermal:
-  :x: 620
-  :y: 940
+  :x: 1520
+  :y: 1000
 :households_water_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 1500
+  :y: 1540
 :households_water_heater_resistive_electricity:
   :x: 1520
-  :y: 1440
+  :y: 1480
 :households_space_heater_heatpump_air_water_electricity:
   :x: 1520
   :y: 680
@@ -589,10 +589,10 @@
   :y: 740
 :households_water_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 1620
+  :y: 1660
 :households_water_heater_combined_network_gas:
   :x: 1520
-  :y: 1200
+  :y: 1240
 :households_final_demand_wood_pellets:
   :x: 3120
   :y: 940
@@ -625,10 +625,10 @@
   :y: 180
 :households_water_heater_network_gas:
   :x: 1520
-  :y: 1140
+  :y: 1180
 :households_water_heater_micro_chp_network_gas:
   :x: 1520
-  :y: 1260
+  :y: 1300
 :households_space_heater_district_heating_steam_hot_water:
   :x: 1520
   :y: 800
@@ -640,7 +640,7 @@
   :y: 380
 :households_water_heater_fuel_cell_chp_network_gas:
   :x: 1520
-  :y: 1320
+  :y: 1360
 :energy_power_ultra_supercritical_coal:
   :x: 6240
   :y: 2500
@@ -847,7 +847,7 @@
   :y: 4860
 :households_final_demand_for_hot_water_solar_thermal:
   :x: 2320
-  :y: 1380
+  :y: 1180
 :households_final_demand_solar_thermal:
   :x: 3120
   :y: 1000
@@ -859,13 +859,13 @@
   :y: 440
 :households_final_demand_for_hot_water_coal:
   :x: 2320
-  :y: 1140
+  :y: 1240
 :households_final_demand_for_space_heating_crude_oil:
   :x: 2320
   :y: 500
 :households_final_demand_for_hot_water_crude_oil:
   :x: 2320
-  :y: 1200
+  :y: 1300
 :households_final_demand_for_space_heating_network_gas:
   :x: 2320
   :y: 560
@@ -874,19 +874,19 @@
   :y: 120
 :households_final_demand_for_hot_water_network_gas:
   :x: 2320
-  :y: 1260
+  :y: 1360
 :households_final_demand_for_cooking_network_gas:
   :x: 2320
-  :y: 1800
+  :y: 1900
 :households_final_demand_for_space_heating_wood_pellets:
   :x: 2320
   :y: 620
 :households_final_demand_for_hot_water_wood_pellets:
   :x: 2320
-  :y: 1320
+  :y: 1420
 :households_final_demand_for_cooking_wood_pellets:
   :x: 2320
-  :y: 1860
+  :y: 1960
 :households_final_demand_for_space_heating_electricity:
   :x: 2320
   :y: 740
@@ -895,22 +895,22 @@
   :y: 180
 :households_final_demand_for_hot_water_electricity:
   :x: 2320
-  :y: 1440
+  :y: 1480
 :households_final_demand_for_cooking_electricity:
   :x: 2320
-  :y: 1920
+  :y: 2020
 :households_final_demand_for_lighting_electricity:
   :x: 2320
-  :y: 2180
+  :y: 2460
 :households_final_demand_for_appliances_electricity:
   :x: 2320
-  :y: 2520
+  :y: 2700
 :households_final_demand_for_space_heating_steam_hot_water:
   :x: 2320
   :y: 800
 :households_final_demand_for_hot_water_steam_hot_water:
   :x: 2320
-  :y: 1500
+  :y: 1540
 :energy_power_turbine_network_gas:
   :x: 6240
   :y: 3220
@@ -1078,16 +1078,16 @@
   :y: 560
 :households_useful_demand_for_hot_water_after_solar_heater:
   :x: 600
-  :y: 1380
+  :y: 1420
 :households_useful_demand_for_space_heating_after_insulation_for_houses_with_solar_heater:
   :x: 460
   :y: 720
 :households_useful_demand_for_hot_water_for_houses_with_solar_heater:
   :x: 340
-  :y: 1200
+  :y: 1240
 :households_water_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1560
+  :y: 1600
 :industry_aluminium_production:
   :x: 720
   :y: 9700
@@ -1381,20 +1381,25 @@
   :y: 6220
 :households_appliances_clothes_dryer_electricity:
   :x: 1520
-  :y: 2500
+  :y: 2680
 :households_appliances_computer_media_electricity:
   :x: 1520
-  :y: 2620
+  :y: 2800
 :households_appliances_other_electricity:
   :x: 1520
-  :y: 2740
+  :y: 2920
 :households_appliances_television_electricity:
   :x: 1520
-  :y: 2560
+  :y: 2740
 :households_appliances_vacuum_cleaner_electricity:
   :x: 1520
+<<<<<<< HEAD
   :y: 2680
 :energy_export_torrefied_biomass_pellets:
+=======
+  :y: 2860
+:energy_export_torrified_biomass_pellets:
+>>>>>>> changed converter positions for new household heating nodes
   :x: 3200
   :y: 10780
 :energy_export_lignite:
@@ -1510,16 +1515,16 @@
   :y: 1000
 :households_flexibility_p2h_electricity:
   :x: 920
-  :y: 1220
+  :y: 1260
 :energy_flexibility_p2g_electricity:
   :x: 7320
   :y: 4220
 :households_useful_demand_for_hot_water_for_houses_with_p2h:
   :x: 740
-  :y: 1300
+  :y: 1340
 :households_useful_demand_for_hot_water_after_solar_heater_and_p2h:
   :x: 920
-  :y: 1380
+  :y: 1420
 :transport_useful_demand_ship_kms:
   :x: 720
   :y: 4960
@@ -1585,7 +1590,7 @@
   :y: 860
 :households_water_heater_hybrid_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1680
+  :y: 1720
 :transport_car_using_hydrogen:
   :x: 1520
   :y: 3580
@@ -2305,22 +2310,22 @@
   :y: 12060
 :households_water_heater_network_gas_aggregator:
   :x: 1180
-  :y: 1140
+  :y: 1180
 :households_water_heater_resistive_electricity_aggregator:
   :x: 1180
-  :y: 1440
+  :y: 1480
 :households_water_heater_wood_pellets_aggregator:
   :x: 1180
-  :y: 1380
+  :y: 1420
 :households_water_heater_deficit:
   :x: 1520
-  :y: 1740
+  :y: 1780
 :households_water_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 1680
+  :y: 1720
 :households_water_heater_micro_chp_network_gas_aggregator:
   :x: 1180
-  :y: 1260
+  :y: 1300
 :households_space_heater_coal_aggregator:
   :x: 1180
   :y: 260
@@ -2359,25 +2364,25 @@
   :y: 920
 :households_water_heater_coal_aggregator:
   :x: 1180
-  :y: 1020
+  :y: 1060
 :households_water_heater_combined_network_gas_aggregator:
   :x: 1180
-  :y: 1200
+  :y: 1240
 :households_water_heater_crude_oil_aggregator:
   :x: 1180
-  :y: 1080
+  :y: 1120
 :households_water_heater_district_heating_steam_hot_water_aggregator:
   :x: 1180
-  :y: 1620
+  :y: 1660
 :households_water_heater_fuel_cell_chp_network_gas_aggregator:
   :x: 1180
-  :y: 1320
+  :y: 1360
 :households_water_heater_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 1560
+  :y: 1600
 :households_water_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
-  :y: 1500
+  :y: 1540
 :industry_locally_available_useable_heat:
   :x: 340
   :y: 11340
@@ -2929,4 +2934,40 @@
 :households_detached_houses_heating_savings_from_insulation:
   :x: 220
   :y: 820
+<<<<<<< HEAD
 >>>>>>> Converter positions of new housing stock nodes
+=======
+:households_terraced_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 760
+:households_corner_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 460
+:households_corner_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 460
+:households_semi_detached_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 660
+:households_terraced_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 760
+:households_detached_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 560
+:households_apartments_useful_demand_for_space_heating:
+  :x: 0
+  :y: 360
+:households_apartments_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 360
+:households_space_heating_savings_from_insulation:
+  :x: 220
+  :y: 900
+:households_detached_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 560
+:households_semi_detached_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 660
+>>>>>>> changed converter positions for new household heating nodes
