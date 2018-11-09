@@ -57,6 +57,7 @@ gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
@@ -64,6 +65,9 @@ gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: '1cc5ae3',  github: 'quintel/atlas'
 >>>>>>> Support new type/subtype Merit attributes
+=======
+gem 'atlas',         ref: 'c03baed',  github: 'quintel/atlas'
+>>>>>>> Updated atlas
 
 # system gems
 gem 'mysql2'

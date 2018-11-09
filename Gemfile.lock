@@ -8,6 +8,7 @@ GIT
   remote: https://github.com/quintel/atlas.git
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
 =======
@@ -18,6 +19,10 @@ GIT
   revision: 1cc5ae3d5f10ac392ad4e6a9079f3ee7a93e6243
   ref: 1cc5ae3
 >>>>>>> Support new type/subtype Merit attributes
+=======
+  revision: c03baedc14976155ed11d548b07081220ec3d365
+  ref: c03baed
+>>>>>>> Updated atlas
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
@@ -446,4 +451,8 @@ RUBY VERSION
    ruby 2.4.2p198
 
 BUNDLED WITH
+<<<<<<< HEAD
    1.17.1
+=======
+   1.16.6
+>>>>>>> Updated atlas
