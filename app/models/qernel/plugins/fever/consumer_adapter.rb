@@ -15,7 +15,7 @@ module Qernel::Plugins
 
       def inject!
         @converter.dataset_lazy_set(:heat_input_curve) do
-          participant.producer.input_curve.to_a
+          participant.demand_curve
         end
       end
 
@@ -26,12 +26,11 @@ module Qernel::Plugins
       private
 
       def demand_curve
-        if @config.curve.to_s.delete(' ') == 'dynamic:household_space_heating'
-          # Yuck.
-          @graph.plugin(:time_resolve).fever.space_heating_demand_curve
-        else
-          TimeResolve.load_profile(@dataset, @config.curve) * @converter.demand
-        end
+        # Yuck.
+        curve = @graph.plugin(:time_resolve).fever
+          .curves.curve(@config.curve, @converter)
+
+        curve * @converter.demand
       end
 
       def number_of_units

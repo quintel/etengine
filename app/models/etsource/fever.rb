@@ -47,7 +47,8 @@ module Etsource
 
     # Public: Retrieves the configuration for a single named Fever group.
     def group(name)
-      groups.detect { |group| group.name == name }
+      groups.detect { |group| group.name == name } ||
+        raise("No such Fever group: #{name.inspect}")
     end
   end
 end

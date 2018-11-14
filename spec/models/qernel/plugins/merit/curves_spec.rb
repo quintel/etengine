@@ -11,7 +11,7 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
     )
   end
 
-  describe 'electric car curves' do
+  describe 'dynamic curves' do
     let(:converter) { instance_double('Qernel::Converter', demand: 8760) }
     let(:ev_mix)  { [0.75, 0.25, 0] }
     let(:profile) { curves.profile('dynamic: ev_demand', converter) }
@@ -82,45 +82,5 @@ describe Qernel::Plugins::Merit::Curves, :household_curves do
         expect { normalized_profile }.to raise_error(Errno::ENOENT)
       end
     end
-  end # electric vehicle profiles
-
-  describe 'household hot water demand' do
-    before do
-      stub_hot_water(graph, demand: hot_water_demand)
-    end
-
-    let(:curve) { curves.household_hot_water_demand }
-
-    context 'with hot water demand of 8760' do
-      let(:hot_water_demand) { 8760.0 }
-
-      it 'creates a profile with one entry per-hour' do
-        expect(curve.length).to eq(8760)
-      end
-
-      it 'scaled the profile by demand' do
-        expect(curve.take(4)).to eq([2.0, 0.0, 2.0, 0.0])
-      end
-
-      it 'has an area equal to demand' do
-        expect(curve.sum).to eq(8760)
-      end
-    end
-
-    context 'with no hot water demand' do
-      let(:hot_water_demand) { 0.0 }
-
-      it 'creates a profile with one entry per-hour' do
-        expect(curve.length).to eq(8760)
-      end
-
-      it 'scaled the profile by demand' do
-        expect(curve.take(4)).to eq([0.0, 0.0, 0.0, 0.0])
-      end
-
-      it 'has an area of zero' do
-        expect(curve.sum).to eq(0)
-      end
-    end
-  end # household hot water demand
+  end
 end

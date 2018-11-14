@@ -19,8 +19,8 @@ module Qernel::Plugins
         @groups || setup
       end
 
-      def space_heating_demand_curve
-        @sh_demand ||= HouseholdHeat.demand_curve(graph)
+      def curves
+        @curves ||= Curves.new(@graph)
       end
 
       def summary

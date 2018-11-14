@@ -71,6 +71,15 @@ module Qernel::Plugins
         ::Merit::Curve.new(chopped_curve.map { |val| val / (3600.0 * new_sum) })
       end
 
+      # Public: Receives a curve of values and converts it to a load profile
+      # which sums to 1/3600.
+      #
+      # Returns a Merit::Curve
+      def curve_to_profile(curve)
+        sum = curve.sum * 3600
+        ::Merit::Curve.new(curve.map { |val| val / sum })
+      end
+
       # Internal: Adds an arbitrary number of curves together using the largest
       # available adder methods.
       private_class_method def add_many(curves)
