@@ -49,6 +49,14 @@ module Qernel::Plugins
       def curve(name)
         ::Merit::LoadProfile.load(@dir.join("#{ name }.csv"))
       end
+
+      # Public: Tests that a curve exists.
+      #
+      # Returns true of the CurveSet can load a curve matching the name, false
+      # otherwise.
+      def exists?(name)
+        @dir.join("#{name}.csv").file?
+      end
     end # CurveSet
   end
 end

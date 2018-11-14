@@ -14,23 +14,6 @@ module Qernel::Plugins
         @household_heat = household_heat
       end
 
-      # Public: All dynamic curves combined into one.
-      #
-      # Returns a Merit::Curve.
-      def combined
-        @combined ||=
-          Util.add_curves(CURVE_NAMES.map { |name| public_send(name) })
-      end
-
-      # Public: Returns the peak loads of explicitly modelled technologies.
-      #
-      # Returns a Hash
-      def peaks
-        @peaks ||= CurvePeakFinder.peaks(Util.add_curves(
-          [combined, household_hot_water_demand]
-        ))
-      end
-
       # Public: Retrieves the load profile or curve matching the given profile
       # name.
       #
@@ -41,30 +24,23 @@ module Qernel::Plugins
       def profile(name, converter)
         name = name.to_s
 
-        return dataset.load_profile(name) unless name.start_with?('dynamic:')
-        return AggregateCurve.zeroed_profile if converter.demand.zero?
-
-        dyn_name = name[8..-1].strip.to_sym
-
-        if respond_to?(dyn_name)
-          public_send(dyn_name)
+        if name.start_with?('fever-electricity-demand:')
+          fever_demand_curve(name[25..-1].strip.to_sym)
+        elsif name.start_with?('dynamic:')
+          dynamic_profile(name[8..-1].strip.to_sym, converter)
         else
-          dynamic_profile(dyn_name, converter)
+          dataset.load_profile(name)
         end
       end
 
-      # Public: Creates a profile describing the demand for electricity in
-      # households due to the use of hot water.
+      # Public: Reads an electricity demand curve from a Fever group.
       #
-      # Returns a Merit::Curve.
-      def household_hot_water_demand
-        @household_heat.hot_water_demand
-      end
-
-      # Public: Creates a profile describing the demand for electricity due to
-      # heating and cooling in new households.
-      def household_space_heating_demand
-        @household_heat.space_heating_demand
+      # Note that the curve returned is a demand curve, not a load profile. When
+      # Merit and Fever are enabled, this will typically return an
+      # ElectricityDemandCurve where the values are populated as the Fever group
+      # is calculated.
+      def fever_demand_curve(name)
+        @household_heat.curve(name)
       end
 
       # Public: Returns the total demand of the curve matching the +curve_name+.

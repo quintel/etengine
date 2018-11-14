@@ -26,17 +26,6 @@ module Qernel::Plugins
       :time_resolve
     end
 
-    # Internal: Retrieves the load curve matching the given key.
-    #
-    # Returns a Merit::Curve.
-    def self.load_profile(dataset, key)
-      unless (path = dataset.load_profile_path(key)).file?
-        raise "No such load profile: #{ path }"
-      end
-
-      ::Merit::LoadProfile.load(path)
-    end
-
     def initialize(graph)
       super
       @merit = MeritOrder.new(graph)
@@ -89,15 +78,11 @@ module Qernel::Plugins
       @hydrogen.inject_values!
     end
 
-    def household_heat
-      @household_heat ||= HouseholdHeat.new(@graph, curve_set('heat'))
-    end
-
-    def curve_set(name)
+    def self.curve_set(area, name)
       CurveSet.with_dataset(
-        @fever.dataset,
+        Atlas::Dataset.find(area.area_code),
         name,
-        if @graph.area.public_send("#{ name }_curve_set") == 1.0
+        if area.public_send("#{name}_curve_set") == 1.0
           '1987'
         else
           'default'

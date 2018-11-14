@@ -51,6 +51,13 @@ solar_pv:
     - solar_pv_profile_1
     - solar_pv_profile_2
 
+detached_houses_heat:
+  type: interpolate
+  curves:
+    - insulation_detached_houses_low
+    - insulation_detached_houses_medium
+    - insulation_detached_houses_high
+
 wind_coastal:
   type: amplify
   curve: wind_coastal_baseline

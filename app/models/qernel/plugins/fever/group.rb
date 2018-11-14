@@ -21,10 +21,7 @@ module Qernel::Plugins
 
       # Public: The Fever calculation which will compute the group.
       def calculator
-        @calculator ||= ::Fever::Calculator.new(
-          adapters_by_type[:consumer].first.participant,
-          activities
-        )
+        @calculator ||= ::Fever::Calculator.new(consumer, activities)
       end
 
       # Public: Instructs the calculator to compute a single frame.
@@ -64,6 +61,22 @@ module Qernel::Plugins
       end
 
       private
+
+      def consumer
+        if adapters_by_type[:consumer].length == 1
+          return adapters_by_type[:consumer].first.participant
+        end
+
+        # Group has multiple consumers; Fever supports only one so we need to
+        # create a new consumer summing the individual demand curves.
+        ::Fever::Consumer.new(
+          Merit::Util.add_curves(
+            adapters_by_type[:consumer].map do |adapter|
+              adapter.participant.demand_curve
+            end
+          ).to_a
+        )
+      end
 
       def activities
         storage = adapters_by_type[:storage].map(&:participant)

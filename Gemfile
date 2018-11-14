@@ -58,6 +58,7 @@ gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
@@ -68,6 +69,9 @@ gem 'atlas',         ref: '1cc5ae3',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c03baed',  github: 'quintel/atlas'
 >>>>>>> Updated atlas
+=======
+gem 'atlas',         ref: 'afab09e',  github: 'quintel/atlas'
+>>>>>>> Much improved support for household heat curves
 
 # system gems
 gem 'mysql2'
