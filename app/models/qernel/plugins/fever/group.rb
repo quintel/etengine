@@ -70,7 +70,7 @@ module Qernel::Plugins
         # Group has multiple consumers; Fever supports only one so we need to
         # create a new consumer summing the individual demand curves.
         ::Fever::Consumer.new(
-          Merit::Util.add_curves(
+          TimeResolve::Util.add_curves(
             adapters_by_type[:consumer].map do |adapter|
               adapter.participant.demand_curve
             end

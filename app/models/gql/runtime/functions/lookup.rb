@@ -227,7 +227,7 @@ module Gql::Runtime
 
         return curves.first.to_a if curves.one?
 
-        Qernel::Plugins::Merit::Util.add_curves(curves).to_a
+        Qernel::Plugins::TimeResolve::Util.add_curves(curves).to_a
       end
 
       # Inverts a single curve by swapping positive numbers to be negative, and

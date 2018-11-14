@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Qernel::Plugins::Merit::AggregateCurve' do
+describe Qernel::Plugins::TimeResolve::AggregateCurve do
   let(:dataset) { Atlas::Dataset.find(:nl) }
   let(:profile_one) { dataset.load_profile(:electric_vehicle_profile_1) }
   let(:profile_two) { dataset.load_profile(:electric_vehicle_profile_2) }
@@ -8,7 +8,7 @@ describe 'Qernel::Plugins::Merit::AggregateCurve' do
   let(:mix) { { profile_one => 0.5, profile_two => 0.5 } }
   let(:demand) { 1.0 }
 
-  let(:curve) { Qernel::Plugins::Merit::AggregateCurve.build(demand, mix) }
+  let(:curve) { described_class.build(mix) }
 
   describe 'with a 50/50 mix' do
     let(:mix) { { profile_one => 0.5, profile_two => 0.5 } }
@@ -77,18 +77,6 @@ describe 'Qernel::Plugins::Merit::AggregateCurve' do
 
     it 'has a sum of 1.0' do
       expect(curve.to_a.sum).to be_within(1e-5).of(1.0)
-    end
-  end
-
-  describe 'when demand is zero' do
-    let(:demand) { 0.0 }
-
-    it 'contains data for each hour' do
-      expect(curve.length).to eq(8760)
-    end
-
-    it 'has a sum of zero' do
-      expect(curve.to_a.sum).to be_zero
     end
   end
 

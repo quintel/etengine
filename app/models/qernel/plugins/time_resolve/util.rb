@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
 module Qernel::Plugins
-  module Merit
+  class TimeResolve
     module Util
+      # Defines how close an amplified curve must be to the target FLH before
+      # stopping iterative amplification.
+      AMPLIFY_TOLERANCE = 1e-4
+
       module_function
 
       # Public: Combines two or more curves, creating a new curve where each
@@ -29,7 +33,6 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def amplify_curve(input_curve, target)
-        tolerance = 1e-4 # Error tolerance in the final curve.
         curve = input_curve.to_a
 
         # Create a new curve representing each value as a fraction of the max.
@@ -38,13 +41,10 @@ module Qernel::Plugins
         full_load_hours = curve.sum
 
         if target < (full_load_hours - 1.0) ||
-              (full_load_hours / target - 1.0).abs < tolerance
+            (full_load_hours / target - 1.0).abs < AMPLIFY_TOLERANCE
           # Short circuit if the curve represents the same or more FLH than
           # the target.
           return input_curve.dup
-        end
-
-        if (full_load_hours / target - 1.0).abs < tolerance
         end
 
         chop = chop_size = 0.5
@@ -57,7 +57,7 @@ module Qernel::Plugins
           chopped_curve = curve.map { |val| val > chop ? chop : val }
           flh = chopped_curve.sum / chop
 
-          break if (flh / target - 1.0).abs < tolerance
+          break if (flh / target - 1.0).abs < AMPLIFY_TOLERANCE
 
           # Prepare the next iteration which will add or remove only half the
           # amount of this iteration.
