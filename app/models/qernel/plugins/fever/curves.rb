@@ -6,10 +6,10 @@ module Qernel::Plugins
     # the use of dynamic curves as defined in ETSource. Otherwise falls back to
     # first attempting to load from the heat CurveSet and finally from the
     # dataset load profile directory.
-    class Curves
+    class Curves < TimeResolve::Curves
       def initialize(graph)
-        @graph = graph
-        @dataset = Atlas::Dataset.find(@graph.area.area_code)
+        super(graph)
+        @dataset = Atlas::Dataset.find(graph.area.area_code)
       end
 
       def curve_set
@@ -24,44 +24,10 @@ module Qernel::Plugins
       #
       # Returns a Merit::Curve.
       def curve(name, converter)
-        name = name.to_s
-
-        if name.start_with?('dynamic:')
-          dynamic_profile(name[8..-1].strip.to_sym, converter)
-        elsif curve_set.exists?(name)
+        if curve_set.exists?(name)
           curve_set.curve(name)
         else
-          @dataset.load_profile(name)
-        end
-      end
-
-      private
-
-      def dynamic_profile(name, converter)
-        curve_conf = Etsource::Config.dynamic_curve(name)
-
-        if curve_conf['type'] == 'amplify'
-          Qernel::Plugins::Merit::Util.amplify_curve(
-            @dataset.load_profile(curve_conf['curve']),
-            converter.full_load_hours
-          )
-        else
-          Qernel::Plugins::Merit::AggregateCurve.aggregate(mix_config(name))
-        end
-      end
-
-      def mix_config(curve_name)
-        curve_config(curve_name.to_sym)
-          .each_with_object({}) do |(key, share), data|
-            data[curve(key, nil)] = share
-          end
-      end
-
-      def curve_config(name)
-        components = Etsource::Config.dynamic_curve(name)['curves']
-
-        components.each_with_object({}) do |component, config|
-          config[component] = @graph.area.public_send("#{component}_share")
+          super
         end
       end
     end

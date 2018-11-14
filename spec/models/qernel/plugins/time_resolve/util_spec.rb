@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Qernel::Plugins::Merit::Util do
+describe Qernel::Plugins::TimeResolve::Util do
   describe '.add_curves' do
     context 'with two curves of [1, 2, 1, 2]' do
       let(:result) do
-        Qernel::Plugins::Merit::Util.add_curves([
+        Qernel::Plugins::TimeResolve::Util.add_curves([
           Merit::Curve.new([1.0, 2.0] * 2),
           Merit::Curve.new([1.0, 2.0] * 2),
         ])
@@ -25,7 +25,7 @@ describe Qernel::Plugins::Merit::Util do
 
     context 'with two arrays of [1, 2, 1, 2]' do
       let(:result) do
-        Qernel::Plugins::Merit::Util.add_curves([
+        Qernel::Plugins::TimeResolve::Util.add_curves([
           [1.0, 2.0] * 2,
           [1.0, 2.0] * 2
         ])
@@ -46,7 +46,7 @@ describe Qernel::Plugins::Merit::Util do
 
     context 'with an array and curve of [1, 2, 1, 2]' do
       let(:result) do
-        Qernel::Plugins::Merit::Util.add_curves([
+        Qernel::Plugins::TimeResolve::Util.add_curves([
           [1.0, 2.0] * 2,
           Merit::Curve.new([1.0, 2.0] * 2)
         ])
@@ -70,7 +70,7 @@ describe Qernel::Plugins::Merit::Util do
         c1 = Merit::Curve.new([1.0, 2.0, 1.0, 2.0])
         c2 = Merit::Curve.new([1.0, 2.0, 3.0, 4.0])
 
-        Qernel::Plugins::Merit::Util.add_curves([c1, c2] * 13)
+        Qernel::Plugins::TimeResolve::Util.add_curves([c1, c2] * 13)
       end
 
       it 'returns a Merit::Curve' do
@@ -93,7 +93,7 @@ describe Qernel::Plugins::Merit::Util do
 
       context 'amplifying to 3flh' do
         let(:result) do
-          Qernel::Plugins::Merit::Util.amplify_curve(curve, 3.0)
+          Qernel::Plugins::TimeResolve::Util.amplify_curve(curve, 3.0)
         end
 
         it 'returns a Merit::Curve' do
@@ -114,7 +114,7 @@ describe Qernel::Plugins::Merit::Util do
 
       context 'amplifying to 20flh' do
         let(:result) do
-          Qernel::Plugins::Merit::Util.amplify_curve(curve, 20.0)
+          Qernel::Plugins::TimeResolve::Util.amplify_curve(curve, 20.0)
         end
 
         it 'returns a Merit::Curve' do
@@ -139,7 +139,7 @@ describe Qernel::Plugins::Merit::Util do
 
       context 'amplifying to 1flh' do
         let(:result) do
-          Qernel::Plugins::Merit::Util.amplify_curve(curve, 1.0)
+          Qernel::Plugins::TimeResolve::Util.amplify_curve(curve, 1.0)
         end
 
         it 'does not amplify the curve' do

@@ -9,16 +9,8 @@ module Qernel::Plugins
 
       def curve(group_name)
         fever_group(group_name)&.elec_demand_curve ||
-          AggregateCurve.zeroed_profile
+          TimeResolve::AggregateCurve.zeroed_profile
       end
-
-      # def space_heating_demand
-      #   curve(:space_heating)
-      # end
-
-      # def hot_water_demand
-      #   curve(:hot_water)
-      # end
 
       # Public: Returns the total amount of demand for the group matching
       # +group_name+.

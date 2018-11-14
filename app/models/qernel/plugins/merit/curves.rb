@@ -3,14 +3,9 @@
 module Qernel::Plugins
   module Merit
     # Helper class for creating and fetching curves related to the merit order.
-    class Curves
-      CURVE_NAMES = [
-        :ev_demand,
-        :household_space_heating_demand
-      ].freeze
-
+    class Curves < TimeResolve::Curves
       def initialize(graph, household_heat)
-        @graph = graph
+        super(graph)
         @household_heat = household_heat
       end
 
@@ -21,15 +16,13 @@ module Qernel::Plugins
       # otherwise it falls back to the dynamic curve configuration in ETSource.
       #
       # Returns a Merit::Curve.
-      def profile(name, converter)
+      def curve(name, converter)
         name = name.to_s
 
-        if name.start_with?('fever-electricity-demand:')
+        if prefix?(name, 'fever-electricity-demand')
           fever_demand_curve(name[25..-1].strip.to_sym)
-        elsif name.start_with?('dynamic:')
-          dynamic_profile(name[8..-1].strip.to_sym, converter)
         else
-          dataset.load_profile(name)
+          super
         end
       end
 
@@ -53,37 +46,6 @@ module Qernel::Plugins
           @household_heat.demand_value(curve_name)
         end
       end
-
-      private
-
-      def dynamic_profile(name, converter)
-        curve_conf = Etsource::Config.dynamic_curve(name)
-
-        if curve_conf['type'] == 'amplify'
-          Merit::Util.amplify_curve(
-            dataset.load_profile(curve_conf['curve']),
-            converter.full_load_hours
-          )
-        else
-          AggregateCurve.aggregate(mix_config(dataset, name))
-        end
-      end
-
-      def dataset
-        @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
-      end
-
-      def mix_config(dataset, curve_name)
-        AggregateCurve.mix(dataset, curve_config(curve_name.to_sym))
-      end
-
-      def curve_config(name)
-        components = Etsource::Config.dynamic_curve(name)['curves']
-
-        components.each_with_object({}) do |component, config|
-          config[component] = @graph.area.public_send("#{component}_share")
-        end
-      end
-    end # Curves
-  end # Merit
-end # Qernel::Plugins
+    end
+  end
+end

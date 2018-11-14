@@ -24,7 +24,7 @@ module Qernel::Plugins
 
         return [0.0] * 8760 if curves.none?
 
-        Merit::Util.add_curves(curves).to_a
+        TimeResolve::Util.add_curves(curves).to_a
       end
 
       # Public: Curve of the production of heat in each hour of the year.
@@ -59,7 +59,7 @@ module Qernel::Plugins
 
         return [0.0] * 8760 if curves.none?
 
-        Merit::Util.add_curves(curves).to_a
+        TimeResolve::Util.add_curves(curves).to_a
       end
 
       # Public: A curve describing periods when production does not meet demand.
