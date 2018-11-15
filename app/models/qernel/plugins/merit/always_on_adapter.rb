@@ -22,7 +22,7 @@ module Qernel::Plugins
       end
 
       def production_profile
-        @graph.plugin(:merit).curves.profile(@config.group, @converter)
+        @graph.plugin(:merit).curves.curve(@config.group, @converter)
       end
     end # AlwaysOnAdapter
   end # Merit

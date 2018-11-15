@@ -29,7 +29,7 @@ module Qernel::Plugins
       private
 
       def consumption_curve
-        @graph.plugin(:merit).curves.profile(@config.group, @converter)
+        @graph.plugin(:merit).curves.curve(@config.group, @converter)
       end
     end
   end
