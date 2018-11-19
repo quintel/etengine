@@ -54,6 +54,8 @@ class Graph
                 :finished_converters,
                 :area
 
+  delegate :time_curves, :insulation_costs, to: :dataset
+
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
     @logger = ::Qernel::Logger.new
@@ -155,10 +157,6 @@ class Graph
     # See Qernel::Dataset#assign_dataset_attributes to understand what's going on:
     call_on_each_qernel_object(:assign_dataset_attributes)
     reset_goals
-  end
-
-  def time_curves
-    dataset.time_curves
   end
 
   def present?

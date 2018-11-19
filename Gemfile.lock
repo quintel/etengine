@@ -10,6 +10,7 @@ GIT
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
 =======
@@ -28,6 +29,10 @@ GIT
   revision: afab09e7b1b2e1f9d88ebae7463701c24cfbed2c
   ref: afab09e
 >>>>>>> Much improved support for household heat curves
+=======
+  revision: c4f117ced3aaec60fc40ceb0a5c6473b8885c495
+  ref: c4f117c
+>>>>>>> Add support for insulation costs
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
