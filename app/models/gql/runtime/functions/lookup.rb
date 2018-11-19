@@ -199,6 +199,18 @@ module Gql::Runtime
         end
       end
 
+      # Public: Retrieves the insulation cost map for a file (new_builds,
+      # apartments, etc), then looks up the cost of moving from one level to
+      # another.
+      #
+      # from_level may instead of a string key when looking up costs for new
+      # builds.
+      #
+      # Returns a numeric.
+      def INSULATION_COST(file, from_level, to_level)
+        scope.graph.insulation_costs(file).get(from_level, to_level)
+      end
+
       # Retrieves the merit order price curve
       def MERIT_PRICE_CURVE
         if Qernel::Plugins::MeritOrder.enabled?(scope.graph)
