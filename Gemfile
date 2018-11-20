@@ -60,6 +60,7 @@ gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
@@ -76,6 +77,9 @@ gem 'atlas',         ref: 'afab09e',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c4f117c',  github: 'quintel/atlas'
 >>>>>>> Add support for insulation costs
+=======
+gem 'atlas',         ref: '3b1a321',  github: 'quintel/atlas'
+>>>>>>> Updated atlas
 
 # system gems
 gem 'mysql2'
