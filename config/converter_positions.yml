@@ -283,7 +283,7 @@
   :y: 580
 :households_water_heater_wood_pellets:
   :x: 1520
-  :y: 1420
+  :y: 1300
 :transport_useful_demand_truck_kms:
   :x: 720
   :y: 3920
@@ -399,8 +399,8 @@
   :x: 1520
   :y: 2380
 :households_useful_demand_hot_water:
-  :x: 120
-  :y: 1420
+  :x: 80
+  :y: 1320
 :households_useful_demand_for_cooling_after_insulation:
   :x: 720
   :y: 100
@@ -571,25 +571,25 @@
   :y: 1000
 :households_water_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 1540
+  :y: 1420
 :households_water_heater_resistive_electricity:
   :x: 1520
-  :y: 1480
+  :y: 1360
 :households_space_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 680
+  :y: 620
 :households_space_heater_electricity:
   :x: 1520
-  :y: 620
+  :y: 560
 :households_space_heater_combined_network_gas:
   :x: 1520
   :y: 440
 :households_space_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 740
+  :y: 680
 :households_water_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 1660
+  :y: 1540
 :households_water_heater_combined_network_gas:
   :x: 1520
   :y: 1240
@@ -610,7 +610,7 @@
   :y: 1120
 :households_space_heater_wood_pellets:
   :x: 1520
-  :y: 560
+  :y: 500
 :households_space_heater_coal:
   :x: 1520
   :y: 260
@@ -631,7 +631,7 @@
   :y: 1300
 :households_space_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 800
+  :y: 740
 :households_space_heater_micro_chp_network_gas:
   :x: 1520
   :y: 500
@@ -1077,17 +1077,17 @@
   :x: 620
   :y: 560
 :households_useful_demand_for_hot_water_after_solar_heater:
-  :x: 600
-  :y: 1420
+  :x: 560
+  :y: 1320
 :households_useful_demand_for_space_heating_after_insulation_for_houses_with_solar_heater:
   :x: 460
   :y: 720
 :households_useful_demand_for_hot_water_for_houses_with_solar_heater:
-  :x: 340
-  :y: 1240
+  :x: 300
+  :y: 1140
 :households_water_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1600
+  :y: 1480
 :industry_aluminium_production:
   :x: 720
   :y: 9700
@@ -1514,17 +1514,17 @@
   :x: 3920
   :y: 1000
 :households_flexibility_p2h_electricity:
-  :x: 920
-  :y: 1260
+  :x: 880
+  :y: 1160
 :energy_flexibility_p2g_electricity:
   :x: 7320
   :y: 4220
 :households_useful_demand_for_hot_water_for_houses_with_p2h:
-  :x: 740
-  :y: 1340
+  :x: 700
+  :y: 1240
 :households_useful_demand_for_hot_water_after_solar_heater_and_p2h:
-  :x: 920
-  :y: 1420
+  :x: 880
+  :y: 1320
 :transport_useful_demand_ship_kms:
   :x: 720
   :y: 4960
@@ -1584,13 +1584,13 @@
   :y: 860
 :households_space_heater_hybrid_heatpump_air_water_electricity:
   :x: 1520
-  :y: 860
+  :y: 800
 :households_space_heater_hybrid_heatpump_combined_network_gas:
   :x: 1920
   :y: 860
 :households_water_heater_hybrid_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1720
+  :y: 1600
 :transport_car_using_hydrogen:
   :x: 1520
   :y: 3580
@@ -2313,16 +2313,16 @@
   :y: 1180
 :households_water_heater_resistive_electricity_aggregator:
   :x: 1180
-  :y: 1480
+  :y: 1360
 :households_water_heater_wood_pellets_aggregator:
   :x: 1180
-  :y: 1420
+  :y: 1300
 :households_water_heater_deficit:
-  :x: 1520
-  :y: 1780
+  :x: 1360
+  :y: 1700
 :households_water_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 1720
+  :y: 1600
 :households_water_heater_micro_chp_network_gas_aggregator:
   :x: 1180
   :y: 1300
@@ -2337,19 +2337,19 @@
   :y: 320
 :households_space_heater_district_heating_steam_hot_water_aggregator:
   :x: 1180
-  :y: 800
+  :y: 740
 :households_space_heater_electricity_aggregator:
   :x: 1180
-  :y: 620
+  :y: 560
 :households_space_heater_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 680
+  :y: 620
 :households_space_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
-  :y: 740
+  :y: 680
 :households_space_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 860
+  :y: 800
 :households_space_heater_micro_chp_network_gas_aggregator:
   :x: 1180
   :y: 500
@@ -2358,10 +2358,10 @@
   :y: 380
 :households_space_heater_wood_pellets_aggregator:
   :x: 1180
-  :y: 560
+  :y: 500
 :households_space_heater_deficit:
-  :x: 1520
-  :y: 920
+  :x: 1380
+  :y: 900
 :households_water_heater_coal_aggregator:
   :x: 1180
   :y: 1060
@@ -2373,16 +2373,16 @@
   :y: 1120
 :households_water_heater_district_heating_steam_hot_water_aggregator:
   :x: 1180
-  :y: 1660
+  :y: 1540
 :households_water_heater_fuel_cell_chp_network_gas_aggregator:
   :x: 1180
   :y: 1360
 :households_water_heater_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 1600
+  :y: 1480
 :households_water_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
-  :y: 1540
+  :y: 1420
 :industry_locally_available_useable_heat:
   :x: 340
   :y: 11340
