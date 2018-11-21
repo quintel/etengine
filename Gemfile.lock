@@ -12,6 +12,7 @@ GIT
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
 =======
@@ -37,6 +38,10 @@ GIT
 =======
   revision: 3b1a321491e9a458f5ec15a67b0c2052a504e783
   ref: 3b1a321
+>>>>>>> Updated atlas
+=======
+  revision: 7205c92579119cf26cd33bc9df4c470f7b519823
+  ref: 7205c92
 >>>>>>> Updated atlas
   specs:
     atlas (1.0.0)
