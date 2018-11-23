@@ -35,7 +35,7 @@ module Api
 
         render json: record
       rescue ActiveRecord::RecordNotFound => e
-        render json: { errors: [ e.message ]}, status: 404
+        render_not_found(errors: [e.message])
       end
 
       # GET /api/v3/inputs/list.json

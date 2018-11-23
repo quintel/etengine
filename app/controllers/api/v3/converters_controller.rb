@@ -50,10 +50,10 @@ module Api
       private
 
       def find_converter
-        key = params[:id].to_sym rescue nil
+        key = params[:id].presence&.to_sym
         @converter = ConverterPresenter.new(key, @scenario)
-      rescue Exception => e
-        render :json => {:errors => [e.message]}, :status => 404 and return
+      rescue StandardError => e
+        render_not_found(errors: [e.message])
       end
 
       def permitted_params

@@ -240,15 +240,17 @@ module Api
       private
 
       def find_preset_or_scenario
-        @scenario = Preset.get(params[:id]).try(:to_scenario) ||
-                    Scenario.find_by_id(params[:id])
-        render :json => {:errors => ["Scenario not found"]}, :status => 404 and return unless @scenario
+        @scenario =
+          Preset.get(params[:id]).try(:to_scenario) ||
+          Scenario.find_by_id(params[:id])
+
+        render_not_found(errors: ['Scenario not found']) unless @scenario
       end
 
       def find_scenario
         @scenario = Scenario.find params[:id]
       rescue ActiveRecord::RecordNotFound
-        render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
+        render_not_found(errors: ['Scenario not found'])
       end
 
       # Internal: All the request parameters, filtered.
@@ -290,7 +292,6 @@ module Api
           .permit!
           .to_h
           .with_indifferent_access
-          # .transform_values(&:to_f)
       end
 
       # Internal: Attributes for creating a scaled scenario.
