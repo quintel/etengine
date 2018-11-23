@@ -16,11 +16,15 @@ module Api
           area_data
         end
 
-        respond_with(data)
+        render json: data
       end
 
       def show
-        respond_with(@area = Area.get(params[:id]))
+        if Area.exists?(params[:id])
+          render json: Area.get(params[:id])
+        else
+          render_not_found
+        end
       end
     end
   end
