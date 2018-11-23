@@ -14,7 +14,7 @@ class Scenario < ApplicationRecord
   store :user_values
   store :balanced_values
 
-  belongs_to :user
+  belongs_to :user, optional: true
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :flexibility_order, dependent: :destroy

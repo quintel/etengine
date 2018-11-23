@@ -16,7 +16,7 @@ describe Api::V3::ScenariosController do
   describe "GET show.json" do
     it "should return a scenario info" do
       get :show, params: { :id => scenario.id }, :format => :json
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(assigns(:scenario)).to eq(scenario)
     end
   end
@@ -24,7 +24,7 @@ describe Api::V3::ScenariosController do
   describe "GET batch.json" do
     it "should return the info of multiple scenarios" do
       get :batch, params: { :id => [scenarios.map(&:id)].join(',') }, :format => :json
-      expect(response).to be_success
+      expect(response).to be_successful
 
       expect(assigns(:scenarios)).to be_a(Array)
 
@@ -37,7 +37,7 @@ describe Api::V3::ScenariosController do
   describe "GET templates" do
     it "should return the homepage scenarios" do
       get :templates
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it "should not include in_start_menu=false scenarios" do
@@ -57,32 +57,32 @@ describe Api::V3::ScenariosController do
 
     it "should reset parameters" do
       put :update, params: { :id => @scenario.id, :reset => true }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(@scenario.reload.user_values).to eq({})
     end
 
     it "should merge parameters" do
       put :update, params: {:id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(@scenario.reload.user_values.to_set).to eq({'foo' => 23.0, 'bar' => 56.0}.to_set)
     end
 
     it "should merge parameters resetting old values when needed" do
       put :update, params: {:id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}, :reset => true}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(@scenario.reload.user_values.to_set).to eq({'bar' => 56.0}.to_set)
     end
 
     it "should update parameters" do
       put :update, params: {:id => @scenario.id, :scenario => {:user_values => {'foo' => 56.0}}}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(@scenario.reload.user_values.to_set).to eq({'foo' => 56.0}.to_set)
       expect(@scenario.reload.user_values).to eq({'foo' => 56.0})
     end
 
     it "shouldn't update end_year" do
       put :update, params: {:id => @scenario.id, :scenario => {:end_year => 2050}}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(@scenario.reload.end_year).to eq(2040)
     end
 
@@ -91,12 +91,12 @@ describe Api::V3::ScenariosController do
         put :update, params: {:id => @scenario.id, :scenario => {:start_year => 2009}}
       }.to_not change { @scenario.reload.start_year }
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
     it "shouldn't update area" do
       put :update, params: {:id => @scenario.id, :scenario => {:area_code => 'de'}}
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(@scenario.reload.area_code).to eq('nl')
     end
 

@@ -30,7 +30,8 @@ module Api
       end
 
       def flexibility_params
-        params.require(:flexibility_order).permit(:scenario_id, order: [])
+        fo_params = params.require(:flexibility_order).permit(order: [])
+        fo_params.merge(scenario_id: params[:scenario_id])
       end
     end
   end

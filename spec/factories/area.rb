@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :area do
-    country 'nl'
+    country { 'nl' }
   end
 end

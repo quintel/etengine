@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe Api::V3::FlexibilityOrdersController do
-  let(:scenario_id) { 5 }
+  let(:scenario) { FactoryBot.create(:scenario) }
+
   let(:create_flexibility_order) {
-    post :set, params: { scenario_id: scenario_id, flexibility_order: {
-      order: ['p2h', 'p2g']
-    } }
+    post :set, params: {
+      scenario_id: scenario.id,
+      flexibility_order: { order: %w[p2h p2g] }
+    }
   }
 
   describe "new flexibility order" do
@@ -25,7 +27,7 @@ describe Api::V3::FlexibilityOrdersController do
   describe "existing flexibility order" do
     let!(:flexibility_order) {
       FlexibilityOrder.create!(
-        scenario_id: scenario_id, order: ['p2g', 'p2h']
+        scenario_id: scenario.id, order: ['p2g', 'p2h']
       )
     }
 
@@ -42,7 +44,7 @@ describe Api::V3::FlexibilityOrdersController do
     end
 
     it 'grabs the current flexibility order' do
-      get :get, params: { scenario_id: scenario_id }
+      get :get, params: { scenario_id: scenario.id }
 
       expect(JSON.parse(response.body)['order']).to eq(['p2g', 'p2h'])
     end

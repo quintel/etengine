@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Input do
-  let(:scenario) { Scenario.new(area_code: 'nl', end_year: 2050) }
+  let(:scenario) { FactoryBot.create(:scenario) }
   let(:gql)      { scenario.gql }
   before         { allow(Input).to receive(:all).and_return([input]) }
   before         { Rails.cache.clear }
@@ -59,6 +59,8 @@ describe Input do
     # Scaled scenario to 10.000 households
     context 'with a scenario scaled to 10.000 households' do
       before do
+        scenario.save!
+
         scenario.create_scaler!(
           area_attribute: 'number_of_residences',
           value: 10000
