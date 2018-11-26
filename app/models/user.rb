@@ -7,7 +7,7 @@ class User < ApplicationRecord
          :trackable, :validatable
 
   has_many :scenarios
-  belongs_to :role, optional: true
+  belongs_to :role
 
   validates_format_of   :phone_number,
                         :message => " is niet goed ingevuld.",
