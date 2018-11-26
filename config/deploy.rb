@@ -1,4 +1,4 @@
-lock '3.11.0'
+lock '3.10.1'
 
 set :log_level, 'info'
 set :pty, true
