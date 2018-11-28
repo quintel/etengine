@@ -5,7 +5,7 @@ class @Graph
   updated_coordinates: {}
   SNAPPABLE_GRID_SIZE: 10
   GRID_STEP_SIZE: 800
-  GRID_X_SIZE: 8000
+  GRID_X_SIZE: 9000
   GRID_Y_SIZE: 19000
 
   link_styles:
