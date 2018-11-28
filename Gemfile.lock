@@ -13,6 +13,7 @@ GIT
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
 =======
@@ -42,6 +43,10 @@ GIT
 =======
   revision: 7205c92579119cf26cd33bc9df4c470f7b519823
   ref: 7205c92
+>>>>>>> Updated atlas
+=======
+  revision: 39ba57d7ed3cb52d3aa2cf6f953da4aeaec2856c
+  ref: 39ba57d
 >>>>>>> Updated atlas
   specs:
     atlas (1.0.0)
@@ -242,7 +247,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.0.5)
+    concurrent-ruby (1.1.3)
     crass (1.0.4)
     dalli (2.7.6)
     debug_inspector (0.0.3)
@@ -284,7 +289,7 @@ GEM
     highline (1.7.10)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (0.9.1)
+    i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jquery-rails (4.3.1)
@@ -339,12 +344,16 @@ GEM
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
 <<<<<<< HEAD
+<<<<<<< HEAD
     minitest (5.11.3)
     msgpack (1.2.4)
     multi_json (1.13.1)
 >>>>>>> Updated atlas
 =======
     minitest (5.11.1)
+=======
+    minitest (5.11.3)
+>>>>>>> Updated atlas
     msgpack (1.2.0)
     multi_json (1.12.2)
 >>>>>>> Revert "Updated atlas"
@@ -538,7 +547,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.8)
     turbine-graph (0.1.3)
-    tzinfo (1.2.4)
+    tzinfo (1.2.5)
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
