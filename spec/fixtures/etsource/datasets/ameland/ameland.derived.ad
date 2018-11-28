@@ -53,7 +53,6 @@
 - old_houses_insulation_cost_constant = 5962.7
 - old_houses_insulation_employment_constant = 0.014
 - man_hours_per_man_year = 1800.0
-- technical_lifetime_insulation = 30.0
 - annual_infrastructure_cost_electricity = 1810.0
 - annual_infrastructure_cost_gas = 1452.0
 - areable_land = 19175.5
@@ -73,7 +72,6 @@
 - residences_roof_surface_available_for_pv = 266.7
 - buildings_roof_surface_available_for_pv = 133.3
 - base_dataset = nl
-- technical_lifetime_insulation = 30.0
 - scaling.area_attribute = number_of_residences
 - scaling.base_value = 7449298
 - scaling.has_agriculture =
