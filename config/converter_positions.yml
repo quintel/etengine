@@ -216,7 +216,7 @@
   :x: 7700
   :y: 3160
 :energy_production_bio_oil:
-  :x: 7700
+  :x: 7320
   :y: 3920
 :energy_import_natural_gas:
   :x: 7700
@@ -240,8 +240,8 @@
   :x: 7700
   :y: 4280
 :energy_production_woody_biomass:
-  :x: 7700
-  :y: 3620
+  :x: 7780
+  :y: 1380
 :households_useful_demand_for_space_heating_after_insulation:
   :x: 320
   :y: 540
@@ -333,8 +333,8 @@
   :x: 7340
   :y: 3320
 :energy_distribution_woody_biomass:
-  :x: 7020
-  :y: 3620
+  :x: 7400
+  :y: 1380
 :energy_distribution_greengas:
   :x: 7060
   :y: 3160
@@ -739,31 +739,31 @@
   :y: 6860
 :energy_distribution_torrified_biomass_pellets:
   :x: 7240
-  :y: 940
+  :y: 900
 :energy_torrefaction_wood:
-  :x: 7400
-  :y: 980
+  :x: 7380
+  :y: 1020
 :energy_import_steam_hot_water:
   :x: 7700
   :y: 4100
 :energy_import_torrified_biomass_pellets:
-  :x: 7400
+  :x: 7780
   :y: 900
 :energy_distribution_wood_pellets:
   :x: 7240
   :y: 1180
 :energy_production_wood_pellets:
   :x: 7400
-  :y: 1220
+  :y: 1300
 :energy_import_wood_pellets:
-  :x: 7400
-  :y: 1140
+  :x: 7780
+  :y: 1180
 :energy_distribution_wood:
-  :x: 7540
-  :y: 1220
+  :x: 7580
+  :y: 1300
 :energy_production_wood:
-  :x: 7680
-  :y: 1220
+  :x: 7780
+  :y: 1300
 :energy_upgrade_biogas:
   :x: 7180
   :y: 3080
@@ -2760,17 +2760,20 @@
   :x: 8220
   :y: 900
 :foreign_energy_upgrade_biogas:
-  :x: 7880
-  :y: 3100
+  :x: 8000
+  :y: 3080
 :foreign_energy_distribution_biogas:
-  :x: 8020
-  :y: 3020
+  :x: 8140
+  :y: 3000
 :foreign_energy_production_biogas:
-  :x: 8200
-  :y: 3020
+  :x: 8320
+  :y: 3000
 :foreign_energy_production_manure:
-  :x: 8320
-  :y: 2960
+  :x: 8440
+  :y: 2940
 :foreign_energy_production_corn:
-  :x: 8320
-  :y: 3060
+  :x: 8440
+  :y: 3040
+:foreign_energy_production_bio_oil:
+  :x: 8000
+  :y: 4040
