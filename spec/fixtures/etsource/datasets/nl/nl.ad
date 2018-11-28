@@ -66,7 +66,6 @@
 - onshore_suitable_for_wind = 11379.0
 - residences_roof_surface_available_for_pv = 266.7
 - buildings_roof_surface_available_for_pv = 133.3
-- technical_lifetime_insulation = 30.0
 - interconnector_capacity = 5850.0
 - electric_vehicle_profile_1 = 0.75
 - electric_vehicle_profile_2 = 0.25
