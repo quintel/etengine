@@ -2759,3 +2759,18 @@
 :foreign_energy_production_wood:
   :x: 8220
   :y: 900
+:foreign_energy_upgrade_biogas:
+  :x: 7880
+  :y: 3100
+:foreign_energy_distribution_biogas:
+  :x: 8020
+  :y: 3020
+:foreign_energy_production_biogas:
+  :x: 8200
+  :y: 3020
+:foreign_energy_production_manure:
+  :x: 8320
+  :y: 2960
+:foreign_energy_production_corn:
+  :x: 8320
+  :y: 3060
