@@ -2753,3 +2753,9 @@
 :energy_imported_hydrogen_backup:
   :x: 6240
   :y: 4720
+:foreign_energy_torrefaction_wood:
+  :x: 7620
+  :y: 900
+:foreign_energy_production_wood:
+  :x: 7800
+  :y: 900
