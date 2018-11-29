@@ -214,7 +214,7 @@
   :y: 4040
 :energy_import_greengas:
   :x: 7700
-  :y: 3160
+  :y: 3140
 :energy_production_bio_oil:
   :x: 7320
   :y: 3920
@@ -337,7 +337,7 @@
   :y: 1380
 :energy_distribution_greengas:
   :x: 7060
-  :y: 3160
+  :y: 3140
 :energy_distribution_coal:
   :x: 7340
   :y: 3380
@@ -766,7 +766,7 @@
   :y: 1300
 :energy_upgrade_biogas:
   :x: 7180
-  :y: 3080
+  :y: 3060
 :energy_distribution_manure:
   :x: 7560
   :y: 2940
@@ -2760,20 +2760,21 @@
   :x: 8220
   :y: 900
 :foreign_energy_upgrade_biogas:
-  :x: 8000
-  :y: 3080
-:foreign_energy_distribution_biogas:
   :x: 8140
-  :y: 3000
+  :y: 3140
+:foreign_energy_distribution_biogas:
+  :x: 8260
+  :y: 3080
 :foreign_energy_production_biogas:
-  :x: 8320
-  :y: 3000
+  :x: 8440
+  :y: 3080
 :foreign_energy_production_manure:
-  :x: 8440
-  :y: 2940
+  :x: 8560
+  :y: 3020
 :foreign_energy_production_corn:
-  :x: 8440
-  :y: 3040
-:foreign_energy_production_bio_oil:
+  :x: 8560
+  :y: 3140
+:foreign_energy_production_bio_lng:
   :x: 8000
-  :y: 4040
+  :y: 4600
+
