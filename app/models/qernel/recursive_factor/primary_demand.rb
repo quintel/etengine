@@ -9,6 +9,17 @@ module Qernel::RecursiveFactor::PrimaryDemand
     end
   end
 
+  # Public: Calculates the primary energy demand for primary demand nodes which
+  # considered "abroad" - not part of the region modelled.
+  #
+  # Returns a numeric.
+  def primary_demand_abroad
+    fetch(:primary_demand_abroad) do
+      (demand || 0.0) *
+        recursive_factor(:primary_demand_factor, domestic: false)
+    end
+  end
+
   def primary_demand_of(*carriers)
     carriers.flatten.map do |carrier|
       primary_demand_of_carrier(carrier.try(:key) || carrier)

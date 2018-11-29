@@ -38,10 +38,28 @@ module Qernel::RecursiveFactor::Base
   # *args                  - Additional arguments passed along to the strategy
   #                          method.
   #
+  # domestic:              - Sets that the factor should include nodes which are
+  #                          part of the region being modelled, as opposed to
+  #                          nodes which represent energy sourced from abroad.
+  #                          Setting this to false will return a factor which
+  #                          calculates the factor using only nodes which belong
+  #                          to the "abroad" group.
+  #
   # Returns a float.
-  def recursive_factor(strategy_method, converter_share_method = nil, link = nil, *args)
+  def recursive_factor(
+    strategy_method,
+    converter_share_method = nil,
+    link = nil,
+    *args,
+    domestic: true
+  )
     if (return_value = send(strategy_method, link, *args)) != nil
-      return_value
+      filter_result_with_locality(return_value, domestic)
+    elsif domestic && right_abroad?
+      # We've reached a border between "domestic" and "abroad", but have not
+      # received a value. The calculation cannot proceed further into "abroad"
+      # nodes.
+      0.0
     else
       results = input_links.map do |link|
         parent = link.rgt_converter
@@ -81,7 +99,9 @@ module Qernel::RecursiveFactor::Base
           0.0
         else
           parent_value = parent.recursive_factor(
-            strategy_method, converter_share_method, link, *args)
+            strategy_method, converter_share_method, link, *args,
+            domestic: domestic
+          )
 
           demanding_share * loss_compensation_factor *
             converter_share * parent_value
@@ -111,12 +131,30 @@ module Qernel::RecursiveFactor::Base
   # *args                  - Additional arguments passed along to the strategy
   #                          method.
   #
+  # domestic:              - Sets that the factor should include nodes which are
+  #                          part of the region being modelled, as opposed to
+  #                          nodes which represent energy sourced from abroad.
+  #                          Setting this to false will return a factor which
+  #                          calculates the factor using only nodes which belong
+  #                          to the "abroad" group.
+  #
   # See +recursive_factor+ for more information.
   #
   # Returns a float.
-  def recursive_factor_without_losses(strategy_method, converter_share_method = nil, link = nil, *args)
+  def recursive_factor_without_losses(
+    strategy_method,
+    converter_share_method = nil,
+    link = nil,
+    *args,
+    domestic: true
+  )
     if (return_value = send(strategy_method, link, *args)) != nil
-      return_value
+      filter_result_with_locality(return_value, domestic)
+    elsif domestic && right_abroad?
+      # We've reached a border between "domestic" and "abroad", but have not
+      # received a value. The calculation cannot proceed further into "abroad"
+      # nodes.
+      0.0
     else
       val = input_links.map do |link|
         parent = link.rgt_converter
@@ -180,7 +218,9 @@ module Qernel::RecursiveFactor::Base
 
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
-            strategy_method, converter_share_method, link, *args)
+            strategy_method, converter_share_method, link, *args,
+            domestic: domestic
+          )
 
           link_share * parent_value * parent_conversion
         end
@@ -203,6 +243,34 @@ module Qernel::RecursiveFactor::Base
     end
 
     @right_dead_end
+  end
+
+  # Public: Returns if the converter has inputs, but all are to nodes which
+  # represent demand abroad. This allows us to stop recursing as soon as we
+  # reach such a node when calculating domestic factors.
+  #
+  # Returns true or false.
+  def right_abroad?
+    unless defined?(@right_abroad)
+      @right_abroad = input_links.all? do |link|
+        link.rgt_converter.abroad?
+      end
+    end
+
+    @right_abroad
+  end
+
+  # Internal: Receives a calculated value from recursive factor and asserts that
+  # the node may be used to provide that value: a domestic node should not be
+  # used to provide values for an "abroad" factor.
+  #
+  # domestic - Indicates whether to return values for domestic nodes. Setting to
+  #            false inverts the outcome, returning values only for "abroad"
+  #            nodes.
+  #
+  # Returns a numeric.
+  def filter_result_with_locality(value, domestic)
+    domestic == abroad? ? 0.0 : value
   end
 
   # Public: The loss compensation factor is the amount by which we must

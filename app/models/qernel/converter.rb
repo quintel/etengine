@@ -157,7 +157,16 @@ class Converter
     end
   end
 
-protected
+  # Public: Does this converter represent energy flow from outside the modelled
+  # region?
+  #
+  # Returns true or false.
+  def abroad?
+    # Double-negate as abroad may be nil.
+    !!dataset_get(:abroad) # rubocop:disable Style/DoubleNegation
+  end
+
+  protected
 
   # Memoize here, so it doesn't have to at runtime
   #
