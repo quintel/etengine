@@ -14,9 +14,6 @@ module Etsource
 
     def initialize
       @etsource = Etsource::Base.instance
-      @datasets = {}.with_indifferent_access
-      @area_attributes = {}.with_indifferent_access
-      @gquery = Gqueries.new(@etsource)
     end
 
     def globals(file_name)
@@ -45,13 +42,13 @@ module Etsource
     end
 
     def area_attributes(area_code)
-      @area_attributes[area_code] ||= begin
+      cache("area_attributes/#{area_code}") do
         area = Atlas::Dataset.find(area_code)
         area_attr = area.to_hash
         area_attr[:derived] = area.is_a?(Atlas::Dataset::Derived)
         area_attr['last_updated_at'] = @etsource.last_updated_at("datasets/#{area_code}")
 
-        area_attr.with_indifferent_access
+        IceNine.deep_freeze!(area_attr.with_indifferent_access)
       end
     end
 
@@ -82,7 +79,7 @@ module Etsource
     def gqueries
       instrument("etsource.loader: gqueries") do
         cache("gqueries") do
-          @gquery.import
+          Gqueries.new(@etsource).import
         end
       end
     end
