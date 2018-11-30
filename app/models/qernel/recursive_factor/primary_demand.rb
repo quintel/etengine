@@ -9,6 +9,19 @@ module Qernel::RecursiveFactor::PrimaryDemand
     end
   end
 
+  # Calculates the primary energy demand, including traversing through
+  # converters which are flagged as "abroad". The normal primary demand
+  # calculation terminates at the border between non-abroad and abroad.
+  #
+  # Returns a numeric.
+  def primary_demand_including_abroad
+    fetch(:primary_demand_including_abroad) do
+      (demand || 0.0) * recursive_factor(
+        :primary_demand_including_abroad_factor, include_abroad: true
+      )
+    end
+  end
+
   def primary_demand_of(*carriers)
     carriers.flatten.map do |carrier|
       primary_demand_of_carrier(carrier.try(:key) || carrier)
@@ -40,16 +53,15 @@ module Qernel::RecursiveFactor::PrimaryDemand
   end
 
   def primary_demand_factor(link)
-    return nil unless right_dead_end?
+    factor_for_primary_demand(link) if domestic_dead_end?
+  end
 
-    # We return nil when we want to continue traversing. So typically this is
-    # until we hit a dead end. Alternatively (for final_demand) we could stop
-    # when we hit a converter that is final_demand_group?
-    factor_for_primary_demand(link)
+  def primary_demand_including_abroad_factor(link)
+    factor_for_primary_demand(link) if right_dead_end?
   end
 
   def primary_demand_factor_of_carrier(link, carrier_key)
-    return nil if !right_dead_end? || !primary_energy_demand?
+    return nil if !domestic_dead_end? || !primary_energy_demand?
 
     link ||= output_links.first
 

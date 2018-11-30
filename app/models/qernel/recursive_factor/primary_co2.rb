@@ -30,7 +30,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   #   co2_per_mj of primary_energy_demand carrier
   def co2_per_mj_of_carrier_factor(link, carrier_key)
     return 0.0 if query.free_co2_factor == 1.0
-    return nil if !right_dead_end? || !primary_energy_demand?
+    return nil if !domestic_dead_end? || !primary_energy_demand?
 
     link ||= output_links.first
 
@@ -55,7 +55,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   #   co2_per_mj of primary_energy_demand carrier
   #
   def co2_per_mj_factor(link)
-    return nil if !right_dead_end? || !primary_energy_demand?
+    return nil if !domestic_dead_end? || !primary_energy_demand?
     link ||= output_links.first
 
     carrier = link.nil? ? output_carriers.reject(&:loss?).first : link.carrier

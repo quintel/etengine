@@ -33,7 +33,7 @@ module Qernel::RecursiveFactor::FinalDemand
   def final_demand_factor(_link)
     if final_demand_group?
       1.0
-    elsif right_dead_end?
+    elsif domestic_dead_end?
       0.0
     end
   end

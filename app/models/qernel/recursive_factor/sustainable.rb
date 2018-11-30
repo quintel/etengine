@@ -27,7 +27,7 @@ module Qernel::RecursiveFactor::Sustainable
   end
 
   def sustainability_share_factor(link)
-    return nil unless right_dead_end? && link
+    return nil unless domestic_dead_end? && link
 
     # If the converter has a sustainability share which has been explicitly
     # set (through research data or a graph plugin), use that in preference to
@@ -44,7 +44,7 @@ module Qernel::RecursiveFactor::Sustainable
   end
 
   def sustainable_factor(link)
-    return nil unless right_dead_end?
+    return nil unless domestic_dead_end?
     return 0.0 unless primary_energy_demand?
 
     link ||= output_links.first
