@@ -40,7 +40,7 @@
   :y: 6660
 :energy_distribution_kerosene:
   :x: 5600
-  :y: 6300
+  :y: 6280
 :energy_distribution_gasoline:
   :x: 5600
   :y: 6220
@@ -180,32 +180,32 @@
   :x: 7200
   :y: 6820
 :energy_import_lpg:
-  :x: 7200
-  :y: 6220
+  :x: 7700
+  :y: 6160
 :energy_import_bio_ethanol:
-  :x: 7200
-  :y: 6660
+  :x: 7700
+  :y: 6600
 :energy_import_biodiesel:
-  :x: 7200
-  :y: 6740
+  :x: 7700
+  :y: 6660
 :energy_import_kerosene:
-  :x: 7200
-  :y: 6380
+  :x: 7700
+  :y: 6280
 :energy_import_gasoline:
-  :x: 7200
-  :y: 6300
+  :x: 7700
+  :y: 6220
 :energy_import_diesel:
-  :x: 7200
-  :y: 6460
+  :x: 7700
+  :y: 6340
 :energy_production_algae_diesel:
   :x: 6400
   :y: 6740
 :energy_production_bio_ethanol:
   :x: 6400
-  :y: 6600
+  :y: 6500
 :energy_production_biodiesel:
   :x: 6400
-  :y: 6660
+  :y: 6860
 :energy_import_electricity:
   :x: 7000
   :y: 2000
@@ -216,7 +216,7 @@
   :x: 7700
   :y: 3140
 :energy_production_bio_oil:
-  :x: 7320
+  :x: 7700
   :y: 3920
 :energy_import_natural_gas:
   :x: 7700
@@ -241,7 +241,7 @@
   :y: 4280
 :energy_production_woody_biomass:
   :x: 7780
-  :y: 1380
+  :y: 1300
 :households_useful_demand_for_space_heating_after_insulation:
   :x: 320
   :y: 540
@@ -292,7 +292,7 @@
   :y: 3580
 :energy_distribution_diesel:
   :x: 5600
-  :y: 6380
+  :y: 6340
 :transport_useful_demand_planes:
   :x: 720
   :y: 3960
@@ -333,8 +333,8 @@
   :x: 7340
   :y: 3320
 :energy_distribution_woody_biomass:
-  :x: 7400
-  :y: 1380
+  :x: 7540
+  :y: 1300
 :energy_distribution_greengas:
   :x: 7060
   :y: 3140
@@ -738,11 +738,11 @@
   :x: 3920
   :y: 6860
 :energy_distribution_torrified_biomass_pellets:
-  :x: 7240
+  :x: 7200
   :y: 900
 :energy_torrefaction_wood:
   :x: 7380
-  :y: 1020
+  :y: 1040
 :energy_import_steam_hot_water:
   :x: 7700
   :y: 4100
@@ -750,20 +750,20 @@
   :x: 7780
   :y: 900
 :energy_distribution_wood_pellets:
-  :x: 7240
+  :x: 7200
   :y: 1180
 :energy_production_wood_pellets:
-  :x: 7400
-  :y: 1300
+  :x: 7360
+  :y: 1380
 :energy_import_wood_pellets:
   :x: 7780
   :y: 1180
 :energy_distribution_wood:
-  :x: 7580
-  :y: 1300
+  :x: 7540
+  :y: 1380
 :energy_production_wood:
   :x: 7780
-  :y: 1300
+  :y: 1380
 :energy_upgrade_biogas:
   :x: 7180
   :y: 3060
@@ -946,7 +946,7 @@
   :y: 4400
 :energy_distribution_heavy_fuel_oil:
   :x: 5600
-  :y: 6440
+  :y: 6400
 :transport_final_demand_for_road_lpg:
   :x: 2320
   :y: 3460
@@ -2214,8 +2214,8 @@
   :x: 3200
   :y: 11440
 :energy_import_heavy_fuel_oil:
-  :x: 7200
-  :y: 6540
+  :x: 7700
+  :y: 6400
 :industry_useful_demand_for_other_ict_electricity:
   :x: 720
   :y: 9400
@@ -2466,8 +2466,8 @@
   :x: 5600
   :y: 6720
 :energy_import_bio_kerosene:
-  :x: 7200
-  :y: 6820
+  :x: 7700
+  :y: 6720
 :bunkers_total_useful_demand_ships:
   :x: 720
   :y: 18920
@@ -2760,7 +2760,7 @@
   :x: 8220
   :y: 900
 :foreign_energy_upgrade_biogas:
-  :x: 8140
+  :x: 8100
   :y: 3140
 :foreign_energy_distribution_biogas:
   :x: 8260
@@ -2777,4 +2777,36 @@
 :foreign_energy_production_bio_lng:
   :x: 8000
   :y: 4600
-
+:energy_production_waste_fats:
+  :x: 7120
+  :y: 6860
+:energy_production_palm:
+  :x: 7120
+  :y: 6920
+:energy_production_rapeseed:
+  :x: 7120
+  :y: 6980
+:energy_production_sugar_cane:
+  :x: 7120
+  :y: 6500
+:energy_production_sugar_beets:
+  :x: 7120
+  :y: 6560
+:foreign_energy_production_waste_fats:
+  :x: 8000
+  :y: 6800
+:foreign_energy_production_sugar_cane:
+  :x: 8000
+  :y: 6600
+:foreign_energy_production_palm:
+  :x: 8000
+  :y: 6720
+:foreign_energy_production_sugar_beets:
+  :x: 8000
+  :y: 6660
+:foreign_energy_production_bio_oil:
+  :x: 8000
+  :y: 4040
+:foreign_energy_production_rapeseed:
+  :x: 8000
+  :y: 6860
