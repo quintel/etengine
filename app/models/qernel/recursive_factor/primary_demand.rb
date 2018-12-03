@@ -61,10 +61,6 @@ module Qernel::RecursiveFactor::PrimaryDemand
     factor_for_primary_demand(:primary_energy_demand?) if right_dead_end?
   end
 
-  def demand_of_bio_resources_including_abroad_factor(_link)
-    factor_for_primary_demand(:bio_resources_demand?) if right_dead_end?
-  end
-
   def primary_demand_factor_of_carrier(link, carrier_key, stop_condition)
     return nil if !domestic_dead_end? || !primary_energy_demand?
 
