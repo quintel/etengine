@@ -36,6 +36,11 @@ module Qernel::RecursiveFactor::BioDemand
 
   private
 
+  def demand_of_bio_resources_including_abroad_factor(_link)
+    return nil unless right_dead_end? || bio_resources_demand?
+    factor_for_primary_demand(:bio_resources_demand?)
+  end
+
   # Internal: Triggers the recursive factor calculation of the bio resources
   # demand from the current node.
   #
@@ -59,7 +64,7 @@ module Qernel::RecursiveFactor::BioDemand
     link,
     carrier_key
   )
-    return nil if !right_dead_end? || !bio_resources_demand?
+    return nil unless right_dead_end? || bio_resources_demand?
 
     link ||= output_links.first
 
