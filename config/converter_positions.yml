@@ -202,22 +202,22 @@
   :y: 6740
 :energy_production_bio_ethanol:
   :x: 6400
-  :y: 6500
+  :y: 6960
 :energy_production_biodiesel:
   :x: 6400
-  :y: 6860
+  :y: 7100
 :energy_import_electricity:
   :x: 7000
   :y: 2000
 :energy_import_bio_oil:
   :x: 7700
-  :y: 4040
+  :y: 6540
 :energy_import_greengas:
   :x: 7700
   :y: 3140
 :energy_production_bio_oil:
-  :x: 7700
-  :y: 3920
+  :x: 6400
+  :y: 6840
 :energy_import_natural_gas:
   :x: 7700
   :y: 4340
@@ -327,8 +327,8 @@
   :x: 3000
   :y: 9100
 :energy_distribution_bio_oil:
-  :x: 7020
-  :y: 3920
+  :x: 5600
+  :y: 6540
 :energy_distribution_crude_oil:
   :x: 7340
   :y: 3320
@@ -2779,19 +2779,19 @@
   :y: 4600
 :energy_production_waste_fats:
   :x: 7120
-  :y: 6860
+  :y: 7120
 :energy_production_palm:
   :x: 7120
-  :y: 6920
+  :y: 7280
 :energy_production_rapeseed:
   :x: 7120
-  :y: 6980
+  :y: 7460
 :energy_production_sugar_cane:
   :x: 7120
-  :y: 6500
+  :y: 6900
 :energy_production_sugar_beets:
   :x: 7120
-  :y: 6560
+  :y: 6960
 :foreign_energy_production_waste_fats:
   :x: 8000
   :y: 6800
@@ -2806,7 +2806,37 @@
   :y: 6660
 :foreign_energy_production_bio_oil:
   :x: 8000
-  :y: 4040
+  :y: 6540
 :foreign_energy_production_rapeseed:
   :x: 8000
   :y: 6860
+:energy_production_biodiesel_from_palm:
+  :x: 6760
+  :y: 7280
+:energy_production_biodiesel_from_rapeseed:
+  :x: 6760
+  :y: 7420
+:energy_production_bio_oil_from_palm:
+  :x: 6760
+  :y: 7220
+:energy_production_biodiesel_from_waste_fats:
+  :x: 6760
+  :y: 7140
+:energy_production_bio_ethanol_from_sugar_beets:
+  :x: 6760
+  :y: 6960
+:energy_production_bio_ethanol_from_sugar_cane:
+  :x: 6760
+  :y: 6900
+:energy_production_bio_kerosene:
+  :x: 6400
+  :y: 7220
+:energy_production_bio_kerosene_from_palm:
+  :x: 6760
+  :y: 7340
+:energy_production_bio_kerosene_from_waste_fats:
+  :x: 6760
+  :y: 7080
+:energy_production_bio_kerosene_from_rapeseed:
+  :x: 6760
+  :y: 7480
