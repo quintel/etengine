@@ -53,15 +53,18 @@ module Qernel::RecursiveFactor::PrimaryDemand
   end
 
   def primary_demand_factor(_link)
-    return unless domestic_dead_end?
-    factor_for_primary_demand(:primary_energy_demand?)
+    factor_for_primary_demand if domestic_dead_end?
   end
 
   def primary_demand_including_abroad_factor(_link)
-    factor_for_primary_demand(:primary_energy_demand?) if right_dead_end?
+    factor_for_primary_demand if right_dead_end?
   end
 
-  def primary_demand_factor_of_carrier(link, carrier_key, stop_condition)
+  def primary_demand_factor_of_carrier(
+    link,
+    carrier_key,
+    stop_condition = :primary_energy_demand?
+  )
     return nil if !domestic_dead_end? || !primary_energy_demand?
 
     link ||= output_links.first
@@ -81,7 +84,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
   #                  calculation.
   #
   # Returns a numeric.
-  def factor_for_primary_demand(stop_condition)
+  def factor_for_primary_demand(stop_condition = :primary_energy_demand?)
     stop = public_send(stop_condition)
 
     # If a converter has infinite resources (such as wind, solar/sun), we
