@@ -2876,3 +2876,6 @@
 :foreign_energy_production_biodiesel_from_palm:
   :x: 8420
   :y: 6680
+:foreign_energy_production_biogenic_waste:
+  :x: 8000
+  :y: 4980
