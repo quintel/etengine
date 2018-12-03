@@ -52,40 +52,47 @@ module Qernel::RecursiveFactor::PrimaryDemand
     (demand || 0.0) * factor
   end
 
-  def primary_demand_factor(link)
-    factor_for_primary_demand(link) if domestic_dead_end?
+  def primary_demand_factor(_link)
+    return unless domestic_dead_end?
+    factor_for_primary_demand(:primary_energy_demand?)
   end
 
-  def primary_demand_including_abroad_factor(link)
-    factor_for_primary_demand(link) if right_dead_end?
+  def primary_demand_including_abroad_factor(_link)
+    factor_for_primary_demand(:primary_energy_demand?) if right_dead_end?
   end
 
-  def primary_demand_factor_of_carrier(link, carrier_key)
+  def demand_of_bio_resources_including_abroad_factor(_link)
+    factor_for_primary_demand(:bio_resources_demand?) if right_dead_end?
+  end
+
+  def primary_demand_factor_of_carrier(link, carrier_key, stop_condition)
     return nil if !domestic_dead_end? || !primary_energy_demand?
 
     link ||= output_links.first
 
     if link && link.carrier.key == carrier_key
-      factor_for_primary_demand(link)
+      factor_for_primary_demand(stop_condition)
     else
       0.0
     end
   end
 
-  def factor_for_primary_demand(link)
-    # Example of a case when a link is not assigned (and therefore needs to be
-    # assigned in order to check if its imported_electricity):
-    #
-    # When you get the primary_demand of the group primary_energy_demand, you
-    # already  start at the right dead end and don't jump throught links.
-    link ||= output_links.first
+  # Internal: Calculates the primary demand factor of the given link.
+  #
+  # link           - The link whose primary demand factor is to be calculated.
+  # stop_condition - A method to be called on self to determine if the link has
+  #                  any primary energy demand to be included in the
+  #                  calculation.
+  #
+  # Returns a numeric.
+  def factor_for_primary_demand(stop_condition)
+    stop = public_send(stop_condition)
 
-    # If a converter has infinite ressources (such as wind, solar/sun), we
+    # If a converter has infinite resources (such as wind, solar/sun), we
     # take the output of energy (1 - losses).
-    if infinite? && primary_energy_demand?
+    if infinite? && stop
       (1 - loss_output_conversion)
-
-    elsif primary_energy_demand? # Normal case.
+    elsif stop # Normal case.
       1.0
     else
       0.0

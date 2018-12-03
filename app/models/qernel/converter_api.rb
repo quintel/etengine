@@ -325,6 +325,8 @@ class ConverterApi
       self.send(method_name)
     elsif m = /^primary_demand(\w*)$/.match(method_id.to_s)
       self.converter.send(method_id, *arguments)
+    elsif m = /^demand_of_(\w*)$/.match(method_id.to_s)
+      self.converter.send(method_id, *arguments)
     elsif m = /^dependent_supply(\w*)$/.match(method_id.to_s)
       self.converter.send(method_id, *arguments)
     elsif m = /^final_demand(\w*)$/.match(method_id.to_s)
