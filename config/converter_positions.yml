@@ -737,7 +737,7 @@
 :buildings_solar_pv_solar_radiation:
   :x: 3920
   :y: 6860
-:energy_distribution_torrified_biomass_pellets:
+:energy_distribution_torrefied_biomass_pellets:
   :x: 7200
   :y: 900
 :energy_torrefaction_wood:
@@ -746,7 +746,7 @@
 :energy_import_steam_hot_water:
   :x: 7700
   :y: 4100
-:energy_import_torrified_biomass_pellets:
+:energy_import_torrefied_biomass_pellets:
   :x: 7780
   :y: 900
 :energy_distribution_wood_pellets:
@@ -1394,7 +1394,7 @@
 :households_appliances_vacuum_cleaner_electricity:
   :x: 1520
   :y: 2680
-:energy_export_torrified_biomass_pellets:
+:energy_export_torrefied_biomass_pellets:
   :x: 3200
   :y: 10780
 :energy_export_lignite:
