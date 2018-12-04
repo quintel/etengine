@@ -23,8 +23,9 @@ module Qernel::Plugins
         @curves ||= Curves.new(@graph)
       end
 
-      def summary
-        @summary ||= Summary.new(self)
+      def summary(name)
+        @summaries ||= {}
+        @summaries[name.to_sym] ||= Summary.new(group(name))
       end
 
       # Configures the Fever groups, ensuring that hot water is first since its

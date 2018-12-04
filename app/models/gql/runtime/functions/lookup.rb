@@ -253,19 +253,27 @@ module Gql::Runtime
       # Public: Describes the total demand of all consumers in the Fever plugin.
       #
       # Returns an array.
-      def FEVER_DEMAND
+      def FEVER_DEMAND(*groups)
         return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
 
-        scope.graph.plugin(:time_resolve).fever.summary.demand
+        plugin = scope.graph.plugin(:time_resolve).fever
+
+        Qernel::Plugins::TimeResolve::Util.add_curves(
+          groups.map { |group| plugin.summary(group).demand }
+        ).to_a
       end
 
       # Public: Describes the total production in the Fever plugin.
       #
       # Returns an array.
-      def FEVER_PRODUCTION
+      def FEVER_PRODUCTION(*groups)
         return [] unless Qernel::Plugins::MeritOrder.enabled?(scope.graph)
 
-        scope.graph.plugin(:time_resolve).fever.summary.production
+        plugin = scope.graph.plugin(:time_resolve).fever
+
+        Qernel::Plugins::TimeResolve::Util.add_curves(
+          groups.map { |group| plugin.summary(group).production }
+        ).to_a
       end
     end
   end
