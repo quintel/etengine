@@ -1,9 +1,9 @@
 ---
 :households_useful_demand_light:
-  :x: 720
+  :x: 800
   :y: 2320
 :households_useful_demand_cooking_useable_heat:
-  :x: 720
+  :x: 800
   :y: 2020
 :households_appliances_dishwasher_electricity:
   :x: 1520
@@ -90,14 +90,14 @@
   :x: 720
   :y: 7300
 :buildings_useful_demand_after_insulation_cooling:
-  :x: 260
-  :y: 6440
+  :x: 800
+  :y: 6420
 :buildings_useful_demand_for_space_heating_after_insulation:
   :x: 440
   :y: 5980
 :buildings_cooling_savings_insulation_cooling:
-  :x: 220
-  :y: 6540
+  :x: 200
+  :y: 6520
 :buildings_lighting_led_electricity:
   :x: 1520
   :y: 7300
@@ -108,11 +108,11 @@
   :x: 1520
   :y: 7360
 :buildings_heating_savings_from_insulation_useable_heat:
-  :x: 220
-  :y: 6120
+  :x: 200
+  :y: 6080
 :buildings_useful_demand_cooling:
   :x: 40
-  :y: 6440
+  :y: 6420
 :buildings_final_demand_steam_hot_water:
   :x: 3120
   :y: 6920
@@ -153,8 +153,8 @@
   :x: 1520
   :y: 5880
 :buildings_space_heater_solar_thermal:
-  :x: 720
-  :y: 6120
+  :x: 800
+  :y: 6260
 :buildings_collective_chp_wood_pellets:
   :x: 3920
   :y: 6980
@@ -1063,10 +1063,10 @@
   :y: 6060
 :buildings_final_demand_for_space_heating_electricity:
   :x: 2320
-  :y: 6120
+  :y: 6060
 :buildings_final_demand_for_space_heating_steam_hot_water:
   :x: 2320
-  :y: 6240
+  :y: 6180
 :buildings_final_demand_for_space_heating_coal:
   :x: 2320
   :y: 5760
@@ -1077,7 +1077,7 @@
   :x: 620
   :y: 560
 :households_useful_demand_for_hot_water_after_solar_heater:
-  :x: 560
+  :x: 440
   :y: 1320
 :households_useful_demand_for_space_heating_after_insulation_for_houses_with_solar_heater:
   :x: 460
@@ -1520,10 +1520,10 @@
   :x: 7320
   :y: 4220
 :households_useful_demand_for_hot_water_for_houses_with_p2h:
-  :x: 700
+  :x: 620
   :y: 1240
 :households_useful_demand_for_hot_water_after_solar_heater_and_p2h:
-  :x: 880
+  :x: 800
   :y: 1320
 :transport_useful_demand_ship_kms:
   :x: 720
@@ -2974,6 +2974,39 @@
 >>>>>>> changed converter positions for new household heating nodes
 =======
 :buildings_useful_demand_for_space_heating_after_insulation_and_solar_thermal:
-  :x: 840
+  :x: 800
   :y: 5980
+<<<<<<< HEAD
 >>>>>>> removed solar thermal from buildings heating share group
+=======
+:buildings_space_heater_wood_pellets_aggregator:
+  :x: 1060
+  :y: 6000
+:buildings_space_heater_network_gas_aggregator:
+  :x: 1060
+  :y: 5940
+:buildings_space_heater_collective_heatpump_water_water_ts_electricity_aggregator:
+  :x: 1060
+  :y: 6120
+:buildings_space_heater_crude_oil_aggregator:
+  :x: 1060
+  :y: 5820
+:buildings_space_heater_heatpump_air_water_network_gas_aggregator:
+  :x: 1060
+  :y: 5880
+:buildings_space_heater_coal_aggregator:
+  :x: 1060
+  :y: 5760
+:buildings_space_heater_electricity_aggregator:
+  :x: 1060
+  :y: 6060
+:buildings_space_heater_district_heating_steam_hot_water_aggregator:
+  :x: 1060
+  :y: 6180
+:buildings_space_heater_deficit:
+  :x: 1280
+  :y: 6260
+:households_useful_demand_for_cooling:
+  :x: 800
+  :y: 120
+>>>>>>> Updated converter positions for buildings heating
