@@ -14,6 +14,7 @@ GIT
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   revision: dcc7d55ccf772f907d27ff469421d5b197abf04f
   ref: dcc7d55
 =======
@@ -48,6 +49,10 @@ GIT
   revision: 39ba57d7ed3cb52d3aa2cf6f953da4aeaec2856c
   ref: 39ba57d
 >>>>>>> Updated atlas
+=======
+  revision: a959ea683c1364c1479e63f0c582668c780cfce7
+  ref: a959ea6
+>>>>>>> Updated Atlas
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)

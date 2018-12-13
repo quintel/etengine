@@ -63,6 +63,7 @@ gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
@@ -88,6 +89,9 @@ gem 'atlas',         ref: '7205c92',  github: 'quintel/atlas'
 =======
 gem 'atlas',         ref: '39ba57d',  github: 'quintel/atlas'
 >>>>>>> Updated atlas
+=======
+gem 'atlas',         ref: 'a959ea6',  github: 'quintel/atlas'
+>>>>>>> Updated Atlas
 
 # system gems
 gem 'mysql2'
