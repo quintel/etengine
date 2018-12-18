@@ -2879,3 +2879,9 @@
 :foreign_energy_production_biogenic_waste:
   :x: 8000
   :y: 4980
+:energy_production_bio_ethanol_from_wheat:
+  :x: 6760
+  :y: 6840
+:energy_production_wheat:
+  :x: 7120
+  :y: 6840
