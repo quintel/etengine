@@ -2885,3 +2885,9 @@
 :energy_production_wheat:
   :x: 7120
   :y: 6840
+:foreign_energy_production_bio_ethanol_from_wheat:
+  :x: 8420
+  :y: 6360
+:foreign_energy_production_wheat:
+  :x: 8720
+  :y: 6360
