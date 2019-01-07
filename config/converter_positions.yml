@@ -3009,4 +3009,16 @@
 :households_useful_demand_for_cooling:
   :x: 800
   :y: 120
+<<<<<<< HEAD
 >>>>>>> Updated converter positions for buildings heating
+=======
+:energy_import_residual_heat:
+  :x: 7700
+  :y: 3520
+:energy_distribution_imported_heat:
+  :x: 6240
+  :y: 4020
+:energy_import_heat:
+  :x: 7700
+  :y: 4100
+>>>>>>> Converter positions new residual heat nodes
