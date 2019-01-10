@@ -2785,7 +2785,7 @@
   :y: 7280
 :energy_production_rapeseed:
   :x: 7120
-  :y: 7460
+  :y: 7280
 :energy_production_sugar_cane:
   :x: 7120
   :y: 6900
@@ -2815,13 +2815,13 @@
   :y: 7280
 :energy_production_biodiesel_from_rapeseed:
   :x: 6760
-  :y: 7420
+  :y: 7240
 :energy_production_bio_oil_from_palm:
   :x: 6760
   :y: 7220
 :energy_production_biodiesel_from_waste_fats:
   :x: 6760
-  :y: 7140
+  :y: 7160
 :energy_production_bio_ethanol_from_sugar_beets:
   :x: 6760
   :y: 6960
@@ -2836,10 +2836,10 @@
   :y: 7340
 :energy_production_bio_kerosene_from_waste_fats:
   :x: 6760
-  :y: 7080
+  :y: 7100
 :energy_production_bio_kerosene_from_rapeseed:
   :x: 6760
-  :y: 7480
+  :y: 7300
 :foreign_energy_production_bio_ethanol:
   :x: 8000
   :y: 6620
@@ -2891,3 +2891,9 @@
 :foreign_energy_production_wheat:
   :x: 8720
   :y: 6360
+:energy_production_bio_ethanol_from_corn:
+  :x: 6760
+  :y: 7020
+:foreign_energy_production_bio_ethanol_from_corn:
+  :x: 8420
+  :y: 6300
