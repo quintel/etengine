@@ -53,11 +53,13 @@ module Qernel::RecursiveFactor::PrimaryDemand
   end
 
   def primary_demand_factor(_link)
-    factor_for_primary_demand if domestic_dead_end?
+    factor_for_primary_demand if primary_energy_demand? || domestic_dead_end?
   end
 
   def primary_demand_including_abroad_factor(_link)
-    factor_for_primary_demand if right_dead_end?
+    if (abroad? && primary_energy_demand?) || right_dead_end?
+      factor_for_primary_demand
+    end
   end
 
   def primary_demand_factor_of_carrier(
@@ -65,7 +67,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
     carrier_key,
     stop_condition = :primary_energy_demand?
   )
-    return nil if !domestic_dead_end? || !primary_energy_demand?
+    return nil unless primary_energy_demand?
 
     link ||= output_links.first
 
