@@ -583,7 +583,7 @@
   :y: 560
 :households_space_heater_combined_network_gas:
   :x: 1520
-  :y: 440
+  :y: 380
 :households_space_heater_heatpump_ground_water_electricity:
   :x: 1520
   :y: 680
@@ -613,16 +613,16 @@
   :y: 500
 :households_space_heater_coal:
   :x: 1520
-  :y: 260
+  :y: 200
 :households_space_heater_crude_oil:
   :x: 1520
-  :y: 320
+  :y: 260
 :households_cooling_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 120
+  :y: 80
 :households_cooling_heatpump_air_water_electricity:
   :x: 1520
-  :y: 180
+  :y: 140
 :households_water_heater_network_gas:
   :x: 1520
   :y: 1180
@@ -634,10 +634,10 @@
   :y: 740
 :households_space_heater_micro_chp_network_gas:
   :x: 1520
-  :y: 500
+  :y: 440
 :households_space_heater_network_gas:
   :x: 1520
-  :y: 380
+  :y: 320
 :households_water_heater_fuel_cell_chp_network_gas:
   :x: 1520
   :y: 1360
@@ -1159,7 +1159,7 @@
   :y: 10020
 :households_cooling_airconditioning_electricity:
   :x: 1520
-  :y: 60
+  :y: 20
 :industry_unused_local_production_steam_hot_water:
   :x: 2500
   :y: 9060
@@ -3011,3 +3011,15 @@
 :foreign_energy_production_bio_ethanol_from_corn:
   :x: 8420
   :y: 6300
+:households_space_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
+  :x: 1180
+  :y: 920
+:households_space_heater_hybrid_hydrogen_heatpump_air_water_electricity:
+  :x: 1520
+  :y: 860
+:households_final_demand_for_space_heating_hydrogen:
+  :x: 2320
+  :y: 860
+:households_final_demand_hydrogen:
+  :x: 3120
+  :y: 1180
