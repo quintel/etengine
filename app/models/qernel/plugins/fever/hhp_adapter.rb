@@ -24,7 +24,7 @@ module Qernel::Plugins
         total_demand = primary_component.output_curve.sum + sec_demand
         sec_share    = sec_demand / total_demand
 
-        @converter.converter.input(:network_gas)[:conversion] = sec_share
+        @converter.converter.input(secondary_carrier)[:conversion] = sec_share
 
         # The electric adapter has already set the electricity and ambient heat
         # conversions, but failed to account for the new secondary share.
@@ -38,7 +38,7 @@ module Qernel::Plugins
       def producer_for_carrier(carrier)
         case carrier
         when @config.efficiency_based_on then primary_component
-        when :network_gas                then secondary_component
+        when secondary_carrier           then secondary_component
         end
       end
 
@@ -57,11 +57,11 @@ module Qernel::Plugins
           ::Fever::Producer.new(
             if @config.alias_of
               DelegatedCapacityCurve.new(
-                total_value { @config.capacity[:network_gas] },
-                aliased_adapter.producer_for_carrier(:network_gas)
+                total_value { @config.capacity[secondary_carrier] },
+                aliased_adapter.producer_for_carrier(secondary_carrier)
               )
             else
-              total_value { @config.capacity[:network_gas] }
+              total_value { @config.capacity[secondary_carrier] }
             end
           )
       end
@@ -76,7 +76,29 @@ module Qernel::Plugins
 
       # Internal: The share of the secondary component carrier.
       def secondary_share
-        @converter.converter.input(:network_gas).conversion
+        @converter.converter.input(secondary_carrier).conversion
+      end
+
+      # Internal: Symbol naming the input carrier used by the secondary
+      # component.
+      #
+      # Returns a Symbol, or raises an error if there is not suitable - or more
+      # than one - carrier.
+      def secondary_carrier
+        return @secondary_carrier if @secondary_carrier
+
+        carriers = @converter.converter.inputs.map { |i| i.carrier.key } -
+          [@config.efficiency_based_on, @config.efficiency_balanced_with]
+
+        if carriers.length.zero?
+          raise 'No secondary carrier available for hybrid heat-pump ' \
+                "#{@converter.key}. Are you sure this is a HHP?"
+        elsif carriers.length != 1
+          raise "Too many carriers for hybrid heat-pump #{@converter.key}. " \
+                "Expected only one of: #{carriers.join(', ')}"
+        end
+
+        @secondary_carrier = carriers.first
       end
 
       # Internal: Re-balances the efficiency of the (typically) electricity and
