@@ -21,7 +21,7 @@ class UsersController < ApplicationController
     end
 
     if @user.save
-      redirect_to user_path(@user), notice: 'User updated'
+      redirect_to users_path, notice: 'User updated'
     else
       render :edit
     end
