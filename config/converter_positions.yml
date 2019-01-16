@@ -315,13 +315,13 @@
   :x: 1860
   :y: 5280
 :agriculture_unused_local_production_steam_hot_water:
-  :x: 3300
-  :y: 5280
+  :x: 3180
+  :y: 5180
 :agriculture_locally_available_electricity:
-  :x: 3520
+  :x: 3360
   :y: 5600
 :agriculture_locally_available_steam_hot_water:
-  :x: 3520
+  :x: 3360
   :y: 5480
 :industry_locally_available_steam_hot_water:
   :x: 3000
@@ -387,7 +387,7 @@
   :x: 1520
   :y: 1960
 :households_locally_available_electricity:
-  :x: 3420
+  :x: 3360
   :y: 1060
 :households_lighting_incandescent_electricity:
   :x: 1520
@@ -1164,7 +1164,7 @@
   :x: 2500
   :y: 9060
 :agriculture_chp_engine_biogas:
-  :x: 3900
+  :x: 3880
   :y: 5540
 :industry_chp_engine_gas_power_fuelmix:
   :x: 3480
@@ -1173,10 +1173,10 @@
   :x: 3480
   :y: 9100
 :agriculture_chp_engine_network_gas:
-  :x: 3900
+  :x: 3880
   :y: 5480
 :agriculture_chp_supercritical_wood_pellets:
-  :x: 3900
+  :x: 3880
   :y: 5600
 :households_collective_chp_biogas:
   :x: 3920
@@ -1215,10 +1215,10 @@
   :x: 4080
   :y: 8380
 :agriculture_chp_engine_biogas_dumped_heat:
-  :x: 3500
-  :y: 5660
+  :x: 3360
+  :y: 5720
 :households_collective_chp_biogas_dumped_heat:
-  :x: 3540
+  :x: 3360
   :y: 1240
 :other_chp_engine_biogas_dumped_heat:
   :x: 3900
@@ -2858,6 +2858,15 @@
 :energy_import_heat:
   :x: 7700
   :y: 4100
+:households_heat_network_steam_hot_water:
+  :x: 3360
+  :y: 1120
+:agriculture_heat_network_steam_hot_water:
+  :x: 3600
+  :y: 5480
+:buildings_heat_network_steam_hot_water:
+  :x: 3520
+  :y: 6920
 :foreign_energy_torrefaction_wood:
   :x: 8000
   :y: 900
