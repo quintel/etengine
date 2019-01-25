@@ -55,47 +55,8 @@ gem 'quintel_merit', ref: '0f33926',  github: 'quintel/merit'
 gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-gem 'atlas',         ref: 'dcc7d55',  github: 'quintel/atlas'
-=======
-gem 'atlas',         ref: 'c41054c',  github: 'quintel/atlas'
->>>>>>> Add support for ETSource config files
-=======
-gem 'atlas',         ref: '1cc5ae3',  github: 'quintel/atlas'
->>>>>>> Support new type/subtype Merit attributes
-=======
-gem 'atlas',         ref: 'c03baed',  github: 'quintel/atlas'
->>>>>>> Updated atlas
-=======
-gem 'atlas',         ref: 'afab09e',  github: 'quintel/atlas'
->>>>>>> Much improved support for household heat curves
-=======
-gem 'atlas',         ref: 'c4f117c',  github: 'quintel/atlas'
->>>>>>> Add support for insulation costs
-=======
-gem 'atlas',         ref: '3b1a321',  github: 'quintel/atlas'
->>>>>>> Updated atlas
-=======
-gem 'atlas',         ref: '7205c92',  github: 'quintel/atlas'
->>>>>>> Updated atlas
-=======
-gem 'atlas',         ref: '39ba57d',  github: 'quintel/atlas'
->>>>>>> Updated atlas
-=======
-gem 'atlas',         ref: 'a959ea6',  github: 'quintel/atlas'
->>>>>>> Updated Atlas
-=======
-gem 'atlas',         ref: 'c85457c',  github: 'quintel/atlas'
->>>>>>> Update Atlas to quintel/atlas@c85457c
+
+gem 'atlas',         ref: '1ee776e',  github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2'
