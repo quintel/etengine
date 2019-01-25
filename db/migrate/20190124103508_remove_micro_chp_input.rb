@@ -20,7 +20,7 @@ class RemoveMicroChpInput < ActiveRecord::Migration[5.1]
         target_collection[TARGET_KEY] += source_collection[SOURCE_KEY]
         source_collection.delete(SOURCE_KEY)
 
-        scenario.save(validate: false)
+        scenario.save(validate: false, touch: false)
       end
     end
 

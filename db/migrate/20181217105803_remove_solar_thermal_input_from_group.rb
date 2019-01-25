@@ -34,7 +34,7 @@ class RemoveSolarThermalInputFromGroup < ActiveRecord::Migration[5.1]
       update_collection(scenario.user_values, st_val)
       update_collection(scenario.balanced_values, st_val)
 
-      scenario.save(validate: false)
+      scenario.save(validate: false, touch: false)
       updated += 1
     end
 

@@ -55,7 +55,7 @@ class RemoveHouseholdWaterHeatingInputs < ActiveRecord::Migration[5.1]
       end
 
       if has_changed
-        scenario.save(validate: false)
+        scenario.save(validate: false, touch: false)
         updated += 1
       else
         skipped += 1
