@@ -1,0 +1,1438 @@
+{
+  "hengstdal": {
+    "number_of_old_residences": 2843,
+    "number_of_new_residences": 626
+  },
+  "BU00141205_hunzepark": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "GM1931_krimpenerwaard": {
+    "number_of_old_residences": 18272.299999999996,
+    "number_of_new_residences": 5058.700000000005
+  },
+  "GM0664_goes": {
+    "number_of_old_residences": 13403.1,
+    "number_of_new_residences": 4280.89999999999
+  },
+  "BU00090000_ten_boer": {
+    "number_of_old_residences": 1387.0681297410001,
+    "number_of_new_residences": 453.931870259
+  },
+  "om_geldermalsen": {
+    "number_of_old_residences": 7787.1,
+    "number_of_new_residences": 2773.9
+  },
+  "GM1676_schouwen_duiveland": {
+    "number_of_old_residences": 13141.4,
+    "number_of_new_residences": 3527.6
+  },
+  "BU00170106_verspreide_huizen_ten_westen_van_noord_willemskanaal": {
+    "number_of_old_residences": 40.069713641999996,
+    "number_of_new_residences": 8.930286358000002
+  },
+  "BU00140200_oranjebuurt": {
+    "number_of_old_residences": 1265.214301407,
+    "number_of_new_residences": 111.78569859300002
+  },
+  "BU00140603_villabuurt": {
+    "number_of_old_residences": 393.493592311,
+    "number_of_new_residences": 43.50640768899999
+  },
+  "GM0370_beemster_no_highways": {
+    "number_of_old_residences": 2818.300000000001,
+    "number_of_new_residences": 838.699999999999
+  },
+  "BU00141211_ruischerwaard": {
+    "number_of_old_residences": 471.354347583,
+    "number_of_new_residences": 41.64565241700001
+  },
+  "GM0431_oostzaan": {
+    "number_of_old_residences": 2873.99904,
+    "number_of_new_residences": 1174.0009599999998
+  },
+  "BU00140701_hoornse_meer": {
+    "number_of_old_residences": 2259.413636448,
+    "number_of_new_residences": 356.58636355200014
+  },
+  "BU00140503_kop_van_oost": {
+    "number_of_old_residences": 10.998268218,
+    "number_of_new_residences": 388.001731782
+  },
+  "BU00140102_herewegbuurt": {
+    "number_of_old_residences": 675.05660686,
+    "number_of_new_residences": 114.94339313999998
+  },
+  "GM0738_baarle_nassau": {
+    "number_of_old_residences": 2145.8,
+    "number_of_new_residences": 600.2
+  },
+  "BU00140107_laanhuizen": {
+    "number_of_old_residences": 624.0070011419999,
+    "number_of_new_residences": 61.992998858000036
+  },
+  "BU00140905_dorkwerd": {
+    "number_of_old_residences": 32.085173124,
+    "number_of_new_residences": 3.9148268760000007
+  },
+  "GM0453_velsen_no_steel": {
+    "number_of_old_residences": 24830.69999999999,
+    "number_of_new_residences": 5772.300000000011
+  },
+  "RGNH05_kop_van_noord_holland": {
+    "number_of_old_residences": 59568.05712,
+    "number_of_new_residences": 15207.94288
+  },
+  "BU00090002_thesinge": {
+    "number_of_old_residences": 154.600550812,
+    "number_of_new_residences": 24.39944918800001
+  },
+  "GM0855_roosendaal": {
+    "number_of_old_residences": 26272.7,
+    "number_of_new_residences": 8445.3
+  },
+  "om_zevenaar": {
+    "number_of_old_residences": 14820,
+    "number_of_new_residences": 4584
+  },
+  "om_berkelland": {
+    "number_of_old_residences": 14666,
+    "number_of_new_residences": 4633
+  },
+  "GM0748_breda": {
+    "number_of_old_residences": 60701.9,
+    "number_of_new_residences": 20947.1
+  },
+  "om_duiven": {
+    "number_of_old_residences": 7272.8,
+    "number_of_new_residences": 3343.2
+  },
+  "GM0405_hoorn": {
+    "number_of_old_residences": 23035.56881,
+    "number_of_new_residences": 9387.43119
+  },
+  "om_culemborg": {
+    "number_of_old_residences": 7966.3,
+    "number_of_new_residences": 3562.7
+  },
+  "om_lochem": {
+    "number_of_old_residences": 11273.1,
+    "number_of_new_residences": 3245.9
+  },
+  "BU00170005_hemmen": {
+    "number_of_old_residences": 317.13051284200003,
+    "number_of_new_residences": 449.86948715799997
+  },
+  "BU00140705_bruilweering": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "GM0457_weesp": {
+    "number_of_old_residences": 7415.9712,
+    "number_of_new_residences": 1224.0287999999996
+  },
+  "om_aalten": {
+    "number_of_old_residences": 9331.3,
+    "number_of_new_residences": 2443.7
+  },
+  "BU00140507_euvelgunne": {
+    "number_of_old_residences": 4.521116442,
+    "number_of_new_residences": 1.4788835580000002
+  },
+  "om_nijmegen": {
+    "number_of_old_residences": 63005.3,
+    "number_of_new_residences": 15672.7
+  },
+  "BU00140003_binnenstad_west": {
+    "number_of_old_residences": 896.602337854,
+    "number_of_new_residences": 109.39766214600002
+  },
+  "om_oude-ijsselstreek": {
+    "number_of_old_residences": 14353,
+    "number_of_new_residences": 2887
+  },
+  "pl": {
+    "number_of_old_residences": 11702711.5,
+    "number_of_new_residences": 1857788.5
+  },
+  "GM0632_woerden": {
+    "number_of_old_residences": 15133.592888848365,
+    "number_of_new_residences": 6268.407111151635
+  },
+  "om_nunspeet": {
+    "number_of_old_residences": 7839.7,
+    "number_of_new_residences": 2546.3
+  },
+  "GM0779_geertruidenberg": {
+    "number_of_old_residences": 7284.5,
+    "number_of_new_residences": 2268.5
+  },
+  "BU00141100_beijum_west": {
+    "number_of_old_residences": 2706.152811075,
+    "number_of_new_residences": 268.8471889250002
+  },
+  "BU00141000_selwerd": {
+    "number_of_old_residences": 244,
+    "number_of_new_residences": 3816
+  },
+  "GM0766_drimmelen": {
+    "number_of_old_residences": 9115.3,
+    "number_of_new_residences": 2385.7
+  },
+  "om_ede": {
+    "number_of_old_residences": 33908.8,
+    "number_of_new_residences": 14341.2
+  },
+  "BU00141102_de_hunze": {
+    "number_of_old_residences": 849.5404092,
+    "number_of_new_residences": 155.45959080000003
+  },
+  "BU00141300_middelbert": {
+    "number_of_old_residences": 33.904435532,
+    "number_of_new_residences": 7.095564467999999
+  },
+  "GM0373_bergen": {
+    "number_of_old_residences": 12746.8224,
+    "number_of_new_residences": 2229.1776000000004
+  },
+  "om_voorst": {
+    "number_of_old_residences": 7652.5,
+    "number_of_new_residences": 2138.5
+  },
+  "BU00140809_bangeweer": {
+    "number_of_old_residences": 89.143857306,
+    "number_of_new_residences": 8.856142694000006
+  },
+  "BU00141402_lageland": {
+    "number_of_old_residences": 28.520153888,
+    "number_of_new_residences": 3.4798461120000006
+  },
+  "BU00140008_stationsgebied": {
+    "number_of_old_residences": 9.647603625,
+    "number_of_new_residences": 65.352396375
+  },
+  "BU00140704_piccardthof": {
+    "number_of_old_residences": 11.770076514,
+    "number_of_new_residences": 415.229923486
+  },
+  "BU00140807_suikerfabriekterrein": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "BU00140502_eemskanaal": {
+    "number_of_old_residences": 9.042232884,
+    "number_of_new_residences": 2.9577671160000003
+  },
+  "BU00140806_gravenburg": {
+    "number_of_old_residences": 6.459300382,
+    "number_of_new_residences": 696.540699618
+  },
+  "BU00140805_leegkerk": {
+    "number_of_old_residences": 18.008860071999997,
+    "number_of_new_residences": 9.991139928
+  },
+  "BU00141209_noorddijk": {
+    "number_of_old_residences": 39.509233813,
+    "number_of_new_residences": 3.4907661870000006
+  },
+  "BU00141207_kardinge": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "BU00141003_zernike_campus": {
+    "number_of_old_residences": 3.014077628,
+    "number_of_new_residences": 0.9859223720000001
+  },
+  "BU00090005_achter_thesinge_en_bovenrijge": {
+    "number_of_old_residences": 27.56458173,
+    "number_of_new_residences": 2.4354182700000004
+  },
+  "BU00140403_florabuurt": {
+    "number_of_old_residences": 595.9462572,
+    "number_of_new_residences": 109.05374280000001
+  },
+  "om_hattem": {
+    "number_of_old_residences": 4274.2,
+    "number_of_new_residences": 885.8
+  },
+  "BU00140803_vierverlaten": {
+    "number_of_old_residences": 47.705102776000004,
+    "number_of_new_residences": 11.294897223999996
+  },
+  "GM0532_stede_broec": {
+    "number_of_old_residences": 6591.310079999999,
+    "number_of_new_residences": 2432.6899200000003
+  },
+  "om_cleantech-regio": {
+    "number_of_old_residences": 145404.8,
+    "number_of_new_residences": 36351.2
+  },
+  "BU00090101_winneweer_gedeeltelijk": {
+    "number_of_old_residences": 36.752775639999996,
+    "number_of_new_residences": 3.2472243600000006
+  },
+  "GM0370_beemster": {
+    "number_of_old_residences": 2818.30362,
+    "number_of_new_residences": 838.69638
+  },
+  "BU00140201_noorderplantsoenbuurt": {
+    "number_of_old_residences": 2053.947242826,
+    "number_of_new_residences": 204.0527571740001
+  },
+  "om_doesburg": {
+    "number_of_old_residences": 3989.7,
+    "number_of_new_residences": 1177.3
+  },
+  "BU00140508_winschoterdiep": {
+    "number_of_old_residences": 6.028155256,
+    "number_of_new_residences": 1.9718447440000002
+  },
+  "GM1961_vijfheerenlanden": {
+    "number_of_old_residences": 17898.199999999277,
+    "number_of_new_residences": 4610.800000000724
+  },
+  "GM0995_lelystad": {
+    "number_of_old_residences": 22980.699999999993,
+    "number_of_new_residences": 9774.300000000008
+  },
+  "BU00140506_eemspoort": {
+    "number_of_old_residences": 9.042232884,
+    "number_of_new_residences": 2.9577671160000003
+  },
+  "be": {
+    "number_of_old_residences": 4148547.5,
+    "number_of_new_residences": 923026.5
+  },
+  "GM1709_woudrichem": {
+    "number_of_old_residences": 4475.4,
+    "number_of_new_residences": 1455.6
+  },
+  "BU00141004_selwerderhof": {
+    "number_of_old_residences": 2.260558221,
+    "number_of_new_residences": 0.7394417790000001
+  },
+  "GM0473_zandvoort": {
+    "number_of_old_residences": 7901.239500000001,
+    "number_of_new_residences": 1548.7604999999999
+  },
+  "rotterdam": {
+    "number_of_old_residences": 251058,
+    "number_of_new_residences": 60110
+  },
+  "om_neerijnen": {
+    "number_of_old_residences": 3535.7,
+    "number_of_new_residences": 1124.3
+  },
+  "BU00140606_de_wijert_zuid": {
+    "number_of_old_residences": 1202.0914092599999,
+    "number_of_new_residences": 267.90859074
+  },
+  "om_nijkerk": {
+    "number_of_old_residences": 11286,
+    "number_of_new_residences": 4636
+  },
+  "BU00141203_oosterhoogebrug": {
+    "number_of_old_residences": 801.357520176,
+    "number_of_new_residences": 302.64247982399996
+  },
+  "GM0484_alphen_aan_den_rijn": {
+    "number_of_old_residences": 35342.99999999999,
+    "number_of_new_residences": 10625.000000000004
+  },
+  "om_maasdriel": {
+    "number_of_old_residences": 7061.9,
+    "number_of_new_residences": 2577.1
+  },
+  "RGNH02_zaanstreek_waterland": {
+    "number_of_old_residences": 106688.50693999999,
+    "number_of_new_residences": 37129.49306
+  },
+  "GM1904_stichtse_vecht": {
+    "number_of_old_residences": 22289.899999999496,
+    "number_of_new_residences": 5271.100000000502
+  },
+  "BU00140100_de_meeuwen": {
+    "number_of_old_residences": 358.890854292,
+    "number_of_new_residences": 199.10914570800003
+  },
+  "RGUT01_u16": {
+    "number_of_old_residences": 297008.75699528103,
+    "number_of_new_residences": 102792.243004719
+  },
+  "GM0377_bloemendaal": {
+    "number_of_old_residences": 8294.8229,
+    "number_of_new_residences": 1358.1771000000006
+  },
+  "GM0352_wijk_bij_duurstede": {
+    "number_of_old_residences": 7155.899999999772,
+    "number_of_new_residences": 2701.1000000002273
+  },
+  "BU00140109_martini_trade_park": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "om_achterhoek": {
+    "number_of_old_residences": 101328.4,
+    "number_of_new_residences": 28783.6
+  },
+  "om_haarlemmermeer": {
+    "number_of_old_residences": 37610.3,
+    "number_of_new_residences": 24364.7
+  },
+  "om_lingewaal": {
+    "number_of_old_residences": 3523.8,
+    "number_of_new_residences": 977.2
+  },
+  "GM0388_enkhuizen": {
+    "number_of_old_residences": 6292.672299999999,
+    "number_of_new_residences": 2349.3277000000003
+  },
+  "BU00140810_de_buitenhof": {
+    "number_of_old_residences": 442.05319711,
+    "number_of_new_residences": 110.94680288999999
+  },
+  "BU00140000_binnenstad_noord": {
+    "number_of_old_residences": 2075.521121915,
+    "number_of_new_residences": 229.47887808499996
+  },
+  "GM0392_haarlem": {
+    "number_of_old_residences": 63884.19888,
+    "number_of_new_residences": 9789.80112
+  },
+  "BU00140511_waterhuizen": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "GM0498_drechterland": {
+    "number_of_old_residences": 5357.68532,
+    "number_of_new_residences": 2750.31468
+  },
+  "GM0873_tholen": {
+    "number_of_old_residences": 8176.9,
+    "number_of_new_residences": 2449.1
+  },
+  "BU00140106_zeeheldenbuurt": {
+    "number_of_old_residences": 1301.0482571250002,
+    "number_of_new_residences": 173.95174287499992
+  },
+  "BU00140800_hoogkerk_dorp": {
+    "number_of_old_residences": 658.141141985,
+    "number_of_new_residences": 204.85885801499995
+  },
+  "GM0826_moerdijk": {
+    "number_of_old_residences": 11551.6,
+    "number_of_new_residences": 4564.4
+  },
+  "GM0375_beverwijk": {
+    "number_of_old_residences": 13902.505739999999,
+    "number_of_new_residences": 4943.49426
+  },
+  "GM1598_koggenland": {
+    "number_of_old_residences": 6213.05286,
+    "number_of_new_residences": 3005.94714
+  },
+  "GM1695_noord_beveland": {
+    "number_of_old_residences": 3484.2,
+    "number_of_new_residences": 862.8
+  },
+  "GM0397_heemstede": {
+    "number_of_old_residences": 10524.4372,
+    "number_of_new_residences": 1995.5628000000004
+  },
+  "GM0798_heusden": {
+    "number_of_old_residences": 13670.1,
+    "number_of_new_residences": 4610.9
+  },
+  "BU00141106_koningslaagte": {
+    "number_of_old_residences": 20.2140266,
+    "number_of_new_residences": 4.785973399999999
+  },
+  "om_mook-en-middelaar": {
+    "number_of_old_residences": 2679.6,
+    "number_of_new_residences": 864.4
+  },
+  "om_arnhem": {
+    "number_of_old_residences": 57144.2,
+    "number_of_new_residences": 14817.8
+  },
+  "PV21_friesland": {
+    "number_of_old_residences": 231625.92763338,
+    "number_of_new_residences": 63914.07236661999
+  },
+  "BU00140504_woonschepenhaven": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "GM0797_halderberge": {
+    "number_of_old_residences": 10074.6,
+    "number_of_new_residences": 2952.4
+  },
+  "BU00140509_stainkoeln": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "om_heumen": {
+    "number_of_old_residences": 4524.8,
+    "number_of_new_residences": 2420.2
+  },
+  "example": {
+    "number_of_old_residences": 34465360,
+    "number_of_new_residences": 5610640
+  },
+  "BU00141401_harkstede": {
+    "number_of_old_residences": 70.703152182,
+    "number_of_new_residences": 10.296847818000002
+  },
+  "GM0736_de_ronde_venen": {
+    "number_of_old_residences": 13893.799999999803,
+    "number_of_new_residences": 3714.2000000001967
+  },
+  "GM0307_amersfoort": {
+    "number_of_old_residences": 44086.44,
+    "number_of_new_residences": 20746.56
+  },
+  "BU00090009_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
+    "number_of_old_residences": 122.662388654,
+    "number_of_new_residences": 55.337611346
+  },
+  "GM0441_schagen": {
+    "number_of_old_residences": 14871.043409999998,
+    "number_of_new_residences": 4941.956590000001
+  },
+  "BU00140900_vinkhuizen_noord": {
+    "number_of_old_residences": 2421.364742628,
+    "number_of_new_residences": 352.635257372
+  },
+  "BU00140103_rivierenbuurt": {
+    "number_of_old_residences": 2068.77698756,
+    "number_of_new_residences": 519.2230124399999
+  },
+  "GM0358_aalsmeer": {
+    "number_of_old_residences": 7592.6876999999995,
+    "number_of_new_residences": 5300.3123000000005
+  },
+  "om_barneveld": {
+    "number_of_old_residences": 12670,
+    "number_of_new_residences": 7928
+  },
+  "BU00141002_paddepoel_noord": {
+    "number_of_old_residences": 2815.03291095,
+    "number_of_new_residences": 409.96708905
+  },
+  "GM0758_dongen": {
+    "number_of_old_residences": 8032.1,
+    "number_of_new_residences": 2759.9
+  },
+  "om_deventer": {
+    "number_of_old_residences": 31824.7,
+    "number_of_new_residences": 11033.3
+  },
+  "GM0870_steenbergen": {
+    "number_of_old_residences": 8010,
+    "number_of_new_residences": 1996
+  },
+  "noorderplantsoen": {
+    "number_of_old_residences": 2009,
+    "number_of_new_residences": 152
+  },
+  "GM0393_haarlemmerliede_en_spaarnwoude": {
+    "number_of_old_residences": 1791.2921099999999,
+    "number_of_new_residences": 489.70789000000013
+  },
+  "GM0880_wormerland": {
+    "number_of_old_residences": 5050.22988,
+    "number_of_new_residences": 1633.7701200000001
+  },
+  "om_neder-betuwe": {
+    "number_of_old_residences": 6292.7,
+    "number_of_new_residences": 1957.3
+  },
+  "GM0402_hilversum": {
+    "number_of_old_residences": 35746.53216,
+    "number_of_new_residences": 5375.4678399999975
+  },
+  "BU00141005_tuinwijk": {
+    "number_of_old_residences": 806.7234252979999,
+    "number_of_new_residences": 71.27657470200002
+  },
+  "GM0627_waddinxveen": {
+    "number_of_old_residences": 8709.699999999999,
+    "number_of_new_residences": 2538.3000000000015
+  },
+  "BU00170004_glimmen": {
+    "number_of_old_residences": 395.48743055799997,
+    "number_of_new_residences": 77.51256944200003
+  },
+  "GM0312_bunnik": {
+    "number_of_old_residences": 4929.39999999983,
+    "number_of_new_residences": 1339.60000000017
+  },
+  "BU00140400_gorechtbuurt": {
+    "number_of_old_residences": 2182.490075112,
+    "number_of_new_residences": 579.5099248880001
+  },
+  "BU00141302_klein_harkstede": {
+    "number_of_old_residences": 26.73764427,
+    "number_of_new_residences": 3.2623557300000003
+  },
+  "GM0321_houten": {
+    "number_of_old_residences": 9436.199999999353,
+    "number_of_new_residences": 10105.800000000649
+  },
+  "BU00140808_peizerweg": {
+    "number_of_old_residences": 8.288713477,
+    "number_of_new_residences": 2.711286523
+  },
+  "PV26_utrecht": {
+    "number_of_old_residences": 401295.6,
+    "number_of_new_residences": 142177.4
+  },
+  "PV23_overijssel": {
+    "number_of_old_residences": 363274.07143389597,
+    "number_of_new_residences": 130484.92856610402
+  },
+  "om_noord-veluwe": {
+    "number_of_old_residences": 58989.8,
+    "number_of_new_residences": 21483.2
+  },
+  "GM0453_velsen": {
+    "number_of_old_residences": 24830.66214,
+    "number_of_new_residences": 5772.337860000001
+  },
+  "om_elburg": {
+    "number_of_old_residences": 7009.5,
+    "number_of_new_residences": 2091.5
+  },
+  "GM1940_de_fryske_marren": {
+    "number_of_old_residences": 16797.927059999998,
+    "number_of_new_residences": 6020.07294
+  },
+  "BU00140501_europapark": {
+    "number_of_old_residences": 0,
+    "number_of_new_residences": 643
+  },
+  "BU00141208_drielanden": {
+    "number_of_old_residences": 359.258381881,
+    "number_of_new_residences": 31.741618119000005
+  },
+  "BU00140505_driebond": {
+    "number_of_old_residences": 2.260558221,
+    "number_of_new_residences": 0.7394417790000001
+  },
+  "BU00140104_grunobuurt": {
+    "number_of_old_residences": 870.967277556,
+    "number_of_new_residences": 285.032722444
+  },
+  "GM0303_dronten": {
+    "number_of_old_residences": 9405.699999999997,
+    "number_of_new_residences": 7089.300000000002
+  },
+  "BU00140203_kostverloren": {
+    "number_of_old_residences": 1084.133375472,
+    "number_of_new_residences": 287.86662452800005
+  },
+  "nl2013": {
+    "number_of_old_residences": 5788104.5,
+    "number_of_new_residences": 1661193.5
+  },
+  "BU00141001_paddepoel_zuid": {
+    "number_of_old_residences": 1313.9117290000002,
+    "number_of_new_residences": 1286.0882709999998
+  },
+  "BU00140510_roodehaan": {
+    "number_of_old_residences": 6.7816746629999995,
+    "number_of_new_residences": 2.2183253370000005
+  },
+  "GM0432_opmeer": {
+    "number_of_old_residences": 3433.9968,
+    "number_of_new_residences": 1246.0032
+  },
+  "GM0383_castricum": {
+    "number_of_old_residences": 11964.338459999999,
+    "number_of_new_residences": 3494.6615400000005
+  },
+  "GM0406_huizen": {
+    "number_of_old_residences": 15209.74336,
+    "number_of_new_residences": 3382.2566399999996
+  },
+  "om_zutphen": {
+    "number_of_old_residences": 16454.1,
+    "number_of_new_residences": 5240.9
+  },
+  "om_regio_arnhem-nijmegen": {
+    "number_of_old_residences": 253004.3,
+    "number_of_new_residences": 74918.7
+  },
+  "veere": {
+    "number_of_old_residences": 8608.3,
+    "number_of_new_residences": 2108.7
+  },
+  "BU00140500_de_linie": {
+    "number_of_old_residences": 78.5590578,
+    "number_of_new_residences": 371.4409422
+  },
+  "PV29_zeeland": {
+    "number_of_old_residences": 144911.3,
+    "number_of_new_residences": 37756.7
+  },
+  "s_heer_hendrikskinderen": {
+    "number_of_old_residences": 405.488492422529,
+    "number_of_new_residences": 129.511507577471
+  },
+  "GM1901_bodegraven_reeuwijk": {
+    "number_of_old_residences": 10799.3,
+    "number_of_new_residences": 3208.7000000000007
+  },
+  "GM0355_zeist": {
+    "number_of_old_residences": 23256.39999999869,
+    "number_of_new_residences": 4700.600000001308
+  },
+  "BU00140604_helpman": {
+    "number_of_old_residences": 2965.167999534,
+    "number_of_new_residences": 431.83200046600007
+  },
+  "om_doetinchem": {
+    "number_of_old_residences": 18398.5,
+    "number_of_new_residences": 6640.5
+  },
+  "BU00140906_de_held": {
+    "number_of_old_residences": 869.883070612,
+    "number_of_new_residences": 148.116929388
+  },
+  "BU00140300_de_hoogte": {
+    "number_of_old_residences": 1886.5199732,
+    "number_of_new_residences": 473.48002679999996
+  },
+  "BU00140605_de_wijert": {
+    "number_of_old_residences": 2300.328662754,
+    "number_of_new_residences": 512.671337246
+  },
+  "BU00090102_woltersum": {
+    "number_of_old_residences": 117.425118184,
+    "number_of_new_residences": 24.574881815999998
+  },
+  "BU00090003_sint_annen": {
+    "number_of_old_residences": 47.962372216,
+    "number_of_new_residences": 10.037627784
+  },
+  "nl2012": {
+    "number_of_old_residences": 5739499.3,
+    "number_of_new_residences": 1647243.7
+  },
+  "om_west-maas-en-waal": {
+    "number_of_old_residences": 5975,
+    "number_of_new_residences": 1896
+  },
+  "BU00140602_klein_martijn": {
+    "number_of_old_residences": 267.376442781,
+    "number_of_new_residences": 23.623557219000006
+  },
+  "PV20_groningen": {
+    "number_of_old_residences": 222965.05000000002,
+    "number_of_new_residences": 66599.94999999998
+  },
+  "GM0353_ijsselstein": {
+    "number_of_old_residences": 7730.09999999951,
+    "number_of_new_residences": 6438.90000000049
+  },
+  "oostkapelle": {
+    "number_of_old_residences": 1070.9975,
+    "number_of_new_residences": 254.0025
+  },
+  "BU00140202_schildersbuurt": {
+    "number_of_old_residences": 2212.74679977,
+    "number_of_new_residences": 322.25320023
+  },
+  "BU00140302_professorenbuurt": {
+    "number_of_old_residences": 2217.40521275,
+    "number_of_new_residences": 876.5947872500001
+  },
+  "PV27_noord_holland": {
+    "number_of_old_residences": 1006024.96433,
+    "number_of_new_residences": 294068.03567
+  },
+  "BU00140401_vogelbuurt": {
+    "number_of_old_residences": 1095.9034521190001,
+    "number_of_new_residences": 453.09654788099994
+  },
+  "om_renswoude": {
+    "number_of_old_residences": 1171.6,
+    "number_of_new_residences": 665.4
+  },
+  "BU00140002_binnenstad_oost": {
+    "number_of_old_residences": 1894.725030786,
+    "number_of_new_residences": 422.27496921400007
+  },
+  "GM1723_zundert": {
+    "number_of_old_residences": 6804.3,
+    "number_of_new_residences": 2392.7
+  },
+  "RGNB01_west_en_midden_brabant": {
+    "number_of_old_residences": 380199.4,
+    "number_of_new_residences": 130817.6
+  },
+  "BU00141206_zilvermeer": {
+    "number_of_old_residences": 79.018467626,
+    "number_of_new_residences": 6.981532374000001
+  },
+  "GM0448_texel": {
+    "number_of_old_residences": 5010.1092,
+    "number_of_new_residences": 1459.8907999999997
+  },
+  "GM0716_alphen_chaam": {
+    "number_of_old_residences": 3111.1,
+    "number_of_new_residences": 1102.9
+  },
+  "GM1655_werkendam": {
+    "number_of_old_residences": 8232.8,
+    "number_of_new_residences": 2287.2
+  },
+  "GM1911_hollands_kroon": {
+    "number_of_old_residences": 15793.899140000001,
+    "number_of_new_residences": 4760.10086
+  },
+  "GM0171_noordoostpolder": {
+    "number_of_old_residences": 14234.700000000008,
+    "number_of_new_residences": 5348.299999999991
+  },
+  "BU00170003_harenermolen": {
+    "number_of_old_residences": 128.76334942900002,
+    "number_of_new_residences": 14.236650570999997
+  },
+  "om_renkum": {
+    "number_of_old_residences": 12808.7,
+    "number_of_new_residences": 1849.3
+  },
+  "PV24_flevoland": {
+    "number_of_old_residences": 86033.574522,
+    "number_of_new_residences": 76884.425478
+  },
+  "de_biezen": {
+    "number_of_old_residences": 1330,
+    "number_of_new_residences": 0
+  },
+  "GM0420_medemblik": {
+    "number_of_old_residences": 13127.61876,
+    "number_of_new_residences": 5274.38124
+  },
+  "BU00170102_paterswolde_gedeeltelijk": {
+    "number_of_old_residences": 38.810931072,
+    "number_of_new_residences": 9.189068927999998
+  },
+  "BU00140802_westpoort": {
+    "number_of_old_residences": 2.260558221,
+    "number_of_new_residences": 0.7394417790000001
+  },
+  "om_rhenen": {
+    "number_of_old_residences": 5967.1,
+    "number_of_new_residences": 1724.9
+  },
+  "om_scherpenzeel": {
+    "number_of_old_residences": 2814.4,
+    "number_of_new_residences": 896.6
+  },
+  "BU00170002_voorveld": {
+    "number_of_old_residences": 55.184292635999995,
+    "number_of_new_residences": 10.815707364000003
+  },
+  "BU00141200_lewenborg_noord": {
+    "number_of_old_residences": 1530.0180504,
+    "number_of_new_residences": 279.9819496
+  },
+  "om_rheden": {
+    "number_of_old_residences": 18532.1,
+    "number_of_new_residences": 2398.9
+  },
+  "BU00140004_noorderplantsoen": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "BU00140001_binnenstad_zuid": {
+    "number_of_old_residences": 3153.259514242,
+    "number_of_new_residences": 384.7404857580001
+  },
+  "om_bronckhorst": {
+    "number_of_old_residences": 12850.3,
+    "number_of_new_residences": 3223.7
+  },
+  "GM0439_purmerend": {
+    "number_of_old_residences": 24058.1286,
+    "number_of_new_residences": 11521.871399999998
+  },
+  "gemeente_groningen": {
+    "number_of_old_residences": 88551.6899,
+    "number_of_new_residences": 21001.3101
+  },
+  "GM0744_bergen_op_zoom": {
+    "number_of_old_residences": 23347.6,
+    "number_of_new_residences": 6390.4
+  },
+  "om_rivierenland": {
+    "number_of_old_residences": 69845.8,
+    "number_of_new_residences": 25943.2
+  },
+  "baarland": {
+    "number_of_old_residences": 203.82,
+    "number_of_new_residences": 54.18
+  },
+  "uk": {
+    "number_of_old_residences": 21084050.4,
+    "number_of_new_residences": 6051149.6
+  },
+  "BU00140301_indische_buurt": {
+    "number_of_old_residences": 3977.2016172,
+    "number_of_new_residences": 727.7983828000001
+  },
+  "GM0361_alkmaar": {
+    "number_of_old_residences": 40652.38116,
+    "number_of_new_residences": 9693.618840000003
+  },
+  "GM0809_hilvarenbeek": {
+    "number_of_old_residences": 4737.7,
+    "number_of_new_residences": 1738.3
+  },
+  "BU00140108_stadspark": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "BU00140101_oosterpoort": {
+    "number_of_old_residences": 2517.41811921,
+    "number_of_new_residences": 336.58188078999984
+  },
+  "stichtse_vecht": {
+    "number_of_old_residences": 22405.9,
+    "number_of_new_residences": 5155.1
+  },
+  "BU00140404_damsterbuurt": {
+    "number_of_old_residences": 333.356863532,
+    "number_of_new_residences": 163.64313646800002
+  },
+  "GM0513_gouda": {
+    "number_of_old_residences": 26335.699999999997,
+    "number_of_new_residences": 5532.300000000005
+  },
+  "reitdiep": {
+    "number_of_old_residences": 0,
+    "number_of_new_residences": 918
+  },
+  "om_putten": {
+    "number_of_old_residences": 6762.1,
+    "number_of_new_residences": 2806.9
+  },
+  "GM0184_urk": {
+    "number_of_old_residences": 3634.7000000000003,
+    "number_of_new_residences": 2563.2999999999997
+  },
+  "om_winterswijk": {
+    "number_of_old_residences": 10525.3,
+    "number_of_new_residences": 2335.7
+  },
+  "BU00141103_van_starkenborgh": {
+    "number_of_old_residences": 0,
+    "number_of_new_residences": 295
+  },
+  "om_overbetuwe": {
+    "number_of_old_residences": 12415,
+    "number_of_new_residences": 6423
+  },
+  "BU00170001_oosterhaar": {
+    "number_of_old_residences": 1859.690448,
+    "number_of_new_residences": 340.30955200000005
+  },
+  "GM0546_leiden": {
+    "number_of_old_residences": 47670.59999999998,
+    "number_of_new_residences": 8965.400000000021
+  },
+  "BU00170100_noordlaren": {
+    "number_of_old_residences": 153.47959101,
+    "number_of_new_residences": 20.52040898999999
+  },
+  "GM0362_amstelveen": {
+    "number_of_old_residences": 33544.53805,
+    "number_of_new_residences": 9500.461949999999
+  },
+  "om_harderwijk": {
+    "number_of_old_residences": 11952.3,
+    "number_of_new_residences": 6759.7
+  },
+  "BU00141101_beijum_oost": {
+    "number_of_old_residences": 2891.5246234769997,
+    "number_of_new_residences": 255.47537652300005
+  },
+  "BU00140907_westpark": {
+    "number_of_old_residences": 4.521116442,
+    "number_of_new_residences": 1.4788835580000002
+  },
+  "BU00170108_verspreide_huizen_onner_esch": {
+    "number_of_old_residences": 77.438098248,
+    "number_of_new_residences": 20.561901752000004
+  },
+  "GM0385_edam_volendam": {
+    "number_of_old_residences": 10822.6854,
+    "number_of_new_residences": 4117.3146
+  },
+  "GM0450_uitgeest": {
+    "number_of_old_residences": 3493.6865599999996,
+    "number_of_new_residences": 2054.3134400000004
+  },
+  "BU00140700_corpus_den_hoorn": {
+    "number_of_old_residences": 1999.038596526,
+    "number_of_new_residences": 754.961403474
+  },
+  "GM0335_montfoort": {
+    "number_of_old_residences": 4276.5000000001355,
+    "number_of_new_residences": 1295.4999999998647
+  },
+  "GM0417_laren": {
+    "number_of_old_residences": 4488.4182,
+    "number_of_new_residences": 691.5818
+  },
+  "GM1674_woensdrecht": {
+    "number_of_old_residences": 7686,
+    "number_of_new_residences": 1956
+  },
+  "RGNH04_amstelland_meerlanden": {
+    "number_of_old_residences": 102749.725464,
+    "number_of_new_residences": 47072.274536000004
+  },
+  "BU00141204_ulgersmaborg": {
+    "number_of_old_residences": 759.973894532,
+    "number_of_new_residences": 84.02610546799998
+  },
+  "BU00141301_engelbert": {
+    "number_of_old_residences": 297.10943817599997,
+    "number_of_new_residences": 78.890561824
+  },
+  "GM0398_heerhugowaard": {
+    "number_of_old_residences": 12612.973600000001,
+    "number_of_new_residences": 9699.026399999999
+  },
+  "GM1696_wijdemeren": {
+    "number_of_old_residences": 8605.22614,
+    "number_of_new_residences": 1775.7738599999998
+  },
+  "GM0384_diemen": {
+    "number_of_old_residences": 10407.33568,
+    "number_of_new_residences": 2808.6643200000008
+  },
+  "om_beuningen": {
+    "number_of_old_residences": 7823.2,
+    "number_of_new_residences": 2757.8
+  },
+  "nl": {
+    "number_of_old_residences": 5688299,
+    "number_of_new_residences": 1899665
+  },
+  "GM0396_heemskerk": {
+    "number_of_old_residences": 12151.99227,
+    "number_of_new_residences": 5305.00773
+  },
+  "om_druten": {
+    "number_of_old_residences": 5168.8,
+    "number_of_new_residences": 2438.2
+  },
+  "RGNH07_west_friesland": {
+    "number_of_old_residences": 64051.76946,
+    "number_of_new_residences": 26446.23054
+  },
+  "BU00090100_ten_post": {
+    "number_of_old_residences": 247.49319121599999,
+    "number_of_new_residences": 48.506808784000015
+  },
+  "BU00140901_vinkhuizen_zuid": {
+    "number_of_old_residences": 1732.599349896,
+    "number_of_new_residences": 595.4006501040001
+  },
+  "GM0785_goirle": {
+    "number_of_old_residences": 7402.5,
+    "number_of_new_residences": 2503.5
+  },
+  "antwerpen": {
+    "number_of_old_residences": 183703.8,
+    "number_of_new_residences": 78730.2
+  },
+  "BU00140402_bloemenbuurt": {
+    "number_of_old_residences": 1617.627478335,
+    "number_of_new_residences": 197.37252166500002
+  },
+  "BU00140600_sterrebosbuurt": {
+    "number_of_old_residences": 28.226131679999998,
+    "number_of_new_residences": 67.77386832
+  },
+  "om_epe": {
+    "number_of_old_residences": 11479.1,
+    "number_of_new_residences": 2359.9
+  },
+  "GM0399_heiloo": {
+    "number_of_old_residences": 7849.120320000001,
+    "number_of_new_residences": 2383.8796799999996
+  },
+  "GM0852_waterland": {
+    "number_of_old_residences": 6314.0168,
+    "number_of_new_residences": 965.9831999999998
+  },
+  "om_oost-gelre": {
+    "number_of_old_residences": 9676.9,
+    "number_of_new_residences": 2977.1
+  },
+  "om_brummen": {
+    "number_of_old_residences": 7404.5,
+    "number_of_new_residences": 1845.5
+  },
+  "de": {
+    "number_of_old_residences": 34621708,
+    "number_of_new_residences": 5636092
+  },
+  "BU00140904_reitdiep": {
+    "number_of_old_residences": 0,
+    "number_of_new_residences": 1025
+  },
+  "GM0344_utrecht": {
+    "number_of_old_residences": 106969.46724528272,
+    "number_of_new_residences": 42350.532754717286
+  },
+  "GM0479_zaanstad": {
+    "number_of_old_residences": 51053.74484,
+    "number_of_new_residences": 15907.255159999999
+  },
+  "RGNB02_west_brabant": {
+    "number_of_old_residences": 238194.8,
+    "number_of_new_residences": 78210.2
+  },
+  "RGNH03_gooi_en_vechtstreek": {
+    "number_of_old_residences": 98260.4608,
+    "number_of_new_residences": 16155.5392
+  },
+  "GM0356_nieuwegein": {
+    "number_of_old_residences": 22404.199999999797,
+    "number_of_new_residences": 5394.800000000205
+  },
+  "om_lingewaard": {
+    "number_of_old_residences": 13268,
+    "number_of_new_residences": 5946
+  },
+  "BU00141107_hunzeboord": {
+    "number_of_old_residences": 0.753519407,
+    "number_of_new_residences": 0.24648059300000003
+  },
+  "dk": {
+    "number_of_old_residences": 2080272.08945641,
+    "number_of_new_residences": 694727.910543592
+  },
+  "br": {
+    "number_of_old_residences": 35892720,
+    "number_of_new_residences": 13958280
+  },
+  "GM0874_tilburg": {
+    "number_of_old_residences": 67930.6,
+    "number_of_new_residences": 27848.4
+  },
+  "BU00140601_coendersborg": {
+    "number_of_old_residences": 1406.620605852,
+    "number_of_new_residences": 294.37939414799996
+  },
+  "GM0867_rucphen": {
+    "number_of_old_residences": 7573.1,
+    "number_of_new_residences": 1960.9
+  },
+  "GM0784_gilze_en_rijen": {
+    "number_of_old_residences": 8094.3,
+    "number_of_new_residences": 3043.7
+  },
+  "om_foodvalley": {
+    "number_of_old_residences": 101682,
+    "number_of_new_residences": 42269
+  },
+  "bd_etten-leur": {
+    "number_of_old_residences": 11921.1,
+    "number_of_new_residences": 6486.9
+  },
+  "GM0416_langedijk": {
+    "number_of_old_residences": 7234.18432,
+    "number_of_new_residences": 4061.81568
+  },
+  "GM0879_waalwijk": {
+    "number_of_old_residences": 15914.5,
+    "number_of_new_residences": 5037.5
+  },
+  "om_berg-en-dal": {
+    "number_of_old_residences": 11289.2,
+    "number_of_new_residences": 3803.8
+  },
+  "om_heerde": {
+    "number_of_old_residences": 6061.5,
+    "number_of_new_residences": 1720.5
+  },
+  "om_zaltbommel": {
+    "number_of_old_residences": 7617.8,
+    "number_of_new_residences": 3183.2
+  },
+  "GM0400_den_helder": {
+    "number_of_old_residences": 23893.15341,
+    "number_of_new_residences": 4045.8465899999997
+  },
+  "GM1942_gooise_meren": {
+    "number_of_old_residences": 23109.38994,
+    "number_of_new_residences": 3028.610060000001
+  },
+  "BU00090109_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
+    "number_of_old_residences": 57.003555047999996,
+    "number_of_new_residences": 8.996444952000003
+  },
+  "GM0034_almere": {
+    "number_of_old_residences": 32456.99999999999,
+    "number_of_new_residences": 47264.000000000015
+  },
+  "om_wijchen": {
+    "number_of_old_residences": 12492.3,
+    "number_of_new_residences": 5013.7
+  },
+  "GM0310_de_bilt": {
+    "number_of_old_residences": 16923.25716510838,
+    "number_of_new_residences": 2338.74283489162
+  },
+  "fr": {
+    "number_of_old_residences": 21562060.8,
+    "number_of_new_residences": 6188339.2
+  },
+  "BU00141400_meerstad": {
+    "number_of_old_residences": 0,
+    "number_of_new_residences": 226
+  },
+  "om_rozendaal": {
+    "number_of_old_residences": 491.5,
+    "number_of_new_residences": 143.5
+  },
+  "es": {
+    "number_of_old_residences": 14992982,
+    "number_of_new_residences": 2440718
+  },
+  "om_tiel": {
+    "number_of_old_residences": 12428.2,
+    "number_of_new_residences": 5225.8
+  },
+  "GM0824_loon_op_zand": {
+    "number_of_old_residences": 7645.1,
+    "number_of_new_residences": 2464.9
+  },
+  "GM1892_zuidplas": {
+    "number_of_old_residences": 12112.199999999997,
+    "number_of_new_residences": 4674.800000000004
+  },
+  "om_apeldoorn": {
+    "number_of_old_residences": 54123.1,
+    "number_of_new_residences": 15680.9
+  },
+  "RGNB03_hart_van_brabant": {
+    "number_of_old_residences": 142004.6,
+    "number_of_new_residences": 52607.4
+  },
+  "BU00140702_hoornse_park": {
+    "number_of_old_residences": 270.160465509,
+    "number_of_new_residences": 26.839534491000016
+  },
+  "BU00140105_badstratenbuurt": {
+    "number_of_old_residences": 550.795471962,
+    "number_of_new_residences": 67.204528038
+  },
+  "om_westervoort": {
+    "number_of_old_residences": 5279.1,
+    "number_of_new_residences": 1264.9
+  },
+  "GM0738_aalburg": {
+    "number_of_old_residences": 3435.1,
+    "number_of_new_residences": 1595.9
+  },
+  "BU00140005_hortusbuurt_ebbingekwartier": {
+    "number_of_old_residences": 2021.586423615,
+    "number_of_new_residences": 873.4135763849999
+  },
+  "BU00170107_verspreide_huizen_op_de_hondsrug": {
+    "number_of_old_residences": 116.965708548,
+    "number_of_new_residences": 17.034291452
+  },
+  "BU00140007_umcg": {
+    "number_of_old_residences": 1.507038814,
+    "number_of_new_residences": 0.49296118600000005
+  },
+  "GM0589_oudewater": {
+    "number_of_old_residences": 3288.900000000125,
+    "number_of_new_residences": 981.0999999998751
+  },
+  "BU00140902_hoendiep": {
+    "number_of_old_residences": 37.533772146,
+    "number_of_new_residences": 5.466227854
+  },
+  "BU00090001_garmerwolde": {
+    "number_of_old_residences": 158.08287629,
+    "number_of_new_residences": 26.917123709999995
+  },
+  "eu": {
+    "number_of_old_residences": 163616697.3,
+    "number_of_new_residences": 46958202.7
+  },
+  "BU00140811_kranenburg": {
+    "number_of_old_residences": 2.260558221,
+    "number_of_new_residences": 0.7394417790000001
+  },
+  "BU00140903_friesestraatweg": {
+    "number_of_old_residences": 338.330213743,
+    "number_of_new_residences": 110.66978625700001
+  },
+  "GM0415_landsmeer": {
+    "number_of_old_residences": 3698.08296,
+    "number_of_new_residences": 969.9170399999998
+  },
+  "friesland": {
+    "number_of_old_residences": 232769.4,
+    "number_of_new_residences": 62770.6
+  },
+  "BU00090104_wittewierum": {
+    "number_of_old_residences": 22.051665375000002,
+    "number_of_new_residences": 2.9483346249999984
+  },
+  "RGNH01_ijmond_zuid_kennemerland": {
+    "number_of_old_residences": 141489.733935,
+    "number_of_new_residences": 30713.266065000007
+  },
+  "BU00140801_hoogkerk_zuid": {
+    "number_of_old_residences": 1815.9546450799999,
+    "number_of_new_residences": 624.04535492
+  },
+  "om_buren": {
+    "number_of_old_residences": 7657.3,
+    "number_of_new_residences": 2665.7
+  },
+  "BU00141202_lewenborg_west": {
+    "number_of_old_residences": 751.594261838,
+    "number_of_new_residences": 66.405738162
+  },
+  "BU00141210_ruischerbrug": {
+    "number_of_old_residences": 170.569631869,
+    "number_of_new_residences": 50.430368131
+  },
+  "BU00170101_onnen": {
+    "number_of_old_residences": 154.435163224,
+    "number_of_new_residences": 36.56483677599999
+  },
+  "paddepoel_noord": {
+    "number_of_old_residences": 367,
+    "number_of_new_residences": 18
+  },
+  "BU00141105_het_witte_lam": {
+    "number_of_old_residences": 12.809829919,
+    "number_of_new_residences": 4.190170081000001
+  },
+  "om_wageningen": {
+    "number_of_old_residences": 15066.5,
+    "number_of_new_residences": 4463.5
+  },
+  "GM0451_uithoorn": {
+    "number_of_old_residences": 9454.4505,
+    "number_of_new_residences": 3382.5494999999996
+  },
+  "BU00140812_de_kring": {
+    "number_of_old_residences": 9.42708693,
+    "number_of_new_residences": 47.57291307
+  },
+  "BU00140703_van_swieten": {
+    "number_of_old_residences": 1.507038814,
+    "number_of_new_residences": 0.49296118600000005
+  },
+  "GM0363_amsterdam": {
+    "number_of_old_residences": 336660.0992,
+    "number_of_new_residences": 87729.9008
+  },
+  "om_montferland": {
+    "number_of_old_residences": 11527.1,
+    "number_of_new_residences": 3642.9
+  },
+  "BU00090106_lellens": {
+    "number_of_old_residences": 18.330446862,
+    "number_of_new_residences": 2.6695531380000004
+  },
+  "PV22_drenthe": {
+    "number_of_old_residences": 160949,
+    "number_of_new_residences": 50953
+  },
+  "BU00141104_noorderhoogebrug": {
+    "number_of_old_residences": 111.884637231,
+    "number_of_new_residences": 11.115362769000006
+  },
+  "om_ermelo": {
+    "number_of_old_residences": 8580.8,
+    "number_of_new_residences": 2200.2
+  },
+  "om_oldebroek": {
+    "number_of_old_residences": 6509.7,
+    "number_of_new_residences": 2472.3
+  },
+  "GM1581_utrechtse_heuvelrug": {
+    "number_of_old_residences": 17322.79999999898,
+    "number_of_new_residences": 3893.2000000010203
+  },
+  "BU00170109_verspreide_huizen_ten_oosten_van_de_hondsrug": {
+    "number_of_old_residences": 7.535194069999999,
+    "number_of_new_residences": 2.4648059300000003
+  },
+  "GM0840_oisterwijk": {
+    "number_of_old_residences": 8577.7,
+    "number_of_new_residences": 2600.3
+  },
+  "GM0050_zeewolde": {
+    "number_of_old_residences": 3320.8000000000006,
+    "number_of_new_residences": 4845.2
+  },
+  "RGNH06_regio_alkmaar": {
+    "number_of_old_residences": 96553.5975,
+    "number_of_new_residences": 33616.4025
+  },
+  "GM0437_ouder_amstel": {
+    "number_of_old_residences": 4391.52656,
+    "number_of_new_residences": 1459.47344
+  },
+  "GM0394_haarlemmermeer": {
+    "number_of_old_residences": 37359.3747,
+    "number_of_new_residences": 24620.6253
+  },
+  "BU00170103_essen": {
+    "number_of_old_residences": 29.26439761,
+    "number_of_new_residences": 5.735602390000002
+  },
+  "BU00140804_zuidwending": {
+    "number_of_old_residences": 12.809829919,
+    "number_of_new_residences": 4.190170081000001
+  },
+  "flevoland": {
+    "number_of_old_residences": 83751.715358475,
+    "number_of_new_residences": 81444.284641525
+  },
+  "GM0331_lopik": {
+    "number_of_old_residences": 4100.500000000129,
+    "number_of_new_residences": 1387.4999999998704
+  },
+  "om_veenendaal": {
+    "number_of_old_residences": 18797.6,
+    "number_of_new_residences": 7613.4
+  },
+  "BU00141201_lewenborg_zuid": {
+    "number_of_old_residences": 1306.56117416,
+    "number_of_new_residences": 273.43882584
+  },
+  "GM0376_blaricum": {
+    "number_of_old_residences": 3685.60062,
+    "number_of_new_residences": 677.3993799999998
+  },
+  "om_gelderland": {
+    "number_of_old_residences": 664620.8,
+    "number_of_new_residences": 213041.2
+  },
+  "BU00170000_haren": {
+    "number_of_old_residences": 4190.698487865,
+    "number_of_new_residences": 560.3015121349997
+  },
+  "GM0851_oosterhout": {
+    "number_of_old_residences": 18275,
+    "number_of_new_residences": 5973
+  }
+}
