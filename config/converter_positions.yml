@@ -1393,14 +1393,9 @@
   :y: 2740
 :households_appliances_vacuum_cleaner_electricity:
   :x: 1520
-<<<<<<< HEAD
   :y: 2680
 :energy_export_torrefied_biomass_pellets:
-=======
   :y: 2860
-:energy_export_torrified_biomass_pellets:
->>>>>>> changed converter positions for new household heating nodes
-  :x: 3200
   :y: 10780
 :energy_export_lignite:
   :x: 3200
@@ -2758,7 +2753,6 @@
 :energy_imported_hydrogen_backup:
   :x: 6240
   :y: 4720
-<<<<<<< HEAD
 :foreign_energy_torrefaction_wood:
   :x: 8000
   :y: 900
@@ -2903,7 +2897,6 @@
 :foreign_energy_production_bio_ethanol_from_corn:
   :x: 8420
   :y: 6300
-=======
 :households_detached_houses_useful_demand_for_heating:
   :x: 60
   :y: 740
@@ -2934,9 +2927,6 @@
 :households_detached_houses_heating_savings_from_insulation:
   :x: 220
   :y: 820
-<<<<<<< HEAD
->>>>>>> Converter positions of new housing stock nodes
-=======
 :households_terraced_houses_useful_demand_for_space_heating:
   :x: 0
   :y: 760
@@ -2970,15 +2960,9 @@
 :households_semi_detached_houses_useful_demand_for_space_heating_after_insulation:
   :x: 380
   :y: 660
-<<<<<<< HEAD
->>>>>>> changed converter positions for new household heating nodes
-=======
 :buildings_useful_demand_for_space_heating_after_insulation_and_solar_thermal:
   :x: 800
   :y: 5980
-<<<<<<< HEAD
->>>>>>> removed solar thermal from buildings heating share group
-=======
 :buildings_space_heater_wood_pellets_aggregator:
   :x: 1060
   :y: 6000
@@ -3009,21 +2993,12 @@
 :households_useful_demand_for_cooling:
   :x: 800
   :y: 120
-<<<<<<< HEAD
->>>>>>> Updated converter positions for buildings heating
-=======
-:energy_import_residual_heat:
-  :x: 7700
-  :y: 3520
 :energy_distribution_imported_heat:
   :x: 6240
   :y: 4020
 :energy_import_heat:
   :x: 7700
   :y: 4100
-<<<<<<< HEAD
->>>>>>> Converter positions new residual heat nodes
-=======
 :households_heat_network_steam_hot_water:
   :x: 3360
   :y: 1120
@@ -3033,4 +3008,3 @@
 :buildings_heat_network_steam_hot_water:
   :x: 3520
   :y: 6920
->>>>>>> Update converter positions for HH and buidlings heat network
