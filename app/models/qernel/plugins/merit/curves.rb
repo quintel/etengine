@@ -1,76 +1,39 @@
+# frozen_string_literal: true
+
 module Qernel::Plugins
   module Merit
     # Helper class for creating and fetching curves related to the merit order.
-    class Curves
-      CURVE_NAMES = [
-        :ev_demand,
-        :household_space_heating_demand
-      ].freeze
-
-      DYNAMIC_CURVES = {
-        ev_demand: %w[
-          electric_vehicle_profile_1
-          electric_vehicle_profile_2
-          electric_vehicle_profile_3
-        ],
-        solar_pv: %w[
-          solar_pv_profile_1
-          solar_pv_profile_2
-        ]
-      }.freeze
-
+    class Curves < TimeResolve::Curves
       def initialize(graph, household_heat)
-        @graph = graph
+        super(graph)
         @household_heat = household_heat
       end
 
-      # Public: All dynamic curves combined into one.
+      # Public: Retrieves the load profile or curve matching the given profile
+      # name.
+      #
+      # For dynamic curves, a matching method name will be invoked if it exists,
+      # otherwise it falls back to the dynamic curve configuration in ETSource.
       #
       # Returns a Merit::Curve.
-      def combined
-        @combined ||=
-          Util.add_curves(CURVE_NAMES.map { |name| public_send(name) })
+      def curve(name, converter)
+        name = name.to_s
+
+        if prefix?(name, 'fever-electricity-demand')
+          fever_demand_curve(name[25..-1].strip.to_sym)
+        else
+          super
+        end
       end
 
-      # Public: Returns the peak loads of explicitly modelled technologies.
+      # Public: Reads an electricity demand curve from a Fever group.
       #
-      # Returns a Hash
-      def peaks
-        @peaks ||= CurvePeakFinder.peaks(Util.add_curves(
-          [combined, household_hot_water_demand]
-        ))
-      end
-
-      def profile(name)
-        AggregateCurve.aggregate(mix_config(dataset, name))
-      end
-
-      # Public: Creates a profile describing the demand for electricity by
-      # electric vehicles.
-      #
-      # Expects the graph to have been computed, with the EV car converter given
-      # a demand, and a valid profile mix saved with the area.
-      #
-      # Returns a Merit::Curve.
-      def ev_demand
-        AggregateCurve.build(
-          demand_value(:ev),
-          mix_config(dataset, :ev_demand)
-        )
-      end
-
-      # Public: Creates a profile describing the demand for electricity in
-      # households due to the use of hot water.
-      #
-      # Returns a Merit::Curve.
-      def household_hot_water_demand
-        @household_heat.hot_water_demand
-      end
-
-      # Public: Creates a profile describing the demand for electricity due to
-      # heating and cooling in new households.
-      def household_space_heating_demand
-        @household_heat.space_heating_demand
+      # Note that the curve returned is a demand curve, not a load profile. When
+      # Merit and Fever are enabled, this will typically return an
+      # ElectricityDemandCurve where the values are populated as the Fever group
+      # is calculated.
+      def fever_demand_curve(name)
+        @household_heat.curve(name)
       end
 
       # Public: Returns the total demand of the curve matching the +curve_name+.
@@ -83,24 +46,6 @@ module Qernel::Plugins
           @household_heat.demand_value(curve_name)
         end
       end
-
-      private
-
-      def dataset
-        @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
-      end
-
-      def mix_config(dataset, curve_name)
-        AggregateCurve.mix(dataset, curve_config(curve_name.to_sym))
-      end
-
-      def curve_config(name)
-        raise "No such dynamic curve: #{name}" unless DYNAMIC_CURVES.key?(name)
-
-        DYNAMIC_CURVES[name].each_with_object({}) do |attribute, conf|
-          conf[attribute] = @graph.area.public_send("#{attribute}_share")
-        end
-      end
-    end # Curves
-  end # Merit
-end # Qernel::Plugins
+    end
+  end
+end

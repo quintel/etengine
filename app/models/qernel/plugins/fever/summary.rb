@@ -1,10 +1,10 @@
 module Qernel::Plugins
   module Fever
-    # Receives the Fever plugin and summarises the total production and
+    # Receives a Fever group and summarises the total production and
     # consumption, for use in queries, CSVs, etc.
     class Summary
-      def initialize(plugin)
-        @plugin = plugin
+      def initialize(group)
+        @group  = group
         @demand = @production = @surplus = @deficit = nil
       end
 
@@ -14,17 +14,15 @@ module Qernel::Plugins
       def demand
         return @demand if @demand
 
-        curves = @plugin.groups.flat_map do |group|
-          suppliers = group.adapters.reject do |adapter|
-            !adapter.participant.is_a?(::Fever::Consumer)
-          end
-
-          suppliers.map { |a| a.participant.demand_curve }
+        suppliers = @group.adapters.select do |adapter|
+          adapter.participant.is_a?(::Fever::Consumer)
         end
 
-        return [0.0] * 8760 if curves.none?
+        return [0.0] * 8760 if suppliers.none?
 
-        Merit::Util.add_curves(curves).to_a
+        @demand = TimeResolve::Util.add_curves(suppliers.map do |adapter|
+          adapter.participant.demand_curve
+        end).to_a
       end
 
       # Public: Curve of the production of heat in each hour of the year.
@@ -33,33 +31,31 @@ module Qernel::Plugins
       def production
         return @production if @production
 
-        curves = @plugin.groups.flat_map do |group|
-          suppliers = group.adapters.reject do |adapter|
-            adapter.participant.is_a?(::Fever::Consumer)
-          end
+        suppliers = @group.adapters.reject do |adapter|
+          adapter.participant.is_a?(::Fever::Consumer)
+        end
 
-          suppliers.map do |a|
-            input  = a.participant.producer.input_curve
-            output = a.participant.producer.output_curve
+        return [0.0] * 8760 if suppliers.none?
 
-            if input.object_id != output.object_id
-              # In order to represent heat being produced - but stored for
-              # future use - the production curve takes the maximum of the input
-              # and output of each producer. This means that energy in a reserve
-              # is accounted for twice. Skip this when the input and output
-              # curves are the same object.
-              input.map.with_index do |val, index|
-                val > output[index] ? val : output[index]
-              end
-            else
-              output
+        curves = suppliers.map do |a|
+          input  = a.participant.producer.input_curve
+          output = a.participant.producer.output_curve
+
+          if input.object_id != output.object_id
+            # In order to represent heat being produced - but stored for
+            # future use - the production curve takes the maximum of the input
+            # and output of each producer. This means that energy in a reserve
+            # is accounted for twice. Skip this when the input and output
+            # curves are the same object.
+            input.map.with_index do |val, index|
+              val > output[index] ? val : output[index]
             end
+          else
+            output
           end
         end
 
-        return [0.0] * 8760 if curves.none?
-
-        Merit::Util.add_curves(curves).to_a
+        @production = TimeResolve::Util.add_curves(curves).to_a
       end
 
       # Public: A curve describing periods when production does not meet demand.

@@ -52,6 +52,10 @@ module Qernel::Plugins
 
           link.share = demand > 0 ? production / demand : 1.0
         end
+
+        @converter.dataset_lazy_set(:heat_output_curve) do
+          producer.output_curve.to_a
+        end
       end
 
       def producer

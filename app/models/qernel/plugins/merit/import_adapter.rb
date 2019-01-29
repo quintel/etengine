@@ -5,12 +5,12 @@ module Qernel::Plugins
       def inject!
         super
 
-        elec_link = @converter.converter.output(:electricity).links.first
+        elec_link = target_api.converter.output(:electricity).links.first
 
         if elec_link.link_type == :flexible
           # We need to override the calculation of the flexible link and set
           # set the demand explicitly.
-          elec_link.dataset_set(:value, @converter.demand)
+          elec_link.dataset_set(:value, target_api.demand)
           elec_link.dataset_set(:calculated, true)
         end
       end
@@ -26,11 +26,11 @@ module Qernel::Plugins
       end
 
       def output_capacity_per_unit
-        @converter.electricity_output_capacity
+        source_api.electricity_output_capacity
       end
 
       def flh_capacity
-        @converter.electricity_output_capacity
+        source_api.electricity_output_capacity
       end
     end # ImportAdapter
   end # Merit

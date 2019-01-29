@@ -4,45 +4,54 @@ module Qernel::Plugins
     # to heating in households on graphs which do not use the full Merit/Fever
     # plugins.
     class SimpleHouseholdHeat
-      CURVE_TO_GROUP = {
-        hot_water: :merit_household_hot_water_producers,
-        space_heating: :merit_household_space_heating_producers
-      }.freeze
-
       def initialize(graph, curve_set)
         @graph = graph
         @curve_set = curve_set
+        @fever_curves = Qernel::Plugins::Fever::Curves.new(@graph)
       end
 
-      # Public: Returns the total amount of demand for the curve matching the
-      # +curve_name+.
-      def demand_value(curve_name)
-        @graph.query.group_demand_for_electricity(
-          CURVE_TO_GROUP.fetch(curve_name)
-        )
-      end
-
-      # Public: Creates a curve describing the demand for electricity in
-      # households due to the use of hot water.
+      # Public: Returns the total amount of demand for the Fever group matching
+      # the given +group_name+.
       #
-      # Returns a Merit::Curve.
-      def hot_water_demand
-        @hw_demand ||= AggregateCurve.build(
-          demand_value(:hot_water),
-          AggregateCurve.mix(
-            Atlas::Dataset.find(@graph.area.area_code),
-            dhw_normalized: 1.0
-          )
-        )
+      # Returns a numeric.
+      def demand_value(group_name)
+        group_producers(group_name).sum do |producer|
+          # We use demand * conversion because output_of_electricity requires a
+          # calculated graph, which is not always the case when computing
+          # time-resolved loads.
+          producer.demand * producer.converter_api.electricity_input_conversion
+        end
       end
 
-      # Public: Creates a curve describing the demadn for electricity in
-      # households due to space heating.
-      #
-      # Returns a Merit::Curve.
-      def space_heating_demand
-        TimeResolve::HouseholdHeat.new(@graph, @curve_set)
-          .demand_curve(demand_value(:space_heating))
+      def curve(group_name)
+        electricity_demand = demand_value(group_name)
+
+        consumers = group_consumers(group_name)
+        total_demand = consumers.sum(&:demand)
+
+        # Get demand curves for each consumer.
+        individual = consumers.map do |consumer|
+          @fever_curves.curve(consumer.fever.curve, consumer) *
+            (electricity_demand * (consumer.demand / total_demand))
+        end
+
+        TimeResolve::Util.add_curves(individual)
+      end
+
+      private
+
+      def group_consumers(group_name)
+        group_converters_of_type(group_name, :consumer)
+      end
+
+      def group_producers(group_name)
+        group_converters_of_type(group_name, :producer)
+      end
+
+      def group_converters_of_type(group_name, type)
+        Etsource::Fever.group(group_name).keys(type).map do |key|
+          @graph.converter(key)
+        end
       end
     end
   end # Merit

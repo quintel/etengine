@@ -64,6 +64,7 @@ class Converter
 
   include Qernel::RecursiveFactor::Base
   include Qernel::RecursiveFactor::PrimaryDemand
+  include Qernel::RecursiveFactor::BioDemand
   include Qernel::RecursiveFactor::DependentSupply
   include Qernel::RecursiveFactor::FinalDemand
   include Qernel::RecursiveFactor::PrimaryCo2
@@ -112,12 +113,13 @@ class Converter
   attr_reader :sector_environment
   alias sector_environment? sector_environment
 
-  attr_reader :primary_energy_demand, :useful_demand, :final_demand_group, :non_energetic_use, :energy_import_export
+  attr_reader :primary_energy_demand, :useful_demand, :final_demand_group, :non_energetic_use, :energy_import_export, :bio_resources_demand
   alias primary_energy_demand? primary_energy_demand
   alias useful_demand? useful_demand
   alias final_demand_group? final_demand_group
   alias non_energetic_use? non_energetic_use
   alias energy_import_export? energy_import_export
+  alias bio_resources_demand? bio_resources_demand
 
   # --------- Initializing ----------------------------------------------------
 
@@ -157,7 +159,16 @@ class Converter
     end
   end
 
-protected
+  # Public: Does this converter represent energy flow from outside the modelled
+  # region?
+  #
+  # Returns true or false.
+  def abroad?
+    # Double-negate as abroad may be nil.
+    !!dataset_get(:abroad) # rubocop:disable Style/DoubleNegation
+  end
+
+  protected
 
   # Memoize here, so it doesn't have to at runtime
   #
@@ -166,9 +177,10 @@ protected
 
     @primary_energy_demand = @groups.include? :primary_energy_demand
     @useful_demand         = @groups.include? :useful_demand
-    @final_demand_group      = @groups.include? :final_demand_group
+    @final_demand_group    = @groups.include? :final_demand_group
     @non_energetic_use     = @groups.include? :non_energetic_use
     @energy_import_export  = @groups.include? :energy_import_export
+    @bio_resources_demand  = @groups.include? :bio_resources_demand
 
     self.dataset_key # memoize dataset_key
   end

@@ -39,8 +39,16 @@ module Qernel::RecursiveFactor::Base
   #                          method.
   #
   # Returns a float.
-  def recursive_factor(strategy_method, converter_share_method = nil, link = nil, *args)
-    if (return_value = send(strategy_method, link, *args)) != nil
+  def recursive_factor(
+    strategy_method,
+    converter_share_method = nil,
+    link = nil,
+    *args,
+    include_abroad: false
+  )
+    if !include_abroad && abroad?
+      0.0
+    elsif (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
       results = input_links.map do |link|
@@ -81,7 +89,9 @@ module Qernel::RecursiveFactor::Base
           0.0
         else
           parent_value = parent.recursive_factor(
-            strategy_method, converter_share_method, link, *args)
+            strategy_method, converter_share_method, link, *args,
+            include_abroad: include_abroad
+          )
 
           demanding_share * loss_compensation_factor *
             converter_share * parent_value
@@ -114,8 +124,16 @@ module Qernel::RecursiveFactor::Base
   # See +recursive_factor+ for more information.
   #
   # Returns a float.
-  def recursive_factor_without_losses(strategy_method, converter_share_method = nil, link = nil, *args)
-    if (return_value = send(strategy_method, link, *args)) != nil
+  def recursive_factor_without_losses(
+    strategy_method,
+    converter_share_method = nil,
+    link = nil,
+    *args,
+    include_abroad: false
+  )
+    if !include_abroad && abroad?
+      0.0
+    elsif (return_value = send(strategy_method, link, *args)) != nil
       return_value
     else
       val = input_links.map do |link|
@@ -180,7 +198,9 @@ module Qernel::RecursiveFactor::Base
 
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
-            strategy_method, converter_share_method, link, *args)
+            strategy_method, converter_share_method, link, *args,
+            include_abroad: include_abroad
+          )
 
           link_share * parent_value * parent_conversion
         end
@@ -203,6 +223,20 @@ module Qernel::RecursiveFactor::Base
     end
 
     @right_dead_end
+  end
+
+  # Public: Determines if the converter has any parents into which we should
+  # recurse when performing calculations. A domestic dead end includes when the
+  # node inputs are all abroad.
+  #
+  # Returns true or false.
+  def domestic_dead_end?
+    unless defined?(@domestic_dead_end)
+      @domestic_dead_end = right_dead_end? ||
+        input_links.all? { |link| link.rgt_converter.abroad? }
+    end
+
+    @domestic_dead_end
   end
 
   # Public: The loss compensation factor is the amount by which we must

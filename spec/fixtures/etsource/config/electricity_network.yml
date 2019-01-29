@@ -1,0 +1,23 @@
+---
+# LV network, peak load is MAX(demand_curve - supply_curve)
+
+# Configures the electricity networks in the model, from low voltage to high
+# voltage. The residual (unmet) demand from the lowest network is passed to the
+# next network up, until all loads cancel out or there are no additional
+# networks.
+#
+# * "name" is used by the "merit_order.level" attribute in those nodes which
+#   participate in the Merit order
+#
+# * "peak" sets how ETEngine determines the peak load of the network level
+#     - net:   MAX(demand_curve - supply_curve)
+#     - gross: MAX(MAX(demand_curve), MAX(supply_curve))
+
+- name: lv
+  peak: net
+
+- name: mv
+  peak: net
+
+- name: hv
+  peak: gross

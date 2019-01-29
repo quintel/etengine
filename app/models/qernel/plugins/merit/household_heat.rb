@@ -7,12 +7,9 @@ module Qernel::Plugins
         @graph = graph
       end
 
-      def space_heating_demand
-        curve(:space_heating)
-      end
-
-      def hot_water_demand
-        curve(:hot_water)
+      def curve(group_name)
+        fever_group(group_name)&.elec_demand_curve ||
+          TimeResolve::AggregateCurve.zeroed_profile
       end
 
       # Public: Returns the total amount of demand for the group matching
@@ -28,11 +25,6 @@ module Qernel::Plugins
       end
 
       private
-
-      def curve(group_name)
-        group = fever_group(group_name)
-        group && group.elec_demand_curve || ::Merit::Curve.new([0.0] * 8760)
-      end
 
       def fever_group(group_name)
         @graph.plugin(:time_resolve).fever.group(group_name)

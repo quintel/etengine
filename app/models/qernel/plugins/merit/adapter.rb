@@ -6,12 +6,12 @@ module Qernel::Plugins
 
       def self.adapter_for(converter, graph, dataset)
         klass = case converter.merit_order.type.to_sym
-          when :dispatchable, :volatile, :must_run
+          when :producer
             ProducerAdapter.factory(converter, graph, dataset)
           when :flex
             FlexAdapter.factory(converter, graph, dataset)
           when :consumer
-            ConsumerAdapter
+            ConsumerAdapter.factory(converter, graph, dataset)
           else
             self
         end
@@ -44,8 +44,8 @@ module Qernel::Plugins
       def producer_attributes
         {
           key:                       @converter.key,
-          number_of_units:           @converter.number_of_units,
-          availability:              @converter.availability,
+          number_of_units:           source_api.number_of_units,
+          availability:              source_api.availability,
 
           # The marginal costs attribute is not optional, but it is an
           # unnecessary calculation when the Merit order is not being run.
@@ -55,6 +55,27 @@ module Qernel::Plugins
 
       def producer_class
         fail NotImplementedError
+      end
+
+      # Internal: The ConverterApi from which data is taken to be used by the
+      # Merit participant.
+      #
+      # Returns a Qernel::ConverterApi.
+      def target_api
+        @converter
+      end
+
+      # Internal: The ConverterApi on which the results of the Merit calcualtion
+      # for the node are stored.
+      #
+      # Returns a Qernel::ConverterApi.
+      def source_api
+        @source_api ||=
+          if @config.delegate.present?
+            @graph.converter(@config.delegate).converter_api
+          else
+            @converter
+          end
       end
     end # Adapter
   end # Merit

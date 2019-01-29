@@ -9,6 +9,19 @@ module Qernel::RecursiveFactor::PrimaryDemand
     end
   end
 
+  # Calculates the primary energy demand, including traversing through
+  # converters which are flagged as "abroad". The normal primary demand
+  # calculation terminates at the border between non-abroad and abroad.
+  #
+  # Returns a numeric.
+  def primary_demand_including_abroad
+    fetch(:primary_demand_including_abroad) do
+      (demand || 0.0) * recursive_factor(
+        :primary_demand_including_abroad_factor, include_abroad: true
+      )
+    end
+  end
+
   def primary_demand_of(*carriers)
     carriers.flatten.map do |carrier|
       primary_demand_of_carrier(carrier.try(:key) || carrier)
@@ -39,41 +52,46 @@ module Qernel::RecursiveFactor::PrimaryDemand
     (demand || 0.0) * factor
   end
 
-  def primary_demand_factor(link)
-    return nil unless right_dead_end?
-
-    # We return nil when we want to continue traversing. So typically this is
-    # until we hit a dead end. Alternatively (for final_demand) we could stop
-    # when we hit a converter that is final_demand_group?
-    factor_for_primary_demand(link)
+  def primary_demand_factor(_link)
+    factor_for_primary_demand if domestic_dead_end?
   end
 
-  def primary_demand_factor_of_carrier(link, carrier_key)
-    return nil if !right_dead_end? || !primary_energy_demand?
+  def primary_demand_including_abroad_factor(_link)
+    factor_for_primary_demand if right_dead_end?
+  end
+
+  def primary_demand_factor_of_carrier(
+    link,
+    carrier_key,
+    stop_condition = :primary_energy_demand?
+  )
+    return nil if !domestic_dead_end? || !primary_energy_demand?
 
     link ||= output_links.first
 
     if link && link.carrier.key == carrier_key
-      factor_for_primary_demand(link)
+      factor_for_primary_demand(stop_condition)
     else
       0.0
     end
   end
 
-  def factor_for_primary_demand(link)
-    # Example of a case when a link is not assigned (and therefore needs to be
-    # assigned in order to check if its imported_electricity):
-    #
-    # When you get the primary_demand of the group primary_energy_demand, you
-    # already  start at the right dead end and don't jump throught links.
-    link ||= output_links.first
+  # Internal: Calculates the primary demand factor of the given link.
+  #
+  # link           - The link whose primary demand factor is to be calculated.
+  # stop_condition - A method to be called on self to determine if the link has
+  #                  any primary energy demand to be included in the
+  #                  calculation.
+  #
+  # Returns a numeric.
+  def factor_for_primary_demand(stop_condition = :primary_energy_demand?)
+    stop = public_send(stop_condition)
 
-    # If a converter has infinite ressources (such as wind, solar/sun), we
+    # If a converter has infinite resources (such as wind, solar/sun), we
     # take the output of energy (1 - losses).
-    if infinite? && primary_energy_demand?
+    if infinite? && stop
       (1 - loss_output_conversion)
-
-    elsif primary_energy_demand? # Normal case.
+    elsif stop # Normal case.
       1.0
     else
       0.0

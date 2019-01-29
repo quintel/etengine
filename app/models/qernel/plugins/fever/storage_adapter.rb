@@ -19,6 +19,14 @@ module Qernel::Plugins
           )
       end
 
+      def inject!
+        super
+
+        @converter.dataset_lazy_set(:heat_input_curve) do
+          participant.producer.input_curve.to_a
+        end
+      end
+
       private
 
       def reserve

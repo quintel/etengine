@@ -20,23 +20,17 @@ module Qernel
       previous = nil
       participants = partition_participants(graph)
 
-      config.each do |layer_config|
+      Etsource::Config.electricity_network.each do |layer_config|
         name = layer_config[:name]
 
         previous = layers[name] = Layer.new(
           base: previous,
-          peak: layer_config[:peak],
+          peak: Peak.const_get(layer_config[:peak]),
           **participants[name]
         )
       end
 
       layers
-    end
-
-    private_class_method def config
-      [ { name: :lv, peak: Peak::Net },
-        { name: :mv, peak: Peak::Net },
-        { name: :hv, peak: Peak::Gross } ]
     end
 
     # Internal: Takes a graph and returns a hash describing the producers and

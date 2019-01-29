@@ -54,6 +54,8 @@ class Graph
                 :finished_converters,
                 :area
 
+  delegate :time_curves, :insulation_costs, to: :dataset
+
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
     @logger = ::Qernel::Logger.new
@@ -157,16 +159,16 @@ class Graph
     reset_goals
   end
 
-  def time_curves
-    dataset.time_curves
-  end
-
   def present?
     year == @area.analysis_year
   end
 
   def future?
     ! present?
+  end
+
+  def period
+    @period ||= present? ? :present : :future
   end
 
   def update_link_shares

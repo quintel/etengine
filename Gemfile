@@ -21,6 +21,7 @@ gem 'gravatar_image_tag'
 
 # Ruby gems
 gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
+gem 'ice_nine'
 gem 'distribution', '~> 0.6'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
@@ -54,7 +55,7 @@ gem 'quintel_merit', ref: '0f33926',  github: 'quintel/merit'
 gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
-gem 'atlas',         ref: '8bdb2c9',  github: 'quintel/atlas'
+gem 'atlas',         ref: '893c548',  github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2'

@@ -1,5 +1,5 @@
 module Qernel::Plugins
-  module Merit
+  class TimeResolve
     # Creates a demand curve for use in the Merit order by combining a total
     # demand with a mix of curve "components" which should be mixed together in
     # a share defined by the user.
@@ -11,41 +11,23 @@ module Qernel::Plugins
     module AggregateCurve
       module_function
 
-      def build(demand, curves)
-        return zeroed_profile if demand.zero? || curves.empty?
-
-        aggregate(balanced_mix(curves)) * demand
-      end
-
-      # Internal: Given a hash of load profile keys, returns a new hash where
-      # each key is the appropriate LoadProfile object. Missing load profiles
-      # are omitted.
-      #
-      # Returns a hash.
-      def mix(dataset, curves)
-        curves.each_with_object({}) do |(key, share), data|
-          path = dataset.load_profile_path(key)
-          next unless path.file?
-
-          data[::Merit::LoadProfile.load(path)] = share
-        end
-      end
-
       # Internal: Sums one or more profiles using the given profile mix.
       #
       # Returns Merit::Curve.
-      def aggregate(mix)
-        length = mix.keys.first.length
-
-        return mix.values.first if length == 1
+      def build(mix)
+        return zeroed_profile if mix.empty?
+        return mix.keys.first if mix.length == 1
 
         Util.add_curves(
-          mix.map { |prof, share| prof * share if share > 0 }.compact
+          balanced_mix(mix)
+            .map { |prof, share| prof * share if share.positive? }
+            .compact
         )
       end
 
-      def add_curves(length)
-        ::Merit::Curve.new(Array.new(length) { |index| yield(index) })
+      # Public: Returns a profile of all zeroes.
+      def zeroed_profile
+        ::Merit::Curve.new(Array.new(8760, 0.0))
       end
 
       # Internal: Ensures that a mix of profiles sum to 1.0.
@@ -64,13 +46,6 @@ module Qernel::Plugins
       end
 
       private_class_method :balanced_mix
-
-      def zeroed_profile
-        ::Merit::Curve.new(Array.new(8760, 0.0))
-      end
-
-      private_class_method :zeroed_profile
     end
   end
 end
-

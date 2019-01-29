@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # A Gquery holds a specific GQL query. It mainly consists of:
 # - key: other gqueries can embed this query using the key. E.g. SUM(QUERY(foo),QUERY(bar))
@@ -70,6 +72,13 @@ class Gquery
     group_key.include?("output_elements")
   rescue => e
     false
+  end
+
+  # Public: Describes additional behavior for the gquery when executed. Allows
+  # the graph to ignore the input or to post-process the results prior to
+  # sending them to the client.
+  def behavior
+    @behavior ||= (unit == 'curve' ? CurveBehavior : NullBehavior)
   end
 
   def gql_modifier

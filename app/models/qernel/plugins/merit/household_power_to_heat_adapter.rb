@@ -28,12 +28,9 @@ module Qernel::Plugins
         attrs[:delegate] =
           @graph.plugin(:time_resolve).fever.group(:hot_water).calculator
 
-        # attrs[:decay] =
-        #   @converter.number_of_units.zero? ? ->(*) { 0.0 } : reserve_decay
-
         # TODO Does input capacity /efficiency prevent the need to model input
         # constraints in Fever?
-        attrs[:input_capacity_per_unit] = @converter.input_capacity
+        attrs[:input_capacity_per_unit] = source_api.input_capacity
 
         # Do not emit anything; it has been converted to hot water.
         #

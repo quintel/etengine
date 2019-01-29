@@ -21,10 +21,7 @@ module Qernel::Plugins
 
       # Public: The Fever calculation which will compute the group.
       def calculator
-        @calculator ||= ::Fever::Calculator.new(
-          adapters_by_type[:consumer].first.participant,
-          activities
-        )
+        @calculator ||= ::Fever::Calculator.new(consumer, activities)
       end
 
       # Public: Instructs the calculator to compute a single frame.
@@ -57,13 +54,29 @@ module Qernel::Plugins
 
         @adapters = Plugin::TYPES.each_with_object({}) do |type, data|
           data[type] =
-            (Etsource::Fever.data[@name][type] || []).map do |node_key|
+            Etsource::Fever.group(@name).keys(type).map do |node_key|
               Adapter.adapter_for(@graph.converter(node_key), @graph, @dataset)
             end
         end
       end
 
       private
+
+      def consumer
+        if adapters_by_type[:consumer].length == 1
+          return adapters_by_type[:consumer].first.participant
+        end
+
+        # Group has multiple consumers; Fever supports only one so we need to
+        # create a new consumer summing the individual demand curves.
+        ::Fever::Consumer.new(
+          TimeResolve::Util.add_curves(
+            adapters_by_type[:consumer].map do |adapter|
+              adapter.participant.demand_curve
+            end
+          ).to_a
+        )
+      end
 
       def activities
         storage = adapters_by_type[:storage].map(&:participant)

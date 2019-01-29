@@ -1,19 +1,19 @@
 ---
 :households_useful_demand_light:
-  :x: 720
-  :y: 2180
+  :x: 800
+  :y: 2320
 :households_useful_demand_cooking_useable_heat:
-  :x: 720
-  :y: 1920
+  :x: 800
+  :y: 2020
 :households_appliances_dishwasher_electricity:
   :x: 1520
-  :y: 2320
+  :y: 2500
 :households_appliances_fridge_freezer_electricity:
   :x: 1520
-  :y: 2380
+  :y: 2560
 :households_appliances_washing_machine_electricity:
   :x: 1520
-  :y: 2440
+  :y: 2620
 :households_new_houses_useful_demand_for_cooling:
   :x: 440
   :y: 160
@@ -40,7 +40,7 @@
   :y: 6660
 :energy_distribution_kerosene:
   :x: 5600
-  :y: 6300
+  :y: 6280
 :energy_distribution_gasoline:
   :x: 5600
   :y: 6220
@@ -90,14 +90,14 @@
   :x: 720
   :y: 7300
 :buildings_useful_demand_after_insulation_cooling:
-  :x: 260
-  :y: 6440
+  :x: 800
+  :y: 6420
 :buildings_useful_demand_for_space_heating_after_insulation:
-  :x: 260
-  :y: 6080
+  :x: 440
+  :y: 5980
 :buildings_cooling_savings_insulation_cooling:
-  :x: 220
-  :y: 6540
+  :x: 200
+  :y: 6520
 :buildings_lighting_led_electricity:
   :x: 1520
   :y: 7300
@@ -108,11 +108,11 @@
   :x: 1520
   :y: 7360
 :buildings_heating_savings_from_insulation_useable_heat:
-  :x: 180
-  :y: 6220
+  :x: 200
+  :y: 6080
 :buildings_useful_demand_cooling:
   :x: 40
-  :y: 6440
+  :y: 6420
 :buildings_final_demand_steam_hot_water:
   :x: 3120
   :y: 6920
@@ -145,7 +145,7 @@
   :y: 6360
 :buildings_space_heater_collective_heatpump_water_water_ts_electricity:
   :x: 1520
-  :y: 6180
+  :y: 6120
 :buildings_space_heater_wood_pellets:
   :x: 1520
   :y: 6000
@@ -153,14 +153,14 @@
   :x: 1520
   :y: 5880
 :buildings_space_heater_solar_thermal:
-  :x: 1520
-  :y: 6060
+  :x: 800
+  :y: 6260
 :buildings_collective_chp_wood_pellets:
   :x: 3920
   :y: 6980
 :buildings_space_heater_electricity:
   :x: 1520
-  :y: 6120
+  :y: 6060
 :buildings_space_heater_network_gas:
   :x: 1520
   :y: 5940
@@ -180,44 +180,44 @@
   :x: 7200
   :y: 6820
 :energy_import_lpg:
-  :x: 7200
-  :y: 6220
+  :x: 7700
+  :y: 6160
 :energy_import_bio_ethanol:
-  :x: 7200
-  :y: 6660
+  :x: 7700
+  :y: 6620
 :energy_import_biodiesel:
-  :x: 7200
-  :y: 6740
+  :x: 7700
+  :y: 6720
 :energy_import_kerosene:
-  :x: 7200
-  :y: 6380
+  :x: 7700
+  :y: 6280
 :energy_import_gasoline:
-  :x: 7200
-  :y: 6300
+  :x: 7700
+  :y: 6220
 :energy_import_diesel:
-  :x: 7200
-  :y: 6460
+  :x: 7700
+  :y: 6340
 :energy_production_algae_diesel:
   :x: 6400
   :y: 6740
 :energy_production_bio_ethanol:
   :x: 6400
-  :y: 6600
+  :y: 6960
 :energy_production_biodiesel:
   :x: 6400
-  :y: 6660
+  :y: 7100
 :energy_import_electricity:
   :x: 7000
   :y: 2000
 :energy_import_bio_oil:
   :x: 7700
-  :y: 4040
+  :y: 6540
 :energy_import_greengas:
   :x: 7700
-  :y: 3160
+  :y: 3140
 :energy_production_bio_oil:
-  :x: 7700
-  :y: 3920
+  :x: 6400
+  :y: 6840
 :energy_import_natural_gas:
   :x: 7700
   :y: 4340
@@ -240,26 +240,26 @@
   :x: 7700
   :y: 4280
 :energy_production_woody_biomass:
-  :x: 7700
-  :y: 3620
+  :x: 7780
+  :y: 1300
 :households_useful_demand_for_space_heating_after_insulation:
-  :x: 320
-  :y: 540
+  :x: 800
+  :y: 560
 :households_old_houses_useful_demand_for_cooling:
   :x: 440
   :y: 60
 :households_cooker_induction_electricity:
   :x: 1520
-  :y: 2040
+  :y: 2140
 :households_cooker_halogen_electricity:
   :x: 1520
-  :y: 1980
+  :y: 2080
 :households_cooker_resistive_electricity:
   :x: 1520
-  :y: 1920
+  :y: 2020
 :households_cooker_network_gas:
   :x: 1520
-  :y: 1800
+  :y: 1900
 :households_collective_chp_wood_pellets:
   :x: 3920
   :y: 1180
@@ -271,10 +271,10 @@
   :y: 520
 :households_water_heater_crude_oil:
   :x: 1520
-  :y: 1080
+  :y: 1120
 :households_water_heater_coal:
   :x: 1520
-  :y: 1020
+  :y: 1060
 :households_old_houses_heating_savings_from_insulation:
   :x: 320
   :y: 640
@@ -283,7 +283,7 @@
   :y: 580
 :households_water_heater_wood_pellets:
   :x: 1520
-  :y: 1380
+  :y: 1300
 :transport_useful_demand_truck_kms:
   :x: 720
   :y: 3920
@@ -292,7 +292,7 @@
   :y: 3580
 :energy_distribution_diesel:
   :x: 5600
-  :y: 6380
+  :y: 6340
 :transport_useful_demand_planes:
   :x: 720
   :y: 3960
@@ -315,29 +315,29 @@
   :x: 1860
   :y: 5280
 :agriculture_unused_local_production_steam_hot_water:
-  :x: 3300
-  :y: 5280
+  :x: 3180
+  :y: 5180
 :agriculture_locally_available_electricity:
-  :x: 3520
+  :x: 3360
   :y: 5600
 :agriculture_locally_available_steam_hot_water:
-  :x: 3520
+  :x: 3360
   :y: 5480
 :industry_locally_available_steam_hot_water:
   :x: 3000
   :y: 9100
 :energy_distribution_bio_oil:
-  :x: 7020
-  :y: 3920
+  :x: 5600
+  :y: 6540
 :energy_distribution_crude_oil:
   :x: 7340
   :y: 3320
 :energy_distribution_woody_biomass:
-  :x: 7020
-  :y: 3620
+  :x: 7540
+  :y: 1300
 :energy_distribution_greengas:
   :x: 7060
-  :y: 3160
+  :y: 3140
 :energy_distribution_coal:
   :x: 7340
   :y: 3380
@@ -385,22 +385,22 @@
   :y: 2320
 :households_cooker_wood_pellets:
   :x: 1520
-  :y: 1860
+  :y: 1960
 :households_locally_available_electricity:
-  :x: 3420
+  :x: 3360
   :y: 1060
 :households_lighting_incandescent_electricity:
   :x: 1520
-  :y: 2120
+  :y: 2260
 :households_lighting_efficient_fluorescent_electricity:
   :x: 1520
-  :y: 2180
+  :y: 2320
 :households_lighting_led_electricity:
   :x: 1520
-  :y: 2240
+  :y: 2380
 :households_useful_demand_hot_water:
-  :x: 120
-  :y: 1380
+  :x: 80
+  :y: 1320
 :households_useful_demand_for_cooling_after_insulation:
   :x: 720
   :y: 100
@@ -567,32 +567,32 @@
   :x: 6240
   :y: 4140
 :households_water_heater_solar_thermal:
-  :x: 620
-  :y: 940
+  :x: 1520
+  :y: 1000
 :households_water_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 1500
+  :y: 1420
 :households_water_heater_resistive_electricity:
   :x: 1520
-  :y: 1440
+  :y: 1360
 :households_space_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 680
+  :y: 620
 :households_space_heater_electricity:
   :x: 1520
-  :y: 620
+  :y: 560
 :households_space_heater_combined_network_gas:
   :x: 1520
   :y: 440
 :households_space_heater_heatpump_ground_water_electricity:
   :x: 1520
-  :y: 740
+  :y: 680
 :households_water_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 1620
+  :y: 1540
 :households_water_heater_combined_network_gas:
   :x: 1520
-  :y: 1200
+  :y: 1240
 :households_final_demand_wood_pellets:
   :x: 3120
   :y: 940
@@ -610,7 +610,7 @@
   :y: 1120
 :households_space_heater_wood_pellets:
   :x: 1520
-  :y: 560
+  :y: 500
 :households_space_heater_coal:
   :x: 1520
   :y: 260
@@ -625,13 +625,13 @@
   :y: 180
 :households_water_heater_network_gas:
   :x: 1520
-  :y: 1140
+  :y: 1180
 :households_water_heater_micro_chp_network_gas:
   :x: 1520
-  :y: 1260
+  :y: 1300
 :households_space_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 800
+  :y: 740
 :households_space_heater_micro_chp_network_gas:
   :x: 1520
   :y: 500
@@ -640,7 +640,7 @@
   :y: 380
 :households_water_heater_fuel_cell_chp_network_gas:
   :x: 1520
-  :y: 1320
+  :y: 1360
 :energy_power_ultra_supercritical_coal:
   :x: 6240
   :y: 2500
@@ -737,36 +737,36 @@
 :buildings_solar_pv_solar_radiation:
   :x: 3920
   :y: 6860
-:energy_distribution_torrified_biomass_pellets:
-  :x: 7240
-  :y: 940
+:energy_distribution_torrefied_biomass_pellets:
+  :x: 7200
+  :y: 900
 :energy_torrefaction_wood:
-  :x: 7400
-  :y: 980
+  :x: 7380
+  :y: 1040
 :energy_import_steam_hot_water:
   :x: 7700
   :y: 4100
-:energy_import_torrified_biomass_pellets:
-  :x: 7400
+:energy_import_torrefied_biomass_pellets:
+  :x: 7780
   :y: 900
 :energy_distribution_wood_pellets:
-  :x: 7240
+  :x: 7200
   :y: 1180
 :energy_production_wood_pellets:
-  :x: 7400
-  :y: 1220
+  :x: 7360
+  :y: 1380
 :energy_import_wood_pellets:
-  :x: 7400
-  :y: 1140
+  :x: 7780
+  :y: 1180
 :energy_distribution_wood:
   :x: 7540
-  :y: 1220
+  :y: 1380
 :energy_production_wood:
-  :x: 7680
-  :y: 1220
+  :x: 7780
+  :y: 1380
 :energy_upgrade_biogas:
   :x: 7180
-  :y: 3080
+  :y: 3060
 :energy_distribution_manure:
   :x: 7560
   :y: 2940
@@ -847,7 +847,7 @@
   :y: 4860
 :households_final_demand_for_hot_water_solar_thermal:
   :x: 2320
-  :y: 1380
+  :y: 1180
 :households_final_demand_solar_thermal:
   :x: 3120
   :y: 1000
@@ -859,13 +859,13 @@
   :y: 440
 :households_final_demand_for_hot_water_coal:
   :x: 2320
-  :y: 1140
+  :y: 1240
 :households_final_demand_for_space_heating_crude_oil:
   :x: 2320
   :y: 500
 :households_final_demand_for_hot_water_crude_oil:
   :x: 2320
-  :y: 1200
+  :y: 1300
 :households_final_demand_for_space_heating_network_gas:
   :x: 2320
   :y: 560
@@ -874,19 +874,19 @@
   :y: 120
 :households_final_demand_for_hot_water_network_gas:
   :x: 2320
-  :y: 1260
+  :y: 1360
 :households_final_demand_for_cooking_network_gas:
   :x: 2320
-  :y: 1800
+  :y: 1900
 :households_final_demand_for_space_heating_wood_pellets:
   :x: 2320
   :y: 620
 :households_final_demand_for_hot_water_wood_pellets:
   :x: 2320
-  :y: 1320
+  :y: 1420
 :households_final_demand_for_cooking_wood_pellets:
   :x: 2320
-  :y: 1860
+  :y: 1960
 :households_final_demand_for_space_heating_electricity:
   :x: 2320
   :y: 740
@@ -895,22 +895,22 @@
   :y: 180
 :households_final_demand_for_hot_water_electricity:
   :x: 2320
-  :y: 1440
+  :y: 1480
 :households_final_demand_for_cooking_electricity:
   :x: 2320
-  :y: 1920
+  :y: 2020
 :households_final_demand_for_lighting_electricity:
   :x: 2320
-  :y: 2180
+  :y: 2460
 :households_final_demand_for_appliances_electricity:
   :x: 2320
-  :y: 2520
+  :y: 2700
 :households_final_demand_for_space_heating_steam_hot_water:
   :x: 2320
   :y: 800
 :households_final_demand_for_hot_water_steam_hot_water:
   :x: 2320
-  :y: 1500
+  :y: 1540
 :energy_power_turbine_network_gas:
   :x: 6240
   :y: 3220
@@ -946,7 +946,7 @@
   :y: 4400
 :energy_distribution_heavy_fuel_oil:
   :x: 5600
-  :y: 6440
+  :y: 6400
 :transport_final_demand_for_road_lpg:
   :x: 2320
   :y: 3460
@@ -1018,7 +1018,7 @@
   :y: 8500
 :buildings_space_heater_district_heating_steam_hot_water:
   :x: 1520
-  :y: 6240
+  :y: 6180
 :buildings_appliances_coal:
   :x: 1520
   :y: 7460
@@ -1063,10 +1063,10 @@
   :y: 6060
 :buildings_final_demand_for_space_heating_electricity:
   :x: 2320
-  :y: 6120
+  :y: 6060
 :buildings_final_demand_for_space_heating_steam_hot_water:
   :x: 2320
-  :y: 6240
+  :y: 6180
 :buildings_final_demand_for_space_heating_coal:
   :x: 2320
   :y: 5760
@@ -1075,19 +1075,19 @@
   :y: 6800
 :households_useful_demand_for_space_heating_after_insulation_and_solar_heater:
   :x: 620
-  :y: 540
+  :y: 560
 :households_useful_demand_for_hot_water_after_solar_heater:
-  :x: 600
-  :y: 1380
+  :x: 440
+  :y: 1320
 :households_useful_demand_for_space_heating_after_insulation_for_houses_with_solar_heater:
   :x: 460
   :y: 720
 :households_useful_demand_for_hot_water_for_houses_with_solar_heater:
-  :x: 340
-  :y: 1200
+  :x: 300
+  :y: 1140
 :households_water_heater_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1560
+  :y: 1480
 :industry_aluminium_production:
   :x: 720
   :y: 9700
@@ -1164,7 +1164,7 @@
   :x: 2500
   :y: 9060
 :agriculture_chp_engine_biogas:
-  :x: 3900
+  :x: 3880
   :y: 5540
 :industry_chp_engine_gas_power_fuelmix:
   :x: 3480
@@ -1173,10 +1173,10 @@
   :x: 3480
   :y: 9100
 :agriculture_chp_engine_network_gas:
-  :x: 3900
+  :x: 3880
   :y: 5480
 :agriculture_chp_supercritical_wood_pellets:
-  :x: 3900
+  :x: 3880
   :y: 5600
 :households_collective_chp_biogas:
   :x: 3920
@@ -1215,10 +1215,10 @@
   :x: 4080
   :y: 8380
 :agriculture_chp_engine_biogas_dumped_heat:
-  :x: 3500
-  :y: 5660
+  :x: 3360
+  :y: 5720
 :households_collective_chp_biogas_dumped_heat:
-  :x: 3540
+  :x: 3360
   :y: 1240
 :other_chp_engine_biogas_dumped_heat:
   :x: 3900
@@ -1321,7 +1321,7 @@
   :y: 2020
 :buildings_useful_demand_for_space_heating:
   :x: 40
-  :y: 6080
+  :y: 5980
 :energy_interconnector_imported_electricity:
   :x: 6240
   :y: 1820
@@ -1381,20 +1381,20 @@
   :y: 6220
 :households_appliances_clothes_dryer_electricity:
   :x: 1520
-  :y: 2500
+  :y: 2680
 :households_appliances_computer_media_electricity:
   :x: 1520
-  :y: 2620
+  :y: 2800
 :households_appliances_other_electricity:
   :x: 1520
-  :y: 2740
+  :y: 2920
 :households_appliances_television_electricity:
   :x: 1520
-  :y: 2560
+  :y: 2740
 :households_appliances_vacuum_cleaner_electricity:
   :x: 1520
   :y: 2680
-:energy_export_torrified_biomass_pellets:
+:energy_export_torrefied_biomass_pellets:
   :x: 3200
   :y: 10780
 :energy_export_lignite:
@@ -1509,17 +1509,17 @@
   :x: 3920
   :y: 1000
 :households_flexibility_p2h_electricity:
-  :x: 920
-  :y: 1220
+  :x: 880
+  :y: 1160
 :energy_flexibility_p2g_electricity:
   :x: 7320
   :y: 4220
 :households_useful_demand_for_hot_water_for_houses_with_p2h:
-  :x: 740
-  :y: 1300
+  :x: 620
+  :y: 1240
 :households_useful_demand_for_hot_water_after_solar_heater_and_p2h:
-  :x: 920
-  :y: 1380
+  :x: 800
+  :y: 1320
 :transport_useful_demand_ship_kms:
   :x: 720
   :y: 4960
@@ -1579,13 +1579,13 @@
   :y: 860
 :households_space_heater_hybrid_heatpump_air_water_electricity:
   :x: 1520
-  :y: 860
+  :y: 800
 :households_space_heater_hybrid_heatpump_combined_network_gas:
   :x: 1920
   :y: 860
 :households_water_heater_hybrid_heatpump_air_water_electricity:
   :x: 1520
-  :y: 1680
+  :y: 1600
 :transport_car_using_hydrogen:
   :x: 1520
   :y: 3580
@@ -2214,8 +2214,8 @@
   :x: 3200
   :y: 11440
 :energy_import_heavy_fuel_oil:
-  :x: 7200
-  :y: 6540
+  :x: 7700
+  :y: 6400
 :industry_useful_demand_for_other_ict_electricity:
   :x: 720
   :y: 9400
@@ -2305,22 +2305,22 @@
   :y: 12060
 :households_water_heater_network_gas_aggregator:
   :x: 1180
-  :y: 1140
+  :y: 1180
 :households_water_heater_resistive_electricity_aggregator:
   :x: 1180
-  :y: 1440
+  :y: 1360
 :households_water_heater_wood_pellets_aggregator:
   :x: 1180
-  :y: 1380
+  :y: 1300
 :households_water_heater_deficit:
-  :x: 1520
-  :y: 1740
+  :x: 1360
+  :y: 1700
 :households_water_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 1680
+  :y: 1600
 :households_water_heater_micro_chp_network_gas_aggregator:
   :x: 1180
-  :y: 1260
+  :y: 1300
 :households_space_heater_coal_aggregator:
   :x: 1180
   :y: 260
@@ -2332,19 +2332,19 @@
   :y: 320
 :households_space_heater_district_heating_steam_hot_water_aggregator:
   :x: 1180
-  :y: 800
+  :y: 740
 :households_space_heater_electricity_aggregator:
   :x: 1180
-  :y: 620
+  :y: 560
 :households_space_heater_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 680
+  :y: 620
 :households_space_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
-  :y: 740
+  :y: 680
 :households_space_heater_hybrid_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 860
+  :y: 800
 :households_space_heater_micro_chp_network_gas_aggregator:
   :x: 1180
   :y: 500
@@ -2353,31 +2353,31 @@
   :y: 380
 :households_space_heater_wood_pellets_aggregator:
   :x: 1180
-  :y: 560
+  :y: 500
 :households_space_heater_deficit:
-  :x: 1520
-  :y: 920
+  :x: 1380
+  :y: 900
 :households_water_heater_coal_aggregator:
   :x: 1180
-  :y: 1020
+  :y: 1060
 :households_water_heater_combined_network_gas_aggregator:
   :x: 1180
-  :y: 1200
+  :y: 1240
 :households_water_heater_crude_oil_aggregator:
   :x: 1180
-  :y: 1080
+  :y: 1120
 :households_water_heater_district_heating_steam_hot_water_aggregator:
   :x: 1180
-  :y: 1620
+  :y: 1540
 :households_water_heater_fuel_cell_chp_network_gas_aggregator:
   :x: 1180
-  :y: 1320
+  :y: 1360
 :households_water_heater_heatpump_air_water_electricity_aggregator:
   :x: 1180
-  :y: 1560
+  :y: 1480
 :households_water_heater_heatpump_ground_water_electricity_aggregator:
   :x: 1180
-  :y: 1500
+  :y: 1420
 :industry_locally_available_useable_heat:
   :x: 340
   :y: 11340
@@ -2466,8 +2466,8 @@
   :x: 5600
   :y: 6720
 :energy_import_bio_kerosene:
-  :x: 7200
-  :y: 6820
+  :x: 7700
+  :y: 6800
 :bunkers_total_useful_demand_ships:
   :x: 720
   :y: 18920
@@ -2753,3 +2753,261 @@
 :energy_imported_hydrogen_backup:
   :x: 6240
   :y: 4720
+:households_detached_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 740
+:households_corner_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 560
+:households_semi_detached_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 660
+:households_semi_detached_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 720
+:households_terraced_houses_useful_demand_for_heating:
+  :x: 60
+  :y: 460
+:households_apartments_useful_demand_for_heating:
+  :x: 60
+  :y: 360
+:households_apartments_heating_savings_from_insulation:
+  :x: 220
+  :y: 280
+:households_terraced_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 400
+:households_corner_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 640
+:households_detached_houses_heating_savings_from_insulation:
+  :x: 220
+  :y: 820
+:households_terraced_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 760
+:households_corner_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 460
+:households_corner_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 460
+:households_semi_detached_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 660
+:households_terraced_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 760
+:households_detached_houses_useful_demand_for_space_heating:
+  :x: 0
+  :y: 560
+:households_apartments_useful_demand_for_space_heating:
+  :x: 0
+  :y: 360
+:households_apartments_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 360
+:households_space_heating_savings_from_insulation:
+  :x: 220
+  :y: 900
+:households_detached_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 560
+:households_semi_detached_houses_useful_demand_for_space_heating_after_insulation:
+  :x: 380
+  :y: 660
+:buildings_useful_demand_for_space_heating_after_insulation_and_solar_thermal:
+  :x: 800
+  :y: 5980
+:buildings_space_heater_wood_pellets_aggregator:
+  :x: 1060
+  :y: 6000
+:buildings_space_heater_network_gas_aggregator:
+  :x: 1060
+  :y: 5940
+:buildings_space_heater_collective_heatpump_water_water_ts_electricity_aggregator:
+  :x: 1060
+  :y: 6120
+:buildings_space_heater_crude_oil_aggregator:
+  :x: 1060
+  :y: 5820
+:buildings_space_heater_heatpump_air_water_network_gas_aggregator:
+  :x: 1060
+  :y: 5880
+:buildings_space_heater_coal_aggregator:
+  :x: 1060
+  :y: 5760
+:buildings_space_heater_electricity_aggregator:
+  :x: 1060
+  :y: 6060
+:buildings_space_heater_district_heating_steam_hot_water_aggregator:
+  :x: 1060
+  :y: 6180
+:buildings_space_heater_deficit:
+  :x: 1280
+  :y: 6260
+:households_useful_demand_for_cooling:
+  :x: 800
+  :y: 120
+:energy_import_residual_heat:
+  :x: 7700
+  :y: 3520
+:energy_distribution_imported_heat:
+  :x: 6240
+  :y: 4020
+:energy_import_heat:
+  :x: 7700
+  :y: 4100
+:households_heat_network_steam_hot_water:
+  :x: 3360
+  :y: 1120
+:agriculture_heat_network_steam_hot_water:
+  :x: 3600
+  :y: 5480
+:buildings_heat_network_steam_hot_water:
+  :x: 3520
+  :y: 6920
+:foreign_energy_torrefaction_wood:
+  :x: 8000
+  :y: 900
+:foreign_energy_production_wood:
+  :x: 8220
+  :y: 900
+:foreign_energy_upgrade_biogas:
+  :x: 8100
+  :y: 3140
+:foreign_energy_distribution_biogas:
+  :x: 8260
+  :y: 3080
+:foreign_energy_production_biogas:
+  :x: 8440
+  :y: 3080
+:foreign_energy_production_manure:
+  :x: 8560
+  :y: 3020
+:foreign_energy_production_corn:
+  :x: 8560
+  :y: 3140
+:foreign_energy_production_bio_lng:
+  :x: 8000
+  :y: 4600
+:energy_production_waste_fats:
+  :x: 7120
+  :y: 7120
+:energy_production_palm:
+  :x: 7120
+  :y: 7280
+:energy_production_rapeseed:
+  :x: 7120
+  :y: 7280
+:energy_production_sugar_cane:
+  :x: 7120
+  :y: 6900
+:energy_production_sugar_beets:
+  :x: 7120
+  :y: 6960
+:foreign_energy_production_waste_fats:
+  :x: 8720
+  :y: 6800
+:foreign_energy_production_sugar_cane:
+  :x: 8720
+  :y: 6420
+:foreign_energy_production_palm:
+  :x: 8720
+  :y: 6620
+:foreign_energy_production_sugar_beets:
+  :x: 8720
+  :y: 6480
+:foreign_energy_production_bio_oil:
+  :x: 8000
+  :y: 6540
+:foreign_energy_production_rapeseed:
+  :x: 8720
+  :y: 6940
+:energy_production_biodiesel_from_palm:
+  :x: 6760
+  :y: 7280
+:energy_production_biodiesel_from_rapeseed:
+  :x: 6760
+  :y: 7240
+:energy_production_bio_oil_from_palm:
+  :x: 6760
+  :y: 7220
+:energy_production_biodiesel_from_waste_fats:
+  :x: 6760
+  :y: 7160
+:energy_production_bio_ethanol_from_sugar_beets:
+  :x: 6760
+  :y: 6960
+:energy_production_bio_ethanol_from_sugar_cane:
+  :x: 6760
+  :y: 6900
+:energy_production_bio_kerosene:
+  :x: 6400
+  :y: 7220
+:energy_production_bio_kerosene_from_palm:
+  :x: 6760
+  :y: 7340
+:energy_production_bio_kerosene_from_waste_fats:
+  :x: 6760
+  :y: 7100
+:energy_production_bio_kerosene_from_rapeseed:
+  :x: 6760
+  :y: 7300
+:foreign_energy_production_bio_ethanol:
+  :x: 8000
+  :y: 6620
+:foreign_energy_production_bio_kerosene:
+  :x: 8000
+  :y: 6800
+:foreign_energy_production_biodiesel:
+  :x: 8000
+  :y: 6720
+:foreign_energy_production_bio_ethanol_from_sugar_beets:
+  :x: 8420
+  :y: 6480
+:foreign_energy_production_bio_ethanol_from_sugar_cane:
+  :x: 8420
+  :y: 6420
+:foreign_energy_production_bio_oil_from_palm:
+  :x: 8420
+  :y: 6560
+:foreign_energy_production_bio_kerosene_from_rapeseed:
+  :x: 8420
+  :y: 6920
+:foreign_energy_production_bio_kerosene_from_palm:
+  :x: 8420
+  :y: 6620
+:foreign_energy_production_bio_kerosene_from_waste_fats:
+  :x: 8420
+  :y: 6840
+:foreign_energy_production_biodiesel_from_waste_fats:
+  :x: 8420
+  :y: 6760
+:foreign_energy_production_biodiesel_from_rapeseed:
+  :x: 8420
+  :y: 6980
+:foreign_energy_production_biodiesel_from_palm:
+  :x: 8420
+  :y: 6680
+:foreign_energy_production_biogenic_waste:
+  :x: 8000
+  :y: 4980
+:energy_production_bio_ethanol_from_wheat:
+  :x: 6760
+  :y: 6840
+:energy_production_wheat:
+  :x: 7120
+  :y: 6840
+:foreign_energy_production_bio_ethanol_from_wheat:
+  :x: 8420
+  :y: 6360
+:foreign_energy_production_wheat:
+  :x: 8720
+  :y: 6360
+:energy_production_bio_ethanol_from_corn:
+  :x: 6760
+  :y: 7020
+:foreign_energy_production_bio_ethanol_from_corn:
+  :x: 8420
+  :y: 6300

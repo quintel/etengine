@@ -161,9 +161,9 @@ class GraphApi
   # Returns an array of floats.
   def electricity_demand_curve
     fetch(:electricity_demand_curve) do
-      Plugins::Merit::Util.add_curves(
+      Plugins::TimeResolve::Util.add_curves(
         graph.plugin(:merit).order.participants.users.map(&:load_curve)
-      )
+      ).to_a
     end
   end
 

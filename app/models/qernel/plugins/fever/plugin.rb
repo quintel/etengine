@@ -19,21 +19,21 @@ module Qernel::Plugins
         @groups || setup
       end
 
-      def space_heating_demand_curve
-        @sh_demand ||= HouseholdHeat.demand_curve(graph)
+      def curves
+        @curves ||= Curves.new(@graph)
       end
 
-      def summary
-        @summary ||= Summary.new(self)
+      def summary(name)
+        @summaries ||= {}
+        @summaries[name.to_sym] ||= Summary.new(group(name))
       end
 
       # Configures the Fever groups, ensuring that hot water is first since its
       # producers may be used as aliases in other groups.
       def setup
-        @groups =
-          Etsource::Fever.data.keys
-            .sort_by { |key| key == :hot_water ? 0 : 1 }
-            .map { |key| Group.new(key, self) }
+        @groups = Etsource::Fever.groups.map do |conf|
+          Group.new(conf.name, self)
+        end
       end
 
       # Internal: Instructs each contained calculator to compute loads.
