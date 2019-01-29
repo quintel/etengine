@@ -1962,6 +1962,32 @@
     "insulation_terraced_houses_start_value": 13,
     "insulation_buildings_start_value": 28.8
   },
+  "nl2012": {
+    "number_of_apartments": 2676274.9028,
+    "insulation_apartments_start_value": 13,
+    "number_of_corner_houses": 980364.9488,
+    "insulation_corner_houses_start_value": 9,
+    "number_of_detached_houses": 1016787.176,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 666982.0356,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 2247554.9368,
+    "insulation_terraced_houses_start_value": 13,
+    "insulation_buildings_start_value": 28.8
+  },
+  "nl2013": {
+    "number_of_apartments": 2676274.9028,
+    "insulation_apartments_start_value": 13,
+    "number_of_corner_houses": 980364.9488,
+    "insulation_corner_houses_start_value": 9,
+    "number_of_detached_houses": 1016787.176,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 666982.0356,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 2247554.9368,
+    "insulation_terraced_houses_start_value": 13,
+    "insulation_buildings_start_value": 28.8
+  },
   "BU00140510_roodehaan": {
     "number_of_apartments": 0,
     "insulation_apartments_start_value": 32,
