@@ -11,7 +11,7 @@ class RemoveMicroChpInput < ActiveRecord::Migration[5.1]
     Scenario.migratable.find_each.with_index do |scenario, index|
       say "#{index} done" if index.positive? && (index % 250).zero?
 
-      if collection_name(scenario, SOURCE_KEY)
+      if collection_name(scenario, SOURCE_KEY) && collection_name(scenario, TARGET_KEY)
         updated += 1
 
         source_collection = scenario.public_send(collection_name(scenario, SOURCE_KEY))
