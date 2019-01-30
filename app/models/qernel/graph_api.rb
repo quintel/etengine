@@ -122,7 +122,7 @@ class GraphApi
   # exceeded.
   def loss_of_load_expectation(capacity, excludes = [])
     graph.plugin(:merit).order.lole.expectation(
-      electricity_demand_curve, capacity, excludes
+      ::Merit::Curve.new(electricity_demand_curve), capacity, excludes
     )
   end
 
