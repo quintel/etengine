@@ -3011,6 +3011,18 @@
 :foreign_energy_production_bio_ethanol_from_corn:
   :x: 8420
   :y: 6300
+<<<<<<< HEAD
+=======
+:households_water_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
+  :x: 1180
+  :y: 1660
+:households_water_heater_hybrid_hydrogen_heatpump_air_water_electricity:
+  :x: 1520
+  :y: 1660
+:households_final_demand_for_hot_water_hydrogen:
+  :x: 2320
+  :y: 1600
+>>>>>>> Adjust positions for h2 hhp
 :households_space_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
   :x: 1180
   :y: 860
@@ -3023,6 +3035,7 @@
 :households_final_demand_hydrogen:
   :x: 3120
   :y: 1180
+<<<<<<< HEAD
 :households_water_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
   :x: 1180
   :y: 1720
@@ -3032,3 +3045,5 @@
 :households_final_demand_for_hot_water_hydrogen:
   :x: 2320
   :y: 1560
+=======
+>>>>>>> Adjust positions for h2 hhp
