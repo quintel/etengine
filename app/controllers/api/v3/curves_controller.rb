@@ -33,23 +33,11 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/household_heat.csv
       def household_heat_curves
-        summary = scenario.gql.future_graph.plugin(:time_resolve).fever.summary
-
-        rows = summary.production.zip(
-          summary.demand,
-          summary.surplus,
-          summary.deficit
-        )
+        presenter =
+          Api::V3::HouseholdHeatCSVPresenter.new(scenario.gql.future_graph)
 
         send_csv('household_heat') do |csv|
-          csv << [
-            'Production',
-            'Demand',
-            'Buffering and time-shifting',
-            'Deficit'
-          ]
-
-          rows.each { |row| csv << row.flatten }
+          presenter.to_csv_rows.each { |row| csv << row }
         end
       end
 
