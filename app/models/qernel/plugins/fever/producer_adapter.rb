@@ -34,17 +34,14 @@ module Qernel::Plugins
         producer   = participant.producer
         production = producer.output_curve.sum
 
-        full_load_hours =
-          if production.zero?
-            0.0
-          else
-            production / total_value(:heat_output_capacity)
-          end
-
         @converter.demand = (production * 3600) / output_efficiency # MWh -> MJ
 
-        @converter[:full_load_hours]   = full_load_hours
-        @converter[:full_load_seconds] = full_load_hours * 3600
+        if production.positive?
+          full_load_hours = production / total_value(:heat_output_capacity)
+
+          @converter[:full_load_hours]   = full_load_hours
+          @converter[:full_load_seconds] = full_load_hours * 3600
+        end
 
         if @converter.converter.groups.include?(:aggregator_producer)
           demand = participant.demand
