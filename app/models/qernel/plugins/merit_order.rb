@@ -15,7 +15,7 @@ module Qernel::Plugins
 
     # A list of types of merit order producers to be supplied to the M/O.
     def participant_types
-      %w[consumer flex producer].freeze
+      %i[consumer flex producer].freeze
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
