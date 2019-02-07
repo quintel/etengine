@@ -583,7 +583,7 @@
   :y: 560
 :households_space_heater_combined_network_gas:
   :x: 1520
-  :y: 380
+  :y: 440
 :households_space_heater_heatpump_ground_water_electricity:
   :x: 1520
   :y: 680
@@ -613,10 +613,10 @@
   :y: 500
 :households_space_heater_coal:
   :x: 1520
-  :y: 200
+  :y: 260
 :households_space_heater_crude_oil:
   :x: 1520
-  :y: 260
+  :y: 320
 :households_cooling_heatpump_ground_water_electricity:
   :x: 1520
   :y: 60
@@ -637,7 +637,7 @@
   :y: 440
 :households_space_heater_network_gas:
   :x: 1520
-  :y: 320
+  :y: 380
 :households_water_heater_fuel_cell_chp_network_gas:
   :x: 1520
   :y: 1360
@@ -2323,13 +2323,13 @@
   :y: 1300
 :households_space_heater_coal_aggregator:
   :x: 1180
-  :y: 200
+  :y: 260
 :households_space_heater_combined_network_gas_aggregator:
   :x: 1180
-  :y: 380
+  :y: 440
 :households_space_heater_crude_oil_aggregator:
   :x: 1180
-  :y: 260
+  :y: 320
 :households_space_heater_district_heating_steam_hot_water_aggregator:
   :x: 1180
   :y: 740
@@ -2350,7 +2350,7 @@
   :y: 440
 :households_space_heater_network_gas_aggregator:
   :x: 1180
-  :y: 320
+  :y: 380
 :households_space_heater_wood_pellets_aggregator:
   :x: 1180
   :y: 500
@@ -3011,8 +3011,6 @@
 :foreign_energy_production_bio_ethanol_from_corn:
   :x: 8420
   :y: 6300
-<<<<<<< HEAD
-=======
 :households_water_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
   :x: 1180
   :y: 1660
@@ -3022,7 +3020,6 @@
 :households_final_demand_for_hot_water_hydrogen:
   :x: 2320
   :y: 1600
->>>>>>> Adjust positions for h2 hhp
 :households_space_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
   :x: 1180
   :y: 860
@@ -3035,15 +3032,3 @@
 :households_final_demand_hydrogen:
   :x: 3120
   :y: 1180
-<<<<<<< HEAD
-:households_water_heater_hybrid_hydrogen_heatpump_air_water_electricity_aggregator:
-  :x: 1180
-  :y: 1720
-:households_water_heater_hybrid_hydrogen_heatpump_air_water_electricity:
-  :x: 1520
-  :y: 1720
-:households_final_demand_for_hot_water_hydrogen:
-  :x: 2320
-  :y: 1560
-=======
->>>>>>> Adjust positions for h2 hhp
