@@ -51,6 +51,10 @@
     "number_of_old_residences": 2873.99904,
     "number_of_new_residences": 1174.0009599999998
   },
+  "GM0431_oostzaan_no_highways": {
+    "number_of_old_residences": 2873.99904,
+    "number_of_new_residences": 1174.0009599999998
+  },
   "BU00140701_hoornse_meer": {
     "number_of_old_residences": 2259.413636448,
     "number_of_new_residences": 356.58636355200014
@@ -491,6 +495,10 @@
     "number_of_old_residences": 44086.44,
     "number_of_new_residences": 20746.56
   },
+  "GM0307_amersfoort_no_highways": {
+    "number_of_old_residences": 44086.44,
+    "number_of_new_residences": 20746.56
+  },
   "BU00090009_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
     "number_of_old_residences": 122.662388654,
     "number_of_new_residences": 55.337611346
@@ -540,6 +548,10 @@
     "number_of_new_residences": 489.70789000000013
   },
   "GM0880_wormerland": {
+    "number_of_old_residences": 5050.22988,
+    "number_of_new_residences": 1633.7701200000001
+  },
+  "GM0880_wormerland_no_highways": {
     "number_of_old_residences": 5050.22988,
     "number_of_new_residences": 1633.7701200000001
   },
@@ -648,6 +660,10 @@
     "number_of_new_residences": 1246.0032
   },
   "GM0383_castricum": {
+    "number_of_old_residences": 11964.338459999999,
+    "number_of_new_residences": 3494.6615400000005
+  },
+  "GM0383_castricum_no_highways": {
     "number_of_old_residences": 11964.338459999999,
     "number_of_new_residences": 3494.6615400000005
   },
@@ -975,6 +991,10 @@
     "number_of_old_residences": 3493.6865599999996,
     "number_of_new_residences": 2054.3134400000004
   },
+  "GM0450_uitgeest_no_highways": {
+    "number_of_old_residences": 3493.6865599999996,
+    "number_of_new_residences": 2054.3134400000004
+  },
   "BU00140700_corpus_den_hoorn": {
     "number_of_old_residences": 1999.038596526,
     "number_of_new_residences": 754.961403474
@@ -984,6 +1004,10 @@
     "number_of_new_residences": 1295.4999999998647
   },
   "GM0417_laren": {
+    "number_of_old_residences": 4488.4182,
+    "number_of_new_residences": 691.5818
+  },
+  "GM0417_laren_no_highways": {
     "number_of_old_residences": 4488.4182,
     "number_of_new_residences": 691.5818
   },
@@ -1012,6 +1036,10 @@
     "number_of_new_residences": 1775.7738599999998
   },
   "GM0384_diemen": {
+    "number_of_old_residences": 10407.33568,
+    "number_of_new_residences": 2808.6643200000008
+  },
+  "GM0384_diemen_no_highways": {
     "number_of_old_residences": 10407.33568,
     "number_of_new_residences": 2808.6643200000008
   },
@@ -1068,6 +1096,10 @@
     "number_of_new_residences": 2383.8796799999996
   },
   "GM0852_waterland": {
+    "number_of_old_residences": 6314.0168,
+    "number_of_new_residences": 965.9831999999998
+  },
+  "GM0852_waterland_no_highways": {
     "number_of_old_residences": 6314.0168,
     "number_of_new_residences": 965.9831999999998
   },
@@ -1172,6 +1204,10 @@
     "number_of_new_residences": 4045.8465899999997
   },
   "GM1942_gooise_meren": {
+    "number_of_old_residences": 23109.38994,
+    "number_of_new_residences": 3028.610060000001
+  },
+  "GM1942_gooise_meren_no_highways": {
     "number_of_old_residences": 23109.38994,
     "number_of_new_residences": 3028.610060000001
   },
@@ -1295,6 +1331,10 @@
     "number_of_old_residences": 141489.733935,
     "number_of_new_residences": 30713.266065000007
   },
+  "RGNH01_ijmond_zuid_kennemerland_no_steel": {
+    "number_of_old_residences": 141489.733935,
+    "number_of_new_residences": 30713.266065000007
+  },
   "BU00140801_hoogkerk_zuid": {
     "number_of_old_residences": 1815.9546450799999,
     "number_of_new_residences": 624.04535492
@@ -1391,7 +1431,15 @@
     "number_of_old_residences": 4391.52656,
     "number_of_new_residences": 1459.47344
   },
+  "GM0437_ouder-amstel_no_highways": {
+    "number_of_old_residences": 4391.52656,
+    "number_of_new_residences": 1459.47344
+  },
   "GM0394_haarlemmermeer": {
+    "number_of_old_residences": 37359.3747,
+    "number_of_new_residences": 24620.6253
+  },
+  "GM0394_haarlemmermeer_no_highways": {
     "number_of_old_residences": 37359.3747,
     "number_of_new_residences": 24620.6253
   },
@@ -1420,6 +1468,10 @@
     "number_of_new_residences": 273.43882584
   },
   "GM0376_blaricum": {
+    "number_of_old_residences": 3685.60062,
+    "number_of_new_residences": 677.3993799999998
+  },
+  "GM0376_blaricum_no_highways": {
     "number_of_old_residences": 3685.60062,
     "number_of_new_residences": 677.3993799999998
   },
