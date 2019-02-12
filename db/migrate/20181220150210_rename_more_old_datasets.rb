@@ -8,6 +8,7 @@ class RenameMoreOldDatasets < ActiveRecord::Migration[5.1]
     'stedendriehoek' => 'om_cleantech-regio',
     'u16' => 'RGUT01_u16',
     'ijmond-zuid-kennemerland' => 'RGNH01_ijmond_zuid_kennemerland',
+    'ijmond-zuid-kennemerland_no_steel' => 'RGNH01_ijmond_zuid_kennemerland_no_steel',
     'zaanstreek-waterland' => 'RGNH02_zaanstreek_waterland',
     'gooi_en_vechtstreek' => 'RGNH03_gooi_en_vechtstreek',
     'amstelland-meerlanden' => 'RGNH04_amstelland_meerlanden',

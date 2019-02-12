@@ -155,6 +155,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 54
   },
+  "GM0431_oostzaan_no_highways": {
+    "number_of_apartments": 678.1264957264957,
+    "insulation_apartments_start_value": 27,
+    "number_of_corner_houses": 661.3216117216116,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 609.918437118437,
+    "insulation_detached_houses_start_value": 17,
+    "number_of_semi_detached_houses": 438.9040293040294,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 1659.729426129426,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 54
+  },
   "BU00140701_hoornse_meer": {
     "number_of_apartments": 1804.6554320544997,
     "insulation_apartments_start_value": 17,
@@ -857,6 +870,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 46
   },
+  "GM0370_beemster_no_highways": {
+    "number_of_apartments": 377.18795811518333,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 527.4887434554975,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 1342.1764397905758,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 497.81151832460733,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 912.335340314136,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
   "BU00140201_noorderplantsoenbuurt": {
     "number_of_apartments": 1352.6236144578313,
     "insulation_apartments_start_value": 8,
@@ -1377,6 +1403,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 46
   },
+  "GM0437_ouder-amstel_no_highways": {
+    "number_of_apartments": 2137.560040705563,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 855.4209633649932,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 344.35159430122116,
+    "insulation_detached_houses_start_value": 17,
+    "number_of_semi_detached_houses": 360.2294776119403,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 2153.4379240162825,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
   "GM0744_baarle_nassau": {
     "number_of_apartments": 316.88353982300885,
     "insulation_apartments_start_value": 17,
@@ -1637,6 +1676,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 46
   },
+  "GM0880_wormerland_no_highways": {
+    "number_of_apartments": 1563.733215547703,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 1050.0335689045935,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 1054.9540636042404,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 713.4717314487633,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 2301.8074204947,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
   "om_neder-betuwe": {
     "number_of_apartments": 2909.775,
     "insulation_apartments_start_value": 13,
@@ -1820,6 +1872,19 @@
     "insulation_buildings_start_value": 28.8
   },
   "GM0453_velsen": {
+    "number_of_apartments": 11364.236955247216,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 4404.75073285128,
+    "insulation_corner_houses_start_value": 13,
+    "number_of_detached_houses": 694.7524916943521,
+    "insulation_detached_houses_start_value": 7.000000000000001,
+    "number_of_semi_detached_houses": 2095.2220050811025,
+    "insulation_semi_detached_houses_start_value": 9,
+    "number_of_terraced_houses": 12044.037815126052,
+    "insulation_terraced_houses_start_value": 13,
+    "insulation_buildings_start_value": 31
+  },
+  "GM0453_velsen_no_steel": {
     "number_of_apartments": 11364.236955247216,
     "insulation_apartments_start_value": 17,
     "number_of_corner_houses": 4404.75073285128,
@@ -2066,6 +2131,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 46
   },
+  "GM0383_castricum_no_highways": {
+    "number_of_apartments": 3342.248703680283,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 2576.8258505122044,
+    "insulation_corner_houses_start_value": 13,
+    "number_of_detached_houses": 2401.8441254584545,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 1748.8396990008853,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 5389.241621348173,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
   "GM0406_huizen": {
     "number_of_apartments": 5149.039647577093,
     "insulation_apartments_start_value": 17,
@@ -2300,6 +2378,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 46
   },
+  "GM0307_amersfoort_no_highways": {
+    "number_of_apartments": 22915.373168689828,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 9472.429363750523,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 2441.0660318124737,
+    "insulation_detached_houses_start_value": 17,
+    "number_of_semi_detached_houses": 4054.4535370447884,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 26405.677898702386,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
   "BU00090102_woltersum": {
     "number_of_apartments": 0,
     "insulation_apartments_start_value": 32,
@@ -2418,6 +2509,19 @@
     "insulation_buildings_start_value": 46
   },
   "RGNH01_ijmond_zuid_kennemerland": {
+    "number_of_apartments": 71584.7871,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 20876.169690000002,
+    "insulation_corner_houses_start_value": 14.9228,
+    "number_of_detached_houses": 5995.075242,
+    "insulation_detached_houses_start_value": 11.2313,
+    "number_of_semi_detached_houses": 8208.744807000001,
+    "insulation_semi_detached_houses_start_value": 9.3595,
+    "number_of_terraced_houses": 65538.223161,
+    "insulation_terraced_houses_start_value": 14.602200000000002,
+    "insulation_buildings_start_value": 34.268
+  },
+  "RGNH01_ijmond_zuid_kennemerland_no_steel": {
     "number_of_apartments": 71584.7871,
     "insulation_apartments_start_value": 17,
     "number_of_corner_houses": 20876.169690000002,
@@ -3054,6 +3158,19 @@
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 31
   },
+  "GM0450_uitgeest_no_highways": {
+    "number_of_apartments": 1062.9299590090895,
+    "insulation_apartments_start_value": 27,
+    "number_of_corner_houses": 1035.244341472108,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 568.5439315630013,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 523.0604170379612,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 2358.22135091784,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 31
+  },
   "PV20_groningen": {
     "number_of_apartments": 91691.430402,
     "insulation_apartments_start_value": 17.3094,
@@ -3094,6 +3211,19 @@
     "insulation_buildings_start_value": 46
   },
   "GM0417_laren": {
+    "number_of_apartments": 837.6800000000001,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 724.2133333333333,
+    "insulation_corner_houses_start_value": 13,
+    "number_of_detached_houses": 1106.0533333333335,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 1479.0133333333333,
+    "insulation_semi_detached_houses_start_value": 9,
+    "number_of_terraced_houses": 1033.0400000000002,
+    "insulation_terraced_houses_start_value": 13,
+    "insulation_buildings_start_value": 31
+  },
+  "GM0417_laren_no_highways": {
     "number_of_apartments": 837.6800000000001,
     "insulation_apartments_start_value": 17,
     "number_of_corner_houses": 724.2133333333333,
@@ -3183,6 +3313,45 @@
     "number_of_terraced_houses": 3900.0312687913415,
     "insulation_terraced_houses_start_value": 21,
     "insulation_buildings_start_value": 46
+  },
+  "GM0384_diemen_no_highways": {
+    "number_of_apartments": 7623.23992784125,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 1420.5411906193626,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 119.20625375826819,
+    "insulation_detached_houses_start_value": 17,
+    "number_of_semi_detached_houses": 152.98135898977753,
+    "insulation_semi_detached_houses_start_value": 18,
+    "number_of_terraced_houses": 3900.0312687913415,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
+  "GM0394_haarlemmermeer": {
+    "number_of_apartments": 15333.569765714003,
+    "insulation_apartments_start_value": 27,
+    "number_of_corner_houses": 9613.157660111943,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 4655.1260587448605,
+    "insulation_detached_houses_start_value": 17,
+    "number_of_semi_detached_houses": 4413.620288275793,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 27964.5262271534,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 54
+  },
+  "GM0394_haarlemmermeer_no_highways": {
+    "number_of_apartments": 15333.569765714003,
+    "insulation_apartments_start_value": 27,
+    "number_of_corner_houses": 9613.157660111943,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 4655.1260587448605,
+    "insulation_detached_houses_start_value": 17,
+    "number_of_semi_detached_houses": 4413.620288275793,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 27964.5262271534,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 54
   },
   "om_beuningen": {
     "number_of_apartments": 3731.9187,
@@ -3315,6 +3484,19 @@
     "insulation_buildings_start_value": 46
   },
   "GM0852_waterland": {
+    "number_of_apartments": 1086.567164179104,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 1444.7318960751797,
+    "insulation_corner_houses_start_value": 13,
+    "number_of_detached_houses": 1099.6462133775567,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 733.4328358208957,
+    "insulation_semi_detached_houses_start_value": 13,
+    "number_of_terraced_houses": 2915.621890547264,
+    "insulation_terraced_houses_start_value": 13,
+    "insulation_buildings_start_value": 31
+  },
+  "GM0852_waterland_no_highways": {
     "number_of_apartments": 1086.567164179104,
     "insulation_apartments_start_value": 17,
     "number_of_corner_houses": 1444.7318960751797,
@@ -3601,6 +3783,19 @@
     "insulation_buildings_start_value": 46
   },
   "GM1942_gooise_meren": {
+    "number_of_apartments": 7941.683764883765,
+    "insulation_apartments_start_value": 17,
+    "number_of_corner_houses": 4468.802646002645,
+    "insulation_corner_houses_start_value": 13,
+    "number_of_detached_houses": 1391.1284823284825,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 3371.1153279153273,
+    "insulation_semi_detached_houses_start_value": 9,
+    "number_of_terraced_houses": 8965.26977886978,
+    "insulation_terraced_houses_start_value": 13,
+    "insulation_buildings_start_value": 31
+  },
+  "GM1942_gooise_meren_no_highways": {
     "number_of_apartments": 7941.683764883765,
     "insulation_apartments_start_value": 17,
     "number_of_corner_houses": 4468.802646002645,
@@ -4394,6 +4589,19 @@
     "insulation_buildings_start_value": 28.8
   },
   "GM0376_blaricum": {
+    "number_of_apartments": 563.3445222405272,
+    "insulation_apartments_start_value": 27,
+    "number_of_corner_houses": 860.7401153212521,
+    "insulation_corner_houses_start_value": 21,
+    "number_of_detached_houses": 1045.826194398682,
+    "insulation_detached_houses_start_value": 11,
+    "number_of_semi_detached_houses": 752.9229818780888,
+    "insulation_semi_detached_houses_start_value": 9,
+    "number_of_terraced_houses": 1140.1661861614498,
+    "insulation_terraced_houses_start_value": 21,
+    "insulation_buildings_start_value": 46
+  },
+  "GM0376_blaricum_no_highways": {
     "number_of_apartments": 563.3445222405272,
     "insulation_apartments_start_value": 27,
     "number_of_corner_houses": 860.7401153212521,
