@@ -29,6 +29,9 @@ module Qernel::Plugins
         consumers = group_consumers(group_name)
         total_demand = consumers.sum(&:demand)
 
+        # Prevent curve consisting of NaN,NaN,... when total demand is zero.
+        return TimeResolve::AggregateCurve.zeroed_profile if total_demand.zero?
+
         # Get demand curves for each consumer.
         individual = consumers.map do |consumer|
           @fever_curves.curve(consumer.fever.curve, consumer) *
