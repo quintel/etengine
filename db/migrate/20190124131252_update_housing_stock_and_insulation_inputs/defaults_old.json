@@ -1,1490 +1,2220 @@
 {
-  "hengstdal": {
-    "number_of_old_residences": 2843,
-    "number_of_new_residences": 626
-  },
-  "BU00141205_hunzepark": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "GM1931_krimpenerwaard": {
-    "number_of_old_residences": 18272.299999999996,
-    "number_of_new_residences": 5058.700000000005
-  },
-  "GM0664_goes": {
-    "number_of_old_residences": 13403.1,
-    "number_of_new_residences": 4280.89999999999
-  },
   "BU00090000_ten_boer": {
-    "number_of_old_residences": 1387.0681297410001,
-    "number_of_new_residences": 453.931870259
-  },
-  "om_geldermalsen": {
-    "number_of_old_residences": 7787.1,
-    "number_of_new_residences": 2773.9
-  },
-  "GM1676_schouwen_duiveland": {
-    "number_of_old_residences": 13141.4,
-    "number_of_new_residences": 3527.6
-  },
-  "BU00170106_verspreide_huizen_ten_westen_van_noord_willemskanaal": {
-    "number_of_old_residences": 40.069713641999996,
-    "number_of_new_residences": 8.930286358000002
-  },
-  "BU00140200_oranjebuurt": {
-    "number_of_old_residences": 1265.214301407,
-    "number_of_new_residences": 111.78569859300002
-  },
-  "BU00140603_villabuurt": {
-    "number_of_old_residences": 393.493592311,
-    "number_of_new_residences": 43.50640768899999
-  },
-  "GM0370_beemster_no_highways": {
-    "number_of_old_residences": 2818.300000000001,
-    "number_of_new_residences": 838.699999999999
-  },
-  "BU00141211_ruischerwaard": {
-    "number_of_old_residences": 471.354347583,
-    "number_of_new_residences": 41.64565241700001
-  },
-  "GM0431_oostzaan": {
-    "number_of_old_residences": 2873.99904,
-    "number_of_new_residences": 1174.0009599999998
-  },
-  "GM0431_oostzaan_no_highways": {
-    "number_of_old_residences": 2873.99904,
-    "number_of_new_residences": 1174.0009599999998
-  },
-  "BU00140701_hoornse_meer": {
-    "number_of_old_residences": 2259.413636448,
-    "number_of_new_residences": 356.58636355200014
-  },
-  "BU00140503_kop_van_oost": {
-    "number_of_old_residences": 10.998268218,
-    "number_of_new_residences": 388.001731782
-  },
-  "BU00140102_herewegbuurt": {
-    "number_of_old_residences": 675.05660686,
-    "number_of_new_residences": 114.94339313999998
-  },
-  "GM0738_baarle_nassau": {
-    "number_of_old_residences": 2145.8,
-    "number_of_new_residences": 600.2
-  },
-  "BU00140107_laanhuizen": {
-    "number_of_old_residences": 624.0070011419999,
-    "number_of_new_residences": 61.992998858000036
-  },
-  "BU00140905_dorkwerd": {
-    "number_of_old_residences": 32.085173124,
-    "number_of_new_residences": 3.9148268760000007
-  },
-  "GM0453_velsen_no_steel": {
-    "number_of_old_residences": 24830.69999999999,
-    "number_of_new_residences": 5772.300000000011
-  },
-  "RGNH05_kop_van_noord_holland": {
-    "number_of_old_residences": 59568.05712,
-    "number_of_new_residences": 15207.94288
-  },
-  "BU00090002_thesinge": {
-    "number_of_old_residences": 154.600550812,
-    "number_of_new_residences": 24.39944918800001
-  },
-  "GM0855_roosendaal": {
-    "number_of_old_residences": 26272.7,
-    "number_of_new_residences": 8445.3
-  },
-  "om_zevenaar": {
-    "number_of_old_residences": 14820,
-    "number_of_new_residences": 4584
-  },
-  "om_berkelland": {
-    "number_of_old_residences": 14666,
-    "number_of_new_residences": 4633
-  },
-  "GM0748_breda": {
-    "number_of_old_residences": 60701.9,
-    "number_of_new_residences": 20947.1
-  },
-  "om_duiven": {
-    "number_of_old_residences": 7272.8,
-    "number_of_new_residences": 3343.2
-  },
-  "GM0405_hoorn": {
-    "number_of_old_residences": 23035.56881,
-    "number_of_new_residences": 9387.43119
-  },
-  "om_culemborg": {
-    "number_of_old_residences": 7966.3,
-    "number_of_new_residences": 3562.7
-  },
-  "om_lochem": {
-    "number_of_old_residences": 11273.1,
-    "number_of_new_residences": 3245.9
-  },
-  "BU00170005_hemmen": {
-    "number_of_old_residences": 317.13051284200003,
-    "number_of_new_residences": 449.86948715799997
-  },
-  "BU00140705_bruilweering": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "GM0457_weesp": {
-    "number_of_old_residences": 7415.9712,
-    "number_of_new_residences": 1224.0287999999996
-  },
-  "om_aalten": {
-    "number_of_old_residences": 9331.3,
-    "number_of_new_residences": 2443.7
-  },
-  "BU00140507_euvelgunne": {
-    "number_of_old_residences": 4.521116442,
-    "number_of_new_residences": 1.4788835580000002
-  },
-  "om_nijmegen": {
-    "number_of_old_residences": 63005.3,
-    "number_of_new_residences": 15672.7
-  },
-  "BU00140003_binnenstad_west": {
-    "number_of_old_residences": 896.602337854,
-    "number_of_new_residences": 109.39766214600002
-  },
-  "om_oude-ijsselstreek": {
-    "number_of_old_residences": 14353,
-    "number_of_new_residences": 2887
-  },
-  "pl": {
-    "number_of_old_residences": 11702711.5,
-    "number_of_new_residences": 1857788.5
-  },
-  "GM0632_woerden": {
-    "number_of_old_residences": 15133.592888848365,
-    "number_of_new_residences": 6268.407111151635
-  },
-  "om_nunspeet": {
-    "number_of_old_residences": 7839.7,
-    "number_of_new_residences": 2546.3
-  },
-  "GM0779_geertruidenberg": {
-    "number_of_old_residences": 7284.5,
-    "number_of_new_residences": 2268.5
-  },
-  "BU00141100_beijum_west": {
-    "number_of_old_residences": 2706.152811075,
-    "number_of_new_residences": 268.8471889250002
-  },
-  "BU00141000_selwerd": {
-    "number_of_old_residences": 244,
-    "number_of_new_residences": 3816
-  },
-  "GM0766_drimmelen": {
-    "number_of_old_residences": 9115.3,
-    "number_of_new_residences": 2385.7
-  },
-  "om_ede": {
-    "number_of_old_residences": 33908.8,
-    "number_of_new_residences": 14341.2
-  },
-  "BU00141102_de_hunze": {
-    "number_of_old_residences": 849.5404092,
-    "number_of_new_residences": 155.45959080000003
-  },
-  "BU00141300_middelbert": {
-    "number_of_old_residences": 33.904435532,
-    "number_of_new_residences": 7.095564467999999
-  },
-  "GM0373_bergen": {
-    "number_of_old_residences": 12746.8224,
-    "number_of_new_residences": 2229.1776000000004
-  },
-  "om_voorst": {
-    "number_of_old_residences": 7652.5,
-    "number_of_new_residences": 2138.5
-  },
-  "BU00140809_bangeweer": {
-    "number_of_old_residences": 89.143857306,
-    "number_of_new_residences": 8.856142694000006
-  },
-  "BU00141402_lageland": {
-    "number_of_old_residences": 28.520153888,
-    "number_of_new_residences": 3.4798461120000006
-  },
-  "BU00140008_stationsgebied": {
-    "number_of_old_residences": 9.647603625,
-    "number_of_new_residences": 65.352396375
-  },
-  "BU00140704_piccardthof": {
-    "number_of_old_residences": 11.770076514,
-    "number_of_new_residences": 415.229923486
-  },
-  "BU00140807_suikerfabriekterrein": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "BU00140502_eemskanaal": {
-    "number_of_old_residences": 9.042232884,
-    "number_of_new_residences": 2.9577671160000003
-  },
-  "BU00140806_gravenburg": {
-    "number_of_old_residences": 6.459300382,
-    "number_of_new_residences": 696.540699618
-  },
-  "BU00140805_leegkerk": {
-    "number_of_old_residences": 18.008860071999997,
-    "number_of_new_residences": 9.991139928
-  },
-  "BU00141209_noorddijk": {
-    "number_of_old_residences": 39.509233813,
-    "number_of_new_residences": 3.4907661870000006
-  },
-  "BU00141207_kardinge": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "BU00141003_zernike_campus": {
-    "number_of_old_residences": 3.014077628,
-    "number_of_new_residences": 0.9859223720000001
-  },
-  "BU00090005_achter_thesinge_en_bovenrijge": {
-    "number_of_old_residences": 27.56458173,
-    "number_of_new_residences": 2.4354182700000004
-  },
-  "BU00140403_florabuurt": {
-    "number_of_old_residences": 595.9462572,
-    "number_of_new_residences": 109.05374280000001
-  },
-  "om_hattem": {
-    "number_of_old_residences": 4274.2,
-    "number_of_new_residences": 885.8
-  },
-  "BU00140803_vierverlaten": {
-    "number_of_old_residences": 47.705102776000004,
-    "number_of_new_residences": 11.294897223999996
-  },
-  "GM0532_stede_broec": {
-    "number_of_old_residences": 6591.310079999999,
-    "number_of_new_residences": 2432.6899200000003
-  },
-  "om_cleantech-regio": {
-    "number_of_old_residences": 145404.8,
-    "number_of_new_residences": 36351.2
-  },
-  "BU00090101_winneweer_gedeeltelijk": {
-    "number_of_old_residences": 36.752775639999996,
-    "number_of_new_residences": 3.2472243600000006
-  },
-  "GM0370_beemster": {
-    "number_of_old_residences": 2818.30362,
-    "number_of_new_residences": 838.69638
-  },
-  "BU00140201_noorderplantsoenbuurt": {
-    "number_of_old_residences": 2053.947242826,
-    "number_of_new_residences": 204.0527571740001
-  },
-  "om_doesburg": {
-    "number_of_old_residences": 3989.7,
-    "number_of_new_residences": 1177.3
-  },
-  "BU00140508_winschoterdiep": {
-    "number_of_old_residences": 6.028155256,
-    "number_of_new_residences": 1.9718447440000002
-  },
-  "GM1961_vijfheerenlanden": {
-    "number_of_old_residences": 17898.199999999277,
-    "number_of_new_residences": 4610.800000000724
-  },
-  "GM0995_lelystad": {
-    "number_of_old_residences": 22980.699999999993,
-    "number_of_new_residences": 9774.300000000008
-  },
-  "BU00140506_eemspoort": {
-    "number_of_old_residences": 9.042232884,
-    "number_of_new_residences": 2.9577671160000003
-  },
-  "be": {
-    "number_of_old_residences": 4148547.5,
-    "number_of_new_residences": 923026.5
-  },
-  "GM1709_woudrichem": {
-    "number_of_old_residences": 4475.4,
-    "number_of_new_residences": 1455.6
-  },
-  "BU00141004_selwerderhof": {
-    "number_of_old_residences": 2.260558221,
-    "number_of_new_residences": 0.7394417790000001
-  },
-  "GM0473_zandvoort": {
-    "number_of_old_residences": 7901.239500000001,
-    "number_of_new_residences": 1548.7604999999999
-  },
-  "rotterdam": {
-    "number_of_old_residences": 251058,
-    "number_of_new_residences": 60110
-  },
-  "om_neerijnen": {
-    "number_of_old_residences": 3535.7,
-    "number_of_new_residences": 1124.3
-  },
-  "BU00140606_de_wijert_zuid": {
-    "number_of_old_residences": 1202.0914092599999,
-    "number_of_new_residences": 267.90859074
-  },
-  "om_nijkerk": {
-    "number_of_old_residences": 11286,
-    "number_of_new_residences": 4636
-  },
-  "BU00141203_oosterhoogebrug": {
-    "number_of_old_residences": 801.357520176,
-    "number_of_new_residences": 302.64247982399996
-  },
-  "GM0484_alphen_aan_den_rijn": {
-    "number_of_old_residences": 35342.99999999999,
-    "number_of_new_residences": 10625.000000000004
-  },
-  "om_maasdriel": {
-    "number_of_old_residences": 7061.9,
-    "number_of_new_residences": 2577.1
-  },
-  "RGNH02_zaanstreek_waterland": {
-    "number_of_old_residences": 106688.50693999999,
-    "number_of_new_residences": 37129.49306
-  },
-  "GM1904_stichtse_vecht": {
-    "number_of_old_residences": 22289.899999999496,
-    "number_of_new_residences": 5271.100000000502
-  },
-  "BU00140100_de_meeuwen": {
-    "number_of_old_residences": 358.890854292,
-    "number_of_new_residences": 199.10914570800003
-  },
-  "RGUT01_u16": {
-    "number_of_old_residences": 297008.75699528103,
-    "number_of_new_residences": 102792.243004719
-  },
-  "GM0377_bloemendaal": {
-    "number_of_old_residences": 8294.8229,
-    "number_of_new_residences": 1358.1771000000006
-  },
-  "GM0352_wijk_bij_duurstede": {
-    "number_of_old_residences": 7155.899999999772,
-    "number_of_new_residences": 2701.1000000002273
-  },
-  "BU00140109_martini_trade_park": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "om_achterhoek": {
-    "number_of_old_residences": 101328.4,
-    "number_of_new_residences": 28783.6
-  },
-  "om_haarlemmermeer": {
-    "number_of_old_residences": 37610.3,
-    "number_of_new_residences": 24364.7
-  },
-  "om_lingewaal": {
-    "number_of_old_residences": 3523.8,
-    "number_of_new_residences": 977.2
-  },
-  "GM0388_enkhuizen": {
-    "number_of_old_residences": 6292.672299999999,
-    "number_of_new_residences": 2349.3277000000003
-  },
-  "BU00140810_de_buitenhof": {
-    "number_of_old_residences": 442.05319711,
-    "number_of_new_residences": 110.94680288999999
-  },
-  "BU00140000_binnenstad_noord": {
-    "number_of_old_residences": 2075.521121915,
-    "number_of_new_residences": 229.47887808499996
-  },
-  "GM0392_haarlem": {
-    "number_of_old_residences": 63884.19888,
-    "number_of_new_residences": 9789.80112
-  },
-  "BU00140511_waterhuizen": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "GM0498_drechterland": {
-    "number_of_old_residences": 5357.68532,
-    "number_of_new_residences": 2750.31468
-  },
-  "GM0873_tholen": {
-    "number_of_old_residences": 8176.9,
-    "number_of_new_residences": 2449.1
-  },
-  "BU00140106_zeeheldenbuurt": {
-    "number_of_old_residences": 1301.0482571250002,
-    "number_of_new_residences": 173.95174287499992
-  },
-  "BU00140800_hoogkerk_dorp": {
-    "number_of_old_residences": 658.141141985,
-    "number_of_new_residences": 204.85885801499995
-  },
-  "GM0826_moerdijk": {
-    "number_of_old_residences": 11551.6,
-    "number_of_new_residences": 4564.4
-  },
-  "GM0375_beverwijk": {
-    "number_of_old_residences": 13902.505739999999,
-    "number_of_new_residences": 4943.49426
-  },
-  "GM1598_koggenland": {
-    "number_of_old_residences": 6213.05286,
-    "number_of_new_residences": 3005.94714
-  },
-  "GM1695_noord_beveland": {
-    "number_of_old_residences": 3484.2,
-    "number_of_new_residences": 862.8
-  },
-  "GM0397_heemstede": {
-    "number_of_old_residences": 10524.4372,
-    "number_of_new_residences": 1995.5628000000004
-  },
-  "GM0798_heusden": {
-    "number_of_old_residences": 13670.1,
-    "number_of_new_residences": 4610.9
-  },
-  "BU00141106_koningslaagte": {
-    "number_of_old_residences": 20.2140266,
-    "number_of_new_residences": 4.785973399999999
-  },
-  "om_mook-en-middelaar": {
-    "number_of_old_residences": 2679.6,
-    "number_of_new_residences": 864.4
-  },
-  "om_arnhem": {
-    "number_of_old_residences": 57144.2,
-    "number_of_new_residences": 14817.8
-  },
-  "PV21_friesland": {
-    "number_of_old_residences": 231625.92763338,
-    "number_of_new_residences": 63914.07236661999
-  },
-  "BU00140504_woonschepenhaven": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "GM0797_halderberge": {
-    "number_of_old_residences": 10074.6,
-    "number_of_new_residences": 2952.4
-  },
-  "BU00140509_stainkoeln": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "om_heumen": {
-    "number_of_old_residences": 4524.8,
-    "number_of_new_residences": 2420.2
-  },
-  "example": {
-    "number_of_old_residences": 34465360,
-    "number_of_new_residences": 5610640
-  },
-  "BU00141401_harkstede": {
-    "number_of_old_residences": 70.703152182,
-    "number_of_new_residences": 10.296847818000002
-  },
-  "GM0736_de_ronde_venen": {
-    "number_of_old_residences": 13893.799999999803,
-    "number_of_new_residences": 3714.2000000001967
-  },
-  "GM0307_amersfoort": {
-    "number_of_old_residences": 44086.44,
-    "number_of_new_residences": 20746.56
-  },
-  "GM0307_amersfoort_no_highways": {
-    "number_of_old_residences": 44086.44,
-    "number_of_new_residences": 20746.56
-  },
-  "BU00090009_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
-    "number_of_old_residences": 122.662388654,
-    "number_of_new_residences": 55.337611346
-  },
-  "GM0441_schagen": {
-    "number_of_old_residences": 14871.043409999998,
-    "number_of_new_residences": 4941.956590000001
-  },
-  "BU00140900_vinkhuizen_noord": {
-    "number_of_old_residences": 2421.364742628,
-    "number_of_new_residences": 352.635257372
-  },
-  "BU00140103_rivierenbuurt": {
-    "number_of_old_residences": 2068.77698756,
-    "number_of_new_residences": 519.2230124399999
-  },
-  "GM0358_aalsmeer": {
-    "number_of_old_residences": 7592.6876999999995,
-    "number_of_new_residences": 5300.3123000000005
-  },
-  "om_barneveld": {
-    "number_of_old_residences": 12670,
-    "number_of_new_residences": 7928
-  },
-  "BU00141002_paddepoel_noord": {
-    "number_of_old_residences": 2815.03291095,
-    "number_of_new_residences": 409.96708905
-  },
-  "GM0758_dongen": {
-    "number_of_old_residences": 8032.1,
-    "number_of_new_residences": 2759.9
-  },
-  "om_deventer": {
-    "number_of_old_residences": 31824.7,
-    "number_of_new_residences": 11033.3
-  },
-  "GM0870_steenbergen": {
-    "number_of_old_residences": 8010,
-    "number_of_new_residences": 1996
-  },
-  "noorderplantsoen": {
-    "number_of_old_residences": 2009,
-    "number_of_new_residences": 152
-  },
-  "GM0393_haarlemmerliede_en_spaarnwoude": {
-    "number_of_old_residences": 1791.2921099999999,
-    "number_of_new_residences": 489.70789000000013
-  },
-  "GM0880_wormerland": {
-    "number_of_old_residences": 5050.22988,
-    "number_of_new_residences": 1633.7701200000001
-  },
-  "GM0880_wormerland_no_highways": {
-    "number_of_old_residences": 5050.22988,
-    "number_of_new_residences": 1633.7701200000001
-  },
-  "om_neder-betuwe": {
-    "number_of_old_residences": 6292.7,
-    "number_of_new_residences": 1957.3
-  },
-  "GM0402_hilversum": {
-    "number_of_old_residences": 35746.53216,
-    "number_of_new_residences": 5375.4678399999975
-  },
-  "BU00141005_tuinwijk": {
-    "number_of_old_residences": 806.7234252979999,
-    "number_of_new_residences": 71.27657470200002
-  },
-  "GM0627_waddinxveen": {
-    "number_of_old_residences": 8709.699999999999,
-    "number_of_new_residences": 2538.3000000000015
-  },
-  "BU00170004_glimmen": {
-    "number_of_old_residences": 395.48743055799997,
-    "number_of_new_residences": 77.51256944200003
-  },
-  "GM0312_bunnik": {
-    "number_of_old_residences": 4929.39999999983,
-    "number_of_new_residences": 1339.60000000017
-  },
-  "BU00140400_gorechtbuurt": {
-    "number_of_old_residences": 2182.490075112,
-    "number_of_new_residences": 579.5099248880001
-  },
-  "BU00141302_klein_harkstede": {
-    "number_of_old_residences": 26.73764427,
-    "number_of_new_residences": 3.2623557300000003
-  },
-  "GM0321_houten": {
-    "number_of_old_residences": 9436.199999999353,
-    "number_of_new_residences": 10105.800000000649
-  },
-  "BU00140808_peizerweg": {
-    "number_of_old_residences": 8.288713477,
-    "number_of_new_residences": 2.711286523
-  },
-  "PV26_utrecht": {
-    "number_of_old_residences": 401295.6,
-    "number_of_new_residences": 142177.4
-  },
-  "PV23_overijssel": {
-    "number_of_old_residences": 363274.07143389597,
-    "number_of_new_residences": 130484.92856610402
-  },
-  "om_noord-veluwe": {
-    "number_of_old_residences": 58989.8,
-    "number_of_new_residences": 21483.2
-  },
-  "GM0453_velsen": {
-    "number_of_old_residences": 24830.66214,
-    "number_of_new_residences": 5772.337860000001
-  },
-  "om_elburg": {
-    "number_of_old_residences": 7009.5,
-    "number_of_new_residences": 2091.5
-  },
-  "GM1940_de_fryske_marren": {
-    "number_of_old_residences": 16797.927059999998,
-    "number_of_new_residences": 6020.07294
-  },
-  "BU00140501_europapark": {
-    "number_of_old_residences": 0,
-    "number_of_new_residences": 643
-  },
-  "BU00141208_drielanden": {
-    "number_of_old_residences": 359.258381881,
-    "number_of_new_residences": 31.741618119000005
-  },
-  "BU00140505_driebond": {
-    "number_of_old_residences": 2.260558221,
-    "number_of_new_residences": 0.7394417790000001
-  },
-  "BU00140104_grunobuurt": {
-    "number_of_old_residences": 870.967277556,
-    "number_of_new_residences": 285.032722444
-  },
-  "GM0303_dronten": {
-    "number_of_old_residences": 9405.699999999997,
-    "number_of_new_residences": 7089.300000000002
-  },
-  "BU00140203_kostverloren": {
-    "number_of_old_residences": 1084.133375472,
-    "number_of_new_residences": 287.86662452800005
-  },
-  "nl2013": {
-    "number_of_old_residences": 5788104.5,
-    "number_of_new_residences": 1661193.5
-  },
-  "BU00141001_paddepoel_zuid": {
-    "number_of_old_residences": 1313.9117290000002,
-    "number_of_new_residences": 1286.0882709999998
-  },
-  "BU00140510_roodehaan": {
-    "number_of_old_residences": 6.7816746629999995,
-    "number_of_new_residences": 2.2183253370000005
-  },
-  "GM0432_opmeer": {
-    "number_of_old_residences": 3433.9968,
-    "number_of_new_residences": 1246.0032
-  },
-  "GM0383_castricum": {
-    "number_of_old_residences": 11964.338459999999,
-    "number_of_new_residences": 3494.6615400000005
-  },
-  "GM0383_castricum_no_highways": {
-    "number_of_old_residences": 11964.338459999999,
-    "number_of_new_residences": 3494.6615400000005
-  },
-  "GM0406_huizen": {
-    "number_of_old_residences": 15209.74336,
-    "number_of_new_residences": 3382.2566399999996
-  },
-  "om_zutphen": {
-    "number_of_old_residences": 16454.1,
-    "number_of_new_residences": 5240.9
-  },
-  "om_regio_arnhem-nijmegen": {
-    "number_of_old_residences": 253004.3,
-    "number_of_new_residences": 74918.7
-  },
-  "veere": {
-    "number_of_old_residences": 8608.3,
-    "number_of_new_residences": 2108.7
-  },
-  "BU00140500_de_linie": {
-    "number_of_old_residences": 78.5590578,
-    "number_of_new_residences": 371.4409422
-  },
-  "PV29_zeeland": {
-    "number_of_old_residences": 144911.3,
-    "number_of_new_residences": 37756.7
-  },
-  "s_heer_hendrikskinderen": {
-    "number_of_old_residences": 405.488492422529,
-    "number_of_new_residences": 129.511507577471
-  },
-  "GM1901_bodegraven_reeuwijk": {
-    "number_of_old_residences": 10799.3,
-    "number_of_new_residences": 3208.7000000000007
-  },
-  "GM0355_zeist": {
-    "number_of_old_residences": 23256.39999999869,
-    "number_of_new_residences": 4700.600000001308
-  },
-  "BU00140604_helpman": {
-    "number_of_old_residences": 2965.167999534,
-    "number_of_new_residences": 431.83200046600007
-  },
-  "om_doetinchem": {
-    "number_of_old_residences": 18398.5,
-    "number_of_new_residences": 6640.5
-  },
-  "BU00140906_de_held": {
-    "number_of_old_residences": 869.883070612,
-    "number_of_new_residences": 148.116929388
-  },
-  "BU00140300_de_hoogte": {
-    "number_of_old_residences": 1886.5199732,
-    "number_of_new_residences": 473.48002679999996
-  },
-  "BU00140605_de_wijert": {
-    "number_of_old_residences": 2300.328662754,
-    "number_of_new_residences": 512.671337246
-  },
-  "BU00090102_woltersum": {
-    "number_of_old_residences": 117.425118184,
-    "number_of_new_residences": 24.574881815999998
-  },
-  "BU00090003_sint_annen": {
-    "number_of_old_residences": 47.962372216,
-    "number_of_new_residences": 10.037627784
-  },
-  "nl2012": {
-    "number_of_old_residences": 5739499.3,
-    "number_of_new_residences": 1647243.7
-  },
-  "om_west-maas-en-waal": {
-    "number_of_old_residences": 5975,
-    "number_of_new_residences": 1896
-  },
-  "BU00140602_klein_martijn": {
-    "number_of_old_residences": 267.376442781,
-    "number_of_new_residences": 23.623557219000006
-  },
-  "PV20_groningen": {
-    "number_of_old_residences": 222965.05000000002,
-    "number_of_new_residences": 66599.94999999998
-  },
-  "GM0353_ijsselstein": {
-    "number_of_old_residences": 7730.09999999951,
-    "number_of_new_residences": 6438.90000000049
-  },
-  "oostkapelle": {
-    "number_of_old_residences": 1070.9975,
-    "number_of_new_residences": 254.0025
-  },
-  "BU00140202_schildersbuurt": {
-    "number_of_old_residences": 2212.74679977,
-    "number_of_new_residences": 322.25320023
-  },
-  "BU00140302_professorenbuurt": {
-    "number_of_old_residences": 2217.40521275,
-    "number_of_new_residences": 876.5947872500001
-  },
-  "PV27_noord_holland": {
-    "number_of_old_residences": 1006024.96433,
-    "number_of_new_residences": 294068.03567
-  },
-  "BU00140401_vogelbuurt": {
-    "number_of_old_residences": 1095.9034521190001,
-    "number_of_new_residences": 453.09654788099994
-  },
-  "om_renswoude": {
-    "number_of_old_residences": 1171.6,
-    "number_of_new_residences": 665.4
-  },
-  "BU00140002_binnenstad_oost": {
-    "number_of_old_residences": 1894.725030786,
-    "number_of_new_residences": 422.27496921400007
-  },
-  "GM1723_zundert": {
-    "number_of_old_residences": 6804.3,
-    "number_of_new_residences": 2392.7
-  },
-  "RGNB01_west_en_midden_brabant": {
-    "number_of_old_residences": 380199.4,
-    "number_of_new_residences": 130817.6
-  },
-  "BU00141206_zilvermeer": {
-    "number_of_old_residences": 79.018467626,
-    "number_of_new_residences": 6.981532374000001
-  },
-  "GM0448_texel": {
-    "number_of_old_residences": 5010.1092,
-    "number_of_new_residences": 1459.8907999999997
-  },
-  "GM0716_alphen_chaam": {
-    "number_of_old_residences": 3111.1,
-    "number_of_new_residences": 1102.9
-  },
-  "GM1655_werkendam": {
-    "number_of_old_residences": 8232.8,
-    "number_of_new_residences": 2287.2
-  },
-  "GM1911_hollands_kroon": {
-    "number_of_old_residences": 15793.899140000001,
-    "number_of_new_residences": 4760.10086
-  },
-  "GM0171_noordoostpolder": {
-    "number_of_old_residences": 14234.700000000008,
-    "number_of_new_residences": 5348.299999999991
-  },
-  "BU00170003_harenermolen": {
-    "number_of_old_residences": 128.76334942900002,
-    "number_of_new_residences": 14.236650570999997
-  },
-  "om_renkum": {
-    "number_of_old_residences": 12808.7,
-    "number_of_new_residences": 1849.3
-  },
-  "PV24_flevoland": {
-    "number_of_old_residences": 86033.574522,
-    "number_of_new_residences": 76884.425478
-  },
-  "de_biezen": {
-    "number_of_old_residences": 1330,
-    "number_of_new_residences": 0
-  },
-  "GM0420_medemblik": {
-    "number_of_old_residences": 13127.61876,
-    "number_of_new_residences": 5274.38124
-  },
-  "BU00170102_paterswolde_gedeeltelijk": {
-    "number_of_old_residences": 38.810931072,
-    "number_of_new_residences": 9.189068927999998
-  },
-  "BU00140802_westpoort": {
-    "number_of_old_residences": 2.260558221,
-    "number_of_new_residences": 0.7394417790000001
-  },
-  "om_rhenen": {
-    "number_of_old_residences": 5967.1,
-    "number_of_new_residences": 1724.9
-  },
-  "om_scherpenzeel": {
-    "number_of_old_residences": 2814.4,
-    "number_of_new_residences": 896.6
-  },
-  "BU00170002_voorveld": {
-    "number_of_old_residences": 55.184292635999995,
-    "number_of_new_residences": 10.815707364000003
-  },
-  "BU00141200_lewenborg_noord": {
-    "number_of_old_residences": 1530.0180504,
-    "number_of_new_residences": 279.9819496
-  },
-  "om_rheden": {
-    "number_of_old_residences": 18532.1,
-    "number_of_new_residences": 2398.9
-  },
-  "BU00140004_noorderplantsoen": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "BU00140001_binnenstad_zuid": {
-    "number_of_old_residences": 3153.259514242,
-    "number_of_new_residences": 384.7404857580001
-  },
-  "om_bronckhorst": {
-    "number_of_old_residences": 12850.3,
-    "number_of_new_residences": 3223.7
-  },
-  "GM0439_purmerend": {
-    "number_of_old_residences": 24058.1286,
-    "number_of_new_residences": 11521.871399999998
-  },
-  "gemeente_groningen": {
-    "number_of_old_residences": 88551.6899,
-    "number_of_new_residences": 21001.3101
-  },
-  "GM0744_bergen_op_zoom": {
-    "number_of_old_residences": 23347.6,
-    "number_of_new_residences": 6390.4
-  },
-  "om_rivierenland": {
-    "number_of_old_residences": 69845.8,
-    "number_of_new_residences": 25943.2
-  },
-  "baarland": {
-    "number_of_old_residences": 203.82,
-    "number_of_new_residences": 54.18
-  },
-  "uk": {
-    "number_of_old_residences": 21084050.4,
-    "number_of_new_residences": 6051149.6
-  },
-  "BU00140301_indische_buurt": {
-    "number_of_old_residences": 3977.2016172,
-    "number_of_new_residences": 727.7983828000001
-  },
-  "GM0361_alkmaar": {
-    "number_of_old_residences": 40652.38116,
-    "number_of_new_residences": 9693.618840000003
-  },
-  "GM0809_hilvarenbeek": {
-    "number_of_old_residences": 4737.7,
-    "number_of_new_residences": 1738.3
-  },
-  "BU00140108_stadspark": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "BU00140101_oosterpoort": {
-    "number_of_old_residences": 2517.41811921,
-    "number_of_new_residences": 336.58188078999984
-  },
-  "stichtse_vecht": {
-    "number_of_old_residences": 22405.9,
-    "number_of_new_residences": 5155.1
-  },
-  "BU00140404_damsterbuurt": {
-    "number_of_old_residences": 333.356863532,
-    "number_of_new_residences": 163.64313646800002
-  },
-  "GM0513_gouda": {
-    "number_of_old_residences": 26335.699999999997,
-    "number_of_new_residences": 5532.300000000005
-  },
-  "reitdiep": {
-    "number_of_old_residences": 0,
-    "number_of_new_residences": 918
-  },
-  "om_putten": {
-    "number_of_old_residences": 6762.1,
-    "number_of_new_residences": 2806.9
-  },
-  "GM0184_urk": {
-    "number_of_old_residences": 3634.7000000000003,
-    "number_of_new_residences": 2563.2999999999997
-  },
-  "om_winterswijk": {
-    "number_of_old_residences": 10525.3,
-    "number_of_new_residences": 2335.7
-  },
-  "BU00141103_van_starkenborgh": {
-    "number_of_old_residences": 0,
-    "number_of_new_residences": 295
-  },
-  "om_overbetuwe": {
-    "number_of_old_residences": 12415,
-    "number_of_new_residences": 6423
-  },
-  "BU00170001_oosterhaar": {
-    "number_of_old_residences": 1859.690448,
-    "number_of_new_residences": 340.30955200000005
-  },
-  "GM0546_leiden": {
-    "number_of_old_residences": 47670.59999999998,
-    "number_of_new_residences": 8965.400000000021
-  },
-  "BU00170100_noordlaren": {
-    "number_of_old_residences": 153.47959101,
-    "number_of_new_residences": 20.52040898999999
-  },
-  "GM0362_amstelveen": {
-    "number_of_old_residences": 33544.53805,
-    "number_of_new_residences": 9500.461949999999
-  },
-  "om_harderwijk": {
-    "number_of_old_residences": 11952.3,
-    "number_of_new_residences": 6759.7
-  },
-  "BU00141101_beijum_oost": {
-    "number_of_old_residences": 2891.5246234769997,
-    "number_of_new_residences": 255.47537652300005
-  },
-  "BU00140907_westpark": {
-    "number_of_old_residences": 4.521116442,
-    "number_of_new_residences": 1.4788835580000002
-  },
-  "BU00170108_verspreide_huizen_onner_esch": {
-    "number_of_old_residences": 77.438098248,
-    "number_of_new_residences": 20.561901752000004
-  },
-  "GM0385_edam_volendam": {
-    "number_of_old_residences": 10822.6854,
-    "number_of_new_residences": 4117.3146
-  },
-  "GM0450_uitgeest": {
-    "number_of_old_residences": 3493.6865599999996,
-    "number_of_new_residences": 2054.3134400000004
-  },
-  "GM0450_uitgeest_no_highways": {
-    "number_of_old_residences": 3493.6865599999996,
-    "number_of_new_residences": 2054.3134400000004
-  },
-  "BU00140700_corpus_den_hoorn": {
-    "number_of_old_residences": 1999.038596526,
-    "number_of_new_residences": 754.961403474
-  },
-  "GM0335_montfoort": {
-    "number_of_old_residences": 4276.5000000001355,
-    "number_of_new_residences": 1295.4999999998647
-  },
-  "GM0417_laren": {
-    "number_of_old_residences": 4488.4182,
-    "number_of_new_residences": 691.5818
-  },
-  "GM0417_laren_no_highways": {
-    "number_of_old_residences": 4488.4182,
-    "number_of_new_residences": 691.5818
-  },
-  "GM1674_woensdrecht": {
-    "number_of_old_residences": 7686,
-    "number_of_new_residences": 1956
-  },
-  "RGNH04_amstelland_meerlanden": {
-    "number_of_old_residences": 102749.725464,
-    "number_of_new_residences": 47072.274536000004
-  },
-  "BU00141204_ulgersmaborg": {
-    "number_of_old_residences": 759.973894532,
-    "number_of_new_residences": 84.02610546799998
-  },
-  "BU00141301_engelbert": {
-    "number_of_old_residences": 297.10943817599997,
-    "number_of_new_residences": 78.890561824
-  },
-  "GM0398_heerhugowaard": {
-    "number_of_old_residences": 12612.973600000001,
-    "number_of_new_residences": 9699.026399999999
-  },
-  "GM1696_wijdemeren": {
-    "number_of_old_residences": 8605.22614,
-    "number_of_new_residences": 1775.7738599999998
-  },
-  "GM0384_diemen": {
-    "number_of_old_residences": 10407.33568,
-    "number_of_new_residences": 2808.6643200000008
-  },
-  "GM0384_diemen_no_highways": {
-    "number_of_old_residences": 10407.33568,
-    "number_of_new_residences": 2808.6643200000008
-  },
-  "om_beuningen": {
-    "number_of_old_residences": 7823.2,
-    "number_of_new_residences": 2757.8
-  },
-  "nl": {
-    "number_of_old_residences": 5688299,
-    "number_of_new_residences": 1899665
-  },
-  "GM0396_heemskerk": {
-    "number_of_old_residences": 12151.99227,
-    "number_of_new_residences": 5305.00773
-  },
-  "om_druten": {
-    "number_of_old_residences": 5168.8,
-    "number_of_new_residences": 2438.2
-  },
-  "RGNH07_west_friesland": {
-    "number_of_old_residences": 64051.76946,
-    "number_of_new_residences": 26446.23054
-  },
-  "BU00090100_ten_post": {
-    "number_of_old_residences": 247.49319121599999,
-    "number_of_new_residences": 48.506808784000015
-  },
-  "BU00140901_vinkhuizen_zuid": {
-    "number_of_old_residences": 1732.599349896,
-    "number_of_new_residences": 595.4006501040001
-  },
-  "GM0785_goirle": {
-    "number_of_old_residences": 7402.5,
-    "number_of_new_residences": 2503.5
-  },
-  "antwerpen": {
-    "number_of_old_residences": 183703.8,
-    "number_of_new_residences": 78730.2
-  },
-  "BU00140402_bloemenbuurt": {
-    "number_of_old_residences": 1617.627478335,
-    "number_of_new_residences": 197.37252166500002
-  },
-  "BU00140600_sterrebosbuurt": {
-    "number_of_old_residences": 28.226131679999998,
-    "number_of_new_residences": 67.77386832
-  },
-  "om_epe": {
-    "number_of_old_residences": 11479.1,
-    "number_of_new_residences": 2359.9
-  },
-  "GM0399_heiloo": {
-    "number_of_old_residences": 7849.120320000001,
-    "number_of_new_residences": 2383.8796799999996
-  },
-  "GM0852_waterland": {
-    "number_of_old_residences": 6314.0168,
-    "number_of_new_residences": 965.9831999999998
-  },
-  "GM0852_waterland_no_highways": {
-    "number_of_old_residences": 6314.0168,
-    "number_of_new_residences": 965.9831999999998
-  },
-  "om_oost-gelre": {
-    "number_of_old_residences": 9676.9,
-    "number_of_new_residences": 2977.1
-  },
-  "om_brummen": {
-    "number_of_old_residences": 7404.5,
-    "number_of_new_residences": 1845.5
-  },
-  "de": {
-    "number_of_old_residences": 34621708,
-    "number_of_new_residences": 5636092
-  },
-  "BU00140904_reitdiep": {
-    "number_of_old_residences": 0,
-    "number_of_new_residences": 1025
-  },
-  "GM0344_utrecht": {
-    "number_of_old_residences": 106969.46724528272,
-    "number_of_new_residences": 42350.532754717286
-  },
-  "GM0479_zaanstad": {
-    "number_of_old_residences": 51053.74484,
-    "number_of_new_residences": 15907.255159999999
-  },
-  "RGNB02_west_brabant": {
-    "number_of_old_residences": 238194.8,
-    "number_of_new_residences": 78210.2
-  },
-  "RGNH03_gooi_en_vechtstreek": {
-    "number_of_old_residences": 98260.4608,
-    "number_of_new_residences": 16155.5392
-  },
-  "GM0356_nieuwegein": {
-    "number_of_old_residences": 22404.199999999797,
-    "number_of_new_residences": 5394.800000000205
-  },
-  "om_lingewaard": {
-    "number_of_old_residences": 13268,
-    "number_of_new_residences": 5946
-  },
-  "BU00141107_hunzeboord": {
-    "number_of_old_residences": 0.753519407,
-    "number_of_new_residences": 0.24648059300000003
-  },
-  "dk": {
-    "number_of_old_residences": 2080272.08945641,
-    "number_of_new_residences": 694727.910543592
-  },
-  "br": {
-    "number_of_old_residences": 35892720,
-    "number_of_new_residences": 13958280
-  },
-  "GM0874_tilburg": {
-    "number_of_old_residences": 67930.6,
-    "number_of_new_residences": 27848.4
-  },
-  "BU00140601_coendersborg": {
-    "number_of_old_residences": 1406.620605852,
-    "number_of_new_residences": 294.37939414799996
-  },
-  "GM0867_rucphen": {
-    "number_of_old_residences": 7573.1,
-    "number_of_new_residences": 1960.9
-  },
-  "GM0784_gilze_en_rijen": {
-    "number_of_old_residences": 8094.3,
-    "number_of_new_residences": 3043.7
-  },
-  "om_foodvalley": {
-    "number_of_old_residences": 101682,
-    "number_of_new_residences": 42269
-  },
-  "bd_etten-leur": {
-    "number_of_old_residences": 11921.1,
-    "number_of_new_residences": 6486.9
-  },
-  "GM0416_langedijk": {
-    "number_of_old_residences": 7234.18432,
-    "number_of_new_residences": 4061.81568
-  },
-  "GM0879_waalwijk": {
-    "number_of_old_residences": 15914.5,
-    "number_of_new_residences": 5037.5
-  },
-  "om_berg-en-dal": {
-    "number_of_old_residences": 11289.2,
-    "number_of_new_residences": 3803.8
-  },
-  "om_heerde": {
-    "number_of_old_residences": 6061.5,
-    "number_of_new_residences": 1720.5
-  },
-  "om_zaltbommel": {
-    "number_of_old_residences": 7617.8,
-    "number_of_new_residences": 3183.2
-  },
-  "GM0400_den_helder": {
-    "number_of_old_residences": 23893.15341,
-    "number_of_new_residences": 4045.8465899999997
-  },
-  "GM1942_gooise_meren": {
-    "number_of_old_residences": 23109.38994,
-    "number_of_new_residences": 3028.610060000001
-  },
-  "GM1942_gooise_meren_no_highways": {
-    "number_of_old_residences": 23109.38994,
-    "number_of_new_residences": 3028.610060000001
-  },
-  "BU00090109_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
-    "number_of_old_residences": 57.003555047999996,
-    "number_of_new_residences": 8.996444952000003
-  },
-  "GM0034_almere": {
-    "number_of_old_residences": 32456.99999999999,
-    "number_of_new_residences": 47264.000000000015
-  },
-  "om_wijchen": {
-    "number_of_old_residences": 12492.3,
-    "number_of_new_residences": 5013.7
-  },
-  "GM0310_de_bilt": {
-    "number_of_old_residences": 16923.25716510838,
-    "number_of_new_residences": 2338.74283489162
-  },
-  "fr": {
-    "number_of_old_residences": 21562060.8,
-    "number_of_new_residences": 6188339.2
-  },
-  "BU00141400_meerstad": {
-    "number_of_old_residences": 0,
-    "number_of_new_residences": 226
-  },
-  "om_rozendaal": {
-    "number_of_old_residences": 491.5,
-    "number_of_new_residences": 143.5
-  },
-  "es": {
-    "number_of_old_residences": 14992982,
-    "number_of_new_residences": 2440718
-  },
-  "om_tiel": {
-    "number_of_old_residences": 12428.2,
-    "number_of_new_residences": 5225.8
-  },
-  "GM0824_loon_op_zand": {
-    "number_of_old_residences": 7645.1,
-    "number_of_new_residences": 2464.9
-  },
-  "GM1892_zuidplas": {
-    "number_of_old_residences": 12112.199999999997,
-    "number_of_new_residences": 4674.800000000004
-  },
-  "om_apeldoorn": {
-    "number_of_old_residences": 54123.1,
-    "number_of_new_residences": 15680.9
-  },
-  "RGNB03_hart_van_brabant": {
-    "number_of_old_residences": 142004.6,
-    "number_of_new_residences": 52607.4
-  },
-  "BU00140702_hoornse_park": {
-    "number_of_old_residences": 270.160465509,
-    "number_of_new_residences": 26.839534491000016
-  },
-  "BU00140105_badstratenbuurt": {
-    "number_of_old_residences": 550.795471962,
-    "number_of_new_residences": 67.204528038
-  },
-  "om_westervoort": {
-    "number_of_old_residences": 5279.1,
-    "number_of_new_residences": 1264.9
-  },
-  "GM0738_aalburg": {
-    "number_of_old_residences": 3435.1,
-    "number_of_new_residences": 1595.9
-  },
-  "BU00140005_hortusbuurt_ebbingekwartier": {
-    "number_of_old_residences": 2021.586423615,
-    "number_of_new_residences": 873.4135763849999
-  },
-  "BU00170107_verspreide_huizen_op_de_hondsrug": {
-    "number_of_old_residences": 116.965708548,
-    "number_of_new_residences": 17.034291452
-  },
-  "BU00140007_umcg": {
-    "number_of_old_residences": 1.507038814,
-    "number_of_new_residences": 0.49296118600000005
-  },
-  "GM0589_oudewater": {
-    "number_of_old_residences": 3288.900000000125,
-    "number_of_new_residences": 981.0999999998751
-  },
-  "BU00140902_hoendiep": {
-    "number_of_old_residences": 37.533772146,
-    "number_of_new_residences": 5.466227854
+    "households_new_houses_useful_demand_for_heating": 19666376.61,
+    "households_old_houses_useful_demand_for_heating": 60094049.37,
+    "number_of_new_residences": 453.931870259,
+    "number_of_old_residences": 1387.0681297410001
   },
   "BU00090001_garmerwolde": {
-    "number_of_old_residences": 158.08287629,
-    "number_of_new_residences": 26.917123709999995
+    "households_new_houses_useful_demand_for_heating": 1397690.55,
+    "households_old_houses_useful_demand_for_heating": 8208564.357,
+    "number_of_new_residences": 26.917123709999995,
+    "number_of_old_residences": 158.08287629
   },
-  "eu": {
-    "number_of_old_residences": 163616697.3,
-    "number_of_new_residences": 46958202.7
+  "BU00090002_thesinge": {
+    "households_new_houses_useful_demand_for_heating": 1369683.635,
+    "households_old_houses_useful_demand_for_heating": 8678632.159,
+    "number_of_new_residences": 24.39944918800001,
+    "number_of_old_residences": 154.600550812
   },
-  "BU00140811_kranenburg": {
-    "number_of_old_residences": 2.260558221,
-    "number_of_new_residences": 0.7394417790000001
+  "BU00090003_sint_annen": {
+    "households_new_houses_useful_demand_for_heating": 504554.175,
+    "households_old_houses_useful_demand_for_heating": 2410889.87,
+    "number_of_new_residences": 10.037627784,
+    "number_of_old_residences": 47.962372216
   },
-  "BU00140903_friesestraatweg": {
-    "number_of_old_residences": 338.330213743,
-    "number_of_new_residences": 110.66978625700001
+  "BU00090005_achter_thesinge_en_bovenrijge": {
+    "households_new_houses_useful_demand_for_heating": 149443.3651,
+    "households_old_houses_useful_demand_for_heating": 1691431.777,
+    "number_of_new_residences": 2.4354182700000004,
+    "number_of_old_residences": 27.56458173
   },
-  "GM0415_landsmeer": {
-    "number_of_old_residences": 3698.08296,
-    "number_of_new_residences": 969.9170399999998
+  "BU00090009_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
+    "households_new_houses_useful_demand_for_heating": 2967231.673,
+    "households_old_houses_useful_demand_for_heating": 6577221.456,
+    "number_of_new_residences": 55.337611346,
+    "number_of_old_residences": 122.662388654
   },
-  "friesland": {
-    "number_of_old_residences": 232769.4,
-    "number_of_new_residences": 62770.6
+  "BU00090100_ten_post": {
+    "households_new_houses_useful_demand_for_heating": 2605187.336,
+    "households_old_houses_useful_demand_for_heating": 13292280.89,
+    "number_of_new_residences": 48.506808784000015,
+    "number_of_old_residences": 247.49319121599999
+  },
+  "BU00090101_winneweer_gedeeltelijk": {
+    "households_new_houses_useful_demand_for_heating": 182157.9673,
+    "households_old_houses_useful_demand_for_heating": 2061702.599,
+    "number_of_new_residences": 3.2472243600000006,
+    "number_of_old_residences": 36.752775639999996
+  },
+  "BU00090102_woltersum": {
+    "households_new_houses_useful_demand_for_heating": 1234128.023,
+    "households_old_houses_useful_demand_for_heating": 5896981.723,
+    "number_of_new_residences": 24.574881815999998,
+    "number_of_old_residences": 117.425118184
   },
   "BU00090104_wittewierum": {
-    "number_of_old_residences": 22.051665375000002,
-    "number_of_new_residences": 2.9483346249999984
-  },
-  "RGNH01_ijmond_zuid_kennemerland": {
-    "number_of_old_residences": 141489.733935,
-    "number_of_new_residences": 30713.266065000007
-  },
-  "RGNH01_ijmond_zuid_kennemerland_no_steel": {
-    "number_of_old_residences": 141489.733935,
-    "number_of_new_residences": 30713.266065000007
-  },
-  "BU00140801_hoogkerk_zuid": {
-    "number_of_old_residences": 1815.9546450799999,
-    "number_of_new_residences": 624.04535492
-  },
-  "om_buren": {
-    "number_of_old_residences": 7657.3,
-    "number_of_new_residences": 2665.7
-  },
-  "BU00141202_lewenborg_west": {
-    "number_of_old_residences": 751.594261838,
-    "number_of_new_residences": 66.405738162
-  },
-  "BU00141210_ruischerbrug": {
-    "number_of_old_residences": 170.569631869,
-    "number_of_new_residences": 50.430368131
-  },
-  "BU00170101_onnen": {
-    "number_of_old_residences": 154.435163224,
-    "number_of_new_residences": 36.56483677599999
-  },
-  "paddepoel_noord": {
-    "number_of_old_residences": 367,
-    "number_of_new_residences": 18
-  },
-  "BU00141105_het_witte_lam": {
-    "number_of_old_residences": 12.809829919,
-    "number_of_new_residences": 4.190170081000001
-  },
-  "om_wageningen": {
-    "number_of_old_residences": 15066.5,
-    "number_of_new_residences": 4463.5
-  },
-  "GM0451_uithoorn": {
-    "number_of_old_residences": 9454.4505,
-    "number_of_new_residences": 3382.5494999999996
-  },
-  "BU00140812_de_kring": {
-    "number_of_old_residences": 9.42708693,
-    "number_of_new_residences": 47.57291307
-  },
-  "BU00140703_van_swieten": {
-    "number_of_old_residences": 1.507038814,
-    "number_of_new_residences": 0.49296118600000005
-  },
-  "GM0363_amsterdam": {
-    "number_of_old_residences": 336660.0992,
-    "number_of_new_residences": 87729.9008
-  },
-  "om_montferland": {
-    "number_of_old_residences": 11527.1,
-    "number_of_new_residences": 3642.9
+    "households_new_houses_useful_demand_for_heating": 192748.5144,
+    "households_old_houses_useful_demand_for_heating": 1441636.137,
+    "number_of_new_residences": 2.9483346249999984,
+    "number_of_old_residences": 22.051665375000002
   },
   "BU00090106_lellens": {
-    "number_of_old_residences": 18.330446862,
-    "number_of_new_residences": 2.6695531380000004
+    "households_new_houses_useful_demand_for_heating": 142922.3592,
+    "households_old_houses_useful_demand_for_heating": 981374.2509,
+    "number_of_new_residences": 2.6695531380000004,
+    "number_of_old_residences": 18.330446862
   },
-  "PV22_drenthe": {
-    "number_of_old_residences": 160949,
-    "number_of_new_residences": 50953
+  "BU00090109_verspreide_huizen_ten_noorden_van_het_eemskanaal": {
+    "households_new_houses_useful_demand_for_heating": 494026.9839,
+    "households_old_houses_useful_demand_for_heating": 3130269.181,
+    "number_of_new_residences": 8.996444952000003,
+    "number_of_old_residences": 57.003555047999996
   },
-  "BU00141104_noorderhoogebrug": {
-    "number_of_old_residences": 111.884637231,
-    "number_of_new_residences": 11.115362769000006
+  "BU00140000_binnenstad_noord": {
+    "households_new_houses_useful_demand_for_heating": 8153706.581,
+    "households_old_houses_useful_demand_for_heating": 73746178.18,
+    "number_of_new_residences": 229.47887808499996,
+    "number_of_old_residences": 2075.521121915
   },
-  "om_ermelo": {
-    "number_of_old_residences": 8580.8,
-    "number_of_new_residences": 2200.2
+  "BU00140001_binnenstad_zuid": {
+    "households_new_houses_useful_demand_for_heating": 13036460.55,
+    "households_old_houses_useful_demand_for_heating": 106844340,
+    "number_of_new_residences": 384.7404857580001,
+    "number_of_old_residences": 3153.259514242
   },
-  "om_oldebroek": {
-    "number_of_old_residences": 6509.7,
-    "number_of_new_residences": 2472.3
+  "BU00140002_binnenstad_oost": {
+    "households_new_houses_useful_demand_for_heating": 12403957.16,
+    "households_old_houses_useful_demand_for_heating": 55655887.34,
+    "number_of_new_residences": 422.27496921400007,
+    "number_of_old_residences": 1894.725030786
   },
-  "GM1581_utrechtse_heuvelrug": {
-    "number_of_old_residences": 17322.79999999898,
-    "number_of_new_residences": 3893.2000000010203
+  "BU00140003_binnenstad_west": {
+    "households_new_houses_useful_demand_for_heating": 3733548.48,
+    "households_old_houses_useful_demand_for_heating": 30599450.03,
+    "number_of_new_residences": 109.39766214600002,
+    "number_of_old_residences": 896.602337854
   },
-  "BU00170109_verspreide_huizen_ten_oosten_van_de_hondsrug": {
-    "number_of_old_residences": 7.535194069999999,
-    "number_of_new_residences": 2.4648059300000003
+  "BU00140004_noorderplantsoen": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
   },
-  "GM0840_oisterwijk": {
-    "number_of_old_residences": 8577.7,
-    "number_of_new_residences": 2600.3
+  "BU00140005_hortusbuurt_ebbingekwartier": {
+    "households_new_houses_useful_demand_for_heating": 30244531.45,
+    "households_old_houses_useful_demand_for_heating": 70003416.28,
+    "number_of_new_residences": 873.4135763849999,
+    "number_of_old_residences": 2021.586423615
   },
-  "GM0050_zeewolde": {
-    "number_of_old_residences": 3320.8000000000006,
-    "number_of_new_residences": 4845.2
+  "BU00140007_umcg": {
+    "households_new_houses_useful_demand_for_heating": 16188.10067,
+    "households_old_houses_useful_demand_for_heating": 49488.87808,
+    "number_of_new_residences": 0.49296118600000005,
+    "number_of_old_residences": 1.507038814
   },
-  "RGNH06_regio_alkmaar": {
-    "number_of_old_residences": 96553.5975,
-    "number_of_new_residences": 33616.4025
+  "BU00140008_stationsgebied": {
+    "households_new_houses_useful_demand_for_heating": 1982760.27,
+    "households_old_houses_useful_demand_for_heating": 292703.6533,
+    "number_of_new_residences": 65.352396375,
+    "number_of_old_residences": 9.647603625
   },
-  "GM0437_ouder_amstel": {
-    "number_of_old_residences": 4391.52656,
-    "number_of_new_residences": 1459.47344
+  "BU00140100_de_meeuwen": {
+    "households_new_houses_useful_demand_for_heating": 5609208.001,
+    "households_old_houses_useful_demand_for_heating": 10110502.18,
+    "number_of_new_residences": 199.10914570800003,
+    "number_of_old_residences": 358.890854292
   },
-  "GM0437_ouder-amstel_no_highways": {
-    "number_of_old_residences": 4391.52656,
-    "number_of_new_residences": 1459.47344
+  "BU00140101_oosterpoort": {
+    "households_new_houses_useful_demand_for_heating": 11374219.63,
+    "households_old_houses_useful_demand_for_heating": 85071919.26,
+    "number_of_new_residences": 336.58188078999984,
+    "number_of_old_residences": 2517.41811921
   },
-  "GM0394_haarlemmermeer": {
-    "number_of_old_residences": 37359.3747,
-    "number_of_new_residences": 24620.6253
+  "BU00140102_herewegbuurt": {
+    "households_new_houses_useful_demand_for_heating": 4811799.981,
+    "households_old_houses_useful_demand_for_heating": 28259452.58,
+    "number_of_new_residences": 114.94339313999998,
+    "number_of_old_residences": 675.05660686
   },
-  "GM0394_haarlemmermeer_no_highways": {
-    "number_of_old_residences": 37359.3747,
-    "number_of_new_residences": 24620.6253
+  "BU00140103_rivierenbuurt": {
+    "households_new_houses_useful_demand_for_heating": 18111148.62,
+    "households_old_houses_useful_demand_for_heating": 72161530.96,
+    "number_of_new_residences": 519.2230124399999,
+    "number_of_old_residences": 2068.77698756
   },
-  "BU00170103_essen": {
-    "number_of_old_residences": 29.26439761,
-    "number_of_new_residences": 5.735602390000002
+  "BU00140104_grunobuurt": {
+    "households_new_houses_useful_demand_for_heating": 9560438.389,
+    "households_old_houses_useful_demand_for_heating": 29213589.67,
+    "number_of_new_residences": 285.032722444,
+    "number_of_old_residences": 870.967277556
+  },
+  "BU00140105_badstratenbuurt": {
+    "households_new_houses_useful_demand_for_heating": 1895409.88,
+    "households_old_houses_useful_demand_for_heating": 15534417.25,
+    "number_of_new_residences": 67.204528038,
+    "number_of_old_residences": 550.795471962
+  },
+  "BU00140106_zeeheldenbuurt": {
+    "households_new_houses_useful_demand_for_heating": 6766386.362,
+    "households_old_houses_useful_demand_for_heating": 50608260.87,
+    "number_of_new_residences": 173.95174287499992,
+    "number_of_old_residences": 1301.0482571250002
+  },
+  "BU00140107_laanhuizen": {
+    "households_new_houses_useful_demand_for_heating": 2196115.438,
+    "households_old_houses_useful_demand_for_heating": 22105583.44,
+    "number_of_new_residences": 61.992998858000036,
+    "number_of_old_residences": 624.0070011419999
+  },
+  "BU00140108_stadspark": {
+    "households_new_houses_useful_demand_for_heating": 8094.050334,
+    "households_old_houses_useful_demand_for_heating": 24744.43904,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140109_martini_trade_park": {
+    "households_new_houses_useful_demand_for_heating": 8094.050334,
+    "households_old_houses_useful_demand_for_heating": 24744.43904,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140200_oranjebuurt": {
+    "households_new_houses_useful_demand_for_heating": 4078570.267,
+    "households_old_houses_useful_demand_for_heating": 46162125.35,
+    "number_of_new_residences": 111.78569859300002,
+    "number_of_old_residences": 1265.214301407
+  },
+  "BU00140201_noorderplantsoenbuurt": {
+    "households_new_houses_useful_demand_for_heating": 7331585.773,
+    "households_old_houses_useful_demand_for_heating": 73798024.55,
+    "number_of_new_residences": 204.0527571740001,
+    "number_of_old_residences": 2053.947242826
+  },
+  "BU00140202_schildersbuurt": {
+    "households_new_houses_useful_demand_for_heating": 13262819.09,
+    "households_old_houses_useful_demand_for_heating": 91068949.76,
+    "number_of_new_residences": 322.25320023,
+    "number_of_old_residences": 2212.74679977
+  },
+  "BU00140203_kostverloren": {
+    "households_new_houses_useful_demand_for_heating": 10103593.11,
+    "households_old_houses_useful_demand_for_heating": 38051102.73,
+    "number_of_new_residences": 287.86662452800005,
+    "number_of_old_residences": 1084.133375472
+  },
+  "BU00140300_de_hoogte": {
+    "households_new_houses_useful_demand_for_heating": 12991715.54,
+    "households_old_houses_useful_demand_for_heating": 51763811.5,
+    "number_of_new_residences": 473.48002679999996,
+    "number_of_old_residences": 1886.5199732
+  },
+  "BU00140301_indische_buurt": {
+    "households_new_houses_useful_demand_for_heating": 22483123.92,
+    "households_old_houses_useful_demand_for_heating": 122863582.7,
+    "number_of_new_residences": 727.7983828000001,
+    "number_of_old_residences": 3977.2016172
+  },
+  "BU00140302_professorenbuurt": {
+    "households_new_houses_useful_demand_for_heating": 31506265.21,
+    "households_old_houses_useful_demand_for_heating": 79697207.57,
+    "number_of_new_residences": 876.5947872500001,
+    "number_of_old_residences": 2217.40521275
+  },
+  "BU00140400_gorechtbuurt": {
+    "households_new_houses_useful_demand_for_heating": 20814869.65,
+    "households_old_houses_useful_demand_for_heating": 78390799.68,
+    "number_of_new_residences": 579.5099248880001,
+    "number_of_old_residences": 2182.490075112
+  },
+  "BU00140401_vogelbuurt": {
+    "households_new_houses_useful_demand_for_heating": 12351950.12,
+    "households_old_houses_useful_demand_for_heating": 29875629.91,
+    "number_of_new_residences": 453.09654788099994,
+    "number_of_old_residences": 1095.9034521190001
+  },
+  "BU00140402_bloemenbuurt": {
+    "households_new_houses_useful_demand_for_heating": 5830368.487,
+    "households_old_houses_useful_demand_for_heating": 47784586.19,
+    "number_of_new_residences": 197.37252166500002,
+    "number_of_old_residences": 1617.627478335
+  },
+  "BU00140403_florabuurt": {
+    "households_new_houses_useful_demand_for_heating": 3188775.88,
+    "households_old_houses_useful_demand_for_heating": 17425711.42,
+    "number_of_new_residences": 109.05374280000001,
+    "number_of_old_residences": 595.9462572
+  },
+  "BU00140404_damsterbuurt": {
+    "households_new_houses_useful_demand_for_heating": 5522322.12,
+    "households_old_houses_useful_demand_for_heating": 11249503.16,
+    "number_of_new_residences": 163.64313646800002,
+    "number_of_old_residences": 333.356863532
+  },
+  "BU00140500_de_linie": {
+    "households_new_houses_useful_demand_for_heating": 10626436.91,
+    "households_old_houses_useful_demand_for_heating": 2247471.339,
+    "number_of_new_residences": 371.4409422,
+    "number_of_old_residences": 78.5590578
+  },
+  "BU00140501_europapark": {
+    "households_new_houses_useful_demand_for_heating": 21120206.28,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 643,
+    "number_of_old_residences": 0
+  },
+  "BU00140502_eemskanaal": {
+    "households_new_houses_useful_demand_for_heating": 97128.60401,
+    "households_old_houses_useful_demand_for_heating": 296933.2685,
+    "number_of_new_residences": 2.9577671160000003,
+    "number_of_old_residences": 9.042232884
+  },
+  "BU00140503_kop_van_oost": {
+    "households_new_houses_useful_demand_for_heating": 9182372.859,
+    "households_old_houses_useful_demand_for_heating": 260282.8578,
+    "number_of_new_residences": 388.001731782,
+    "number_of_old_residences": 10.998268218
+  },
+  "BU00140504_woonschepenhaven": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140505_driebond": {
+    "households_new_houses_useful_demand_for_heating": 24282.151,
+    "households_old_houses_useful_demand_for_heating": 74233.31712,
+    "number_of_new_residences": 0.7394417790000001,
+    "number_of_old_residences": 2.260558221
+  },
+  "BU00140506_eemspoort": {
+    "households_new_houses_useful_demand_for_heating": 97128.60401,
+    "households_old_houses_useful_demand_for_heating": 296933.2685,
+    "number_of_new_residences": 2.9577671160000003,
+    "number_of_old_residences": 9.042232884
+  },
+  "BU00140507_euvelgunne": {
+    "households_new_houses_useful_demand_for_heating": 48564.302,
+    "households_old_houses_useful_demand_for_heating": 148466.6342,
+    "number_of_new_residences": 1.4788835580000002,
+    "number_of_old_residences": 4.521116442
+  },
+  "BU00140508_winschoterdiep": {
+    "households_new_houses_useful_demand_for_heating": 64752.40267,
+    "households_old_houses_useful_demand_for_heating": 197955.5123,
+    "number_of_new_residences": 1.9718447440000002,
+    "number_of_old_residences": 6.028155256
+  },
+  "BU00140509_stainkoeln": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140510_roodehaan": {
+    "households_new_houses_useful_demand_for_heating": 200908.2172,
+    "households_old_houses_useful_demand_for_heating": 614199.434,
+    "number_of_new_residences": 2.2183253370000005,
+    "number_of_old_residences": 6.7816746629999995
+  },
+  "BU00140511_waterhuizen": {
+    "households_new_houses_useful_demand_for_heating": 8094.050334,
+    "households_old_houses_useful_demand_for_heating": 24744.43904,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140600_sterrebosbuurt": {
+    "households_new_houses_useful_demand_for_heating": 2942358.385,
+    "households_old_houses_useful_demand_for_heating": 1225419.137,
+    "number_of_new_residences": 67.77386832,
+    "number_of_old_residences": 28.226131679999998
+  },
+  "BU00140601_coendersborg": {
+    "households_new_houses_useful_demand_for_heating": 11868485.63,
+    "households_old_houses_useful_demand_for_heating": 56710682.83,
+    "number_of_new_residences": 294.37939414799996,
+    "number_of_old_residences": 1406.620605852
+  },
+  "BU00140602_klein_martijn": {
+    "households_new_houses_useful_demand_for_heating": 1205521.47,
+    "households_old_houses_useful_demand_for_heating": 13644348.28,
+    "number_of_new_residences": 23.623557219000006,
+    "number_of_old_residences": 267.376442781
+  },
+  "BU00140603_villabuurt": {
+    "households_new_houses_useful_demand_for_heating": 3482229.746,
+    "households_old_houses_useful_demand_for_heating": 31495017.97,
+    "number_of_new_residences": 43.50640768899999,
+    "number_of_old_residences": 393.493592311
+  },
+  "BU00140604_helpman": {
+    "households_new_houses_useful_demand_for_heating": 17810330.5,
+    "households_old_houses_useful_demand_for_heating": 122294369.1,
+    "number_of_new_residences": 431.83200046600007,
+    "number_of_old_residences": 2965.167999534
+  },
+  "BU00140605_de_wijert": {
+    "households_new_houses_useful_demand_for_heating": 15695972.3,
+    "households_old_houses_useful_demand_for_heating": 70426981.85,
+    "number_of_new_residences": 512.671337246,
+    "number_of_old_residences": 2300.328662754
+  },
+  "BU00140606_de_wijert_zuid": {
+    "households_new_houses_useful_demand_for_heating": 12471923.91,
+    "households_old_houses_useful_demand_for_heating": 55960850.47,
+    "number_of_new_residences": 267.90859074,
+    "number_of_old_residences": 1202.0914092599999
+  },
+  "BU00140700_corpus_den_hoorn": {
+    "households_new_houses_useful_demand_for_heating": 21914579.7,
+    "households_old_houses_useful_demand_for_heating": 58026927.54,
+    "number_of_new_residences": 754.961403474,
+    "number_of_old_residences": 1999.038596526
+  },
+  "BU00140701_hoornse_meer": {
+    "households_new_houses_useful_demand_for_heating": 10676796.88,
+    "households_old_houses_useful_demand_for_heating": 67650653.35,
+    "number_of_new_residences": 356.58636355200014,
+    "number_of_old_residences": 2259.413636448
+  },
+  "BU00140702_hoornse_park": {
+    "households_new_houses_useful_demand_for_heating": 1526431.861,
+    "households_old_houses_useful_demand_for_heating": 15364705.46,
+    "number_of_new_residences": 26.839534491000016,
+    "number_of_old_residences": 270.160465509
+  },
+  "BU00140703_van_swieten": {
+    "households_new_houses_useful_demand_for_heating": 16188.10067,
+    "households_old_houses_useful_demand_for_heating": 49488.87808,
+    "number_of_new_residences": 0.49296118600000005,
+    "number_of_old_residences": 1.507038814
+  },
+  "BU00140704_piccardthof": {
+    "households_new_houses_useful_demand_for_heating": 21290630.12,
+    "households_old_houses_useful_demand_for_heating": 603502.6173,
+    "number_of_new_residences": 415.229923486,
+    "number_of_old_residences": 11.770076514
+  },
+  "BU00140705_bruilweering": {
+    "households_new_houses_useful_demand_for_heating": 8094.050334,
+    "households_old_houses_useful_demand_for_heating": 24744.43904,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140800_hoogkerk_dorp": {
+    "households_new_houses_useful_demand_for_heating": 8549964.103,
+    "households_old_houses_useful_demand_for_heating": 27468097.76,
+    "number_of_new_residences": 204.85885801499995,
+    "number_of_old_residences": 658.141141985
+  },
+  "BU00140801_hoogkerk_zuid": {
+    "households_new_houses_useful_demand_for_heating": 22925753.09,
+    "households_old_houses_useful_demand_for_heating": 66713304.54,
+    "number_of_new_residences": 624.04535492,
+    "number_of_old_residences": 1815.9546450799999
+  },
+  "BU00140802_westpoort": {
+    "households_new_houses_useful_demand_for_heating": 24282.151,
+    "households_old_houses_useful_demand_for_heating": 74233.31712,
+    "number_of_new_residences": 0.7394417790000001,
+    "number_of_old_residences": 2.260558221
+  },
+  "BU00140803_vierverlaten": {
+    "households_new_houses_useful_demand_for_heating": 659824.0611,
+    "households_old_houses_useful_demand_for_heating": 2786831.436,
+    "number_of_new_residences": 11.294897223999996,
+    "number_of_old_residences": 47.705102776000004
   },
   "BU00140804_zuidwending": {
-    "number_of_old_residences": 12.809829919,
-    "number_of_new_residences": 4.190170081000001
+    "households_new_houses_useful_demand_for_heating": 250130.5102,
+    "households_old_houses_useful_demand_for_heating": 764677.622,
+    "number_of_new_residences": 4.190170081000001,
+    "number_of_old_residences": 12.809829919
   },
-  "flevoland": {
-    "number_of_old_residences": 83751.715358475,
-    "number_of_new_residences": 81444.284641525
+  "BU00140805_leegkerk": {
+    "households_new_houses_useful_demand_for_heating": 680472.8449,
+    "households_old_houses_useful_demand_for_heating": 1226540.749,
+    "number_of_new_residences": 9.991139928,
+    "number_of_old_residences": 18.008860071999997
   },
-  "GM0331_lopik": {
-    "number_of_old_residences": 4100.500000000129,
-    "number_of_new_residences": 1387.4999999998704
+  "BU00140806_gravenburg": {
+    "households_new_houses_useful_demand_for_heating": 26420358.53,
+    "households_old_houses_useful_demand_for_heating": 245006.5474,
+    "number_of_new_residences": 696.540699618,
+    "number_of_old_residences": 6.459300382
   },
-  "om_veenendaal": {
-    "number_of_old_residences": 18797.6,
-    "number_of_new_residences": 7613.4
+  "BU00140807_suikerfabriekterrein": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00140808_peizerweg": {
+    "households_new_houses_useful_demand_for_heating": 89034.55367,
+    "households_old_houses_useful_demand_for_heating": 272188.8294,
+    "number_of_new_residences": 2.711286523,
+    "number_of_old_residences": 8.288713477
+  },
+  "BU00140809_bangeweer": {
+    "households_new_houses_useful_demand_for_heating": 463175.7168,
+    "households_old_houses_useful_demand_for_heating": 4662218.24,
+    "number_of_new_residences": 8.856142694000006,
+    "number_of_old_residences": 89.143857306
+  },
+  "BU00140810_de_buitenhof": {
+    "households_new_houses_useful_demand_for_heating": 4639556.636,
+    "households_old_houses_useful_demand_for_heating": 18485713.79,
+    "number_of_new_residences": 110.94680288999999,
+    "number_of_old_residences": 442.05319711
+  },
+  "BU00140811_kranenburg": {
+    "households_new_houses_useful_demand_for_heating": 24282.151,
+    "households_old_houses_useful_demand_for_heating": 74233.31712,
+    "number_of_new_residences": 0.7394417790000001,
+    "number_of_old_residences": 2.260558221
+  },
+  "BU00140812_de_kring": {
+    "households_new_houses_useful_demand_for_heating": 1681450.716,
+    "households_old_houses_useful_demand_for_heating": 333197.6339,
+    "number_of_new_residences": 47.57291307,
+    "number_of_old_residences": 9.42708693
+  },
+  "BU00140900_vinkhuizen_noord": {
+    "households_new_houses_useful_demand_for_heating": 11688619.26,
+    "households_old_houses_useful_demand_for_heating": 80259730.05,
+    "number_of_new_residences": 352.635257372,
+    "number_of_old_residences": 2421.364742628
+  },
+  "BU00140901_vinkhuizen_zuid": {
+    "households_new_houses_useful_demand_for_heating": 20403780.21,
+    "households_old_houses_useful_demand_for_heating": 59374433.54,
+    "number_of_new_residences": 595.4006501040001,
+    "number_of_old_residences": 1732.599349896
+  },
+  "BU00140902_hoendiep": {
+    "households_new_houses_useful_demand_for_heating": 260695.1475,
+    "households_old_houses_useful_demand_for_heating": 1790059.348,
+    "number_of_new_residences": 5.466227854,
+    "number_of_old_residences": 37.533772146
+  },
+  "BU00140903_friesestraatweg": {
+    "households_new_houses_useful_demand_for_heating": 6780964.644,
+    "households_old_houses_useful_demand_for_heating": 20730185.67,
+    "number_of_new_residences": 110.66978625700001,
+    "number_of_old_residences": 338.330213743
+  },
+  "BU00140904_reitdiep": {
+    "households_new_houses_useful_demand_for_heating": 34354075.03,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 1025,
+    "number_of_old_residences": 0
+  },
+  "BU00140905_dorkwerd": {
+    "households_new_houses_useful_demand_for_heating": 231690.0672,
+    "households_old_houses_useful_demand_for_heating": 1898887.525,
+    "number_of_new_residences": 3.9148268760000007,
+    "number_of_old_residences": 32.085173124
+  },
+  "BU00140906_de_held": {
+    "households_new_houses_useful_demand_for_heating": 4999354.865,
+    "households_old_houses_useful_demand_for_heating": 29360952.72,
+    "number_of_new_residences": 148.116929388,
+    "number_of_old_residences": 869.883070612
+  },
+  "BU00140907_westpark": {
+    "households_new_houses_useful_demand_for_heating": 48564.302,
+    "households_old_houses_useful_demand_for_heating": 148466.6342,
+    "number_of_new_residences": 1.4788835580000002,
+    "number_of_old_residences": 4.521116442
+  },
+  "BU00141000_selwerd": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 139374351.8,
+    "number_of_new_residences": 3816,
+    "number_of_old_residences": 244
+  },
+  "BU00141001_paddepoel_zuid": {
+    "households_new_houses_useful_demand_for_heating": 40160518.03,
+    "households_old_houses_useful_demand_for_heating": 41029357.68,
+    "number_of_new_residences": 1286.0882709999998,
+    "number_of_old_residences": 1313.9117290000002
+  },
+  "BU00141002_paddepoel_noord": {
+    "households_new_houses_useful_demand_for_heating": 14717159.01,
+    "households_old_houses_useful_demand_for_heating": 101055153.2,
+    "number_of_new_residences": 409.96708905,
+    "number_of_old_residences": 2815.03291095
+  },
+  "BU00141003_zernike_campus": {
+    "households_new_houses_useful_demand_for_heating": 32376.20134,
+    "households_old_houses_useful_demand_for_heating": 98977.75616,
+    "number_of_new_residences": 0.9859223720000001,
+    "number_of_old_residences": 3.014077628
+  },
+  "BU00141004_selwerderhof": {
+    "households_new_houses_useful_demand_for_heating": 24282.151,
+    "households_old_houses_useful_demand_for_heating": 74233.31712,
+    "number_of_new_residences": 0.7394417790000001,
+    "number_of_old_residences": 2.260558221
+  },
+  "BU00141005_tuinwijk": {
+    "households_new_houses_useful_demand_for_heating": 2288712.107,
+    "households_old_houses_useful_demand_for_heating": 25904130.19,
+    "number_of_new_residences": 71.27657470200002,
+    "number_of_old_residences": 806.7234252979999
+  },
+  "BU00141100_beijum_west": {
+    "households_new_houses_useful_demand_for_heating": 9426363.648,
+    "households_old_houses_useful_demand_for_heating": 94883567.82,
+    "number_of_new_residences": 268.8471889250002,
+    "number_of_old_residences": 2706.152811075
+  },
+  "BU00141101_beijum_oost": {
+    "households_new_houses_useful_demand_for_heating": 7808428.011,
+    "households_old_houses_useful_demand_for_heating": 88377448.23,
+    "number_of_new_residences": 255.47537652300005,
+    "number_of_old_residences": 2891.5246234769997
+  },
+  "BU00141102_de_hunze": {
+    "households_new_houses_useful_demand_for_heating": 5851466.162,
+    "households_old_houses_useful_demand_for_heating": 31976521.57,
+    "number_of_new_residences": 155.45959080000003,
+    "number_of_old_residences": 849.5404092
+  },
+  "BU00141103_van_starkenborgh": {
+    "households_new_houses_useful_demand_for_heating": 10356895.61,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 295,
+    "number_of_old_residences": 0
+  },
+  "BU00141104_noorderhoogebrug": {
+    "households_new_houses_useful_demand_for_heating": 682459.9338,
+    "households_old_houses_useful_demand_for_heating": 6869481.789,
+    "number_of_new_residences": 11.115362769000006,
+    "number_of_old_residences": 111.884637231
+  },
+  "BU00141105_het_witte_lam": {
+    "households_new_houses_useful_demand_for_heating": 223921.0681,
+    "households_old_houses_useful_demand_for_heating": 684552.3551,
+    "number_of_new_residences": 4.190170081000001,
+    "number_of_old_residences": 12.809829919
+  },
+  "BU00141106_koningslaagte": {
+    "households_new_houses_useful_demand_for_heating": 381135.0595,
+    "households_old_houses_useful_demand_for_heating": 1609761.189,
+    "number_of_new_residences": 4.785973399999999,
+    "number_of_old_residences": 20.2140266
+  },
+  "BU00141107_hunzeboord": {
+    "households_new_houses_useful_demand_for_heating": 8094.050334,
+    "households_old_houses_useful_demand_for_heating": 24744.43904,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00141200_lewenborg_noord": {
+    "households_new_houses_useful_demand_for_heating": 9638982.594,
+    "households_old_houses_useful_demand_for_heating": 52674171.95,
+    "number_of_new_residences": 279.9819496,
+    "number_of_old_residences": 1530.0180504
   },
   "BU00141201_lewenborg_zuid": {
-    "number_of_old_residences": 1306.56117416,
-    "number_of_new_residences": 273.43882584
+    "households_new_houses_useful_demand_for_heating": 9752228.401,
+    "households_old_houses_useful_demand_for_heating": 46598660.42,
+    "number_of_new_residences": 273.43882584,
+    "number_of_old_residences": 1306.56117416
   },
-  "GM0376_blaricum": {
-    "number_of_old_residences": 3685.60062,
-    "number_of_new_residences": 677.3993799999998
+  "BU00141202_lewenborg_west": {
+    "households_new_houses_useful_demand_for_heating": 2567041.865,
+    "households_old_houses_useful_demand_for_heating": 29054325.56,
+    "number_of_new_residences": 66.405738162,
+    "number_of_old_residences": 751.594261838
   },
-  "GM0376_blaricum_no_highways": {
-    "number_of_old_residences": 3685.60062,
-    "number_of_new_residences": 677.3993799999998
+  "BU00141203_oosterhoogebrug": {
+    "households_new_houses_useful_demand_for_heating": 13521024.65,
+    "households_old_houses_useful_demand_for_heating": 35801896.65,
+    "number_of_new_residences": 302.64247982399996,
+    "number_of_old_residences": 801.357520176
   },
-  "om_gelderland": {
-    "number_of_old_residences": 664620.8,
-    "number_of_new_residences": 213041.2
+  "BU00141204_ulgersmaborg": {
+    "households_new_houses_useful_demand_for_heating": 3140862.602,
+    "households_old_houses_useful_demand_for_heating": 28407523.72,
+    "number_of_new_residences": 84.02610546799998,
+    "number_of_old_residences": 759.973894532
+  },
+  "BU00141205_hunzepark": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00141206_zilvermeer": {
+    "households_new_houses_useful_demand_for_heating": 283227.1887,
+    "households_old_houses_useful_demand_for_heating": 3205625.534,
+    "number_of_new_residences": 6.981532374000001,
+    "number_of_old_residences": 79.018467626
+  },
+  "BU00141207_kardinge": {
+    "households_new_houses_useful_demand_for_heating": 8094.050334,
+    "households_old_houses_useful_demand_for_heating": 24744.43904,
+    "number_of_new_residences": 0.24648059300000003,
+    "number_of_old_residences": 0.753519407
+  },
+  "BU00141208_drielanden": {
+    "households_new_houses_useful_demand_for_heating": 975029.1204,
+    "households_old_houses_useful_demand_for_heating": 11035586.87,
+    "number_of_new_residences": 31.741618119000005,
+    "number_of_old_residences": 359.258381881
+  },
+  "BU00141209_noorddijk": {
+    "households_new_houses_useful_demand_for_heating": 222637.1778,
+    "households_old_houses_useful_demand_for_heating": 2519854.91,
+    "number_of_new_residences": 3.4907661870000006,
+    "number_of_old_residences": 39.509233813
+  },
+  "BU00141210_ruischerbrug": {
+    "households_new_houses_useful_demand_for_heating": 2227804.63,
+    "households_old_houses_useful_demand_for_heating": 7535059.324,
+    "number_of_new_residences": 50.430368131,
+    "number_of_old_residences": 170.569631869
+  },
+  "BU00141211_ruischerwaard": {
+    "households_new_houses_useful_demand_for_heating": 1360675.62,
+    "households_old_houses_useful_demand_for_heating": 15400415.94,
+    "number_of_new_residences": 41.64565241700001,
+    "number_of_old_residences": 471.354347583
+  },
+  "BU00141300_middelbert": {
+    "households_new_houses_useful_demand_for_heating": 486419.7857,
+    "households_old_houses_useful_demand_for_heating": 2324239.085,
+    "number_of_new_residences": 7.095564467999999,
+    "number_of_old_residences": 33.904435532
+  },
+  "BU00141301_engelbert": {
+    "households_new_houses_useful_demand_for_heating": 3710175.583,
+    "households_old_houses_useful_demand_for_heating": 13972877.84,
+    "number_of_new_residences": 78.890561824,
+    "number_of_old_residences": 297.10943817599997
+  },
+  "BU00141302_klein_harkstede": {
+    "households_new_houses_useful_demand_for_heating": 191390.2598,
+    "households_old_houses_useful_demand_for_heating": 1568598.003,
+    "number_of_new_residences": 3.2623557300000003,
+    "number_of_old_residences": 26.73764427
+  },
+  "BU00141400_meerstad": {
+    "households_new_houses_useful_demand_for_heating": 23312760.12,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 226,
+    "number_of_old_residences": 0
+  },
+  "BU00141401_harkstede": {
+    "households_new_houses_useful_demand_for_heating": 522204.3004,
+    "households_old_houses_useful_demand_for_heating": 3585708.051,
+    "number_of_new_residences": 10.296847818000002,
+    "number_of_old_residences": 70.703152182
+  },
+  "BU00141402_lageland": {
+    "households_new_houses_useful_demand_for_heating": 199246.9836,
+    "households_old_houses_useful_demand_for_heating": 1632990.21,
+    "number_of_new_residences": 3.4798461120000006,
+    "number_of_old_residences": 28.520153888
   },
   "BU00170000_haren": {
-    "number_of_old_residences": 4190.698487865,
-    "number_of_new_residences": 560.3015121349997
+    "households_new_houses_useful_demand_for_heating": 30368622.9,
+    "households_old_houses_useful_demand_for_heating": 227137959.3,
+    "number_of_new_residences": 560.3015121349997,
+    "number_of_old_residences": 4190.698487865
+  },
+  "BU00170001_oosterhaar": {
+    "households_new_houses_useful_demand_for_heating": 14394926.07,
+    "households_old_houses_useful_demand_for_heating": 78663988.02,
+    "number_of_new_residences": 340.30955200000005,
+    "number_of_old_residences": 1859.690448
+  },
+  "BU00170002_voorveld": {
+    "households_new_houses_useful_demand_for_heating": 1064356.852,
+    "households_old_houses_useful_demand_for_heating": 5430599.961,
+    "number_of_new_residences": 10.815707364000003,
+    "number_of_old_residences": 55.184292635999995
+  },
+  "BU00170003_harenermolen": {
+    "households_new_houses_useful_demand_for_heating": 1179735.69,
+    "households_old_houses_useful_demand_for_heating": 10670116.41,
+    "number_of_new_residences": 14.236650570999997,
+    "number_of_old_residences": 128.76334942900002
+  },
+  "BU00170004_glimmen": {
+    "households_new_houses_useful_demand_for_heating": 5542546.819,
+    "households_old_houses_useful_demand_for_heating": 28279382.5,
+    "number_of_new_residences": 77.51256944200003,
+    "number_of_old_residences": 395.48743055799997
+  },
+  "BU00170005_hemmen": {
+    "households_new_houses_useful_demand_for_heating": 23015719.33,
+    "households_old_houses_useful_demand_for_heating": 16224676.45,
+    "number_of_new_residences": 449.86948715799997,
+    "number_of_old_residences": 317.13051284200003
+  },
+  "BU00170100_noordlaren": {
+    "households_new_houses_useful_demand_for_heating": 1231277.72,
+    "households_old_houses_useful_demand_for_heating": 9209173.22,
+    "number_of_new_residences": 20.52040898999999,
+    "number_of_old_residences": 153.47959101
+  },
+  "BU00170101_onnen": {
+    "households_new_houses_useful_demand_for_heating": 2150155.898,
+    "households_old_houses_useful_demand_for_heating": 9081393.664,
+    "number_of_new_residences": 36.56483677599999,
+    "number_of_old_residences": 154.435163224
+  },
+  "BU00170102_paterswolde_gedeeltelijk": {
+    "households_new_houses_useful_demand_for_heating": 416865.9851,
+    "households_old_houses_useful_demand_for_heating": 1760674.247,
+    "number_of_new_residences": 9.189068927999998,
+    "number_of_old_residences": 38.810931072
+  },
+  "BU00170103_essen": {
+    "households_new_houses_useful_demand_for_heating": 483921.5281,
+    "households_old_houses_useful_demand_for_heating": 2469081.894,
+    "number_of_new_residences": 5.735602390000002,
+    "number_of_old_residences": 29.26439761
+  },
+  "BU00170106_verspreide_huizen_ten_westen_van_noord_willemskanaal": {
+    "households_new_houses_useful_demand_for_heating": 573327.2047,
+    "households_old_houses_useful_demand_for_heating": 2572488.271,
+    "number_of_new_residences": 8.930286358000002,
+    "number_of_old_residences": 40.069713641999996
+  },
+  "BU00170107_verspreide_huizen_op_de_hondsrug": {
+    "households_new_houses_useful_demand_for_heating": 1301567.877,
+    "households_old_houses_useful_demand_for_heating": 8937196.439,
+    "number_of_new_residences": 17.034291452,
+    "number_of_old_residences": 116.965708548
+  },
+  "BU00170108_verspreide_huizen_onner_esch": {
+    "households_new_houses_useful_demand_for_heating": 1677850.274,
+    "households_old_houses_useful_demand_for_heating": 6318945.393,
+    "number_of_new_residences": 20.561901752000004,
+    "number_of_old_residences": 77.438098248
+  },
+  "BU00170109_verspreide_huizen_ten_oosten_van_de_hondsrug": {
+    "households_new_houses_useful_demand_for_heating": 80940.50334,
+    "households_old_houses_useful_demand_for_heating": 247444.3904,
+    "number_of_new_residences": 2.4648059300000003,
+    "number_of_old_residences": 7.535194069999999
+  },
+  "GM0034_almere": {
+    "households_new_houses_useful_demand_for_heating": 1545868511,
+    "households_old_houses_useful_demand_for_heating": 1061574439,
+    "number_of_new_residences": 47264.000000000015,
+    "number_of_old_residences": 32456.99999999999
+  },
+  "GM0050_zeewolde": {
+    "households_new_houses_useful_demand_for_heating": 220419350.5,
+    "households_old_houses_useful_demand_for_heating": 151070870,
+    "number_of_new_residences": 4845.2,
+    "number_of_old_residences": 3320.8000000000006
+  },
+  "GM0171_noordoostpolder": {
+    "households_new_houses_useful_demand_for_heating": 215583391.7,
+    "households_old_houses_useful_demand_for_heating": 573783240.5,
+    "number_of_new_residences": 5348.299999999991,
+    "number_of_old_residences": 14234.700000000008
+  },
+  "GM0184_urk": {
+    "households_new_houses_useful_demand_for_heating": 109138086.3,
+    "households_old_houses_useful_demand_for_heating": 154755277.3,
+    "number_of_new_residences": 2563.2999999999997,
+    "number_of_old_residences": 3634.7000000000003
+  },
+  "GM0303_dronten": {
+    "households_new_houses_useful_demand_for_heating": 290232539.9,
+    "households_old_houses_useful_demand_for_heating": 385064844.3,
+    "number_of_new_residences": 7089.300000000002,
+    "number_of_old_residences": 9405.699999999997
+  },
+  "GM0307_amersfoort": {
+    "households_new_houses_useful_demand_for_heating": 747360131.8,
+    "households_old_houses_useful_demand_for_heating": 1370976247,
+    "number_of_new_residences": 20746.56,
+    "number_of_old_residences": 44086.44
+  },
+  "GM0307_amersfoort_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 747360131.8,
+    "households_old_houses_useful_demand_for_heating": 1370976247,
+    "number_of_new_residences": 20746.56,
+    "number_of_old_residences": 44086.44
+  },
+  "GM0310_de_bilt": {
+    "households_new_houses_useful_demand_for_heating": 111069880.7,
+    "households_old_houses_useful_demand_for_heating": 803707071.2,
+    "number_of_new_residences": 2338.74283489162,
+    "number_of_old_residences": 16923.25716510838
+  },
+  "GM0312_bunnik": {
+    "households_new_houses_useful_demand_for_heating": 56560055.84,
+    "households_old_houses_useful_demand_for_heating": 208127156.8,
+    "number_of_new_residences": 1339.60000000017,
+    "number_of_old_residences": 4929.39999999983
+  },
+  "GM0321_houten": {
+    "households_new_houses_useful_demand_for_heating": 329858162.9,
+    "households_old_houses_useful_demand_for_heating": 308002097.5,
+    "number_of_new_residences": 10105.800000000649,
+    "number_of_old_residences": 9436.199999999353
+  },
+  "GM0331_lopik": {
+    "households_new_houses_useful_demand_for_heating": 60477484.78,
+    "households_old_houses_useful_demand_for_heating": 178730037,
+    "number_of_new_residences": 1387.4999999998704,
+    "number_of_old_residences": 4100.500000000129
+  },
+  "GM0335_montfoort": {
+    "households_new_houses_useful_demand_for_heating": 50689508.07,
+    "households_old_houses_useful_demand_for_heating": 167328198.6,
+    "number_of_new_residences": 1295.4999999998647,
+    "number_of_old_residences": 4276.5000000001355
+  },
+  "GM0344_utrecht": {
+    "households_new_houses_useful_demand_for_heating": 1137523874,
+    "households_old_houses_useful_demand_for_heating": 2873171006,
+    "number_of_new_residences": 42350.532754717286,
+    "number_of_old_residences": 106969.46724528272
+  },
+  "GM0352_wijk_bij_duurstede": {
+    "households_new_houses_useful_demand_for_heating": 102453818.4,
+    "households_old_houses_useful_demand_for_heating": 271426189,
+    "number_of_new_residences": 2701.1000000002273,
+    "number_of_old_residences": 7155.899999999772
+  },
+  "GM0353_ijsselstein": {
+    "households_new_houses_useful_demand_for_heating": 199978994.8,
+    "households_old_houses_useful_demand_for_heating": 240081011.9,
+    "number_of_new_residences": 6438.90000000049,
+    "number_of_old_residences": 7730.09999999951
+  },
+  "GM0355_zeist": {
+    "households_new_houses_useful_demand_for_heating": 203294070.3,
+    "households_old_houses_useful_demand_for_heating": 1005805262,
+    "number_of_new_residences": 4700.600000001308,
+    "number_of_old_residences": 23256.39999999869
+  },
+  "GM0356_nieuwegein": {
+    "households_new_houses_useful_demand_for_heating": 152141342.6,
+    "households_old_houses_useful_demand_for_heating": 631831591.3,
+    "number_of_new_residences": 5394.800000000205,
+    "number_of_old_residences": 22404.199999999797
+  },
+  "GM0358_aalsmeer": {
+    "households_new_houses_useful_demand_for_heating": 220629312.5,
+    "households_old_houses_useful_demand_for_heating": 316051087.7,
+    "number_of_new_residences": 5300.3123000000005,
+    "number_of_old_residences": 7592.6876999999995
+  },
+  "GM0361_alkmaar": {
+    "households_new_houses_useful_demand_for_heating": 336023136.2,
+    "households_old_houses_useful_demand_for_heating": 1409188956,
+    "number_of_new_residences": 9693.618840000003,
+    "number_of_old_residences": 40652.38116
+  },
+  "GM0362_amstelveen": {
+    "households_new_houses_useful_demand_for_heating": 342508993.7,
+    "households_old_houses_useful_demand_for_heating": 1209341823,
+    "number_of_new_residences": 9500.461949999999,
+    "number_of_old_residences": 33544.53805
+  },
+  "GM0363_amsterdam": {
+    "households_new_houses_useful_demand_for_heating": 2380252058,
+    "households_old_houses_useful_demand_for_heating": 9134125157,
+    "number_of_new_residences": 87729.9008,
+    "number_of_old_residences": 336660.0992
+  },
+  "GM0370_beemster": {
+    "households_new_houses_useful_demand_for_heating": 40675999.57,
+    "households_old_houses_useful_demand_for_heating": 136685121.8,
+    "number_of_new_residences": 838.69638,
+    "number_of_old_residences": 2818.30362
+  },
+  "GM0370_beemster_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 38418051.28,
+    "households_old_houses_useful_demand_for_heating": 129096928.5,
+    "number_of_new_residences": 838.699999999999,
+    "number_of_old_residences": 2818.300000000001
+  },
+  "GM0373_bergen": {
+    "households_new_houses_useful_demand_for_heating": 117118386,
+    "households_old_houses_useful_demand_for_heating": 669703152.2,
+    "number_of_new_residences": 2229.1776000000004,
+    "number_of_old_residences": 12746.8224
+  },
+  "GM0375_beverwijk": {
+    "households_new_houses_useful_demand_for_heating": 169363471,
+    "households_old_houses_useful_demand_for_heating": 476298040.2,
+    "number_of_new_residences": 4943.49426,
+    "number_of_old_residences": 13902.505739999999
+  },
+  "GM0376_blaricum": {
+    "households_new_houses_useful_demand_for_heating": 45566270.97,
+    "households_old_houses_useful_demand_for_heating": 247917375.6,
+    "number_of_new_residences": 677.3993799999998,
+    "number_of_old_residences": 3685.60062
+  },
+  "GM0376_blaricum_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 43223369.63,
+    "households_old_houses_useful_demand_for_heating": 235169842.2,
+    "number_of_new_residences": 677.3993799999998,
+    "number_of_old_residences": 3685.60062
+  },
+  "GM0377_bloemendaal": {
+    "households_new_houses_useful_demand_for_heating": 85719740.46,
+    "households_old_houses_useful_demand_for_heating": 523517931.6,
+    "number_of_new_residences": 1358.1771000000006,
+    "number_of_old_residences": 8294.8229
+  },
+  "GM0383_castricum": {
+    "households_new_houses_useful_demand_for_heating": 155536999,
+    "households_old_houses_useful_demand_for_heating": 532497146.7,
+    "number_of_new_residences": 3494.6615400000005,
+    "number_of_old_residences": 11964.338459999999
+  },
+  "GM0383_castricum_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 146754055.4,
+    "households_old_houses_useful_demand_for_heating": 502420678.3,
+    "number_of_new_residences": 3494.6615400000005,
+    "number_of_old_residences": 11964.338459999999
+  },
+  "GM0384_diemen": {
+    "households_new_houses_useful_demand_for_heating": 84662916.51,
+    "households_old_houses_useful_demand_for_heating": 313713314,
+    "number_of_new_residences": 2808.6643200000008,
+    "number_of_old_residences": 10407.33568
+  },
+  "GM0384_diemen_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 79966016.84,
+    "households_old_houses_useful_demand_for_heating": 296304456.5,
+    "number_of_new_residences": 2808.6643200000008,
+    "number_of_old_residences": 10407.33568
+  },
+  "GM0385_edam_volendam": {
+    "households_new_houses_useful_demand_for_heating": 193314713,
+    "households_old_houses_useful_demand_for_heating": 508142934.2,
+    "number_of_new_residences": 4117.3146,
+    "number_of_old_residences": 10822.6854
+  },
+  "GM0388_enkhuizen": {
+    "households_new_houses_useful_demand_for_heating": 84717629.11,
+    "households_old_houses_useful_demand_for_heating": 226916099.5,
+    "number_of_new_residences": 2349.3277000000003,
+    "number_of_old_residences": 6292.672299999999
+  },
+  "GM0392_haarlem": {
+    "households_new_houses_useful_demand_for_heating": 346984673.6,
+    "households_old_houses_useful_demand_for_heating": 2264278674,
+    "number_of_new_residences": 9789.80112,
+    "number_of_old_residences": 63884.19888
+  },
+  "GM0393_haarlemmerliede_en_spaarnwoude": {
+    "households_new_houses_useful_demand_for_heating": 21860979.75,
+    "households_old_houses_useful_demand_for_heating": 79964814.41,
+    "number_of_new_residences": 489.70789000000013,
+    "number_of_old_residences": 1791.2921099999999
+  },
+  "GM0394_haarlemmermeer": {
+    "households_new_houses_useful_demand_for_heating": 860148635.9,
+    "households_old_houses_useful_demand_for_heating": 1305190863,
+    "number_of_new_residences": 24620.6253,
+    "number_of_old_residences": 37359.3747
+  },
+  "GM0394_haarlemmermeer_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 860148635.9,
+    "households_old_houses_useful_demand_for_heating": 1305190863,
+    "number_of_new_residences": 24620.6253,
+    "number_of_old_residences": 37359.3747
+  },
+  "GM0396_heemskerk": {
+    "households_new_houses_useful_demand_for_heating": 189960238.8,
+    "households_old_houses_useful_demand_for_heating": 435135153.5,
+    "number_of_new_residences": 5305.00773,
+    "number_of_old_residences": 12151.99227
+  },
+  "GM0397_heemstede": {
+    "households_new_houses_useful_demand_for_heating": 94133019.07,
+    "households_old_houses_useful_demand_for_heating": 496449947.7,
+    "number_of_new_residences": 1995.5628000000004,
+    "number_of_old_residences": 10524.4372
+  },
+  "GM0398_heerhugowaard": {
+    "households_new_houses_useful_demand_for_heating": 345253362.2,
+    "households_old_houses_useful_demand_for_heating": 448980275.2,
+    "number_of_new_residences": 9699.026399999999,
+    "number_of_old_residences": 12612.973600000001
+  },
+  "GM0399_heiloo": {
+    "households_new_houses_useful_demand_for_heating": 109123352.3,
+    "households_old_houses_useful_demand_for_heating": 359297631.2,
+    "number_of_new_residences": 2383.8796799999996,
+    "number_of_old_residences": 7849.120320000001
+  },
+  "GM0400_den_helder": {
+    "households_new_houses_useful_demand_for_heating": 147047146.2,
+    "households_old_houses_useful_demand_for_heating": 868401691.8,
+    "number_of_new_residences": 4045.8465899999997,
+    "number_of_old_residences": 23893.15341
+  },
+  "GM0402_hilversum": {
+    "households_new_houses_useful_demand_for_heating": 225068413.9,
+    "households_old_houses_useful_demand_for_heating": 1496691178,
+    "number_of_new_residences": 5375.4678399999975,
+    "number_of_old_residences": 35746.53216
+  },
+  "GM0405_hoorn": {
+    "households_new_houses_useful_demand_for_heating": 323736697.9,
+    "households_old_houses_useful_demand_for_heating": 794408910.2,
+    "number_of_new_residences": 9387.43119,
+    "number_of_old_residences": 23035.56881
+  },
+  "GM0406_huizen": {
+    "households_new_houses_useful_demand_for_heating": 138205371.1,
+    "households_old_houses_useful_demand_for_heating": 621498735.7,
+    "number_of_new_residences": 3382.2566399999996,
+    "number_of_old_residences": 15209.74336
+  },
+  "GM0415_landsmeer": {
+    "households_new_houses_useful_demand_for_heating": 42292839.62,
+    "households_old_houses_useful_demand_for_heating": 161253409.4,
+    "number_of_new_residences": 969.9170399999998,
+    "number_of_old_residences": 3698.08296
+  },
+  "GM0416_langedijk": {
+    "households_new_houses_useful_demand_for_heating": 171909758.6,
+    "households_old_houses_useful_demand_for_heating": 306175114.3,
+    "number_of_new_residences": 4061.81568,
+    "number_of_old_residences": 7234.18432
+  },
+  "GM0417_laren": {
+    "households_new_houses_useful_demand_for_heating": 46359749.11,
+    "households_old_houses_useful_demand_for_heating": 300878278.9,
+    "number_of_new_residences": 691.5818,
+    "number_of_old_residences": 4488.4182
+  },
+  "GM0417_laren_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 43735522.74,
+    "households_old_houses_useful_demand_for_heating": 283854101.8,
+    "number_of_new_residences": 691.5818,
+    "number_of_old_residences": 4488.4182
+  },
+  "GM0420_medemblik": {
+    "households_new_houses_useful_demand_for_heating": 237019353.5,
+    "households_old_houses_useful_demand_for_heating": 589926963.9,
+    "number_of_new_residences": 5274.38124,
+    "number_of_old_residences": 13127.61876
+  },
+  "GM0431_oostzaan": {
+    "households_new_houses_useful_demand_for_heating": 48107975.99,
+    "households_old_houses_useful_demand_for_heating": 117770156.5,
+    "number_of_new_residences": 1174.0009599999998,
+    "number_of_old_residences": 2873.99904
+  },
+  "GM0431_oostzaan_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 45367281.62,
+    "households_old_houses_useful_demand_for_heating": 111060960.3,
+    "number_of_new_residences": 1174.0009599999998,
+    "number_of_old_residences": 2873.99904
+  },
+  "GM0432_opmeer": {
+    "households_new_houses_useful_demand_for_heating": 54758159.44,
+    "households_old_houses_useful_demand_for_heating": 150914013.9,
+    "number_of_new_residences": 1246.0032,
+    "number_of_old_residences": 3433.9968
+  },
+  "GM0437_ouder-amstel_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 51795350.28,
+    "households_old_houses_useful_demand_for_heating": 155847400.3,
+    "number_of_new_residences": 1459.47344,
+    "number_of_old_residences": 4391.52656
+  },
+  "GM0437_ouder_amstel": {
+    "households_new_houses_useful_demand_for_heating": 55016307,
+    "households_old_houses_useful_demand_for_heating": 165542973.8,
+    "number_of_new_residences": 1459.47344,
+    "number_of_old_residences": 4391.52656
+  },
+  "GM0439_purmerend": {
+    "households_new_houses_useful_demand_for_heating": 411578335.3,
+    "households_old_houses_useful_demand_for_heating": 859392035.8,
+    "number_of_new_residences": 11521.871399999998,
+    "number_of_old_residences": 24058.1286
+  },
+  "GM0441_schagen": {
+    "households_new_houses_useful_demand_for_heating": 212750253.5,
+    "households_old_houses_useful_demand_for_heating": 640195476.8,
+    "number_of_new_residences": 4941.956590000001,
+    "number_of_old_residences": 14871.043409999998
+  },
+  "GM0448_texel": {
+    "households_new_houses_useful_demand_for_heating": 66444930.92,
+    "households_old_houses_useful_demand_for_heating": 228028260.5,
+    "number_of_new_residences": 1459.8907999999997,
+    "number_of_old_residences": 5010.1092
+  },
+  "GM0450_uitgeest": {
+    "households_new_houses_useful_demand_for_heating": 78744006.43,
+    "households_old_houses_useful_demand_for_heating": 133916700.1,
+    "number_of_new_residences": 2054.3134400000004,
+    "number_of_old_residences": 3493.6865599999996
+  },
+  "GM0450_uitgeest_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 74175724.65,
+    "households_old_houses_useful_demand_for_heating": 126148921.4,
+    "number_of_new_residences": 2054.3134400000004,
+    "number_of_old_residences": 3493.6865599999996
+  },
+  "GM0451_uithoorn": {
+    "households_new_houses_useful_demand_for_heating": 127287993.6,
+    "households_old_houses_useful_demand_for_heating": 355778395.9,
+    "number_of_new_residences": 3382.5494999999996,
+    "number_of_old_residences": 9454.4505
+  },
+  "GM0453_velsen": {
+    "households_new_houses_useful_demand_for_heating": 213075624.8,
+    "households_old_houses_useful_demand_for_heating": 916579898.5,
+    "number_of_new_residences": 5772.337860000001,
+    "number_of_old_residences": 24830.66214
+  },
+  "GM0453_velsen_no_steel": {
+    "households_new_houses_useful_demand_for_heating": 200639627.3,
+    "households_old_houses_useful_demand_for_heating": 863091383.7,
+    "number_of_new_residences": 5772.300000000011,
+    "number_of_old_residences": 24830.69999999999
+  },
+  "GM0457_weesp": {
+    "households_new_houses_useful_demand_for_heating": 40611767.31,
+    "households_old_houses_useful_demand_for_heating": 246052786.3,
+    "number_of_new_residences": 1224.0287999999996,
+    "number_of_old_residences": 7415.9712
+  },
+  "GM0473_zandvoort": {
+    "households_new_houses_useful_demand_for_heating": 64395528.7,
+    "households_old_houses_useful_demand_for_heating": 328523677.5,
+    "number_of_new_residences": 1548.7604999999999,
+    "number_of_old_residences": 7901.239500000001
+  },
+  "GM0479_zaanstad": {
+    "households_new_houses_useful_demand_for_heating": 568484805.6,
+    "households_old_houses_useful_demand_for_heating": 1824530877,
+    "number_of_new_residences": 15907.255159999999,
+    "number_of_old_residences": 51053.74484
+  },
+  "GM0484_alphen_aan_den_rijn": {
+    "number_of_new_residences": 10625.000000000004,
+    "number_of_old_residences": 35342.99999999999
+  },
+  "GM0498_drechterland": {
+    "households_new_houses_useful_demand_for_heating": 129261950.8,
+    "households_old_houses_useful_demand_for_heating": 251805679.3,
+    "number_of_new_residences": 2750.31468,
+    "number_of_old_residences": 5357.68532
+  },
+  "GM0513_gouda": {
+    "households_new_houses_useful_demand_for_heating": 164344638.2,
+    "households_old_houses_useful_demand_for_heating": 782338464.7,
+    "number_of_new_residences": 5532.300000000005,
+    "number_of_old_residences": 26335.699999999997
+  },
+  "GM0532_stede_broec": {
+    "households_new_houses_useful_demand_for_heating": 100409490.8,
+    "households_old_houses_useful_demand_for_heating": 272056904.3,
+    "number_of_new_residences": 2432.6899200000003,
+    "number_of_old_residences": 6591.310079999999
+  },
+  "GM0546_leiden": {
+    "number_of_new_residences": 8965.400000000021,
+    "number_of_old_residences": 47670.59999999998
+  },
+  "GM0589_oudewater": {
+    "households_new_houses_useful_demand_for_heating": 38581505.01,
+    "households_old_houses_useful_demand_for_heating": 129335146.1,
+    "number_of_new_residences": 981.0999999998751,
+    "number_of_old_residences": 3288.900000000125
+  },
+  "GM0627_waddinxveen": {
+    "number_of_new_residences": 2538.3000000000015,
+    "number_of_old_residences": 8709.699999999999
+  },
+  "GM0632_woerden": {
+    "households_new_houses_useful_demand_for_heating": 223110421.2,
+    "households_old_houses_useful_demand_for_heating": 538647574,
+    "number_of_new_residences": 6268.407111151635,
+    "number_of_old_residences": 15133.592888848365
+  },
+  "GM0664_goes": {
+    "households_new_houses_useful_demand_for_heating": 48723873.72,
+    "households_old_houses_useful_demand_for_heating": 549179711.5,
+    "number_of_new_residences": 4280.89999999999,
+    "number_of_old_residences": 13403.1
+  },
+  "GM0716_alphen_chaam": {
+    "households_new_houses_useful_demand_for_heating": 69428821,
+    "households_old_houses_useful_demand_for_heating": 195847316.2,
+    "number_of_new_residences": 1102.9,
+    "number_of_old_residences": 3111.1
+  },
+  "GM0736_de_ronde_venen": {
+    "households_new_houses_useful_demand_for_heating": 152313099.3,
+    "households_old_houses_useful_demand_for_heating": 569761385.8,
+    "number_of_new_residences": 3714.2000000001967,
+    "number_of_old_residences": 13893.799999999803
+  },
+  "GM0738_aalburg": {
+    "households_new_houses_useful_demand_for_heating": 81485338.74,
+    "households_old_houses_useful_demand_for_heating": 175393375,
+    "number_of_new_residences": 1595.9,
+    "number_of_old_residences": 3435.1
+  },
+  "GM0738_baarle_nassau": {
+    "households_new_houses_useful_demand_for_heating": 34189965.08,
+    "households_old_houses_useful_demand_for_heating": 122233967.1,
+    "number_of_new_residences": 600.2,
+    "number_of_old_residences": 2145.8
+  },
+  "GM0744_bergen_op_zoom": {
+    "households_new_houses_useful_demand_for_heating": 239504157.4,
+    "households_old_houses_useful_demand_for_heating": 875038693.3,
+    "number_of_new_residences": 6390.4,
+    "number_of_old_residences": 23347.6
+  },
+  "GM0748_breda": {
+    "households_new_houses_useful_demand_for_heating": 727313353.9,
+    "households_old_houses_useful_demand_for_heating": 2107657025,
+    "number_of_new_residences": 20947.1,
+    "number_of_old_residences": 60701.9
+  },
+  "GM0758_dongen": {
+    "households_new_houses_useful_demand_for_heating": 112396677.5,
+    "households_old_houses_useful_demand_for_heating": 327106544.9,
+    "number_of_new_residences": 2759.9,
+    "number_of_old_residences": 8032.1
+  },
+  "GM0766_drimmelen": {
+    "households_new_houses_useful_demand_for_heating": 112245272,
+    "households_old_houses_useful_demand_for_heating": 428867555.8,
+    "number_of_new_residences": 2385.7,
+    "number_of_old_residences": 9115.3
+  },
+  "GM0779_geertruidenberg": {
+    "households_new_houses_useful_demand_for_heating": 80909422.07,
+    "households_old_houses_useful_demand_for_heating": 259812512.7,
+    "number_of_new_residences": 2268.5,
+    "number_of_old_residences": 7284.5
+  },
+  "GM0784_gilze_en_rijen": {
+    "households_new_houses_useful_demand_for_heating": 130994041.2,
+    "households_old_houses_useful_demand_for_heating": 348360570.3,
+    "number_of_new_residences": 3043.7,
+    "number_of_old_residences": 8094.3
+  },
+  "GM0785_goirle": {
+    "households_new_houses_useful_demand_for_heating": 110783954.4,
+    "households_old_houses_useful_demand_for_heating": 327572687.1,
+    "number_of_new_residences": 2503.5,
+    "number_of_old_residences": 7402.5
+  },
+  "GM0797_halderberge": {
+    "households_new_houses_useful_demand_for_heating": 136099763.9,
+    "households_old_houses_useful_demand_for_heating": 464419008.8,
+    "number_of_new_residences": 2952.4,
+    "number_of_old_residences": 10074.6
+  },
+  "GM0798_heusden": {
+    "households_new_houses_useful_demand_for_heating": 203083565.7,
+    "households_old_houses_useful_demand_for_heating": 602089104.3,
+    "number_of_new_residences": 4610.9,
+    "number_of_old_residences": 13670.1
+  },
+  "GM0809_hilvarenbeek": {
+    "households_new_houses_useful_demand_for_heating": 98695641.98,
+    "households_old_houses_useful_demand_for_heating": 268992891.3,
+    "number_of_new_residences": 1738.3,
+    "number_of_old_residences": 4737.7
+  },
+  "GM0824_loon_op_zand": {
+    "households_new_houses_useful_demand_for_heating": 111695864.6,
+    "households_old_houses_useful_demand_for_heating": 346434360.1,
+    "number_of_new_residences": 2464.9,
+    "number_of_old_residences": 7645.1
+  },
+  "GM0826_moerdijk": {
+    "households_new_houses_useful_demand_for_heating": 196875872.1,
+    "households_old_houses_useful_demand_for_heating": 498254167.8,
+    "number_of_new_residences": 4564.4,
+    "number_of_old_residences": 11551.6
+  },
+  "GM0840_oisterwijk": {
+    "households_new_houses_useful_demand_for_heating": 131572601.9,
+    "households_old_houses_useful_demand_for_heating": 434023115.4,
+    "number_of_new_residences": 2600.3,
+    "number_of_old_residences": 8577.7
   },
   "GM0851_oosterhout": {
-    "number_of_old_residences": 18275,
-    "number_of_new_residences": 5973
+    "households_new_houses_useful_demand_for_heating": 237639458.8,
+    "households_old_houses_useful_demand_for_heating": 727082054.1,
+    "number_of_new_residences": 5973,
+    "number_of_old_residences": 18275
+  },
+  "GM0852_waterland": {
+    "households_new_houses_useful_demand_for_heating": 43222751.33,
+    "households_old_houses_useful_demand_for_heating": 282519590.4,
+    "number_of_new_residences": 965.9831999999998,
+    "number_of_old_residences": 6314.0168
+  },
+  "GM0852_waterland_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 40737867.97,
+    "households_old_houses_useful_demand_for_heating": 266272151.5,
+    "number_of_new_residences": 965.9831999999998,
+    "number_of_old_residences": 6314.0168
+  },
+  "GM0855_roosendaal": {
+    "households_new_houses_useful_demand_for_heating": 334288548.4,
+    "households_old_houses_useful_demand_for_heating": 1039946804,
+    "number_of_new_residences": 8445.3,
+    "number_of_old_residences": 26272.7
+  },
+  "GM0867_rucphen": {
+    "households_new_houses_useful_demand_for_heating": 109903199.7,
+    "households_old_houses_useful_demand_for_heating": 424451997.2,
+    "number_of_new_residences": 1960.9,
+    "number_of_old_residences": 7573.1
+  },
+  "GM0870_steenbergen": {
+    "households_new_houses_useful_demand_for_heating": 88277013.45,
+    "households_old_houses_useful_demand_for_heating": 354257954.8,
+    "number_of_new_residences": 1996,
+    "number_of_old_residences": 8010
+  },
+  "GM0873_tholen": {
+    "households_new_houses_useful_demand_for_heating": 98630554.2,
+    "households_old_houses_useful_demand_for_heating": 329301449,
+    "number_of_new_residences": 2449.1,
+    "number_of_old_residences": 8176.9
+  },
+  "GM0874_tilburg": {
+    "households_new_houses_useful_demand_for_heating": 897635894.2,
+    "households_old_houses_useful_demand_for_heating": 2189603169,
+    "number_of_new_residences": 27848.4,
+    "number_of_old_residences": 67930.6
+  },
+  "GM0879_waalwijk": {
+    "households_new_houses_useful_demand_for_heating": 201237050.5,
+    "households_old_houses_useful_demand_for_heating": 635749288.2,
+    "number_of_new_residences": 5037.5,
+    "number_of_old_residences": 15914.5
+  },
+  "GM0880_wormerland": {
+    "households_new_houses_useful_demand_for_heating": 65223138.02,
+    "households_old_houses_useful_demand_for_heating": 201614557.9,
+    "number_of_new_residences": 1633.7701200000001,
+    "number_of_old_residences": 5050.22988
+  },
+  "GM0880_wormerland_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 61482951.47,
+    "households_old_houses_useful_demand_for_heating": 190048476.9,
+    "number_of_new_residences": 1633.7701200000001,
+    "number_of_old_residences": 5050.22988
+  },
+  "GM0995_lelystad": {
+    "households_new_houses_useful_demand_for_heating": 361669461.1,
+    "households_old_houses_useful_demand_for_heating": 850333771.8,
+    "number_of_new_residences": 9774.300000000008,
+    "number_of_old_residences": 22980.699999999993
+  },
+  "GM1581_utrechtse_heuvelrug": {
+    "households_new_houses_useful_demand_for_heating": 204105453.3,
+    "households_old_houses_useful_demand_for_heating": 908167560.6,
+    "number_of_new_residences": 3893.2000000010203,
+    "number_of_old_residences": 17322.79999999898
+  },
+  "GM1598_koggenland": {
+    "households_new_houses_useful_demand_for_heating": 131896545.8,
+    "households_old_houses_useful_demand_for_heating": 272619634.7,
+    "number_of_new_residences": 3005.94714,
+    "number_of_old_residences": 6213.05286
+  },
+  "GM1655_werkendam": {
+    "households_new_houses_useful_demand_for_heating": 101688908.2,
+    "households_old_houses_useful_demand_for_heating": 366030274.3,
+    "number_of_new_residences": 2287.2,
+    "number_of_old_residences": 8232.8
+  },
+  "GM1674_woensdrecht": {
+    "households_new_houses_useful_demand_for_heating": 101665718.5,
+    "households_old_houses_useful_demand_for_heating": 399490139.3,
+    "number_of_new_residences": 1956,
+    "number_of_old_residences": 7686
+  },
+  "GM1676_schouwen_duiveland": {
+    "households_new_houses_useful_demand_for_heating": 155767648.8,
+    "households_old_houses_useful_demand_for_heating": 580282622.6,
+    "number_of_new_residences": 3527.6,
+    "number_of_old_residences": 13141.4
+  },
+  "GM1695_noord_beveland": {
+    "households_new_houses_useful_demand_for_heating": 35458903.64,
+    "households_old_houses_useful_demand_for_heating": 143191831.3,
+    "number_of_new_residences": 862.8,
+    "number_of_old_residences": 3484.2
+  },
+  "GM1696_wijdemeren": {
+    "households_new_houses_useful_demand_for_heating": 90213593.78,
+    "households_old_houses_useful_demand_for_heating": 437166236.6,
+    "number_of_new_residences": 1775.7738599999998,
+    "number_of_old_residences": 8605.22614
+  },
+  "GM1709_woudrichem": {
+    "households_new_houses_useful_demand_for_heating": 68062270.45,
+    "households_old_houses_useful_demand_for_heating": 209264829,
+    "number_of_new_residences": 1455.6,
+    "number_of_old_residences": 4475.4
+  },
+  "GM1723_zundert": {
+    "households_new_houses_useful_demand_for_heating": 129076674.9,
+    "households_old_houses_useful_demand_for_heating": 367064997.2,
+    "number_of_new_residences": 2392.7,
+    "number_of_old_residences": 6804.3
+  },
+  "GM1892_zuidplas": {
+    "households_new_houses_useful_demand_for_heating": 162291721.0,
+    "households_old_houses_useful_demand_for_heating": 420490672.0,
+    "number_of_new_residences": 4674.800000000004,
+    "number_of_old_residences": 12112.199999999997
+  },
+  "GM1901_bodegraven_reeuwijk": {
+    "households_new_houses_useful_demand_for_heating": 125990352.0,
+    "households_old_houses_useful_demand_for_heating": 424037027.0,
+    "number_of_new_residences": 3208.7000000000007,
+    "number_of_old_residences": 10799.3
+  },
+  "GM1904_stichtse_vecht": {
+    "households_new_houses_useful_demand_for_heating": 205017978.2,
+    "households_old_houses_useful_demand_for_heating": 866959502.1,
+    "number_of_new_residences": 5271.100000000502,
+    "number_of_old_residences": 22289.899999999496
+  },
+  "GM1911_hollands_kroon": {
+    "households_new_houses_useful_demand_for_heating": 215893155.8,
+    "households_old_houses_useful_demand_for_heating": 716328251.8,
+    "number_of_new_residences": 4760.10086,
+    "number_of_old_residences": 15793.899140000001
+  },
+  "GM1931_krimpenerwaard": {
+    "households_new_houses_useful_demand_for_heating": 198314655.6,
+    "households_old_houses_useful_demand_for_heating": 716323340.1,
+    "number_of_new_residences": 5058.700000000005,
+    "number_of_old_residences": 18272.299999999996
+  },
+  "GM1940_de_fryske_marren": {
+    "households_new_houses_useful_demand_for_heating": 273328149.4,
+    "households_old_houses_useful_demand_for_heating": 762672871.8,
+    "number_of_new_residences": 6020.07294,
+    "number_of_old_residences": 16797.927059999998
+  },
+  "GM1942_gooise_meren": {
+    "households_new_houses_useful_demand_for_heating": 146506882.1,
+    "households_old_houses_useful_demand_for_heating": 1117900489,
+    "number_of_new_residences": 3028.610060000001,
+    "number_of_old_residences": 23109.38994
+  },
+  "GM1942_gooise_meren_no_highways": {
+    "households_new_houses_useful_demand_for_heating": 137971595.5,
+    "households_old_houses_useful_demand_for_heating": 1052745919,
+    "number_of_new_residences": 3028.610060000001,
+    "number_of_old_residences": 23109.38994
+  },
+  "GM1961_vijfheerenlanden": {
+    "households_new_houses_useful_demand_for_heating": 184990919.3,
+    "households_old_houses_useful_demand_for_heating": 718097614.3,
+    "number_of_new_residences": 4610.800000000724,
+    "number_of_old_residences": 17898.199999999277
+  },
+  "PV20_groningen": {
+    "households_new_houses_useful_demand_for_heating": 2739038987,
+    "households_old_houses_useful_demand_for_heating": 9169826174,
+    "number_of_new_residences": 66599.94999999998,
+    "number_of_old_residences": 222965.05000000002
+  },
+  "PV21_friesland": {
+    "households_new_houses_useful_demand_for_heating": 2867205892,
+    "households_old_houses_useful_demand_for_heating": 10390813788,
+    "number_of_new_residences": 63914.07236661999,
+    "number_of_old_residences": 231625.92763338
+  },
+  "PV22_drenthe": {
+    "households_new_houses_useful_demand_for_heating": 777783969.5,
+    "households_old_houses_useful_demand_for_heating": 8845791300,
+    "number_of_new_residences": 50953,
+    "number_of_old_residences": 160949
+  },
+  "PV23_overijssel": {
+    "households_new_houses_useful_demand_for_heating": 5661728451,
+    "households_old_houses_useful_demand_for_heating": 15762426881,
+    "number_of_new_residences": 130484.92856610402,
+    "number_of_old_residences": 363274.07143389597
+  },
+  "PV24_flevoland": {
+    "households_new_houses_useful_demand_for_heating": 2793533377,
+    "households_old_houses_useful_demand_for_heating": 3125960303,
+    "number_of_new_residences": 76884.425478,
+    "number_of_old_residences": 86033.574522
+  },
+  "PV26_utrecht": {
+    "households_new_houses_useful_demand_for_heating": 5704749237,
+    "households_old_houses_useful_demand_for_heating": 16101650249,
+    "number_of_new_residences": 142177.4,
+    "number_of_old_residences": 401295.6
+  },
+  "PV27_noord_holland": {
+    "households_new_houses_useful_demand_for_heating": 10450538548,
+    "households_old_houses_useful_demand_for_heating": 35751939668,
+    "number_of_new_residences": 294068.03567,
+    "number_of_old_residences": 1006024.96433
+  },
+  "PV29_zeeland": {
+    "households_new_houses_useful_demand_for_heating": 1472310477,
+    "households_old_houses_useful_demand_for_heating": 5650769936,
+    "number_of_new_residences": 37756.7,
+    "number_of_old_residences": 144911.3
+  },
+  "RGNB01_west_en_midden_brabant": {
+    "households_new_houses_useful_demand_for_heating": 5246961372,
+    "households_old_houses_useful_demand_for_heating": 15249412660,
+    "number_of_new_residences": 130817.6,
+    "number_of_old_residences": 380199.4
+  },
+  "RGNB02_west_brabant": {
+    "households_new_houses_useful_demand_for_heating": 3217924885,
+    "households_old_houses_useful_demand_for_heating": 9800422125,
+    "number_of_new_residences": 78210.2,
+    "number_of_old_residences": 238194.8
+  },
+  "RGNB03_hart_van_brabant": {
+    "households_new_houses_useful_demand_for_heating": 2021455813,
+    "households_old_houses_useful_demand_for_heating": 5456571209,
+    "number_of_new_residences": 52607.4,
+    "number_of_old_residences": 142004.6
+  },
+  "RGNH01_ijmond_zuid_kennemerland": {
+    "households_new_houses_useful_demand_for_heating": 1109470423,
+    "households_old_houses_useful_demand_for_heating": 5111103279,
+    "number_of_new_residences": 30713.266065000007,
+    "number_of_old_residences": 141489.733935
+  },
+  "RGNH01_ijmond_zuid_kennemerland_no_steel": {
+    "number_of_new_residences": 30713.266065000007,
+    "number_of_old_residences": 141489.733935
+  },
+  "RGNH02_zaanstreek_waterland": {
+    "households_new_houses_useful_demand_for_heating": 1421176550,
+    "households_old_houses_useful_demand_for_heating": 4083632490,
+    "number_of_new_residences": 37129.49306,
+    "number_of_old_residences": 106688.50693999999
+  },
+  "RGNH03_gooi_en_vechtstreek": {
+    "households_new_houses_useful_demand_for_heating": 734329932.6,
+    "households_old_houses_useful_demand_for_heating": 4466306984,
+    "number_of_new_residences": 16155.5392,
+    "number_of_old_residences": 98260.4608
+  },
+  "RGNH04_amstelland_meerlanden": {
+    "households_new_houses_useful_demand_for_heating": 1626556860,
+    "households_old_houses_useful_demand_for_heating": 3550460912,
+    "number_of_new_residences": 47072.274536000004,
+    "number_of_old_residences": 102749.725464
+  },
+  "RGNH05_kop_van_noord_holland": {
+    "households_new_houses_useful_demand_for_heating": 629479420,
+    "households_old_houses_useful_demand_for_heating": 2465610658,
+    "number_of_new_residences": 15207.94288,
+    "number_of_old_residences": 59568.05712
+  },
+  "RGNH06_regio_alkmaar": {
+    "households_new_houses_useful_demand_for_heating": 1336048301,
+    "households_old_houses_useful_demand_for_heating": 3837420435,
+    "number_of_new_residences": 33616.4025,
+    "number_of_old_residences": 96553.5975
+  },
+  "RGNH07_west_friesland": {
+    "households_new_houses_useful_demand_for_heating": 1058003477,
+    "households_old_houses_useful_demand_for_heating": 2562444380,
+    "number_of_new_residences": 26446.23054,
+    "number_of_old_residences": 64051.76946
+  },
+  "RGUT01_u16": {
+    "households_new_houses_useful_demand_for_heating": 3738319707,
+    "households_old_houses_useful_demand_for_heating": 10801531877,
+    "number_of_new_residences": 102792.243004719,
+    "number_of_old_residences": 297008.75699528103
+  },
+  "antwerpen": {
+    "households_new_houses_useful_demand_for_heating": 1071668554,
+    "households_old_houses_useful_demand_for_heating": 9002015856,
+    "number_of_new_residences": 78730.2,
+    "number_of_old_residences": 183703.8
+  },
+  "baarland": {
+    "households_new_houses_useful_demand_for_heating": 776116.8081,
+    "households_old_houses_useful_demand_for_heating": 10510839.06,
+    "number_of_new_residences": 54.18,
+    "number_of_old_residences": 203.82
+  },
+  "bd_etten-leur": {
+    "households_new_houses_useful_demand_for_heating": 256067832,
+    "households_old_houses_useful_demand_for_heating": 470580744.6,
+    "number_of_new_residences": 6486.9,
+    "number_of_old_residences": 11921.1
+  },
+  "be": {
+    "households_new_houses_useful_demand_for_heating": 15325967194,
+    "households_old_houses_useful_demand_for_heating": 247978000000,
+    "number_of_new_residences": 923026.5,
+    "number_of_old_residences": 4148547.5
+  },
+  "br": {
+    "households_new_houses_useful_demand_for_heating": 22640086448,
+    "households_old_houses_useful_demand_for_heating": 209583000000,
+    "number_of_new_residences": 13958280,
+    "number_of_old_residences": 35892720
+  },
+  "de": {
+    "households_new_houses_useful_demand_for_heating": 61082071923,
+    "households_old_houses_useful_demand_for_heating": 1350790000000,
+    "number_of_new_residences": 5636092,
+    "number_of_old_residences": 34621708
+  },
+  "de_biezen": {
+    "households_new_houses_useful_demand_for_heating": 0,
+    "households_old_houses_useful_demand_for_heating": 59480980,
+    "number_of_new_residences": 0,
+    "number_of_old_residences": 1330
+  },
+  "dk": {
+    "households_new_houses_useful_demand_for_heating": 5291169073,
+    "households_old_houses_useful_demand_for_heating": 119397000000,
+    "number_of_new_residences": 694727.910543592,
+    "number_of_old_residences": 2080272.08945641
+  },
+  "es": {
+    "households_new_houses_useful_demand_for_heating": 11236624722,
+    "households_old_houses_useful_demand_for_heating": 248490000000,
+    "number_of_new_residences": 2440718,
+    "number_of_old_residences": 14992982
+  },
+  "eu": {
+    "households_new_houses_useful_demand_for_heating": 479342000000,
+    "households_old_houses_useful_demand_for_heating": 6012620000000,
+    "number_of_new_residences": 46958202.7,
+    "number_of_old_residences": 163616697.3
+  },
+  "example": {
+    "number_of_new_residences": 5610640,
+    "number_of_old_residences": 34465360
+  },
+  "flevoland": {
+    "households_new_houses_useful_demand_for_heating": 1155827554,
+    "households_old_houses_useful_demand_for_heating": 4279140876,
+    "number_of_new_residences": 81444.284641525,
+    "number_of_old_residences": 83751.715358475
+  },
+  "fr": {
+    "households_new_houses_useful_demand_for_heating": 72523538583,
+    "households_old_houses_useful_demand_for_heating": 909699000000,
+    "number_of_new_residences": 6188339.2,
+    "number_of_old_residences": 21562060.8
+  },
+  "friesland": {
+    "households_new_houses_useful_demand_for_heating": 2814638552,
+    "households_old_houses_useful_demand_for_heating": 10437397874,
+    "number_of_new_residences": 62770.6,
+    "number_of_old_residences": 232769.4
+  },
+  "gemeente_groningen": {
+    "households_new_houses_useful_demand_for_heating": 228664483.4,
+    "households_old_houses_useful_demand_for_heating": 3464266924,
+    "number_of_new_residences": 21001.3101,
+    "number_of_old_residences": 88551.6899
+  },
+  "hengstdal": {
+    "households_new_houses_useful_demand_for_heating": 20902673.91,
+    "households_old_houses_useful_demand_for_heating": 94930194.76,
+    "number_of_new_residences": 626,
+    "number_of_old_residences": 2843
+  },
+  "nl": {
+    "households_new_houses_useful_demand_for_heating": 23154633315,
+    "households_old_houses_useful_demand_for_heating": 249601000000,
+    "number_of_new_residences": 1899665,
+    "number_of_old_residences": 5688299
+  },
+  "nl2012": {
+    "number_of_new_residences": 1647243.7,
+    "number_of_old_residences": 5739499.3
+  },
+  "nl2013": {
+    "number_of_new_residences": 1661193.5,
+    "number_of_old_residences": 5788104.5
+  },
+  "noorderplantsoen": {
+    "households_new_houses_useful_demand_for_heating": 2361866.9,
+    "households_old_houses_useful_demand_for_heating": 112381361.2,
+    "number_of_new_residences": 152,
+    "number_of_old_residences": 2009
+  },
+  "om_aalten": {
+    "households_new_houses_useful_demand_for_heating": 103823949.9,
+    "households_old_houses_useful_demand_for_heating": 396453093.3,
+    "number_of_new_residences": 2443.7,
+    "number_of_old_residences": 9331.3
+  },
+  "om_achterhoek": {
+    "households_new_houses_useful_demand_for_heating": 1298294236,
+    "households_old_houses_useful_demand_for_heating": 4570452538,
+    "number_of_new_residences": 28783.6,
+    "number_of_old_residences": 101328.4
+  },
+  "om_apeldoorn": {
+    "households_new_houses_useful_demand_for_heating": 690914856,
+    "households_old_houses_useful_demand_for_heating": 2384713495,
+    "number_of_new_residences": 15680.9,
+    "number_of_old_residences": 54123.1
+  },
+  "om_arnhem": {
+    "households_new_houses_useful_demand_for_heating": 485584163.4,
+    "households_old_houses_useful_demand_for_heating": 1872634166,
+    "number_of_new_residences": 14817.8,
+    "number_of_old_residences": 57144.2
+  },
+  "om_barneveld": {
+    "households_new_houses_useful_demand_for_heating": 384588509.3,
+    "households_old_houses_useful_demand_for_heating": 614623664.6,
+    "number_of_new_residences": 7928,
+    "number_of_old_residences": 12670
+  },
+  "om_berg-en-dal": {
+    "households_new_houses_useful_demand_for_heating": 174191035.2,
+    "households_old_houses_useful_demand_for_heating": 516977084.5,
+    "number_of_new_residences": 3803.8,
+    "number_of_old_residences": 11289.2
+  },
+  "om_berkelland": {
+    "households_new_houses_useful_demand_for_heating": 219551449.5,
+    "households_old_houses_useful_demand_for_heating": 695001415.7,
+    "number_of_new_residences": 4633,
+    "number_of_old_residences": 14666
+  },
+  "om_beuningen": {
+    "households_new_houses_useful_demand_for_heating": 112571545,
+    "households_old_houses_useful_demand_for_heating": 319337773.2,
+    "number_of_new_residences": 2757.8,
+    "number_of_old_residences": 7823.2
+  },
+  "om_bronckhorst": {
+    "households_new_houses_useful_demand_for_heating": 172987255.5,
+    "households_old_houses_useful_demand_for_heating": 689561103.3,
+    "number_of_new_residences": 3223.7,
+    "number_of_old_residences": 12850.3
+  },
+  "om_brummen": {
+    "households_new_houses_useful_demand_for_heating": 88089543.3,
+    "households_old_houses_useful_demand_for_heating": 353432144.9,
+    "number_of_new_residences": 1845.5,
+    "number_of_old_residences": 7404.5
+  },
+  "om_buren": {
+    "households_new_houses_useful_demand_for_heating": 135581910.9,
+    "households_old_houses_useful_demand_for_heating": 389462942.8,
+    "number_of_new_residences": 2665.7,
+    "number_of_old_residences": 7657.3
+  },
+  "om_cleantech-regio": {
+    "households_new_houses_useful_demand_for_heating": 1793994826,
+    "households_old_houses_useful_demand_for_heating": 6054605691,
+    "number_of_new_residences": 36351.2,
+    "number_of_old_residences": 145404.8
+  },
+  "om_culemborg": {
+    "households_new_houses_useful_demand_for_heating": 121611228.9,
+    "households_old_houses_useful_demand_for_heating": 271926216.8,
+    "number_of_new_residences": 3562.7,
+    "number_of_old_residences": 7966.3
+  },
+  "om_deventer": {
+    "households_new_houses_useful_demand_for_heating": 385010355.2,
+    "households_old_houses_useful_demand_for_heating": 1110532574,
+    "number_of_new_residences": 11033.3,
+    "number_of_old_residences": 31824.7
+  },
+  "om_doesburg": {
+    "households_new_houses_useful_demand_for_heating": 40261848.57,
+    "households_old_houses_useful_demand_for_heating": 136441601.3,
+    "number_of_new_residences": 1177.3,
+    "number_of_old_residences": 3989.7
+  },
+  "om_doetinchem": {
+    "households_new_houses_useful_demand_for_heating": 263850830.6,
+    "households_old_houses_useful_demand_for_heating": 731038251.2,
+    "number_of_new_residences": 6640.5,
+    "number_of_old_residences": 18398.5
+  },
+  "om_druten": {
+    "households_new_houses_useful_demand_for_heating": 102511354.3,
+    "households_old_houses_useful_demand_for_heating": 217316334.9,
+    "number_of_new_residences": 2438.2,
+    "number_of_old_residences": 5168.8
+  },
+  "om_duiven": {
+    "households_new_houses_useful_demand_for_heating": 115884012,
+    "households_old_houses_useful_demand_for_heating": 252094173.9,
+    "number_of_new_residences": 3343.2,
+    "number_of_old_residences": 7272.8
+  },
+  "om_ede": {
+    "households_new_houses_useful_demand_for_heating": 658102584.8,
+    "households_old_houses_useful_demand_for_heating": 1556039169,
+    "number_of_new_residences": 14341.2,
+    "number_of_old_residences": 33908.8
+  },
+  "om_elburg": {
+    "households_new_houses_useful_demand_for_heating": 95055809.2,
+    "households_old_houses_useful_demand_for_heating": 318572170.5,
+    "number_of_new_residences": 2091.5,
+    "number_of_old_residences": 7009.5
+  },
+  "om_epe": {
+    "households_new_houses_useful_demand_for_heating": 133429446.6,
+    "households_old_houses_useful_demand_for_heating": 649031721.7,
+    "number_of_new_residences": 2359.9,
+    "number_of_old_residences": 11479.1
+  },
+  "om_ermelo": {
+    "households_new_houses_useful_demand_for_heating": 114046571.1,
+    "households_old_houses_useful_demand_for_heating": 444782663.9,
+    "number_of_new_residences": 2200.2,
+    "number_of_old_residences": 8580.8
+  },
+  "om_foodvalley": {
+    "households_new_houses_useful_demand_for_heating": 1770575037,
+    "households_old_houses_useful_demand_for_heating": 4259282473,
+    "number_of_new_residences": 42269,
+    "number_of_old_residences": 101682
+  },
+  "om_gelderland": {
+    "households_new_houses_useful_demand_for_heating": 9041959036,
+    "households_old_houses_useful_demand_for_heating": 28208036981,
+    "number_of_new_residences": 213041.2,
+    "number_of_old_residences": 664620.8
+  },
+  "om_geldermalsen": {
+    "households_new_houses_useful_demand_for_heating": 139902854.8,
+    "households_old_houses_useful_demand_for_heating": 392745780.4,
+    "number_of_new_residences": 2773.9,
+    "number_of_old_residences": 7787.1
+  },
+  "om_haarlemmermeer": {
+    "households_new_houses_useful_demand_for_heating": 899880993,
+    "households_old_houses_useful_demand_for_heating": 1389091354,
+    "number_of_new_residences": 24364.7,
+    "number_of_old_residences": 37610.3
+  },
+  "om_harderwijk": {
+    "households_new_houses_useful_demand_for_heating": 249149079.7,
+    "households_old_houses_useful_demand_for_heating": 440537974.3,
+    "number_of_new_residences": 6759.7,
+    "number_of_old_residences": 11952.3
+  },
+  "om_hattem": {
+    "households_new_houses_useful_demand_for_heating": 39983296.12,
+    "households_old_houses_useful_demand_for_heating": 192929108.5,
+    "number_of_new_residences": 885.8,
+    "number_of_old_residences": 4274.2
+  },
+  "om_heerde": {
+    "households_new_houses_useful_demand_for_heating": 92532192.35,
+    "households_old_houses_useful_demand_for_heating": 326000513.8,
+    "number_of_new_residences": 1720.5,
+    "number_of_old_residences": 6061.5
+  },
+  "om_heumen": {
+    "households_new_houses_useful_demand_for_heating": 115092754.2,
+    "households_old_houses_useful_demand_for_heating": 215177131.7,
+    "number_of_new_residences": 2420.2,
+    "number_of_old_residences": 4524.8
+  },
+  "om_lingewaal": {
+    "households_new_houses_useful_demand_for_heating": 43474875.09,
+    "households_old_houses_useful_demand_for_heating": 156771147,
+    "number_of_new_residences": 977.2,
+    "number_of_old_residences": 3523.8
+  },
+  "om_lingewaard": {
+    "households_new_houses_useful_demand_for_heating": 244633219.7,
+    "households_old_houses_useful_demand_for_heating": 545878499.7,
+    "number_of_new_residences": 5946,
+    "number_of_old_residences": 13268
+  },
+  "om_lochem": {
+    "households_new_houses_useful_demand_for_heating": 179119120.5,
+    "households_old_houses_useful_demand_for_heating": 622085633.3,
+    "number_of_new_residences": 3245.9,
+    "number_of_old_residences": 11273.1
+  },
+  "om_maasdriel": {
+    "households_new_houses_useful_demand_for_heating": 126275971.5,
+    "households_old_houses_useful_demand_for_heating": 346027815.5,
+    "number_of_new_residences": 2577.1,
+    "number_of_old_residences": 7061.9
+  },
+  "om_montferland": {
+    "households_new_houses_useful_demand_for_heating": 168442513,
+    "households_old_houses_useful_demand_for_heating": 532996703.5,
+    "number_of_new_residences": 3642.9,
+    "number_of_old_residences": 11527.1
+  },
+  "om_mook-en-middelaar": {
+    "households_new_houses_useful_demand_for_heating": 45496650.97,
+    "households_old_houses_useful_demand_for_heating": 141037512.6,
+    "number_of_new_residences": 864.4,
+    "number_of_old_residences": 2679.6
+  },
+  "om_neder-betuwe": {
+    "households_new_houses_useful_demand_for_heating": 92219508.95,
+    "households_old_houses_useful_demand_for_heating": 296484802.5,
+    "number_of_new_residences": 1957.3,
+    "number_of_old_residences": 6292.7
+  },
+  "om_neerijnen": {
+    "households_new_houses_useful_demand_for_heating": 56768091.91,
+    "households_old_houses_useful_demand_for_heating": 178524364.1,
+    "number_of_new_residences": 1124.3,
+    "number_of_old_residences": 3535.7
+  },
+  "om_nijkerk": {
+    "households_new_houses_useful_demand_for_heating": 193014719,
+    "households_old_houses_useful_demand_for_heating": 469880094.6,
+    "number_of_new_residences": 4636,
+    "number_of_old_residences": 11286
+  },
+  "om_nijmegen": {
+    "households_new_houses_useful_demand_for_heating": 513438925.3,
+    "households_old_houses_useful_demand_for_heating": 2064058747,
+    "number_of_new_residences": 15672.7,
+    "number_of_old_residences": 63005.3
+  },
+  "om_noord-veluwe": {
+    "households_new_houses_useful_demand_for_heating": 1027000477,
+    "households_old_houses_useful_demand_for_heating": 2819996682,
+    "number_of_new_residences": 21483.2,
+    "number_of_old_residences": 58989.8
+  },
+  "om_nunspeet": {
+    "households_new_houses_useful_demand_for_heating": 149140405.8,
+    "households_old_houses_useful_demand_for_heating": 459182358.6,
+    "number_of_new_residences": 2546.3,
+    "number_of_old_residences": 7839.7
+  },
+  "om_oldebroek": {
+    "households_new_houses_useful_demand_for_heating": 119836938.2,
+    "households_old_houses_useful_demand_for_heating": 315537158.3,
+    "number_of_new_residences": 2472.3,
+    "number_of_old_residences": 6509.7
+  },
+  "om_oost-gelre": {
+    "households_new_houses_useful_demand_for_heating": 131266317.1,
+    "households_old_houses_useful_demand_for_heating": 426673952.4,
+    "number_of_new_residences": 2977.1,
+    "number_of_old_residences": 9676.9
+  },
+  "om_oude-ijsselstreek": {
+    "households_new_houses_useful_demand_for_heating": 127352827.3,
+    "households_old_houses_useful_demand_for_heating": 633146910.2,
+    "number_of_new_residences": 2887,
+    "number_of_old_residences": 14353
+  },
+  "om_overbetuwe": {
+    "households_new_houses_useful_demand_for_heating": 269591612.5,
+    "households_old_houses_useful_demand_for_heating": 521092926.9,
+    "number_of_new_residences": 6423,
+    "number_of_old_residences": 12415
+  },
+  "om_putten": {
+    "households_new_houses_useful_demand_for_heating": 143648195,
+    "households_old_houses_useful_demand_for_heating": 346062723.7,
+    "number_of_new_residences": 2806.9,
+    "number_of_old_residences": 6762.1
+  },
+  "om_regio_arnhem-nijmegen": {
+    "households_new_houses_useful_demand_for_heating": 2834139441,
+    "households_old_houses_useful_demand_for_heating": 9571034540,
+    "number_of_new_residences": 74918.7,
+    "number_of_old_residences": 253004.3
+  },
+  "om_renkum": {
+    "households_new_houses_useful_demand_for_heating": 90743061.87,
+    "households_old_houses_useful_demand_for_heating": 628508439.2,
+    "number_of_new_residences": 1849.3,
+    "number_of_old_residences": 12808.7
+  },
+  "om_renswoude": {
+    "households_new_houses_useful_demand_for_heating": 30525603.68,
+    "households_old_houses_useful_demand_for_heating": 53747816.76,
+    "number_of_new_residences": 665.4,
+    "number_of_old_residences": 1171.6
+  },
+  "om_rheden": {
+    "households_new_houses_useful_demand_for_heating": 108950348.5,
+    "households_old_houses_useful_demand_for_heating": 841668578.3,
+    "number_of_new_residences": 2398.9,
+    "number_of_old_residences": 18532.1
+  },
+  "om_rhenen": {
+    "households_new_houses_useful_demand_for_heating": 81424155.53,
+    "households_old_houses_useful_demand_for_heating": 281677823.9,
+    "number_of_new_residences": 1724.9,
+    "number_of_old_residences": 5967.1
+  },
+  "om_rivierenland": {
+    "households_new_houses_useful_demand_for_heating": 1154778677,
+    "households_old_houses_useful_demand_for_heating": 3108962677,
+    "number_of_new_residences": 25943.2,
+    "number_of_old_residences": 69845.8
+  },
+  "om_rozendaal": {
+    "households_new_houses_useful_demand_for_heating": 17712675.61,
+    "households_old_houses_useful_demand_for_heating": 60667456.88,
+    "number_of_new_residences": 143.5,
+    "number_of_old_residences": 491.5
+  },
+  "om_scherpenzeel": {
+    "households_new_houses_useful_demand_for_heating": 39769221,
+    "households_old_houses_useful_demand_for_heating": 124834369.4,
+    "number_of_new_residences": 896.6,
+    "number_of_old_residences": 2814.4
+  },
+  "om_tiel": {
+    "households_new_houses_useful_demand_for_heating": 190989516.9,
+    "households_old_houses_useful_demand_for_heating": 454218667.6,
+    "number_of_new_residences": 5225.8,
+    "number_of_old_residences": 12428.2
+  },
+  "om_veenendaal": {
+    "households_new_houses_useful_demand_for_heating": 254731890.1,
+    "households_old_houses_useful_demand_for_heating": 628936897.7,
+    "number_of_new_residences": 7613.4,
+    "number_of_old_residences": 18797.6
+  },
+  "om_voorst": {
+    "households_new_houses_useful_demand_for_heating": 103010023.7,
+    "households_old_houses_useful_demand_for_heating": 368615481,
+    "number_of_new_residences": 2138.5,
+    "number_of_old_residences": 7652.5
+  },
+  "om_wageningen": {
+    "households_new_houses_useful_demand_for_heating": 150374238.7,
+    "households_old_houses_useful_demand_for_heating": 507586752.1,
+    "number_of_new_residences": 4463.5,
+    "number_of_old_residences": 15066.5
+  },
+  "om_west-maas-en-waal": {
+    "households_new_houses_useful_demand_for_heating": 93862749.91,
+    "households_old_houses_useful_demand_for_heating": 295796377,
+    "number_of_new_residences": 1896,
+    "number_of_old_residences": 5975
+  },
+  "om_westervoort": {
+    "households_new_houses_useful_demand_for_heating": 40340991.87,
+    "households_old_houses_useful_demand_for_heating": 168364400.5,
+    "number_of_new_residences": 1264.9,
+    "number_of_old_residences": 5279.1
+  },
+  "om_wijchen": {
+    "households_new_houses_useful_demand_for_heating": 195141854.5,
+    "households_old_houses_useful_demand_for_heating": 486221870,
+    "number_of_new_residences": 5013.7,
+    "number_of_old_residences": 12492.3
+  },
+  "om_winterswijk": {
+    "households_new_houses_useful_demand_for_heating": 104716980.9,
+    "households_old_houses_useful_demand_for_heating": 471883220.9,
+    "number_of_new_residences": 2335.7,
+    "number_of_old_residences": 10525.3
+  },
+  "om_zaltbommel": {
+    "households_new_houses_useful_demand_for_heating": 141785619.9,
+    "households_old_houses_useful_demand_for_heating": 339310912.2,
+    "number_of_new_residences": 3183.2,
+    "number_of_old_residences": 7617.8
+  },
+  "om_zevenaar": {
+    "households_new_houses_useful_demand_for_heating": 176128986,
+    "households_old_houses_useful_demand_for_heating": 569422245.4,
+    "number_of_new_residences": 4584,
+    "number_of_old_residences": 14820
+  },
+  "om_zutphen": {
+    "households_new_houses_useful_demand_for_heating": 188574834.6,
+    "households_old_houses_useful_demand_for_heating": 592041288,
+    "number_of_new_residences": 5240.9,
+    "number_of_old_residences": 16454.1
+  },
+  "oostkapelle": {
+    "households_new_houses_useful_demand_for_heating": 3968293.95,
+    "households_old_houses_useful_demand_for_heating": 60236093.89,
+    "number_of_new_residences": 254.0025,
+    "number_of_old_residences": 1070.9975
+  },
+  "paddepoel_noord": {
+    "households_new_houses_useful_demand_for_heating": 181488,
+    "households_old_houses_useful_demand_for_heating": 13321220.8,
+    "number_of_new_residences": 18,
+    "number_of_old_residences": 367
+  },
+  "pl": {
+    "households_new_houses_useful_demand_for_heating": 20681198425,
+    "households_old_houses_useful_demand_for_heating": 468995000000,
+    "number_of_new_residences": 1857788.5,
+    "number_of_old_residences": 11702711.5
+  },
+  "reitdiep": {
+    "households_new_houses_useful_demand_for_heating": 30069170.52,
+    "households_old_houses_useful_demand_for_heating": 0,
+    "number_of_new_residences": 918,
+    "number_of_old_residences": 0
+  },
+  "rotterdam": {
+    "households_new_houses_useful_demand_for_heating": 1597525737,
+    "households_old_houses_useful_demand_for_heating": 6672294400,
+    "number_of_new_residences": 60110,
+    "number_of_old_residences": 251058
+  },
+  "s_heer_hendrikskinderen": {
+    "households_new_houses_useful_demand_for_heating": 1965674.446,
+    "households_old_houses_useful_demand_for_heating": 22155638.35,
+    "number_of_new_residences": 129.511507577471,
+    "number_of_old_residences": 405.488492422529
+  },
+  "stichtse_vecht": {
+    "households_new_houses_useful_demand_for_heating": 211907500.6,
+    "households_old_houses_useful_demand_for_heating": 921025444,
+    "number_of_new_residences": 5155.1,
+    "number_of_old_residences": 22405.9
+  },
+  "uk": {
+    "households_new_houses_useful_demand_for_heating": 67954784250,
+    "households_old_houses_useful_demand_for_heating": 852391000000,
+    "number_of_new_residences": 6051149.6,
+    "number_of_old_residences": 21084050.4
+  },
+  "veere": {
+    "households_new_houses_useful_demand_for_heating": 93403031.38,
+    "households_old_houses_useful_demand_for_heating": 381297157,
+    "number_of_new_residences": 2108.7,
+    "number_of_old_residences": 8608.3
   }
 }

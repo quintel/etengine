@@ -16,12 +16,21 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
     terraced_houses: 56.0
   }.freeze
 
+  INSULATION_MAX = {
+    apartments: 0.67,
+    buildings: 0.74,
+    corner_houses: 0.69,
+    detached_houses: 0.67,
+    semi_detached_houses: 0.69,
+    terraced_houses: 0.69
+  }.freeze
+
   def up
     say "#{Scenario.migratable.count} scenarios to be checked..."
     updated = 0
 
-    new_defaults = JSON.parse(File.read('db/migrate/20190124131252_update_housing_stock_and_insulation_inputs/defaults_new.json'))
-    old_defaults = JSON.parse(File.read('db/migrate/20190124131252_update_housing_stock_and_insulation_inputs/defaults_old.json'))
+    new_defaults = values_to_floats(JSON.parse(File.read('db/migrate/20190124131252_update_housing_stock_and_insulation_inputs/defaults_new.json')))
+    old_defaults = values_to_floats(JSON.parse(File.read('db/migrate/20190124131252_update_housing_stock_and_insulation_inputs/defaults_old.json')))
 
     Scenario.migratable.find_each.with_index do |scenario, index|
       say "#{index} done" if index.positive? && (index % 250).zero?
@@ -105,26 +114,47 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
 
   def update_housing_insulation(scenario, new_defaults, old_defaults)
     if !scenario.user_values['households_insulation_level_old_houses'] &&
-        !scenario.user_values['households_insulation_level_new_houses']
+        !scenario.user_values['households_insulation_level_new_houses'] ||
+        old_defaults['number_of_old_residences'].zero? ||
+        old_defaults['number_of_new_residences'].zero?
       return false
     end
 
-    used_potential_old_houses =
-      ((scenario.user_values['households_insulation_level_old_houses'] || 0.5) - 0.5) / 2.5
+    saving_fraction_old = 1.0 - 0.66 / #
+      ((scenario.user_values['households_insulation_level_old_houses'] || 0.5) + 0.16)
 
-    used_potential_new_houses =
-      ((scenario.user_values['households_insulation_level_new_houses'] || 1.8) - 1.8) / 1.2
+    saving_fraction_new = 1.0 - 1.85 / #
+      ((scenario.user_values['households_insulation_level_new_houses'] || 1.8) + 0.05)
 
-    average_potential_used = (
-      (nor_value(scenario, old_defaults, :old) * used_potential_old_houses) +
-      (nor_value(scenario, old_defaults, :new) * used_potential_new_houses)
-    ) / number_of_residences(scenario, old_defaults)
+    heat_demand_change =
+      (1.0 + (scenario.user_values['households_useful_demand_heat_per_person'] || 0.0) / 100.0) **
+      (scenario.end_year - Atlas::Dataset.find(scenario.area_code).analysis_year)
+
+    future_ud_old =
+      old_defaults['households_old_houses_useful_demand_for_heating'] *
+      (nor_value(scenario, old_defaults, :old) / old_defaults['number_of_old_residences']) *
+      heat_demand_change
+
+    future_ud_new =
+      old_defaults['households_new_houses_useful_demand_for_heating'] *
+      (nor_value(scenario, old_defaults, :new) / old_defaults['number_of_new_residences']) *
+      heat_demand_change
+
+    # Do nothing when there is no demand (no residences).
+    return if future_ud_old.zero? && future_ud_new.zero?
+
+    average_saving =
+      (saving_fraction_old * future_ud_old + saving_fraction_new * future_ud_new) / #
+      (future_ud_old + future_ud_new)
 
     HOUSING_TYPES.each do |type|
       scenario.user_values["households_insulation_level_#{type}"] =
-        average_potential_used *
-        (INSULATION_RANGE[type] - new_defaults["insulation_#{type}_start_value"]) +
-        new_defaults["insulation_#{type}_start_value"]
+        100.0 * [
+          1.0 -
+            (1.0 - (new_defaults["insulation_#{type}_start_value"] / 100.0)) *
+            (1.0 - average_saving),
+          INSULATION_MAX[type]
+        ].min
     end
 
     true
@@ -136,8 +166,15 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
     old_value = scenario.user_values['buildings_insulation_level']
     start_value = defaults['insulation_buildings_start_value']
 
+    saving_fraction = 1.0 - 0.73 / (old_value + 0.13)
+
     scenario.user_values['buildings_insulation_level'] =
-      ((old_value - 0.6) / 2.4) * (74 - start_value) + start_value
+      100.0 * [
+        1.0 -
+          (1.0 - start_value / 100.0) *
+          (1.0 - saving_fraction),
+        INSULATION_MAX[:buildings]
+      ].min
   end
 
   # Helpers
@@ -156,5 +193,9 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
     else
       defaults["number_of_#{period}_residences"]
     end
+  end
+
+  def values_to_floats(defaults)
+    Hash[defaults.map { |k, v| [k, v.transform_values(&:to_f)] }]
   end
 end
