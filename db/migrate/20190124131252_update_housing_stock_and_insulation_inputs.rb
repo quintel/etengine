@@ -29,8 +29,11 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
     say "#{Scenario.migratable.count} scenarios to be checked..."
     updated = 0
 
-    new_defaults = values_to_floats(JSON.parse(File.read('db/migrate/20190124131252_update_housing_stock_and_insulation_inputs/defaults_new.json')))
-    old_defaults = values_to_floats(JSON.parse(File.read('db/migrate/20190124131252_update_housing_stock_and_insulation_inputs/defaults_old.json')))
+    dir = Pathname.new(__FILE__).expand_path.dirname.join('20190124131252_update_housing_stock_and_insulation_inputs')
+
+    new_defaults = values_to_floats(JSON.parse(File.read(dir.join('defaults_new.json'))))
+    old_defaults = values_to_floats(JSON.parse(File.read(dir.join('defaults_old.json'))))
+    analysis_years = JSON.parse(File.read(dir.join('analysis_years.json')))
 
     Scenario.migratable.find_each.with_index do |scenario, index|
       say "#{index} done" if index.positive? && (index % 250).zero?
@@ -49,7 +52,8 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
       changed_housing = update_housing_insulation(
         scenario,
         scenario_new_defaults,
-        scenario_old_defaults
+        scenario_old_defaults,
+        analysis_years[scenario.area_code]
       )
 
       changed_buildings = update_buildings_insulation(
@@ -112,7 +116,7 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
 
   # Insulation
 
-  def update_housing_insulation(scenario, new_defaults, old_defaults)
+  def update_housing_insulation(scenario, new_defaults, old_defaults, analysis_year)
     if !scenario.user_values['households_insulation_level_old_houses'] &&
         !scenario.user_values['households_insulation_level_new_houses'] ||
         old_defaults['number_of_old_residences'].zero? ||
@@ -128,7 +132,7 @@ class UpdateHousingStockAndInsulationInputs < ActiveRecord::Migration[5.1]
 
     heat_demand_change =
       (1.0 + (scenario.user_values['households_useful_demand_heat_per_person'] || 0.0) / 100.0) **
-      (scenario.end_year - Atlas::Dataset.find(scenario.area_code).analysis_year)
+      (scenario.end_year - analysis_year)
 
     future_ud_old =
       old_defaults['households_old_houses_useful_demand_for_heating'] *
