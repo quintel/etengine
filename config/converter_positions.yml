@@ -2929,19 +2929,19 @@
   :y: 7280
 :energy_production_biodiesel_from_rapeseed:
   :x: 6760
-  :y: 7240
+  :y: 7260
 :energy_production_bio_oil_from_palm:
   :x: 6760
   :y: 7220
 :energy_production_biodiesel_from_waste_fats:
   :x: 6760
-  :y: 7160
+  :y: 7180
 :energy_production_bio_ethanol_from_sugar_beets:
   :x: 6760
-  :y: 6960
+  :y: 6980
 :energy_production_bio_ethanol_from_sugar_cane:
   :x: 6760
-  :y: 6900
+  :y: 6920
 :energy_production_bio_kerosene:
   :x: 6400
   :y: 7220
@@ -2950,10 +2950,10 @@
   :y: 7340
 :energy_production_bio_kerosene_from_waste_fats:
   :x: 6760
-  :y: 7100
+  :y: 7120
 :energy_production_bio_kerosene_from_rapeseed:
   :x: 6760
-  :y: 7300
+  :y: 7320
 :foreign_energy_production_bio_ethanol:
   :x: 8000
   :y: 6620
@@ -2995,7 +2995,7 @@
   :y: 4980
 :energy_production_bio_ethanol_from_wheat:
   :x: 6760
-  :y: 6840
+  :y: 6860
 :energy_production_wheat:
   :x: 7120
   :y: 6840
@@ -3007,7 +3007,7 @@
   :y: 6360
 :energy_production_bio_ethanol_from_corn:
   :x: 6760
-  :y: 7020
+  :y: 7040
 :foreign_energy_production_bio_ethanol_from_corn:
   :x: 8420
   :y: 6300
@@ -3032,3 +3032,15 @@
 :households_final_demand_hydrogen:
   :x: 3120
   :y: 1180
+:energy_import_sugar_cane:
+  :x: 7700
+  :y: 6920
+:energy_import_sugar_beets:
+  :x: 7700
+  :y: 6980
+:energy_import_wheat:
+  :x: 7700
+  :y: 6860
+:energy_import_corn:
+  :x: 7700
+  :y: 7040
