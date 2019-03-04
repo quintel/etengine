@@ -2892,8 +2892,8 @@
   :x: 8000
   :y: 4600
 :energy_production_waste_fats:
-  :x: 7120
-  :y: 7120
+  :x: 7340
+  :y: 7200
 :energy_production_palm:
   :x: 7120
   :y: 7280
@@ -3044,3 +3044,9 @@
 :energy_import_corn:
   :x: 7700
   :y: 7040
+:energy_distribution_waste_fats:
+  :x: 7120
+  :y: 7140
+:energy_import_waste_fats:
+  :x: 7700
+  :y: 7100
