@@ -16,9 +16,16 @@ module Qernel::Plugins
 
     # Keys of carriers whose CO2 attributes should be calculated by the FCE
     # plugin.
-    FCE_CARRIERS = [
-      :biodiesel, :bio_ethanol, :coal,          :crude_oil,
-      :greengas,  :natural_gas, :lng, :uranium_oxide, :wood_pellets
+    FCE_CARRIERS = %i[
+      biodiesel
+      bio_ethanol
+      coal
+      crude_oil
+      greengas
+      natural_gas
+      lng
+      uranium_oxide
+      wood_pellets
     ].freeze
 
     def calculator
