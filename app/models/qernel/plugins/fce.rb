@@ -22,6 +22,8 @@ module Qernel::Plugins
       coal
       crude_oil
       greengas
+      imported_electricity
+      imported_heat
       natural_gas
       lng
       uranium_oxide
