@@ -88,7 +88,7 @@ module Scenario::Persistable
     if source_scaler
       descaled = source_scaler.descale(value)
       dest_scaler ? dest_scaler.scale(descaled) : descaled
-    else dest_scaler
+    elsif dest_scaler
       dest_scaler.scale(value)
     end
   end
