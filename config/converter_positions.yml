@@ -502,7 +502,7 @@
   :y: 5320
 :energy_power_solar_pv_solar_radiation:
   :x: 6240
-  :y: 3820
+  :y: 3860
 :energy_power_wind_turbine_inland:
   :x: 6240
   :y: 2740
@@ -514,7 +514,7 @@
   :y: 2680
 :energy_power_solar_csp_solar_radiation:
   :x: 6240
-  :y: 3880
+  :y: 3920
 :energy_power_hydro_river:
   :x: 6240
   :y: 2800
@@ -523,7 +523,7 @@
   :y: 2560
 :energy_power_geothermal:
   :x: 6240
-  :y: 3940
+  :y: 3980
 :other_useful_demand_crude_oil_non_energetic:
   :x: 700
   :y: 8580
@@ -565,7 +565,7 @@
   :y: 8240
 :energy_heater_for_heat_network_wood_pellets:
   :x: 6240
-  :y: 4140
+  :y: 4180
 :households_water_heater_solar_thermal:
   :x: 1520
   :y: 1000
@@ -670,7 +670,7 @@
   :y: 3040
 :energy_heater_for_heat_network_geothermal:
   :x: 6240
-  :y: 4080
+  :y: 4120
 :industry_final_demand_wood_pellets:
   :x: 2760
   :y: 9960
@@ -694,19 +694,19 @@
   :y: 3100
 :energy_heater_for_heat_network_coal:
   :x: 6240
-  :y: 4200
+  :y: 4240
 :energy_heater_for_heat_network_lignite:
   :x: 6240
-  :y: 4260
+  :y: 4300
 :energy_heater_for_heat_network_crude_oil:
   :x: 6240
-  :y: 4320
+  :y: 4360
 :energy_heater_for_heat_network_network_gas:
   :x: 6240
-  :y: 4380
+  :y: 4420
 :energy_heater_for_heat_network_waste_mix:
   :x: 6240
-  :y: 4440
+  :y: 4480
 :energy_final_demand_electricity:
   :x: 4680
   :y: 3880
@@ -2854,7 +2854,7 @@
   :y: 3520
 :energy_distribution_imported_heat:
   :x: 6240
-  :y: 4020
+  :y: 4060
 :energy_import_heat:
   :x: 7700
   :y: 4100
@@ -3050,3 +3050,9 @@
 :energy_import_waste_fats:
   :x: 7700
   :y: 7100
+:energy_power_baseload_turbine_hydrogen:
+  :x: 6240
+  :y: 3780
+:energy_power_combined_cycle_hydrogen:
+  :x: 6240
+  :y: 3780
