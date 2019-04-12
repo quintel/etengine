@@ -25,6 +25,7 @@ module Qernel::Plugins
       imported_electricity
       imported_heat
       natural_gas
+      non_biogenic_waste
       lng
       uranium_oxide
       wood_pellets
