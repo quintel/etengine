@@ -124,6 +124,24 @@ module Api
         render json: { errors: @scenario.errors }, status: 422
       end
 
+      # POST /api/v3/scenarios/interpolate
+      def interpolate
+        attrs = filtered_params[:scenario] || {}
+
+        @scenario = Scenario::YearInterpolator.call(
+          Scenario.find(attrs[:scenario_id]),
+          attrs[:end_year]&.to_i # TODO Validate
+        )
+
+        # @scenario.attributes = attrs
+
+        Scenario.transaction do
+          @scenario.save!
+        end
+
+        render json: ScenarioPresenter.new(self, @scenario, {})
+      end
+
       # PUT-PATCH /api/v3/scenarios/:id
       #
       # This is the main scenario interaction method

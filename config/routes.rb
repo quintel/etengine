@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         end
         collection do
           post :merge
+          post :interpolate
         end
         get :templates, :on => :collection
         resources :converters, :only => :show do
