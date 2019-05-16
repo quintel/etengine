@@ -3,6 +3,8 @@
 # Receives a scenario and creates a new scenario with a new end year. Input
 # values will be adjusted to linearly interpolate new values based on the year.
 class Scenario::YearInterpolator
+  class InterpolationError < RuntimeError; end
+
   def self.call(scenario, year)
     new(scenario, year).run
   end
@@ -34,19 +36,25 @@ class Scenario::YearInterpolator
   private
 
   def validate!
-    raise 'Interpolated scenario must have an end year' unless @year
+    unless @year
+      raise InterpolationError, 'Interpolated scenario must have an end year'
+    end
 
     if @year >= @scenario.end_year
-      raise 'Interpolated scenario must have an end year prior to the ' \
-            'original scenario'
+      raise InterpolationError,
+        'Interpolated scenario must have an end year prior to the ' \
+        'original scenario'
     end
 
     if @year < @scenario.start_year
-      raise 'Interpolated scenario may not have an end year prior to the ' \
-            'dataset analysis year'
+      raise InterpolationError,
+        'Interpolated scenario may not have an end year prior to the dataset ' \
+        'analysis year'
     end
 
-    raise 'Cannot interpolate scaled scenarios' if @scenario.scaler
+    if @scenario.scaler
+      raise InterpolationError, 'Cannot interpolate scaled scenarios'
+    end
   end
 
   # Internal: Receives a collection of inputs and interpolates the values to

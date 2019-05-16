@@ -74,8 +74,15 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         params: { scenario: { scenario_id: source.id } }
     end
 
-    it 'raises an error' do
-      expect { send_data }.to raise_error(/must have an end year/)
+    it 'returns 400 Bad Request' do
+      send_data
+      expect(response.status).to be(400)
+    end
+
+    it 'returns the error' do
+      expect(response_data).to include('errors' => [
+        'Interpolated scenario must have an end year'
+      ])
     end
   end
 end

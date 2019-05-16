@@ -10,6 +10,10 @@ module Api
         :production_parameters, :energy_flow
       ]
 
+      rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
+        render json: { errors: [ex.message] }, status: :bad_request
+      end
+
       # GET /api/v3/scenarios/:id
       #
       # Returns the scenario details in JSON format. If the scenario is missing
