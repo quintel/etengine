@@ -10,7 +10,7 @@ module Api
         @errors  = []
         @results = {}
 
-        if assert_valid_gqueries!
+        if @requested_queries.any? && assert_valid_gqueries!
           @results = perform_gqueries!
         end
       end
