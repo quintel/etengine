@@ -16,8 +16,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'with valid parameters' do
     let(:send_data) do
-      post '/api/v3/scenarios/interpolate',
-        params: { scenario: { scenario_id: source.id, end_year: 2040 } }
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040 }
     end
 
     before { source }
@@ -46,23 +46,17 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'with an invalid scenario ID' do
     let(:send_data) do
-      post '/api/v3/scenarios/interpolate',
-        params: { scenario: { scenario_id: 999_999, end_year: 2040 }}
+      post '/api/v3/scenarios/999999/interpolate',
+        params: { end_year: 2040 }
     end
 
     it 'returns 404 Not Found' do
-      expect { send_data }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-  end
-
-  context 'with no scenario ID' do
-    let(:send_data) do
-      post '/api/v3/scenarios/interpolate',
-        params: { scenario: { end_year: 2040 } }
+      send_data
+      expect(response.status).to be(404)
     end
 
-    it 'returns 404 Not Found' do
-      expect { send_data }.to raise_error(ActiveRecord::RecordNotFound)
+    it 'sends back an error message' do
+      expect(response_data).to include('errors' => ['Scenario not found'])
     end
   end
 
@@ -70,8 +64,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     before { source }
 
     let(:send_data) do
-      post '/api/v3/scenarios/interpolate',
-        params: { scenario: { scenario_id: source.id } }
+      post "/api/v3/scenarios/#{source.id}/interpolate", params: {}
     end
 
     it 'returns 400 Bad Request' do

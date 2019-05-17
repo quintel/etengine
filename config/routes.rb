@@ -20,10 +20,10 @@ Rails.application.routes.draw do
           get :energy_flow
           get :merit
           put :dashboard
+          post :interpolate
         end
         collection do
           post :merge
-          post :interpolate
         end
         get :templates, :on => :collection
         resources :converters, :only => :show do

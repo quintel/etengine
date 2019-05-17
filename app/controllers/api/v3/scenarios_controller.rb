@@ -3,7 +3,7 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_action :find_scenario, only: [:update]
+      before_action :find_scenario, only: %i[interpolate update]
 
       before_action :find_preset_or_scenario, only: [
         :show, :merit, :dashboard, :application_demands,
@@ -130,20 +130,20 @@ module Api
 
       # POST /api/v3/scenarios/interpolate
       def interpolate
-        attrs = filtered_params[:scenario] || {}
-
-        @scenario = Scenario::YearInterpolator.call(
-          Scenario.find(attrs[:scenario_id]),
-          attrs[:end_year]&.to_i # TODO Validate
+        @interpolated = Scenario::YearInterpolator.call(
+          @scenario, params.require(:end_year).to_i
         )
 
-        # @scenario.attributes = attrs
-
         Scenario.transaction do
-          @scenario.save!
+          @interpolated.save!
         end
 
-        render json: ScenarioPresenter.new(self, @scenario, {})
+        render json: ScenarioPresenter.new(self, @interpolated, {})
+      rescue ActionController::ParameterMissing
+        render(
+          status: :bad_request,
+          json: { errors: ['Interpolated scenario must have an end year'] }
+        )
       end
 
       # PUT-PATCH /api/v3/scenarios/:id
