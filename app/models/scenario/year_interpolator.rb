@@ -43,13 +43,13 @@ class Scenario::YearInterpolator
     if @year >= @scenario.end_year
       raise InterpolationError,
         'Interpolated scenario must have an end year prior to the ' \
-        'original scenario'
+        "original scenario (#{@scenario.end_year})"
     end
 
     if @year < @scenario.start_year
       raise InterpolationError,
         'Interpolated scenario may not have an end year prior to the dataset ' \
-        'analysis year'
+        "analysis year (#{@scenario.start_year})"
     end
 
     if @scenario.scaler
