@@ -24,11 +24,13 @@ class Scenario::YearInterpolator
     clone.title    = @scenario.title
     clone.source   = @scenario.source
 
-    clone.user_values =
-      interpolate_input_collection(@scenario.user_values)
+    if @year != @scenario.end_year
+      clone.user_values =
+        interpolate_input_collection(@scenario.user_values)
 
-    clone.balanced_values =
-      interpolate_input_collection(@scenario.balanced_values)
+      clone.balanced_values =
+        interpolate_input_collection(@scenario.balanced_values)
+    end
 
     clone
   end
@@ -40,9 +42,9 @@ class Scenario::YearInterpolator
       raise InterpolationError, 'Interpolated scenario must have an end year'
     end
 
-    if @year >= @scenario.end_year
+    if @year > @scenario.end_year
       raise InterpolationError,
-        'Interpolated scenario must have an end year prior to the ' \
+        'Interpolated scenario must have an end year equal or prior to the ' \
         "original scenario (#{@scenario.end_year})"
     end
 

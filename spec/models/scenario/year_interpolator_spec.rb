@@ -98,6 +98,27 @@ RSpec.describe Scenario::YearInterpolator do
     end
   end
 
+  context 'with a year the same as the source scenario end year' do
+    let(:source) do
+      FactoryBot.create(:scenario, {
+        id:              99999, # Avoid a collision with a preset ID
+        end_year:        2050,
+        user_values:     { 'grouped_input_one' => 75 },
+        balanced_values: { 'grouped_input_two' => 50 }
+      })
+    end
+
+    let(:interpolated) { described_class.call(source, 2050) }
+
+    it 'sets user_values inputs' do
+      expect(interpolated.user_values).to eq(source.user_values)
+    end
+
+    it 'sets balanced_values inputs' do
+      expect(interpolated.balanced_values).to eq(source.balanced_values)
+    end
+  end
+
   context 'when the scenario has a flexibility order' do
     let(:source) do
       FactoryBot.create(:scenario, {
