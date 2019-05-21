@@ -42,6 +42,25 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'sets the end year' do
       expect(response_data).to include('end_year' => 2040)
     end
+
+    it 'does not mark the scenario as protected' do
+      send_data
+      expect(Scenario.find(response_data['id'])).not_to be_protected
+    end
+  end
+
+  context 'with valid parameters and protected=true' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, protected: true }
+    end
+
+    before { source }
+
+    it 'marks the scenario as protected' do
+      send_data
+      expect(Scenario.find(response_data['id'])).to be_protected
+    end
   end
 
   context 'with an invalid scenario ID' do

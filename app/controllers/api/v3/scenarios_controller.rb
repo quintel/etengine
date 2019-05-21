@@ -134,6 +134,8 @@ module Api
           @scenario, params.require(:end_year).to_i
         )
 
+        @interpolated.protected = true if params[:protected]
+
         Scenario.transaction do
           @interpolated.save!
         end
