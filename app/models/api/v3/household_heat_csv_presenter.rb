@@ -38,7 +38,7 @@ module Api
       def curve(type)
         Qernel::Plugins::TimeResolve::Util.add_curves([
           summary(:space_heating).public_send(type),
-          summary(:hot_water).public_send(type)
+          summary(:households_hot_water).public_send(type)
         ])
       end
 

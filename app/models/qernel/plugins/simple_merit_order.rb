@@ -136,7 +136,7 @@ module Qernel::Plugins
       # Aren't these individual demands now?
       demand = @graph.graph_query.total_demand_for_electricity -
         individual_demands -
-        curves.demand_value(:hot_water) -
+        curves.demand_value(:households_hot_water) -
         curves.demand_value(:space_heating) -
         curves.demand_value(:buildings_space_heating)
 
