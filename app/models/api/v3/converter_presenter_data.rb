@@ -25,7 +25,7 @@ module Api
               formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
-          'initial_investment_per(:mw_electricity)' =>
+          'total_initial_investment_per(:mw_electricity)' =>
             { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'ccs_investment_per(:mw_electricity)' =>
@@ -74,7 +74,7 @@ module Api
               formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
-          'initial_investment_per(:plant)' =>
+          'total_initial_investment_per(:plant)' =>
             {label: 'Initial purchase price', unit: 'EUR'},
           'cost_of_installing_per(:plant)' =>
             {label: 'Cost of installing', unit:'EUR'},
@@ -112,7 +112,7 @@ module Api
               formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
-          'initial_investment_per(:plant)' =>
+          'total_initial_investment_per(:plant)' =>
             {label: 'Initial purchase price', unit: 'EUR'},
           'cost_of_installing_per(:plant)' =>
             {label: 'Cost of installing', unit:'EUR'},
@@ -152,7 +152,7 @@ module Api
               formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
-          'initial_investment_per(:mw_electricity)' =>
+          'total_initial_investment_per(:mw_electricity)' =>
             { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'ccs_investment_per(:mw_electricity)' =>
@@ -202,7 +202,7 @@ module Api
               formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
-          'initial_investment_per(:plant)' =>
+          'total_initial_investment_per(:plant)' =>
             { label: 'Investment costs', unit: 'EUR'},
           'ccs_investment_per(:plant)' =>
             { label: 'Additional initial investment for CCS', unit: 'EUR'},
@@ -231,7 +231,7 @@ module Api
 
       FLEXIBILITY_COSTS_AND_OTHER = {
         :cost => {
-          'initial_investment_per(:mw_typical_input_capacity)' =>
+          'total_initial_investment_per(:mw_typical_input_capacity)' =>
             { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'ccs_investment_per(:mw_typical_input_capacity)' =>
