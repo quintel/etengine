@@ -1707,13 +1707,13 @@
   :x: 1520
   :y: 11860
 :industry_useful_demand_for_chemical_other_coal_non_energetic:
-  :x: 720
+  :x: 1180
   :y: 12540
 :industry_final_demand_for_chemical_other_coal_non_energetic:
   :x: 1520
   :y: 12540
 :industry_useful_demand_for_chemical_other_crude_oil_non_energetic:
-  :x: 720
+  :x: 1180
   :y: 12660
 :industry_final_demand_for_chemical_other_crude_oil_non_energetic:
   :x: 1520
@@ -1725,7 +1725,7 @@
   :x: 1520
   :y: 12040
 :industry_useful_demand_for_chemical_other_network_gas_non_energetic:
-  :x: 720
+  :x: 1180
   :y: 12600
 :industry_final_demand_for_chemical_other_network_gas_non_energetic:
   :x: 1520
@@ -1761,7 +1761,7 @@
   :x: 1520
   :y: 12360
 :industry_useful_demand_for_chemical_other_wood_pellets_non_energetic:
-  :x: 720
+  :x: 1180
   :y: 12720
 :industry_final_demand_for_chemical_other_wood_pellets_non_energetic:
   :x: 1520
@@ -3056,3 +3056,12 @@
 :energy_power_combined_cycle_hydrogen:
   :x: 6240
   :y: 3780
+:industry_useful_demand_for_chemical_other_non_energetic:
+  :x: 720
+  :y: 12660
+:industry_useful_demand_for_chemical_other_hydrogen_non_energetic:
+  :x: 1180
+  :y: 12780
+:industry_final_demand_for_chemical_other_hydrogen_non_energetic:
+  :x: 1520
+  :y: 12780
