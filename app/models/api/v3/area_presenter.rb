@@ -11,6 +11,7 @@ module Api
         base_dataset
         geo_id
         group
+        number_of_inhabitants
         scaling
         useable
       ]).freeze
