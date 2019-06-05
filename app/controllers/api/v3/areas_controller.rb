@@ -1,19 +1,16 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class AreasController < BaseController
       respond_to :json
 
       def index
+        # Default to sending full data for backwards compatibility.
+        detailed = params.fetch(:detailed, 'true') == 'true'
+
         data = Etsource::Dataset.region_codes.map do |code|
-          area_data = Area.get(code).dup
-
-          # For compatibility with ETModel, which expects a "useable"
-          # attribute which tells it if the region may be chosen.
-          area_data[:useable] = area_data[:enabled][:etmodel]
-          area_data.delete(:enabled)
-          area_data.delete(:init)
-
-          area_data
+          Api::V3::AreaPresenter.new(Area.get(code), detailed: detailed)
         end
 
         render json: data
@@ -21,7 +18,10 @@ module Api
 
       def show
         if Area.exists?(params[:id])
-          render json: Area.get(params[:id])
+          render json: Api::V3::AreaPresenter.new(
+            Area.get(params[:id]),
+            detailed: true
+          )
         else
           render_not_found
         end
