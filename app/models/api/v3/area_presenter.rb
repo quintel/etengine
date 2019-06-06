@@ -9,6 +9,7 @@ module Api
         analysis_year
         area
         base_dataset
+        derived
         geo_id
         group
         number_of_inhabitants
