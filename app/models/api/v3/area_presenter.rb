@@ -13,6 +13,7 @@ module Api
         geo_id
         group
         number_of_inhabitants
+        number_of_residences
         scaling
         useable
       ]).freeze
