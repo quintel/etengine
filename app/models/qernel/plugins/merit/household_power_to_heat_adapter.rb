@@ -26,7 +26,7 @@ module Qernel::Plugins
 
         # Yuck.
         attrs[:delegate] =
-          @graph.plugin(:time_resolve).fever.group(:hot_water).calculator
+          @graph.plugin(:time_resolve).fever.group(:households_hot_water).calculator
 
         # TODO Does input capacity /efficiency prevent the need to model input
         # constraints in Fever?
