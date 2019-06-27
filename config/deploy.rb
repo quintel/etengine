@@ -46,6 +46,7 @@ set :linked_dirs, %w[
   log
   public/system
   sbin
+  storage
   tmp/cache
   tmp/pids
   tmp/sockets
