@@ -440,6 +440,30 @@ describe Scenario do
       end
     end
 
+    context 'with a custom imported electricity price curve' do
+      before do
+        preset.imported_electricity_price_curve.attach(
+          io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
+          filename: 'price_curve.csv',
+          content_type: 'text/csv'
+        )
+      end
+
+      it 'works' do
+        expect(scenario.imported_electricity_price_curve).to be_attached
+      end
+
+      it 'creates a new attachment' do
+        expect(scenario.imported_electricity_price_curve)
+          .not_to eq(preset.imported_electricity_price_curve)
+      end
+
+      it 'has the same content as the original' do
+        expect(scenario.imported_electricity_price_curve.download)
+          .to eq(preset.imported_electricity_price_curve.download)
+      end
+    end
+
     context 'with a preset flexibility order' do
       let(:techs) do
         %w(

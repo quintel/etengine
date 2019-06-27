@@ -52,3 +52,4 @@ etsource_export
 .powenv
 config/newrelic.yml
 query_script.rb
+storage/*

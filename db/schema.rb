@@ -10,36 +10,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190624084227) do
+ActiveRecord::Schema.define(version: 2019_07_01_131310) do
 
-  create_table "fce_values", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "fce_values", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "using_country"
     t.string "origin_country"
-    t.float "co2_exploration_per_mj", limit: 24
-    t.float "co2_extraction_per_mj", limit: 24
-    t.float "co2_treatment_per_mj", limit: 24
-    t.float "co2_transportation_per_mj", limit: 24
-    t.float "co2_conversion_per_mj", limit: 24
-    t.float "co2_waste_treatment_per_mj", limit: 24
+    t.float "co2_exploration_per_mj"
+    t.float "co2_extraction_per_mj"
+    t.float "co2_treatment_per_mj"
+    t.float "co2_transportation_per_mj"
+    t.float "co2_conversion_per_mj"
+    t.float "co2_waste_treatment_per_mj"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "carrier"
   end
 
-  create_table "flexibility_orders", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "flexibility_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "scenario_id"
     t.text "order", limit: 16777215
     t.index ["scenario_id"], name: "index_flexibility_orders_on_scenario_id", unique: true
   end
 
-  create_table "gquery_groups", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "gquery_groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "group_key"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text "description", limit: 16777215
   end
 
-  create_table "query_table_cells", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "query_table_cells", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "query_table_id"
     t.integer "row"
     t.integer "column"
@@ -50,7 +71,7 @@ ActiveRecord::Schema.define(version: 20190624084227) do
     t.index ["query_table_id"], name: "index_query_table_cells_on_query_table_id"
   end
 
-  create_table "query_tables", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "query_tables", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
     t.text "description", limit: 16777215
     t.integer "row_count"
@@ -59,24 +80,24 @@ ActiveRecord::Schema.define(version: 20190624084227) do
     t.datetime "updated_at"
   end
 
-  create_table "roles", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "roles", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "scenario_scalings", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "scenario_scalings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.integer "scenario_id"
     t.string "area_attribute"
-    t.float "value", limit: 24
-    t.float "base_value", limit: 24
+    t.float "value"
+    t.float "base_value"
     t.boolean "has_agriculture", default: false, null: false
     t.boolean "has_industry", default: false, null: false
     t.boolean "has_energy", default: true, null: false
     t.index ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true
   end
 
-  create_table "scenarios", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "scenarios", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "author"
     t.string "title"
     t.text "description", limit: 16777215
@@ -95,7 +116,7 @@ ActiveRecord::Schema.define(version: 20190624084227) do
     t.text "balanced_values", limit: 16777215
   end
 
-  create_table "users", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
+  create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
     t.string "company_school"
@@ -124,4 +145,5 @@ ActiveRecord::Schema.define(version: 20190624084227) do
     t.index ["trackable"], name: "index_users_on_trackable"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
 end

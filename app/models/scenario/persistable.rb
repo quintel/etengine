@@ -53,6 +53,8 @@ module Scenario::Persistable
 
     self.flexibility_order = cloned_flexibility_order(preset)
 
+    attach_preset_imported_electricity_price_curve(preset)
+
     self.end_year  = preset.end_year
     self.area_code = preset.area_code
     self.use_fce   = preset.use_fce
@@ -101,5 +103,19 @@ module Scenario::Persistable
     if order = preset.try(:flexibility_order)
       FlexibilityOrder.new(order.attributes.except('id', 'scenario_id'))
     end
+  end
+
+  # Internal: Attaches the imported electricity price curve from the preset
+  # scenario.
+  def attach_preset_imported_electricity_price_curve(preset)
+    attachment = preset.try(:imported_electricity_price_curve)
+
+    return unless attachment && attachment.attached?
+
+    imported_electricity_price_curve.attach(
+      io: StringIO.new(attachment.download),
+      filename: attachment.filename.to_s,
+      content_type: attachment.content_type.to_s
+    )
   end
 end

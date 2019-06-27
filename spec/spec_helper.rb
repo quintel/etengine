@@ -67,6 +67,10 @@ RSpec.configure do |config|
     Etsource::Base.loader(fixture_path.to_s)
     Atlas.data_dir = fixture_path
   end
+
+  config.after(:suite) do
+    FileUtils.rm_rf(Rails.root.join('tmp', 'storage'))
+  end
 end
 
 Shoulda::Matchers.configure do |config|

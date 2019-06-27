@@ -261,6 +261,15 @@ module Gql
 
       @future_graph.flexibility_order = @present_graph.flexibility_order =
         @scenario.flexibility_order.try(:order) || FlexibilityOrder.default_order
+
+      if @scenario.imported_electricity_price_curve.attached?
+        path = ActiveStorage::Blob.service.path_for(
+          @scenario.imported_electricity_price_curve.key
+        )
+
+        @future_graph.carrier(:imported_electricity).cost_curve =
+          Merit::Curve.load_file(path).to_a
+      end
     end
 
     def scale_dataset

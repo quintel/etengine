@@ -51,6 +51,9 @@ module Etm
     config.assets.enabled = true
     config.assets.precompile += ['graph.js', 'graph.css']
 
+    # Store files locally.
+    config.active_storage.service = :local
+
     # Mail
 
     if (email_conf = Rails.root.join('config/email.yml')).file?
