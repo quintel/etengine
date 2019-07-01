@@ -66,15 +66,7 @@ module Api
       end
 
       def attachment_json(attachment)
-        if attachment.attached?
-          {
-            name: attachment.filename,
-            size: attachment.byte_size,
-            date: attachment.created_at
-          }
-        else
-          {}
-        end
+        CustomCurvePresenter.new(attachment)
       end
 
       def errors_json(sanitizer)
