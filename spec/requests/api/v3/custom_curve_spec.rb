@@ -111,7 +111,48 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    describe 'when removing an attached curve' do
+    context 'when uploading a curve exceeding 1MB', :focus do
+      let(:file) { Tempfile.new('large_curve') }
+
+      let(:request) do
+        put url, params: {
+          file: fixture_file_upload(file.path, 'text/csv')
+        }
+      end
+
+      before { file.write(((['1'*120]*8760).join("\n") + "\n")) }
+
+      after { file.unlink }
+
+      it 'fails' do
+        request
+        expect(response).not_to be_successful
+      end
+
+      it 'sends back JSON data with errors' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'errors' => ['Curve should not be larger than 1MB']
+        )
+      end
+
+      it 'sends back JSON data with error keys' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'error_keys' => %w[file_too_large]
+        )
+      end
+
+      it 'does not change the attachment' do
+        expect { request }
+          .not_to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .from(false)
+      end
+    end
+
+    context 'when removing an attached curve' do
       before do
         put url, params: {
           file: fixture_file_upload('files/price_curve.csv', 'text/csv')

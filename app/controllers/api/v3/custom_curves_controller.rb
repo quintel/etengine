@@ -17,6 +17,7 @@ module Api
 
       respond_to :json
       before_action :ensure_valid_curve_name
+      before_action :ensure_reasonable_file_size, only: :update
 
       # Sends the name of the current custom curve for the scenario, or an empty
       # object if none is set.
@@ -88,6 +89,21 @@ module Api
 
         render(
           json: { errors: ["No such custom curve: #{params[:id].inspect}"] },
+          status: 422
+        )
+      end
+
+      # Asserts that the uploaded file is not too large; there's no reason for
+      # 8760 numeric values to exceed one megabyte. Short-circuiting prevents
+      # processing large files.
+      def ensure_reasonable_file_size
+        return unless params.require(:file).size > 1.megabyte
+
+        render(
+          json: {
+            errors: ['Curve should not be larger than 1MB'],
+            error_keys: [:file_too_large]
+          },
           status: 422
         )
       end
