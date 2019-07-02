@@ -25,6 +25,7 @@ EXPECTED_FILE_START = 'etengine'
 
 prompt = TTY::Prompt.new
 source_dir = File.expand_path('~/Downloads')
+show_commands = false
 files = []
 
 def help!(prompt)
@@ -93,6 +94,8 @@ def import_dbbot_commands(file)
   ]
 end
 
+show_commands = ARGV.delete('--show-commands')
+
 if ARGV.any?
   filename = ARGV.first
 
@@ -149,13 +152,6 @@ unless file.name.match?(EXPECTED_FILE_START)
   )
 end
 
-prompt.warn('Importing will remove changes made to your local database.')
-
-unless prompt.yes?('Happy to proceed?')
-  prompt.say('Exiting without performing the import.')
-  exit
-end
-
 # How to import?
 # --------------
 
@@ -180,6 +176,19 @@ end
 # Off we go...
 # ------------
 
+if show_commands
+  puts
+  puts commands
+  exit
+end
+
+prompt.warn('Importing will remove changes made to your local database.')
+
+unless prompt.yes?('Happy to proceed?')
+  prompt.say('Exiting without performing the import.')
+  exit
+end
+
 spinner = TTY::Spinner.new(
   "[:spinner] Importing #{file.name}...",
   format: :dots
@@ -190,6 +199,10 @@ spinner.run do
     spinner.success('done!')
   else
     spinner.error('error.')
+    puts
+    puts 'Try running again with the --show-commands argument to see'
+    puts 'what the script will execute. Run each command manually to'
+    puts 'see which one fails, and for a more useful error message.'
     exit
   end
 end
