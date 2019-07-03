@@ -1,5 +1,5 @@
-- breadcrumb link_to 'Scenarios', data_scenarios_path
-- breadcrumb link_to @scenario.title, data_scenario_path(:id => @scenario)
+- breadcrumb link_to 'Scenarios', backend_scenarios_path
+- breadcrumb link_to @scenario.title, backend_scenario_path(:id => @scenario)
 - breadcrumb 'edit'
 
 = render 'form'

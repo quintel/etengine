@@ -30,14 +30,14 @@
           %tr
             %td= converter.excel_id
             %td= link_to highlight(converter.key.to_s, params[:q]),
-                  data_converter_path(:id => converter)
+                  backend_converter_path(:id => converter)
             %td
               %small
                 = link_to 'pres',
-                  data_converter_path(:id => converter, :format => 'svg'),
+                  backend_converter_path(:id => converter, :format => 'svg'),
                   :target => :blank, class: 'btn btn-mini'
                 = link_to 'fut',
-                  data_converter_path(:id => converter, :format => 'svg', :graph => 'future'),
+                  backend_converter_path(:id => converter, :format => 'svg', :graph => 'future'),
                   :target => :blank, class: 'btn btn-mini'
 
             - fields.each do |field|

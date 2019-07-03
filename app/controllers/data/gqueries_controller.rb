@@ -1,4 +1,4 @@
-class Data::GqueriesController < Data::BaseController
+class Backend::GqueriesController < Backend::BaseController
   layout 'application'
 
   before_action :find_model, :only => :show
@@ -14,7 +14,7 @@ class Data::GqueriesController < Data::BaseController
   # GET test
   def test
     if params[:commit] == "Debug"
-      redirect_to data_debug_gql_path(gquery: params[:query])
+      redirect_to backend_debug_gql_path(gquery: params[:query])
     elsif params[:query].present?
       begin
         @result = @gql.query(params[:query].gsub(/\s/,''), nil, true)

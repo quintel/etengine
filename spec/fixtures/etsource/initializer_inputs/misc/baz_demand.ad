@@ -1,4 +1,3 @@
 - key = baz_demand
-- update_type = PJ
 - query = UPDATE(V(baz), preset_demand, USER_INPUT())
 - priority = 2

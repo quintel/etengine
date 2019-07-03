@@ -1,4 +1,4 @@
-class Data::DebugController < Data::BaseController
+class Backend::DebugController < Backend::BaseController
   layout 'application'
 
   def calculation

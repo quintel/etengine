@@ -1,7 +1,7 @@
 = render "data/shared/data_subnav"
 
 %section#search_box
-  = form_tag data_scenarios_path, :method => :get do
+  = form_tag backend_scenarios_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
     = check_box_tag :in_start_menu, 1, params[:in_start_menu]
     = label_tag "In start menu", nil, for: "in_start_menu"
@@ -31,7 +31,7 @@
     - @scenarios.each do |s|
       %tr{ class: s.id.to_s == params[:api_scenario_id] ? 'active' : '' }
         %td
-          = link_to s.id, data_scenario_path(:id => s.id)
+          = link_to s.id, backend_scenario_path(:id => s.id)
           - if s.id.to_s == params[:api_scenario_id]
             %span.tag Current Scenario
         %td= s.title
@@ -41,4 +41,4 @@
         %td= '✓' if s.protected?
         %td
           = link_to 'edit', edit_data_scenario_path(:id => s.id)
-          = link_to 'export', data_scenario_path(:id => s.id, :format => :ad)
+          = link_to 'export', backend_scenario_path(:id => s.id, :format => :ad)

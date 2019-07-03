@@ -8,7 +8,7 @@
   %table
     - @gqueries.each do |g|
       %tr
-        %td= link_to highlight(g.key, params[:search]), data_gquery_path(id: g.key)
+        %td= link_to highlight(g.key, params[:search]), backend_gquery_path(id: g.key)
 - else
 
   No gqueries found
@@ -22,7 +22,7 @@
   %table
     - @converters.each do |c|
       %tr
-        %td= link_to highlight(c.key.to_s, params[:search]), data_converter_path(id: c.key)
+        %td= link_to highlight(c.key.to_s, params[:search]), backend_converter_path(id: c.key)
 
 - else
 

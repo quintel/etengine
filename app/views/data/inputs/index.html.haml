@@ -20,7 +20,7 @@
         - @inputs.each do |i|
           %tr
             %td= i.id
-            %td= link_to highlight(i.key, params[:q]), data_input_path(:id => i.id)
+            %td= link_to highlight(i.key, params[:q]), backend_input_path(:id => i.id)
             %td
               - begin
                 = auto_number(i.start_value_for(@gql))

@@ -2,17 +2,24 @@
 
 module Gql
   module QueryInterface::Base
-    def input_value
-      @input_value
+    def self.included(base)
+      base.instance_eval <<-RUBY, __FILE__, __LINE__ + 1
+        attr_reader :input_key
+        attr_accessor :input_value, :update_type
+      RUBY
     end
 
-    def input_key
-      @input_key
-    end
+    # def input_value
+    #   @input_value
+    # end
 
-    def input_value=(val)
-      @input_value = val
-    end
+    # def input_key
+    #   @input_key
+    # end
+
+    # def input_value=(val)
+    #   @input_value = val
+    # end
 
     def query(obj, input_value = nil)
       case obj
@@ -47,8 +54,11 @@ module Gql
 
     def execute_input(input, value = nil)
       @input_key   = input.key   # used for the logger
-      self.input_value = value.to_s
-      self.input_value = "#{self.input_value}#{input.update_type}" unless self.input_value.include?('%')
+      # self.input_value = value.to_s
+      # self.input_value = "#{self.input_value}#{input.update_type}" unless self.input_value.include?('%')
+
+      self.input_value = value
+      self.update_type = input.update_type
       rubel_execute(input.command)
     ensure
       self.input_value = nil

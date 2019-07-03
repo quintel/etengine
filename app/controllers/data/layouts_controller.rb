@@ -1,4 +1,4 @@
-class Data::LayoutsController < Data::BaseController
+class Backend::LayoutsController < Backend::BaseController
   before_action :find_models, :only => [:show, :edit]
 
   helper_method :attributes_for_json, :positions

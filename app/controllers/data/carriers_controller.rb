@@ -1,4 +1,4 @@
-class Data::CarriersController < Data::BaseController
+class Backend::CarriersController < Backend::BaseController
   layout 'application'
 
   def index

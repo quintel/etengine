@@ -10,7 +10,7 @@
     .span8
       .page-header
         %h2 Debug GQL
-      = form_tag data_debug_gql_path, :method => :get do
+      = form_tag backend_debug_gql_path, :method => :get do
         %h4 Input document (optional)
         %p Copy/Paste the contents of a inputs/*.ad file in here
         = text_area_tag :input_doc, params[:input_doc], :placeholder => 'Input Document', :class => 'span8'

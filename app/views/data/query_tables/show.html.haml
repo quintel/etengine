@@ -6,7 +6,7 @@
       %h2
         = h(@query_table.name)
         %small
-          = link_to "Back", data_query_tables_path
+          = link_to "Back", backend_query_tables_path
           = link_to "Edit", edit_data_query_table_path(:id => @query_table.id)
 
 
@@ -38,5 +38,5 @@
     %p
       = link_to "Edit", edit_data_query_table_path(:id => @query_table.id)
       |
-      = link_to "Destroy", data_query_table_path(:id => @query_table.id), :confirm => 'Are you sure?', :method => :delete
+      = link_to "Destroy", backend_query_table_path(:id => @query_table.id), :confirm => 'Are you sure?', :method => :delete
       |

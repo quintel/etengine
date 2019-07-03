@@ -1,8 +1,8 @@
 %section#search_box
-  = form_tag data_inputs_path, :method => :get do
+  = form_tag backend_inputs_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
     = submit_tag "search"
-    
+
 - content_for :footer do
   :javascript
     $(function(){

@@ -1,4 +1,4 @@
-ruby '2.4.2'
+ruby '2.6.3'
 
 source 'https://rubygems.org'
 
@@ -70,7 +70,6 @@ group :development do
   gem 'spring'
   # gem 'quiet_assets'
   gem 'better_errors'
-  gem 'binding_of_caller'
   gem 'listen'
 
   gem 'capistrano',             '~> 3.9',   require: false
@@ -85,6 +84,7 @@ group :test, :development do
   gem 'pry-rails'
   gem 'rspec-rails', '~> 3.7'
   gem 'watchr'
+  gem 'binding_of_caller'
 
   gem 'rubocop',             '~> 0.71.0', require: false
   gem 'rubocop-performance',              require: false

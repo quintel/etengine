@@ -1,4 +1,4 @@
-class Data::GqlController < Data::BaseController
+class Backend::GqlController < Backend::BaseController
   layout 'application'
 
   def index

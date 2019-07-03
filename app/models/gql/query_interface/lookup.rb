@@ -17,9 +17,7 @@ module Gql::QueryInterface::Lookup
   end
 
   def big_decimal(n)
-    BigDecimal(n)
-  # rescue
-  #   BigDecimal(0)
+    BigDecimal(n, exception: false) || n.to_f
   end
 
   def scenario

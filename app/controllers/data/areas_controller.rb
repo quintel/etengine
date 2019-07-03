@@ -1,4 +1,4 @@
-class Data::AreasController < Data::BaseController
+class Backend::AreasController < Backend::BaseController
   layout 'application'
 
   def show

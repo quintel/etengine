@@ -4,4 +4,4 @@
 
 %ul
   - @gql.present_graph.converters.select(&:has_loop?).each do |converter|
-    %li= link_to converter.key, data_converter_path(:id => converter.key)
+    %li= link_to converter.key, backend_converter_path(:id => converter.key)

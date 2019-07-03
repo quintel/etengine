@@ -1,4 +1,4 @@
-class Data::ConvertersController < Data::BaseController
+class Backend::ConvertersController < Backend::BaseController
   layout 'application'
 
   skip_authorize_resource :only => :show

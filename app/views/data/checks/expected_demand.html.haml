@@ -27,7 +27,7 @@
         %tr
           %td
             %a{:id => key}= converter.dataset_get(:excel_id)
-          %td= link_to key, data_converter_path(:id => key)
+          %td= link_to key, backend_converter_path(:id => key)
           %td.align-right= auto_number converter.demand
           %td.align-right= auto_number converter.demand_expected_value
           %td
@@ -51,7 +51,7 @@
       %tr
         %td
           %a{:id => key}= converter.dataset_get(:excel_id)
-        %td= link_to key, data_converter_path(:id => key)
+        %td= link_to key, backend_converter_path(:id => key)
         %td.align-right= auto_number converter.demand
         %td.align-right= auto_number converter.demand_expected_value
         %td

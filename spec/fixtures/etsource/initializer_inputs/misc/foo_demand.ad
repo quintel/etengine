@@ -1,3 +1,2 @@
 - key = foo_demand
-- update_type = PJ
 - query = UPDATE(V(foo), preset_demand, USER_INPUT())

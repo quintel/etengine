@@ -201,7 +201,7 @@ describe Input do
         max_value:        10,
         max_value_gql:   'present:(10 * 5)',
         label:           '%',
-        label_query:     'present:(50 * 10)'
+        label_query:     'present:(50.0 * 10)'
       })
     end
 
@@ -237,11 +237,11 @@ describe Input do
 
     describe 'label_value_for' do
       it 'should return the value when given Gql::Gql' do
-        expect(input.label_value_for(gql).to_f).to eql(500.0)
+        expect(input.label_value_for(gql)).to eql(500.0)
       end
 
       it 'should return the value when given Scenario' do
-        expect(input.label_value_for(scenario).to_f).to eql(500.0)
+        expect(input.label_value_for(scenario)).to eql(500.0)
       end
     end
 

@@ -1,4 +1,4 @@
-= form_tag data_converters_path, :method => :get, :class => "form form-inline", :style => 'display: inline' do
+= form_tag backend_converters_path, :method => :get, :class => "form form-inline", :style => 'display: inline' do
   = search_field_tag :q, params[:q], :placeholder => 'search'
   = select_tag 'group', options_for_select(converter_groups, params[:group]),
     :include_blank => true

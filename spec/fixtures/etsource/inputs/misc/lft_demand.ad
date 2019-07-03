@@ -2,7 +2,7 @@
 - key = lft_demand
 - unit = PJ
 - update_period = future
-- update_type = PJ
+- update_type =
 - factor = 100
 - max_value = 100
 - min_value = 0

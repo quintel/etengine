@@ -14,6 +14,6 @@
                     == #{sub_key}: #{sub_value}
               - else
                 - if object_attribute_is_converter?(key)
-                  = link_to value, data_converter_path(id: value)
+                  = link_to value, backend_converter_path(id: value)
                 - else
                   = value

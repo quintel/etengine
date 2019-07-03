@@ -1,11 +1,11 @@
-class Data::BaseController < ApplicationController
+class Backend::BaseController < ApplicationController
   layout 'data'
   before_action :initialize_gql
 
   authorize_resource :class => false
 
   def redirect
-    redirect_to data_root_path(:api_scenario_id => params[:api_scenario_id])
+    redirect_to backend_root_path(:api_scenario_id => params[:api_scenario_id])
   end
 
   protected

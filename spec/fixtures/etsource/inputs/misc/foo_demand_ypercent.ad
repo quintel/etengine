@@ -1,0 +1,7 @@
+- unit = PJ
+- update_period = future
+- update_type = %y
+- max_value = 10
+- min_value = 0
+- start_value = 0
+- query = UPDATE(V(foo), preset_demand, USER_INPUT())

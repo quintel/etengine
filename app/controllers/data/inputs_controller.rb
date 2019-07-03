@@ -1,4 +1,4 @@
-class Data::InputsController < Data::BaseController
+class Backend::InputsController < Backend::BaseController
   layout 'application'
 
   before_action :find_input, :only => [:show]

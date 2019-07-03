@@ -70,7 +70,7 @@ Rails.application.routes.draw do
     resources :turks, :only => [:index, :show]
   end
 
-  namespace :data do
+  namespace :backend do
     get  '/redirect'    => "base#redirect", :as => 'redirect'
     post '/restart'     => 'pages#restart', :as => 'restart'
     post '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'

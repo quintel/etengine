@@ -1,10 +1,10 @@
 #canvas
 :javascript
-  var converter_url_prefix = "#{data_converters_path()}";
-  var update_converter_positions_path = "#{data_layout_path}";
+  var converter_url_prefix = "#{backend_converters_path()}";
+  var update_converter_positions_path = "#{backend_layout_path}";
   var data;
 
-  $.getJSON(data_json_url, function(json_data) {
+  $.getJSON(backend_json_url, function(json_data) {
     data = json_data;
     for (var node_key in data['present']) {
       for (var key in data['present'][node_key]) {

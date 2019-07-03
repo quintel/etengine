@@ -1,7 +1,7 @@
 = render "data/shared/data_subnav"
 .row
   .span12
-    .page-header 
+    .page-header
       %h2 Carriers
 
     %table.table.table-condensed.table-striped
@@ -14,6 +14,6 @@
       %tbody
         - @carriers.each do |c|
           %tr
-            %td= link_to c.key, data_carrier_path(:id => c)
+            %td= link_to c.key, backend_carrier_path(:id => c)
             - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
               %td= auto_number c[key]

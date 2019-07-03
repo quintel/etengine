@@ -1,4 +1,4 @@
-class Data::ChecksController < Data::BaseController
+class Backend::ChecksController < Backend::BaseController
   layout 'application'
 
   def loops
@@ -42,7 +42,7 @@ class Data::ChecksController < Data::BaseController
     end
   end
 
-  # @return [Array<Data::ShareGroupsController::ShareGroup>]
+  # @return [Array<Backend::ShareGroupsController::ShareGroup>]
   #   Returns a ShareGroup for each one defined in ETsource.
   def share_groups_for_area(area)
     gql    = Scenario.new(area_code: area, end_year: 2050).gql

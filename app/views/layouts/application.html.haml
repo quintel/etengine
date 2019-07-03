@@ -34,30 +34,30 @@
                     Data
                     %b.caret
                   %ul.dropdown-menu
-                    %li= link_to 'Overview',       data_root_path(url_params)
-                    %li= link_to 'Area',           data_area_path(url_params)
+                    %li= link_to 'Overview',       backend_root_path(url_params)
+                    %li= link_to 'Area',           backend_area_path(url_params)
                     %li= link_to "Checks",         {:controller => 'data/checks', :action => 'expected_demand'}.merge(url_params)
-                    %li= link_to 'Carriers',       data_carriers_path(url_params)
-                    %li= link_to 'Converters',     data_converters_path(url_params)
-                    %li= link_to "Inputs",         data_inputs_path(url_params)
-                    %li= link_to "Scenarios",      data_scenarios_path(url_params)
+                    %li= link_to 'Carriers',       backend_carriers_path(url_params)
+                    %li= link_to 'Converters',     backend_converters_path(url_params)
+                    %li= link_to "Inputs",         backend_inputs_path(url_params)
+                    %li= link_to "Scenarios",      backend_scenarios_path(url_params)
                     %li.divider
-                    %li= link_to "Current Scenario".html_safe,      data_scenario_path(url_params.merge(id: 'current'))
+                    %li= link_to "Current Scenario".html_safe,      backend_scenario_path(url_params.merge(id: 'current'))
                 %li.dropdown
                   %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
                     Debug / GQL
                     %b.caret
                   %ul.dropdown-menu
                     %li= link_to 'GQL Sandbox',       test_data_gqueries_path(url_params)
-                    %li= link_to "GQL Search", data_gql_search_path(url_params)
-                    %li= link_to "GQL Log", data_gql_log_path(url_params)
-                    %li= link_to "GQL Warnings", data_gql_warnings_path(url_params)
+                    %li= link_to "GQL Search", backend_gql_search_path(url_params)
+                    %li= link_to "GQL Log", backend_gql_log_path(url_params)
+                    %li= link_to "GQL Warnings", backend_gql_warnings_path(url_params)
                     %li.divider
-                    %li= link_to 'GQueries',  data_gqueries_path(url_params)
+                    %li= link_to 'GQueries',  backend_gqueries_path(url_params)
                     %li.divider
-                    %li= link_to 'Debug ActiveDocument',     data_debug_gql_path(url_params)
-                    %li= link_to 'Audit',     data_debug_calculation_path(url_params)
-                    %li= link_to 'Query Tables', data_query_tables_path(url_params)
+                    %li= link_to 'Debug ActiveDocument',     backend_debug_gql_path(url_params)
+                    %li= link_to 'Audit',     backend_debug_calculation_path(url_params)
+                    %li= link_to 'Query Tables', backend_query_tables_path(url_params)
                 %li.dropdown
                   %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
                     Misc
@@ -68,13 +68,13 @@
 
               %ul.nav.pull-right
                 %li
-                  %form.form-inline.navbar-search{:action => data_search_path(url_params), :method => :get}
+                  %form.form-inline.navbar-search{:action => backend_search_path(url_params), :method => :get}
                     %input.search-query.typeahead{:name => 'search', :placeholder => "Search", :autocomplete => 'off'}
 
                 - if params[:api_scenario_id]
                   %li.divider-vertical
                   %li
-                    %form#api_scenario_selector.navbar-form.form.form-inline{:action => data_redirect_path(url_params), :method => :get}
+                    %form#api_scenario_selector.navbar-form.form.form-inline{:action => backend_redirect_path(url_params), :method => :get}
                       - opts = [["Current - ##{@gql.scenario.id rescue 'error'}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
                       = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
                   %li

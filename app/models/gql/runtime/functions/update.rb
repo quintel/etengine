@@ -57,17 +57,9 @@ module Gql::Runtime
       #   UPDATE( L( foo ), demand, USER_INPUT() )
       #   UPDATE( L( foo ), demand, 100 - USER_INPUT() )
       #
-      # @example absolute numbers
+      # @example
       #   UPDATE( L( foo ), demand,  5 ) # => demand becomes 5
       #   UPDATE( L( foo ), demand, "5") # => demand becomes 5
-      #
-      # @example with growth_rate
-      #   UPDATE( L( foo ), demand, "5%")
-      #   # => demand increases by 5%
-      #
-      # @example with growth_rate per year
-      #   UPDATE( L( foo ), demand, "5%y")
-      #   # => demand increases by 5% for every year
       #
       # @example multiple objects with the same number
       #   UPDATE( L( foo, bar, baz ), demand,  5 )
@@ -177,7 +169,7 @@ module Gql::Runtime
       # Private: at the moment only takes care of percentages and absolute numbers.
       #
       def input_factor
-        if scope.input_value.andand.include?('%')
+        if scope.update_type&.include?('%')
           100.0
         else
           1.0
@@ -196,17 +188,10 @@ module Gql::Runtime
       #   "3%y" # => :relative_per_year
       #
       def update_strategy
-        input = scope.input_value
-        if input.is_a?(::String)
-          if input.include?('%y')
-            :relative_per_year
-          elsif input.include?('%')
-            :relative_total
-          else
-            :absolute
-          end
-        else
-          :absolute
+        case scope.update_type
+        when '%y' then :relative_per_year
+        when '%'  then :relative_total
+        else           :absolute
         end
       end
 

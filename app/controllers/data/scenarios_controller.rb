@@ -1,4 +1,4 @@
-class Data::ScenariosController < Data::BaseController
+class Backend::ScenariosController < Backend::BaseController
   layout 'application'
 
   before_action :find_scenario, :only => [:show, :edit, :update]
@@ -25,7 +25,7 @@ class Data::ScenariosController < Data::BaseController
     @scenario = Scenario.new(scenario_attributes.merge(source: 'ETEngine Admin UI'))
 
     if @scenario.save
-      redirect_to data_scenario_path(:id => @scenario.id), :notice => 'Scenario created'
+      redirect_to backend_scenario_path(:id => @scenario.id), :notice => 'Scenario created'
     else
       render :new
     end
@@ -50,7 +50,7 @@ class Data::ScenariosController < Data::BaseController
 
   def update
     if @scenario.update_attributes(scenario_attributes)
-      redirect_to data_scenario_path(:id => @scenario.id), :notice => 'Scenario updated'
+      redirect_to backend_scenario_path(:id => @scenario.id), :notice => 'Scenario updated'
     else
       render :edit
     end

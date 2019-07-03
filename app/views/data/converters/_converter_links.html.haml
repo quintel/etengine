@@ -28,7 +28,7 @@
                         - output_slot.links.sort_by { |s| s.lft_converter.key }.each_with_index do |output_link, i|
                           %tr
                             %td
-                              = link_to output_link.lft_converter.key, data_converter_path(:id => output_link.lft_converter)
+                              = link_to output_link.lft_converter.key, backend_converter_path(:id => output_link.lft_converter)
                               %span(style="font-size: 11px")
                                 = link_to '(doc)', link_to_edge_file(output_link)
                             %td{:title => output_link.value}= auto_number output_link.value
@@ -89,6 +89,6 @@
                                   %strong= auto_number input_link.max_demand
                             %td{:title => input_link.value}= auto_number input_link.value
                             %td
-                              = link_to input_link.rgt_converter.key, data_converter_path(:id => input_link.rgt_converter)
+                              = link_to input_link.rgt_converter.key, backend_converter_path(:id => input_link.rgt_converter)
                               %span(style="font-size: 11px")
                                 = link_to '(doc)', link_to_edge_file(input_link)

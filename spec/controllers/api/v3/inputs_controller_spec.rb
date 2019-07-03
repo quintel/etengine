@@ -175,7 +175,7 @@ describe Api::V3::InputsController do
 
    context '"label" attribute' do
      it 'is present when an input has a label' do
-       static_input.label_query = 'present:2 * 16'
+       static_input.label_query = 'present:2.0 * 16'
        static_input.label       = 'g'
 
        expect(json['label']).to eql('value' => 32.0, 'suffix' => 'g')

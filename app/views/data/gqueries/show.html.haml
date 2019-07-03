@@ -5,7 +5,7 @@
     .page-header
       %h1
         = @gquery.key
-        = link_to 'debug', data_debug_gql_path(gquery: "Q(#{@gquery.key})"), class: 'btn'
+        = link_to 'debug', backend_debug_gql_path(gquery: "Q(#{@gquery.key})"), class: 'btn'
 
     %h2 GQL Statment
 
@@ -45,4 +45,4 @@
       - Gquery.contains(@gquery.key).each do |gquery|
         %tr
           %td Gquery
-          %td= link_to gquery.key, data_gquery_path(id: gquery.key)
+          %td= link_to gquery.key, backend_gquery_path(id: gquery.key)

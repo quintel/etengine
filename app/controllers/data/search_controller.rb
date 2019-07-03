@@ -1,4 +1,4 @@
-class Data::SearchController < Data::BaseController
+class Backend::SearchController < Backend::BaseController
   layout 'application'
   skip_before_action :initialize_gql, :only => [:index]
 
@@ -8,9 +8,9 @@ class Data::SearchController < Data::BaseController
       format.html do
         if search = params[:search]
           if gquery = Gquery.get(search.strip)
-            redirect_to data_gquery_path(id: gquery.key)
+            redirect_to backend_gquery_path(id: gquery.key)
           elsif Etsource::Loader.instance.graph.converter(search)
-            redirect_to data_converter_path(id: search)
+            redirect_to backend_converter_path(id: search)
           else
             initialize_gql
             @gqueries = Gquery.all.select{|g| g.key.include?(params[:search])}

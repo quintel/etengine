@@ -4,7 +4,7 @@
   .span12
     .page-header
       %section#search_box.form.form-inline
-        = form_tag data_gql_search_path, :method => :get do
+        = form_tag backend_gql_search_path, :method => :get do
           = label_tag "Search"
           = search_field_tag :q, @q
           = submit_tag "Search", :class => 'btn btn-primary'
@@ -28,7 +28,7 @@
         %tbody
           - @gqueries.each do |g|
             %tr
-              %td= link_to highlight(g.key, @q), data_gquery_path(:id => g.key)
+              %td= link_to highlight(g.key, @q), backend_gquery_path(:id => g.key)
               %td= highlight(g.query, @q)
               %td= highlight(g.deprecated_key, @q) if g.deprecated_key
     - if @inputs.any?

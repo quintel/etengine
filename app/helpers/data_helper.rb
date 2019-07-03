@@ -56,28 +56,28 @@ module DataHelper
   def gqueries_autocomplete_map_cache
     Rails.cache.fetch "gqueries_autocomplete_map_cache" do
       loader.gqueries.sort_by(&:key).map do |gquery|
-        {label: gquery.key, url: data_gquery_path(:id => gquery.key)}
+        {label: gquery.key, url: backend_gquery_path(:id => gquery.key)}
       end.to_json
     end
   end
 
   def inputs_autocomplete_map_cache
     Rails.cache.fetch "inputs_autocomplete_map_cache" do
-      Input.all.map {|a| {label: a.key, url: data_input_path(:id => a.id)} }.to_json
+      Input.all.map {|a| {label: a.key, url: backend_input_path(:id => a.id)} }.to_json
     end
   end
 
   def converters_autocomplete_map_cache
     Rails.cache.fetch "converters_autocomplete_map_cache" do
       converters.sort_by(&:key).map do |a|
-        {label: a.key, url: data_converter_path(:id => a)}
+        {label: a.key, url: backend_converter_path(:id => a)}
       end.to_json
     end
   end
 
   def carriers_autocomplete_map_cache
     Rails.cache.fetch "carriers_autocomplete_map_cache" do
-      carriers.sort_by(&:key).map {|a| {label: a.key, url: data_carrier_path(:id => a)} }.to_json
+      carriers.sort_by(&:key).map {|a| {label: a.key, url: backend_carrier_path(:id => a)} }.to_json
     end
   end
 
@@ -112,7 +112,7 @@ module DataHelper
         name = id.to_s
       end
     else
-      link = data_scenario_path(id: id)
+      link = backend_scenario_path(id: id)
       name = id.to_s
     end
 

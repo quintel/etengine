@@ -26,6 +26,41 @@ describe Gql::Gql do
     end
   end
 
+  context 'with a scalar input' do
+    before do
+      scenario.user_values = { foo_demand: 10.0 }
+      gql.prepare
+    end
+
+    it 'updates the future graph with the input value' do
+      expect(gql.future.graph.converter(:foo).preset_demand).to eq(10.0)
+    end
+  end
+
+  context 'with a % input' do
+    before do
+      scenario.user_values = { foo_demand_percent: 5.0 }
+      gql.prepare
+    end
+
+    it 'updates the future graph with the input value' do
+      expect(gql.future.graph.converter(:foo).preset_demand).to eq(50.0 * 1.05)
+    end
+  end
+
+  context 'with a %y input' do
+    before do
+      scenario.user_values = { foo_demand_ypercent: 1.0 }
+      gql.prepare
+    end
+
+    it 'updates the future graph with the input value' do
+      # future year (2040) - present year (2011) = 29
+      expect(gql.future.graph.converter(:foo).preset_demand)
+        .to be_within(1e-9).of(50 * (1.01**29))
+    end
+  end
+
   describe 'use_network_calculations' do
     it 'is unchanged for unscaled scenarios' do
       gql.prepare

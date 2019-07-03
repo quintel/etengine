@@ -3,7 +3,7 @@
     %strong Sorry, there were errors updating the scenario.
 
 = simple_form_for [:data, @scenario],
-    :url => @scenario.new_record? ? data_scenarios_path : data_scenario_path(:id => @scenario) do |f|
+    :url => @scenario.new_record? ? backend_scenarios_path : data_scenario_path(:id => @scenario) do |f|
   = f.input :title
   = f.input :author
   = f.input :description

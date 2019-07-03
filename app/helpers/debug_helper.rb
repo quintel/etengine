@@ -96,7 +96,7 @@ module DebugHelper
     else
       haml_tag 'span.attr_name', attr_name.to_s
       if log[:converter]
-        haml_concat link_to(">>", data_converter_path(:id => log[:converter]))
+        haml_concat link_to(">>", backend_converter_path(:id => log[:converter]))
       end
     end
   end
@@ -127,7 +127,7 @@ module DebugHelper
   end
 
   def calculation_debugger_path(converter, calculation)
-    data_debug_gql_path(:gquery => "V(#{converter.key}, #{calculation})")
+    backend_debug_gql_path(:gquery => "V(#{converter.key}, #{calculation})")
   end
 
   # Merit Order --------------------------------------------------------------

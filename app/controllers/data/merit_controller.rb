@@ -1,4 +1,4 @@
-class Data::MeritController < Data::BaseController
+class Backend::MeritController < Backend::BaseController
   layout 'application'
 
   def index
