@@ -111,7 +111,7 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when uploading a curve exceeding 1MB', :focus do
+    context 'when uploading a curve exceeding 1MB' do
       let(:file) { Tempfile.new('large_curve') }
 
       let(:request) do
