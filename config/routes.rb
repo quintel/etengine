@@ -21,7 +21,6 @@ Rails.application.routes.draw do
           get :merit
           put :dashboard
           post :interpolate
-          post :update_import_price_curve
         end
         collection do
           post :merge
