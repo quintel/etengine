@@ -8,8 +8,8 @@ module Qernel::Plugins
         elec_link = target_api.converter.output(:electricity).links.first
 
         if elec_link.link_type == :flexible
-          # We need to override the calculation of the flexible link and set
-          # set the demand explicitly.
+          # We need to override the calculation of the flexible link and set the
+          # demand explicitly.
           elec_link.dataset_set(:value, target_api.demand)
           elec_link.dataset_set(:calculated, true)
         end
@@ -21,8 +21,20 @@ module Qernel::Plugins
         ::Merit::DispatchableProducer
       end
 
+      def producer_attributes
+        attrs = super
+
+        attrs.delete(:marginal_costs)
+
+        attrs[:cost_curve] = ::Merit::Curve.new(
+          @graph.carrier(:imported_electricity).cost_curve
+        )
+
+        attrs
+      end
+
       def marginal_costs
-        @graph.carrier(:imported_electricity).cost_per_mj * 3600
+        0.0
       end
 
       def output_capacity_per_unit

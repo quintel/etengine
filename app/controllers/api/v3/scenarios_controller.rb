@@ -3,7 +3,9 @@ module Api
     class ScenariosController < BaseController
       respond_to :json
 
-      before_action :find_scenario, only: %i[interpolate update]
+      before_action :find_scenario, only: %i[
+        interpolate update update_import_price_curve
+      ]
 
       before_action :find_preset_or_scenario, only: [
         :show, :merit, :dashboard, :application_demands,
@@ -202,6 +204,29 @@ module Api
           render json: { errors: presenter.errors }, status: 422
         else
           render json: presenter
+        end
+      end
+
+      def update_import_price_curve
+        scenario_params = params.require(:scenario).permit(:import_price_curve)
+
+        curve = scenario_params[:import_price_curve]
+        content = curve.tempfile.read
+
+        curve.tempfile.rewind
+
+        sanitizer = Api::PriceCurveSanitizer.from_string(content)
+
+        if sanitizer.valid?
+          @scenario.import_price_curve.attach(
+            io: StringIO.new(sanitizer.sanitized_curve.join("\n")),
+            filename: "#{File.basename(curve.original_filename)}.csv",
+            content_type: 'text/csv'
+          )
+
+          render json: { errors: [] }
+        else
+          render json: { errors: sanitizer.errors }, status: 422
         end
       end
 

@@ -18,7 +18,7 @@ class Carrier
   DATASET_ATTRIBUTES = Atlas::Carrier.attribute_set.map(&:name)
 
   dataset_accessors DATASET_ATTRIBUTES
-
+  dataset_accessors :cost_curve
 
   # ----- Micro optimization --------------------------------------------------
 
@@ -85,6 +85,10 @@ class Carrier
     else
       cost_per_mj
     end
+  end
+
+  def cost_curve
+    dataset_get(:cost_curve) || ([merit_order_cost_per_mj * 3600] * 8760)
   end
 
   def ==(other)

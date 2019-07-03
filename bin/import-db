@@ -1,0 +1,212 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'shellwords'
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'tty-prompt'
+  gem 'tty-spinner'
+end
+
+# Setup
+# -----
+
+FileInfo = Struct.new(:path) do
+  def name
+    File.basename(path)
+  end
+end
+
+# Expect backup files to begin with this string, otherwise warn the user that
+# they may be importing a DB for a different app.
+EXPECTED_FILE_START = 'etengine'
+
+prompt = TTY::Prompt.new
+source_dir = File.expand_path('~/Downloads')
+show_commands = false
+files = []
+
+def help!(prompt)
+  pastel = Pastel.new
+
+  prompt.say(<<~HELP)
+    #{pastel.bold('Usage:')} bin/import-db [file-or-directory]
+
+    import-db looks for files ending in .tbz, .sql, .sql.gz, or
+    .sql.bz2 in your Downloads directory. Alternatively, provide a
+    path to a backup file or different directory.
+
+    A .tbz file is expected to be a backup archive created by dbbot,
+    while sql.* files will be copies of the database without storage
+    (such as custom price curves).
+
+    #{pastel.yellow('# Looks in ~/Downloads for suitable files:')}
+    #{pastel.bold('bin/import-db')}
+
+    #{pastel.yellow('# Looks in db/dumps for suitable files:')}
+    #{pastel.bold('bin/import-db db/dumps')}
+
+    #{pastel.yellow('# Loads the specified backup file:')}
+    #{pastel.bold('bin/import-db ~/Downloads/my-database.sql')}
+  HELP
+
+  exit(0)
+end
+
+# Takes a string and turns it into an application name.
+#
+# For example
+#   appify "etmodel"  # => "ETModel"
+#   appify "etengine" # => "ETEngine"
+#   appify "merit"    # => "Merit"
+def appify(string)
+  string = string.to_s
+
+  if string.start_with?('et')
+    "ET#{appify(string[2..-1])}"
+  else
+    "#{string[0].upcase}#{string[1..-1]}"
+  end
+end
+
+# Returns the list of commands which must be executed to import a compressed
+# DB file.
+def import_db_commands(import_command, file)
+  [
+    'bundle exec rails db:drop db:create > /dev/null',
+    Kernel.format(import_command, file.path.shellescape),
+    'bundle exec rails RAILS_ENV=development db:environment:set > /dev/null'
+  ]
+end
+
+# Returns the list of commands which must be executed to import a backup from
+# dbbot. These include database and ActiveStorage files.
+def import_dbbot_commands(file)
+  [
+    'mkdir -p tmp/dbbot-backup',
+    Kernel.format('tar -jxf %s -C tmp/dbbot-backup --strip-components=1', file.path.shellescape),
+    'rm -rf storage',
+    'mv tmp/dbbot-backup/storage storage',
+    *import_db_commands("bunzip2 -c tmp/dbbot-backup/database.sql.bz2 | bin/rails db", file),
+    'rm -rf tmp/dbbot-backup'
+  ]
+end
+
+show_commands = ARGV.delete('--show-commands')
+
+if ARGV.any?
+  filename = ARGV.first
+
+  if %w[help --help].include?(filename)
+    help!(prompt)
+  elsif File.directory?(filename)
+    source_dir = File.expand_path(filename)
+  elsif File.exist?(filename)
+    files = [FileInfo.new(ARGV.first)]
+  else
+    prompt.error("No such file: #{ARGV.first}")
+    exit(1)
+  end
+end
+
+if files.none?
+  # If there are no files specified in ARGV, search for them in the source dir.
+  files = Dir.glob(source_dir + '/*{.sql,.sql.bz2,.sql.gz,.tbz}')
+    .sort
+    .reverse
+    .map { |path| FileInfo.new(path) }
+end
+
+# Select file
+# -----------
+
+if files.none? || ARGV.first == 'help'
+  prompt.error('No backup files found')
+  prompt.say("\n")
+  help!(prompt)
+end
+
+file =
+  if files.length > 1
+    prompt.enum_select('Which backup do you want to import?') do |menu|
+      files.each { |f| menu.choice(f.name, f) }
+      menu.choice('Cancel', :cancel)
+    end
+  else
+    prompt.say("Found one backup file: #{files.first.name}")
+    files.first
+  end
+
+exit if file == :cancel
+
+# Sanity check
+# ------------
+
+unless file.name.match?(EXPECTED_FILE_START)
+  prompt.error(
+    'The filename suggests this might not be an ' \
+    "#{appify(EXPECTED_FILE_START)} backup. " \
+    "It may belong to #{appify(file.name.split('_', 2).first)}."
+  )
+end
+
+# How to import?
+# --------------
+
+commands =
+  case file.name
+  when /tbz$/ then import_dbbot_commands(file)
+  when /bz2$/ then import_db_commands('bunzip2 -c %s | bin/rails db', file)
+  when /gz$/  then import_db_commands('gunzip -c %s | bin/rails db', file)
+  when /sql$/ then import_db_commands('bin/rails db < %s', file)
+  end
+
+commands.each do |command|
+  executable = command.split(' ').first
+
+  # Assert that all commands are available prior to running.
+  unless Kernel.system("which #{executable} > /dev/null")
+    prompt.error("#{executable} not found!")
+    exit(1)
+  end
+end
+
+# Off we go...
+# ------------
+
+if show_commands
+  puts
+  puts commands
+  exit
+end
+
+prompt.warn('Importing will remove changes made to your local database.')
+
+unless prompt.yes?('Happy to proceed?')
+  prompt.say('Exiting without performing the import.')
+  exit
+end
+
+spinner = TTY::Spinner.new(
+  "[:spinner] Importing #{file.name}...",
+  format: :dots
+)
+
+spinner.run do
+  if commands.all? { |cmd| Kernel.system(cmd) }
+    spinner.success('done!')
+  else
+    spinner.error('error.')
+    puts
+    puts 'Try running again with the --show-commands argument to see'
+    puts 'what the script will execute. Run each command manually to'
+    puts 'see which one fails, and for a more useful error message.'
+    exit
+  end
+end
+
+if prompt.yes?("Do you want to remove the backup file? (#{file.name})")
+  File.unlink(file.path)
+end

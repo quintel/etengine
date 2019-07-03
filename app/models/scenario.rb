@@ -19,6 +19,8 @@ class Scenario < ApplicationRecord
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :flexibility_order, dependent: :destroy
 
+  has_one_attached :imported_electricity_price_curve
+
   validates_presence_of :title, on: :create, message: 'Please provide a title'
   validates             :area_code, presence: true
   validates :area_code, inclusion: { in: ->(*) { Etsource::Dataset.region_codes } }

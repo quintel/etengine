@@ -21,6 +21,7 @@ Rails.application.routes.draw do
           get :merit
           put :dashboard
           post :interpolate
+          post :update_import_price_curve
         end
         collection do
           post :merge
@@ -37,6 +38,8 @@ Rails.application.routes.draw do
             get :get
           end
         end
+
+        resources :custom_curves, only: %i[show update destroy]
 
         get 'curves/loads', to: 'curves#load_curves', as: :merit_download
         get 'curves/price', to: 'curves#price_curve', as: :merit_price_download
