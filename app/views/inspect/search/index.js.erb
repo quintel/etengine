@@ -1,4 +1,4 @@
-<% cache("/inspect/latest/search/keys.js") do %>
+<% cache("/inspect/search/keys.js") do %>
 var search_keys = <%=
   [
     *Etsource::Loader.instance.graph.converters.map(&:key),

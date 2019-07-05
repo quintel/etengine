@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Inspect::BaseController < ApplicationController
   layout 'data'
   before_action :initialize_gql
@@ -11,13 +13,7 @@ class Inspect::BaseController < ApplicationController
   protected
 
   def initialize_gql
-    api_scenario_id = params[:api_scenario_id] ||= 'latest'
-
-    if api_scenario_id == 'latest'
-      @api_scenario = Scenario.last
-    else
-      @api_scenario = Scenario.find(params[:api_scenario_id])
-    end
+    @api_scenario = Scenario.find(params[:api_scenario_id])
     @gql = @api_scenario.gql(prepare: true)
   rescue Atlas::DocumentNotFoundError => ex
     if ex.message.match(/could not find a dataset with the key/i)

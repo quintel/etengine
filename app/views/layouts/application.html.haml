@@ -4,7 +4,7 @@
     %title EnergyTransitionModel
     = javascript_include_tag 'application'
     - if current_user
-      = javascript_include_tag '/inspect/latest/search.js'
+      = javascript_include_tag '/inspect/search.js'
 
     = stylesheet_link_tag 'application'
 
@@ -25,7 +25,6 @@
                 %span.server.local Local
 
             - if current_user
-              - url_params = {api_scenario_id: params.fetch(:api_scenario_id, 'latest')}
               %ul.nav
                 %li= link_to 'ETsource',  etsource_commits_path
 
@@ -34,30 +33,30 @@
                     Data
                     %b.caret
                   %ul.dropdown-menu
-                    %li= link_to 'Overview',       inspect_root_path(url_params)
-                    %li= link_to 'Area',           inspect_area_path(url_params)
-                    %li= link_to "Checks",         {:controller => 'inspect/checks', :action => 'expected_demand'}.merge(url_params)
-                    %li= link_to 'Carriers',       inspect_carriers_path(url_params)
-                    %li= link_to 'Converters',     inspect_converters_path(url_params)
-                    %li= link_to "Inputs",         inspect_inputs_path(url_params)
-                    %li= link_to "Scenarios",      inspect_scenarios_path(url_params)
+                    %li= link_to 'Overview',       inspect_root_path
+                    %li= link_to 'Area',           inspect_area_path
+                    %li= link_to "Checks",         {:controller => 'inspect/checks', :action => 'expected_demand'}.merge
+                    %li= link_to 'Carriers',       inspect_carriers_path
+                    %li= link_to 'Converters',     inspect_converters_path
+                    %li= link_to "Inputs",         inspect_inputs_path
+                    %li= link_to "Scenarios",      inspect_scenarios_path
                     %li.divider
-                    %li= link_to "Current Scenario".html_safe,      inspect_scenario_path(url_params.merge(id: 'current'))
+                    %li= link_to "Current Scenario".html_safe,      inspect_scenario_path(id: @api_scenario.id)
                 %li.dropdown
                   %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
                     Debug / GQL
                     %b.caret
                   %ul.dropdown-menu
-                    %li= link_to 'GQL Sandbox',       test_inspect_gqueries_path(url_params)
-                    %li= link_to "GQL Search", inspect_gql_search_path(url_params)
-                    %li= link_to "GQL Log", inspect_gql_log_path(url_params)
-                    %li= link_to "GQL Warnings", inspect_gql_warnings_path(url_params)
+                    %li= link_to 'GQL Sandbox',       test_inspect_gqueries_path
+                    %li= link_to "GQL Search", inspect_gql_search_path
+                    %li= link_to "GQL Log", inspect_gql_log_path
+                    %li= link_to "GQL Warnings", inspect_gql_warnings_path
                     %li.divider
-                    %li= link_to 'GQueries',  inspect_gqueries_path(url_params)
+                    %li= link_to 'GQueries',  inspect_gqueries_path
                     %li.divider
-                    %li= link_to 'Debug ActiveDocument',     inspect_debug_gql_path(url_params)
-                    %li= link_to 'Audit',     inspect_debug_calculation_path(url_params)
-                    %li= link_to 'Query Tables', inspect_query_tables_path(url_params)
+                    %li= link_to 'Debug ActiveDocument',     inspect_debug_gql_path
+                    %li= link_to 'Audit',     inspect_debug_calculation_path
+                    %li= link_to 'Query Tables', inspect_query_tables_path
                 %li.dropdown
                   %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
                     Misc
@@ -68,14 +67,14 @@
 
               %ul.nav.pull-right
                 %li
-                  %form.form-inline.navbar-search{:action => inspect_search_path(url_params), :method => :get}
+                  %form.form-inline.navbar-search{:action => inspect_search_path, :method => :get}
                     %input.search-query.typeahead{:name => 'search', :placeholder => "Search", :autocomplete => 'off'}
 
                 - if params[:api_scenario_id]
                   %li.divider-vertical
                   %li
-                    %form#api_scenario_selector.navbar-form.form.form-inline{:action => inspect_redirect_path(url_params), :method => :get}
-                      - opts = [["Current - ##{@gql.scenario.id rescue 'error'}", 'latest'], *Scenario.recent.map{|as| [as.identifier, as.id]}]
+                    %form#api_scenario_selector.navbar-form.form.form-inline{:action => inspect_redirect_path, :method => :get}
+                      - opts = Scenario.recent.map{ |as| [as.identifier, as.id] }
                       = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
                   %li
                     %form#area_code_selector.navbar-form.form.form-inline{:action => '#', :method => :get}

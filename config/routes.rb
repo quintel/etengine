@@ -71,14 +71,15 @@ Rails.application.routes.draw do
   end
 
   namespace :inspect do
+    get '/'             => 'pages#start_inspect'
     get  '/redirect'    => "base#redirect", :as => 'redirect'
     post '/restart'     => 'pages#restart', :as => 'restart'
     post '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
-    scope '/:api_scenario_id' do
-      root :to => "pages#index", :api_scenario_id => 'latest'
+    get 'search.js' => 'search#index', as: :search_autocomplete
 
-      get '', to: 'pages#index'
+    scope '/:api_scenario_id' do
+      root :to => "pages#index"
 
       # The Graphviz
       resource :layout, :except => [:new, :index, :create, :destroy] do
@@ -132,8 +133,6 @@ Rails.application.routes.draw do
       get 'search' => 'search#index', :as => :search
     end
   end
-
-  get '/inspect', to: redirect("inspect/latest")
 
   get '/data', to: redirect('/inspect', status: 302)
 

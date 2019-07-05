@@ -37,7 +37,7 @@ class Inspect::ConvertersController < Inspect::BaseController
 
     def diagram
       depth = params[:depth].andand.to_i || 3
-      base_url = "/inspect/latest/nl/converters/"
+      base_url = "/inspect/#{@api_scenario.id}/converters/"
       converter = params[:graph] == 'future' ? @converter_future : @converter_present
       converter.to_image(depth, base_url)
     end

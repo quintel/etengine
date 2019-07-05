@@ -56,7 +56,7 @@ class GraphDiagram
         :fillcolor => fillcolor
       }
 
-      hsh[:href] = "#{@svg_path}#{converter.id}.svg" if @svg_path
+      hsh[:href] = "#{@svg_path}#{converter.key}.svg" if @svg_path
 
       if converter.demand.nil?
         hsh[:color] = '#ff0000'
