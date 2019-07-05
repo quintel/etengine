@@ -1,0 +1,22 @@
+- content_for :subnav do
+  %ul.nav.nav-pills
+    %li= link_to 'Overview',       inspect_root_path
+    %li= link_to 'Area',           inspect_area_path
+    %li= link_to 'Carriers',       inspect_carriers_path
+    %li= link_to 'Converters',     inspect_converters_path
+    %li= link_to "Inputs",         inspect_inputs_path
+    %li= link_to "Merit",          inspect_merit_path
+    %li.dropdown
+      %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'} Layout
+      %ul.dropdown-menu
+        %li= link_to 'Show', inspect_layout_path, :target => '_blank'
+        %li= link_to 'Edit', edit_inspect_layout_path, :target => '_blank'
+    %li.dropdown
+      %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+        Checks
+        %b.carret
+      %ul.dropdown-menu
+        %li= link_to 'Expected Demand', :controller => 'inspect/checks', :action => 'expected_demand'
+        %li= link_to 'Share Groups',    :controller => 'inspect/checks', :action => 'share_groups'
+        %li= link_to 'All gquery Results',  :controller => 'inspect/checks', :action => 'gquery_results'
+    %li= link_to "Scenarios",      inspect_scenarios_path

@@ -1,0 +1,8 @@
+- content_for :subnav do
+  %ul.nav.nav-pills
+    %li= link_to 'Gqueries', inspect_gqueries_path
+    %li= link_to 'Sandbox', test_inspect_gqueries_path
+    %li= link_to 'Query Tables', inspect_query_tables_path
+    %li= link_to "GQL Search", inspect_gql_search_path
+    %li= link_to "GQL Log", inspect_gql_log_path
+    %li= link_to "GQL Warnings", inspect_gql_warnings_path

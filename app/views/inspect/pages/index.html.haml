@@ -1,0 +1,34 @@
+= render 'inspect/shared/inspect_subnav'
+
+= button_to "Restart", inspect_restart_path,
+    :confirm =>"This will drop the sessions for ALL users! Please be patient, server restarts takes 30secs. Are you sure?", :class => 'btn'
+= button_to "Clear Cache", inspect_clear_cache_path, :confirm =>"Are you sure?", :class => 'btn'
+
+%p
+  = link_to 'GQL Log', inspect_gql_log_path
+  = link_to 'GQL Warnings', inspect_gql_warnings_path
+
+%h3 System
+
+%table.table.table-condensed
+  = render partial: 'git_gem_info', locals: { name: 'atlas',    commit: Etsource::Commit::ATLAS_COMMIT }
+  = render partial: 'git_gem_info', locals: { name: 'refinery', commit: Etsource::Commit::REFINERY_COMMIT }
+  %tr
+    %td Uptime
+    %td= %x{uptime}
+  %tr
+    %td Ruby Version
+    %td== #{ RUBY_VERSION}-p#{ RUBY_PATCHLEVEL }
+
+  - if @cache_stats.any?
+    - @cache_stats.each_pair do |store, info|
+      %tr
+        %th{:colspan => 2} Memcache: #{store}
+      - info.each_pair do |k,v|
+        %tr
+          %td= k
+          %td= v
+  - else
+    %tr
+      %th{:colspan => 2}
+        == Memcache: disabled in the #{ Rails.env } environment

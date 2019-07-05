@@ -1,0 +1,74 @@
+%strong#graph_saving{:style => 'background: #f00; color: #fff; display: none'} Saving...
+#instructions
+  %ul
+    %li ALT + click to select/deselect multiple converters
+    %li Shift + click: highlight links
+    %li ALT + Shift + click: hide converter
+    %li Double-click on converter to open details in new converter
+    %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
+    %li= graphviz_attribute_selector
+    %li= graphviz_toggle_sectors
+
+  %script
+    == var inspect_json_url = "#{edit_inspect_layout_path(:format => 'json')}";
+
+= render 'initialize_graph'
+
+:javascript
+  window.requiresPositionExport = false;
+
+  function update_positions(callback) {
+    $('#graph_saving').text('Saving...').show();
+    $.ajax({
+      type: 'PUT',
+      url: update_converter_positions_path,
+      data: {'converter_positions' : GRAPH.getUpdatedValues()},
+      success: function(data) {
+        $('#graph_saving').fadeOut();
+        GRAPH.updated_coordinates = {};
+
+        window.requiresPositionExport = true;
+
+        if (callback) {
+          callback();
+        }
+      },
+      error: function(data) { $('#graph_saving').text('ERROR'); }
+    });
+
+    return false;
+  };
+
+  function update_and_download() {
+    update_positions(function() {
+      window.location.pathname =
+        window.location.pathname.replace(/edit$/, 'yaml');
+
+      window.requiresPositionExport = false;
+    });
+
+    return false;
+  }
+
+  $(window).on('beforeunload', function() {
+    $('#options a:first').addClass('glow');
+
+    if (window.requiresPositionExport) {
+      return "You haven't downloaded the converter position YAML. You " +
+             "need to download a copy of the YAML and commit it to ETEngine " +
+             "(in the 'config' directory), otherwise your changes will be " +
+             "lost during the next deploy.";
+    }
+  });
+
+  GRAPH.enableDragging();
+
+#options{:style => 'position: fixed; height: 25px; width: 450px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
+  = link_to 'Save and download YAML', 'javascript:update_and_download()'
+  |
+  = link_to 'Save', 'javascript:update_positions()'
+  |
+  = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
+  |
+  = link_to 'highlight off', 'javascript:GRAPH.highlight_off_all()'
+

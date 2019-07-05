@@ -1,0 +1,14 @@
+= render 'inspect/gqueries/subnav'
+
+%h2 GQL Warnings
+
+%section#search_box
+  = form_tag inspect_gql_warnings_path, :method => :get do
+    = search_field_tag :filter, params[:filter], :placeholder => 'filter'
+    = submit_tag "search", :class => 'btn'
+
+= button_to 'Clear Log', inspect_gql_warnings_path(:reset => 1), :confirm => 'Are you sure?', :class => 'btn'
+= button_to 'Refresh', inspect_gql_warnings_path, :class => 'btn'
+
+
+%pre= @log_contents

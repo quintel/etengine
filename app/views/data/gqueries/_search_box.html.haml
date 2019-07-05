@@ -1,6 +1,0 @@
-%section#search_box.form-inline
-  = form_tag backend_gqueries_path, :method => :get do
-    = search_field_tag :q, params[:q], :placeholder => 'search'
-    %label Gquery Group:
-    = select_tag :group, options_for_select(Gquery.group_keys, params[:group]), :include_blank => '-- group --'
-    = submit_tag "Show group", :class => 'btn btn-small'

@@ -1,0 +1,14 @@
+= render 'inspect/gqueries/subnav'
+
+%h2 GQL Logs
+
+%section#search_box
+  = form_tag inspect_gql_log_path, :method => :get do
+    = search_field_tag :filter, params[:filter], :placeholder => 'filter'
+    = submit_tag "search"
+
+= button_to 'Clear Log', inspect_gql_log_path(:reset => 1), :confirm => 'Are you sure?'
+= button_to 'Refresh', inspect_gql_log_path
+
+
+%pre= @log_contents

@@ -1,0 +1,8 @@
+- title "Edit Query Table"
+
+= render 'form'
+
+%p
+  = link_to "Show", inspect_query_table_path(:id => @query_table.id)
+  |
+  = link_to "View All", inspect_query_tables_path

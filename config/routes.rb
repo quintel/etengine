@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   # Frontend
   resources :users, :except => :show
-  get '/graph' => 'data/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
+  get '/graph' => 'inspect/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
 
   namespace :api do
     namespace :v3 do
@@ -70,7 +70,7 @@ Rails.application.routes.draw do
     resources :turks, :only => [:index, :show]
   end
 
-  namespace :backend do
+  namespace :inspect do
     get  '/redirect'    => "base#redirect", :as => 'redirect'
     post '/restart'     => 'pages#restart', :as => 'restart'
     post '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
@@ -133,7 +133,12 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/data', to: redirect("data/latest")
+  get '/inspect', to: redirect("inspect/latest")
+
+  get '/data', to: redirect('/inspect', status: 302)
+
+  get '/data/*rest',
+    to: redirect(status: 302) { |params| "/inspect/#{params[:rest]}" }
 
   namespace :etsource do
     root :to => 'commits#index'

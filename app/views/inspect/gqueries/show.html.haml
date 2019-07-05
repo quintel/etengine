@@ -1,0 +1,48 @@
+= render 'subnav'
+
+.row
+  .span12
+    .page-header
+      %h1
+        = @gquery.key
+        = link_to 'debug', inspect_debug_gql_path(gquery: "Q(#{@gquery.key})"), class: 'btn'
+
+    %h2 GQL Statment
+
+    %pre.highlight.ruby
+      = preserve do
+        = color_syntaxed_gquery @gquery.query
+
+    %h2 Result
+    = render 'result', result: @result
+
+    %h2 Description
+
+    .well
+      = simple_format @gquery.description
+
+    %h2 Characteristics
+
+    %table.table
+      - if @gquery.deprecated_key
+        %tr
+          %dt Deprecated Key
+          %dd= @gquery.deprecated_key
+      %tr
+        %td Groups
+        %td= @gquery.group_key
+      %tr
+        %td Unit
+        %td= @gquery.unit
+      %tr
+        %td File path
+        %td
+          %code= @gquery.file_path
+
+    %h2 References
+
+    %table.table
+      - Gquery.contains(@gquery.key).each do |gquery|
+        %tr
+          %td Gquery
+          %td= link_to gquery.key, inspect_gquery_path(id: gquery.key)

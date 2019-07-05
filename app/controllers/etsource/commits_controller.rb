@@ -8,7 +8,7 @@ class Etsource::CommitsController < ApplicationController
 
   authorize_resource :class => false
 
-  # data/latest/etsource/commits/current
+  # etsource/commits/current
   def show
   end
 

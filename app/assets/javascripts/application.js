@@ -28,7 +28,7 @@ $(document).ready(function() {
     };
 
     $.post('/api/v3/scenarios/', params, function(data, _ts, jqXHR) {
-      location.href = "/data/"+data.id;
+      location.href = "/inspect/"+data.id;
     })
   });
 

@@ -1,0 +1,19 @@
+= render "inspect/shared/inspect_subnav"
+.row
+  .span12
+    .page-header
+      %h2 Carriers
+
+    %table.table.table-condensed.table-striped
+      %thead
+        %tr
+          %th Key
+          - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+            %th= key.to_s.gsub '_', ' '
+
+      %tbody
+        - @carriers.each do |c|
+          %tr
+            %td= link_to c.key, inspect_carrier_path(:id => c)
+            - Qernel::Carrier::DATASET_ATTRIBUTES.each do |key|
+              %td= auto_number c[key]
