@@ -14,14 +14,16 @@ module Qernel::Plugins
           elec_link.dataset_set(:calculated, true)
         end
 
-        # Recalculate the price per MJ.
-        total_price =
-          carrier.cost_curve.to_enum.with_index.sum do |price, index|
-            price * participant.load_at(index)
-          end
+        if (production = participant.production).positive?
+          # Recalculate the price per MJ.
+          total_price =
+            carrier.cost_curve.to_enum.with_index.sum do |price, index|
+              price * participant.load_at(index)
+            end
 
-        # Divide by production which is in MJ to set the cost per MJ.
-        carrier.dataset_set(:cost_per_mj, total_price / participant.production)
+          # Divide by production which is in MJ to set the cost per MJ.
+          carrier.dataset_set(:cost_per_mj, total_price / production)
+        end
       end
 
       private
