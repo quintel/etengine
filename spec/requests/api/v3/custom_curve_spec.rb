@@ -72,6 +72,32 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
+    context 'when uploading a valid curve file with a byte order mark' do
+      let(:file) do
+        file = Tempfile.new('bom_curve')
+        file.write("\xEF\xBB\xBF")
+        file.write("1.0\n" * 8760)
+        file
+      end
+
+      let(:request) do
+        put url, params: {
+          file: fixture_file_upload(file.path, 'text/csv')
+        }
+      end
+
+      it 'succeeds' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'attaches the file' do
+        expect { request }
+          .to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .from(false).to(true)
+      end
+    end
+
     context 'when uploading an invalid curve' do
       let(:request) do
         put url, params: {

@@ -20,7 +20,10 @@ module Api
     # Public: Takes a CSV file as a raw string, converts each line to a float
     # and returns a sanitizer.
     def self.from_string(string)
-      new(CSV.parse(string, converters: :float).flatten.compact)
+      new(CSV.parse(
+        string.force_encoding('UTF-8').sub(/\A\xEF\xBB\xBF/, ''),
+        converters: :float
+      ).flatten.compact)
     rescue CSV::MalformedCSVError
       new(nil)
     end

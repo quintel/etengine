@@ -184,7 +184,7 @@ RSpec.describe Api::PriceCurveSanitizer do
     end
 
     context 'when given an empty string' do
-      let(:input) { '' }
+      let(:input) { +'' }
 
       it 'is not valid' do
         expect(sanitizer).not_to be_valid
@@ -204,6 +204,18 @@ RSpec.describe Api::PriceCurveSanitizer do
 
       it 'is not valid' do
         expect(sanitizer).not_to be_valid
+      end
+    end
+
+    context 'with given a string with a byte order mark and 8760 floats' do
+      let(:input) { "\xEF\xBB\xBF" + ("1.2\n" * 8760) }
+
+      it 'is valid' do
+        expect(sanitizer).to be_valid
+      end
+
+      it 'sanitizes the curve' do
+        expect(sanitizer.sanitized_curve).to eq([1.2] * 8760)
       end
     end
   end
