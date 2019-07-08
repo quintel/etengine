@@ -43,7 +43,11 @@ module Api
     #
     # Returns an array.
     def sanitized_curve
-      valid? ? @curve.map { |value| value.round(2) } : nil
+      return nil unless valid?
+
+      @curve.map do |value|
+        value < 0.0 ? 0.0 : value.round(2)
+      end
     end
 
     # Public: Determines if the curve provided by the user contains valid data

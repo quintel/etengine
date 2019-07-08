@@ -62,6 +62,18 @@ RSpec.describe Api::PriceCurveSanitizer do
     end
   end
 
+  context 'with a curve containing negatives' do
+    let(:curve) { [1.0, -1.0] * 4380 }
+
+    it 'is valid' do
+      expect(sanitizer).to be_valid
+    end
+
+    it 'converts negatives to zero' do
+      expect(sanitizer.sanitized_curve.take(4)).to eq([1.0, 0.0, 1.0, 0.0])
+    end
+  end
+
   context 'with an empty curve' do
     let(:curve) { [] }
 
