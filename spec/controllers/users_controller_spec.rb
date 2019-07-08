@@ -12,7 +12,7 @@ describe UsersController do
     it "should work for admins" do
       sign_in(admin)
       get :index
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response).to render_template(:index)
     end
   end
@@ -26,7 +26,7 @@ describe UsersController do
     it "should work for admins" do
       sign_in(admin)
       get :edit, params: { :id => admin.id }
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(assigns(:user)).to eq(admin)
       expect(response).to render_template(:edit)
     end
