@@ -1,0 +1,139 @@
+require:
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  Exclude:
+  - 'bin/**/*'
+  - 'config/routes.rb'
+  - 'db/migrate/**/*'
+  - 'db/schema.rb'
+  - 'db/seeds.rb'
+  - 'vendor/**/*'
+
+Bundler/OrderedGems:
+  Enabled: false
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+# Multi-line parameters should be indented by two spaces only.
+#
+#   # Bad
+#   call_something(param_one,
+#                  param_two,
+#                  param_three)
+#
+#   # Good
+#   call_something(
+#     param_one, param_two, param_three
+#   )
+#
+#   # Acceptable, but not as readable
+#   call_something(param_one
+#     param_two, param_three)
+#
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+# Indent parameters with two spaces only.
+#
+#   # Bad
+#   call_this_long_method(
+#     with_inner_call(
+#       my_parameters
+#     )
+#   )
+#
+#   # Good
+#   call_this_long_method(with_inner_call(
+#     my_parameters
+#   ))
+#
+Layout/FirstParameterIndentation:
+  EnforcedStyle: consistent
+
+# Indent array values with two spaces only.
+#
+#   # Bad
+#   my_array = [ 1,
+#                2,
+#                3 ]
+#   # Good
+#   my_array = [
+#     1,
+#     2,
+#     3
+#   ]
+#
+Layout/IndentArray:
+  EnforcedStyle: consistent
+
+# Indent hash keys with two spaces only.
+#
+#   # Bad
+#   my_hash = { "one" => 1,
+#               "two" => 2,
+#               "three" => 3 }
+#
+#   # Good
+#   my_hash = {
+#     "one" => 1,
+#     "two" => 2,
+#     "three" => 3
+#   }
+#
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
+# Multi-line method calls are indented by two spaces only.
+#
+#   # Bad
+#   MyClass.where(thing: true, another: 'yes')
+#          .order(:created_at)
+#          .limit(5)
+#
+#   # Good
+#   MyClass.where(thing: true, another: 'yes')
+#     .order(:created_at).limit(5)
+#
+#   # Good
+#   MyClass.where(thing: true, another: 'yes')
+#     .order(:created_at)
+#     .limit(5)
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+# Prefer alias_method over alias
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+# Only suggest guard clauses when a block is three or more lines long.
+Style/GuardClause:
+  MinBodyLength: 3 # Default is 1.
+
+Metrics/AbcSize:
+  Enabled: false
+
+# Ignore long blocks in specs.
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
+# Ignore long comments in deploy configs.
+Metrics/LineLength:
+  Exclude:
+  - config/deploy.rb
+  - config/deploy/*.rb
+
+# Limiting methods to 10 lines is a bit excessive; increase to 20.
+Metrics/MethodLength:
+  Max: 20 # Default is 10.
+
+# Don't require methods to be in separate spec files.
+RSpec/FilePath:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
