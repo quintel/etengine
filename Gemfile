@@ -85,6 +85,11 @@ group :test, :development do
   gem 'pry-rails'
   gem 'rspec-rails', '~> 3.7'
   gem 'watchr'
+
+  gem 'rubocop',             '~> 0.71.0', require: false
+  gem 'rubocop-performance',              require: false
+  gem 'rubocop-rails',                    require: false
+  gem 'rubocop-rspec',                    require: false
 end
 
 group :test do
