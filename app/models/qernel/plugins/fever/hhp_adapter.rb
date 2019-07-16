@@ -42,6 +42,14 @@ module Qernel::Plugins
         end
       end
 
+      # Public: Returns if the named carrier (a Symbol) is one of the inputs to
+      # the converter used by this adapter.
+      #
+      # Returns true or false.
+      def input?(carrier)
+        [@config.efficiency_based_on, secondary_carrier].include?(carrier)
+      end
+
       private
 
       # Internal: The Fever producer which will be the first one asked to

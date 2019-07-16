@@ -19,6 +19,10 @@ module Qernel::Plugins
         end
       end
 
+      def input?(*)
+        false
+      end
+
       def producer_for_carrier(_carrier)
         nil
       end

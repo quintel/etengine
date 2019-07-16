@@ -37,9 +37,7 @@ module Qernel::Plugins
       # caused by the activities within the calculator.
       def elec_demand_curve
         @elec_demand_curve ||=
-          Qernel::Plugins::Fever::ElectricityDemandCurve.new(
-            adapters.map { |a| a.producer_for_electricity_demand }.compact
-          )
+          Qernel::Plugins::Fever::ElectricityDemandCurve.from_adapters(adapters)
       end
 
       # Internal: The adapters which map converters from the graph to activities
