@@ -201,11 +201,11 @@
   :x: 6400
   :y: 6740
 :energy_production_bio_ethanol:
-  :x: 6400
-  :y: 6960
+  :x: 7340
+  :y: 2520
 :energy_production_biodiesel:
-  :x: 6400
-  :y: 7100
+  :x: 7340
+  :y: 2740
 :energy_import_electricity:
   :x: 7000
   :y: 2000
@@ -214,10 +214,10 @@
   :y: 6540
 :energy_import_greengas:
   :x: 7700
-  :y: 3140
+  :y: 3100
 :energy_production_bio_oil:
-  :x: 6400
-  :y: 6840
+  :x: 7340
+  :y: 2820
 :energy_import_natural_gas:
   :x: 7700
   :y: 4340
@@ -239,9 +239,9 @@
 :energy_extraction_natural_gas:
   :x: 7700
   :y: 4280
-:energy_production_woody_biomass:
-  :x: 7780
-  :y: 1300
+:energy_production_dry_biomass:
+  :x: 7700
+  :y: 2360
 :households_useful_demand_for_space_heating_after_insulation:
   :x: 800
   :y: 560
@@ -332,12 +332,12 @@
 :energy_distribution_crude_oil:
   :x: 7340
   :y: 3320
-:energy_distribution_woody_biomass:
-  :x: 7540
-  :y: 1300
+:energy_distribution_dry_biomass:
+  :x: 7520
+  :y: 2340
 :energy_distribution_greengas:
-  :x: 7060
-  :y: 3140
+  :x: 7020
+  :y: 3100
 :energy_distribution_coal:
   :x: 7340
   :y: 3380
@@ -351,8 +351,8 @@
   :x: 5520
   :y: 2380
 :energy_distribution_crude_oil_loss:
-  :x: 7120
-  :y: 3240
+  :x: 7180
+  :y: 3260
 :energy_distribution_network_gas_loss:
   :x: 6520
   :y: 3720
@@ -502,7 +502,7 @@
   :y: 5320
 :energy_power_solar_pv_solar_radiation:
   :x: 6240
-  :y: 3860
+  :y: 3920
 :energy_power_wind_turbine_inland:
   :x: 6240
   :y: 2740
@@ -514,7 +514,7 @@
   :y: 2680
 :energy_power_solar_csp_solar_radiation:
   :x: 6240
-  :y: 3920
+  :y: 3980
 :energy_power_hydro_river:
   :x: 6240
   :y: 2800
@@ -523,7 +523,7 @@
   :y: 2560
 :energy_power_geothermal:
   :x: 6240
-  :y: 3980
+  :y: 4040
 :other_useful_demand_crude_oil_non_energetic:
   :x: 700
   :y: 8580
@@ -565,7 +565,7 @@
   :y: 8240
 :energy_heater_for_heat_network_wood_pellets:
   :x: 6240
-  :y: 4180
+  :y: 4240
 :households_water_heater_solar_thermal:
   :x: 1520
   :y: 1000
@@ -670,7 +670,7 @@
   :y: 3040
 :energy_heater_for_heat_network_geothermal:
   :x: 6240
-  :y: 4120
+  :y: 4180
 :industry_final_demand_wood_pellets:
   :x: 2760
   :y: 9960
@@ -694,19 +694,19 @@
   :y: 3100
 :energy_heater_for_heat_network_coal:
   :x: 6240
-  :y: 4240
+  :y: 4300
 :energy_heater_for_heat_network_lignite:
   :x: 6240
-  :y: 4300
+  :y: 4360
 :energy_heater_for_heat_network_crude_oil:
   :x: 6240
-  :y: 4360
+  :y: 4420
 :energy_heater_for_heat_network_network_gas:
   :x: 6240
-  :y: 4420
+  :y: 4480
 :energy_heater_for_heat_network_waste_mix:
   :x: 6240
-  :y: 4480
+  :y: 4540
 :energy_final_demand_electricity:
   :x: 4680
   :y: 3880
@@ -738,11 +738,11 @@
   :x: 3920
   :y: 6860
 :energy_distribution_torrefied_biomass_pellets:
-  :x: 7200
-  :y: 900
+  :x: 7180
+  :y: 2300
 :energy_torrefaction_wood:
-  :x: 7380
-  :y: 1040
+  :x: 7340
+  :y: 2300
 :energy_import_steam_hot_water:
   :x: 7700
   :y: 4100
@@ -750,11 +750,11 @@
   :x: 7780
   :y: 900
 :energy_distribution_wood_pellets:
-  :x: 7200
-  :y: 1180
+  :x: 7180
+  :y: 2360
 :energy_production_wood_pellets:
-  :x: 7360
-  :y: 1380
+  :x: 7340
+  :y: 2360
 :energy_import_wood_pellets:
   :x: 7780
   :y: 1180
@@ -764,9 +764,9 @@
 :energy_production_wood:
   :x: 7780
   :y: 1380
-:energy_upgrade_biogas:
+:energy_greengas_upgrade_biogas:
   :x: 7180
-  :y: 3060
+  :y: 3040
 :energy_distribution_manure:
   :x: 7560
   :y: 2940
@@ -825,7 +825,7 @@
   :x: 7440
   :y: 3000
 :energy_distribution_biogas:
-  :x: 7300
+  :x: 7340
   :y: 3000
 :energy_distribution_biogenic_waste:
   :x: 7420
@@ -1189,19 +1189,19 @@
   :y: 1360
 :energy_chp_supercritical_waste_mix:
   :x: 6240
-  :y: 3480
+  :y: 3460
 :energy_chp_combined_cycle_network_gas:
   :x: 6240
-  :y: 3540
+  :y: 3520
 :energy_chp_ultra_supercritical_coal:
   :x: 6240
-  :y: 3600
+  :y: 3580
 :energy_chp_ultra_supercritical_crude_oil:
   :x: 6240
   :y: 3720
 :energy_chp_ultra_supercritical_lignite:
   :x: 6240
-  :y: 3660
+  :y: 3700
 :energy_power_supercritical_waste_mix:
   :x: 6240
   :y: 3400
@@ -1566,8 +1566,8 @@
   :x: 3120
   :y: 4520
 :energy_distribution_bio_lng:
-  :x: 7500
-  :y: 4600
+  :x: 5600
+  :y: 6720
 :energy_import_bio_lng:
   :x: 7700
   :y: 4600
@@ -2464,7 +2464,7 @@
   :y: 18780
 :energy_distribution_bio_kerosene:
   :x: 5600
-  :y: 6720
+  :y: 6780
 :energy_import_bio_kerosene:
   :x: 7700
   :y: 6800
@@ -2647,7 +2647,7 @@
   :y: 4860
 :energy_power_turbine_hydrogen:
   :x: 6240
-  :y: 3720
+  :y: 3780
 :industry_chemicals_fertilizers_locally_available_hydrogen:
   :x: 340
   :y: 11440
@@ -2854,7 +2854,7 @@
   :y: 3520
 :energy_distribution_imported_heat:
   :x: 6240
-  :y: 4060
+  :y: 4120
 :energy_import_heat:
   :x: 7700
   :y: 4100
@@ -2873,21 +2873,21 @@
 :foreign_energy_production_wood:
   :x: 8220
   :y: 900
-:foreign_energy_upgrade_biogas:
+:foreign_energy_greengas_upgrade_biogas:
   :x: 8100
-  :y: 3140
+  :y: 3060
 :foreign_energy_distribution_biogas:
-  :x: 8260
-  :y: 3080
+  :x: 8240
+  :y: 3000
 :foreign_energy_production_biogas:
   :x: 8440
-  :y: 3080
+  :y: 3000
 :foreign_energy_production_manure:
-  :x: 8560
-  :y: 3020
+  :x: 8620
+  :y: 2960
 :foreign_energy_production_corn:
-  :x: 8560
-  :y: 3140
+  :x: 8620
+  :y: 3100
 :foreign_energy_production_bio_lng:
   :x: 8000
   :y: 4600
@@ -2943,8 +2943,8 @@
   :x: 6760
   :y: 6920
 :energy_production_bio_kerosene:
-  :x: 6400
-  :y: 7220
+  :x: 7340
+  :y: 2440
 :energy_production_bio_kerosene_from_palm:
   :x: 6760
   :y: 7340
@@ -3055,7 +3055,7 @@
   :y: 3780
 :energy_power_combined_cycle_hydrogen:
   :x: 6240
-  :y: 3780
+  :y: 3840
 :industry_useful_demand_for_chemical_other_non_energetic:
   :x: 720
   :y: 12660
@@ -3065,3 +3065,69 @@
 :industry_final_demand_for_chemical_other_hydrogen_non_energetic:
   :x: 1520
   :y: 12780
+:energy_distribution_wet_biomass:
+  :x: 7520
+  :y: 2560
+:energy_production_wet_biomass:
+  :x: 7700
+  :y: 2580
+:energy_import_wet_biomass:
+  :x: 7700
+  :y: 2520
+:energy_distribution_oily_biomass:
+  :x: 7520
+  :y: 2780
+:energy_import_oily_biomass:
+  :x: 7700
+  :y: 2740
+:energy_production_oily_biomass:
+  :x: 7700
+  :y: 2800
+:energy_biogas_fermentation_wet_biomass:
+  :x: 7480
+  :y: 3000
+:energy_greengas_gasification_wet_biomass:
+  :x: 7340
+  :y: 3160
+:energy_greengas_gasification_dry_biomass:
+  :x: 7340
+  :y: 3100
+:foreign_energy_distribution_greengas:
+  :x: 7940
+  :y: 3140
+:foreign_energy_greengas_wet_biomass_gasification:
+  :x: 8200
+  :y: 3140
+:foreign_energy_greengas_dry_biomass_gasification:
+  :x: 8200
+  :y: 3200
+:energy_import_dry_biomass:
+  :x: 7700
+  :y: 2300
+:foreign_energy_biogas_fermentation:
+  :x: 8440
+  :y: 3000
+:foreign_energy_production_dry_biomass:
+  :x: 8600
+  :y: 3200
+:foreign_energy_production_wet_biomass:
+  :x: 8600
+  :y: 3060
+:energy_chp_engine_biogas:
+  :x: 6240
+  :y: 3640
+:energy_chp_engine_biogas_dumped_heat:
+  :x: 5940
+  :y: 3640
+:energy_production_bio_lng:
+  :x: 7340
+  :y: 2580
+:energy_export_oily_biomass:
+  :x: 3200
+  :y: 11680
+:energy_export_wet_biomass:
+  :x: 3200
+  :y: 11740
+:energy_export_dry_biomass:
+  :x: 3200
+  :y: 11800
