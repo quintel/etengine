@@ -75,13 +75,8 @@ module Gql::Runtime::Functions
 
     describe 'SUM_CURVES([ElectricityDemandCurve])' do
       let(:result) do
-        producer = Class.new do
-          def source_at(frame)
-            frame.to_f
-          end
-        end.new
-
-        curve = Qernel::Plugins::Fever::ElectricityDemandCurve.new([producer])
+        callable = ->(frame) { frame.to_f }
+        curve = Qernel::Plugins::Fever::ElectricityDemandCurve.new([callable])
 
         gql.query_future(-> { SUM_CURVES(curve) })
       end
