@@ -34,11 +34,62 @@ class Qernel::ConverterApi
   end
   unit_for_calculation "nominal_capacity_cooling_output_per_unit", 'MW'
 
+  ## Returns the sum of all bio resources input. This is dry biomass, wet biomass,
+  ## oily biomass, biogenic waste, torrefied biomass pellets, wood pellets,
+  ## waste mix, bio kerosene, bio lng, bio oil, biodiesel, bio ethanol, biogas,
+  ## greengas, network gas and compressed network gas.
+  #
+  def input_of_bio_resources
+    fetch(:input_of_bio_resources) do
+      input_of_dry_biomass +
+        input_of_wet_biomass +
+        input_of_oily_biomass +
+        input_of_biogenic_waste +
+        input_of_torrefied_biomass_pellets +
+        input_of_wood_pellets +
+        input_of_waste_mix +
+        input_of_bio_kerosene +
+        input_of_bio_lng +
+        input_of_bio_oil +
+        input_of_biodiesel +
+        input_of_bio_ethanol +
+        input_of_biogas +
+        input_of_greengas +
+        input_of_network_gas +
+        input_of_compressed_network_gas +
+        input_of_gas_power_fuelmix
+    end
+  end
+  unit_for_calculation "input_of_bio_resources", 'MJ'
+
+  ## Returns the sum of all bio fuels input. This is biodiesel, bio kerosene, bio oil,
+  ## bio lng and bio ethanol.
+  #
+  def input_of_bio_fuels
+    fetch(:input_of_bio_fuels) do
+      input_of_biodiesel +
+        input_of_bio_kerosene +
+        input_of_bio_oil +
+        input_of_bio_lng +
+        input_of_bio_ethanol
+    end
+  end
+  unit_for_calculation "input_of_bio_fuels", 'MJ'
+
   ## Returns the total heat output conversion of one unit. This is useable heat and steam_hot_water.
   #
   def heat_output_conversion
     fetch(:heat_output_conversion) do
-      (steam_hot_water_output_conversion  + useable_heat_output_conversion)
+      (steam_hot_water_output_conversion + useable_heat_output_conversion)
+    end
+  end
+  unit_for_calculation "heat_output_conversion", 'factor'
+
+  ## Returns the total heat output conversion of one unit. This is useable heat and steam_hot_water.
+  #
+  def heat_output_conversion
+    fetch(:heat_output_conversion) do
+      (steam_hot_water_output_conversion + useable_heat_output_conversion)
     end
   end
   unit_for_calculation "heat_output_conversion", 'factor'
