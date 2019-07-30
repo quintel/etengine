@@ -12,7 +12,7 @@
 %p
   = link_to "create new scenario", new_data_scenario_path, class: 'btn'
 
-%table.table.table-condensed
+%table.table.table-condensed.scenario-list
   %thead
     %tr
       %th{:colspan => 8} Scenario count: #{Scenario.count}
@@ -29,8 +29,11 @@
       %td{:colspan => 8}= paginate @scenarios
   %tbody
     - @scenarios.each do |s|
-      %tr
-        %td= link_to s.id, data_scenario_path(:id => s.id)
+      %tr{ class: s.id.to_s == params[:api_scenario_id] ? 'active' : '' }
+        %td
+          = link_to s.id, data_scenario_path(:id => s.id)
+          - if s.id.to_s == params[:api_scenario_id]
+            %span.tag Current Scenario
         %td= s.title
         %td= s.end_year
         %td= s.area_code
