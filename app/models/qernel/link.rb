@@ -202,7 +202,10 @@ module Qernel
         # To fix https://github.com/dennisschoenmakers/etengine/issues/178
         # we have to change the following line:
         if flexible?
-          other_share = siblings_and_self.map(&:share).compact.sum.to_f
+          other_share =
+            siblings_and_self.sum do |link|
+              link.share.nil? || link == self ? 0.0 : link.share.to_f
+            end
 
           # Disallow a negative energy flow.
           self.share = other_share > 1 ? 0.0 : 1.0 - other_share
