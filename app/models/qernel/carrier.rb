@@ -44,7 +44,7 @@ class Carrier
   #   Qernel::Carrier.new key: :electricity
   #
   def initialize(opts)
-    @key      = opts[:key].andand.to_sym
+    @key      = opts[:key]&.to_sym
     @id       = @key
 
     # ----- Micro optimization --------------------

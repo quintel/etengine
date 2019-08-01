@@ -102,7 +102,7 @@ module Qernel
     # el[1.0,dyn]: => [{:conversion => 1.0, :dynamic => 1}, nil]
     # el[1.0,dyn;0.5]: => [{:conversion => 1.0, :dynamic => 1}, {:conversion => 0.5}]
     def slot(carrier_key)
-      if carrier_key and slots = carrier_key.match(/.+\[(.+)\]:/).andand.captures.andand.first
+      if carrier_key and slots = carrier_key.match(/.+\[(.+)\]:/)&.captures&.first
         lft_conversion, rgt_conversion = slots.split(';')
         r = []
         r << {:conversion => lft_conversion.to_f} if lft_conversion

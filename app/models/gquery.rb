@@ -82,7 +82,7 @@ class Gquery
   end
 
   def gql_modifier
-    @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP).andand.captures.andand.first
+    @gql_modifier ||= query.match(GQL_MODIFIER_REGEXP)&.captures&.first
   end
 
   def self.group_keys

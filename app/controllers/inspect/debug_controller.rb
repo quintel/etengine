@@ -24,7 +24,7 @@ class Inspect::DebugController < Inspect::BaseController
     @gql.update_graphs
 
     # Run the custom defined input
-    if params[:input_doc].andand.present? && params[:input_user_value]
+    if params[:input_doc]&.present? && params[:input_user_value]
       attributes = Atlas::Input.new(
         { key: :debug_input }.merge(
           Atlas::Parser::TextToHash::Base.new(params[:input_doc]).to_hash)
@@ -40,7 +40,7 @@ class Inspect::DebugController < Inspect::BaseController
 
     @gql.calculate_graphs
 
-    if params[:gquery].andand.present?
+    if params[:gquery]&.present?
       @gql.query("OBSERVE_GET(ALL())")
       @gql.query(params[:gquery])
     end

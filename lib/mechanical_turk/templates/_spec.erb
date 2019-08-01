@@ -3,8 +3,8 @@ require 'spec_helper'
 describe "untitled" do
   before :all do
     load_scenario(<%= generator.settings_for_load_scenario.html_safe %>) do
-    <% generator.settings['user_values'].andand.each do |id, value| %>
-      move_slider <%= id %>, <%= value %>       # <%= Input.get(id).andand.key || 'not found' %>
+    <% generator.settings['user_values']&.each do |id, value| %>
+      move_slider <%= id %>, <%= value %>       # <%= Input.get(id)&.key || 'not found' %>
     <% end %>
     end
   end

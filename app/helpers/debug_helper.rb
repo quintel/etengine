@@ -4,7 +4,7 @@ module DebugHelper
   def method_source(method_name)
     Rails.cache.fetch("methods/source/#{method_name}") do
       begin
-        f, line = Qernel::ConverterApi.instance_method(method_name).andand.source_location
+        f, line = Qernel::ConverterApi.instance_method(method_name)&.source_location
         if f and line
           lines = File.read(f).lines.to_a
 

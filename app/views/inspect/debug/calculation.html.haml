@@ -27,8 +27,8 @@
       - converter = @gql.future_graph.converter(key)
       %tr
         %td= key
-        - set_log = grouped[key].andand.detect{|l| l[:type] == :set} || {}
-        - get_log = grouped[key].andand.select{|l| l[:type] == :get} || []
+        - set_log = grouped[key]&.detect{|l| l[:type] == :set} || {}
+        - get_log = grouped[key]&.select{|l| l[:type] == :get} || []
         %td.tar= auto_number converter.preset_demand
         %td.tar= auto_number set_log[:value]
         %td.tar= @logs.index(set_log) || 0
