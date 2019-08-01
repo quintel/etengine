@@ -100,6 +100,10 @@ module Etsource
       end
     end
 
+    def clear!(type)
+      Rails.cache.delete("#{cache_key}#{type}")
+    end
+
   protected
 
     def cache(key, &block)

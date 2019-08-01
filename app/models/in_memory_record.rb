@@ -58,5 +58,11 @@ module InMemoryRecord
       records[obj.key.to_s] = obj
       obj
     end
+
+    # Removes cached copies of records.
+    def clear!
+      NastyCache.instance.delete("#{name}#all")
+      NastyCache.instance.delete("#{name}#records")
+    end
   end
 end

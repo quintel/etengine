@@ -26,7 +26,25 @@ module Etsource
   #   Etsource::Reloader.start!
   #
   class Reloader
-    DIRS = %w[carriers config datasets edges gqueries inputs nodes presets]
+    DIRS = %w[
+      carriers
+      config
+      datasets
+      edges
+      gqueries
+      initializer_inputs
+      inputs
+      nodes
+      presets
+    ].freeze
+
+    # Directories which may be reloaded without throwing away the graph.
+    RECORD_RELOAD = %w[
+      gqueries
+      inputs
+      initializer_inputs
+      presets
+    ].freeze
 
     class << self
       def start!
@@ -34,11 +52,17 @@ module Etsource
 
         watched_dirs = DIRS.map(&Regexp.method(:escape)).join('|')
 
-        Rails.logger.info('-' * 100)
-        Rails.logger.info(watched_dirs)
-        Rails.logger.info('-' * 100)
+        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s) do |(path, *)|
+          path = Pathname.new(path).relative_path_from(Atlas.data_dir)
+          type = path.to_s.split('/').first
 
-        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s) { |*| reload! }
+          if RECORD_RELOAD.include?(type)
+            reload_record!(type)
+          else
+            reload!
+          end
+        end
+
         @listener.only(%r{(?:#{ watched_dirs })/.*})
         @listener.start
 
@@ -56,7 +80,17 @@ module Etsource
         end
       end
 
-      def reload!
+      def reload_record!(type)
+        class_name = type.classify
+
+        "Atlas::#{class_name}".constantize.manager.clear!
+        class_name.constantize.clear!
+        Etsource::Loader.instance.clear!(type)
+
+        Rails.logger.info "ETsource live reload: Cleared cache for #{type}."
+      end
+
+      def reload!(type = nil)
         Rails.cache.clear
 
         NastyCache.instance.expire!(
@@ -64,7 +98,11 @@ module Etsource
 
         NastyCache.instance.expire_local!
 
-        Atlas::ActiveDocument::Manager.clear_all!
+        if type
+          "Atlas::#{type.classify}".constantize.manager.clear!
+        else
+          Atlas::ActiveDocument::Manager.clear_all!
+        end
 
         Rails.logger.info 'ETsource live reload: Caches cleared.'
       end
