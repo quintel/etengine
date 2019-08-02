@@ -65,7 +65,7 @@ module Api
       HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :heat_output_capacity =>
-            { label: 'Heat capacity', unit:'MW',
+            { label: 'Heat capacity per unit', unit: 'MW',
               formatter: FORMAT_1DP },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
@@ -102,7 +102,7 @@ module Api
       HEAT_PUMP_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :heat_output_capacity =>
-            {label: 'Heat capacity', unit:'MW'},
+            {label: 'Heat capacity per unit', unit: 'MW'},
           :coefficient_of_performance =>
             {label: 'Coefficient of Performance',  unit:''},
           :full_load_hours  =>
@@ -140,7 +140,7 @@ module Api
       CHP_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :electricity_output_capacity =>
-            { label: 'Electrical capacity', unit:'MW',
+            { label: 'Electrical capacity per unit', unit: 'MW',
               formatter: FORMAT_1DP },
           :electricity_output_conversion  =>
             { label: 'Electrical efficiency', unit: '%',
@@ -190,7 +190,7 @@ module Api
       HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capacity', unit:'MW input',
+            { label: 'Capacity per unit', unit: 'MW input',
               formatter: ->(n) { n && FORMAT_1DP.call(n) } },
           :hydrogen_output_conversion  =>
             { label: 'Hydrogen output efficiency', unit: '%',
@@ -271,7 +271,7 @@ module Api
       CARBON_CAPTURING_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capacity', unit:'MWe',
+            { label: 'Capacity per unit', unit: 'MWe',
               formatter: FORMAT_1DP },
           :co_output_conversion=>
             { label: 'Carbon monoxide output efficiency', unit: '%',
@@ -286,7 +286,7 @@ module Api
       P2G_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capacity', unit:'MWe',
+            { label: 'Capacity per unit', unit: 'MWe',
               formatter: FORMAT_1DP },
           :hydrogen_output_conversion=>
             { label: 'Hydrogen output efficiency', unit: '%',
@@ -301,7 +301,7 @@ module Api
       P2H_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capacity', unit:'MWe',
+            { label: 'Capacity per unit', unit: 'MWe',
               formatter: FORMAT_1DP },
           :useable_heat_output_conversion=>
             { label: 'Heat efficiency', unit: '%',
@@ -316,7 +316,7 @@ module Api
       P2KEROSENE_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capacity', unit:'MWe',
+            { label: 'Capacity per unit', unit: 'MWe',
               formatter: FORMAT_1DP },
           :kerosene_output_conversion=>
             { label: 'Kerosene output efficiency', unit: '%',
