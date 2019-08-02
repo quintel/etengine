@@ -13,7 +13,7 @@ module Api
       ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :electricity_output_capacity =>
-            { label: 'Electrical capacity per unit', unit:'MW',
+            { label: 'Electrical capacity per unit', unit: 'MW',
               formatter: FORMAT_1DP },
           :electricity_output_conversion  =>
             { label: 'Electrical efficiency', unit: '%',
