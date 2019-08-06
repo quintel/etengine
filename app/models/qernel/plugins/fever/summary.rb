@@ -20,7 +20,7 @@ module Qernel::Plugins
 
         return [0.0] * 8760 if suppliers.none?
 
-        @demand = TimeResolve::Util.add_curves(suppliers.map do |adapter|
+        @demand = ::Merit::CurveTools.add_curves(suppliers.map do |adapter|
           adapter.participant.demand_curve
         end).to_a
       end
@@ -55,7 +55,7 @@ module Qernel::Plugins
           end
         end
 
-        @production = TimeResolve::Util.add_curves(curves).to_a
+        @production = ::Merit::CurveTools.add_curves(curves).to_a
       end
 
       # Public: A curve describing periods when production does not meet demand.

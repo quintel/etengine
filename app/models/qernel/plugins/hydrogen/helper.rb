@@ -28,7 +28,7 @@ module Qernel::Plugins
 
       # Internal: Creates the combined curves of two hydrogen groups.
       private_class_method def combined_curve(plugin, group_one, group_two)
-        TimeResolve::Util.add_curves((
+        ::Merit::CurveTools.add_curves((
           plugin.adapter_group(group_one) + plugin.adapter_group(group_two)
         ).map(&:demand_curve)).to_a
       end

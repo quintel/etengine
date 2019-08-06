@@ -38,7 +38,7 @@ module Qernel::Plugins
             (electricity_demand * (consumer.demand / total_demand))
         end
 
-        TimeResolve::Util.add_curves(individual)
+        ::Merit::CurveTools.add_curves(individual)
       end
 
       private

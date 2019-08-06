@@ -239,7 +239,7 @@ module Gql::Runtime
 
         return curves.first.to_a if curves.one?
 
-        Qernel::Plugins::TimeResolve::Util.add_curves(curves).to_a
+        Merit::CurveTools.add_curves(curves).to_a
       end
 
       # Inverts a single curve by swapping positive numbers to be negative, and
@@ -258,7 +258,7 @@ module Gql::Runtime
 
         plugin = scope.graph.plugin(:time_resolve).fever
 
-        Qernel::Plugins::TimeResolve::Util.add_curves(
+        Merit::CurveTools.add_curves(
           groups.map { |group| plugin.summary(group).demand }
         ).to_a
       end
@@ -271,7 +271,7 @@ module Gql::Runtime
 
         plugin = scope.graph.plugin(:time_resolve).fever
 
-        Qernel::Plugins::TimeResolve::Util.add_curves(
+        Merit::CurveTools.add_curves(
           groups.map { |group| plugin.summary(group).production }
         ).to_a
       end

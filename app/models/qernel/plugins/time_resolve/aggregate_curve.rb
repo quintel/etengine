@@ -18,7 +18,7 @@ module Qernel::Plugins
         return zeroed_profile if mix.empty?
         return mix.keys.first if mix.length == 1
 
-        Util.add_curves(
+        ::Merit::CurveTools.add_curves(
           balanced_mix(mix)
             .map { |prof, share| prof * share if share.positive? }
             .compact

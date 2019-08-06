@@ -63,7 +63,7 @@ module Qernel::Closud
 
     def total_of(curves)
       if curves.any?
-        Qernel::Plugins::TimeResolve::Util.add_curves(curves)
+        Merit::CurveTools.add_curves(curves)
       else
         Merit::Curve.new([], 8760)
       end
