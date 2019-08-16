@@ -35,14 +35,19 @@ module Qernel::Plugins
       def producer_attributes
         attrs = super
 
-        attrs.delete(:marginal_costs)
-        attrs[:cost_curve] = ::Merit::Curve.new(carrier.cost_curve)
+        cost_curve = carrier.cost_curve
+        first_hour_cost = cost_curve.first
+
+        unless cost_curve.all? { |val| val == first_hour_cost }
+          attrs.delete(:marginal_costs)
+          attrs[:cost_curve] = ::Merit::Curve.new(cost_curve)
+        end
 
         attrs
       end
 
       def marginal_costs
-        0.0
+        carrier.cost_curve.first
       end
 
       def output_capacity_per_unit
