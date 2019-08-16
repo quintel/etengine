@@ -84,7 +84,11 @@ module Qernel::Plugins
       @order = ::Merit::Order.new
 
       each_adapter do |adapter|
-        @order.add(adapter.participant)
+        # We have to trigger "participant" so that values may be injected after
+        # the calculation, even if the participant isn't used in Merit.
+        participant = adapter.participant
+
+        @order.add(participant) if adapter.installed?
       end
 
       @order.add(::Merit::User.create(

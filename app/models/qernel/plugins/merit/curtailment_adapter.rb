@@ -22,6 +22,11 @@ module Qernel::Plugins
         target_api.demand = demand
       end
 
+      def installed?
+        # Curtailment is always available as an consumer-of-last-resort.
+        true
+      end
+
       private
 
       def producer_attributes

@@ -37,6 +37,10 @@ module Qernel::Plugins
         end
       end
 
+      def installed?
+        input_of_electricity.positive?
+      end
+
       private
 
       def consumption_profile

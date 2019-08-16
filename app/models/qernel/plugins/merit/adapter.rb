@@ -34,6 +34,16 @@ module Qernel::Plugins
         fail NotImplementedError
       end
 
+      # Internal: Determines whether the participant has any capacity; if not,
+      # the participant will not actually be added to the merit order, speeding
+      # up calculation times.
+      #
+      # Returns true or false.
+      def installed?
+        source_api.number_of_units.positive? &&
+          source_api.availability.positive?
+      end
+
       private
 
       # Internal: Given a Merit order participant +type+ and the associated

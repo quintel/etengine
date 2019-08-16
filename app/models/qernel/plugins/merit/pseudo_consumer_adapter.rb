@@ -26,6 +26,18 @@ module Qernel::Plugins
         consumption_curve.sum * 3600
       end
 
+      def installed?
+        # Psuedo consumers are typically dynamic demands resulting from some
+        # other time-resolved calculation. We can't be 100% sure that a demand
+        # of zero on the node will still be zero after a dynamic demand is
+        # computed.
+        #
+        # For example a hybrid heat pump may have no electricity demand by
+        # default, but changes in temperature may result in it being assigned
+        # on by the Fever heat calculation.
+        true
+      end
+
       private
 
       def consumption_curve
