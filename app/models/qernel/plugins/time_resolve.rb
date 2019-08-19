@@ -63,11 +63,13 @@ module Qernel::Plugins
 
       # Detaching the dataset clears the goals. This would ordinarily be correct
       # behaviour, but we need to preserve them for the second calculation.
-      goals = @graph.goals
-      @graph.detach_dataset!
+      @graph.retaining_lifecycle do
+        goals = @graph.goals
+        @graph.detach_dataset!
 
-      @graph.dataset = @original_dataset
-      @graph.goals   = goals
+        @graph.dataset = @original_dataset
+        @graph.goals   = goals
+      end
 
       # Any subsequent calculations (one of which) must have the merit order
       # demands injected into the graph.

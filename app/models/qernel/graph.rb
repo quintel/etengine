@@ -126,6 +126,17 @@ class Graph
     self.dataset = nil
   end
 
+  # Runs the given block, ensuring that the original lifecycle used on the graph
+  # is kept at the end of the block. This is useful when running code which
+  # might change the lifecycle, such as during graph calculation.
+  def retaining_lifecycle
+    lc = lifecycle
+    yield
+    dataset_set(:lifecycle, lc)
+
+    self
+  end
+
   # Calls method_name on every qernel object including graph itself.
   # => caution: stacklevel too deep
   #
