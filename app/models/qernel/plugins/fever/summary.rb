@@ -15,7 +15,7 @@ module Qernel::Plugins
         return @demand if @demand
 
         suppliers = @group.adapters.select do |adapter|
-          adapter.participant.is_a?(::Fever::Consumer)
+          adapter.installed? && adapter.participant.is_a?(::Fever::Consumer)
         end
 
         return [0.0] * 8760 if suppliers.none?

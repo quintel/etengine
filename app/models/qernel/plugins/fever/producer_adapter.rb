@@ -92,6 +92,11 @@ module Qernel::Plugins
         end
       end
 
+      # Public: Returns if this adapter has any units installed.
+      def installed?
+        @converter.number_of_units.positive?
+      end
+
       private
 
       def output_efficiency

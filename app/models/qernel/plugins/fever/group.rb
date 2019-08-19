@@ -77,8 +77,13 @@ module Qernel::Plugins
       end
 
       def activities
-        storage = adapters_by_type[:storage].map(&:participant)
-        producers = adapters_by_type[:producer].map(&:participant)
+        storage = adapters_by_type[:storage]
+          .select(&:installed?)
+          .map(&:participant)
+
+        producers = adapters_by_type[:producer]
+          .select(&:installed?)
+          .map(&:participant)
 
         [storage, producers]
       end

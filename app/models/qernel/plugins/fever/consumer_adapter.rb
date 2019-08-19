@@ -27,6 +27,10 @@ module Qernel::Plugins
         nil
       end
 
+      def installed?
+        true
+      end
+
       private
 
       def demand_curve
