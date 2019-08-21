@@ -30,7 +30,6 @@ module Qernel::Plugins
       #
       # Returns a Hydrogen::Calculator.
       def calculator
-        # @calculator ||= Calculator.new(total_demand_curve, total_supply_curve)
         @calculator ||= Calculator.new(
           Helper.total_demand_curve(self),
           Helper.total_supply_curve(self)
