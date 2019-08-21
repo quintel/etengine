@@ -47,9 +47,10 @@ module Qernel::Plugins
         nil
       end
 
-      # Public: Returns an array of all adapters of the given type.
-      def adapter_group(type)
-        adapters[type] || []
+      # Public: Returns an array of all adapters of the given type which have
+      # non-zero demand.
+      def installed_adapters_of_type(type)
+        (adapters[type] || []).select { |a| a.carrier_demand.positive? }
       end
 
       private

@@ -5,6 +5,23 @@ require 'spec_helper'
 RSpec.describe Qernel::Plugins::Hydrogen::Calculator do
   let(:calculator) { described_class.new(demand, supply) }
 
+  context 'with no demand or supply' do
+    let(:demand) { [] }
+    let(:supply) { [] }
+
+    it 'has no residual demand' do
+      expect(calculator.residual_demand).to eq([])
+    end
+
+    it 'has no cumulative residual demand' do
+      expect(calculator.cumulative_residual_demand).to eq([])
+    end
+
+    it 'has no storage' do
+      expect(calculator.storage_volume).to eq([])
+    end
+  end
+
   context 'with constant 5 demand, 5 supply' do
     let(:demand) { [5.0] * 10 }
     let(:supply) { [5.0] * 10 }

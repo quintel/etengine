@@ -20,8 +20,13 @@ module Qernel::Plugins
       #
       # Returns a float.
       def supply_demand_balance(plugin)
-        consumption = plugin.adapter_group(:consumer).sum(&:carrier_demand)
-        production  = plugin.adapter_group(:producer).sum(&:carrier_demand)
+        consumption = plugin
+          .installed_adapters_of_type(:consumer)
+          .sum(&:carrier_demand)
+
+        production = plugin
+          .installed_adapters_of_type(:producer)
+          .sum(&:carrier_demand)
 
         production - consumption
       end
@@ -29,7 +34,8 @@ module Qernel::Plugins
       # Internal: Creates the combined curves of two hydrogen groups.
       private_class_method def combined_curve(plugin, group_one, group_two)
         ::Merit::CurveTools.add_curves((
-          plugin.adapter_group(group_one) + plugin.adapter_group(group_two)
+          plugin.installed_adapters_of_type(group_one) +
+          plugin.installed_adapters_of_type(group_two)
         ).map(&:demand_curve)).to_a
       end
     end
