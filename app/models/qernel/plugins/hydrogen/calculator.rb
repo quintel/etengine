@@ -10,9 +10,13 @@ module Qernel::Plugins
         "#<#{self.class} demand=#{@total_demand.sum} supply=#{@supply.sum}>"
       end
 
-      # Public: Given a demand and supply curve, creates a new curve describing
-      # the excess of demand (positive) or of supply (negative).
-      def residual_demand
+      # Public: Takes the total demand and supply curves, calculating for each
+      # hour the difference between demand and supply.
+      #
+      # Positive values indicate a surplus, while negative values are deficits.
+      #
+      # Returns an array.
+      def surplus
         result = Array.new(@total_demand.length)
 
         # Hold the current index and increment in each iteration: its faster to
@@ -28,10 +32,14 @@ module Qernel::Plugins
         result
       end
 
-      # Public: Given a curve creates a new curve where each value is the sum of
-      # itself plus the previous cumulative value.
-      def cumulative_residual_demand
-        curve = residual_demand
+      # Public: Takes the hourly surplus curve, and calculates for each hour
+      # the total amount of surplus energy up to that point in the year.
+      #
+      # Positive values represent a surplus, while negative values are deficits.
+      #
+      # Returns an array.
+      def cumulative_surplus
+        curve = surplus
         cumulative = []
 
         curve.each.with_index do |value, index|
