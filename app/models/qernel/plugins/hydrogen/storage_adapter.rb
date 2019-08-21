@@ -25,14 +25,9 @@ module Qernel::Plugins
         end
 
         # Set the storage volume.
-        cs = calculator.cumulative_surplus
-        (cs_min, cs_max) = cs.minmax
+        (cs_min, cs_max) = calculator.cumulative_surplus.minmax
 
-        # A curve which starts and ends with the same value: storage is
-        # neutral throughout the year starting with enough energy to meet any
-        # deficits, while ending up with the same amount to do the same the
-        # following year.
-        inject_storage(cs_max - cs_min) { cs.map { |val| val - cs_min } }
+        inject_storage(cs_max - cs_min) { calculator.storage_volume }
 
         nil
       end

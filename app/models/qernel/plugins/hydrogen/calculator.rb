@@ -50,25 +50,22 @@ module Qernel::Plugins
       end
 
       def storage_in
-        residual_demand.map { |v| v.positive? ? v : 0.0 }
+        surplus.map { |v| v.positive? ? v : 0.0 }
       end
 
       def storage_out
-        residual_demand.map { |v| v.negative? ? -v : 0.0 }
+        surplus.map { |v| v.negative? ? -v : 0.0 }
       end
 
+      # Public: Computes the energy which must be stored in the global buffer
+      # for each hour of the year in order to balance supply and demand.
+      #
+      # Returns a curve.
       def storage_volume
-        cumulative = cumulative_residual_demand
+        chs = cumulative_surplus
+        chs_min = chs.min
 
-        volume = []
-
-        residual_demand.each.with_index do |value, index|
-          previous = index.zero? ? cumulative.min.abs : volume[index - 1]
-
-          volume[index] = previous + value
-        end
-
-        volume
+        chs.map { |val| val - chs_min }
       end
 
       private
