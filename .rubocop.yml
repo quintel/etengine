@@ -33,6 +33,9 @@ Gemspec/OrderedDependencies:
 #   call_something(param_one
 #     param_two, param_three)
 #
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
+
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
 
