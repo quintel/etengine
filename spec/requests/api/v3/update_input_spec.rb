@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'Updating inputs with API v3' do
@@ -8,38 +10,63 @@ describe 'Updating inputs with API v3' do
 
   let(:scenario) do
     FactoryBot.create(:scenario,
-      user_values:     { 'unrelated_one' => 25.0 },
+      user_values: { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
   end
 
   before do
-    allow(Input).to receive(:records).and_return({
+    allow(Input).to receive(:records).and_return(
       'balanced_one' =>
-        FactoryBot.build(:input, start_value: 100.0, key: 'balanced_one', share_group: 'grouped', priority: 0),
+        FactoryBot.build(
+          :input,
+          start_value: 100.0,
+          key: 'balanced_one',
+          share_group: 'grouped',
+          priority: 0
+        ),
       'balanced_two' =>
-        FactoryBot.build(:input, start_value: 0.0, key: 'balanced_two', share_group: 'grouped', priority: 0),
+        FactoryBot.build(
+          :input,
+          start_value: 0.0,
+          key: 'balanced_two',
+          share_group: 'grouped',
+          priority: 0
+        ),
       'unrelated_one' =>
-        FactoryBot.build(:input, key: 'unrelated_one', share_group: 'diode', priority: 0),
+        FactoryBot.build(
+          :input,
+          key: 'unrelated_one',
+          share_group: 'diode',
+          priority: 0
+        ),
       'unrelated_two' =>
-        FactoryBot.build(:input, key: 'unrelated_two', share_group: 'diode', priority: 0),
+        FactoryBot.build(
+          :input,
+          key: 'unrelated_two',
+          share_group: 'diode',
+          priority: 0
+        ),
       'nongrouped' =>
-        FactoryBot.build(:input, key: 'nongrouped', priority: 0)
-    })
+        FactoryBot.build(
+          :input,
+          key: 'nongrouped',
+          priority: 0
+        )
+    )
 
     allow(Input).to receive(:all).and_return(Input.records.values)
   end
 
   def put_scenario(user_values = {}, params = {})
-    user_values = Hash[user_values.map { |k, v| [ k.to_s, v.to_s ] }]
+    user_values = Hash[user_values.map { |k, v| [k.to_s, v.to_s] }]
 
-    put "/api/v3/scenarios/#{ scenario.id }",
-      params: params.merge({ scenario: { user_values: user_values } })
+    put "/api/v3/scenarios/#{scenario.id}",
+      params: params.merge(scenario: { user_values: user_values })
 
     scenario.reload
   end
 
   def nonbalanced_scenario(user_values = {}, params = {})
-    # put_scenario(user_values, params)
     put_scenario(user_values, params.merge(autobalance: false))
   end
 
@@ -62,20 +89,20 @@ describe 'Updating inputs with API v3' do
   # --------------------------------------------------------------------------
 
   context 'when autobalance=false,' do
-    context 'providing a non-grouped single value' do
+    context 'when providing a non-grouped single value' do
       before do
         nonbalanced_scenario(nongrouped: 50)
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
       it 'sets the user value' do
         expect(scenario.user_values).to include('nongrouped' => 50.0)
       end
 
-      it 'should include the scenario data' do
+      it 'includes the scenario data' do
         json = JSON.parse(response.body)
 
         expect(json).to have_key('scenario')
@@ -89,18 +116,19 @@ describe 'Updating inputs with API v3' do
 
         expect(json['scenario']).to have_key('created_at')
 
-        expect(json['scenario']['url']).
-          to match(%r{/scenarios/#{ scenario.id }$})
+        expect(json['scenario']['url'])
+          .to match(%r{/scenarios/#{ scenario.id }$})
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing a non-grouped single value
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'providing a balanced single value' do
+    context 'when providing a balanced single value' do
       before do
         scenario.balanced_values.merge!(
           'balanced_one' => 20.0,
-          'balanced_two' => 80.0)
+          'balanced_two' => 80.0
+        )
 
         scenario.save!
 
@@ -108,7 +136,7 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
       it 'sets the user value' do
@@ -116,37 +144,38 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'removes previously balanced values' do
-        expect(scenario.balanced_values).to_not have_key('balanced_one')
-        expect(scenario.balanced_values).to_not have_key('balanced_two')
+        expect(scenario.balanced_values).not_to have_key('balanced_one')
+        expect(scenario.balanced_values).not_to have_key('balanced_two')
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing a balancing single value
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'providing an unbalanced single value' do
+    context 'when providing an unbalanced single value' do
       before do
         nonbalanced_scenario(balanced_one: 50)
       end
 
       it 'responds 422 Unprocessable Entity' do
-        expect(response.status).to eql(422)
+        expect(response.status).to be(422)
       end
 
       it 'does not set the user value' do
-        expect(scenario.user_values).to_not have_key('balanced_one')
+        expect(scenario.user_values).not_to have_key('balanced_one')
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)).
-          to have_api_balance_error.on(:grouped)
+        expect(JSON.parse(response.body))
+          .to have_api_balance_error.on(:grouped)
       end
-    end # providing a balancing single value
+    end
 
-    context 'providing an unbalanced group' do
+    context 'when providing an unbalanced group' do
       before do
         scenario.balanced_values.merge!(
           'balanced_one' => 20.0,
-          'balanced_two' => 80.0)
+          'balanced_two' => 80.0
+        )
 
         scenario.save!
 
@@ -154,7 +183,7 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
       it 'sets the user values' do
@@ -163,38 +192,39 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'removes previously balanced values' do
-        expect(scenario.balanced_values).to_not have_key('balanced_one')
-        expect(scenario.balanced_values).to_not have_key('balanced_two')
+        expect(scenario.balanced_values).not_to have_key('balanced_one')
+        expect(scenario.balanced_values).not_to have_key('balanced_two')
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing a balanced group
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'providing a non-balancing single value' do
+    context 'when providing a non-balancing single value' do
       before do
         nonbalanced_scenario(balanced_one: 99)
       end
 
       it 'responds 422 Unprocessable Entity' do
-        expect(response.status).to eql(422)
+        expect(response.status).to be(422)
       end
 
       it 'does not set the user value' do
-        expect(scenario.user_values).to_not have_key('balanced_one')
+        expect(scenario.user_values).not_to have_key('balanced_one')
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)).
-          to have_api_balance_error.on(:grouped)
+        expect(JSON.parse(response.body))
+          .to have_api_balance_error.on(:grouped)
       end
-    end # providing a non-balancing single value
+    end
 
-    context 'resetting a member of the group' do
+    context 'when resetting a member of the group' do
       context 'when the other member is explicitly set' do
         before do
           scenario.user_values.merge!(
             'balanced_one' => 20.0,
-            'balanced_two' => 80.0)
+            'balanced_two' => 80.0
+          )
 
           scenario.save!
 
@@ -202,25 +232,26 @@ describe 'Updating inputs with API v3' do
         end
 
         it 'responds 422 Unprocessable Entity' do
-          expect(response.status).to eql(422)
+          expect(response.status).to be(422)
         end
 
         it 'does not reset the value' do
           expect(scenario.user_values).to include(
             'balanced_one' => 20.0,
-            'balanced_two' => 80.0)
+            'balanced_two' => 80.0
+          )
         end
 
         it 'warns about the unbalanced group' do
-          expect(JSON.parse(response.body)).
-            to have_api_balance_error.on(:grouped)
+          expect(JSON.parse(response.body))
+            .to have_api_balance_error.on(:grouped)
         end
-      end # when the other member is explicitly set
+      end
 
       context 'when the other member is autobalanced' do
         before do
-          scenario.user_values.merge!('balanced_one' => 20.0)
-          scenario.balanced_values.merge!('balanced_two' => 80.0)
+          scenario.user_values['balanced_one'] = 20.0
+          scenario.balanced_values['balanced_two'] = 80.0
 
           scenario.save!
 
@@ -228,20 +259,20 @@ describe 'Updating inputs with API v3' do
         end
 
         it 'responds 200 OK' do
-          expect(response.status).to eql(200)
+          expect(response.status).to be(200)
         end
 
         it 'removes the user value' do
-          expect(scenario.user_values).to_not have_key('balanced_one')
+          expect(scenario.user_values).not_to have_key('balanced_one')
         end
 
         it 'removes unnecessary balanced values' do
-          expect(scenario.balanced_values).to_not have_key('balanced_two')
+          expect(scenario.balanced_values).not_to have_key('balanced_two')
         end
 
-        it_should_behave_like 'updating inputs'
-      end # when the other member is autobalanced
-    end # resetting a member of the group
+        it_behaves_like 'updating inputs'
+      end
+    end
 
     context 'when performing a scenario-level reset' do
       before do
@@ -249,23 +280,23 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
-      it 'should remove the user values' do
+      it 'removes the user values' do
         expect(scenario.user_values).to be_empty
       end
 
-      it 'should remove the balanced values' do
+      it 'removes the balanced values' do
         expect(scenario.balanced_values).to be_empty
       end
-    end # when performing a scenario-level reset
-  end # when autobalance=false
+    end
+  end
 
   # --------------------------------------------------------------------------
 
   context 'when autobalance=true,' do
-    context 'providing one member of a group' do
+    context 'when providing one member of a group' do
       before do
         autobalance_scenario(balanced_one: 10)
       end
@@ -283,16 +314,16 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'includes the balanaced value when requesting inputs.json' do
-        get "/api/v3/scenarios/#{ scenario.id }/inputs.json"
+        get "/api/v3/scenarios/#{scenario.id}/inputs.json"
         inputs = JSON.parse(response.body)
 
-        expect(inputs['balanced_two']['user']).to eql(90.0)
+        expect(inputs['balanced_two']['user']).to be(90.0)
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing one member of a group
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'providing an unbalanceable member of a group' do
+    context 'when providing an unbalanceable member of a group' do
       before do
         autobalance_scenario(balanced_one: 101)
       end
@@ -302,18 +333,18 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'sets no user value' do
-        expect(scenario.user_values).to_not have_key('balanced_one')
+        expect(scenario.user_values).not_to have_key('balanced_one')
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)).
-          to have_api_balance_error.on(:grouped)
+        expect(JSON.parse(response.body))
+          .to have_api_balance_error.on(:grouped)
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing an unbalanceable member of a group
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'providing all unbalanceable members of a group' do
+    context 'when providing all unbalanceable members of a group' do
       before do
         autobalance_scenario(balanced_one: 49, balanced_two: 50)
       end
@@ -323,46 +354,48 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'sets no user value' do
-        expect(scenario.user_values).to_not have_key('balanced_one')
+        expect(scenario.user_values).not_to have_key('balanced_one')
       end
 
       it 'warns about the unbalanced group' do
-        expect(JSON.parse(response.body)).
-          to have_api_balance_error.on(:grouped)
+        expect(JSON.parse(response.body))
+          .to have_api_balance_error.on(:grouped)
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing all unbalanceable members of a group
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'providing all members of a group' do
+    context 'when providing all members of a group' do
       before do
         autobalance_scenario(balanced_one: 10, balanced_two: 90)
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
       it 'sets the user values' do
         expect(scenario.user_values).to include(
           'balanced_one' => 10.0,
-          'balanced_two' => 90.0)
+          'balanced_two' => 90.0
+        )
       end
 
       it 'does not balance the group' do
-        expect(scenario.balanced_values).to_not have_key('balanced_one')
-        expect(scenario.balanced_values).to_not have_key('balanced_two')
+        expect(scenario.balanced_values).not_to have_key('balanced_one')
+        expect(scenario.balanced_values).not_to have_key('balanced_two')
       end
 
-      it_should_behave_like 'updating inputs'
-    end # providing all members of a group
+      it_behaves_like 'updating inputs'
+    end
 
-    context 'resetting a member of the group' do
-      context 'and all members are set' do
+    context 'when resetting a member of the group' do
+      context 'when all members are set' do
         before do
           scenario.user_values.merge!(
             'balanced_one' => 90.0,
-            'balanced_two' => 10.0)
+            'balanced_two' => 10.0
+          )
 
           scenario.save!
 
@@ -370,84 +403,84 @@ describe 'Updating inputs with API v3' do
         end
 
         it 'responds 200 OK' do
-          expect(response.status).to eql(200)
+          expect(response.status).to be(200)
         end
 
         it 're-balances the group' do
           expect(scenario.user_values).to include('balanced_two' => 10.0)
-          expect(scenario.user_values).to_not have_key('balanced_one')
+          expect(scenario.user_values).not_to have_key('balanced_one')
 
           expect(scenario.balanced_values).to include('balanced_one' => 90.0)
         end
 
-        it_should_behave_like 'updating inputs'
-      end # and all members are set
+        it_behaves_like 'updating inputs'
+      end
 
-      context 'and a balanced value is set' do
+      context 'when a balanced value is set' do
         before do
-          scenario.user_values.merge!('balanced_one' => 90.0)
-          scenario.balanced_values.merge!('balanced_two' => 10.0)
+          scenario.user_values['balanced_one'] = 90.0
+          scenario.balanced_values['balanced_two'] = 10.0
           scenario.save!
 
           autobalance_scenario(balanced_one: 'reset')
         end
 
         it 'responds 200 OK' do
-          expect(response.status).to eql(200)
+          expect(response.status).to be(200)
         end
 
         it 'removes the user value' do
-          expect(scenario.user_values).to_not have_key('balanced_one')
+          expect(scenario.user_values).not_to have_key('balanced_one')
         end
 
         it 'removes the balanced value' do
-          expect(scenario.balanced_values).to_not have_key('balanced_two')
+          expect(scenario.balanced_values).not_to have_key('balanced_two')
         end
 
-        it_should_behave_like 'updating inputs'
-      end # and a balanced value is set
+        it_behaves_like 'updating inputs'
+      end
 
-      context 'and only that member is set' do
+      context 'when only that member is set' do
         before do
-          scenario.user_values.merge!('balanced_one' => 100.0)
+          scenario.user_values['balanced_one'] = 100.0
           scenario.save!
 
           autobalance_scenario(balanced_one: 'reset')
         end
 
-        it 'should respond 200 OK' do
-          expect(response.status).to eql(200)
+        it 'responds 200 OK' do
+          expect(response.status).to be(200)
         end
 
-        it 'should remove the user value' do
-          expect(scenario.user_values).to_not have_key('balanced_one')
+        it 'removes the user value' do
+          expect(scenario.user_values).not_to have_key('balanced_one')
         end
 
-        it_should_behave_like 'updating inputs'
-      end # and only that member is set
-    end # resetting a member of the group
+        it_behaves_like 'updating inputs'
+      end
+    end
 
-    context 'resetting all members of the group' do
+    context 'when resetting all members of the group' do
       before do
         autobalance_scenario(balanced_one: 'reset', balanced_two: 'reset')
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
       it 'removes the user values' do
-        expect(scenario.user_values).to_not have_key('balanced_one')
-        expect(scenario.user_values).to_not have_key('balanced_two')
+        expect(scenario.user_values).not_to have_key('balanced_one')
+        expect(scenario.user_values).not_to have_key('balanced_two')
       end
 
       it 'does not add any balanced values' do
-        expect(scenario.user_values).to_not have_key('balanced_one')
-        expect(scenario.balanced_values).to_not have_key('balanced_two')
+        expect(scenario.user_values).not_to have_key('balanced_one')
+        expect(scenario.balanced_values).not_to have_key('balanced_two')
       end
 
-      it_should_behave_like 'updating inputs'
-    end # resetting all members of the group
+      it_behaves_like 'updating inputs'
+    end
 
     context 'when performing a scenario-level reset' do
       before do
@@ -455,18 +488,18 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
-        expect(response.status).to eql(200)
+        expect(response.status).to be(200)
       end
 
-      it 'should remove the user values' do
+      it 'removes the user values' do
         expect(scenario.user_values).to be_empty
       end
 
-      it 'should remove the balanced values' do
+      it 'removes the balanced values' do
         expect(scenario.balanced_values).to be_empty
       end
-    end # when performing a scenario-level reset
-  end # when autobalance=true
+    end
+  end
 
   # --------------------------------------------------------------------------
 
@@ -475,64 +508,64 @@ describe 'Updating inputs with API v3' do
       put_scenario(does_not_exist: 50)
     end
 
-    it 'should respond 422 Unprocessable Entity' do
-      expect(response.status).to eql(422)
+    it 'responds 422 Unprocessable Entity' do
+      expect(response.status).to be(422)
     end
 
-    it 'should have an error message' do
-      expect(JSON.parse(response.body)['errors']).
-        to include('Input does_not_exist does not exist')
+    it 'has an error message' do
+      expect(JSON.parse(response.body)['errors'])
+        .to include('Input does_not_exist does not exist')
     end
-  end # when the input does not exist
+  end
 
   context 'when the value is above the permitted maximum' do
     before do
       put_scenario(nongrouped: 101)
     end
 
-    it 'should respond 422 Unprocessable Entity' do
-      expect(response.status).to eql(422)
+    it 'responds 422 Unprocessable Entity' do
+      expect(response.status).to be(422)
     end
 
-    it 'should have an error message' do
-      expect(JSON.parse(response.body)['errors']).
-        to include("Input nongrouped cannot be greater than 100")
+    it 'has an error message' do
+      expect(JSON.parse(response.body)['errors'])
+        .to include('Input nongrouped cannot be greater than 100')
     end
-  end # when the value is above the permitted maximum
+  end
 
   context 'when the value is beneath the permitted minimum' do
     before do
       put_scenario(nongrouped: -1)
     end
 
-    it 'should respond 422 Unprocessable Entity' do
-      expect(response.status).to eql(422)
+    it 'responds 422 Unprocessable Entity' do
+      expect(response.status).to be(422)
     end
 
-    it 'should have an error message' do
-      expect(JSON.parse(response.body)['errors']).
-        to include("Input nongrouped cannot be less than 0")
+    it 'has an error message' do
+      expect(JSON.parse(response.body)['errors'])
+        .to include('Input nongrouped cannot be less than 0')
     end
-  end # when the value is beneath the permitted minimum
+  end
 
   context 'when requesting a non-existent query' do
     before do
-      put_scenario({ nongrouped: 10 }, gqueries: %w( does_not_exist ))
+      put_scenario({ nongrouped: 10 }, gqueries: %w[does_not_exist])
     end
 
-    it 'should respond 422 Unprocessable Entity' do
-      expect(response.status).to eql(422)
+    it 'responds 422 Unprocessable Entity' do
+      expect(response.status).to be(422)
     end
 
-    it 'should have an error message' do
-      expect(JSON.parse(response.body)['errors']).
-        to include('Gquery does_not_exist does not exist')
+    it 'has an error message' do
+      expect(JSON.parse(response.body)['errors'])
+        .to include('Gquery does_not_exist does not exist')
     end
 
-    it 'should not set the scenario attributes' do
-      expect(scenario.user_values).to_not have_key('nongrouped')
+    it 'does not set the scenario attributes' do
+      expect(scenario.user_values).not_to have_key('nongrouped')
     end
-  end # when requesting a non-existent query
+  end
 
   context 'when submitting non-Hash user_values' do
     before do
