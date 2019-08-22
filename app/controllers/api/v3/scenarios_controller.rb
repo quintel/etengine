@@ -290,15 +290,15 @@ module Api
       #
       # Returns a ActionController::Parameters.
       def scenario_attributes
-        user_vals = filtered_user_values(params[:scenario])
-
-        attrs = params.permit(scenario: %i[
-          area_code author country descale description end_year
-          preset_scenario_id protected region scenario_id source
-          title use_fce
+        attrs = params.permit(scenario: [
+          :area_code, :author, :country, :descale, :description, :end_year,
+          :preset_scenario_id, :protected, :region, :scenario_id, :source,
+          :title, :use_fce, user_values: {}
         ])
 
-        attrs = (attrs[:scenario] || {}).merge(user_values: user_vals)
+        attrs = (attrs[:scenario] || {}).merge(
+          user_values: filtered_user_values(attrs[:scenario])
+        )
 
         attrs[:descale] = attrs[:descale] == 'true'
 
@@ -309,8 +309,7 @@ module Api
       #
       # Returns a ActionController::Parameters
       def filtered_user_values(scenario)
-        # return {} unless scenario && scenario[:user_values]
-        return {} unless scenario && scenario[:user_values]
+        return {} unless scenario&.key?(:user_values)
 
         scenario[:user_values]
           .permit!

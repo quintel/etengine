@@ -534,4 +534,14 @@ describe 'Updating inputs with API v3' do
     end
   end # when requesting a non-existent query
 
+  context 'when submitting non-Hash user_values' do
+    before do
+      put "/api/v3/scenarios/#{scenario.id}",
+        params: { scenario: { user_values: [] } }
+    end
+
+    it 'responds 200 OK' do
+      expect(response.status).to eq(200)
+    end
+  end
 end
