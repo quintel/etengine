@@ -47,7 +47,7 @@ module Qernel::Plugins
       #
       # Returns a Merit::LoadProfile.
       def curve(name)
-        ::Merit::LoadProfile.load(@dir.join("#{ name }.csv"))
+        Merit::LoadProfile.load(@dir.join("#{ name }.csv"))
       end
 
       # Public: Tests that a curve exists.

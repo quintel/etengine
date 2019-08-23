@@ -32,7 +32,7 @@ module Api
 
       # Public: Creates a hash with the merit order data.
       def as_json(*)
-        order = Qernel::Plugins::MeritOrder.new(@graph).order
+        order = Qernel::MeritFacade::Manager.new(@graph).order
         data  = { profiles: {}, participants: [] }
         area  = Atlas::Dataset.find(@graph.area.area_code)
 

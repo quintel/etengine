@@ -18,7 +18,7 @@ module Qernel::Plugins
         return zeroed_profile if mix.empty?
         return mix.keys.first if mix.length == 1
 
-        ::Merit::CurveTools.add_curves(
+        Merit::CurveTools.add_curves(
           balanced_mix(mix)
             .map { |prof, share| prof * share if share.positive? }
             .compact
@@ -27,7 +27,7 @@ module Qernel::Plugins
 
       # Public: Returns a profile of all zeroes.
       def zeroed_profile
-        ::Merit::Curve.new(Array.new(8760, 0.0))
+        Merit::Curve.new(Array.new(8760, 0.0))
       end
 
       # Internal: Ensures that a mix of profiles sum to 1.0.

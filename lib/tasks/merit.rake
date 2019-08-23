@@ -52,7 +52,7 @@ namespace :merit do
 
     graph = scenario.gql.future_graph
 
-    order = Qernel::Plugins::MeritOrder.new(graph).order.calculate
+    order = Qernel::MeritFacade::Manager.new(graph).order.calculate
 
     # Save the data.
     area  = scenario.area_code.upcase

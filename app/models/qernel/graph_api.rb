@@ -27,7 +27,7 @@ class GraphApi
   end
 
   def use_merit_order_demands?
-    Qernel::Plugins::MeritOrder.enabled?(graph)
+    Qernel::Plugins::TimeResolve.enabled?(graph)
   end
 
   def fce_enabled?
@@ -122,7 +122,7 @@ class GraphApi
   # exceeded.
   def loss_of_load_expectation(capacity, excludes = [])
     graph.plugin(:merit).order.lole.expectation(
-      ::Merit::Curve.new(electricity_demand_curve), capacity, excludes
+      Merit::Curve.new(electricity_demand_curve), capacity, excludes
     )
   end
 

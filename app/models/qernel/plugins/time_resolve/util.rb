@@ -49,7 +49,7 @@ module Qernel::Plugins
         new_sum = chopped_curve.sum
 
         # Normalize to describe demand in MWh.
-        ::Merit::Curve.new(chopped_curve.map { |val| val / (3600.0 * new_sum) })
+        Merit::Curve.new(chopped_curve.map { |val| val / (3600.0 * new_sum) })
       end
 
       # Public: Receives a curve of values and converts it to a load profile
@@ -58,7 +58,7 @@ module Qernel::Plugins
       # Returns a Merit::Curve
       def curve_to_profile(curve)
         sum = curve.sum * 3600
-        ::Merit::Curve.new(curve.map { |val| val / sum })
+        Merit::Curve.new(curve.map { |val| val / sum })
       end
     end
   end

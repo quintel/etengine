@@ -89,11 +89,11 @@ module Qernel
         profile_name = @config.profile.to_s.delete(' ')
 
         if @converter.demand&.zero?
-          ::Merit::Curve.new([0.0] * 8760)
+          Merit::Curve.new([0.0] * 8760)
         elsif profile_name.start_with?('self')
-          ::Merit::Curve.new(merit_demand_profile(profile_name[5..-1].to_sym))
+          Merit::Curve.new(merit_demand_profile(profile_name[5..-1].to_sym))
         elsif profile_name.start_with?('dynamic')
-          ::Merit::Curve.new(dynamic_demand_profile(profile_name[8..-1].to_sym))
+          Merit::Curve.new(dynamic_demand_profile(profile_name[8..-1].to_sym))
         else
           @context.dataset.load_profile(@config.profile)
         end
@@ -144,7 +144,7 @@ module Qernel
           # between min and max curves, rather than amplifying the min curve.
           @context.graph.plugin(:merit).curves.curve(name, @converter)
         else
-          Plugin::TimeResolve::Util.amplify_curve(
+          Plugins::TimeResolve::Util.amplify_curve(
             @context.dataset.load_profile("#{name}_baseline"),
             full_load_hours
           )

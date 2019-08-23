@@ -28,8 +28,8 @@ module Qernel::Plugins
 
     def initialize(graph)
       super
-      @merit = Qernel::Merit::Manager.new(graph)
-      @fever = Qernel::Fever::Manager.new(graph)
+      @merit = Qernel::MeritFacade::Manager.new(graph)
+      @fever = Qernel::FeverFacade::Manager.new(graph)
       @hydrogen = Qernel::Hydrogen::Manager.new(graph)
     end
 
@@ -54,7 +54,7 @@ module Qernel::Plugins
     end
 
     def inject
-      merit_calc = ::Merit::StepwiseCalculator.new.calculate(@merit.order)
+      merit_calc = Merit::StepwiseCalculator.new.calculate(@merit.order)
 
       8760.times do |frame|
         @fever.calculate_frame(frame)

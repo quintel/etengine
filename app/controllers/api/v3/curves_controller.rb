@@ -54,7 +54,7 @@ module Api
       private
 
       def merit_required
-        unless Qernel::Plugins::MeritOrder.enabled?(scenario.gql.future_graph)
+        unless Qernel::Plugins::TimeResolve.enabled?(scenario.gql.future_graph)
           render :merit_required, format: :html, layout: false
         end
       end

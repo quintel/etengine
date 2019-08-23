@@ -23,7 +23,7 @@ module Qernel::Plugins
     end
 
     def curves
-      @curves ||= Qernel::Merit::Curves.new(@graph, household_heat)
+      @curves ||= Qernel::MeritFacade::Curves.new(@graph, household_heat)
     end
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
@@ -54,7 +54,7 @@ module Qernel::Plugins
 
         models.each do |converter|
           @adapters[converter.key] ||=
-            Qernel::Merit::Adapter.adapter_for(converter, @graph, dataset)
+            Qernel::MeritFacade::Adapter.adapter_for(converter, @graph, dataset)
         end
       end
 
@@ -79,7 +79,7 @@ module Qernel::Plugins
     # supply additional information so that we can determine cost and
     # profitability.
     def setup
-      @order = ::Merit::Order.new
+      @order = Merit::Order.new
 
       each_adapter do |adapter|
         # We have to trigger "participant" so that values may be injected after
@@ -89,7 +89,7 @@ module Qernel::Plugins
         @order.add(participant) if adapter.installed?
       end
 
-      @order.add(::Merit::User.create(
+      @order.add(Merit::User.create(
         key: :total_demand,
         load_curve: total_demand_curve
       ))
@@ -163,7 +163,7 @@ module Qernel::Plugins
 
     # Internal: Fetches the adapter matching the given participant `key`.
     #
-    # Returns a Plugins::Merit::Adapter or nil.
+    # Returns a MeritFacade::Adapter or nil.
     def adapter(key)
       adapters[key]
     end
@@ -181,9 +181,9 @@ module Qernel::Plugins
     end
 
     def household_heat
-      Qernel::Merit::SimpleHouseholdHeat.new(
+      Qernel::MeritFacade::SimpleHouseholdHeat.new(
         @graph,
-        Qernel::Merit::CurveSet.with_dataset(dataset, 'heat', 'default')
+        TimeResolve::CurveSet.with_dataset(dataset, 'heat', 'default')
       )
     end
   end # SimpleMeritOrder
