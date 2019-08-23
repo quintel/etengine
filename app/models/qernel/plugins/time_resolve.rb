@@ -28,9 +28,9 @@ module Qernel::Plugins
 
     def initialize(graph)
       super
-      @merit = MeritOrder.new(graph)
-      @fever = Qernel::Plugins::Fever::Plugin.new(graph)
-      @hydrogen = Qernel::Plugins::Hydrogen::Plugin.new(graph)
+      @merit = Qernel::Merit::Manager.new(graph)
+      @fever = Qernel::Fever::Manager.new(graph)
+      @hydrogen = Qernel::Hydrogen::Manager.new(graph)
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we

@@ -23,7 +23,7 @@ module Qernel::Plugins
     end
 
     def curves
-      @curves ||= Qernel::Plugins::Merit::Curves.new(@graph, household_heat)
+      @curves ||= Qernel::Merit::Curves.new(@graph, household_heat)
     end
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
@@ -54,9 +54,7 @@ module Qernel::Plugins
 
         models.each do |converter|
           @adapters[converter.key] ||=
-            Qernel::Plugins::Merit::Adapter.adapter_for(
-              converter, @graph, dataset
-            )
+            Qernel::Merit::Adapter.adapter_for(converter, @graph, dataset)
         end
       end
 
@@ -183,9 +181,9 @@ module Qernel::Plugins
     end
 
     def household_heat
-      Merit::SimpleHouseholdHeat.new(
+      Qernel::Merit::SimpleHouseholdHeat.new(
         @graph,
-        TimeResolve::CurveSet.with_dataset(dataset, 'heat', 'default')
+        Qernel::Merit::CurveSet.with_dataset(dataset, 'heat', 'default')
       )
     end
   end # SimpleMeritOrder

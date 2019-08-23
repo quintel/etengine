@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Qernel::Plugins
-  describe MeritOrder do
+  describe DisableSectors do
     let(:gql) do
       gql = Scenario.default(
         user_values: { settings_enable_merit_order: 0 }
