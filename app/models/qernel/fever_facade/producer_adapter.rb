@@ -21,7 +21,7 @@ module Qernel
 
       def participant
         @participant ||=
-          if @config.defer_for && @config.defer_for > 0
+          if @config.defer_for&.positive?
             Fever::DeferrableActivity.new(
               producer, share: share, expire_after: @config.defer_for
             )
@@ -47,7 +47,7 @@ module Qernel
           demand = participant.demand
           link   = @converter.converter.output(:useable_heat).links.first
 
-          link.share = demand > 0 ? production / demand : 1.0
+          link.share = demand.positive? ? production / demand : 1.0
         end
 
         @converter.dataset_lazy_set(:heat_output_curve) do
@@ -56,7 +56,7 @@ module Qernel
       end
 
       def producer
-        if (st = @converter.dataset_get(:storage)) && st.volume > 0
+        if (st = @converter.dataset_get(:storage)) && st.volume.positive?
           Fever::BufferingProducer.new(
             capacity, reserve,
             input_efficiency: input_efficiency
@@ -105,9 +105,10 @@ module Qernel
       end
 
       def input_efficiency
-        slots = @converter.converter.inputs.reject do |slot|
-          slot.carrier.key == :ambient_heat
-        end
+        slots =
+          @converter.converter.inputs.reject do |slot|
+            slot.carrier.key == :ambient_heat
+          end
 
         slots.any? ? 1.0 / slots.sum(&:conversion) : 1.0
       end
@@ -132,8 +133,9 @@ module Qernel
           @graph.converter(@config.alias_of).dataset_get(:fever).group
         )
 
-        alias_group.adapters
-          .detect { |adapter| adapter.converter.key == @config.alias_of }
+        alias_group.adapters.detect do |adapter|
+          adapter.converter.key == @config.alias_of
+        end
       end
 
       def reserve
@@ -155,6 +157,6 @@ module Qernel
           link.share
         end
       end
-    end # ProducerAdapter
+    end
   end
 end

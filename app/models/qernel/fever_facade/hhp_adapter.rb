@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
     # An adapter which sets up a hybrid heat-pump to participate in Fever.
@@ -135,10 +137,11 @@ module Qernel
 
         total_demand = participant.producer.output_curve.sum
 
-        new_conversion = output.sum do |(carrier, share)|
-          producer = producer_for_carrier(carrier.to_sym)
-          producer ? (producer.output_curve.sum / total_demand) * share : 0.0
-        end
+        new_conversion =
+          output.sum do |(carrier, share)|
+            producer = producer_for_carrier(carrier.to_sym)
+            producer ? (producer.output_curve.sum / total_demand) * share : 0.0
+          end
 
         @converter.converter.output(:useable_heat)[:conversion] = new_conversion
       end

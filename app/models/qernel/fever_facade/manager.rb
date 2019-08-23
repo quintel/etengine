@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
+    # Sets up and controls the calculation of one or more Fever instance.
     class Manager
-      TYPES = [:consumer, :storage, :producer].freeze
+      TYPES = %i[consumer storage producer].freeze
 
       attr_reader :dataset
       attr_reader :graph
@@ -31,9 +34,10 @@ module Qernel
       # Configures the Fever groups, ensuring that hot water is first since its
       # producers may be used as aliases in other groups.
       def setup
-        @groups = Etsource::Fever.groups.map do |conf|
-          Group.new(conf.name, self)
-        end
+        @groups =
+          Etsource::Fever.groups.map do |conf|
+            Group.new(conf.name, self)
+          end
       end
 
       # Internal: Instructs each contained calculator to compute loads.

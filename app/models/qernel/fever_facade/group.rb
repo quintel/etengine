@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
     # Defines a set of consumers and producers which will be computed in Fever.
@@ -29,9 +31,7 @@ module Qernel
       # frame - The frame number to be calculated.
       #
       # Returns nothing.
-      def calculate_frame(frame)
-        calculator.calculate_frame(frame)
-      end
+      delegate :calculate_frame, to: :calculator
 
       # Public: Returns a curve which describes the demand for electricity
       # caused by the activities within the calculator.
@@ -49,12 +49,15 @@ module Qernel
       def adapters_by_type
         return @adapters if @adapters
 
-        @adapters = Manager::TYPES.each_with_object({}) do |type, data|
-          data[type] =
-            Etsource::Fever.group(@name).keys(type).map do |node_key|
-              Adapter.adapter_for(@graph.converter(node_key), @graph, @dataset)
-            end
-        end
+        @adapters =
+          Manager::TYPES.each_with_object({}) do |type, data|
+            data[type] =
+              Etsource::Fever.group(@name).keys(type).map do |node_key|
+                Adapter.adapter_for(
+                  @graph.converter(node_key), @graph, @dataset
+                )
+              end
+          end
       end
 
       private
@@ -86,6 +89,6 @@ module Qernel
 
         [storage, producers]
       end
-    end # Group
-  end # Fever
+    end
+  end
 end

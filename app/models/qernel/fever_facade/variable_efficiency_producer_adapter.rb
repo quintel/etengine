@@ -2,6 +2,8 @@
 
 module Qernel
   module FeverFacade
+    # A producer whose efficiency varies throughout the year depending on the
+    # ambient temperature.
     class VariableEfficiencyProducerAdapter < ProducerAdapter
       def inject!
         share = combined_share
@@ -10,12 +12,12 @@ module Qernel
 
         load_efficiency = load_adjusted_input_efficiency
 
-        unless load_efficiency.zero?
-          efficiency = 1 / load_efficiency
+        return if load_efficiency.zero?
 
-          based_on_slot[:conversion]      = efficiency * share
-          balanced_with_slot[:conversion] = (1.0 - efficiency) * share
-        end
+        efficiency = 1 / load_efficiency
+
+        based_on_slot[:conversion]      = efficiency * share
+        balanced_with_slot[:conversion] = (1.0 - efficiency) * share
       end
 
       # Internal: Computes the actual efficiency of the heat pump over the year,
@@ -63,23 +65,27 @@ module Qernel
       #
       # Returns an array.
       def input_efficiency
-        @input_efficiency ||= begin
-          base_cop   = @config.base_cop
-          per_degree = @config.cop_per_degree
+        @input_efficiency ||=
+          begin
+            base_cop   = @config.base_cop
+            per_degree = @config.cop_per_degree
 
-          temperature_curve.map do |val|
-            cop = base_cop + per_degree * val
+            temperature_curve.map do |val|
+              cop = base_cop + per_degree * val
 
-            # Coefficient of performance must not drop below 1.0 (where there is
-            # no "balanced_with" energy, and only "based_on" energy is used).
-            cop < 1.0 ? 1.0 : cop
+              # Coefficient of performance must not drop below 1.0 (where there
+              # is no "balanced_with" energy, and only "based_on" energy is
+              # used).
+              cop < 1.0 ? 1.0 : cop
+            end
           end
-        end
       end
 
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
-        @graph.plugin(:time_resolve).fever.curves.curve('air_temperature', @converter)
+        @graph.plugin(:time_resolve).fever.curves.curve(
+          'air_temperature', @converter
+        )
       end
 
       def capacity
@@ -113,9 +119,10 @@ module Qernel
       def efficiency_based_capacity
         cop_cutoff = @config.cop_cutoff || 1.0
 
-        input_cap = total_value do
-          @config.capacity[@config.efficiency_based_on]
-        end
+        input_cap =
+          total_value do
+            @config.capacity[@config.efficiency_based_on]
+          end
 
         input_efficiency.map do |eff|
           eff < cop_cutoff ? 0.0 : input_cap * eff

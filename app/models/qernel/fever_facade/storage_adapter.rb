@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
     # Represents a Fever participant which will store excess energy from
@@ -41,6 +43,6 @@ module Qernel
           total_value { @converter.dataset_get(:storage).volume }
         )
       end
-    end # StorageAdapter
+    end
   end
 end

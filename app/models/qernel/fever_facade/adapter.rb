@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
     # Base class which handles setting up the participant in Fever, and
@@ -8,12 +10,13 @@ module Qernel
       def self.adapter_for(converter, graph, dataset)
         type = converter.dataset_get(:fever).type.to_sym
 
-        klass = case type
+        klass =
+          case type
           when :producer then ProducerAdapter.factory(converter, graph, dataset)
           when :storage  then StorageAdapter
           when :consumer then ConsumerAdapter
-          else raise "Unknown Fever type: #{ type }"
-        end
+          else raise "Unknown Fever type: #{type}"
+          end
 
         klass.new(converter, graph, dataset)
       end
@@ -31,7 +34,7 @@ module Qernel
       end
 
       def inspect
-        "#<#{ self.class.name } converter=#{ @converter.key }>"
+        "#<#{self.class.name} converter=#{@converter.key}>"
       end
 
       def participant
@@ -67,5 +70,5 @@ module Qernel
         @number_of_units ||= @converter.number_of_units
       end
     end
-  end # Fever
-end # Qernel
+  end
+end

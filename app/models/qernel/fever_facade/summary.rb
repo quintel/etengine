@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
     # Receives a Fever group and summarises the total production and
@@ -14,9 +16,10 @@ module Qernel
       def demand
         return @demand if @demand
 
-        suppliers = @group.adapters.select do |adapter|
-          adapter.installed? && adapter.participant.is_a?(Fever::Consumer)
-        end
+        suppliers =
+          @group.adapters.select do |adapter|
+            adapter.installed? && adapter.participant.is_a?(Fever::Consumer)
+          end
 
         return [0.0] * 8760 if suppliers.none?
 
@@ -31,29 +34,31 @@ module Qernel
       def production
         return @production if @production
 
-        suppliers = @group.adapters.reject do |adapter|
-          adapter.participant.is_a?(Fever::Consumer)
-        end
+        suppliers =
+          @group.adapters.reject do |adapter|
+            adapter.participant.is_a?(Fever::Consumer)
+          end
 
         return [0.0] * 8760 if suppliers.none?
 
-        curves = suppliers.map do |a|
-          input  = a.participant.producer.input_curve
-          output = a.participant.producer.output_curve
+        curves =
+          suppliers.map do |a|
+            input = a.participant.producer.input_curve
+            output = a.participant.producer.output_curve
 
-          if input.object_id != output.object_id
-            # In order to represent heat being produced - but stored for
-            # future use - the production curve takes the maximum of the input
-            # and output of each producer. This means that energy in a reserve
-            # is accounted for twice. Skip this when the input and output
-            # curves are the same object.
-            input.map.with_index do |val, index|
-              val > output[index] ? val : output[index]
+            if input.object_id != output.object_id
+              # In order to represent heat being produced - but stored for
+              # future use - the production curve takes the maximum of the input
+              # and output of each producer. This means that energy in a reserve
+              # is accounted for twice. Skip this when the input and output
+              # curves are the same object.
+              input.map.with_index do |val, index|
+                val > output[index] ? val : output[index]
+              end
+            else
+              output
             end
-          else
-            output
           end
-        end
 
         @production = Merit::CurveTools.add_curves(curves).to_a
       end
@@ -100,6 +105,6 @@ module Qernel
           end
         end
       end
-    end # Summary
-  end # Fever
+    end
+  end
 end

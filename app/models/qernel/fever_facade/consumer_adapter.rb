@@ -44,6 +44,6 @@ module Qernel
       def number_of_units
         1.0
       end
-    end # ConsumerAdapter
+    end
   end
 end

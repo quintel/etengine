@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Qernel
   module FeverFacade
+    # A capacity curve where the capacity is determined based on the capacity of
+    # another producer.
     class DelegatedCapacityCurve
       include Enumerable
 
