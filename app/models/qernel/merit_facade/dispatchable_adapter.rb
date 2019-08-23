@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
-    # Adds data needed to calculate profitability of a dispatchable producer.
+    # Adds data needed to calculate a dispatchable producer.
     class DispatchableAdapter < ProducerAdapter
       def inject!
         super

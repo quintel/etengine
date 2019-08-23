@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # An adapter which deals with flexible and storage technologies in the merit
@@ -6,29 +8,30 @@ module Qernel
     class FlexAdapter < Adapter
       def self.factory(converter, _graph, _dataset)
         case converter.merit_order.subtype.to_sym
-          when :storage
-            StorageAdapter
-          when :power_to_gas
-            PowerToGasAdapter
-          when :power_to_heat_industry
-            PowerToHeatAdapter
-          when :power_to_heat
-            HouseholdPowerToHeatAdapter
-          when :curtailment
-            CurtailmentAdapter
-          else
-            self
+        when :storage
+          StorageAdapter
+        when :power_to_gas
+          PowerToGasAdapter
+        when :power_to_heat_industry
+          PowerToHeatAdapter
+        when :power_to_heat
+          HouseholdPowerToHeatAdapter
+        when :curtailment
+          CurtailmentAdapter
+        else
+          self
         end
       end
 
       def inject!
         full_load_hours = participant.full_load_hours * output_efficiency
 
-        if ! full_load_hours || full_load_hours.nan?
-          full_load_seconds = full_load_hours = 0.0
-        else
-          full_load_seconds = full_load_hours * 3600
-        end
+        full_load_seconds =
+          if !full_load_hours || full_load_hours.nan?
+            full_load_hours = 0.0
+          else
+            full_load_hours * 3600
+          end
 
         target_api[:full_load_hours]   = full_load_hours
         target_api[:full_load_seconds] = full_load_seconds
@@ -64,20 +67,6 @@ module Qernel
           source_api.input_capacity
 
         attrs
-
-        # {
-        #   key:                       @converter.key,
-        #   number_of_units:           delegate_api.number_of_units,
-        #   availability:              delegate_api.availability,
-        #   marginal_costs:            0.0,
-
-        #   # Default is to multiply the input capacity by the electricity output
-        #   # conversion. This doesn't work, because the flex converters have a
-        #   # dependant electricity link and the conversion will be zero the first
-        #   # time the graph is calculated.
-        #   output_capacity_per_unit:
-        #     delegate_api.output_capacity || delegate_api.input_capacity
-        # }
       end
 
       def output_efficiency
@@ -91,6 +80,6 @@ module Qernel
       def producer_class
         Merit::Flex::Base
       end
-    end # FlexAdapter
-  end # Merit
+    end
+  end
 end

@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Sets up storage in Merit; typically used for household batteries or
+    # storage in electric vehicles.
     class StorageAdapter < FlexAdapter
       def installed?
         # Skip storage when there is no volume for storing energy.
@@ -38,6 +42,6 @@ module Qernel
         slots = @converter.converter.inputs.reject(&:loss?)
         1 / (slots.any? ? slots.sum(&:conversion) : 1.0)
       end
-    end # StorageAdapter
-  end # Merit
+    end
+  end
 end

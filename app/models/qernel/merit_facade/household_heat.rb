@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # Helper class for determining curves for the demand for electricity due
@@ -30,5 +32,5 @@ module Qernel
         @graph.plugin(:time_resolve).fever.group(group_name)
       end
     end
-  end # Merit
-end # Qernel::Plugins
+  end
+end

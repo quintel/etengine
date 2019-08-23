@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # An adapter which reads a demand curve from the Merit plugin's Curve

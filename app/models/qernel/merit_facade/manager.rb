@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # Sets up and fully-calculates the Merit order. After the graph has been
     # calculated, the graph demand is supplied to the Merit gem to determine how
     # to fairly assign loads depending on cost.
     #
-    # After the merit order has been calculated, it's producer loads are assigned
-    # back to the graph, and the graph will be recalculated.
+    # After the merit order has been calculated, it's producer loads are
+    # assigned back to the graph, and the graph will be recalculated.
     class Manager < Qernel::Plugins::SimpleMeritOrder
       # A list of types of merit order producers to be supplied to the M/O.
       def participant_types
@@ -39,8 +41,8 @@ module Qernel
       def set_dispatchable_positions!
         dispatchables =
           @order.participants.dispatchables.select do |participant|
-            # Flexible technologies are classed as dispatchable but should not be
-            # assigned a position.
+            # Flexible technologies are classed as dispatchable but should not
+            # be assigned a position.
             adapter(participant.key).config.subtype == :dispatchable
           end
 

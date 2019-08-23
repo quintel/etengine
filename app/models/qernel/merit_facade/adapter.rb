@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # Converts a Qernel::Converter to a Merit participant and back again.
@@ -5,7 +7,8 @@ module Qernel
       attr_reader :converter, :config
 
       def self.adapter_for(converter, graph, dataset)
-        klass = case converter.merit_order.type.to_sym
+        klass =
+          case converter.merit_order.type.to_sym
           when :producer
             ProducerAdapter.factory(converter, graph, dataset)
           when :flex
@@ -14,7 +17,7 @@ module Qernel
             ConsumerAdapter.factory(converter, graph, dataset)
           else
             self
-        end
+          end
 
         klass.new(converter, graph, dataset)
       end
@@ -31,7 +34,7 @@ module Qernel
       end
 
       def inject!
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       # Internal: Determines whether the participant has any capacity; if not,
@@ -53,18 +56,18 @@ module Qernel
       # Returns a hash.
       def producer_attributes
         {
-          key:                       @converter.key,
-          number_of_units:           source_api.number_of_units,
-          availability:              source_api.availability,
+          key: @converter.key,
+          number_of_units: source_api.number_of_units,
+          availability: source_api.availability,
 
           # The marginal costs attribute is not optional, but it is an
           # unnecessary calculation when the Merit order is not being run.
-          marginal_costs:            0.0
+          marginal_costs: 0.0
         }
       end
 
       def producer_class
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       # Internal: The ConverterApi from which data is taken to be used by the
@@ -87,6 +90,6 @@ module Qernel
             @converter
           end
       end
-    end # Adapter
-  end # Merit
+    end
+  end
 end

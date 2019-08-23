@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Sets up a Merit participant which will be used last, using any excess
+    # electricity not exported or assigned to flexibles.
     class CurtailmentAdapter < FlexAdapter
       def inject!
         super
@@ -36,7 +40,7 @@ module Qernel
           attrs[:input_capacity_per_unit]  = Float::INFINITY
           attrs[:output_capacity_per_unit] = Float::INFINITY
         else
-          # TODO Can this be set in FlexAdapter?
+          # TODO: Can this be set in FlexAdapter?
           attrs[:input_capacity_per_unit] =
             source_api.input_capacity ||
             source_api.output_capacity
@@ -46,6 +50,6 @@ module Qernel
 
         attrs
       end
-    end # CurtailmentAdapter
-  end # Merit
+    end
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # Implements behaviour specific to the import interconnector.
@@ -14,16 +16,18 @@ module Qernel
           elec_link.dataset_set(:calculated, true)
         end
 
-        if (production = participant.production).positive?
-          # Recalculate the price per MJ.
-          total_price =
-            carrier.cost_curve.to_enum.with_index.sum do |price, index|
-              price * participant.load_at(index)
-            end
+        production = participant.production
 
-          # Divide by production which is in MJ to set the cost per MJ.
-          carrier.dataset_set(:cost_per_mj, total_price / production)
-        end
+        return unless production.positive?
+
+        # Recalculate the price per MJ.
+        total_price =
+          carrier.cost_curve.to_enum.with_index.sum do |price, index|
+            price * participant.load_at(index)
+          end
+
+        # Divide by production which is in MJ to set the cost per MJ.
+        carrier.dataset_set(:cost_per_mj, total_price / production)
       end
 
       private
@@ -61,6 +65,6 @@ module Qernel
       def carrier
         @graph.carrier(:imported_electricity)
       end
-    end # ImportAdapter
-  end # Merit
+    end
+  end
 end

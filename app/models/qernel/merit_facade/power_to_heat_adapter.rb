@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Sets up generic power-to-heat participants in Merit.
     class PowerToHeatAdapter < StorageAdapter
       def inject!
         super
@@ -11,11 +14,12 @@ module Qernel
             3600
           )
 
-        if ! full_load_hours || full_load_hours.nan?
-          full_load_seconds = full_load_hours = 0.0
-        else
-          full_load_seconds = full_load_hours * 3600
-        end
+        full_load_seconds =
+          if !full_load_hours || full_load_hours.nan?
+            full_load_hours = 0.0
+          else
+            full_load_hours * 3600
+          end
 
         target_api[:full_load_hours]   = full_load_hours
         target_api[:full_load_seconds] = full_load_seconds
@@ -86,6 +90,6 @@ module Qernel
 
         self_cap / group_cap
       end
-    end # PowerToHeatAdapter
-  end # Merit
+    end
+  end
 end

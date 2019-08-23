@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Base class which sets up producers in Merit.
     class ProducerAdapter < Adapter
-      def self.factory(converter, graph, dataset)
+      def self.factory(converter, _graph, _dataset)
         case converter.merit_order.subtype
         when :must_run, :volatile
           AlwaysOnAdapter
@@ -14,11 +17,12 @@ module Qernel
       def inject!
         full_load_hours = participant.full_load_hours
 
-        if ! full_load_hours || full_load_hours.nan?
-          full_load_seconds = full_load_hours = 0.0
-        else
-          full_load_seconds = full_load_hours * 3600
-        end
+        full_load_seconds =
+          if !full_load_hours || full_load_hours.nan?
+            full_load_hours = 0.0
+          else
+            full_load_hours * 3600
+          end
 
         target_api[:full_load_hours]   = full_load_hours
         target_api[:full_load_seconds] = full_load_seconds
@@ -62,6 +66,6 @@ module Qernel
       def flh_capacity
         source_api.input_capacity
       end
-    end # ProducerAdapter
-  end # Merit
+    end
+  end
 end

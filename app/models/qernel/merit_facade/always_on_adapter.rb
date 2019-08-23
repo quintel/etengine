@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Sets up a producer whose demand is determined by a fixed profile.
     class AlwaysOnAdapter < ProducerAdapter
       private
 
@@ -24,6 +27,6 @@ module Qernel
       def production_profile
         @graph.plugin(:merit).curves.curve(@config.group, @converter)
       end
-    end # AlwaysOnAdapter
-  end # Merit
+    end
+  end
 end

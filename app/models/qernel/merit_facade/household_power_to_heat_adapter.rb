@@ -1,8 +1,14 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Sets up household power-to-heat in Merit whose electricty demand needs to
+    # be communicated to a Fever group for conversion to heat.
     class HouseholdPowerToHeatAdapter < FlexAdapter
       private
 
+      # A Merit participant whose energy is not available to be re-emitted, and
+      # where consumption needs to be communicated to a delegate.
       class DelegatingBlackHole < Merit::Flex::BlackHole
         def initialize(opts)
           super
@@ -25,10 +31,10 @@ module Qernel
         attrs = super
 
         # Yuck.
-        attrs[:delegate] =
-          @graph.plugin(:time_resolve).fever.group(:households_hot_water).calculator
+        attrs[:delegate] = @graph.plugin(:time_resolve)
+          .fever.group(:households_hot_water).calculator
 
-        # TODO Does input capacity /efficiency prevent the need to model input
+        # TODO: Does input capacity /efficiency prevent the need to model input
         # constraints in Fever?
         attrs[:input_capacity_per_unit] = source_api.input_capacity
 
@@ -48,6 +54,6 @@ module Qernel
       def excess_share
         1.0
       end
-    end # PowerToHeatAdapter
-  end # Merit
+    end
+  end
 end

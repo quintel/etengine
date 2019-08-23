@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # An adapter which does not adjust the merit order output for loss, since
@@ -16,6 +18,6 @@ module Qernel
       def output_efficiency
         1.0
       end
-    end # PowerToGasAdapter
-  end # Merit
+    end
+  end
 end

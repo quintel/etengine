@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
+    # Determines the peak values in a curve for winter daytime and night, and
+    # summer daytime and night.
     module CurvePeakFinder
       module_function
 
@@ -54,6 +58,6 @@ module Qernel
       end
 
       private_class_method :daytime?
-    end # CurvePeakFinder
-  end # Merit
-end # Qernel::Plugins
+    end
+  end
+end

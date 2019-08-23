@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   module MeritFacade
     # Helper class for determining curves for the demand for electricity due
@@ -35,10 +37,11 @@ module Qernel
         end
 
         # Get demand curves for each consumer.
-        individual = consumers.map do |consumer|
-          @fever_curves.curve(consumer.fever.curve, consumer) *
-            (electricity_demand * (consumer.demand / total_demand))
-        end
+        individual =
+          consumers.map do |consumer|
+            @fever_curves.curve(consumer.fever.curve, consumer) *
+              (electricity_demand * (consumer.demand / total_demand))
+          end
 
         Merit::CurveTools.add_curves(individual)
       end
@@ -59,5 +62,5 @@ module Qernel
         end
       end
     end
-  end # Merit
-end # Qernel
+  end
+end
