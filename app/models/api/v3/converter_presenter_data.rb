@@ -326,6 +326,43 @@ module Api
         }
       }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
+      # If the converter belongs to the traditional_heat presentation group then
+      # add these
+      BIOMASS_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'capacity per unit', unit: 'MW',
+              formatter: FORMAT_1DP },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+          :greengas_output_conversion  =>
+            { label: 'efficiency', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT }
+        },
+        :cost => {
+          'total_initial_investment_per(:plant)' =>
+            {label: 'Initial purchase price', unit: 'EUR'},
+          'cost_of_installing_per(:plant)' =>
+            {label: 'Cost of installing', unit:'EUR'},
+          'decommissioning_costs_per(:plant)' =>
+            {label: 'Decommissioning costs', unit:'EUR'},
+          'fixed_operation_and_maintenance_costs_per(:plant)' =>
+            {label: 'Fixed operation and maintenance costs', unit:'EUR / year'},
+          'variable_operation_and_maintenance_costs_per(:full_load_hour)'  =>
+            {label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour'},
+          :wacc  =>
+            {label: 'Weighted average cost of capital', unit: '%'},
+          :takes_part_in_ets  =>
+            {label: 'Do emissions have to be paid through the ETS?', unit: 'yes / no', formatter: lambda{|x| x == 1 ? 'yes' : 'no'}}
+        },
+        :other => {
+          :land_use_per_unit  =>
+            {label: 'Land use per unit', unit: 'km2'},
+          :technical_lifetime  =>
+            {label: 'Technical lifetime', unit: 'years'}
+        }
+      }
+
       # some converters use extra attributes. Rather than messing up the views I
       # add the method here. I hope this will be removed
       def uses_coal_and_wood_pellets?
@@ -356,6 +393,8 @@ module Api
             P2H_ATTRIBUTES_AND_METHODS
           when :p2kerosene
             P2KEROSENE_ATTRIBUTES_AND_METHODS
+          when :biomass
+            BIOMASS_ATTRIBUTES_AND_METHODS
           else
             {}
           end
