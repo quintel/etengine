@@ -331,12 +331,15 @@ module Api
       BIOMASS_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'capacity per unit', unit: 'MW',
+            { label: 'Capacity per unit', unit: 'MW',
               formatter: FORMAT_1DP },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
           :greengas_output_conversion  =>
-            { label: 'efficiency', unit: '%',
+            { label: 'Efficiency', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT },
+          :biogas_output_conversion  =>
+            { label: 'Efficiency', unit: '%',
               formatter: FORMAT_FAC_TO_PERCENT }
         },
         :cost => {
