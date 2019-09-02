@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     # Given a scenario, and parameters from an HTTP request, updates the
@@ -10,7 +12,7 @@ module Api
       validate :validate_groups_balance
 
       validates_with ActiveRecord::Validations::AssociatedValidator,
-        attributes: [ :scenario ]
+        attributes: [:scenario]
 
       # @return [Scenario]
       #   Returns the scenario being updated.
@@ -40,11 +42,13 @@ module Api
         return true if @data.empty?
 
         @scenario.attributes = @scenario.attributes.except(
-          "id", "present_updated_at", "created_at", "updated_at").merge(
+          'id', 'present_updated_at', 'created_at', 'updated_at'
+        ).merge(
           @scenario_data.except(:area_code, :end_year).merge(
             balanced_values: balanced_values,
-            user_values:     user_values
-        ))
+            user_values: user_values
+          )
+        )
 
         valid? ? @scenario.save(validate: false) : false
       end
@@ -56,15 +60,13 @@ module Api
       def valid?(*args)
         super
       rescue RuntimeError => e
-        # TODO Perhaps it is better to notify Airbrake, and add an error
+        # TODO: Perhaps it is better to notify Airbrake, and add an error
         #      message with "something went wrong" and the Airbrake ID?
         errors.add(:base, e.message)
         false
       end
 
-      #######
       private
-      #######
 
       # @return [true, false]
       #   Returns if the scenario be reset to the default input values.
@@ -86,9 +88,9 @@ module Api
           if input.blank?
             errors.add(:base, "Input #{key} does not exist")
           elsif value < (min = input[:min])
-            errors.add(:base, "Input #{key} cannot be less than #{ min }")
+            errors.add(:base, "Input #{key} cannot be less than #{min}")
           elsif value > (max = input[:max])
-            errors.add(:base, "Input #{key} cannot be greater than #{ max }")
+            errors.add(:base, "Input #{key} cannot be greater than #{max}")
           end
         end
       end
@@ -107,15 +109,15 @@ module Api
               input_cache[:default]
           end.compact
 
-          unless values.sum.between?(99.99, 100.01)
-            info = inputs.map(&:key).zip(values).map do |key, value|
-              "#{ key }=#{ value }"
-            end.join(' ')
+          next if values.sum.between?(99.99, 100.01)
 
-            errors.add(:base,
-              "#{ group.to_s.inspect } group does not balance: group sums to " \
-              "#{ values.sum } using #{ info }")
-          end
+          info = inputs.map(&:key).zip(values).map do |key, value|
+            "#{key}=#{value}"
+          end.join(' ')
+
+          errors.add(:base,
+            "#{group.to_s.inspect} group does not balance: group sums to " \
+            "#{values.sum} using #{info}")
         end
       end
 
@@ -128,13 +130,14 @@ module Api
       #   otherwise the value will be cast to a float.
       #
       def provided_values
-        @provided_values ||= begin
-          values = @scenario_data[:user_values] || {}
+        @provided_values ||=
+          begin
+            values = @scenario_data[:user_values] || {}
 
-          values.each_with_object({}) do |(key, value), collection|
-            collection[key.to_s] = convert_provided_value(key, value)
+            values.each_with_object({}) do |(key, value), collection|
+              collection[key.to_s] = convert_provided_value(key, value)
+            end
           end
-        end
       end
 
       # The values provided by the user, sans any which are to be reset.
@@ -154,15 +157,16 @@ module Api
       #   are removed from the hash.
       #
       def user_values
-        @user_values ||= begin
-          values = base_user_values
+        @user_values ||=
+          begin
+            values = base_user_values
 
-          provided_values.each do |key, value|
-            value == :reset ? values.delete(key) : values[key] = value
+            provided_values.each do |key, value|
+              value == :reset ? values.delete(key) : values[key] = value
+            end
+
+            values
           end
-
-          values
-        end
       end
 
       # Returns the values required to balance share groups.
@@ -172,29 +176,30 @@ module Api
       #   the request did not ask for auto-balancing.
       #
       def balanced_values
-        @balanced_values ||= begin
-          if user_values.blank?
-            {}
-          else
-            balanced = base_balanced_values
+        @balanced_values ||=
+          begin
+            if user_values.blank?
+              {}
+            else
+              balanced = base_balanced_values
 
-            # Remove balanced values for the entire groups which the user is
-            # updating otherwise the group won't validate.
-            each_group(provided_values) do |_, inputs|
-              inputs.each { |input| balanced.delete(input.key) }
-            end
-
-            if @data[:autobalance] != 'false' && @data[:autobalance] != false
+              # Remove balanced values for the entire groups which the user is
+              # updating otherwise the group won't validate.
               each_group(provided_values) do |_, inputs|
-                if balanced_group = balance_group(inputs)
-                  balanced.merge!(balanced_group)
+                inputs.each { |input| balanced.delete(input.key) }
+              end
+
+              if @data[:autobalance] != 'false' && @data[:autobalance] != false
+                each_group(provided_values) do |_, inputs|
+                  if (balanced_group = balance_group(inputs))
+                    balanced.merge!(balanced_group)
+                  end
                 end
               end
-            end
 
-            balanced
+              balanced
+            end
           end
-        end
       end
 
       # Internal: Given a group of inputs belonging to a common share group,
@@ -204,14 +209,10 @@ module Api
       # Returns a hash of balanced values.
       def balance_group(inputs)
         if @data[:force_balance]
-          balancer_values = provided_values
-
           # Force balancing deletes all values previously provided for
           # the group and permits their use in the balancer.
           inputs.each do |input|
-            unless provided_values.key?(input.key)
-              user_values.delete(input.key)
-            end
+            user_values.delete(input.key) unless provided_values.key?(input.key)
           end
 
           Balancer.new(inputs).balance(@scenario, provided_values)
@@ -221,10 +222,9 @@ module Api
           Balancer.new(inputs).balance(@scenario, user_values)
         end
       rescue Balancer::BalancerError
-        # It is acceptable for a balancer to fail; validation will
-        # catch it and notify the user.
-        #
-        # TODO Notify Airbrake?
+        # It is acceptable for a balancer to fail; validation will catch if and
+        # notify the user.
+        nil
       end
 
       # Given a collection of user values, yields the name of each group to
@@ -297,6 +297,6 @@ module Api
           (@scenario.balanced_values || {}).dup
         end
       end
-    end # ScenarioUpdater
-  end # V3
-end # Api
+    end
+  end
+end
