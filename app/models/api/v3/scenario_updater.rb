@@ -132,7 +132,14 @@ module Api
           values = @scenario_data[:user_values] || Hash.new
 
           Hash[ values.map do |key, value|
-            [ key.to_s, value == 'reset' ? :reset : value.to_f ]
+            value =
+              if value == 'reset'
+                value_from_parent(key) || :reset
+              else
+                value.to_f
+              end
+
+            [key.to_s, value]
           end ]
         end
       end
@@ -156,7 +163,11 @@ module Api
       def user_values
         @user_values ||= begin
           if reset?
-            provided_values.dup
+            if @scenario.parent
+              @scenario.parent.user_values.merge(provided_values)
+            else
+              provided_values.dup
+            end
           elsif provided_values.blank?
             @scenario.user_values
           else
@@ -182,7 +193,12 @@ module Api
           if user_values.blank?
             Hash.new
           else
-            balanced = reset? ? {} : (@scenario.balanced_values || {}).dup
+            balanced =
+              if reset?
+                @scenario.parent&.balanced_values || {}
+              else
+                (@scenario.balanced_values || {}).dup
+              end
 
             # Remove balanced values for the entire groups which the user is
             # updating otherwise the group won't validate.
@@ -255,6 +271,19 @@ module Api
         end
 
         nil
+      end
+
+      # Internal: Returns the parent scenario's value for `key` input.
+      #
+      # Returns a numeric, or nil if there is no parent, nor a user or balanced
+      # value specified for the key.
+      def value_from_parent(key)
+        parent = @scenario.parent
+
+        return nil unless parent
+
+        parent.user_values[key] ||
+          (parent.respond_to?(:balanced_values) && parent.balanced_values[key])
       end
 
     end # ScenarioUpdater

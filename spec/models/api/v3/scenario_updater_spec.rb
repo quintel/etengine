@@ -196,6 +196,60 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
   # --------------------------------------------------------------------------
 
+  context 'Resetting an entire scenario, while providing new values with a ' \
+          'parent' do
+    let(:params) do
+      {
+        reset: true,
+        scenario: { user_values: { foo_demand: 1 } }
+      }
+    end
+
+    let(:parent) do
+      FactoryBot.create(:scenario, user_values: {
+        foo_demand: 10.0,
+        input_2: 100,
+        input_3: 125
+      })
+    end
+
+    before do
+      scenario.user_values = {
+        'foo_demand' => 5.0,
+        'bar_demand' => 25.5
+      }
+
+      scenario.balanced_values = { 'input_2' => '5.0' }
+
+      scenario.preset_scenario_id = parent.id
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'sets new values' do
+      updater.apply
+      expect(scenario.reload.user_values).to include('foo_demand' => 1.0)
+    end
+
+    it 'removes unspecified input values' do
+      updater.apply
+      expect(scenario.reload.user_values).not_to have_key('bar_demand')
+    end
+
+    it 'removes all balanced values' do
+      updater.apply
+      expect(scenario.reload.balanced_values).to eq({})
+    end
+
+    it 'restores the parents original values' do
+      updater.apply
+      expect(scenario.reload.user_values).to include('input_3' => 125)
+    end
+  end
+
+  # --------------------------------------------------------------------------
+
   context 'Resetting a single value' do
     let(:params) { {
       scenario: { user_values: {
@@ -221,6 +275,43 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       expect(scenario.reload.user_values).to include('input_2' => 15.0)
     end
   end # Resetting a single value
+
+  # --------------------------------------------------------------------------
+
+  context 'Resetting a single value' do
+    let(:params) do
+      {
+        scenario: {
+          user_values: {
+            'foo_demand' => 'reset',
+            'input_2' => '15.0'
+          }
+        }
+      }
+    end
+
+    let(:parent) do
+      FactoryBot.create(:scenario, user_values: { foo_demand: 10.0 })
+    end
+
+    before do
+      scenario.user_values = { 'foo_demand' => 5.0 }
+      scenario.preset_scenario_id = parent.id
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'reverts the input value to that of the parent' do
+      updater.apply
+      expect(scenario.reload.user_values).to include('foo_demand' => 10)
+    end
+
+    it 'sets new input values' do
+      updater.apply
+      expect(scenario.reload.user_values).to include('input_2' => 15.0)
+    end
+  end
 
   # --------------------------------------------------------------------------
 

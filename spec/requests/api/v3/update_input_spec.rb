@@ -416,6 +416,63 @@ describe 'Updating inputs with API v3' do
         it_behaves_like 'updating inputs'
       end
 
+      context 'when resetting a value specified by the parent scenario' do
+        before do
+          scenario.preset_scenario_id = parent.id
+          scenario.save!
+
+          autobalance_scenario(balanced_one: 'reset')
+        end
+
+        let(:parent) do
+          FactoryBot.create(:scenario,
+            user_values: { 'balanced_one' => 15.0 },
+            balanced_values: { 'balanced_two' => 85.0 })
+        end
+
+        it 'responds 200 OK' do
+          expect(response.status).to be(200)
+        end
+
+        it 'restores the parents user value' do
+          expect(scenario.user_values).to include('balanced_one' => 15.0)
+        end
+
+        it 'restores the parents balanced value' do
+          expect(scenario.balanced_values).to include('balanced_two' => 85.0)
+        end
+
+        it_behaves_like 'updating inputs'
+      end
+
+      context 'when performing a scenario-level reset and the scenario has a ' \
+              'parent' do
+        before do
+          scenario.preset_scenario_id = parent.id
+          scenario.save!
+
+          autobalance_scenario({}, reset: true)
+        end
+
+        let(:parent) do
+          FactoryBot.create(:scenario,
+            user_values: { 'balanced_one' => 15.0 },
+            balanced_values: { 'balanced_two' => 85.0 })
+        end
+
+        it 'responds 200 OK' do
+          expect(response.status).to be(200)
+        end
+
+        it 'restores the parents user values' do
+          expect(scenario.user_values).to eq('balanced_one' => 15.0)
+        end
+
+        it 'restores the parents balanced values' do
+          expect(scenario.balanced_values).to eq('balanced_two' => 85.0)
+        end
+      end
+
       context 'when a balanced value is set' do
         before do
           scenario.user_values['balanced_one'] = 90.0

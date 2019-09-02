@@ -87,33 +87,6 @@ describe "API v3scenario life cycle", :etsource_fixture do
     expect(result["errors"][0]).to match(/does not exist/)
   end
 
-  it "should reset the user_values, also the ones from a preset scenario" do
-    post '/api/v3/scenarios', params: {:scenario => {:scenario_id => 2999}}
-
-    scenario = JSON.parse(response.body)
-    url = "/api/v3/scenarios/#{scenario['id']}"
-
-    # ---- test that presets have been applied -----------------------------------
-
-    put url, params: { :gqueries => ['foo_demand'] }
-
-    result = JSON.parse(response.body)['gqueries']
-    # First, set to 10 by applying foo_demand = 10
-    # Then, set to 30 by applying input_3 = 30
-    expect(result['foo_demand']['future']).to eq(30.0)
-
-    # ---- reset -----------------------------------------------------------------
-
-    put url, params: { :reset => 1 }
-
-    # ---- query again -----------------------------------------------------------
-
-    put url, params: { :gqueries => ['foo_demand'] }
-
-    result = JSON.parse(response.body)['gqueries']
-    expect(result['foo_demand']['future']).to eq(100.0)
-  end
-
   it "should default to end_year 2040 and area_code 'nl' when creating a scenario" do
     post '/api/v3/scenarios', params: {:scenario => {}}
 
