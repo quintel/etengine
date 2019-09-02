@@ -129,18 +129,11 @@ module Api
       #
       def provided_values
         @provided_values ||= begin
-          values = @scenario_data[:user_values] || Hash.new
+          values = @scenario_data[:user_values] || {}
 
-          Hash[ values.map do |key, value|
-            value =
-              if value == 'reset'
-                value_from_parent(key) || :reset
-              else
-                value.to_f
-              end
-
-            [key.to_s, value]
-          end ]
+          values.each_with_object({}) do |(key, value), collection|
+            collection[key.to_s] = convert_provided_value(key, value)
+          end
         end
       end
 
@@ -162,23 +155,13 @@ module Api
       #
       def user_values
         @user_values ||= begin
-          if reset?
-            if @scenario.parent
-              @scenario.parent.user_values.merge(provided_values)
-            else
-              provided_values.dup
-            end
-          elsif provided_values.blank?
-            @scenario.user_values
-          else
-            values = @scenario.user_values.dup
+          values = base_user_values
 
-            provided_values.each do |key, value|
-              value == :reset ? values.delete(key) : values[key] = value
-            end
-
-            values
+          provided_values.each do |key, value|
+            value == :reset ? values.delete(key) : values[key] = value
           end
+
+          values
         end
       end
 
@@ -191,14 +174,9 @@ module Api
       def balanced_values
         @balanced_values ||= begin
           if user_values.blank?
-            Hash.new
+            {}
           else
-            balanced =
-              if reset?
-                @scenario.parent&.balanced_values || {}
-              else
-                (@scenario.balanced_values || {}).dup
-              end
+            balanced = base_balanced_values
 
             # Remove balanced values for the entire groups which the user is
             # updating otherwise the group won't validate.
@@ -286,6 +264,39 @@ module Api
           (parent.respond_to?(:balanced_values) && parent.balanced_values[key])
       end
 
+      # Internal: Takes a value provided by a user and converts it to a number
+      # or other value used by the updater.
+      #
+      # Returns a numeric or symbol.
+      def convert_provided_value(key, value)
+        if value == 'reset'
+          value_from_parent(key) || :reset
+        else
+          value.to_f
+        end
+      end
+
+      # Internal: A hash of starting user values.
+      def base_user_values
+        if reset?
+          if @scenario.parent
+            @scenario.parent.user_values.merge(provided_values)
+          else
+            provided_values.dup
+          end
+        else
+          @scenario.user_values.dup
+        end
+      end
+
+      # Internal: A hash of starting balanced values.
+      def base_balanced_values
+        if reset?
+          @scenario.parent&.balanced_values || {}
+        else
+          (@scenario.balanced_values || {}).dup
+        end
+      end
     end # ScenarioUpdater
   end # V3
 end # Api
