@@ -23,7 +23,7 @@ module Qernel
 
         return [0.0] * 8760 if suppliers.none?
 
-        @demand = :Merit::CurveTools.add_curves(suppliers.map do |adapter|
+        @demand = Merit::CurveTools.add_curves(suppliers.map do |adapter|
           adapter.participant.demand_curve
         end).to_a
       end
