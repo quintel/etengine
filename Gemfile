@@ -28,7 +28,7 @@ gem 'osmosis',                github: 'quintel/osmosis'
 
 # Rails gem
 gem 'simple_form'
-gem 'devise', '~> 4.0'
+gem 'devise', '~> 4.7'
 gem 'cancancan', '~> 2.0'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
