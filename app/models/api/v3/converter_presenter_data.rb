@@ -335,10 +335,7 @@ module Api
               formatter: FORMAT_1DP },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
-          :greengas_output_conversion  =>
-            { label: 'Efficiency', unit: '%',
-              formatter: FORMAT_FAC_TO_PERCENT },
-          :biogas_output_conversion  =>
+          '1.0 - loss_output_conversion' =>
             { label: 'Efficiency', unit: '%',
               formatter: FORMAT_FAC_TO_PERCENT }
         },
