@@ -2743,7 +2743,7 @@
   :y: 5120
 :energy_flexibility_pumped_storage_electricity:
   :x: 5520
-  :y: 1880
+  :y: 2660
 :energy_hydrogen_storage:
   :x: 5840
   :y: 4980
@@ -3131,3 +3131,9 @@
 :energy_export_dry_biomass:
   :x: 3200
   :y: 11800
+:energy_flexibility_mv_batteries_electricity:
+  :x: 5520
+  :y: 2540
+:energy_flexibility_hv_opac_electricity:
+  :x: 5520
+  :y: 2600

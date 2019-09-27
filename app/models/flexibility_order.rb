@@ -2,8 +2,10 @@
 
 class FlexibilityOrder < ApplicationRecord
   GROUPS = %w[
-    power_to_power
+    household_batteries
+    mv_batteries
     electric_vehicle
+    opac
     pumped_storage
     power_to_gas
     power_to_gas_industry
