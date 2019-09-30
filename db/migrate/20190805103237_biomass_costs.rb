@@ -6,9 +6,9 @@ class BiomassCosts < ActiveRecord::Migration[5.2]
 
   # new input keys and their start values
   NEW_INPUTS = {
-    'costs_wood' => 166.0,
+    'costs_wood' => 150.0,
     'costs_biogas' => 57.0,
-    'costs_greengas' => 57.52
+    'costs_greengas' => 64.0
   }.freeze
 
   def up
