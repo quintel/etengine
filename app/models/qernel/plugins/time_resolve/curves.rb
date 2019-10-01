@@ -42,10 +42,7 @@ module Qernel::Plugins
       # Returns a Merit::Curve.
       def curve_set_profile(name)
         set_name, curve_name = split_curve_name(name)
-
-        # TODO: It might be preferable to memoize the curve set, indexed on the
-        # set name after the first call.
-        TimeResolve.curve_set(@graph.area, set_name).curve(curve_name)
+        curve_set(set_name).curve(curve_name)
       end
 
       # Internal: Creates a dynamic curve based on the ETSource dynamic curves
@@ -99,7 +96,12 @@ module Qernel::Plugins
       # Internal: Splits a curve into an array containing two elements: the
       # curve set name (or nil if no curve set is specified) and the curve name.
       def split_curve_name(name)
-        name.index('/') ? name.split('/', 2) : [nil, name]
+        name.include?('/') ? name.split('/', 2) : [nil, name]
+      end
+
+      # Internal: Fetch the curve set variant for the curve set called `name`.
+      def curve_set(name)
+        CurveSet.for_area(@graph.area, name)
       end
 
       def dataset

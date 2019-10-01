@@ -1,35 +1,57 @@
+# frozen_string_literal: true
+
 module Qernel::Plugins
   class TimeResolve
-    class CurveSet
+    # Contains helpers for reading CurveSet data.
+    module CurveSet
       # Public: Creates a new CurveSet containing profiles from the given
       # dataset.
       #
-      # dataset - An Atlas::Dataset in which the profile set can be found.
-      # subpath - Path to the subdirectory containing all the profile sets of
-      #           the same type.
-      # variant - The particular variant of the profile set to load.
+      # area    - A Qernel::Area for which the curves should be loaded.
+      # name    - Name of the curve set to load.
+      # variant - Optional name of the variant to load. If not provided, the
+      #           name will be determined automatically using
+      #           `selected_variant_name`.
       #
       # For example
       #
       #   # Loads the "cold_snap" variant of the "heat" in the NL region. These
       #   # files will be in: etsource/datasets/nl/curves/heat/cold_snap.
-      #   CurveSet.with_dataset(
-      #     Atlas::Dataset.find(:nl),
-      #     'heat',
-      #     'cold_snap'
-      #   )
+      #   CurveSet.for_area(area, 'heat', 'cold_snap')
       #
-      # Returns a CurveSet. If the CurveSet does not exist, falls back to the
-      # "default" variant.
-      def self.with_dataset(dataset, name, variant)
+      # Returns an Atlas::Dataset::CurveSet::Variant.
+      def self.for_area(area, name, variant = nil)
+        dataset = Atlas::Dataset.find(area.area_code)
+
         unless dataset.curve_sets.curve_set?(name)
           raise Errno::ENOENT,
             "No curve-set \"#{name}\" for dataset #{dataset.key}"
         end
 
+        variant_name = variant || CurveSet.selected_variant_name(area, name)
+
         set = dataset.curve_sets.curve_set(name)
-        set.variant(variant) || set.variant('default')
+        set.variant(variant_name) || set.variant('default')
       end
-    end # CurveSet
+
+      # Public: Given an area, determines the name of the variant to be loaded
+      # for the named curve set.
+      #
+      # area - A Qernel::Area.
+      # name - The name of the curve set.
+      #
+      # Returns a String.
+      def self.selected_variant_name(area, name)
+        variant = area.public_send("#{name}_curve_set")
+
+        # TODO: Remove this backwards compatibility once heat curve set input is
+        # updated to use a string
+        return variant unless name == 'heat'
+
+        variant == 1.0 ? '1987' : 'default'
+      rescue NoMethodError
+        'default'
+      end
+    end
   end
 end
