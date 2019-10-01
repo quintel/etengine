@@ -36,7 +36,7 @@ describe Qernel::FeverFacade::Curves, :household_curves do
 
   describe 'heat set curves' do
     context 'when the file exists' do
-      let(:curve_name) { 'insulation_detached_houses_low' }
+      let(:curve_name) { 'heat/insulation_detached_houses_low' }
 
       it 'returns the curve' do
         expect(curve).to be_a(Merit::Curve)
@@ -44,7 +44,15 @@ describe Qernel::FeverFacade::Curves, :household_curves do
     end
 
     context 'when the file does not exist' do
-      let(:curve_name) { 'insulation_detached_houses_nope' }
+      let(:curve_name) { 'heat/insulation_detached_houses_nope' }
+
+      it 'raises an error' do
+        expect { curve }.to raise_error(Errno::ENOENT)
+      end
+    end
+
+    context 'when the curve set does not exist' do
+      let(:curve_name) { 'nope/insulation_detached_houses_low' }
 
       it 'raises an error' do
         expect { curve }.to raise_error(Errno::ENOENT)

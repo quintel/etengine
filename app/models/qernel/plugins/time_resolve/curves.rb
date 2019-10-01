@@ -19,6 +19,8 @@ module Qernel::Plugins
       def curve(name, converter)
         if prefix?(name, 'dynamic')
           dynamic_profile(name.to_s[8..-1].strip.to_sym, converter)
+        elsif name.include?('/')
+          curve_set_profile(name)
         else
           dataset.load_profile(name)
         end
@@ -29,6 +31,21 @@ module Qernel::Plugins
       # Internal: Returns if the `curve_name` is prefixed with `prefix`.
       def prefix?(curve_name, prefix)
         curve_name.to_s.start_with?("#{prefix}:")
+      end
+
+      # Internal: Loads a profile from a curve set.
+      #
+      # The profile name is expected to be in the form
+      # "curve_set_name/curve_name", with the variant name being determined
+      # automatically based on user values.
+      #
+      # Returns a Merit::Curve.
+      def curve_set_profile(name)
+        set_name, curve_name = split_curve_name(name)
+
+        # TODO: It might be preferable to memoize the curve set, indexed on the
+        # set name after the first call.
+        TimeResolve.curve_set(@graph.area, set_name).curve(curve_name)
       end
 
       # Internal: Creates a dynamic curve based on the ETSource dynamic curves
@@ -74,8 +91,15 @@ module Qernel::Plugins
       def curve_components(curve_names)
         curve_names.each_with_object({}) do |component, config|
           config[curve(component, nil)] =
-            @graph.area.public_send("#{component}_share")
+            # Strip any curve set name from the component name.
+            @graph.area.public_send("#{split_curve_name(component).last}_share")
         end
+      end
+
+      # Internal: Splits a curve into an array containing two elements: the
+      # curve set name (or nil if no curve set is specified) and the curve name.
+      def split_curve_name(name)
+        name.index('/') ? name.split('/', 2) : [nil, name]
       end
 
       def dataset

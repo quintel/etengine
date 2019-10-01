@@ -9,12 +9,12 @@ module Qernel
     class Curves < Plugins::TimeResolve::Curves
       def initialize(graph)
         super(graph)
-        @dataset = Atlas::Dataset.find(graph.area.area_code)
+        # @dataset = Atlas::Dataset.find(graph.area.area_code)
       end
 
-      def curve_set
-        @curve_set ||= Plugins::TimeResolve.curve_set(@graph.area, 'heat')
-      end
+      # def curve_set
+      #   @curve_set ||= Plugins::TimeResolve.curve_set(@graph.area, 'heat')
+      # end
 
       # Public: Retrieves the load profile or curve matching the given profile
       # name.
@@ -23,13 +23,13 @@ module Qernel
       # otherwise it falls back to the dynamic curve configuration in ETSource.
       #
       # Returns a Merit::Curve.
-      def curve(name, converter)
-        if curve_set.exists?(name)
-          curve_set.curve(name)
-        else
-          super
-        end
-      end
+      # def curve(name, converter)
+      #   if curve_set.curve?(name)
+      #     curve_set.curve(name)
+      #   else
+      #     super
+      #   end
+      # end
     end
   end
 end

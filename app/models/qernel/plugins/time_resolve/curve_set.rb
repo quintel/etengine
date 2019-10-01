@@ -22,37 +22,13 @@ module Qernel::Plugins
       # Returns a CurveSet. If the CurveSet does not exist, falls back to the
       # "default" variant.
       def self.with_dataset(dataset, name, variant)
-        set_dir = dataset.dataset_dir.join('curves').join(name)
-
-        unless set_dir.directory?
-          raise Errno::ENOENT, "No curve-set \"#{ name }\" at #{ set_dir }"
+        unless dataset.curve_sets.curve_set?(name)
+          raise Errno::ENOENT,
+            "No curve-set \"#{name}\" for dataset #{dataset.key}"
         end
 
-        variant_dir = set_dir.join(variant.to_s)
-        variant_dir = set_dir.join('default') unless variant_dir.directory?
-
-        new(variant_dir)
-      end
-
-      private_class_method :new
-
-      def initialize(dir)
-        @dir = Pathname.new(dir)
-      end
-
-      # Public: The named curve as a Merit::LoadProfile.
-      #
-      # Returns a Merit::Curve.
-      def curve(name)
-        Merit::Curve.load_file(@dir.join("#{name}.csv"))
-      end
-
-      # Public: Tests that a curve exists.
-      #
-      # Returns true of the CurveSet can load a curve matching the name, false
-      # otherwise.
-      def exists?(name)
-        @dir.join("#{name}.csv").file?
+        set = dataset.curve_sets.curve_set(name)
+        set.variant(variant) || set.variant('default')
       end
     end # CurveSet
   end

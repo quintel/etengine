@@ -80,16 +80,24 @@ module Qernel::Plugins
       @hydrogen.inject_values!
     end
 
+    # TODO Move this into TimeResolve::Curves.
     def self.curve_set(area, name)
-      CurveSet.with_dataset(
-        Atlas::Dataset.find(area.area_code),
-        name,
+      dataset = Atlas::Dataset.find(area.area_code)
+
+      unless dataset.curve_sets.curve_set?(name)
+        raise Errno::ENOENT,
+          "No curve-set \"#{name}\" for dataset #{dataset.key}"
+      end
+
+      variant_name =
         if area.public_send("#{name}_curve_set") == 1.0
           '1987'
         else
           'default'
         end
-      )
+
+      set = dataset.curve_sets.curve_set(name)
+      set.variant(variant_name) || set.variant('default')
     end
   end
 end

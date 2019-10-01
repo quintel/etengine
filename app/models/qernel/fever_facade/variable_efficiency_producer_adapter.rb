@@ -84,7 +84,7 @@ module Qernel
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
         @graph.plugin(:time_resolve).fever.curves.curve(
-          'air_temperature', @converter
+          'heat/air_temperature', @converter
         )
       end
 
