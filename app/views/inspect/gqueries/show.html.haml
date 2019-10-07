@@ -14,7 +14,10 @@
         = color_syntaxed_gquery @gquery.query
 
     %h2 Result
-    = render 'result', result: @result
+    - if @error
+      = render partial: 'error', locals: { error: @error }
+    - else
+      = render 'result', result: @result
 
     %h2 Description
 

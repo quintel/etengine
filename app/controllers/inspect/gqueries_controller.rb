@@ -25,6 +25,8 @@ class Inspect::GqueriesController < Inspect::BaseController
 
   def show
     @result = @gql.query(@gquery)
+  rescue Gql::CommandError => e
+    @error = e
   end
 
   def result
