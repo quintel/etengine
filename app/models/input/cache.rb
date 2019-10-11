@@ -62,9 +62,11 @@ class Input
         step:     input.step_value
       }
 
-      values = Scaler.call(input, scaler_for(gql), values)
+      # TODO: Remove once adding a proper "permited_values" attribute.
+      values[:min] = values[:min].map(&:to_s) if input.unit == 'enum'
 
-      required_numerics = values.slice(:min, :max, :default).values
+      values = Scaler.call(input, scaler_for(gql), values)
+      required_numerics = values.values_at(*input.required_numeric_attributes)
 
       if required_numerics.any? { |value| ! value.is_a?(Numeric) }
         { disabled: true, error: 'Non-numeric GQL value' }

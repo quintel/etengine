@@ -339,6 +339,23 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     it_behaves_like 'a failed scenario update'
   end
 
+  context 'when sending a string value for a numeric input' do
+    before do
+      scenario.update(user_values: { 'foo_demand' => 2.5 })
+    end
+
+    let(:params) do
+      { scenario: { user_values: { 'foo_demand' => 'invalid' } } }
+    end
+
+    it_behaves_like 'a failed scenario update'
+
+    it 'does not change user_values' do
+      expect { updater.apply }
+        .not_to change { scenario.reload.user_values['foo_demand'] }.from(2.5)
+    end
+  end
+
   context 'when sending a non-hash user_values attribute' do
     before do
       scenario.update!(user_values: { 'foo_demand' => 1.0 })

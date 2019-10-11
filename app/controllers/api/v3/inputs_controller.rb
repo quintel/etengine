@@ -27,10 +27,12 @@ module Api
         record =
           if params.key?(:id) && params[:id].include?(',')
             params[:id].split(',').compact.uniq.map do |id|
-              InputPresenter.new(fetch_input(id), @scenario, true)
+              InputPresenter.presenter_for(fetch_input(id), @scenario, true)
             end
           else
-            InputPresenter.new(fetch_input(params[:id]), @scenario, true)
+            InputPresenter.presenter_for(
+              fetch_input(params[:id]), @scenario, true
+            )
           end
 
         render json: record

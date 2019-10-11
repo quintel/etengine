@@ -130,6 +130,35 @@ describe Api::V3::InputsController do
         )
       end
     end # with a scaled scenario
+
+    context 'with an enum input' do
+      let(:gql_input) do
+        FactoryBot.build(:input, {
+          start_value_gql: 'present:1 + 1',
+          unit: 'enum',
+          min_value_gql: 'present:[1, 2, 3]'
+        })
+      end
+
+      it 'omits the min value' do
+        expect(json[gql_input.key]).not_to have_key('min')
+      end
+
+      it 'omits the max value' do
+        expect(json[gql_input.key]).not_to have_key('max')
+      end
+
+      it 'omits the step value' do
+        # expect(json[gql_input.key].keys).not_to include('step')
+        expect(json[gql_input.key]).not_to have_key('step')
+      end
+
+      it 'includes the permitted values' do
+        expect(json[gql_input.key]).to include(
+          'permitted_values' => %w[1 2 3]
+        )
+      end
+    end
   end # GET /api/v3/scenarios/:scenario_id/inputs
 
  # ---------------------------------------------------------------------------

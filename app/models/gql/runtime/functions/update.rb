@@ -148,7 +148,6 @@ module Gql::Runtime
             end
 
             value = yield original_value, input_value
-            value = value.to_f if value != true && value != false
 
             update_element_with(object, attribute_name, value)
           else
@@ -229,6 +228,10 @@ module Gql::Runtime
           input
         end
         input_float / input_factor
+      end
+
+      def RAW_USER_INPUT()
+        scope.input_value
       end
 
       # Public: Given the +key+ for an input, INPUT_VALUE retrieves the value

@@ -13,9 +13,23 @@ module Api
       def self.collection(inputs, scenario, extras = false)
         scenario = IndifferentScenario.from(scenario)
 
-        inputs.each_with_object(Hash.new) do |input, data|
-          data[input.key] = InputPresenter.new(input, scenario, extras)
+        inputs.each_with_object({}) do |input, data|
+          data[input.key] = presenter_for(input, scenario, extras)
         end
+      end
+
+      # Public: Creates an appropriate presenter for the given input.
+      #
+      # @param [Input] input
+      #   The input for which we want JSON.
+      #
+      # @see InputPresenter#initialize
+      #
+      # @return [InputPresenter]
+      #   Returns the input presenter (or subclass) instance.
+      def self.presenter_for(input, *args)
+        klass = input.unit == 'enum' ? EnumInputPresenter : self
+        klass.new(input, *args)
       end
 
       # Creates a new Input API presenter.
