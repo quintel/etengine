@@ -48,7 +48,7 @@ module Qernel
     end
 
     def heat_curve_set
-      fetch(:heat_curve_set) { 0.0 }
+      fetch(:heat_curve_set) { 'default' }
     end
 
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.

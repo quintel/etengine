@@ -23,14 +23,14 @@ module Qernel::Plugins
       def self.for_area(area, name, variant = nil)
         dataset = Atlas::Dataset.find(area.area_code)
 
-        unless dataset.curve_sets.curve_set?(name)
+        unless dataset.curve_sets.key?(name)
           raise Errno::ENOENT,
             "No curve-set \"#{name}\" for dataset #{dataset.key}"
         end
 
         variant_name = variant || CurveSet.selected_variant_name(area, name)
 
-        set = dataset.curve_sets.curve_set(name)
+        set = dataset.curve_sets.get(name)
         set.variant(variant_name) || set.variant('default')
       end
 
@@ -42,13 +42,7 @@ module Qernel::Plugins
       #
       # Returns a String.
       def self.selected_variant_name(area, name)
-        variant = area.public_send("#{name}_curve_set")
-
-        # TODO: Remove this backwards compatibility once heat curve set input is
-        # updated to use a string
-        return variant unless name == 'heat'
-
-        variant == 1.0 ? '1987' : 'default'
+        area.public_send("#{name}_curve_set")
       rescue NoMethodError
         'default'
       end

@@ -221,17 +221,12 @@ module Gql::Runtime
       #
       def USER_INPUT()
         input = scope.input_value
-        input_float = if input.is_a?(::String)
-          # We need to use BigDecimal for pretty numbers (try in irb: 1.15 * 100.0)
-          big_decimal(input)
+
+        if input.is_a?(Numeric)
+          input / input_factor
         else
           input
         end
-        input_float / input_factor
-      end
-
-      def RAW_USER_INPUT()
-        scope.input_value
       end
 
       # Public: Given the +key+ for an input, INPUT_VALUE retrieves the value
