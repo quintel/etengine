@@ -3,7 +3,7 @@
 module HouseholdCurvesHelper
   # Public: Creates a household heat curve set
   def create_curve_set(dataset: :nl, variant: 'default')
-    Atlas::Dataset.find(dataset).curve_sets.get('heat').variant(variant)
+    Atlas::Dataset.find(dataset).curve_sets.get('weather').variant(variant)
   end
 
   # Public: Creates a basic graph, graph API, and area stub.

@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 describe Qernel::FeverFacade::Curves, :household_curves do
-  let(:graph)     { create_graph(area_code: region, heat_curve_set: curve_set) }
+  let(:graph) do
+    create_graph(area_code: region, weather_curve_set: curve_set)
+  end
+
   let(:region)    { :nl }
   let(:curve_set) { 0.0 }
 
@@ -34,9 +37,9 @@ describe Qernel::FeverFacade::Curves, :household_curves do
     end
   end
 
-  describe 'heat set curves' do
+  describe 'weather set curves' do
     context 'when the file exists' do
-      let(:curve_name) { 'heat/insulation_detached_houses_low' }
+      let(:curve_name) { 'weather/insulation_detached_houses_low' }
 
       it 'returns the curve' do
         expect(curve).to be_a(Merit::Curve)
@@ -44,7 +47,7 @@ describe Qernel::FeverFacade::Curves, :household_curves do
     end
 
     context 'when the file does not exist' do
-      let(:curve_name) { 'heat/insulation_detached_houses_nope' }
+      let(:curve_name) { 'weather/insulation_detached_houses_nope' }
 
       it 'raises an error' do
         expect { curve }.to raise_error(Errno::ENOENT)

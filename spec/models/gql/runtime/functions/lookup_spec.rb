@@ -8,7 +8,7 @@ module Gql::Runtime::Functions
       gql.query_future(example.metadata[:example_group][:description])
     end
 
-    describe 'CURVE_SET_VARIANTS(heat)' do
+    describe 'CURVE_SET_VARIANTS(weather)' do
       it 'returns ["default", "empty"]' do
         expect(result).to eq(%w[default empty])
       end

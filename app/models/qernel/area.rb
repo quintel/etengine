@@ -15,7 +15,7 @@ module Qernel
     dataset_accessors ATTRIBUTES_USED
     dataset_accessors :insulation_level_new_houses
     dataset_accessors :insulation_level_old_houses
-    dataset_accessors :heat_curve_set
+    dataset_accessors :weather_curve_set
     dataset_accessors :disabled_sectors
 
     attr_accessor :graph
@@ -47,8 +47,8 @@ module Qernel
       fetch(:insulation_level_new_houses) { insulation_level_new_houses_min }
     end
 
-    def heat_curve_set
-      fetch(:heat_curve_set) { 'default' }
+    def weather_curve_set
+      fetch(:weather_curve_set) { 'default' }
     end
 
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.

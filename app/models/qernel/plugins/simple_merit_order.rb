@@ -183,7 +183,7 @@ module Qernel::Plugins
     def household_heat
       Qernel::MeritFacade::SimpleHouseholdHeat.new(
         @graph,
-        TimeResolve::CurveSet.for_area(@graph.area, 'heat', 'default')
+        TimeResolve::CurveSet.for_area(@graph.area, 'weather', 'default')
       )
     end
   end # SimpleMeritOrder
