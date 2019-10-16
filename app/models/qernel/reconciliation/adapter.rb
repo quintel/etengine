@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module Qernel
-  module Hydrogen
-    # Converts a Qernel::Converter to a Hydrogen adapter and back again.
+  module Reconciliation
+    # Converts a Qernel::Converter to a Reconciliation adapter and back again.
     class Adapter
       def self.adapter_for(converter, context)
-        type = converter.hydrogen.type
+        type = context.node_config(converter).type
 
         klass =
           case type
@@ -20,7 +20,7 @@ module Qernel
           when :storage
             StorageAdapter
           else
-            raise 'Unknown hydrogen participant type for ' \
+            raise 'Unknown reconciliation participant type for ' \
                   "#{converter.key}: #{type.inspect}"
           end
 
@@ -30,7 +30,7 @@ module Qernel
       def initialize(converter, context)
         @converter = converter
         @context   = context
-        @config    = converter.hydrogen
+        @config    = context.node_config(converter)
       end
 
       def setup(phase:)
@@ -50,8 +50,8 @@ module Qernel
         "#<#{self.class.name} #{@converter.key.inspect}>"
       end
 
-      # Public: Receives the hydrogen calculator and makes changes to the graph
-      # according to the behaviour of the adapter in the calculation.
+      # Public: Receives the reconciliation calculator and makes changes to the
+      # graph according to the behaviour of the adapter in the calculation.
       #
       # Override in subclasses as needed.
       #
@@ -67,11 +67,11 @@ module Qernel
       # Internal: Defines when in the time_resolve calculation to create the
       # demand curve.
       #
-      # Most participants in hydrogen have static curves which are a function of
-      # a load profile and the demand of the converter. The demand curve of
-      # these participants must be created before Merit detaches the dataset,
-      # afterwhich the converter demand will be zero (pending recalculation).
-      # These are :static.
+      # Most participants in Reconciliation have static curves which are a
+      # function of a load profile and the demand of the converter. The demand
+      # curve of these participants must be created before Merit detaches the
+      # dataset, afterwhich the converter demand will be zero (pending
+      # recalculation). These are :static.
       #
       # Others only have a correct demand curve _after_ the Merit calculation,
       # such as power-to-gas. These are :dynamic.
@@ -106,7 +106,7 @@ module Qernel
       # and slot since it's faster than summing the curve. It also has the nice
       # effect whereby dividing the load curve (in MW) by demand (in MJ)
       # produces a new load profile of values summing to 1/3600; effectively
-      # converting hydrogen amount from MJ to MW.
+      # converting the carrier demand from MJ to MW.
       #
       # input_of_electricity and output_of_electricity helpers may not be used
       # here as they require the graph to have been calcualted.
@@ -114,7 +114,7 @@ module Qernel
       # Returns an array.
       def merit_demand_profile(name)
         unless @converter.merit_order
-          raise 'Cannot use "self: ..." hydrogen profile on non-Merit ' \
+          raise 'Cannot use "self: ..." reconciliation profile on non-Merit ' \
                 "participant: #{@converter.key}"
         end
 
@@ -126,7 +126,7 @@ module Qernel
           slot = @converter.output(:electricity)
           curve = @converter.query.electricity_output_curve
         else
-          raise %(Unknown hydrogen profile: "self: #{@config.profile}")
+          raise %(Unknown reconciliation profile: "self: #{@config.profile}")
         end
 
         total = @converter.demand * slot.conversion

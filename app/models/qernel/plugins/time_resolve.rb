@@ -30,7 +30,7 @@ module Qernel::Plugins
       super
       @merit = Qernel::MeritFacade::Manager.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
-      @hydrogen = Qernel::Hydrogen::Manager.new(graph)
+      @hydrogen = Qernel::Reconciliation::Manager.new(graph, :hydrogen)
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we

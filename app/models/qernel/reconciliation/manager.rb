@@ -1,15 +1,14 @@
 module Qernel
-  module Hydrogen
+  module Reconciliation
     class Manager
-      Context = Struct.new(:dataset, :plugin, :graph)
-
-      def initialize(graph)
+      def initialize(graph, carrier_name)
         @graph = graph
 
         @context = Context.new(
           Atlas::Dataset.find(graph.area.area_code),
           self,
-          graph
+          graph,
+          carrier_name
         )
       end
 
@@ -25,10 +24,10 @@ module Qernel
         setup_adapters(phase: :final)
       end
 
-      # Public: Sets up and returns the time-resolved hydrogen calculator.
+      # Public: Sets up and returns the time-resolved reconciliation calculator.
       # Memoizes after the first call.
       #
-      # Returns a Hydrogen::Calculator.
+      # Returns a Reconciliation::Calculator.
       def calculator
         @calculator ||= Calculator.new(
           Helper.total_demand_curve(self),
@@ -57,14 +56,15 @@ module Qernel
       # Internal: Creates and memoizes all adapters.
       def adapters
         # TODO Memoize list of nodes, as we do with Merit.
-        @adapters ||= Atlas::Node.all
-          .select(&:hydrogen)
-          .group_by { |node| node.hydrogen.type }
-          .transform_values do |nodes|
-            nodes.map do |node|
-              Adapter.adapter_for(@graph.converter(node.key), @context)
+        @adapters ||=
+          Atlas::Node.all
+            .select { |node| @context.node_config(node) }
+            .group_by { |node| @context.node_config(node).type }
+            .transform_values do |nodes|
+              nodes.map do |node|
+                Adapter.adapter_for(@graph.converter(node.key), @context)
+              end
             end
-          end
       end
 
       # Internal: Triggers the adapters to determine their demand and curve at
@@ -82,6 +82,7 @@ module Qernel
       # Internal: Iterates through each adapter.
       def each_adapter
         return enum_for(:each_adapter) unless block_given?
+
         adapters.values.flatten.each { |adapter| yield(adapter) }
       end
     end
