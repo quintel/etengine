@@ -3,10 +3,14 @@
 module Qernel
   module Plugins
     class TimeResolve
-      # A simple wrapper around one or more Reconciliation calculations.
+      # Creates Reconciliation managers to compute time-resolved supply/demand
+      # of carriers, as defined in ETSource.
       class ReconciliationWrapper
-        def initialize(managers)
-          @managers = managers
+        def initialize(graph)
+          @managers =
+            Etsource::Reconciliation.map do |carrier, conf|
+              create_manager(graph, carrier, conf)
+            end
         end
 
         def setup
@@ -20,6 +24,19 @@ module Qernel
             manager.setup_dynamic
             manager.inject_values!
           end
+        end
+
+        private
+
+        def create_manager(graph, carrier, node_key_map)
+          Qernel::Reconciliation::Manager.new(
+            graph,
+            carrier,
+            node_key_map.transform_values do |typed_nodes|
+              # Convert node keys to Converter instances.
+              typed_nodes.map { |key| graph.converter(key) }
+            end
+          )
         end
       end
     end

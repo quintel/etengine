@@ -1,8 +1,9 @@
 module Qernel
   module Reconciliation
     class Manager
-      def initialize(graph, carrier_name)
+      def initialize(graph, carrier_name, converters)
         @graph = graph
+        @converters = converters
 
         @context = Context.new(
           Atlas::Dataset.find(graph.area.area_code),
@@ -55,16 +56,10 @@ module Qernel
 
       # Internal: Creates and memoizes all adapters.
       def adapters
-        # TODO Memoize list of nodes, as we do with Merit.
         @adapters ||=
-          Atlas::Node.all
-            .select { |node| @context.node_config(node) }
-            .group_by { |node| @context.node_config(node).type }
-            .transform_values do |nodes|
-              nodes.map do |node|
-                Adapter.adapter_for(@graph.converter(node.key), @context)
-              end
-            end
+          @converters.transform_values do |convs|
+            convs.map { |conv| Adapter.adapter_for(conv, @context) }
+          end
       end
 
       # Internal: Triggers the adapters to determine their demand and curve at
