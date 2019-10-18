@@ -113,25 +113,7 @@ module Qernel
       #
       # Returns an array.
       def merit_demand_profile(name)
-        unless @converter.merit_order
-          raise 'Cannot use "self: ..." reconciliation profile on non-Merit ' \
-                "participant: #{@converter.key}"
-        end
-
-        case name
-        when :electricity_input_curve
-          slot = @converter.input(:electricity)
-          curve = @converter.query.electricity_input_curve
-        when :electricity_output_curve
-          slot = @converter.output(:electricity)
-          curve = @converter.query.electricity_output_curve
-        else
-          raise %(Unknown reconciliation profile: "self: #{@config.profile}")
-        end
-
-        total = @converter.demand * slot.conversion
-
-        curve.map { |value| value.abs / total }
+        SelfDemandProfile.build(@converter, name)
       end
 
       # Internal: Creates a dynamic demand profile by interpolating between two

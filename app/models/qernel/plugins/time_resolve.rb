@@ -11,7 +11,6 @@ module Qernel::Plugins
 
     attr_reader :merit
     attr_reader :fever
-    attr_reader :hydrogen
 
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
@@ -30,7 +29,11 @@ module Qernel::Plugins
       super
       @merit = Qernel::MeritFacade::Manager.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
-      @hydrogen = Qernel::Reconciliation::Manager.new(graph, :hydrogen)
+
+      @reconciliation = ReconciliationWrapper.new([
+        Qernel::Reconciliation::Manager.new(graph, :hydrogen),
+        Qernel::Reconciliation::Manager.new(graph, :network_gas)
+      ])
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
@@ -50,7 +53,7 @@ module Qernel::Plugins
     def setup
       @fever.setup
       @merit.setup
-      @hydrogen.setup_static
+      @reconciliation.setup
     end
 
     def inject
@@ -76,8 +79,7 @@ module Qernel::Plugins
       @merit.send(:inject_values!)
       @fever.inject_values!
 
-      @hydrogen.setup_dynamic
-      @hydrogen.inject_values!
+      @reconciliation.inject_values!
     end
   end
 end

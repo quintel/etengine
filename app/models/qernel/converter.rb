@@ -102,6 +102,7 @@ class Converter
     fever
     hydrogen
     merit_order
+    network_gas
     preset_demand
     storage
   ]
