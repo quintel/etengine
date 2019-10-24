@@ -211,6 +211,12 @@ module Gql::Runtime
         scope.graph.insulation_costs(file).get(from_level, to_level)
       end
 
+      # Public: Retrieves a single value from the weather_properties.csv file
+      # associated with the currently-selected weather curve set.
+      def WEATHER_PROPERTY(key)
+        scope.graph.weather_properties.get(key, :value)
+      end
+
       # Retrieves the merit order price curve
       def MERIT_PRICE_CURVE
         if Qernel::Plugins::TimeResolve.enabled?(scope.graph)

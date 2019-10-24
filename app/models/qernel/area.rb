@@ -51,6 +51,10 @@ module Qernel
       fetch(:weather_curve_set) { 'default' }
     end
 
+    def weather_properties
+      Etsource::Dataset.weather_properties(area_code, weather_curve_set)
+    end
+
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
 
     def co2_emission_1990_billions
