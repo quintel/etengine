@@ -21,7 +21,7 @@ describe Qernel::FeverFacade::Curves, :household_curves do
       let(:curve_name) { 'dhw_normalized' }
 
       it 'returns the curve' do
-        expect(curve).to be_a(Merit::LoadProfile)
+        expect(curve).to be_a(Merit::Curve)
       end
     end
 
@@ -39,7 +39,7 @@ describe Qernel::FeverFacade::Curves, :household_curves do
       let(:curve_name) { 'insulation_detached_houses_low' }
 
       it 'returns the curve' do
-        expect(curve).to be_a(Merit::LoadProfile)
+        expect(curve).to be_a(Merit::Curve)
       end
     end
 

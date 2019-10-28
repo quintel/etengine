@@ -1,1 +1,3 @@
-Merit::LoadProfile.reader = Merit::LoadProfile::CachingReader.new
+# frozen_string_literal: true
+
+Merit::Curve.reader = Merit::Curve::CachingReader.new

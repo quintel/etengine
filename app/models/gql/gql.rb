@@ -267,8 +267,12 @@ module Gql
           @scenario.imported_electricity_price_curve.key
         )
 
+        # The graph wants an array. Loading a curve and converting to an array
+        # is expensive since Merit::Curve has to deal with the possibility of
+        # missing/default values. Using the reader directly avoids this
+        # overhead.
         @future_graph.carrier(:imported_electricity).cost_curve =
-          Merit::Curve.load_file(path).to_a
+          Merit::Curve.reader.read(path)
       end
     end
 

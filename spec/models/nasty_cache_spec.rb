@@ -44,12 +44,14 @@ describe NastyCache do
     expect(@cache.get("to_be_expired")).to be_nil
   end
 
-  it "should expire load profiles" do
-    expect { @cache.expire! }.
-      to change { Merit::LoadProfile.reader }
+  context 'Merit curve reader' do
+    it 'is created anew' do
+      expect { @cache.expire! }.to (change { Merit::Curve.reader })
+    end
 
-    expect { @cache.expire! }.
-      to_not change { Merit::LoadProfile.reader.class }
+    it 'preserves the class of the original reader' do
+      expect { @cache.expire! }.not_to (change { Merit::Curve.reader.class })
+    end
   end
 
   it "should cache with Rails.cache" do

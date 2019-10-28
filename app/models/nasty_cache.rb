@@ -142,7 +142,7 @@ class NastyCache
 
     # In production, load profiles are cached. Wipe that cache by creating a new
     # reader of the same type.
-    Merit::LoadProfile.reader = Merit::LoadProfile.reader.class.new
+    Merit::Curve.reader = Merit::Curve.reader.class.new
 
     @cache_store = {}
   end

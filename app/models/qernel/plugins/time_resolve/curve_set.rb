@@ -42,12 +42,9 @@ module Qernel::Plugins
 
       # Public: The named curve as a Merit::LoadProfile.
       #
-      # TODO: A LoadProfile is too specific; a Curve or plain array would be
-      # preferred.
-      #
-      # Returns a Merit::LoadProfile.
+      # Returns a Merit::Curve.
       def curve(name)
-        Merit::LoadProfile.load(@dir.join("#{ name }.csv"))
+        Merit::Curve.load_file(@dir.join("#{name}.csv"))
       end
 
       # Public: Tests that a curve exists.

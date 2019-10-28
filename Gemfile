@@ -51,11 +51,11 @@ gem 'parallel'
 
 # own gems
 gem 'rubel',         ref: 'e36554a',  github: 'quintel/rubel'
-gem 'quintel_merit', ref: '58620d2',  github: 'quintel/merit'
+gem 'quintel_merit', ref: 'b63720c',  github: 'quintel/merit'
 gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '253158c',  github: 'quintel/refinery'
-gem 'atlas',         ref: 'e2869d4',  github: 'quintel/atlas'
+gem 'atlas',         ref: '6d75f41',  github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2'
