@@ -129,13 +129,7 @@ RSpec.describe Scenario::YearInterpolator do
     end
 
     let(:techs) do
-      %w(
-        power_to_heat
-        export
-        power_to_gas
-        power_to_power
-        electric_vehicle
-      )
+      FlexibilityOrder.default_order.shuffle
     end
 
     let(:interpolated) { described_class.call(source, 2040) }

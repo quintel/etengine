@@ -466,13 +466,7 @@ describe Scenario do
 
     context 'with a preset flexibility order' do
       let(:techs) do
-        %w(
-          power_to_heat
-          export
-          power_to_gas
-          power_to_power
-          electric_vehicle
-        )
+        FlexibilityOrder.default_order.shuffle
       end
 
       let!(:order) do
