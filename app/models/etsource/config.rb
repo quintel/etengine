@@ -36,6 +36,13 @@ module Etsource
       read('fever').map(&:to_sym)
     end
 
+    # Public: Reads the flexibility order options.
+    #
+    # Returns an array of strings.
+    def flexibility_order
+      read('flexibility_order')
+    end
+
     private_class_method def read(name)
       NastyCache.instance.fetch("etsource.config.#{name}") do
         IceNine.deep_freeze(Atlas::Config.read(name))

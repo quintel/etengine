@@ -51,6 +51,7 @@ describe Api::V3::FlexibilityOrdersController do
   it "grabs the default order" do
     get :get, params: { scenario_id: -1 }
 
-    expect(JSON.parse(response.body)['order']).to eq(FlexibilityOrder::GROUPS)
+    expect(JSON.parse(response.body)['order'])
+      .to eq(FlexibilityOrder.default_order)
   end
 end

@@ -155,7 +155,7 @@ describe Preset, :etsource_fixture do
       let(:scenario) do
         FactoryBot.build(:scenario, user_values: { a: 1 }).tap do |s|
           s.flexibility_order =
-            FlexibilityOrder.new(order: FlexibilityOrder::GROUPS)
+            FlexibilityOrder.new(order: FlexibilityOrder.default_order)
         end
       end
 
@@ -164,7 +164,8 @@ describe Preset, :etsource_fixture do
       end
 
       it 'sets the flexibility order values' do
-        expect(preset.flexibility_order.order).to eq(FlexibilityOrder::GROUPS)
+        expect(preset.flexibility_order.order)
+          .to eq(FlexibilityOrder.default_order)
       end
     end # with a flexibility order
   end # .from_scenario
