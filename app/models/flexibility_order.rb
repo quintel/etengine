@@ -5,7 +5,7 @@ class FlexibilityOrder < ApplicationRecord
 
   belongs_to :scenario
 
-  validates :scenario_id, uniqueness: true
+  validates :scenario_id, presence: true, uniqueness: true
 
   validates_with Atlas::FlexibilityOrderValidator,
     attribute: :order,

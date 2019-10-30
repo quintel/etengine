@@ -31,12 +31,7 @@ Rails.application.routes.draw do
           post :stats,    :on => :collection
         end
         resources :inputs, :only => [:index, :show]
-        resource :flexibility_order, only: [] do
-          collection do
-            post :set
-            get :get
-          end
-        end
+        resource :flexibility_order, only: [:show, :update]
 
         resources :custom_curves, only: %i[show update destroy]
 

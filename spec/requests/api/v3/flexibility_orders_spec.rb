@@ -5,14 +5,10 @@ require 'spec_helper'
 describe 'APIv3 flexibility orders' do
   let(:valid_options) { FlexibilityOrder.default_order }
   let(:scenario) { FactoryBot.create(:scenario) }
+  let(:url) { api_v3_scenario_flexibility_order_url(scenario_id: scenario.id) }
 
   context 'when fetching the flexibility order' do
-    let(:request) do
-      get get_api_v3_scenario_flexibility_order_url(scenario.id), params: {
-        scenario_id: scenario.id,
-        flexibility_order: { order: valid_options }
-      }
-    end
+    let(:request) { get(url) }
 
     context 'when no order exists' do
       it 'is a successful request' do
@@ -99,8 +95,7 @@ describe 'APIv3 flexibility orders' do
 
     context 'when the flexibility order does not exist, given valid data' do
       let(:request) do
-        post set_api_v3_scenario_flexibility_order_url(scenario.id), params: {
-          scenario_id: scenario.id,
+        put url, params: {
           flexibility_order: { order: valid_options.reverse }
         }
       end
@@ -114,8 +109,7 @@ describe 'APIv3 flexibility orders' do
 
     context 'when the scenario does not exist, given valid data' do
       let(:request) do
-        post set_api_v3_scenario_flexibility_order_url(scenario.id), params: {
-          scenario_id: scenario.id,
+        put url, params: {
           flexibility_order: { order: valid_options.reverse }
         }
       end
@@ -136,8 +130,7 @@ describe 'APIv3 flexibility orders' do
 
     context 'when the flexibility order does not exist, given invalid data' do
       let(:request) do
-        post set_api_v3_scenario_flexibility_order_url(scenario.id), params: {
-          scenario_id: scenario.id,
+        put url, params: {
           flexibility_order: { order: %w[invalid] }
         }
       end
@@ -151,8 +144,7 @@ describe 'APIv3 flexibility orders' do
 
     context 'when the flexibility order exists, given valid data' do
       let(:request) do
-        post set_api_v3_scenario_flexibility_order_url(scenario.id), params: {
-          scenario_id: scenario.id,
+        put url, params: {
           flexibility_order: { order: valid_options.reverse }
         }
       end
@@ -173,8 +165,7 @@ describe 'APIv3 flexibility orders' do
 
     context 'when the flexibility order exists, given invalid data' do
       let(:request) do
-        post set_api_v3_scenario_flexibility_order_url(scenario.id), params: {
-          scenario_id: scenario.id,
+        put url, params: {
           flexibility_order: { order: %w[invalid] }
         }
       end

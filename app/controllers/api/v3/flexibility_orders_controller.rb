@@ -10,8 +10,12 @@ module Api
         render json: { errors: ['Scenario not found'] }, status: 404
       end
 
-      def set
-        order = update_order(order_params)
+      def show
+        render json: flexibility_order || FlexibilityOrder.default
+      end
+
+      def update
+        order = update_order(params[:scenario_id], order_params)
 
         if order.valid?
           order.save
@@ -32,22 +36,18 @@ module Api
         end
       end
 
-      def get
-        render json: flexibility_order || FlexibilityOrder.default
-      end
-
       private
 
       def find_scenario
         Scenario.find(params[:scenario_id])
       end
 
-      def update_order(params)
+      def update_order(scenario_id, params)
         if flexibility_order
           flexibility_order.order = params[:order]
           flexibility_order
         else
-          FlexibilityOrder.new(params)
+          FlexibilityOrder.new(params.merge(scenario_id: scenario_id))
         end
       end
 
@@ -57,7 +57,7 @@ module Api
       end
 
       def order_params
-        params.require(:flexibility_order).permit(:scenario_id, order: [])
+        params.require(:flexibility_order).permit(order: [])
       end
 
       def render_errors(order)
