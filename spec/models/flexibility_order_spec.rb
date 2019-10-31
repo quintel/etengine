@@ -73,4 +73,43 @@ describe FlexibilityOrder do
       end
     end
   end
+
+  describe '#useable_order' do
+    let(:fo) { described_class.new(order: order) }
+
+    context 'when the order is empty' do
+      let(:order) { [] }
+
+      it 'returns the default order' do
+        expect(fo.useable_order).to eq(described_class.default_order)
+      end
+    end
+
+    describe 'when the order has all the options present' do
+      let(:order) { described_class.default_order.reverse }
+
+      it 'returns the user order' do
+        expect(fo.useable_order).to eq(described_class.default_order.reverse)
+      end
+    end
+
+    describe 'when the order has missing options' do
+      let(:order) { [described_class.default_order.last] }
+
+      it 'appends the missing options' do
+        expect(fo.useable_order).to eq([
+          described_class.default_order.last,
+          *described_class.default_order[0..-2]
+        ])
+      end
+    end
+
+    describe 'when the order has an invalid option' do
+      let(:order) { ['invalid', *described_class.default_order] }
+
+      it 'omits the invalid option' do
+        expect(fo.useable_order).to eq(described_class.default_order)
+      end
+    end
+  end
 end

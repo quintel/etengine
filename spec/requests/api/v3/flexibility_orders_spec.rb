@@ -50,6 +50,55 @@ describe 'APIv3 flexibility orders' do
         )
       end
     end
+
+    context 'when the existing order contains invalid options' do
+      before do
+        fo = FlexibilityOrder.new(
+          scenario_id: scenario.id,
+          order: ['invalid', *FlexibilityOrder.default_order]
+        )
+
+        fo.save(validate: false)
+      end
+
+      it 'is a successful request' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'omits the invalid options' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'order' => FlexibilityOrder.default_order
+        )
+      end
+    end
+
+    context 'when the existing order is missing some options' do
+      before do
+        FlexibilityOrder.create!(
+          scenario_id: scenario.id,
+          order: [FlexibilityOrder.default_order.last]
+        )
+      end
+
+      it 'is a successful request' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'includes the missing options appended to the user choices' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'order' => [
+            FlexibilityOrder.default_order.last,
+            *FlexibilityOrder.default_order[0..-2]
+          ]
+        )
+      end
+    end
   end
 
   context 'when updating the flexibility order' do

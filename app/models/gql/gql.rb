@@ -259,8 +259,10 @@ module Gql
       @present_graph.use_fce = @scenario.use_fce
       @future_graph.use_fce = @scenario.use_fce
 
-      @future_graph.flexibility_order = @present_graph.flexibility_order =
-        @scenario.flexibility_order.try(:order) || FlexibilityOrder.default_order
+      @future_graph.flexibility_order =
+        @present_graph.flexibility_order =
+          @scenario.flexibility_order.try(:useable_order) ||
+          FlexibilityOrder.default_order
 
       if @scenario.imported_electricity_price_curve.attached?
         path = ActiveStorage::Blob.service.path_for(

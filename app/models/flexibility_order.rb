@@ -12,7 +12,21 @@ class FlexibilityOrder < ApplicationRecord
     in: -> { FlexibilityOrder.default_order }
 
   def as_json(*)
-    { order: order }
+    { order: useable_order }
+  end
+
+  # Public: The flexibility order with any invalid options removed, and any
+  # missing options appended with the default sorting.
+  def useable_order
+    defaults = self.class.default_order
+    intersection = order & defaults
+
+    if intersection.length != defaults.length
+      # Merge specified options with those missing.
+      intersection.concat(defaults - intersection)
+    end
+
+    intersection
   end
 
   def self.default
