@@ -67,7 +67,7 @@ module Qernel
 
         raise MissingCurve.new(attribute, converter) if curve.blank?
 
-        total = curve.sum
+        total = curve.sum * 3600 # MJ to MWh
         curve.map { |val| val / total }
       end
     end
