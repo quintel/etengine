@@ -1966,10 +1966,10 @@
   :y: 15900
 :industry_useful_demand_for_other_non_specified_coal_non_energetic:
   :x: 720
-  :y: 16260
+  :y: 16320
 :industry_final_demand_for_other_non_specified_coal_non_energetic:
   :x: 1520
-  :y: 16260
+  :y: 16320
 :industry_final_demand_for_other_coal_non_energetic:
   :x: 2120
   :y: 13360
@@ -1981,10 +1981,10 @@
   :y: 16080
 :industry_useful_demand_for_other_non_specified_crude_oil_non_energetic:
   :x: 720
-  :y: 16380
+  :y: 16440
 :industry_final_demand_for_other_non_specified_crude_oil_non_energetic:
   :x: 1520
-  :y: 16380
+  :y: 16440
 :industry_final_demand_for_other_crude_oil_non_energetic:
   :x: 2120
   :y: 13480
@@ -2002,10 +2002,10 @@
   :y: 15960
 :industry_useful_demand_for_other_non_specified_network_gas_non_energetic:
   :x: 720
-  :y: 16320
+  :y: 16380
 :industry_final_demand_for_other_non_specified_network_gas_non_energetic:
   :x: 1520
-  :y: 16320
+  :y: 16380
 :industry_final_demand_for_other_network_gas_non_energetic:
   :x: 2120
   :y: 13420
@@ -2023,10 +2023,10 @@
   :y: 16020
 :industry_useful_demand_for_other_non_specified_wood_pellets_non_energetic:
   :x: 720
-  :y: 16440
+  :y: 16500
 :industry_final_demand_for_other_non_specified_wood_pellets_non_energetic:
   :x: 1520
-  :y: 16440
+  :y: 16500
 :industry_final_demand_for_other_wood_pellets_non_energetic:
   :x: 2120
   :y: 13540
@@ -3137,3 +3137,51 @@
 :energy_flexibility_hv_opac_electricity:
   :x: 5520
   :y: 2600
+:industry_useful_demand_for_other_machinery_hydrogen:
+  :x: 720
+  :y: 14620
+:industry_final_demand_for_other_machinery_hydrogen:
+  :x: 1520
+  :y: 14620
+:industry_final_demand_for_other_transport_equipment_hydrogen:
+  :x: 1520
+  :y: 18100
+:industry_useful_demand_for_other_mining_hydrogen:
+  :x: 720
+  :y: 15680
+:industry_useful_demand_for_other_construction_hydrogen:
+  :x: 720
+  :y: 17000
+:industry_useful_demand_for_other_transport_equipment_hydrogen:
+  :x: 720
+  :y: 18100
+:industry_useful_demand_for_other_textile_hydrogen:
+  :x: 720
+  :y: 17560
+:industry_final_demand_for_other_textile_hydrogen:
+  :x: 1520
+  :y: 17560
+:industry_useful_demand_for_other_non_specified_hydrogen:
+  :x: 720
+  :y: 16200
+:industry_final_demand_for_other_construction_hydrogen:
+  :x: 1520
+  :y: 17000
+:industry_final_demand_for_other_mining_hydrogen:
+  :x: 1520
+  :y: 15680
+:industry_final_demand_for_other_non_specified_hydrogen:
+  :x: 1520
+  :y: 16200
+:industry_useful_demand_for_other_minerals_hydrogen:
+  :x: 720
+  :y: 15140
+:industry_final_demand_for_other_minerals_hydrogen:
+  :x: 1520
+  :y: 15140
+:industry_useful_demand_for_other_wood_products_hydrogen:
+  :x: 720
+  :y: 18640
+:industry_final_demand_for_other_wood_products_hydrogen:
+  :x: 1520
+  :y: 18640
