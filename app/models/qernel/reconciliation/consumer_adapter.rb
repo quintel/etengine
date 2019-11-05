@@ -2,7 +2,16 @@
 
 module Qernel
   module Reconciliation
+    # Represents a form of consumption within the reconciliation calculation.
     class ConsumerAdapter < Adapter
+      def self.factory(converter, context)
+        if context.node_config(converter).behavior == :subordinate
+          SubordinateConsumerAdapter
+        else
+          self
+        end
+      end
+
       def inject!(_calculator)
         @converter.dataset_lazy_set(@context.curve_name(:input)) do
           demand_curve.to_a

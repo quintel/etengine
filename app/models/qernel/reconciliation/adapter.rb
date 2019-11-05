@@ -10,7 +10,7 @@ module Qernel
         klass =
           case type
           when :consumer
-            ConsumerAdapter
+            ConsumerAdapter.factory(converter, context)
           when :export
             ExportAdapter
           when :producer
