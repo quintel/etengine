@@ -34,7 +34,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
     end
 
     it 'is based on the values in the source curve and slot conversion' do
-      expect(result).to eq([0.1, 0.2, 0.3, 0.2, 0.2])
+      expect(result).to eq([0.1, 0.2, 0.3, 0.2, 0.2].map { |v| v / 3600 })
     end
   end
 
