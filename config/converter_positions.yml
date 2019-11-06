@@ -2170,25 +2170,25 @@
   :y: 13020
 :industry_final_demand_for_other_food_crude_oil:
   :x: 1520
-  :y: 13140
+  :y: 13080
 :industry_useful_demand_for_other_food_electricity:
   :x: 720
-  :y: 12920
+  :y: 12900
 :industry_final_demand_for_other_food_electricity:
   :x: 1520
-  :y: 12920
+  :y: 12900
 :industry_final_demand_for_other_food_network_gas:
   :x: 1520
-  :y: 13080
+  :y: 13380
 :industry_useful_demand_for_other_food_useable_heat:
   :x: 720
   :y: 13060
 :industry_final_demand_for_other_food_steam_hot_water:
   :x: 1520
-  :y: 13320
+  :y: 12960
 :industry_final_demand_for_other_food_wood_pellets:
   :x: 1520
-  :y: 13200
+  :y: 13140
 :industry_useful_demand_for_other_machinery_coal:
   :x: 720
   :y: 14320
@@ -2233,13 +2233,13 @@
   :y: 13020
 :industry_other_food_burner_crude_oil:
   :x: 1220
-  :y: 13140
+  :y: 13080
 :industry_other_food_burner_network_gas:
   :x: 1220
-  :y: 13080
+  :y: 13380
 :industry_other_food_burner_wood_pellets:
   :x: 1220
-  :y: 13200
+  :y: 13140
 :industry_other_paper_burner_coal:
   :x: 1220
   :y: 13560
@@ -2254,7 +2254,7 @@
   :y: 13680
 :industry_other_food_heater_electricity:
   :x: 1220
-  :y: 12960
+  :y: 12940
 :industry_other_paper_heater_electricity:
   :x: 1220
   :y: 13500
@@ -2286,8 +2286,8 @@
   :x: 920
   :y: 10620
 :industry_other_food_flexibility_p2h_electricity:
-  :x: 920
-  :y: 13140
+  :x: 1220
+  :y: 13320
 :industry_other_paper_flexibility_p2h_electricity:
   :x: 900
   :y: 13700
@@ -2662,7 +2662,7 @@
   :y: 10380
 :industry_final_demand_for_other_food_hydrogen:
   :x: 1520
-  :y: 13260
+  :y: 13200
 :industry_final_demand_for_other_hydrogen:
   :x: 2120
   :y: 13280
@@ -2671,7 +2671,7 @@
   :y: 10440
 :industry_other_food_burner_hydrogen:
   :x: 1220
-  :y: 13260
+  :y: 13200
 :industry_chemicals_other_burner_hydrogen:
   :x: 1180
   :y: 12480
@@ -3185,3 +3185,18 @@
 :industry_final_demand_for_other_wood_products_hydrogen:
   :x: 1520
   :y: 18640
+:industry_other_food_distribution_hybrid_heat_network_gas:
+  :x: 1080
+  :y: 13340
+:industry_other_food_flexibility_p2h_network_gas_electricity:
+  :x: 1220
+  :y: 13320
+:industry_other_food_p2h_network_gas_distribution_useable_heat:
+  :x: 1080
+  :y: 13340
+:industry_other_food_flexibility_p2h_hydrogen_electricity:
+  :x: 1220
+  :y: 13260
+:industry_other_food_p2h_hydrogen_distribution_useable_heat:
+  :x: 1080
+  :y: 13220
