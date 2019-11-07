@@ -37,6 +37,6 @@ class RenameClimateSlider < ActiveRecord::Migration[5.2]
   # All protected scenarios, and any unprotected scenarios since Jan 1st 2019
   # will be updated.
   def scenarios
-    Scenario.migratable_since(Date.new(2019, 1, 1))
+    Scenario.migratable_since(Date.new(2019, 10, 1))
   end
 end
