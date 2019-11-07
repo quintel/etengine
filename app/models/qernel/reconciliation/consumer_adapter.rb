@@ -27,10 +27,12 @@ module Qernel
       end
 
       def input_slot
-        @converter.input(@context.carrier) ||
+        carrier = @config.demand_carrier || @context.carrier
+
+        @converter.input(carrier) ||
           raise(<<~ERROR.squish)
-            Expected a #{@context.carrier} output on #{@converter.key}, but
-            none was found.
+            Expected a #{carrier} output on #{@converter.key}, but none was
+            found.
           ERROR
       end
     end
