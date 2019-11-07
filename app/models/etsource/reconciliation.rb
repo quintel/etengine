@@ -14,6 +14,10 @@ module Etsource
         end
       end
 
+      def supported_carrier?(carrier)
+        carrier_list.include?(carrier.to_sym)
+      end
+
       private
 
       # Imports a list of carriers and nodes which belong to a reconciliation

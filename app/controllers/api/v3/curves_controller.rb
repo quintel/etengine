@@ -43,10 +43,28 @@ module Api
 
       # Downloads the total demand and supply for hydrogen, with additional
       # columns for the storage demand and supply.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/hydrogen.csv
       def hydrogen
-        presenter = Api::V3::HydrogenCSVPresenter.new(scenario.gql.future_graph)
+        presenter = Api::V3::ReconciliationCSVPresenter.new(
+          scenario.gql.future_graph, :hydrogen
+        )
 
         send_csv('hydrogen') do |csv|
+          presenter.to_csv_rows.each { |row| csv << row }
+        end
+      end
+
+      # Downloads the total demand and supply for network gas, with additional
+      # columns for the storage demand and supply.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/network_gas.csv
+      def network_gas
+        presenter = Api::V3::ReconciliationCSVPresenter.new(
+          scenario.gql.future_graph, :network_gas
+        )
+
+        send_csv('network_gas') do |csv|
           presenter.to_csv_rows.each { |row| csv << row }
         end
       end

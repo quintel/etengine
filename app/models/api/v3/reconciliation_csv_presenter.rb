@@ -1,9 +1,36 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     # Creates CSV rows describing hydrogen production.
-    class HydrogenCSVPresenter
-      def initialize(graph)
+    class ReconciliationCSVPresenter
+      # Provides support for multiple carriers in the presenter.
+      class Adapter
+        def initialize(carrier)
+          @carrier = carrier.to_sym
+        end
+
+        def supported?(graph)
+          graph.plugin(:time_resolve) &&
+            Etsource::Reconciliation.supported_carrier?(@carrier)
+        end
+
+        def converters(graph)
+          graph.converters.select(&@carrier)
+        end
+
+        def converter_curve(converter, direction)
+          converter.converter_api.public_send("#{@carrier}_#{direction}_curve")
+        end
+
+        def converter_config(converter)
+          converter.public_send(@carrier)
+        end
+      end
+
+      def initialize(graph, carrier)
         @graph = graph
+        @adapter = Adapter.new(carrier)
       end
 
       # Public: Creates an array of rows for a CSV file containing the loads of
@@ -12,7 +39,7 @@ module Api
       # Returns an array of arrays.
       def to_csv_rows
         # Empty CSV if time-resolved calculations are not enabled.
-        unless @graph.plugin(:time_resolve)&.hydrogen
+        unless @adapter.supported?(@graph)
           return [['Merit order and time-resolved calculation are not ' \
                    'enabled for this scenario']]
         end
@@ -39,24 +66,27 @@ module Api
       # Internal: Creates a column representing data for a converter in a
       # direction.
       def column_from_converter(converter, direction)
-        loads = converter.converter_api
-          .public_send("hydrogen_#{direction}_curve").map { |val| val.round(2) }
+        loads =
+          @adapter.converter_curve(converter, direction).map { |v| v.round(2) }
 
         ["#{converter.key}.#{direction}", *loads]
       end
 
       def converters_of_type(*types)
-        types.flat_map { |type| converters[type] }.sort_by(&:key)
+        types.flat_map { |type| converters[type] }.compact.sort_by(&:key)
       end
 
       def converters
-        @converters ||= @graph.converters.select(&:hydrogen)
-          .each_with_object({}) do |converter, data|
-            next unless converter.hydrogen
+        @converters ||=
+          @adapter.converters(@graph)
+            .each_with_object({}) do |converter, data|
+              config = @adapter.converter_config(converter)
 
-            data[converter.hydrogen.type] ||= []
-            data[converter.hydrogen.type].push(converter)
-          end
+              next unless config
+
+              data[config.type] ||= []
+              data[config.type].push(converter)
+            end
       end
     end
   end
