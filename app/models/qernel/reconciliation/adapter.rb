@@ -133,6 +133,17 @@ module Qernel
         end
       end
 
+      # Internal: Fetches demand from the converter.
+      def converter_demand
+        if @converter.demand.nil? && @converter.query.number_of_units.zero?
+          # Demand may be nil if it is set by Fever, and the producer has no
+          # installed units (therefore was omitted from the calculation).
+          0.0
+        else
+          @converter.demand
+        end
+      end
+
       # Internal: The full load hours of the participant.
       #
       # Returns a numeric.

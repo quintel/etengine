@@ -23,7 +23,7 @@ module Qernel
       def calculate_carrier_demand
         # We can't use input_of(carrier) as the graph may not be calculated at
         # the time this method is called.
-        @converter.demand * @converter.input(@context.carrier).conversion
+        converter_demand * @converter.input(@context.carrier).conversion
       end
     end
   end
