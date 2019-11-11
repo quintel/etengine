@@ -30,9 +30,5 @@ module Qernel
     def time_curves
       @data[:time_curves]
     end
-
-    def insulation_costs(file)
-      Etsource::Dataset.insulation_costs(@data[:area][:area_data][:area], file)
-    end
   end
 end

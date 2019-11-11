@@ -39,6 +39,10 @@ module Qernel
       dataset_get(:disabled_sectors) || []
     end
 
+    def insulation_costs(file)
+      Etsource::Dataset.insulation_costs(area_code, file)
+    end
+
     def insulation_level_old_houses
       fetch(:insulation_level_old_houses) { insulation_level_old_houses_min }
     end

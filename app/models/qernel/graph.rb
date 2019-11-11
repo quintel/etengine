@@ -54,8 +54,8 @@ class Graph
                 :finished_converters,
                 :area
 
-  delegate :time_curves, :insulation_costs, to: :dataset
-  delegate :weather_properties, to: :area
+  delegate :time_curves, to: :dataset
+  delegate :insulation_costs, :weather_properties, to: :area
 
   # def initialize(converters, carriers, groups)
   def initialize(converters = [])
