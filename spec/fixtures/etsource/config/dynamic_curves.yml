@@ -54,9 +54,9 @@ solar_pv:
 detached_houses_heat:
   type: interpolate
   curves:
-    - insulation_detached_houses_low
-    - insulation_detached_houses_medium
-    - insulation_detached_houses_high
+    - weather/insulation_detached_houses_low
+    - weather/insulation_detached_houses_medium
+    - weather/insulation_detached_houses_high
 
 wind_inland:
   type: amplify

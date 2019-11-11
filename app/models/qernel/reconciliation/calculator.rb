@@ -1,5 +1,5 @@
 module Qernel
-  module Hydrogen
+  module Reconciliation
     class Calculator
       def initialize(demand, supply)
         @total_demand = demand
@@ -20,8 +20,8 @@ module Qernel
         result = Array.new(@total_demand.length)
 
         # Hold the current index and increment in each iteration: its faster to
-        # do this and prealloate the result array, than to create an empty array
-        # and push each result.
+        # do this - and prealloate the result array - than to create an empty
+        # array and push each result.
         index = -1
 
         @total_demand.zip(@total_supply) do |demand, supply|

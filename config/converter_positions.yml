@@ -469,16 +469,16 @@
   :y: 6860
 :industry_final_demand_wood_pellets_non_energetic:
   :x: 2760
-  :y: 10320
+  :y: 10380
 :industry_final_demand_coal_non_energetic:
   :x: 2760
-  :y: 10140
+  :y: 10200
 :industry_final_demand_network_gas_non_energetic:
   :x: 2760
-  :y: 10200
+  :y: 10260
 :industry_final_demand_crude_oil_non_energetic:
   :x: 2760
-  :y: 10260
+  :y: 10320
 :transport_final_demand_crude_oil_non_energetic:
   :x: 3120
   :y: 5000
@@ -1456,7 +1456,7 @@
   :y: 2080
 :industry_final_demand_for_chemical_network_gas:
   :x: 2120
-  :y: 10620
+  :y: 10740
 :industry_final_demand_for_chemical_steam_hot_water:
   :x: 2120
   :y: 10860
@@ -1471,7 +1471,7 @@
   :y: 11040
 :industry_final_demand_for_chemical_wood_pellets:
   :x: 2120
-  :y: 10680
+  :y: 10620
 :industry_final_demand_for_chemical_coal_non_energetic:
   :x: 2120
   :y: 10920
@@ -1483,7 +1483,7 @@
   :y: 10980
 :industry_final_demand_for_chemical_crude_oil:
   :x: 2120
-  :y: 10740
+  :y: 10680
 :energy_export_non_biogenic_waste:
   :x: 3200
   :y: 11560
@@ -1708,16 +1708,16 @@
   :y: 11860
 :industry_useful_demand_for_chemical_other_coal_non_energetic:
   :x: 1180
-  :y: 12540
+  :y: 12680
 :industry_final_demand_for_chemical_other_coal_non_energetic:
   :x: 1520
-  :y: 12540
+  :y: 12680
 :industry_useful_demand_for_chemical_other_crude_oil_non_energetic:
   :x: 1180
-  :y: 12660
+  :y: 12800
 :industry_final_demand_for_chemical_other_crude_oil_non_energetic:
   :x: 1520
-  :y: 12660
+  :y: 12800
 :industry_useful_demand_for_chemical_other_electricity:
   :x: 720
   :y: 12040
@@ -1726,10 +1726,10 @@
   :y: 12040
 :industry_useful_demand_for_chemical_other_network_gas_non_energetic:
   :x: 1180
-  :y: 12600
+  :y: 12740
 :industry_final_demand_for_chemical_other_network_gas_non_energetic:
   :x: 1520
-  :y: 12600
+  :y: 12740
 :industry_useful_demand_for_chemical_other_useable_heat:
   :x: 720
   :y: 12200
@@ -1738,43 +1738,43 @@
   :y: 12240
 :industry_chemicals_other_burner_crude_oil:
   :x: 1180
-  :y: 12420
+  :y: 12360
 :industry_chemicals_other_burner_network_gas:
   :x: 1180
-  :y: 12300
+  :y: 12420
 :industry_chemicals_other_burner_wood_pellets:
   :x: 1180
-  :y: 12360
+  :y: 12300
 :industry_final_demand_for_chemical_other_coal:
   :x: 1520
   :y: 12240
 :industry_final_demand_for_chemical_other_crude_oil:
   :x: 1520
-  :y: 12420
+  :y: 12360
 :industry_final_demand_for_chemical_other_network_gas:
   :x: 1520
-  :y: 12300
+  :y: 12420
 :industry_final_demand_for_chemical_other_steam_hot_water:
   :x: 1520
   :y: 12180
 :industry_final_demand_for_chemical_other_wood_pellets:
   :x: 1520
-  :y: 12360
+  :y: 12300
 :industry_useful_demand_for_chemical_other_wood_pellets_non_energetic:
   :x: 1180
-  :y: 12720
+  :y: 12860
 :industry_final_demand_for_chemical_other_wood_pellets_non_energetic:
   :x: 1520
-  :y: 12720
+  :y: 12860
 :industry_useful_demand_for_chemical_refineries_coal_non_energetic:
   :x: 720
-  :y: 10920
+  :y: 11020
 :industry_final_demand_for_chemical_refineries_coal_non_energetic:
   :x: 1520
-  :y: 10920
+  :y: 11020
 :industry_useful_demand_for_chemical_refineries_crude_oil_non_energetic:
   :x: 720
-  :y: 11100
+  :y: 10960
 :industry_final_demand_for_chemical_refineries_crude_oil_non_energetic:
   :x: 1520
   :y: 11100
@@ -1786,10 +1786,10 @@
   :y: 10440
 :industry_useful_demand_for_chemical_refineries_network_gas_non_energetic:
   :x: 720
-  :y: 10980
+  :y: 11080
 :industry_final_demand_for_chemical_refineries_network_gas_non_energetic:
   :x: 1520
-  :y: 10980
+  :y: 11080
 :industry_useful_demand_for_chemical_refineries_useable_heat:
   :x: 720
   :y: 10560
@@ -1798,34 +1798,34 @@
   :y: 10560
 :industry_chemicals_refineries_burner_crude_oil:
   :x: 1240
-  :y: 10740
+  :y: 10680
 :industry_chemicals_refineries_burner_network_gas:
   :x: 1240
-  :y: 10620
+  :y: 10740
 :industry_chemicals_refineries_burner_wood_pellets:
   :x: 1240
-  :y: 10680
+  :y: 10620
 :industry_final_demand_for_chemical_refineries_coal:
   :x: 1520
   :y: 10560
 :industry_final_demand_for_chemical_refineries_crude_oil:
   :x: 1520
-  :y: 10740
+  :y: 10680
 :industry_final_demand_for_chemical_refineries_network_gas:
   :x: 1520
-  :y: 10620
+  :y: 10740
 :industry_final_demand_for_chemical_refineries_steam_hot_water:
   :x: 1520
-  :y: 10860
+  :y: 10960
 :industry_final_demand_for_chemical_refineries_wood_pellets:
   :x: 1520
-  :y: 10680
+  :y: 10620
 :industry_useful_demand_for_chemical_refineries_wood_pellets_non_energetic:
   :x: 720
-  :y: 11040
+  :y: 11140
 :industry_final_demand_for_chemical_refineries_wood_pellets_non_energetic:
   :x: 1520
-  :y: 11040
+  :y: 11140
 :industry_useful_demand_for_other_wood_products_crude_oil:
   :x: 720
   :y: 18520
@@ -2032,28 +2032,28 @@
   :y: 13540
 :industry_final_demand_for_other_paper_coal:
   :x: 1520
-  :y: 13560
+  :y: 13760
 :industry_final_demand_for_other_paper_crude_oil:
   :x: 1520
-  :y: 13740
+  :y: 13940
 :industry_useful_demand_for_other_paper_electricity:
   :x: 720
-  :y: 13440
+  :y: 13640
 :industry_final_demand_for_other_paper_electricity:
   :x: 1520
-  :y: 13440
+  :y: 13640
 :industry_final_demand_for_other_paper_network_gas:
   :x: 1520
-  :y: 13620
+  :y: 14000
 :industry_useful_demand_for_other_paper_useable_heat:
   :x: 720
-  :y: 13620
+  :y: 13820
 :industry_final_demand_for_other_paper_steam_hot_water:
   :x: 1520
-  :y: 13860
+  :y: 13820
 :industry_final_demand_for_other_paper_wood_pellets:
   :x: 1520
-  :y: 13680
+  :y: 13880
 :industry_useful_demand_for_other_textile_coal:
   :x: 720
   :y: 17260
@@ -2167,28 +2167,28 @@
   :y: 16820
 :industry_final_demand_for_other_food_coal:
   :x: 1520
-  :y: 13020
+  :y: 13160
 :industry_final_demand_for_other_food_crude_oil:
   :x: 1520
-  :y: 13140
+  :y: 13220
 :industry_useful_demand_for_other_food_electricity:
   :x: 720
-  :y: 12920
+  :y: 13040
 :industry_final_demand_for_other_food_electricity:
   :x: 1520
-  :y: 12920
+  :y: 13040
 :industry_final_demand_for_other_food_network_gas:
   :x: 1520
-  :y: 13080
+  :y: 13340
 :industry_useful_demand_for_other_food_useable_heat:
   :x: 720
-  :y: 13060
+  :y: 13200
 :industry_final_demand_for_other_food_steam_hot_water:
   :x: 1520
-  :y: 13320
+  :y: 13100
 :industry_final_demand_for_other_food_wood_pellets:
   :x: 1520
-  :y: 13200
+  :y: 13280
 :industry_useful_demand_for_other_machinery_coal:
   :x: 720
   :y: 14320
@@ -2199,8 +2199,8 @@
   :x: 720
   :y: 14500
 :industry_refinery_transformation_crude_oil:
-  :x: 480
-  :y: 10780
+  :x: 340
+  :y: 10800
 :industry_locally_available_crude_oil_non_energetic_for_chemical:
   :x: 2020
   :y: 11420
@@ -2229,35 +2229,35 @@
   :x: 180
   :y: 11460
 :industry_other_food_burner_coal:
-  :x: 1220
-  :y: 13020
+  :x: 1160
+  :y: 13160
 :industry_other_food_burner_crude_oil:
-  :x: 1220
-  :y: 13140
+  :x: 1160
+  :y: 13220
 :industry_other_food_burner_network_gas:
-  :x: 1220
-  :y: 13080
+  :x: 1160
+  :y: 13340
 :industry_other_food_burner_wood_pellets:
-  :x: 1220
-  :y: 13200
+  :x: 1160
+  :y: 13280
 :industry_other_paper_burner_coal:
-  :x: 1220
-  :y: 13560
+  :x: 1160
+  :y: 13760
 :industry_other_paper_burner_crude_oil:
-  :x: 1220
-  :y: 13740
+  :x: 1160
+  :y: 13940
 :industry_other_paper_burner_network_gas:
-  :x: 1220
-  :y: 13620
+  :x: 1160
+  :y: 14000
 :industry_other_paper_burner_wood_pellets:
-  :x: 1220
-  :y: 13680
+  :x: 1160
+  :y: 13880
 :industry_other_food_heater_electricity:
-  :x: 1220
-  :y: 12960
+  :x: 1160
+  :y: 13100
 :industry_other_paper_heater_electricity:
-  :x: 1220
-  :y: 13500
+  :x: 1160
+  :y: 13700
 :industry_chemicals_fertilizers_haber_bosch_process_hydrogen:
   :x: 0
   :y: 11340
@@ -2286,8 +2286,8 @@
   :x: 920
   :y: 10620
 :industry_other_food_flexibility_p2h_electricity:
-  :x: 920
-  :y: 13140
+  :x: 1220
+  :y: 13320
 :industry_other_paper_flexibility_p2h_electricity:
   :x: 900
   :y: 13700
@@ -2659,40 +2659,40 @@
   :y: 11160
 :industry_final_demand_hydrogen_non_energetic:
   :x: 2760
-  :y: 10380
+  :y: 10440
 :industry_final_demand_for_other_food_hydrogen:
   :x: 1520
-  :y: 13260
+  :y: 13460
 :industry_final_demand_for_other_hydrogen:
   :x: 2120
   :y: 13280
 :industry_final_demand_hydrogen:
   :x: 2760
-  :y: 10440
+  :y: 10140
 :industry_other_food_burner_hydrogen:
-  :x: 1220
-  :y: 13260
+  :x: 1160
+  :y: 13460
 :industry_chemicals_other_burner_hydrogen:
   :x: 1180
-  :y: 12480
+  :y: 12540
 :industry_final_demand_for_chemical_other_hydrogen:
   :x: 1520
-  :y: 12480
+  :y: 12540
 :industry_final_demand_for_chemical_hydrogen:
   :x: 2120
   :y: 10800
 :industry_chemicals_refineries_burner_hydrogen:
   :x: 1240
-  :y: 10800
+  :y: 10860
 :industry_final_demand_for_chemical_refineries_hydrogen:
   :x: 1520
-  :y: 10800
+  :y: 10860
 :industry_other_paper_burner_hydrogen:
-  :x: 1220
-  :y: 13800
+  :x: 1160
+  :y: 14120
 :industry_final_demand_for_other_paper_hydrogen:
   :x: 1520
-  :y: 13800
+  :y: 14120
 :industry_chemicals_fertilizers_burner_hydrogen:
   :x: 1140
   :y: 11580
@@ -3058,13 +3058,13 @@
   :y: 3840
 :industry_useful_demand_for_chemical_other_non_energetic:
   :x: 720
-  :y: 12660
+  :y: 12800
 :industry_useful_demand_for_chemical_other_hydrogen_non_energetic:
   :x: 1180
-  :y: 12780
+  :y: 12920
 :industry_final_demand_for_chemical_other_hydrogen_non_energetic:
   :x: 1520
-  :y: 12780
+  :y: 12920
 :energy_distribution_wet_biomass:
   :x: 7520
   :y: 2560
@@ -3185,3 +3185,63 @@
 :industry_final_demand_for_other_wood_products_hydrogen:
   :x: 1520
   :y: 18640
+:industry_other_food_distribution_hybrid_heat_network_gas:
+  :x: 1080
+  :y: 13340
+:industry_other_food_flexibility_p2h_network_gas_electricity:
+  :x: 1160
+  :y: 13400
+:industry_other_food_p2h_network_gas_distribution_useable_heat:
+  :x: 1080
+  :y: 13340
+:industry_other_food_flexibility_p2h_hydrogen_electricity:
+  :x: 1160
+  :y: 13520
+:industry_other_food_p2h_hydrogen_distribution_useable_heat:
+  :x: 1080
+  :y: 13220
+:energy_network_gas_storage:
+  :x: 6760
+  :y: 4340
+:industry_other_paper_flexibility_p2h_hydrogen_electricity:
+  :x: 1160
+  :y: 14180
+:industry_chemicals_other_flexibility_p2h_hydrogen_electricity:
+  :x: 1180
+  :y: 12600
+:industry_chemicals_other_flexibility_p2h_network_gas_electricity:
+  :x: 1180
+  :y: 12480
+:industry_chemicals_other_hydrogen_hybrid_heat:
+  :x: 900
+  :y: 12560
+:industry_chemicals_refineries_flexibility_p2h_network_gas_electricity:
+  :x: 1240
+  :y: 10800
+:industry_chemicals_refineries_network_gas_hybrid_heat:
+  :x: 920
+  :y: 10760
+:industry_chemicals_refineries_flexibility_p2h_hydrogen_electricity:
+  :x: 1240
+  :y: 10920
+:industry_other_paper_hydrogen_hybrid_heat:
+  :x: 900
+  :y: 14140
+:industry_other_paper_flexibility_p2h_network_gas_electricity:
+  :x: 1160
+  :y: 14060
+:industry_chemicals_refineries_hydrogen_hybrid_heat:
+  :x: 920
+  :y: 10880
+:industry_chemicals_other_network_gas_hybrid_heat:
+  :x: 900
+  :y: 12440
+:industry_other_paper_network_gas_hybrid_heat:
+  :x: 900
+  :y: 14020
+:industry_other_food_hydrogen_hybrid_heat:
+  :x: 900
+  :y: 13500
+:industry_other_food_network_gas_hybrid_heat:
+  :x: 900
+  :y: 13380

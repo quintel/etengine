@@ -362,5 +362,4 @@ describe Input do
       end
     end
   end # when the input have nil GQL start, minimum, and maximum
-
 end

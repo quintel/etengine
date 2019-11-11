@@ -80,23 +80,22 @@ module Api
 
       # Asserts that the values provided by the user are within the permitted
       # mininum and maximum.
-      #
       def validate_user_values
         provided_values_without_resets.each do |key, value|
-          input = Input.cache(@scenario).read(@scenario, Input.get(key))
+          input = Input.get(key)
+          input_data = Input.cache(@scenario).read(@scenario, input)
 
-          if input.blank?
+          if input_data.blank?
             errors.add(:base, "Input #{key} does not exist")
-          elsif value < (min = input[:min])
-            errors.add(:base, "Input #{key} cannot be less than #{min}")
-          elsif value > (max = input[:max])
-            errors.add(:base, "Input #{key} cannot be greater than #{max}")
+          elsif input.enum?
+            validate_enum_input(key, input_data, value)
+          else
+            validate_numeric_input(key, input_data, value)
           end
         end
       end
 
       # Asserts that input values provided by the user correctly balance.
-      #
       def validate_groups_balance
         each_group(provided_values) do |group, inputs|
           values = inputs.map do |input|
@@ -121,6 +120,35 @@ module Api
         end
       end
 
+      def validate_enum_input(key, input, value)
+        return if input[:min].include?(value)
+
+        errors.add(
+          :base,
+          format(
+            'Input %<key>s was %<value>s, but must be one of: %<allowed>s',
+            key: key,
+            value: value.inspect,
+            allowed: input[:min].map(&:inspect).join(', ')
+          )
+        )
+      end
+
+      def validate_numeric_input(key, input, value)
+        # If the value was nil, the value provided by the visitor could not
+        # be coerced into a valid number.
+        if value.nil?
+          errors.add(:base, "Input #{key} must be numeric")
+          return
+        end
+
+        if value < (min = input[:min])
+          errors.add(:base, "Input #{key} cannot be less than #{min}")
+        elsif value > (max = input[:max])
+          errors.add(:base, "Input #{key} cannot be greater than #{max}")
+        end
+      end
+
       # User Values and Balancing --------------------------------------------
 
       # The values provided by the user in the current request.
@@ -135,7 +163,7 @@ module Api
             values = @scenario_data[:user_values] || {}
 
             values.each_with_object({}) do |(key, value), collection|
-              collection[key.to_s] = convert_provided_value(key, value)
+              collection[key.to_s] = coerce_provided_value(key, value)
             end
           end
       end
@@ -264,15 +292,19 @@ module Api
           (parent.respond_to?(:balanced_values) && parent.balanced_values[key])
       end
 
-      # Internal: Takes a value provided by a user and converts it to a number
+      # Internal: Takes a value provided by a user and coerces it to a number
       # or other value used by the updater.
       #
-      # Returns a numeric or symbol.
-      def convert_provided_value(key, value)
-        if value == 'reset'
+      # Returns a numeric, string, or symbol.
+      def coerce_provided_value(key, value)
+        input = Input.get(key)
+
+        if input.nil?
+          nil
+        elsif value == 'reset'
           value_from_parent(key) || :reset
         else
-          value.to_f
+          input.coerce(value)
         end
       end
 

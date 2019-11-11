@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  module Hydrogen
+  module Reconciliation
     class StorageAdapter < Adapter
       def inspect
         "#<#{self.class.name} #{@converter.key.inspect}>"
@@ -16,11 +16,11 @@ module Qernel
 
         return inject_zero_storage! if @converter.demand.zero?
 
-        @converter.dataset_lazy_set(:hydrogen_input_curve) do
+        @converter.dataset_lazy_set(@context.curve_name(:input)) do
           calculator.storage_in
         end
 
-        @converter.dataset_lazy_set(:hydrogen_output_curve) do
+        @converter.dataset_lazy_set(@context.curve_name(:output)) do
           calculator.storage_out
         end
 
@@ -35,12 +35,12 @@ module Qernel
       private
 
       # Internal: In the event that there is no storage (almost certainly there
-      # is no hydrogen in the scenario), set empty curves.
+      # is no carrier energy in the scenario), set empty curves.
       def inject_zero_storage!
         null_curve = Array.new(8760, 0.0)
 
-        @converter.dataset_set(:hydrogen_input_curve, null_curve)
-        @converter.dataset_set(:hydrogen_output_curve, null_curve)
+        @converter.dataset_set(@context.curve_name(:input), null_curve)
+        @converter.dataset_set(@context.curve_name(:output), null_curve)
 
         inject_storage(0.0) { Array.new(8760, 0.0) }
       end

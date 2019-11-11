@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Qernel::Hydrogen::Calculator do
+RSpec.describe Qernel::Reconciliation::Calculator do
   let(:calculator) { described_class.new(demand, supply) }
 
   context 'with no demand or supply' do

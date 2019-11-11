@@ -211,6 +211,12 @@ module Gql::Runtime
         scope.graph.insulation_costs(file).get(from_level, to_level)
       end
 
+      # Public: Retrieves a single value from the weather_properties.csv file
+      # associated with the currently-selected weather curve set.
+      def WEATHER_PROPERTY(key)
+        scope.graph.weather_properties.get(key, :value)
+      end
+
       # Retrieves the merit order price curve
       def MERIT_PRICE_CURVE
         if Qernel::Plugins::TimeResolve.enabled?(scope.graph)
@@ -274,6 +280,20 @@ module Gql::Runtime
         Merit::CurveTools.add_curves(
           groups.map { |group| plugin.summary(group).production }
         ).to_a
+      end
+
+      # Public: Creates an array containing the name of all the variants of a
+      # curve set available for the current dataset.
+      #
+      # For example:
+      #   CURVE_SET_VARIANTS(heat) => ["default", "1987"]
+      #
+      # Returns an array of string.
+      def CURVE_SET_VARIANTS(name)
+        dataset = Atlas::Dataset.find(scope.graph.area.area_code)
+        curve_set = dataset.curve_sets.get(name)
+
+        curve_set ? curve_set.map(&:name) : []
       end
     end
   end

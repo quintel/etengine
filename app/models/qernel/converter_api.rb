@@ -65,6 +65,7 @@ class ConverterApi
     fever
     hydrogen
     merit_order
+    network_gas
     preset_demand
     storage
   ]
@@ -73,6 +74,7 @@ class ConverterApi
   dataset_carrier_curve_reader :electricity
   dataset_carrier_curve_reader :hydrogen
   dataset_carrier_curve_reader :heat
+  dataset_carrier_curve_reader :network_gas
 
   # Returns a ConverterApi instance based on the given Converter.
   #

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  module Hydrogen
+  module Reconciliation
     # Electrolysers are a special-case producer whose load profile is based on
     # the electricity output by another node.
     #
@@ -21,11 +21,13 @@ module Qernel
         super
         @producer = @converter.input(:electricity).links.first.rgt_converter
 
+        output_conversion_name = @context.carrier_named('%s_output_conversion')
+
         # Capacity needs to be calculated early, as number_of_units requires
         # demand to be present; this varies based on demand.
-        @hydrogen_capacity =
+        @carrier_capacity =
           @converter.converter_api.input_capacity *
-          @converter.converter_api.hydrogen_output_conversion *
+          @converter.converter_api.public_send(output_conversion_name) *
           @converter.converter_api.number_of_units
 
         # Pre-compute electricity while demand is set on the converter.
@@ -33,11 +35,11 @@ module Qernel
       end
 
       # Public: Capacity-limited demand curve describing the amount of
-      # electricity converted to - and output as - hydrogen.
+      # electricity converted to - and output as - carrier energy.
       def demand_curve
         @demand_curve ||= begin
-          unlimited_hydrogen_curve.map do |value|
-            value < @hydrogen_capacity ? value : @hydrogen_capacity
+          unlimited_carrier_curve.map do |value|
+            value < @carrier_capacity ? value : @carrier_capacity
           end
         end
       end
@@ -48,10 +50,10 @@ module Qernel
         return if carrier_demand.zero?
 
         @converter.demand =
-          carrier_demand / @converter.output(:hydrogen).conversion
+          carrier_demand / @converter.output(@context.carrier).conversion
 
         @converter[:full_load_hours] =
-          carrier_demand / (@hydrogen_capacity * 3600)
+          carrier_demand / (@carrier_capacity * 3600)
 
         electricity_h2_share = @converter.demand / max_available_electricity
 
@@ -64,7 +66,7 @@ module Qernel
       private
 
       # Internal: The maximum amount of electricity available for conversion to
-      # hydrogen.
+      # the carrier.
       #
       # Returns a Float.
       def max_available_electricity
@@ -72,24 +74,25 @@ module Qernel
           @producer.demand * @producer.output(:electricity).conversion
       end
 
-      # Internal: The maximum amount of hydrogen which may be emitted by the
-      # electrolyser assuming no curtailment and unlimited output capacity.
+      # Internal: The maximum amount of carrier energy which may be emitted by
+      # the electrolyser assuming no curtailment and unlimited output capacity.
       #
       # Returns a Float.
-      def max_hydrogen_production
-        max_available_electricity * @converter.output(:hydrogen).conversion
+      def max_carrier_production
+        max_available_electricity *
+          @converter.output(@context.carrier).conversion
       end
 
-      # Internal: Curve representing the maximum amount of hydrogen that may be
-      # produced in each hour, assuming no electricity is curtailed, and
-      # unlimited output capacity of the hydrogen conversion.
+      # Internal: Curve representing the maximum amount of carrier energy that
+      # may be produced in each hour, assuming no electricity is curtailed, and
+      # unlimited output capacity of the carrier conversion.
       #
       # Returns a Merit::Curve.
-      def unlimited_hydrogen_curve
-        demand_profile * max_hydrogen_production
+      def unlimited_carrier_curve
+        demand_profile * max_carrier_production
       end
 
-      # Internal: Total demand of the hydrogen producer is determined with the
+      # Internal: The total demand of the producer is determined with the
       # capacity-limited demand curve.
       #
       # Returns a Float.

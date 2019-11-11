@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: d59ca02f422bfae0c208112fbd06012bb313f563
-  ref: d59ca02
+  revision: f793605e4623030ef7a0b986522bb0915bc99529
+  ref: f793605
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
@@ -187,7 +187,7 @@ GEM
     highline (1.7.10)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.6.0)
+    i18n (1.7.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jaro_winkler (1.5.3)

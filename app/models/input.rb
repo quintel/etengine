@@ -69,6 +69,34 @@ class Input
     )
   end
 
+  # Public: Given a `value` from user input via the API, safely converts the
+  # value to the appropriate type for the input.
+  #
+  # In most cases this will be a float. Enum inputs will return a string.
+  #
+  # Returns a Float or String, or nil if the value could not be coerced.
+  def coerce(value)
+    enum? ? value.to_s : Float(value)
+  rescue ArgumentError
+    nil
+  end
+
+  # Public: A list of the attributes whose values are required to be numeric for
+  # this input.
+  #
+  # Returns an array of Symbols.
+  def required_numeric_attributes
+    enum? ? [] : %i[min max default]
+  end
+
+  # Public: Returns if the input unit is "enum", where the user may select a
+  # discrete value, rather than a linear range.
+  #
+  # Returns true or false.
+  def enum?
+    defined?(@enum) ? @enum : @enum = unit == 'enum'
+  end
+
   # Returns the label shown alongside the input name in ETM.
   #
   # @param [Scenario, Gql::Gql] gql_or_scenario

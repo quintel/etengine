@@ -1,10 +1,15 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Api::V3::ScenarioUpdater, :etsource_fixture do
-
   shared_examples_for 'a successful scenario update' do
     it 'is valid' do
       expect(updater).to be_valid
+    end
+
+    it 'has no errors' do
+      updater.valid?
       expect(updater.errors).to be_blank
     end
 
@@ -16,6 +21,10 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   shared_examples_for 'a failed scenario update' do
     it 'is not valid' do
       expect(updater).not_to be_valid
+    end
+
+    it 'has errors' do
+      updater.valid?
       expect(updater.errors).not_to be_blank
     end
 
@@ -24,8 +33,8 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
 
     it 'does not change any values' do
-      old_attributes = scenario.reload.attributes.
-        except('user_values', 'balanced_values')
+      old_attributes = scenario.reload.attributes
+        .except('user_values', 'balanced_values')
 
       user_values     = scenario.user_values
       balanced_values = scenario.balanced_values
@@ -33,8 +42,8 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.apply
       scenario.reload
 
-      new_attributes = scenario.attributes.
-        except('user_values', 'balanced_values')
+      new_attributes = scenario.attributes
+        .except('user_values', 'balanced_values')
 
       expect(new_attributes).to eql(old_attributes)
       expect(scenario.user_values).to eql(user_values)
@@ -45,82 +54,78 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
   end
 
-  # --------------------------------------------------------------------------
-
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:updater)  { Api::V3::ScenarioUpdater.new(scenario, params) }
 
-  # --------------------------------------------------------------------------
+  context 'with no user parameters' do
+    let(:params) { {} }
 
-  context 'With no user parameters' do
-    let(:params) { Hash.new }
-
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'makes no changes' do
-      expect(scenario).not_to receive(:save)
+      allow(scenario).to receive(:save)
       updater.apply
+      expect(scenario).not_to have_received(:save)
     end
-  end # With no user parameters
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'With parameters, but no user values' do
+  context 'with parameters, but no user values' do
     before do
-      scenario.update_attributes!(
+      scenario.update!(
         use_fce: true,
-        user_values: { 'foo_demand' => 1.0 })
+        user_values: { 'foo_demand' => 1.0 }
+      )
     end
 
     let(:params) { { autobalance: true, scenario: { use_fce: false } } }
 
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'saves the scenario attributes' do
-      expect(scenario).to receive(:save)
+      allow(scenario).to receive(:save)
       updater.apply
       expect(scenario.reload.use_fce).to be_truthy
     end
 
     it 'does not change the user values' do
       updater.apply
-      expect(scenario.reload.user_values).to eql({ 'foo_demand' => 1.0 })
+      expect(scenario.reload.user_values).to eql('foo_demand' => 1.0)
     end
-  end # With parameters, but no user values
+  end
 
-  # --------------------------------------------------------------------------
+  context 'with a clean scenario' do
+    let(:params) do
+      {
+        scenario: { user_values: { 'foo_demand' => '10.0' } }
+      }
+    end
 
-  context 'With a clean scenario' do
-    let(:params) { {
-      scenario: { user_values: { 'foo_demand' => '10.0' } }
-    } }
-
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'sets the input values' do
       updater.apply
       scenario.reload
 
-      expect(scenario.user_values).to eql({ 'foo_demand' => 10.0 })
+      expect(scenario.user_values).to eql('foo_demand' => 10.0)
     end
-  end # With a clean scenario
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'When the scenario has existing values' do
-    let(:params) { {
-      scenario: { user_values: {
-        'foo_demand' => '10.0',
-        'input_2'    => '15.0'
-      } }
-    } }
+  context 'when the scenario has existing values' do
+    let(:params) do
+      {
+        scenario: { user_values: {
+          'foo_demand' => '10.0',
+          'input_2' => '15.0'
+        } }
+      }
+    end
 
     before do
       scenario.user_values = { 'foo_demand' => '5.0' }
       scenario.save!
     end
 
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'overwrites older values' do
       updater.apply
@@ -131,11 +136,9 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.apply
       expect(scenario.reload.user_values).to include('input_2' => 15.0)
     end
-  end # When the scenario has existing values
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Resetting an entire scenario' do
+  context 'when resetting an entire scenario' do
     let(:params) { { reset: true } }
 
     before do
@@ -144,7 +147,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       scenario.save!
     end
 
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'removes all input values' do
       updater.apply
@@ -155,15 +158,15 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.apply
       expect(scenario.reload.balanced_values).to eq({})
     end
-  end # Resetting an entire scenario
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Resetting an entire scenario, while providing new values' do
-    let(:params) { {
-      reset: true,
-      scenario: { user_values: { foo_demand: 1 } }
-    } }
+  context 'when resetting an entire scenario and providing new values' do
+    let(:params) do
+      {
+        reset: true,
+        scenario: { user_values: { foo_demand: 1 } }
+      }
+    end
 
     before do
       scenario.user_values = {
@@ -176,7 +179,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       scenario.save!
     end
 
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'sets new values' do
       updater.apply
@@ -192,12 +195,10 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.apply
       expect(scenario.reload.balanced_values).to eq({})
     end
-  end # Resetting an entire scenario, while providing new values
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Resetting an entire scenario, while providing new values with a ' \
-          'parent' do
+  context 'when resetting an entire scenario, while providing new values ' \
+          'with a parent' do
     let(:params) do
       {
         reset: true,
@@ -248,22 +249,22 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
   end
 
-  # --------------------------------------------------------------------------
-
-  context 'Resetting a single value' do
-    let(:params) { {
-      scenario: { user_values: {
-        'foo_demand' => 'reset',
-        'input_2'    => '15.0'
-      } }
-    } }
+  context 'when resetting a single value' do
+    let(:params) do
+      {
+        scenario: { user_values: {
+          'foo_demand' => 'reset',
+          'input_2' => '15.0'
+        } }
+      }
+    end
 
     before do
       scenario.user_values = { 'foo_demand' => 5.0 }
       scenario.save!
     end
 
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
     it 'removes the reset value' do
       updater.apply
@@ -274,11 +275,9 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.apply
       expect(scenario.reload.user_values).to include('input_2' => 15.0)
     end
-  end # Resetting a single value
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Resetting a single value' do
+  context 'when resetting a single value' do
     let(:params) do
       {
         scenario: {
@@ -313,14 +312,14 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
   end
 
-  # --------------------------------------------------------------------------
+  context 'when setting invalid scenario values' do
+    let(:params) do
+      {
+        scenario: { area_code: nil, user_values: { 'foo_demand' => '-1.0' } }
+      }
+    end
 
-  context 'Setting invalid scenario values' do
-    let(:params) { {
-      scenario: { area_code: nil, user_values: { 'foo_demand' => '-1.0' } }
-    } }
-
-    it_should_behave_like 'a failed scenario update'
+    it_behaves_like 'a failed scenario update'
 
     it 'warns about the invalid value' do
       updater.valid?
@@ -328,134 +327,155 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       expect(updater.errors[:base]).to \
         include('Input foo_demand cannot be less than 0.0')
     end
-  end # Setting invalid scenario values
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Setting an invalid input value' do
-    let(:params) { {
-      scenario: { user_values: { 'foo_demand' => '-1.0' } }
-    } }
-
-    it_should_behave_like 'a failed scenario update'
-  end # Setting an invalid input value
-
-  # --------------------------------------------------------------------------
-
-  context 'Sending a non-hash user_values attribute' do
-    before do
-      scenario.update_attributes!(user_values: { 'foo_demand' => 1.0 })
+  context 'when setting an invalid input value' do
+    let(:params) do
+      {
+        scenario: { user_values: { 'foo_demand' => '-1.0' } }
+      }
     end
 
-    let(:params) { {
-      scenario: { user_values: nil }
-    } }
+    it_behaves_like 'a failed scenario update'
+  end
 
-    it_should_behave_like 'a successful scenario update'
+  context 'when sending a string value for a numeric input' do
+    before do
+      scenario.update(user_values: { 'foo_demand' => 2.5 })
+    end
+
+    let(:params) do
+      { scenario: { user_values: { 'foo_demand' => 'invalid' } } }
+    end
+
+    it_behaves_like 'a failed scenario update'
 
     it 'does not change user_values' do
-      scenario.reload
-      expect(scenario.user_values).to eq({ 'foo_demand' => 1.0 })
+      expect { updater.apply }
+        .not_to change { scenario.reload.user_values['foo_demand'] }.from(2.5)
     end
-  end # Sending a non-hash user_values attribute
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Changing a scenario which references an old input' do
+  context 'when sending a non-hash user_values attribute' do
     before do
-      scenario.update_attributes!(user_values: { 'removed' => 1.0 })
+      scenario.update!(user_values: { 'foo_demand' => 1.0 })
     end
 
-    let(:params) { {
-      scenario: { user_values: { 'foo_demand' => '-1.0' } }
-    } }
+    let(:params) do
+      {
+        scenario: { user_values: nil }
+      }
+    end
 
-    it_should_behave_like 'a failed scenario update'
+    it_behaves_like 'a successful scenario update'
+
+    it 'does not change user_values' do
+      updater.apply
+      scenario.reload
+      expect(scenario.user_values).to eq('foo_demand' => 1.0)
+    end
+  end
+
+  context 'when changing a scenario which references an old input' do
+    before do
+      scenario.update!(user_values: { 'removed' => 1.0 })
+    end
+
+    let(:params) do
+      {
+        scenario: { user_values: { 'foo_demand' => '-1.0' } }
+      }
+    end
+
+    it_behaves_like 'a failed scenario update'
 
     it 'does not change the user values' do
-      expect(scenario.reload.user_values).to eql({ 'removed' => 1.0 })
+      updater.apply
+      expect(scenario.reload.user_values).to eql('removed' => 1.0)
     end
-  end # Changing a scenario which references an old input
+  end
 
-  # --------------------------------------------------------------------------
-
-  context 'Setting an area-disabled input' do
-    let(:params) { {
-      scenario: { user_values: {
-        'foo_demand' => '1.0',
-        'input_2'    => '50.0'
-      } }
-    } }
+  context 'when setting an area-disabled input' do
+    let(:params) do
+      {
+        scenario: { user_values: {
+          'foo_demand' => '1.0',
+          'input_2' => '50.0'
+        } }
+      }
+    end
 
     before do
       input = Input.get('foo_demand')
       allow(input).to receive(:disabled_in_current_area?).and_return(true)
     end
 
-    it_should_behave_like 'a successful scenario update'
+    it_behaves_like 'a successful scenario update'
 
-    it 'should not set the disabled input' do
+    it 'does not set the disabled input' do
       pending 'should not save disabled inputs'
       updater.apply
       expect(scenario.reload.user_values).not_to have_key('foo_demand')
     end
 
-    it 'should set the enabled input' do
+    it 'sets the enabled input' do
       updater.apply
       expect(scenario.reload.user_values).to include('input_2' => 50.0)
     end
   end
 
-  # ----------------------------------------------------------------------------
-
-  context 'Setting an input in a scaled scenario' do
+  context 'when setting an input in a scaled scenario' do
     let(:scenario) do
       ScenarioScaling.create!(
-        scenario:       super(),
+        scenario: super(),
         area_attribute: 'number_of_residences',
-        value:          1_000_000
+        value: 1_000_000
       ).scenario
     end
 
     context 'when the input value is within the acceptable range' do
-      let(:params) { {
-        autobalance: false,
-        scenario: { user_values: {
-          # 5.0 is not an acceptable value in a non-scaled scenario (10.0 is
-          # the minimum).
-          'input_2' => '5.0'
-        } }
-      } }
+      let(:params) do
+        {
+          autobalance: false,
+          scenario: { user_values: {
+            # 5.0 is not an acceptable value in a non-scaled scenario (10.0 is
+            # the minimum).
+            'input_2' => '5.0'
+          } }
+        }
+      end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
     end
 
     context 'when the input value is not within the acceptable range' do
-      let(:params) { {
-        autobalance: false,
-        scenario: { user_values: {
-          # 50000 is an acceptable value in a non-scaled scenario.
-          'input_2' => '50000'
-        } }
-      } }
+      let(:params) do
+        {
+          autobalance: false,
+          scenario: { user_values: {
+            # 50000 is an acceptable value in a non-scaled scenario.
+            'input_2' => '50000'
+          } }
+        }
+      end
 
-      it_should_behave_like 'a failed scenario update'
+      it_behaves_like 'a failed scenario update'
     end
   end
 
-  # --------------------------------------------------------------------------
-
-  context 'Updating grouped inputs without the balancer' do
+  context 'when updating grouped inputs without the balancer' do
     context 'when the group adds up' do
-      let(:params) { {
-        autobalance: false,
-        scenario: { user_values: {
-          'grouped_input_one' => '75.0',
-          'grouped_input_two' => '25.0'
-        } }
-      } }
+      let(:params) do
+        {
+          autobalance: false,
+          scenario: { user_values: {
+            'grouped_input_one' => '75.0',
+            'grouped_input_two' => '25.0'
+          } }
+        }
+      end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
 
       it 'sets the user values' do
         updater.apply
@@ -464,22 +484,24 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
         expect(scenario.user_values).to include('grouped_input_one' => 75.0)
         expect(scenario.user_values).to include('grouped_input_two' => 25.0)
       end
-    end # when the group adds up
+    end
 
     context 'when the input has been previously balanced' do
-      let(:params) { {
-        autobalance: false,
-        scenario: { user_values: { 'grouped_input_one' => '100.0' } }
-      } }
+      let(:params) do
+        {
+          autobalance: false,
+          scenario: { user_values: { 'grouped_input_one' => '100.0' } }
+        }
+      end
 
       before do
         scenario.balanced_values = {
           'grouped_input_one' => 50.0,
-          'input_2'           => 100.0
+          'input_2' => 100.0
         }
       end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
 
       it 'sets the user values' do
         updater.apply
@@ -489,22 +511,24 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
         expect(scenario.balanced_values).not_to have_key('grouped_input_two')
         expect(scenario.balanced_values).to     have_key('input_2')
       end
-    end # when the input has been previously balanced
+    end
 
     context 'when related inputs have been previously balanced' do
-      let(:params) { {
-        autobalance: false,
-        scenario: { user_values: { 'grouped_input_one' => '100.0' } }
-      } }
+      let(:params) do
+        {
+          autobalance: false,
+          scenario: { user_values: { 'grouped_input_one' => '100.0' } }
+        }
+      end
 
       before do
         scenario.balanced_values = {
           'grouped_input_two' => 100.0,
-          'input_2'           => 100.0
+          'input_2' => 100.0
         }
       end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
 
       it 'sets the user values' do
         updater.apply
@@ -514,39 +538,42 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
         expect(scenario.balanced_values).not_to have_key('grouped_input_two')
         expect(scenario.balanced_values).to     have_key('input_2')
       end
-    end # when related inputs have been previously balanced
+    end
 
     context 'when the group does not add up' do
-      let(:params) { {
-        autobalance: false,
-        scenario: { user_values: {
-          'grouped_input_one' => '75.0',
-          'grouped_input_two' => '10.0'
-        } }
-      } }
+      let(:params) do
+        {
+          autobalance: false,
+          scenario: { user_values: {
+            'grouped_input_one' => '75.0',
+            'grouped_input_two' => '10.0'
+          } }
+        }
+      end
 
-      it_should_behave_like 'a failed scenario update'
+      it_behaves_like 'a failed scenario update'
 
-      it 'should have an error message' do
+      it 'has an error message' do
         updater.apply
 
-        expect(updater.errors[:base].any? { |error|
+        expect(updater.errors[:base]).to be_any do |error|
           error.match(/"grouped" group does not balance/)
-        }).to be_truthy
+        end
       end
-    end # when the group does not add up
-  end # Updating grouped inputs without the balancer
+    end
+  end
+  # end: Updating grouped inputs without the balancer
 
-  # --------------------------------------------------------------------------
-
-  context 'Updating a grouped input with the balancer' do
+  context 'when updating a grouped input with the balancer' do
     context 'when the values can be balanced' do
-      let(:params) { {
-        autobalance: true,
-        scenario: { user_values: { 'grouped_input_one' => '75.0' } }
-      } }
+      let(:params) do
+        {
+          autobalance: true,
+          scenario: { user_values: { 'grouped_input_one' => '75.0' } }
+        }
+      end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
 
       it 'sets the user value' do
         updater.apply
@@ -555,20 +582,24 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
       it 'sets the balanced value' do
         updater.apply
-        expect(scenario.reload.balanced_values).to eql('grouped_input_two' => 25.0)
+
+        expect(scenario.reload.balanced_values)
+          .to eql('grouped_input_two' => 25.0)
       end
-    end # when the values can be balanced
+    end
 
     context 'when providing all values' do
-      let(:params) { {
-        autobalance: true,
-        scenario: { user_values: {
-          'grouped_input_one' => '70.0',
-          'grouped_input_two' => '30.0'
-        } }
-      } }
+      let(:params) do
+        {
+          autobalance: true,
+          scenario: { user_values: {
+            'grouped_input_one' => '70.0',
+            'grouped_input_two' => '30.0'
+          } }
+        }
+      end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
 
       it 'sets the user value' do
         updater.apply
@@ -576,33 +607,29 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
         expect(scenario.user_values).to eql(
           'grouped_input_one' => 70.0,
-          'grouped_input_two' => 30.0)
+          'grouped_input_two' => 30.0
+        )
       end
 
       it 'sets no balanced values' do
         updater.apply
         expect(scenario.reload.balanced_values).to be_blank
       end
-    end # when providing all values
-
-    context 'when the provided values already balance' do
-      let(:params) { {
-        autobalance: true,
-        scenario: { user_values: { 'grouped_input_one' => '100.0' } }
-      } }
-    end # when the provided values already balance
+    end
 
     context 'when setting a previously balanced value' do
-      let(:params) { {
-        autobalance: true,
-        scenario: { user_values: { 'grouped_input_one' => '100.0' } }
-      } }
+      let(:params) do
+        {
+          autobalance: true,
+          scenario: { user_values: { 'grouped_input_one' => '100.0' } }
+        }
+      end
 
       before do
         scenario.balanced_values = { 'grouped_input_one' => '25.0' }
       end
 
-      it_should_behave_like 'a successful scenario update'
+      it_behaves_like 'a successful scenario update'
 
       it 'sets the user value' do
         updater.apply
@@ -611,18 +638,22 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
       it 'sets balanced values' do
         updater.apply
-        expect(scenario.reload.balanced_values).to eql('grouped_input_two' => 0.0)
+
+        expect(scenario.reload.balanced_values)
+          .to eql('grouped_input_two' => 0.0)
       end
-    end # when setting a previously balanced value
+    end
 
     context 'when the values cannot be balanced' do
-      let(:params) { {
-        autobalance: true,
-        scenario: { user_values: { 'grouped_input_one' => '9999999.0' } }
-      } }
+      let(:params) do
+        {
+          autobalance: true,
+          scenario: { user_values: { 'grouped_input_one' => '9999999.0' } }
+        }
+      end
 
-      it_should_behave_like 'a failed scenario update'
-    end # when the values cannot be balanced
-  end # Updating a grouped input with the balancer
-
-end # ScenarioUpdater
+      it_behaves_like 'a failed scenario update'
+    end
+  end
+  # end: Updating a grouped input with the balancer
+end
