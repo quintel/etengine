@@ -7,7 +7,9 @@ module Qernel
       end
 
       def inspect
-        "#<#{self.class} demand=#{@total_demand.sum} supply=#{@supply.sum}>"
+        "#<#{self.class} " \
+          "demand=#{@total_demand.sum} " \
+          "supply=#{@total_supply.sum}>"
       end
 
       # Public: Takes the total demand and supply curves, calculating for each
