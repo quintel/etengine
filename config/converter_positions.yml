@@ -325,7 +325,7 @@
   :y: 5480
 :industry_locally_available_steam_hot_water:
   :x: 3000
-  :y: 9100
+  :y: 9160
 :energy_distribution_bio_oil:
   :x: 5600
   :y: 6540
@@ -354,8 +354,8 @@
   :x: 7180
   :y: 3260
 :energy_distribution_network_gas_loss:
-  :x: 5660
-  :y: 5060
+  :x: 5620
+  :y: 4820
 :energy_heat_network_loss:
   :x: 4660
   :y: 3340
@@ -408,7 +408,7 @@
   :x: 700
   :y: 8480
 :energy_national_gas_network_natural_gas:
-  :x: 5840
+  :x: 5800
   :y: 4920
 :energy_treatment_natural_gas:
   :x: 6400
@@ -1161,17 +1161,17 @@
   :x: 1520
   :y: 0
 :industry_unused_local_production_steam_hot_water:
-  :x: 2500
-  :y: 9060
+  :x: 2760
+  :y: 9080
 :agriculture_chp_engine_biogas:
   :x: 3880
   :y: 5540
 :industry_chp_engine_gas_power_fuelmix:
   :x: 3480
-  :y: 9040
+  :y: 8920
 :industry_chp_turbine_gas_power_fuelmix:
   :x: 3480
-  :y: 9100
+  :y: 8980
 :agriculture_chp_engine_network_gas:
   :x: 3880
   :y: 5480
@@ -1225,10 +1225,10 @@
   :y: 8320
 :industry_chp_combined_cycle_gas_power_fuelmix:
   :x: 3480
-  :y: 9220
+  :y: 9100
 :industry_chp_ultra_supercritical_coal:
   :x: 3480
-  :y: 9160
+  :y: 9040
 :energy_power_energy_sector_own_use:
   :x: 5520
   :y: 2260
@@ -2721,13 +2721,13 @@
   :x: 5500
   :y: 5580
 :energy_transport_hydrogen_compressed_trucks:
-  :x: 5680
+  :x: 5660
   :y: 5640
 :energy_transport_hydrogen_pipelines:
-  :x: 5680
+  :x: 5660
   :y: 5520
 :energy_distribution_hydrogen_before_transport:
-  :x: 5820
+  :x: 5800
   :y: 5580
 :energy_production_excess_electricity:
   :x: 7700
@@ -2745,7 +2745,7 @@
   :x: 5520
   :y: 2660
 :energy_hydrogen_storage:
-  :x: 5820
+  :x: 5800
   :y: 5460
 :energy_imported_hydrogen_baseload:
   :x: 6220
@@ -3201,8 +3201,8 @@
   :x: 1080
   :y: 13220
 :energy_network_gas_storage:
-  :x: 5840
-  :y: 4980
+  :x: 5800
+  :y: 5020
 :industry_other_paper_flexibility_p2h_hydrogen_electricity:
   :x: 1160
   :y: 14180
@@ -3246,7 +3246,7 @@
   :x: 900
   :y: 13380
 :energy_heat_distribution_loss:
-  :x: 5700
+  :x: 5620
   :y: 4420
 :energy_heat_burner_network_gas:
   :x: 6240
@@ -3285,7 +3285,7 @@
   :x: 6240
   :y: 4300
 :energy_distribution_steam_hot_water:
-  :x: 5820
+  :x: 5800
   :y: 4540
 :energy_heat_backup_burner_network_gas:
   :x: 6240
@@ -3293,3 +3293,18 @@
 :energy_heat_unused_steam_hot_water:
   :x: 5540
   :y: 4680
+:industry_chp_wood_pellets:
+  :x: 3480
+  :y: 9160
+:industry_heat_burner_lignite:
+  :x: 3480
+  :y: 9220
+:industry_heat_backup_burner_network_gas:
+  :x: 3480
+  :y: 9400
+:industry_heat_burner_coal:
+  :x: 3480
+  :y: 9280
+:industry_heat_well_geothermal:
+  :x: 3480
+  :y: 9340
