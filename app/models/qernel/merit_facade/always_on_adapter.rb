@@ -25,7 +25,7 @@ module Qernel
       end
 
       def production_profile
-        @graph.plugin(:merit).curves.curve(@config.group, @converter)
+        @context.curves.curve(@config.group, @converter)
       end
     end
   end

@@ -31,7 +31,7 @@ module Qernel
         attrs = super
 
         # Yuck.
-        attrs[:delegate] = @graph.plugin(:time_resolve)
+        attrs[:delegate] = @context.graph.plugin(:time_resolve)
           .fever.group(:households_hot_water).calculator
 
         # TODO: Does input capacity /efficiency prevent the need to model input

@@ -21,6 +21,8 @@ module Qernel
 
         if prefix?(name, 'fever-electricity-demand')
           fever_demand_curve(name[25..-1].strip.to_sym)
+        elsif prefix?(name, 'fever-self')
+          fever_self_curve(name[11..-1].strip.to_sym)
         else
           super
         end
@@ -34,6 +36,12 @@ module Qernel
       # is calculated.
       def fever_demand_curve(name)
         @household_heat.curve(name)
+      end
+
+      # Public: Creates a dynamic curve which reads the demand from a Fever
+      # participant.
+      def fever_self_curve(name)
+        raise "Unknown fever-self curve: #{name}" unless name == :input_curve
       end
 
       # Public: Returns the total demand of the curve matching the +curve_name+.

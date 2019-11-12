@@ -19,12 +19,12 @@ module Qernel
       end
 
       def inject!
-        target_api.dataset_lazy_set(:electricity_input_curve) do
+        target_api.dataset_lazy_set(@context.curve_name(:input)) do
           @participant.load_curve.to_a
         end
       end
 
-      def input_of_electricity
+      def input_of_carrier
         consumption_curve.sum * 3600
       end
 
@@ -43,7 +43,7 @@ module Qernel
       private
 
       def consumption_curve
-        @graph.plugin(:merit).curves.curve(@config.group, @converter)
+        @context.curves.curve(@config.group, @converter)
       end
     end
   end

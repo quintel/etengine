@@ -81,7 +81,8 @@ module Qernel
       end
 
       def demand_profile
-        @dataset.load_profile(@config.demand_profile)
+        # TODO: This can become @context.curves.curve(...)
+        @context.dataset.load_profile(@config.demand_profile)
       end
 
       # Internal: Participants belonging to a group with others should receive
@@ -95,7 +96,7 @@ module Qernel
         return 0.0 if self_cap.zero?
 
         # Find all flex converters belonging to the same group.
-        @graph.plugin(:merit).each_adapter do |adapter|
+        @context.plugin.each_adapter do |adapter|
           aconf = adapter.config
           conv = adapter.converter
 

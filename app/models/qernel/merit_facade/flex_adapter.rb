@@ -6,8 +6,8 @@ module Qernel
     # order. These technologies store excess for future use, or remove excess
     # via export or curtailment.
     class FlexAdapter < Adapter
-      def self.factory(converter, _graph, _dataset)
-        case converter.merit_order.subtype.to_sym
+      def self.factory(converter, context)
+        case context.node_config(converter).subtype.to_sym
         when :storage
           StorageAdapter
         when :power_to_gas
@@ -41,11 +41,11 @@ module Qernel
           source_api.input_capacity *
           participant.number_of_units
 
-        target_api.dataset_lazy_set(:electricity_input_curve) do
+        target_api.dataset_lazy_set(@context.curve_name(:input)) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
         end
 
-        target_api.dataset_lazy_set(:electricity_output_curve) do
+        target_api.dataset_lazy_set(@context.curve_name(:output)) do
           @participant.load_curve.map { |v| v.positive? ? v : 0.0 }
         end
       end

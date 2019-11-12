@@ -6,27 +6,26 @@ module Qernel
     class Adapter
       attr_reader :converter, :config
 
-      def self.adapter_for(converter, graph, dataset)
+      def self.adapter_for(converter, context)
         klass =
-          case converter.merit_order.type.to_sym
+          case context.node_config(converter).type.to_sym
           when :producer
-            ProducerAdapter.factory(converter, graph, dataset)
+            ProducerAdapter.factory(converter, context)
           when :flex
-            FlexAdapter.factory(converter, graph, dataset)
+            FlexAdapter.factory(converter, context)
           when :consumer
-            ConsumerAdapter.factory(converter, graph, dataset)
+            ConsumerAdapter.factory(converter, context)
           else
             self
           end
 
-        klass.new(converter, graph, dataset)
+        klass.new(converter, context)
       end
 
-      def initialize(converter, graph, dataset)
+      def initialize(converter, context)
         @converter = converter.converter_api
-        @graph     = graph
-        @dataset   = dataset
-        @config    = converter.merit_order
+        @context   = context
+        @config    = context.node_config(converter)
       end
 
       def participant
@@ -85,7 +84,7 @@ module Qernel
       def source_api
         @source_api ||=
           if @config.delegate.present?
-            @graph.converter(@config.delegate).converter_api
+            @context.graph.converter(@config.delegate).converter_api
           else
             @converter
           end

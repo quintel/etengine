@@ -63,7 +63,7 @@ module Qernel
       end
 
       def carrier
-        @graph.carrier(:imported_electricity)
+        @context.graph.carrier(:imported_electricity)
       end
     end
   end

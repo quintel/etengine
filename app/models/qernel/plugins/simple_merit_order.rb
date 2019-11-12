@@ -18,8 +18,9 @@ module Qernel::Plugins
       :merit
     end
 
-    def initialize(graph)
+    def initialize(graph, carrier)
       super
+      @context = Qernel::MeritFacade::Context.new(self, graph, carrier)
     end
 
     def curves
@@ -54,7 +55,7 @@ module Qernel::Plugins
 
         models.each do |converter|
           @adapters[converter.key] ||=
-            Qernel::MeritFacade::Adapter.adapter_for(converter, @graph, dataset)
+            Qernel::MeritFacade::Adapter.adapter_for(converter, @context)
         end
       end
 
@@ -112,12 +113,7 @@ module Qernel::Plugins
     #
     # Returns a Merit::Curve
     def total_demand_curve
-      dataset.load_profile(:total_demand) * total_demand
-    end
-
-    # Public: Returns the Atlas dataset for the current graph region.
-    def dataset
-      @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
+      @context.dataset.load_profile(:total_demand) * total_demand
     end
 
     # Internal: The total electricity demand, joules, across the graph.
@@ -128,7 +124,7 @@ module Qernel::Plugins
       # a separate Merit participant.
       individual_demands = each_adapter.sum do |adapter|
         if adapter.config.type == :consumer
-          adapter.input_of_electricity
+          adapter.input_of_carrier
         else
           0.0
         end
@@ -150,10 +146,14 @@ module Qernel::Plugins
     #
     # Returns an array.
     def converters(type, subtype)
-      (Etsource::MeritOrder.new.import[type.to_s] || {}).map do |key, profile|
+      type_data = Etsource::MeritOrder.new.import_electricity[type.to_s]
+
+      (type_data || {}).map do |key, profile|
         converter = @graph.converter(key)
 
-        next if !subtype.nil? && converter.merit_order.subtype != subtype
+        if !subtype.nil? && @context.node_config(converter).subtype != subtype
+          next
+        end
 
         converter.converter_api.load_profile_key = profile
 
@@ -176,7 +176,7 @@ module Qernel::Plugins
       order = @graph.flexibility_order.map(&:to_sym)
 
       converters.sort_by do |conv|
-        order.index(conv.merit_order.group) || Float::INFINITY
+        order.index(@context.node_config(conv).group) || Float::INFINITY
       end
     end
 
