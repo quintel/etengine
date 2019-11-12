@@ -336,8 +336,8 @@
   :x: 7520
   :y: 2340
 :energy_distribution_greengas:
-  :x: 7020
-  :y: 3100
+  :x: 6400
+  :y: 4880
 :energy_distribution_coal:
   :x: 7340
   :y: 3380
@@ -354,8 +354,8 @@
   :x: 7180
   :y: 3260
 :energy_distribution_network_gas_loss:
-  :x: 6520
-  :y: 3720
+  :x: 5660
+  :y: 5060
 :energy_heat_network_loss:
   :x: 4660
   :y: 3340
@@ -375,8 +375,8 @@
   :x: 7020
   :y: 3740
 :energy_mixer_for_gas_power_fuel:
-  :x: 6520
-  :y: 3640
+  :x: 6400
+  :y: 5060
 :energy_power_transformer_lv_mv_electricity:
   :x: 4360
   :y: 2420
@@ -412,7 +412,7 @@
   :y: 4920
 :energy_treatment_natural_gas:
   :x: 6400
-  :y: 4920
+  :y: 4940
 :other_final_demand_for_heat_coal:
   :x: 2320
   :y: 8120
@@ -502,7 +502,7 @@
   :y: 5320
 :energy_power_solar_pv_solar_radiation:
   :x: 6240
-  :y: 3920
+  :y: 3640
 :energy_power_wind_turbine_inland:
   :x: 6240
   :y: 2740
@@ -514,7 +514,7 @@
   :y: 2680
 :energy_power_solar_csp_solar_radiation:
   :x: 6240
-  :y: 3980
+  :y: 3700
 :energy_power_hydro_river:
   :x: 6240
   :y: 2800
@@ -523,7 +523,7 @@
   :y: 2560
 :energy_power_geothermal:
   :x: 6240
-  :y: 4040
+  :y: 3580
 :other_useful_demand_crude_oil_non_energetic:
   :x: 700
   :y: 8580
@@ -765,8 +765,8 @@
   :x: 7780
   :y: 1380
 :energy_greengas_upgrade_biogas:
-  :x: 7180
-  :y: 3040
+  :x: 6660
+  :y: 4820
 :energy_distribution_manure:
   :x: 7560
   :y: 2940
@@ -1189,19 +1189,19 @@
   :y: 1360
 :energy_chp_supercritical_waste_mix:
   :x: 6240
-  :y: 3460
+  :y: 3760
 :energy_chp_combined_cycle_network_gas:
   :x: 6240
-  :y: 3520
+  :y: 3820
 :energy_chp_ultra_supercritical_coal:
   :x: 6240
-  :y: 3580
+  :y: 3880
 :energy_chp_ultra_supercritical_crude_oil:
   :x: 6240
   :y: 3720
 :energy_chp_ultra_supercritical_lignite:
   :x: 6240
-  :y: 3700
+  :y: 4000
 :energy_power_supercritical_waste_mix:
   :x: 6240
   :y: 3400
@@ -1450,10 +1450,10 @@
   :y: 5180
 :energy_power_ultra_supercritical_cofiring_coal:
   :x: 6240
-  :y: 2020
+  :y: 2080
 :energy_chp_ultra_supercritical_cofiring_coal:
   :x: 6240
-  :y: 2080
+  :y: 3940
 :industry_final_demand_for_chemical_network_gas:
   :x: 2120
   :y: 10740
@@ -2647,7 +2647,7 @@
   :y: 5340
 :energy_power_turbine_hydrogen:
   :x: 6240
-  :y: 3780
+  :y: 3520
 :industry_chemicals_fertilizers_locally_available_hydrogen:
   :x: 340
   :y: 11440
@@ -3055,7 +3055,7 @@
   :y: 3780
 :energy_power_combined_cycle_hydrogen:
   :x: 6240
-  :y: 3840
+  :y: 3460
 :industry_useful_demand_for_chemical_other_non_energetic:
   :x: 720
   :y: 12800
@@ -3087,11 +3087,11 @@
   :x: 7480
   :y: 3000
 :energy_greengas_gasification_wet_biomass:
-  :x: 7340
-  :y: 3160
+  :x: 6660
+  :y: 4940
 :energy_greengas_gasification_dry_biomass:
-  :x: 7340
-  :y: 3100
+  :x: 6660
+  :y: 4880
 :foreign_energy_distribution_greengas:
   :x: 7940
   :y: 3140
