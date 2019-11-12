@@ -408,11 +408,11 @@
   :x: 700
   :y: 8480
 :energy_national_gas_network_natural_gas:
-  :x: 6760
-  :y: 4280
+  :x: 5840
+  :y: 4920
 :energy_treatment_natural_gas:
-  :x: 7320
-  :y: 4280
+  :x: 6400
+  :y: 4920
 :other_final_demand_for_heat_coal:
   :x: 2320
   :y: 8120
@@ -1533,8 +1533,8 @@
   :x: 1920
   :y: 4900
 :energy_regasification_lng:
-  :x: 7320
-  :y: 4360
+  :x: 6400
+  :y: 5000
 :transport_final_demand_for_road_lng:
   :x: 2320
   :y: 3880
@@ -2613,26 +2613,26 @@
   :x: 2780
   :y: 18660
 :energy_hydrogen_wind_turbine_offshore:
-  :x: 6520
-  :y: 5240
+  :x: 6500
+  :y: 5720
 :energy_hydrogen_steam_methane_reformer_ccs:
-  :x: 6240
-  :y: 4980
+  :x: 6220
+  :y: 5460
 :energy_hydrogen_electrolysis_wind_electricity:
-  :x: 6240
-  :y: 5240
+  :x: 6220
+  :y: 5720
 :energy_hydrogen_flexibility_p2g_electricity:
-  :x: 6240
-  :y: 5300
+  :x: 6220
+  :y: 5780
 :energy_hydrogen_solar_pv_solar_radiation:
-  :x: 6520
-  :y: 5180
+  :x: 6500
+  :y: 5660
 :energy_hydrogen_electrolysis_solar_electricity:
-  :x: 6240
-  :y: 5180
+  :x: 6220
+  :y: 5660
 :energy_hydrogen_steam_methane_reformer:
-  :x: 6240
-  :y: 5040
+  :x: 6220
+  :y: 5520
 :energy_import_hydrogen:
   :x: 7700
   :y: 5100
@@ -2640,11 +2640,11 @@
   :x: 7040
   :y: 4280
 :energy_hydrogen_biomass_gasification:
-  :x: 6240
-  :y: 4920
+  :x: 6220
+  :y: 5400
 :energy_hydrogen_biomass_gasification_ccs:
-  :x: 6240
-  :y: 4860
+  :x: 6220
+  :y: 5340
 :energy_power_turbine_hydrogen:
   :x: 6240
   :y: 3780
@@ -2718,17 +2718,17 @@
   :x: 3920
   :y: 7280
 :energy_distribution_hydrogen_after_transport:
-  :x: 5520
-  :y: 5100
+  :x: 5500
+  :y: 5580
 :energy_transport_hydrogen_compressed_trucks:
-  :x: 5700
-  :y: 5160
+  :x: 5680
+  :y: 5640
 :energy_transport_hydrogen_pipelines:
-  :x: 5700
-  :y: 5040
+  :x: 5680
+  :y: 5520
 :energy_distribution_hydrogen_before_transport:
-  :x: 5840
-  :y: 5100
+  :x: 5820
+  :y: 5580
 :energy_production_excess_electricity:
   :x: 7700
   :y: 5040
@@ -2739,20 +2739,20 @@
   :x: 6520
   :y: 5100
 :energy_hydrogen_curtailed_electricity:
-  :x: 6240
-  :y: 5120
+  :x: 6220
+  :y: 5600
 :energy_flexibility_pumped_storage_electricity:
   :x: 5520
   :y: 2660
 :energy_hydrogen_storage:
-  :x: 5840
-  :y: 4980
+  :x: 5820
+  :y: 5460
 :energy_imported_hydrogen_baseload:
-  :x: 6240
-  :y: 4780
+  :x: 6220
+  :y: 5260
 :energy_imported_hydrogen_backup:
-  :x: 6240
-  :y: 4720
+  :x: 6220
+  :y: 5200
 :households_detached_houses_useful_demand_for_heating:
   :x: 60
   :y: 740
@@ -2853,8 +2853,8 @@
   :x: 7700
   :y: 3520
 :energy_distribution_imported_heat:
-  :x: 6240
-  :y: 4120
+  :x: 6800
+  :y: 4100
 :energy_import_heat:
   :x: 7700
   :y: 4100
@@ -3201,8 +3201,8 @@
   :x: 1080
   :y: 13220
 :energy_network_gas_storage:
-  :x: 6760
-  :y: 4340
+  :x: 5840
+  :y: 4980
 :industry_other_paper_flexibility_p2h_hydrogen_electricity:
   :x: 1160
   :y: 14180
@@ -3245,3 +3245,51 @@
 :industry_other_food_network_gas_hybrid_heat:
   :x: 900
   :y: 13380
+:energy_heat_distribution_loss:
+  :x: 5700
+  :y: 4420
+:energy_heat_burner_network_gas:
+  :x: 6240
+  :y: 4540
+:energy_heat_burner_waste_mix:
+  :x: 6500
+  :y: 4220
+:energy_heat_import_steam_hot_water:
+  :x: 6500
+  :y: 4100
+:energy_heat_burner_hydrogen:
+  :x: 6240
+  :y: 4480
+:energy_heat_heatpump_water_water_electricity:
+  :x: 6240
+  :y: 4600
+:energy_heat_burner_wood_pellets:
+  :x: 6240
+  :y: 4720
+:energy_heat_burner_crude_oil:
+  :x: 6500
+  :y: 4160
+:energy_transmission_steam_hot_water:
+  :x: 6060
+  :y: 4160
+:energy_heat_well_geothermal:
+  :x: 6240
+  :y: 4660
+:energy_chp_local_biogas:
+  :x: 6240
+  :y: 4420
+:energy_chp_local_network_gas:
+  :x: 6240
+  :y: 4360
+:energy_chp_local_wood_pellets:
+  :x: 6240
+  :y: 4300
+:energy_distribution_steam_hot_water:
+  :x: 5820
+  :y: 4540
+:energy_heat_backup_burner_network_gas:
+  :x: 6240
+  :y: 4780
+:energy_heat_unused_steam_hot_water:
+  :x: 5540
+  :y: 4680
