@@ -4,6 +4,11 @@ module Qernel
   module MeritFacade
     # Sets up generic power-to-heat participants in Merit.
     class PowerToHeatAdapter < StorageAdapter
+      def initialize(*)
+        super
+        @heat_output_curve = Array.new(8760, 0.0)
+      end
+
       def inject!
         super
 
@@ -28,6 +33,10 @@ module Qernel
           full_load_seconds *
           source_api.input_capacity *
           participant.number_of_units
+
+        target_api.dataset_lazy_set(:heat_output_curve) do
+          @heat_output_curve
+        end
       end
 
       private
@@ -54,7 +63,16 @@ module Qernel
         # Remove from the storage ("buffer") as much as possible to satisfy
         # the demand profile.
         decay = subtraction_profile
-        ->(point, _) { decay.get(point) }
+        conversion = @converter.converter.output(:useable_heat).conversion
+
+        lambda do |point, stored|
+          wanted = decay.get(point)
+          heat = (stored > wanted ? wanted : stored) * conversion
+
+          @heat_output_curve[point - 1] = heat
+
+          decay.get(wanted)
+        end
       end
 
       def subtraction_profile
