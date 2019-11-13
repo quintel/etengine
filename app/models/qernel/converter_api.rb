@@ -76,6 +76,9 @@ class ConverterApi
   dataset_carrier_curve_reader :heat
   dataset_carrier_curve_reader :network_gas
 
+  alias_method :useable_heat_output_curve, :heat_output_curve
+  alias_method :useable_heat_input_curve,  :heat_input_curve
+
   # Returns a ConverterApi instance based on the given Converter.
   #
   # Most converters will get a ConverterApi, but for some it makes sense to

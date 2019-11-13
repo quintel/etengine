@@ -40,22 +40,28 @@ module Qernel
 
       # Regex which should match curve names, extracting the carrier and
       # direction.
-      CURVE_RE = /\A\w+_(?:input|output)_curve\Z/.freeze
+      CURVE_RE =
+        /\A(?<carrier>[\w_]+)_(?<direction>input|output)_curve\Z/.freeze
 
-      # Public: Creates a demand curve for a node based on an existing carrier
-      # input or output curve.
+      # Public: Given a curve name, decodes the carrier name and direction.
+      #
+      # Returns a hash with :carrier and :direction keys or nil if the curve
+      # name is not valid.
+      def self.decode_name(name)
+        match = name.to_s.match(CURVE_RE)
+
+        return nil unless match
+
+        match.named_captures.symbolize_keys!.transform_values!(&:to_sym)
+      end
+
+      # Public: Fetches a demand profile from a node.
       #
       # converter - The Qernel::Converter
       # attribute - The name of the attribute which contains the carrier curve.
       #
-      # For example:
-      #
-      #   SelfDemandProfile.create(converter, 'electricity_input_curve')
-      #   # => Creates the demand curve for `converter` based on the value of
-      #   #    the `electricity_input_curve` attribute.
-      #
       # Returns an Array.
-      def self.build(converter, attribute)
+      def self.curve(converter, attribute)
         attribute = attribute.to_s.strip
 
         unless attribute.to_s.match?(CURVE_RE) &&
@@ -66,6 +72,25 @@ module Qernel
         curve = converter.query.public_send(attribute)
 
         raise MissingCurve.new(attribute, converter) if curve.blank?
+
+        curve
+      end
+
+      # Public: Creates a demand profile for a node based on an existing carrier
+      # input or output curve.
+      #
+      # converter - The Qernel::Converter
+      # attribute - The name of the attribute which contains the carrier curve.
+      #
+      # For example:
+      #
+      #   SelfDemandProfile.profile(converter, 'electricity_input_curve')
+      #   # => Creates the demand curve for `converter` based on the value of
+      #   #    the `electricity_input_curve` attribute.
+      #
+      # Returns an Array.
+      def self.profile(converter, attribute)
+        curve = curve(converter, attribute)
 
         total = curve.sum * 3600 # MJ to MWh
         curve.map { |val| val / total }

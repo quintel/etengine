@@ -13,13 +13,11 @@ module Qernel
     #
     # Numerous restrictions apply:
     #
-    #   * When initialized, the leader must have no demand.
+    #   * When initialized, the leader must have zero demand.
     #   * Both the leader and subordinate nodes must have an output slot of the
     #     same carrier, defined by the "subordinate_by_output" attribute in
     #     ETSource.
-    #   * The leader node must have a curve assigned to an attribute whose name
-    #     is configured in ETSource with the "subordinate_by_input" attribute. An
-    #     input slot of the same carrier should also exist.
+    #   * The leader node must have a output curve for the named output carrier.
     #
     class SubordinateConsumerAdapter < ConsumerAdapter
       def initialize(*)
@@ -30,8 +28,8 @@ module Qernel
       def demand_curve
         return super if leader.demand == @original_leader_demand
 
-        leader_curve = leader.query.public_send(
-          "#{@config.subordinate_input}_input_curve"
+        leader_curve = SelfDemandProfile.curve(
+          leader, "#{@config.subordinate_to_output}_output_curve"
         )
 
         # Convert the "influenced by" node's input to output, then to the
@@ -65,33 +63,13 @@ module Qernel
       #
       # Returns a numeric.
       def leader_conversion
-        leader_input = leader.input(@config.subordinate_input).conversion
-        leader_output = leader.output(output_carrier).conversion
-
         self_input = @converter.input(@context.carrier).conversion
-        self_output = @converter.output(output_carrier).conversion
 
-        (leader_output / leader_input) * (self_input / self_output)
-      end
+        self_output = @converter.output(
+          @config.subordinate_to_output
+        ).conversion
 
-      # Internal: Attempts to automatically determine the output carrier both
-      # the leader and subordinate have in common. Raises an error if they have
-      # more than one carrier in common.
-      def output_carrier
-        return @config.subordinate_output if @config.subordinate_output
-
-        common =
-          leader.outputs.map(&:carrier).reject(&:loss?) &
-          @converter.outputs.map(&:carrier).reject(&:loss?)
-
-        return common.first.key if common.one?
-
-        raise(
-          'Cannot automatically determine the ' \
-          "\"#{@context.carrier}.subordinate_output\" carrier for " \
-          "#{@converter.key}, both nodes have several output carriers in " \
-          'common. Please specify the carrier manually in the node document.'
-        )
+        self_input / self_output
       end
 
       def leader
