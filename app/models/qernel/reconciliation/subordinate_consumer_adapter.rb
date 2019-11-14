@@ -22,11 +22,18 @@ module Qernel
     class SubordinateConsumerAdapter < ConsumerAdapter
       def initialize(*)
         super
+
+        @original_carrier_demand = orig_calculate_carrier_demand
         @original_leader_demand = leader.demand
       end
 
       def demand_curve
-        return super if leader.demand == @original_leader_demand
+        return @demand_curve if @demand_curve
+
+        if unchanged_leader?
+          @demand_curve = original_demand_curve
+          return @demand_curve
+        end
 
         leader_curve = SelfDemandProfile.curve(
           leader, "#{@config.subordinate_to_output}_output_curve"
@@ -38,24 +45,37 @@ module Qernel
         # influencing node.
         conversion = leader_conversion
 
-        super.map.with_index do |value, index|
-          reduced = value - (leader_curve[index] * conversion)
-          reduced.positive? ? reduced : 0.0
-        end
+        @demand_curve ||=
+          original_demand_curve.map.with_index do |value, index|
+            reduced = value - (leader_curve[index] * conversion)
+            reduced.positive? ? reduced : 0.0
+          end
       end
 
       private
 
-      def calculate_carrier_demand
-        unless leader.demand.zero?
-          raise(
-            "Cannot use \"#{@context.carrier}.subordinate_to\" on" \
-            "#{@converter.key} when the leader/other node has a non-zero " \
-            'demand.'
-          )
-        end
+      def demand_phase
+        :dynamic
+      end
 
-        super
+      def unchanged_leader?
+        leader.demand == @original_leader_demand
+      end
+
+      # Internal: The demand curve without subtracting the energy supplied by
+      # the leader.
+      def original_demand_curve
+        demand_profile * @original_carrier_demand
+      end
+
+      # The original method for calculating carrier demand (demand times the
+      # conversion) is used when initializing the adapter.
+      alias_method :orig_calculate_carrier_demand, :calculate_carrier_demand
+
+      # Internal: When the leader demand has changed, we must dynamically
+      # recalculate the demand to account for energy now provided by the leader.
+      def calculate_carrier_demand
+        unchanged_leader? ? @original_carrier_demand : (demand_curve.sum * 3600)
       end
 
       # Internal: The conversion to be used to determine how much each unit of
