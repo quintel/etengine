@@ -22,13 +22,19 @@ class Inspect::ScenariosController < Inspect::BaseController
   end
 
   def create
-    @scenario = Scenario.new(scenario_attributes.merge(source: 'ETEngine Admin UI'))
+    Scenario.transaction do
+      @scenario = Scenario.create!(
+        scenario_attributes
+          .except(:flexibility_order)
+          .merge(source: 'ETEngine Admin UI')
+      )
 
-    if @scenario.save
-      redirect_to inspect_scenario_path(:id => @scenario.id), :notice => 'Scenario created'
-    else
-      render :new
+      update_flexibility_order!(@scenario, scenario_attributes)
     end
+
+    redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario created'
+  rescue ActiveRecord::RecordInvalid
+    render :new
   end
 
   def show
@@ -49,11 +55,14 @@ class Inspect::ScenariosController < Inspect::BaseController
   end
 
   def update
-    if @scenario.update_attributes(scenario_attributes)
-      redirect_to inspect_scenario_path(:id => @scenario.id), :notice => 'Scenario updated'
-    else
-      render :edit
+    Scenario.transaction do
+      @scenario.update!(scenario_attributes.except(:flexibility_order))
+      update_flexibility_order!(@scenario, scenario_attributes)
+
+      redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
     end
+  rescue ActiveRecord::RecordInvalid
+    render :edit
   end
 
   private
@@ -71,5 +80,18 @@ class Inspect::ScenariosController < Inspect::BaseController
     attrs[:protected] = attrs[:protected] == '1'
 
     attrs
+  end
+
+  def update_flexibility_order!(scenario, attrs)
+    return unless attrs[:flexibility_order]
+
+    fo = scenario.flexibility_order || scenario.build_flexibility_order
+    fo.order = attrs[:flexibility_order][:order].to_s.split
+
+    if fo.order == FlexibilityOrder.default_order || fo.order.empty?
+      fo.destroy unless fo.new_record?
+    else
+      fo.save!
+    end
   end
 end

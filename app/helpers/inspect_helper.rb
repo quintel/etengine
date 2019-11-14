@@ -183,4 +183,11 @@ module InspectHelper
   def object_attribute_is_converter?(name)
     %i[alias_of delegate].include?(name)
   end
+
+  # Public: Returns the scenario's flexibility order as a string with each
+  # option on a newline.
+  def flexibility_order_list(scenario)
+    fo = scenario.flexibility_order || FlexibilityOrder.default
+    fo.useable_order.join("\n")
+  end
 end

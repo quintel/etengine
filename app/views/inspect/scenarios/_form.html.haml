@@ -11,12 +11,24 @@
   = f.input :end_year
   = f.input :area_code, collection: Etsource::Dataset.region_codes.map { |d| [d.upcase, d] }
   = f.input :user_values_as_yaml, :as => :text, :hint => "Position (values) of all the sliders"
+  = f.simple_fields_for :flexibility_order, (@scenario.flexibility_order || FlexibilityOrder.default) do |fo|
+    = fo.input :order, as: :text, input_html: { value: flexibility_order_list(@scenario) }, hint: 'Delete all lines to revert to default'
   = f.button :submit
 
   :css
-    #scenario_user_values_as_yaml {
+    #scenario_user_values_as_yaml, #scenario_flexibility_order_order {
       font-family: monospace;
       width: 800px;
       height: 300px;
       margin-right: 10px;
+    }
+
+    #scenario_flexibility_order_order {
+      height: 220px;
+      width: 400px;
+    }
+
+    .text .hint {
+      display: block;
+      margin: -10px 0 5px;
     }
