@@ -27,6 +27,13 @@ module Qernel
         @original_leader_demand = leader.demand
       end
 
+      # Public: The demand curve for the subordinate.
+      #
+      # The curve is calculated by taking the original curve (based on the
+      # configured profile and original carrier demand) and subtracting from it
+      # the energy which is no longer needed due to supply from the leader node.
+      #
+      # Returns an array.
       def demand_curve
         return @demand_curve if @demand_curve
 
@@ -39,13 +46,9 @@ module Qernel
           leader, "#{@config.subordinate_to_output}_output_curve"
         )
 
-        # Convert the "influenced by" node's input to output, then to the
-        # current nodes output back to input. This tells us demand of the
-        # current node should be influenced by each unit of input in the
-        # influencing node.
         conversion = leader_conversion
 
-        @demand_curve ||=
+        @demand_curve =
           original_demand_curve.map.with_index do |value, index|
             reduced = value - (leader_curve[index] * conversion)
             reduced.positive? ? reduced : 0.0
@@ -55,6 +58,8 @@ module Qernel
       private
 
       def demand_phase
+        # Calculation of carrier demand depends on the leader having a curve,
+        # which comes from Merit/Fever.
         :dynamic
       end
 
