@@ -3,7 +3,7 @@
 module Qernel
   module MeritFacade
     # Helper class for creating and fetching curves related to the merit order.
-    class Curves < Plugins::TimeResolve::Curves
+    class Curves < Causality::Curves
       def initialize(graph, household_heat)
         super(graph)
         @household_heat = household_heat

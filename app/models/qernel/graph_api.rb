@@ -27,7 +27,7 @@ class GraphApi
   end
 
   def use_merit_order_demands?
-    Qernel::Plugins::TimeResolve.enabled?(graph)
+    Qernel::Causality.enabled?(graph)
   end
 
   def fce_enabled?

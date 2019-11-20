@@ -126,7 +126,7 @@ module Qernel
           # between min and max curves, rather than amplifying the min curve.
           @context.graph.plugin(:merit).curves.curve(name, @converter)
         else
-          Plugins::TimeResolve::Util.amplify_curve(
+          Causality::Util.amplify_curve(
             @context.dataset.load_profile("#{name}_baseline"),
             full_load_hours
           )

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Qernel::Plugins
-  class TimeResolve
+module Qernel
+  module Causality
     module Util
       # Defines how close an amplified curve must be to the target FLH before
       # stopping iterative amplification.

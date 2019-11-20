@@ -22,7 +22,7 @@ class Graph
 
   PLUGINS = [ Plugins::DisableSectors,
               Plugins::SimpleMeritOrder,
-              Plugins::TimeResolve,
+              Plugins::Causality,
               Plugins::FCE,
               Plugins::MaxDemandRecursive,
               Plugins::ResettableSlots ]

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Qernel::Plugins
-  class TimeResolve
+module Qernel
+  module Causality
     # Contains helpers for reading CurveSet data.
     module CurveSet
       # Public: Creates a new CurveSet containing profiles from the given

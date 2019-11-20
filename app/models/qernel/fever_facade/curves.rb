@@ -6,7 +6,7 @@ module Qernel
     # the use of dynamic curves as defined in ETSource. Otherwise falls back to
     # first attempting to load from the heat CurveSet and finally from the
     # dataset load profile directory.
-    class Curves < Plugins::TimeResolve::Curves
+    class Curves < Causality::Curves
     end
   end
 end

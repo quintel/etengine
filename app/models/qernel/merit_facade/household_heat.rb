@@ -11,7 +11,7 @@ module Qernel
 
       def curve(group_name)
         fever_group(group_name)&.elec_demand_curve ||
-          Plugins::TimeResolve::AggregateCurve.zeroed_profile
+          Causality::AggregateCurve.zeroed_profile
       end
 
       # Public: Returns the total amount of demand for the group matching

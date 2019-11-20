@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Qernel::Plugins::TimeResolve::AggregateCurve do
+describe Qernel::Causality::AggregateCurve do
   let(:dataset) { Atlas::Dataset.find(:nl) }
   let(:profile_one) { dataset.load_profile(:electric_vehicle_profile_1) }
   let(:profile_two) { dataset.load_profile(:electric_vehicle_profile_2) }
