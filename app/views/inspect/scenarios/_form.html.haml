@@ -9,7 +9,7 @@
   = f.input :description
   = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
   = f.input :end_year
-  = f.input :area_code, collection: Etsource::Dataset.region_codes.map { |d| [d.upcase, d] }
+  = f.input :area_code, collection: Etsource::Dataset.region_codes.sort
   = f.input :user_values_as_yaml, :as => :text, :hint => "Position (values) of all the sliders"
   = f.simple_fields_for :flexibility_order, (@scenario.flexibility_order || FlexibilityOrder.default) do |fo|
     = fo.input :order, as: :text, input_html: { value: flexibility_order_list(@scenario) }, hint: 'Delete all lines to revert to default'
