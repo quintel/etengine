@@ -3,24 +3,23 @@
 module Qernel
   module MeritFacade
     # Sets up a Merit participant which will be used last, using any excess
-    # electricity not exported or assigned to flexibles.
+    # energy not exported or assigned to flexibles.
     class CurtailmentAdapter < FlexAdapter
       def inject!
         super
 
-        elec_link = target_api.converter.input(:electricity).links.first
+        input_link = target_api.converter.input(@context.carrier).links.first
 
-        # Figure out the electricity output efficiency of the HV network;
-        # curtailment needs to be reduced by exactly this amount to prevent
-        # unwanted import.
-        efficiency = elec_link.output.conversion
+        # Figure out the output efficiency of the network; curtailment needs to
+        # be reduced by exactly this amount to prevent unwanted import.
+        efficiency = input_link.output.conversion
         demand     = participant.production(:mj) * efficiency
 
-        if elec_link.link_type == :inversed_flexible
+        if input_link.link_type == :inversed_flexible
           # We need to override the calculation of an inversed flexible link
           # and set the demand explicitly.
-          elec_link.dataset_set(:value, demand)
-          elec_link.dataset_set(:calculated, true)
+          input_link.dataset_set(:value, demand)
+          input_link.dataset_set(:calculated, true)
         end
 
         target_api.demand = demand

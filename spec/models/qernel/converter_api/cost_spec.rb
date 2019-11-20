@@ -263,7 +263,7 @@ module Qernel
 
     describe "#storage_costs" do
       let(:storage) do
-        Atlas::StorageDetails.new(volume: volume, cost_per_mwh: cost)
+        Atlas::NodeAttributes::Storage.new(volume: volume, cost_per_mwh: cost)
       end
 
       before { @c.with(storage: storage) }

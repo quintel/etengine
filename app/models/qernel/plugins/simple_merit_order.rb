@@ -18,9 +18,13 @@ module Qernel::Plugins
       :merit
     end
 
-    def initialize(graph, carrier)
-      super
-      @context = Qernel::MeritFacade::Context.new(self, graph, carrier)
+    def initialize(graph, context = nil)
+      super(graph)
+
+      @context =
+        context || Qernel::MeritFacade::Context.new(
+          self, graph, :electricity, :merit_order
+        )
     end
 
     def curves

@@ -11,6 +11,8 @@ module Qernel
           participant.marginal_costs.to_f
         end
 
+        return unless @context.carrier == :electricity
+
         target_api.dataset_lazy_set(:profitability) do
           participant.profitability
         end

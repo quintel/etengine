@@ -59,6 +59,7 @@
           %td Use
           %td= @converter_present.use_key
         = render partial: 'object_attributes', locals: { name: 'Fever (Heat)', object: @converter_future.fever }
+        = render partial: 'object_attributes', locals: { name: 'Heat network', object: @converter_future.heat_network }
         = render partial: 'object_attributes', locals: { name: 'Hydrogen', object: @converter_future.hydrogen }
         = render partial: 'object_attributes', locals: { name: 'Merit Order', object: @converter_future.merit_order }
         = render partial: 'object_attributes', locals: { name: 'Storage', object: @converter_future.storage }

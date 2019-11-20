@@ -55,13 +55,10 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        # attrs[:number_of_units] = delegate_api.number_of_units
-        # attrs[:availability]    = delegate_api.availability
-
-        # Default is to multiply the input capacity by the electricity output
+        # Default is to multiply the input capacity by the carrier output
         # conversion. This doesn't work, because the flex converters have a
-        # dependant electricity link and the conversion will be zero the first
-        # time the graph is calculated.
+        # dependant link and the conversion will be zero the first time the
+        # graph is calculated.
         attrs[:output_capacity_per_unit] =
           source_api.output_capacity ||
           source_api.input_capacity

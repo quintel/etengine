@@ -29,6 +29,7 @@ module Qernel::Plugins
       super
       @merit = Qernel::MeritFacade::Manager.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
+      @heat_network = HeatNetwork.new(graph)
       @reconciliation = ReconciliationWrapper.new(graph)
     end
 
@@ -49,6 +50,7 @@ module Qernel::Plugins
     def setup
       @fever.setup
       @merit.setup
+      @heat_network.setup
       @reconciliation.setup
     end
 
@@ -74,6 +76,9 @@ module Qernel::Plugins
       # demands injected into the graph.
       @merit.send(:inject_values!)
       @fever.inject_values!
+
+      @heat_network.order.calculate
+      @heat_network.send(:inject_values!)
 
       @reconciliation.inject_values!
     end

@@ -8,7 +8,7 @@ module Qernel
         # Public: Fetches the configuration for a node, based on the context
         # carrier.
         #
-        # Returns an Atlas::ReconciliationDetails.
+        # Returns an Atlas::NodeAttributes::Reconciliation.
         def node_config(node)
           node.public_send(carrier)
         end
