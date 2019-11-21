@@ -142,7 +142,7 @@ module Gql::Runtime
             original_value = object[attribute_name]
 
             if original_value.is_a?(Numeric)
-              original_value = big_decimal(original_value.to_s)
+              original_value = original_value.to_f
             elsif original_value.nil?
               original_value = 0.0
             end
