@@ -42,8 +42,8 @@ module Qernel
           return @demand_curve
         end
 
-        leader_curve = SelfDemandProfile.curve(
-          leader, "#{@config.subordinate_to_output}_output_curve"
+        leader_curve = Causality::SelfDemandProfile.curve(
+          leader.converter_api, "#{@config.subordinate_to_output}_output_curve"
         )
 
         conversion = leader_conversion

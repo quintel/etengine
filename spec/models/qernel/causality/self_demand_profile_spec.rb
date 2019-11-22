@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Qernel::Reconciliation::SelfDemandProfile do
+describe Qernel::Causality::SelfDemandProfile do
   def curve_name_from_example(example)
     description = example.metadata[:example_group][:description]
     match = description.match(/"([^"]*)"/)
@@ -17,7 +17,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
   let(:source_curve) { [5.0, 10.0, 15.0, 10.0, 10.0] }
 
   let(:converter) do
-    Qernel::Converter.new(key: :fake_converter).with(demand: 100.0)
+    Qernel::Converter.new(key: :fake_converter).with(demand: 100.0).converter_api
   end
 
   describe '.curve' do
@@ -41,8 +41,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
 
     context 'when using "valid_input_curve"' do
       before do
-        allow(converter.query)
-          .to receive(:valid_input_curve).and_return(source_curve)
+        allow(converter).to receive(:valid_input_curve).and_return(source_curve)
       end
 
       include_examples 'a valid demand curve name'
@@ -50,7 +49,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
 
     context 'when using "valid_output_curve"' do
       before do
-        allow(converter.query)
+        allow(converter)
           .to receive(:valid_output_curve).and_return(source_curve)
       end
 
@@ -59,7 +58,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
 
     context 'when using "valid_output_curve "' do
       before do
-        allow(converter.query)
+        allow(converter)
           .to receive(:valid_output_curve).and_return(source_curve)
       end
 
@@ -68,7 +67,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
 
     context 'when using "valid_underscored_output_curve "' do
       before do
-        allow(converter.query)
+        allow(converter)
           .to receive(:valid_underscored_output_curve).and_return(source_curve)
       end
 
@@ -77,7 +76,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
 
     context 'when using "valid_output_curve" and no curve is set' do
       before do
-        allow(converter.query).to receive(:valid_output_curve).and_return(nil)
+        allow(converter).to receive(:valid_output_curve).and_return(nil)
       end
 
       it 'raises an error' do
@@ -92,7 +91,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
 
     context 'when using "valid_output_curve" and an empty curve is set' do
       before do
-        allow(converter.query).to receive(:valid_output_curve).and_return([])
+        allow(converter).to receive(:valid_output_curve).and_return([])
       end
 
       it 'raises an error' do
@@ -169,7 +168,7 @@ describe Qernel::Reconciliation::SelfDemandProfile do
     end
 
     before do
-      allow(converter.query)
+      allow(converter)
         .to receive(:valid_input_curve).and_return(source_curve)
     end
 
@@ -214,6 +213,26 @@ describe Qernel::Reconciliation::SelfDemandProfile do
     context 'with "valid_thing_input_curve"' do
       it 'has a carrier of :valid_thing' do
         expect(result[:carrier]).to eq(:valid_thing)
+      end
+
+      it 'has a direction of :input' do
+        expect(result[:direction]).to eq(:input)
+      end
+    end
+
+    context 'with "self: valid_input_curve"' do
+      it 'has a carrier of :valid' do
+        expect(result[:carrier]).to eq(:valid)
+      end
+
+      it 'has a direction of :input' do
+        expect(result[:direction]).to eq(:input)
+      end
+    end
+
+    context 'with "self-thing: valid_input_curve"' do
+      it 'has a carrier of :valid' do
+        expect(result[:carrier]).to eq(:valid)
       end
 
       it 'has a direction of :input' do

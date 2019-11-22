@@ -113,7 +113,7 @@ module Qernel
       #
       # Returns an array.
       def merit_demand_profile(name)
-        SelfDemandProfile.profile(@converter, name)
+        Causality::SelfDemandProfile.profile(@converter.converter_api, name)
       end
 
       # Internal: Creates a dynamic demand profile by interpolating between two

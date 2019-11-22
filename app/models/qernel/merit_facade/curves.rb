@@ -21,8 +21,8 @@ module Qernel
 
         if prefix?(name, 'fever-electricity-demand')
           fever_demand_curve(name[25..-1].strip.to_sym)
-        elsif prefix?(name, 'fever-self')
-          fever_self_curve(name[11..-1].strip.to_sym)
+        elsif prefix?(name, 'self')
+          self_curve(name[5..-1].strip.to_sym, converter)
         else
           super
         end
@@ -36,6 +36,14 @@ module Qernel
       # is calculated.
       def fever_demand_curve(name)
         @household_heat.curve(name)
+      end
+
+      # Internal: Reads a curve from an attribute on the converter and converts
+      # it to a 1/3600 (J -> Wh) profile.
+      #
+      # Returns a Merit::Curve.
+      def self_curve(name, converter)
+        Merit::Curve.new(Causality::SelfDemandProfile.profile(converter, name))
       end
 
       # Public: Creates a dynamic curve which reads the demand from a Fever
