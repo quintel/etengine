@@ -8,16 +8,23 @@ module Qernel
         case context.node_config(converter).subtype
         when :pseudo
           PseudoConsumerAdapter
+        when :consumption_loss
+          ConsumptionLossAdapter
         else
           self
         end
+      end
+
+      def initialize(*)
+        super
+        @input_of_carrier = input_of_carrier
       end
 
       def participant
         @participant ||= Merit::User.create(
           key: @converter.key,
           load_profile: consumption_profile,
-          total_consumption: input_of_carrier
+          total_consumption: @input_of_carrier
         )
       end
 
@@ -41,7 +48,7 @@ module Qernel
       end
 
       def installed?
-        input_of_carrier.positive?
+        @input_of_carrier.positive?
       end
 
       private
