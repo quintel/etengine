@@ -326,6 +326,23 @@ module Api
         }
       }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
+      # If the converter belongs to the p2p presentation group then
+      # add these
+      P2P_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Charging capacity per unit', unit: 'MW' },
+          'storage[:volume]' =>
+            { label: 'Storage capacity per unit', unit: 'MWh' },
+          :electricity_output_conversion  =>
+            { label: 'Electricity output efficiency', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT },
+          :electricity_input_conversion  =>
+            { label: 'Electricity input share', unit: '%',
+              formatter: FORMAT_FAC_TO_PERCENT }
+        }
+      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
       # If the converter belongs to the traditional_heat presentation group then
       # add these
       BIOMASS_ATTRIBUTES_AND_METHODS = {
@@ -393,6 +410,8 @@ module Api
             P2H_ATTRIBUTES_AND_METHODS
           when :p2kerosene
             P2KEROSENE_ATTRIBUTES_AND_METHODS
+          when :p2p
+            P2P_ATTRIBUTES_AND_METHODS
           when :biomass
             BIOMASS_ATTRIBUTES_AND_METHODS
           else
