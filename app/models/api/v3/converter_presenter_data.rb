@@ -332,14 +332,17 @@ module Api
         technical: {
           typical_input_capacity: {
             label: 'Charging capacity per unit',
-            unit: 'MW'},
+            unit: 'MW'
+          },
           'storage[:volume]' => {
             label: 'Storage capacity per unit',
-            unit: 'MWh'},
-          '1.0/electricity_input_conversion * electricity_output_conversion'  => {
+            unit: 'MWh'
+          },
+          '1.0/electricity_input_conversion * electricity_output_conversion' => {
             label: 'Round trip efficiency',
             unit: '%',
-            formatter: FORMAT_FAC_TO_PERCENT}
+            formatter: FORMAT_FAC_TO_PERCENT
+          }
         }
       }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
