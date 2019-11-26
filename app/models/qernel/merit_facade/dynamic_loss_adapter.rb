@@ -3,14 +3,14 @@
 module Qernel
   module MeritFacade
     # Adds a consumer to the merit order calculation whose demand is a share of
-    # all the other demands. For example, if the consumption share is 0.2 (20%)
-    # and other demands sum to 10, demand for the consumption loss user will be
-    # 2, and total demand for the frame will be 12.
-    class ConsumptionLossAdapter < Adapter
+    # the total energy flow for each hour. For example, if the loss share is 0.2
+    # (20%) and other demands sum to 10, demand for the consumption loss user
+    # will be 2, and total demand for the frame will be 12.
+    class DynamicLossAdapter < Adapter
       def participant
         @participant ||= Merit::User.create(
           key: @converter.key,
-          consumption_share: consumption_share
+          share: loss_share
         )
       end
 
@@ -19,7 +19,7 @@ module Qernel
           @participant.load_curve.to_a
         end
 
-        target_api.demand = @participant.load_curve.sum * 3600
+        target_api.demand = @participant.production
       end
 
       def installed?
@@ -28,12 +28,12 @@ module Qernel
 
       private
 
-      def consumption_share
+      def loss_share
         links = target_api.converter.input(:loss).links
 
         if links.length != 1
           raise "Cannot find single loss link into #{@converter.key} for use " \
-            'as a consumption_loss in merit order calculation'
+            'as a dynamic_loss participant in merit order calculation'
         end
 
         link = links.first
