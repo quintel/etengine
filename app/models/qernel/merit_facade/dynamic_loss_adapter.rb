@@ -18,8 +18,6 @@ module Qernel
         target_api.dataset_lazy_set(@context.curve_name(:input)) do
           @participant.load_curve.to_a
         end
-
-        target_api.demand = @participant.production
       end
 
       def installed?
