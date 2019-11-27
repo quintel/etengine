@@ -187,7 +187,7 @@ module Qernel::Plugins
     def household_heat
       Qernel::MeritFacade::SimpleHouseholdHeat.new(
         @graph,
-        Causality::CurveSet.for_area(@graph.area, 'weather', 'default')
+        Qernel::Causality::CurveSet.for_area(@graph.area, 'weather', 'default')
       )
     end
   end # SimpleMeritOrder
