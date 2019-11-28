@@ -3301,7 +3301,7 @@
   :y: 9220
 :industry_heat_backup_burner_network_gas:
   :x: 3480
-  :y: 9400
+  :y: 9460
 :industry_heat_burner_coal:
   :x: 3480
   :y: 9280
@@ -3317,3 +3317,6 @@
 :energy_chp_local_engine_network_gas:
   :x: 6060
   :y: 4360
+:industry_heat_burner_crude_oil:
+  :x: 3480
+  :y: 9400
