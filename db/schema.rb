@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_06_220751) do
+ActiveRecord::Schema.define(version: 2019_11_27_175656) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
@@ -58,6 +58,12 @@ ActiveRecord::Schema.define(version: 2019_11_06_220751) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text "description"
+  end
+
+  create_table "heat_network_orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "scenario_id"
+    t.text "order"
+    t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id", unique: true
   end
 
   create_table "query_table_cells", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
@@ -146,4 +152,5 @@ ActiveRecord::Schema.define(version: 2019_11_06_220751) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "heat_network_orders", "scenarios"
 end

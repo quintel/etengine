@@ -6,7 +6,11 @@ module Qernel
     class HeatNetwork < Qernel::MeritFacade::Manager
       def initialize(graph)
         context = Qernel::MeritFacade::Context.new(
-          self, graph, :steam_hot_water, :heat_network
+          self,
+          graph,
+          :steam_hot_water,
+          :heat_network,
+          Qernel::MeritFacade::UserDefinedSorter.new(graph.heat_network_order)
         )
 
         super(graph, context)
@@ -47,19 +51,13 @@ module Qernel
         end
       end
 
-      # TODO: Refactor. This is Manager#converters with one change.
-      def converters(type, subtype)
-        type_data = Etsource::MeritOrder.new.import_heat_network[type.to_s]
+      def sort_converters(_type, converters)
+        # No sorting required in heat network.
+        converters
+      end
 
-        (type_data || {}).map do |key, profile|
-          converter = @graph.converter(key)
-
-          next if !subtype.nil? && converter.merit_order.subtype != subtype
-
-          converter.converter_api.load_profile_key = profile
-
-          converter
-        end.compact
+      def etsource_data
+        Etsource::MeritOrder.new.import_heat_network
       end
     end
   end

@@ -24,12 +24,14 @@ class Inspect::ScenariosController < Inspect::BaseController
   def create
     Scenario.transaction do
       @scenario = Scenario.create!(
-        scenario_attributes
-          .except(:flexibility_order)
-          .merge(source: 'ETEngine Admin UI')
+        scenario_attributes.merge(source: 'ETEngine Admin UI')
       )
 
-      update_flexibility_order!(@scenario, scenario_attributes)
+      update_user_sortables!(
+        user_sortable_attributes,
+        flexibility_order: @scenario.flexibility_order,
+        heat_network_order: @scenario.heat_network_order
+      )
     end
 
     redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario created'
@@ -56,8 +58,13 @@ class Inspect::ScenariosController < Inspect::BaseController
 
   def update
     Scenario.transaction do
-      @scenario.update!(scenario_attributes.except(:flexibility_order))
-      update_flexibility_order!(@scenario, scenario_attributes)
+      @scenario.update!(scenario_attributes)
+
+      update_user_sortables!(
+        user_sortable_attributes,
+        flexibility_order: @scenario.flexibility_order,
+        heat_network_order: @scenario.heat_network_order
+      )
 
       redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
     end
@@ -79,19 +86,37 @@ class Inspect::ScenariosController < Inspect::BaseController
     attrs = params.require(:scenario).permit!
     attrs[:protected] = attrs[:protected] == '1'
 
-    attrs
+    attrs.except(:flexibility_order, :heat_network_order)
   end
 
-  def update_flexibility_order!(scenario, attrs)
-    return unless attrs[:flexibility_order]
+  def user_sortable_attributes
+    params.require(:scenario).permit(
+      heat_network_order: [:order],
+      flexibility_order: [:order]
+    )
+  end
 
-    fo = scenario.flexibility_order || scenario.build_flexibility_order
-    fo.order = attrs[:flexibility_order][:order].to_s.split
+  def update_user_sortables!(attrs, records)
+    records = records.select { |key, _| attrs.key?(key) }
 
-    if fo.order == FlexibilityOrder.default_order || fo.order.empty?
-      fo.destroy unless fo.new_record?
-    else
-      fo.save!
+    records.each do |key, record|
+      # Assign the sortable to the scenario explicity, so that we may preserve
+      # the object (and errors) when re-rendering the edit view.
+      record.scenario.public_send("#{key}=", record)
+      record.order = attrs[key][:order].to_s.split
+    end
+
+    # Validate each record (to get error message) and raise if any were invalid.
+    unless records.reduce(true) { |status, (_, rec)| rec.valid? && status }
+      raise ActiveRecord::RecordInvalid
+    end
+
+    records.each do |_, record|
+      if record.default?
+        record.destroy unless record.new_record?
+      else
+        record.save!(validate: false)
+      end
     end
   end
 end

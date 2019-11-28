@@ -4,15 +4,16 @@ module Qernel
   module MeritFacade
     # Encapsulates objects useful to the merit calculation.
     class Context
-      attr_reader :plugin, :graph, :carrier
+      attr_reader :plugin, :graph, :carrier, :dispatchable_sorter
 
       delegate :curves, to: :plugin
 
-      def initialize(plugin, graph, carrier, attribute)
+      def initialize(plugin, graph, carrier, attribute, dispatchable_sorter)
         @plugin = plugin
         @graph = graph
         @carrier = carrier
         @attribute = attribute
+        @dispatchable_sorter = dispatchable_sorter
       end
 
       def dataset

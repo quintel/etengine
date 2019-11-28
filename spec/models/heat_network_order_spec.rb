@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe FlexibilityOrder do
-  it { is_expected.to validate_uniqueness_of(:scenario_id) }
+describe HeatNetworkOrder do
+  it { is_expected.to have_db_index(:scenario_id).unique }
 
   describe '#order' do
     let(:preset) { described_class.new(order: order) }
@@ -26,7 +26,7 @@ describe FlexibilityOrder do
     end
 
     context 'when the order contains one of two valid values' do
-      let(:order) { [Etsource::Config.flexibility_order.first] }
+      let(:order) { [Etsource::Config.heat_network_order.first] }
 
       it 'has no errors' do
         preset.valid?
@@ -36,7 +36,7 @@ describe FlexibilityOrder do
     end
 
     context 'when the order contains all valid values' do
-      let(:order) { Etsource::Config.flexibility_order }
+      let(:order) { Etsource::Config.heat_network_order }
 
       it 'has no errors' do
         preset.valid?
@@ -47,8 +47,8 @@ describe FlexibilityOrder do
     context 'when the order repeats a valid value' do
       let(:order) do
         [
-          Etsource::Config.flexibility_order.first,
-          Etsource::Config.flexibility_order.first
+          Etsource::Config.heat_network_order.first,
+          Etsource::Config.heat_network_order.first
         ]
       end
 

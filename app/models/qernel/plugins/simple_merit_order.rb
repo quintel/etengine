@@ -23,7 +23,11 @@ module Qernel::Plugins
 
       @context =
         context || Qernel::MeritFacade::Context.new(
-          self, graph, :electricity, :merit_order
+          self,
+          graph,
+          :electricity,
+          :merit_order,
+          Qernel::MeritFacade::MarginalCostSorter.new
         )
     end
 
@@ -54,10 +58,7 @@ module Qernel::Plugins
       @adapters = {}
 
       participant_types.each do |(type, subtype)|
-        models = converters(type, subtype)
-        models = sort_flexibles(models) if type == :flex
-
-        models.each do |converter|
+        converters(type, subtype).each do |converter|
           @adapters[converter.key] ||=
             Qernel::MeritFacade::Adapter.adapter_for(converter, @context)
         end
@@ -150,9 +151,9 @@ module Qernel::Plugins
     #
     # Returns an array.
     def converters(type, subtype)
-      type_data = Etsource::MeritOrder.new.import_electricity[type.to_s]
+      type_data = etsource_data[type.to_s]
 
-      (type_data || {}).map do |key, profile|
+      converters = (type_data || {}).map do |key, profile|
         converter = @graph.converter(key)
 
         if !subtype.nil? && @context.node_config(converter).subtype != subtype
@@ -163,6 +164,8 @@ module Qernel::Plugins
 
         converter
       end.compact
+
+      sort_converters(type, converters)
     end
 
     # Internal: Fetches the adapter matching the given participant `key`.
@@ -176,7 +179,9 @@ module Qernel::Plugins
     # them to match to FlexibilityOrder assigned to the current scenario.
     #
     # Returns an array of Qernel::Converter.
-    def sort_flexibles(converters)
+    def sort_converters(type, converters)
+      return converters unless type == :flex
+
       order = @graph.flexibility_order.map(&:to_sym)
 
       converters.sort_by do |conv|
@@ -189,6 +194,10 @@ module Qernel::Plugins
         @graph,
         Qernel::Causality::CurveSet.for_area(@graph.area, 'weather', 'default')
       )
+    end
+
+    def etsource_data
+      Etsource::MeritOrder.new.import_electricity
     end
   end # SimpleMeritOrder
 end # Qernel::Plugins

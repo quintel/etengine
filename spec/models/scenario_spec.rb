@@ -436,7 +436,7 @@ describe Scenario do
 
     context 'with no preset flexibility order' do
       it 'should create no flexibilty order' do
-        expect(scenario.flexibility_order).to be_nil
+        expect(scenario[:flexibility_order]).to be_nil
       end
     end
 

@@ -11,19 +11,23 @@
   = f.input :end_year
   = f.input :area_code, collection: Etsource::Dataset.region_codes.sort
   = f.input :user_values_as_yaml, :as => :text, :hint => "Position (values) of all the sliders"
-  = f.simple_fields_for :flexibility_order, (@scenario.flexibility_order || FlexibilityOrder.default) do |fo|
-    = fo.input :order, as: :text, input_html: { value: flexibility_order_list(@scenario) }, hint: 'Delete all lines to revert to default'
+  = f.simple_fields_for :flexibility_order, @scenario.flexibility_order do |fo|
+    = fo.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.flexibility_order) }, label: 'Flexibility order', hint: 'Delete all lines to revert to default'
+  = f.simple_fields_for :heat_network_order, @scenario.heat_network_order do |hno|
+    = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order) }, label: 'Heat network dispatchables order', hint: 'Delete all lines to revert to default'
   = f.button :submit
 
   :css
-    #scenario_user_values_as_yaml, #scenario_flexibility_order_order {
+    #scenario_user_values_as_yaml,
+    #scenario_flexibility_order_order,
+    #scenario_heat_network_order_order {
       font-family: monospace;
       width: 800px;
       height: 300px;
       margin-right: 10px;
     }
 
-    #scenario_flexibility_order_order {
+    #scenario_flexibility_order_order, #scenario_heat_network_order_order {
       height: 220px;
       width: 400px;
     }
