@@ -43,6 +43,10 @@ Rails.application.routes.draw do
         get 'curves/loads', to: 'curves#load_curves', as: :merit_download
         get 'curves/price', to: 'curves#price_curve', as: :merit_price_download
 
+        get 'curves/heat_network',
+          to: 'curves#heat_network',
+          as: :curves_heat_network_download
+
         get 'curves/household_heat',
           to: 'curves#household_heat_curves',
           as: :curves_household_heat_download

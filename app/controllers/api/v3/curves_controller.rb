@@ -2,7 +2,15 @@ module Api
   module V3
     class CurvesController < BaseController
       respond_to :json
-      respond_to :csv, only: %i[load_curves price_curve household_heat_curves]
+
+      respond_to :csv, only: %i[
+        heat_network
+        household_heat_curves
+        hydrogen
+        load_curves
+        network_gas
+        price_curve
+      ]
 
       rescue_from ActiveRecord::RecordNotFound do
         render json: { errors: ['Scenario not found'] }, status: 404
@@ -28,17 +36,23 @@ module Api
         end
       end
 
+      # Downloads the load on each participant in the heat merit order as a CSV.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/heat_network.csv
+      def heat_network
+        render_presenter Api::V3::MeritCSVPresenter.new(
+          scenario.gql.future_graph, :steam_hot_water, :heat_network
+        )
+      end
+
       # Downloads the supply and demand of heat, including deficits and
       # surpluses due to buffering and time-shifting.
       #
       # GET /api/v3/scenarios/:scenario_id/curves/household_heat.csv
       def household_heat_curves
-        presenter =
-          Api::V3::HouseholdHeatCSVPresenter.new(scenario.gql.future_graph)
-
-        send_csv('household_heat') do |csv|
-          presenter.to_csv_rows.each { |row| csv << row }
-        end
+        render_presenter Api::V3::HouseholdHeatCSVPresenter.new(
+          scenario.gql.future_graph
+        )
       end
 
       # Downloads the total demand and supply for hydrogen, with additional
@@ -46,13 +60,9 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/hydrogen.csv
       def hydrogen
-        presenter = Api::V3::ReconciliationCSVPresenter.new(
+        render_presenter Api::V3::ReconciliationCSVPresenter.new(
           scenario.gql.future_graph, :hydrogen
         )
-
-        send_csv('hydrogen') do |csv|
-          presenter.to_csv_rows.each { |row| csv << row }
-        end
       end
 
       # Downloads the total demand and supply for network gas, with additional
@@ -60,20 +70,22 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/network_gas.csv
       def network_gas
-        presenter = Api::V3::ReconciliationCSVPresenter.new(
+        render_presenter Api::V3::ReconciliationCSVPresenter.new(
           scenario.gql.future_graph, :network_gas
         )
-
-        send_csv('network_gas') do |csv|
-          presenter.to_csv_rows.each { |row| csv << row }
-        end
       end
 
       private
 
       def merit_required
-        unless Qernel::Causality.enabled?(scenario.gql.future_graph)
+        unless Qernel::Plugins::Causality.enabled?(scenario.gql.future_graph)
           render :merit_required, format: :html, layout: false
+        end
+      end
+
+      def render_presenter(presenter)
+        send_csv(presenter.filename) do |csv|
+          presenter.to_csv_rows.each { |row| csv << row }
         end
       end
 
