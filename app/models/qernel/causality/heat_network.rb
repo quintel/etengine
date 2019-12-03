@@ -51,9 +51,15 @@ module Qernel
         end
       end
 
-      def sort_converters(_type, converters)
-        # No sorting required in heat network.
-        converters
+      def sort_converters(type, converters)
+        if type == :flex
+          # Curtailment always comes last.
+          converters.sort_by do |conv|
+            @context.node_config(conv).group == :curtailment ? 1 : 0
+          end
+        else
+          converters
+        end
       end
 
       def etsource_data
