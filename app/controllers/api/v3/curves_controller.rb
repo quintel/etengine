@@ -18,22 +18,52 @@ module Api
 
       before_action :merit_required
 
-      # Downloads the load on each participant in the merit order as a CSV.
+      # Downloads the load on each participant in the electricity merit order as
+      # a CSV.
+      #
+      # This CSV is deprecated and is replaced by the "merit_order" action.
       #
       # GET /api/v3/scenarios/:scenario_id/merit/loads.csv
       def load_curves
+        order = scenario.gql.future_graph.plugin(:merit).order
+
         send_csv('loads') do |csv|
-          merit_order.load_curves.each { |row| csv << row }
+          order.load_curves.each { |row| csv << row }
         end
       end
 
       # Downloads the merit order price for each hour of the year as a CSV.
       #
+      # This CSV is deprecated and is replaced by the "electricity_price"
+      # action.
+      #
       # GET /api/v3/scenarios/:scenario_id/merit/price.csv
       def price_curve
+        order = scenario.gql.future_graph.plugin(:merit).order
+
         send_csv('price') do |csv|
-          merit_order.price_curve.each { |row| csv << [row] }
+          order.price_curve.each { |row| csv << [row] }
         end
+      end
+
+      # Downloads the load on each participant in the electricity merit order as
+      # a CSV.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/merit_order.csv
+      def merit_order
+        render_presenter Api::V3::MeritCSVPresenter.new(
+          scenario.gql.future_graph, :electricity, :merit_order
+        )
+      end
+
+      # Downloads the hourly price of electricity according to the merit order.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
+      def electricity_price
+        render_presenter Api::V3::MeritPriceCSVPresenter.new(
+          scenario.gql.future_graph,
+          scenario.gql.future_graph.plugin(:merit).order
+        )
       end
 
       # Downloads the load on each participant in the heat merit order as a CSV.
@@ -95,10 +125,6 @@ module Api
           type: 'text/csv',
           filename: "#{ name }.#{ scenario.id }.csv"
         )
-      end
-
-      def merit_order
-        scenario.gql.future_graph.plugin(:merit).order
       end
 
       def scenario
