@@ -219,7 +219,7 @@ module Gql::Runtime
 
       # Retrieves the merit order price curve
       def MERIT_PRICE_CURVE
-        if Qernel::Causality.enabled?(scope.graph)
+        if Qernel::Plugins::Causality.enabled?(scope.graph)
           scope.graph.plugin(:merit).order.price_curve.to_a
         else
           []
@@ -260,7 +260,7 @@ module Gql::Runtime
       #
       # Returns an array.
       def FEVER_DEMAND(*groups)
-        return [] unless Qernel::Causality.enabled?(scope.graph)
+        return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
 
         plugin = scope.graph.plugin(:time_resolve).fever
 
@@ -273,7 +273,7 @@ module Gql::Runtime
       #
       # Returns an array.
       def FEVER_PRODUCTION(*groups)
-        return [] unless Qernel::Causality.enabled?(scope.graph)
+        return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
 
         plugin = scope.graph.plugin(:time_resolve).fever
 
