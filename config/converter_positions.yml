@@ -3246,8 +3246,8 @@
   :x: 900
   :y: 13380
 :energy_heat_distribution_loss:
-  :x: 5620
-  :y: 4420
+  :x: 5220
+  :y: 4460
 :energy_heat_burner_network_gas:
   :x: 6060
   :y: 4480
@@ -3259,13 +3259,13 @@
   :y: 4100
 :energy_heat_burner_hydrogen:
   :x: 6060
-  :y: 4420
+  :y: 4540
 :energy_heat_heatpump_water_water_electricity:
   :x: 6060
-  :y: 4540
+  :y: 4600
 :energy_heat_burner_wood_pellets:
   :x: 6060
-  :y: 4660
+  :y: 4720
 :energy_heat_burner_crude_oil:
   :x: 6500
   :y: 4160
@@ -3274,7 +3274,7 @@
   :y: 4160
 :energy_heat_well_geothermal:
   :x: 6060
-  :y: 4600
+  :y: 4660
 :energy_chp_local_biogas:
   :x: 6240
   :y: 4420
@@ -3285,14 +3285,14 @@
   :x: 6060
   :y: 4240
 :energy_distribution_steam_hot_water:
-  :x: 5800
-  :y: 4540
+  :x: 5460
+  :y: 4520
 :energy_heat_backup_burner_network_gas:
   :x: 6060
-  :y: 4720
+  :y: 4780
 :energy_heat_unused_steam_hot_water:
-  :x: 5540
-  :y: 4680
+  :x: 5340
+  :y: 4600
 :industry_chp_wood_pellets:
   :x: 3480
   :y: 9160
@@ -3310,7 +3310,7 @@
   :y: 9340
 :energy_heat_solar_thermal:
   :x: 6060
-  :y: 4780
+  :y: 4840
 :energy_chp_local_engine_biogas:
   :x: 6060
   :y: 4300
@@ -3320,3 +3320,15 @@
 :industry_heat_burner_crude_oil:
   :x: 3480
   :y: 9400
+:energy_heat_burner_coal:
+  :x: 6060
+  :y: 4420
+:energy_heat_network_storage:
+  :x: 5620
+  :y: 4380
+:energy_production_aggregator_steam_hot_water:
+  :x: 5820
+  :y: 4420
+:energy_heat_dumped_steam_hot_water:
+  :x: 5220
+  :y: 4520
