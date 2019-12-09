@@ -77,7 +77,7 @@ module Qernel
 
       def subtraction_profile
         demand_profile *
-          @graph.converter(@config.demand_source).converter_api.demand
+          @context.graph.converter(@config.demand_source).converter_api.demand
       end
 
       def demand_profile
