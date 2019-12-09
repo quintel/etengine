@@ -8,8 +8,8 @@ module Qernel
         case context.node_config(converter).subtype
         when :pseudo
           PseudoConsumerAdapter
-        when :dynamic_loss
-          DynamicLossAdapter
+        when :consumption_loss
+          ConsumptionLossAdapter
         else
           self
         end
