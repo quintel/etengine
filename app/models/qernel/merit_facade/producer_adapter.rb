@@ -10,6 +10,8 @@ module Qernel
         case config.subtype
         when :must_run, :volatile
           AlwaysOnAdapter
+        when :backup
+          BackupAdapter
         when :dispatchable
           group = config.group
           group == :import ? ImportAdapter : DispatchableAdapter
