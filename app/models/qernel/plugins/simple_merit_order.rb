@@ -32,7 +32,11 @@ module Qernel::Plugins
     end
 
     def curves
-      @curves ||= Qernel::MeritFacade::Curves.new(@graph, household_heat)
+      @curves ||= Qernel::MeritFacade::Curves.new(
+        @graph,
+        household_heat,
+        start_hour
+      )
     end
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
@@ -198,6 +202,11 @@ module Qernel::Plugins
 
     def etsource_data
       Etsource::MeritOrder.new.import_electricity
+    end
+
+    # Calculation begin on January 1st 00:00.
+    def start_hour
+      0
     end
   end # SimpleMeritOrder
 end # Qernel::Plugins

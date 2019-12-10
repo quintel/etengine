@@ -41,11 +41,11 @@ module Qernel
           source_api.input_capacity *
           participant.number_of_units
 
-        target_api.dataset_lazy_set(@context.curve_name(:input)) do
+        inject_curve!(:input) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
         end
 
-        target_api.dataset_lazy_set(@context.curve_name(:output)) do
+        inject_curve!(:output) do
           @participant.load_curve.map { |v| v.positive? ? v : 0.0 }
         end
       end

@@ -19,9 +19,7 @@ module Qernel
       end
 
       def inject!
-        target_api.dataset_lazy_set(@context.curve_name(:input)) do
-          @participant.load_curve.to_a
-        end
+        inject_curve!(:input) { @participant.load_curve }
       end
 
       def input_of_carrier

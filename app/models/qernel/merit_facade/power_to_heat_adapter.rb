@@ -34,9 +34,7 @@ module Qernel
           source_api.input_capacity *
           participant.number_of_units
 
-        target_api.dataset_lazy_set(:heat_output_curve) do
-          @heat_output_curve
-        end
+        inject_curve!(full_name: :heat_output_curve) { @heat_output_curve }
       end
 
       private

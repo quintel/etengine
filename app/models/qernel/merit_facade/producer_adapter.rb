@@ -35,9 +35,7 @@ module Qernel
           flh_capacity *
           participant.number_of_units
 
-        target_api.dataset_lazy_set(@context.curve_name(:output)) do
-          @participant.load_curve.to_a
-        end
+        inject_curve!(:output) { @participant.load_curve }
       end
 
       private

@@ -65,6 +65,12 @@ module Qernel
       def etsource_data
         Etsource::MeritOrder.new.import_heat_network
       end
+
+      def start_hour
+        # Rotate curves so that the calculation is from April to March rather
+        # than January to December.
+        8760 / 4
+      end
     end
   end
 end

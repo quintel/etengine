@@ -4,9 +4,10 @@ module Qernel
   module MeritFacade
     # Helper class for creating and fetching curves related to the merit order.
     class Curves < Causality::Curves
-      def initialize(graph, household_heat)
+      def initialize(graph, household_heat, rotate = 0)
         super(graph)
         @household_heat = household_heat
+        @rotate = rotate
       end
 
       # Public: Retrieves the load profile or curve matching the given profile
@@ -22,10 +23,27 @@ module Qernel
         if prefix?(name, 'fever-electricity-demand')
           fever_demand_curve(name[25..-1].strip.to_sym)
         elsif prefix?(name, 'self')
-          self_curve(name[5..-1].strip.to_sym, converter)
+          rotate(self_curve(name[5..-1].strip.to_sym, converter))
         else
-          super
+          rotate(super)
         end
+      end
+
+      # Public: Rotates the given curve by the number of hours specified.
+      #
+      # See Array#rotate.
+      #
+      # Returns a curve.
+      def rotate(curve, count = @rotate, *rest)
+        @rotate.zero? ? curve : curve.rotate(count)
+      end
+
+      # Public: De-rotates the given curve so that its first hour represents
+      # January 1st 00:00.
+      #
+      # Returns a curve.
+      def derotate(curve)
+        rotate(curve, -@rotate)
       end
 
       # Public: Reads an electricity demand curve from a Fever group.
