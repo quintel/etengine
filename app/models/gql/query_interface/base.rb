@@ -41,7 +41,7 @@ module Gql
     def subquery(gquery_key)
       gquery = get_gquery(gquery_key)
 
-      return nil unless gquery
+      raise "Missing gquery: #{gquery_key.inspect}" unless gquery
 
       behavior = gquery.behavior
 

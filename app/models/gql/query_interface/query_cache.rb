@@ -4,6 +4,8 @@ module Gql
     def subquery(gquery_key)
       gquery = get_gquery(gquery_key)
 
+      raise "Missing gquery: #{gquery_key.inspect}" unless gquery
+
       if options[:cache_prefix] && gquery && gquery.cacheable?
         val = Rails.cache.fetch("/gquery_cache/#{options[:cache_prefix]}/#{gquery.key}") do
           # BUG/DEBT memcached seems to be unable to store false values
