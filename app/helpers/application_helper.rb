@@ -3,8 +3,13 @@ module ApplicationHelper
     lead  = '  ' * indent
 
     if result.is_a?(Array)
-      lines = result.map { |el| format_result(el, indent + 1) }
-      return "#{ lead }[\n#{ lines.join(",\n") }\n#{ lead }]".html_safe
+      lines =
+        result.map.with_index do |el, index|
+          "#{format_result(el, indent + 1)}," \
+          "<span class='suffix'>#{index}</span>"
+        end
+
+      return "#{lead}[\n#{lines.join("\n")}\n#{lead}]".html_safe
     end
 
     line = case result
