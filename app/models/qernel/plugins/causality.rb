@@ -1,7 +1,7 @@
 module Qernel::Plugins
   # Graph plugin which coordinates the calculation of time-resolved electricity
   # and heat loads in Merit and Fever.
-  class TimeResolve
+  class Causality
     include Plugin
 
     before :first_calculation, :clone_dataset
@@ -29,7 +29,8 @@ module Qernel::Plugins
       super
       @merit = Qernel::MeritFacade::Manager.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
-      @reconciliation = ReconciliationWrapper.new(graph)
+      @heat_network = Qernel::Causality::HeatNetwork.new(graph)
+      @reconciliation = Qernel::Causality::ReconciliationWrapper.new(graph)
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
@@ -49,6 +50,7 @@ module Qernel::Plugins
     def setup
       @fever.setup
       @merit.setup
+      @heat_network.setup
       @reconciliation.setup
     end
 
@@ -72,9 +74,10 @@ module Qernel::Plugins
 
       # Any subsequent calculations (one of which) must have the merit order
       # demands injected into the graph.
-      @merit.send(:inject_values!)
+      @merit.inject_values!
       @fever.inject_values!
 
+      @heat_network.inject_values!
       @reconciliation.inject_values!
     end
   end

@@ -4,7 +4,29 @@ module Etsource
       @etsource = etsource
     end
 
-    # Public: Reads the merit order definitions from the Atlas nodes list.
+    # Public: reads the electricity merit order definitions from Atlas Node
+    # data.
+    #
+    # See MeritOrder#import
+    #
+    # Returns a hash.
+    def import_electricity
+      import(:merit_order)
+    end
+
+    # Public: reads the heat network merit order definitions from Atlas Node
+    # data.
+    #
+    # See MeritOrder#import
+    #
+    # Returns a hash.
+    def import_heat_network
+      import(:heat_network)
+    end
+
+    private
+
+    # Internal: Reads the merit order definitions from the Atlas nodes list.
     #
     # There are a few weird idiosyncrasies here; the method returns a hash
     # containing keys for each "type" of merit order node, where each value is
@@ -21,14 +43,15 @@ module Etsource
     #     "volatile"     => { "node_three" => "solar_pv" } }
     #
     # Returns a hash.
-    def import
-      Rails.cache.fetch('merit_order_hash') do
-        mo_nodes = Atlas::Node.all.select(&:merit_order)
+    def import(attribute)
+      Rails.cache.fetch("#{attribute}_hash") do
+        mo_nodes = Atlas::Node.all.select(&attribute)
         mo_data  = {}
 
         mo_nodes.each do |node|
-          type  = node.merit_order.type.to_s
-          group = node.merit_order.group && node.merit_order.group.to_s
+          config = node.public_send(attribute)
+          type   = config.type.to_s
+          group  = config.group&.to_s
 
           mo_data[type] ||= {}
           mo_data[type][node.key.to_s] = group

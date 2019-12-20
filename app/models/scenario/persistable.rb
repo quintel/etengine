@@ -51,7 +51,8 @@ module Scenario::Persistable
         other_scaler.attributes.except('id', 'scenario_id'))
     end
 
-    self.flexibility_order = cloned_flexibility_order(preset)
+    self.flexibility_order = cloned_user_sortable(preset, :flexibility_order)
+    self.heat_network_order = cloned_user_sortable(preset, :heat_network_order)
 
     attach_preset_imported_electricity_price_curve(preset)
 
@@ -95,13 +96,13 @@ module Scenario::Persistable
     end
   end
 
-  # Internal: If the source preset has a flexibility order, clones it onto the
-  # new scenario.
+  # Internal: If the source preset has a flexibility/heat network order, creates
+  # a clone to be used by the new scenario.
   #
-  # Returns a flexibility order or nil.
-  def cloned_flexibility_order(preset)
-    if order = preset.try(:flexibility_order)
-      FlexibilityOrder.new(order.attributes.except('id', 'scenario_id'))
+  # Returns a UserSortable or nil.
+  def cloned_user_sortable(preset, attribute)
+    if (order = preset.try(attribute))
+      order.class.new(order.attributes.except('id', 'scenario_id'))
     end
   end
 

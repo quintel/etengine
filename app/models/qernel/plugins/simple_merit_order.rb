@@ -18,12 +18,25 @@ module Qernel::Plugins
       :merit
     end
 
-    def initialize(graph)
-      super
+    def initialize(graph, context = nil)
+      super(graph)
+
+      @context =
+        context || Qernel::MeritFacade::Context.new(
+          self,
+          graph,
+          :electricity,
+          :merit_order,
+          Qernel::MeritFacade::MarginalCostSorter.new
+        )
     end
 
     def curves
-      @curves ||= Qernel::MeritFacade::Curves.new(@graph, household_heat)
+      @curves ||= Qernel::MeritFacade::Curves.new(
+        @graph,
+        household_heat,
+        start_hour
+      )
     end
 
     # Simple-mode does not need a full-run, and profiles for must-runs will
@@ -49,12 +62,9 @@ module Qernel::Plugins
       @adapters = {}
 
       participant_types.each do |(type, subtype)|
-        models = converters(type, subtype)
-        models = sort_flexibles(models) if type == :flex
-
-        models.each do |converter|
+        converters(type, subtype).each do |converter|
           @adapters[converter.key] ||=
-            Qernel::MeritFacade::Adapter.adapter_for(converter, @graph, dataset)
+            Qernel::MeritFacade::Adapter.adapter_for(converter, @context)
         end
       end
 
@@ -112,12 +122,7 @@ module Qernel::Plugins
     #
     # Returns a Merit::Curve
     def total_demand_curve
-      dataset.load_profile(:total_demand) * total_demand
-    end
-
-    # Public: Returns the Atlas dataset for the current graph region.
-    def dataset
-      @dataset ||= Atlas::Dataset.find(@graph.area.area_code)
+      @context.dataset.load_profile(:total_demand) * total_demand
     end
 
     # Internal: The total electricity demand, joules, across the graph.
@@ -128,7 +133,7 @@ module Qernel::Plugins
       # a separate Merit participant.
       individual_demands = each_adapter.sum do |adapter|
         if adapter.config.type == :consumer
-          adapter.input_of_electricity
+          adapter.input_of_carrier
         else
           0.0
         end
@@ -150,15 +155,21 @@ module Qernel::Plugins
     #
     # Returns an array.
     def converters(type, subtype)
-      (Etsource::MeritOrder.new.import[type.to_s] || {}).map do |key, profile|
+      type_data = etsource_data[type.to_s]
+
+      converters = (type_data || {}).map do |key, profile|
         converter = @graph.converter(key)
 
-        next if !subtype.nil? && converter.merit_order.subtype != subtype
+        if !subtype.nil? && @context.node_config(converter).subtype != subtype
+          next
+        end
 
         converter.converter_api.load_profile_key = profile
 
         converter
       end.compact
+
+      sort_converters(type, converters)
     end
 
     # Internal: Fetches the adapter matching the given participant `key`.
@@ -172,19 +183,30 @@ module Qernel::Plugins
     # them to match to FlexibilityOrder assigned to the current scenario.
     #
     # Returns an array of Qernel::Converter.
-    def sort_flexibles(converters)
+    def sort_converters(type, converters)
+      return converters unless type == :flex
+
       order = @graph.flexibility_order.map(&:to_sym)
 
       converters.sort_by do |conv|
-        order.index(conv.merit_order.group) || Float::INFINITY
+        order.index(@context.node_config(conv).group) || Float::INFINITY
       end
     end
 
     def household_heat
       Qernel::MeritFacade::SimpleHouseholdHeat.new(
         @graph,
-        TimeResolve::CurveSet.for_area(@graph.area, 'weather', 'default')
+        Qernel::Causality::CurveSet.for_area(@graph.area, 'weather', 'default')
       )
+    end
+
+    def etsource_data
+      Etsource::MeritOrder.new.import_electricity
+    end
+
+    # Calculation begin on January 1st 00:00.
+    def start_hour
+      0
     end
   end # SimpleMeritOrder
 end # Qernel::Plugins

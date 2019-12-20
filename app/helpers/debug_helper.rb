@@ -133,7 +133,7 @@ module DebugHelper
   # Merit Order --------------------------------------------------------------
 
   def merit_order_converters(graph, type)
-    unless converters = Etsource::MeritOrder.new.import[type.to_s]
+    unless converters = Etsource::MeritOrder.new.import_electricity[type.to_s]
       raise "No such merit order group: #{ type.inspect }"
     end
 

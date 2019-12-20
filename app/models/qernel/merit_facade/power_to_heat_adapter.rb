@@ -34,9 +34,7 @@ module Qernel
           source_api.input_capacity *
           participant.number_of_units
 
-        target_api.dataset_lazy_set(:heat_output_curve) do
-          @heat_output_curve
-        end
+        inject_curve!(full_name: :heat_output_curve) { @heat_output_curve }
       end
 
       private
@@ -77,11 +75,12 @@ module Qernel
 
       def subtraction_profile
         demand_profile *
-          @graph.converter(@config.demand_source).converter_api.demand
+          @context.graph.converter(@config.demand_source).converter_api.demand
       end
 
       def demand_profile
-        @dataset.load_profile(@config.demand_profile)
+        # TODO: This can become @context.curves.curve(...)
+        @context.dataset.load_profile(@config.demand_profile)
       end
 
       # Internal: Participants belonging to a group with others should receive
@@ -95,7 +94,7 @@ module Qernel
         return 0.0 if self_cap.zero?
 
         # Find all flex converters belonging to the same group.
-        @graph.plugin(:merit).each_adapter do |adapter|
+        @context.plugin.each_adapter do |adapter|
           aconf = adapter.config
           conv = adapter.converter
 

@@ -6,27 +6,26 @@ module Qernel
     class Adapter
       attr_reader :converter, :config
 
-      def self.adapter_for(converter, graph, dataset)
+      def self.adapter_for(converter, context)
         klass =
-          case converter.merit_order.type.to_sym
+          case context.node_config(converter).type.to_sym
           when :producer
-            ProducerAdapter.factory(converter, graph, dataset)
+            ProducerAdapter.factory(converter, context)
           when :flex
-            FlexAdapter.factory(converter, graph, dataset)
+            FlexAdapter.factory(converter, context)
           when :consumer
-            ConsumerAdapter.factory(converter, graph, dataset)
+            ConsumerAdapter.factory(converter, context)
           else
             self
           end
 
-        klass.new(converter, graph, dataset)
+        klass.new(converter, context)
       end
 
-      def initialize(converter, graph, dataset)
+      def initialize(converter, context)
         @converter = converter.converter_api
-        @graph     = graph
-        @dataset   = dataset
-        @config    = converter.merit_order
+        @context   = context
+        @config    = context.node_config(converter)
       end
 
       def participant
@@ -85,10 +84,43 @@ module Qernel
       def source_api
         @source_api ||=
           if @config.delegate.present?
-            @graph.converter(@config.delegate).converter_api
+            @context.graph.converter(@config.delegate).converter_api
           else
             @converter
           end
+      end
+
+      # Internal: Assigns a computed curve to the target API. Provide a
+      # direction (input or output) in order to determine the name of the
+      # attribute to be set, and a block which yields the calculated curve.
+      #
+      # `inject_curve!` will take care of derotating the curve as necessary in
+      # order that its first point represents January 1st 00:00.
+      #
+      # For example:
+      #
+      #   inject_curve!(:output) do
+      #     @participant.load_curve
+      #   end
+      #
+      # You may optionally provide a full curve name when you wish to set a
+      # curve for a different carrier or attribute. For example:
+      #
+      #   inject_curve!(full_name: :storage_curve) do
+      #     @participant.reserve.to_a
+      #   end
+      #
+      # Returns nothing.
+      def inject_curve!(direction = nil, full_name: nil)
+        if direction.nil? && full_name.nil?
+          raise 'No curve name given to inject_curve!'
+        end
+
+        name = full_name || @context.curve_name(direction)
+
+        target_api.dataset_lazy_set(name) do
+          @context.curves.derotate(yield.to_a)
+        end
       end
     end
   end

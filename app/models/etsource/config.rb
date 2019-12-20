@@ -43,6 +43,13 @@ module Etsource
       read('flexibility_order')
     end
 
+    # Public: Reads the order of dispatchables to be used in the heat network.
+    #
+    # Returns an array of strings.
+    def heat_network_order
+      read('heat_network_order')
+    end
+
     private_class_method def read(name)
       NastyCache.instance.fetch("etsource.config.#{name}") do
         IceNine.deep_freeze(Atlas::Config.read(name))

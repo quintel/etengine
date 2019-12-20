@@ -63,6 +63,7 @@ class ConverterApi
   dataset_accessors %i[
     demand
     fever
+    heat_network
     hydrogen
     merit_order
     network_gas
@@ -75,6 +76,7 @@ class ConverterApi
   dataset_carrier_curve_reader :hydrogen
   dataset_carrier_curve_reader :heat
   dataset_carrier_curve_reader :network_gas
+  dataset_carrier_curve_reader :steam_hot_water
 
   alias_method :useable_heat_output_curve, :heat_output_curve
   alias_method :useable_heat_input_curve,  :heat_input_curve

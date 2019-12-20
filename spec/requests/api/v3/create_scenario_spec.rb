@@ -219,6 +219,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         expect(response.status).to eql(200)
       end
 
+      it 'does not create a default flexibility order' do
+        expect(FlexibilityOrder.where(scenario_id: json['id']).count).to be_zero
+      end
+
+      it 'does not create a default heat network order' do
+        expect(HeatNetworkOrder.where(scenario_id: json['id']).count).to be_zero
+      end
+
       it 'should scale the user values' do
         scenario = Scenario.find(json['id'])
 
@@ -231,6 +239,26 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         # Input 3 is a non-scaled input
         expect(scenario.user_values['input_3']).
           to eq(preset.user_values[:input_3])
+      end
+
+      context 'when the preset has a flexibility order' do
+        let(:preset) do
+          Preset.all.detect { |p| p.key == :with_flexibility_order }
+        end
+
+        it 'creates a flexibility order' do
+          expect(FlexibilityOrder.where(scenario_id: json['id']).count).to eq(1)
+        end
+      end
+
+      context 'when the preset has a heat network order' do
+        let(:preset) do
+          Preset.all.detect { |p| p.key == :with_flexibility_order }
+        end
+
+        it 'creates a heat network order' do
+          expect(HeatNetworkOrder.where(scenario_id: json['id']).count).to eq(1)
+        end
       end
     end # with a preset
 

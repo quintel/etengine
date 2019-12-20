@@ -100,6 +100,7 @@ class Converter
     demand
     excel_id
     fever
+    heat_network
     hydrogen
     merit_order
     network_gas

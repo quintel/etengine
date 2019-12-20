@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  module Reconciliation
+  module Causality
     # Creates a demand profile for the reconciliation carrier by reading a curve
     # from the node.
     module SelfDemandProfile
@@ -48,7 +48,13 @@ module Qernel
       # Returns a hash with :carrier and :direction keys or nil if the curve
       # name is not valid.
       def self.decode_name(name)
-        match = name.to_s.match(CURVE_RE)
+        name = name.to_s
+
+        if (colon_idx = name.index(':'))
+          name = name[(colon_idx + 1)..-1].strip
+        end
+
+        match = name.match(CURVE_RE)
 
         return nil unless match
 
@@ -57,7 +63,7 @@ module Qernel
 
       # Public: Fetches a demand profile from a node.
       #
-      # converter - The Qernel::Converter
+      # converter - The Qernel::ConverterApi
       # attribute - The name of the attribute which contains the carrier curve.
       #
       # Returns an Array.
@@ -65,11 +71,11 @@ module Qernel
         attribute = attribute.to_s.strip
 
         unless attribute.to_s.match?(CURVE_RE) &&
-            converter.query.respond_to?(attribute)
+            converter.respond_to?(attribute)
           raise NoSuchCurveAttribute.new(attribute, converter)
         end
 
-        curve = converter.query.public_send(attribute)
+        curve = converter.public_send(attribute)
 
         raise MissingCurve.new(attribute, converter) if curve.blank?
 
@@ -79,7 +85,7 @@ module Qernel
       # Public: Creates a demand profile for a node based on an existing carrier
       # input or output curve.
       #
-      # converter - The Qernel::Converter
+      # converter - The Qernel::ConverterApi
       # attribute - The name of the attribute which contains the carrier curve.
       #
       # For example:
@@ -91,8 +97,11 @@ module Qernel
       # Returns an Array.
       def self.profile(converter, attribute)
         curve = curve(converter, attribute)
+        sum = curve.sum
 
-        total = curve.sum * 3600 # MJ to MWh
+        return curve if sum.zero?
+
+        total = sum * 3600 # MJ to MWh
         curve.map { |val| val / total }
       end
     end

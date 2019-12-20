@@ -4,6 +4,14 @@ module Qernel
   module MeritFacade
     # Implements behaviour specific to the import interconnector.
     class ImportAdapter < ProducerAdapter
+      def initialize(*)
+        super
+
+        unless @context.carrier == :electricity
+          raise "#{self.class.name} only supports electricity"
+        end
+      end
+
       def inject!
         super
 
@@ -63,7 +71,7 @@ module Qernel
       end
 
       def carrier
-        @graph.carrier(:imported_electricity)
+        @context.graph.carrier(:imported_electricity)
       end
     end
   end

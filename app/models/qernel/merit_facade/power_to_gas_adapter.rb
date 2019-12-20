@@ -8,8 +8,8 @@ module Qernel
       def inject!
         super
 
-        @converter.dataset_lazy_set(:electricity_input_curve) do
-          participant.load_curve.to_a.map(&:abs)
+        inject_curve!(:input) do
+          @participant.load_curve.to_a.map(&:abs)
         end
       end
 

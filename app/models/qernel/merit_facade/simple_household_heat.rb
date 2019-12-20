@@ -33,7 +33,7 @@ module Qernel
 
         # Prevent curve consisting of NaN,NaN,... when total demand is zero.
         if total_demand.zero?
-          return Plugins::TimeResolve::AggregateCurve.zeroed_profile
+          return Causality::AggregateCurve.zeroed_profile
         end
 
         # Get demand curves for each consumer.

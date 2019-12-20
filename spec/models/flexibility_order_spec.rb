@@ -56,7 +56,7 @@ describe FlexibilityOrder do
         preset.valid?
 
         expect(preset.errors[:order]).to include(
-          'contains a flexibility option more than once'
+          'contains an option more than once'
         )
       end
     end
@@ -68,7 +68,7 @@ describe FlexibilityOrder do
         preset.valid?
 
         expect(preset.errors[:order]).to include(
-          'contains unknown flexibility options: invalid'
+          'contains unknown options: invalid'
         )
       end
     end

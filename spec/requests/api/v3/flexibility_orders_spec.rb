@@ -137,7 +137,7 @@ describe 'APIv3 flexibility orders' do
         request
 
         expect(JSON.parse(response.body)).to include(
-          'errors' => ['Order contains unknown flexibility options: invalid']
+          'errors' => ['Order contains unknown options: invalid']
         )
       end
     end

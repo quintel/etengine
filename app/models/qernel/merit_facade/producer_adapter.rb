@@ -4,12 +4,16 @@ module Qernel
   module MeritFacade
     # Base class which sets up producers in Merit.
     class ProducerAdapter < Adapter
-      def self.factory(converter, _graph, _dataset)
-        case converter.merit_order.subtype
+      def self.factory(converter, context)
+        config = context.node_config(converter)
+
+        case config.subtype
         when :must_run, :volatile
           AlwaysOnAdapter
+        when :backup
+          BackupAdapter
         when :dispatchable
-          group = converter.merit_order.group
+          group = config.group
           group == :import ? ImportAdapter : DispatchableAdapter
         end
       end
@@ -33,9 +37,7 @@ module Qernel
           flh_capacity *
           participant.number_of_units
 
-        target_api.dataset_lazy_set(:electricity_output_curve) do
-          @participant.load_curve.to_a
-        end
+        inject_curve!(:output) { @participant.load_curve }
       end
 
       private
@@ -58,7 +60,8 @@ module Qernel
       end
 
       def output_capacity_per_unit
-        source_api.electricity_output_conversion * source_api.input_capacity
+        source_api.public_send(@context.carrier_named('%s_output_conversion')) *
+          source_api.input_capacity
       end
 
       # Internal: Capacity used to multiply full load seconds to determien the

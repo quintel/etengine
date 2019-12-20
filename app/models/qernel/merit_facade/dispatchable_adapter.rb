@@ -7,6 +7,8 @@ module Qernel
       def inject!
         super
 
+        return unless @context.carrier == :electricity
+
         target_api.dataset_lazy_set(:marginal_costs) do
           participant.marginal_costs.to_f
         end
@@ -30,6 +32,10 @@ module Qernel
           source_api.send(:fixed_operation_and_maintenance_costs_per_year)
 
         attrs
+      end
+
+      def marginal_costs
+        @context.dispatchable_sorter.cost(@converter)
       end
     end
   end

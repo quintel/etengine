@@ -59,7 +59,7 @@ module Etsource
       def carrier_list
         Rails.cache.fetch('reconciliation_carriers') do
           Atlas::Node.attribute_set.select do |attribute|
-            attribute.primitive == Atlas::ReconciliationDetails
+            attribute.primitive == Atlas::NodeAttributes::Reconciliation
           end.map(&:name)
         end
       end

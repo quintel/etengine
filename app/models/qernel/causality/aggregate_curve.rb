@@ -1,5 +1,5 @@
-module Qernel::Plugins
-  class TimeResolve
+module Qernel
+  module Causality
     # Creates a demand curve for use in the Merit order by combining a total
     # demand with a mix of curve "components" which should be mixed together in
     # a share defined by the user.

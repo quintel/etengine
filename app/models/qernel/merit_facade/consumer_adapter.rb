@@ -4,49 +4,55 @@ module Qernel
   module MeritFacade
     # Converts a Qernel::Converter to a Merit user.
     class ConsumerAdapter < Adapter
-      def self.factory(converter, _graph, _dataset)
-        case converter.merit_order.subtype
+      def self.factory(converter, context)
+        case context.node_config(converter).subtype
         when :pseudo
           PseudoConsumerAdapter
+        when :consumption_loss
+          ConsumptionLossAdapter
         else
           self
         end
+      end
+
+      def initialize(*)
+        super
+        @input_of_carrier = input_of_carrier
       end
 
       def participant
         @participant ||= Merit::User.create(
           key: @converter.key,
           load_profile: consumption_profile,
-          total_consumption: input_of_electricity
+          total_consumption: @input_of_carrier
         )
       end
 
       def inject!
-        target_api.dataset_lazy_set(:electricity_input_curve) do
-          @participant.load_curve.to_a
-        end
+        inject_curve!(:input) { @participant.load_curve }
       end
 
-      def input_of_electricity
-        if source_api.converter.input(:electricity)
-          source_api.input_of_electricity
-        elsif source_api.converter.input(:loss)
+      def input_of_carrier
+        if source_api.converter.input(@context.carrier)
+          source_api.public_send(@context.carrier_named('input_of_%s'))
+        elsif @context.carrier == :electricity &&
+            source_api.converter.input(:loss)
           # HV loss node does not have an electricity input; use graph method
           # which compensates for export.
-          @graph.query.electricity_losses_if_export_is_zero
+          @context.graph.query.electricity_losses_if_export_is_zero
         else
           raise "No acceptable consumption input for #{source_api.key}"
         end
       end
 
       def installed?
-        input_of_electricity.positive?
+        @input_of_carrier.positive?
       end
 
       private
 
       def consumption_profile
-        @graph.plugin(:merit).curves.curve(@config.group, @converter)
+        @context.curves.curve(@config.group, @converter)
       end
     end
   end

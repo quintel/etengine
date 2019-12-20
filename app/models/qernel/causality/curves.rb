@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Qernel::Plugins
-  class TimeResolve
+module Qernel
+  module Causality
     # Helper class for creating and fetching curves in time resolved plugins
     # such as Merit and Fever.
     class Curves

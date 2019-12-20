@@ -31,12 +31,29 @@ Rails.application.routes.draw do
           post :stats,    :on => :collection
         end
         resources :inputs, :only => [:index, :show]
-        resource :flexibility_order, only: [:show, :update]
+
+        resource :flexibility_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :flexibility
+
+        resource :heat_network_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :heat_network
 
         resources :custom_curves, only: %i[show update destroy]
 
         get 'curves/loads', to: 'curves#load_curves', as: :merit_download
         get 'curves/price', to: 'curves#price_curve', as: :merit_price_download
+
+        get 'curves/merit_order',
+          to: 'curves#merit_order',
+          as: :curves_merit_order_download
+
+        get 'curves/electricity_price',
+          to: 'curves#electricity_price',
+          as: :curves_electricity_price_download
+
+        get 'curves/heat_network',
+          to: 'curves#heat_network',
+          as: :curves_heat_network_download
 
         get 'curves/household_heat',
           to: 'curves#household_heat_curves',

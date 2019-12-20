@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe Qernel::Plugins::TimeResolve::Util do
+describe Qernel::Causality::Util do
   describe '.amplify_curve' do
     describe 'with a curve of [0.25, 0.25, 0.5, 1.0] (2flh)' do
       let(:curve) { [0.25, 0.5, 0.75, 1.0].map { |v| v / 3600.0 / 2 } }
 
       context 'amplifying to 3flh' do
         let(:result) do
-          Qernel::Plugins::TimeResolve::Util.amplify_curve(curve, 3.0)
+          described_class.amplify_curve(curve, 3.0)
         end
 
         it 'returns a Merit::Curve' do
@@ -28,7 +28,7 @@ describe Qernel::Plugins::TimeResolve::Util do
 
       context 'amplifying to 20flh' do
         let(:result) do
-          Qernel::Plugins::TimeResolve::Util.amplify_curve(curve, 20.0)
+          described_class.amplify_curve(curve, 20.0)
         end
 
         it 'returns a Merit::Curve' do
@@ -53,7 +53,7 @@ describe Qernel::Plugins::TimeResolve::Util do
 
       context 'amplifying to 1flh' do
         let(:result) do
-          Qernel::Plugins::TimeResolve::Util.amplify_curve(curve, 1.0)
+          described_class.amplify_curve(curve, 1.0)
         end
 
         it 'does not amplify the curve' do

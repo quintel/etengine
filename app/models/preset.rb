@@ -27,8 +27,12 @@ class Preset
       )
     end
 
-    if scenario.flexibility_order
+    unless scenario.flexibility_order.default?
       attrs[:flexibility_order] = scenario.flexibility_order.order.dup
+    end
+
+    unless scenario.heat_network_order.default?
+      attrs[:heat_network_order] = scenario.heat_network_order.order.dup
     end
 
     Preset.new(attrs)
@@ -55,9 +59,20 @@ class Preset
   #
   # Returns a FlexibilityOrder.
   def flexibility_order
-    @flexibility_order &&
-      @flexibility_order.any? &&
+    @flexibility_order&.any? &&
       FlexibilityOrder.new(order: @flexibility_order.dup)
+  end
+
+  # Public: The preset heat network order, if one is assigned.
+  #
+  # If Atlas returns an empty array, no custom heat network order is set. In
+  # this case, a HeatNetworkOrder is not returned and the app will use the
+  # defaults.
+  #
+  # Returns a HeatNetworkOrder.
+  def heat_network_order
+    @heat_network_order&.any? &&
+      HeatNetworkOrder.new(order: @heat_network_order.dup)
   end
 
   # Public: The year on which the analysis for the preset's area is based.
@@ -72,11 +87,20 @@ class Preset
     attrs = attributes
     id = attrs.delete(:id)
 
-    Scenario.new(attrs.except(:scaling, :flexibility_order)).tap do |scenario|
+    Scenario.new(
+      attrs.except(:scaling, :flexibility_order, :heat_network_order)
+    ).tap do |scenario|
       scenario.id = id
 
       scenario.scaler = scaler.dup if scaler
-      scenario.flexibility_order = flexibility_order.dup if flexibility_order
+
+      if flexibility_order
+        scenario.flexibility_order = flexibility_order.dup.tap(&:readonly!)
+      end
+
+      if heat_network_order
+        scenario.heat_network_order = heat_network_order.dup.tap(&:readonly!)
+      end
 
       scenario.readonly!
     end
@@ -117,10 +141,12 @@ class Preset
       attrs[:scaling] = scaler.attributes.symbolize_keys.slice(*SCALING_COLUMNS)
     end
 
-    if flexibility_order
-      attrs[:flexibility_order] = flexibility_order.order
-    else
-      attrs.delete(:flexibility_order)
+    %i[flexibility_order heat_network_order].each do |sortable|
+      if (record = public_send(sortable)) && !record.default?
+        attrs[sortable] = record.order
+      else
+        attrs.delete(sortable)
+      end
     end
 
     "#{ Atlas::HashToTextParser.new(attrs.compact).to_text }\n"

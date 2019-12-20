@@ -18,6 +18,7 @@ class Scenario < ApplicationRecord
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :flexibility_order, dependent: :destroy
+  has_one    :heat_network_order, dependent: :destroy
 
   has_one_attached :imported_electricity_price_curve
 
@@ -216,5 +217,17 @@ class Scenario < ApplicationRecord
     user_values[input.key] ||
       balanced_values[input.key] ||
       input.start_value_for(self)
+  end
+
+  def flexibility_order
+    super || FlexibilityOrder.default(scenario_id: id)
+  end
+
+  def heat_network_order
+    super || HeatNetworkOrder.default(scenario_id: id)
+  end
+
+  def user_sortables
+    [flexibility_order, heat_network_order]
   end
 end
