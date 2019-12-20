@@ -13,6 +13,8 @@ module Qernel
       def inject!
         super
 
+        inject_infinite! if infinite_storage?
+
         # If the output slot has two links, one a share link and one inversed
         # flexible, assume that unused energy is dumped through the flexible.
         # Adjust the share edge so that only energy actually emitted by the
@@ -43,7 +45,9 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        attrs[:reserve_class] = Merit::Flex::SimpleReserve
+        unless infinite_storage?
+          attrs[:reserve_class] = Merit::Flex::SimpleReserve
+        end
 
         attrs[:input_capacity_per_unit] =
           source_api.input_capacity ||
@@ -58,6 +62,8 @@ module Qernel
       end
 
       def storage_volume_per_unit
+        return Float::INFINITY if infinite_storage?
+
         source_api.dataset_get(:storage).volume *
           (1 - (source_api.reserved_fraction || 0.0))
       end
@@ -69,6 +75,21 @@ module Qernel
       def input_efficiency
         slots = @converter.converter.inputs.reject(&:loss?)
         1 / (slots.any? ? slots.sum(&:conversion) : 1.0)
+      end
+
+      # Infinite storage has an infinitely large reserve, which is then resized
+      # after the calculation to be the maximum value stored.
+      def infinite_storage?
+        @config.group == :infinite
+      end
+
+      def inject_infinite!
+        reserve = @participant.reserve
+        stored = Array.new(8760) { |frame| reserve.at(frame) }
+
+        source_api.storage.volume = stored.max.ceil.to_f
+
+        inject_curve!(full_name: :storage_curve) { stored }
       end
     end
   end
