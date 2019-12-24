@@ -34,7 +34,7 @@ module Qernel
       # See Array#rotate.
       #
       # Returns a curve.
-      def rotate(curve, count = @rotate, *rest)
+      def rotate(curve, count = @rotate)
         @rotate.zero? ? curve : curve.rotate(count)
       end
 
