@@ -19,7 +19,7 @@ module Qernel
       end
 
       def inject!
-        full_load_hours = participant.full_load_hours
+        full_load_hours = full_load_hours_from_participant
 
         full_load_seconds =
           if !full_load_hours || full_load_hours.nan?
@@ -68,6 +68,10 @@ module Qernel
       # resulting annual demand of the producer.
       def flh_capacity
         source_api.input_capacity
+      end
+
+      def full_load_hours_from_participant
+        participant.full_load_hours
       end
     end
   end
