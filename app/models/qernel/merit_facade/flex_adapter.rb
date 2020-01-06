@@ -55,6 +55,8 @@ module Qernel
       def producer_attributes
         attrs = super
 
+        attrs[:marginal_costs] = marginal_costs
+
         # Default is to multiply the input capacity by the carrier output
         # conversion. This doesn't work, because the flex converters have a
         # dependant link and the conversion will be zero the first time the
@@ -76,6 +78,10 @@ module Qernel
 
       def producer_class
         Merit::Flex::Base
+      end
+
+      def marginal_costs
+        @context.dispatchable_sorter.cost(@converter, @config)
       end
     end
   end

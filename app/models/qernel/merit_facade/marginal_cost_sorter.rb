@@ -5,8 +5,8 @@ module Qernel
     # Extracts marginal costs from a converter to be used to set their placement
     # in the merit order.
     class MarginalCostSorter
-      def cost(converter)
-        converter.marginal_costs
+      def cost(converter, config)
+        config.type == :flex ? :null : converter.marginal_costs
       end
     end
   end

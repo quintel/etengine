@@ -8,7 +8,7 @@ module Qernel
         @order = order.map(&:to_sym)
       end
 
-      def cost(converter)
+      def cost(converter, _config)
         @order.index(converter.key) || Float::INFINITY
       end
     end
