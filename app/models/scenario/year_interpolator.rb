@@ -68,18 +68,26 @@ class Scenario::YearInterpolator
   #
   # Returns the interpolated inputs.
   def interpolate_input_collection(collection)
-    year_delta = @scenario.end_year - @year
+    num_years = @scenario.end_year - @year
     total_years = @scenario.end_year - @scenario.start_year
 
     collection.each_with_object(collection.class.new) do |(key, value), interp|
-      input = Input.get(key)
-
-      next unless input
-
-      start = input.start_value_for(@scenario)
-      change_per_year = (value - start) / total_years
-
-      interp[key] = start + change_per_year * (total_years - year_delta)
+      if (input = Input.get(key))
+        interp[key] = interpolate_input(input, value, total_years, num_years)
+      end
     end
+  end
+
+  # Internal: Calculates the interpolated value of an input based on its current
+  # value in the original scenario.
+  #
+  # Returns a Numeric or String value for the new user values.
+  def interpolate_input(input, value, total_years, num_years)
+    return value if input.enum?
+
+    start = input.start_value_for(@scenario)
+    change_per_year = (value - start) / total_years
+
+    start + change_per_year * (total_years - num_years)
   end
 end

@@ -1,0 +1,4 @@
+- query =
+- start_value = present:"default"
+- min_value = ["default", "other"]
+- unit = enum
