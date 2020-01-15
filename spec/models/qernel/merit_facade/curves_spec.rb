@@ -7,6 +7,7 @@ describe Qernel::MeritFacade::Curves, :household_curves do
   let(:curves) do
     described_class.new(
       graph,
+      Qernel::MeritFacade::Context.new(nil, nil, :carrier, :attribute, nil),
       Qernel::MeritFacade::SimpleHouseholdHeat.new(graph, create_curve_set)
     )
   end

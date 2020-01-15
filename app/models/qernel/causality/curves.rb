@@ -5,8 +5,9 @@ module Qernel
     # Helper class for creating and fetching curves in time resolved plugins
     # such as Merit and Fever.
     class Curves
-      def initialize(graph)
+      def initialize(graph, rotate: 0)
         @graph = graph
+        @rotate = rotate
       end
 
       # Public: Retrieves the load profile or curve matching the given profile
@@ -17,13 +18,24 @@ module Qernel
       #
       # Returns a Merit::Curve.
       def curve(name, converter)
-        if prefix?(name, 'dynamic')
-          dynamic_profile(name.to_s[8..-1].strip.to_sym, converter)
-        elsif name.include?('/')
-          curve_set_profile(name)
-        else
-          dataset.load_profile(name)
-        end
+        rotate(load_curve(name, converter))
+      end
+
+      # Public: Rotates the given curve by the number of hours specified.
+      #
+      # See Array#rotate.
+      #
+      # Returns a curve.
+      def rotate(curve, count = @rotate)
+        @rotate.zero? ? curve : curve.rotate(count)
+      end
+
+      # Public: De-rotates the given curve so that its first hour represents
+      # January 1st 00:00.
+      #
+      # Returns a curve.
+      def derotate(curve)
+        rotate(curve, -@rotate)
       end
 
       private
@@ -31,6 +43,17 @@ module Qernel
       # Internal: Returns if the `curve_name` is prefixed with `prefix`.
       def prefix?(curve_name, prefix)
         curve_name.to_s.start_with?("#{prefix}:")
+      end
+
+      # Internal: Loads a curve without performing rotation.
+      def load_curve(name, converter = nil)
+        if prefix?(name, 'dynamic')
+          dynamic_profile(name.to_s[8..-1].strip.to_sym, converter)
+        elsif name.include?('/')
+          curve_set_profile(name)
+        else
+          dataset.load_profile(name)
+        end
       end
 
       # Internal: Loads a profile from a curve set.
@@ -77,7 +100,7 @@ module Qernel
           MSG
         end
 
-        Util.amplify_curve(curve(name, nil), converter.full_load_hours)
+        Util.amplify_curve(load_curve(name), converter.full_load_hours)
       end
 
       # Internal: Takes an array of curve names - components of an aggregate
@@ -87,7 +110,7 @@ module Qernel
       # Returns a Hash.
       def curve_components(curve_names)
         curve_names.each_with_object({}) do |component, config|
-          config[curve(component, nil)] =
+          config[load_curve(component)] =
             # Strip any curve set name from the component name.
             @graph.area.public_send("#{split_curve_name(component).last}_share")
         end

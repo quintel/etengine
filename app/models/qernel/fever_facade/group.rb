@@ -37,6 +37,14 @@ module Qernel
         @elec_demand_curve ||= ElectricityDemandCurve.from_adapters(adapters)
       end
 
+      # Public: Returns the adapter for the converter matching `key` or nil if
+      # the converter is not a participant in the group.
+      def adapter(key)
+        if (config = @context.graph.converter(key).fever)
+          adapters_by_type[config.type].find { |a| a.converter.key == key }
+        end
+      end
+
       # Internal: The adapters which map converters from the graph to activities
       # within Fever.
       def adapters

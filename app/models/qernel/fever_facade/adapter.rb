@@ -85,7 +85,7 @@ module Qernel
       # Returns nothing.
       def inject_curve!(direction)
         @converter.dataset_lazy_set(:"heat_#{direction}_curve") do
-          yield.to_a
+          @context.curves.derotate(yield.to_a)
         end
       end
     end

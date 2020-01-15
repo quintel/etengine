@@ -21,11 +21,19 @@ module Qernel
       end
 
       def participant
-        @participant ||= Merit::User.create(
-          key: @converter.key,
-          load_profile: consumption_profile,
-          total_consumption: @input_of_carrier
-        )
+        @participant ||=
+          if @config.group.to_s.starts_with?('self:')
+            Merit::User.create(
+              key: @converter.key,
+              load_curve: @context.curves.curve(@config.group, @converter)
+            )
+          else
+            Merit::User.create(
+              key: @converter.key,
+              load_profile: consumption_profile,
+              total_consumption: @input_of_carrier
+            )
+          end
       end
 
       def inject!

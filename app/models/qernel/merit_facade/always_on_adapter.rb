@@ -12,10 +12,17 @@ module Qernel
         attrs[:load_profile]    = production_profile
         attrs[:full_load_hours] = source_api.full_load_hours
 
+        if @config.group.to_s.starts_with?('self:')
+          attrs[:load_curve] = attrs.delete(:load_profile)
+          attrs.delete(:full_load_hours)
+        end
+
         attrs
       end
 
       def producer_class
+        return Merit::CurveProducer if @config.group.to_s.starts_with?('self:')
+
         case @config.subtype
         when :volatile then Merit::VolatileProducer
         when :must_run then Merit::MustRunProducer

@@ -34,8 +34,9 @@ module Qernel::Plugins
     def curves
       @curves ||= Qernel::MeritFacade::Curves.new(
         @graph,
+        @context,
         household_heat,
-        start_hour
+        rotate: Qernel::Plugins::Causality::CURVE_ROTATE
       )
     end
 
@@ -92,17 +93,23 @@ module Qernel::Plugins
       @order = Merit::Order.new
 
       each_adapter do |adapter|
+        next if adapter.config.group.to_s.start_with?('self')
+
         # We have to trigger "participant" so that values may be injected after
         # the calculation, even if the participant isn't used in Merit.
         participant = adapter.participant
 
         @order.add(participant) if adapter.installed?
       end
+    end
 
-      @order.add(Merit::User.create(
-        key: :total_demand,
-        load_curve: total_demand_curve
-      ))
+    def setup_dynamic
+      each_adapter do |adapter|
+        next unless adapter.config.group.to_s.start_with?('self')
+
+        participant = adapter.participant
+        @order.add(participant) if adapter.installed?
+      end
     end
 
     # Internal: Iterates through each adapter.
@@ -116,39 +123,6 @@ module Qernel::Plugins
     #######
     private
     #######
-
-    # Internal: A curve describing all demand which should be fulfilled by the
-    # merit order.
-    #
-    # Returns a Merit::Curve
-    def total_demand_curve
-      @context.dataset.load_profile(:total_demand) * total_demand
-    end
-
-    # Internal: The total electricity demand, joules, across the graph.
-    #
-    # Returns a float.
-    def total_demand
-      # Remove from total demand the demand of any producer which is modelled as
-      # a separate Merit participant.
-      individual_demands = each_adapter.sum do |adapter|
-        if adapter.config.type == :consumer
-          adapter.input_of_carrier
-        else
-          0.0
-        end
-      end
-
-      # TODO Do we need to subtract the hot water and space heating demand?
-      # Aren't these individual demands now?
-      demand = @graph.graph_query.total_demand_for_electricity -
-        individual_demands -
-        curves.demand_value(:households_hot_water) -
-        curves.demand_value(:space_heating) -
-        curves.demand_value(:buildings_space_heating)
-
-      demand.negative? ? 0.0 : demand
-    end
 
     # Internal: Returns an array of converters which are of the requested merit
     # order +type+ (defined in PRODUCER_TYPES).
@@ -202,11 +176,6 @@ module Qernel::Plugins
 
     def etsource_data
       Etsource::MeritOrder.new.import_electricity
-    end
-
-    # Calculation begin on January 1st 00:00.
-    def start_hour
-      0
     end
   end # SimpleMeritOrder
 end # Qernel::Plugins
