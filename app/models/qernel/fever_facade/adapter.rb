@@ -68,6 +68,26 @@ module Qernel
       def number_of_units
         @number_of_units ||= @converter.number_of_units
       end
+
+      # Internal: Assigns a computed curve to the converter API. Provide a
+      # direction (input or output) in order to determine the name of the
+      # attribute to be set, and a block which yields the calculated curve.
+      #
+      # `inject_curve!` will take care of derotating the curve as necessary in
+      # order that its first point represents January 1st 00:00.
+      #
+      # For example:
+      #
+      #   inject_curve!(:output) do
+      #     @participant.load_curve
+      #   end
+      #
+      # Returns nothing.
+      def inject_curve!(direction)
+        @converter.dataset_lazy_set(:"heat_#{direction}_curve") do
+          yield.to_a
+        end
+      end
     end
   end
 end

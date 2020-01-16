@@ -14,9 +14,7 @@ module Qernel
       end
 
       def inject!
-        @converter.dataset_lazy_set(:heat_input_curve) do
-          participant.demand_curve
-        end
+        inject_curve!(:input) { participant.demand_curve }
       end
 
       def input?(*)

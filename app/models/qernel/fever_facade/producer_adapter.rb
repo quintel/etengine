@@ -50,9 +50,7 @@ module Qernel
           link.share = demand.positive? ? production / demand : 1.0
         end
 
-        @converter.dataset_lazy_set(:heat_output_curve) do
-          producer.output_curve.to_a
-        end
+        inject_curve!(:output) { producer.output_curve.to_a }
       end
 
       def producer
