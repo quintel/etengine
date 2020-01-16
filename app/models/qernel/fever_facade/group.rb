@@ -10,15 +10,13 @@ module Qernel
 
       # Public: Creates a new Group.
       #
-      # name    - The name of the group as a Symbol.
-      # graph   - The Qernel::Graph containing the converters and demands.
-      # dataset - Atlas::Dataset for the current region.
+      # name   - The name of the group as a Symbol.
+      # plugin - The FeverFacade::Manager to which the group belongs.
       #
       # Returns a Group.
       def initialize(name, plugin)
         @name    = name
-        @graph   = plugin.graph
-        @dataset = plugin.dataset
+        @context = Context.new(plugin, plugin.graph)
       end
 
       # Public: The Fever calculation which will compute the group.
@@ -54,7 +52,7 @@ module Qernel
             data[type] =
               Etsource::Fever.group(@name).keys(type).map do |node_key|
                 Adapter.adapter_for(
-                  @graph.converter(node_key), @graph, @dataset
+                  @context.graph.converter(node_key), @context
                 )
               end
           end

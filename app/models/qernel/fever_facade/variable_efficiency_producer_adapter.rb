@@ -83,9 +83,7 @@ module Qernel
 
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
-        @graph.plugin(:time_resolve).fever.curves.curve(
-          'weather/air_temperature', @converter
-        )
+        @context.curves.curve('weather/air_temperature', @converter)
       end
 
       def capacity

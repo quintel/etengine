@@ -80,7 +80,7 @@ module Qernel
       # pump.
       def primary_adapter
         @primary_adapter ||= VariableEfficiencyProducerAdapter.new(
-          @converter.converter, @graph, @dataset
+          @converter.converter, @context
         )
       end
 

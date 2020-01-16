@@ -7,24 +7,23 @@ module Qernel
     class Adapter
       attr_reader :converter
 
-      def self.adapter_for(converter, graph, dataset)
+      def self.adapter_for(converter, context)
         type = converter.dataset_get(:fever).type.to_sym
 
         klass =
           case type
-          when :producer then ProducerAdapter.factory(converter, graph, dataset)
+          when :producer then ProducerAdapter.factory(converter, context)
           when :storage  then StorageAdapter
           when :consumer then ConsumerAdapter
           else raise "Unknown Fever type: #{type}"
           end
 
-        klass.new(converter, graph, dataset)
+        klass.new(converter, context)
       end
 
-      def initialize(converter, graph, dataset)
+      def initialize(converter, context)
         @converter = converter.converter_api
-        @graph     = graph
-        @dataset   = dataset
+        @context   = context
         @config    = converter.dataset_get(:fever)
 
         # Store this now; technologies with a flexible edge will not have the
