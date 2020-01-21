@@ -45,18 +45,30 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        unless infinite_storage?
-          attrs[:reserve_class] = Merit::Flex::SimpleReserve
-        end
-
         attrs[:input_capacity_per_unit] =
           source_api.input_capacity ||
           source_api.output_capacity
 
-        attrs[:volume_per_unit] = storage_volume_per_unit
-
         attrs[:input_efficiency]  = input_efficiency
         attrs[:output_efficiency] = output_efficiency
+
+        attrs.merge!(storage_attributes)
+      end
+
+      def storage_attributes
+        attrs = { volume_per_unit: storage_volume_per_unit }
+
+        decay_factor = source_api.storage.decay
+
+        if decay_factor&.positive?
+          attrs[:decay] = ->(_, amount) { amount * decay_factor }
+        end
+
+        unless @context.carrier == :steam_hot_water
+          # Heat network storage requires the ability to fetch the full storage
+          # curve; not supported by SimpleReserve.
+          attrs[:reserve_class] = Merit::Flex::SimpleReserve
+        end
 
         attrs
       end
@@ -64,7 +76,7 @@ module Qernel
       def storage_volume_per_unit
         return Float::INFINITY if infinite_storage?
 
-        source_api.dataset_get(:storage).volume *
+        source_api.storage.volume *
           (1 - (source_api.reserved_fraction || 0.0))
       end
 
