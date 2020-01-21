@@ -4,7 +4,7 @@ module Qernel
   module FeverFacade
     # Represents a Fever participant which will describe total demand.
     class ConsumerAdapter < Adapter
-      def initialize(converter, graph, dataset)
+      def initialize(converter, context)
         super
         @was = @converter.demand
       end
@@ -14,9 +14,7 @@ module Qernel
       end
 
       def inject!
-        @converter.dataset_lazy_set(:heat_input_curve) do
-          participant.demand_curve
-        end
+        inject_curve!(:input) { participant.demand_curve }
       end
 
       def input?(*)
@@ -34,11 +32,7 @@ module Qernel
       private
 
       def demand_curve
-        # Yuck.
-        curve = @graph.plugin(:time_resolve).fever
-          .curves.curve(@config.curve, @converter)
-
-        curve * @converter.demand
+        @context.curves.curve(@config.curve, @converter) * @converter.demand
       end
 
       def number_of_units

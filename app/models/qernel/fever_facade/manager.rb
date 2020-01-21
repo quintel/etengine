@@ -23,7 +23,12 @@ module Qernel
       end
 
       def curves
-        @curves ||= Curves.new(@graph)
+        # Rotate curves so that the calculation is from April to March rather
+        # than January to December.
+        @curves ||= Curves.new(
+          @graph,
+          rotate: Qernel::Plugins::Causality::CURVE_ROTATE
+        )
       end
 
       def summary(name)

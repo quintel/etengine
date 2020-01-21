@@ -4,10 +4,11 @@ module Qernel
   module MeritFacade
     # Helper class for creating and fetching curves related to the merit order.
     class Curves < Causality::Curves
-      def initialize(graph, household_heat, rotate = 0)
-        super(graph)
+      def initialize(graph, context, household_heat, rotate: 0)
+        super(graph, rotate: rotate)
+
         @household_heat = household_heat
-        @rotate = rotate
+        @context = context
       end
 
       # Public: Retrieves the load profile or curve matching the given profile
@@ -20,30 +21,15 @@ module Qernel
       def curve(name, converter)
         name = name.to_s
 
+        # Fever and self curves come from Fever or another Merit instance and
+        # are already rotated.
         if prefix?(name, 'fever-electricity-demand')
           fever_demand_curve(name[25..-1].strip.to_sym)
         elsif prefix?(name, 'self')
-          rotate(self_curve(name[5..-1].strip.to_sym, converter))
+          self_curve(name[5..-1].strip.to_sym, converter)
         else
-          rotate(super)
+          super
         end
-      end
-
-      # Public: Rotates the given curve by the number of hours specified.
-      #
-      # See Array#rotate.
-      #
-      # Returns a curve.
-      def rotate(curve, count = @rotate)
-        @rotate.zero? ? curve : curve.rotate(count)
-      end
-
-      # Public: De-rotates the given curve so that its first hour represents
-      # January 1st 00:00.
-      #
-      # Returns a curve.
-      def derotate(curve)
-        rotate(curve, -@rotate)
       end
 
       # Public: Reads an electricity demand curve from a Fever group.
@@ -56,18 +42,17 @@ module Qernel
         @household_heat.curve(name)
       end
 
-      # Internal: Reads a curve from an attribute on the converter and converts
-      # it to a 1/3600 (J -> Wh) profile.
+      # Internal: Reads a curve from another causality component (such as
+      # electricity merit order reading heat network merit order).
       #
-      # Returns a Merit::Curve.
+      # The curves from other calculations will be incomplete and only have
+      # values available once that component has been calculated for the current
+      # hour.
+      #
+      # Returns a Causality::LazyCurve.
       def self_curve(name, converter)
-        Merit::Curve.new(Causality::SelfDemandProfile.profile(converter, name))
-      end
-
-      # Public: Creates a dynamic curve which reads the demand from a Fever
-      # participant.
-      def fever_self_curve(name)
-        raise "Unknown fever-self curve: #{name}" unless name == :input_curve
+        @self_curves ||= SelfCurves.new(@graph.plugin(:time_resolve), @context)
+        @self_curves.curve(name, converter)
       end
 
       # Public: Returns the total demand of the curve matching the +curve_name+.

@@ -9,7 +9,7 @@ module Qernel
       # converter in Fever.
       #
       # Returns an Adapter class.
-      def self.factory(converter, _graph, _dataset)
+      def self.factory(converter, _context)
         if converter.key.to_s.include?('hybrid')
           HHPAdapter
         elsif converter.dataset_get(:fever).efficiency_based_on
@@ -50,9 +50,7 @@ module Qernel
           link.share = demand.positive? ? production / demand : 1.0
         end
 
-        @converter.dataset_lazy_set(:heat_output_curve) do
-          producer.output_curve.to_a
-        end
+        inject_curve!(:output) { producer.output_curve.to_a }
       end
 
       def producer
@@ -129,8 +127,8 @@ module Qernel
       # Internal: The Fever participant is an alias of a producer in another
       # group; fetch it!
       def aliased_adapter
-        alias_group = @graph.plugin(:time_resolve).fever.group(
-          @graph.converter(@config.alias_of).dataset_get(:fever).group
+        alias_group = @context.plugin.group(
+          @context.graph.converter(@config.alias_of).dataset_get(:fever).group
         )
 
         alias_group.adapters.detect do |adapter|

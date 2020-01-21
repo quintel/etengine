@@ -4,6 +4,11 @@ module Qernel::Plugins
   class Causality
     include Plugin
 
+    # Rotate curves in step-calculated components (Fever and Merit) so that we
+    # start on April 1st, and calculate through to March 31st, instead of
+    # January 1st to December 31st.
+    CURVE_ROTATE = 8760 / 4
+
     before :first_calculation, :clone_dataset
     after  :first_calculation, :setup
     after  :first_calculation, :run
@@ -11,6 +16,7 @@ module Qernel::Plugins
 
     attr_reader :merit
     attr_reader :fever
+    attr_reader :heat_network
 
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
@@ -52,13 +58,21 @@ module Qernel::Plugins
       @merit.setup
       @heat_network.setup
       @reconciliation.setup
+
+      @merit.setup_dynamic
+      @heat_network.setup_dynamic
     end
 
     def inject
       merit_calc = Merit::StepwiseCalculator.new.calculate(@merit.order)
 
+      heat_network_calc = Merit::StepwiseCalculator.new.calculate(
+        @heat_network.order
+      )
+
       8760.times do |frame|
         @fever.calculate_frame(frame)
+        heat_network_calc.call(frame)
         merit_calc.call(frame)
       end
 

@@ -7,24 +7,23 @@ module Qernel
     class Adapter
       attr_reader :converter
 
-      def self.adapter_for(converter, graph, dataset)
+      def self.adapter_for(converter, context)
         type = converter.dataset_get(:fever).type.to_sym
 
         klass =
           case type
-          when :producer then ProducerAdapter.factory(converter, graph, dataset)
+          when :producer then ProducerAdapter.factory(converter, context)
           when :storage  then StorageAdapter
           when :consumer then ConsumerAdapter
           else raise "Unknown Fever type: #{type}"
           end
 
-        klass.new(converter, graph, dataset)
+        klass.new(converter, context)
       end
 
-      def initialize(converter, graph, dataset)
+      def initialize(converter, context)
         @converter = converter.converter_api
-        @graph     = graph
-        @dataset   = dataset
+        @context   = context
         @config    = converter.dataset_get(:fever)
 
         # Store this now; technologies with a flexible edge will not have the
@@ -68,6 +67,26 @@ module Qernel
 
       def number_of_units
         @number_of_units ||= @converter.number_of_units
+      end
+
+      # Internal: Assigns a computed curve to the converter API. Provide a
+      # direction (input or output) in order to determine the name of the
+      # attribute to be set, and a block which yields the calculated curve.
+      #
+      # `inject_curve!` will take care of derotating the curve as necessary in
+      # order that its first point represents January 1st 00:00.
+      #
+      # For example:
+      #
+      #   inject_curve!(:output) do
+      #     @participant.load_curve
+      #   end
+      #
+      # Returns nothing.
+      def inject_curve!(direction)
+        @converter.dataset_lazy_set(:"heat_#{direction}_curve") do
+          @context.curves.derotate(yield.to_a)
+        end
       end
     end
   end

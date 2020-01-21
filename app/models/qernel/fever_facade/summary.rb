@@ -24,7 +24,7 @@ module Qernel
         return [0.0] * 8760 if suppliers.none?
 
         @demand = Merit::CurveTools.add_curves(suppliers.map do |adapter|
-          adapter.participant.demand_curve
+          adapter.converter.heat_input_curve
         end).to_a
       end
 
@@ -42,11 +42,12 @@ module Qernel
         return [0.0] * 8760 if suppliers.none?
 
         curves =
-          suppliers.map do |a|
-            input = a.participant.producer.input_curve
-            output = a.participant.producer.output_curve
+          suppliers.map do |adapter|
+            input = adapter.converter.heat_input_curve
+            output = adapter.converter.heat_output_curve
 
-            if input.object_id != output.object_id
+            # Array may be empty, which means there is no curve.
+            if input.first
               # In order to represent heat being produced - but stored for
               # future use - the production curve takes the maximum of the input
               # and output of each producer. This means that energy in a reserve
@@ -56,9 +57,9 @@ module Qernel
                 val > output[index] ? val : output[index]
               end
             else
-              output
+              output.first ? output : nil
             end
-          end
+          end.compact
 
         @production = Merit::CurveTools.add_curves(curves).to_a
       end
