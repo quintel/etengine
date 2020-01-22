@@ -7,7 +7,7 @@ module Qernel::Plugins
     # Rotate curves in step-calculated components (Fever and Merit) so that we
     # start on April 1st, and calculate through to March 31st, instead of
     # January 1st to December 31st.
-    CURVE_ROTATE = 8760 / 4
+    CURVE_ROTATE = 2160
 
     before :first_calculation, :clone_dataset
     after  :first_calculation, :setup

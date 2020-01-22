@@ -46,7 +46,7 @@ module Qernel::RecursiveFactor::Base
     *args,
     include_abroad: false
   )
-    if !include_abroad && abroad?
+    if (!include_abroad && abroad?) || recursive_factor_ignore?
       0.0
     elsif (return_value = send(strategy_method, link, *args)) != nil
       return_value
@@ -131,7 +131,7 @@ module Qernel::RecursiveFactor::Base
     *args,
     include_abroad: false
   )
-    if !include_abroad && abroad?
+    if (!include_abroad && abroad?) || recursive_factor_ignore?
       0.0
     elsif (return_value = send(strategy_method, link, *args)) != nil
       return_value

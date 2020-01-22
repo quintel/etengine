@@ -170,6 +170,14 @@ class Converter
     !!dataset_get(:abroad) # rubocop:disable Style/DoubleNegation
   end
 
+  # Public: When true, this node should be ignored in recursive factor
+  # calculations (always returning zero), and will prevent further recusion.
+  #
+  # Returns true or false.
+  def recursive_factor_ignore?
+    @recursive_factor_ignore
+  end
+
   protected
 
   # Memoize here, so it doesn't have to at runtime
@@ -183,6 +191,8 @@ class Converter
     @non_energetic_use     = @groups.include? :non_energetic_use
     @energy_import_export  = @groups.include? :energy_import_export
     @bio_resources_demand  = @groups.include? :bio_resources_demand
+
+    @recursive_factor_ignore = @groups.include? :recursive_factor_ignore
 
     self.dataset_key # memoize dataset_key
   end
