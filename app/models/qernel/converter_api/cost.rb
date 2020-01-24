@@ -149,7 +149,7 @@ module Qernel
         end
 
         average_investment * wacc *
-          (construction_time + technical_lifetime) /
+          (construction_time + technical_lifetime) / #
           technical_lifetime
       end
     end
@@ -204,9 +204,9 @@ module Qernel
     # Returns a float.
     def variable_costs_per_typical_input
       fetch(:variable_costs_per_typical_input) do
-        (weighted_carrier_cost_per_mj +
-        co2_emissions_costs_per_typical_input +
-        variable_operation_and_maintenance_costs_per_typical_input)
+        weighted_carrier_cost_per_mj +
+          co2_emissions_costs_per_typical_input +
+          variable_operation_and_maintenance_costs_per_typical_input
       end
     end
     unit_for_calculation 'variable_costs_per_typical_input', 'euro / MJ'
