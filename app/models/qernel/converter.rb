@@ -106,6 +106,7 @@ class Converter
     network_gas
     preset_demand
     storage
+    waste_outputs
   ]
 
   # --------- Micro-optimizing ------------------------------------------------

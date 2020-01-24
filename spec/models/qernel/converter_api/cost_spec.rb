@@ -299,18 +299,53 @@ describe 'Qernel::ConverterApi cost calculations' do
     end
 
     describe '#co2_emissions_costs_per_typical_input' do
-      it 'calculates when everything is set' do
-        converter.with(
+      let(:attrs) do
+        {
           weighted_carrier_co2_per_mj: 2.0,
           takes_part_in_ets: 1.0,
           free_co2_factor: 0.0
-        )
+        }
+      end
+
+      before do
+        converter.with(attrs)
 
         allow(api).to receive(:area).and_return(
           double(co2_price: 2.0, co2_percentage_free: 0.0)
         )
+      end
 
+      it 'calculates when everything is set' do
         expect(api.send(:co2_emissions_costs_per_typical_input)).to eq(4.0)
+      end
+
+      context 'with heat and electricity outputs' do
+        before do
+          converter.add_slot(build_slot(converter, :heat, :output, 0.4))
+          converter.add_slot(build_slot(converter, :electricity, :output, 0.6))
+          converter.with(attrs.merge(waste_outputs: [:heat]))
+        end
+
+        it 'ignores waste outputs' do
+          expect(api.send(:co2_emissions_costs_per_typical_input)).to eq(2.4)
+        end
+      end
+
+      context 'with heat, electricity, and loss outputs' do
+        before do
+          converter.add_slot(build_slot(converter, :heat, :output, 0.3))
+          converter.add_slot(build_slot(converter, :electricity, :output, 0.5))
+          converter.add_slot(build_slot(converter, :loss, :output, 0.2))
+
+          converter.with(attrs.merge(waste_outputs: [:heat]))
+        end
+
+        it 'includes a costable share of loss' do
+          # 2 from the electricity, plus the electricity share of the loss.
+          # loss is 0.2, and electricity is responsible for 0.625 (0.5 / 0.8) of
+          # that = 0.5.
+          expect(api.send(:co2_emissions_costs_per_typical_input)).to eq(2.5)
+        end
       end
     end
   end
