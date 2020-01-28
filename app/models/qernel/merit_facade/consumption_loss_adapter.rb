@@ -38,7 +38,14 @@ module Qernel
         end
 
         link = links.first
-        link.rgt_output.conversion * link.parent_share
+        loss_share = link.rgt_output.conversion * link.parent_share
+
+        other_shares =
+          link.rgt_converter.outputs.sum do |input|
+            input.loss? ? 0.0 : input.conversion
+          end
+
+        other_shares.zero? ? 0.0 : loss_share / other_shares
       end
     end
   end
