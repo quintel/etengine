@@ -4,6 +4,10 @@ module Qernel
   module MeritFacade
     # A dispatchable producer with unlimited capacity.
     class BackupAdapter < DispatchableAdapter
+      def installed?
+        true
+      end
+
       private
 
       def full_load_hours_from_participant
@@ -11,13 +15,17 @@ module Qernel
         # calculated in Merit itself.
         participant.production / (
           output_capacity_per_unit *
-          participant.number_of_units *
+          number_of_units_from_participant *
           3600
         )
       end
 
+      def number_of_units_from_participant
+        participant.load_curve.max / output_capacity_per_unit
+      end
+
       def producer_attributes
-        super.merge!(output_capacity_per_unit: Float::INFINITY)
+        super.merge!(number_of_units: Float::INFINITY)
       end
 
       def marginal_costs

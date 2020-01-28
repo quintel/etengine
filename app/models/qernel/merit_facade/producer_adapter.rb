@@ -30,12 +30,12 @@ module Qernel
 
         target_api[:full_load_hours]   = full_load_hours
         target_api[:full_load_seconds] = full_load_seconds
-        target_api[:number_of_units]   = participant.number_of_units
+        target_api[:number_of_units]   = number_of_units_from_participant
 
         target_api.demand =
           full_load_seconds *
           flh_capacity *
-          participant.number_of_units
+          target_api.number_of_units
 
         inject_curve!(:output) { @participant.load_curve }
       end
@@ -72,6 +72,10 @@ module Qernel
 
       def full_load_hours_from_participant
         participant.full_load_hours
+      end
+
+      def number_of_units_from_participant
+        participant.number_of_units
       end
     end
   end
