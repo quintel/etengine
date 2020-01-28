@@ -97,6 +97,32 @@ module Qernel
     end
     unit_for_calculation 'storage_costs', 'euro / plant'
 
+    # Internal: Determines the share of output energy which is accounted for
+    # when calculating fuel and CO2 costs.
+    #
+    # Some nodes split input energy into multiple carriers, but one or more of
+    # those is considered a "waste product" and should not be considered when
+    # calculating costs. For example, a gas CHP may take in gas as an input and
+    # outputs electricity, steam hot water, and loss, but only electricity and
+    # part of the loss are costable byproducts of the conversion, while the heat
+    # is a "free" waste product.
+    #
+    # Returns a numeric.
+    def costable_energy_factor
+      fetch(:costable_energy_factor) do
+        costable, loss, total = costable_conversions
+
+        if costable.nil?
+          1.0
+        elsif (total - loss).positive?
+          costable + loss * costable / (total - loss)
+        else
+          0.0
+        end
+      end
+    end
+    unit_for_calculation 'costable_energy_factor', 'factor'
+
     private
 
     # Internal: Calculates the total cost of a plant in euro per plant per year.
@@ -250,7 +276,8 @@ module Qernel
       fetch(:co2_emissions_costs_per_typical_input) do
         weighted_carrier_co2_per_mj * area.co2_price *
           (1 - area.co2_percentage_free) *
-          takes_part_in_ets * ((1 - free_co2_factor))
+          takes_part_in_ets * ((1 - free_co2_factor)) *
+          costable_energy_factor
       end
     end
     unit_for_calculation 'co2_emissions_costs_per_typical_input', 'euro / MJ'
@@ -396,5 +423,31 @@ module Qernel
       fetch(:typical_input) { input_capacity * full_load_seconds }
     end
     unit_for_calculation 'typical_input', 'MJ / year'
+
+    # The conversions used by costable_energy_factor to determine how to
+    # calculate fuel and CO2 costs based on the output carriers.
+    #
+    # Returns an array containing the costable conversion, loss conversion, and
+    # total of all outputs. Returns an empty array if the node does not have any
+    # waste_outputs configured.
+    def costable_conversions
+      return [] unless converter.waste_outputs&.any?
+
+      loss = 0.0
+      costable = 0.0
+      total = 0.0
+
+      converter.outputs.each do |output|
+        if output.loss?
+          loss = output.conversion
+        elsif !converter.waste_outputs.include?(output.carrier.key)
+          costable += output.conversion
+        end
+
+        total += output.conversion
+      end
+
+      [costable, loss, total]
+    end
   end
 end
