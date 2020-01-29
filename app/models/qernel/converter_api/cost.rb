@@ -63,7 +63,7 @@ module Qernel
     # Returns the marginal costs per MWh (produced electricity)
     def marginal_costs
       fetch(:marginal_costs) do
-        variable_costs_per_typical_input *
+        variable_costs_per_typical_input(include_waste: false) *
           SECS_PER_HOUR / electricity_output_conversion
       end
     end
@@ -78,7 +78,7 @@ module Qernel
     #
     # Returns the marginal costs per MWh (produced heat).
     def marginal_heat_costs
-      variable_costs_per_typical_input *
+      variable_costs_per_typical_input(include_waste: false) *
         SECS_PER_HOUR / heat_output_conversion
     end
     unit_for_calculation 'marginal_heat_costs', 'euro / MWh'
@@ -96,32 +96,6 @@ module Qernel
       end
     end
     unit_for_calculation 'storage_costs', 'euro / plant'
-
-    # Internal: Determines the share of output energy which is accounted for
-    # when calculating fuel and CO2 costs.
-    #
-    # Some nodes split input energy into multiple carriers, but one or more of
-    # those is considered a "waste product" and should not be considered when
-    # calculating costs. For example, a gas CHP may take in gas as an input and
-    # outputs electricity, steam hot water, and loss, but only electricity and
-    # part of the loss are costable byproducts of the conversion, while the heat
-    # is a "free" waste product.
-    #
-    # Returns a numeric.
-    def costable_energy_factor
-      fetch(:costable_energy_factor) do
-        costable, loss, total = costable_conversions
-
-        if costable.nil?
-          1.0
-        elsif (total - loss).positive?
-          costable + loss * costable / (total - loss)
-        else
-          0.0
-        end
-      end
-    end
-    unit_for_calculation 'costable_energy_factor', 'factor'
 
     private
 
@@ -228,11 +202,22 @@ module Qernel
     # explicitly depend on the production of the plant.
     #
     # Returns a float.
-    def variable_costs_per_typical_input
-      fetch(:variable_costs_per_typical_input) do
-        weighted_carrier_cost_per_mj +
-          co2_emissions_costs_per_typical_input +
-          variable_operation_and_maintenance_costs_per_typical_input
+    def variable_costs_per_typical_input(include_waste: true)
+      cache_key =
+        if include_waste
+          :variable_costs_per_typical_input
+        else
+          :variable_costs_per_typical_input_except_waste
+        end
+
+      fetch(cache_key) do
+        costable =
+          weighted_carrier_cost_per_mj +
+          co2_emissions_costs_per_typical_input
+
+        costable *= costable_energy_factor unless include_waste
+
+        costable + variable_operation_and_maintenance_costs_per_typical_input
       end
     end
     unit_for_calculation 'variable_costs_per_typical_input', 'euro / MJ'
@@ -276,8 +261,7 @@ module Qernel
       fetch(:co2_emissions_costs_per_typical_input) do
         weighted_carrier_co2_per_mj * area.co2_price *
           (1 - area.co2_percentage_free) *
-          takes_part_in_ets * ((1 - free_co2_factor)) *
-          costable_energy_factor
+          takes_part_in_ets * ((1 - free_co2_factor))
       end
     end
     unit_for_calculation 'co2_emissions_costs_per_typical_input', 'euro / MJ'
@@ -423,6 +407,32 @@ module Qernel
       fetch(:typical_input) { input_capacity * full_load_seconds }
     end
     unit_for_calculation 'typical_input', 'MJ / year'
+
+    # Internal: Determines the share of output energy which is accounted for
+    # when calculating fuel and CO2 costs.
+    #
+    # Some nodes split input energy into multiple carriers, but one or more of
+    # those is considered a "waste product" and should not be considered when
+    # calculating costs. For example, a gas CHP may take in gas as an input and
+    # outputs electricity, steam hot water, and loss, but only electricity and
+    # part of the loss are costable byproducts of the conversion, while the heat
+    # is a "free" waste product.
+    #
+    # Returns a numeric.
+    def costable_energy_factor
+      fetch(:costable_energy_factor) do
+        costable, loss, total = costable_conversions
+
+        if costable.nil?
+          1.0
+        elsif (total - loss).positive?
+          costable + loss * costable / (total - loss)
+        else
+          0.0
+        end
+      end
+    end
+    unit_for_calculation 'costable_energy_factor', 'factor'
 
     # The conversions used by costable_energy_factor to determine how to
     # calculate fuel and CO2 costs based on the output carriers.
