@@ -29,6 +29,7 @@ module Qernel
       def inject_values!
         each_adapter(&:inject!)
         set_dispatchable_positions!
+        inject_graph_values!
       end
 
       private
@@ -54,6 +55,10 @@ module Qernel
 
       def household_heat
         HouseholdHeat.new(@graph)
+      end
+
+      # Internal: Sets global values on the graph object after calculation.
+      def inject_graph_values!
       end
     end
   end

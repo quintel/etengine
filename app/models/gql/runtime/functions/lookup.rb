@@ -217,15 +217,6 @@ module Gql::Runtime
         scope.graph.weather_properties.get(key, :value)
       end
 
-      # Retrieves the merit order price curve
-      def MERIT_PRICE_CURVE
-        if Qernel::Plugins::Causality.enabled?(scope.graph)
-          scope.graph.plugin(:merit).order.price_curve.to_a
-        else
-          []
-        end
-      end
-
       # Adds the values in multiple curves.
       #
       # For example:

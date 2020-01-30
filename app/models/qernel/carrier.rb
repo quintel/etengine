@@ -5,6 +5,7 @@ class Carrier
   # ----- Dataset -------------------------------------------------------------
 
   include DatasetAttributes
+  extend DatasetCurveAttributes
 
   CO2_FCE_COMPONENTS = [
     :co2_conversion_per_mj,
@@ -18,7 +19,13 @@ class Carrier
   DATASET_ATTRIBUTES = Atlas::Carrier.attribute_set.map(&:name)
 
   dataset_accessors DATASET_ATTRIBUTES
+
+  # Public: An array describing the price of the carrier in each hour.
   dataset_accessors :cost_curve
+
+  # Public: An array describing the total demand for electricity in each hour.
+  # Set by the electricity merit order calcualtion.
+  dataset_curve_reader :demand_curve
 
   # ----- Micro optimization --------------------------------------------------
 
@@ -83,7 +90,7 @@ class Carrier
     if @key == :gas_power_fuelmix
       graph.carrier(:natural_gas).cost_per_mj
     else
-      cost_per_mj
+      cost_per_mj || 0.0
     end
   end
 

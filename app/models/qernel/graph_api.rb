@@ -121,9 +121,8 @@ class GraphApi
   # Returns a Integer representing the number of hours where capacity was
   # exceeded.
   def loss_of_load_expectation(capacity, excludes = [])
-    graph.plugin(:merit).order.lole.expectation(
-      Merit::Curve.new(electricity_demand_curve), capacity, excludes
-    )
+    order = graph.plugin(:merit).order
+    order.lole.expectation(order.demand_curve, capacity, excludes)
   end
 
   # Public: Returns number of excess load events for a certain duration.
@@ -154,13 +153,6 @@ class GraphApi
   # Returns an Integer
   def number_of_blackout_hours
     graph.plugin(:merit).order.blackout.number_of_hours
-  end
-
-  # Public: An array describing the total electricity demand in each hour.
-  #
-  # Returns an array of floats.
-  def electricity_demand_curve
-    graph.plugin(:merit).order.demand_curve.to_a
   end
 
   # Public: Builds a model of the electricity network.
