@@ -1381,7 +1381,7 @@
   :y: 6220
 :households_appliances_clothes_dryer_electricity:
   :x: 1520
-  :y: 2680
+  :y: 2860
 :households_appliances_computer_media_electricity:
   :x: 1520
   :y: 2800
@@ -1960,73 +1960,73 @@
   :y: 15500
 :industry_useful_demand_for_other_non_specified_coal:
   :x: 720
-  :y: 15900
+  :y: 14400
 :industry_final_demand_for_other_non_specified_coal:
   :x: 1520
-  :y: 15900
+  :y: 14400
 :industry_useful_demand_for_other_non_specified_coal_non_energetic:
   :x: 720
-  :y: 16320
+  :y: 14820
 :industry_final_demand_for_other_non_specified_coal_non_energetic:
   :x: 1520
-  :y: 16320
+  :y: 14820
 :industry_final_demand_for_other_coal_non_energetic:
   :x: 2120
   :y: 13360
 :industry_useful_demand_for_other_non_specified_crude_oil:
   :x: 720
-  :y: 16080
+  :y: 14580
 :industry_final_demand_for_other_non_specified_crude_oil:
   :x: 1520
-  :y: 16080
+  :y: 14580
 :industry_useful_demand_for_other_non_specified_crude_oil_non_energetic:
   :x: 720
-  :y: 16440
+  :y: 14940
 :industry_final_demand_for_other_non_specified_crude_oil_non_energetic:
   :x: 1520
-  :y: 16440
+  :y: 14940
 :industry_final_demand_for_other_crude_oil_non_energetic:
   :x: 2120
   :y: 13480
 :industry_useful_demand_for_other_non_specified_electricity:
   :x: 720
-  :y: 15840
+  :y: 14340
 :industry_final_demand_for_other_non_specified_electricity:
   :x: 1520
-  :y: 15840
+  :y: 14340
 :industry_useful_demand_for_other_non_specified_network_gas:
   :x: 720
-  :y: 15960
+  :y: 14460
 :industry_final_demand_for_other_non_specified_network_gas:
   :x: 1520
-  :y: 15960
+  :y: 14460
 :industry_useful_demand_for_other_non_specified_network_gas_non_energetic:
   :x: 720
-  :y: 16380
+  :y: 14880
 :industry_final_demand_for_other_non_specified_network_gas_non_energetic:
   :x: 1520
-  :y: 16380
+  :y: 14880
 :industry_final_demand_for_other_network_gas_non_energetic:
   :x: 2120
   :y: 13420
 :industry_useful_demand_for_other_non_specified_useable_heat:
   :x: 720
-  :y: 16140
+  :y: 14640
 :industry_final_demand_for_other_non_specified_steam_hot_water:
   :x: 1520
-  :y: 16140
+  :y: 14640
 :industry_useful_demand_for_other_non_specified_wood_pellets:
   :x: 720
-  :y: 16020
+  :y: 14520
 :industry_final_demand_for_other_non_specified_wood_pellets:
   :x: 1520
-  :y: 16020
+  :y: 14520
 :industry_useful_demand_for_other_non_specified_wood_pellets_non_energetic:
   :x: 720
-  :y: 16500
+  :y: 15000
 :industry_final_demand_for_other_non_specified_wood_pellets_non_energetic:
   :x: 1520
-  :y: 16500
+  :y: 15000
 :industry_final_demand_for_other_wood_pellets_non_energetic:
   :x: 2120
   :y: 13540
@@ -2383,7 +2383,7 @@
   :y: 11340
 :bunkers_useful_demand_planes:
   :x: 720
-  :y: 18760
+  :y: 15500
 :bunkers_plane_using_bio_ethanol:
   :x: 1520
   :y: 18780
@@ -2404,7 +2404,7 @@
   :y: 18700
 :bunkers_plane_using_kerosene:
   :x: 1520
-  :y: 18760
+  :y: 15500
 :bunkers_demand_for_aviation_kerosene:
   :x: 2320
   :y: 18640
@@ -2413,13 +2413,13 @@
   :y: 18640
 :bunkers_useful_demand_ships:
   :x: 720
-  :y: 18860
+  :y: 15600
 :bunkers_ship_using_heavy_fuel_oil:
   :x: 1520
-  :y: 18840
+  :y: 15580
 :bunkers_ship_using_lng:
   :x: 1520
-  :y: 18900
+  :y: 15640
 :bunkers_demand_for_shipping_lng:
   :x: 2320
   :y: 18820
@@ -2440,28 +2440,28 @@
   :y: 18780
 :bunkers_final_demand_for_shipping_heavy_fuel_oil:
   :x: 2320
-  :y: 18840
+  :y: 15580
 :bunkers_final_demand_heavy_fuel_oil:
   :x: 3120
-  :y: 18840
+  :y: 15580
 :bunkers_final_demand_for_shipping_lng:
   :x: 2320
-  :y: 18900
+  :y: 15640
 :bunkers_final_demand_lng:
   :x: 3120
-  :y: 18900
+  :y: 15640
 :bunkers_final_demand_for_aviation_kerosene:
   :x: 2320
-  :y: 18720
+  :y: 15460
 :bunkers_final_demand_kerosene:
   :x: 3120
-  :y: 18720
+  :y: 15460
 :bunkers_final_demand_for_aviation_bio_kerosene:
   :x: 2320
-  :y: 18780
+  :y: 15520
 :bunkers_final_demand_bio_kerosene:
   :x: 3120
-  :y: 18780
+  :y: 15520
 :energy_distribution_bio_kerosene:
   :x: 5600
   :y: 6780
@@ -2470,19 +2470,19 @@
   :y: 6800
 :bunkers_total_useful_demand_ships:
   :x: 720
-  :y: 18920
+  :y: 15660
 :bunkers_total_useful_demand_planes:
   :x: 720
-  :y: 18700
+  :y: 15440
 :bunkers_flexibility_p2l_electricity:
   :x: 2040
   :y: 18640
 :bunkers_locally_available_kerosene_after_p2l:
   :x: 1780
-  :y: 18760
+  :y: 15500
 :bunkers_aviation_mixer_kerosene:
   :x: 2040
-  :y: 18760
+  :y: 15500
 :transport_useful_demand_passenger_kms:
   :x: 340
   :y: 3920
@@ -2572,34 +2572,34 @@
   :y: 4260
 :bunkers_flexibility_p2g_electricity:
   :x: 2780
-  :y: 18340
+  :y: 15080
 :bunkers_kerosene_production_p2l:
   :x: 2320
-  :y: 18500
+  :y: 15240
 :bunkers_p2l_direct_air_capture:
   :x: 2780
-  :y: 18540
+  :y: 15280
 :bunkers_p2l_point_source_CO:
   :x: 2780
-  :y: 18600
+  :y: 15340
 :bunkers_p2l_point_source_CO2:
   :x: 2780
-  :y: 18660
+  :y: 15400
 :bunkers_final_demand_for_p2l_electricity:
   :x: 3120
   :y: 18500
 :bunkers_p2l_burner_network_gas:
   :x: 2960
-  :y: 18420
+  :y: 15160
 :bunkers_final_demand_network_gas:
   :x: 3120
-  :y: 18420
+  :y: 15160
 :bunkers_p2l_mixer_co:
   :x: 2600
-  :y: 18540
+  :y: 15280
 :bunkers_final_demand_electricity:
   :x: 3120
-  :y: 18500
+  :y: 15240
 :households_collective_heatpump_water_water_electricity:
   :x: 3920
   :y: 1420
@@ -3163,7 +3163,7 @@
   :y: 17560
 :industry_useful_demand_for_other_non_specified_hydrogen:
   :x: 720
-  :y: 16200
+  :y: 14700
 :industry_final_demand_for_other_construction_hydrogen:
   :x: 1520
   :y: 17000
@@ -3172,7 +3172,7 @@
   :y: 15680
 :industry_final_demand_for_other_non_specified_hydrogen:
   :x: 1520
-  :y: 16200
+  :y: 14700
 :industry_useful_demand_for_other_minerals_hydrogen:
   :x: 720
   :y: 15140
