@@ -28,7 +28,11 @@ module Api
         order = scenario.gql.future_graph.plugin(:merit).order
 
         send_csv('loads') do |csv|
-          order.load_curves.each { |row| csv << row }
+          order.load_curves.each do |row|
+            # Temporary: Manually derotate curves. This CSV will soon be
+            # removed.
+            csv << row.rotate(-Qernel::Plugins::Causality::CURVE_ROTATE)
+          end
         end
       end
 
@@ -39,10 +43,10 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/merit/price.csv
       def price_curve
-        order = scenario.gql.future_graph.plugin(:merit).order
+        graph = scenario.gql.future_graph
 
         send_csv('price') do |csv|
-          order.price_curve.each { |row| csv << [row] }
+          graph.carrier(:electricity).cost_curve.each { |row| csv << [row] }
         end
       end
 
@@ -60,9 +64,9 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
       def electricity_price
-        render_presenter Api::V3::MeritPriceCSVPresenter.new(
-          scenario.gql.future_graph,
-          scenario.gql.future_graph.plugin(:merit).order
+        render_presenter Api::V3::CarrierPriceCSVPresenter.new(
+          scenario.gql.future_graph.carrier(:electricity),
+          scenario.gql.future_graph.year
         )
       end
 

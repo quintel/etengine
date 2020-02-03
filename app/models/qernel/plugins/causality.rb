@@ -33,7 +33,7 @@ module Qernel::Plugins
 
     def initialize(graph)
       super
-      @merit = Qernel::MeritFacade::Manager.new(graph)
+      @merit = Qernel::Causality::Electricity.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
       @heat_network = Qernel::Causality::HeatNetwork.new(graph)
       @reconciliation = Qernel::Causality::ReconciliationWrapper.new(graph)
