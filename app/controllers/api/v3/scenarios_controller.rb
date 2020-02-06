@@ -4,6 +4,7 @@ module Api
       respond_to :json
 
       before_action :find_scenario, only: %i[interpolate update]
+      around_action :wrap_with_raven_context, only: :update
 
       before_action :find_preset_or_scenario, only: [
         :show, :merit, :dashboard, :application_demands,
@@ -327,6 +328,15 @@ module Api
             :has_agriculture, :has_energy, :has_industry
           )
         end
+      end
+
+      # Internal: Wraps an action with information about a scenario, so that if
+      # an exception occurs, we can provide Sentry with information about the
+      # scenario which caused the error.
+      #
+      # Returns the result of the block.
+      def wrap_with_raven_context
+        ScenarioRavenContext.with_context(@scenario) { yield }
       end
     end
   end
