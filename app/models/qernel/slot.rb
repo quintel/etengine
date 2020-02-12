@@ -30,11 +30,13 @@ class Slot
   # Returns an instance of Slot, or a Slot subclass.
   #
   def self.factory(type, id, converter, carrier, direction = :input)
-    klass = case type
-      when :loss    then Slot::Loss
-      when :elastic then Slot::Elastic
-      else               Slot
-    end
+    klass =
+      case type
+      when :loss       then Slot::Loss
+      when :elastic    then Slot::Elastic
+      when :link_based then Slot::LinkBased
+      else                  Slot
+      end
 
     klass.new(id, converter, carrier, direction)
   end

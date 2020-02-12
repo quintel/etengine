@@ -11,12 +11,6 @@ module Qernel
         input_link = target_api.converter.input(@context.carrier).links.first
         demand     = participant.production(:mj)
 
-        if @context.carrier == :electricity
-          # Figure out the output efficiency of the network; curtailment needs
-          # to be reduced by exactly this amount to prevent unwanted import.
-          demand *= input_link.output.conversion
-        end
-
         if input_link.link_type == :inversed_flexible
           # We need to override the calculation of an inversed flexible link
           # and set the demand explicitly.

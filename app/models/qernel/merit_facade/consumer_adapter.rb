@@ -10,6 +10,8 @@ module Qernel
           PseudoConsumerAdapter
         when :consumption_loss
           ConsumptionLossAdapter
+        when :electricity_loss
+          ElectricityLossAdapter
         else
           self
         end
@@ -41,16 +43,11 @@ module Qernel
       end
 
       def input_of_carrier
-        if source_api.converter.input(@context.carrier)
-          source_api.public_send(@context.carrier_named('input_of_%s'))
-        elsif @context.carrier == :electricity &&
-            source_api.converter.input(:loss)
-          # HV loss node does not have an electricity input; use graph method
-          # which compensates for export.
-          @context.graph.query.electricity_losses_if_export_is_zero
-        else
+        unless source_api.converter.input(@context.carrier)
           raise "No acceptable consumption input for #{source_api.key}"
         end
+
+        source_api.public_send(@context.carrier_named('input_of_%s'))
       end
 
       def installed?
