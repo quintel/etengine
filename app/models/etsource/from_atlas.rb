@@ -26,11 +26,14 @@ module Etsource
       #
       # Returns a Qernel::Slot.
       def slot(slot, converter, carrier)
-        type = if slot.carrier == :loss
-          :loss
-        elsif slot.is_a?(Atlas::Slot::Elastic)
-          :elastic
-        end
+        type =
+          if slot.carrier == :loss
+            :loss
+          elsif slot.is_a?(Atlas::Slot::Elastic)
+            :elastic
+          elsif slot.is_a?(Atlas::Slot::Dynamic)
+            :link_based
+          end
 
         slot_from_data(converter, carrier, slot.direction, type)
       end
