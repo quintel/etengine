@@ -6,6 +6,10 @@ module Api
         @graph = graph
       end
 
+      def filename
+        'household_heat'
+      end
+
       def to_csv_rows
         # Empty CSV if time-resolved calculations are not enabled.
         unless @graph.plugin(:time_resolve)&.fever
