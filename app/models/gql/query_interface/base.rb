@@ -43,13 +43,7 @@ module Gql
 
       raise "Missing gquery: #{gquery_key.inspect}" unless gquery
 
-      behavior = gquery.behavior
-
-      if behavior.period_supported?(graph.period)
-        behavior.process_result(rubel_execute(gquery.command))
-      else
-        behavior.fallback_value
-      end
+      rubel_execute(gquery.command)
     end
 
     def execute_input(input, value = nil)

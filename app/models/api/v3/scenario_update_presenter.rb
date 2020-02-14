@@ -96,13 +96,17 @@ module Api
       #  return boolean values, so false must be preserved
       #
       def perform_query(gql, period, query)
+        behavior = query.behavior
+
+        return behavior.fallback_value unless behavior.period_supported?(period)
+
         value = gql.public_send(:"query_#{ period }", query)
 
         # Rails 4.1 JSON encodes BigDecimal as a string. This is not part of
         # the ETEngine APIv3 spec.
         value = value.to_f if value.is_a?(BigDecimal)
 
-        nan?(value) ? 0.0 : value
+        behavior.process_result(nan?(value) ? 0.0 : value)
       rescue Exception => exception
         # TODO Exception is *way* too low level to be rescued; we could do
         #      with a GraphError exception for "acceptable" graph errors.
