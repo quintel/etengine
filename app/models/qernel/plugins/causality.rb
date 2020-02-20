@@ -88,10 +88,10 @@ module Qernel::Plugins
 
       # Any subsequent calculations (one of which) must have the merit order
       # demands injected into the graph.
-      @merit.inject_values!
       @fever.inject_values!
-
       @heat_network.inject_values!
+      @merit.inject_values!
+
       @reconciliation.inject_values!
     end
   end
