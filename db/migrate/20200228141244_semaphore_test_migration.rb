@@ -19,12 +19,14 @@ class SemaphoreTestMigration < ActiveRecord::Migration[5.2]
     say ""
 
     scenarios.find_each.with_index do |scenario, index|
+      say "Scenario = #{scenario.id}"
+      say "dataset exists? = #{Atlas::Dataset.exists?(scenario.area_code)}"
+
       if Atlas::Dataset.exists?(scenario.area_code)
         before = scenario.user_values.dup
 
         yield(scenario)
 
-        say "Scenario = #{scenario.id}"
         say "before = #{before.inspect}, after = #{scenario.user_values.inspect}"
         say "changed? = #{scenario.changed?.inspect}"
         say ""

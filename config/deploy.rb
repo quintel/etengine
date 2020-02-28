@@ -60,8 +60,8 @@ set :linked_dirs, %w[
 # set :keep_releases, 5
 
 namespace :deploy do
-  after  'bundler:install',   'deploy:app_config'
-  before 'deploy:publishing', 'deploy:etsource'
+  after  'bundler:install', 'deploy:app_config'
+  before 'deploy:migrate',  'deploy:etsource'
 
   after :publishing, :restart
 
