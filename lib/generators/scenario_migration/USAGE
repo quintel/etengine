@@ -1,0 +1,8 @@
+Description:
+    Creates a migration for scenario user data
+
+Example:
+    rails generate scenario_migration UpdateSomeInput
+
+    This will create:
+        db/migrations/??_update_some_input.rb
