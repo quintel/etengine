@@ -5,8 +5,8 @@ module Api
     #
     module ConverterPresenterData
       FORMAT_KILO           = ->(n) { (n / 1000).to_i }
-      FORMAT_1DP            = ->(n) { '%.1f' % n }
-      FORMAT_3DP            = ->(n) { '%.3f' % n }
+      FORMAT_1DP            = ->(n) { format('%.1f', n) }
+      FORMAT_3DP            = ->(n) { format('%.3f', n) }
       FORMAT_FAC_TO_PERCENT = ->(n) { FORMAT_1DP.call(n * 100) }
 
       # If the converter belongs to the electricity_production presentation group then
