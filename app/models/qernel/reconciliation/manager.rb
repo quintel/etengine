@@ -36,6 +36,10 @@ module Qernel
         )
       end
 
+      def curves
+        @curves ||= Curves.new(@graph)
+      end
+
       # Internal: Takes loads and costs from the calculated Merit order, and
       # installs them on the appropriate converters in the graph. The updated
       # values will be used in the recalculated graph.

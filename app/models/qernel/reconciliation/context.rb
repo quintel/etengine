@@ -5,6 +5,8 @@ module Qernel
     # Encapsulates objects useful to the reconciliation calculation.
     Context =
       Struct.new(:dataset, :plugin, :graph, :carrier) do
+        delegate :curves, to: :plugin
+
         # Public: Fetches the configuration for a node, based on the context
         # carrier.
         #

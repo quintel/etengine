@@ -86,51 +86,7 @@ module Qernel
       #
       # Returns a Merit::Curve.
       def demand_profile
-        profile_name = @config.profile.to_s.delete(' ')
-
-        if @converter.demand&.zero?
-          Merit::Curve.new([0.0] * 8760)
-        elsif profile_name.start_with?('self')
-          Merit::Curve.new(merit_demand_profile(profile_name[5..-1].to_sym))
-        elsif profile_name.start_with?('dynamic')
-          Merit::Curve.new(dynamic_demand_profile(profile_name[8..-1].to_sym))
-        else
-          @context.dataset.load_profile(@config.profile)
-        end
-      end
-
-      # Internal: Constructs a dynamic demand profile using the electricity load
-      # curve from the Merit order calculation.
-      #
-      # Determines the input or output of electricity using the converter demand
-      # and slot since it's faster than summing the curve. It also has the nice
-      # effect whereby dividing the load curve (in MW) by demand (in MJ)
-      # produces a new load profile of values summing to 1/3600; effectively
-      # converting the carrier demand from MJ to MW.
-      #
-      # input_of_electricity and output_of_electricity helpers may not be used
-      # here as they require the graph to have been calcualted.
-      #
-      # Returns an array.
-      def merit_demand_profile(name)
-        Causality::SelfDemandProfile.profile(@converter.converter_api, name)
-      end
-
-      # Internal: Creates a dynamic demand profile by interpolating between two
-      # or more curves, or by amplifying a baseline curve.
-      #
-      # Returns an array.
-      def dynamic_demand_profile(name)
-        if name == :solar_pv
-          # Temporary special-case for solar PV which should interpolate
-          # between min and max curves, rather than amplifying the min curve.
-          @context.graph.plugin(:merit).curves.curve(name, @converter)
-        else
-          Causality::Util.amplify_curve(
-            @context.dataset.load_profile("#{name}_baseline"),
-            full_load_hours
-          )
-        end
+        @context.curves.curve(@config.profile, @converter)
       end
 
       # Internal: Fetches demand from the converter.
