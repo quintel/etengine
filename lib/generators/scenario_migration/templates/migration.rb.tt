@@ -17,7 +17,7 @@ class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Mi
       #   scenario.user_values['new_input'] =
       #     scenario.user_values.delete('old_input')
       #
-      #   # When the scenari ohas an input, divide its value by 100.
+      #   # When the scenario has an input, divide its value by 100.
       #   if scenario.user_values.key?('my_input')
       #     scenario.user_values['my_input'] /= 100
       #   end
@@ -25,16 +25,17 @@ class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Mi
       # If you need to reference data from Atlas, be sure to check that the
       # dataset used by the scenario still exists:
       #
-      #   # Skip the scenario if the dataset no longer exists.
       #   next unless Atlas::Dataset.exists?(scenario.area_code)
       #
       # Scenarios will be automatically saved if changes were made.
       #
       # ### Candidate scenarios
       #
-      # By default, all protected scenarios and unprotected scenarios modified
-      # in the last month will be migrated. You may supply a custom cutoff date
-      # for migrating unprotected scenarios with the `since` keyword argument.
+      # By default, all protected scenarios are migrated, along with any
+      # unprotected scenarios modified in the last month. You may supply a
+      # custom cutoff date for migrating unprotected scenarios with the `since`
+      # keyword argument.
+      #
       # For example, to migrate unprotected scenarios up to three months old:
       #
       #   migrate_scenarios(since: 3.months.ago) do |scenario|
