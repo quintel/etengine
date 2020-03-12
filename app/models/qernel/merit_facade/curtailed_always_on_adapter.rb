@@ -20,6 +20,16 @@ module Qernel
         inject_curve!(full_name: :curtailment_output_curve) do
           profile_builder.curtailment_curve(@original_output)
         end
+
+        output = @converter.converter.output(@context.carrier)
+        out_links = output.links
+
+        return unless out_links.one? && out_links.first.link_type == :constant
+
+        demand = target_api.demand * output.conversion
+
+        out_links.first.dataset_set(:value, demand)
+        out_links.first.dataset_set(:calculated, true)
       end
 
       private
