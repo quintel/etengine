@@ -82,9 +82,22 @@ module Qernel
       #     @participant.load_curve
       #   end
       #
+      # You may optionally provide a full curve name when you wish to set a
+      # curve for a different carrier or attribute. For example:
+      #
+      #   inject_curve!(full_name: :storage_curve) do
+      #     @participant.reserve.to_a
+      #   end
+      #
       # Returns nothing.
-      def inject_curve!(direction)
-        @converter.dataset_lazy_set(:"heat_#{direction}_curve") do
+      def inject_curve!(direction = nil, full_name: nil)
+        if direction.nil? && full_name.nil?
+          raise 'No curve name given to inject_curve!'
+        end
+
+        name = full_name || :"heat_#{direction}_curve"
+
+        @converter.dataset_lazy_set(name.to_sym) do
           @context.curves.derotate(yield.to_a)
         end
       end

@@ -51,6 +51,7 @@ module Qernel
         end
 
         inject_curve!(:output) { producer.output_curve.to_a }
+        inject_input_curves!
       end
 
       def producer
@@ -103,12 +104,7 @@ module Qernel
       end
 
       def input_efficiency
-        slots =
-          @converter.converter.inputs.reject do |slot|
-            slot.carrier.key == :ambient_heat
-          end
-
-        slots.any? ? 1.0 / slots.sum(&:conversion) : 1.0
+        1.0 / @converter.converter.input(input_carrier).conversion
       end
 
       # Internal: The total capacity of the Fever participant in each frame.
@@ -153,6 +149,29 @@ module Qernel
           link.lft_converter.output(:useable_heat).links.first.share
         else
           link.share
+        end
+      end
+
+      # Public: Determines the name of the main input carrier to the converter.
+      def input_carrier
+        return @input_carrier if @input_carrier
+
+        slots =
+          @converter.converter.inputs.reject do |slot|
+            slot.carrier.key == :ambient_heat
+          end
+
+        if slots.length != 1
+          raise 'Cannot determine input carrier for Fever producer: ' \
+                "#{@converter.key}"
+        end
+
+        @input_carrier = slots.first.carrier.key
+      end
+
+      def inject_input_curves!
+        inject_curve!(full_name: "#{input_carrier}_input_curve") do
+          Array.new(8760, &demand_callable_for_carrier(input_carrier))
         end
       end
     end
