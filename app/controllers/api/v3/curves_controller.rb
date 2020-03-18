@@ -56,7 +56,10 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/merit_order.csv
       def merit_order
         render_presenter Api::V3::MeritCSVPresenter.new(
-          scenario.gql.future_graph, :electricity, :merit_order
+          scenario.gql.future_graph, :electricity, :merit_order,
+          Api::V3::MeritCSVPresenter::ConverterCustomisation.new(
+            'merit_order_csv_include', 'merit_order_csv_exclude'
+          )
         )
       end
 
