@@ -87,9 +87,31 @@ module Qernel
           converter, carrier, direction
         )
 
+        filter = merit_curve_value_filter(adapter.config.type, direction)
+
         Qernel::Causality::LazyCurve.new do |frame|
           source_frame = frame - offset
-          source_frame.negative? ? 0.0 : curve[source_frame] * conversion
+
+          if source_frame.negative?
+            0.0
+          elsif filter
+            filter.call(curve[source_frame]) * conversion
+          else
+            curve[source_frame] * conversion
+          end
+        end
+      end
+
+      # Internal: Values from Merit curves can be used verbatim, except when the
+      # participant is a flexibility technology. In those cases, input is
+      # represented as a negative, and output as a positive.
+      def merit_curve_value_filter(type, direction)
+        return nil unless type == :flex
+
+        if direction == :input
+          ->(value) { value.negative? ? value.abs : 0.0 }
+        else
+          ->(value) { value.positive? ? value : 0.0 }
         end
       end
 
