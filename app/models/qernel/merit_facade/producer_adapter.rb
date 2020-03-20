@@ -9,7 +9,8 @@ module Qernel
 
         case config.subtype
         when :must_run, :volatile
-          AlwaysOnAdapter
+          curtailment = config.production_curtailment
+          curtailment&.positive? ? CurtailedAlwaysOnAdapter : AlwaysOnAdapter
         when :backup
           BackupAdapter
         when :dispatchable

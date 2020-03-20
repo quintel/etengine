@@ -195,6 +195,18 @@ module Qernel
       def output_efficiency
         1.0
       end
+
+      def inject_input_curves!
+        primary_carrier = @config.efficiency_based_on
+
+        inject_curve!(full_name: "#{primary_carrier}_input_curve") do
+          Array.new(8760, &demand_callable_for_carrier(primary_carrier))
+        end
+
+        inject_curve!(full_name: "#{secondary_carrier}_input_curve") do
+          Array.new(8760, &demand_callable_for_carrier(secondary_carrier))
+        end
+      end
     end
   end
 end

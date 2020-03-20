@@ -71,6 +71,7 @@ class ConverterApi
     storage
   ]
 
+  dataset_curve_reader :curtailment_output_curve
   dataset_curve_reader :storage_curve
   dataset_carrier_curve_reader :electricity
   dataset_carrier_curve_reader :hydrogen

@@ -74,15 +74,19 @@ module Api
       private
 
       def producer_columns
-        converters_of_type(*producer_types).map do |converter|
-          column_from_converter(converter, :output)
-        end
+        producers.map { |converter| column_from_converter(converter, :output) }
       end
 
       def consumer_columns
-        converters_of_type(*consumer_types).map do |converter|
-          column_from_converter(converter, :input)
-        end
+        consumers.map { |converter| column_from_converter(converter, :input) }
+      end
+
+      def producers
+        converters_of_type(producer_types)
+      end
+
+      def consumers
+        converters_of_type(consumer_types)
       end
 
       # Internal: Creates a column representing data for a converter's energy
@@ -94,7 +98,7 @@ module Api
         ]
       end
 
-      def converters_of_type(*types)
+      def converters_of_type(types)
         @adapter.converters(@graph)
           .select { |c| types.include?(@adapter.converter_config(c).type) }
           .sort_by(&:key)
