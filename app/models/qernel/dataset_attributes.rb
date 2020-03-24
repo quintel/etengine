@@ -259,9 +259,6 @@ module Qernel::DatasetAttributes
     else
       dataset_attributes[attr_name]
     end
-
-  rescue => e
-    raise "#{dataset_key} #{attr_name} not found: #{e.message}"
   end
 
   def [](attr_name)
