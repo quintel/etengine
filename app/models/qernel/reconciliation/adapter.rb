@@ -43,7 +43,12 @@ module Qernel
       end
 
       def demand_curve
-        @demand_curve ||= demand_profile * carrier_demand
+        @demand_curve ||=
+          if carrier_demand.zero?
+            Merit::Curve.new([0.0] * 8760)
+          else
+            demand_profile * carrier_demand
+          end
       end
 
       def inspect
