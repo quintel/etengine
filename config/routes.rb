@@ -40,9 +40,6 @@ Rails.application.routes.draw do
 
         resources :custom_curves, only: %i[show update destroy]
 
-        get 'curves/loads', to: 'curves#load_curves', as: :merit_download
-        get 'curves/price', to: 'curves#price_curve', as: :merit_price_download
-
         get 'curves/merit_order',
           to: 'curves#merit_order',
           as: :curves_merit_order_download

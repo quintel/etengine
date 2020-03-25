@@ -21,38 +21,6 @@ module Api
       # Downloads the load on each participant in the electricity merit order as
       # a CSV.
       #
-      # This CSV is deprecated and is replaced by the "merit_order" action.
-      #
-      # GET /api/v3/scenarios/:scenario_id/merit/loads.csv
-      def load_curves
-        order = scenario.gql.future_graph.plugin(:merit).order
-
-        send_csv('loads') do |csv|
-          order.load_curves.each do |row|
-            # Temporary: Manually derotate curves. This CSV will soon be
-            # removed.
-            csv << row.rotate(-Qernel::Plugins::Causality::CURVE_ROTATE)
-          end
-        end
-      end
-
-      # Downloads the merit order price for each hour of the year as a CSV.
-      #
-      # This CSV is deprecated and is replaced by the "electricity_price"
-      # action.
-      #
-      # GET /api/v3/scenarios/:scenario_id/merit/price.csv
-      def price_curve
-        graph = scenario.gql.future_graph
-
-        send_csv('price') do |csv|
-          graph.carrier(:electricity).cost_curve.each { |row| csv << [row] }
-        end
-      end
-
-      # Downloads the load on each participant in the electricity merit order as
-      # a CSV.
-      #
       # GET /api/v3/scenarios/:scenario_id/curves/merit_order.csv
       def merit_order
         render_presenter Api::V3::MeritCSVPresenter.new(
