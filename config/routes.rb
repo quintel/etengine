@@ -63,11 +63,8 @@ Rails.application.routes.draw do
         get 'curves/network_gas',
           to: 'curves#network_gas',
           as: :curves_network_gas_download
-
-        # Old paths for Merit downloads.
-        get 'merit/loads', to: redirect('api/v3/scenarios/%{scenario_id}/curves/loads')
-        get 'merit/price', to: redirect('api/v3/scenarios/%{scenario_id}/curves/price')
       end
+
       resources :converters, :only => :show do
         get :topology, :on => :collection
       end
