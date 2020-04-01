@@ -9,7 +9,7 @@
         Converters
         = render "search_box"
 
-    %table.table.table-condensed
+    %table.table.table-condensed.converter-list
       %thead
         %tr
           %th{:colspan => 3}
@@ -31,7 +31,7 @@
             %td= converter.excel_id
             %td= link_to highlight(converter.key.to_s, params[:q]),
                   inspect_converter_path(:id => converter)
-            %td
+            %td.buttons
               %small
                 = link_to 'pres',
                   inspect_converter_path(:id => converter, :format => 'svg'),
@@ -42,9 +42,12 @@
 
             - fields.each do |field|
               - if converter.key.present? and query = "V(#{converter.key.to_s.downcase},#{field})"
-                - p, f = gql_query(query).results
-                %td.tar{:title => title_tag_number(p)}= auto_number(p)
-                %td.tar{:title => title_tag_number(f)}= auto_number(f)
+                - begin
+                  - p, f = gql_query(query).results
+                  %td.tar{ :title => title_tag_number(p) }= auto_number(p)
+                  %td.tar{ :title => title_tag_number(f) }= auto_number(f)
+                - rescue => e
+                  %td{ colspan: 2 }= e.message
       %tfoot
         %tr
           %td{:colspan => 5}= paginate @converters
