@@ -60,4 +60,20 @@ describe Api::V3::ScenarioPresenter do
       expect(subject[:inputs].keys.sort).to eq(Input.all.map(&:key).sort)
     end
   end
+
+  context 'with an unprotected scenario' do
+    subject { described_class.new(controller, scenario).as_json }
+
+    before { scenario.update!(protected: false) }
+
+    it { is_expected.to include(protected: false) }
+  end
+
+  context 'with a protected scenario' do
+    subject { described_class.new(controller, scenario).as_json }
+
+    before { scenario.update!(protected: true) }
+
+    it { is_expected.to include(protected: true) }
+  end
 end # Api::V3::ScenarioPresenter
