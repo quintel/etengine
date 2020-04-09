@@ -634,4 +634,16 @@ describe 'Updating inputs with API v3' do
       expect(response.status).to eq(200)
     end
   end
+
+  context 'when submitting malformed JSON', :focus do
+    before do
+      put "/api/v3/scenarios/#{scenario.id}",
+        params: '{',
+        headers: { 'CONTENT_TYPE' => 'application/json' }
+    end
+
+    it 'responds 400 Bad Request' do
+      expect(response.status).to eq(400)
+    end
+  end
 end

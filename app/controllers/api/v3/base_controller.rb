@@ -20,6 +20,18 @@ module Api
       def render_not_found(body = {})
         render json: body, status: :not_found
       end
+
+      # Processes the controller action.
+      #
+      # Wraps around the default to rescue malformed params (e.g. JSON bodies)
+      # which is currently not possible with `rescue_from`.
+      #
+      # See: https://github.com/rails/rails/issues/38285
+      def process_action(*args)
+        super
+      rescue ActionDispatch::Http::Parameters::ParseError => e
+        render status: 400, json: { errors: [e.message] }
+      end
     end
   end
 end
