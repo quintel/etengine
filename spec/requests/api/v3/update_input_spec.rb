@@ -635,7 +635,7 @@ describe 'Updating inputs with API v3' do
     end
   end
 
-  context 'when submitting malformed JSON', :focus do
+  context 'when submitting malformed JSON' do
     before do
       put "/api/v3/scenarios/#{scenario.id}",
         params: '{',
