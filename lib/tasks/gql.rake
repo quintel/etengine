@@ -128,13 +128,6 @@ namespace :gql do
     end
   end
 
-  desc 'Dump a dataset for debugging datasets.'
-  task :dataset => :environment do
-    gql = unprepared_gql
-    hsh = Etsource::Loader.instance.raw_hash(gql.scenario.area_code)
-    puts YAML::dump(hsh)
-  end
-
   def init_environment
     Rails.cache.clear
     # Use etsource git repository per default

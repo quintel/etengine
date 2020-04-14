@@ -16,15 +16,6 @@ module Etsource
       @etsource = Etsource::Base.instance
     end
 
-    def globals(file_name)
-      instrument("etsource.loader: globals #{file_name.inspect}") do
-        cache("globals/#{file_name}") do
-          f = "#{@etsource.export_dir}/datasets/_globals/#{file_name}.yml"
-          File.exists?(f) ? YAML::load_file(f) : nil
-        end
-      end
-    end
-
     # @return [Qernel::Graph] a deep clone of the graph.
     #   It is important to work with clones, because present and future_graph should
     #   be independent to reduce bugs.
@@ -71,11 +62,6 @@ module Etsource
       end
     end
 
-    # Only used for the gql console dataset output
-    def raw_hash(country)
-      ::Etsource::Dataset::Import.new(country).raw_hash
-    end
-
     def gqueries
       instrument("etsource.loader: gqueries") do
         cache("gqueries") do
@@ -104,7 +90,7 @@ module Etsource
       Rails.cache.delete("#{cache_key}#{type}")
     end
 
-  protected
+    protected
 
     def cache(key, &block)
       Rails.cache.fetch(cache_key+key) do
