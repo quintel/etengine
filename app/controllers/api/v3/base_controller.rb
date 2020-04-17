@@ -1,6 +1,10 @@
 module Api
   module V3
     class BaseController < ApplicationController
+      rescue_from ActionController::ParameterMissing do |e|
+        render status: 400, json: { errors: [e.message] }
+      end
+
       private
 
       # Many API actions require an active scenario. Let's set it here
