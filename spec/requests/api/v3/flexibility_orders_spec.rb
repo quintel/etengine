@@ -233,5 +233,26 @@ describe 'APIv3 flexibility orders' do
         expect { request }.not_to(change { order.reload.attributes })
       end
     end
+
+    context 'when the request is missing the flexibility_order key' do
+      let(:request) do
+        put url, params: { order: valid_options.reverse }
+      end
+
+      it 'is a failed request' do
+        request
+        expect(response).not_to be_successful
+      end
+
+      it 'responds with a list of errors' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'errors' => [
+            'param is missing or the value is empty: flexibility_order'
+          ]
+        )
+      end
+    end
   end
 end
