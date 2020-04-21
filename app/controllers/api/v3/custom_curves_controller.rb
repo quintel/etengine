@@ -16,8 +16,10 @@ module Api
       PERMITTED_CURVES = Set.new(CURVE_SANITIZERS.keys).freeze
 
       respond_to :json
+
       before_action :ensure_valid_curve_name, except: :index
       before_action :ensure_reasonable_file_size, only: :update
+      before_action :ensure_curve_set, only: %i[show destroy]
 
       # Sends information abuot all custom curves attached to the scenario.
       #
@@ -107,6 +109,10 @@ module Api
           json: { errors: ["No such custom curve: #{params[:id].inspect}"] },
           status: 422
         )
+      end
+
+      def ensure_curve_set
+        render_not_found unless current_attachment.attached?
       end
 
       # Asserts that the uploaded file is not too large; there's no reason for
