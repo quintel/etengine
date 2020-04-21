@@ -58,8 +58,8 @@ describe 'Custom curves', :etsource_fixture do
     context 'when showing a curve and the scenario has nothing attached' do
       before { get(url) }
 
-      it 'succeeds' do
-        expect(response).to be_successful
+      it 'is 404 Not Found' do
+        expect(response).to be_not_found
       end
 
       it 'sends an empty JSON object' do
@@ -252,9 +252,9 @@ describe 'Custom curves', :etsource_fixture do
     describe 'when removing and the scenario has no curve attached' do
       let(:request) { delete url }
 
-      it 'succeeds' do
+      it 'is 404 Not Found' do
         request
-        expect(response).to be_successful
+        expect(response).to be_not_found
       end
 
       it 'returns JSON representing no curve attached' do
