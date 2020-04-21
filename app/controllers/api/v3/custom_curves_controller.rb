@@ -16,15 +16,27 @@ module Api
       PERMITTED_CURVES = Set.new(CURVE_SANITIZERS.keys).freeze
 
       respond_to :json
-      before_action :ensure_valid_curve_name
+      before_action :ensure_valid_curve_name, except: :index
       before_action :ensure_reasonable_file_size, only: :update
+
+      # Sends information abuot all custom curves attached to the scenario.
+      #
+      # GET /api/v3/scenarios/:scenario_id/custom_curves
+      def index
+        curves =
+          CURVE_SANITIZERS.each_key.map do |key|
+            attachment_json(attachment(key)).as_json.presence
+          end
+
+        render json: curves.compact
+      end
 
       # Sends the name of the current custom curve for the scenario, or an empty
       # object if none is set.
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
-        render json: attachment_json(attachment)
+        render json: attachment_json(current_attachment)
       end
 
       # Creates or updates a custom curve for a scenario.
@@ -35,13 +47,13 @@ module Api
         sanitizer = create_sanitizer(params[:id], upload.tempfile)
 
         if sanitizer.valid?
-          attachment.attach(
+          current_attachment.attach(
             io: StringIO.new(sanitizer.sanitized_curve.join("\n")),
             filename: upload.original_filename,
             content_type: 'text/csv'
           )
 
-          render json: attachment_json(attachment)
+          render json: attachment_json(current_attachment)
         else
           render json: errors_json(sanitizer), status: 422
         end
@@ -51,7 +63,7 @@ module Api
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        attachment.purge if attachment.attached?
+        current_attachment.purge if current_attachment.attached?
 
         render json: {}, status: 200
       end
@@ -62,8 +74,12 @@ module Api
         Scenario.find(params[:scenario_id])
       end
 
-      def attachment
-        scenario.send("#{params[:id]}_curve")
+      def current_attachment
+        attachment(params[:id])
+      end
+
+      def attachment(type)
+        scenario.send("#{type}_curve")
       end
 
       def attachment_json(attachment)
