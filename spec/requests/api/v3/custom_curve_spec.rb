@@ -8,6 +8,50 @@ describe 'Custom curves', :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves/#{curve_name}" }
 
+  context 'when requesting all attached curves' do
+    let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves" }
+
+    context 'when nothing is attached' do
+      before { get(url) }
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends no curve data' do
+        expect(JSON.parse(response.body)).to eq([])
+      end
+    end
+
+    context 'with an attached curve for interconnector 1' do
+      before do
+        put "#{url}/imported_electricity_price", params: {
+          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+        }
+
+        get(url)
+      end
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends data about one curve' do
+        expect(JSON.parse(response.body).length).to eq(1)
+      end
+
+      it 'sends data about the attached curve' do
+        expect(JSON.parse(response.body)).to include(
+          hash_including(
+            'type' => 'imported_electricity_price',
+            'name' => 'price_curve.csv',
+            'size' => 35_039
+          )
+        )
+      end
+    end
+  end
+
   context 'with a valid curve name' do
     let(:curve_name) { 'imported_electricity_price' }
 

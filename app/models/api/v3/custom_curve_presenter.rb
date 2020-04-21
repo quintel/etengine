@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     # Provides JSON information about a custom curve.
@@ -11,6 +13,7 @@ module Api
         return {} unless @attachment.attached?
 
         {
+          type: @attachment.name.to_s.chomp('_curve'),
           name: @attachment.filename.to_s,
           size: @attachment.byte_size,
           date: @attachment.created_at,
