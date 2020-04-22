@@ -39,7 +39,8 @@ module Qernel
         target_api.demand =
           full_load_seconds *
           source_api.input_capacity *
-          participant.number_of_units
+          participant.number_of_units / #
+          @converter.converter.input(@context.carrier).conversion
 
         inject_curve!(:input) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
