@@ -24,7 +24,7 @@ module Qernel
       end
 
       def inject!
-        full_load_hours = participant.full_load_hours * output_efficiency
+        full_load_hours = participant.full_load_hours / input_efficiency
 
         full_load_seconds =
           if !full_load_hours || full_load_hours.nan?
@@ -39,8 +39,7 @@ module Qernel
         target_api.demand =
           full_load_seconds *
           source_api.input_capacity *
-          participant.number_of_units / #
-          @converter.converter.input(@context.carrier).conversion
+          participant.number_of_units
 
         inject_curve!(:input) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
@@ -67,6 +66,10 @@ module Qernel
           source_api.input_capacity
 
         attrs
+      end
+
+      def input_efficiency
+        @converter.converter.input(@context.carrier)&.conversion || 1.0
       end
 
       def output_efficiency
