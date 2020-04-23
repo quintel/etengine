@@ -84,11 +84,6 @@ module Qernel
         Merit::Flex::Storage
       end
 
-      def input_efficiency
-        slots = @converter.converter.inputs.reject(&:loss?)
-        1 / (slots.any? ? slots.sum(&:conversion) : 1.0)
-      end
-
       # Infinite storage has an infinitely large reserve, which is then resized
       # after the calculation to be the maximum value stored.
       def infinite_storage?
