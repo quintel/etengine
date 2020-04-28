@@ -74,10 +74,7 @@ module Qernel
       end
 
       def storage_volume_per_unit
-        return Float::INFINITY if infinite_storage?
-
-        source_api.storage.volume *
-          (1 - (source_api.reserved_fraction || 0.0))
+        infinite_storage? ? Float::INFINITY : source_api.storage.volume
       end
 
       def producer_class
