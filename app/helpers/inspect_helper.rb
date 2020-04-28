@@ -181,7 +181,7 @@ module InspectHelper
   #
   # Returns true or false.
   def object_attribute_is_converter?(name)
-    %i[alias_of delegate].include?(name)
+    %i[alias_of output_capacity_from_demand_of delegate].include?(name)
   end
 
   # Public: Returns the scenario flexibility or heat network order as a string
