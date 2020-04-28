@@ -38,7 +38,7 @@ module Qernel
 
         target_api.demand =
           full_load_seconds *
-          source_api.input_capacity *
+          participant.output_capacity_per_unit *
           participant.number_of_units
 
         inject_curve!(:input) do
