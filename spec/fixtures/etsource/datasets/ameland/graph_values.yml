@@ -7,6 +7,3 @@ share_setter:
 
 conversion_setter:
   :"converter_fixture_for_slots+@gas": 0.5
-
-reserved_fraction_setter:
-  baz: 1

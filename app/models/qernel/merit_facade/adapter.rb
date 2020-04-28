@@ -43,7 +43,7 @@ module Qernel
       # Returns true or false.
       def installed?
         source_api.number_of_units.positive? &&
-          source_api.availability.positive?
+          target_api.availability.positive?
       end
 
       private
@@ -57,7 +57,7 @@ module Qernel
         {
           key: @converter.key,
           number_of_units: source_api.number_of_units,
-          availability: source_api.availability,
+          availability: target_api.availability,
 
           # The marginal costs attribute is not optional, but it is an
           # unnecessary calculation when the Merit order is not being run.
