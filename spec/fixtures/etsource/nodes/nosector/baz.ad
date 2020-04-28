@@ -1,2 +1,2 @@
 - groups = []
-- graph_methods = [demand_setter, reserved_fraction_setter]
+- graph_methods = [demand_setter]
