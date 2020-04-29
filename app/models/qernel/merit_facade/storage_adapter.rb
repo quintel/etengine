@@ -15,6 +15,12 @@ module Qernel
 
         inject_infinite! if infinite_storage?
 
+        # If the capacity is set dynamically by this adapter, reflect the change
+        # on the source node.
+        if @config.output_capacity_from_demand_of
+          inject_dynamic_output_capacity!
+        end
+
         # If the output slot has two links, one a share link and one inversed
         # flexible, assume that unused energy is dumped through the flexible.
         # Adjust the share edge so that only energy actually emitted by the
@@ -44,6 +50,10 @@ module Qernel
 
       def producer_attributes
         attrs = super
+
+        if @config.output_capacity_from_demand_of
+          attrs[:output_capacity_per_unit] = capacity_from_other_demand
+        end
 
         attrs[:input_capacity_per_unit] =
           source_api.input_capacity ||
@@ -94,6 +104,27 @@ module Qernel
         source_api.storage.volume = stored.max.ceil.to_f
 
         inject_curve!(full_name: :storage_curve) { stored }
+      end
+
+      def inject_dynamic_output_capacity!
+        capacity = @participant.output_capacity_per_unit
+        target_api.output_capacity = capacity
+
+        if @context.carrier == :electricity
+          target_api.electricity_output_capacity = capacity
+        elsif @context.carrier == :steam_hot_water
+          target_api.heat_output_capacity = capacity
+        end
+      end
+
+      # Internal: When "output_capacity_from_demand_of" is set, set the capacity
+      # of the storage to be equal to the average demand of another node,
+      # multiplied by a constant chosen by the user.
+      def capacity_from_other_demand
+        node = @context.graph.converter(@config.output_capacity_from_demand_of)
+        avg_load = node.demand / 8760 / 3600
+
+        avg_load * @config.output_capacity_from_demand_share
       end
     end
   end
