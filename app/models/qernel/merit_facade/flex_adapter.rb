@@ -65,6 +65,14 @@ module Qernel
           source_api.output_capacity ||
           source_api.input_capacity
 
+        if @config.subtype.blank?
+          # Temporary fix for quintel/etmodel#3335.
+          attrs[:input_capacity_per_unit] =
+            (source_api.input_capacity ||
+              source_api.output_capacity
+            ) * input_efficiency
+        end
+
         attrs
       end
 
