@@ -57,27 +57,35 @@ module Qernel
 
         attrs[:marginal_costs] = marginal_costs
 
-        # Default is to multiply the input capacity by the carrier output
-        # conversion. This doesn't work, because the flex converters have a
-        # dependant link and the conversion will be zero the first time the
-        # graph is calculated.
-        attrs[:output_capacity_per_unit] =
-          source_api.output_capacity ||
-          source_api.input_capacity
+        attrs[:output_capacity_per_unit] = output_capacity
+        attrs[:input_capacity_per_unit] = input_capacity
 
         attrs
       end
 
       def input_efficiency
-        @converter.converter.input(@context.carrier)&.conversion || 1.0
+        input = @converter.converter.input(@context.carrier)
+        input ? input.conversion : 0.0
       end
 
       def output_efficiency
         # Most attributes come from the delegate, but this is not the case for
         # output efficiency for which the participant may be assigned a
         # different value than the delegate.
-        slots = @converter.converter.outputs.reject(&:loss?)
-        slots.any? ? slots.sum(&:conversion) : 1.0
+        # @converter.converter.output(@context.carrier)&.conversion || 0.0
+
+        output = @converter.converter.output(@context.carrier)
+        output ? output.conversion : 0.0
+      end
+
+      def input_capacity
+        cap = source_api.input_capacity || source_api.output_capacity
+        cap * input_efficiency
+      end
+
+      def output_capacity
+        cap = source_api.output_capacity || source_api.input_capacity
+        cap * output_efficiency
       end
 
       def producer_class

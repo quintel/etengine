@@ -51,13 +51,16 @@ module Qernel
       def producer_attributes
         attrs = super
 
+        # This is done prior to calling `capacity_from_other_demand` as that
+        # feature specifies that it affects output capacity only, and input
+        # capacity should remain as defined by the node.
+        if linked_capacity?
+          attrs[:input_capacity_per_unit] = attrs[:output_capacity_per_unit]
+        end
+
         if @config.output_capacity_from_demand_of
           attrs[:output_capacity_per_unit] = capacity_from_other_demand
         end
-
-        attrs[:input_capacity_per_unit] =
-          source_api.input_capacity ||
-          source_api.output_capacity
 
         attrs[:input_efficiency]  = input_efficiency
         attrs[:output_efficiency] = output_efficiency
@@ -125,6 +128,14 @@ module Qernel
         avg_load = node.demand / 8760 / 3600
 
         avg_load * @config.output_capacity_from_demand_share
+      end
+
+      # Internal: Indicates that the input conversions should be ignored and not
+      # used to set capacity, but instead the input capacity is equal to the
+      # output capacity. This permits the use of conversions to set storage
+      # efficiency.
+      def linked_capacity?
+        @config.subtype == :storage
       end
     end
   end
