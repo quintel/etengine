@@ -72,10 +72,8 @@ module Qernel
         # Most attributes come from the delegate, but this is not the case for
         # output efficiency for which the participant may be assigned a
         # different value than the delegate.
-        # @converter.converter.output(@context.carrier)&.conversion || 0.0
-
         output = @converter.converter.output(@context.carrier)
-        output ? output.conversion : 0.0
+        output ? output.conversion : 1.0
       end
 
       def input_capacity
