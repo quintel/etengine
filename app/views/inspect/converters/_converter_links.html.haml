@@ -71,7 +71,7 @@
                           %th Energy flow (MJ)
                           %th Converter
                       %tbody
-                        - input_slot.links.sort_by { |s| s.lft_converter.key }.each_with_index do |input_link, i|
+                        - input_slot.links.sort_by { |s| s.rgt_converter.key }.each_with_index do |input_link, i|
                           %tr
                             %td
                               = input_link.link_type
