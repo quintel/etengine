@@ -149,6 +149,19 @@ module Api
         )
       end
 
+      # POST /api/v3/scenarios/project
+      def project
+        from = Scenario.find(params[:from])
+        onto = Scenario.find(params[:onto])
+        sliders = params[:sliders]
+        render json: Scenario::Projector.new(from, onto, sliders)
+
+      rescue ActiveRecord::RecordNotFound
+        render  status: :bad_request,
+                json: { errors: ['bad request'] }
+
+      end
+
       # PUT-PATCH /api/v3/scenarios/:id
       #
       # This is the main scenario interaction method
