@@ -16,7 +16,7 @@ module Api
           type: @attachment.name.to_s.chomp('_curve'),
           name: @attachment.filename.to_s,
           size: @attachment.byte_size,
-          date: @attachment.created_at,
+          date: @attachment.created_at.utc,
           stats: stats
         }
       end
