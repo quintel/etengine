@@ -72,7 +72,7 @@ module Api
       def destroy
         current_attachment.purge if current_attachment.attached?
 
-        render json: {}, status: 200
+        head :no_content
       end
 
       private
