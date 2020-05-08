@@ -236,9 +236,9 @@ describe 'Custom curves', :etsource_fixture do
         expect(response).to be_successful
       end
 
-      it 'returns JSON representing no curve attached' do
+      it 'sends no data' do
         request
-        expect(JSON.parse(response.body)).to eq({})
+        expect(response.body).to be_empty
       end
 
       it 'removes the attachment' do
