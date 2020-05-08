@@ -113,10 +113,6 @@ module Scenario::Persistable
 
     return unless attachment && attachment.attached?
 
-    imported_electricity_price_curve.attach(
-      io: StringIO.new(attachment.download),
-      filename: attachment.filename.to_s,
-      content_type: attachment.content_type.to_s
-    )
+    imported_electricity_price_curve.attach(attachment.blob)
   end
 end

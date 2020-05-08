@@ -644,4 +644,56 @@ describe Scenario do
       end.to raise_error(Psych::DisallowedClass)
     end
   end
+
+  context 'with two scenarios using the same attached curve' do
+    let(:scenario_one) { FactoryBot.create(:scenario) }
+    let(:scenario_two) { FactoryBot.create(:scenario) }
+
+    before do
+      scenario_one.imported_electricity_price_curve.attach(
+        io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
+        filename: 'price_curve.csv',
+        content_type: 'text/csv'
+      )
+
+      scenario_two.imported_electricity_price_curve.attach(
+        scenario_one.imported_electricity_price_curve.blob
+      )
+
+      scenario_one.reload
+      scenario_two.reload
+    end
+
+    it 'the first scenario has a price curve' do
+      expect(scenario_one.imported_electricity_price_curve).to be_attached
+    end
+
+    it 'the second scenario has a price curve' do
+      expect(scenario_two.imported_electricity_price_curve).to be_attached
+    end
+
+    it 'the scenario have the same price curve blob' do
+      expect(scenario_two.imported_electricity_price_curve.blob).
+        to eq(scenario_one.imported_electricity_price_curve.blob)
+    end
+
+    # Sanity check against Rails behaviour changing in the future.
+    it 'the blob is not deleted when removed from one scenario' do
+      expect { scenario_one.imported_electricity_price_curve.purge }
+        .not_to change(ActiveStorage::Blob, :count)
+    end
+
+    it 'the reference is kept intact when removed from only one scenario' do
+      scenario_one.imported_electricity_price_curve.purge
+      expect(scenario_two.imported_electricity_price_curve).to be_attached
+    end
+
+    # Sanity check against Rails behaviour changing in the future.
+    it 'the blob is deleted when removed from both scenarios' do
+      scenario_one.imported_electricity_price_curve.purge
+
+      expect { scenario_two.imported_electricity_price_curve.purge }
+        .to change(ActiveStorage::Blob, :count).by(-1)
+    end
+  end
 end
