@@ -440,9 +440,9 @@ describe Scenario do
       end
     end
 
-    context 'with a custom imported electricity price curve' do
+    context 'with a custom interconnector 1 electricity price curve' do
       before do
-        preset.imported_electricity_price_curve.attach(
+        preset.interconnector_1_price_curve.attach(
           io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
           filename: 'price_curve.csv',
           content_type: 'text/csv'
@@ -450,17 +450,41 @@ describe Scenario do
       end
 
       it 'works' do
-        expect(scenario.imported_electricity_price_curve).to be_attached
+        expect(scenario.interconnector_1_price_curve).to be_attached
       end
 
       it 'creates a new attachment' do
-        expect(scenario.imported_electricity_price_curve)
-          .not_to eq(preset.imported_electricity_price_curve)
+        expect(scenario.interconnector_1_price_curve)
+          .not_to eq(preset.interconnector_1_price_curve)
       end
 
       it 'has the same content as the original' do
-        expect(scenario.imported_electricity_price_curve.download)
-          .to eq(preset.imported_electricity_price_curve.download)
+        expect(scenario.interconnector_1_price_curve.download)
+          .to eq(preset.interconnector_1_price_curve.download)
+      end
+    end
+
+    context 'with a custom interconnector 3 electricity price curve' do
+      before do
+        preset.interconnector_3_price_curve.attach(
+          io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
+          filename: 'price_curve.csv',
+          content_type: 'text/csv'
+        )
+      end
+
+      it 'works' do
+        expect(scenario.interconnector_3_price_curve).to be_attached
+      end
+
+      it 'creates a new attachment' do
+        expect(scenario.interconnector_3_price_curve)
+          .not_to eq(preset.interconnector_3_price_curve)
+      end
+
+      it 'has the same content as the original' do
+        expect(scenario.interconnector_3_price_curve.download)
+          .to eq(preset.interconnector_3_price_curve.download)
       end
     end
 
@@ -650,14 +674,14 @@ describe Scenario do
     let(:scenario_two) { FactoryBot.create(:scenario) }
 
     before do
-      scenario_one.imported_electricity_price_curve.attach(
+      scenario_one.interconnector_1_price_curve.attach(
         io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
         filename: 'price_curve.csv',
         content_type: 'text/csv'
       )
 
-      scenario_two.imported_electricity_price_curve.attach(
-        scenario_one.imported_electricity_price_curve.blob
+      scenario_two.interconnector_1_price_curve.attach(
+        scenario_one.interconnector_1_price_curve.blob
       )
 
       scenario_one.reload
@@ -665,34 +689,34 @@ describe Scenario do
     end
 
     it 'the first scenario has a price curve' do
-      expect(scenario_one.imported_electricity_price_curve).to be_attached
+      expect(scenario_one.interconnector_1_price_curve).to be_attached
     end
 
     it 'the second scenario has a price curve' do
-      expect(scenario_two.imported_electricity_price_curve).to be_attached
+      expect(scenario_two.interconnector_1_price_curve).to be_attached
     end
 
     it 'the scenario have the same price curve blob' do
-      expect(scenario_two.imported_electricity_price_curve.blob).
-        to eq(scenario_one.imported_electricity_price_curve.blob)
+      expect(scenario_two.interconnector_1_price_curve.blob).
+        to eq(scenario_one.interconnector_1_price_curve.blob)
     end
 
     # Sanity check against Rails behaviour changing in the future.
     it 'the blob is not deleted when removed from one scenario' do
-      expect { scenario_one.imported_electricity_price_curve.purge }
+      expect { scenario_one.interconnector_1_price_curve.purge }
         .not_to change(ActiveStorage::Blob, :count)
     end
 
     it 'the reference is kept intact when removed from only one scenario' do
-      scenario_one.imported_electricity_price_curve.purge
-      expect(scenario_two.imported_electricity_price_curve).to be_attached
+      scenario_one.interconnector_1_price_curve.purge
+      expect(scenario_two.interconnector_1_price_curve).to be_attached
     end
 
     # Sanity check against Rails behaviour changing in the future.
     it 'the blob is deleted when removed from both scenarios' do
-      scenario_one.imported_electricity_price_curve.purge
+      scenario_one.interconnector_1_price_curve.purge
 
-      expect { scenario_two.imported_electricity_price_curve.purge }
+      expect { scenario_two.interconnector_1_price_curve.purge }
         .to change(ActiveStorage::Blob, :count).by(-1)
     end
   end

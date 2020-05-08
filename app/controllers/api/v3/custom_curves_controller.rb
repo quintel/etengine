@@ -9,7 +9,12 @@ module Api
       # A map of permitted curves to the sanitizer class responsible for
       # checking and formatting the contents of the curve.
       CURVE_SANITIZERS = {
-        'imported_electricity_price' => Api::PriceCurveSanitizer
+        'interconnector_1_price' => Api::PriceCurveSanitizer,
+        'interconnector_2_price' => Api::PriceCurveSanitizer,
+        'interconnector_3_price' => Api::PriceCurveSanitizer,
+        'interconnector_4_price' => Api::PriceCurveSanitizer,
+        'interconnector_5_price' => Api::PriceCurveSanitizer,
+        'interconnector_6_price' => Api::PriceCurveSanitizer
       }.freeze
 
       # A set containing the list of permitted curve names.

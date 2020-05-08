@@ -2,12 +2,12 @@ require 'spec_helper'
 
 describe Api::V3::CustomCurvePresenter do
   let(:scenario) { FactoryBot.create(:scenario) }
-  let(:attachment) { scenario.imported_electricity_price_curve }
+  let(:attachment) { scenario.interconnector_1_price_curve }
   let(:json) { described_class.new(attachment).as_json }
 
   context 'with an attached curve' do
     before do
-      scenario.imported_electricity_price_curve.attach(
+      scenario.interconnector_1_price_curve.attach(
         io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
         filename: 'price_curve.csv',
         content_type: 'text/csv'

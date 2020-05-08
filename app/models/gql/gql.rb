@@ -265,19 +265,6 @@ module Gql
         @present_graph.dataset_set(sortable.graph_key, order)
         @future_graph.dataset_set(sortable.graph_key, order)
       end
-
-      if @scenario.imported_electricity_price_curve.attached?
-        path = ActiveStorage::Blob.service.path_for(
-          @scenario.imported_electricity_price_curve.key
-        )
-
-        # The graph wants an array. Loading a curve and converting to an array
-        # is expensive since Merit::Curve has to deal with the possibility of
-        # missing/default values. Using the reader directly avoids this
-        # overhead.
-        @future_graph.carrier(:imported_electricity).cost_curve =
-          Merit::Curve.reader.read(path)
-      end
     end
 
     def scale_dataset

@@ -25,7 +25,7 @@ describe 'Custom curves', :etsource_fixture do
 
     context 'with an attached curve for interconnector 1' do
       before do
-        put "#{url}/imported_electricity_price", params: {
+        put "#{url}/interconnector_1_price", params: {
           file: fixture_file_upload('files/price_curve.csv', 'text/csv')
         }
 
@@ -43,7 +43,7 @@ describe 'Custom curves', :etsource_fixture do
       it 'sends data about the attached curve' do
         expect(JSON.parse(response.body)).to include(
           hash_including(
-            'type' => 'imported_electricity_price',
+            'type' => 'interconnector_1_price',
             'name' => 'price_curve.csv',
             'size' => 35_039
           )
@@ -53,7 +53,7 @@ describe 'Custom curves', :etsource_fixture do
   end
 
   context 'with a valid curve name' do
-    let(:curve_name) { 'imported_electricity_price' }
+    let(:curve_name) { 'interconnector_1_price' }
 
     context 'when showing a curve and the scenario has nothing attached' do
       before { get(url) }
@@ -111,7 +111,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'attaches the file' do
         expect { request }
-          .to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .to change { scenario.reload.interconnector_1_price_curve.attached? }
           .from(false).to(true)
       end
     end
@@ -137,7 +137,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'attaches the file' do
         expect { request }
-          .to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .to change { scenario.reload.interconnector_1_price_curve.attached? }
           .from(false).to(true)
       end
     end
@@ -176,7 +176,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'does not change the attachment' do
         expect { request }
-          .not_to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .not_to change { scenario.reload.interconnector_1_price_curve.attached? }
           .from(false)
       end
     end
@@ -217,7 +217,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'does not change the attachment' do
         expect { request }
-          .not_to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .not_to change { scenario.reload.interconnector_1_price_curve.attached? }
           .from(false)
       end
     end
@@ -243,7 +243,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'removes the attachment' do
         expect { request }
-          .to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .to change { scenario.reload.interconnector_1_price_curve.attached? }
           .from(true)
           .to(false)
       end
@@ -264,7 +264,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'does not change the attachment' do
         expect { request }
-          .not_to change { scenario.reload.imported_electricity_price_curve.attached? }
+          .not_to change { scenario.reload.interconnector_1_price_curve.attached? }
           .from(false)
       end
     end

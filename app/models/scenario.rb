@@ -10,6 +10,7 @@ class Scenario < ApplicationRecord
   include Scenario::Persistable
   include Scenario::InputGroups
   include Scenario::Copies
+  include Scenario::Attachments
 
   store :user_values
   store :balanced_values
@@ -19,8 +20,6 @@ class Scenario < ApplicationRecord
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :flexibility_order, dependent: :destroy
   has_one    :heat_network_order, dependent: :destroy
-
-  has_one_attached :imported_electricity_price_curve
 
   validates_presence_of :title, on: :create, message: 'Please provide a title'
   validates             :area_code, presence: true

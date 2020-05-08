@@ -13,6 +13,7 @@ module Gql::Runtime
 
     include ::Gql::Runtime::Functions::Legacy
     include ::Gql::Runtime::Functions::Constants
+    include ::Gql::Runtime::Functions::Curves
     include ::Gql::Runtime::Functions::Traversal
     include ::Gql::Runtime::Functions::Aggregate
     include ::Gql::Runtime::Functions::Control
@@ -21,6 +22,5 @@ module Gql::Runtime
     include ::Gql::Runtime::Functions::Update
     include ::Gql::Runtime::Functions::Helper
     include ::Gql::Runtime::Functions::Core
-    
   end
 end
