@@ -109,10 +109,12 @@ module Scenario::Persistable
   # Internal: Attaches the imported electricity price curve from the preset
   # scenario.
   def attach_preset_imported_electricity_price_curve(preset)
-    attachment = preset.try(:imported_electricity_price_curve)
+    files = preset.try(:attached_files)
 
-    return unless attachment && attachment.attached?
+    return unless files&.any?
 
-    imported_electricity_price_curve.attach(attachment.blob)
+    files.each do |source_file|
+      public_send(source_file.name).attach(source_file.blob)
+    end
   end
 end

@@ -12,6 +12,15 @@ module Qernel
         end
       end
 
+      # Public: Is the import interconnector installed?
+      #
+      # Interconnectors always have one unit, and normally have an availability
+      # of 1.0. Therefore the default `installed?` is not sufficient to exclude
+      # interconenctors which have no capacity.
+      def installed?
+        super && source_api.electricity_output_capacity.positive?
+      end
+
       def inject!
         super
 
@@ -24,18 +33,9 @@ module Qernel
           elec_link.dataset_set(:calculated, true)
         end
 
-        production = participant.production
+        return unless cost_curve? && participant.production.positive?
 
-        return unless production.positive?
-
-        # Recalculate the price per MJ.
-        total_price =
-          carrier.cost_curve.to_enum.with_index.sum do |price, index|
-            price * participant.load_at(index)
-          end
-
-        # Divide by production which is in MJ to set the cost per MJ.
-        carrier.dataset_set(:cost_per_mj, total_price / production)
+        target_api.marginal_costs = participant.marginal_costs
       end
 
       private
@@ -47,10 +47,7 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        cost_curve = carrier.cost_curve
-        first_hour_cost = cost_curve.first
-
-        unless cost_curve.all? { |val| val == first_hour_cost }
+        if cost_curve?
           attrs.delete(:marginal_costs)
           attrs[:cost_curve] = Merit::Curve.new(cost_curve)
         end
@@ -58,8 +55,12 @@ module Qernel
         attrs
       end
 
-      def marginal_costs
-        carrier.cost_curve.first
+      def cost_curve?
+        cost_curve&.any?
+      end
+
+      def cost_curve
+        source_api.marginal_cost_curve
       end
 
       def output_capacity_per_unit
@@ -68,10 +69,6 @@ module Qernel
 
       def flh_capacity
         source_api.electricity_output_capacity
-      end
-
-      def carrier
-        @context.graph.carrier(:imported_electricity)
       end
     end
   end

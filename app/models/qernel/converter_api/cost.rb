@@ -70,6 +70,14 @@ module Qernel
     end
     unit_for_calculation 'marginal_costs', 'euro / MWh'
 
+    # Public: Set a marginal cost for the converter (in euro /MWh), bypassing
+    # the normal marginal cost calculation.
+    #
+    # Returns the cost.
+    def marginal_costs=(value)
+      dataset_set(:marginal_costs, value)
+    end
+
     # Public: Calculates the marginal costs for a plant in euro per MWh of
     # produced heat.
     #

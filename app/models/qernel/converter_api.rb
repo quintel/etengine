@@ -72,6 +72,7 @@ class ConverterApi
   ]
 
   dataset_curve_reader :curtailment_output_curve
+  dataset_curve_reader :marginal_cost_curve
   dataset_curve_reader :storage_curve
   dataset_carrier_curve_reader :electricity
   dataset_carrier_curve_reader :hydrogen
@@ -81,6 +82,11 @@ class ConverterApi
 
   alias_method :useable_heat_output_curve, :heat_output_curve
   alias_method :useable_heat_input_curve,  :heat_input_curve
+
+  def marginal_cost_curve=(curve)
+    # Ignore empty curves and set no value.
+    dataset_set(:marginal_cost_curve, curve&.any? ? curve : nil)
+  end
 
   # Returns a ConverterApi instance based on the given Converter.
   #
