@@ -40,7 +40,11 @@ th.input-demand, th.output-demand
 th.output-demand
   text-align: right
 
-tr.converter-flows
+.converter-flows
+  text-align: center
+  .converter-flows-inner
+    display: inline-block
+    text-align: left
   .energy, .delta
     float: left
   .energy
@@ -53,8 +57,10 @@ tr.converter-flows
     position: relative
   .input, .output, .demand, .name
     background: white
-    min-width: 65px
+    box-sizing: border-box
     display: inline-block
+    min-width: 80px
+    padding: 5px 8px 4px
     text-align: center
   .name
     background: none
@@ -63,13 +69,11 @@ tr.converter-flows
   .input, .output
     border-radius: 3px
     border: 1px solid #ddd
-    padding: 3px 6px 2px
   .demand
     background: #444
     border-radius: 3px
     color: #fff
     margin: 1px 2px 0
-    padding: 4px 7px 3px
   .present
     color: #999
     .demand
@@ -77,10 +81,16 @@ tr.converter-flows
   .delta
     background: #eee
     border-radius: 3px
+    font-size: 1rem
     padding: 8px
     color: #444
-    font-size: 1rem
     margin-top: 22px
+
+.link-flows
+  .nav-tabs
+    font-size: 16px
+    .active
+      font-weight: bold
 
 .converter-attrs
   font-family: monospace

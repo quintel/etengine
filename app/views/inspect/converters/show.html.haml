@@ -15,43 +15,56 @@
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
       = link_to 'View document', link_to_node_file(@converter_future)
 
+.row-fluid.span-12.converter-flows
+  .converter-flows-inner
+    .energy
+      .present
+        %span.name Present
+        %span.output(title="Output flow")
+          = auto_number converter_flow(@converter_present, :outputs)
+        &larr;
+        %span.demand(title="Demand")<
+          = auto_number @converter_present.demand
+        &larr;
+        %span.input(title="Input flow")
+          = auto_number converter_flow(@converter_present, :inputs)
+      .future
+        %span.name Future
+        %span.output(title="Output flow")
+          = auto_number converter_flow(@converter_future, :outputs)
+        &larr;
+        %span.demand(title="Demand")<
+          = auto_number @converter_future.demand
+        &larr;
+        %span.input(title="Input flow")
+          = auto_number converter_flow(@converter_future, :inputs)
+    - delta = (@converter_future.demand / @converter_present.demand) * 100 - 100
+    - if delta.abs > 1e-5
+      .delta
+        - if delta > 0
+          ⬆
+        - else
+          ⬇
+        == #{ auto_number(delta) }%
+
+.tabbable.link-flows
+  %ul.nav.nav-tabs
+    %li
+      %a{ 'href' => "#present-links", 'data-toggle' => 'tab' } Present Flows
+    %li.active
+      %a{ 'href' => "#future-links", 'data-toggle' => 'tab' } Future Flows
+
+  .tab-content
+    #present-links.tab-pane
+      = render 'converter_links', c: @converter_present
+    #future-links.tab-pane.active
+      = render 'converter_links', c: @converter_future
+
 .row-fluid
   .span12
     %h2 Details
     %table.table.table-condensed
       %tbody
-        %tr.converter-flows
-          %td Flows
-          %td
-            .energy
-              .present
-                %span.name Present
-                %span.output(title="Output flow")
-                  = auto_number converter_flow(@converter_present, :outputs)
-                &larr;
-                %span.demand(title="Demand")<
-                  = auto_number @converter_present.demand
-                &larr;
-                %span.input(title="Input flow")
-                  = auto_number converter_flow(@converter_present, :inputs)
-              .future
-                %span.name Future
-                %span.output(title="Output flow")
-                  = auto_number converter_flow(@converter_future, :outputs)
-                &larr;
-                %span.demand(title="Demand")<
-                  = auto_number @converter_future.demand
-                &larr;
-                %span.input(title="Input flow")
-                  = auto_number converter_flow(@converter_future, :inputs)
-            - delta = (@converter_future.demand / @converter_present.demand) * 100 - 100
-            - if delta.abs > 1e-5
-              .delta
-                - if delta > 0
-                  ⬆
-                - else
-                  ⬇
-                == #{ auto_number(delta) }%
         %tr
           %td Sector
           %td= @converter_present.sector_key
@@ -81,20 +94,6 @@
             %ol
               - Input.with_queries_containing(converter_key).sort_by(&:key).each do |input|
                 %li= link_to input.key, inspect_input_path(:id => input.id, :highlight => converter_key)
-
-.row-fluid.future-edges
-  .span12
-    %h2
-      Future Input / Outputs
-      = link_to 'Show present values'
-    = render 'converter_links', c: @converter_future
-
-.row-fluid.present-edges(style="display:none")
-  .span12
-    %h2
-      Present Input / Outputs
-      = link_to 'Show future values'
-    = render 'converter_links', c: @converter_present
 
 - if @presenter.attributes_and_methods_to_show.any?
   .row-fluid

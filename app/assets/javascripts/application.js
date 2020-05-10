@@ -107,31 +107,17 @@ $(document).ready(function() {
 
   // Present / Future Edge Swapper
 
-  function supports_html5_storage() {
-      try {
-          return 'localStorage' in window && window['localStorage'] !== null;
-      } catch (e) {
-          return false;
-      }
-  }
+  if (document.querySelector('.link-flows')) {
+    $('.link-flows .nav-tabs a').click(function(event) {
+      localStorage.setItem(
+        'selectedPeriod', $(event.target).attr('href')
+      );
+    });
 
-  $('.future-edges h2 a, .present-edges h2 a').click(function(event) {
-    $('.future-edges').toggle();
-    $('.present-edges').toggle();
-
-    if (supports_html5_storage()) {
-        localStorage.setItem(
-            'presentEdges', $('.present-edges').is(':visible')
-        );
+    var selectedPeriod = localStorage.getItem('selectedPeriod');
+    if (selectedPeriod) {
+        $('.link-flows .nav-tabs a[href="' + selectedPeriod + '"]').click();
     }
-
-    event.preventDefault();
-  });
-
-  if (supports_html5_storage()) {
-      if (localStorage.getItem('presentEdges') === 'true') {
-          $('.future-edges h2 a').click();
-      }
   }
 
   $('.gql-debug #query').keyup(function(event) {
