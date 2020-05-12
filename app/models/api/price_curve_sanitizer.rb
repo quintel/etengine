@@ -20,13 +20,33 @@ module Api
     # Public: Takes a CSV file as a raw string, converts each line to a float
     # and returns a sanitizer.
     def self.from_string(string)
-      new(CSV.parse(
-        string.force_encoding('UTF-8').sub(/\A\xEF\xBB\xBF/, ''),
-        converters: :float
-      ).flatten.compact)
+      string = string.force_encoding('UTF-8').sub(/\A\xEF\xBB\xBF/, '')
+
+      # Match the first 1kb rather than the first line, to prevent DoS by
+      # uploading an extremely large file with no newline.
+      if string[0..1024].match?(/price/i)
+        from_table_csv(string)
+      else
+        new(CSV.parse(string, converters: :float).flatten.compact)
+      end
     rescue CSV::MalformedCSVError
       new(nil)
     end
+
+    # Internal: When given a CSV with "Time" and "Price" headers, parses the
+    # file returning only the price data.
+    def self.from_table_csv(string)
+      # Parse without converters, as parsing with `:float` turns out to be
+      # extremely slow when given this type of file.
+      table = CSV.parse(string, converters: nil, headers: true)
+      col = table.headers.find { |header| header.match(/price/i) }
+
+      new(table[col].map do |value|
+        CSV::Converters[:float].call(value)
+      end)
+    end
+
+    private_class_method :from_table_csv
 
     # Create a new Sanitizer with an unsafe curve.
     #
