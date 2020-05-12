@@ -203,6 +203,30 @@ RSpec.describe Api::PriceCurveSanitizer do
       end
     end
 
+    context 'when given an exported price curve' do
+      let(:input) do
+        "Time,Price (Euros)\n" + ("N/A,1.2\n" * 8760)
+      end
+
+      it 'is valid' do
+        expect(sanitizer).to be_valid
+      end
+
+      it 'sanitizes the curve' do
+        expect(sanitizer.sanitized_curve).to eq([1.2] * 8760)
+      end
+    end
+
+    context 'when given an exported price curve with malformed prices' do
+      let(:input) do
+        "Time,Price (Euros)\n" + ("N/A,1.2a\n" * 8760)
+      end
+
+      it 'is not valid' do
+        expect(sanitizer).not_to be_valid
+      end
+    end
+
     context 'when given a string with mixed values' do
       let(:input) { "1.2\nnope\n" * 4380 }
 
