@@ -19,10 +19,11 @@ module Qernel
     # Return a float of the input capacity of a typical plant in MWinput
     def input_capacity
       fetch(:input_capacity) do
-        electric_based_input_capacity ||
+        typical_input_capacity ||
+          electric_based_input_capacity ||
           heat_based_input_capacity ||
           cooling_based_input_capacity ||
-          typical_input_capacity || 0.0
+          0.0
       end
     end
     unit_for_calculation 'input_capacity', 'MWinput'
