@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_08_182346) do
+ActiveRecord::Schema.define(version: 2020_05_19_114227) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
@@ -90,6 +90,16 @@ ActiveRecord::Schema.define(version: 2020_05_08_182346) do
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "scenario_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "scenario_id"
+    t.string "attachment_key"
+    t.string "other_scenario_title"
+    t.integer "other_end_year"
+    t.string "other_dataset_key"
+    t.integer "other_saved_scenario_id"
+    t.index ["scenario_id"], name: "index_scenario_attachments_on_scenario_id"
   end
 
   create_table "scenario_scalings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
