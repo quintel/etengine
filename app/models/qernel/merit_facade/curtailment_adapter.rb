@@ -34,11 +34,6 @@ module Qernel
         if @config.group == :curtailment
           attrs[:input_capacity_per_unit]  = Float::INFINITY
           attrs[:output_capacity_per_unit] = Float::INFINITY
-        else
-          # TODO: Can this be set in FlexAdapter?
-          attrs[:input_capacity_per_unit] =
-            source_api.input_capacity ||
-            source_api.output_capacity
         end
 
         attrs[:number_of_units] = 1.0
