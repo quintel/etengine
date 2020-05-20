@@ -18,6 +18,10 @@ module Qernel
 
       private
 
+      def flex_groups
+        Etsource::Config.flexibility_groups(@context.attribute)
+      end
+
       def sort_converters(type, converters)
         if type == :flex
           # Curtailment always comes last.

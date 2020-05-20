@@ -7,6 +7,10 @@ module Qernel
     class Electricity < Qernel::MeritFacade::Manager
       private
 
+      def flex_groups
+        Etsource::Config.flexibility_groups(@context.attribute)
+      end
+
       def inject_graph_values!
         carrier = @context.graph.carrier(@context.carrier)
 

@@ -4,6 +4,8 @@ module Qernel
   module MeritFacade
     # Implements behaviour specific to the import interconnector.
     class ImportAdapter < ProducerAdapter
+      include OptionalCostCurve
+
       def initialize(*)
         super
 
@@ -32,35 +34,12 @@ module Qernel
           elec_link.dataset_set(:value, target_api.demand)
           elec_link.dataset_set(:calculated, true)
         end
-
-        return unless cost_curve? && participant.production.positive?
-
-        target_api.marginal_costs = participant.marginal_costs
       end
 
       private
 
       def producer_class
         Merit::DispatchableProducer
-      end
-
-      def producer_attributes
-        attrs = super
-
-        if cost_curve?
-          attrs.delete(:marginal_costs)
-          attrs[:cost_curve] = Merit::Curve.new(cost_curve)
-        end
-
-        attrs
-      end
-
-      def cost_curve?
-        cost_curve&.any?
-      end
-
-      def cost_curve
-        source_api.marginal_cost_curve
       end
 
       def output_capacity_per_unit
