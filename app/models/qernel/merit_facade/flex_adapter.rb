@@ -10,6 +10,8 @@ module Qernel
         case context.node_config(converter).subtype.to_sym
         when :storage
           StorageAdapter
+        when :export
+          ExportAdapter
         when :power_to_gas
           PowerToGasAdapter
         when :power_to_heat_industry
