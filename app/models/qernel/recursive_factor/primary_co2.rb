@@ -39,7 +39,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
       if query.free_co2_factor.nil? || carrier.co2_conversion_per_mj.nil?
         0.0
       else
-        carrier.co2_per_mj -
+        link.co2_per_mj -
           (query.free_co2_factor * carrier.co2_conversion_per_mj)
       end
     else
@@ -64,7 +64,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
 
     return 0.0 if free_co2_factor == 1.0 || carrier.co2_conversion_per_mj.nil?
 
-    co2_ex_free = carrier.co2_per_mj -
+    co2_ex_free = link.co2_per_mj -
       (free_co2_factor * carrier.co2_conversion_per_mj)
 
     primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0

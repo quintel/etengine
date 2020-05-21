@@ -17,7 +17,8 @@ module Qernel
 
     include DatasetAttributes
 
-    dataset_accessors :share, :value, :calculated, :country_specific
+    dataset_accessors :co2_per_mj, :calculated, :country_specific,
+                      :share, :value
 
     def self.dataset_group; :graph; end
 
@@ -254,11 +255,22 @@ module Qernel
       reversed? ? lft_input : rgt_output
     end
 
-    # Optimizations ------------------------------------------------------------
+    # Queries ------------------------------------------------------------------
 
-    #######
+    # Public: Returns how much CO2 is emitted per MJ passing through the link.
+    #
+    # Delegates to the carrier if no custom link value is set. Note that setting
+    # a custom `co2_per_mj` only has an effect if the link would be used to
+    # calculate CO2 emissions.
+    #
+    # See Qernel::RecursiveFactor::PrimaryCo#co2_per_mj_factor
+    #
+    # Returns a numeric.
+    def co2_per_mj
+      fetch(:co2_per_mj) { @carrier.co2_per_mj }
+    end
+
     private
-    #######
 
     # Internal: Micro-optimization which improves the performance of
     # Array#flatten when the array contains Links.
