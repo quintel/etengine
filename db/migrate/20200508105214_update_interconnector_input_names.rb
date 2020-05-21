@@ -8,6 +8,8 @@ class UpdateInterconnectorInputNames < ActiveRecord::Migration[5.2]
     interconnectors_availability_for_import: :electricity_interconnector_1_import_availability,
     interconnectors_availability_for_export: :electricity_interconnector_1_export_availability,
     costs_imported_electricity: :electricity_interconnector_1_marginal_costs,
+    co2_emissions_of_imported_electricity_present: :electricity_interconnector_1_co2_emissions_present,
+    co2_emissions_of_imported_electricity_future: :electricity_interconnector_1_co2_emissions_future
   }
 
   def up
