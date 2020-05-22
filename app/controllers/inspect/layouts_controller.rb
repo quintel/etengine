@@ -13,7 +13,7 @@ class Inspect::LayoutsController < Inspect::BaseController
   end
 
   def yaml
-    response.headers['Content-Disposition'] = 'attachment; filename="converter_positions.yml"'
+    response.headers['Content-Disposition'] = 'attachment; filename="node_positions.yml"'
     response.headers['Content-Type']        = 'application/x-yaml'
 
     render plain: positions.to_yaml
@@ -66,7 +66,7 @@ private
   end
 
   def positions
-    ConverterPositions.new(Rails.root.join('config/converter_positions.yml'))
+    ConverterPositions.new(Atlas.data_dir.join('config/node_positions.yml'))
   end
 
   def auto_number(n)

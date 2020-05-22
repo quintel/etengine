@@ -37,18 +37,21 @@ class ConverterPositions
       data[key.to_sym] = { x: positions[:x].to_i, y: positions[:y].to_i }
     end
 
-    File.write(@path, YAML.dump(data))
+    serialize =
+      data.sort_by(&:first).each_with_object({}) do |(key, pos), hash|
+        hash[key.to_s] = pos.stringify_keys if Atlas::Node.exists?(key)
+      end
+
+    File.write(@path, YAML.dump(serialize))
   end
 
   def to_yaml
     YAML.dump(data)
   end
 
-  #######
   private
-  #######
 
   def data
-    @data ||= YAML.load_file(@path)
+    @data ||= YAML.safe_load(File.read(@path), symbolize_names: true)
   end
 end
