@@ -1,0 +1,26 @@
+#instructions
+  %ul
+    %li.form
+      %h6 Node attributes
+      = graphviz_attribute_selector
+    %li.form
+      %h6 Toggle sectors
+      = graphviz_toggle_sectors
+    %li.links
+      %ul
+        %li= link_to 'Deselect all', 'javascript:GRAPH.deselect_all()'
+        %li= link_to 'Highlight off', 'javascript:GRAPH.highlight_off_all()'
+    %li.help
+      %details
+        %summary Help
+        %ul
+          %li ALT + click to select/deselect multiple converters
+          %li Shift + click: highlight links
+          %li ALT + Shift + click: hide converter
+          %li Double-click on converter to open details in new converter
+          %li Search for converters by name using Ctrl/Cmd+F.
+    - if show_actions
+      %li.actions
+        %ul
+          %li= link_to 'Save', 'javascript:save_changes()'
+          %li= link_to 'Save and download YAML', 'javascript:update_and_download()'

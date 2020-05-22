@@ -4,7 +4,7 @@
 class @Graph
   updated_coordinates: {}
   SNAPPABLE_GRID_SIZE: 10
-  GRID_STEP_SIZE: 800
+  GRID_STEP_SIZE: 500
   GRID_X_SIZE: 9000
   GRID_Y_SIZE: 19000
 
@@ -41,13 +41,15 @@ class @Graph
       # M0   1 L10000   1
       # M0 801 L10000 80
       @r.path("M#{i},0L#{i},#{@height}")
-        .attr({stroke : '#ccc'})
+        .attr({stroke : '#eee'})
+        .node.setAttribute('class', 'grid')
 
-    for i in [1..@height] by @GRID_STEP_SIZE
+    for i in [0..(@height - 1)] by @GRID_STEP_SIZE
       # M1   0 L1   8000
       # M801 0 L801 8000
       @r.path("M0,#{i}L#{@width},#{i}")
-        .attr({stroke : '#ccc'})
+        .attr({stroke : '#eee', class: 'grid'})
+        .node.setAttribute('class', 'grid')
 
   show_attribute_values: =>
     for key, c of @converters
@@ -190,7 +192,6 @@ class @Converter
   drawConverterBox: =>
     txt_attributes =
       'text-anchor' : 'start'
-      'font-family' : 'arial'
       'font-weight' : 400
       "font-size" : 11
 

@@ -8,10 +8,9 @@ module GraphvizHelper
 
   def graphviz_toggle_sectors
     out = select_tag 'selected', options_for_select([*@gql.present_graph.sectors, 'all'])
-    out += link_to 'show', 'javascript:GRAPH.show_selected()'
-    out += ", "
-    out += link_to 'hide', 'javascript:GRAPH.hide_selected()'
-    out += "(to only show one sector, hide 'all' first, then show 'sector')"
+    out += link_to 'Show', 'javascript:GRAPH.show_selected()'
+    out += ' '
+    out += link_to 'Hide', 'javascript:GRAPH.hide_selected()'
     out
   end
 

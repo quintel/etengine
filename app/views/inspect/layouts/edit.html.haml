@@ -1,16 +1,9 @@
-%strong#graph_saving{:style => 'background: #f00; color: #fff; display: none'} Saving...
-#instructions
-  %ul
-    %li ALT + click to select/deselect multiple converters
-    %li Shift + click: highlight links
-    %li ALT + Shift + click: hide converter
-    %li Double-click on converter to open details in new converter
-    %li Search for converters using id (with #) using Ctrl+F. For low ids, finish search with a ".", e.g. #30.
-    %li= graphviz_attribute_selector
-    %li= graphviz_toggle_sectors
+%strong#graph_saving Saving...
 
-  %script
-    == var inspect_json_url = "#{edit_inspect_layout_path(:format => 'json')}";
+= render partial: 'controls', locals: { show_actions: true }
+
+:javascript
+  var inspect_json_url = "#{edit_inspect_layout_path(:format => 'json')}";
 
 = render 'initialize_graph'
 
@@ -39,6 +32,15 @@
     return false;
   };
 
+  function save_changes() {
+    update_positions(function() {
+      alert(
+        "New positions saved to ETSource at config/node_positions.yml. " +
+        "Don't forget to commit the changes!"
+      )
+    });
+  }
+
   function update_and_download() {
     update_positions(function() {
       window.location.pathname =
@@ -51,24 +53,13 @@
   }
 
   $(window).on('beforeunload', function() {
-    $('#options a:first').addClass('glow');
+    $('.actions a:first').addClass('glow');
 
     if (window.requiresPositionExport) {
-      return "You haven't downloaded the converter position YAML. You " +
-             "need to download a copy of the YAML and commit it to ETEngine " +
-             "(in the 'config' directory), otherwise your changes will be " +
-             "lost during the next deploy.";
+      return "You haven't saved the node position YAML. You need to save " +
+             "the node positions and commit the change in ETSource otherwise " +
+             "your changes will be lost."
     }
   });
 
   GRAPH.enableDragging();
-
-#options{:style => 'position: fixed; height: 25px; width: 450px; bottom: 0px; background: #DFE8F3; z-index: 1000;'}
-  = link_to 'Save and download YAML', 'javascript:update_and_download()'
-  |
-  = link_to 'Save', 'javascript:update_positions()'
-  |
-  = link_to 'deselect all', 'javascript:GRAPH.deselect_all()'
-  |
-  = link_to 'highlight off', 'javascript:GRAPH.highlight_off_all()'
-
