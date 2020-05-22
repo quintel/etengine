@@ -16,11 +16,7 @@ class Inspect::LayoutsController < Inspect::BaseController
     response.headers['Content-Disposition'] = 'attachment; filename="converter_positions.yml"'
     response.headers['Content-Type']        = 'application/x-yaml'
 
-    render text: positions.to_yaml
-    # respond_to do |format|
-      # format.html { render :layout => 'blueprint_layout' }
-      # format.json { render text: positions.to_yaml  }
-    # end
+    render plain: positions.to_yaml
   end
 
   def edit
