@@ -53,8 +53,7 @@ module Api
       end
 
       def positions
-        ConverterPositions.new(
-          Rails.root.join('config/converter_positions.yml'))
+        ConverterPositions.new(Atlas.data_dir.join('config/node_positions.yml'))
       end
     end
   end
