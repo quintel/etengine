@@ -161,9 +161,13 @@ module Qernel::Plugins
       return converters unless type == :flex
 
       order = @graph.flexibility_order.map(&:to_sym)
+      index = -1
 
       converters.sort_by do |conv|
-        order.index(@context.node_config(conv).group) || Float::INFINITY
+        [
+          order.index(@context.node_config(conv).group) || Float::INFINITY,
+          index += 1 # Ensure stable sort.
+        ]
       end
     end
 
