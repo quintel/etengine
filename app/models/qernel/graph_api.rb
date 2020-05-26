@@ -159,7 +159,14 @@ class GraphApi
   #
   # Returns an object responding to the name of each layer in the network.
   def electricity_network
-    fetch(:electricity_network) { Closud.build(graph) }
+    fetch(:electricity_network) do
+      curve_helper = graph.plugin(:merit).curves
+
+      Closud::Queryable.new(
+        Closud.build(graph),
+        ->(curve) { curve_helper.derotate(curve) }
+      )
+    end
   end
 
   # Computes the electricity losses AS IF there were no exports.
