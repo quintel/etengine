@@ -13,6 +13,7 @@ module Qernel::Plugins
     after  :first_calculation, :setup
     after  :first_calculation, :run
     before :recalculation,     :inject
+    after  :recalculation,     :inject_reconciliation
 
     attr_reader :merit
     attr_reader :fever
@@ -36,7 +37,6 @@ module Qernel::Plugins
       @merit = Qernel::Causality::Electricity.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
       @heat_network = Qernel::Causality::HeatNetwork.new(graph)
-      @reconciliation = Qernel::Causality::ReconciliationWrapper.new(graph)
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
@@ -57,7 +57,6 @@ module Qernel::Plugins
       @fever.setup
       @merit.setup
       @heat_network.setup
-      @reconciliation.setup
 
       @merit.setup_dynamic
       @heat_network.setup_dynamic
@@ -91,6 +90,15 @@ module Qernel::Plugins
       @fever.inject_values!
       @heat_network.inject_values!
       @merit.inject_values!
+    end
+
+    # Internal: Calculate and inject "Reconciliation" curves.
+    #
+    # This is performed after the recalculation of the graph, ensuring that and
+    # changes in demand caused in `inject` are correctly accounted for.
+    def inject_reconciliation
+      @reconciliation = Qernel::Causality::ReconciliationWrapper.new(@graph)
+      @reconciliation.setup
 
       @reconciliation.inject_values!
     end
