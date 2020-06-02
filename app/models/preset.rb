@@ -75,6 +75,10 @@ class Preset
       HeatNetworkOrder.new(order: @heat_network_order.dup)
   end
 
+  def scenario_attachments
+    @scenario_attachments&.any?
+  end
+
   # Public: The year on which the analysis for the preset's area is based.
   #
   # Returns an integer.

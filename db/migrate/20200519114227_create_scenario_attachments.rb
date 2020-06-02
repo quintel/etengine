@@ -5,6 +5,7 @@ class CreateScenarioAttachments < ActiveRecord::Migration[5.2]
         type: :integer,
         index: true
       t.string  :attachment_key
+      t.integer :other_scenario_id
       t.string  :other_scenario_title
       t.integer :other_end_year
       t.string  :other_dataset_key

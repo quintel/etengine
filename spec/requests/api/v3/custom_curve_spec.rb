@@ -111,7 +111,13 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'attaches the file' do
         expect { request }
-          .to change { scenario.reload.interconnector_1_price_curve.attached? }
+          .to change {
+            scenario
+              .reload
+              .scenario_attachments
+              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .present?
+          }
           .from(false).to(true)
       end
     end
@@ -137,7 +143,13 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'attaches the file' do
         expect { request }
-          .to change { scenario.reload.interconnector_1_price_curve.attached? }
+          .to change {
+            scenario
+              .reload
+              .scenario_attachments
+              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .present?
+          }
           .from(false).to(true)
       end
     end
@@ -176,7 +188,13 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'does not change the attachment' do
         expect { request }
-          .not_to change { scenario.reload.interconnector_1_price_curve.attached? }
+          .not_to change {
+            scenario
+              .reload
+              .scenario_attachments
+              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .present?
+          }
           .from(false)
       end
     end
@@ -217,7 +235,13 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'does not change the attachment' do
         expect { request }
-          .not_to change { scenario.reload.interconnector_1_price_curve.attached? }
+          .not_to change {
+            scenario
+              .reload
+              .scenario_attachments
+              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .present?
+          }
           .from(false)
       end
     end
@@ -243,7 +267,13 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'removes the attachment' do
         expect { request }
-          .to change { scenario.reload.interconnector_1_price_curve.attached? }
+          .to change {
+            scenario
+              .reload
+              .scenario_attachments
+              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .present?
+          }
           .from(true)
           .to(false)
       end
@@ -264,7 +294,13 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'does not change the attachment' do
         expect { request }
-          .not_to change { scenario.reload.interconnector_1_price_curve.attached? }
+          .not_to change {
+            scenario
+              .reload
+              .scenario_attachments
+              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .present?
+          }
           .from(false)
       end
     end

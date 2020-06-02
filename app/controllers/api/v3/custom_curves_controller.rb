@@ -34,7 +34,7 @@ module Api
           CURVE_SANITIZERS.each_key.map do |key|
             attachment_json(attachment(key)).as_json.presence
           end
-
+        # debugger
         render json: curves.compact
       end
 
@@ -54,7 +54,9 @@ module Api
         sanitizer = create_sanitizer(params[:id], upload.tempfile)
 
         if sanitizer.valid?
-          current_attachment.attach(
+          update_or_create_attachment(params[:id], metadata_parameters)
+
+          current_attachment.custom_curve.attach(
             io: StringIO.new(sanitizer.sanitized_curve.join("\n")),
             filename: upload.original_filename,
             content_type: 'text/csv'
@@ -62,6 +64,7 @@ module Api
 
           render json: attachment_json(current_attachment)
         else
+          puts errors_json(sanitizer)
           render json: errors_json(sanitizer), status: 422
         end
       end
@@ -70,15 +73,15 @@ module Api
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        current_attachment.purge if current_attachment.attached?
+        current_attachment.destroy if current_attachment
 
         head :no_content
       end
 
       private
 
-      def scenario
-        Scenario.find(params[:scenario_id])
+      def scenario_attachments
+        ScenarioAttachment.where(scenario_id: params[:scenario_id])
       end
 
       def current_attachment
@@ -86,11 +89,37 @@ module Api
       end
 
       def attachment(type)
-        scenario.send("#{type}_curve")
+        return if scenario_attachments.size == 0
+
+        scenario_attachments.find_by(attachment_key: "#{type}_curve")
+      end
+
+      def update_or_create_attachment(type, metadata)
+        unless current_attachment
+          ScenarioAttachment.create(
+            attachment_key: "#{type}_curve",
+            scenario_id: params[:scenario_id]
+          )
+        end
+
+        # If new metadata is not supplied, remove old metadata
+        current_attachment.update_or_remove_metadata(metadata)
+      end
+
+      def metadata_parameters
+        return {} unless params[:metadata]
+
+        params.require(:metadata).permit(
+          :other_scenario_id,
+          :other_scenario_title,
+          :other_saved_scenario_id,
+          :other_dataset_key,
+          :other_end_year
+        )
       end
 
       def attachment_json(attachment)
-        CustomCurvePresenter.new(attachment)
+        attachment ? CustomCurvePresenter.new(attachment) : {}
       end
 
       def errors_json(sanitizer)
@@ -117,7 +146,7 @@ module Api
       end
 
       def ensure_curve_set
-        render_not_found unless current_attachment.attached?
+        render_not_found unless current_attachment&.custom_curve&.attached?
       end
 
       # Asserts that the uploaded file is not too large; there's no reason for
