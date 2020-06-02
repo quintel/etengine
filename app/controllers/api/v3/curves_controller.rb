@@ -35,10 +35,14 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
       def electricity_price
-        render_presenter Api::V3::CarrierPriceCSVPresenter.new(
+        csv_presenter = Api::V3::CarrierPriceCSVPresenter.new(
           scenario.gql.future_graph.carrier(:electricity),
           scenario.gql.future_graph.year
         )
+        respond_to do |format|
+          format.csv  { render_presenter csv_presenter }
+          format.json { render json: csv_presenter }
+        end
       end
 
       # Downloads the load on each participant in the heat merit order as a CSV.

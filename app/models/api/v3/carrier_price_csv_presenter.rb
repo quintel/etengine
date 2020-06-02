@@ -19,6 +19,10 @@ module Api
       def filename
         "#{@carrier.key}_price"
       end
+
+      def as_json(*)
+        { curve: @carrier.cost_curve.join("\n") }
+      end
     end
   end
 end

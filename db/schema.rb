@@ -95,6 +95,7 @@ ActiveRecord::Schema.define(version: 2020_05_19_114227) do
   create_table "scenario_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "scenario_id"
     t.string "attachment_key"
+    t.integer "other_scenario_id"
     t.string "other_scenario_title"
     t.integer "other_end_year"
     t.string "other_dataset_key"

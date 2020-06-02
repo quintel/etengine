@@ -10,7 +10,6 @@ class Scenario < ApplicationRecord
   include Scenario::Persistable
   include Scenario::InputGroups
   include Scenario::Copies
-  include Scenario::Attachments
 
   store :user_values
   store :balanced_values

@@ -4,20 +4,23 @@ module Api
   module V3
     # Provides JSON information about a custom curve.
     class CustomCurvePresenter
-      # Creates a presenter using an ActiveStorage attachment.
+      # Creates a presenter for a ScenarioAttachment with an ActiveStorage
+      # attachment.
       def initialize(attachment)
         @attachment = attachment
+        @custom_curve = attachment.custom_curve
       end
 
       def as_json(*)
-        return {} unless @attachment.attached?
+        return {} unless @custom_curve.attached?
 
         {
-          type: @attachment.name.to_s.chomp('_curve'),
-          name: @attachment.filename.to_s,
-          size: @attachment.byte_size,
-          date: @attachment.created_at.utc,
-          stats: stats
+          type: @attachment.attachment_key.chomp('_curve'),
+          name: @custom_curve.filename.to_s,
+          size: @custom_curve.byte_size,
+          date: @custom_curve.created_at.utc,
+          stats: stats,
+          other_scenario: @attachment.metadata_json
         }
       end
 
@@ -43,7 +46,7 @@ module Api
       def curve
         @curve ||=
           Merit::Curve.load_file(
-            ActiveStorage::Blob.service.path_for(@attachment.key)
+            ActiveStorage::Blob.service.path_for(@custom_curve.key)
           ).to_a
       end
     end
