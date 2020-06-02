@@ -69,6 +69,27 @@ module Api
       def consumer_types
         %i[consumer flex]
       end
+
+      def extra_columns
+        [deficit_column]
+      end
+
+      def deficit_column
+        production = Merit::CurveTools.add_curves(producers.map do |prod|
+          @adapter.converter_curve(prod, :output)
+        end)
+
+        consumption = Merit::CurveTools.add_curves(consumers.map do |cons|
+          @adapter.converter_curve(cons, :input)
+        end)
+
+        deficit =
+          consumption.map.with_index do |amount, index|
+            (amount - production[index]).round(4)
+          end
+
+        ['deficit', *deficit]
+      end
     end
   end
 end

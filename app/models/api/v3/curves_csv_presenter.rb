@@ -67,7 +67,8 @@ module Api
         [
           self.class.time_column(@graph.year),
           *producer_columns,
-          *consumer_columns
+          *consumer_columns,
+          *extra_columns
         ].transpose
       end
 
@@ -79,6 +80,10 @@ module Api
 
       def consumer_columns
         consumers.map { |converter| column_from_converter(converter, :input) }
+      end
+
+      def extra_columns
+        []
       end
 
       def producers
