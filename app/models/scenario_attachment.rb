@@ -23,11 +23,17 @@ class ScenarioAttachment < ApplicationRecord
   has_one_attached :custom_curve
   belongs_to :scenario
 
-  validates_presence_of :attachment_key
+  validates :attachment_key, presence: true, uniqueness: {
+    scope: :scenario_id,
+    case_sensitive: false,
+    message: 'already exists for this scenario'
+  }
+
   validates :attachment_key, inclusion: {
     in: ATTACHMENT_KEYS,
     message: "should be one of: #{ATTACHMENT_KEYS}"
   }
+
   validate :validate_other_scenario_metadata
 
   # Returns true for attachments which have all their 'other_scenario' metadata

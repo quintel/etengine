@@ -10,6 +10,8 @@ class CreateScenarioAttachments < ActiveRecord::Migration[5.2]
       t.integer :other_end_year
       t.string  :other_dataset_key
       t.integer :other_saved_scenario_id
+
+      t.index [:scenario_id, :attachment_key], unique: true
     end
   end
 end
