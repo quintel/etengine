@@ -26,11 +26,7 @@ describe Api::V3::ScenariosController do
       get :batch, params: { :id => [scenarios.map(&:id)].join(',') }, :format => :json
       expect(response).to be_successful
 
-      expect(assigns(:scenarios)).to be_a(Array)
-
-      assigns(:scenarios).each do |scenario|
-        expect(scenario).to be_a(Api::V3::ScenarioPresenter)
-      end
+      expect(assigns(:presenters)).to all(be_a(Api::V3::ScenarioPresenter))
     end
   end
 
