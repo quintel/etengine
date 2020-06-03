@@ -44,6 +44,58 @@ describe ScenarioAttachment do
     it { is_expected.to be_valid }
   end
 
+  context 'when an interconnector_1_price curve attachment already exists' do
+    before do
+      described_class.create!(
+        scenario_id: 1,
+        attachment_key: 'interconnector_1_price_curve'
+      )
+    end
+
+    context 'with a new "interconnector_1_price_curve" attachment' do
+      let(:attachment) do
+        attachment = described_class.new(
+          scenario_id: 1,
+          attachment_key: 'interconnector_1_price_curve'
+        )
+      end
+
+      it 'is invalid' do
+        expect(attachment).not_to be_valid
+      end
+
+      it 'has an error on attachment_key' do
+        attachment.valid?
+
+        expect(attachment.errors[:attachment_key])
+          .to include('already exists for this scenario')
+      end
+    end
+
+    context 'with a new "interconnector_1_price_curve" attachment for a ' \
+            'different scenario' do
+      it 'is valid' do
+        attachment = described_class.new(
+          scenario_id: 2,
+          attachment_key: 'interconnector_1_price_curve'
+        )
+
+        expect(attachment).to be_valid
+      end
+    end
+
+    context 'with a new "interconnector_2_price_curve" attachment' do
+      it 'is valid' do
+        attachment = described_class.new(
+          scenario_id: 2,
+          attachment_key: 'interconnector_2_price_curve'
+        )
+
+        expect(attachment).to be_valid
+      end
+    end
+  end
+
   describe '#update_or_remove_metadata' do
     context 'when all metadata is set' do
       let (:attachment) do

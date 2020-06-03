@@ -100,6 +100,7 @@ ActiveRecord::Schema.define(version: 2020_05_19_114227) do
     t.integer "other_end_year"
     t.string "other_dataset_key"
     t.integer "other_saved_scenario_id"
+    t.index ["scenario_id", "attachment_key"], name: "index_scenario_attachments_on_scenario_id_and_attachment_key", unique: true
     t.index ["scenario_id"], name: "index_scenario_attachments_on_scenario_id"
   end
 
