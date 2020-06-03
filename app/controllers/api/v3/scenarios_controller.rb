@@ -41,12 +41,14 @@ module Api
       def batch
         ids = params[:id].split(',')
 
-        @scenarios = ids.map do |id|
-          scenario = Preset.get(id).try(:to_scenario) || Scenario.find_by_id(id)
-          scenario ? ScenarioPresenter.new(self, scenario, filtered_params) : nil
+        scenarios = Scenario.where(id: ids).includes(:scaler).index_by(&:id)
+
+        @presenters = ids.map do |id|
+          scen = Preset.get(id).try(:to_scenario) || scenarios[id.to_i]
+          scen ? ScenarioPresenter.new(self, scen, filtered_params) : nil
         end.compact
 
-        render json: @scenarios
+        render json: @presenters
       end
 
       def dashboard
