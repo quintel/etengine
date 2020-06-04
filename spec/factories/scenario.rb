@@ -11,7 +11,7 @@ FactoryBot.define do
   end
 
   factory :scenario_attachment do
-    attachment_key 'interconnector_1_price_curve'
+    key { 'interconnector_1_price_curve' }
     scenario
   end
 end

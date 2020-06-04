@@ -54,8 +54,8 @@ module Scenario::Persistable
     self.flexibility_order = cloned_user_sortable(preset, :flexibility_order)
     self.heat_network_order = cloned_user_sortable(preset, :heat_network_order)
 
-    cloned_scenario_attachments(preset) { |cloned_attachment|
-      self.scenario_attachments << cloned_attachment if cloned_attachment
+    cloned_attachments(preset) { |cloned_attachment|
+      self.attachments << cloned_attachment if cloned_attachment
     }
 
     self.end_year  = preset.end_year
@@ -110,15 +110,15 @@ module Scenario::Persistable
 
   # Internal: Attaches the imported electricity price curve from the preset
   # scenario to new scenario attachments.
-  def cloned_scenario_attachments(preset)
-    attachments = preset.scenario_attachments
+  def cloned_attachments(preset)
+    attachments = preset.attachments
 
     return if !attachments || attachments.size == 0
 
     attachments.each do |attachment|
       cloned_attachment =
         ScenarioAttachment.new(attachment.attributes.except('id', 'scenario_id'))
-      yield cloned_attachment.custom_curve.attach(attachment.custom_curve.blob)
+      yield cloned_attachment.file.attach(attachment.file.blob)
     end
   end
 end

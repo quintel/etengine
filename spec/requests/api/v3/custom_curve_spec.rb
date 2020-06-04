@@ -114,8 +114,8 @@ describe 'Custom curves', :etsource_fixture do
           .to change {
             scenario
               .reload
-              .scenario_attachments
-              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
               .present?
           }
           .from(false).to(true)
@@ -146,8 +146,8 @@ describe 'Custom curves', :etsource_fixture do
           .to change {
             scenario
               .reload
-              .scenario_attachments
-              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
               .present?
           }
           .from(false).to(true)
@@ -191,8 +191,8 @@ describe 'Custom curves', :etsource_fixture do
           .not_to change {
             scenario
               .reload
-              .scenario_attachments
-              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
               .present?
           }
           .from(false)
@@ -238,8 +238,8 @@ describe 'Custom curves', :etsource_fixture do
           .not_to change {
             scenario
               .reload
-              .scenario_attachments
-              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
               .present?
           }
           .from(false)
@@ -270,8 +270,8 @@ describe 'Custom curves', :etsource_fixture do
           .to change {
             scenario
               .reload
-              .scenario_attachments
-              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
               .present?
           }
           .from(true)
@@ -297,8 +297,8 @@ describe 'Custom curves', :etsource_fixture do
           .not_to change {
             scenario
               .reload
-              .scenario_attachments
-              .find_by(attachment_key: 'interconnector_1_price_curve')
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
               .present?
           }
           .from(false)

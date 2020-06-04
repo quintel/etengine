@@ -8,7 +8,7 @@ module Gql::Runtime
       # contents into a curve. If no attachment is set, nil is returned.
       def ATTACHED_CURVE(name)
         attachment =
-          scope.gql.scenario.scenario_attachments.find_by(attachment_key: name)
+          scope.gql.scenario.attachments.find_by(key: name)
 
         # Not sure if we need this check anymore; this is to check if the name
         # is correct?
@@ -16,9 +16,9 @@ module Gql::Runtime
         #   raise "No such attached file: #{name.inspect}"
         # end
 
-        return nil unless attachment && attachment.custom_curve.attached?
+        return nil unless attachment && attachment.file.attached?
 
-        path = ActiveStorage::Blob.service.path_for(attachment.custom_curve.key)
+        path = ActiveStorage::Blob.service.path_for(attachment.file.key)
 
         # The graph wants an array. Loading a curve and converting to an array
         # is expensive since Merit::Curve has to deal with the possibility of

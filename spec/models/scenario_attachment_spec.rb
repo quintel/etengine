@@ -3,18 +3,18 @@ require 'spec_helper'
 describe ScenarioAttachment do
   let(:metadata) do
     {
-      other_scenario_id: 1,
-      other_saved_scenario_id: 1,
-      other_scenario_title: 'a',
-      other_dataset_key: 'nl',
-      other_end_year: 2050
+      source_scenario_id: 1,
+      source_saved_scenario_id: 1,
+      source_scenario_title: 'a',
+      source_dataset_key: 'nl',
+      source_end_year: 2050
     }
   end
 
-  context 'with all from_other_scenario attributes set' do
+  context 'with all source scenario attributes set' do
     subject do
       ScenarioAttachment.new(
-        metadata.merge(attachment_key: 'interconnector_1_price_curve')
+        metadata.merge(key: 'interconnector_1_price_curve')
       )
     end
 
@@ -22,22 +22,22 @@ describe ScenarioAttachment do
 
   end
 
-  context 'with some from_other_scenario attributes set' do
+  context 'with some source scenario attributes set' do
     subject do
       ScenarioAttachment.new(
-        attachment_key: 'interconnector_1_price_curve',
-        other_dataset_key: 'nl',
-        other_end_year: 2050
+        key: 'interconnector_1_price_curve',
+        source_dataset_key: 'nl',
+        source_end_year: 2050
       )
     end
 
     it { is_expected.to_not be_valid }
   end
 
-  context 'with no from_other_scenario attributes set' do
+  context 'with no source scenario attributes set' do
     subject do
       ScenarioAttachment.new(
-        attachment_key: 'interconnector_1_price_curve'
+        key: 'interconnector_1_price_curve'
       )
     end
 
@@ -48,7 +48,7 @@ describe ScenarioAttachment do
     before do
       described_class.create!(
         scenario_id: 1,
-        attachment_key: 'interconnector_1_price_curve'
+        key: 'interconnector_1_price_curve'
       )
     end
 
@@ -56,7 +56,7 @@ describe ScenarioAttachment do
       let(:attachment) do
         attachment = described_class.new(
           scenario_id: 1,
-          attachment_key: 'interconnector_1_price_curve'
+          key: 'interconnector_1_price_curve'
         )
       end
 
@@ -64,10 +64,10 @@ describe ScenarioAttachment do
         expect(attachment).not_to be_valid
       end
 
-      it 'has an error on attachment_key' do
+      it 'has an error on key' do
         attachment.valid?
 
-        expect(attachment.errors[:attachment_key])
+        expect(attachment.errors[:key])
           .to include('already exists for this scenario')
       end
     end
@@ -77,7 +77,7 @@ describe ScenarioAttachment do
       it 'is valid' do
         attachment = described_class.new(
           scenario_id: 2,
-          attachment_key: 'interconnector_1_price_curve'
+          key: 'interconnector_1_price_curve'
         )
 
         expect(attachment).to be_valid
@@ -88,7 +88,7 @@ describe ScenarioAttachment do
       it 'is valid' do
         attachment = described_class.new(
           scenario_id: 2,
-          attachment_key: 'interconnector_2_price_curve'
+          key: 'interconnector_2_price_curve'
         )
 
         expect(attachment).to be_valid
@@ -100,20 +100,20 @@ describe ScenarioAttachment do
     context 'when all metadata is set' do
       let (:attachment) do
         ScenarioAttachment.new(
-          metadata.merge(attachment_key: 'interconnector_1_price_curve')
+          metadata.merge(key: 'interconnector_1_price_curve')
         )
       end
       it 'removes the metadata when no new metadata is supplied' do
         expect { attachment.update_or_remove_metadata({}) }
           .to change {
-            attachment.from_other_scenario?
+            attachment.has_source_scenario?
           }.from(true).to(false)
       end
 
       it 'updates the metadata when new metadata is given' do
         expect { attachment.update_or_remove_metadata(metadata) }
           .not_to change {
-            attachment.from_other_scenario?
+            attachment.has_source_scenario?
           }.from(true)
       end
     end
@@ -121,21 +121,21 @@ describe ScenarioAttachment do
     context 'when no metadata is set' do
       let (:attachment) do
         ScenarioAttachment.new(
-          attachment_key: 'interconnector_1_price_curve'
+          key: 'interconnector_1_price_curve'
         )
       end
 
       it 'does nothing when no new metadata is supplied' do
         expect { attachment.update_or_remove_metadata({}) }
           .not_to change {
-            attachment.from_other_scenario?
+            attachment.has_source_scenario?
           }.from(false)
       end
 
       it 'updates the metadata when new metadata is given' do
         expect { attachment.update_or_remove_metadata(metadata) }
           .to change {
-            attachment.from_other_scenario?
+            attachment.has_source_scenario?
           }.from(false).to(true)
       end
     end
