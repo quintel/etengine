@@ -448,8 +448,7 @@ describe Scenario do
       end
       let(:scenario_attachment) do
         scenario
-          .attachments
-          .find_by(key: 'interconnector_1_price_curve')
+          .attachments.first
       end
       before do
         preset_attachment.file.attach(
@@ -460,18 +459,15 @@ describe Scenario do
       end
 
       it 'works' do
-        pending('scenario.scenario_attachements remains empty for some reason')
         expect(scenario_attachment.file).to be_attached
       end
 
       it 'creates a new attachment' do
-        pending('scenario.scenario_attachements remains empty for some reason')
         expect(scenario_attachment.file)
           .not_to eq(preset_attachment.file)
       end
 
       it 'has the same content as the original' do
-        pending('scenario.scenario_attachements remains empty for some reason')
         expect(scenario_attachment.file.download)
           .to eq(preset_attachment.file.download)
       end
@@ -485,8 +481,7 @@ describe Scenario do
       end
       let(:scenario_attachment) do
         scenario
-          .attachments
-          .find_by(key: 'interconnector_3_price_curve')
+          .attachments.first
       end
       before do
         preset_attachment.file.attach(
@@ -497,18 +492,15 @@ describe Scenario do
       end
 
       it 'works' do
-        pending('scenario.scenario_attachements remains empty for some reason')
         expect(scenario_attachment.file).to be_attached
       end
 
       it 'creates a new attachment' do
-        pending('scenario.scenario_attachements remains empty for some reason')
         expect(scenario_attachment.file)
           .not_to eq(preset_attachment.file)
       end
 
       it 'has the same content as the original' do
-        pending('scenario.scenario_attachements remains empty for some reason')
         expect(scenario_attachment.file.download)
           .to eq(preset_attachment.file.download)
       end

@@ -55,7 +55,7 @@ module Scenario::Persistable
     self.heat_network_order = cloned_user_sortable(preset, :heat_network_order)
 
     cloned_attachments(preset) { |cloned_attachment|
-      self.attachments << cloned_attachment if cloned_attachment
+      self.attachments << cloned_attachment
     }
 
     self.end_year  = preset.end_year
@@ -118,7 +118,8 @@ module Scenario::Persistable
     attachments.each do |attachment|
       cloned_attachment =
         ScenarioAttachment.new(attachment.attributes.except('id', 'scenario_id'))
-      yield cloned_attachment.file.attach(attachment.file.blob)
+      cloned_attachment.file.attach(attachment.file.blob)
+      yield cloned_attachment
     end
   end
 end
