@@ -443,16 +443,16 @@ describe Scenario do
     context 'with a custom interconnector 1 electricity price curve' do
       let(:preset_attachment) do
         preset
-          .scenario_attachments
-          .create(attachment_key: 'interconnector_1_price_curve')
+          .attachments
+          .create(key: 'interconnector_1_price_curve')
       end
       let(:scenario_attachment) do
         scenario
-          .scenario_attachments
-          .find_by(attachment_key: 'interconnector_1_price_curve')
+          .attachments
+          .find_by(key: 'interconnector_1_price_curve')
       end
       before do
-        preset_attachment.custom_curve.attach(
+        preset_attachment.file.attach(
           io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
           filename: 'price_curve.csv',
           content_type: 'text/csv'
@@ -461,35 +461,35 @@ describe Scenario do
 
       it 'works' do
         pending('scenario.scenario_attachements remains empty for some reason')
-        expect(scenario_attachment.custom_curve).to be_attached
+        expect(scenario_attachment.file).to be_attached
       end
 
       it 'creates a new attachment' do
         pending('scenario.scenario_attachements remains empty for some reason')
-        expect(scenario_attachment.custom_curve)
-          .not_to eq(preset_attachment.custom_curve)
+        expect(scenario_attachment.file)
+          .not_to eq(preset_attachment.file)
       end
 
       it 'has the same content as the original' do
         pending('scenario.scenario_attachements remains empty for some reason')
-        expect(scenario_attachment.custom_curve.download)
-          .to eq(preset_attachment.custom_curve.download)
+        expect(scenario_attachment.file.download)
+          .to eq(preset_attachment.file.download)
       end
     end
 
     context 'with a custom interconnector 3 electricity price curve' do
       let(:preset_attachment) do
         preset
-          .scenario_attachments
-          .create(attachment_key: 'interconnector_3_price_curve')
+          .attachments
+          .create(key: 'interconnector_3_price_curve')
       end
       let(:scenario_attachment) do
         scenario
-          .scenario_attachments
-          .find_by(attachment_key: 'interconnector_3_price_curve')
+          .attachments
+          .find_by(key: 'interconnector_3_price_curve')
       end
       before do
-        preset_attachment.custom_curve.attach(
+        preset_attachment.file.attach(
           io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
           filename: 'price_curve.csv',
           content_type: 'text/csv'
@@ -498,19 +498,19 @@ describe Scenario do
 
       it 'works' do
         pending('scenario.scenario_attachements remains empty for some reason')
-        expect(scenario_attachment.custom_curve).to be_attached
+        expect(scenario_attachment.file).to be_attached
       end
 
       it 'creates a new attachment' do
         pending('scenario.scenario_attachements remains empty for some reason')
-        expect(scenario_attachment.custom_curve)
-          .not_to eq(preset_attachment.custom_curve)
+        expect(scenario_attachment.file)
+          .not_to eq(preset_attachment.file)
       end
 
       it 'has the same content as the original' do
         pending('scenario.scenario_attachements remains empty for some reason')
-        expect(scenario_attachment.custom_curve.download)
-          .to eq(preset_attachment.custom_curve.download)
+        expect(scenario_attachment.file.download)
+          .to eq(preset_attachment.file.download)
       end
     end
 
@@ -700,14 +700,14 @@ describe Scenario do
     let(:scenario_two_attachment) { FactoryBot.create(:scenario_attachment) }
 
     before do
-      scenario_one_attachment.custom_curve.attach(
+      scenario_one_attachment.file.attach(
         io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
         filename: 'price_curve.csv',
         content_type: 'text/csv'
       )
 
-      scenario_two_attachment.custom_curve.attach(
-        scenario_one_attachment.custom_curve.blob
+      scenario_two_attachment.file.attach(
+        scenario_one_attachment.file.blob
       )
 
       scenario_one_attachment.scenario.reload
@@ -715,34 +715,34 @@ describe Scenario do
     end
 
     it 'the first scenario has a price curve' do
-      expect(scenario_one_attachment.custom_curve).to be_attached
+      expect(scenario_one_attachment.file).to be_attached
     end
 
     it 'the second scenario has a price curve' do
-      expect(scenario_two_attachment.custom_curve).to be_attached
+      expect(scenario_two_attachment.file).to be_attached
     end
 
     it 'the scenario have the same price curve blob' do
-      expect(scenario_two_attachment.custom_curve.blob).
-        to eq(scenario_one_attachment.custom_curve.blob)
+      expect(scenario_two_attachment.file.blob).
+        to eq(scenario_one_attachment.file.blob)
     end
 
     # Sanity check against Rails behaviour changing in the future.
     it 'the blob is not deleted when removed from one scenario' do
-      expect { scenario_one_attachment.custom_curve.purge }
+      expect { scenario_one_attachment.file.purge }
         .not_to change(ActiveStorage::Blob, :count)
     end
 
     it 'the reference is kept intact when removed from only one scenario' do
-      scenario_one_attachment.custom_curve.purge
-      expect(scenario_two_attachment.custom_curve).to be_attached
+      scenario_one_attachment.file.purge
+      expect(scenario_two_attachment.file).to be_attached
     end
 
     # Sanity check against Rails behaviour changing in the future.
     it 'the blob is deleted when removed from both scenarios' do
-      scenario_one_attachment.custom_curve.purge
+      scenario_one_attachment.file.purge
 
-      expect { scenario_two_attachment.custom_curve.purge }
+      expect { scenario_two_attachment.file.purge }
         .to change(ActiveStorage::Blob, :count).by(-1)
     end
   end

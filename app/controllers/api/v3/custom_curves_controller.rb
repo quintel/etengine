@@ -56,7 +56,7 @@ module Api
         if sanitizer.valid?
           update_or_create_attachment(params[:id], metadata_parameters)
 
-          current_attachment.custom_curve.attach(
+          current_attachment.file.attach(
             io: StringIO.new(sanitizer.sanitized_curve.join("\n")),
             filename: upload.original_filename,
             content_type: 'text/csv'
@@ -91,13 +91,13 @@ module Api
       def attachment(type)
         return if scenario_attachments.size == 0
 
-        scenario_attachments.find_by(attachment_key: "#{type}_curve")
+        scenario_attachments.find_by(key: "#{type}_curve")
       end
 
       def update_or_create_attachment(type, metadata)
         unless current_attachment
           ScenarioAttachment.create(
-            attachment_key: "#{type}_curve",
+            key: "#{type}_curve",
             scenario_id: params[:scenario_id]
           )
         end
@@ -110,11 +110,11 @@ module Api
         return {} unless params[:metadata]
 
         params.require(:metadata).permit(
-          :other_scenario_id,
-          :other_scenario_title,
-          :other_saved_scenario_id,
-          :other_dataset_key,
-          :other_end_year
+          :source_scenario_id,
+          :source_scenario_title,
+          :source_saved_scenario_id,
+          :source_dataset_key,
+          :source_end_year
         )
       end
 
@@ -146,7 +146,7 @@ module Api
       end
 
       def ensure_curve_set
-        render_not_found unless current_attachment&.custom_curve&.attached?
+        render_not_found unless current_attachment&.file&.attached?
       end
 
       # Asserts that the uploaded file is not too large; there's no reason for

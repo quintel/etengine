@@ -94,13 +94,13 @@ ActiveRecord::Schema.define(version: 2020_05_19_114227) do
 
   create_table "scenario_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "scenario_id"
-    t.string "attachment_key"
-    t.integer "other_scenario_id"
-    t.string "other_scenario_title"
-    t.integer "other_end_year"
-    t.string "other_dataset_key"
-    t.integer "other_saved_scenario_id"
-    t.index ["scenario_id", "attachment_key"], name: "index_scenario_attachments_on_scenario_id_and_attachment_key", unique: true
+    t.string "key"
+    t.integer "source_scenario_id"
+    t.string "source_scenario_title"
+    t.integer "source_end_year"
+    t.string "source_dataset_key"
+    t.integer "source_saved_scenario_id"
+    t.index ["scenario_id", "key"], name: "index_scenario_attachments_on_scenario_id_and_key", unique: true
     t.index ["scenario_id"], name: "index_scenario_attachments_on_scenario_id"
   end
 

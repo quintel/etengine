@@ -8,19 +8,19 @@ module Api
       # attachment.
       def initialize(attachment)
         @attachment = attachment
-        @custom_curve = attachment.custom_curve
+        @custom_curve = attachment.file
       end
 
       def as_json(*)
         return {} unless @custom_curve.attached?
 
         {
-          type: @attachment.attachment_key.chomp('_curve'),
+          type: @attachment.key.chomp('_curve'),
           name: @custom_curve.filename.to_s,
           size: @custom_curve.byte_size,
           date: @custom_curve.created_at.utc,
           stats: stats,
-          other_scenario: @attachment.metadata_json
+          source_scenario: @attachment.metadata_json
         }
       end
 
