@@ -26,13 +26,13 @@ describe Api::V3::CustomCurvePresenter do
 
     context 'originating from another scenario' do
       before do
-        attachment.update_attributes({
+        attachment.update(
           source_scenario_id: 1,
           source_saved_scenario_id: 1,
           source_scenario_title: 'a',
           source_dataset_key: 'nl',
           source_end_year: 2050
-        })
+        )
       end
 
       it { expect(json[:source_scenario]).to include(source_scenario_id: 1) }

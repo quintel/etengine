@@ -39,6 +39,7 @@ module Api
           scenario.gql.future_graph.carrier(:electricity),
           scenario.gql.future_graph.year
         )
+
         respond_to do |format|
           format.csv  { render_presenter csv_presenter }
           format.json { render json: csv_presenter }
