@@ -13,17 +13,26 @@ class Inspect::BaseController < ApplicationController
   protected
 
   def initialize_gql
+    # Allows the substitution of a "_" in place of a scenario ID if the user
+    # wishes to start a new scenario.
+    start_scenario_and_redirect && return if params[:api_scenario_id] == '_'
+
     @api_scenario = Scenario.find(params[:api_scenario_id])
     @gql = @api_scenario.gql(prepare: true)
-  rescue Atlas::DocumentNotFoundError => ex
-    if ex.message.match(/could not find a dataset with the key/i)
-      scenario = Scenario.create(
-        Scenario.default_attributes.merge(source: 'ETEngine Admin UI'))
+  rescue Atlas::DocumentNotFoundError => e
+    raise e unless e.message.match?(/could not find a dataset with the key/i)
 
-      redirect_to "/inspect/#{ scenario.id }"
-    else
-      raise ex
-    end
+    start_scenario_and_redirect
+  end
+
+  # Starts a new scenario and redirects the user to their requested page for the
+  # scenario.
+  def start_scenario_and_redirect
+    scenario = Scenario.create(
+      Scenario.default_attributes.merge(source: 'ETEngine Admin UI')
+    )
+
+    redirect_to url_for(api_scenario_id: scenario.id)
   end
 
   # Internal: Renders a 404 page.
