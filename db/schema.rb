@@ -93,8 +93,8 @@ ActiveRecord::Schema.define(version: 2020_05_19_114227) do
   end
 
   create_table "scenario_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "scenario_id"
-    t.string "key"
+    t.integer "scenario_id", null: false
+    t.string "key", null: false
     t.integer "source_scenario_id"
     t.string "source_scenario_title"
     t.integer "source_end_year"
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(version: 2020_05_19_114227) do
     t.integer "source_saved_scenario_id"
     t.index ["scenario_id", "key"], name: "index_scenario_attachments_on_scenario_id_and_key", unique: true
     t.index ["scenario_id"], name: "index_scenario_attachments_on_scenario_id"
+    t.index ["source_scenario_id"], name: "index_scenario_attachments_on_source_scenario_id"
   end
 
   create_table "scenario_scalings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
@@ -165,4 +166,6 @@ ActiveRecord::Schema.define(version: 2020_05_19_114227) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "heat_network_orders", "scenarios"
+  add_foreign_key "scenario_attachments", "scenarios"
+  add_foreign_key "scenario_attachments", "scenarios", column: "source_scenario_id", name: "index_scenario_attachments_on_source_scenario_id"
 end

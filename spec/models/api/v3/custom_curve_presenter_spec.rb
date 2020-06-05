@@ -25,9 +25,11 @@ describe Api::V3::CustomCurvePresenter do
     it { expect(json[:source_scenario]).to eq({}) }
 
     context 'originating from another scenario' do
+      let(:source) { FactoryBot.create(:scenario) }
+
       before do
         attachment.update(
-          source_scenario_id: 1,
+          source_scenario_id: source.id,
           source_saved_scenario_id: 1,
           source_scenario_title: 'a',
           source_dataset_key: 'nl',
@@ -35,13 +37,18 @@ describe Api::V3::CustomCurvePresenter do
         )
       end
 
-      it { expect(json[:source_scenario]).to include(source_scenario_id: 1) }
-      it {
+      it 'includes the source scenario ID' do
+        expect(json[:source_scenario]).to include(source_scenario_id: source.id)
+      end
+
+      it 'includes the source scenario title' do
         expect(json[:source_scenario]).to include(source_scenario_title: 'a')
-      }
-      it {
+      end
+
+      it 'includes the saved scenario ID' do
         expect(json[:source_scenario]).to include(source_saved_scenario_id: 1)
-      }
+      end
+
       it { expect(json[:source_scenario]).to include(source_dataset_key: 'nl') }
       it { expect(json[:source_scenario]).to include(source_end_year: 2050) }
     end

@@ -21,6 +21,12 @@ class Scenario < ApplicationRecord
   has_one    :heat_network_order, dependent: :destroy
   has_many   :attachments, dependent: :destroy, class_name: 'ScenarioAttachment'
 
+  has_many :source_attachments,
+    dependent: :nullify,
+    class_name: 'ScenarioAttachment',
+    foreign_key: :source_scenario_id,
+    inverse_of: :source_scenario
+
   validates_presence_of :title, on: :create, message: 'Please provide a title'
   validates             :area_code, presence: true
   validates :area_code, inclusion: { in: ->(*) { Etsource::Dataset.region_codes } }
