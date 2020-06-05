@@ -3,9 +3,12 @@
 require 'spec_helper'
 
 describe ScenarioAttachment do
+  let(:scenario) { FactoryBot.create(:scenario) }
+  let(:source) { FactoryBot.create(:scenario) }
+
   let(:metadata) do
     {
-      source_scenario_id: 1,
+      source_scenario_id: source.id,
       source_saved_scenario_id: 1,
       source_scenario_title: 'a',
       source_dataset_key: 'nl',
@@ -48,7 +51,7 @@ describe ScenarioAttachment do
   context 'when an interconnector_1_price curve attachment already exists' do
     before do
       described_class.create!(
-        scenario_id: 1,
+        scenario_id: scenario.id,
         key: 'interconnector_1_price_curve'
       )
     end
@@ -56,7 +59,7 @@ describe ScenarioAttachment do
     context 'with a new "interconnector_1_price_curve" attachment' do
       let(:attachment) do
         described_class.new(
-          scenario_id: 1,
+          scenario_id: scenario.id,
           key: 'interconnector_1_price_curve'
         )
       end
@@ -77,7 +80,7 @@ describe ScenarioAttachment do
             'different scenario' do
       it 'is valid' do
         attachment = described_class.new(
-          scenario_id: 2,
+          scenario_id: FactoryBot.create(:scenario).id,
           key: 'interconnector_1_price_curve'
         )
 
@@ -88,7 +91,7 @@ describe ScenarioAttachment do
     context 'with a new "interconnector_2_price_curve" attachment' do
       it 'is valid' do
         attachment = described_class.new(
-          scenario_id: 2,
+          scenario_id: scenario.id,
           key: 'interconnector_2_price_curve'
         )
 
@@ -101,7 +104,10 @@ describe ScenarioAttachment do
     context 'when all metadata is set' do
       let(:attachment) do
         described_class.new(
-          metadata.merge(key: 'interconnector_1_price_curve')
+          metadata.merge(
+            scenario_id: scenario.id,
+            key: 'interconnector_1_price_curve'
+          )
         )
       end
 
@@ -121,7 +127,8 @@ describe ScenarioAttachment do
     context 'when no metadata is set' do
       let(:attachment) do
         described_class.new(
-          key: 'interconnector_1_price_curve'
+          key: 'interconnector_1_price_curve',
+          scenario_id: scenario.id
         )
       end
 
