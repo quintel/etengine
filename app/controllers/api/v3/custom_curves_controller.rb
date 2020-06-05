@@ -34,7 +34,7 @@ module Api
           CURVE_SANITIZERS.each_key.map do |key|
             attachment_json(attachment(key)).as_json.presence
           end
-        # debugger
+
         render json: curves.compact
       end
 
@@ -64,7 +64,6 @@ module Api
 
           render json: attachment_json(current_attachment)
         else
-          puts errors_json(sanitizer)
           render json: errors_json(sanitizer), status: 422
         end
       end
@@ -73,8 +72,7 @@ module Api
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        current_attachment.destroy if current_attachment
-
+        current_attachment&.destroy
         head :no_content
       end
 
@@ -89,7 +87,7 @@ module Api
       end
 
       def attachment(type)
-        return if scenario_attachments.size == 0
+        return if scenario_attachments.empty?
 
         scenario_attachments.find_by(key: "#{type}_curve")
       end

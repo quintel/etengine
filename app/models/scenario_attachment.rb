@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 # Contains scenario attachments such as custom curves for interconnectors
 class ScenarioAttachment < ApplicationRecord
-
   ATTACHMENT_KEYS = %w[
     interconnector_1_price_curve
     interconnector_2_price_curve
@@ -38,14 +39,14 @@ class ScenarioAttachment < ApplicationRecord
 
   # Returns true for attachments which have all their 'source_scenario' metadata
   # set, indicating the attachment was imported from another scenario
-  def has_source_scenario?
+  def source_scenario?
     SOURCE_SCENARIO_METADATA.all? do |key|
       public_send(key).present?
     end
   end
 
   def metadata_json
-    return {} unless has_source_scenario?
+    return {} unless source_scenario?
 
     SOURCE_SCENARIO_METADATA.to_h { |key| [key, public_send(key)] }
   end
@@ -55,18 +56,18 @@ class ScenarioAttachment < ApplicationRecord
   # scenario-imported curve to a user uploaded curve. Thus we remove all source
   # scenario metadata present.
   def update_or_remove_metadata(metadata)
-    return update_attributes(metadata) if metadata.present?
-    return unless has_source_scenario?
+    return update(metadata) if metadata.present?
+    return unless source_scenario?
 
-    update_attributes(SOURCE_SCENARIO_METADATA.to_h { |key| [key, nil] })
+    update(SOURCE_SCENARIO_METADATA.to_h { |key| [key, nil] })
   end
 
   # Validates if all scenario metadata is set. When none of the metadata
   # attributes is set, this indicates a user-uploaded attachment. These are
   # allowed as well
   def validate_source_scenario_metadata
-    if SOURCE_SCENARIO_METADATA.any?{ |key| public_send(key).present? } &&
-      !has_source_scenario?
+    if SOURCE_SCENARIO_METADATA.any? { |key| public_send(key).present? } &&
+        !source_scenario?
       errors.add(
         :base,
         'All metadata needs to be set for curves imported from another scenario'

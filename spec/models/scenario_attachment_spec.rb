@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe ScenarioAttachment do
@@ -13,30 +15,29 @@ describe ScenarioAttachment do
 
   context 'with all source scenario attributes set' do
     subject do
-      ScenarioAttachment.new(
+      described_class.new(
         metadata.merge(key: 'interconnector_1_price_curve')
       )
     end
 
     it { is_expected.to be_valid }
-
   end
 
   context 'with some source scenario attributes set' do
     subject do
-      ScenarioAttachment.new(
+      described_class.new(
         key: 'interconnector_1_price_curve',
         source_dataset_key: 'nl',
         source_end_year: 2050
       )
     end
 
-    it { is_expected.to_not be_valid }
+    it { is_expected.not_to be_valid }
   end
 
   context 'with no source scenario attributes set' do
     subject do
-      ScenarioAttachment.new(
+      described_class.new(
         key: 'interconnector_1_price_curve'
       )
     end
@@ -54,7 +55,7 @@ describe ScenarioAttachment do
 
     context 'with a new "interconnector_1_price_curve" attachment' do
       let(:attachment) do
-        attachment = described_class.new(
+        described_class.new(
           scenario_id: 1,
           key: 'interconnector_1_price_curve'
         )
@@ -98,45 +99,42 @@ describe ScenarioAttachment do
 
   describe '#update_or_remove_metadata' do
     context 'when all metadata is set' do
-      let (:attachment) do
-        ScenarioAttachment.new(
+      let(:attachment) do
+        described_class.new(
           metadata.merge(key: 'interconnector_1_price_curve')
         )
       end
+
       it 'removes the metadata when no new metadata is supplied' do
         expect { attachment.update_or_remove_metadata({}) }
-          .to change {
-            attachment.has_source_scenario?
-          }.from(true).to(false)
+          .to change(attachment, :source_scenario?)
+          .from(true).to(false)
       end
 
       it 'updates the metadata when new metadata is given' do
         expect { attachment.update_or_remove_metadata(metadata) }
-          .not_to change {
-            attachment.has_source_scenario?
-          }.from(true)
+          .not_to change(attachment, :source_scenario?)
+          .from(true)
       end
     end
 
     context 'when no metadata is set' do
-      let (:attachment) do
-        ScenarioAttachment.new(
+      let(:attachment) do
+        described_class.new(
           key: 'interconnector_1_price_curve'
         )
       end
 
       it 'does nothing when no new metadata is supplied' do
         expect { attachment.update_or_remove_metadata({}) }
-          .not_to change {
-            attachment.has_source_scenario?
-          }.from(false)
+          .not_to change(attachment, :source_scenario?)
+          .from(false)
       end
 
       it 'updates the metadata when new metadata is given' do
         expect { attachment.update_or_remove_metadata(metadata) }
-          .to change {
-            attachment.has_source_scenario?
-          }.from(false).to(true)
+          .to change(attachment, :source_scenario?)
+          .from(false).to(true)
       end
     end
   end

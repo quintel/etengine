@@ -446,10 +446,11 @@ describe Scenario do
           .attachments
           .create(key: 'interconnector_1_price_curve')
       end
+
       let(:scenario_attachment) do
-        scenario
-          .attachments.first
+        scenario.attachments.first
       end
+
       before do
         preset_attachment.file.attach(
           io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
@@ -479,10 +480,11 @@ describe Scenario do
           .attachments
           .create(key: 'interconnector_3_price_curve')
       end
+
       let(:scenario_attachment) do
-        scenario
-          .attachments.first
+        scenario.attachments.first
       end
+
       before do
         preset_attachment.file.attach(
           io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
@@ -715,8 +717,8 @@ describe Scenario do
     end
 
     it 'the scenario have the same price curve blob' do
-      expect(scenario_two_attachment.file.blob).
-        to eq(scenario_one_attachment.file.blob)
+      expect(scenario_two_attachment.file.blob)
+        .to eq(scenario_one_attachment.file.blob)
     end
 
     # Sanity check against Rails behaviour changing in the future.

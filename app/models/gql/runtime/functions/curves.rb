@@ -10,13 +10,7 @@ module Gql::Runtime
         attachment =
           scope.gql.scenario.attachments.find_by(key: name)
 
-        # Not sure if we need this check anymore; this is to check if the name
-        # is correct?
-        # unless attachment.is_a?(ActiveStorage::Attached)
-        #   raise "No such attached file: #{name.inspect}"
-        # end
-
-        return nil unless attachment && attachment.file.attached?
+        return nil unless attachment&.file&.attached?
 
         path = ActiveStorage::Blob.service.path_for(attachment.file.key)
 
