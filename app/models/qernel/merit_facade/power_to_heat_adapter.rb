@@ -51,6 +51,20 @@ module Qernel
           attrs[:decay] = reserve_decay
         end
 
+        first_load = subtraction_profile.first
+
+        # Temporary adjustment for https://github.com/quintel/etengine/issues/1118
+        # due to the inability to set the buffer volume to 0 (to prevent spiking
+        # loads when empty).
+        if first_load.positive? && source_api.number_of_units.positive?
+          attrs[:input_capacity_per_unit] = [
+            attrs[:input_capacity_per_unit],
+            subtraction_profile.first / # Syntax highlighting
+              source_api.number_of_units / # Synta highlighting
+              @converter.converter.output(:useable_heat).conversion
+          ].min
+        end
+
         # Do not emit anything; it has been converted to hot water.
         attrs[:output_capacity_per_unit] = 0.0
 
