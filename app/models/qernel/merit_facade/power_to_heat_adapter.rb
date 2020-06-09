@@ -51,6 +51,18 @@ module Qernel
           attrs[:decay] = reserve_decay
         end
 
+        # Adjustment for https://github.com/quintel/etengine/issues/1118, due to
+        # the inability to set the buffer volume to 0 (to prevent spiking loads
+        # when empty).
+        if source_api.number_of_units.positive?
+          attrs[:input_capacity_per_unit] = [
+            attrs[:input_capacity_per_unit],
+            total_demand / 3600 / 8760 / # Slash highlighting
+              source_api.number_of_units / # / Slash highlighting
+              @converter.converter.output(:useable_heat).conversion
+          ].min
+        end
+
         # Do not emit anything; it has been converted to hot water.
         attrs[:output_capacity_per_unit] = 0.0
 
@@ -64,23 +76,25 @@ module Qernel
         conversion = @converter.converter.output(:useable_heat).conversion
 
         lambda do |point, stored|
-          wanted = decay.get(point)
+          wanted = decay.get(point) / conversion
           heat = (stored > wanted ? wanted : stored) * conversion
 
-          @heat_output_curve[point - 1] = heat
+          @heat_output_curve[point] = heat
 
           decay.get(wanted)
         end
       end
 
       def subtraction_profile
-        demand_profile *
-          @context.graph.converter(@config.demand_source).converter_api.demand
+        demand_profile * total_demand
       end
 
       def demand_profile
-        # TODO: This can become @context.curves.curve(...)
-        @context.dataset.load_profile(@config.demand_profile)
+        @context.curves.curve(@config.demand_profile, source_api)
+      end
+
+      def total_demand
+        @context.graph.converter(@config.demand_source).converter_api.demand
       end
 
       # Internal: Participants belonging to a group with others should receive
