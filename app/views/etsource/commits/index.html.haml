@@ -23,13 +23,12 @@
         .span6
           %h4(style="margin-bottom: 20px")
             Latest import:
-            %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha.try(:slice, 0, 10) || 'N/A'}
+            %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha.try(:slice, 0, 8) || 'N/A'}
     - if @output
       .row
         %pre.git_output= @output
-  .row(style="width:1012px")
+  .row(style="width:1017px")
     .span16.alert.alert-error.import-warning
-      .arrow
       After pressing "Import" you might find that the page hangs for a while,
       followed by "We're sorry, but something went wrong". This is due to the
       import taking more than 60 seconds and is normal. Return to this page and
@@ -44,7 +43,7 @@
           Commits on
           = date.to_formatted_s(:long)
         - commits.each do |commit|
-          .commit{ id: "rev-#{ commit.sha }" }
+          .commit{ id: "rev-#{ commit.sha }", class: @etsource.get_latest_import_sha == commit.sha) ? 'current' : '' }
             .action
               - if @etsource.get_latest_import_sha == commit.sha
                 .current ✓ &nbsp;Loaded&nbsp;
