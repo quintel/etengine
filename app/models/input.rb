@@ -58,6 +58,12 @@ class Input
     update_period == 'future' || update_period == 'both'
   end
 
+  def linting_error
+    this.should(be)
+        .a("linting")
+        .error
+  end
+
   # make as_json work
   def id
     self.key
