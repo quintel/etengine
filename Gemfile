@@ -84,7 +84,9 @@ group :test, :development do
   gem 'rspec-rails', '~> 3.7'
   gem 'watchr'
   gem 'binding_of_caller'
+end
 
+group :development, :lint do
   gem 'rubocop',             '~> 0.85.0', require: false
   gem 'rubocop-performance',              require: false
   gem 'rubocop-rails',                    require: false
