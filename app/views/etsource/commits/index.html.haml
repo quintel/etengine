@@ -40,12 +40,14 @@
   .span16
     - @commits.group_by { |com| com.gcommit.date.to_date }.each do |date, commits|
       .commit-group
-        %h4= date.to_formatted_s(:long)
+        %h4
+          Commits on
+          = date.to_formatted_s(:long)
         - commits.each do |commit|
           .commit{ id: "rev-#{ commit.sha }" }
             .action
               - if @etsource.get_latest_import_sha == commit.sha
-                .current ✓ &nbsp;Loaded
+                .current ✓ &nbsp;Loaded&nbsp;
               - elsif import_in_progress?
                 .wait Please wait&hellip;
               - elsif !can_import?
