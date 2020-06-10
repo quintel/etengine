@@ -10,4 +10,4 @@ versions:
 #
 # Valid options: 'modified'
 # Default: nil
-check_scope: 'modified'
+# check_scope: 'modified'
