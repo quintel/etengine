@@ -87,11 +87,15 @@ module Api
       end
 
       def producers
-        converters_of_type(producer_types)
+        converters_of_type(producer_types).select do |producer|
+          @adapter.converter_curve(producer, :output)&.any?
+        end
       end
 
       def consumers
-        converters_of_type(consumer_types)
+        converters_of_type(consumer_types) do |consumer|
+          @adapter.converter_curve(consumer, :output)&.any?
+        end
       end
 
       # Internal: Creates a column representing data for a converter's energy
