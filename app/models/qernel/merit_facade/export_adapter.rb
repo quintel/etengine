@@ -3,7 +3,7 @@
 module Qernel
   module MeritFacade
     # Implements behaviour specific to the export interconnector.
-    class ExportAdapter < Adapter
+    class ExportAdapter < FlexAdapter
       include OptionalCostCurve
 
       def initialize(*)
@@ -33,17 +33,28 @@ module Qernel
           input_link.dataset_set(:calculated, true)
         end
 
-        inject_curve!(:input) { @participant.load_curve }
+        if @config.satisfy_with_dispatchables
+          inject_curve!(:input) { @participant.load_curve }
+        else
+          inject_curve!(:input) do
+            @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
+          end
+        end
       end
 
       def participant
         # Export is price-sensitive. An IC wants to export at full capacity all
         # the time, but only if it is cost-effective to do so.
-        @participant ||= Merit::User::PriceSensitive.new(
-          inner_consumer,
-          cost_strategy,
-          @config.group
-        )
+        @participant ||=
+          if @config.satisfy_with_dispatchables
+            Merit::User::PriceSensitive.new(
+              inner_consumer,
+              cost_strategy,
+              @config.group
+            )
+          else
+            Merit::Flex::Base.new(producer_attributes)
+          end
       end
 
       private
@@ -63,6 +74,15 @@ module Qernel
         )
       end
 
+      # Internal: Creates the attributes for initializing the participant.
+      #
+      # Not used when the participant is a PriceSensitive.
+      def producer_attributes
+        attrs = super
+        attrs[:group] = @config.group
+        attrs
+      end
+
       def total_input_capacity
         source_api.input_capacity *
           source_api.number_of_units *
@@ -71,6 +91,11 @@ module Qernel
 
       def marginal_costs
         source_api.marginal_costs
+      end
+
+      def output_capacity
+        # Used only when in non-PriceSensitive mode.
+        0.0
       end
 
       def inject_flh(demand)
