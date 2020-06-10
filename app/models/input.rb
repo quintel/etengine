@@ -69,8 +69,6 @@ class Input
     self.key
   end
 
-  do
-
   def as_json(options={})
     super(
       :methods => [:id, :max_value, :min_value, :start_value]
