@@ -43,7 +43,7 @@
           Commits on
           = date.to_formatted_s(:long)
         - commits.each do |commit|
-          .commit{ id: "rev-#{ commit.sha }", class: @etsource.get_latest_import_sha == commit.sha) ? 'current' : '' }
+          .commit{ id: "rev-#{ commit.sha }", class: @etsource.get_latest_import_sha == commit.sha ? 'current' : '' }
             .action
               - if @etsource.get_latest_import_sha == commit.sha
                 .current ✓ &nbsp;Loaded&nbsp;
