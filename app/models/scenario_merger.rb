@@ -120,7 +120,10 @@ class ScenarioMerger
   #
   # Returns an array of strings.
   def input_keys(collection)
-    @scenarios.flat_map { |s| s.public_send(collection).keys }.uniq
+    @scenarios
+      .flat_map { |s| s.public_send(collection).keys }
+      .uniq
+      .select { |key| Input.get(key).present? }
   end
 
   # Internal: Returns the end year of the scenarios.
