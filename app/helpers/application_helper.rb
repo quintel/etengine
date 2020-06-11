@@ -39,6 +39,10 @@ module ApplicationHelper
     "<code>#{ str }</code>".html_safe
   end
 
+  def safe_inspect_path
+    params[:api_scenario_id] ? inspect_root_path : inspect_path
+  end
+
   def asset_cache_name(name)
     if Rails.env.development?
       # we set config.perform_caching to true in development (to cache the Graph-qernel)

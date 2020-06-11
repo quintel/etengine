@@ -1,15 +1,14 @@
 - repo ||= 'etsource'
 
 .details
-  = gravatar_image_tag(commit.author.email, size: 140, class: 'avatar', gravatar: { default: asset_url('quintel-avatar.png') })
   %span.message
     %a.sha{ href: "https://github.com/quintel/#{ repo }/commit/#{ commit.sha }" }
       = truncate(commit.message.split("\n").first, length: 80)
   %span.author
+    = gravatar_image_tag(commit.author.email, size: 140, class: 'avatar', gravatar: { default: asset_url('quintel-avatar.png') })
     = commit.author.name
     %span.date
       == authored #{ time_ago_in_words(commit.date) } ago
 .links
   %a.sha{ href: "https://github.com/quintel/#{ repo }/commit/#{ commit.sha }" }
-    %span.ref= commit.sha[0..9]
-    →
+    %span.ref= commit.sha[0..7]

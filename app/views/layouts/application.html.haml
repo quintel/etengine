@@ -15,7 +15,7 @@
           - if content_for?(:navbar)
             = content_for :navbar
           - else
-            %a.brand{:href => etsource_root_path}
+            %a.brand{:href => safe_inspect_path}
               ETEngine
               - if Rails.env.production?
                 %span.server.production Production

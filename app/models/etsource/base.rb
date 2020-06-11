@@ -40,7 +40,7 @@ module Etsource
     end
 
     def commits
-      git.log(40).map { |gcommit| Commit.new(self, gcommit) }
+      git.log(50).map { |gcommit| Commit.new(self, gcommit) }
     end
 
     def get_latest_export_sha
