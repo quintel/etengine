@@ -32,12 +32,12 @@ module Etsource
       end
     end
 
-    def self.weather_properties(region_code, variant)
-      key = "weather_properties.#{region_code}.#{variant}"
+    def self.weather_properties(region_code, variant_name)
+      key = "weather_properties.#{region_code}.#{variant_name}"
 
       NastyCache.instance.fetch(key) do
         dataset = Atlas::Dataset.find(region_code)
-        variant = dataset.curve_sets.get!('weather').variant!(variant)
+        variant = dataset.curve_sets.get!('weather').variant!(variant_name)
 
         unless variant.curve?('weather_properties')
           raise "No weather_properties.csv found at #{variant.path}"
