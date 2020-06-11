@@ -100,15 +100,31 @@ class ScenarioMerger
   #
   # collection - :user_values or :balanced_values, depending on which collection
   #              of input values are being merged.
-  # input      - The key of the input whose value is to be calculated.
+  # input_key  - The key of the input whose value is to be calculated.
   #
   # Returns a Numeric.
-  def input_value(collection, input)
+  def input_value(collection, input_key)
+    return enumerable_input_value(collection, input_key) if Input.get(input_key).enum?
+
     @scenarios.map do |scenario|
       @weights[scenario] * (
-        scenario.public_send(collection)[input] ||
-        Input.get(input).start_value_for(scenario) )
+        scenario.public_send(collection)[input_key] ||
+        Input.get(input_key).start_value_for(scenario) )
     end.sum
+  end
+
+  # Internal: Determines which value to use for an enum input.
+  #
+  # Selects the most frequently used value from the scenarios being merged.
+  #
+  # Returns a String.
+  def enumerable_input_value(collection, input_key)
+    values = @scenarios.map do |scenario|
+      scenario.public_send(collection)[input_key] ||
+        Input.get(input_key).start_value_for(scenario)
+    end
+
+    values.group_by { |key| key }.max_by { |(_, keys)| keys.length }.first
   end
 
   # Internal: Given the name of a collection (:user_values or :balanced_values)

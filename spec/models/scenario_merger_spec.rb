@@ -124,6 +124,32 @@ describe ScenarioMerger do
     end
   end # given one scenario
 
+  context 'when given three scenarios with enum inputs' do
+    let(:merger) do
+      described_class.new([
+        [scenario_one, 1],
+        [scenario_two, 1],
+        [scenario_three, 1]
+      ])
+    end
+
+    let(:scenario_one) do
+      FactoryBot.build(:scenario, user_values: { 'enum' => 'default' })
+    end
+
+    let(:scenario_two) do
+      FactoryBot.build(:scenario, user_values: { 'enum' => 'other' })
+    end
+
+    let(:scenario_three) do
+      FactoryBot.build(:scenario, user_values: { 'enum' => 'other' })
+    end
+
+    it 'selects the most common enum value' do
+      expect(merged.user_values).to eq('enum' => 'other')
+    end
+  end
+
   context 'given no scenarios' do
     it 'raises an error' do
       expect { ScenarioMerger.new([]) }
