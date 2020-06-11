@@ -254,5 +254,24 @@ describe 'APIv3 flexibility orders' do
         )
       end
     end
+
+    context 'when the request contains an invalid flexibility_order payload' do
+      let(:request) do
+        put url, params: { flexibility_order: 'hi' }
+      end
+
+      it 'is a failed request' do
+        request
+        expect(response).not_to be_successful
+      end
+
+      it 'responds with a list of errors' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'errors' => ['Invalid JSON payload']
+        )
+      end
+    end
   end
 end

@@ -10,6 +10,12 @@ module Api
         render json: { errors: ['Scenario not found'] }, status: 404
       end
 
+      rescue_from NoMethodError do |e|
+        raise e unless e.message.starts_with?("undefined method `permit'")
+
+        render json: { errors: ['Invalid JSON payload'] }, status: 400
+      end
+
       def show
         render json: sortable
       end
