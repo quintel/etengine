@@ -32,7 +32,9 @@ converter_keys = @converters.map(&:key)
   <% end %>
 <% end %>
 
-GRAPH.draw();
+GRAPH.draw(function() {
+  $('#loading').remove();
+});
 
 if ('btoa' in window) {
   var instructionsEl = $('#instructions');

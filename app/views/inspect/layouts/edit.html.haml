@@ -1,6 +1,7 @@
 %strong#graph_saving Saving...
 
 = render partial: 'controls', locals: { show_actions: true }
+= render partial: 'loading'
 
 :javascript
   var inspect_json_url = "#{edit_inspect_layout_path(:format => 'json')}";

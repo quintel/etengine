@@ -24,12 +24,13 @@ class @Graph
 
   # Draws the graph
   #
-  draw: =>
+  draw: (cb) =>
     @drawGrid()
     link.draw() for link in @links
     for key, converter of @converters
       converter.draw()
     link.adjust_to_converter() for link in @links
+    cb() if cb
 
   enableDragging: ->
     converter.addDragEventListeners() for key, converter of @converters
