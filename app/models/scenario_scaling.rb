@@ -83,8 +83,9 @@ class ScenarioScaling < ActiveRecord::Base
     dataset
   end
 
-  # Public: Given a hash of input min, max, step, etc, values, adjusts the step
-  # values of inputs whose unit is relative to the size of the region.
+  # Public: Determines an appropriate "step" value for the input, accounting for how the value will
+  # be scaled; if the parent dataset allows values 0-50GW and steps of 0.1GW, it makes no sense to
+  # keep that step value when a scaled dataset allows values between 0-20MW.
   #
   # Returns a hash.
   def input_step(step_value)
