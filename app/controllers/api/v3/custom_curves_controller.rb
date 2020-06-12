@@ -23,6 +23,7 @@ module Api
       respond_to :json
 
       before_action :ensure_valid_curve_name, except: :index
+      before_action :ensure_upload_is_file, only: :update
       before_action :ensure_reasonable_file_size, only: :update
       before_action :ensure_curve_set, only: %i[show destroy]
 
@@ -145,6 +146,19 @@ module Api
 
       def ensure_curve_set
         render_not_found unless current_attachment&.file&.attached?
+      end
+
+      # Asserts that the user uploaded a file, and not a string or other object.
+      def ensure_upload_is_file
+        return if params.require(:file).respond_to?(:tempfile)
+
+        render(
+          json: {
+            errors: ['"file" was not a valid multipart/form-data file'],
+            error_keys: [:not_multipart_form_data]
+          },
+          status: 422
+        )
       end
 
       # Asserts that the uploaded file is not too large; there's no reason for

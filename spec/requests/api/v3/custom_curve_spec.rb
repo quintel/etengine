@@ -122,6 +122,28 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
+    context 'when uploading a curve as a string' do
+      let(:request) do
+        put url, params: { file: ("1.0\n" * 8760) }
+      end
+
+      it 'sends back JSON data with errors' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'errors' => ['"file" was not a valid multipart/form-data file']
+        )
+      end
+
+      it 'sends back JSON data with error keys' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'error_keys' => %w[not_multipart_form_data]
+        )
+      end
+    end
+
     context 'when uploading a valid curve file with a byte order mark' do
       let(:file) do
         file = Tempfile.new('bom_curve')
