@@ -66,7 +66,7 @@ private
   end
 
   def positions
-    ConverterPositions.new(Atlas.data_dir.join('config/node_positions.yml'))
+    @positions ||= ConverterPositions.new(Atlas.data_dir.join('config/node_positions.yml'))
   end
 
   def auto_number(n)
