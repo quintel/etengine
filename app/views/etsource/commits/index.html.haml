@@ -1,9 +1,10 @@
 - if import_in_progress?
-  .span6.alert.alert-error(style="padding: 8px 16px 16px")
-    %h3(style="font-size: 18px; margin: 0")
-      Import in progress!
-    A new ETSource commit is already being imported. Refresh this page in a
-    minute to see the changes, and import another new version if you wish.
+  .row
+    .span6.alert.alert-error(style="padding: 8px 16px 16px")
+      %h3(style="font-size: 18px; margin: 0")
+        Import in progress!
+      A new ETSource commit is already being imported. Refresh this page in a
+      minute to see the changes, and import another new version if you wish.
 
 - if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
   %h4 Looks like you're loading ETSource from the local working copy.
@@ -26,7 +27,8 @@
             %a.latest-import{ href: "#rev-#{ @etsource.get_latest_import_sha }" } #{@etsource.get_latest_import_sha.try(:slice, 0, 8) || 'N/A'}
     - if @output
       .row
-        %pre.git_output= @output
+        .span6
+          %pre.git_output= @output
   .row(style="width:1017px")
     .span16.alert.alert-error.import-warning
       After pressing "Import" you might find that the page hangs for a while,
