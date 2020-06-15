@@ -88,5 +88,32 @@ module Gql::Runtime::Functions
     describe 'CEIL(123456, -3)' do
       it('returns 123000') { expect(result).to eq(124000) }
     end
+
+    # FLATTEN
+    # -------
+
+    describe 'FLATTEN(1, 2, 3)' do
+      it('returns [1, 2, 3]') { expect(result).to eq([1, 2, 3]) }
+    end
+
+    describe 'FLATTEN(1, 2, 3, 3)' do
+      it('returns [1, 2, 3, 3]') { expect(result).to eq([1, 2, 3, 3]) }
+    end
+
+    describe 'FLATTEN(1, 2, nil, 2, nil)' do
+      it('returns [1, 2, 2]') { expect(result).to eq([1, 2, 2]) }
+    end
+
+    describe 'FLATTEN(1, [2, 3], [4])' do
+      it('returns [1, 2, 3, 4]') { expect(result).to eq([1, 2, 3, 4]) }
+    end
+
+    describe 'FLATTEN([1, [2]], [5])' do
+      it('returns [1, 2, 5]') { expect(result).to eq([1, 2, 5]) }
+    end
+
+    describe 'FLATTEN(V(1, [2], nil, [nil], [6]))' do
+      it('returns [1, 2, 6]') { expect(result).to eq([1, 2, 6]) }
+    end
   end
 end
