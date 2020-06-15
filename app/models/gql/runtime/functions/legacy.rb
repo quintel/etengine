@@ -86,7 +86,6 @@ module Gql::Runtime
         Distribution::Normal.cdf( (upper_boundary.to_f - mean.to_f) / std_dev.to_f )
       end
 
-
       # SQRT(2) => [4]
       # SQRT(2,3) => [4,9]
       # SUM(SQRT(2,3)) => 13
@@ -151,8 +150,7 @@ module Gql::Runtime
         value.first == nil
       end
 
-
-     def NEG(*values)
+      def NEG(*values)
         values = flatten_compact(values).map!{|v| v * -1.0}
         values.first
       end
@@ -171,6 +169,13 @@ module Gql::Runtime
 
       def INVERSE(*values)
         1.0 / values.first
+      end
+
+      # Public: Flattens any nested arrays into a single array with depth=1, removing nils.
+      #
+      # Equivalent to `array.flatten.compact` in Ruby.
+      def FLATTEN(*values)
+        flatten_compact(values)
       end
 
       def flatten_compact(arr)
