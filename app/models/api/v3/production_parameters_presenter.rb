@@ -40,10 +40,12 @@ module Api
       private
 
       def converters
-        ( @graph.group_converters(:heat_production) +
+        (
+          @graph.group_converters(:heat_production) +
           @graph.group_converters(:electricity_production) +
-          @graph.group_converters(:cost_hydrogen_production) + 
-          @graph.group_converters(:cost_hydrogen_infrastructure) + 
+          @graph.group_converters(:cost_hydrogen_production) +
+          @graph.group_converters(:cost_hydrogen_infrastructure) +
+          @graph.group_converters(:cost_flexibility) +
           @graph.group_converters(:cost_other)
         ).uniq.sort_by(&:key)
       end
