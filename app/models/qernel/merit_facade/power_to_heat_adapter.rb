@@ -14,7 +14,7 @@ module Qernel
 
         full_load_hours =
           participant.production / input_efficiency / (
-            participant.input_capacity_per_unit *
+            source_api.input_capacity *
             participant.number_of_units *
             3600
           )
