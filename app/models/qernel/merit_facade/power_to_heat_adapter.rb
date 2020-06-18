@@ -12,8 +12,10 @@ module Qernel
       def inject!
         super
 
+        production = participant.production
+
         full_load_hours =
-          participant.production / input_efficiency / (
+          production / input_efficiency / (
             source_api.input_capacity *
             participant.number_of_units *
             3600
@@ -29,10 +31,7 @@ module Qernel
         target_api[:full_load_hours]   = full_load_hours
         target_api[:full_load_seconds] = full_load_seconds
 
-        target_api.demand =
-          full_load_seconds *
-          source_api.input_capacity *
-          participant.number_of_units
+        target_api.demand = production
 
         inject_curve!(full_name: :heat_output_curve) { @heat_output_curve }
       end
