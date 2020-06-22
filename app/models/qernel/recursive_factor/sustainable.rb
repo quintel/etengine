@@ -29,7 +29,7 @@ module Qernel::RecursiveFactor::Sustainable
   def sustainability_share_factor(link)
     return nil unless (domestic_dead_end? || primary_energy_demand?) && link
 
-    # If the converter has a sustainability share which has been explicitly
+    # If the node has a sustainability share which has been explicitly
     # set (through research data or a graph plugin), use that in preference to
     # the carrier sustainability.
     share = query.dataset_get(:sustainability_share) || link.carrier.sustainable

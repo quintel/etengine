@@ -438,22 +438,22 @@ simpler with old apps
       ...
     ]
 
-## Converters
+## Nodes
 
-### Get a converter details
+### Get a node details
 
 This information should be seen on the graph diagram (maybe when the user
 clicks on a node and wants to see the details) and on the ETM, when the user
-clicks on the converter info link (now we're loading an iframe). Do we ever
-need converter info outside the scope of a scenario? We could use the
-`/converters/:code` URL to get the generic converter attributes (those that
+clicks on the node info link (now we're loading an iframe). Do we ever
+need node info outside the scope of a scenario? We could use the
+`/nodes/:code` URL to get the generic node attributes (those that
 don't require an active scenario) and
-`/scenarios/:scenario_id/converters/:code` to get the attributes for a
+`/scenarios/:scenario_id/nodes/:code` to get the attributes for a
 specific scenario.
 
 #### Request
 
-    GET /converters/:code
+    GET /nodes/:code
 
 If the scenario_id is missing then the controller will use the latest scenario.
 
@@ -493,22 +493,22 @@ If the scenario_id is missing then the controller will use the latest scenario.
 
 The `data` section contains both attributes and calculations.
 
-### Converter details for a specific scenario
+### Node details for a specific scenario
 
 #### Request
 
-    GET /scenarios/:scenario_id/converters/:key
+    GET /scenarios/:scenario_id/nodes/:key
 
 #### Response
 
 See above, the response is identical.
 
-### Converter topology
+### Node topology
 
 #### Request
 
-    GET /scenarios/:scenario_id/converters/topology
+    GET /scenarios/:scenario_id/nodes/topology
 
 #### Response
 
-Returns an array of ConverterPosition objects. Will be used on visualization.
+Returns an array of NodePosition objects. Will be used on visualization.

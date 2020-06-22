@@ -23,11 +23,11 @@ module Qernel::Plugins
       end
 
       it 'zeroes out disabled sectors' do
-        expect(gql.future.graph.converter(:foo).demand).to be_zero
+        expect(gql.future.graph.node(:foo).demand).to be_zero
       end
 
       it 'does not zero-out enabled sectors' do
-        expect(gql.future.graph.converter(:cpd_sink).demand).to_not be_zero
+        expect(gql.future.graph.node(:cpd_sink).demand).to_not be_zero
       end
     end # when there is one disabled sector
 
@@ -41,7 +41,7 @@ module Qernel::Plugins
       end
 
       it 'zeroes out no sectors' do
-        expect(gql.future.graph.converter(:foo).demand).to_not be_zero
+        expect(gql.future.graph.node(:foo).demand).to_not be_zero
       end
     end # when there are no disabled sectors
   end

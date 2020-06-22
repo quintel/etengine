@@ -4,7 +4,7 @@ module Qernel
   class Slot
     # A slot which calculates its conversion by looking at the demand of all the
     # links belonging to it, and determining their share of the demand of _all_
-    # links in the same direction from the converter.
+    # links in the same direction from the node.
     #
     # This is useful in cases where a graph plugin changes the flow of some of
     # the outputs, and the conversions need to be updated to ensure they remain
@@ -25,7 +25,7 @@ module Qernel
 
       def link_based_conversion
         fetch(:link_based_conversion, false) do
-          self_and_siblings = input? ? @converter.inputs : @converter.outputs
+          self_and_siblings = input? ? @node.inputs : @node.outputs
           all_links = self_and_siblings.flat_map(&:links)
 
           return nil unless all_links.all?(&:value)

@@ -42,8 +42,8 @@ module Gql::QueryInterface::Lookup
     graph.area.send(key)
   end
 
-  def all_converters
-    graph.converters
+  def all_nodes
+    graph.nodes
   end
 
   # @param [String] Carrier key
@@ -58,46 +58,46 @@ module Gql::QueryInterface::Lookup
   end
 
   # @param [String,Array] Use keys
-  # @return [Converter]
+  # @return [Node]
   #
-  def use_converters(keys)
+  def use_nodes(keys)
     if keys.is_a?(Array)
-      flatten_compact keys.flatten.map{|key| graph.use_converters(key) }
+      flatten_compact keys.flatten.map{|key| graph.use_nodes(key) }
     else
-      flatten_compact graph.use_converters(key)
+      flatten_compact graph.use_nodes(key)
     end
   end
 
   # @param [String,Array] Sector keys
-  # @return [Converter]
+  # @return [Node]
   #
-  def sector_converters(keys)
+  def sector_nodes(keys)
     if keys.is_a?(Array)
-      flatten_compact keys.flatten.map{|key| graph.sector_converters(key) }
+      flatten_compact keys.flatten.map{|key| graph.sector_nodes(key) }
     else
-      flatten_compact graph.sector_converters(keys)
+      flatten_compact graph.sector_nodes(keys)
     end
   end
 
   # @param [String,Array] Group keys
-  # @return [Converter]
+  # @return [Node]
   #
-  def group_converters(keys)
+  def group_nodes(keys)
     if keys.is_a?(Array)
-      flatten_compact keys.flatten.map{|key| graph.group_converters(key) }
+      flatten_compact keys.flatten.map{|key| graph.group_nodes(key) }
     else
-      flatten_compact graph.group_converters(keys)
+      flatten_compact graph.group_nodes(keys)
     end
   end
 
-  # @param [String] Converter keys
-  # @return [Converter]
+  # @param [String] Node keys
+  # @return [Node]
   #
-  def converters(keys)
+  def nodes(keys)
     if keys.is_a?(Array)
-      flatten_compact keys.flatten.map{|key| graph.converter(key) }
+      flatten_compact keys.flatten.map{|key| graph.node(key) }
     else
-      flatten_compact [graph.converter(keys)]
+      flatten_compact [graph.node(keys)]
     end
   end
 

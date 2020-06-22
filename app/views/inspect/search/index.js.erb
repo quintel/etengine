@@ -1,7 +1,7 @@
 <% cache("/inspect/search/keys.js") do %>
 var search_keys = <%=
   [
-    *Etsource::Loader.instance.graph.converters.map(&:key),
+    *Etsource::Loader.instance.graph.nodes.map(&:key),
     *Gquery.all.map(&:key)
   ].to_json.html_safe
 %>

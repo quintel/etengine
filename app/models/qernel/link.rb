@@ -3,7 +3,7 @@ module Qernel
     extend ActiveModel::Naming
 
     # Public: Defines a method on the Link which, when called, will call the
-    # method of the same name on the parent converter's ConverterApi, reducing
+    # method of the same name on the parent node's NodeApi, reducing
     # the value according to the slot conversion and parent share.
     #
     # Returns nothing.
@@ -34,7 +34,7 @@ module Qernel
     # the dataset.
     attr_accessor :graph
 
-    attr_reader :lft_converter, :rgt_converter, :carrier,
+    attr_reader :lft_node, :rgt_node, :carrier,
       :id, :key, :link_type, :groups
 
     # Flow ---------------------------------------------------------------------
@@ -44,13 +44,13 @@ module Qernel
     # --------------------------------------------------------------------------
 
     # Creates a new Link. Automatically adds the connection to the parent and
-    # child converters.
+    # child nodes.
     #
     # id       - A unique identifier for the link. A non-integer value will be
     #            run through the Hashpipe library which returns an integer hash
     #            of the ID for fast lookups and comparison.
-    # lft      - The left, "child", converter.
-    # rft      - The right, "parent", converter.
+    # lft      - The left, "child", node.
+    # rft      - The right, "parent", node.
     # carrier  - The Carrier determining the type of energy which flows through
     #            this edge.
     # type     - A symbol which tells the link how it should be calculated. See
@@ -64,14 +64,14 @@ module Qernel
       @id  = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
 
       @reversed      = reversed
-      @lft_converter = lft
-      @rgt_converter = rgt
+      @lft_node = lft
+      @rgt_node = rgt
       @carrier       = carrier
       @groups        = groups.freeze
       @link_type     = type.to_sym
 
-      lft_converter.add_input_link(self)
-      rgt_converter.add_output_link(self)
+      lft_node.add_input_link(self)
+      rgt_node.add_output_link(self)
 
       self.dataset_key # memoize dataset_key
     end
@@ -89,11 +89,11 @@ module Qernel
     end
 
     # Public: The sector to which the link belongs. This is the same as the sector
-    # of the child (consumer, "left-hand") converter.
+    # of the child (consumer, "left-hand") node.
     #
     # Returns a symbol.
     def sector
-      lft_converter.sector_key
+      lft_node.sector_key
     end
 
     def carrier_key
@@ -133,24 +133,24 @@ module Qernel
     end
 
     def energetic?
-      ! lft_converter.non_energetic_use?
+      ! lft_node.non_energetic_use?
     end
 
     # Calculation --------------------------------------------------------------
 
     def max_demand
-      dataset_get(:max_demand) || rgt_converter.query.max_demand
+      dataset_get(:max_demand) || rgt_node.query.max_demand
     end
 
     def priority
       dataset_get(:priority) || -Float::INFINITY
     end
 
-    # Public: The share of energy from the parent converter carried away by this
+    # Public: The share of energy from the parent node carried away by this
     # link.
     #
     # This is only able to return a meaningful value AFTER the graph has been
-    # calculated, since prior to this the link or converter may not yet have a
+    # calculated, since prior to this the link or node may not yet have a
     # demand.
     #
     # Returns a Numeric, or nil if no share can be calculated.
@@ -161,18 +161,18 @@ module Qernel
         end
     end
 
-    # Public: Delegates a calculation to the parent node ConverterApi, reducing
+    # Public: Delegates a calculation to the parent node NodeApi, reducing
     # the returned value in accordance with the slot conversion and link share.
     #
-    # calculation - The method to be called on the ConverterApi
+    # calculation - The method to be called on the NodeApi
     # *args       - Additional arguments to be passed to the calculation method.
     #
     # Returns a number, or nil if the calculation returned nil.
     def delegated_calculation(calculation, lossless = false, *args)
-      value = rgt_converter.query.send(calculation, *args)
+      value = rgt_node.query.send(calculation, *args)
 
       if value
-        loss_comp = lossless ? rgt_converter.loss_compensation_factor : 1.0
+        loss_comp = lossless ? rgt_node.loss_compensation_factor : 1.0
         value * (output.conversion * loss_comp) * parent_share
       end
     end
@@ -223,7 +223,7 @@ module Qernel
     #
     # Returns a Qernel::Slot.
     def lft_input
-      lft_converter.input(@carrier)
+      lft_node.input(@carrier)
     end
 
     # The slot from where the energy for this link comes, irrespective of the
@@ -231,7 +231,7 @@ module Qernel
     #
     # Returns a Qernel::Slot.
     def rgt_output
-      rgt_converter.output(@carrier)
+      rgt_node.output(@carrier)
     end
 
     # The slot from where the energy for this link comes, for calculation
@@ -244,7 +244,7 @@ module Qernel
     end
 
     # The slot that receives the energy of this link. If reversed it will be the
-    # lft converter.
+    # lft node.
 
     # The slot which receives energy from this link, for calculation purposes.
     # If the link is reversed it will instead return the slot from which the

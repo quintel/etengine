@@ -3,14 +3,14 @@ module Etsource
   # using the ETSource documents.
   module FromAtlas
     class << self
-      # Public: Given an Atlas +node+, creates the corresponding Converter for
+      # Public: Given an Atlas +node+, creates the corresponding Node for
       # use in the graph.
       #
       # node - An Atlas::Node.
       #
-      # Returns a Qernel::Converter.
-      def converter(node)
-        Qernel::Converter.new(
+      # Returns a Qernel::Node.
+      def node(node)
+        Qernel::Node.new(
           key:                  node.key.to_sym,
           sector_id:            node.sector.to_sym,
           use_id:               node.use.try(:to_sym),
@@ -25,7 +25,7 @@ module Etsource
       # slot - An Atlas::Slot.
       #
       # Returns a Qernel::Slot.
-      def slot(slot, converter, carrier)
+      def slot(slot, node, carrier)
         type =
           if slot.carrier == :loss
             :loss
@@ -35,22 +35,22 @@ module Etsource
             :link_based
           end
 
-        slot_from_data(converter, carrier, slot.direction, type)
+        slot_from_data(node, carrier, slot.direction, type)
       end
 
       # Public: Given data about a +slot+, creates the corresponding Slot.
       #
-      # converter   - The Qernel::Converter to which the slot belongs.
+      # node   - The Qernel::Node to which the slot belongs.
       # carrier     - The Qernel::Carrier.
       # direction   - Input or output slot? :in or :out.
       # type        - What type of slotto create. nil, :elastic, or :loss.
       #
       # Returns a Qernel::Slot
-      def slot_from_data(converter, carrier, direction, type = nil)
+      def slot_from_data(node, carrier, direction, type = nil)
         Qernel::Slot.factory(
           type,
-          slot_key(converter.key, carrier.key, direction),
-          converter,
+          slot_key(node.key, carrier.key, direction),
+          node,
           carrier,
           direction == :in ? :input : :output
         )
@@ -63,8 +63,8 @@ module Etsource
       # supplier and consumer, hence the bang!
       #
       # edge     - The Atlas::Edge.
-      # consumer - The consumer (input) converter.
-      # supplier - The supplier (output) converter.
+      # consumer - The consumer (input) node.
+      # supplier - The supplier (output) node.
       # carrier  - The Qernel::Carrier.
       #
       # Returns a Qernel::Link.

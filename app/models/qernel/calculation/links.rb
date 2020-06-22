@@ -13,7 +13,7 @@ module Qernel::Calculation
     end
 
     # Public: Determines if the given +link+ will have its value calculated by
-    # looking at the parent (output) converter.
+    # looking at the parent (output) node.
     #
     # Returns true or false.
     def self.calculated_by_parent?(link)
@@ -24,7 +24,7 @@ module Qernel::Calculation
     end
 
     # Public: Determines if the given +link+ will have its value calculated by
-    # looking at the child (input) converter.
+    # looking at the child (input) node.
     #
     # Returns true or false.
     def self.calculated_by_child?(link)
@@ -41,7 +41,7 @@ module Qernel::Calculation
         # slot.
         Dependent.call(link) ||
           raise("Constant link with share = nil expects a demand of parent " \
-                "converter #{ link.rgt_converter }")
+                "node #{ link.rgt_node }")
       else
         # When a share value is present in the data, it isn't actually a share
         # but an absolute amount of energy to be assigned to the link as demand.
@@ -75,7 +75,7 @@ module Qernel::Calculation
     # looks at how much excess energy the parent (output) slot has, and assigns
     # that amount to be taken away by the inversed flexible.
     InversedFlexible = lambda do |link|
-      output = link.rgt_converter.demand * link.output.conversion
+      output = link.rgt_node.demand * link.output.conversion
       excess = output - link.output.external_link_value
 
       (excess < 0.0) ? 0.0 : excess
@@ -122,11 +122,11 @@ module Qernel::Calculation
       # Returns a Numeric, or nil if there is no minimum demand.
       def self.min_demand(link)
         if ! link.carrier.electricity? &&
-              ! link.rgt_converter.energy_import_export?
+              ! link.rgt_node.energy_import_export?
           0.0
-        elsif link.lft_converter.has_loop?
+        elsif link.lft_node.has_loop?
           # Typically a loop contains an inversed flexible (to the left) and a
-          # flexible (to the right), to the same converter. Sometimes this
+          # flexible (to the right), to the same node. Sometimes this
           # construct does not work properly, so we manually make sure a
           # flexible cannot go below 0.0.
           #

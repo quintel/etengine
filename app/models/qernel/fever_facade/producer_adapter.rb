@@ -10,13 +10,13 @@ module Qernel
       include Inject
 
       # Public: Returns an appropriate adapter class to represent the given
-      # converter in Fever.
+      # node in Fever.
       #
       # Returns an Adapter class.
-      def self.factory(converter, _context)
-        if converter.key.to_s.include?('hybrid')
+      def self.factory(node, _context)
+        if node.key.to_s.include?('hybrid')
           HHPAdapter
-        elsif converter.dataset_get(:fever).efficiency_based_on
+        elsif node.dataset_get(:fever).efficiency_based_on
           VariableEfficiencyProducerAdapter
         else
           self
@@ -41,7 +41,7 @@ module Qernel
       end
 
       def producer
-        if (st = @converter.dataset_get(:storage)) && st.volume.positive?
+        if (st = @node.dataset_get(:storage)) && st.volume.positive?
           Fever::BufferingProducer.new(
             capacity, reserve,
             input_efficiency: input_efficiency
@@ -53,7 +53,7 @@ module Qernel
 
       # Public: Returns if this adapter has any units installed.
       def installed?
-        @converter.number_of_units.positive?
+        @node.number_of_units.positive?
       end
 
       private
@@ -62,11 +62,11 @@ module Qernel
       # group; fetch it!
       def aliased_adapter
         alias_group = @context.plugin.group(
-          @context.graph.converter(@config.alias_of).dataset_get(:fever).group
+          @context.graph.node(@config.alias_of).dataset_get(:fever).group
         )
 
         alias_group.adapters.detect do |adapter|
-          adapter.converter.key == @config.alias_of
+          adapter.node.key == @config.alias_of
         end
       end
     end

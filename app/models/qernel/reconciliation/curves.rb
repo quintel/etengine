@@ -13,29 +13,29 @@ module Qernel
       # otherwise it falls back to the dynamic curve configuration in ETSource.
       #
       # Returns a Merit::Curve.
-      def curve(name, converter)
+      def curve(name, node)
         name = name.to_s
 
-        if converter.demand&.zero?
+        if node.demand&.zero?
           Merit::Curve.new([0.0] * 8760)
         elsif prefix?(name, 'self')
-          Merit::Curve.new(self_demand_profile(name[5..-1].to_sym, converter))
+          Merit::Curve.new(self_demand_profile(name[5..-1].to_sym, node))
         else
-          super(name, converter.converter_api)
+          super(name, node.node_api)
         end
       end
 
       private
 
       # Internal: Constructs a dynamic demand profile using a curve already
-      # stored on the converter from a previous (fully-completed) calculation.
+      # stored on the node from a previous (fully-completed) calculation.
       # For example, "self: electricity_output_curve" uses the electricity
-      # production curve calculated for the converter in the electricity merit
+      # production curve calculated for the node in the electricity merit
       # order.
       #
       # Returns an array.
-      def self_demand_profile(name, converter)
-        Causality::SelfDemandProfile.profile(converter.converter_api, name)
+      def self_demand_profile(name, node)
+        Causality::SelfDemandProfile.profile(node.node_api, name)
       end
     end
   end

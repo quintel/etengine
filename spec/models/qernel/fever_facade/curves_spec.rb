@@ -12,8 +12,8 @@ describe Qernel::FeverFacade::Curves, :household_curves do
     Qernel::FeverFacade::Curves.new(graph)
   end
 
-  let(:converter) { instance_double('Qernel::Converter', demand: 8760) }
-  let(:curve) { curves.curve(curve_name, converter) }
+  let(:node) { instance_double('Qernel::Node', demand: 8760) }
+  let(:curve) { curves.curve(curve_name, node) }
 
   # The curve is converted so as to sum to 1.0; this converts it to something
   # mething more readable.

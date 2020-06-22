@@ -13,7 +13,7 @@ module Qernel
     end
 
 
-    # used now in api/v3/converter.rb and data converter detail page.
+    # used now in api/v3/node.rb and data node detail page.
     # Returns a hash with the methods (grouped by category) to be shown
     #
     # This belongs mostly to the presentation layer, so this method could be
@@ -54,17 +54,17 @@ module Qernel
           'variable_operation_and_maintenance_costs_per(:plant)'     => {},
           'total_initial_investment_per(:plant)'                     => {},
         },
-        :costs_per_converter => {
-          'total_costs_per(:converter)'                              => {},
-          'fixed_costs_per(:converter)'                              => {},
-          'cost_of_capital_per(:converter)'                          => {},
-          'depreciation_costs_per(:converter)'                       => {},
-          'variable_costs_per(:converter)'                           => {},
-          'fuel_costs_per(:converter)'                               => {},
-          'co2_emissions_costs_per(:converter)'                      => {},
-          'fixed_operation_and_maintenance_costs_per(:converter)'    => {},
-          'variable_operation_and_maintenance_costs_per(:converter)' => {},
-          'total_initial_investment_per(:converter)'                 => {},
+        :costs_per_node => {
+          'total_costs_per(:node)'                              => {},
+          'fixed_costs_per(:node)'                              => {},
+          'cost_of_capital_per(:node)'                          => {},
+          'depreciation_costs_per(:node)'                       => {},
+          'variable_costs_per(:node)'                           => {},
+          'fuel_costs_per(:node)'                               => {},
+          'co2_emissions_costs_per(:node)'                      => {},
+          'fixed_operation_and_maintenance_costs_per(:node)'    => {},
+          'variable_operation_and_maintenance_costs_per(:node)' => {},
+          'total_initial_investment_per(:node)'                 => {},
         },
         :costs_per_mw_electricity => {
           'total_costs_per(:mw_electricity)'                              => {},

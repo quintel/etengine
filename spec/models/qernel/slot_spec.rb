@@ -8,12 +8,12 @@ module Qernel
     end
 
     describe '.factory' do
-      let(:converter) { Qernel::Converter.new(id: 1) }
+      let(:node) { Qernel::Node.new(id: 1) }
 
       context 'when type=nil' do
         it 'should be an ordinary slot' do
           slot = Qernel::Slot.factory(
-            nil, 1, converter,
+            nil, 1, node,
             Qernel::Carrier.new(key: :electricity), :output)
 
           expect(slot).to     be_a(Qernel::Slot)
@@ -24,7 +24,7 @@ module Qernel
       context 'when type=invalid' do
         it 'should be an ordinary slot' do
           slot = Qernel::Slot.factory(:invalid,
-            1, converter, Qernel::Carrier.new(key: :loss), :input)
+            1, node, Qernel::Carrier.new(key: :loss), :input)
 
           expect(slot).to     be_a(Qernel::Slot)
           expect(slot).not_to be_a(Qernel::Slot::Elastic)
@@ -34,7 +34,7 @@ module Qernel
       context 'when type=elastic' do
         it 'should be an elastic slot' do
           slot = Qernel::Slot.factory(:elastic,
-            1, converter, Qernel::Carrier.new(key: :loss), :output)
+            1, node, Qernel::Carrier.new(key: :loss), :output)
 
           expect(slot).to be_a(Qernel::Slot::Elastic)
         end

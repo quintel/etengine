@@ -1,0 +1,5 @@
+= form_tag inspect_nodes_path, :method => :get, :class => "form form-inline", :style => 'display: inline' do
+  = search_field_tag :q, params[:q], :placeholder => 'search'
+  = select_tag 'group', options_for_select(node_groups, params[:group]),
+    :include_blank => true
+  = submit_tag "search", :class => 'btn'

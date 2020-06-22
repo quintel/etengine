@@ -10,22 +10,22 @@ module Qernel
         # Internal: Calculates what share of the total heat demand will be
         # supplied by this producer.
         def share
-          link = @converter.converter.output(:useable_heat).links.first
+          link = @node.node.output(:useable_heat).links.first
 
-          if link.lft_converter.key.to_s.include?('aggregator')
-            link.lft_converter.output(:useable_heat).links.first.share
+          if link.lft_node.key.to_s.include?('aggregator')
+            link.lft_node.output(:useable_heat).links.first.share
           else
             link.share
           end
         end
 
         def output_efficiency
-          slots = @converter.converter.outputs.reject(&:loss?)
+          slots = @node.node.outputs.reject(&:loss?)
           slots.any? ? slots.sum(&:conversion) : 1.0
         end
 
         def input_efficiency
-          1.0 / @converter.converter.input(input_carrier).conversion
+          1.0 / @node.node.input(input_carrier).conversion
         end
 
         # Internal: The capacity of the Fever participant in each frame.
@@ -46,7 +46,7 @@ module Qernel
         #
         # Returns a Merit::Flex::Reserve.
         def reserve
-          volume  = total_value { @converter.dataset_get(:storage).volume }
+          volume  = total_value { @node.dataset_get(:storage).volume }
           reserve = Merit::Flex::SimpleReserve.new(volume)
 
           # Buffer starts full.

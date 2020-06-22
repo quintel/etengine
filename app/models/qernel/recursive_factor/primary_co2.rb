@@ -13,7 +13,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
     1.0 - free_co2_factor
   end
 
-  # Internal: The proportion of the converter's energy which is generated
+  # Internal: The proportion of the node's energy which is generated
   # without CO2 emissions.
   #
   # Returns a numeric.
@@ -22,7 +22,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   end
 
   # @return [0.0]
-  #   if converter is non_energetic_use / has free_co2_factor of 1.0.
+  #   if node is non_energetic_use / has free_co2_factor of 1.0.
   #   This ends the recursive_factor.
   # @return [nil]
   #   until dead end or primary_energy_demand
@@ -48,7 +48,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   end
 
   # @return [0.0]
-  #  if converter is non_energetic_use / has free_co2_factor of 1.0.
+  #  if node is non_energetic_use / has free_co2_factor of 1.0.
   #   This ends the recursive_factor.
   # @return [nil]
   #   until dead end or primary_energy_demand

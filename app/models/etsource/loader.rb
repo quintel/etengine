@@ -102,7 +102,7 @@ module Etsource
       "etsource/#{NastyCache.instance.local_timestamp}/"
     end
 
-    # A Qernel::Graph from ETsource where the converters are ordered in a way that
+    # A Qernel::Graph from ETsource where the nodes are ordered in a way that
     #  is optimal for the calculation.
     #
     def optimized_graph

@@ -19,7 +19,7 @@ class @Graph
     @height = height
     @r = Raphael("canvas", width, height)
     @selected = []
-    @converters = {}
+    @nodes = {}
     @links = []
 
   # Draws the graph
@@ -27,13 +27,13 @@ class @Graph
   draw: (cb) =>
     @drawGrid()
     link.draw() for link in @links
-    for key, converter of @converters
-      converter.draw()
-    link.adjust_to_converter() for link in @links
+    for key, node of @nodes
+      node.draw()
+    link.adjust_to_node() for link in @links
     cb() if cb
 
   enableDragging: ->
-    converter.addDragEventListeners() for key, converter of @converters
+    node.addDragEventListeners() for key, node of @nodes
 
   # Draw the grid.
   #
@@ -53,7 +53,7 @@ class @Graph
         .node.setAttribute('class', 'grid')
 
   show_attribute_values: =>
-    for key, c of @converters
+    for key, c of @nodes
       period = $('#period').val()
       attr = $('#attribute').val()
       if data[period]? && data[period][key]? && data[period][key][attr]?
@@ -62,88 +62,88 @@ class @Graph
 
   show_selected: ->
     selected_group = $('#selected').val()
-    for key, converter of @converters
-      if (selected_group == 'all' || converter.sector == selected_group)
-        converter.show()
+    for key, node of @nodes
+      if (selected_group == 'all' || node.sector == selected_group)
+        node.show()
 
   hide_selected: ->
     selected_group = $('#selected').val()
-    for id, converter of @converters
-      if (selected_group == 'all' || converter.sector == selected_group)
-        converter.hide()
+    for id, node of @nodes
+      if (selected_group == 'all' || node.sector == selected_group)
+        node.hide()
 
   deselect_all: =>
-    for converter in @selected
-      converter.converter.unselect()
+    for node in @selected
+      node.node.unselect()
     return false
 
   highlight_off_all: =>
-    for key, converter of @converters
-      converter.highlight_off()
+    for key, node of @nodes
+      node.highlight_off()
     return false
 
   mark_all_dirty: =>
-    converter.markDirty() for key, converter of @converters
+    node.markDirty() for key, node of @nodes
 
-  # { converter_key : {x : 12, y : 23, hidden : true} }
+  # { node_key : {x : 12, y : 23, hidden : true} }
   #
   getUpdatedValues: ->
-    converter_position_attrs = {}
-    for key, converter of @converters
-      if converter.isDirty()
-        converter_position_attrs[key] = converter.getAttributes()
-    converter_position_attrs
+    node_position_attrs = {}
+    for key, node of @nodes
+      if node.isDirty()
+        node_position_attrs[key] = node.getAttributes()
+    node_position_attrs
 
   # drag event handlers
   #
   elements_drag: (elements) ->
-    for converter_box in elements
-      for link in converter_box.converter.links
-        # Highlights in/output converter slots
-        link.input_converter.input_slot().attr({fill : '#cc0'})
-        link.output_converter.output_slot().attr({fill : '#cc0'})
-      b = converter_box # "b" just to make it more readable
+    for node_box in elements
+      for link in node_box.node.links
+        # Highlights in/output node slots
+        link.input_node.input_slot().attr({fill : '#cc0'})
+        link.output_node.output_slot().attr({fill : '#cc0'})
+      b = node_box # "b" just to make it more readable
       b.ox = if b.type == "rect" then b.attr("x") else b.attr("cx")
       b.oy = if b.type == "rect" then b.attr("y") else b.attr("cy")
 
   elements_move: (elements,dx,dy) ->
-    for converter_box in elements
-      converter_box.converter.moveTo(dx,dy)
+    for node_box in elements
+      node_box.node.moveTo(dx,dy)
 
   elements_up: (elements) ->
-    for converter_box in elements
-      for link in converter_box.converter.links
-        link.input_converter.input_slot().attr({fill : '#fff'})
-        link.output_converter.output_slot().attr({fill : '#fff'})
-      converter_box.converter.update_position(converter_box.attr('x'), converter_box.attr('y'))
+    for node_box in elements
+      for link in node_box.node.links
+        link.input_node.input_slot().attr({fill : '#fff'})
+        link.output_node.output_slot().attr({fill : '#fff'})
+      node_box.node.update_position(node_box.attr('x'), node_box.attr('y'))
 
 class @Link
   constructor: (args) ->
     [input_key, output_key, color, style] = args
     @color = color
     @style = style
-    @output_converter = GRAPH.converters[output_key]
-    @input_converter = GRAPH.converters[input_key]
+    @output_node = GRAPH.nodes[output_key]
+    @input_node = GRAPH.nodes[input_key]
 
-    @output_converter.links.push(this)
-    @input_converter.links.push(this)
+    @output_node.links.push(this)
+    @input_node.links.push(this)
     @r = GRAPH.r
     GRAPH.links.push(this)
 
   # Draw the Link.
   # *Warning*: The order of the elements being drawed defines their z-index.
-  #            We want the links to appear behind the converter boxes, therefore
+  #            We want the links to appear behind the node boxes, therefore
   #            call draw() on links first.
   #
   draw: =>
-    @shape = @r.connection(@input_converter.input_slot(),
-                          @output_converter.output_slot(),
+    @shape = @r.connection(@input_node.input_slot(),
+                          @output_node.output_slot(),
                           @color,
                           @color+'|'+@style)
 
-  output_converter: -> @output_converter
+  output_node: -> @output_node
 
-  input_converter: -> @input_converter
+  input_node: -> @input_node
 
   highlight_on: ->
     @shape.bg.attr({stroke : '#f00'})
@@ -153,13 +153,13 @@ class @Link
     @shape.bg.attr({stroke : @color})
     @shape.line.attr({stroke : @color})
 
-  # (Re-)connects a link to the converter slots.
-  # Needs to be called everytime we move/drag a Converter.
-  # Also has to be called after drawing the converters.
+  # (Re-)connects a link to the node slots.
+  # Needs to be called everytime we move/drag a Node.
+  # Also has to be called after drawing the nodes.
   #
-  adjust_to_converter: => @r.connection(@shape)
+  adjust_to_node: => @r.connection(@shape)
 
-class @Converter
+class @Node
   STYLE_SELECTED : {fill : '#cff', 'stroke' : '#f00' }
   STYLE_HIGHLIGHT : {'stroke' : '#f00'}
 
@@ -178,19 +178,19 @@ class @Converter
     @stroke_color = stroke_color
     @r = GRAPH.r
 
-    GRAPH.converters[key] = this
+    GRAPH.nodes[key] = this
 
-  # Draws the Converter on the raphael space.
+  # Draws the Node on the raphael space.
   # *Warning*: The order of the elements being drawed defines their z-index.
-  #           We want the links to appear behind the converter boxes, therefore
-  #           call draw() on converters after the links.
+  #           We want the links to appear behind the node boxes, therefore
+  #           call draw() on nodes after the links.
   #
   draw: ->
-    @drawConverterBox()
+    @drawNodeBox()
     @hide() if @isHidden()
     @addEventListeners()
 
-  drawConverterBox: =>
+  drawNodeBox: =>
     txt_attributes =
       'text-anchor' : 'start'
       'font-weight' : 400
@@ -201,9 +201,9 @@ class @Converter
 
     box = @r.rect(pos_x, pos_y, 80, 50)
     box.attr(@getBoxAttributes())
-    box.converter = this
+    box.node = this
 
-    # Creating text nodes of converter
+    # Creating text nodes of node
     box.sector_node = @r.text(0, 0, @getSectorUseShortcut())
     box.text_node = @r.text(0, 0, @key).attr({'text-anchor': 'start'})
     box.value_node = @r.text(0,0, '').attr({'text-anchor': 'start'})
@@ -227,7 +227,7 @@ class @Converter
 
     @box.node.ondblclick = (evt) =>
       if !evt.altKey || !evt.shiftKey
-        url = "#{window.converter_url_prefix}/#{@key}"
+        url = "#{window.node_url_prefix}/#{@key}"
         window.open(url, '_blank')
       false
 
@@ -238,13 +238,13 @@ class @Converter
     @box.up = -> GRAPH.elements_up($.merge([this],GRAPH.selected))
     @box.drag(@box.move, @box.dragger, @box.up)
 
-  # Has Converter changed attribute values?
+  # Has Node changed attribute values?
   isDirty: -> @dirty == true
 
-  # Mark Converter changed.
+  # Mark Node changed.
   markDirty: -> @dirty = true
 
-  # Highlight converters and their links.
+  # Highlight nodes and their links.
   highlight_toggle: ->
     if @highlighted then @highlight_off() else @highlight_on()
 
@@ -258,7 +258,7 @@ class @Converter
     @box.attr({'stroke' : this.stroke_color})
     link.highlight_off() for link in @links
 
-  # Select multiple converters to drag them at the same time.
+  # Select multiple nodes to drag them at the same time.
   toggle_selection: ->
     if _.indexOf(GRAPH.selected, this.box) >= 0 then @unselect() else @select()
 
@@ -272,7 +272,7 @@ class @Converter
 
   getBox: -> @box
 
-  # Apply the passed raphael parameters to all the shapes of a converter.
+  # Apply the passed raphael parameters to all the shapes of a node.
   # Including links, Slots, Text nodes.
   # This is mostly useful for assigning opacity.
   #
@@ -351,7 +351,7 @@ class @Converter
     @markDirty()
     GRAPH.updated_coordinates[@id] = [pos_x, pos_y]
 
-  # Position the child-shapes according to the converter shape.
+  # Position the child-shapes according to the node shape.
   position_subnodes: =>
     pos_x = @box.attr('x')
     pos_y = @box.attr('y')
@@ -364,7 +364,7 @@ class @Converter
     @output_slot().attr({cx : pos_x + 85, cy : pos_y + 20 })
 
   # Relative move to.
-  # Snaps converter to an (invisible) grid.
+  # Snaps node to an (invisible) grid.
   #
   moveTo: (dx, dy) ->
     b = @box
@@ -375,4 +375,4 @@ class @Converter
     att = if b.type == "rect" then  {x: x, y: y} else {cx: x, cy: y}
     b.attr(att)
     @position_subnodes()
-    link.adjust_to_converter() for link in @links
+    link.adjust_to_node() for link in @links

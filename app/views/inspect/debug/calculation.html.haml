@@ -24,11 +24,11 @@
       %th.tar Position
   %tbody
     - @gql.query_present("MAP(ALL(), key)").sort_by(&:to_s).each do |key|
-      - converter = @gql.future_graph.converter(key)
+      - node = @gql.future_graph.node(key)
       %tr
         %td= key
         - set_log = grouped[key]&.detect{|l| l[:type] == :set} || {}
         - get_log = grouped[key]&.select{|l| l[:type] == :get} || []
-        %td.tar= auto_number converter.preset_demand
+        %td.tar= auto_number node.preset_demand
         %td.tar= auto_number set_log[:value]
         %td.tar= @logs.index(set_log) || 0

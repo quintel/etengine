@@ -13,7 +13,7 @@ module Qernel
     class PseudoConsumerAdapter < Adapter
       def participant
         @participant ||= Merit::User.create(
-          key: @converter.key,
+          key: @node.key,
           load_curve: consumption_curve
         )
       end
@@ -41,7 +41,7 @@ module Qernel
       private
 
       def consumption_curve
-        @context.curves.curve(@config.group, @converter)
+        @context.curves.curve(@config.group, @node)
       end
     end
   end

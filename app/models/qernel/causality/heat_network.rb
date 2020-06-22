@@ -22,14 +22,14 @@ module Qernel
         Etsource::Config.flexibility_groups(@context.attribute)
       end
 
-      def sort_converters(type, converters)
+      def sort_nodes(type, nodes)
         if type == :flex
           # Curtailment always comes last.
-          converters.sort_by do |conv|
+          nodes.sort_by do |conv|
             @context.node_config(conv).group == :curtailment ? 1 : 0
           end
         else
-          converters
+          nodes
         end
       end
 

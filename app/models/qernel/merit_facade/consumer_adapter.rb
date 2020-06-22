@@ -2,10 +2,10 @@
 
 module Qernel
   module MeritFacade
-    # Converts a Qernel::Converter to a Merit user.
+    # Converts a Qernel::Node to a Merit user.
     class ConsumerAdapter < Adapter
-      def self.factory(converter, context)
-        case context.node_config(converter).subtype
+      def self.factory(node, context)
+        case context.node_config(node).subtype
         when :pseudo
           PseudoConsumerAdapter
         when :consumption_loss
@@ -26,12 +26,12 @@ module Qernel
         @participant ||=
           if @config.group.to_s.starts_with?('self:')
             Merit::User.create(
-              key: @converter.key,
-              load_curve: @context.curves.curve(@config.group, @converter)
+              key: @node.key,
+              load_curve: @context.curves.curve(@config.group, @node)
             )
           else
             Merit::User.create(
-              key: @converter.key,
+              key: @node.key,
               load_profile: consumption_profile,
               total_consumption: @input_of_carrier
             )
@@ -43,7 +43,7 @@ module Qernel
       end
 
       def input_of_carrier
-        unless source_api.converter.input(@context.carrier)
+        unless source_api.node.input(@context.carrier)
           raise "No acceptable consumption input for #{source_api.key}"
         end
 
@@ -57,7 +57,7 @@ module Qernel
       private
 
       def consumption_profile
-        @context.curves.curve(@config.group, @converter)
+        @context.curves.curve(@config.group, @node)
       end
     end
   end

@@ -2,30 +2,30 @@
 
 module Qernel
   module MeritFacade
-    # Converts a Qernel::Converter to a Merit participant and back again.
+    # Converts a Qernel::Node to a Merit participant and back again.
     class Adapter
-      attr_reader :converter, :config
+      attr_reader :node, :config
 
-      def self.adapter_for(converter, context)
+      def self.adapter_for(node, context)
         klass =
-          case context.node_config(converter).type.to_sym
+          case context.node_config(node).type.to_sym
           when :producer
-            ProducerAdapter.factory(converter, context)
+            ProducerAdapter.factory(node, context)
           when :flex
-            FlexAdapter.factory(converter, context)
+            FlexAdapter.factory(node, context)
           when :consumer
-            ConsumerAdapter.factory(converter, context)
+            ConsumerAdapter.factory(node, context)
           else
             self
           end
 
-        klass.new(converter, context)
+        klass.new(node, context)
       end
 
-      def initialize(converter, context)
-        @converter = converter.converter_api
-        @context   = context
-        @config    = context.node_config(converter)
+      def initialize(node, context)
+        @node = node.node_api
+        @context = context
+        @config = context.node_config(node)
       end
 
       def participant
@@ -49,13 +49,13 @@ module Qernel
       private
 
       # Internal: Given a Merit order participant +type+ and the associated
-      # Converter, +conv+, from the graph, returns a hash of attributes required
+      # Node, +node+, from the graph, returns a hash of attributes required
       # to set up the Participant object in the Merit order.
       #
       # Returns a hash.
       def producer_attributes
         {
-          key: @converter.key,
+          key: @node.key,
           number_of_units: source_api.number_of_units,
           availability: target_api.availability,
 
@@ -69,24 +69,24 @@ module Qernel
         raise NotImplementedError
       end
 
-      # Internal: The ConverterApi from which data is taken to be used by the
+      # Internal: The NodeApi from which data is taken to be used by the
       # Merit participant.
       #
-      # Returns a Qernel::ConverterApi.
+      # Returns a Qernel::NodeApi.
       def target_api
-        @converter
+        @node
       end
 
-      # Internal: The ConverterApi on which the results of the Merit calcualtion
+      # Internal: The NodeApi on which the results of the Merit calcualtion
       # for the node are stored.
       #
-      # Returns a Qernel::ConverterApi.
+      # Returns a Qernel::NodeApi.
       def source_api
         @source_api ||=
           if @config.delegate.present?
-            @context.graph.converter(@config.delegate).converter_api
+            @context.graph.node(@config.delegate).node_api
           else
-            @converter
+            @node
           end
       end
 

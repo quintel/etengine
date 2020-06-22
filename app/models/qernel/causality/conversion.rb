@@ -2,39 +2,39 @@
 
 module Qernel
   module Causality
-    # Calculates energy conversions from one converter slot to another.
+    # Calculates energy conversions from one node slot to another.
     module Conversion
-      # Public: Given a converter, and details of two slots (carrier and
+      # Public: Given a node, and details of two slots (carrier and
       # direction), determines how to convert energy quantities from the "from"
       # slot to the "to" slot.
       #
       # For example:
-      #   Conversion.conversion(converter, :electricity, :input, :heat, :output)
+      #   Conversion.conversion(node, :electricity, :input, :heat, :output)
       #   => 0.75
       #
       # Returns a Numeric. Raises an error if a named slot is not present.
       def self.conversion(
-        converter,
+        node,
         from_carrier,
         from_direction,
         to_carrier,
         to_direction
       )
-        from = slot(converter, from_carrier, from_direction).conversion
-        to = slot(converter, to_carrier, to_direction).conversion
+        from = slot(node, from_carrier, from_direction).conversion
+        to = slot(node, to_carrier, to_direction).conversion
 
         from.zero? || to.zero? ? 0.0 : to / from
       end
 
-      def self.slot(converter, carrier, direction)
+      def self.slot(node, carrier, direction)
         slot =
           if direction == :input
-            converter.input(carrier)
+            node.input(carrier)
           else
-            converter.output(carrier)
+            node.output(carrier)
           end
 
-        slot || raise("No #{carrier} #{direction} slot on #{converter.key}")
+        slot || raise("No #{carrier} #{direction} slot on #{node.key}")
       end
 
       private_class_method :slot

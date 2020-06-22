@@ -16,13 +16,13 @@ describe Qernel::Causality::SelfDemandProfile do
 
   let(:source_curve) { [5.0, 10.0, 15.0, 10.0, 10.0] }
 
-  let(:converter) do
-    Qernel::Converter.new(key: :fake_converter).with(demand: 100.0).converter_api
+  let(:node) do
+    Qernel::Node.new(key: :fake_node).with(demand: 100.0).node_api
   end
 
   describe '.curve' do
     let(:result) do |example|
-      described_class.curve(converter, curve_name_from_example(example))
+      described_class.curve(node, curve_name_from_example(example))
     end
 
     shared_examples_for 'a valid demand curve name' do
@@ -41,7 +41,7 @@ describe Qernel::Causality::SelfDemandProfile do
 
     context 'when using "valid_input_curve"' do
       before do
-        allow(converter).to receive(:valid_input_curve).and_return(source_curve)
+        allow(node).to receive(:valid_input_curve).and_return(source_curve)
       end
 
       include_examples 'a valid demand curve name'
@@ -49,7 +49,7 @@ describe Qernel::Causality::SelfDemandProfile do
 
     context 'when using "valid_output_curve"' do
       before do
-        allow(converter)
+        allow(node)
           .to receive(:valid_output_curve).and_return(source_curve)
       end
 
@@ -58,7 +58,7 @@ describe Qernel::Causality::SelfDemandProfile do
 
     context 'when using "valid_output_curve "' do
       before do
-        allow(converter)
+        allow(node)
           .to receive(:valid_output_curve).and_return(source_curve)
       end
 
@@ -67,7 +67,7 @@ describe Qernel::Causality::SelfDemandProfile do
 
     context 'when using "valid_underscored_output_curve "' do
       before do
-        allow(converter)
+        allow(node)
           .to receive(:valid_underscored_output_curve).and_return(source_curve)
       end
 
@@ -76,13 +76,13 @@ describe Qernel::Causality::SelfDemandProfile do
 
     context 'when using "valid_output_curve" and no curve is set' do
       before do
-        allow(converter).to receive(:valid_output_curve).and_return(nil)
+        allow(node).to receive(:valid_output_curve).and_return(nil)
       end
 
       it 'raises an error' do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
-            Converter fake_converter does not have a "valid_output_curve" to use
+            Node fake_node does not have a "valid_output_curve" to use
             as profile "self: valid_output_curve"
           MESSAGE
         )
@@ -91,13 +91,13 @@ describe Qernel::Causality::SelfDemandProfile do
 
     context 'when using "valid_output_curve" and an empty curve is set' do
       before do
-        allow(converter).to receive(:valid_output_curve).and_return([])
+        allow(node).to receive(:valid_output_curve).and_return([])
       end
 
       it 'raises an error' do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
-            Converter fake_converter does not have a "valid_output_curve" to use
+            Node fake_node does not have a "valid_output_curve" to use
             as profile "self: valid_output_curve"
           MESSAGE
         )
@@ -109,7 +109,7 @@ describe Qernel::Causality::SelfDemandProfile do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
             No such curve attribute "invalid_input_curve"; was specified by
-            converter fake_converter to create a profile for
+            node fake_node to create a profile for
             "self: invalid_input_curve"
           MESSAGE
         )
@@ -120,8 +120,8 @@ describe Qernel::Causality::SelfDemandProfile do
       it 'raises an error' do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
-            No such curve attribute "invalid_input"; was specified by converter
-            fake_converter to create a profile for "self: invalid_input"
+            No such curve attribute "invalid_input"; was specified by node
+            fake_node to create a profile for "self: invalid_input"
           MESSAGE
         )
       end
@@ -132,7 +132,7 @@ describe Qernel::Causality::SelfDemandProfile do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
             No such curve attribute "invalid_nothing_curve"; was specified by
-            converter fake_converter to create a profile for
+            node fake_node to create a profile for
             "self: invalid_nothing_curve"
           MESSAGE
         )
@@ -143,8 +143,8 @@ describe Qernel::Causality::SelfDemandProfile do
       it 'raises an error' do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
-            No such curve attribute "to_s"; was specified by converter
-            fake_converter to create a profile for "self: to_s"
+            No such curve attribute "to_s"; was specified by node
+            fake_node to create a profile for "self: to_s"
           MESSAGE
         )
       end
@@ -154,8 +154,8 @@ describe Qernel::Causality::SelfDemandProfile do
       it 'raises an error' do
         expect { result }.to raise_error(
           <<~MESSAGE.squish
-            No such curve attribute ""; was specified by converter
-            fake_converter to create a profile for "self:"
+            No such curve attribute ""; was specified by node
+            fake_node to create a profile for "self:"
           MESSAGE
         )
       end
@@ -164,11 +164,11 @@ describe Qernel::Causality::SelfDemandProfile do
 
   describe '.profile' do
     let(:result) do
-      described_class.profile(converter, 'valid_input_curve')
+      described_class.profile(node, 'valid_input_curve')
     end
 
     before do
-      allow(converter)
+      allow(node)
         .to receive(:valid_input_curve).and_return(source_curve)
     end
 

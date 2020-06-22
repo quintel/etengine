@@ -24,7 +24,7 @@ module Qernel
         return [0.0] * 8760 if suppliers.none?
 
         @demand = Merit::CurveTools.add_curves(suppliers.map do |adapter|
-          adapter.converter.heat_input_curve
+          adapter.node.heat_input_curve
         end).to_a
       end
 
@@ -43,8 +43,8 @@ module Qernel
 
         curves =
           suppliers.map do |adapter|
-            input = adapter.converter.heat_input_curve
-            output = adapter.converter.heat_output_curve
+            input = adapter.node.heat_input_curve
+            output = adapter.node.heat_output_curve
 
             # Array may be empty, which means there is no curve.
             if input.first

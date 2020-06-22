@@ -178,7 +178,7 @@ directory!
 
 [GQL Functions](http://beta.et-engine.com/doc/Gql/Grammar/Sandbox.html)
 
-[Converter methods](http://beta.et-engine.com/doc/Qernel/ConverterApi.html)
+[Node methods](http://beta.et-engine.com/doc/Qernel/NodeApi.html)
 
 ## Screencasts
 
@@ -197,7 +197,7 @@ the gql console.
 
 #### [ETsource: Create a new basic etmodel](http://vimeo.com/40709640)
 
-We build a new etmodel with 3 converters from scratch. This helps you
+We build a new etmodel with 3 nodes from scratch. This helps you
 understand how the etsource works.
 
 The result you can find in: etsource/models/sample

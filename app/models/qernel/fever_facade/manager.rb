@@ -53,7 +53,7 @@ module Qernel
       end
 
       # Internal: Takes loads and costs from the calculated Merit order, and
-      # installs them on the appropriate converters in the graph. The updated
+      # installs them on the appropriate nodes in the graph. The updated
       # values will be used in the recalculated graph.
       #
       # Returns nothing.

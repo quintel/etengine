@@ -1,7 +1,7 @@
 module Qernel::RecursiveFactor::Base
 
-  # Public: Recursively traverses the graph from "self" (this converter) to
-  # the parent (supplier) converters. It does so by following its input_links
+  # Public: Recursively traverses the graph from "self" (this node) to
+  # the parent (supplier) nodes. It does so by following its input_links
   # according to a +strategy method+. The strategy method returns either:
   #
   #   * a 'weight' of a link/path. When returning a weight, the
@@ -27,13 +27,13 @@ module Qernel::RecursiveFactor::Base
   #
   # strategy_method        - The method name that controls the flow.
   #
-  # converter_share_method - Additional method_name that gives a weight to a
-  #                          converter. For example, use #co2_factor to
-  #                          exclude converters that have co2 filters.
+  # node_share_method - Additional method_name that gives a weight to a
+  #                          node. For example, use #co2_factor to
+  #                          exclude nodes that have co2 filters.
   #
   # link                   - The link through which we called the
   #                          recursive_factor (this is nil for the first
-  #                          converter; recursive_factor uses it internally).
+  #                          node; recursive_factor uses it internally).
   #
   # *args                  - Additional arguments passed along to the strategy
   #                          method.
@@ -41,7 +41,7 @@ module Qernel::RecursiveFactor::Base
   # Returns a float.
   def recursive_factor(
     strategy_method,
-    converter_share_method = nil,
+    node_share_method = nil,
     link = nil,
     *args,
     include_abroad: false
@@ -52,7 +52,7 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       results = input_links.map do |link|
-        parent = link.rgt_converter
+        parent = link.rgt_node
 
         # The demanding_share returns the right-to-left share. This is the
         # same as +link.share+ except when the carrier is loss, in which case
@@ -73,28 +73,28 @@ module Qernel::RecursiveFactor::Base
 
         # What part is considered to be contributing to the outcome?
         # (e.g. 80% when free_co2_factor is 20%). This is 100% when the
-        # converter_share method is nil.
-        converter_share = converter_share(converter_share_method)
+        # node_share method is nil.
+        node_share = node_share(node_share_method)
 
         if demanding_share.zero?
-          # The converter has no demand, we can safely omit it.
+          # The node has no demand, we can safely omit it.
           0.0
         elsif loss_compensation_factor.zero?
-          # The converter is 100% loss, so there is no point in recursing
+          # The node is 100% loss, so there is no point in recursing
           # further on this link.
           0.0
-        elsif converter_share.zero?
-          # The converter has been assigned a weight of zero, so we can safely
+        elsif node_share.zero?
+          # The node has been assigned a weight of zero, so we can safely
           # omit it.
           0.0
         else
           parent_value = parent.recursive_factor(
-            strategy_method, converter_share_method, link, *args,
+            strategy_method, node_share_method, link, *args,
             include_abroad: include_abroad
           )
 
           demanding_share * loss_compensation_factor *
-            converter_share * parent_value
+            node_share * parent_value
         end
       end
 
@@ -110,13 +110,13 @@ module Qernel::RecursiveFactor::Base
   #
   # strategy_method        - The method name that controls the flow.
   #
-  # converter_share_method - Additional method_name that gives a weight to a
-  #                          converter. For example, use #co2_factor to
-  #                          exclude converters that have co2 filters.
+  # node_share_method - Additional method_name that gives a weight to a
+  #                          node. For example, use #co2_factor to
+  #                          exclude nodes that have co2 filters.
   #
   # link                   - The link through which we called the
   #                          recursive_factor (this is nil for the first
-  #                          converter; recursive_factor uses it internally).
+  #                          node; recursive_factor uses it internally).
   #
   # *args                  - Additional arguments passed along to the strategy
   #                          method.
@@ -126,7 +126,7 @@ module Qernel::RecursiveFactor::Base
   # Returns a float.
   def recursive_factor_without_losses(
     strategy_method,
-    converter_share_method = nil,
+    node_share_method = nil,
     link = nil,
     *args,
     include_abroad: false
@@ -137,7 +137,7 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       val = input_links.map do |link|
-        parent = link.rgt_converter
+        parent = link.rgt_node
 
         # Exception 1:
         #
@@ -146,7 +146,7 @@ module Qernel::RecursiveFactor::Base
         #
         # Exception 2:
         #
-        # If the demand for a converter is zero, certain links are assigned a
+        # If the demand for a node is zero, certain links are assigned a
         # nil share. If a slot has two links with nil share, we have to assign
         # shares so they sum up to 1.0 (and not 2.0, if we just did
         # `link.share || 1.0`, to fix exception 1).
@@ -198,7 +198,7 @@ module Qernel::RecursiveFactor::Base
 
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
-            strategy_method, converter_share_method, link, *args,
+            strategy_method, node_share_method, link, *args,
             include_abroad: include_abroad
           )
 
@@ -210,7 +210,7 @@ module Qernel::RecursiveFactor::Base
     end
   end
 
-  # Public: Determines if the converter has any parents into which we should
+  # Public: Determines if the node has any parents into which we should
   # recurse when performing calculations.
   #
   # Returns true or false.
@@ -218,14 +218,14 @@ module Qernel::RecursiveFactor::Base
     unless defined?(@right_dead_end)
       @right_dead_end = self.input_links.none? do |link|
         # +! environment?+ is already checked elsewhere.
-        ! link.rgt_converter.sector_environment?
+        ! link.rgt_node.sector_environment?
       end
     end
 
     @right_dead_end
   end
 
-  # Public: Determines if the converter has any parents into which we should
+  # Public: Determines if the node has any parents into which we should
   # recurse when performing calculations. A domestic dead end includes when the
   # node inputs are all abroad.
   #
@@ -233,7 +233,7 @@ module Qernel::RecursiveFactor::Base
   def domestic_dead_end?
     unless defined?(@domestic_dead_end)
       @domestic_dead_end = right_dead_end? ||
-        input_links.all? { |link| link.rgt_converter.abroad? }
+        input_links.all? { |link| link.rgt_node.abroad? }
     end
 
     @domestic_dead_end
@@ -241,11 +241,11 @@ module Qernel::RecursiveFactor::Base
 
   # Public: The loss compensation factor is the amount by which we must
   # multiply the demand of a link in order to account for the losses of the
-  # parent (right-hand) converter.
+  # parent (right-hand) node.
   #
-  # A factor of 0.0 means that the converter is 100% loss. A factor of
-  # precisely 1.0 indicates the converter has zero loss, while a factor
-  # greater than one means that the converter has *some* loss.
+  # A factor of 0.0 means that the node is 100% loss. A factor of
+  # precisely 1.0 indicates the node has zero loss, while a factor
+  # greater than one means that the node has *some* loss.
   #
   # For example:
   #
@@ -296,7 +296,7 @@ module Qernel::RecursiveFactor::Base
   #   # +--------------+                                           +---+
   #
   #   xy_elec.share            # => 0.8
-  #   demanding_share(xy_elec) # => 0.0 (converter has no share)
+  #   demanding_share(xy_elec) # => 0.0 (node has no share)
   #
   # Returns a float.
   def demanding_share(link)
@@ -315,11 +315,11 @@ module Qernel::RecursiveFactor::Base
   # recursive_factor calculations.
   #
   # The weighting is determined by calling +method+ on self. If the +method+
-  # argument is nil, all converters are assigned an equal weight. Finally,
+  # argument is nil, all nodes are assigned an equal weight. Finally,
   # should the method return nil, a weight of zero will be assigned.
   #
   # Returns a float.
-  def converter_share(method)
+  def node_share(method)
     method.nil? ? 1.0 : (public_send(method) || 0.0)
   end
 

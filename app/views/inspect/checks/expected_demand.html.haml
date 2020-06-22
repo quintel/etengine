@@ -2,17 +2,17 @@
 
 .header Check if present demand matches demand_expected_value.
 
-- @converters = @gql.present_graph.converters.map(&:query).sort_by{|c| c.excel_id || 0}
-- sad_converters = @converters.select{|c| c.demand_expected? == false }
+- @nodes = @gql.present_graph.nodes.map(&:query).sort_by{|c| c.excel_id || 0}
+- sad_nodes = @nodes.select{|c| c.demand_expected? == false }
 
 %p
   %h2
-    - if sad_converters.any?
-      Demand not expected: #{sad_converters.length} converters are unhappy. :-(
+    - if sad_nodes.any?
+      Demand not expected: #{sad_nodes.length} nodes are unhappy. :-(
     - else
       So far so good!
 
-- if sad_converters.any?
+- if sad_nodes.any?
   %table.table.table-condensed
     %thead
       %tr
@@ -22,21 +22,21 @@
         %th Expected
         %th
     %tbody
-      - sad_converters.each do |converter|
-        - key = converter.key
+      - sad_nodes.each do |node|
+        - key = node.key
         %tr
           %td
-            %a{:id => key}= converter.dataset_get(:excel_id)
-          %td= link_to key, inspect_converter_path(:id => key)
-          %td.align-right= auto_number converter.demand
-          %td.align-right= auto_number converter.demand_expected_value
+            %a{:id => key}= node.dataset_get(:excel_id)
+          %td= link_to key, inspect_node_path(:id => key)
+          %td.align-right= auto_number node.demand
+          %td.align-right= auto_number node.demand_expected_value
           %td
             &nbsp;
-            - if converter.demand_expected? == false
+            - if node.demand_expected? == false
               \:-(
             &nbsp;
 
-%h2 All converters
+%h2 All nodes
 %table.table.table-condensed
   %thead
     %tr
@@ -46,16 +46,16 @@
       %th Expected
       %th
   %tbody
-    - @converters.each do |converter|
-      - key = converter.key
+    - @nodes.each do |node|
+      - key = node.key
       %tr
         %td
-          %a{:id => key}= converter.dataset_get(:excel_id)
-        %td= link_to key, inspect_converter_path(:id => key)
-        %td.align-right= auto_number converter.demand
-        %td.align-right= auto_number converter.demand_expected_value
+          %a{:id => key}= node.dataset_get(:excel_id)
+        %td= link_to key, inspect_node_path(:id => key)
+        %td.align-right= auto_number node.demand
+        %td.align-right= auto_number node.demand_expected_value
         %td
           &nbsp;
-          - if converter.demand_expected? == false
+          - if node.demand_expected? == false
             \:-(
           &nbsp;

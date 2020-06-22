@@ -9,7 +9,7 @@ describe 'APIv3 Topology Data' do
   let(:scenario) { FactoryBot.create(:scenario) }
 
   before do
-    get("/api/v3/scenarios/#{ scenario.id }/converters/topology")
+    get("/api/v3/scenarios/#{ scenario.id }/nodes/topology")
   end
 
   it 'should be successful' do

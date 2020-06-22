@@ -11,7 +11,7 @@ module Qernel
         # The original carrier output is neede so that we can calculate a
         # curtailment curve.
         @original_output =
-          @converter.public_send(@context.carrier_named('output_of_%s'))
+          @node.public_send(@context.carrier_named('output_of_%s'))
       end
 
       def inject!
@@ -21,7 +21,7 @@ module Qernel
           profile_builder.curtailment_curve(@original_output)
         end
 
-        output = @converter.converter.output(@context.carrier)
+        output = @node.node.output(@context.carrier)
         out_links = output.links
 
         return unless out_links.one? && out_links.first.link_type == :constant
@@ -37,7 +37,7 @@ module Qernel
       def install_demand!
         super
 
-        output = @converter.converter.output(@context.carrier)
+        output = @node.node.output(@context.carrier)
         target_api.demand = @participant.production(:mj) / output.conversion
       end
 
@@ -54,11 +54,11 @@ module Qernel
 
             if curtailment.positive? && @config.group.to_s.starts_with?('self:')
               raise 'Cannot use non-zero production_curtailment with a ' \
-                    "\"self:...\" curve in #{@converter.key}"
+                    "\"self:...\" curve in #{@node.key}"
             end
 
             CurtailedProfile.new(
-              @context.curves.curve(@config.group, @converter),
+              @context.curves.curve(@config.group, @node),
               curtailment
             )
           end

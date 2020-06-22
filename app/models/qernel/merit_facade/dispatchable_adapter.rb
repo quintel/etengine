@@ -35,7 +35,7 @@ module Qernel
       end
 
       def marginal_costs
-        @context.dispatchable_sorter.cost(@converter, @config)
+        @context.dispatchable_sorter.cost(@node, @config)
       end
     end
   end

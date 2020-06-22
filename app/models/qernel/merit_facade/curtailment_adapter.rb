@@ -8,7 +8,7 @@ module Qernel
       def inject!
         super
 
-        input_link = target_api.converter.input(@context.carrier).links.first
+        input_link = target_api.node.input(@context.carrier).links.first
         demand     = participant.production(:mj)
 
         if input_link.link_type == :inversed_flexible

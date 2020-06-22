@@ -53,7 +53,7 @@ class GraphApi
   end
 
   def area_footprint
-    graph.group_converters(:bio_footprint_calculation).map do |c|
+    graph.group_nodes(:bio_footprint_calculation).map do |c|
       slot = c.outputs.reject(&:loss?).first
       demand = c.demand || 0.0
       if prod = slot.carrier.typical_production_per_km2
@@ -64,22 +64,22 @@ class GraphApi
     end.flatten.compact.sum
   end
 
-  # Demand of electricity for all final demand converters
+  # Demand of electricity for all final demand nodes
   def final_demand_for_electricity
     group_demand_for_electricity(:final_demand_group)
   end
 
-  # Demand of electricity for all converters which do not belong
+  # Demand of electricity for all nodes which do not belong
   # to the final_demand_group but nevertheless consume electricity.
   def non_final_demand_for_electricity
-    group_demand_for_electricity(:non_final_electricity_demand_converters)
+    group_demand_for_electricity(:non_final_electricity_demand_nodes)
   end
 
-  # Demand of electricity for all converters which belong to the named group.
+  # Demand of electricity for all nodes which belong to the named group.
   def group_demand_for_electricity(group)
     graph
-      .group_converters(group)
-      .map { |conv| conv.converter_api.input_of_electricity }
+      .group_nodes(group)
+      .map { |conv| conv.node_api.input_of_electricity }
       .compact.sum
   end
 
@@ -98,8 +98,8 @@ class GraphApi
     graph.number_of_years
   end
 
-  def converter(key)
-    graph.converter(key).query
+  def node(key)
+    graph.node(key).query
   end
 
   # Public: Given a +demand+ placed on the graph, and a maximum per-hour load
@@ -107,13 +107,13 @@ class GraphApi
   # production capacity.
   #
   # capacity - The total installed capacity, in MWh.
-  # excludes - Converters keys whose profiled demands should be subtracted from
+  # excludes - Nodes keys whose profiled demands should be subtracted from
   #            the total demand curve prior to calculating LOLE. See merit#123
   #            for an example of why this may be desirable.
   #
   # For example
   #
-  #   converter.loss_of_load_expectation(120, 100)
+  #   node.loss_of_load_expectation(120, 100)
   #   # => 130
   #   # This means that for 130 hours in the year, the demand (120 MW) demand
   #   # exceeded available supply of 100 MW.
@@ -202,11 +202,11 @@ class GraphApi
   #
   # Returns a numeric: the network losses for the electricity net.
   def electricity_losses_if_export_is_zero
-    transformer_demand     = graph.converter(:energy_power_transformer_mv_hv_electricity).demand
+    transformer_demand     = graph.node(:energy_power_transformer_mv_hv_electricity).demand
     own_use_of_sector      = energy_sector_own_use_electricity
-    converter              = graph.converter(:energy_power_hv_network_electricity)
-    conversion_loss        = converter.output(:loss).conversion
-    conversion_electricity = converter.output(:electricity).conversion
+    node              = graph.node(:energy_power_hv_network_electricity)
+    conversion_loss        = node.output(:loss).conversion
+    conversion_electricity = node.output(:electricity).conversion
 
     (transformer_demand + own_use_of_sector) * conversion_loss / conversion_electricity
   end
@@ -216,7 +216,7 @@ class GraphApi
   # Demand of electricity of the energy sector itself
   # (not included in final_demand_for_electricity)
   def energy_sector_own_use_electricity
-    graph.converter(:energy_power_sector_own_use_electricity).demand
+    graph.node(:energy_power_sector_own_use_electricity).demand
   end
 
 end

@@ -1,5 +1,5 @@
 %section#search_box
-  = form_tag inspect_converters_path, :method => :get do
+  = form_tag inspect_nodes_path, :method => :get do
     = search_field_tag :q, params[:q], :placeholder => 'search'
     = submit_tag "search"
 - content_for :footer do

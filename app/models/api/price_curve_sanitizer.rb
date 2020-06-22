@@ -36,7 +36,7 @@ module Api
     # Internal: When given a CSV with "Time" and "Price" headers, parses the
     # file returning only the price data.
     def self.from_table_csv(string)
-      # Parse without converters, as parsing with `:float` turns out to be
+      # Parse without nodes, as parsing with `:float` turns out to be
       # extremely slow when given this type of file.
       table = CSV.parse(string, converters: nil, headers: true)
       col = table.headers.find { |header| header.match(/price/i) }

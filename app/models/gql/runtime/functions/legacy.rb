@@ -9,12 +9,12 @@ module Gql::Runtime
       end
 
 
-      def CHILDREN(*converters)
-        flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.rgt_converters})
+      def CHILDREN(*nodes)
+        flatten_uniq(nodes.tap(&:flatten!).map{|c| c.node.rgt_nodes})
       end
 
-      def PARENTS(*converters)
-        flatten_uniq(converters.tap(&:flatten!).map{|c| c.converter.lft_converters})
+      def PARENTS(*nodes)
+        flatten_uniq(nodes.tap(&:flatten!).map{|c| c.node.lft_nodes})
       end
 
       # Returns the elements that are present in both the first and second arrays.

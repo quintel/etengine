@@ -19,8 +19,8 @@ describe 'Etsource::SlotToken' do
       expect(slot.key).to eql('(loss)-fusion')
     end
 
-    it 'should set the converter key to be :fusion' do
-      expect(slot.converter_key).to eql(:fusion)
+    it 'should set the node key to be :fusion' do
+      expect(slot.node_key).to eql(:fusion)
     end
 
     it 'should set the direction to be :output' do
@@ -47,8 +47,8 @@ describe 'Etsource::SlotToken' do
       expect(slot.key).to eql('fusion-(loss)')
     end
 
-    it 'should set the converter key to be :fusion' do
-      expect(slot.converter_key).to eql(:fusion)
+    it 'should set the node key to be :fusion' do
+      expect(slot.node_key).to eql(:fusion)
     end
 
     it 'should set the direction to be :input' do
@@ -75,8 +75,8 @@ describe 'Etsource::SlotToken' do
       expect(slot.key).to eql('(loss)-fusion')
     end
 
-    it 'should set the converter key to be :fusion' do
-      expect(slot.converter_key).to eql(:fusion)
+    it 'should set the node key to be :fusion' do
+      expect(slot.node_key).to eql(:fusion)
     end
 
     it 'should set the direction to be :output' do
@@ -103,8 +103,8 @@ describe 'Etsource::SlotToken' do
       expect(slot.key).to eql('(loss)-fusion')
     end
 
-    it 'should set the converter key to be :fusion' do
-      expect(slot.converter_key).to eql(:fusion)
+    it 'should set the node key to be :fusion' do
+      expect(slot.node_key).to eql(:fusion)
     end
 
     it 'should set the direction to be :output' do
@@ -128,9 +128,9 @@ describe 'Etsource::SlotToken' do
       expect(parsed[1].carrier_key).to eql(:electricity)
     end
 
-    it 'should set the converter keys to be :fusion' do
-      expect(parsed[0].converter_key).to eql(:fusion)
-      expect(parsed[1].converter_key).to eql(:fusion)
+    it 'should set the node keys to be :fusion' do
+      expect(parsed[0].node_key).to eql(:fusion)
+      expect(parsed[1].node_key).to eql(:fusion)
     end
 
     it 'should set :type data for the electricity slot' do

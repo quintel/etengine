@@ -9,12 +9,12 @@ class Inspect::SearchController < Inspect::BaseController
         if search = params[:search]
           if gquery = Gquery.get(search.strip)
             redirect_to inspect_gquery_path(id: gquery.key)
-          elsif Etsource::Loader.instance.graph.converter(search)
-            redirect_to inspect_converter_path(id: search)
+          elsif Etsource::Loader.instance.graph.node(search)
+            redirect_to inspect_node_path(id: search)
           else
             initialize_gql
             @gqueries = Gquery.all.select{|g| g.key.include?(params[:search])}
-            @converters = @gql.present_graph.graph.converters.select!{|c| c.key.to_s.include?(params[:search])}
+            @nodes = @gql.present_graph.graph.nodes.select!{|c| c.key.to_s.include?(params[:search])}
           end
         end
       end

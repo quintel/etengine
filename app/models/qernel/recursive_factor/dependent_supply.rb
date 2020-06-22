@@ -1,5 +1,5 @@
 # Dependent supply is the amount of energy which must be generated earlier in
-# the supply chain in order to satisfy the demand of a converter.
+# the supply chain in order to satisfy the demand of a node.
 #
 # For example, you might look at an air-conditioning node for business premises
 # and want to know how much coal is required to supply the power plants which
@@ -9,7 +9,7 @@
 module Qernel::RecursiveFactor::DependentSupply
   # Public: Calculates how much energy must be generated earlier in the graph -
   # matching the given +carriers+ keys - in order to fulfil demand of this
-  # converter.
+  # node.
   #
   # You may supply one or more carrier keys. If you want to determine the
   # dependent supply of multiple, related carriers, you MUST always call this
@@ -27,7 +27,7 @@ module Qernel::RecursiveFactor::DependentSupply
   #     dependent_supply_of_carriers(:network_gas),
   #     dependent_supply_of_carriers(:natural_gas))
   #
-  # ... the natural gas which SUPPLIES the network gas converters would be
+  # ... the natural gas which SUPPLIES the network gas nodes would be
   # counted twice.
   #
   # Returns a numeric.
@@ -49,9 +49,9 @@ module Qernel::RecursiveFactor::DependentSupply
   # carrier was used earlier in the graph.
   #
   # For example, you may want to know how much "green_gas" is used in a heating
-  # converter, but the node only receives "network_gas", the "green_gas" having
+  # node, but the node only receives "network_gas", the "green_gas" having
   # been mixed with "natural_gas" earlier in the supply chain. Recursive factor
-  # will look to the supply-side of the converter and find the green gas which
+  # will look to the supply-side of the node and find the green gas which
   # ends up being used for heating.
   #
   # There are two phases to the carrier dependent supply calculation. Phase 1
@@ -76,7 +76,7 @@ module Qernel::RecursiveFactor::DependentSupply
     return nil unless carriers.include?(link.carrier.key)
 
     # Phase 2; we have found a link of the desired carrier.
-    dead_end = link.rgt_converter.inputs.none? do |slot|
+    dead_end = link.rgt_node.inputs.none? do |slot|
       carriers.include?(slot.carrier.key)
     end
 

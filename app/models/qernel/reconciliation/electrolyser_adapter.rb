@@ -19,18 +19,18 @@ module Qernel
     class ElectrolyserAdapter < ProducerAdapter
       def initialize(*)
         super
-        @producer = @converter.input(:electricity).links.first.rgt_converter
+        @producer = @node.input(:electricity).links.first.rgt_node
 
         output_conversion_name = @context.carrier_named('%s_output_conversion')
 
         # Capacity needs to be calculated early, as number_of_units requires
         # demand to be present; this varies based on demand.
         @carrier_capacity =
-          @converter.converter_api.input_capacity *
-          @converter.converter_api.public_send(output_conversion_name) *
-          @converter.converter_api.number_of_units
+          @node.node_api.input_capacity *
+          @node.node_api.public_send(output_conversion_name) *
+          @node.node_api.number_of_units
 
-        # Pre-compute electricity while demand is set on the converter.
+        # Pre-compute electricity while demand is set on the node.
         max_available_electricity
       end
 
@@ -49,17 +49,17 @@ module Qernel
 
         return if carrier_demand.zero?
 
-        @converter.demand =
-          carrier_demand / @converter.output(@context.carrier).conversion
+        @node.demand =
+          carrier_demand / @node.output(@context.carrier).conversion
 
-        @converter[:full_load_hours] =
+        @node[:full_load_hours] =
           carrier_demand / (@carrier_capacity * 3600)
 
-        electricity_h2_share = @converter.demand / max_available_electricity
+        electricity_h2_share = @node.demand / max_available_electricity
 
         # Set share explicitly to 1.0 when the producer -> electrolyser share is
         # very close to 1.0 (floating point errors).
-        @converter.input(:electricity).links.first.share =
+        @node.input(:electricity).links.first.share =
           (1 - electricity_h2_share).abs < 1e-4 ? 1.0 : electricity_h2_share
       end
 
@@ -79,8 +79,7 @@ module Qernel
       #
       # Returns a Float.
       def max_carrier_production
-        max_available_electricity *
-          @converter.output(@context.carrier).conversion
+        max_available_electricity * @node.output(@context.carrier).conversion
       end
 
       # Internal: Curve representing the maximum amount of carrier energy that
@@ -105,7 +104,7 @@ module Qernel
       #
       # Returns a numeric.
       def full_load_hours
-        @producer.converter_api.full_load_hours
+        @producer.node_api.full_load_hours
       end
     end
   end

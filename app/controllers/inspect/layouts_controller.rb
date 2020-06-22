@@ -27,8 +27,8 @@ class Inspect::LayoutsController < Inspect::BaseController
   end
 
   def update
-    if params[:converter_positions].present?
-      positions.update(params[:converter_positions].permit!)
+    if params[:node_positions].present?
+      positions.update(params[:node_positions].permit!)
     end
 
     render plain: '', layout: nil
@@ -47,16 +47,16 @@ private
 
   def attributes_for_json
     attrs = ['demand', 'primary_demand']
-    attrs << Qernel::ConverterApi::ATTRIBUTES_USED.sort if params[:action] == 'edit'
+    attrs << Qernel::NodeApi::ATTRIBUTES_USED.sort if params[:action] == 'edit'
     attrs.flatten
   end
 
   def find_models
-    @converters = @gql.present_graph.converters
+    @nodes = @gql.present_graph.nodes
   end
 
   def graph_to_json(graph)
-    graph.converters.inject({}) do |hsh, c|
+    graph.nodes.inject({}) do |hsh, c|
       attr_hash = attributes_for_json.inject({}) do |h, key|
         v = c.query.send(key)
         h.merge key => auto_number(v)
@@ -66,7 +66,7 @@ private
   end
 
   def positions
-    @positions ||= ConverterPositions.new(Atlas.data_dir.join('config/node_positions.yml'))
+    @positions ||= NodePositions.new(Atlas.data_dir.join('config/node_positions.yml'))
   end
 
   def auto_number(n)

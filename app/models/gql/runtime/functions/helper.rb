@@ -40,14 +40,14 @@ module Gql::Runtime
         end
       end
 
-      # SORT_BY( converters , attribute_1)
+      # SORT_BY( nodes , attribute_1)
       #
       def SORT_BY(*objects, arguments)
         flatten_uniq(objects).sort_by{|o| o.query(arguments) || -1.0}
       end
 
 
-      # TXT_TABLE( converters ; attribute_1 ; attribute_2 ; ... )
+      # TXT_TABLE( nodes ; attribute_1 ; attribute_2 ; ... )
       #
       # TXT_TABLE(
       #   SORT_BY(V(G(electricity_production));merit_order_end);
@@ -58,7 +58,7 @@ module Gql::Runtime
         DebugTable.new(objects, arguments, :txt)
       end
 
-      # TXT_TABLE( converters ; attribute_1 ; attribute_2 ; ... )
+      # TXT_TABLE( nodes ; attribute_1 ; attribute_2 ; ... )
       #
       # TXT_TABLE(
       #   SORT_BY(V(G(electricity_production));merit_order_end);

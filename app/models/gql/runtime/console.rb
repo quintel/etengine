@@ -17,17 +17,17 @@ module Gql::Runtime
     include ::Gql::Runtime::Functions::Update
     include ::Gql::Runtime::Functions::Helper
     include ::Gql::Runtime::Functions::Core
-    
+
     # A Pry prompt that logs what user enters to a log file
     # so it can easily be copy pasted by users.
     #
-    # DOES NOT WORK :( couldn't make it work 
+    # DOES NOT WORK :( couldn't make it work
     # class LoggingPrompt
     #   include Readline
     #
     #   def readline(prompt = "GQL: ", add_hist = true)
     #     @logger ||= Logger.new('tmp/prompt.log', 'daily')
-    #     super(prompt, add_hist).tap do |line| 
+    #     super(prompt, add_hist).tap do |line|
     #       @logger.info(line)
     #     end
     #   end
@@ -46,15 +46,15 @@ module Gql::Runtime
     def console
       enable_code_completion
       puts "** Console Loaded"
-      Pry.start(self, 
-                # input: LoggingPrompt.new, 
+      Pry.start(self,
+                # input: LoggingPrompt.new,
                 prompt: proc { |_, nest_level| "GQL: " },
                 print:  RESULT_PRINTER)
     end
 
     # code completion is for the gql console.
-    # it adds converter and gquery keys as methods,
-    # so that PRY code completion picks it up. 
+    # it adds node and gquery keys as methods,
+    # so that PRY code completion picks it up.
     #
     # The methods return the key as a symbol, which is
     # the same behaviour as with method_missing.
@@ -71,7 +71,7 @@ module Gql::Runtime
       define_method :foo do rubel_base.ALL().first; end
       define_method :bar do rubel_base.ALL().second; end
 
-      # add gquery and converter keys
+      # add gquery and node keys
       keys = [
         rubel_base.ALL().map(&:key),
         Gquery.all.map(&:key),

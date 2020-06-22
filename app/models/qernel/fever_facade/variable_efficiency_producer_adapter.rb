@@ -45,13 +45,13 @@ module Qernel
       # Internal: The slot whose efficiency varies depending on the temperature
       # curve.
       def based_on_slot
-        @converter.converter.input(@config.efficiency_based_on)
+        @node.node.input(@config.efficiency_based_on)
       end
 
       # Internal: The slot whose conversion will be adjusted according to the
       # change in efficiency of the "based_on" slot.
       def balanced_with_slot
-        @converter.converter.input(@config.efficiency_balanced_with)
+        @node.node.input(@config.efficiency_balanced_with)
       end
 
       private
@@ -83,7 +83,7 @@ module Qernel
 
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
-        @context.curves.curve('weather/air_temperature', @converter)
+        @context.curves.curve('weather/air_temperature', @node)
       end
 
       def capacity
@@ -92,9 +92,9 @@ module Qernel
             efficiency_based_capacity
           else
             heat_capacity = total_value(:heat_output_capacity)
-            converter = @converter.converter
+            node = @node.node
 
-            heat_capacity *= combined_share if converter.inputs.length > 2
+            heat_capacity *= combined_share if node.inputs.length > 2
             heat_capacity
           end
 

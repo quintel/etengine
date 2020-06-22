@@ -56,12 +56,12 @@ class Gquery
     @command ||= command_for(:query)
   end
 
-  def converters?
-    unit == 'converters'
+  def nodes?
+    unit == 'nodes'
   end
 
   def cacheable?
-    !converters?
+    !nodes?
   end
 
   def dashboard?

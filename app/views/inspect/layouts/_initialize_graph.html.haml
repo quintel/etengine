@@ -1,7 +1,7 @@
 #canvas
 :javascript
-  var converter_url_prefix = "#{inspect_converters_path()}";
-  var update_converter_positions_path = "#{inspect_layout_path}";
+  var node_url_prefix = "#{inspect_nodes_path()}";
+  var update_node_positions_path = "#{inspect_layout_path}";
   var data;
 
   $.getJSON(inspect_json_url, function(json_data) {

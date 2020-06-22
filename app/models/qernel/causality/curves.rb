@@ -17,8 +17,8 @@ module Qernel
       # otherwise it falls back to the dynamic curve configuration in ETSource.
       #
       # Returns a Merit::Curve.
-      def curve(name, converter)
-        rotate(load_curve(name, converter))
+      def curve(name, node)
+        rotate(load_curve(name, node))
       end
 
       # Public: Rotates the given curve by the number of hours specified.
@@ -46,9 +46,9 @@ module Qernel
       end
 
       # Internal: Loads a curve without performing rotation.
-      def load_curve(name, converter = nil)
+      def load_curve(name, node = nil)
         if prefix?(name, 'dynamic')
-          dynamic_profile(name.to_s[8..-1].strip.to_sym, converter)
+          dynamic_profile(name.to_s[8..-1].strip.to_sym, node)
         elsif name.include?('/')
           curve_set_profile(name)
         else
@@ -73,14 +73,14 @@ module Qernel
       # a "baseline" profile.
       #
       # Returns a Merit curve.
-      def dynamic_profile(name, converter)
-        # Returns quickly if the converter has no energy flow.
-        return AggregateCurve.zeroed_profile if converter.demand.zero?
+      def dynamic_profile(name, node)
+        # Returns quickly if the node has no energy flow.
+        return AggregateCurve.zeroed_profile if node.demand.zero?
 
         curve_settings = Etsource::Config.dynamic_curve(name)
 
         if curve_settings['type'] == 'amplify'
-          amplify_curve(curve_settings['curve'], converter)
+          amplify_curve(curve_settings['curve'], node)
         else
           AggregateCurve.build(curve_components(curve_settings['curves']))
         end
@@ -88,19 +88,19 @@ module Qernel
 
       # Internal: Creates a dynamic curve by reading a heat curve or load
       # profile with the matching `name` and amplifying the curve to match the
-      # full load hours of the given converter.
+      # full load hours of the given node.
       #
       # Returns a Merit::Curve.
-      def amplify_curve(name, converter)
-        if converter.nil?
+      def amplify_curve(name, node)
+        if node.nil?
           raise <<~MSG.gsub(/\s+/, ' ').strip
             Cannot use an "amplified" dynamic curve without providing a
-            converter (on #{name.inspect}). Did you try to use a dynamic curve
+            node (on #{name.inspect}). Did you try to use a dynamic curve
             within a dynamic curve?'
           MSG
         end
 
-        Util.amplify_curve(load_curve(name), converter.full_load_hours)
+        Util.amplify_curve(load_curve(name), node.full_load_hours)
       end
 
       # Internal: Takes an array of curve names - components of an aggregate

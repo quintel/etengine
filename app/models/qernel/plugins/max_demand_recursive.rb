@@ -15,7 +15,7 @@ module Qernel::Plugins
     before :calculation, :calculate_max_demand_recursive
 
     def calculate_max_demand_recursive
-      @graph.converters.each do |c|
+      @graph.nodes.each do |c|
         c.max_demand_recursive! if c.query.max_demand == RECURSIVE
       end
     end

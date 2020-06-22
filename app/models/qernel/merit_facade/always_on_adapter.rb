@@ -27,12 +27,12 @@ module Qernel
         when :volatile then Merit::VolatileProducer
         when :must_run then Merit::MustRunProducer
         else
-          raise "Unknown producer class for converter '#{@converter.key}'"
+          raise "Unknown producer class for node '#{@node.key}'"
         end
       end
 
       def production_profile
-        @context.curves.curve(@config.group, @converter)
+        @context.curves.curve(@config.group, @node)
       end
     end
   end

@@ -88,8 +88,8 @@ namespace :merit do
           data[key.to_sym] = producer.public_send(key)
         end
 
-        data[:load_profile_key] = graph.converter(producer.key).
-          converter_api.load_profile_key
+        data[:load_profile_key] = graph.node(producer.key).
+          node_api.load_profile_key
       end
 
       data[:type] = producer.class.name.split('::').last

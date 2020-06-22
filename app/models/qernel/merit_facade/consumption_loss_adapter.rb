@@ -14,7 +14,7 @@ module Qernel
 
       def participant
         @participant ||= Merit::User.create(
-          key: @converter.key,
+          key: @node.key,
           consumption_share: loss_share
         )
       end
@@ -30,10 +30,10 @@ module Qernel
       private
 
       def loss_share
-        links = target_api.converter.input(:loss).links
+        links = target_api.node.input(:loss).links
 
         if links.length != 1
-          raise "Cannot find single loss link into #{@converter.key} for use " \
+          raise "Cannot find single loss link into #{@node.key} for use " \
             'as a dynamic_loss participant in merit order calculation'
         end
 
@@ -41,7 +41,7 @@ module Qernel
         loss_share = link.rgt_output.conversion * link.parent_share
 
         other_shares =
-          link.rgt_converter.outputs.sum do |input|
+          link.rgt_node.outputs.sum do |input|
             input.loss? ? 0.0 : input.conversion
           end
 

@@ -6,4 +6,4 @@ share_setter:
   :"baz-foo@electricity": 0.5
 
 conversion_setter:
-  :"converter_fixture_for_slots+@gas": 0.5
+  :"node_fixture_for_slots+@gas": 0.5

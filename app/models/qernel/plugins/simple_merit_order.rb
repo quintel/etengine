@@ -63,9 +63,8 @@ module Qernel::Plugins
       @adapters = {}
 
       participant_types.each do |(type, subtype)|
-        converters(type, subtype).each do |converter|
-          @adapters[converter.key] ||=
-            Qernel::MeritFacade::Adapter.adapter_for(converter, @context)
+        nodes(type, subtype).each do |node|
+          @adapters[node.key] ||= Qernel::MeritFacade::Adapter.adapter_for(node, @context)
         end
       end
 
@@ -124,26 +123,26 @@ module Qernel::Plugins
     private
     #######
 
-    # Internal: Returns an array of converters which are of the requested merit
+    # Internal: Returns an array of nodes which are of the requested merit
     # order +type+ (defined in PRODUCER_TYPES).
     #
     # Returns an array.
-    def converters(type, subtype)
+    def nodes(type, subtype)
       type_data = etsource_data[type.to_s]
 
-      converters = (type_data || {}).map do |key, profile|
-        converter = @graph.converter(key)
+      nodes = (type_data || {}).map do |key, profile|
+        node = @graph.node(key)
 
-        if !subtype.nil? && @context.node_config(converter).subtype != subtype
+        if !subtype.nil? && @context.node_config(node).subtype != subtype
           next
         end
 
-        converter.converter_api.load_profile_key = profile
+        node.node_api.load_profile_key = profile
 
-        converter
+        node
       end.compact
 
-      sort_converters(type, converters)
+      sort_nodes(type, nodes)
     end
 
     # Internal: Fetches the adapter matching the given participant `key`.
@@ -153,17 +152,17 @@ module Qernel::Plugins
       adapters[key]
     end
 
-    # Internal: Given the flexible merit order participant converters, sorts
+    # Internal: Given the flexible merit order participant nodes, sorts
     # them to match to FlexibilityOrder assigned to the current scenario.
     #
-    # Returns an array of Qernel::Converter.
-    def sort_converters(type, converters)
-      return converters unless type == :flex
+    # Returns an array of Qernel::Node.
+    def sort_nodes(type, nodes)
+      return nodes unless type == :flex
 
       order = @graph.flexibility_order.map(&:to_sym)
       index = -1
 
-      converters.sort_by do |conv|
+      nodes.sort_by do |conv|
         [
           order.index(@context.node_config(conv).group) || Float::INFINITY,
           index += 1 # Ensure stable sort.

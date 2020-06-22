@@ -1,4 +1,4 @@
-desc 'Generates list converter keys and demands from a static.yml file'
+desc 'Generates list node keys and demands from a static.yml file'
 
 task :generate_key_demand_file => [:environment] do
   path              = ENV['path']

@@ -1,9 +1,9 @@
 module Qernel
-# Graph connects and datasets, converters, links, carriers. It controls the
+# Graph connects and datasets, nodes, links, carriers. It controls the
 # main calculation logic and gives allows for plugins to hook into the
 # calculation.
 #
-#     g = Qernel::Graph.new([Qernel::Converter], [Qernel::Carrier])
+#     g = Qernel::Graph.new([Qernel::Node], [Qernel::Carrier])
 #     g.links = [Qernel::Link]
 #     g.slot  = [Qernel::Slot]
 #     # g can now be cached
@@ -48,25 +48,25 @@ class Graph
     self
   end
 
-  attr_reader :converters, :logger
+  attr_reader :nodes, :logger
   attr_writer :goals, :cache_dataset_fetch
 
   attr_accessor :dataset,
-                :finished_converters,
+                :finished_nodes,
                 :area
 
   delegate :time_curves, to: :dataset
   delegate :insulation_costs, :weather_properties, to: :area
 
-  # def initialize(converters, carriers, groups)
-  def initialize(converters = [])
+  # def initialize(nodes, carriers, groups)
+  def initialize(nodes = [])
     @logger = ::Qernel::Logger.new
     @area   = Qernel::Area.new(self)
 
-    @converters_by_group = {}
-    @links_by_group      = {}
+    @nodes_by_group = {}
+    @links_by_group = {}
 
-    self.converters = converters
+    self.nodes = nodes
 
     self.cache_dataset_fetch = true
   end
@@ -89,21 +89,21 @@ class Graph
   # graph anyway, so that was a convenient.
   #
   def assign_graph_to_qernel_objects
-    converters.each do |converter|
-      converter.graph = self
-      converter.slots.each { |s| s.graph = self }
+    nodes.each do |node|
+      node.graph = self
+      node.slots.each { |s| s.graph = self }
     end
     links.each    { |l| l.graph = self }
     carriers.each { |c| c.graph = self }
   end
 
-  # Assigning new converters will also invalidate memoized lookup tables that
-  # are related to converters.
+  # Assigning new nodes will also invalidate memoized lookup tables that
+  # are related to nodes.
   #
-  def converters=(converters)
-    @converters = converters
+  def nodes=(nodes)
+    @nodes = nodes
     reset_memoized_methods
-    @converters
+    @nodes
   end
 
   # Assigning a new dataset will also attach it to all qernel objects.
@@ -147,7 +147,7 @@ class Graph
     area.send(method_name)
     carriers.each(&method_name)
 
-    converters.each do |c|
+    nodes.each do |c|
       c.query.send(method_name)
       c.send(method_name)
       c.input_links.each(&method_name)
@@ -185,15 +185,15 @@ class Graph
   end
 
   def update_link_shares
-    @finished_converters.map(&:input_links).flatten.each(&:update_share)
+    @finished_nodes.map(&:input_links).flatten.each(&:update_share)
   end
 
   def links
-    @links ||= converters.map(&:input_links).flatten.uniq
+    @links ||= nodes.map(&:input_links).flatten.uniq
   end
 
   def groups
-    @groups ||= converters.map(&:groups).flatten.uniq
+    @groups ||= nodes.map(&:groups).flatten.uniq
   end
 
   def carrier(key)
@@ -204,8 +204,8 @@ class Graph
     # The list of carriers is retrieved by looking at all slots, not just
     # links, so that "orphan" carriers used only for initial input also
     # get included.
-    @carriers ||= converters.each_with_object(Set.new) do |converter, carriers|
-      converter.slots.each { |slot| carriers.add slot.carrier }
+    @carriers ||= nodes.each_with_object(Set.new) do |node, carriers|
+      node.slots.each { |slot| carriers.add slot.carrier }
     end.freeze
   end
 
@@ -218,68 +218,68 @@ class Graph
     end
   end
 
-  # Return all converters in the given sector.
+  # Return all nodes in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
-  # @return [Array<Converter>]
+  # @return [Array<Node>]
   #
-  def use_converters(key)
+  def use_nodes(key)
     use_key_sym = key.to_sym
-    self.converters.select{|c| c.use_key == use_key_sym }
+    self.nodes.select{|c| c.use_key == use_key_sym }
   end
 
   def sectors
-    converters.map(&:sector_key).uniq.compact
+    nodes.map(&:sector_key).uniq.compact
   end
 
-  # Return all converters in the given sector.
+  # Return all nodes in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
-  # @return [Array<Converter>]
+  # @return [Array<Node>]
   #
-  def sector_converters(sector_key)
+  def sector_nodes(sector_key)
     key = sector_key.to_sym
-    converters.select{|c| c.sector_key == key }
+    nodes.select{|c| c.sector_key == key }
   end
 
-  # Return all converters in the given sector.
+  # Return all nodes in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
-  # @return [Array<Converter>]
+  # @return [Array<Node>]
   #
-  def group_converters(group_key)
+  def group_nodes(group_key)
     key = group_key.to_sym
-    @converters_by_group[key] ||= converters.select{|c| c.groups.include?(key) }
+    @nodes_by_group[key] ||= nodes.select{|c| c.groups.include?(key) }
   end
 
   # Return all links in the given group.
   #
   # @param group_key [String,Symbol] group identifier
-  # @return [Array<Converter>]
+  # @return [Array<Node>]
   #
   def group_links(group_key)
     key = group_key.to_sym
     @links_by_group[key] ||= links.select{ |link| link.groups.include?(key) }
   end
 
-  # Return the converter with given key.
+  # Return the node with given key.
   #
-  # @param id [Integer,String] lookup key for converter
-  # @return [Converter]
+  # @param id [Integer,String] lookup key for node
+  # @return [Node]
   #
-  def converter(id)
+  def node(id)
     id = id.to_sym if id.is_a?(String)
-    @converters_hash[id]
+    @nodes_hash[id]
   end
 
   # Graphviz
   def to_image
-    g = GraphDiagram.new(self.converters)
+    g = GraphDiagram.new(self.nodes)
     g.generate('graph')
   end
 
 
-  # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of converters.
+  # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of nodes.
   def inspect
     "<Qernel::Graph>"
   end
@@ -302,9 +302,9 @@ class Graph
   #
   # = Algorithm
   #
-  # 1. Take first converter that is "ready for calculation" (see {Qernel::Converter#ready?}) from the converter stack
-  # 2. Calculate the converter (see: {Qernel::Converter#calculate})
-  # 3. Remove converter from stack and move it to {#finished_converters}
+  # 1. Take first node that is "ready for calculation" (see {Qernel::Node#ready?}) from the node stack
+  # 2. Calculate the node (see: {Qernel::Node#calculate})
+  # 3. Remove node from stack and move it to {#finished_nodes}
   # 5. => (continue at 1. until stack is empty)
   # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
   #
@@ -312,62 +312,62 @@ class Graph
     lifecycle.calculate
   end
 
-  # A calculation_loop is one cycle of calculating converters until there is
-  # no converter left to calculate (no converters is #ready? anymore). This
+  # A calculation_loop is one cycle of calculating nodes until there is
+  # no node left to calculate (no nodes is #ready? anymore). This
   # can mean that the calculation is finished or that we need to run a
   # "plugin" (e.g. merit order). The plugin most likely will update some
-  # converter demands, what "unlocks" more converters and the calculation can
+  # node demands, what "unlocks" more nodes and the calculation can
   # continue.
   #
   def calculation_loop
-    # FIFO stack of all the converters. Converters are removed from the stack after calculation.
-    @converter_stack = converters.clone
-    @finished_converters = []
+    # FIFO stack of all the nodes. Nodes are removed from the stack after calculation.
+    @node_stack = nodes.clone
+    @finished_nodes = []
 
-    while index = @converter_stack.index(&:ready?)
-      converter = @converter_stack[index]
-      converter.calculate
-      @finished_converters << @converter_stack.delete_at(index)
+    while index = @node_stack.index(&:ready?)
+      node = @node_stack[index]
+      node.calculate
+      @finished_nodes << @node_stack.delete_at(index)
     end
     update_link_shares
   end
 
 
-  # optimizes calculation speed of graph by rearranging the order of the converters array.
+  # optimizes calculation speed of graph by rearranging the order of the nodes array.
   #
   # Basic idea is to run a brute-force calculation, after the optimal way of
-  # traversing through the graph can be found in finished_converters.
+  # traversing through the graph can be found in finished_nodes.
   #
   # @example
-  #      # Load topology from etsource, random ordering of converters:
-  #      # converters: [converter_1, converter_2, converter_3]
-  #      converter_1.ready?     # => false
-  #      converter_2.ready?     # => false
-  #      converter_3.ready?     # => true
-  #      converter_3.calculate  # => finished_converters: [converter_3]
-  #      converter_1.ready?     # => false
-  #      converter_2.ready?     # => true    | calculating converter_3 makes _2 calculateable/ready
-  #      converter_2.calculate  # => finished_converters: [converter_3, converter_2]
-  #      converter_1.ready?     # => true    | calculating converter_2 makes _1 calculateable/ready
-  #      converter_1.calculate  # => finished_converters: [converter_3, converter_2, converter_1]
-  #      # reorder the converters array according to finished_converters
-  #      # converters: [converter_3, converter_2, converter_1]
-  #      # From now on converters are correctly ordered and we save us lots of expensive ready? checks:
-  #      converter_3.ready?     # => true
-  #      converter_3.calculate
-  #      converter_2.ready?     # => true
-  #      converter_2.calculate
-  #      converter_1.ready?     # => true
-  #      converter_1.calculate
+  #      # Load topology from etsource, random ordering of nodes:
+  #      # nodes: [node_1, node_2, node_3]
+  #      node_1.ready?     # => false
+  #      node_2.ready?     # => false
+  #      node_3.ready?     # => true
+  #      node_3.calculate  # => finished_nodes: [node_3]
+  #      node_1.ready?     # => false
+  #      node_2.ready?     # => true    | calculating node_3 makes _2 calculateable/ready
+  #      node_2.calculate  # => finished_nodes: [node_3, node_2]
+  #      node_1.ready?     # => true    | calculating node_2 makes _1 calculateable/ready
+  #      node_1.calculate  # => finished_nodes: [node_3, node_2, node_1]
+  #      # reorder the nodes array according to finished_nodes
+  #      # nodes: [node_3, node_2, node_1]
+  #      # From now on nodes are correctly ordered and we save us lots of expensive ready? checks:
+  #      node_3.ready?     # => true
+  #      node_3.calculate
+  #      node_2.ready?     # => true
+  #      node_2.calculate
+  #      node_1.ready?     # => true
+  #      node_1.calculate
   #
   #
   def optimize_calculation_order
     copy = DeepClone.clone self #Marshal.load(Marshal.dump(self))
     copy.calculate
-    copy.finished_converters.reverse.each_with_index do |converter, index|
-      if old = converters.detect{|c| c.id == converter.id}
-        converters.delete(old)
-        converters.unshift(old)
+    copy.finished_nodes.reverse.each_with_index do |node, index|
+      if old = nodes.detect{|c| c.id == node.id}
+        nodes.delete(old)
+        nodes.unshift(old)
       end
     end
   end
@@ -406,18 +406,18 @@ class Graph
     @carriers = nil
     @links    = nil
     @groups   = nil
-    @converters_by_group = {}
+    @nodes_by_group = {}
 
-    regenerate_converter_lookup
+    regenerate_node_lookup
   end
 
-  # Regenerate a lookup hash for converters, used by #converter( key_or_excel_id )
+  # Regenerate a lookup hash for nodes, used by #node( key_or_excel_id )
   #
-  def regenerate_converter_lookup
-    @converters_hash = {}
+  def regenerate_node_lookup
+    @nodes_hash = {}
 
-    converters.each do |converter|
-      @converters_hash[converter.key] = converter
+    nodes.each do |node|
+      @nodes_hash[node.key] = node
     end
   end
 
@@ -462,8 +462,8 @@ class Graph
     def connect(lft, rgt, carrier, link_type = :share, reversed = false,
                 left_slot_type = nil, right_slot_type = nil)
 
-      lft = converter(lft) if lft.is_a?(Symbol)
-      rgt = converter(rgt) if rgt.is_a?(Symbol)
+      lft = node(lft) if lft.is_a?(Symbol)
+      rgt = node(rgt) if rgt.is_a?(Symbol)
 
       unless lft.input(carrier)
         lft.add_slot(Slot.factory(left_slot_type, lft.id+100, lft, carrier, :input).with({:conversion => 1.0}))
@@ -474,9 +474,9 @@ class Graph
       Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type, reversed)
     end
 
-    def with_converters(key_dataset_hsh)
-      self.converters = key_dataset_hsh.map do |key, dataset|
-        Converter.new(id: self.converters.length+1, key: key).with(dataset)
+    def with_nodes(key_dataset_hsh)
+      self.nodes = key_dataset_hsh.map do |key, dataset|
+        Node.new(id: self.nodes.length+1, key: key).with(dataset)
       end
     end
   end

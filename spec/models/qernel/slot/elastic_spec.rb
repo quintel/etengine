@@ -12,7 +12,7 @@ describe Qernel::Slot::Elastic do
     Qernel::GraphParser.new(layout).build
   end
 
-  let(:network)     { graph.converters.detect { |c| c.key == :network } }
+  let(:network)     { graph.nodes.detect { |c| c.key == :network } }
   let(:loss)        { network.output(:loss) }
   let(:heat)        { network.output(:useable_heat) }
   let(:electricity) { network.output(:electricity) }
@@ -36,12 +36,12 @@ describe Qernel::Slot::Elastic do
     expect(loss.conversion).to eql(0.5)
   end
 
-  it 'is 1.0 when the converter has no other outputs' do
+  it 'is 1.0 when the node has no other outputs' do
     allow(loss).to receive(:siblings).and_return([])
     expect(loss.conversion).to eql(1.0)
   end
 
-  it 'is 0.0 if the converter breaks the first law of thermodynamics' do
+  it 'is 0.0 if the node breaks the first law of thermodynamics' do
     heat.dataset_set(:conversion, 0.6)
     electricity.dataset_set(:conversion, 0.6)
 
@@ -53,7 +53,7 @@ describe Qernel::Slot::Elastic do
     expect(loss.conversion).to eql(0.75)
   end
 
-  it 'raises an error if a converter has two elastic slots' do
+  it 'raises an error if a node has two elastic slots' do
     layout = <<-LAYOUT.strip_heredoc
       loss[0.5;0.5(elastic)]:        irrelevant   == s(1.0)  ==> network
       electricity[0.5;0.5(elastic)]: irrelevant   == s(1.0)  ==> network

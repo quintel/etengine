@@ -1,4 +1,4 @@
-# updates lft converter with the negative user value
+# updates lft node with the negative user value
 - key = input_3
 - unit = %
 - update_period = future

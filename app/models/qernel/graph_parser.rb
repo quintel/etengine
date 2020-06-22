@@ -25,7 +25,7 @@ module Qernel
 
     def initialize(str)
       @lines = str.lines.map{|l| l.strip.gsub(/\s/, '')}.reject{|l| l.match(/^#/)}.reject(&:blank?)
-      @converters = {}
+      @nodes = {}
     end
 
     def self.create(str)
@@ -55,22 +55,22 @@ module Qernel
       graph = Graph.new.with({})
       graph.area = Area.new.with({})
 
-      # create converters first
+      # create nodes first
       lines.each do |line|
         carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=[\>\<](.+)/).first
 
-        build_converter(lft)
-        build_converter(rgt)
+        build_node(lft)
+        build_node(rgt)
       end
-      graph.converters = @converters.values
+      graph.nodes = @nodes.values
 
 
       lines.each do |line|
         carrier_key, lft, link_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+\=\=[\>\<])(.+)/).first
 
         link_type, link_share, reversed = link(link_str)
-        c_lft = build_converter(lft)
-        c_rgt = build_converter(rgt)
+        c_lft = build_node(lft)
+        c_rgt = build_node(rgt)
         carrier = carrier(carrier_key)
 
         link = graph.
@@ -111,7 +111,7 @@ module Qernel
       end
     end
 
-    # Given a full converter/link line, returns any custom slot types to be
+    # Given a full node/link line, returns any custom slot types to be
     # used at either end of the link.
     #
     # @example
@@ -138,18 +138,18 @@ module Qernel
       CARRIERS[carrier_key]
     end
 
-    def build_converter(str, carrier = nil)
+    def build_node(str, carrier = nil)
       key, dataset = str.scan(/([A-Za-z_0-9]+)(\(\d+\))?/).first
       key = key.to_sym
 
-      unless @converters[key]
-        id = @converters.keys.length+1
+      unless @nodes[key]
+        id = @nodes.keys.length+1
         demand = dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f
         dataset = {:demand => demand, :preset_demand => demand } # preset_demand needed to make old Input v1 updates working
-        @converters[key] = Converter.new(id: id, key: key).with(dataset)
+        @nodes[key] = Node.new(id: id, key: key).with(dataset)
       end
 
-      @converters[key]
+      @nodes[key]
     end
 
 

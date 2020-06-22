@@ -1,11 +1,11 @@
 class GraphDiagram
-  attr_accessor :nodes, :converters, :g
+  attr_accessor :nodes, :nodes, :g
 
-  def initialize(converters, svg_path = nil)
+  def initialize(nodes, svg_path = nil)
     require 'graphviz'
     @svg_path = svg_path
     self.nodes = {}
-    self.converters = converters.uniq
+    self.nodes = nodes.uniq
     @g = GraphViz.new( :G, :type => :digraph )
     draw_nodes
     draw_edges
@@ -21,8 +21,8 @@ class GraphDiagram
 
   private
     def draw_nodes
-      converters.each do |converter|
-        smiley = case converter.query.demand_expected?
+      nodes.each do |node|
+        smiley = case node.query.demand_expected?
         when nil
           "?"
         when true
@@ -30,35 +30,35 @@ class GraphDiagram
         when false
           "&#x2639;"
         end
-        d = (converter.query.demand / 10**9).round(3) rescue ''
-        pd = (converter.primary_demand / 10**9).round(3) rescue ''
-        co =  (converter.primary_co2_emission / 10**9).round(3) rescue ''
-        nodes[converter] = @g.add_node("#{converter.to_s} \n (#{d}) [#{pd} / co2: #{co}] #{smiley}", node_settings(converter))
+        d = (node.query.demand / 10**9).round(3) rescue ''
+        pd = (node.primary_demand / 10**9).round(3) rescue ''
+        co =  (node.primary_co2_emission / 10**9).round(3) rescue ''
+        nodes[node] = @g.add_node("#{node.to_s} \n (#{d}) [#{pd} / co2: #{co}] #{smiley}", node_settings(node))
       end
     end
 
     def draw_edges
-      converters.map(&:input_links).flatten.each do |link|
-        p = nodes[link.lft_converter]
+      nodes.map(&:input_links).flatten.each do |link|
+        p = nodes[link.lft_node]
         # don't draw if no child anymore.
-        if p and c = nodes[link.rgt_converter]
+        if p and c = nodes[link.rgt_node]
           @g.add_edge p, c, edge_settings(link)
         end
       end
     end
 
-    def node_settings(converter)
-      group = [:primary_energy_demand, :useful_demand] & converter.groups
-      fillcolor = converter.output_links.empty? ? '#dddddd' : nil
+    def node_settings(node)
+      group = [:primary_energy_demand, :useful_demand] & node.groups
+      fillcolor = node.output_links.empty? ? '#dddddd' : nil
       hsh = {
         :shape => 'box',
         :group => group,
         :fillcolor => fillcolor
       }
 
-      hsh[:href] = "#{@svg_path}#{converter.key}.svg" if @svg_path
+      hsh[:href] = "#{@svg_path}#{node.key}.svg" if @svg_path
 
-      if converter.demand.nil?
+      if node.demand.nil?
         hsh[:color] = '#ff0000'
       end
 

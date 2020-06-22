@@ -63,7 +63,7 @@ module Api
       end
 
       def profile_key(participant)
-        @graph.converter(participant.key).converter_api.load_profile_key
+        @graph.node(participant.key).node_api.load_profile_key
       end
 
       def participant_type(participant)
@@ -84,7 +84,7 @@ module Api
         return false if     producer.is_a?(Merit::Flex::Base)
 
         # Exclude import which has no profile.
-        group = @graph.converter(producer.key).dataset_get(:merit_order).group
+        group = @graph.node(producer.key).dataset_get(:merit_order).group
         group ? group.to_sym != :import : true
       end
 

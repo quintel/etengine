@@ -13,17 +13,17 @@
 
   No gqueries found
 
-%h3 Converters
+%h3 Nodes
 
-- if @converters
+- if @nodes
 
-  #{@converters.count} results found
+  #{@nodes.count} results found
 
   %table
-    - @converters.each do |c|
+    - @nodes.each do |c|
       %tr
-        %td= link_to highlight(c.key.to_s, params[:search]), inspect_converter_path(id: c.key)
+        %td= link_to highlight(c.key.to_s, params[:search]), inspect_node_path(id: c.key)
 
 - else
 
-  No Converters found
+  No Nodes found

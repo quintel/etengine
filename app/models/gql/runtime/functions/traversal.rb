@@ -7,16 +7,16 @@ module Gql::Runtime
     #                   |               |        |
     #   loss1 <- (loss)-|   foo         |- (gas)-+--> gas_2
     #                   |               |
-    #   heat1 <- (heat)-|  <Converter>  |- (oil)-+
+    #   heat1 <- (heat)-|  <Node>  |- (oil)-+
     #                   |               |        +--> oil_1
     #                   +---------------+
     #
     module Traversal
 
-      # ELEMENT_AT( SORT_BY(GROUP(electricity); demand), 0) => converter with smallest demand
-      def ELEMENT_AT(*converters)
-        index = converters.last.to_i
-        converters.flatten[index]
+      # ELEMENT_AT( SORT_BY(GROUP(electricity); demand), 0) => node with smallest demand
+      def ELEMENT_AT(*nodes)
+        index = nodes.last.to_i
+        nodes.flatten[index]
       end
 
       # Returns the first element of the array.
@@ -41,7 +41,7 @@ module Gql::Runtime
         value_terms.flatten.first
       end
 
-      # Returns the {Qernel::Link} that goes from the first to the second converter.
+      # Returns the {Qernel::Link} that goes from the first to the second node.
       #
       # LINK() performs a LOOKUP on the two keys.
       #
@@ -56,13 +56,13 @@ module Gql::Runtime
         if lft.nil? || rgt.nil?
           nil
         else
-          link = lft.input_links.detect{|l| l.rgt_converter == rgt.converter}
-          link ||= lft.output_links.detect{|l| l.lft_converter == rgt.converter}
+          link = lft.input_links.detect{|l| l.rgt_node == rgt.node}
+          link ||= lft.output_links.detect{|l| l.lft_node == rgt.node}
           link
         end
       end
 
-      # @example All links on a converter
+      # @example All links on a node
       #   LINKS(L(foo))
       #   # => [foo->gas_1, foo->gas_2, loss1->foo, heat1->foo]
       #
@@ -74,14 +74,14 @@ module Gql::Runtime
       # @example All links of a given carrier/slot
       #    LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
-      # @example Links of multiple converters
+      # @example Links of multiple nodes
       #   LINKS(L(foo, bar))
       #
       def LINKS(value_terms, arguments = nil)
         links_for(value_terms, arguments)
       end
 
-      # Get the output (to the left) slots of converter(s).
+      # Get the output (to the left) slots of node(s).
       #
       # @example All input slots
       #   OUTPUT_SLOTS(foo)           #=> [(loss)-foo, (heat)-foo]
@@ -93,11 +93,11 @@ module Gql::Runtime
       #
       def OUTPUT_SLOTS(*args)
         carrier = args.pop if args.length > 1
-        converters = LOOKUP(args).flatten
-        flatten_uniq converters.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
+        nodes = LOOKUP(args).flatten
+        flatten_uniq nodes.compact.map{|c| carrier ? c.output(carrier.to_sym) : c.outputs}
       end
 
-      # Get the input (to the right) slots of converter(s).
+      # Get the input (to the right) slots of node(s).
       #
       # @example All input slots
       #   INPUT_SLOTS(foo) #=> [foo-(gas), foo-(oil)]
@@ -107,8 +107,8 @@ module Gql::Runtime
       #
       def INPUT_SLOTS(*args)
         carrier = args.pop if args.length > 1
-        converters = LOOKUP(args).flatten
-        flatten_uniq converters.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.inputs}
+        nodes = LOOKUP(args).flatten
+        flatten_uniq nodes.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.inputs}
       end
 
       # @example All input links
@@ -122,7 +122,7 @@ module Gql::Runtime
       # @example All input links of a given carrier/slot
       #    INPUT_LINKS(INPUT_SLOTS(foo, oil)) # => [foo->oil_1]
       #
-      # @example Input links of multiple converters
+      # @example Input links of multiple nodes
       #   INPUT_LINKS(L(foo, bar))
       #
       def INPUT_LINKS(value_terms, arguments = nil)
@@ -140,7 +140,7 @@ module Gql::Runtime
       # @example All output links of a given carrier/slot
       #    OUTPUT_LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
-      # @example Output links of multiple converters
+      # @example Output links of multiple nodes
       #   OUTPUT_LINKS(L(foo, bar))
       #
       def OUTPUT_LINKS(value_terms, arguments = nil)
@@ -156,23 +156,23 @@ module Gql::Runtime
       # The `using` parameter allows you to provide an array of methods to try
       # in order to retrieve the links for each object. For example, when
       # looking for output links, you might use `[:output_links, :links]`.
-      # Objects with an `output_links` method (Converter) would use that,
+      # Objects with an `output_links` method (Node) would use that,
       # otherwise `links` will be used (Slot).
       #
       # `arguments` may contain a single string used to filter out
       # non-matching links.
       #
       # @example All links from two objects.
-      #   links_for(L(converter_one, converter_two))
+      #   links_for(L(node_one, node_two))
       #
       # @example Filtering
-      #   links_for(L(converter_one), '! flexible?')
+      #   links_for(L(node_one), '! flexible?')
       #
       # @example Selecting only output links.
-      #   links_for(L(converter_one), nil, [:output_links])
+      #   links_for(L(node_one), nil, [:output_links])
       #
       # @example Selecting output links, falling back to all links.
-      #   links_for(L(converter_one, slot_one), nil, [:output_links, :links])
+      #   links_for(L(node_one, slot_one), nil, [:output_links, :links])
       #
       def links_for(value_terms, arguments = nil, using = [:links])
         value_terms.flatten

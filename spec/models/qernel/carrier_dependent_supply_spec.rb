@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Qernel::Converter, 'carrier dependent supply' do
+describe Qernel::Node, 'carrier dependent supply' do
   before :all do
     NastyCache.instance.expire!
     Etsource::Base.loader('spec/fixtures/etsource')
@@ -97,4 +97,4 @@ describe Qernel::Converter, 'carrier dependent supply' do
       expect(result < doubled).to be_truthy
     end
   end # called with multiple carriers
-end # Qernel::Converter, carrier dependent supply
+end # Qernel::Node, carrier dependent supply

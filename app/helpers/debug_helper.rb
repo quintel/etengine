@@ -4,7 +4,7 @@ module DebugHelper
   def method_source(method_name)
     Rails.cache.fetch("methods/source/#{method_name}") do
       begin
-        f, line = Qernel::ConverterApi.instance_method(method_name)&.source_location
+        f, line = Qernel::NodeApi.instance_method(method_name)&.source_location
         if f and line
           lines = File.read(f).lines.to_a
 
@@ -95,8 +95,8 @@ module DebugHelper
       @method_definitions << attr_name
     else
       haml_tag 'span.attr_name', attr_name.to_s
-      if log[:converter]
-        haml_concat link_to(">>", inspect_converter_path(:id => log[:converter]))
+      if log[:node]
+        haml_concat link_to(">>", inspect_node_path(:id => log[:node]))
       end
     end
   end
@@ -126,19 +126,19 @@ module DebugHelper
     end
   end
 
-  def calculation_debugger_path(converter, calculation)
-    inspect_debug_gql_path(:gquery => "V(#{converter.key}, #{calculation})")
+  def calculation_debugger_path(node, calculation)
+    inspect_debug_gql_path(:gquery => "V(#{node.key}, #{calculation})")
   end
 
   # Merit Order --------------------------------------------------------------
 
-  def merit_order_converters(graph, type)
-    unless converters = Etsource::MeritOrder.new.import_electricity[type.to_s]
+  def merit_order_nodes(graph, type)
+    unless nodes = Etsource::MeritOrder.new.import_electricity[type.to_s]
       raise "No such merit order group: #{ type.inspect }"
     end
 
-    converters.
-      map     { |key, *| graph.converter(key) }.
-      sort_by { |converter| converter[:merit_order_position] }
+    nodes.
+      map     { |key, *| graph.node(key) }.
+      sort_by { |node| node[:merit_order_position] }
   end
 end

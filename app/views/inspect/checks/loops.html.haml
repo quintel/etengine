@@ -3,5 +3,5 @@
 .header Check if present demand matches demand_expected_value.
 
 %ul
-  - @gql.present_graph.converters.select(&:has_loop?).each do |converter|
-    %li= link_to converter.key, inspect_converter_path(:id => converter.key)
+  - @gql.present_graph.nodes.select(&:has_loop?).each do |node|
+    %li= link_to node.key, inspect_node_path(:id => node.key)

@@ -8,8 +8,8 @@ module Qernel
           @g = Qernel::Graph.new()
         end
 
-        it "should initialize with converters []" do
-          @g = Qernel::Graph.new([Qernel::Converter.new(id: 1, key: 'foo')])
+        it "should initialize with nodes []" do
+          @g = Qernel::Graph.new([Qernel::Node.new(id: 1, key: 'foo')])
         end
       end
 
@@ -22,16 +22,16 @@ module Qernel
           expect(subject.area).to_not be_nil
         end
 
-        it "should #reset_memoized_methods when adding converters" do
+        it "should #reset_memoized_methods when adding nodes" do
           expect(@graph).to receive(:reset_memoized_methods)
-          @graph.converters = []
+          @graph.nodes = []
         end
 
-        skip "should assign graph to converters" do
-          converter = Qernel::Converter.new(id: 1, key: 'foo')
+        skip "should assign graph to nodes" do
+          node = Qernel::Node.new(id: 1, key: 'foo')
 
-          @graph.converters = [converter]
-          expect(converter.graph).to eq(@graph)
+          @graph.nodes = [node]
+          expect(node.graph).to eq(@graph)
         end
       end
 
@@ -133,8 +133,8 @@ module Qernel
       describe Graph do
         before do |example|
           @g = GraphParser.new(example.description).build
-          @g.converters.each do |converter|
-            instance_variable_set("@#{converter.key}", converter)
+          @g.nodes.each do |node|
+            instance_variable_set("@#{node.key}", node)
           end
         end
 
@@ -422,7 +422,7 @@ module Qernel
           end
 
 
-          # it "# with same converter does not work
+          # it "# with same node does not work
           #     foo[1.0]:     hw_demand(70)  == s(1) ==> chp(nil)
           #     foo[1.0]:     el_output(nil) == d()  ==> chp(nil)
           #     foo:          chp(nil)       == s(1) ==> rgt(nil) " do
@@ -538,15 +538,15 @@ module Qernel
       describe "reversed" do
         before do
           @g = Qernel::GraphParser.create("lft == s(1.0) ==< rgt(100)")
-          @rgt = @g.converter(:rgt)
-          @lft = @g.converter(:lft)
+          @rgt = @g.node(:rgt)
+          @lft = @g.node(:lft)
           @l = @g.links.first
         end
 
         it "should have reversed link" do
           expect(@l).to be_reversed
           expect(Calculation::Links.calculated_by_parent?(@l)).to be_truthy
-          expect(@l.input).to eq(@g.converter(:rgt).slots.first)
+          expect(@l.input).to eq(@g.node(:rgt).slots.first)
           expect(@l.input.expected_external_value).to eq(100.0)
         end
 

@@ -1,14 +1,14 @@
 # This mixin is included by the qernel objects that have attributes defined
 # in a dataset. See Qernel::Dataset for a general introduction about the
 # object. The Dataset object contains a huge hash with all the attributes
-# of the area, carriers, converters etc of the graph.
+# of the area, carriers, nodes etc of the graph.
 #
 # Qernel::Dataset takes care of loading them into a single hash.  Most of the
 # methods defined in this mixin were made to access this hash.
 #
 # == Example:
 #
-#     class Qernel::Converter
+#     class Qernel::Node
 #       include Qernel::DatasetAttributes
 #
 #       dataset_accessor :demand
@@ -25,7 +25,7 @@
 #
 # So then you can access attributes like:
 #
-#     c = Qernel::Converter.new
+#     c = Qernel::Node.new
 #     c.demand
 #     c.dataset_get(:demand)
 #
@@ -39,7 +39,7 @@
 #
 # == Overwriting dataset_accessors
 #
-#     class Qernel::Converter
+#     class Qernel::Node
 #       include Qernel::DatasetAttributes
 #
 #       dataset_accessor :demand
@@ -47,7 +47,7 @@
 #       def demand; "hello world"; end
 #     end
 #
-#     c = Qernel::Converter.new
+#     c = Qernel::Node.new
 #     c.dataset_set :demand, 300
 #     c.dataset_get(:demand) # => 300
 #     # But:

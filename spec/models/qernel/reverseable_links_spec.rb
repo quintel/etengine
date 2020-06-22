@@ -17,7 +17,7 @@ describe "Reversed Links" do
 
     it "updates the flexible demand when preset_demand is nil" do
       gql = Scenario.default.gql do |gql|
-        gql.future_graph.converter(:reversed_links_left).preset_demand = nil
+        gql.future_graph.node(:reversed_links_left).preset_demand = nil
       end
 
       expect(gql.query_future("V(reversed_links_left,     demand)")).to eq(1100.0)

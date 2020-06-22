@@ -1,0 +1,19 @@
+- if object && object.attributes.values.any?
+  %tr
+    %td
+      = name
+    %td
+      .node-attrs
+        - object.attributes.select { |_, val| val.present? }.sort_by(&:first).each do |key, value|
+          .attribute
+            .key<>= key
+            .value>
+              - if value.is_a?(Hash)
+                - value.each do |sub_key, sub_value|
+                  %span.sub-attribute
+                    == #{sub_key}: #{sub_value}
+              - else
+                - if object_attribute_is_node?(key)
+                  = link_to value, inspect_node_path(id: value)
+                - else
+                  = value

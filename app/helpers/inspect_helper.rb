@@ -67,10 +67,10 @@ module InspectHelper
     end
   end
 
-  def converters_autocomplete_map_cache
-    Rails.cache.fetch "converters_autocomplete_map_cache" do
-      converters.sort_by(&:key).map do |a|
-        {label: a.key, url: inspect_converter_path(:id => a)}
+  def nodes_autocomplete_map_cache
+    Rails.cache.fetch "nodes_autocomplete_map_cache" do
+      nodes.sort_by(&:key).map do |a|
+        {label: a.key, url: inspect_node_path(:id => a)}
       end.to_json
     end
   end
@@ -82,10 +82,10 @@ module InspectHelper
   end
 
   # Since the group table has been dropped we need to fetch the list from ETSource
-  def converter_groups
-    Rails.cache.fetch "converter_group_list" do
+  def node_groups
+    Rails.cache.fetch "node_group_list" do
       initialize_gql unless @gql
-      @gql.present_graph.converters.map{|c| c.groups}.flatten.sort.uniq
+      @gql.present_graph.nodes.map{|c| c.groups}.flatten.sort.uniq
     end
   end
 
@@ -119,8 +119,8 @@ module InspectHelper
     link ? link_to(name, link) : name
   end
 
-  def link_to_node_file(converter)
-    doc = Atlas::Node.find(converter.key)
+  def link_to_node_file(node)
+    doc = Atlas::Node.find(node.key)
     rev = Etsource::Base.instance.get_latest_import_sha
 
     rev = 'HEAD' if rev.blank?
@@ -131,7 +131,7 @@ module InspectHelper
 
   def link_to_edge_file(link)
     key = Atlas::Edge.key(
-      link.rgt_converter.key, link.lft_converter.key, link.carrier.key)
+      link.rgt_node.key, link.lft_node.key, link.carrier.key)
 
     doc = Atlas::Edge.find(key)
     rev = Etsource::Base.instance.get_latest_import_sha
@@ -146,8 +146,8 @@ module InspectHelper
     slot.carrier.key.to_s.match(/_kms\b/)
   end
 
-  def converter_flow(converter, direction)
-    slots = converter.public_send(direction == :inputs ? :inputs : :outputs)
+  def node_flow(node, direction)
+    slots = node.public_send(direction == :inputs ? :inputs : :outputs)
 
     return nil if slots.none?
 
@@ -156,7 +156,7 @@ module InspectHelper
         slot.external_value
       else
         # Fallback for left-most or right-most slots with no links.
-        slot.converter.demand * slot.conversion
+        slot.node.demand * slot.conversion
       end
     end
   end
@@ -176,11 +176,11 @@ module InspectHelper
     end
   end
 
-  # Public: Returns if a converter "object attribute" (`merit_order`, `fever`,
-  # etc) identifies another converter.
+  # Public: Returns if a node "object attribute" (`merit_order`, `fever`,
+  # etc) identifies another node.
   #
   # Returns true or false.
-  def object_attribute_is_converter?(name)
+  def object_attribute_is_node?(name)
     %i[
       alias_of
       delegate

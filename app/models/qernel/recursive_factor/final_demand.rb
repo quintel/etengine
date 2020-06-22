@@ -17,7 +17,7 @@ module Qernel::RecursiveFactor::FinalDemand
   end
 
   def final_demand_factor_of_carrier(link, carrier_key)
-    link ||= output_links.first # in case we query a left-most converter
+    link ||= output_links.first # in case we query a left-most node
 
     return nil unless final_demand_group?
 

@@ -2,8 +2,8 @@ require 'spec_helper'
 
 module Qernel
   describe Link do
-    let(:supplier) { Converter.new(key: :supplier) }
-    let(:consumer) { Converter.new(key: :consumer) }
+    let(:supplier) { Node.new(key: :supplier) }
+    let(:consumer) { Node.new(key: :consumer) }
     let(:carrier)  { Carrier.new(key: :network_gas) }
     let!(:link)    { Link.new('', consumer, supplier, carrier, :share) }
 
@@ -68,7 +68,7 @@ module Qernel
     end # (carrier)?
 
     describe 'primary_demand' do
-      it 'returns the right converter value, minus conversions' do
+      it 'returns the right node value, minus conversions' do
         expect(supplier).to receive(:primary_demand).and_return(40.0)
         expect(supplier).to receive(:loss_compensation_factor).and_return(1.0)
         expect(link.output).to receive(:conversion).and_return(0.5)
@@ -77,7 +77,7 @@ module Qernel
         expect(link.primary_demand).to eq(5.0)
       end
 
-      it 'returns the right converter value, minus conversions adjusting for loss' do
+      it 'returns the right node value, minus conversions adjusting for loss' do
         expect(supplier).to receive(:primary_demand).and_return(40.0)
         expect(supplier).to receive(:loss_compensation_factor).and_return(1.5)
         expect(link.output).to receive(:conversion).and_return(0.5)
@@ -86,14 +86,14 @@ module Qernel
         expect(link.primary_demand).to eq(7.5)
       end
 
-      it 'returns nil if the parent converter value is nil' do
+      it 'returns nil if the parent node value is nil' do
         expect(supplier).to receive(:primary_demand).and_return(nil)
         expect(link.primary_demand).to be_nil
       end
     end # primary_demand
 
     describe 'primary_demand_of_carrier' do
-      it 'returns the right converter value, minus conversions' do
+      it 'returns the right node value, minus conversions' do
         expect(supplier).to receive(:primary_demand_of_carrier).
           with(:coal).and_return(40.0)
 
@@ -104,7 +104,7 @@ module Qernel
         expect(link.primary_demand_of_carrier(:coal)).to eq(5.0)
       end
 
-      it 'returns nil if the parent converter value is nil' do
+      it 'returns nil if the parent node value is nil' do
         expect(supplier).to receive(:primary_demand_of_carrier).
           with(:coal).and_return(nil)
 
@@ -113,7 +113,7 @@ module Qernel
     end # primary_demand_of_carrier
 
     describe 'sustainability_share' do
-      it 'returns the right converter value, minus conversions' do
+      it 'returns the right node value, minus conversions' do
         expect(supplier).to receive(:sustainability_share).and_return(0.5)
 
         expect(supplier).not_to receive(:loss_compensation_factor)

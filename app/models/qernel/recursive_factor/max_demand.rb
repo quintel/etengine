@@ -12,9 +12,9 @@ module Qernel::RecursiveFactor::MaxDemand
         nil
       else
         capped_link = rgt_links.min_by do |l|
-          l.rgt_converter.max_demand_recursive! / l.share rescue Float::INFINITY
+          l.rgt_node.max_demand_recursive! / l.share rescue Float::INFINITY
         end
-        query.max_demand = capped_link.rgt_converter.max_demand_recursive! / capped_link.share rescue nil
+        query.max_demand = capped_link.rgt_node.max_demand_recursive! / capped_link.share rescue nil
       end
     end
   end

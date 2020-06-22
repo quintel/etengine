@@ -28,7 +28,7 @@ module Qernel
       private
 
       def input_link
-        links = target_api.converter.input(:loss).links
+        links = target_api.node.input(:loss).links
 
         if links.length != 1
           raise "Could not find single loss input on #{target_api.key} for " \

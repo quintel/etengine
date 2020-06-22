@@ -6,8 +6,8 @@ module Qernel
     # order. These technologies store excess for future use, or remove excess
     # via export or curtailment.
     class FlexAdapter < Adapter
-      def self.factory(converter, context)
-        case context.node_config(converter).subtype.to_sym
+      def self.factory(node, context)
+        case context.node_config(node).subtype.to_sym
         when :storage
           StorageAdapter
         when :export
@@ -66,7 +66,7 @@ module Qernel
       end
 
       def input_efficiency
-        input = @converter.converter.input(@context.carrier)
+        input = @node.node.input(@context.carrier)
         input ? input.conversion : 0.0
       end
 
@@ -74,7 +74,7 @@ module Qernel
         # Most attributes come from the delegate, but this is not the case for
         # output efficiency for which the participant may be assigned a
         # different value than the delegate.
-        output = @converter.converter.output(@context.carrier)
+        output = @node.node.output(@context.carrier)
         output ? output.conversion : 1.0
       end
 
@@ -93,7 +93,7 @@ module Qernel
       end
 
       def marginal_costs
-        @context.dispatchable_sorter.cost(@converter, @config)
+        @context.dispatchable_sorter.cost(@node, @config)
       end
     end
   end

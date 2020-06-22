@@ -75,7 +75,7 @@ module Etm
   end
 
   require_relative '../lib/instrumentable'
-  require_relative '../lib/converter_positions'
+  require_relative '../lib/node_positions'
   require_relative '../app/models/qernel/errors'
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"

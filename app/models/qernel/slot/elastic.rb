@@ -1,6 +1,6 @@
 module Qernel
   # Represents slots whose +conversion+ adjusts dynamically to fill whatever
-  # remains from the other slots on the converter. This ensures that the
+  # remains from the other slots on the node. This ensures that the
   # cumulative conversion of all the slots add up to 1.0.
   #
   # Used for:
@@ -12,7 +12,7 @@ module Qernel
 
     # Public: Creates a new Elastic slot.
     #
-    # Raises a Qernel::Slot::Elastic::TooManyElasticSlots if the converter
+    # Raises a Qernel::Slot::Elastic::TooManyElasticSlots if the node
     # already has an elastic slot with the same direction.
     #
     def initialize(*)
@@ -49,7 +49,7 @@ module Qernel
     end
 
     # Internal: Raised when trying to add a second elastic slot to a
-    # converter.
+    # node.
     class TooManyElasticSlots < RuntimeError
       def initialize(slot)
         @slot = slot
@@ -61,7 +61,7 @@ module Qernel
         end
 
         <<-MESSAGE.squish!
-          Converter #{ @slot.converter.inspect } already has an elastic slot
+          Node #{ @slot.node.inspect } already has an elastic slot
           (#{ other.inspect }); you cannot add #{ @slot.inspect }.
         MESSAGE
       end

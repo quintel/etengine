@@ -1,3 +1,3 @@
-- groups = [merit_order_converters]
+- groups = [merit_order_nodes]
 - availability = 1.0
 - preset_demand = 2000.0

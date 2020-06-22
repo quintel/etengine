@@ -3,7 +3,7 @@
 module Qernel
   module MeritFacade
     # An adapter which does not adjust the merit order output for loss, since
-    # the converter will account for that instead.
+    # the node will account for that instead.
     class PowerToGasAdapter < FlexAdapter
       def inject!
         super

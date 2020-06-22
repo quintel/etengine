@@ -32,8 +32,8 @@ module Qernel
           graph,
           carrier,
           node_key_map.transform_values do |typed_nodes|
-            # Convert node keys to Converter instances.
-            typed_nodes.map { |key| graph.converter(key) }
+            # Convert node keys to Node instances.
+            typed_nodes.map { |key| graph.node(key) }
           end
         )
       end

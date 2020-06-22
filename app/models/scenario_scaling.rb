@@ -60,7 +60,7 @@ class ScenarioScaling < ActiveRecord::Base
     value.to_f / multiplier
   end
 
-  # Public: An array of sectors; converters in these sectors will have their
+  # Public: An array of sectors; nodes in these sectors will have their
   # demands set to zero by the graph.
   #
   # Returns an array.

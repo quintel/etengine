@@ -18,7 +18,7 @@ module Qernel
       # otherwise it falls back to the dynamic curve configuration in ETSource.
       #
       # Returns a Merit::Curve.
-      def curve(name, converter)
+      def curve(name, node)
         name = name.to_s
 
         # Fever and self curves come from Fever or another Merit instance and
@@ -26,7 +26,7 @@ module Qernel
         if prefix?(name, 'fever-electricity-demand')
           fever_demand_curve(name[25..-1].strip.to_sym)
         elsif prefix?(name, 'self')
-          self_curve(name[5..-1].strip.to_sym, converter)
+          self_curve(name[5..-1].strip.to_sym, node)
         else
           super
         end
@@ -50,9 +50,9 @@ module Qernel
       # hour.
       #
       # Returns a Causality::LazyCurve.
-      def self_curve(name, converter)
+      def self_curve(name, node)
         @self_curves ||= SelfCurves.new(@graph.plugin(:time_resolve), @context)
-        @self_curves.curve(name, converter)
+        @self_curves.curve(name, node)
       end
 
       # Public: Returns the total demand of the curve matching the +curve_name+.

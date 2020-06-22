@@ -58,7 +58,7 @@ module Qernel
             attrs[:input_capacity_per_unit],
             total_demand / 3600 / 8760 / # Slash highlighting
               source_api.number_of_units / # / Slash highlighting
-              @converter.converter.output(:useable_heat).conversion
+              @node.node.output(:useable_heat).conversion
           ].min
         end
 
@@ -72,7 +72,7 @@ module Qernel
         # Remove from the storage ("buffer") as much as possible to satisfy
         # the demand profile.
         decay = subtraction_profile
-        conversion = @converter.converter.output(:useable_heat).conversion
+        conversion = @node.node.output(:useable_heat).conversion
 
         lambda do |point, stored|
           wanted = decay.get(point) / conversion
@@ -93,7 +93,7 @@ module Qernel
       end
 
       def total_demand
-        @context.graph.converter(@config.demand_source).converter_api.demand
+        @context.graph.node(@config.demand_source).node_api.demand
       end
 
       # Internal: Participants belonging to a group with others should receive
@@ -106,10 +106,10 @@ module Qernel
 
         return 0.0 if self_cap.zero?
 
-        # Find all flex converters belonging to the same group.
+        # Find all flex nodes belonging to the same group.
         @context.plugin.each_adapter do |adapter|
           aconf = adapter.config
-          conv = adapter.converter
+          conv = adapter.node
 
           next if aconf.group != @config.group || aconf.type != @config.type
 

@@ -2,14 +2,14 @@ module Gql::Runtime
   module Functions
     module Aggregate
 
-      # Returns how many values. Removes nil values, but does 
+      # Returns how many values. Removes nil values, but does
       # not remove duplicates.
-      # 
+      #
       # @example Basic useage
       #   COUNT(1)              # => 1
       #   COUNT(1,2)            # => 1
       #
-      # @example with converters
+      # @example with nodes
       #   COUNT(L(foo,bar))     # => 2
       #
       # @example multiple LOOKUPs (does not remove duplicates)
@@ -32,7 +32,7 @@ module Gql::Runtime
 
       # Returns the *first* number as a negative
       #
-      # @example 
+      # @example
       #   NEG(2)            # => -2
       #   NEG(1,2,3)        # => -1
       #
@@ -86,7 +86,7 @@ module Gql::Runtime
         args.compact!
         args.sum
       end
-      
+
       # Multiplies all numbers (ignores nil values).
       #
       # @example
@@ -98,13 +98,13 @@ module Gql::Runtime
       # @param [Numeric,Array] *values one or multiple values or arrays
       # @return [Numeric] The average of all values
       #
-      def PRODUCT(*args)    
+      def PRODUCT(*args)
         args.flatten!
         args.compact!
         args.inject(1) {|total,value| total = total * value}
       end
 
-      
+
       # Divides the first with the second.
       #
       # @example

@@ -2,28 +2,28 @@
 var GRAPH = new Graph();
 
 <%
-converter_keys = @converters.map(&:key)
+node_keys = @nodes.map(&:key)
 
-@converters.each do |converter|
-  position = positions.find(converter)
-  params = [converter.key,
+@nodes.each do |node|
+  position = positions.find(node)
+  params = [node.key,
             position[:x],
             position[:y],
-            converter.sector_key,
-            converter.use_key,
+            node.sector_key,
+            node.use_key,
             false,
-            ConverterPositions::FILL_COLORS[converter.sector_key] || '#FFF',
+            NodePositions::FILL_COLORS[node.sector_key] || '#FFF',
             '#999']
 -%>
-<%= "new Converter(#{params.to_json});".html_safe %>
+<%= "new Node(#{params.to_json});".html_safe %>
 <% end %>
 
 
-<% @converters.map(&:input_links).flatten.uniq.each do |link|
-  if converter_keys.include?(link.lft_converter.key) and converter_keys.include?(link.rgt_converter.key)
+<% @nodes.map(&:input_links).flatten.uniq.each do |link|
+  if node_keys.include?(link.lft_node.key) and node_keys.include?(link.rgt_node.key)
     params = [
-      link.rgt_converter.key,
-      link.lft_converter.key,
+      link.rgt_node.key,
+      link.lft_node.key,
       (link.carrier.graphviz_color || '#999'),
       '1|-'   #"1|#{link.link_style}"
     ]

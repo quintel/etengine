@@ -53,10 +53,10 @@ module Qernel
       end
 
       participants.each do |part|
-        converter = graph.converter(part.key)
+        node = graph.node(part.key)
 
-        if converter
-          config = converter.merit_order
+        if node
+          config = node.merit_order
           level = config.level
           type = closud_type(config.type)
 

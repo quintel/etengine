@@ -15,16 +15,16 @@ module GqlHelper
     gql.query(q)
   end
 
-  def converter(key, period = :present)
-    graph(period).converter(key)
+  def node(key, period = :present)
+    graph(period).node(key)
   end
 
   def carriers(period = :present)
-    graph(period).converters
+    graph(period).nodes
   end
 
-  def converters(period = :present)
-    graph(period).converters
+  def nodes(period = :present)
+    graph(period).nodes
   end
 
   def carrier(key, period = :present)

@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe Qernel::MeritFacade::Manager do
   before(:each) do
-    converters = gql.present.graph.converters + gql.future.graph.converters
+    nodes = gql.present.graph.nodes + gql.future.graph.nodes
     attrs      = [ :electricity_output_conversion, :input_capacity,
                     :mwh_electricity, :fixed_costs, :marginal_costs,
                     :fixed_operation_and_maintenance_costs_per_year,
                     :number_of_units, :full_load_hours, :availability ]
 
-    converters.product(attrs).each do |converter, attribute|
-      allow(converter.query).to receive(attribute).and_return(1.0)
+    nodes.product(attrs).each do |node, attribute|
+      allow(node.query).to receive(attribute).and_return(1.0)
     end
 
     allow(gql.future.graph.query)

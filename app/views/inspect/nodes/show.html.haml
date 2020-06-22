@@ -1,0 +1,174 @@
+= render "inspect/shared/inspect_subnav"
+
+:ruby
+  @pre = @node_present.query
+  @fut = @node_future.query
+  node_key = @node_present.key.to_s
+
+
+.row-fluid
+  .span12
+    .page-header
+      %h1
+        = node_key
+        = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
+        = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
+      = link_to 'View document', link_to_node_file(@node_future)
+
+.row-fluid.span-12.node-flows
+  .node-flows-inner
+    .energy
+      .present
+        %span.name Present
+        %span.output(title="Output flow")
+          = auto_number node_flow(@node_present, :outputs)
+        &larr;
+        %span.demand(title="Demand")<
+          = auto_number @node_present.demand
+        &larr;
+        %span.input(title="Input flow")
+          = auto_number node_flow(@node_present, :inputs)
+      .future
+        %span.name Future
+        %span.output(title="Output flow")
+          = auto_number node_flow(@node_future, :outputs)
+        &larr;
+        %span.demand(title="Demand")<
+          = auto_number @node_future.demand
+        &larr;
+        %span.input(title="Input flow")
+          = auto_number node_flow(@node_future, :inputs)
+    - delta = (@node_future.demand / @node_present.demand) * 100 - 100
+    - if delta.abs > 1e-5
+      .delta
+        - if delta > 0
+          ⬆
+        - else
+          ⬇
+        == #{ auto_number(delta) }%
+
+.tabbable.link-flows
+  %ul.nav.nav-tabs
+    %li
+      %a{ 'href' => "#present-links", 'data-toggle' => 'tab' } Present Flows
+    %li.active
+      %a{ 'href' => "#future-links", 'data-toggle' => 'tab' } Future Flows
+
+  .tab-content
+    #present-links.tab-pane
+      = render 'node_links', c: @node_present
+    #future-links.tab-pane.active
+      = render 'node_links', c: @node_future
+
+.row-fluid
+  .span12
+    %h2 Details
+    %table.table.table-condensed
+      %tbody
+        %tr
+          %td Sector
+          %td= @node_present.sector_key
+        %tr
+          %td Use
+          %td= @node_present.use_key
+        = render partial: 'object_attributes', locals: { name: 'Fever (Heat)', object: @node_future.fever }
+        = render partial: 'object_attributes', locals: { name: 'Heat network', object: @node_future.heat_network }
+        = render partial: 'object_attributes', locals: { name: 'Hydrogen', object: @node_future.hydrogen }
+        = render partial: 'object_attributes', locals: { name: 'Merit Order', object: @node_future.merit_order }
+        = render partial: 'object_attributes', locals: { name: 'Network Gas', object: @node_future.network_gas }
+        = render partial: 'object_attributes', locals: { name: 'Storage', object: @node_future.storage }
+        %tr
+          %td Node groups
+          %td
+            %ol
+              - @node_present.groups.each do |group|
+                %li= group
+        %tr
+          %td Used in Gqueries
+          %td
+            %ol
+              - Gquery.name_or_query_contains(node_key).sort_by(&:key).each do |gquery|
+                %li= link_to gquery.key, inspect_gquery_path(:id => gquery.id)
+        %tr
+          %td Used in Inputs
+          %td
+            %ol
+              - Input.with_queries_containing(node_key).sort_by(&:key).each do |input|
+                %li= link_to input.key, inspect_input_path(:id => input.id, :highlight => node_key)
+
+- if @presenter.attributes_and_methods_to_show.any?
+  .row-fluid
+    .span12
+      .page-header
+        %h2 Node Summary
+      %table.table.table-condensed
+        %thead
+          %tr
+            %th Method
+            %th Label
+            %th Present
+            %th Future
+            %th Unit
+        %tbody
+          - @presenter.attributes_and_methods_to_show.each_pair do |group, items|
+            - next if items.empty?
+            %tr
+              %th{:colspan => 5}= group
+            - items.each_pair do |key, opts|
+              %tr
+                %td= key
+                %td= opts[:label]
+                %td
+                  - val = @presenter.present_value(key)
+                  = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
+                %td
+                  - val = @presenter.future_value(key)
+                  = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
+                %td= opts[:unit]
+
+.row-fluid
+  .span6
+    .page-header
+      %h2 All Attributes
+    %table.table.table-condensed
+      %thead
+        %tr
+          %th Node Attributes
+          %th Present
+          %th Future
+          %th Change
+          %th Unit
+      %tbody
+        - Qernel::NodeApi::ATTRIBUTE_GROUPS.each do |group, attributes|
+          %tr
+            %th.attribute_group{:colspan => 5}= group
+          - attributes.each do |attr_name, info|
+            - desc, unit = info
+            %tr
+              %th= attr_name
+              - result_fields(@pre,@fut,attr_name)
+              %td= unit
+
+  .span6
+    .page-header
+      %h2 All Calculations
+    %table.table.table-condensed
+      %thead
+        %tr
+          %th Node Calculations
+          %th Present
+          %th Future
+          %th Change
+          %th Unit
+      %tbody
+        - @node_api.calculation_methods.each_pair do |group, methods|
+          %tr
+            %th.calculation_group{:colspan => 5}= group
+          - methods.each_pair do |method, opts|
+            - present_value = @pre.instance_eval(method.to_s).to_f rescue nil
+            - next if present_value <= 0.0 && opts[:hide_if_zero] rescue nil
+            %tr
+              %th= link_to method, calculation_debugger_path(@node_present, method)
+              - result_fields(@pre, @fut, method)
+              %td= opts[:unit] || Qernel::NodeApi.unit_for_calculation(method)
+    .clear

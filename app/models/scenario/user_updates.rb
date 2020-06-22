@@ -4,7 +4,7 @@
 #
 # user_values alone cannot be used by the gql, we need to translate them
 # into a update_statements hash it is split into the subhashes :carriers,
-# :converters, :area. To define what kind of objects need to be updated.
+# :nodes, :area. To define what kind of objects need to be updated.
 #
 # Based on Input#update_period a update_statement is added to either
 # update_statements, update_statements_present or both.

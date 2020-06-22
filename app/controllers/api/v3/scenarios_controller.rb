@@ -231,7 +231,7 @@ module Api
       # GET /api/v3/scenarios/:id/application_demands
       #
       # Returns a CSV file containing the primary and final demands of
-      # converters belonging to the application_group group.
+      # nodes belonging to the application_group group.
       def application_demands
         send_data(
           ApplicationDemandsPresenter.new(@scenario).as_csv,
@@ -255,10 +255,10 @@ module Api
       # GET /api/v3/scenarios/:id/energy_flow
       #
       # Returns a CSV file containing the energetic inputs and outputs of every
-      # converter in the graph.
+      # node in the graph.
       def energy_flow
         send_data(
-          ConverterFlowPresenter.new(@scenario).as_csv,
+          NodeFlowPresenter.new(@scenario).as_csv,
           type: 'text/csv',
           filename: "energy_flow.#{ @scenario.id }.csv"
         )

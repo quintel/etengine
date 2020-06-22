@@ -4,9 +4,9 @@ module Qernel
   module FeverFacade
     # Represents a Fever participant which will describe total demand.
     class ConsumerAdapter < Adapter
-      def initialize(converter, context)
+      def initialize(node, context)
         super
-        @was = @converter.demand
+        @was = @node.demand
       end
 
       def participant
@@ -32,7 +32,7 @@ module Qernel
       private
 
       def demand_curve
-        @context.curves.curve(@config.curve, @converter) * @converter.demand
+        @context.curves.curve(@config.curve, @node) * @node.demand
       end
 
       def number_of_units

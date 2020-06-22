@@ -15,8 +15,8 @@
     $('#graph_saving').text('Saving...').show();
     $.ajax({
       type: 'PUT',
-      url: update_converter_positions_path,
-      data: {'converter_positions' : GRAPH.getUpdatedValues()},
+      url: update_node_positions_path,
+      data: {'node_positions' : GRAPH.getUpdatedValues()},
       success: function(data) {
         $('#graph_saving').fadeOut();
         GRAPH.updated_coordinates = {};

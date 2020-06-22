@@ -13,17 +13,17 @@ describe Qernel::MeritFacade::Curves, :household_curves do
   end
 
   describe 'amplified dynamic curves with a source curve of 1920 FLH' do
-    let(:converter) do
+    let(:node) do
       instance_double(
-        'Qernel::ConverterApi',
+        'Qernel::NodeApi',
         demand: 8760,
         full_load_hours: full_load_hours
       )
     end
 
-    let(:curve) { curves.curve('dynamic: wind_inland', converter) }
+    let(:curve) { curves.curve('dynamic: wind_inland', node) }
 
-    context 'with a converter FLH of 1000' do
+    context 'with a node FLH of 1000' do
       let(:full_load_hours) { 1000 }
 
       it 'creates a curve with 1920 full load hours' do
@@ -32,7 +32,7 @@ describe Qernel::MeritFacade::Curves, :household_curves do
       end
     end
 
-    context 'with a converter FLH of 1920' do
+    context 'with a node FLH of 1920' do
       let(:full_load_hours) { 1920 }
 
       it 'creates a curve with 1920 full load hours' do
@@ -41,7 +41,7 @@ describe Qernel::MeritFacade::Curves, :household_curves do
       end
     end
 
-    context 'with a converter FLH of 2200' do
+    context 'with a node FLH of 2200' do
       let(:full_load_hours) { 2200 }
 
       it 'creates a curve with 2200 full load hours' do
@@ -52,9 +52,9 @@ describe Qernel::MeritFacade::Curves, :household_curves do
   end
 
   describe 'interpolated dynamic curves' do
-    let(:converter) { instance_double('Qernel::ConverterApi', demand: 8760) }
+    let(:node) { instance_double('Qernel::NodeApi', demand: 8760) }
     let(:ev_mix) { [0.75, 0.25, 0] }
-    let(:curve) { curves.curve('dynamic: ev_demand', converter) }
+    let(:curve) { curves.curve('dynamic: ev_demand', node) }
 
     # The curve is converted so as to sum to 1.0; this converts it to something
     # more readable.

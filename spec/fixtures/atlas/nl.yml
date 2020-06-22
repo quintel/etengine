@@ -19,7 +19,7 @@
   :baz:
     :output:
       :electricity: 1.0
-  :converter_fixture_for_slots:
+  :node_fixture_for_slots:
     :demand: 1.0e-04
     :input:
       :electricity: 0.6
@@ -28,31 +28,31 @@
   # From max_demand_recursive.yml
   # -----------------------------
 
-  :max_demand_converter_d:
+  :max_demand_node_d:
     :max_demand: 'recursive' # <- Refinery will not do this.
     :input:
       :gas: 1.0
     :output:
       :gas: 1.0
-  :max_demand_converter_a:
+  :max_demand_node_a:
     :input:
       :gas: 1.0
     :output:
       :gas: 1.0
-  :max_demand_converter_b:
+  :max_demand_node_b:
     :max_demand: 6.0e-03
     :output:
       :gas: 1.0
-  :max_demand_converter_c:
+  :max_demand_node_c:
     :max_demand: 5.0e-04
     :output:
       :gas: 1.0
 
-  :max_demand_converter_with_high_demand:
+  :max_demand_node_with_high_demand:
     :demand: 1.0e-02
     :input:
       :gas: 1.0
-  :max_demand_converter_with_high_demand_remainder:
+  :max_demand_node_with_high_demand_remainder:
     :output:
       :gas: 1.0
 
@@ -168,15 +168,15 @@
   # From max_demand_recursive.yml
   # -----------------------------
 
-  :max_demand_converter_a-max_demand_converter_d@gas:
+  :max_demand_node_a-max_demand_node_d@gas:
     :child_share: 1.0
-  :max_demand_converter_b-max_demand_converter_a@gas:
+  :max_demand_node_b-max_demand_node_a@gas:
     :child_share: 0.9
-  :max_demand_converter_c-max_demand_converter_a@gas:
+  :max_demand_node_c-max_demand_node_a@gas:
     :child_share: 0.1
 
-  :max_demand_converter_d@max_demand_converter_with_high_demand@gas:
-  :max_demand_converter_with_high_demand_remainder-max_demand_converter_with_high_demand@gas:
+  :max_demand_node_d@max_demand_node_with_high_demand@gas:
+  :max_demand_node_with_high_demand_remainder-max_demand_node_with_high_demand@gas:
 
   # From merit_order.yml
   # --------------------

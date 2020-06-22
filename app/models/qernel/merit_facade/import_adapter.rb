@@ -26,7 +26,7 @@ module Qernel
       def inject!
         super
 
-        elec_link = target_api.converter.output(:electricity).links.first
+        elec_link = target_api.node.output(:electricity).links.first
 
         if elec_link.link_type == :flexible
           # We need to override the calculation of the flexible link and set the

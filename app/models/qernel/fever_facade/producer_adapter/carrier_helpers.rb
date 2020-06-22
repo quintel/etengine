@@ -13,11 +13,11 @@ module Qernel
         end
 
         # Public: Returns if the named carrier (a Symbol) is one of the inputs
-        # to the converter used by this adapter.
+        # to the node used by this adapter.
         #
         # Returns true or false.
         def input?(carrier)
-          !@converter.converter.input(carrier).nil?
+          !@node.node.input(carrier).nil?
         end
 
         # Public: Creates a callable which takes a frame number and returns how
@@ -37,18 +37,18 @@ module Qernel
         private
 
         # Internal: Determines the name of the main input carrier to the
-        # converter.
+        # node.
         def input_carrier
           return @input_carrier if @input_carrier
 
           slots =
-            @converter.converter.inputs.reject do |slot|
+            @node.node.inputs.reject do |slot|
               slot.carrier.key == :ambient_heat
             end
 
           if slots.length != 1
             raise 'Cannot determine input carrier for Fever producer: ' \
-                  "#{@converter.key}"
+                  "#{@node.key}"
           end
 
           @input_carrier = slots.first.carrier.key

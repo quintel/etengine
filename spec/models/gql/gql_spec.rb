@@ -9,20 +9,20 @@ describe Gql::Gql do
 
     # Setting the demand of foo to 50.0
     it 'updates the present graph with initializer inputs' do
-      expect(gql.present.graph.converter(:foo).demand).to eq(50.0)
+      expect(gql.present.graph.node(:foo).demand).to eq(50.0)
     end
 
     it 'updates the future graph with initializer inputs' do
-      expect(gql.future.graph.converter(:foo).demand).to eq(50.0)
+      expect(gql.future.graph.node(:foo).demand).to eq(50.0)
     end
 
     # Setting the demand of baz to 50.0
     it 'updates the present graph with initializer inputs' do
-      expect(gql.present.graph.converter(:baz).demand).to eq(50.0)
+      expect(gql.present.graph.node(:baz).demand).to eq(50.0)
     end
 
     it 'updates the future graph with initializer inputs' do
-      expect(gql.future.graph.converter(:baz).demand).to eq(50.0)
+      expect(gql.future.graph.node(:baz).demand).to eq(50.0)
     end
   end
 
@@ -33,7 +33,7 @@ describe Gql::Gql do
     end
 
     it 'updates the future graph with the input value' do
-      expect(gql.future.graph.converter(:foo).preset_demand).to eq(10.0)
+      expect(gql.future.graph.node(:foo).preset_demand).to eq(10.0)
     end
   end
 
@@ -44,7 +44,7 @@ describe Gql::Gql do
     end
 
     it 'updates the future graph with the input value' do
-      expect(gql.future.graph.converter(:foo).preset_demand).to eq(50.0 * 1.05)
+      expect(gql.future.graph.node(:foo).preset_demand).to eq(50.0 * 1.05)
     end
   end
 
@@ -56,7 +56,7 @@ describe Gql::Gql do
 
     it 'updates the future graph with the input value' do
       # future year (2040) - present year (2011) = 29
-      expect(gql.future.graph.converter(:foo).preset_demand)
+      expect(gql.future.graph.node(:foo).preset_demand)
         .to be_within(1e-9).of(50 * (1.01**29))
     end
   end

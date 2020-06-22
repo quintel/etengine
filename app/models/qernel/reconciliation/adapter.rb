@@ -2,35 +2,35 @@
 
 module Qernel
   module Reconciliation
-    # Converts a Qernel::Converter to a Reconciliation adapter and back again.
+    # Converts a Qernel::Node to a Reconciliation adapter and back again.
     class Adapter
-      def self.adapter_for(converter, context)
-        type = context.node_config(converter).type
+      def self.adapter_for(node, context)
+        type = context.node_config(node).type
 
         klass =
           case type
           when :consumer
-            ConsumerAdapter.factory(converter, context)
+            ConsumerAdapter.factory(node, context)
           when :export
             ExportAdapter
           when :producer
-            ProducerAdapter.factory(converter, context)
+            ProducerAdapter.factory(node, context)
           when :import
             ImportAdapter
           when :storage
             StorageAdapter
           else
             raise 'Unknown reconciliation participant type for ' \
-                  "#{converter.key}: #{type.inspect}"
+                  "#{node.key}: #{type.inspect}"
           end
 
-        klass.new(converter, context)
+        klass.new(node, context)
       end
 
-      def initialize(converter, context)
-        @converter = converter
-        @context   = context
-        @config    = context.node_config(converter)
+      def initialize(node, context)
+        @node = node
+        @context = context
+        @config = context.node_config(node)
       end
 
       def setup(phase:)
@@ -38,8 +38,7 @@ module Qernel
       end
 
       def carrier_demand
-        @carrier_demand ||
-          raise("carrier_demand not yet calulated for #{@converter.key}")
+        @carrier_demand || raise("carrier_demand not yet calulated for #{@node.key}")
       end
 
       def demand_curve
@@ -52,7 +51,7 @@ module Qernel
       end
 
       def inspect
-        "#<#{self.class.name} #{@converter.key.inspect}>"
+        "#<#{self.class.name} #{@node.key.inspect}>"
       end
 
       # Public: Receives the reconciliation calculator and makes changes to the
@@ -73,9 +72,9 @@ module Qernel
       # demand curve.
       #
       # Most participants in Reconciliation have static curves which are a
-      # function of a load profile and the demand of the converter. The demand
+      # function of a load profile and the demand of the node. The demand
       # curve of these participants must be created before Merit detaches the
-      # dataset, afterwhich the converter demand will be zero (pending
+      # dataset, afterwhich the node demand will be zero (pending
       # recalculation). These are :static.
       #
       # Others only have a correct demand curve _after_ the Merit calculation,
@@ -86,22 +85,22 @@ module Qernel
         @config.profile.to_s.strip.start_with?('self') ? :dynamic : :static
       end
 
-      # Internal: Creates the profile describing the shape of the converter
+      # Internal: Creates the profile describing the shape of the node
       # demand throughout the year.
       #
       # Returns a Merit::Curve.
       def demand_profile
-        @context.curves.curve(@config.profile, @converter)
+        @context.curves.curve(@config.profile, @node)
       end
 
-      # Internal: Fetches demand from the converter.
-      def converter_demand
-        if @converter.demand.nil? && @converter.query.number_of_units.zero?
+      # Internal: Fetches demand from the node.
+      def node_demand
+        if @node.demand.nil? && @node.query.number_of_units.zero?
           # Demand may be nil if it is set by Fever, and the producer has no
           # installed units (therefore was omitted from the calculation).
           0.0
         else
-          @converter.demand
+          @node.demand
         end
       end
 
@@ -109,7 +108,7 @@ module Qernel
       #
       # Returns a numeric.
       def full_load_hours
-        @converter.converter_api.full_load_hours
+        @node.node_api.full_load_hours
       end
     end
   end

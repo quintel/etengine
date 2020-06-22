@@ -21,7 +21,7 @@ module Qernel
           # We use demand * conversion because output_of_electricity requires a
           # calculated graph, which is not always the case when computing
           # time-resolved loads.
-          producer.demand * producer.converter_api.electricity_input_conversion
+          producer.demand * producer.node_api.electricity_input_conversion
         end
       end
 
@@ -49,16 +49,16 @@ module Qernel
       private
 
       def group_consumers(group_name)
-        group_converters_of_type(group_name, :consumer)
+        group_nodes_of_type(group_name, :consumer)
       end
 
       def group_producers(group_name)
-        group_converters_of_type(group_name, :producer)
+        group_nodes_of_type(group_name, :producer)
       end
 
-      def group_converters_of_type(group_name, type)
+      def group_nodes_of_type(group_name, type)
         Etsource::Fever.group(group_name).keys(type).map do |key|
-          @graph.converter(key)
+          @graph.node(key)
         end
       end
     end

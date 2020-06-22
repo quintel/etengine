@@ -8,15 +8,15 @@ module Qernel
       # Raised when the profile name is invalid and does not refer to a valid
       # attribute containing a curve.
       class NoSuchCurveAttribute < RuntimeError
-        def initialize(attribute, converter)
+        def initialize(attribute, node)
           @attribute = attribute
-          @converter_key = converter.key
+          @node_key = node.key
         end
 
         def message
           <<~MESSAGE.squish
             No such curve attribute #{@attribute.inspect}; was specified by
-            converter #{@converter_key} to create a profile for
+            node #{@node_key} to create a profile for
             #{profile_name.inspect}
           MESSAGE
         end
@@ -28,11 +28,11 @@ module Qernel
         end
       end
 
-      # Raised when the converter does not have a curve value.
+      # Raised when the node does not have a curve value.
       class MissingCurve < NoSuchCurveAttribute
         def message
           <<~MESSAGE.squish
-            Converter #{@converter_key} does not have a #{@attribute.inspect} to
+            Node #{@node_key} does not have a #{@attribute.inspect} to
             use as profile #{profile_name.inspect}
           MESSAGE
         end
@@ -63,21 +63,21 @@ module Qernel
 
       # Public: Fetches a demand profile from a node.
       #
-      # converter - The Qernel::ConverterApi
+      # node - The Qernel::NodeApi
       # attribute - The name of the attribute which contains the carrier curve.
       #
       # Returns an Array.
-      def self.curve(converter, attribute)
+      def self.curve(node, attribute)
         attribute = attribute.to_s.strip
 
         unless attribute.to_s.match?(CURVE_RE) &&
-            converter.respond_to?(attribute)
-          raise NoSuchCurveAttribute.new(attribute, converter)
+            node.respond_to?(attribute)
+          raise NoSuchCurveAttribute.new(attribute, node)
         end
 
-        curve = converter.public_send(attribute)
+        curve = node.public_send(attribute)
 
-        raise MissingCurve.new(attribute, converter) if curve.blank?
+        raise MissingCurve.new(attribute, node) if curve.blank?
 
         curve
       end
@@ -85,18 +85,18 @@ module Qernel
       # Public: Creates a demand profile for a node based on an existing carrier
       # input or output curve.
       #
-      # converter - The Qernel::ConverterApi
+      # node - The Qernel::NodeApi
       # attribute - The name of the attribute which contains the carrier curve.
       #
       # For example:
       #
-      #   SelfDemandProfile.profile(converter, 'electricity_input_curve')
-      #   # => Creates the demand curve for `converter` based on the value of
+      #   SelfDemandProfile.profile(node, 'electricity_input_curve')
+      #   # => Creates the demand curve for `node` based on the value of
       #   #    the `electricity_input_curve` attribute.
       #
       # Returns an Array.
-      def self.profile(converter, attribute)
-        curve = curve(converter, attribute)
+      def self.profile(node, attribute)
+        curve = curve(node, attribute)
         sum = curve.sum
 
         return curve if sum.zero?

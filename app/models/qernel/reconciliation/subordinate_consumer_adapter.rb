@@ -43,7 +43,7 @@ module Qernel
         end
 
         leader_curve = Causality::SelfDemandProfile.curve(
-          leader.converter_api, "#{@config.subordinate_to_output}_output_curve"
+          leader.node_api, "#{@config.subordinate_to_output}_output_curve"
         )
 
         conversion = leader_conversion
@@ -88,9 +88,9 @@ module Qernel
       #
       # Returns a numeric.
       def leader_conversion
-        self_input = @converter.input(@context.carrier).conversion
+        self_input = @node.input(@context.carrier).conversion
 
-        self_output = @converter.output(
+        self_output = @node.output(
           @config.subordinate_to_output
         ).conversion
 
@@ -98,7 +98,7 @@ module Qernel
       end
 
       def leader
-        @leader ||= @context.graph.converter(@config.subordinate_to)
+        @leader ||= @context.graph.node(@config.subordinate_to)
       end
     end
   end

@@ -19,13 +19,13 @@
     %th Full Load Hours
     %th Cap. Factor
 
-  - merit_order_converters(graph, :dispatchable).each do |converter|
+  - merit_order_nodes(graph, :dispatchable).each do |node|
     %tr
-      %td= converter.key
-      %td= number_with_delimiter(converter.demand)
-      %td= converter[:merit_order_position]
-      %td= number_with_delimiter(converter.query.full_load_hours)
-      %td= converter[:capacity_factor]
+      %td= node.key
+      %td= number_with_delimiter(node.demand)
+      %td= node[:merit_order_position]
+      %td= number_with_delimiter(node.query.full_load_hours)
+      %td= node[:capacity_factor]
 
 %h2 Must Run
 %table.table
@@ -36,10 +36,10 @@
     %th Full Load Hours
     %th Cap. Factor
 
-  - merit_order_converters(graph, :must_run).each do |converter|
+  - merit_order_nodes(graph, :must_run).each do |node|
     %tr
-      %td= converter.key
-      %td= number_with_delimiter(converter.demand)
-      %td= converter[:merit_order_position]
-      %td= number_with_delimiter(converter.query.full_load_hours)
-      %td= converter[:capacity_factor]
+      %td= node.key
+      %td= number_with_delimiter(node.demand)
+      %td= node[:merit_order_position]
+      %td= number_with_delimiter(node.query.full_load_hours)
+      %td= node[:capacity_factor]

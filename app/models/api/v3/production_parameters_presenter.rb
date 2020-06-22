@@ -4,14 +4,14 @@ module Api
     class ProductionParametersPresenter
       # Creates a new production parameters presenter.
       #
-      # scenario - The Scenario whose converter details are to be presented.
+      # scenario - The Scenario whose node details are to be presented.
       #
       # Returns an ProductionParametersPresenter.
       def initialize(scenario)
         @graph = scenario.gql.future.graph
       end
 
-      # Public: Formats the converters for the scenario as a CSV file
+      # Public: Formats the nodes for the scenario as a CSV file
       # containing the data.
       #
       # Returns a String.
@@ -28,54 +28,54 @@ module Api
             variable_operation_and_maintenance_costs_per_full_load_hour
             wacc
             technical_lifetime
-            total_investment_over_lifetime_per_converter
+            total_investment_over_lifetime_per_node
           ]
 
-          converters.each do |converter|
-            csv << converter_row(converter)
+          nodes.each do |node|
+            csv << node_row(node)
           end
         end
       end
 
       private
 
-      def converters
+      def nodes
         (
-          @graph.group_converters(:heat_production) +
-          @graph.group_converters(:electricity_production) +
-          @graph.group_converters(:cost_hydrogen_production) +
-          @graph.group_converters(:cost_hydrogen_infrastructure) +
-          @graph.group_converters(:cost_flexibility) +
-          @graph.group_converters(:cost_other)
+          @graph.group_nodes(:heat_production) +
+          @graph.group_nodes(:electricity_production) +
+          @graph.group_nodes(:cost_hydrogen_production) +
+          @graph.group_nodes(:cost_hydrogen_infrastructure) +
+          @graph.group_nodes(:cost_flexibility) +
+          @graph.group_nodes(:cost_other)
         ).uniq.sort_by(&:key)
       end
 
-      # Internal: Creates an array/CSV row representing the converter and its
+      # Internal: Creates an array/CSV row representing the node and its
       # demands.
-      def converter_row(converter)
+      def node_row(node)
         [
-          converter.key,
-          number_of_units(converter),
-          converter.query.electricity_output_capacity,
-          converter.query.heat_output_capacity,
-          converter.query.full_load_hours,
-          converter.query.initial_investment_per(:plant),
-          converter.query.fixed_operation_and_maintenance_costs_per_year,
-          converter.query.variable_operation_and_maintenance_costs_per_full_load_hour,
-          converter.query.wacc,
-          converter.query.technical_lifetime,
+          node.key,
+          number_of_units(node),
+          node.query.electricity_output_capacity,
+          node.query.heat_output_capacity,
+          node.query.full_load_hours,
+          node.query.initial_investment_per(:plant),
+          node.query.fixed_operation_and_maintenance_costs_per_year,
+          node.query.variable_operation_and_maintenance_costs_per_full_load_hour,
+          node.query.wacc,
+          node.query.technical_lifetime,
           begin
-            converter.query.total_investment_over_lifetime_per(:converter)
+            node.query.total_investment_over_lifetime_per(:node)
           rescue StandardError
             nil
           end
         ]
       end
 
-      # Internal: Gets the converter number of units. Guards against failure for
-      # converters where it cannot be calculated.
-      def number_of_units(converter)
-        converter.query.number_of_units
+      # Internal: Gets the node number of units. Guards against failure for
+      # nodes where it cannot be calculated.
+      def number_of_units(node)
+        node.query.number_of_units
       rescue
         ''
       end

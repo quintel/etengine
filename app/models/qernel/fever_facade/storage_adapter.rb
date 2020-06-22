@@ -38,7 +38,7 @@ module Qernel
 
       def reserve
         Merit::Flex::SimpleReserve.new(
-          total_value { @converter.dataset_get(:storage).volume }
+          total_value { @node.dataset_get(:storage).volume }
         )
       end
     end

@@ -12,7 +12,7 @@ describe Qernel::Slot::LinkBased do
     Qernel::GraphParser.new(layout).build
   end
 
-  let(:network)     { graph.converter(:network) }
+  let(:network)     { graph.node(:network) }
   let(:loss)        { network.output(:loss) }
   let(:electricity) { network.output(:electricity) }
 

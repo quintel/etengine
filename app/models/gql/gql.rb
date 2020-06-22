@@ -32,7 +32,7 @@ module Gql
     #     # before yielding Gql#initialize calls
     #     # gql.init_datasets
     #     # gql.update_graphs
-    #     gql.future_graph.converter(:foo).preset_demand = nil
+    #     gql.future_graph.node(:foo).preset_demand = nil
     #     gql.update_graph(:future, Input.last, 2.0)
     #     # after yielding:
     #     # gql.calculate_graphs
@@ -225,7 +225,7 @@ module Gql
       rescue_with = Raven.configuration.capture_allowed? ? :airbrake : :debug
 
       gquery_keys.inject({}) do |hsh, key|
-        result = if gquery = (Gquery.get(key) rescue nil) and !gquery.converters?
+        result = if gquery = (Gquery.get(key) rescue nil) and !gquery.nodes?
           query(gquery, rescue_with)
         else
           # Why this? Hmm. Seems like we only really want to execute if it's a Gql query

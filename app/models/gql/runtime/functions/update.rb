@@ -63,7 +63,7 @@ module Gql::Runtime
       #
       # @example multiple objects with the same number
       #   UPDATE( L( foo, bar, baz ), demand,  5 )
-      #   # => demand of all converter becomes 5
+      #   # => demand of all node becomes 5
       #
       # @example multiple objects with a different number
       #   EACH(

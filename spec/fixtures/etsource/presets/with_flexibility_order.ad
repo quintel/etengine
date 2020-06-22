@@ -8,4 +8,4 @@
 - user_values.input_2 = 20.0
 - user_values.input_3 = 30.0
 - flexibility_order = [flex_two, flex_one]
-- heat_network_order = [converter_two, converter_one]
+- heat_network_order = [node_two, node_one]

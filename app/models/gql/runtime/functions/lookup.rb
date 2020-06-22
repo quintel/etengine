@@ -66,7 +66,7 @@ module Gql::Runtime
       end
 
 
-      # Returns an Array of all {Qernel::Converter}. Use wisely, as this
+      # Returns an Array of all {Qernel::Node}. Use wisely, as this
       # could become a performance killer.
       #
       # Examples
@@ -74,17 +74,17 @@ module Gql::Runtime
       #   ALL()
       #
       def ALL(*keys)
-        scope.all_converters
+        scope.all_nodes
       end
 
-      # Returns an Array of {Qernel::Converter} for given group.
+      # Returns an Array of {Qernel::Node} for given group.
       #
       # Examples
       #
       #   GROUP(households)
       #
       def GROUP(*keys)
-        scope.group_converters(keys)
+        scope.group_nodes(keys)
       end
       alias G GROUP
 
@@ -99,19 +99,19 @@ module Gql::Runtime
       end
       alias LG LINK_GROUP
 
-      # Returns an Array of {Qernel::Converter} for given sector.
+      # Returns an Array of {Qernel::Node} for given sector.
       #
       # Examples
       #
       #   SECTORS(households)
       #
       def SECTOR(*keys)
-        scope.sector_converters(keys)
+        scope.sector_nodes(keys)
       end
 
-      # Returns an Array with {Qernel::Converter} for given energy use.
+      # Returns an Array with {Qernel::Node} for given energy use.
       #
-      # See Qernel::Converter::USES
+      # See Qernel::Node::USES
       #
       # Examples
       #
@@ -120,7 +120,7 @@ module Gql::Runtime
       #   USE(undefined)
       #
       def USE(*keys)
-        scope.use_converters(keys)
+        scope.use_nodes(keys)
       end
 
       # Returns an Array of {Qernel::Carrier} for given key(s)

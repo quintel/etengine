@@ -12,7 +12,7 @@ describe Qernel::Slot::Loss do
     Qernel::GraphParser.new(layout).build
   end
 
-  let(:network) { graph.converters.detect { |c| c.key == :network } }
+  let(:network) { graph.nodes.detect { |c| c.key == :network } }
   let(:loss)    { network.output(:loss) }
 
   before do

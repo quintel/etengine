@@ -2,7 +2,7 @@
 
 module Api
   module V3
-    # The CSV contains the key of each converter and the direction of energy
+    # The CSV contains the key of each node and the direction of energy
     # flow (input or output) and the hourly load in MWh.
     class CurvesCSVPresenter
       # Provides support for multiple carriers in the presenter.
@@ -18,16 +18,16 @@ module Api
           Qernel::Plugins::Causality.enabled?(graph)
         end
 
-        def converters(graph)
-          graph.converters.select(&@attribute)
+        def nodes(graph)
+          graph.nodes.select(&@attribute)
         end
 
-        def converter_curve(converter, direction)
-          converter.converter_api.public_send("#{@carrier}_#{direction}_curve")
+        def node_curve(node, direction)
+          node.node_api.public_send("#{@carrier}_#{direction}_curve")
         end
 
-        def converter_config(converter)
-          converter.public_send(@attribute)
+        def node_config(node)
+          node.public_send(@attribute)
         end
       end
 
@@ -75,11 +75,11 @@ module Api
       private
 
       def producer_columns
-        producers.map { |converter| column_from_converter(converter, :output) }
+        producers.map { |node| column_from_node(node, :output) }
       end
 
       def consumer_columns
-        consumers.map { |converter| column_from_converter(converter, :input) }
+        consumers.map { |node| column_from_node(node, :input) }
       end
 
       def extra_columns
@@ -87,29 +87,29 @@ module Api
       end
 
       def producers
-        converters_of_type(producer_types).select do |producer|
-          @adapter.converter_curve(producer, :output)&.any?
+        nodes_of_type(producer_types).select do |producer|
+          @adapter.node_curve(producer, :output)&.any?
         end
       end
 
       def consumers
-        converters_of_type(consumer_types) do |consumer|
-          @adapter.converter_curve(consumer, :output)&.any?
+        nodes_of_type(consumer_types) do |consumer|
+          @adapter.node_curve(consumer, :output)&.any?
         end
       end
 
-      # Internal: Creates a column representing data for a converter's energy
+      # Internal: Creates a column representing data for a node's energy
       # flows in a chosen direction.
-      def column_from_converter(converter, direction)
+      def column_from_node(node, direction)
         [
-          "#{converter.key}.#{direction}",
-          *@adapter.converter_curve(converter, direction).map { |v| v.round(4) }
+          "#{node.key}.#{direction}",
+          *@adapter.node_curve(node, direction).map { |v| v.round(4) }
         ]
       end
 
-      def converters_of_type(types)
-        @adapter.converters(@graph)
-          .select { |c| types.include?(@adapter.converter_config(c).type) }
+      def nodes_of_type(types)
+        @adapter.nodes(@graph)
+          .select { |c| types.include?(@adapter.node_config(c).type) }
           .sort_by(&:key)
       end
     end

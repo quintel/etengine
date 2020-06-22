@@ -34,7 +34,7 @@ module Qernel
     # other than 1.0. If half of the input energy for the node were to come from
     # the primary component, and half from the secondary, setting an output
     # conversion of 1.03 would result in inaccurate input of the primary
-    # component carriers. To that end, the converter will be hard-coded to an
+    # component carriers. To that end, the node will be hard-coded to an
     # output conversion of 1.0, and the input shares will be adjusted to ensure
     # the flow of energ into the node is correct.
     class HHPAdapter < ProducerAdapter
@@ -49,7 +49,7 @@ module Qernel
         # Sets the load-adjusted efficiency of the primary component carriers.
         # primary_adapter.inject!
 
-        @converter.converter.output(:useable_heat)[:conversion] = 1.0
+        @node.node.output(:useable_heat)[:conversion] = 1.0
 
         # Set the demands and other attributes based on the whole producer and
         # not the individual parts.
@@ -70,7 +70,7 @@ module Qernel
       end
 
       # Public: Returns if the named carrier (a Symbol) is one of the inputs to
-      # the converter used by this adapter.
+      # the node used by this adapter.
       #
       # Returns true or false.
       def input?(carrier)
@@ -106,13 +106,13 @@ module Qernel
       # pump.
       def primary_adapter
         @primary_adapter ||= VariableEfficiencyProducerAdapter.new(
-          @converter.converter, @context
+          @node.node, @context
         )
       end
 
       # Internal: The share of the secondary component carrier.
       def secondary_share
-        @converter.converter.input(secondary_carrier).conversion
+        @node.node.input(secondary_carrier).conversion
       end
 
       # Internal: Symbol naming the input carrier used by the secondary
@@ -123,14 +123,14 @@ module Qernel
       def secondary_carrier
         return @secondary_carrier if @secondary_carrier
 
-        carriers = @converter.converter.inputs.map { |i| i.carrier.key } -
+        carriers = @node.node.inputs.map { |i| i.carrier.key } -
           [@config.efficiency_based_on, @config.efficiency_balanced_with]
 
         if carriers.length.zero?
           raise 'No secondary carrier available for hybrid heat-pump ' \
-                "#{@converter.key}. Are you sure this is a HHP?"
+                "#{@node.key}. Are you sure this is a HHP?"
         elsif carriers.length != 1
-          raise "Too many carriers for hybrid heat-pump #{@converter.key}. " \
+          raise "Too many carriers for hybrid heat-pump #{@node.key}. " \
                 "Expected only one of: #{carriers.join(', ')}"
         end
 
@@ -140,7 +140,7 @@ module Qernel
       # Internal: Sets the input conversions after the calculation to match the
       # use of energy by the Fever components.
       def set_input_conversions!
-        return if @converter.demand.zero?
+        return if @node.demand.zero?
 
         primary_demand = primary_component.input_curve.sum
         based_on_input = source_energy_of_component(primary_component)
@@ -149,14 +149,14 @@ module Qernel
         sec_eff = output_efficiency_of_carrier(secondary_carrier)
         secondary_input = secondary_component.input_curve.sum / sec_eff
 
-        @converter.converter.input(:electricity)[:conversion] =
-          (based_on_input * MJ_IN_MWH) / @converter.demand
+        @node.node.input(:electricity)[:conversion] =
+          (based_on_input * MJ_IN_MWH) / @node.demand
 
-        @converter.converter.input(:ambient_heat)[:conversion] =
-          (balanced_with_input * MJ_IN_MWH) / @converter.demand
+        @node.node.input(:ambient_heat)[:conversion] =
+          (balanced_with_input * MJ_IN_MWH) / @node.demand
 
-        @converter.converter.input(secondary_carrier)[:conversion] =
-          (secondary_input * MJ_IN_MWH) / @converter.demand
+        @node.node.input(secondary_carrier)[:conversion] =
+          (secondary_input * MJ_IN_MWH) / @node.demand
       end
 
       # Internal: Calculates the total amount of "source" input to the given
@@ -188,7 +188,7 @@ module Qernel
       #
       # Returns a numeric.
       def output_efficiency_of_carrier(carrier)
-        output = Atlas::Node.find(@converter.key).output[:useable_heat]
+        output = Atlas::Node.find(@node.key).output[:useable_heat]
         output.is_a?(Hash) ? output[carrier] : 1.0
       end
 

@@ -10,7 +10,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
   end
 
   # Calculates the primary energy demand, including traversing through
-  # converters which are flagged as "abroad". The normal primary demand
+  # nodes which are flagged as "abroad". The normal primary demand
   # calculation terminates at the border between non-abroad and abroad.
   #
   # Returns a numeric.
@@ -38,12 +38,12 @@ module Qernel::RecursiveFactor::PrimaryDemand
     end
   end
 
-  def primary_demand_with(factor_method, converter_share_method = nil)
+  def primary_demand_with(factor_method, node_share_method = nil)
     factor =
-      if converter_share_method
+      if node_share_method
         recursive_factor(
           "#{factor_method}_factor",
-          "#{converter_share_method}_factor"
+          "#{node_share_method}_factor"
         )
       else
         recursive_factor("#{factor_method}_factor")
@@ -89,7 +89,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
   def factor_for_primary_demand(stop_condition = :primary_energy_demand?)
     stop = public_send(stop_condition)
 
-    # If a converter has infinite resources (such as wind, solar/sun), we
+    # If a node has infinite resources (such as wind, solar/sun), we
     # take the output of energy (1 - losses).
     if infinite? && stop
       (1 - loss_output_conversion)

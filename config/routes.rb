@@ -26,10 +26,15 @@ Rails.application.routes.draw do
           post :merge
         end
         get :templates, :on => :collection
-        resources :converters, :only => :show do
+
+        resources :nodes, :only => :show do
           get  :topology, :on => :collection
           post :stats,    :on => :collection
         end
+
+        get 'converters', to: redirect('/api/v3/scenarios/%{scenario_id}/nodes')
+        get 'converters/:id', to: redirect('/api/v3/scenarios/%{scenario_id}/nodes/%{id}')
+
         resources :inputs, :only => [:index, :show]
 
         resource :flexibility_order, only: [:show, :update],
@@ -65,9 +70,13 @@ Rails.application.routes.draw do
           as: :curves_network_gas_download
       end
 
-      resources :converters, :only => :show do
+      resources :nodes, :only => :show do
         get :topology, :on => :collection
       end
+
+      get 'converters', to: redirect('/api/v3/nodes')
+      get 'converters/*rest', to: redirect('/api/v3/nodes/%{rest}')
+
       resources :inputs, :only => [:index, :show] do
         get :list, :on => :collection
       end
@@ -105,7 +114,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :converters, :only => [:index, :show]
+      resources :nodes, :only => [:index, :show]
       resources :carriers, :only => [:index, :show]
       resource  :area, :as => :area, :only => :show
 
@@ -139,6 +148,9 @@ Rails.application.routes.draw do
 
       get '/merit/download_prices',
         to: redirect("api/v3/scenarios/%{api_scenario_id}/merit/price.csv")
+
+      get 'converters', to: redirect('/inspect/%{api_scenario_id}/nodes')
+      get 'converters/:id', to: redirect('/inspect/%{api_scenario_id}/nodes/%{id}')
 
       get 'search' => 'search#index', :as => :search
     end

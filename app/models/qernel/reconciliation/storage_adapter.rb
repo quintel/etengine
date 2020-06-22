@@ -4,7 +4,7 @@ module Qernel
   module Reconciliation
     class StorageAdapter < Adapter
       def inspect
-        "#<#{self.class.name} #{@converter.key.inspect}>"
+        "#<#{self.class.name} #{@node.key.inspect}>"
       end
 
       def setup(phase:)
@@ -12,15 +12,15 @@ module Qernel
       end
 
       def inject!(calculator)
-        @converter.demand = calculator.storage_out.sum * 3600
+        @node.demand = calculator.storage_out.sum * 3600
 
-        return inject_zero_storage! if @converter.demand.zero?
+        return inject_zero_storage! if @node.demand.zero?
 
-        @converter.dataset_lazy_set(@context.curve_name(:input)) do
+        @node.dataset_lazy_set(@context.curve_name(:input)) do
           calculator.storage_in
         end
 
-        @converter.dataset_lazy_set(@context.curve_name(:output)) do
+        @node.dataset_lazy_set(@context.curve_name(:output)) do
           calculator.storage_out
         end
 
@@ -39,8 +39,8 @@ module Qernel
       def inject_zero_storage!
         null_curve = Array.new(8760, 0.0)
 
-        @converter.dataset_set(@context.curve_name(:input), null_curve)
-        @converter.dataset_set(@context.curve_name(:output), null_curve)
+        @node.dataset_set(@context.curve_name(:input), null_curve)
+        @node.dataset_set(@context.curve_name(:output), null_curve)
 
         inject_storage(0.0) { Array.new(8760, 0.0) }
       end
@@ -48,10 +48,10 @@ module Qernel
       # Sets the amount of storage. Provide a block which will lazily set the
       # storage curve.
       def inject_storage(volume, &curve)
-        storage = @converter.dataset_get(:storage)
+        storage = @node.dataset_get(:storage)
         storage.send(:volume=, volume)
 
-        @converter.dataset_lazy_set(:storage_curve, &curve)
+        @node.dataset_lazy_set(:storage_curve, &curve)
 
         nil
       end

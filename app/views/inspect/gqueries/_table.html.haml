@@ -21,9 +21,9 @@
               - if value.is_a?(Numeric)
                 %td.numeric{ title: value }
                   = number_with_precision(value, precision: 10, separator: '.', delimiter: ',', strip_insignificant_zeros: true)
-              - elsif table.objects[row_idx].is_a?(Qernel::Converter) && table.data[0][col_idx] == :key
-                %td.converter
-                  = link_to(value, inspect_converter_path(id: value))
+              - elsif table.objects[row_idx].is_a?(Qernel::Node) && table.data[0][col_idx] == :key
+                %td.node
+                  = link_to(value, inspect_node_path(id: value))
               - else
                 %td= value
 

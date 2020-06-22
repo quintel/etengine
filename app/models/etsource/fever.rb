@@ -15,7 +15,7 @@ module Etsource
         keys_by_type[type] || []
       end
 
-      # Public: Returns if there are any converters belonging to the given type.
+      # Public: Returns if there are any nodes belonging to the given type.
       #
       # Returns true or false.
       def any_of_type?(type)

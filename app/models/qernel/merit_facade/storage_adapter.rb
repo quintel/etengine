@@ -25,7 +25,7 @@ module Qernel
         # flexible, assume that unused energy is dumped through the flexible.
         # Adjust the share edge so that only energy actually emitted by the
         # storage flows.
-        output_slot = @converter.converter.output(@context.carrier)
+        output_slot = @node.node.output(@context.carrier)
 
         return if !output_slot || output_slot.links.length != 2
 
@@ -124,7 +124,7 @@ module Qernel
       # of the storage to be equal to the average demand of another node,
       # multiplied by a constant chosen by the user.
       def capacity_from_other_demand
-        node = @context.graph.converter(@config.output_capacity_from_demand_of)
+        node = @context.graph.node(@config.output_capacity_from_demand_of)
         avg_load = node.demand / 8760 / 3600
 
         avg_load * @config.output_capacity_from_demand_share

@@ -5,23 +5,23 @@ module Gql::Runtime
       # Shortcut for the LOOKUP and MAP function. Also see {#LOOKUP} and {#MAP}.
       #
       #
-      # Instead of converter keys you can pass anything inside V(). This
-      # works because if LOOKUP does not find a converter for an argument
+      # Instead of node keys you can pass anything inside V(). This
+      # works because if LOOKUP does not find a node for an argument
       # it returns that argument itself.
       #
-      # @example Lookup a converter by key
+      # @example Lookup a node by key
       #   V(foo)               # = LOOKUP(foo)
       #   # => [<foo>]
       #
-      # @example Lookup multiple converters by their keys
+      # @example Lookup multiple nodes by their keys
       #   V(foo, bar)          # = LOOKUP(foo, bar)
       #   # => [<foo>, <bar>]
       #
-      # @example Lookup a converter attribute
+      # @example Lookup a node attribute
       #   V(foo, demand)       # = MAP(LOOKUP(foo), demand)
       #   # => 100
       #
-      # @example Lookup multiple converter attributes
+      # @example Lookup multiple node attributes
       #   V(foo, bar, demand)  # = MAP(LOOKUP(foo, bar), demand)
       #   # => [100, 200]
       #
@@ -35,8 +35,8 @@ module Gql::Runtime
       #
       # @see #LOOKUP
       # @see #MAP
-      # @return [Array] the result of {LOOKUP} if the last argument is a converter key.
-      # @return [Numeric,Array] the result of {MAP}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a converter key.
+      # @return [Array] the result of {LOOKUP} if the last argument is a node key.
+      # @return [Numeric,Array] the result of {MAP}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a node key.
       #
       def V(*args)
         # Given: V(..., primary_demand_of( CARRIER(...) ))
@@ -62,7 +62,7 @@ module Gql::Runtime
       #
       # @param [Symbol] key The gquery key
       #
-      # @return [Numeric,Array] The result of that gquery. Can be a number, list of converters, etc.
+      # @return [Numeric,Array] The result of that gquery. Can be a number, list of nodes, etc.
       #
       def Q(key)
         scope.subquery(key.to_s)
@@ -72,24 +72,24 @@ module Gql::Runtime
       # Lookup objects by their corresponding key(s).
       #
       #
-      # @example One or multiple converters
-      #   LOOKUP(foo)               # => [<Converter foo>]
-      #   LOOKUP(foo, bar)          # => [<Converter foo>, <Converter bar>]
+      # @example One or multiple nodes
+      #   LOOKUP(foo)               # => [<Node foo>]
+      #   LOOKUP(foo, bar)          # => [<Node foo>, <Node bar>]
       #
-      # @example Elements that are not converter keys are simply returned
-      #   LOOKUP(foo, 3.0)          # => [<Converter foo>, 3.0]
-      #   LOOKUP(foo, CARRIER(gas)) # => [<Converter foo>,<Carrier Gas>]
+      # @example Elements that are not node keys are simply returned
+      #   LOOKUP(foo, 3.0)          # => [<Node foo>, 3.0]
+      #   LOOKUP(foo, CARRIER(gas)) # => [<Node foo>,<Carrier Gas>]
       #
       # @example nil and duplicate elements are removed
-      #   LOOKUP(foo, nil)          # => [<Converter foo>]
-      #   LOOKUP(foo, LOOKUP(foo))  # => [<Converter foo>]
+      #   LOOKUP(foo, nil)          # => [<Node foo>]
+      #   LOOKUP(foo, LOOKUP(foo))  # => [<Node foo>]
       #
       # @example Nested arrays are flattened
       #   LOOKUP(foo, LOOKUP(bar, SECTOR(households)))
-      #   # => [<Converter foo>,<Converter bar>,...]
+      #   # => [<Node foo>,<Node bar>,...]
       #
       # @param [Array] keys One or more of:
-      #   - Converter key
+      #   - Node key
       #   - {Qernel::Base} objects, e.g. LOOKUP(CARRIER(foo))
       #   - Arrays thereof, e.g. LOOKUP(LOOKUP(),LOOKUP())
       #
@@ -104,9 +104,9 @@ module Gql::Runtime
           if key.respond_to?(:to_sym)
             # prevents lookup for strings from V(.., "demand*2") or Rubel
             # messages V(.., foo(1))
-            @scope.converters(key).tap do |arr|
+            @scope.nodes(key).tap do |arr|
               if arr.empty?
-                ActiveSupport::Notifications.instrument("warn: No converter found with key: #{key}")
+                ActiveSupport::Notifications.instrument("warn: No node found with key: #{key}")
               end
             end
           else
@@ -120,7 +120,7 @@ module Gql::Runtime
       end
       alias LOOKUP L
 
-      # Similar to LOOKUP, checks if a converter with that key exists.
+      # Similar to LOOKUP, checks if a node with that key exists.
       # Does not log a warning if not found. Mainly used for the V() method.
       #
       # @private
@@ -129,7 +129,7 @@ module Gql::Runtime
         if key.respond_to?(:to_sym)
           # prevents lookup for strings from V(.., "demand*2") or Rubel
           # messages V(.., foo(1))
-          @scope.converters(key)
+          @scope.nodes(key)
         else
           [key]
         end

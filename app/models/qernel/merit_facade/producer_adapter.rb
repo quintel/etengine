@@ -4,8 +4,8 @@ module Qernel
   module MeritFacade
     # Base class which sets up producers in Merit.
     class ProducerAdapter < Adapter
-      def self.factory(converter, context)
-        config = context.node_config(converter)
+      def self.factory(node, context)
+        config = context.node_config(node)
 
         case config.subtype
         when :must_run, :volatile

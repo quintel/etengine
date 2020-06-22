@@ -5,26 +5,26 @@ module Qernel
     # Base class which handles setting up the participant in Fever, and
     # converting data post-calculation to be added back to ETEngine.
     class Adapter
-      attr_reader :converter
+      attr_reader :node
 
-      def self.adapter_for(converter, context)
-        type = converter.dataset_get(:fever).type.to_sym
+      def self.adapter_for(node, context)
+        type = node.dataset_get(:fever).type.to_sym
 
         klass =
           case type
-          when :producer then ProducerAdapter.factory(converter, context)
+          when :producer then ProducerAdapter.factory(node, context)
           when :storage  then StorageAdapter
           when :consumer then ConsumerAdapter
           else raise "Unknown Fever type: #{type}"
           end
 
-        klass.new(converter, context)
+        klass.new(node, context)
       end
 
-      def initialize(converter, context)
-        @converter = converter.converter_api
+      def initialize(node, context)
+        @node = node.node_api
         @context   = context
-        @config    = converter.dataset_get(:fever)
+        @config    = node.dataset_get(:fever)
 
         # Store this now; technologies with a flexible edge will not have the
         # share set when running inject! which results in the number_of_units
@@ -33,7 +33,7 @@ module Qernel
       end
 
       def inspect
-        "#<#{self.class.name} converter=#{@converter.key}>"
+        "#<#{self.class.name} node=#{@node.key}>"
       end
 
       def participant
@@ -61,15 +61,15 @@ module Qernel
       #
       # Returns a numeric.
       def total_value(attribute = nil)
-        per_unit = block_given? ? yield : @converter.public_send(attribute)
+        per_unit = block_given? ? yield : @node.public_send(attribute)
         per_unit * @number_of_units
       end
 
       def number_of_units
-        @number_of_units ||= @converter.number_of_units
+        @number_of_units ||= @node.number_of_units
       end
 
-      # Internal: Assigns a computed curve to the converter API. Provide a
+      # Internal: Assigns a computed curve to the node API. Provide a
       # direction (input or output) in order to determine the name of the
       # attribute to be set, and a block which yields the calculated curve.
       #
@@ -97,7 +97,7 @@ module Qernel
 
         name = full_name || :"heat_#{direction}_curve"
 
-        @converter.dataset_lazy_set(name.to_sym) do
+        @node.dataset_lazy_set(name.to_sym) do
           @context.curves.derotate(yield.to_a)
         end
       end

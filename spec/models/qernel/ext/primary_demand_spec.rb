@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 module Qernel
-  describe Converter do
-    skip do 
-      before do |example| 
+  describe Node do
+    skip do
+      before do |example|
         # it_description = example.metadata[:description]
         context_description = example.metadata[:example_group][:description]
         @g = GraphParser.new(context_description).build
         @g.calculate
-        @g.converters.each do |converter|
-          instance_variable_set("@#{converter.key}", converter)
+        @g.nodes.each do |node|
+          instance_variable_set("@#{node.key}", node)
         end
       end
 
@@ -64,11 +64,11 @@ module Qernel
         @rgt.stub!(:primary_energy_demand?).and_return(true)
       end
 
-      
+
       specify { @lft.demand.should == 200.0 }
       specify { @mid.demand.should == 120.0 }
       specify { @rgt.demand.should == 200.0 }
-      
+
 
       it "if rgt,rgt2 are primary" do
         @lft.primary_demand.should == 200.0
@@ -77,18 +77,18 @@ module Qernel
       end
 
       context "# with loop
-               # 
+               #
                electricity: lft(90) == s(1) ==> mid
                electricity:                     mid == f(1.0) ==> loop
                electricity:                                       loop == i(nil) ==> mid
                electricity[1.0;0.4]:            mid == d(nil) ==> rgt
                loss[1.0;0.6]:               hlp(60) == f(1.0) ==> rgt" do
-        
+
         before do
           allow(@rgt).to receive(:primary_energy_demand?).and_return(true)
         end
 
-        
+
         specify { expect(@lft.demand).to eq(90.0) }
         specify { expect(@rgt.demand).to eq(100.0) }
         specify { expect(@mid.demand).to eq(90.0) }
@@ -96,13 +96,13 @@ module Qernel
         # => f(1.0) gets 90 - 40 => 50
         specify { expect(@loop.demand).to eq(50.0) }
         #specify { @innerloop.demand.should == 100.0 }
-        
+
 
         specify { expect(@lft.primary_demand).to eq(100.0) }
       end
 
       context "# with inner loop
-               # 
+               #
                electricity: lft(90) == s(1) ==> mid
                electricity:                     mid == f(1.0) ==> loop
                electricity:                                       loop == i(nil) ==> mid
@@ -111,7 +111,7 @@ module Qernel
                electricity[1.0;0.4]:                              loop == d(nil) ==> innerloop
                electricity[1.0;0.6]:                    outer_loop(60) == s(1.0) ==> innerloop
                " do
-        
+
         before do
           allow(@rgt).to receive(:primary_energy_demand?).and_return(true)
         end
@@ -121,7 +121,7 @@ module Qernel
         specify { expect(@mid.demand).to eq(90.0) }
         specify { expect(@loop.demand).to eq(50.0) }
         specify { expect(@innerloop.demand).to eq(100.0) }
-        
+
         specify { expect(@lft.primary_demand).to eq(100.0) }
       end
     end

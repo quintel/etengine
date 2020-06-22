@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Recursively computes the bio energy demand of a converter. This is the amount
+# Recursively computes the bio energy demand of a node. This is the amount
 # of energy provided by nodes -- including abroad -- which belong to the
 # bio_resources_demand group.
 module Qernel::RecursiveFactor::BioDemand
@@ -50,7 +50,7 @@ module Qernel::RecursiveFactor::BioDemand
 
     demand * recursive_factor(
       :demand_of_bio_resources_including_abroad_of_carrier_factor,
-      nil, # converter_share_method
+      nil, # node_share_method
       nil, # link
       carrier_key
     )

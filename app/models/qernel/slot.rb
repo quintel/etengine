@@ -2,16 +2,16 @@ module Qernel
 
 ##
 # A slot combines several input/output links of the same carrier.
-# It can either be on the input or output side of a converter. A
+# It can either be on the input or output side of a node. A
 # slot waits (see #ready?) until all passive_links have been calculated
 # and then calculates the active_links.
 #
 # Usually we are just interested in the #external_value of a slot,
 # which is the amount of energy that goes through. The internal value
-# is the external_value * conversion, which in the end equals the converter
+# is the external_value * conversion, which in the end equals the node
 # demand. So:
 #
-#  external_value * conversion = internal_value = converter.demand
+#  external_value * conversion = internal_value = node.demand
 #
 #
 class Slot
@@ -23,13 +23,13 @@ class Slot
   #             :elastic will give you a Slot::Elastic instance. nil will
   #             return a normal slot.
   # id        - Unique identifier for the slot.
-  # converter - The converter to which the slot belongs.
+  # node - The node to which the slot belongs.
   # carrier   - The carrier used by the links which connect to the slot.
   # direction - Indicates whether the slot is for :input or :output.
   #
   # Returns an instance of Slot, or a Slot subclass.
   #
-  def self.factory(type, id, converter, carrier, direction = :input)
+  def self.factory(type, id, node, carrier, direction = :input)
     klass =
       case type
       when :loss       then Slot::Loss
@@ -38,14 +38,14 @@ class Slot
       else                  Slot
       end
 
-    klass.new(id, converter, carrier, direction)
+    klass.new(id, node, carrier, direction)
   end
 
   # --------- Accessor ---------------------------------------------------------
 
   attr_accessor :carrier,
-                :converter,
-                :converter_id,
+                :node,
+                :node_id,
                 :graph
 
   attr_reader :direction,
@@ -62,10 +62,10 @@ class Slot
 
   # --------- Initialize ------------------------------------------------------
 
-  def initialize(id, converter, carrier, direction = :input)
+  def initialize(id, node, carrier, direction = :input)
     @id  = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
     @key = @id
-    @converter = converter
+    @node = node
     @carrier   = carrier
     @direction = direction.to_sym
     self.dataset_key # memoize dataset_key
@@ -81,10 +81,10 @@ class Slot
     # 2010-06-07 sb:
     # Theoretically it should be:
     #
-    #   passive_links.all?(&:value) and converter.has_demand?
+    #   passive_links.all?(&:value) and node.has_demand?
     #
-    # As a slot can only calculate if the converter demand is
-    # known. But as we control the flow from the converter we
+    # As a slot can only calculate if the node demand is
+    # known. But as we control the flow from the node we
     # can skip this (saves a bit of performance).
   end
 
@@ -118,21 +118,21 @@ class Slot
 
   # --------- Slot Types ------------------------------------------------------
 
-  # @return [Boolean] Is Slot an input (on the left side of converter)
-  # Links that are calculated by this converter
+  # @return [Boolean] Is Slot an input (on the left side of node)
+  # Links that are calculated by this node
   #
   def input?
     (direction === :input)
   end
 
-  # @return [Boolean] is it an output (on the left side of converter)
+  # @return [Boolean] is it an output (on the left side of node)
   #
   def output?
     !input?
   end
 
   def environment?
-    converter.environment?
+    node.environment?
   end
 
   def loss?
@@ -153,7 +153,7 @@ class Slot
   end
 
 
-  # @return [Array<Link>] Links calculated by the converter on the other end.
+  # @return [Array<Link>] Links calculated by the node on the other end.
   #
   def passive_links
     @passive_links ||= if input?
@@ -166,36 +166,36 @@ class Slot
   # @return [Array<Link>]
   #
   def links
-    # For legacy reasons, we still access links through the converter.
+    # For legacy reasons, we still access links through the node.
     @links ||= if input?
-      converter.input_links.select{|l| l.carrier == @carrier}
+      node.input_links.select{|l| l.carrier == @carrier}
     else
-      converter.output_links.select{|l| l.carrier == @carrier}
+      node.output_links.select{|l| l.carrier == @carrier}
     end
   end
 
   def siblings
     if input?
-      converter.inputs - [self]
+      node.inputs - [self]
     else
-      converter.outputs - [self]
+      node.outputs - [self]
     end
   end
 
   # --------- Value -----------------------------------------------------------
 
   # Expected value of this slot. Must equal to the actual value (sum of link values * conversion)
-  # expected_demand = total_converter_demand * conversion
+  # expected_demand = total_node_demand * conversion
   #
   # @return [Float]
   #
   def expected_value
-    conversion * (converter.demand || 0.0)
+    conversion * (node.demand || 0.0)
   end
   alias_method :expected_external_value, :expected_value
 
-  # total demand of converter
-  # value for converter
+  # total demand of node
+  # value for node
   #
   # @return [Float, nil] nil if not all links have values
   #
@@ -239,7 +239,7 @@ class Slot
   # @param carrier [Symbol,Carrier]
   # @return [Float] The input conversion for the carrier, calculates #actual_conversion if #dynamic?
   # @return 0.0 if no conversion defined for carrier
-  # @return 1.0 if converter is environment?
+  # @return 1.0 if node is environment?
   #
   def conversion
     dataset_get(:conversion) || flexible_conversion || 0.0
@@ -258,11 +258,11 @@ class Slot
   # If a slot has a flag flexible: true we take the remainder of the other slots
   #
   # @example
-  #     converter_1
-  #       converter-(useable_heat): {flexible: true, conversion: null}
-  #       converter-(gas):  {conversion: 0.4}
+  #     node_1
+  #       node-(useable_heat): {flexible: true, conversion: null}
+  #       node-(gas):  {conversion: 0.4}
   #
-  #     converter_1.input(:gas).flexible_conversion
+  #     node_1.input(:gas).flexible_conversion
   #     # => 0.6
   #
   # The conversion of the slot must be nil. otherwise {#conversion} will not delegate
@@ -271,7 +271,7 @@ class Slot
   def flexible_conversion
     if dataset_get(:flexible)
       if siblings.any?(&:flexible)
-        raise "Multiple flexible slots defined for converter: #{converter.key}"
+        raise "Multiple flexible slots defined for node: #{node.key}"
       end
       remainder = 1.0 - siblings.map(&:conversion).compact.sum
     else
@@ -300,8 +300,8 @@ class Slot
   # order to account for uncalculated reversed share links.
   #
   # If the slot has a mix of forwards and reversed share links, the reversed
-  # links aren't calculated until after the converter demans is known. That is
-  # too late, since the converter demand won't account for the reversed
+  # links aren't calculated until after the node demans is known. That is
+  # too late, since the node demand won't account for the reversed
   # shares. Such slots require their external_value adjusting so that the
   # reversed shares are included.
   #
@@ -324,7 +324,7 @@ class Slot
 
   def inspect
     "<#{ self.class.name } id:#{ id } carrier:#{ carrier.key } " \
-      "converter:#{ converter.key }>"
+      "node:#{ node.key }>"
   end
 
 

@@ -18,7 +18,7 @@ public/stylesheets/*.css
 public/system/*
 public/flowplayer/*
 tmp/*
-public/images/converter_12*
+public/images/node_12*
 import/*
 public/assets
 et*.sql

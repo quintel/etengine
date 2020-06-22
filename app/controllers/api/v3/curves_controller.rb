@@ -25,7 +25,7 @@ module Api
       def merit_order
         render_presenter Api::V3::MeritCSVPresenter.new(
           scenario.gql.future_graph, :electricity, :merit_order,
-          Api::V3::MeritCSVPresenter::ConverterCustomisation.new(
+          Api::V3::MeritCSVPresenter::NodeCustomisation.new(
             'merit_order_csv_include', 'merit_order_csv_exclude'
           )
         )

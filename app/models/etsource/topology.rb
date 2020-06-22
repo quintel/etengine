@@ -11,7 +11,7 @@ module Etsource
     end
 
     def import
-      graph = Qernel::Graph.new(converter_hash.values)
+      graph = Qernel::Graph.new(node_hash.values)
 
       create_explicit_slots!
       establish_links!
@@ -48,7 +48,7 @@ module Etsource
     def create_explicit_slots!
       Atlas::Node.all.each do |node|
         (node.in_slots + node.out_slots).each do |slot|
-          conv = converter(node.key)
+          conv = node(node.key)
           conv.add_slot(FromAtlas.slot(slot, conv, carrier(slot.carrier)))
         end
       end
@@ -56,8 +56,8 @@ module Etsource
 
     def establish_links!
       Atlas::Edge.all.each do |edge|
-        supplier = converter(edge.supplier)
-        consumer = converter(edge.consumer)
+        supplier = node(edge.supplier)
+        consumer = node(edge.consumer)
         carrier  = carrier(edge.carrier)
 
         # Some slots are not explicitly defined as "input" or "output"
@@ -75,22 +75,22 @@ module Etsource
       end
     end
 
-    # Internal: Returns a hash of all the converter objects, where each key
-    # is the key of the converter, and each value the converter itself.
+    # Internal: Returns a hash of all the node objects, where each key
+    # is the key of the node, and each value the node itself.
     #
     # Returns a Hash.
-    def converter_hash
-      @converter_hash ||=
+    def node_hash
+      @node_hash ||=
         Atlas::Node.all.each_with_object({}) do |node, collection|
-          collection[node.key] = FromAtlas.converter(node)
+          collection[node.key] = FromAtlas.node(node)
         end
     end
 
-    # Internal: Returns an the converter whose key matches +key+.
+    # Internal: Returns an the node whose key matches +key+.
     #
-    # Returns a Qernel::Converter.
-    def converter(key)
-      converter_hash[key]
+    # Returns a Qernel::Node.
+    def node(key)
+      node_hash[key]
     end
   end
 
@@ -120,8 +120,8 @@ module Etsource
       Rails.logger.warn("No Slots '#{line}'") if input.nil? or output.nil?
       Rails.logger.warn("Carriers do not match in '#{line}'") if input.carrier_key != output.carrier_key
       @carrier_key = input.carrier_key
-      @input_key   = input.converter_key
-      @output_key  = output.converter_key
+      @input_key   = input.node_key
+      @output_key  = output.node_key
       @reversed    = line.include?('<')
       @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/-(\w)-/).flatten.first]
     end
@@ -142,16 +142,16 @@ module Etsource
 
   # Extract keys from a Slot Topology String
   #    Token.new("(HW)-FOO")
-  #    t.converter_key # => :FOO
+  #    t.node_key # => :FOO
   #    t.carrier_key # => :HW
   #    t.direction # => :output
   #    t.key # => HW-FOO
   #
   class SlotToken
-    attr_reader :converter_key, :carrier_key, :direction, :key
+    attr_reader :node_key, :carrier_key, :direction, :key
 
     MATCHER = /
-      (\w+-\(\w+\)|\(\w+\)-\w+)  # (carrier)-converter_key
+      (\w+-\(\w+\)|\(\w+\)-\w+)  # (carrier)-node_key
       (?::\s?                    # Non-matching group containing hash data.
        (\{.+\})                  # Data hash.
       )?                         # Data is optional.
@@ -161,7 +161,7 @@ module Etsource
       @key  = line.gsub(/#.+/, '').strip
       @data = data
 
-      @converter_key, @carrier_key = if line.include?(')-')
+      @node_key, @carrier_key = if line.include?(')-')
         @direction = :output
         @key.split('-').reverse.map(&:to_sym)
       else
