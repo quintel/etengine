@@ -57,7 +57,7 @@ module Qernel
 
       # create nodes first
       lines.each do |line|
-        carrier_key, lft, link, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=[\>\<](.+)/).first
+        carrier_key, lft, edge, rgt = line.scan(/(.+:)?(.+)\=\=(.+)\=\=[\>\<](.+)/).first
 
         build_node(lft)
         build_node(rgt)
@@ -66,16 +66,16 @@ module Qernel
 
 
       lines.each do |line|
-        carrier_key, lft, link_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+\=\=[\>\<])(.+)/).first
+        carrier_key, lft, edge_str, rgt = line.scan(/(.+:)?(.+)\=\=(.+\=\=[\>\<])(.+)/).first
 
-        link_type, link_share, reversed = link(link_str)
+        edge_type, edge_share, reversed = edge(edge_str)
         c_lft = build_node(lft)
         c_rgt = build_node(rgt)
         carrier = carrier(carrier_key)
 
-        link = graph.
-          connect(c_lft, c_rgt, carrier, link_type, reversed, *slot_types(line)).
-          with(:share => link_share)
+        edge = graph.
+          connect(c_lft, c_rgt, carrier, edge_type, reversed, *slot_types(line)).
+          with(:share => edge_share)
 
         s_lft, s_rgt = slot(carrier_key)
         c_lft.input(carrier.key).with(s_lft) if s_lft
@@ -89,12 +89,12 @@ module Qernel
 
     # s => :share, nil
     # s(1.0) => :share, 1.0
-    def link(str)
+    def edge(str)
       reversed = str[-1] == "<"
       str = str[0..-2]
-      link_type = LINK_TYPES[str[0]]
-      link_share = str.gsub(/[^\d^\.]/, '') == '' ? nil : str.gsub(/[^\d^\.]/,'').to_f
-      [link_type, link_share, reversed]
+      edge_type = LINK_TYPES[str[0]]
+      edge_share = str.gsub(/[^\d^\.]/, '') == '' ? nil : str.gsub(/[^\d^\.]/,'').to_f
+      [edge_type, edge_share, reversed]
     end
 
     # el: => nil
@@ -111,8 +111,8 @@ module Qernel
       end
     end
 
-    # Given a full node/link line, returns any custom slot types to be
-    # used at either end of the link.
+    # Given a full node/edge line, returns any custom slot types to be
+    # used at either end of the edge.
     #
     # @example
     #   "electricity: l == s ==> r"                  # => []

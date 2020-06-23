@@ -32,7 +32,7 @@ module Etsource
           elsif slot.is_a?(Atlas::Slot::Elastic)
             :elastic
           elsif slot.is_a?(Atlas::Slot::Dynamic)
-            :link_based
+            :edge_based
           end
 
         slot_from_data(node, carrier, slot.direction, type)
@@ -56,10 +56,10 @@ module Etsource
         )
       end
 
-      # Public: Given an Atlas +edge+, creates the corresponding Link for use
+      # Public: Given an Atlas +edge+, creates the corresponding Edge for use
       # in the graph.
       #
-      # Link#initialize automatically establishes the connection between the
+      # Edge#initialize automatically establishes the connection between the
       # supplier and consumer, hence the bang!
       #
       # edge     - The Atlas::Edge.
@@ -67,10 +67,10 @@ module Etsource
       # supplier - The supplier (output) node.
       # carrier  - The Qernel::Carrier.
       #
-      # Returns a Qernel::Link.
-      def link!(edge, consumer, supplier, carrier)
-        Qernel::Link.new(
-          link_key(edge),
+      # Returns a Qernel::Edge.
+      def edge!(edge, consumer, supplier, carrier)
+        Qernel::Edge.new(
+          edge_key(edge),
           consumer,
           supplier,
           carrier,
@@ -96,7 +96,7 @@ module Etsource
       # when used in ETEngine.
       #
       # Returns a string.
-      def link_key(edge)
+      def edge_key(edge)
         type_key =
           case edge.type
             when :share             then :s

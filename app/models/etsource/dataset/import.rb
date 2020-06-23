@@ -212,7 +212,7 @@ module Etsource
       attributes.delete(:parent_share)
       attributes.delete(:demand)
 
-      dataset[Hashpipe.hash(FromAtlas.link_key(edge))] = attributes
+      dataset[Hashpipe.hash(FromAtlas.edge_key(edge))] = attributes
     end
 
     # Internal: Given a production-mode Atlas object and an attribute name,

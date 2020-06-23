@@ -4978,7 +4978,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 		this._addClass( "ui-menu", "ui-widget ui-widget-content" );
 		this._on( {
 
-			// Prevent focus from sticking to links inside menu after clicking
+			// Prevent focus from sticking to edges inside menu after clicking
 			// them (focus should always stay on UL during navigation).
 			"mousedown .ui-menu-item": function( event ) {
 				event.preventDefault();
@@ -7232,10 +7232,10 @@ function Datepicker() {
 	this._dayOverClass = "ui-datepicker-days-cell-over"; // The name of the day hover marker class
 	this.regional = []; // Available regional settings, indexed by language code
 	this.regional[ "" ] = { // Default regional settings
-		closeText: "Done", // Display text for close link
-		prevText: "Prev", // Display text for previous month link
-		nextText: "Next", // Display text for next month link
-		currentText: "Today", // Display text for current month link
+		closeText: "Done", // Display text for close edge
+		prevText: "Prev", // Display text for previous month edge
+		nextText: "Next", // Display text for next month edge
+		currentText: "Today", // Display text for current month edge
 		monthNames: [ "January","February","March","April","May","June",
 			"July","August","September","October","November","December" ], // Names of months for drop-down and formatting
 		monthNamesShort: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ], // For formatting
@@ -7260,10 +7260,10 @@ function Datepicker() {
 		buttonText: "...", // Text for trigger button
 		buttonImage: "", // URL for trigger button image
 		buttonImageOnly: false, // True if the image appears alone, false if it appears on a button
-		hideIfNoPrevNext: false, // True to hide next/previous month links
+		hideIfNoPrevNext: false, // True to hide next/previous month edges
 			// if not applicable, false to just disable them
-		navigationAsDateFormat: false, // True if date formatting applied to prev/today/next links
-		gotoCurrent: false, // True if today link goes back to current selection instead
+		navigationAsDateFormat: false, // True if date formatting applied to prev/today/next edges
+		gotoCurrent: false, // True if today edge goes back to current selection instead
 		changeMonth: false, // True if month can be selected directly, false if only prev/next
 		changeYear: false, // True if year can be selected directly, false if only prev/next
 		yearRange: "c-10:c+10", // Range of years to display in drop-down,
@@ -7291,7 +7291,7 @@ function Datepicker() {
 		numberOfMonths: 1, // Number of months to show at a time
 		showCurrentAtPos: 0, // The position in multipe months at which to show the current month (starting at 0)
 		stepMonths: 1, // Number of months to step back/forward
-		stepBigMonths: 12, // Number of months to step back/forward for the big links
+		stepBigMonths: 12, // Number of months to step back/forward for the big edges
 		altField: "", // Selector for an alternate field to store selected dates into
 		altFormat: "", // The date format to use for the alternate field
 		constrainInput: true, // The input is constrained by the current date format
@@ -8142,7 +8142,7 @@ $.extend( Datepicker.prototype, {
 		this._updateDatepicker( inst );
 	},
 
-	/* Action for current link. */
+	/* Action for current edge. */
 	_gotoToday: function( id ) {
 		var date,
 			target = $( id ),

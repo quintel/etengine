@@ -28,18 +28,18 @@ module Qernel::RecursiveFactor::PrimaryCo2
   #   until dead end or primary_energy_demand
   # @return [Float]
   #   co2_per_mj of primary_energy_demand carrier
-  def co2_per_mj_of_carrier_factor(link, carrier_key)
+  def co2_per_mj_of_carrier_factor(edge, carrier_key)
     return 0.0 if query.free_co2_factor == 1.0
 
     return nil unless domestic_dead_end? || primary_energy_demand?
 
-    link ||= output_links.first
+    edge ||= output_edges.first
 
-    if link && (carrier = link.carrier) && (link.carrier.key == carrier_key)
+    if edge && (carrier = edge.carrier) && (edge.carrier.key == carrier_key)
       if query.free_co2_factor.nil? || carrier.co2_conversion_per_mj.nil?
         0.0
       else
-        link.co2_per_mj -
+        edge.co2_per_mj -
           (query.free_co2_factor * carrier.co2_conversion_per_mj)
       end
     else
@@ -55,16 +55,16 @@ module Qernel::RecursiveFactor::PrimaryCo2
   # @return [Float]
   #   co2_per_mj of primary_energy_demand carrier
   #
-  def co2_per_mj_factor(link)
+  def co2_per_mj_factor(edge)
     return nil unless domestic_dead_end? || primary_energy_demand?
 
-    link ||= output_links.first
+    edge ||= output_edges.first
 
-    carrier = link.nil? ? output_carriers.reject(&:loss?).first : link.carrier
+    carrier = edge.nil? ? output_carriers.reject(&:loss?).first : edge.carrier
 
     return 0.0 if free_co2_factor == 1.0 || carrier.co2_conversion_per_mj.nil?
 
-    co2_ex_free = link.co2_per_mj -
+    co2_ex_free = edge.co2_per_mj -
       (free_co2_factor * carrier.co2_conversion_per_mj)
 
     primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0

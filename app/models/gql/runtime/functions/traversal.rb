@@ -41,44 +41,44 @@ module Gql::Runtime
         value_terms.flatten.first
       end
 
-      # Returns the {Qernel::Link} that goes from the first to the second node.
+      # Returns the {Qernel::Edge} that goes from the first to the second node.
       #
       # LINK() performs a LOOKUP on the two keys.
       #
       # Examples
       #
-      #   LINK( foo, bar ) => Qernel::Link
+      #   LINK( foo, bar ) => Qernel::Edge
       #   # works in the other direction too
-      #   LINK( bar, foo ) => Qernel::Link
+      #   LINK( bar, foo ) => Qernel::Edge
       #
       def LINK(lft, rgt)
         lft,rgt = LOOKUP(lft, rgt).flatten
         if lft.nil? || rgt.nil?
           nil
         else
-          link = lft.input_links.detect{|l| l.rgt_node == rgt.node}
-          link ||= lft.output_links.detect{|l| l.lft_node == rgt.node}
-          link
+          edge = lft.input_edges.detect{|l| l.rgt_node == rgt.node}
+          edge ||= lft.output_edges.detect{|l| l.lft_node == rgt.node}
+          edge
         end
       end
 
-      # @example All links on a node
+      # @example All edges on a node
       #   LINKS(L(foo))
       #   # => [foo->gas_1, foo->gas_2, loss1->foo, heat1->foo]
       #
-      # @example All output links with a constraint
+      # @example All output edges with a constraint
       #   LINKS(L(foo), "share?")
       #   LINKS(L(foo), "flexible?")
       #   LINKS(L(foo), "flexible? && share >= 1.0")
       #
-      # @example All links of a given carrier/slot
+      # @example All edges of a given carrier/slot
       #    LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
-      # @example Links of multiple nodes
+      # @example Edges of multiple nodes
       #   LINKS(L(foo, bar))
       #
       def LINKS(value_terms, arguments = nil)
-        links_for(value_terms, arguments)
+        edges_for(value_terms, arguments)
       end
 
       # Get the output (to the left) slots of node(s).
@@ -111,93 +111,93 @@ module Gql::Runtime
         flatten_uniq nodes.compact.map{|c| carrier ? c.input(carrier.to_sym) : c.inputs}
       end
 
-      # @example All input links
+      # @example All input edges
       #   INPUT_LINKS(L(foo))
       #
-      # @example All input links with a constraint
+      # @example All input edges with a constraint
       #   INPUT_LINKS(L(foo), "share?")
       #   INPUT_LINKS(L(foo), "flexible?")
       #   INPUT_LINKS(L(foo), "flexible? && share >= 1.0")
       #
-      # @example All input links of a given carrier/slot
+      # @example All input edges of a given carrier/slot
       #    INPUT_LINKS(INPUT_SLOTS(foo, oil)) # => [foo->oil_1]
       #
-      # @example Input links of multiple nodes
+      # @example Input edges of multiple nodes
       #   INPUT_LINKS(L(foo, bar))
       #
       def INPUT_LINKS(value_terms, arguments = nil)
-        links_for(value_terms, arguments, [:input_links, :links])
+        edges_for(value_terms, arguments, [:input_edges, :edges])
       end
 
-      # @example All output links
+      # @example All output edges
       #   OUTPUT_LINKS(L(foo))
       #
-      # @example All output links with a constraint
+      # @example All output edges with a constraint
       #   OUTPUT_LINKS(L(foo), "share?")
       #   OUTPUT_LINKS(L(foo), "flexible?")
       #   OUTPUT_LINKS(L(foo), "flexible? && share >= 1.0")
       #
-      # @example All output links of a given carrier/slot
+      # @example All output edges of a given carrier/slot
       #    OUTPUT_LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
-      # @example Output links of multiple nodes
+      # @example Output edges of multiple nodes
       #   OUTPUT_LINKS(L(foo, bar))
       #
       def OUTPUT_LINKS(value_terms, arguments = nil)
-        links_for(value_terms, arguments, [:output_links, :links])
+        edges_for(value_terms, arguments, [:output_edges, :edges])
       end
 
       #######
       private
       #######
 
-      # Internal: Returns links from one or more Qernel objects.
+      # Internal: Returns edges from one or more Qernel objects.
       #
       # The `using` parameter allows you to provide an array of methods to try
-      # in order to retrieve the links for each object. For example, when
-      # looking for output links, you might use `[:output_links, :links]`.
-      # Objects with an `output_links` method (Node) would use that,
-      # otherwise `links` will be used (Slot).
+      # in order to retrieve the edges for each object. For example, when
+      # looking for output edges, you might use `[:output_edges, :edges]`.
+      # Objects with an `output_edges` method (Node) would use that,
+      # otherwise `edges` will be used (Slot).
       #
       # `arguments` may contain a single string used to filter out
-      # non-matching links.
+      # non-matching edges.
       #
-      # @example All links from two objects.
-      #   links_for(L(node_one, node_two))
+      # @example All edges from two objects.
+      #   edges_for(L(node_one, node_two))
       #
       # @example Filtering
-      #   links_for(L(node_one), '! flexible?')
+      #   edges_for(L(node_one), '! flexible?')
       #
-      # @example Selecting only output links.
-      #   links_for(L(node_one), nil, [:output_links])
+      # @example Selecting only output edges.
+      #   edges_for(L(node_one), nil, [:output_edges])
       #
-      # @example Selecting output links, falling back to all links.
-      #   links_for(L(node_one, slot_one), nil, [:output_links, :links])
+      # @example Selecting output edges, falling back to all edges.
+      #   edges_for(L(node_one, slot_one), nil, [:output_edges, :edges])
       #
-      def links_for(value_terms, arguments = nil, using = [:links])
+      def edges_for(value_terms, arguments = nil, using = [:edges])
         value_terms.flatten
 
-        links = flatten_uniq(value_terms).map! do |obj|
+        edges = flatten_uniq(value_terms).map! do |obj|
           if method = using.detect { |method| obj.respond_to?(method) }
             obj.public_send(method)
           end
         end
 
-        links.compact!
-        links.flatten!
+        edges.compact!
+        edges.flatten!
 
         if arguments.present?
           filter = arguments.is_a?(Array) ? arguments.first : arguments
 
-          # If the filter is a symbol, it is probably selcting for link type,
+          # If the filter is a symbol, it is probably selcting for edge type,
           # e.g. OUTPUT_LINKS(..., constant). Make sure it runs the correct
           # predicate method:
           filter = "#{ filter }?" if filter.is_a?(Symbol)
 
-          links.select! { |link| link.instance_eval(filter.to_s) }
+          edges.select! { |edge| edge.instance_eval(filter.to_s) }
         end
 
-        links
+        edges
       end
 
     end # Traversal

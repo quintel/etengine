@@ -19,18 +19,18 @@ module Qernel
       end
 
       def inject!
-        input_link = target_api.node.input(@context.carrier).links.first
+        input_edge = target_api.node.input(@context.carrier).edges.first
         demand     = participant.production(:mj)
 
         target_api.demand = demand
 
         inject_flh(demand)
 
-        if input_link.link_type == :inversed_flexible
-          # We need to override the calculation of an inversed flexible link
+        if input_edge.edge_type == :inversed_flexible
+          # We need to override the calculation of an inversed flexible edge
           # and set the demand explicitly.
-          input_link.dataset_set(:value, demand)
-          input_link.dataset_set(:calculated, true)
+          input_edge.dataset_set(:value, demand)
+          input_edge.dataset_set(:calculated, true)
         end
 
         if @config.satisfy_with_dispatchables

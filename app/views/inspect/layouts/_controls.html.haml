@@ -6,7 +6,7 @@
     %li.form
       %h6 Toggle sectors
       = graphviz_toggle_sectors
-    %li.links
+    %li.edges
       %ul
         %li= link_to 'Deselect all', 'javascript:GRAPH.deselect_all()'
         %li= link_to 'Highlight off', 'javascript:GRAPH.highlight_off_all()'
@@ -15,7 +15,7 @@
         %summary Help
         %ul
           %li ALT + click to select/deselect multiple nodes
-          %li Shift + click: highlight links
+          %li Shift + click: highlight edges
           %li ALT + Shift + click: hide node
           %li Double-click on node to open details in new node
           %li Search for nodes by name using Ctrl/Cmd+F.

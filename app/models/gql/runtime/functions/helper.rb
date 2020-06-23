@@ -7,12 +7,12 @@ module Gql::Runtime
       # using Update#update_element_with in the debug runtime.
       def OBSERVE_SET(objects, arguments)
         keys = arguments # OBSERVE(..., :demand)
-        if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:links])
+        if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:edges])
           keys     = arguments[:keys]
           includes = [arguments[:include]].flatten
 
-          if includes.include?(:links)
-            objects += flatten_uniq(objects).map{|o| [o.input_links, o.output_links]}
+          if includes.include?(:edges)
+            objects += flatten_uniq(objects).map{|o| [o.input_edges, o.output_edges]}
           end
         end
         keys ||= [:demand, :value]
@@ -24,12 +24,12 @@ module Gql::Runtime
 
       def OBSERVE_GET(objects, arguments = {})
         keys = arguments # OBSERVE(..., :demand)
-        if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:links])
+        if arguments.is_a?(Hash) # OBSERVE(..., keys: [:demand, :share], include: [:edges])
           keys     = arguments[:keys]
           includes = [arguments[:include]].flatten
 
-          if includes.include?(:links)
-            objects += flatten_uniq(objects).map{|o| [o.input_links, o.output_links]}
+          if includes.include?(:edges)
+            objects += flatten_uniq(objects).map{|o| [o.input_edges, o.output_edges]}
           end
         end
         keys ||= [:demand, :value]

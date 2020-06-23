@@ -16,7 +16,7 @@
   z-index: 10000;
   overflow: visible;
 
-  // Links get text shadow
+  // Edges get text shadow
   a {
     color: $grayLight;
     text-shadow: 0 -1px 0 rgba(0,0,0,.25);
@@ -194,7 +194,7 @@
   }
 }
 
-// For backwards compatibility with new dropdowns, redeclare dropdown link padding
+// For backwards compatibility with new dropdowns, redeclare dropdown edge padding
 .topbar ul .menu-dropdown li a, .topbar ul .dropdown-menu li a {
   padding: 4px 15px;
 }
@@ -205,7 +205,7 @@
 li.menu, .dropdown {
   position: relative;
 }
-// The link that is clicked to toggle the dropdown
+// The edge that is clicked to toggle the dropdown
 // a.menu for backwards compatibility
 a.menu:after, .dropdown-toggle:after {
   width: 0;
@@ -262,7 +262,7 @@ a.menu:after, .dropdown-toggle:after {
 }
 
 .topbar .dropdown-menu, .dropdown-menu {
-  // Links within the dropdown menu
+  // Edges within the dropdown menu
   a {
     display: block;
     padding: 4px 15px;
@@ -380,13 +380,13 @@ a.menu:after, .dropdown-toggle:after {
       color: $white;
       text-decoration: none;
       text-shadow: 0 1px 1px rgba(0,0,0,.25);
-      background-color: $linkColorHover;
+      background-color: $edgeColorHover;
     }
   }
   .active a {
     color: $white;
     text-shadow: 0 1px 1px rgba(0,0,0,.25);
-    background-color: $linkColor;
+    background-color: $edgeColor;
   }
 }
 
@@ -623,7 +623,7 @@ button.btn, input[type=submit].btn {
     *margin-top: 0; // IE7.
   }
 
-  // Make links same color as text and stand out more
+  // Make edges same color as text and stand out more
   a {
     font-weight: bold;
     color: $grayDark;
@@ -986,7 +986,7 @@ button.btn, input[type=submit].btn {
       display: block;
     }
     &:hover {
-      border-color: $linkColor;
+      border-color: $edgeColor;
       @include box-shadow(0 1px 4px rgba(0,105,214,.25));
     }
   }

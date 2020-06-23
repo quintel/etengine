@@ -10,9 +10,9 @@ module Qernel::Plugins
           if slot.reset_to_zero == true
             slot.conversion = 0.0
 
-            slot.links.each do |link|
-              link.share = 0.0
-              link.value = 0.0
+            slot.edges.each do |edge|
+              edge.share = 0.0
+              edge.value = 0.0
             end
           end # if
         end # node.slots.each

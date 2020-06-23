@@ -22,14 +22,14 @@ module Qernel
         end
 
         output = @node.node.output(@context.carrier)
-        out_links = output.links
+        out_edges = output.edges
 
-        return unless out_links.one? && out_links.first.link_type == :constant
+        return unless out_edges.one? && out_edges.first.edge_type == :constant
 
         demand = target_api.demand * output.conversion
 
-        out_links.first.dataset_set(:value, demand)
-        out_links.first.dataset_set(:calculated, true)
+        out_edges.first.dataset_set(:value, demand)
+        out_edges.first.dataset_set(:calculated, true)
       end
 
       private

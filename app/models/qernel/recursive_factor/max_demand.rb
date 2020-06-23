@@ -11,10 +11,10 @@ module Qernel::RecursiveFactor::MaxDemand
       elsif has_loop?
         nil
       else
-        capped_link = rgt_links.min_by do |l|
+        capped_edge = rgt_edges.min_by do |l|
           l.rgt_node.max_demand_recursive! / l.share rescue Float::INFINITY
         end
-        query.max_demand = capped_link.rgt_node.max_demand_recursive! / capped_link.share rescue nil
+        query.max_demand = capped_edge.rgt_node.max_demand_recursive! / capped_edge.share rescue nil
       end
     end
   end

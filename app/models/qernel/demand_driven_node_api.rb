@@ -37,7 +37,7 @@ module Qernel
     #
     # In order to determine the number of units, we first find out what share
     # of demand is satisfied in the demanding node by this node. For
-    # example, if the sum of output share links is 0.2, it is assumed that
+    # example, if the sum of output share edges is 0.2, it is assumed that
     # this node accounts for 20% of the "technology share".
     #
     # Finally, the number of units is adjusted according to how many
@@ -49,11 +49,11 @@ module Qernel
     def number_of_units
       fetch(:number_of_units, false) do
         begin
-          heat_links = demand_driven_links
+          heat_edges = demand_driven_edges
 
-          return 0.0 if heat_links.empty?
+          return 0.0 if heat_edges.empty?
 
-          tech_share = sum_unless_empty(heat_links.map(&:share)) || 0
+          tech_share = sum_unless_empty(heat_edges.map(&:share)) || 0
           tech_share = 0.0 if tech_share.abs < 1e-6
           units      = tech_share * (area.number_of_residences || 0)
           supplied   = households_supplied_per_unit
@@ -72,26 +72,26 @@ module Qernel
 
     private
 
-    # Internal: Finds and memoizes the links used to determine the demand-driven
+    # Internal: Finds and memoizes the edges used to determine the demand-driven
     # attributes.
     #
-    # If the node is connected with a single output link to an "aggregator"
-    # node, the aggregator's output links are instead used.
+    # If the node is connected with a single output edge to an "aggregator"
+    # node, the aggregator's output edges are instead used.
     #
-    # Returns an array of links.
-    def demand_driven_links
-      suitable_links = demand_links_for(node)
+    # Returns an array of edges.
+    def demand_driven_edges
+      suitable_edges = demand_edges_for(node)
 
-      if suitable_links.any? && node.groups.include?(:aggregator_producer)
-        return demand_links_for(suitable_links[0].lft_node)
+      if suitable_edges.any? && node.groups.include?(:aggregator_producer)
+        return demand_edges_for(suitable_edges[0].lft_node)
       end
 
-      suitable_links
+      suitable_edges
     end
 
-    def demand_links_for(conv)
-      conv.output_links.select do |link|
-        link.carrier && (link.useable_heat? || link.steam_hot_water?)
+    def demand_edges_for(conv)
+      conv.output_edges.select do |edge|
+        edge.carrier && (edge.useable_heat? || edge.steam_hot_water?)
       end
     end
 

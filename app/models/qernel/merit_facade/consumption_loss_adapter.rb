@@ -30,18 +30,18 @@ module Qernel
       private
 
       def loss_share
-        links = target_api.node.input(:loss).links
+        edges = target_api.node.input(:loss).edges
 
-        if links.length != 1
-          raise "Cannot find single loss link into #{@node.key} for use " \
+        if edges.length != 1
+          raise "Cannot find single loss edge into #{@node.key} for use " \
             'as a dynamic_loss participant in merit order calculation'
         end
 
-        link = links.first
-        loss_share = link.rgt_output.conversion * link.parent_share
+        edge = edges.first
+        loss_share = edge.rgt_output.conversion * edge.parent_share
 
         other_shares =
-          link.rgt_node.outputs.sum do |input|
+          edge.rgt_node.outputs.sum do |input|
             input.loss? ? 0.0 : input.conversion
           end
 

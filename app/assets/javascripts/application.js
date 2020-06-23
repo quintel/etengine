@@ -107,8 +107,8 @@ $(document).ready(function() {
 
   // Present / Future Edge Swapper
 
-  if (document.querySelector('.link-flows')) {
-    $('.link-flows .nav-tabs a').click(function(event) {
+  if (document.querySelector('.edge-flows')) {
+    $('.edge-flows .nav-tabs a').click(function(event) {
       localStorage.setItem(
         'selectedPeriod', $(event.target).attr('href')
       );
@@ -116,7 +116,7 @@ $(document).ready(function() {
 
     var selectedPeriod = localStorage.getItem('selectedPeriod');
     if (selectedPeriod) {
-        $('.link-flows .nav-tabs a[href="' + selectedPeriod + '"]').click();
+        $('.edge-flows .nav-tabs a[href="' + selectedPeriod + '"]').click();
     }
   }
 

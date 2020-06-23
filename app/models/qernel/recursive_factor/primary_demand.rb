@@ -1,6 +1,6 @@
 module Qernel::RecursiveFactor::PrimaryDemand
   # Calculates the primary energy demand. It recursively iterates through all
-  # the child links.
+  # the child edges.
   #
   # It uses primary_energy_demand? to determine if primary or not.
   def primary_demand
@@ -52,36 +52,36 @@ module Qernel::RecursiveFactor::PrimaryDemand
     (demand || 0.0) * factor
   end
 
-  def primary_demand_factor(_link)
+  def primary_demand_factor(_edge)
     factor_for_primary_demand if primary_energy_demand? || domestic_dead_end?
   end
 
-  def primary_demand_including_abroad_factor(_link)
+  def primary_demand_including_abroad_factor(_edge)
     if (abroad? && primary_energy_demand?) || right_dead_end?
       factor_for_primary_demand
     end
   end
 
   def primary_demand_factor_of_carrier(
-    link,
+    edge,
     carrier_key,
     stop_condition = :primary_energy_demand?
   )
     return nil unless primary_energy_demand?
 
-    link ||= output_links.first
+    edge ||= output_edges.first
 
-    if link && link.carrier.key == carrier_key
+    if edge && edge.carrier.key == carrier_key
       factor_for_primary_demand(stop_condition)
     else
       0.0
     end
   end
 
-  # Internal: Calculates the primary demand factor of the given link.
+  # Internal: Calculates the primary demand factor of the given edge.
   #
-  # link           - The link whose primary demand factor is to be calculated.
-  # stop_condition - A method to be called on self to determine if the link has
+  # edge           - The edge whose primary demand factor is to be calculated.
+  # stop_condition - A method to be called on self to determine if the edge has
   #                  any primary energy demand to be included in the
   #                  calculation.
   #

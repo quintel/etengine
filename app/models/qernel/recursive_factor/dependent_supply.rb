@@ -55,40 +55,40 @@ module Qernel::RecursiveFactor::DependentSupply
   # ends up being used for heating.
   #
   # There are two phases to the carrier dependent supply calculation. Phase 1
-  # involves recursively traversing each input path until it either finds links
+  # involves recursively traversing each input path until it either finds edges
   # of the desired carrier, or reaches the dependent supply nodes which have no
-  # incoming links. Once a link has been found of the desired carrier on the
+  # incoming edges. Once a edge has been found of the desired carrier on the
   # path, "phase 2" begins in which we continue traversing to the right until
-  # there are no more links of that carrier, at which point the dependent supply
+  # there are no more edges of that carrier, at which point the dependent supply
   # factor is calculated.
   #
   # See: https://github.com/quintel/etengine/issues/647
   #
-  # link     - The link whose dependent supply is to be calculated.
+  # edge     - The edge whose dependent supply is to be calculated.
   # carriers - The carrier for which you want to calculate the dependent supply.
   #
   # Returns a numeric.
-  def dependent_supply_factor_of_carriers(link, carriers)
-    return nil unless link
+  def dependent_supply_factor_of_carriers(edge, carriers)
+    return nil unless edge
 
-    # Phase 1; we have yet to find a link of the desired carrier; continue
-    # traversing until we find one, or run out of links.
-    return nil unless carriers.include?(link.carrier.key)
+    # Phase 1; we have yet to find a edge of the desired carrier; continue
+    # traversing until we find one, or run out of edges.
+    return nil unless carriers.include?(edge.carrier.key)
 
-    # Phase 2; we have found a link of the desired carrier.
-    dead_end = link.rgt_node.inputs.none? do |slot|
+    # Phase 2; we have found a edge of the desired carrier.
+    dead_end = edge.rgt_node.inputs.none? do |slot|
       carriers.include?(slot.carrier.key)
     end
 
     return unless dead_end || primary_energy_demand?
 
-    # ... the supplier has no more links of this type, therefore we
+    # ... the supplier has no more edges of this type, therefore we
     # calculate the dependent supply factor and do not traverse further.
     #
     # If factor_for_primary_demand returns zero, it is simply because the
     # supply node is not in the primary_energy_demand group; however we
     # don't want to ignore the node, but instead use its demand value.
     factor = factor_for_primary_demand
-    factor.zero? ? link.rgt_output.conversion : factor
+    factor.zero? ? edge.rgt_output.conversion : factor
   end
 end # Qernel::RecursiveFactor::DependentDemand

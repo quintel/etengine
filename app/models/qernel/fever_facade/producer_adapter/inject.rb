@@ -27,9 +27,9 @@ module Qernel
         end
 
         # Internal: If the node feeds energy into an aggregator, set the
-        # share of the links entering the aggregator so that any deficit of
+        # share of the edges entering the aggregator so that any deficit of
         # demand from the producer will be met on the aggregator by its other
-        # input link.
+        # input edge.
         #
         # production - The total amount of energy output by the producer in MWh.
         #
@@ -40,7 +40,7 @@ module Qernel
         #         [Aggregator]
         #
         # If the aggregator demands 50 but the producer only ends up supplying
-        # 25, the share of the P->A link is set to 0.5 (50%). The link between
+        # 25, the share of the P->A edge is set to 0.5 (50%). The edge between
         # [Deficit] and [Aggregator] is expected to be a flexible and will
         # supply the rest.
         def inject_aggregator_attributes!(production)
@@ -49,9 +49,9 @@ module Qernel
           return unless conv.groups.include?(:aggregator_producer)
 
           demand = participant.demand
-          link   = conv.output(:useable_heat).links.first
+          edge   = conv.output(:useable_heat).edges.first
 
-          link.share = demand.positive? ? production / demand : 1.0
+          edge.share = demand.positive? ? production / demand : 1.0
         end
 
         # Internal: Inject input curves from the participant onto the node.

@@ -89,34 +89,34 @@ module InspectHelper
     end
   end
 
-  # Given a scenario or preset ID, creates an HTML link to display it.
+  # Given a scenario or preset ID, creates an HTML edge to display it.
   #
   # Presets are linked to the AD file on ETEngine, using the same Git
   # reference as is currently loaded in ETE. Scenarios are linked to the "view
   # scenario page" in the admin UI.
   #
   # Returns a string.
-  def preset_or_scenario_link(id)
+  def preset_or_scenario_edge(id)
     if preset = Preset.get(id)
       git_ref = Etsource::Base.instance.get_latest_import_sha
       atl_doc = Atlas::Preset.all.find { |p| p.id == preset.id }
 
       if atl_doc
-        link = "https://github.com/quintel/etsource/blob/" +
+        edge = "https://github.com/quintel/etsource/blob/" +
           "#{ git_ref }/data/" +
           "#{ atl_doc.path.relative_path_from(Atlas.data_dir) }"
 
         name = atl_doc.path.relative_path_from(Atlas::Preset.directory).to_s
       else
-        link = nil
+        edge = nil
         name = id.to_s
       end
     else
-      link = inspect_scenario_path(id: id)
+      edge = inspect_scenario_path(id: id)
       name = id.to_s
     end
 
-    link ? link_to(name, link) : name
+    edge ? link_to(name, edge) : name
   end
 
   def link_to_node_file(node)
@@ -129,9 +129,9 @@ module InspectHelper
     "#{ doc.path.relative_path_from(Atlas.data_dir) }"
   end
 
-  def link_to_edge_file(link)
+  def link_to_edge_file(edge)
     key = Atlas::Edge.key(
-      link.rgt_node.key, link.lft_node.key, link.carrier.key)
+      edge.rgt_node.key, edge.lft_node.key, edge.carrier.key)
 
     doc = Atlas::Edge.find(key)
     rev = Etsource::Base.instance.get_latest_import_sha
@@ -152,10 +152,10 @@ module InspectHelper
     return nil if slots.none?
 
     slots.sum do |slot|
-      if slot.links.any?
+      if slot.edges.any?
         slot.external_value
       else
-        # Fallback for left-most or right-most slots with no links.
+        # Fallback for left-most or right-most slots with no edges.
         slot.node.demand * slot.conversion
       end
     end

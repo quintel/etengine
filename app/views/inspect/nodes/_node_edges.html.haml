@@ -1,4 +1,4 @@
-%table.table.node-links
+%table.table.node-edges
   %tbody
     %tr
       %td
@@ -6,34 +6,34 @@
           %thead
             %tr
               %th.centered
-                Links
+                Edges
                 %span.aggregate-demand
                   = auto_number node_flow(c, :outputs)
               %th.centered Outputs
           %tbody
             - c.outputs.sort_by { |c| c.carrier.key }.each do |output_slot|
               %tr.carrier
-                %td.links
-                  - if output_slot.links.any?
+                %td.edges
+                  - if output_slot.edges.any?
                     %table.table.table-condensed
                       %thead
                         %tr
-                          %th.link-target Node
+                          %th.edge-target Node
                           %th.energy MJ
                           %th.share Share
                           %th.type Type
                       %tbody
-                        - output_slot.links.sort_by { |s| s.lft_node.key }.each_with_index do |output_link, i|
+                        - output_slot.edges.sort_by { |s| s.lft_node.key }.each_with_index do |output_edge, i|
                           %tr
                             %td
-                              = link_to output_link.lft_node.key, inspect_node_path(:id => output_link.lft_node)
+                              = link_to output_edge.lft_node.key, inspect_node_path(:id => output_edge.lft_node)
                               .more-info
-                                = link_to 'View .ad file', link_to_edge_file(output_link)
-                            %td.value{:title => output_link.value}= auto_number output_link.value
-                            %td.share{:title => output_link.share}= "#{(100.0 * output_link.parent_share).round(2)} %" unless output_slot.external_value == 0
+                                = link_to 'View .ad file', link_to_edge_file(output_edge)
+                            %td.value{:title => output_edge.value}= auto_number output_edge.value
+                            %td.share{:title => output_edge.share}= "#{(100.0 * output_edge.parent_share).round(2)} %" unless output_slot.external_value == 0
                             %td
-                              = output_link.link_type.to_s.humanize
-                              - if output_link.reversed?
+                              = output_edge.edge_type.to_s.humanize
+                              - if output_edge.reversed?
                                 .more-info Reversed
                   %td.centered{ title: output_slot.carrier.key.to_s.humanize }
                     .carrier-name{ title: output_slot.class.name }
@@ -49,7 +49,7 @@
             %tr
               %th.centered Inputs
               %th.centered
-                Links
+                Edges
                 %span.aggregate-demand{ title: node_flow(c, :inputs) }
                   = auto_number node_flow(c, :inputs)
           %tbody
@@ -61,36 +61,36 @@
                   - if input_slot.conversion
                     %span{ title: input_slot.conversion }
                       = "#{(100 * input_slot.conversion).round(2)} %"
-                %td.links
-                  - if input_slot.links.any?
+                %td.edges
+                  - if input_slot.edges.any?
                     %table.table.table-condensed
                       %thead
                         %tr
                           %th.type Type
                           %th.share Share
                           %th.energy MJ
-                          %th.link-target Node
+                          %th.edge-target Node
                       %tbody
-                        - input_slot.links.sort_by { |s| s.rgt_node.key }.each_with_index do |input_link, i|
+                        - input_slot.edges.sort_by { |s| s.rgt_node.key }.each_with_index do |input_edge, i|
                           %tr
                             %td
-                              = input_link.link_type.to_s.humanize
-                              - if input_link.reversed?
+                              = input_edge.edge_type.to_s.humanize
+                              - if input_edge.reversed?
                                 .more-info Reversed
 
-                            %td.share{:title => input_link.share}= "#{(100 * input_link.share).round(2)} %" unless input_link.share.nil?
-                            %td.value{:title => input_link.value}= auto_number input_link.value
+                            %td.share{:title => input_edge.share}= "#{(100 * input_edge.share).round(2)} %" unless input_edge.share.nil?
+                            %td.value{:title => input_edge.value}= auto_number input_edge.value
                             %td
-                              = link_to input_link.rgt_node.key, inspect_node_path(:id => input_link.rgt_node)
+                              = link_to input_edge.rgt_node.key, inspect_node_path(:id => input_edge.rgt_node)
                               .more-info
-                                = link_to 'View .ad file', link_to_edge_file(input_link)
-                                - if input_link.flexible?
-                                  - if input_link.priority != -Float::INFINITY
+                                = link_to 'View .ad file', link_to_edge_file(input_edge)
+                                - if input_edge.flexible?
+                                  - if input_edge.priority != -Float::INFINITY
                                     %strong
                                       Priority:
-                                      = input_link.priority
-                                  - if input_link.max_demand
+                                      = input_edge.priority
+                                  - if input_edge.max_demand
                                     %strong
                                       Max Demand:
-                                      = auto_number input_link.max_demand
+                                      = auto_number input_edge.max_demand
 

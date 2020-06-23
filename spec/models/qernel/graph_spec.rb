@@ -138,31 +138,31 @@ module Qernel
           end
         end
 
-        context 'group_links' do
+        context 'group_edges' do
           before do
-            @g.links.first.instance_variable_set(:@groups, [:fd])
+            @g.edges.first.instance_variable_set(:@groups, [:fd])
           end
 
-          it '# returns an array of links in the given group
+          it '# returns an array of edges in the given group
               mid(100) == f(1.0) ==> rgt1
               mid      == f(1.0) ==> rgt2' do
-            expect(@g.group_links(:fd)).to eq([@g.links.first])
+            expect(@g.group_edges(:fd)).to eq([@g.edges.first])
           end
-        end # #group_links
+        end # #group_edges
 
         context "Flex Max" do
-          it "# Fill flex_max link upto max_demand
+          it "# Fill flex_max edge upto max_demand
               mid(100) == f(1.0) ==> rgt1
               mid      == f(1.0) ==> rgt2" do
 
-            @rgt1.output_links.first.dataset_set(:max_demand, 30.0)
+            @rgt1.output_edges.first.dataset_set(:max_demand, 30.0)
             @g.calculate
 
             expect(@rgt1.demand).to eq(30.0)
             expect(@rgt2.demand).to eq(70.0)
           end
 
-          it "# flexible links have a default min_demand of 0.0
+          it "# flexible edges have a default min_demand of 0.0
               mid(100) == c(120) ==> rgt1(nil)
               mid      == f(1.0) ==> rgt2(nil)" do
             @g.calculate
@@ -189,7 +189,7 @@ module Qernel
           #     mid(100) == f(1.0) ==> rgt1
           #     mid      == f(1.0) ==> rgt2" do
           #
-          #   @rgt1.output_links.first.min_demand = 30.0
+          #   @rgt1.output_edges.first.min_demand = 30.0
           #   @g.calculate
           #
           #   @rgt1.demand.should == 100.0
@@ -208,7 +208,7 @@ module Qernel
           # defaults:
           # carrier: foo
           # conversion: 1.0
-          # link_share: nil
+          # edge_share: nil
           # demand: nil
           #
           # so:
@@ -264,7 +264,7 @@ module Qernel
 
           # ----- Flexible & Constant  --------------------------------------
 
-          it "# If mid has no output link, it becomes 0.0
+          it "# If mid has no output edge, it becomes 0.0
               mid(nil) == c(80)  ==> rgt1(nil)
               mid      == f(1.0) ==> rgt2(nil)" do
 
@@ -340,7 +340,7 @@ module Qernel
           end
 
           it "# dependent takes it's cut from the total demand (120)
-              # is not depending on the other output-links
+              # is not depending on the other output-edges
               bar[1;0.5]: loss(nil)      == i(nil) ==> mid(nil)
               foo[1;0.5]: el_output(nil) == d(nil) ==> mid
               bar[1;0.5]: hw_demand(50)  == s(1.0) ==> mid
@@ -356,7 +356,7 @@ module Qernel
 
           # ----- Loops  --------------------------------------
 
-          it "# If right side is lower, fill up flexible link
+          it "# If right side is lower, fill up flexible edge
               loss(nil) == i(nil) ==> mid(nil)
               lft1(100) == s(1)   ==> mid
                                       mid == f(nil) ==> loss
@@ -368,7 +368,7 @@ module Qernel
           end
 
           # This does not work as expected
-          skip "# If right side is higher, fill up inversed_flexible link
+          skip "# If right side is higher, fill up inversed_flexible edge
               # sb: HELP: but loss demand stays 0.0???
               loss(nil) == i(nil) ==> mid(nil)
               lft1(100) == s(1)   ==> mid
@@ -540,22 +540,22 @@ module Qernel
           @g = Qernel::GraphParser.create("lft == s(1.0) ==< rgt(100)")
           @rgt = @g.node(:rgt)
           @lft = @g.node(:lft)
-          @l = @g.links.first
+          @l = @g.edges.first
         end
 
-        it "should have reversed link" do
+        it "should have reversed edge" do
           expect(@l).to be_reversed
-          expect(Calculation::Links.calculated_by_parent?(@l)).to be_truthy
+          expect(Calculation::Edges.calculated_by_parent?(@l)).to be_truthy
           expect(@l.input).to eq(@g.node(:rgt).slots.first)
           expect(@l.input.expected_external_value).to eq(100.0)
         end
 
         it "ready" do
-          expect(@lft.input(:foo).passive_links.length).to eq(1)
-          expect(@rgt.output(:foo).passive_links.length).to eq(0)
+          expect(@lft.input(:foo).passive_edges.length).to eq(1)
+          expect(@rgt.output(:foo).passive_edges.length).to eq(0)
         end
 
-        it "should calculate link" do
+        it "should calculate edge" do
           expect(@l.send(:calculate)).to eq(100.0)
           expect(@l.value).to eq(100.0)
         end
@@ -570,7 +570,7 @@ module Qernel
           expect(@lft.input(:foo).ready?).to be_falsey
         end
 
-        it "should calculate link" do
+        it "should calculate edge" do
           expect(@l.calculate).to eq(100.0)
         end
 

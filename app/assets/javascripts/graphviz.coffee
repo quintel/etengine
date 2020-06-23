@@ -1,4 +1,4 @@
-# On drawing boxes and links:
+# On drawing boxes and edges:
 # SVG determines z-index of elements by its creation order.
 
 class @Graph
@@ -8,7 +8,7 @@ class @Graph
   GRID_X_SIZE: 9000
   GRID_Y_SIZE: 19000
 
-  link_styles:
+  edge_styles:
     constant  : ''
     share     : '-'
     flexible  : '. '
@@ -20,16 +20,16 @@ class @Graph
     @r = Raphael("canvas", width, height)
     @selected = []
     @nodes = {}
-    @links = []
+    @edges = []
 
   # Draws the graph
   #
   draw: (cb) =>
     @drawGrid()
-    link.draw() for link in @links
+    edge.draw() for edge in @edges
     for key, node of @nodes
       node.draw()
-    link.adjust_to_node() for link in @links
+    edge.adjust_to_node() for edge in @edges
     cb() if cb
 
   enableDragging: ->
@@ -98,10 +98,10 @@ class @Graph
   #
   elements_drag: (elements) ->
     for node_box in elements
-      for link in node_box.node.links
+      for edge in node_box.node.edges
         # Highlights in/output node slots
-        link.input_node.input_slot().attr({fill : '#cc0'})
-        link.output_node.output_slot().attr({fill : '#cc0'})
+        edge.input_node.input_slot().attr({fill : '#cc0'})
+        edge.output_node.output_slot().attr({fill : '#cc0'})
       b = node_box # "b" just to make it more readable
       b.ox = if b.type == "rect" then b.attr("x") else b.attr("cx")
       b.oy = if b.type == "rect" then b.attr("y") else b.attr("cy")
@@ -112,12 +112,12 @@ class @Graph
 
   elements_up: (elements) ->
     for node_box in elements
-      for link in node_box.node.links
-        link.input_node.input_slot().attr({fill : '#fff'})
-        link.output_node.output_slot().attr({fill : '#fff'})
+      for edge in node_box.node.edges
+        edge.input_node.input_slot().attr({fill : '#fff'})
+        edge.output_node.output_slot().attr({fill : '#fff'})
       node_box.node.update_position(node_box.attr('x'), node_box.attr('y'))
 
-class @Link
+class @Edge
   constructor: (args) ->
     [input_key, output_key, color, style] = args
     @color = color
@@ -125,15 +125,15 @@ class @Link
     @output_node = GRAPH.nodes[output_key]
     @input_node = GRAPH.nodes[input_key]
 
-    @output_node.links.push(this)
-    @input_node.links.push(this)
+    @output_node.edges.push(this)
+    @input_node.edges.push(this)
     @r = GRAPH.r
-    GRAPH.links.push(this)
+    GRAPH.edges.push(this)
 
-  # Draw the Link.
+  # Draw the Edge.
   # *Warning*: The order of the elements being drawed defines their z-index.
-  #            We want the links to appear behind the node boxes, therefore
-  #            call draw() on links first.
+  #            We want the edges to appear behind the node boxes, therefore
+  #            call draw() on edges first.
   #
   draw: =>
     @shape = @r.connection(@input_node.input_slot(),
@@ -153,7 +153,7 @@ class @Link
     @shape.bg.attr({stroke : @color})
     @shape.line.attr({stroke : @color})
 
-  # (Re-)connects a link to the node slots.
+  # (Re-)connects a edge to the node slots.
   # Needs to be called everytime we move/drag a Node.
   # Also has to be called after drawing the nodes.
   #
@@ -170,7 +170,7 @@ class @Node
     @pos_y = pos_y
     @use = use
     @sector = sector
-    @links = []
+    @edges = []
     @highlighted = false
     @dirty = false
     @hidden = hidden
@@ -182,8 +182,8 @@ class @Node
 
   # Draws the Node on the raphael space.
   # *Warning*: The order of the elements being drawed defines their z-index.
-  #           We want the links to appear behind the node boxes, therefore
-  #           call draw() on nodes after the links.
+  #           We want the edges to appear behind the node boxes, therefore
+  #           call draw() on nodes after the edges.
   #
   draw: ->
     @drawNodeBox()
@@ -244,19 +244,19 @@ class @Node
   # Mark Node changed.
   markDirty: -> @dirty = true
 
-  # Highlight nodes and their links.
+  # Highlight nodes and their edges.
   highlight_toggle: ->
     if @highlighted then @highlight_off() else @highlight_on()
 
   highlight_on: ->
     @highlighted = true
     @box.attr(this.STYLE_HIGHLIGHT)
-    link.highlight_on() for link in @links
+    edge.highlight_on() for edge in @edges
 
   highlight_off: ->
     @highlighted = false
     @box.attr({'stroke' : this.stroke_color})
-    link.highlight_off() for link in @links
+    edge.highlight_off() for edge in @edges
 
   # Select multiple nodes to drag them at the same time.
   toggle_selection: ->
@@ -273,7 +273,7 @@ class @Node
   getBox: -> @box
 
   # Apply the passed raphael parameters to all the shapes of a node.
-  # Including links, Slots, Text nodes.
+  # Including edges, Slots, Text nodes.
   # This is mostly useful for assigning opacity.
   #
   apply_to_all: (attrs) ->
@@ -282,9 +282,9 @@ class @Node
     @box.value_node.attr(attrs)
     @input_slot().attr(attrs)
     @output_slot().attr(attrs)
-    for link in @links
-      link.shape.bg.attr(attrs)
-      link.shape.line.attr(attrs)
+    for edge in @edges
+      edge.shape.bg.attr(attrs)
+      edge.shape.line.attr(attrs)
 
   toggle_visibility: ->
     if @isHidden() then @show() else @hide()
@@ -375,4 +375,4 @@ class @Node
     att = if b.type == "rect" then  {x: x, y: y} else {cx: x, cy: y}
     b.attr(att)
     @position_subnodes()
-    link.adjust_to_node() for link in @links
+    edge.adjust_to_node() for edge in @edges

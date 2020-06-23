@@ -1,6 +1,6 @@
 module Qernel::Plugins
   # Based on the configuration of the Area, disables sectors of the graph by
-  # setting the demand of all nodes - and constant links - to zero.
+  # setting the demand of all nodes - and constant edges - to zero.
   class DisableSectors
     include Plugin
 
@@ -24,8 +24,8 @@ module Qernel::Plugins
           node.demand = node.preset_demand = 0.0
         end
 
-        node.input_links.each do |link|
-          link.share = 0.0 if link.link_type == :constant
+        node.input_edges.each do |edge|
+          edge.share = 0.0 if edge.edge_type == :constant
         end
       end
     end

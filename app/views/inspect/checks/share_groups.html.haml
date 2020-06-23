@@ -5,7 +5,7 @@
     .page-header
       %h2== Share Group Sums
 
-    %p.country-links
+    %p.country-edges
       - Etsource::Dataset.region_codes.sort.each do |area|
         %a(href="##{ area }")= area
 

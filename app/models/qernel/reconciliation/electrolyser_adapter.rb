@@ -19,7 +19,7 @@ module Qernel
     class ElectrolyserAdapter < ProducerAdapter
       def initialize(*)
         super
-        @producer = @node.input(:electricity).links.first.rgt_node
+        @producer = @node.input(:electricity).edges.first.rgt_node
 
         output_conversion_name = @context.carrier_named('%s_output_conversion')
 
@@ -59,7 +59,7 @@ module Qernel
 
         # Set share explicitly to 1.0 when the producer -> electrolyser share is
         # very close to 1.0 (floating point errors).
-        @node.input(:electricity).links.first.share =
+        @node.input(:electricity).edges.first.share =
           (1 - electricity_h2_share).abs < 1e-4 ? 1.0 : electricity_h2_share
       end
 

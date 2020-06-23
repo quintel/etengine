@@ -41,7 +41,7 @@ module Qernel
 
           graph = GraphParser.new(layout).build
 
-          allow(graph.node(:left).input_links.first.carrier)
+          allow(graph.node(:left).input_edges.first.carrier)
             .to receive(:sustainable).and_return(0.5)
 
           graph
@@ -50,7 +50,7 @@ module Qernel
         let(:sustainability) { graph.node(:left).sustainability_share }
 
         it 'uses the carrier sustainability' do
-          expect(sustainability).to eq(0.5 * 0.25) # sustainability * link share
+          expect(sustainability).to eq(0.5 * 0.25) # sustainability * edge share
         end
 
         it 'uses the right-most sustainability_share when present' do
@@ -68,7 +68,7 @@ module Qernel
 
           graph = GraphParser.new(layout).build
 
-          allow(graph.node(:left).input_links.first.carrier)
+          allow(graph.node(:left).input_edges.first.carrier)
             .to receive(:sustainable).and_return(nil)
 
           graph

@@ -1,7 +1,7 @@
 %h2 URLs changed - You entered an outdated URL
 
 %p
-  We no longer have to add the country code to the URL. The country is now taken from the 
+  We no longer have to add the country code to the URL. The country is now taken from the
   scenario (in this case 'latest').
 
 %p
@@ -10,8 +10,8 @@
   Now: et-engine.com/data/latest/....
 
 %p
-  
+
   - if (new_url = url_for.gsub(/\/data\/latest\/\w+\//, '/data/latest/') rescue nil)
-    Or click the following link:
+    Or click the following edge:
     %br
     %strong= link_to new_url, new_url

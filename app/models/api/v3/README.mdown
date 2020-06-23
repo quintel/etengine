@@ -444,7 +444,7 @@ simpler with old apps
 
 This information should be seen on the graph diagram (maybe when the user
 clicks on a node and wants to see the details) and on the ETM, when the user
-clicks on the node info link (now we're loading an iframe). Do we ever
+clicks on the node info edge (now we're loading an iframe). Do we ever
 need node info outside the scope of a scenario? We could use the
 `/nodes/:code` URL to get the generic node attributes (those that
 don't require an active scenario) and

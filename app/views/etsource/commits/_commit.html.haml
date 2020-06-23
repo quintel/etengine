@@ -9,6 +9,6 @@
     = commit.author.name
     %span.date
       == authored #{ time_ago_in_words(commit.date) } ago
-.links
+.edges
   %a.sha{ href: "https://github.com/quintel/#{ repo }/commit/#{ commit.sha }" }
     %span.ref= commit.sha[0..7]

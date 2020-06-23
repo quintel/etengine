@@ -1,10 +1,10 @@
 module Qernel
 
 ##
-# A slot combines several input/output links of the same carrier.
+# A slot combines several input/output edges of the same carrier.
 # It can either be on the input or output side of a node. A
-# slot waits (see #ready?) until all passive_links have been calculated
-# and then calculates the active_links.
+# slot waits (see #ready?) until all passive_edges have been calculated
+# and then calculates the active_edges.
 #
 # Usually we are just interested in the #external_value of a slot,
 # which is the amount of energy that goes through. The internal value
@@ -24,7 +24,7 @@ class Slot
   #             return a normal slot.
   # id        - Unique identifier for the slot.
   # node - The node to which the slot belongs.
-  # carrier   - The carrier used by the links which connect to the slot.
+  # carrier   - The carrier used by the edges which connect to the slot.
   # direction - Indicates whether the slot is for :input or :output.
   #
   # Returns an instance of Slot, or a Slot subclass.
@@ -34,7 +34,7 @@ class Slot
       case type
       when :loss       then Slot::Loss
       when :elastic    then Slot::Elastic
-      when :link_based then Slot::LinkBased
+      when :edge_based then Slot::EdgeBased
       else                  Slot
       end
 
@@ -77,49 +77,49 @@ class Slot
   # @return [Boolean] is Slot ready for calculation?
   #
   def ready?
-    passive_links.all?(&:value)
+    passive_edges.all?(&:value)
     # 2010-06-07 sb:
     # Theoretically it should be:
     #
-    #   passive_links.all?(&:value) and node.has_demand?
+    #   passive_edges.all?(&:value) and node.has_demand?
     #
     # As a slot can only calculate if the node demand is
     # known. But as we control the flow from the node we
     # can skip this (saves a bit of performance).
   end
 
-  # Calculate the link values
-  # @return [Array<Link>]
+  # Calculate the edge values
+  # @return [Array<Edge>]
   #
   def calculate
     # 2010-06-07 sb
-    # I don't remember why I don't use active_links here.
+    # I don't remember why I don't use active_edges here.
     # I assume it must be because of inversed_flexible?
     # and [constant with undefined value].
 
     if input?
-      active_links.select(&:constant?).each(&:calculate)
-      active_links.select(&:share?).each(&:calculate)
+      active_edges.select(&:constant?).each(&:calculate)
+      active_edges.select(&:share?).each(&:calculate)
 
-      active_links.
+      active_edges.
         select(&:flexible?).
         # Sort by priority, higher numbers first.
         sort_by(&:priority).reverse.
         # Calculate edges with a max_demand first
-        partition { |link| link.max_demand.present? }.
+        partition { |edge| edge.max_demand.present? }.
         flatten.each(&:calculate)
     end
 
     if output?
-      links.select(&:reversed?).each(&:calculate)
-      links.select(&:dependent?).each(&:calculate)
+      edges.select(&:reversed?).each(&:calculate)
+      edges.select(&:dependent?).each(&:calculate)
     end
   end
 
   # --------- Slot Types ------------------------------------------------------
 
   # @return [Boolean] Is Slot an input (on the left side of node)
-  # Links that are calculated by this node
+  # Edges that are calculated by this node
   #
   def input?
     (direction === :input)
@@ -142,35 +142,35 @@ class Slot
 
   # --------- Traversal -------------------------------------------------------
 
-  # @return [Array<Link>] Links that are calculated by this Slot
+  # @return [Array<Edge>] Edges that are calculated by this Slot
   #
-  def active_links
-    @active_links ||= if input?
-      links.select(&Calculation::Links.method(:calculated_by_child?))
+  def active_edges
+    @active_edges ||= if input?
+      edges.select(&Calculation::Edges.method(:calculated_by_child?))
     else
-      links.select(&Calculation::Links.method(:calculated_by_parent?))
+      edges.select(&Calculation::Edges.method(:calculated_by_parent?))
     end
   end
 
 
-  # @return [Array<Link>] Links calculated by the node on the other end.
+  # @return [Array<Edge>] Edges calculated by the node on the other end.
   #
-  def passive_links
-    @passive_links ||= if input?
-      links.select(&Calculation::Links.method(:calculated_by_parent?))
+  def passive_edges
+    @passive_edges ||= if input?
+      edges.select(&Calculation::Edges.method(:calculated_by_parent?))
     else
-      links.select(&Calculation::Links.method(:calculated_by_child?))
+      edges.select(&Calculation::Edges.method(:calculated_by_child?))
     end
   end
 
-  # @return [Array<Link>]
+  # @return [Array<Edge>]
   #
-  def links
-    # For legacy reasons, we still access links through the node.
-    @links ||= if input?
-      node.input_links.select{|l| l.carrier == @carrier}
+  def edges
+    # For legacy reasons, we still access edges through the node.
+    @edges ||= if input?
+      node.input_edges.select{|l| l.carrier == @carrier}
     else
-      node.output_links.select{|l| l.carrier == @carrier}
+      node.output_edges.select{|l| l.carrier == @carrier}
     end
   end
 
@@ -184,7 +184,7 @@ class Slot
 
   # --------- Value -----------------------------------------------------------
 
-  # Expected value of this slot. Must equal to the actual value (sum of link values * conversion)
+  # Expected value of this slot. Must equal to the actual value (sum of edge values * conversion)
   # expected_demand = total_node_demand * conversion
   #
   # @return [Float]
@@ -197,7 +197,7 @@ class Slot
   # total demand of node
   # value for node
   #
-  # @return [Float, nil] nil if not all links have values
+  # @return [Float, nil] nil if not all edges have values
   #
   def internal_value
     convert(external_value)
@@ -205,32 +205,32 @@ class Slot
 
   # Value to the outside
   #
-  # @return [Float, nil] nil if not all links have values
+  # @return [Float, nil] nil if not all edges have values
   #
   def external_value
-    link_demand = links.map(&:value).compact.sum.to_f
+    edge_demand = edges.map(&:value).compact.sum.to_f
 
     if has_reversed_shares?
-      link_demand / reversed_share_compensation
+      edge_demand / reversed_share_compensation
     else
-      link_demand
+      edge_demand
     end
   end
 
-  # Used for calculation of flexible links.
+  # Used for calculation of flexible edges.
   #
-  # @return [Float] Sum of link values
+  # @return [Float] Sum of edge values
   #
-  def external_passive_link_value
-    links.reject(&:flexible?).map(&:value).compact.sum
+  def external_passive_edge_value
+    edges.reject(&:flexible?).map(&:value).compact.sum
   end
 
-  # Used for calculation of inversed_flexible links.
+  # Used for calculation of inversed_flexible edges.
   #
-  # @return [Float] Sum of link values
+  # @return [Float] Sum of edge values
   #
-  def external_link_value
-    links.map(&:value).compact.sum
+  def external_edge_value
+    edges.map(&:value).compact.sum
   end
 
   # Conversion for given carrier. Returns the conversion dataset attribute. If it is nil
@@ -281,15 +281,15 @@ class Slot
 
   # --------- Reversed Shares -------------------------------------------------
 
-  # Internal: Returns if the slot has any reversed share links.
+  # Internal: Returns if the slot has any reversed share edges.
   #
   # Returns true or false.
   def has_reversed_shares?
     if defined?(@has_reversed_shares)
       @has_reversed_shares
     else
-      @has_reversed_shares = links.any? do |link|
-        link.reversed? && link.link_type == :share
+      @has_reversed_shares = edges.any? do |edge|
+        edge.reversed? && edge.edge_type == :share
       end
     end
   end
@@ -297,19 +297,19 @@ class Slot
   private :has_reversed_shares?
 
   # Internal: Determines by how much the external value needs to be adjusted in
-  # order to account for uncalculated reversed share links.
+  # order to account for uncalculated reversed share edges.
   #
-  # If the slot has a mix of forwards and reversed share links, the reversed
-  # links aren't calculated until after the node demans is known. That is
+  # If the slot has a mix of forwards and reversed share edges, the reversed
+  # edges aren't calculated until after the node demans is known. That is
   # too late, since the node demand won't account for the reversed
   # shares. Such slots require their external_value adjusting so that the
   # reversed shares are included.
   #
   # Returns a float.
   def reversed_share_compensation
-    comp_share = links.reduce(0.0) do |comp, link|
-      if link.reversed? && link.link_type == :share && link.value.nil?
-        comp + link.share
+    comp_share = edges.reduce(0.0) do |comp, edge|
+      if edge.reversed? && edge.edge_type == :share && edge.value.nil?
+        comp + edge.share
       else
         comp
       end

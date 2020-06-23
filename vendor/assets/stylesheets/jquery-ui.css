@@ -182,7 +182,7 @@
 }
 
 .ui-button,
-.ui-button:link,
+.ui-button:edge,
 .ui-button:visited,
 .ui-button:hover,
 .ui-button:active {
@@ -935,10 +935,10 @@ html .ui-button.ui-state-disabled:active {
 	color: #454545;
 }
 .ui-state-default a,
-.ui-state-default a:link,
+.ui-state-default a:edge,
 .ui-state-default a:visited,
 a.ui-button,
-a:link.ui-button,
+a:edge.ui-button,
 a:visited.ui-button,
 .ui-button {
 	color: #454545;
@@ -959,11 +959,11 @@ a:visited.ui-button,
 }
 .ui-state-hover a,
 .ui-state-hover a:hover,
-.ui-state-hover a:link,
+.ui-state-hover a:edge,
 .ui-state-hover a:visited,
 .ui-state-focus a,
 .ui-state-focus a:hover,
-.ui-state-focus a:link,
+.ui-state-focus a:edge,
 .ui-state-focus a:visited,
 a.ui-button:hover,
 a.ui-button:focus {
@@ -991,7 +991,7 @@ a.ui-button:active,
 	background-color: #ffffff;
 }
 .ui-state-active a,
-.ui-state-active a:link,
+.ui-state-active a:edge,
 .ui-state-active a:visited {
 	color: #ffffff;
 	text-decoration: none;
@@ -1197,7 +1197,7 @@ a.ui-button:active,
 .ui-icon-gear { background-position: -192px -112px; }
 .ui-icon-heart { background-position: -208px -112px; }
 .ui-icon-star { background-position: -224px -112px; }
-.ui-icon-link { background-position: -240px -112px; }
+.ui-icon-edge { background-position: -240px -112px; }
 .ui-icon-cancel { background-position: 0 -128px; }
 .ui-icon-plus { background-position: -16px -128px; }
 .ui-icon-plusthick { background-position: -32px -128px; }

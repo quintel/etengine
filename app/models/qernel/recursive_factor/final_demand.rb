@@ -16,13 +16,13 @@ module Qernel::RecursiveFactor::FinalDemand
       recursive_factor(:final_demand_factor_of_carrier, nil, nil, carrier_key)
   end
 
-  def final_demand_factor_of_carrier(link, carrier_key)
-    link ||= output_links.first # in case we query a left-most node
+  def final_demand_factor_of_carrier(edge, carrier_key)
+    edge ||= output_edges.first # in case we query a left-most node
 
     return nil unless final_demand_group?
 
-    if link
-      link.carrier.key == carrier_key ? 1.0 : 0.0
+    if edge
+      edge.carrier.key == carrier_key ? 1.0 : 0.0
     else
       # Left-most node with no outputs may be a member of the final demand
       # group. Look for an input matching the carrier, and use its conversion.
@@ -30,7 +30,7 @@ module Qernel::RecursiveFactor::FinalDemand
     end
   end
 
-  def final_demand_factor(_link)
+  def final_demand_factor(_edge)
     if final_demand_group?
       1.0
     elsif domestic_dead_end?

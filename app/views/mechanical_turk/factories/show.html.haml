@@ -3,10 +3,10 @@
   =# link_to_function 'Copy to Clipboard', '$("#spec_clipboard").val($("#spec").text()); $("#spec_clipboard")[0].select(); alert("Now click OK, then press Cmd+C");'
   -#%textarea#spec_clipboard{:style => "position:absolute; left: -500px"}
   %li Create a new file inside etsource/mechanical_turk and Copy the code below inside.
-  %li Then remove the lines/tests that you don't want. 
+  %li Then remove the lines/tests that you don't want.
   %li Make sure that the file ends with _spec.rb. E.g. households_spec.rb.
-  %li 
-    Test with 
+  %li
+    Test with
     %code rake gql:test
     that it works
 

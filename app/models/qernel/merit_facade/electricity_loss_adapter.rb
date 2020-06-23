@@ -4,8 +4,8 @@ module Qernel
   module MeritFacade
     # A special case of consumer used when representing loss within the
     # electricity network. In this we need to determine the demand from a method
-    # on GraphApi, and set the demand on the node and sole incoming link after
-    # the calculation is done. This is required in order for Slot::LinkBased to
+    # on GraphApi, and set the demand on the node and sole incoming edge after
+    # the calculation is done. This is required in order for Slot::EdgeBased to
     # calculate the share of electricty.
     class ElectricityLossAdapter < ConsumerAdapter
       def inject!
@@ -15,8 +15,8 @@ module Qernel
 
         target_api.demand = production
 
-        input_link.value = production
-        input_link.calculated = true
+        input_edge.value = production
+        input_edge.calculated = true
       end
 
       def input_of_carrier
@@ -27,15 +27,15 @@ module Qernel
 
       private
 
-      def input_link
-        links = target_api.node.input(:loss).links
+      def input_edge
+        edges = target_api.node.input(:loss).edges
 
-        if links.length != 1
+        if edges.length != 1
           raise "Could not find single loss input on #{target_api.key} for " \
-                "use by #{self.class.name} (found #{links.length} links)"
+                "use by #{self.class.name} (found #{edges.length} edges)"
         end
 
-        links.first
+        edges.first
       end
     end
   end

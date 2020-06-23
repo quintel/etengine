@@ -26,13 +26,13 @@ module Qernel
       def inject!
         super
 
-        elec_link = target_api.node.output(:electricity).links.first
+        elec_edge = target_api.node.output(:electricity).edges.first
 
-        if elec_link.link_type == :flexible
-          # We need to override the calculation of the flexible link and set the
+        if elec_edge.edge_type == :flexible
+          # We need to override the calculation of the flexible edge and set the
           # demand explicitly.
-          elec_link.dataset_set(:value, target_api.demand)
-          elec_link.dataset_set(:calculated, true)
+          elec_edge.dataset_set(:value, target_api.demand)
+          elec_edge.dataset_set(:calculated, true)
         end
       end
 

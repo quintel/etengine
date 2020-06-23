@@ -1,11 +1,11 @@
 module Qernel
   # This is the qernel side of the Dataset ActiveRecord object.
   # When you run Dataset.find(...).to_qernel you'll get an instance of this class
-  # and the data set will be loaded. LinkData, SlotData etc are merged in a single
+  # and the data set will be loaded. EdgeData, SlotData etc are merged in a single
   # large hash (+data+) with some major keys:
   #
   # ruby-1.9.3-p0 :044 > Dataset.last.to_qernel.data.keys
-  # => [:graph, :node, :carrier, :link, :slot, :area]
+  # => [:graph, :node, :carrier, :edge, :slot, :area]
   #
   # The DatasetAttribute module adds to the including class a set of methods to
   # access the related dataset values.

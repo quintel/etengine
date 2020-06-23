@@ -19,16 +19,16 @@ node_keys = @nodes.map(&:key)
 <% end %>
 
 
-<% @nodes.map(&:input_links).flatten.uniq.each do |link|
-  if node_keys.include?(link.lft_node.key) and node_keys.include?(link.rgt_node.key)
+<% @nodes.map(&:input_edges).flatten.uniq.each do |edge|
+  if node_keys.include?(edge.lft_node.key) and node_keys.include?(edge.rgt_node.key)
     params = [
-      link.rgt_node.key,
-      link.lft_node.key,
-      (link.carrier.graphviz_color || '#999'),
-      '1|-'   #"1|#{link.link_style}"
+      edge.rgt_node.key,
+      edge.lft_node.key,
+      (edge.carrier.graphviz_color || '#999'),
+      '1|-'   #"1|#{edge.edge_style}"
     ]
     -%>
-    <%= "new Link(#{params.to_json});".html_safe %>
+    <%= "new Edge(#{params.to_json});".html_safe %>
   <% end %>
 <% end %>
 
@@ -38,11 +38,11 @@ GRAPH.draw(function() {
 
 if ('btoa' in window) {
   var instructionsEl = $('#instructions');
-  var link = $('<a href="#">Download SVG</a>')
+  var edge = $('<a href="#">Download SVG</a>')
 
-  instructionsEl.find('li.links ul').append($('<li></li>').append(link));
+  instructionsEl.find('li.edges ul').append($('<li></li>').append(edge));
 
-  link.click(function(event) {
+  edge.click(function(event) {
     event.preventDefault();
 
     var a = document.createElement('a'),

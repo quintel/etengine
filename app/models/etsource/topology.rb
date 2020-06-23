@@ -14,7 +14,7 @@ module Etsource
       graph = Qernel::Graph.new(node_hash.values)
 
       create_explicit_slots!
-      establish_links!
+      establish_edges!
 
       graph.assign_graph_to_qernel_objects
 
@@ -54,7 +54,7 @@ module Etsource
       end
     end
 
-    def establish_links!
+    def establish_edges!
       Atlas::Edge.all.each do |edge|
         supplier = node(edge.supplier)
         consumer = node(edge.consumer)
@@ -71,7 +71,7 @@ module Etsource
           consumer.add_slot(FromAtlas.slot_from_data(consumer, carrier, :in))
         end
 
-        FromAtlas.link!(edge, consumer, supplier, carrier)
+        FromAtlas.edge!(edge, consumer, supplier, carrier)
       end
     end
 
@@ -96,10 +96,10 @@ module Etsource
 
   # Extract keys from a Slot Topology String
   #    Token.new("FOO-(HW) -- s --> (HW)-BAR")
-  #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, link_type: :share>
+  #    => <Token carrier_key:HW, output_key:BAR, input_key:FOO, edge_type: :share>
   #
-  class LinkToken
-    attr_reader :input_key, :carrier_key, :output_key, :key, :link_type, :reversed
+  class EdgeToken
+    attr_reader :input_key, :carrier_key, :output_key, :key, :edge_type, :reversed
 
     LINK_TYPES = {
       's' => :share,
@@ -123,7 +123,7 @@ module Etsource
       @input_key   = input.node_key
       @output_key  = output.node_key
       @reversed    = line.include?('<')
-      @link_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/-(\w)-/).flatten.first]
+      @edge_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/-(\w)-/).flatten.first]
     end
 
     # Matches:

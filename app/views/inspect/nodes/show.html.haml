@@ -47,18 +47,18 @@
           ⬇
         == #{ auto_number(delta) }%
 
-.tabbable.link-flows
+.tabbable.edge-flows
   %ul.nav.nav-tabs
     %li
-      %a{ 'href' => "#present-links", 'data-toggle' => 'tab' } Present Flows
+      %a{ 'href' => "#present-edges", 'data-toggle' => 'tab' } Present Flows
     %li.active
-      %a{ 'href' => "#future-links", 'data-toggle' => 'tab' } Future Flows
+      %a{ 'href' => "#future-edges", 'data-toggle' => 'tab' } Future Flows
 
   .tab-content
-    #present-links.tab-pane
-      = render 'node_links', c: @node_present
-    #future-links.tab-pane.active
-      = render 'node_links', c: @node_future
+    #present-edges.tab-pane
+      = render 'node_edges', c: @node_present
+    #future-edges.tab-pane.active
+      = render 'node_edges', c: @node_future
 
 .row-fluid
   .span12

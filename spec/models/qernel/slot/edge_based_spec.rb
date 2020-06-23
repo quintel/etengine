@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-describe Qernel::Slot::LinkBased do
+describe Qernel::Slot::EdgeBased do
   let(:graph) do
     layout = <<-LAYOUT.strip_heredoc
-      electricity[1.0;0.9(link_based)]: elec_output  == s(1.0)  ==> network
+      electricity[1.0;0.9(edge_based)]: elec_output  == s(1.0)  ==> network
       loss[1.0;0.1]:                    loss_output  == s(1.0)  ==> network
     LAYOUT
 
@@ -16,8 +16,8 @@ describe Qernel::Slot::LinkBased do
   let(:loss)        { network.output(:loss) }
   let(:electricity) { network.output(:electricity) }
 
-  let(:loss_link)   { loss.links.first }
-  let(:elec_link)   { electricity.links.first }
+  let(:loss_edge)   { loss.edges.first }
+  let(:elec_edge)   { electricity.edges.first }
 
   before do
     # GraphParser adds a conversion; get rid of it.
@@ -26,13 +26,13 @@ describe Qernel::Slot::LinkBased do
 
   # --------------------------------------------------------------------------
 
-  context 'when a value is known for all links' do
+  context 'when a value is known for all edges' do
     before do
-      loss_link.value = 25.0
-      elec_link.value = 75.0
+      loss_edge.value = 25.0
+      elec_edge.value = 75.0
     end
 
-    it 'calculates the LinkBased conversion' do
+    it 'calculates the EdgeBased conversion' do
       expect(electricity.conversion).to eq(0.75)
     end
 
@@ -41,28 +41,28 @@ describe Qernel::Slot::LinkBased do
     end
 
     it 'does not recalculate when data changes' do
-      expect { elec_link.value = 25.0 }
+      expect { elec_edge.value = 25.0 }
         .not_to change(electricity, :conversion).from(0.75)
     end
   end
 
-  context 'when all the links are zero' do
+  context 'when all the edges are zero' do
     before do
-      loss_link.value = 0.0
-      elec_link.value = 0.0
+      loss_edge.value = 0.0
+      elec_edge.value = 0.0
     end
 
-    it 'calculates the LinkBased conversion as zero' do
+    it 'calculates the EdgeBased conversion as zero' do
       expect(electricity.conversion).to eq(0.0)
     end
   end
 
-  context 'when a :link_based_conversion value is stored' do
+  context 'when a :edge_based_conversion value is stored' do
     before do
-      loss_link.value = 25.0
-      elec_link.value = 75.0
+      loss_edge.value = 25.0
+      elec_edge.value = 75.0
 
-      electricity.dataset_set(:link_based_conversion, 1.0)
+      electricity.dataset_set(:edge_based_conversion, 1.0)
     end
 
     it 'retrieves the cached value' do
@@ -70,10 +70,10 @@ describe Qernel::Slot::LinkBased do
     end
   end
 
-  context 'when the link has no value' do
+  context 'when the edge has no value' do
     before do
-      loss_link.value = 25.0
-      elec_link.value = nil
+      loss_edge.value = 25.0
+      elec_edge.value = nil
     end
 
     it 'does not calculate a value; returning zero' do
@@ -84,12 +84,12 @@ describe Qernel::Slot::LinkBased do
       expect(electricity.dataset_get(:conversion)).to be_nil
     end
 
-    it 'does not cache the returned value as :link_based_conversion' do
-      expect(electricity.dataset_get(:link_based_conversion)).to be_nil
+    it 'does not cache the returned value as :edge_based_conversion' do
+      expect(electricity.dataset_get(:edge_based_conversion)).to be_nil
     end
 
     it 'calculates once enough data is available' do
-      expect { elec_link.value = 25.0 }
+      expect { elec_edge.value = 25.0 }
         .to change(electricity, :conversion)
         .from(0.0).to(0.5)
     end
@@ -103,10 +103,10 @@ describe Qernel::Slot::LinkBased do
     end
   end
 
-  context 'when a sibling slot link has no value' do
+  context 'when a sibling slot edge has no value' do
     before do
-      loss_link.value = nil
-      elec_link.value = 75.0
+      loss_edge.value = nil
+      elec_edge.value = 75.0
     end
 
     it 'does not calculate a value; returning zero' do

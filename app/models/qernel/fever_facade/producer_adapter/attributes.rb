@@ -10,12 +10,12 @@ module Qernel
         # Internal: Calculates what share of the total heat demand will be
         # supplied by this producer.
         def share
-          link = @node.node.output(:useable_heat).links.first
+          edge = @node.node.output(:useable_heat).edges.first
 
-          if link.lft_node.key.to_s.include?('aggregator')
-            link.lft_node.output(:useable_heat).links.first.share
+          if edge.lft_node.key.to_s.include?('aggregator')
+            edge.lft_node.output(:useable_heat).edges.first.share
           else
-            link.share
+            edge.share
           end
         end
 

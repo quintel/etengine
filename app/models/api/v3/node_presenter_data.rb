@@ -426,8 +426,8 @@ module Api
           out = out.dup
           out[:current_fuel_input_mix] = {}
           fuel_mix = {}
-          @node.input_links.each do |link|
-            fuel_mix["#{link.carrier.key}_input_conversion"] = {label: link.carrier.key.to_s.humanize, unit: '%'}
+          @node.input_edges.each do |edge|
+            fuel_mix["#{edge.carrier.key}_input_conversion"] = {label: edge.carrier.key.to_s.humanize, unit: '%'}
           end
           out[:current_fuel_input_mix] = fuel_mix
         end

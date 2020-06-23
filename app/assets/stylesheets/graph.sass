@@ -1,17 +1,17 @@
-@keyframes link-glow
+@keyframes edge-glow
   from
     color: #1949c4
   to
     color: #5fa021
 
-@-webkit-keyframes link-glow
+@-webkit-keyframes edge-glow
   from
     color: #1949c4
   to
     color: #5fa021
 
 body
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+  font-family: -apple-system, BedgeMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
   #instructions, #options, #loading
     background: white
     border-radius: 4px
@@ -66,7 +66,7 @@ body
       padding: 1rem
       li:first-child
         font-weight: bold
-    .links ul, .actions ul
+    .edges ul, .actions ul
       margin: 0
       padding: 0
       overflow: hidden
@@ -94,8 +94,8 @@ body
     &.glow
       color: #4e8816
       font-weight: bold
-      animation: link-glow 2s
-      -webkit-animation: link-glow .5s infinite alternate
+      animation: edge-glow 2s
+      -webkit-animation: edge-glow .5s infinite alternate
   #graph_saving
     color: white
     background-color: #1949c4

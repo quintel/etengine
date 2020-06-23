@@ -9,15 +9,15 @@ module Qernel::RecursiveFactor::WeightedCarrier
     end
   end
 
-  def weighted_carrier_cost_per_mj_factor(link)
+  def weighted_carrier_cost_per_mj_factor(edge)
     # because electricity and steam_hot_water are calculated seperately
     # these are excluded from this calculation
-    return unless link
+    return unless edge
 
-    if link.carrier.electricity? || link.carrier.steam_hot_water?
+    if edge.carrier.electricity? || edge.carrier.steam_hot_water?
       0.0
-    elsif link.carrier.cost_per_mj || domestic_dead_end?
-      link.carrier.cost_per_mj
+    elsif edge.carrier.cost_per_mj || domestic_dead_end?
+      edge.carrier.cost_per_mj
     end
 
     # Else: continue traversing right.
@@ -30,14 +30,14 @@ module Qernel::RecursiveFactor::WeightedCarrier
     end
   end
 
-  def weighted_carrier_co2_per_mj_factor(link)
-    return unless link
+  def weighted_carrier_co2_per_mj_factor(edge)
+    return unless edge
 
     # Electricity and steam_hot_water have no intrinsic CO2 and are therefore
     # excluded from this calculation.
 
-    if link.carrier.co2_conversion_per_mj || domestic_dead_end?
-      link.carrier.co2_conversion_per_mj
+    if edge.carrier.co2_conversion_per_mj || domestic_dead_end?
+      edge.carrier.co2_conversion_per_mj
     end
 
     # Else: continue traversing right.

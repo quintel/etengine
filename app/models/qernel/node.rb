@@ -26,38 +26,38 @@ module Qernel
 # Also note that some update statements modify preset_demand, rather then
 # demand.
 #
-# = Naming of child/parent nodes and their links
+# = Naming of child/parent nodes and their edges
 #
-# <tt>[Demander <b>D</b>]  <---Link <b>L</b> --- [Supplyer <b>S</b>]</tt>
+# <tt>[Demander <b>D</b>]  <---Edge <b>L</b> --- [Supplyer <b>S</b>]</tt>
 #
 # * Energy flows from S to D.
 # * D demands energy from S
 #
 # * D is parent of S
-# * D has a input_link(/downstream/supplying) Link L.
+# * D has a input_edge(/downstream/supplying) Edge L.
 #
 # * S is child of D
-# * S has an output_link(upstream/demanding_link) link L to D
+# * S has an output_edge(upstream/demanding_edge) edge L to D
 #
-# * If link L is share, flexible or constant, D assigns a value to L
-# * If link L is dependent, S assigns a value to L.
+# * If edge L is share, flexible or constant, D assigns a value to L
+# * If edge L is dependent, S assigns a value to L.
 #
 #
-# * <tt>c.input_links = c.input_links</tt>
-# * <tt>c.output_links = c.output_links</tt>
+# * <tt>c.input_edges = c.input_edges</tt>
+# * <tt>c.output_edges = c.output_edges</tt>
 #
 #
 # Node is ready? to fill own demand:
 #
-# Node is ready to assign depending_demand_link_value if:
-# - <tt>output_links.reject(&:depending?).all?(&:value)</tt>
-# Special Case: output_links.reject(&:depending?).empty? and input_links.select(&:depending?).present?
+# Node is ready to assign depending_demand_edge_value if:
+# - <tt>output_edges.reject(&:depending?).all?(&:value)</tt>
+# Special Case: output_edges.reject(&:depending?).empty? and input_edges.select(&:depending?).present?
 #
 #
 #
-# depending_demand_link_value = SUM(fixed & flexible output links) - SUM(dependent_input_links)
+# depending_demand_edge_value = SUM(fixed & flexible output edges) - SUM(dependent_input_edges)
 #
-# If demand is set, assign supplying demanding link
+# If demand is set, assign supplying demanding edge
 #
 class Node
   extend ActiveModel::Naming
@@ -76,8 +76,8 @@ class Node
   include DatasetAttributes
 
   attr_reader  :id,
-               :output_links,
-               :input_links,
+               :output_edges,
+               :input_edges,
                :groups,
                :sector_key,
                :use_key,
@@ -93,8 +93,8 @@ class Node
   #
   attr_reader :type
 
-  alias_method :lft_links, :output_links
-  alias_method :rgt_links, :input_links
+  alias_method :lft_edges, :output_edges
+  alias_method :rgt_edges, :input_edges
 
   dataset_accessors %i[
     demand
@@ -141,7 +141,7 @@ class Node
     @sector_key = opts[:sector_id]
     @presentation_group = opts[:presentation_group]
 
-    @output_links, @input_links = [], []
+    @output_edges, @input_edges = [], []
     @output_hash, @input_hash = {}, {}
 
     memoize_for_cache
@@ -229,16 +229,16 @@ public
 
   # --------- Building --------------------------------------------------------
 
-  # @param link [Link]
+  # @param edge [Edge]
   #
-  def add_output_link(link)
-    @output_links << link
+  def add_output_edge(edge)
+    @output_edges << edge
   end
 
-  # @param link [Link]
+  # @param edge [Edge]
   #
-  def add_input_link(link)
-    @input_links << link
+  def add_input_edge(edge)
+    @input_edges << edge
   end
 
   # @param slot [Qernel::Slot]
@@ -273,13 +273,13 @@ public
   # @return [Array<Node>] Nodes to the right
   #
   def rgt_nodes
-    @rgt_nodes ||= input_links.map(&:rgt_node)
+    @rgt_nodes ||= input_edges.map(&:rgt_node)
   end
 
   # @return [Array<Node>] Nodes to the left
   #
   def lft_nodes
-    @lft_nodes ||= output_links.map(&:lft_node)
+    @lft_nodes ||= output_edges.map(&:lft_node)
   end
 
   # @return [Array<Slot>] all input slots
@@ -373,24 +373,24 @@ public
     slots.all?(&:ready?)
   end
 
-  # Calculates the demand of the node and of the links that depend on this demand.
+  # Calculates the demand of the node and of the edges that depend on this demand.
   #
   # == Algorithm
   #
-  # 1. (unless preset_demand is set) Sums demand of output_links (without dependent links) links.
+  # 1. (unless preset_demand is set) Sums demand of output_edges (without dependent edges) edges.
   #
   # @pre node must be #ready?
   #
   def calculate
     @calculation_state = :calculate
 
-    # Constant links are treated differently.
+    # Constant edges are treated differently.
     # They can overwrite the preset_demand of this node
-    output_links.select(&:constant?).each(&:calculate)
+    output_edges.select(&:constant?).each(&:calculate)
 
     # this is an attempt to solve this issue
     # https://github.com/dennisschoenmakers/etengine/issues/258
-    input_links.select(&:constant?).each(&:calculate) if output_links.any?(&:inversed_flexible?)
+    input_edges.select(&:constant?).each(&:calculate) if output_edges.any?(&:inversed_flexible?)
 
     # If the demand is already set (is not nil), do not overwrite it.
     if self.demand.nil?
@@ -402,14 +402,14 @@ public
     slots.each(&:calculate)
 
     # inversed_flexible fills up the difference of the calculated input/output slot.
-    output_links.select(&:inversed_flexible?).each(&:calculate)
+    output_edges.select(&:inversed_flexible?).each(&:calculate)
   end
 
 protected
 
   # The highest internal_value of in/output slots is the demand of
   # this node. If there are slots with different internal_values
-  # they have to update their passive links, (this happens in #calculate).
+  # they have to update their passive edges, (this happens in #calculate).
   #
   # @pre node must be #ready?
   # @pre has to be used from within #calculate, as slots have to be adjusted
@@ -417,12 +417,12 @@ protected
   # @return [Float] The demand of this node
   #
   def update_demand
-    if output_links.any?(&:inversed_flexible?) or output_links.any?(&:reversed?)
+    if output_edges.any?(&:inversed_flexible?) or output_edges.any?(&:reversed?)
       @calculation_state = :update_demand_if_inversed_flexible_or_reversed
       slots.map(&:internal_value).compact.max
-    elsif output_links.empty?
-      @calculation_state = :update_demand_if_no_output_links
-      # 2010-06-23: If there is no output links we take the highest value from input.
+    elsif output_edges.empty?
+      @calculation_state = :update_demand_if_no_output_edges
+      # 2010-06-23: If there is no output edges we take the highest value from input.
       # otherwise left dead end nodes don't get values
       inputs.map(&:internal_value).compact.max
     else
@@ -439,11 +439,11 @@ public
 
   # @return [Array<Carrier>] Carriers of input
   #
-  def input_carriers; input_links.map(&:carrier).compact; end
+  def input_carriers; input_edges.map(&:carrier).compact; end
 
   # @return [Array<Carrier>] Carriers of output
   #
-  def output_carriers; output_links.map(&:carrier).compact; end
+  def output_carriers; output_edges.map(&:carrier).compact; end
 
 
   # --------- Loss ------------------------------------------------------------

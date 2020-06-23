@@ -24,7 +24,7 @@ module Qernel
         expect(@gql.query_future("V(max_demand_node_a, max_demand_recursive)")).to eq(5000.0)
       end
 
-      it "works with one link" do
+      it "works with one edge" do
         expect(@gql.query_future("V(max_demand_node_d, max_demand)")).to eq(5000.0)
       end
 
@@ -37,8 +37,8 @@ module Qernel
       before do
         @gql = Scenario.default.gql(prepare: false)
         @gql.init_datasets
-        @gql.future_graph.node(:max_demand_node_b).output_links.first.share = 0.99
-        @gql.future_graph.node(:max_demand_node_c).output_links.first.share = 0.01
+        @gql.future_graph.node(:max_demand_node_b).output_edges.first.share = 0.99
+        @gql.future_graph.node(:max_demand_node_c).output_edges.first.share = 0.01
         @gql.update_graphs
         @gql.calculate_graphs
       end
@@ -55,7 +55,7 @@ module Qernel
         expect(@gql.query_future("V(max_demand_node_a, max_demand_recursive)").floor).to eq(6060)
       end
 
-      it "works with one link" do
+      it "works with one edge" do
         expect(@gql.query_future("V(max_demand_node_d, max_demand)").floor).to  eq(6060)
       end
 

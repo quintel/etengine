@@ -102,14 +102,14 @@ module Gql::QueryInterface::Lookup
   end
 
   # @param [String,Array] Group keys
-  # @return [Array<Link>]
+  # @return [Array<Edge>]
   #
-  def group_links(keys)
-    # Array(keys).map(&graph.method(:group_links))
+  def group_edges(keys)
+    # Array(keys).map(&graph.method(:group_edges))
     if keys.is_a?(Array)
-      flatten_compact(keys.flatten.map{|key| graph.group_links(key) })
+      flatten_compact(keys.flatten.map{|key| graph.group_edges(key) })
     else
-      flatten_compact graph.group_link(keys)
+      flatten_compact graph.group_edge(keys)
     end
   end
 

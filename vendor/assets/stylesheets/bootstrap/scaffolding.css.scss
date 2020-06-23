@@ -41,14 +41,14 @@ body {
 // BASE STYLES
 // -----------
 
-// Links
+// Edges
 a {
-  color: $linkColor;
+  color: $edgeColor;
   text-decoration: none;
   line-height: inherit;
   font-weight: inherit;
   &:hover {
-    color: $linkColorHover;
+    color: $edgeColorHover;
     text-decoration: underline;
   }
 }

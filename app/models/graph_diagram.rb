@@ -38,18 +38,18 @@ class GraphDiagram
     end
 
     def draw_edges
-      nodes.map(&:input_links).flatten.each do |link|
-        p = nodes[link.lft_node]
+      nodes.map(&:input_edges).flatten.each do |edge|
+        p = nodes[edge.lft_node]
         # don't draw if no child anymore.
-        if p and c = nodes[link.rgt_node]
-          @g.add_edge p, c, edge_settings(link)
+        if p and c = nodes[edge.rgt_node]
+          @g.add_edge p, c, edge_settings(edge)
         end
       end
     end
 
     def node_settings(node)
       group = [:primary_energy_demand, :useful_demand] & node.groups
-      fillcolor = node.output_links.empty? ? '#dddddd' : nil
+      fillcolor = node.output_edges.empty? ? '#dddddd' : nil
       hsh = {
         :shape => 'box',
         :group => group,
@@ -65,7 +65,7 @@ class GraphDiagram
       hsh
     end
 
-    def edge_settings(link)
+    def edge_settings(edge)
       opts = {}
       share = nil
       colors = {
@@ -75,14 +75,14 @@ class GraphDiagram
         :low_caloric_gas  => '#000099',
         :high_caloric_gas => '#000099',
         :bio_gas          => '#000099'      }
-      if link.share
-        share = "#{link.share} "
+      if edge.share
+        share = "#{edge.share} "
       else
         opts[:color] = '#ff0000'
       end
-      opts[:color] ||= colors[link.carrier.key]
-      val = (link.value / 10**9).round(3) rescue ''
-      opts[:label] = "[#{link.carrier.id} | #{link.link_type.to_s[0..2]} (#{share})] #{val}"
+      opts[:color] ||= colors[edge.carrier.key]
+      val = (edge.value / 10**9).round(3) rescue ''
+      opts[:label] = "[#{edge.carrier.id} | #{edge.edge_type.to_s[0..2]} (#{share})] #{val}"
 
       opts
     end

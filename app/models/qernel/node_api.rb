@@ -4,7 +4,7 @@ module Qernel
 # == Big Picture
 #
 # === Node
-# Responsible for calculating demands/energy flow only. Has links and
+# Responsible for calculating demands/energy flow only. Has edges and
 # slots, so can traverse the graph. But doesn't know about its other
 # attributes like cost, co2, etc. It is more like a node in a graph.
 #
@@ -12,7 +12,7 @@ module Qernel
 #
 # A NodeApi instance includes (static) attributes (stored in the
 # ::Node table) and dynamic attributes that are calculated based
-# on the static ones. It doesn't (really) know about links, slots, etc
+# on the static ones. It doesn't (really) know about edges, slots, etc
 # but can access them through #node. It's more like a data-model.
 #
 #
@@ -153,7 +153,7 @@ class NodeApi
   # Updates a (power plant) node demand by its electricity output.
   #
   # That means we have to divide by the conversion of the electricity slot. So
-  # that the electricity output link receive that value, otherwise one part would
+  # that the electricity output edge receive that value, otherwise one part would
   # go away to losses.
   #
   # UPDATE( ... , preset_demand_by_electricity_production, 1000)
@@ -175,7 +175,7 @@ class NodeApi
   # Updates a (hydrogen production plant) node demand by its hydrogen output.
   #
   # That means we have to divide by the conversion of the hydrogen slot. So
-  # that the hydrogen output link receive that value, otherwise one part would
+  # that the hydrogen output edge receive that value, otherwise one part would
   # go away to losses.
   #
   # UPDATE( ... , preset_demand_by_hydrogen_production, 1000)
@@ -254,10 +254,10 @@ class NodeApi
       unit_for_calculation "primary_demand_of_#{carrier}", 'MJ'
 
       ['input', 'output'].each do |side|
-        define_method "#{carrier}_#{side}_link_share" do
+        define_method "#{carrier}_#{side}_edge_share" do
           if slot = self.node.send(side, carrier_key)
-            if link = slot.links.first
-              link.send('share') || 0.0
+            if edge = slot.edges.first
+              edge.send('share') || 0.0
             else
               0.0
             end
@@ -292,7 +292,7 @@ class NodeApi
   def self.create_share_of_node_method(node_key)
     key = node_key.to_sym
     define_method "share_of_#{key}" do
-      ol = self.node.output_links.detect{|l| l.lft_node.key == key}
+      ol = self.node.output_edges.detect{|l| l.lft_node.key == key}
       ol and ol.share
     end
   end
@@ -306,15 +306,15 @@ class NodeApi
 
   # creates a method during run time if method_missing
   #
-  def self.create_input_link_method(method_id, carrier_name, side, method)
+  def self.create_input_edge_method(method_id, carrier_name, side, method)
     if carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/)
-      carrier_name, link_type = carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
-      link_type = "inversed_flexible" if link_type == "inversedflexible"
+      carrier_name, edge_type = carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
+      edge_type = "inversed_flexible" if edge_type == "inversedflexible"
     end
     define_method method_id do
       if slot = self.node.send(side, carrier_name.to_sym)
-        if link = link_type.nil? ? slot.links.first : slot.links.detect{|l| l.send("#{link_type}?")}
-          link.send(method)
+        if edge = edge_type.nil? ? slot.edges.first : slot.edges.detect{|l| l.send("#{edge_type}?")}
+          edge.send(method)
         end
       end
     end
@@ -322,8 +322,8 @@ class NodeApi
 
   # creates a method during run time if method_missing and returns the value
   #
-  def self.create_input_link_method_and_execute(caller, method_id, carrier_name, side, method)
-    create_input_link_method(method_id, carrier_name, side, method)
+  def self.create_input_edge_method_and_execute(caller, method_id, carrier_name, side, method)
+    create_input_edge_method(method_id, carrier_name, side, method)
     caller.send(method_id)
   end
 
@@ -331,9 +331,9 @@ class NodeApi
     ActiveSupport::Notifications.instrument("gql.debug", "NodeApi:method_missing #{method_id}")
 
     # electricity_
-    if m = /^(.*)_(input|output)_link_(share|value)$/.match(method_id.to_s)
+    if m = /^(.*)_(input|output)_edge_(share|value)$/.match(method_id.to_s)
       carrier_name, side, method = m.captures
-      self.class.create_input_link_method_and_execute(self, method_id, carrier_name, side, method)
+      self.class.create_input_edge_method_and_execute(self, method_id, carrier_name, side, method)
     elsif m = /^share_of_(\w*)$/.match(method_id.to_s) and match = m.captures.first
       self.class.create_share_of_node_method_and_execute(self, match)
     elsif m = /^cost_(\w*)$/.match(method_id.to_s) and method_name = m.captures.first

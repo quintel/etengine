@@ -21,18 +21,18 @@ module Qernel
           inject_dynamic_output_capacity!
         end
 
-        # If the output slot has two links, one a share link and one inversed
+        # If the output slot has two edges, one a share edge and one inversed
         # flexible, assume that unused energy is dumped through the flexible.
         # Adjust the share edge so that only energy actually emitted by the
         # storage flows.
         output_slot = @node.node.output(@context.carrier)
 
-        return if !output_slot || output_slot.links.length != 2
+        return if !output_slot || output_slot.edges.length != 2
 
-        share_link = output_slot.links.detect(&:share?)
-        if_link = output_slot.links.detect(&:inversed_flexible?)
+        share_edge = output_slot.edges.detect(&:share?)
+        if_edge = output_slot.edges.detect(&:inversed_flexible?)
 
-        return unless share_link && if_link
+        return unless share_edge && if_edge
 
         total = target_api.demand * output_slot.conversion / 3600
 
@@ -43,7 +43,7 @@ module Qernel
             @participant.load_curve.sum { |v| v.positive? ? v : 0.0 } / total
           end
 
-        share_link.dataset_set(:share, new_share)
+        share_edge.dataset_set(:share, new_share)
       end
 
       private

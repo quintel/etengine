@@ -103,30 +103,30 @@
     :demand: 1.0e-03
     :input:
       :coupling_carrier: 11.0
-  :resettable_slots_with_hidden_link:
+  :resettable_slots_with_hidden_edge:
     :input:
       :gas: 1.0
     :output:
       :coupling_carrier: 1.0
-  :resettable_slots_with_hidden_link_child:
+  :resettable_slots_with_hidden_edge_child:
     :output:
       :gas: 1.0
 
-  # From reversed_links.yml
+  # From reversed_edges.yml
   # -----------------------
 
-  :reversed_links_middle_1:
+  :reversed_edges_middle_1:
     :demand: 1.0e-03
     :output:
       :gas: 1.0
-  :reversed_links_middle_2:
+  :reversed_edges_middle_2:
     :output:
       :gas: 1.0
-  :reversed_links_middle_3:
+  :reversed_edges_middle_3:
     :demand: 1.0e-04
     :output:
       :gas: 1.0
-  :reversed_links_left:
+  :reversed_edges_left:
     :demand: 1.5e-03
     :input:
       :gas: 1.0
@@ -188,17 +188,17 @@
   # From resettable_slots.yml
   # -------------------------
 
-  :resettable_slots_with_hidden_link-resettable_slots_with_reset_slot@coupling_carrier:
+  :resettable_slots_with_hidden_edge-resettable_slots_with_reset_slot@coupling_carrier:
     :child_share: 1.0
-  :resettable_slots_with_hidden_link_child-resettable_slots_with_hidden_link@gas:
+  :resettable_slots_with_hidden_edge_child-resettable_slots_with_hidden_edge@gas:
     :child_share: 1.0
 
-  # From reversed_links.yml
+  # From reversed_edges.yml
   # -----------------------
 
-  :reversed_links_middle_1-reversed_links_left@gas:
-  :reversed_links_middle_2-reversed_links_left@gas:
-  :reversed_links_middle_3-reversed_links_left@gas:
+  :reversed_edges_middle_1-reversed_edges_left@gas:
+  :reversed_edges_middle_2-reversed_edges_left@gas:
+  :reversed_edges_middle_3-reversed_edges_left@gas:
     :child_share: 1.0
     :parent_share: 1.0
 

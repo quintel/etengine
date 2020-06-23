@@ -36,7 +36,7 @@ module Qernel::RecursiveFactor::BioDemand
 
   private
 
-  def demand_of_bio_resources_including_abroad_factor(_link)
+  def demand_of_bio_resources_including_abroad_factor(_edge)
     return nil unless right_dead_end? || bio_resources_demand?
     factor_for_primary_demand(:bio_resources_demand?)
   end
@@ -51,7 +51,7 @@ module Qernel::RecursiveFactor::BioDemand
     demand * recursive_factor(
       :demand_of_bio_resources_including_abroad_of_carrier_factor,
       nil, # node_share_method
-      nil, # link
+      nil, # edge
       carrier_key
     )
   end
@@ -61,14 +61,14 @@ module Qernel::RecursiveFactor::BioDemand
   #
   # Returns a numeric.
   def demand_of_bio_resources_including_abroad_of_carrier_factor(
-    link,
+    edge,
     carrier_key
   )
     return nil unless right_dead_end? || bio_resources_demand?
 
-    link ||= output_links.first
+    edge ||= output_edges.first
 
-    if link && link.carrier.key == carrier_key
+    if edge && edge.carrier.key == carrier_key
       factor_for_primary_demand(:bio_resources_demand?)
     else
       0.0

@@ -1,10 +1,10 @@
 module Qernel
-# Graph connects and datasets, nodes, links, carriers. It controls the
+# Graph connects and datasets, nodes, edges, carriers. It controls the
 # main calculation logic and gives allows for plugins to hook into the
 # calculation.
 #
 #     g = Qernel::Graph.new([Qernel::Node], [Qernel::Carrier])
-#     g.links = [Qernel::Link]
+#     g.edges = [Qernel::Edge]
 #     g.slot  = [Qernel::Slot]
 #     # g can now be cached
 #     g.dataset = Dataset.new
@@ -64,7 +64,7 @@ class Graph
     @area   = Qernel::Area.new(self)
 
     @nodes_by_group = {}
-    @links_by_group = {}
+    @edges_by_group = {}
 
     self.nodes = nodes
 
@@ -93,7 +93,7 @@ class Graph
       node.graph = self
       node.slots.each { |s| s.graph = self }
     end
-    links.each    { |l| l.graph = self }
+    edges.each    { |l| l.graph = self }
     carriers.each { |c| c.graph = self }
   end
 
@@ -150,7 +150,7 @@ class Graph
     nodes.each do |c|
       c.query.send(method_name)
       c.send(method_name)
-      c.input_links.each(&method_name)
+      c.input_edges.each(&method_name)
       c.inputs.each(&method_name)
       c.outputs.each(&method_name)
     end
@@ -184,12 +184,12 @@ class Graph
     @period ||= present? ? :present : :future
   end
 
-  def update_link_shares
-    @finished_nodes.map(&:input_links).flatten.each(&:update_share)
+  def update_edge_shares
+    @finished_nodes.map(&:input_edges).flatten.each(&:update_share)
   end
 
-  def links
-    @links ||= nodes.map(&:input_links).flatten.uniq
+  def edges
+    @edges ||= nodes.map(&:input_edges).flatten.uniq
   end
 
   def groups
@@ -202,7 +202,7 @@ class Graph
 
   def carriers
     # The list of carriers is retrieved by looking at all slots, not just
-    # links, so that "orphan" carriers used only for initial input also
+    # edges, so that "orphan" carriers used only for initial input also
     # get included.
     @carriers ||= nodes.each_with_object(Set.new) do |node, carriers|
       node.slots.each { |slot| carriers.add slot.carrier }
@@ -252,14 +252,14 @@ class Graph
     @nodes_by_group[key] ||= nodes.select{|c| c.groups.include?(key) }
   end
 
-  # Return all links in the given group.
+  # Return all edges in the given group.
   #
   # @param group_key [String,Symbol] group identifier
   # @return [Array<Node>]
   #
-  def group_links(group_key)
+  def group_edges(group_key)
     key = group_key.to_sym
-    @links_by_group[key] ||= links.select{ |link| link.groups.include?(key) }
+    @edges_by_group[key] ||= edges.select{ |edge| edge.groups.include?(key) }
   end
 
   # Return the node with given key.
@@ -306,7 +306,7 @@ class Graph
   # 2. Calculate the node (see: {Qernel::Node#calculate})
   # 3. Remove node from stack and move it to {#finished_nodes}
   # 5. => (continue at 1. until stack is empty)
-  # 6. recalculate link shares of output_links (see: {Qernel::Link#update_share})
+  # 6. recalculate edge shares of output_edges (see: {Qernel::Edge#update_share})
   #
   def calculate(options = {})
     lifecycle.calculate
@@ -329,7 +329,7 @@ class Graph
       node.calculate
       @finished_nodes << @node_stack.delete_at(index)
     end
-    update_link_shares
+    update_edge_shares
   end
 
 
@@ -404,7 +404,7 @@ class Graph
 
   def reset_memoized_methods
     @carriers = nil
-    @links    = nil
+    @edges    = nil
     @groups   = nil
     @nodes_by_group = {}
 
@@ -458,8 +458,8 @@ class Graph
 
   if Rails.env.test? || Rails.env.development?
     # create slot if necessary.
-    # return link
-    def connect(lft, rgt, carrier, link_type = :share, reversed = false,
+    # return edge
+    def connect(lft, rgt, carrier, edge_type = :share, reversed = false,
                 left_slot_type = nil, right_slot_type = nil)
 
       lft = node(lft) if lft.is_a?(Symbol)
@@ -471,7 +471,7 @@ class Graph
       unless rgt.output(carrier)
         rgt.add_slot(Slot.factory(right_slot_type, rgt.id+200, rgt, carrier, :output).with({:conversion => 1.0}))
       end
-      Link.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, link_type, reversed)
+      Edge.new([lft.id, rgt.id].join('').to_i, lft, rgt, carrier, edge_type, reversed)
     end
 
     def with_nodes(key_dataset_hsh)

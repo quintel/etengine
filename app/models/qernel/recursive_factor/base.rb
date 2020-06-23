@@ -1,10 +1,10 @@
 module Qernel::RecursiveFactor::Base
 
   # Public: Recursively traverses the graph from "self" (this node) to
-  # the parent (supplier) nodes. It does so by following its input_links
+  # the parent (supplier) nodes. It does so by following its input_edges
   # according to a +strategy method+. The strategy method returns either:
   #
-  #   * a 'weight' of a link/path. When returning a weight, the
+  #   * a 'weight' of a edge/path. When returning a weight, the
   #     recursive_factor stops for that path
   #
   #   * nil, in which case the recursion continues.
@@ -31,7 +31,7 @@ module Qernel::RecursiveFactor::Base
   #                          node. For example, use #co2_factor to
   #                          exclude nodes that have co2 filters.
   #
-  # link                   - The link through which we called the
+  # edge                   - The edge through which we called the
   #                          recursive_factor (this is nil for the first
   #                          node; recursive_factor uses it internally).
   #
@@ -42,20 +42,20 @@ module Qernel::RecursiveFactor::Base
   def recursive_factor(
     strategy_method,
     node_share_method = nil,
-    link = nil,
+    edge = nil,
     *args,
     include_abroad: false
   )
     if (!include_abroad && abroad?) || recursive_factor_ignore?
       0.0
-    elsif (return_value = send(strategy_method, link, *args)) != nil
+    elsif (return_value = send(strategy_method, edge, *args)) != nil
       return_value
     else
-      results = input_links.map do |link|
-        parent = link.rgt_node
+      results = input_edges.map do |edge|
+        parent = edge.rgt_node
 
         # The demanding_share returns the right-to-left share. This is the
-        # same as +link.share+ except when the carrier is loss, in which case
+        # same as +edge.share+ except when the carrier is loss, in which case
         # the share will always be 0.0 since we include losses separately
         # using +loss_compensation_factor+.
         #
@@ -63,7 +63,7 @@ module Qernel::RecursiveFactor::Base
         #      \- [C] (demanding_share = 100%)
         #
         # [A] needs to be 100% * [B] + 100% * [C]
-        demanding_share = demanding_share(link)
+        demanding_share = demanding_share(edge)
 
         # The output of the parent needs to be multiplied by this
         # "compensation factor" to include losses.
@@ -81,7 +81,7 @@ module Qernel::RecursiveFactor::Base
           0.0
         elsif loss_compensation_factor.zero?
           # The node is 100% loss, so there is no point in recursing
-          # further on this link.
+          # further on this edge.
           0.0
         elsif node_share.zero?
           # The node has been assigned a weight of zero, so we can safely
@@ -89,7 +89,7 @@ module Qernel::RecursiveFactor::Base
           0.0
         else
           parent_value = parent.recursive_factor(
-            strategy_method, node_share_method, link, *args,
+            strategy_method, node_share_method, edge, *args,
             include_abroad: include_abroad
           )
 
@@ -114,7 +114,7 @@ module Qernel::RecursiveFactor::Base
   #                          node. For example, use #co2_factor to
   #                          exclude nodes that have co2 filters.
   #
-  # link                   - The link through which we called the
+  # edge                   - The edge through which we called the
   #                          recursive_factor (this is nil for the first
   #                          node; recursive_factor uses it internally).
   #
@@ -127,17 +127,17 @@ module Qernel::RecursiveFactor::Base
   def recursive_factor_without_losses(
     strategy_method,
     node_share_method = nil,
-    link = nil,
+    edge = nil,
     *args,
     include_abroad: false
   )
     if (!include_abroad && abroad?) || recursive_factor_ignore?
       0.0
-    elsif (return_value = send(strategy_method, link, *args)) != nil
+    elsif (return_value = send(strategy_method, edge, *args)) != nil
       return_value
     else
-      val = input_links.map do |link|
-        parent = link.rgt_node
+      val = input_edges.map do |edge|
+        parent = edge.rgt_node
 
         # Exception 1:
         #
@@ -146,10 +146,10 @@ module Qernel::RecursiveFactor::Base
         #
         # Exception 2:
         #
-        # If the demand for a node is zero, certain links are assigned a
-        # nil share. If a slot has two links with nil share, we have to assign
+        # If the demand for a node is zero, certain edges are assigned a
+        # nil share. If a slot has two edges with nil share, we have to assign
         # shares so they sum up to 1.0 (and not 2.0, if we just did
-        # `link.share || 1.0`, to fix exception 1).
+        # `edge.share || 1.0`, to fix exception 1).
         #
         # Therefore we assign averages, just to make this calculation work.
         #
@@ -159,28 +159,28 @@ module Qernel::RecursiveFactor::Base
         #                        \
         #                         --(flexible: share nil)-- [C] (method: 1.0)
         #
-        # # (conversion * link_share * value)
+        # # (conversion * edge_share * value)
         # (1.0 * 1.0 * 1.0) + (1.0 * 1.0 * 1.0)
         # # => 2.0!
         #
-        # => This has been changed in Link:
+        # => This has been changed in Edge:
         #      - flexible are assigned share of 1.0 if nil
         #      - constant are assigned share of 0.0 if nil
         #
-        link_share = link.share
+        edge_share = edge.share
 
-        if link_share.nil?
-          # Following code would make sure that combined link_shares would not
+        if edge_share.nil?
+          # Following code would make sure that combined edge_shares would not
           # be higher than 1.0:
           #
-          #   total_link_shares = valid_links.map(&:share).compact.sum
-          #   link_share = (1.0 - total_link_shares) / valid_links.length
-          link_share = 1.0
+          #   total_edge_shares = valid_edges.map(&:share).compact.sum
+          #   edge_share = (1.0 - total_edge_shares) / valid_edges.length
+          edge_share = 1.0
         end
 
-        if link_share.zero?
+        if edge_share.zero?
           # If the share is 0.0 there is no point in continuing with the
-          # calculation for this link, as any result would be multiplied by
+          # calculation for this edge, as any result would be multiplied by
           # zero.
           0.0
         else
@@ -192,17 +192,17 @@ module Qernel::RecursiveFactor::Base
           # +---o slot(0.1) <--(1.0)-- [C] (method: 80)
           #
           # [A] should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
-          input = self.input(link.carrier)
+          input = self.input(edge.carrier)
 
           parent_conversion = (input and input.conversion) || 1.0
 
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
-            strategy_method, node_share_method, link, *args,
+            strategy_method, node_share_method, edge, *args,
             include_abroad: include_abroad
           )
 
-          link_share * parent_value * parent_conversion
+          edge_share * parent_value * parent_conversion
         end
       end
 
@@ -216,9 +216,9 @@ module Qernel::RecursiveFactor::Base
   # Returns true or false.
   def right_dead_end?
     unless defined?(@right_dead_end)
-      @right_dead_end = self.input_links.none? do |link|
+      @right_dead_end = self.input_edges.none? do |edge|
         # +! environment?+ is already checked elsewhere.
-        ! link.rgt_node.sector_environment?
+        ! edge.rgt_node.sector_environment?
       end
     end
 
@@ -233,14 +233,14 @@ module Qernel::RecursiveFactor::Base
   def domestic_dead_end?
     unless defined?(@domestic_dead_end)
       @domestic_dead_end = right_dead_end? ||
-        input_links.all? { |link| link.rgt_node.abroad? }
+        input_edges.all? { |edge| edge.rgt_node.abroad? }
     end
 
     @domestic_dead_end
   end
 
   # Public: The loss compensation factor is the amount by which we must
-  # multiply the demand of a link in order to account for the losses of the
+  # multiply the demand of a edge in order to account for the losses of the
   # parent (right-hand) node.
   #
   # A factor of 0.0 means that the node is 100% loss. A factor of
@@ -273,7 +273,7 @@ module Qernel::RecursiveFactor::Base
     end
   end
 
-  # Public: In contrast to link.share, demanding_share takes also into account
+  # Public: In contrast to edge.share, demanding_share takes also into account
   # losses and zero-demands.
   #
   # For example:
@@ -299,10 +299,10 @@ module Qernel::RecursiveFactor::Base
   #   demanding_share(xy_elec) # => 0.0 (node has no share)
   #
   # Returns a float.
-  def demanding_share(link)
-    return 0.0 if link.loss?
+  def demanding_share(edge)
+    return 0.0 if edge.loss?
 
-    demanding_share = (link.value || 0.0) / (self.demand || 0.0)
+    demanding_share = (edge.value || 0.0) / (self.demand || 0.0)
 
     if demanding_share.nan? || demanding_share.infinite?
       demanding_share = 0.0

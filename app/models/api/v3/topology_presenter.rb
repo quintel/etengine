@@ -16,7 +16,7 @@ module Api
       def as_json(*)
         json = Hash.new
         json[:nodes] = nodes
-        json[:links] = links
+        json[:edges] = edges
         json
       end
 
@@ -41,13 +41,13 @@ module Api
         end
       end
 
-      def links
-        @nodes.map(&:input_links).flatten.uniq.map do |l|
+      def edges
+        @nodes.map(&:input_edges).flatten.uniq.map do |l|
           {
             left: l.lft_node.key,
             right: l.rgt_node.key,
             color: l.carrier.graphviz_color || '#999',
-            type: l.link_type
+            type: l.edge_type
           }
         end
       end

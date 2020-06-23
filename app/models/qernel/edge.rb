@@ -1,8 +1,8 @@
 module Qernel
-  class Link
+  class Edge
     extend ActiveModel::Naming
 
-    # Public: Defines a method on the Link which, when called, will call the
+    # Public: Defines a method on the Edge which, when called, will call the
     # method of the same name on the parent node's NodeApi, reducing
     # the value according to the slot conversion and parent share.
     #
@@ -35,7 +35,7 @@ module Qernel
     attr_accessor :graph
 
     attr_reader :lft_node, :rgt_node, :carrier,
-      :id, :key, :link_type, :groups
+      :id, :key, :edge_type, :groups
 
     # Flow ---------------------------------------------------------------------
 
@@ -43,22 +43,22 @@ module Qernel
 
     # --------------------------------------------------------------------------
 
-    # Creates a new Link. Automatically adds the connection to the parent and
+    # Creates a new Edge. Automatically adds the connection to the parent and
     # child nodes.
     #
-    # id       - A unique identifier for the link. A non-integer value will be
+    # id       - A unique identifier for the edge. A non-integer value will be
     #            run through the Hashpipe library which returns an integer hash
     #            of the ID for fast lookups and comparison.
     # lft      - The left, "child", node.
     # rft      - The right, "parent", node.
     # carrier  - The Carrier determining the type of energy which flows through
     #            this edge.
-    # type     - A symbol which tells the link how it should be calculated. See
-    #            the options in Calculation::Links.for.
-    # reversed - Should the link input and output be swapped when calculating?
-    # groups   - An array of groups to which the link belongs.
+    # type     - A symbol which tells the edge how it should be calculated. See
+    #            the options in Calculation::Edges.for.
+    # reversed - Should the edge input and output be swapped when calculating?
+    # groups   - An array of groups to which the edge belongs.
     #
-    # Returns a link.
+    # Returns a edge.
     def initialize(id, lft, rgt, carrier, type, reversed = false, groups = [])
       @key = id
       @id  = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
@@ -68,15 +68,15 @@ module Qernel
       @rgt_node = rgt
       @carrier       = carrier
       @groups        = groups.freeze
-      @link_type     = type.to_sym
+      @edge_type     = type.to_sym
 
-      lft_node.add_input_link(self)
-      rgt_node.add_output_link(self)
+      lft_node.add_input_edge(self)
+      rgt_node.add_output_edge(self)
 
       self.dataset_key # memoize dataset_key
     end
 
-    # Enables link.electricity?, link.network_gas?, etc.
+    # Enables edge.electricity?, edge.network_gas?, etc.
     Etsource::Dataset::Import.new('nl').carrier_keys.each do |carrier_key|
       delegate :"#{ carrier_key }?", to: :carrier
     end
@@ -88,7 +88,7 @@ module Qernel
       self
     end
 
-    # Public: The sector to which the link belongs. This is the same as the sector
+    # Public: The sector to which the edge belongs. This is the same as the sector
     # of the child (consumer, "left-hand") node.
     #
     # Returns a symbol.
@@ -101,31 +101,31 @@ module Qernel
     end
 
     def inspect
-      "<Qernel::Link #{key.inspect}>"
+      "<Qernel::Edge #{key.inspect}>"
     end
 
     alias_method :to_s, :inspect
 
-    # Link Types ---------------------------------------------------------------
+    # Edge Types ---------------------------------------------------------------
 
     def share?
-      @link_type === :share
+      @edge_type === :share
     end
 
     def flexible?
-      @link_type === :flexible
+      @edge_type === :flexible
     end
 
     def dependent?
-      @link_type === :dependent
+      @edge_type === :dependent
     end
 
     def constant?
-      @link_type === :constant
+      @edge_type === :constant
     end
 
     def inversed_flexible?
-      @link_type === :inversed_flexible
+      @edge_type === :inversed_flexible
     end
 
     def reversed?
@@ -147,10 +147,10 @@ module Qernel
     end
 
     # Public: The share of energy from the parent node carried away by this
-    # link.
+    # edge.
     #
     # This is only able to return a meaningful value AFTER the graph has been
-    # calculated, since prior to this the link or node may not yet have a
+    # calculated, since prior to this the edge or node may not yet have a
     # demand.
     #
     # Returns a Numeric, or nil if no share can be calculated.
@@ -162,7 +162,7 @@ module Qernel
     end
 
     # Public: Delegates a calculation to the parent node NodeApi, reducing
-    # the returned value in accordance with the slot conversion and link share.
+    # the returned value in accordance with the slot conversion and edge share.
     #
     # calculation - The method to be called on the NodeApi
     # *args       - Additional arguments to be passed to the calculation method.
@@ -181,7 +181,7 @@ module Qernel
 
     def calculate
       unless self.calculated
-        self.value      = Calculation::Links.for(self).call(self)
+        self.value      = Calculation::Edges.for(self).call(self)
         self.calculated = true
       end
 
@@ -196,16 +196,16 @@ module Qernel
       if self.value and slot_demand and slot_demand > 0
         self.share = self.value / slot_demand
       elsif value == 0.0
-        siblings_and_self = lft_input.links
+        siblings_and_self = lft_input.edges
 
-        # if the value is 0.0, we have to set rules what links
+        # if the value is 0.0, we have to set rules what edges
         # get what shares. In order to have recursive_factors work properly.
         # To fix https://github.com/dennisschoenmakers/etengine/issues/178
         # we have to change the following line:
         if flexible?
           other_share =
-            siblings_and_self.sum do |link|
-              link.share.nil? || link == self ? 0.0 : link.share.to_f
+            siblings_and_self.sum do |edge|
+              edge.share.nil? || edge == self ? 0.0 : edge.share.to_f
             end
 
           # Disallow a negative energy flow.
@@ -218,36 +218,36 @@ module Qernel
 
     # Demands ------------------------------------------------------------------
 
-    # The slot to which the energy for this link flows, irrespective of the
-    # links "reversed" setting.
+    # The slot to which the energy for this edge flows, irrespective of the
+    # edges "reversed" setting.
     #
     # Returns a Qernel::Slot.
     def lft_input
       lft_node.input(@carrier)
     end
 
-    # The slot from where the energy for this link comes, irrespective of the
-    # link's "reversed" setting.
+    # The slot from where the energy for this edge comes, irrespective of the
+    # edge's "reversed" setting.
     #
     # Returns a Qernel::Slot.
     def rgt_output
       rgt_node.output(@carrier)
     end
 
-    # The slot from where the energy for this link comes, for calculation
-    # purposes. If the link is reversed it will instead return the slot which
-    # receives the link energy.
+    # The slot from where the energy for this edge comes, for calculation
+    # purposes. If the edge is reversed it will instead return the slot which
+    # receives the edge energy.
     #
     # Returns a Qernel::Slot.
     def input
       reversed? ? rgt_output : lft_input
     end
 
-    # The slot that receives the energy of this link. If reversed it will be the
+    # The slot that receives the energy of this edge. If reversed it will be the
     # lft node.
 
-    # The slot which receives energy from this link, for calculation purposes.
-    # If the link is reversed it will instead return the slot from which the
+    # The slot which receives energy from this edge, for calculation purposes.
+    # If the edge is reversed it will instead return the slot from which the
     # energy comes.
     #
     # Returns a Qernel::Slot.
@@ -257,10 +257,10 @@ module Qernel
 
     # Queries ------------------------------------------------------------------
 
-    # Public: Returns how much CO2 is emitted per MJ passing through the link.
+    # Public: Returns how much CO2 is emitted per MJ passing through the edge.
     #
-    # Delegates to the carrier if no custom link value is set. Note that setting
-    # a custom `co2_per_mj` only has an effect if the link would be used to
+    # Delegates to the carrier if no custom edge value is set. Note that setting
+    # a custom `co2_per_mj` only has an effect if the edge would be used to
     # calculate CO2 emissions.
     #
     # See Qernel::RecursiveFactor::PrimaryCo#co2_per_mj_factor
@@ -273,12 +273,12 @@ module Qernel
     private
 
     # Internal: Micro-optimization which improves the performance of
-    # Array#flatten when the array contains Links.
+    # Array#flatten when the array contains Edges.
     #
     # See http://tenderlovemaking.com/2011/06/28/ ...
     #       til-its-ok-to-return-nil-from-to_ary
     def to_ary
       nil
     end
-  end # Link
+  end # Edge
 end # Qernel
