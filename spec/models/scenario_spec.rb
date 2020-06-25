@@ -4,6 +4,22 @@ describe Scenario do
   before { @scenario = Scenario.new }
   subject { @scenario }
 
+  describe '.find_for_calculation' do
+    context 'when the scenario exists' do
+      it 'returns the scenario' do
+        scenario = FactoryBot.create(:scenario)
+        expect(described_class.find_for_calculation(scenario.id)).to eq(scenario)
+      end
+    end
+
+    context 'when the scenario does not exist' do
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect { described_class.find_for_calculation(-1) }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   describe "#default" do
     subject { Scenario.default }
 

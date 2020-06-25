@@ -45,6 +45,8 @@ class Scenario < ApplicationRecord
   scope :recent,        -> { order("created_at DESC").limit(30) }
   scope :recent_first,  -> { order('created_at DESC') }
 
+  scope :with_attachments, -> { includes(attachments: { file_attachment: :blob }) }
+
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
   scope(:deletable, lambda do
@@ -100,6 +102,14 @@ class Scenario < ApplicationRecord
     valid_attributes = [column_names, 'scenario_id'].flatten
     out.delete_if{|key,v| !valid_attributes.include?(key.to_s)}
     out
+  end
+
+  # Public: Finds a scenario by ID, eager loading associations which are typically used during
+  # calculation.
+  #
+  # Returns the Scenario, or raises ActiveRecord::RecordNotFound if the scenario does not exist.
+  def self.find_for_calculation(id)
+    where(id: id).with_attachments.first!
   end
 
   def area

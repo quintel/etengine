@@ -17,7 +17,7 @@ class Inspect::BaseController < ApplicationController
     # wishes to start a new scenario.
     start_scenario_and_redirect && return if params[:api_scenario_id] == '_'
 
-    @api_scenario = Scenario.find(params[:api_scenario_id])
+    @api_scenario = Scenario.find_for_calculation(params[:api_scenario_id])
     @gql = @api_scenario.gql(prepare: true)
   rescue Atlas::DocumentNotFoundError => e
     raise e unless e.message.match?(/could not find a dataset with the key/i)

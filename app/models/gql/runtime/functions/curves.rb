@@ -7,8 +7,8 @@ module Gql::Runtime
       # Public: Looks up the attachment matching the `name`, and converts the
       # contents into a curve. If no attachment is set, nil is returned.
       def ATTACHED_CURVE(name)
-        attachment =
-          scope.gql.scenario.attachments.find_by(key: name)
+        # Use to_a.find to take advantage of the eager-loaded attachments and blobs.
+        attachment = scope.gql.scenario.attachments.to_a.find { |a| a.key == name }
 
         return nil unless attachment&.file&.attached?
 

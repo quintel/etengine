@@ -269,13 +269,13 @@ module Api
       def find_preset_or_scenario
         @scenario =
           Preset.get(params[:id]).try(:to_scenario) ||
-          Scenario.find_by_id(params[:id])
+          Scenario.find_for_calculation(params[:id])
 
         render_not_found(errors: ['Scenario not found']) unless @scenario
       end
 
       def find_scenario
-        @scenario = Scenario.find params[:id]
+        @scenario = Scenario.find_for_calculation(params[:id])
       rescue ActiveRecord::RecordNotFound
         render_not_found(errors: ['Scenario not found'])
       end
