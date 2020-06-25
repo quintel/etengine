@@ -143,7 +143,7 @@ RSpec.describe Qernel::CalculationUnits do
       expect(klass.unit_for_calculation(:second)).to eq(2)
     end
 
-    it 'does not store values which were not assigned', :focus do
+    it 'does not store values which were not assigned' do
       expect(klass.unit_for_calculation(:no)).to be_nil
     end
   end
