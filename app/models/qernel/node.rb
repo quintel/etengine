@@ -146,7 +146,7 @@ class Node
 
     memoize_for_cache
 
-    self.node_api = Qernel::NodeApi.for_node(self)
+    self.node_api = Qernel::NodeApi.from_node(self)
 
     @calculation_state = :initialized
   end

@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Misc calculation methods.
     module HelperCalculations
-      include CalculationUnits
-
       delegate :primary_co2_emission, to: :node
 
       # Public: Calculates the number of units that are installed in the future for this node, based

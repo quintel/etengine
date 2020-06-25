@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Calculations arelated to capacity and energy production.
     module CapacityProduction
-      include CalculationUnits
-
       # Public: The required installed input capacity, based on the demand.
       #
       # Returns a numeric value in MWh.

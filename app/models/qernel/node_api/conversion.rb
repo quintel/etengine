@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Enables converting some calculated values from one unit of measure to another.
     #
     # Each method takes a single parameter, which allows you to convert the original value to one

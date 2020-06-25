@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Represents a node whose number of units is dynamically calculated based on the NoU of a parent
     # and the share of the edge between the two.
     #
@@ -10,7 +10,7 @@ module Qernel
     #   +-----------------+                    +-------+
     #   | Parent (nou=20) | <- (share: 0.3) <- | Child |
     #   +-----------------+                    +-------+
-    class InheritableNouNodeApi < NodeApi
+    class InheritableNouNodeApi < Base
       def number_of_units
         fetch(:number_of_units, false) do
           raise(InvalidParents, self) if node.output_edges.length != 1

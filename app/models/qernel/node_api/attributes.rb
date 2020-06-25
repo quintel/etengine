@@ -1,5 +1,5 @@
 module Qernel
-  class NodeApi
+  module NodeApi
     module Attributes
       # All the static attributes that come from the database
       # Access the following attributes with @. e.g

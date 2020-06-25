@@ -15,7 +15,7 @@ describe Qernel::MeritFacade::Curves, :household_curves do
   describe 'amplified dynamic curves with a source curve of 1920 FLH' do
     let(:node) do
       instance_double(
-        'Qernel::NodeApi',
+        'Qernel::NodeApi::Base',
         demand: 8760,
         full_load_hours: full_load_hours
       )
@@ -52,7 +52,7 @@ describe Qernel::MeritFacade::Curves, :household_curves do
   end
 
   describe 'interpolated dynamic curves' do
-    let(:node) { instance_double('Qernel::NodeApi', demand: 8760) }
+    let(:node) { instance_double('Qernel::NodeApi::Base', demand: 8760) }
     let(:ev_mix) { [0.75, 0.25, 0] }
     let(:curve) { curves.curve('dynamic: ev_demand', node) }
 
