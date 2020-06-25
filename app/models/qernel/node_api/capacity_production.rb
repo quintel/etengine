@@ -81,14 +81,6 @@ module Qernel
       end
       unit_for_calculation 'heat_output_conversion', 'factor'
 
-      # The total heat output conversion of one unit. This is useable heat and steam_hot_water.
-      def heat_output_conversion
-        fetch(:heat_output_conversion) do
-          (steam_hot_water_output_conversion + useable_heat_output_conversion)
-        end
-      end
-      unit_for_calculation 'heat_output_conversion', 'factor'
-
       # The total heat and cold output conversion of one unit. This is useable heat,
       # steam_hot_water, and cooling.
       def heat_and_cold_output_conversion
