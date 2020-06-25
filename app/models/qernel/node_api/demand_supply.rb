@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Contains calculations relating to demand and supply of carriers.
     module DemandSupply
-      include CalculationUnits
-
       def demand_of_fossil
         fetch(:demand_of_fossil) do
           node.input_carriers.map do |carrier|

@@ -6,14 +6,14 @@ module Qernel
     describe 'when no type is specified' do
       it 'should use the default node API' do
         api = Node.new(id: 1).node_api
-        expect(api).to be_kind_of(Qernel::NodeApi)
+        expect(api).to be_kind_of(Qernel::NodeApi::Base)
       end
     end
 
     describe 'when the type is :default' do
       it 'should use the default node API' do
         api = Node.new(id: 1, groups: [ :something ]).node_api
-        expect(api).to be_kind_of(Qernel::NodeApi)
+        expect(api).to be_kind_of(Qernel::NodeApi::Base)
       end
     end
 
@@ -23,7 +23,7 @@ module Qernel
           id: 1, groups: [ :something, :demand_driven ]
         ).node_api
 
-        expect(api).to be_kind_of(Qernel::DemandDrivenNodeApi)
+        expect(api).to be_kind_of(Qernel::NodeApi::DemandDrivenNodeApi)
       end
     end
 

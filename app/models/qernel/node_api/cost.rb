@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Supplies the Node API with methods to calculate the yearly costs of one plant.
     #
     # These methods are used in conversion.rb to offer a possibility to convert to a number of
     # different units.
     module Cost
-      include CalculationUnits
-
       # Public: Calculates the input capacity of a typical plant, based on the  output capacity in
       # MW.
       #
@@ -78,6 +76,17 @@ module Qernel
       # Returns the cost.
       def marginal_costs=(value)
         dataset_set(:marginal_costs, value)
+      end
+
+      # Public: Sets an array to be used as a marginal cost curve.
+      #
+      # This only applies for certain merit order participants. If the given curve is empty, nil is
+      # set instead.
+      #
+      # Returns the curve.
+      def marginal_cost_curve=(curve)
+        # Ignore empty curves and set no value.
+        dataset_set(:marginal_cost_curve, curve&.any? ? curve : nil)
       end
 
       # Public: Calculates the marginal costs for a plant in euro per MWh of produced heat.

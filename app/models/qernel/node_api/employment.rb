@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Attributes relating to employment.
     module Employment
       extend ActiveSupport::Concern

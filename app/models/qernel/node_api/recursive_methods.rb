@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module Qernel
-  class NodeApi
+  module NodeApi
     # Aliases of RecursiveFactor methods.
     module RecursiveMethods
-      include CalculationUnits
-
       # Returns a numeric value in MJ.
       def max_demand_recursive
         node.max_demand_recursive!
