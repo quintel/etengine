@@ -68,24 +68,35 @@ module Qernel::DatasetAttributes
     # In most Qernel objects you will see this method called with a list
     # of the attributes stored in the dataset.
     def dataset_accessors(*attributes)
-      attributes.flatten.each do |attr_name|
-        attr_name_sym = attr_name.to_sym
-        #   def attr_name
-        #     dataset_get :attr_name
-        #   end
-        #
-        #   def attr_name=(value)
-        #     dataset_set :attr_name, value
-        #   end
-        self.class_eval <<-EOF,__FILE__,__LINE__ +1
-          def #{attr_name_sym}
-            dataset_get #{attr_name_sym.inspect}
-          end
+      dataset_reader(attributes)
+      dataset_writer(attributes)
+    end
 
-          def #{attr_name_sym}=(value)
-            dataset_set #{attr_name_sym.inspect}, value
+    # Public: Creates a method which reads a value from the dataset. Does not define a reader if the
+    # class already has a method with the same name.
+    def dataset_reader(*attributes)
+      attributes.flatten.each do |attr_name|
+        next if method_defined?(attr_name)
+
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          def #{attr_name}
+            dataset_get(:#{attr_name})
           end
-        EOF
+        RUBY
+      end
+    end
+
+    # Public: Creates a method which writes a value to the dataset. Does not define a writer if the
+    # class already has a method with the same name.
+    def dataset_writer(*attributes)
+      attributes.flatten.each do |attr_name|
+        next if method_defined?("#{attr_name}=")
+
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          def #{attr_name}=(value)
+            dataset_set(:#{attr_name}, value)
+          end
+        RUBY
       end
     end
 
