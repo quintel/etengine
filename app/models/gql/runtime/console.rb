@@ -16,6 +16,7 @@ module Gql::Runtime
     include ::Gql::Runtime::Functions::Policy
     include ::Gql::Runtime::Functions::Update
     include ::Gql::Runtime::Functions::Helper
+    include ::Gql::Runtime::Functions::Curves
     include ::Gql::Runtime::Functions::Core
 
     # A Pry prompt that logs what user enters to a log file
