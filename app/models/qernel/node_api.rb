@@ -113,9 +113,9 @@ module Qernel
     #
     def self.for_node(node)
       if node.groups.include?(:demand_driven)
-        DemandDrivenNodeApi.new(node)
+        NodeApi::DemandDrivenNodeApi.new(node)
       elsif node.groups.include?(:inheritable_nou)
-        InheritableNouNodeApi.new(node)
+        NodeApi::InheritableNouNodeApi.new(node)
       else
         NodeApi.new(node)
       end
