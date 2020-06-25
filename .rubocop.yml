@@ -154,17 +154,8 @@ Style/MethodCallWithArgsParentheses:
   Exclude:
   - Gemfile
 
-Metrics/AbcSize:
+Metrics:
   Enabled: false
-
-# Ignore long blocks in specs.
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*_spec.rb'
-
-# Limiting methods to 10 lines is a bit excessive; increase to 20.
-Metrics/MethodLength:
-  Max: 20 # Default is 10.
 
 # GQL functions are all uppercase.
 Naming/MethodName:
