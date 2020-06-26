@@ -101,7 +101,7 @@ module Etsource
   class EdgeToken
     attr_reader :input_key, :carrier_key, :output_key, :key, :edge_type, :reversed
 
-    LINK_TYPES = {
+    EDGE_TYPES = {
       's' => :share,
       'f' => :flexible,
       'i' => :inversed_flexible,
@@ -123,7 +123,7 @@ module Etsource
       @input_key   = input.node_key
       @output_key  = output.node_key
       @reversed    = line.include?('<')
-      @edge_type   = LINK_TYPES[line.gsub(/\s+/,'').scan(/-(\w)-/).flatten.first]
+      @edge_type   = EDGE_TYPES[line.gsub(/\s+/,'').scan(/-(\w)-/).flatten.first]
     end
 
     # Matches:

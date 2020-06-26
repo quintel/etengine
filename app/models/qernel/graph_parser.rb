@@ -15,7 +15,7 @@ module Qernel
 
     CARRIERS = {}.merge(CARRIERS_FOR_SPECS)
 
-    LINK_TYPES = {
+    EDGE_TYPES = {
       's' => :share,
       'c' => :constant,
       'd' => :dependent,
@@ -92,7 +92,7 @@ module Qernel
     def edge(str)
       reversed = str[-1] == "<"
       str = str[0..-2]
-      edge_type = LINK_TYPES[str[0]]
+      edge_type = EDGE_TYPES[str[0]]
       edge_share = str.gsub(/[^\d^\.]/, '') == '' ? nil : str.gsub(/[^\d^\.]/,'').to_f
       [edge_type, edge_share, reversed]
     end
