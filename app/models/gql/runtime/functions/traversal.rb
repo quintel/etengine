@@ -43,15 +43,15 @@ module Gql::Runtime
 
       # Returns the {Qernel::Edge} that goes from the first to the second node.
       #
-      # LINK() performs a LOOKUP on the two keys.
+      # EDGE() performs a LOOKUP on the two keys.
       #
       # Examples
       #
-      #   LINK( foo, bar ) => Qernel::Edge
+      #   EDGE( foo, bar ) => Qernel::Edge
       #   # works in the other direction too
-      #   LINK( bar, foo ) => Qernel::Edge
+      #   EDGE( bar, foo ) => Qernel::Edge
       #
-      def LINK(lft, rgt)
+      def EDGE(lft, rgt)
         lft,rgt = LOOKUP(lft, rgt).flatten
         if lft.nil? || rgt.nil?
           nil
@@ -63,21 +63,21 @@ module Gql::Runtime
       end
 
       # @example All edges on a node
-      #   LINKS(L(foo))
+      #   EDGES(L(foo))
       #   # => [foo->gas_1, foo->gas_2, loss1->foo, heat1->foo]
       #
       # @example All output edges with a constraint
-      #   LINKS(L(foo), "share?")
-      #   LINKS(L(foo), "flexible?")
-      #   LINKS(L(foo), "flexible? && share >= 1.0")
+      #   EDGES(L(foo), "share?")
+      #   EDGES(L(foo), "flexible?")
+      #   EDGES(L(foo), "flexible? && share >= 1.0")
       #
       # @example All edges of a given carrier/slot
-      #    LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
+      #    EDGES(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
       # @example Edges of multiple nodes
-      #   LINKS(L(foo, bar))
+      #   EDGES(L(foo, bar))
       #
-      def LINKS(value_terms, arguments = nil)
+      def EDGES(value_terms, arguments = nil)
         edges_for(value_terms, arguments)
       end
 
@@ -112,38 +112,38 @@ module Gql::Runtime
       end
 
       # @example All input edges
-      #   INPUT_LINKS(L(foo))
+      #   INPUT_EDGES(L(foo))
       #
       # @example All input edges with a constraint
-      #   INPUT_LINKS(L(foo), "share?")
-      #   INPUT_LINKS(L(foo), "flexible?")
-      #   INPUT_LINKS(L(foo), "flexible? && share >= 1.0")
+      #   INPUT_EDGES(L(foo), "share?")
+      #   INPUT_EDGES(L(foo), "flexible?")
+      #   INPUT_EDGES(L(foo), "flexible? && share >= 1.0")
       #
       # @example All input edges of a given carrier/slot
-      #    INPUT_LINKS(INPUT_SLOTS(foo, oil)) # => [foo->oil_1]
+      #    INPUT_EDGES(INPUT_SLOTS(foo, oil)) # => [foo->oil_1]
       #
       # @example Input edges of multiple nodes
-      #   INPUT_LINKS(L(foo, bar))
+      #   INPUT_EDGES(L(foo, bar))
       #
-      def INPUT_LINKS(value_terms, arguments = nil)
+      def INPUT_EDGES(value_terms, arguments = nil)
         edges_for(value_terms, arguments, [:input_edges, :edges])
       end
 
       # @example All output edges
-      #   OUTPUT_LINKS(L(foo))
+      #   OUTPUT_EDGES(L(foo))
       #
       # @example All output edges with a constraint
-      #   OUTPUT_LINKS(L(foo), "share?")
-      #   OUTPUT_LINKS(L(foo), "flexible?")
-      #   OUTPUT_LINKS(L(foo), "flexible? && share >= 1.0")
+      #   OUTPUT_EDGES(L(foo), "share?")
+      #   OUTPUT_EDGES(L(foo), "flexible?")
+      #   OUTPUT_EDGES(L(foo), "flexible? && share >= 1.0")
       #
       # @example All output edges of a given carrier/slot
-      #    OUTPUT_LINKS(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
+      #    OUTPUT_EDGES(OUTPUT_SLOTS(foo, heat)) # => [heat->foo]
       #
       # @example Output edges of multiple nodes
-      #   OUTPUT_LINKS(L(foo, bar))
+      #   OUTPUT_EDGES(L(foo, bar))
       #
-      def OUTPUT_LINKS(value_terms, arguments = nil)
+      def OUTPUT_EDGES(value_terms, arguments = nil)
         edges_for(value_terms, arguments, [:output_edges, :edges])
       end
 
@@ -190,7 +190,7 @@ module Gql::Runtime
           filter = arguments.is_a?(Array) ? arguments.first : arguments
 
           # If the filter is a symbol, it is probably selcting for edge type,
-          # e.g. OUTPUT_LINKS(..., constant). Make sure it runs the correct
+          # e.g. OUTPUT_EDGES(..., constant). Make sure it runs the correct
           # predicate method:
           filter = "#{ filter }?" if filter.is_a?(Symbol)
 

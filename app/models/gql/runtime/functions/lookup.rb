@@ -92,12 +92,12 @@ module Gql::Runtime
       #
       # Examples
       #
-      #   LINK_GROUP(households)
+      #   EDGE_GROUP(households)
       #
-      def LINK_GROUP(*keys)
+      def EDGE_GROUP(*keys)
         scope.group_edges(keys)
       end
-      alias LG LINK_GROUP
+      alias EG EDGE_GROUP
 
       # Returns an Array of {Qernel::Node} for given sector.
       #
