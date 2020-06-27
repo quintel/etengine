@@ -46,14 +46,14 @@ module Qernel
 
     # Include parts after attribute accessors have been defined; methods defined in the moduels
     # should override those defined above.
-    include Attributes
-    include CapacityProduction
-    include Conversion
-    include Cost
-    include DemandSupply
-    include Employment
-    include HelperCalculations
-    include RecursiveMethods
+    prepend Attributes
+    prepend CapacityProduction
+    prepend Conversion
+    prepend Cost
+    prepend DemandSupply
+    prepend Employment
+    prepend HelperCalculations
+    prepend RecursiveMethods
 
     EXPECTED_DEMAND_TOLERANCE = 0.001
 
