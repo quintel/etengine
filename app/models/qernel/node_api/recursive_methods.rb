@@ -6,30 +6,35 @@ module Qernel
     module RecursiveMethods
       include CalculationUnits
 
+      # Returns a numeric value in MJ.
       def max_demand_recursive
         node.max_demand_recursive!
       end
-      unit_for_calculation 'max_demand_recursive', 'MJ'
 
+      # Public: The total primary demand of fossil primary carriers of the node.
+      #
+      # Returns a numeric value in MJ.
       delegate :primary_demand_of_fossil, to: :node
-      unit_for_calculation 'primary_demand_of_fossil', 'MJ'
 
+      # Public: The total primary demand of sustainable primary carriers of the node.
+      #
+      # Returns a numeric value in MJ.
       delegate :primary_demand_of_sustainable, to: :node
-      unit_for_calculation 'primary_demand_of_sustainable', 'MJ'
 
       delegate :sustainability_share, to: :node
 
-      # Inverse of sustainability_share https://github.com/dennisschoenmakers/etengine/issues/272
+      # Public: Inverse of sustainability_share. The share of energy which is not sustainable.
+      #
+      # Returns a numeric.
       def non_renewable_share
         1.0 - (sustainability_share || 0.0)
       end
-      unit_for_calculation 'non_renewable_share', 'factor'
 
+      # Public: Returns the cost of MJ energy.
       delegate :weighted_carrier_cost_per_mj, to: :node
-      unit_for_calculation 'weighted_carrier_cost_per_mj', 'euro'
 
+      # Public: Returns the CO2 emissions (in kg) per MJ energy.
       delegate :weighted_carrier_co2_per_mj, to: :node
-      unit_for_calculation 'weighted_carrier_co2_per_mj', 'kg'
     end
   end
 end
