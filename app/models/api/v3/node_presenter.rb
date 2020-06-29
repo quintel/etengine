@@ -41,10 +41,10 @@ module Api
             fut =  opts[:formatter].call(fut).to_s if opts[:formatter]
 
             json[:data][group_label][attr] = {
-              :present => pres,
-              :future => fut,
-              :unit => opts[:unit] || Qernel::NodeApi.unit_for_calculation(attr),
-              :desc => opts[:label]
+              present: pres,
+              future: fut,
+              unit: opts[:unit],
+              desc: opts[:label]
             }
           end
         end

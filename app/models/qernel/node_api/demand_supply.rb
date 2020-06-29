@@ -28,6 +28,9 @@ module Qernel
       end
       alias_method :output_of_sustainable, :demand_of_sustainable
 
+      # Public; The total amount of loss input to the node.
+      #
+      # Returns a numeric value in MJ.
       def input_of_loss
         if node.demand
           node.demand - node.inputs.reject(&:loss?).map(&:external_value).compact.sum
@@ -35,8 +38,10 @@ module Qernel
           0.0
         end
       end
-      unit_for_calculation 'input_of_loss', 'MJ'
 
+      # Public: The total amount of loss output from the node.
+      #
+      # Returns a numeric value in MJ.
       def output_of_loss
         if node.demand
           node.demand - node.outputs.reject(&:loss?).map(&:external_value).compact.sum
@@ -44,7 +49,6 @@ module Qernel
           0.0
         end
       end
-      unit_for_calculation 'output_of_loss', 'MJ'
 
       def output_of(*carriers)
         carriers.flatten.map do |carrier|
@@ -58,23 +62,28 @@ module Qernel
         c&.external_value || 0.0
       end
 
-      # Helper method to get all heat outputs (useable_heat, steam_hot_water)
+      # Public: Helper method to get all heat outputs (useable_heat, steam_hot_water)
+      #
+      # Returns a numeric value in MJ.
       def output_of_heat_carriers
         fetch(:output_of_heat_carriers) do
           output_of_useable_heat + output_of_steam_hot_water
         end
       end
-      unit_for_calculation 'output_of_heat_carriers', 'MJ'
 
+      # Public: The total output of heating and cooling carriers.
+      #
+      # Returns a numeric value in MJ.
       def output_of_heat_and_cooling_carriers
         fetch(:output_of_heat_and_cooling_carriers) do
           output_of_useable_heat + output_of_steam_hot_water + output_of_cooling
         end
       end
-      unit_for_calculation 'output_of_heat_and_cooling_carriers', 'MJ'
 
       # Don't use this function before checking if all fossil carriers are
       # included!
+      #
+      # Returns a numeric value in MJ.
       def input_of_fossil_carriers
         fetch(:input_of_fossil_carriers) do
           input_of_coal +
@@ -84,14 +93,13 @@ module Qernel
             input_of_gasoline
         end
       end
-      unit_for_calculation 'input_of_fossil_carriers', 'MJ'
 
+      # Public: Returns a numeric value in MJ.
       def input_of_ambient_carriers
         fetch(:input_of_ambient_carriers) do
           input_of_ambient_heat + input_of_solar_radiation + input_of_ambient_cold + input_of_wind
         end
       end
-      unit_for_calculation 'input_of_ambient_carriers', 'MJ'
 
       def demand_of_carrier(carrier)
         Rails.logger.info('demand_of_* is deprecated. Use output_of_* instead')

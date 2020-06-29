@@ -203,11 +203,15 @@ module Qernel
       node.preset_demand = val / output_slot.conversion
     end
 
+    # Public: Primary demand of the node.
+    #
+    # Returns a numeric value in MJ.
     delegate :primary_demand, to: :node
-    unit_for_calculation 'primary_demand', 'MJ'
 
+    # Public: Final demand of the node.
+    #
+    # Returns a numeric value in MJ.
     delegate :final_demand, to: :node
-    unit_for_calculation 'final_demand', 'MJ'
 
     # Is the calculated near the demand_expected_value?
     #
@@ -235,27 +239,22 @@ module Qernel
         define_method "demand_of_#{carrier}" do
           output_of_carrier(carrier_key) || 0.0
         end
-        unit_for_calculation "demand_of_#{carrier}", 'MJ'
 
         define_method "supply_of_#{carrier}" do
           input_of_carrier(carrier_key) || 0.0
         end
-        unit_for_calculation "supply_of_#{carrier}", 'MJ'
 
         define_method "input_of_#{carrier}" do
           input_of_carrier(carrier_key) || 0.0
         end
-        unit_for_calculation "input_of_#{carrier}", 'MJ'
 
         define_method "output_of_#{carrier}" do
           output_of_carrier(carrier_key) || 0.0
         end
-        unit_for_calculation "output_of_#{carrier}", 'MJ'
 
         define_method "primary_demand_of_#{carrier}" do
           node.primary_demand_of_carrier(carrier_key) || 0.0
         end
-        unit_for_calculation "primary_demand_of_#{carrier}", 'MJ'
 
         %w[input output].each do |side|
           define_method "#{carrier}_#{side}_edge_share" do
