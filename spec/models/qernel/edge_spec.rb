@@ -67,63 +67,6 @@ module Qernel
       end
     end # (carrier)?
 
-    describe 'primary_demand' do
-      it 'returns the right node value, minus conversions' do
-        expect(supplier).to receive(:primary_demand).and_return(40.0)
-        expect(supplier).to receive(:loss_compensation_factor).and_return(1.0)
-        expect(edge.output).to receive(:conversion).and_return(0.5)
-        expect(edge).to receive(:parent_share).and_return(0.25)
-
-        expect(edge.primary_demand).to eq(5.0)
-      end
-
-      it 'returns the right node value, minus conversions adjusting for loss' do
-        expect(supplier).to receive(:primary_demand).and_return(40.0)
-        expect(supplier).to receive(:loss_compensation_factor).and_return(1.5)
-        expect(edge.output).to receive(:conversion).and_return(0.5)
-        expect(edge).to receive(:parent_share).and_return(0.25)
-
-        expect(edge.primary_demand).to eq(7.5)
-      end
-
-      it 'returns nil if the parent node value is nil' do
-        expect(supplier).to receive(:primary_demand).and_return(nil)
-        expect(edge.primary_demand).to be_nil
-      end
-    end # primary_demand
-
-    describe 'primary_demand_of_carrier' do
-      it 'returns the right node value, minus conversions' do
-        expect(supplier).to receive(:primary_demand_of_carrier).
-          with(:coal).and_return(40.0)
-
-        expect(supplier).to receive(:loss_compensation_factor).and_return(1.0)
-        expect(edge.output).to receive(:conversion).and_return(0.5)
-        expect(edge).to receive(:parent_share).and_return(0.25)
-
-        expect(edge.primary_demand_of_carrier(:coal)).to eq(5.0)
-      end
-
-      it 'returns nil if the parent node value is nil' do
-        expect(supplier).to receive(:primary_demand_of_carrier).
-          with(:coal).and_return(nil)
-
-        expect(edge.primary_demand_of_carrier(:coal)).to be_nil
-      end
-    end # primary_demand_of_carrier
-
-    describe 'sustainability_share' do
-      it 'returns the right node value, minus conversions' do
-        expect(supplier).to receive(:sustainability_share).and_return(0.5)
-
-        expect(supplier).not_to receive(:loss_compensation_factor)
-        expect(edge.output).to receive(:conversion).and_return(0.5)
-        expect(edge).to receive(:parent_share).and_return(0.25)
-
-        expect(edge.sustainability_share).to eq(0.5 * 0.5 * 0.25)
-      end
-    end # sustainability_share
-
     describe 'energetic?' do
       it 'returns true if the consumer node is energetic' do
         expect(consumer).to receive(:non_energetic_use?).and_return(false)

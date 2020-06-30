@@ -93,7 +93,10 @@ class Graph
       node.graph = self
       node.slots.each { |s| s.graph = self }
     end
-    edges.each    { |l| l.graph = self }
+    edges.each do |edge|
+      edge.graph = self
+      edge.query.graph = self
+    end
     carriers.each { |c| c.graph = self }
   end
 
@@ -147,12 +150,15 @@ class Graph
     area.send(method_name)
     carriers.each(&method_name)
 
-    nodes.each do |c|
-      c.query.send(method_name)
-      c.send(method_name)
-      c.input_edges.each(&method_name)
-      c.inputs.each(&method_name)
-      c.outputs.each(&method_name)
+    nodes.each do |n|
+      n.query.send(method_name)
+      n.send(method_name)
+      n.input_edges.each do |edge|
+        edge.public_send(method_name)
+        edge.query.public_send(method_name)
+      end
+      n.inputs.each(&method_name)
+      n.outputs.each(&method_name)
     end
   end
 
