@@ -1,32 +1,14 @@
 module Qernel
   class Edge
     extend ActiveModel::Naming
-
-    # Public: Defines a method on the Edge which, when called, will call the
-    # method of the same name on the parent node's NodeApi, reducing
-    # the value according to the slot conversion and parent share.
-    #
-    # Returns nothing.
-    def self.delegated_calculation(name, lossless = false)
-      define_method(name) do |*args|
-        delegated_calculation(name, lossless, *args)
-      end
-    end
+    include DatasetAttributes
 
     # Dataset ------------------------------------------------------------------
 
-    include DatasetAttributes
-
-    dataset_accessors :co2_per_mj, :calculated, :country_specific,
-                      :share, :value
+    DATASET_ATTRIBUTES = %i[calculated country_specific share value].freeze
+    dataset_accessors DATASET_ATTRIBUTES
 
     def self.dataset_group; :graph; end
-
-    delegated_calculation :primary_demand, true
-    delegated_calculation :primary_demand_of, true
-    delegated_calculation :primary_demand_of_carrier, true
-    delegated_calculation :sustainability_share
-    delegated_calculation :dependent_supply_of_carrier, true
 
     # Accessors ----------------------------------------------------------------
 
@@ -78,14 +60,14 @@ module Qernel
 
     # Enables edge.electricity?, edge.network_gas?, etc.
     Etsource::Dataset::Import.new('nl').carrier_keys.each do |carrier_key|
-      delegate :"#{ carrier_key }?", to: :carrier
+      delegate :"#{carrier_key}?", to: :carrier
     end
 
     # Public: The query object used by some GQL functions.
     #
     # Returns self.
     def query
-      self
+      @query ||= EdgeApi::Energy.new(self)
     end
 
     # Public: The sector to which the edge belongs. This is the same as the sector
@@ -101,7 +83,7 @@ module Qernel
     end
 
     def inspect
-      "<Qernel::Edge #{key.inspect}>"
+      "#<Qernel::Edge #{key.inspect}>"
     end
 
     alias_method :to_s, :inspect
@@ -159,22 +141,6 @@ module Qernel
         if value && (slot_demand = rgt_output.external_value)
           slot_demand.zero? ? 0.0 : value / slot_demand
         end
-    end
-
-    # Public: Delegates a calculation to the parent node NodeApi, reducing
-    # the returned value in accordance with the slot conversion and edge share.
-    #
-    # calculation - The method to be called on the NodeApi
-    # *args       - Additional arguments to be passed to the calculation method.
-    #
-    # Returns a number, or nil if the calculation returned nil.
-    def delegated_calculation(calculation, lossless = false, *args)
-      value = rgt_node.query.send(calculation, *args)
-
-      if value
-        loss_comp = lossless ? rgt_node.loss_compensation_factor : 1.0
-        value * (output.conversion * loss_comp) * parent_share
-      end
     end
 
     # Calculation --------------------------------------------------------------
@@ -255,28 +221,12 @@ module Qernel
       reversed? ? lft_input : rgt_output
     end
 
-    # Queries ------------------------------------------------------------------
-
-    # Public: Returns how much CO2 is emitted per MJ passing through the edge.
-    #
-    # Delegates to the carrier if no custom edge value is set. Note that setting
-    # a custom `co2_per_mj` only has an effect if the edge would be used to
-    # calculate CO2 emissions.
-    #
-    # See Qernel::RecursiveFactor::PrimaryCo#co2_per_mj_factor
-    #
-    # Returns a numeric.
-    def co2_per_mj
-      fetch(:co2_per_mj) { @carrier.co2_per_mj }
-    end
-
     private
 
     # Internal: Micro-optimization which improves the performance of
     # Array#flatten when the array contains Edges.
     #
-    # See http://tenderlovemaking.com/2011/06/28/ ...
-    #       til-its-ok-to-return-nil-from-to_ary
+    # See http://tenderlovemaking.com/2011/06/28/til-its-ok-to-return-nil-from-to_ary.html
     def to_ary
       nil
     end
