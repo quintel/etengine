@@ -98,7 +98,7 @@ class @Graph
   #
   elements_drag: (elements) ->
     for node_box in elements
-      for edge in node_box.node.edges
+      for edge in node_box.model.edges
         # Highlights in/output node slots
         edge.input_node.input_slot().attr({fill : '#cc0'})
         edge.output_node.output_slot().attr({fill : '#cc0'})
@@ -108,14 +108,14 @@ class @Graph
 
   elements_move: (elements,dx,dy) ->
     for node_box in elements
-      node_box.node.moveTo(dx,dy)
+      node_box.model.moveTo(dx,dy)
 
   elements_up: (elements) ->
     for node_box in elements
-      for edge in node_box.node.edges
+      for edge in node_box.model.edges
         edge.input_node.input_slot().attr({fill : '#fff'})
         edge.output_node.output_slot().attr({fill : '#fff'})
-      node_box.node.update_position(node_box.attr('x'), node_box.attr('y'))
+      node_box.model.update_position(node_box.attr('x'), node_box.attr('y'))
 
 class @Edge
   constructor: (args) ->
@@ -201,7 +201,7 @@ class @Node
 
     box = @r.rect(pos_x, pos_y, 80, 50)
     box.attr(@getBoxAttributes())
-    box.node = this
+    box.model = this
 
     # Creating text nodes of node
     box.sector_node = @r.text(0, 0, @getSectorUseShortcut())
