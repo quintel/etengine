@@ -428,7 +428,7 @@ class Graph
   end
 
   def graph_query
-    @graph_query ||= GraphApi.new(self)
+    @graph_query ||= GraphApi.from_graph(self)
   end
 
   def initializer_inputs

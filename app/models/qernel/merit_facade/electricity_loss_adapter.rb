@@ -2,11 +2,10 @@
 
 module Qernel
   module MeritFacade
-    # A special case of consumer used when representing loss within the
-    # electricity network. In this we need to determine the demand from a method
-    # on GraphApi, and set the demand on the node and sole incoming edge after
-    # the calculation is done. This is required in order for Slot::EdgeBased to
-    # calculate the share of electricty.
+    # A special case of consumer used when representing loss within the electricity network. In this
+    # we need to determine the demand from a method on GraphApi::Energy, and set the demand on the
+    # node and sole incoming edge after the calculation is done. This is required in order for
+    # Slot::EdgeBased to calculate the share of electricty.
     class ElectricityLossAdapter < ConsumerAdapter
       def inject!
         super
