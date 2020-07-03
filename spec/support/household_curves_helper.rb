@@ -12,7 +12,7 @@ module HouseholdCurvesHelper
 
     double(
       Qernel::Graph,
-      query: double(Qernel::GraphApi),
+      query: double(Qernel::GraphApi::Energy),
       area:  double(Qernel::Area, area_attributes)
     )
   end
