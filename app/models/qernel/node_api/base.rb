@@ -1,22 +1,35 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 module Qernel
   module NodeApi
     # See Qernel::NodeApi.
     class Base
+      extend Forwardable
       extend DatasetCurveAttributes
 
       include MethodMetaData
       include DatasetAttributes
 
-      include Attributes
-      include CapacityProduction
-      include Conversion
-      include Cost
-      include DemandSupply
-      include Employment
-      include HelperCalculations
-      include RecursiveMethods
+      prepend Attributes
+      prepend CapacityProduction
+      prepend Conversion
+      prepend Cost
+      prepend DemandSupply
+      prepend Employment
+      prepend HelperCalculations
+      prepend RecursiveMethods
+
+      prepend RecursiveFactor::Base
+      prepend RecursiveFactor::PrimaryDemand
+      prepend RecursiveFactor::BioDemand
+      prepend RecursiveFactor::DependentSupply
+      prepend RecursiveFactor::FinalDemand
+      prepend RecursiveFactor::PrimaryCo2
+      prepend RecursiveFactor::WeightedCarrier
+      prepend RecursiveFactor::Sustainable
+      prepend RecursiveFactor::MaxDemand
 
       EXPECTED_DEMAND_TOLERANCE = 0.001
 
@@ -58,6 +71,29 @@ module Qernel
       alias_method :steam_hot_water_output_capacity, :heat_output_capacity
       alias_method :useable_heat_output_capacity, :heat_output_capacity
 
+      def_delegators(
+        :@node,
+        :abroad?,
+        :bio_resources_demand?,
+        :energy_import_export?,
+        :final_demand_group?,
+        :input,
+        :input_edges,
+        :inputs,
+        :key,
+        :lft_edges,
+        :non_energetic_use?,
+        :output,
+        :output_edges,
+        :outputs,
+        :preset_demand=,
+        :primary_energy_demand?,
+        :recursive_factor_ignore?,
+        :rgt_edges,
+        :slots,
+        :useful_demand?
+      )
+
       # NodeApi has same accessor as its node
       def dataset_group
         Qernel::Node.dataset_group
@@ -74,21 +110,20 @@ module Qernel
         to_s
       end
 
+      def query
+        self
+      end
+
       # For testing only
       # Otherwise graphs by GraphParser won't be Gqueryable
       # DEBT properly fix
-      delegate(:dataset_attributes, to: :node) if Rails.env.development? || Rails.env.test?
+      def_delegator(:@node, :dataset_attributes) if Rails.env.development? || Rails.env.test?
 
       def initialize(node_qernel, _attrs = {})
         @node = node_qernel
         @dataset_key = node.dataset_key
         @dataset_group = node.dataset_group
       end
-
-      delegate :key, to: :node
-
-      # See {Qernel::Node} for difference of demand/preset_demand
-      delegate :preset_demand=, to: :node
 
       # Updates a (power plant) node demand by its electricity output.
       #
@@ -140,16 +175,6 @@ module Qernel
         node.preset_demand = val / output_slot.conversion
       end
 
-      # Public: Calculates the primary demand of the node.
-      #
-      # Returns a numeric in MJ.
-      delegate :primary_demand, to: :node
-
-      # Public: Calculates the final demand of the node.
-      #
-      # Returns a numeric in MJ.
-      delegate :final_demand, to: :node
-
       # Is the calculated near the demand_expected_value?
       #
       # Returns nil if demand or expected is nil. Returns true if demand is within tolerance
@@ -190,7 +215,7 @@ module Qernel
           end
 
           define_method "primary_demand_of_#{carrier}" do
-            node.primary_demand_of_carrier(carrier_key) || 0.0
+            primary_demand_of_carrier(carrier_key) || 0.0
           end
 
           %w[input output].each do |side|

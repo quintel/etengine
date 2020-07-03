@@ -139,7 +139,7 @@
           %th Change
           %th Unit
       %tbody
-        - Qernel::NodeApi::ATTRIBUTE_GROUPS.each do |group, attributes|
+        - Qernel::NodeApi::Attributes::ATTRIBUTE_GROUPS.each do |group, attributes|
           %tr
             %th.attribute_group{:colspan => 5}= group
           - attributes.each do |attr_name, info|

@@ -52,7 +52,7 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       results = input_edges.map do |edge|
-        parent = edge.rgt_node
+        parent = edge.rgt_node.query
 
         # The demanding_share returns the right-to-left share. This is the
         # same as +edge.share+ except when the carrier is loss, in which case
@@ -69,7 +69,7 @@ module Qernel::RecursiveFactor::Base
         # "compensation factor" to include losses.
         #
         # See https://github.com/quintel/etengine/issues/518.
-        loss_compensation_factor = parent.loss_compensation_factor
+        loss_compensation_factor = parent.query.loss_compensation_factor
 
         # What part is considered to be contributing to the outcome?
         # (e.g. 80% when free_co2_factor is 20%). This is 100% when the
@@ -137,7 +137,7 @@ module Qernel::RecursiveFactor::Base
       return_value
     else
       val = input_edges.map do |edge|
-        parent = edge.rgt_node
+        parent = edge.rgt_node.query
 
         # Exception 1:
         #
@@ -323,4 +323,4 @@ module Qernel::RecursiveFactor::Base
     method.nil? ? 1.0 : (public_send(method) || 0.0)
   end
 
-end # Qernel::RecursiveFactor::Base
+end

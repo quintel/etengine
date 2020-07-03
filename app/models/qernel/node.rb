@@ -62,17 +62,6 @@ module Qernel
 class Node
   extend ActiveModel::Naming
 
-  include Qernel::RecursiveFactor::Base
-  include Qernel::RecursiveFactor::PrimaryDemand
-  include Qernel::RecursiveFactor::BioDemand
-  include Qernel::RecursiveFactor::DependentSupply
-  include Qernel::RecursiveFactor::FinalDemand
-  include Qernel::RecursiveFactor::PrimaryCo2
-  include Qernel::RecursiveFactor::WeightedCarrier
-  include Qernel::RecursiveFactor::Sustainable
-
-  include Qernel::RecursiveFactor::MaxDemand
-
   include DatasetAttributes
 
   attr_reader  :id,

@@ -12,7 +12,27 @@ module Qernel
 
       dataset_accessors Qernel::Edge::DATASET_ATTRIBUTES
 
-      def_delegators :@edge, :carrier, :input, :lft_node, :rgt_node, :output
+      def_delegators(
+        :@edge,
+        :carrier,
+        :constant?,
+        :demand,
+        :dependent?,
+        :energetic?,
+        :input,
+        :inversed_flexible?,
+        :flexible?,
+        :lft_node,
+        :rgt_node,
+        :sector,
+        :share?,
+        :output,
+        :parent_share
+      )
+
+      Etsource::Dataset::Import.new('nl').carrier_keys.each do |carrier_key|
+        def_delegator :@edge, :"#{carrier_key}?"
+      end
 
       # Returns the Edge which this EdgeApi wraps.
       attr_reader :edge
@@ -58,7 +78,7 @@ module Qernel
         value = rgt_node.query.public_send(calculation, *args)
 
         if value
-          loss_comp = lossless ? rgt_node.loss_compensation_factor : 1.0
+          loss_comp = lossless ? rgt_node.query.loss_compensation_factor : 1.0
           value * (output.conversion * loss_comp) * @edge.parent_share
         end
       end

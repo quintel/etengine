@@ -4,11 +4,6 @@ module Qernel
   module NodeApi
     # Aliases of RecursiveFactor methods.
     module RecursiveMethods
-      # Returns a numeric value in MJ.
-      def max_demand_recursive
-        node.max_demand_recursive!
-      end
-
       # Public: The total primary demand of fossil primary carriers of the node.
       #
       # Returns a numeric value in MJ.
