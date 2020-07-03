@@ -264,6 +264,19 @@ module Qernel
         caller.send(method_id)
       end
 
+      def respond_to_missing?(name, include_private = false)
+        name = name.to_s
+
+        name.match?(/^.*_(input|output)_edge_(share|value)$/) ||
+          name.start_with?('share_of_') ||
+          name.start_with?('cost_') ||
+          name.start_with?('primary_demand') ||
+          name.start_with?('demand_of_') ||
+          name.start_with?('dependent_supply') ||
+          name.start_with?('final_demand') ||
+          super
+      end
+
       def method_missing(method_id, *arguments)
         ActiveSupport::Notifications.instrument('gql.debug', "NodeApi:method_missing #{method_id}")
 
