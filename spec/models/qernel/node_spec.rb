@@ -30,7 +30,7 @@ module Qernel
     describe 'sustainability_share' do
       it 'defaults to 0' do
         node = Node.new(id: 1, key: :hi).with({})
-        expect(node.sustainability_share).to eq(0)
+        expect(node.query.sustainability_share).to eq(0)
       end
 
       context 'two nodes connected with a sustainable=0.5 carrier' do
@@ -47,7 +47,7 @@ module Qernel
           graph
         end
 
-        let(:sustainability) { graph.node(:left).sustainability_share }
+        let(:sustainability) { graph.node(:left).query.sustainability_share }
 
         it 'uses the carrier sustainability' do
           expect(sustainability).to eq(0.5 * 0.25) # sustainability * edge share
@@ -74,7 +74,7 @@ module Qernel
           graph
         end
 
-        let(:sustainability) { graph.node(:left).sustainability_share }
+        let(:sustainability) { graph.node(:left).query.sustainability_share }
 
         it 'is 0' do
           expect(sustainability).to eq(0)

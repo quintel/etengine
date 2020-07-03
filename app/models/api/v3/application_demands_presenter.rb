@@ -41,9 +41,9 @@ module Api
       def node_row(node)
         [
           node.key,
-          node.primary_co2_emission,
-          *primary_carriers.map { |ca| node.primary_demand_of(ca) },
-          *final_carriers.map { |ca| node.final_demand_of(ca) }
+          node.query.primary_co2_emission,
+          *primary_carriers.map { |ca| node.query.primary_demand_of(ca) },
+          *final_carriers.map { |ca| node.query.final_demand_of(ca) }
         ]
       end
 
@@ -55,7 +55,7 @@ module Api
         final_carriers   = Set.new
 
         @graph.nodes.each do |conv|
-          if conv.right_dead_end? || conv.primary_energy_demand?
+          if conv.query.right_dead_end? || conv.primary_energy_demand?
             primary_carriers.merge(conv.outputs.map { |c| c.carrier.key })
           end
 

@@ -67,7 +67,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
     carrier_key,
     stop_condition = :primary_energy_demand?
   )
-    return nil unless primary_energy_demand?
+    return nil unless @node.primary_energy_demand?
 
     edge ||= output_edges.first
 

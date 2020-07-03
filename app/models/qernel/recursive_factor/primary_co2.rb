@@ -15,10 +15,10 @@ module Qernel::RecursiveFactor::PrimaryCo2
 
   # Internal: The proportion of the node's energy which is generated
   # without CO2 emissions.
-  #
+
   # Returns a numeric.
   def free_co2_factor
-    query.free_co2_factor || 0.0
+    dataset_get(:free_co2_factor) || 0.0
   end
 
   # @return [0.0]
@@ -67,6 +67,6 @@ module Qernel::RecursiveFactor::PrimaryCo2
     co2_ex_free = edge.query.co2_per_mj -
       (free_co2_factor * carrier.co2_conversion_per_mj)
 
-    primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0
+    @node.primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0
   end
 end
