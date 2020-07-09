@@ -17,7 +17,7 @@ describe Qernel::Causality::SelfDemandProfile do
   let(:source_curve) { [5.0, 10.0, 15.0, 10.0, 10.0] }
 
   let(:node) do
-    Qernel::Node.new(key: :fake_node).with(demand: 100.0).node_api
+    FactoryBot.build(:node, key: :fake_node).with(demand: 100.0).node_api
   end
 
   describe '.curve' do

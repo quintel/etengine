@@ -48,7 +48,7 @@ class Graph
     self
   end
 
-  attr_reader :nodes, :logger
+  attr_reader :logger, :name, :nodes
   attr_writer :goals, :cache_dataset_fetch
 
   attr_accessor :dataset,
@@ -58,10 +58,15 @@ class Graph
   delegate :time_curves, to: :dataset
   delegate :insulation_costs, :weather_properties, to: :area
 
+  def self.dataset_group_with_name(name)
+    :"#{name}_graph"
+  end
+
   # def initialize(nodes, carriers, groups)
-  def initialize(nodes = [])
-    @logger = ::Qernel::Logger.new
+  def initialize(nodes = [], name = :anonymous)
+    @logger = Qernel::Logger.new
     @area   = Qernel::Area.new(self)
+    @name   = name.to_sym
 
     @nodes_by_group = {}
     @edges_by_group = {}
@@ -69,6 +74,10 @@ class Graph
     self.nodes = nodes
 
     self.cache_dataset_fetch = true
+  end
+
+  def dataset_group
+    @dataset_group ||= self.class.dataset_group_with_name(@name)
   end
 
   # Public: Returns the plugin identified by the given +name+ which was used

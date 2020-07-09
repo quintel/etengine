@@ -1,14 +1,14 @@
+# frozen_string_literal: true
+
 module Etsource
   module AtlasLoader
-    # An abstract class providing useful methods to subclasses, but not meant
-    # to be used directly.
+    # An abstract class providing useful methods to subclasses, but not meant to be used directly.
     module Common
       include Instrumentable
 
       # Public: Creates a new AtlasLoader.
       #
-      # directory - Path to the directory in which the cached files are
-      #             stored.
+      # directory - Path to the directory in which the cached files are stored.
       #
       # Returns an AtlasLoader::Base
       def initialize(directory)
@@ -22,22 +22,18 @@ module Etsource
         @directory
       end
 
-      # Public: The Atlas::ProductionMode for the region specified by the
-      # given dataset key.
+      # Public: The Atlas::ProductionMode for the region specified by the given dataset key.
       #
       # Returns an Atlas::ProductionMode.
       def load(dataset_key)
         location = data_path(dataset_key)
 
-        unless location.file?
-          fail "No Atlas data for #{ dataset_key.inspect } at #{ location }"
-        end
+        raise "No Atlas data for #{dataset_key.inspect} at #{location}" unless location.file?
 
         Atlas::ProductionMode.new(parse(location.read))
       end
 
-      # Public: Forces calculation of all the regions which are enabled for
-      # use in ETEngine.
+      # Public: Forces calculation of all the regions which are enabled for use in ETEngine.
       #
       # Provide a block to which each dataset key will be yielded when loaded.
       #
@@ -46,12 +42,11 @@ module Etsource
         expire_all!
       end
 
-      # Public: Calculates a single region, as specified by the given dataset
-      # key.
+      # Public: Calculates a single region, as specified by the given dataset key.
       #
       # Returns nothing.
       def calculate!(dataset_key)
-        instrument("etsource.loader: atlas+ref(#{ dataset_key.inspect })") do
+        instrument("etsource.loader: atlas+ref(#{dataset_key.inspect})") do
           dataset = Atlas::Dataset.find(dataset_key)
           runner  = Atlas::Runner.new(dataset)
 
@@ -69,35 +64,28 @@ module Etsource
       #
       # Returns nothing.
       def expire_all!
-        if @directory.directory?
-          Pathname.glob(@directory.join('*.pack')).each(&:delete)
-        end
+        Pathname.glob(@directory.join('*.pack')).each(&:delete) if @directory.directory?
       end
 
-      #######
       private
-      #######
 
-      # Internal: Returns the path to an exported .pack file, for the given
-      # dataset key.
+      # Internal: Returns the path to an exported .pack file, for the given dataset key.
       #
       # Returns a Pathname.
       def data_path(dataset_key)
-        @directory.join("#{ dataset_key }.pack")
+        @directory.join("#{dataset_key}.pack")
       end
 
-      # Internal: Given the contents of a saved dataset file, parses the data
-      # into a Ruby hash.
+      # Internal: Given the contents of a saved dataset file, parses the data into a Ruby hash.
       #
       # Returns a hash.
       def parse(data)
         hash = MessagePack.unpack(data)
 
-        # MessagePack converts hash keys from symbols to strings; we need to
-        # convert them back. The keys for the nested hashes (one per document)
-        # don't matter, since ActiveDocument/Virtus will take either.
-        { nodes: hash['nodes'].symbolize_keys!,
-          edges: hash['edges'].symbolize_keys! }
+        # MessagePack converts hash keys from symbols to strings; we need to convert them back. The
+        # keys for the nested hashes (one per document) don't matter, since ActiveDocument/Virtus
+        # will take either.
+        hash.transform_values(&:symbolize_keys!)
       end
 
       # Internal: Creates a string representing the exported data.
@@ -115,15 +103,14 @@ module Etsource
       def calculated?(dataset_key)
         data_path(dataset_key).file?
       end
-    end # Base
+    end
 
-    # An Atlas ProductionMode loader which expects the exported .pack files to
-    # have been calculated already. They should be located in tmp/atlas.
+    # An Atlas ProductionMode loader which expects the exported .pack files to have been calculated
+    # already. They should be located in tmp/atlas.
     class PreCalculated
       include Common
 
-      # Public: Forces calculation of all the regions which are enabled for
-      # use in ETEngine.
+      # Public: Forces calculation of all the regions which are enabled for use in ETEngine.
       #
       # Returns nothing.
       def reload!
@@ -134,33 +121,29 @@ module Etsource
 
           yield(code, calculator) if block_given?
 
-          # In case the user failed to call the calculator in their block, or if
-          # no block was given.
+          # In case the user failed to call the calculator in their block, or if no block was given.
           calculator.call unless calculated?(code)
         end
       end
-    end # PreCalculated
+    end
 
-    # An Atlas ProductionMode loader which runs the Atlas queries and Refinery
-    # calcualtions the first time a region is loaded in ETEngine. This makes
-    # working with ETSource easier in development, but is not recommended for
-    # production.
+    # An Atlas ProductionMode loader which runs the Atlas queries and Refinery calcualtions the
+    # first time a region is loaded in ETEngine. This makes working with ETSource easier in
+    # development, but is not recommended for production.
     class Lazy
       include Common
 
       # Public: Creates a new AtlasLoader.
       #
-      # directory - Path to the directory in which the cached files are
-      # stored.
+      # directory - Path to the directory in which the cached files are stored.
       #
       # Returns an AtlasLoader::Base
       def initialize(directory)
         super(directory.join('lazy'))
       end
 
-      # Public: The Atlas::ProductionMode for the region specified by the
-      # given dataset key. Lazy-loads the dataset by calculating it in Atlas
-      # and Refinery if it does not already exist.
+      # Public: The Atlas::ProductionMode for the region specified by the given dataset key.
+      # Lazy-loads the dataset by calculating it in Atlas and Refinery if it does not already exist.
       #
       # Returns an Atlas::ProductionMode.
       def load(dataset_key)
@@ -171,6 +154,6 @@ module Etsource
 
         super
       end
-    end # Lazy
-  end # AtlasLoader
-end # Etsource
+    end
+  end
+end

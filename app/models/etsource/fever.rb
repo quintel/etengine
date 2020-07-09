@@ -30,7 +30,7 @@ module Etsource
     # the form {Node#key => Node#fever}.
     def groups
       Rails.cache.fetch('fever_data') do
-        grouped_nodes = Atlas::Node.all.select(&:fever).group_by do |node|
+        grouped_nodes = Atlas::EnergyNode.all.select(&:fever).group_by do |node|
           node.fever.group
         end
 

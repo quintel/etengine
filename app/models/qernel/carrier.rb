@@ -63,7 +63,9 @@ class Carrier
     self.dataset_key # memoize dataset_key
   end
 
-  def self.dataset_group; :carriers; end
+  def dataset_group
+    :carriers
+  end
 
   # The effective total co2 emission that gets emitted from
   # exploration until waste treatment. The user can change the

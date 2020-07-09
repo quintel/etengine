@@ -11,11 +11,12 @@ module Etsource
       # Returns a Qernel::Node.
       def node(node)
         Qernel::Node.new(
-          key:                  node.key.to_sym,
-          sector_id:            node.sector.to_sym,
-          use_id:               node.use.try(:to_sym),
-          groups:               node.groups,
-          presentation_group:   node.presentation_group
+          key: node.key.to_sym,
+          graph_name: node.graph_config.name,
+          groups: node.groups,
+          presentation_group: node.presentation_group,
+          sector_id: node.sector&.to_sym,
+          use_id: node.use&.to_sym
         )
       end
 

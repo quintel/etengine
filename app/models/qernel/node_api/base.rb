@@ -34,7 +34,7 @@ module Qernel
       EXPECTED_DEMAND_TOLERANCE = 0.001
 
       # attributes updated by #initialize
-      attr_reader :node, :dataset_key
+      attr_reader :node, :dataset_group, :dataset_key
 
       # attributes updated by Node#graph=
       attr_accessor :area, :graph
@@ -93,11 +93,6 @@ module Qernel
         :slots,
         :useful_demand?
       )
-
-      # NodeApi has same accessor as its node
-      def dataset_group
-        Qernel::Node.dataset_group
-      end
 
       # Optimization for flatten.
       attr_reader :to_ary

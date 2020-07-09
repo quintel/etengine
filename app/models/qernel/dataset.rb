@@ -24,7 +24,11 @@ module Qernel
       end
       @id = id
 
-      @data = { graph: { graph: {} }, area: { area_data: {} } }
+      @data = {
+        area: { area_data: {} },
+        energy_graph: { graph: {} },
+        molecules_graph: { graph: {} }
+      }
     end
 
     def time_curves

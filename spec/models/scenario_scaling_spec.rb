@@ -27,7 +27,7 @@ describe ScenarioScaling do
 
   describe '#scale_dataset!' do
     let(:dataset) { Qernel::Dataset.new }
-    let(:graph)   { dataset.data[:graph] }
+    let(:graph)   { dataset.data[:energy_graph] }
 
     it 'scales node "preset_demand"' do
       graph[:a] = { preset_demand: 100 }

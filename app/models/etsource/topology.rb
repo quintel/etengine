@@ -11,7 +11,7 @@ module Etsource
     end
 
     def import
-      graph = Qernel::Graph.new(node_hash.values)
+      graph = Qernel::Graph.new(node_hash.values, :energy)
 
       create_explicit_slots!
       establish_edges!
@@ -46,7 +46,7 @@ module Etsource
     #######
 
     def create_explicit_slots!
-      Atlas::Node.all.each do |node|
+      Atlas::EnergyNode.all.each do |node|
         (node.in_slots + node.out_slots).each do |slot|
           conv = node(node.key)
           conv.add_slot(FromAtlas.slot(slot, conv, carrier(slot.carrier)))
@@ -55,7 +55,7 @@ module Etsource
     end
 
     def establish_edges!
-      Atlas::Edge.all.each do |edge|
+      Atlas::EnergyEdge.all.each do |edge|
         supplier = node(edge.supplier)
         consumer = node(edge.consumer)
         carrier  = carrier(edge.carrier)
@@ -81,7 +81,7 @@ module Etsource
     # Returns a Hash.
     def node_hash
       @node_hash ||=
-        Atlas::Node.all.each_with_object({}) do |node, collection|
+        Atlas::EnergyNode.all.each_with_object({}) do |node, collection|
           collection[node.key] = FromAtlas.node(node)
         end
     end

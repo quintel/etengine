@@ -188,7 +188,7 @@ module Qernel
       #
       # Returns a numeric.
       def output_efficiency_of_carrier(carrier)
-        output = Atlas::Node.find(@node.key).output[:useable_heat]
+        output = Atlas::EnergyNode.find(@node.key).output[:useable_heat]
         output.is_a?(Hash) ? output[carrier] : 1.0
       end
 

@@ -99,10 +99,6 @@ module Qernel::DatasetAttributes
         RUBY
       end
     end
-
-    def dataset_group
-      @dataset_group ||= self.name.split("::").last.downcase.to_sym
-    end
   end
 
   # For testing only
@@ -121,7 +117,7 @@ module Qernel::DatasetAttributes
   end
 
   def dataset_group
-    self.class.dataset_group
+    @dataset_group ||= self.class.name.demodulize.downcase.to_sym
   end
 
   def graph

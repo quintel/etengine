@@ -8,8 +8,6 @@ module Qernel
     DATASET_ATTRIBUTES = %i[calculated country_specific share value].freeze
     dataset_accessors DATASET_ATTRIBUTES
 
-    def self.dataset_group; :graph; end
-
     # Accessors ----------------------------------------------------------------
 
     # The graph object of the current request. Used by DatasetAttributes to read
@@ -56,6 +54,10 @@ module Qernel
       rgt_node.add_output_edge(self)
 
       self.dataset_key # memoize dataset_key
+    end
+
+    def dataset_group
+      @dataset_group ||= @lft_node.dataset_group
     end
 
     # Enables edge.electricity?, edge.network_gas?, etc.

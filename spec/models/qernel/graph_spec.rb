@@ -9,7 +9,7 @@ module Qernel
         end
 
         it "should initialize with nodes []" do
-          @g = Qernel::Graph.new([Qernel::Node.new(id: 1, key: 'foo')])
+          @g = Qernel::Graph.new([FactoryBot.build(:node, key: 'foo')])
         end
       end
 
@@ -28,7 +28,7 @@ module Qernel
         end
 
         skip "should assign graph to nodes" do
-          node = Qernel::Node.new(id: 1, key: 'foo')
+          node = FactoryBot.build(:node, key: 'foo')
 
           @graph.nodes = [node]
           expect(node.graph).to eq(@graph)

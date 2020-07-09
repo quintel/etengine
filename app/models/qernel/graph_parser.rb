@@ -146,7 +146,7 @@ module Qernel
         id = @nodes.keys.length+1
         demand = dataset.nil? ? nil : dataset.gsub(/\D/,'').to_f
         dataset = {:demand => demand, :preset_demand => demand } # preset_demand needed to make old Input v1 updates working
-        @nodes[key] = Node.new(id: id, key: key).with(dataset)
+        @nodes[key] = Node.new(id: id, key: key, graph_name: :anonymous).with(dataset)
       end
 
       @nodes[key]
