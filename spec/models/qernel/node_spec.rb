@@ -4,32 +4,29 @@ module Qernel
 
   describe Node do
     describe 'when no type is specified' do
-      it 'should use the default node API' do
-        api = Node.new(id: 1).node_api
+      it 'uses the default node API' do
+        api = FactoryBot.build(:node).node_api
         expect(api).to be_kind_of(Qernel::NodeApi::Base)
       end
     end
 
     describe 'when the type is :default' do
-      it 'should use the default node API' do
-        api = Node.new(id: 1, groups: [ :something ]).node_api
+      it 'uses the default node API' do
+        api = FactoryBot.build(:node, groups: [:something]).node_api
         expect(api).to be_kind_of(Qernel::NodeApi::Base)
       end
     end
 
     describe 'when the type is :demand_driven' do
-      it 'should use the demand-driven node API' do
-        api = Node.new(
-          id: 1, groups: [ :something, :demand_driven ]
-        ).node_api
-
+      it 'uses the demand-driven node API' do
+        api = FactoryBot.build(:node, groups: [:something, :demand_driven]).node_api
         expect(api).to be_kind_of(Qernel::NodeApi::DemandDrivenNodeApi)
       end
     end
 
     describe 'sustainability_share' do
       it 'defaults to 0' do
-        node = Node.new(id: 1, key: :hi).with({})
+        node = FactoryBot.build(:node, key: :hi).with({})
         expect(node.query.sustainability_share).to eq(0)
       end
 

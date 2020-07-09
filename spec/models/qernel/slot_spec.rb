@@ -8,7 +8,7 @@ module Qernel
     end
 
     describe '.factory' do
-      let(:node) { Qernel::Node.new(id: 1) }
+      let(:node) { FactoryBot.build(:node) }
 
       context 'when type=nil' do
         it 'should be an ordinary slot' do

@@ -129,6 +129,7 @@ class Node
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
     @presentation_group = opts[:presentation_group]
+    @graph_name = opts.fetch(:graph_name)
 
     @output_edges, @input_edges = [], []
     @output_hash, @input_hash = {}, {}
@@ -186,8 +187,11 @@ class Node
     self.dataset_key # memoize dataset_key
   end
 
-public
-  def self.dataset_group; :graph; end
+  public
+
+  def dataset_group
+    @dataset_group ||= Graph.dataset_group_with_name(@graph_name)
+  end
 
   # Set the graph so that we can access other  parts.
   #

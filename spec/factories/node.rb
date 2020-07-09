@@ -1,3 +1,8 @@
 FactoryBot.define do
-  sequence(:node_key_id) { |n| n }
+  factory :node, class: 'Qernel::Node' do
+    sequence(:id)
+    graph_name { :energy }
+
+    initialize_with { new(attributes) }
+  end
 end

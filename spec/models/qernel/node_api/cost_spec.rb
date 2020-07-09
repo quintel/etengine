@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe 'Qernel::NodeApi cost calculations' do
-  let(:node) { Qernel::Node.new(id: 1) }
+  let(:node) { FactoryBot.build(:node) }
   let(:api) { node.node_api }
 
   def build_slot(node, carrier, direction, conversion = 1.0)

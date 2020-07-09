@@ -58,8 +58,6 @@ class Slot
   DATASET_ATTRIBUTES = [:conversion, :country_specific, :flexible, :reset_to_zero, :breakpoint]
   dataset_accessors DATASET_ATTRIBUTES
 
-  def self.dataset_group; :graph; end
-
   # --------- Initialize ------------------------------------------------------
 
   def initialize(id, node, carrier, direction = :input)
@@ -71,6 +69,9 @@ class Slot
     self.dataset_key # memoize dataset_key
   end
 
+  def dataset_group
+    @dataset_group ||= @node.dataset_group
+  end
 
   # --------- Calculation -----------------------------------------------------
 

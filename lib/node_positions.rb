@@ -39,7 +39,7 @@ class NodePositions
 
     serialize =
       data.sort_by(&:first).each_with_object({}) do |(key, pos), hash|
-        hash[key.to_s] = pos.stringify_keys if Atlas::Node.exists?(key)
+        hash[key.to_s] = pos.stringify_keys if Atlas::EnergyNode.exists?(key)
       end
 
     File.write(@path, YAML.dump(serialize))

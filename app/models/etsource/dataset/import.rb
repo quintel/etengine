@@ -40,7 +40,8 @@ module Etsource
     # Returns a Qernel::Dataset.
     def import_data(data)
       @dataset.data = data
-      @dataset.data[:graph][:graph] = { calculated: false }
+      @dataset.data[:energy_graph][:graph] = { calculated: false }
+      @dataset.data[:molecules_graph][:graph] = { calculated: false }
 
       @dataset
     end
@@ -67,10 +68,23 @@ module Etsource
     protected
 
     def load_dataset_hash
-      { area:        load_region_data,
-        carriers:    load_carrier_data,
-        graph:       load_graph_dataset,
-        time_curves: load_time_curves }
+      graph_objects = self.class.loader.load(@country)
+
+      {
+        area:            load_region_data,
+        carriers:        load_carrier_data,
+        energy_graph:    load_energy_graph_dataset(graph_objects),
+        molecules_graph: load_molecules_graph_dataset(graph_objects),
+        time_curves:     load_time_curves
+      }
+    end
+
+    def load_energy_graph_dataset(objects)
+      load_graph_dataset(objects.energy_nodes, objects.energy_edges)
+    end
+
+    def load_molecules_graph_dataset(objects)
+      load_graph_dataset(objects.molecule_nodes, objects.molecule_edges)
     end
 
     # Internal: Reads the shares, demands, and other regional data from the
@@ -78,13 +92,11 @@ module Etsource
     # dataset.
     #
     # Returns a hash containing the data.
-    def load_graph_dataset
+    def load_graph_dataset(nodes, edges)
       graph_dataset = {}
 
-      graph_objects = self.class.loader.load(@country)
-
-      graph_objects.nodes.each { |node| import_node!(node, graph_dataset) }
-      graph_objects.edges.each { |edge| import_edge!(edge, graph_dataset) }
+      nodes.each { |node| import_node!(node, graph_dataset) }
+      edges.each { |edge| import_edge!(edge, graph_dataset) }
 
       graph_dataset
     end
@@ -130,7 +142,7 @@ module Etsource
     #
     # Returns true or false.
     def demand_attribute(node)
-      if Atlas::Node.find(node.key).groups.include?(:preset_demand)
+      if node.groups.include?(:preset_demand)
         :preset_demand
       else
         :demand_expected_value

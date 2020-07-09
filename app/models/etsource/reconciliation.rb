@@ -42,7 +42,7 @@ module Etsource
       # the named carrier.
       def import_carrier(carrier)
         data =
-          Atlas::Node.all.each_with_object({}) do |node, hash|
+          Atlas::EnergyNode.all.each_with_object({}) do |node, hash|
             config = node.public_send(carrier)
             next unless config
 
@@ -58,7 +58,7 @@ module Etsource
       # should have a reconciliation carrier.
       def carrier_list
         Rails.cache.fetch('reconciliation_carriers') do
-          Atlas::Node.attribute_set.select do |attribute|
+          Atlas::EnergyNode.attribute_set.select do |attribute|
             attribute.primitive == Atlas::NodeAttributes::Reconciliation
           end.map(&:name)
         end

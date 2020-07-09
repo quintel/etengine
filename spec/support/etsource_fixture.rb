@@ -33,14 +33,16 @@ module ETSourceFixtureHelper
     def parse(data)
       data = YAML.load(data)
 
-      Atlas::Node.all.each do |node|
-        data[:nodes][node.key] =
-          node.to_hash.deep_merge(data[:nodes][node.key] || {})
-      end
+      Atlas::GraphConfig.configs.each do |config|
+        config.node_class.all.each do |node|
+          data[config.node_class.name][node.key] =
+            node.to_hash.deep_merge(data[config.node_class.name][node.key] || {})
+        end
 
-      Atlas::Edge.all.each do |edge|
-        data[:edges][edge.key] =
-          edge.to_hash.deep_merge(data[:edges][edge.key] || {})
+        config.edge_class.all.each do |edge|
+          data[config.edge_class.name][edge.key] =
+            edge.to_hash.deep_merge(data[config.edge_class.name][edge.key] || {})
+        end
       end
 
       data

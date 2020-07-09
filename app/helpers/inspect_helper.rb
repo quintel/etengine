@@ -120,8 +120,13 @@ module InspectHelper
   end
 
   def link_to_node_file(node)
-    doc = Atlas::Node.find(node.key)
     rev = Etsource::Base.instance.get_latest_import_sha
+
+    doc = if Atlas::MoleculeNode.exists?(node.key)
+      Atlas::MoleculeNode.find(node.key)
+    else
+      Atlas::EnergyNode.find(node.key)
+    end
 
     rev = 'HEAD' if rev.blank?
 
@@ -130,10 +135,14 @@ module InspectHelper
   end
 
   def link_to_edge_file(edge)
-    key = Atlas::Edge.key(
-      edge.rgt_node.key, edge.lft_node.key, edge.carrier.key)
+    key = Atlas::Edge.key(edge.rgt_node.key, edge.lft_node.key, edge.carrier.key)
 
-    doc = Atlas::Edge.find(key)
+    doc = if Atlas::MoleculeEdge.exists?(key)
+      Atlas::MoleculeEdge.find(key)
+    else
+      Atlas::EnergyEdge.find(key)
+    end
+
     rev = Etsource::Base.instance.get_latest_import_sha
 
     rev = 'HEAD' if rev.blank?

@@ -2,8 +2,8 @@ require 'spec_helper'
 
 module Qernel
   describe Edge do
-    let(:supplier) { Node.new(key: :supplier) }
-    let(:consumer) { Node.new(key: :consumer) }
+    let(:supplier) { FactoryBot.build(:node, key: :supplier) }
+    let(:consumer) { FactoryBot.build(:node, key: :consumer) }
     let(:carrier)  { Carrier.new(key: :network_gas) }
     let!(:edge)    { Edge.new('', consumer, supplier, carrier, :share) }
 

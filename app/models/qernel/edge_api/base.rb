@@ -37,6 +37,11 @@ module Qernel
       # Returns the Edge which this EdgeApi wraps.
       attr_reader :edge
 
+      # Returns the unique key representing the collection where the edge data is found in the
+      # dataset. This always matches the edge, ensuring that both are backed by the same data
+      # structure.
+      attr_reader :dataset_group
+
       # Returns the unique key representing the edge in the dataset. This always matches the edge,
       # ensuring that both are backed by the same data structure.
       attr_reader :dataset_key
@@ -55,13 +60,10 @@ module Qernel
         end
       end
 
-      def self.dataset_group
-        Qernel::Edge.dataset_group
-      end
-
       def initialize(edge)
         @edge = edge
         @dataset_key = edge.dataset_key
+        @dataset_group = edge.dataset_group
       end
 
       # Internal: Delegates a calculation to the parent node NodeApi, reducing the returned value in

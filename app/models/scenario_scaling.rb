@@ -76,7 +76,8 @@ class ScenarioScaling < ActiveRecord::Base
   #
   # Returns the dataset hash.
   def scale_dataset!(dataset)
-    scale_graph_dataset!(dataset.data[:graph])
+    scale_graph_dataset!(dataset.data[:energy_graph])
+    scale_graph_dataset!(dataset.data[:molecules_graph])
     scale_area_dataset!(dataset.data[:area][:area_data])
     scale_time_curves!(dataset.data[:time_curves])
 

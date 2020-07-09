@@ -16,7 +16,7 @@ RSpec.describe Qernel::Causality::Conversion do
     # Creates a node with two input and two output slots. The input slots
     # have conversions of 0.1 and 0.9, and the outputs slots 0.25 and 0.75.
     let(:node) do
-      node = Qernel::Node.new(key: :conv)
+      node = FactoryBot.build(:node, key: :conv)
 
       node.add_slot(create_slot(node, :a, :input, 0.1))
       node.add_slot(create_slot(node, :b, :input, 0.9))
@@ -80,7 +80,7 @@ RSpec.describe Qernel::Causality::Conversion do
 
   context 'with input slots a=0.0 and output slots a=0.0' do
     let(:node) do
-      node = Qernel::Node.new(key: :conv)
+      node = FactoryBot.build(:node, key: :conv)
 
       node.add_slot(create_slot(node, :a, :input, 0.0))
       node.add_slot(create_slot(node, :a, :output, 0.0))
@@ -96,7 +96,7 @@ RSpec.describe Qernel::Causality::Conversion do
 
   context 'with input slots a=0.0 and output slots a=1.0' do
     let(:node) do
-      node = Qernel::Node.new(key: :conv)
+      node = FactoryBot.build(:node, key: :conv)
 
       node.add_slot(create_slot(node, :a, :input, 0.0))
       node.add_slot(create_slot(node, :a, :output, 1.0))
@@ -112,7 +112,7 @@ RSpec.describe Qernel::Causality::Conversion do
 
   context 'with input slots a=1.0 and output slots a=0.0' do
     let(:node) do
-      node = Qernel::Node.new(key: :conv)
+      node = FactoryBot.build(:node, key: :conv)
 
       node.add_slot(create_slot(node, :a, :input, 1.0))
       node.add_slot(create_slot(node, :a, :output, 0.0))

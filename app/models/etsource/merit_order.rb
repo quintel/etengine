@@ -45,7 +45,7 @@ module Etsource
     # Returns a hash.
     def import(attribute)
       Rails.cache.fetch("#{attribute}_hash") do
-        mo_nodes = Atlas::Node.all.select(&attribute).sort_by(&:key)
+        mo_nodes = Atlas::EnergyNode.all.select(&attribute).sort_by(&:key)
         mo_data  = {}
 
         mo_nodes.each do |node|
