@@ -1,7 +1,9 @@
 module Etsource
   class Topology
-    def initialize(etsource = Etsource::Base.instance)
-      @etsource = etsource
+    def initialize(graph_config, dataset)
+      @etsource     = Etsource::Base.instance
+      @dataset      = dataset
+      @graph_config = graph_config
     end
 
     def graph(country = 'nl')
@@ -11,7 +13,7 @@ module Etsource
     end
 
     def import
-      graph = Qernel::Graph.new(node_hash.values, :energy)
+      graph = Qernel::Graph.new(node_hash.values, @graph_config.name)
 
       create_explicit_slots!
       establish_edges!
@@ -27,26 +29,10 @@ module Etsource
       @carriers[key] ||= Qernel::Carrier.new(key: key)
     end
 
-    #########
-    protected
-    #########
-
-    # working copy
-    def base_dir
-      "#{@etsource.export_dir}/topology"
-    end
-
-    # export, read-only dir
-    def export_dir
-      "#{@etsource.export_dir}/topology"
-    end
-
-    #######
     private
-    #######
 
     def create_explicit_slots!
-      Atlas::EnergyNode.all.each do |node|
+      @graph_config.node_class.all.each do |node|
         (node.in_slots + node.out_slots).each do |slot|
           conv = node(node.key)
           conv.add_slot(FromAtlas.slot(slot, conv, carrier(slot.carrier)))
@@ -55,7 +41,7 @@ module Etsource
     end
 
     def establish_edges!
-      Atlas::EnergyEdge.all.each do |edge|
+      @graph_config.edge_class.all.each do |edge|
         supplier = node(edge.supplier)
         consumer = node(edge.consumer)
         carrier  = carrier(edge.carrier)
@@ -81,7 +67,7 @@ module Etsource
     # Returns a Hash.
     def node_hash
       @node_hash ||=
-        Atlas::EnergyNode.all.each_with_object({}) do |node, collection|
+        @graph_config.node_class.all.each_with_object({}) do |node, collection|
           collection[node.key] = FromAtlas.node(node)
         end
     end
