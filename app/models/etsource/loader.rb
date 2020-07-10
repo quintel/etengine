@@ -1,13 +1,8 @@
-# Loader is an interface to the ETsource. It takes care of loading and caching
-# of ETsource components.
-#
-#     loader = Etsource::Loader.instance
-#     # load the (one&only) graph
-#     graph = loader.graph
-#     # next attach the dutch dataset to the graph
-#     graph.dataset = loader.dataset('nl')
-#
+# frozen_string_literal: true
+
 module Etsource
+  # Loader is an interface to the ETsource. It takes care of loading and caching of ETsource
+  # components.
   class Loader
     include Singleton
     include Instrumentable
@@ -20,8 +15,8 @@ module Etsource
     #   It is important to work with clones, because present and future_graph should
     #   be independent to reduce bugs.
     def graph(country = nil)
-      instrument("etsource.loader: graph") do
-        graph = DeepClone.clone optimized_graph
+      instrument('etsource.loader: graph') do
+        graph = DeepClone.clone(optimized_graph)
         graph.dataset = dataset(country) if country
         graph
       end
@@ -92,8 +87,8 @@ module Etsource
 
     protected
 
-    def cache(key, &block)
-      Rails.cache.fetch(cache_key+key) do
+    def cache(key)
+      Rails.cache.fetch(cache_key + key) do
         yield
       end
     end
@@ -106,9 +101,9 @@ module Etsource
     #  is optimal for the calculation.
     #
     def optimized_graph
-      instrument("etsource.loader: optimized_graph") do
+      instrument('etsource.loader: optimized_graph') do
         if @etsource.cache_topology?
-          NastyCache.instance.fetch_cached("optimized_graph") do
+          NastyCache.instance.fetch_cached('optimized_graph') do
             graph = unoptimized_graph
             graph.dataset = dataset('nl')
 
@@ -131,13 +126,20 @@ module Etsource
     end
 
     def unoptimized_graph
+      graph_config = Atlas::GraphConfig.energy
+
       if @etsource.cache_topology?
-        NastyCache.instance.fetch_cached("unoptimized_graph") do
-          Etsource::Topology.new.import
-        end
+        NastyCache.instance.fetch_cached('unoptimized_graph') { load_topology(graph_config) }
       else
-        Etsource::Topology.new.import
+        load_topology(graph_config)
       end
+    end
+
+    # Internal: Loads the topology for a given Atlas::GraphConfig.
+    #
+    # Returns a Qernel::Graph.
+    def load_topology(config)
+      Topology.new(config, dataset('nl')).import
     end
   end
 end
