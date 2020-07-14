@@ -14,9 +14,17 @@ module Etsource
     # @return [Qernel::Graph] a deep clone of the graph.
     #   It is important to work with clones, because present and future_graph should
     #   be independent to reduce bugs.
-    def graph(country = nil)
+    def energy_graph(country = nil)
       instrument('etsource.loader: graph') do
         graph = DeepClone.clone(optimized_graph)
+        graph.dataset = dataset(country) if country
+        graph
+      end
+    end
+
+    def molecule_graph(country = nil)
+      instrument('etsource.loader: molecule_graph') do
+        graph = DeepClone.clone(unoptimized_graph(Atlas::GraphConfig.molecules))
         graph.dataset = dataset(country) if country
         graph
       end
@@ -102,9 +110,11 @@ module Etsource
     #
     def optimized_graph
       instrument('etsource.loader: optimized_graph') do
+        graph_config = Atlas::GraphConfig.energy
+
         if @etsource.cache_topology?
           NastyCache.instance.fetch_cached('optimized_graph') do
-            graph = unoptimized_graph
+            graph = unoptimized_graph(graph_config)
             graph.dataset = dataset('nl')
 
             merit = graph.area.dataset_get(:use_merit_order_demands)
@@ -120,16 +130,16 @@ module Etsource
             graph
           end
         else
-          unoptimized_graph
+          unoptimized_graph(graph_config)
         end
       end
     end
 
-    def unoptimized_graph
-      graph_config = Atlas::GraphConfig.energy
-
+    def unoptimized_graph(graph_config)
       if @etsource.cache_topology?
-        NastyCache.instance.fetch_cached('unoptimized_graph') { load_topology(graph_config) }
+        NastyCache.instance.fetch_cached("unoptimized_#{graph_config.name}_graph") do
+          load_topology(graph_config)
+        end
       else
         load_topology(graph_config)
       end
