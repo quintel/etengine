@@ -9,7 +9,7 @@ class Inspect::SearchController < Inspect::BaseController
         if search = params[:search]
           if gquery = Gquery.get(search.strip)
             redirect_to inspect_gquery_path(id: gquery.key)
-          elsif Etsource::Loader.instance.graph.node(search)
+          elsif Etsource::Loader.instance.energy_graph.node(search)
             redirect_to inspect_node_path(id: search)
           else
             initialize_gql

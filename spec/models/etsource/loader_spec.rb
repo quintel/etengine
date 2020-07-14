@@ -3,7 +3,7 @@ require "spec_helper"
 describe Etsource do
   describe "local etsource" do
     it "loads the graph" do
-      graph   = Etsource::Loader.instance.graph
+      graph   = Etsource::Loader.instance.energy_graph
       dataset = Etsource::Loader.instance.dataset('nl')
     end
 
