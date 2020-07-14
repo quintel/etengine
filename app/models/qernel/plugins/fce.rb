@@ -31,6 +31,10 @@ module Qernel::Plugins
       wood_pellets
     ].freeze
 
+    def self.enabled?(graph)
+      graph.energy?
+    end
+
     def calculator
       @calculator ||= FCECalculator.new(@graph.area.area_code, @graph.use_fce)
     end

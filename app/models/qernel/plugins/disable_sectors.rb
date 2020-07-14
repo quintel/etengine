@@ -7,7 +7,7 @@ module Qernel::Plugins
     before :first_calculation, :disable_sectors
 
     def self.enabled?(graph)
-      graph.area.disabled_sectors.any?
+      graph.energy? && graph.area.disabled_sectors.any?
     end
 
     def disable_sectors
