@@ -22,7 +22,7 @@ module Qernel::Plugins
     # Public: The SimpleMeritOrder plugin is enabled only on future graphs, and
     # only when the "full" Merit order has not been requested.
     def self.enabled?(graph)
-      !SimpleMeritOrder.enabled?(graph)
+      graph.energy? && !SimpleMeritOrder.enabled?(graph)
     end
 
     # Public: A unique name to represent the plugin.

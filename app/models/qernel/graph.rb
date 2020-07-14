@@ -20,12 +20,14 @@ class Graph
   define_callbacks :calculate,
                    :calculate_initial_loop
 
-  PLUGINS = [ Plugins::DisableSectors,
-              Plugins::SimpleMeritOrder,
-              Plugins::Causality,
-              Plugins::FCE,
-              Plugins::MaxDemandRecursive,
-              Plugins::ResettableSlots ]
+  PLUGINS = [
+    Plugins::DisableSectors,
+    Plugins::SimpleMeritOrder,
+    Plugins::Causality,
+    Plugins::FCE,
+    Plugins::MaxDemandRecursive,
+    Plugins::ResettableSlots
+  ].freeze
 
   # ---- DatasetAttributes ----------------------------------------------------
 
@@ -192,7 +194,15 @@ class Graph
   end
 
   def future?
-    ! present?
+    !present?
+  end
+
+  def energy?
+    !molecules?
+  end
+
+  def molecules?
+    @name == :molecules
   end
 
   def period
