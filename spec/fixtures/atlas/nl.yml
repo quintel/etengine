@@ -202,7 +202,6 @@ Atlas::EnergyEdge:
     :child_share: 1.0
     :parent_share: 1.0
 
-
   # Carrier Primary Demand
   # ----------------------
 
@@ -223,5 +222,12 @@ Atlas::EnergyEdge:
 
 # ----------------------------------------------------------------------------
 
-Atlas::MoleculeNode: {}
-Atlas::MoleculeEdge: {}
+Atlas::MoleculeNode:
+  :m_left:
+    :demand: 1.0
+
+Atlas::MoleculeEdge:
+  :m_right_one-m_left@co2:
+    :child_share: 0.75
+  :m_right_two-m_left@co2:
+    :child_share: 0.25

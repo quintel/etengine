@@ -50,47 +50,15 @@ module Gql
         graph.nodes
       end
 
-      # @param [String] Carrier key
-      # @return [Carrier]
-      #
-      def carriers(keys)
-        GraphHelper.carriers(graph, keys)
-      end
-
-      # @param [String,Array] Use keys
-      # @return [Node]
-      #
-      def use_nodes(keys)
-        GraphHelper.use_nodes(graph, keys)
-      end
-
-      # @param [String,Array] Sector keys
-      # @return [Node]
-      #
-      def sector_nodes(keys)
-        GraphHelper.sector_nodes(graph, keys)
-      end
-
-      # @param [String,Array] Group keys
-      # @return [Node]
-      #
-      def group_nodes(keys)
-        GraphHelper.group_nodes(graph, keys)
-      end
-
-      # @param [String] Node keys
-      # @return [Node]
-      #
-      def nodes(keys)
-        GraphHelper.nodes(graph, keys)
-      end
-
-      # @param [String,Array] Group keys
-      # @return [Array<Edge>]
-      #
-      def group_edges(keys)
-        GraphHelper.group_edges(graph, keys)
-      end
+      delegate(
+        :carriers,
+        :use_nodes,
+        :sector_nodes,
+        :group_nodes,
+        :nodes,
+        :group_edges,
+        to: :energy_graph_helper
+      )
     end
   end
 end
