@@ -5,8 +5,8 @@ require 'spec_helper'
 # rubocop:disable RSpec/RepeatedExampleGroupBody
 describe Gql::Runtime::Functions::Core, :etsource_fixture do
   let(:gql) { Scenario.default.gql(prepare: true) }
-  let(:graph) { gql.future_graph }
-  let(:molecule_graph) { gql.future_graph.plugin(:molecules).molecule_graph }
+  let(:graph) { gql.future.graph }
+  let(:molecule_graph) { gql.future.molecules }
 
   let(:result) do |example|
     gql.query_future(example.metadata[:example_group][:description])
