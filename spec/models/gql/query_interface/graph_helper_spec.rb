@@ -4,6 +4,8 @@ require 'spec_helper'
 
 shared_examples_for 'a delegated GraphHelper method' do
   let(:graph_method_name) { method_name }
+  let(:graph) { Qernel::Graph.new }
+  let(:helper) { described_class.new(graph) }
 
   context 'with one key' do
     before do
@@ -11,7 +13,7 @@ shared_examples_for 'a delegated GraphHelper method' do
     end
 
     it 'calls the graph method once' do
-      described_class.public_send(method_name, graph, :key_one)
+      helper.public_send(method_name, :key_one)
       expect(graph).to have_received(graph_method_name).with(:key_one).once
     end
   end
@@ -22,7 +24,7 @@ shared_examples_for 'a delegated GraphHelper method' do
     end
 
     it 'returns the result of the Graph call in an array' do
-      result = described_class.public_send(method_name, graph, :key_one)
+      result = helper.public_send(method_name, :key_one)
       expect(result).to eq(%i[a])
     end
   end
@@ -33,7 +35,7 @@ shared_examples_for 'a delegated GraphHelper method' do
     end
 
     it 'returns the result of the Graph call in an array' do
-      result = described_class.public_send(method_name, graph, :key_one)
+      result = helper.public_send(method_name, :key_one)
       expect(result).to eq(%i[a b])
     end
   end
@@ -45,22 +47,22 @@ shared_examples_for 'a delegated GraphHelper method' do
     end
 
     it 'calls the graph method twice' do
-      described_class.public_send(method_name, graph, %i[key_one key_two])
+      helper.public_send(method_name, %i[key_one key_two])
       expect(graph).to have_received(graph_method_name).twice
     end
 
     it 'requests the first key' do
-      described_class.public_send(method_name, graph, %i[key_one key_two])
+      helper.public_send(method_name, %i[key_one key_two])
       expect(graph).to have_received(graph_method_name).with(:key_one)
     end
 
     it 'requests the second key' do
-      described_class.public_send(method_name, graph, %i[key_one key_two])
+      helper.public_send(method_name, %i[key_one key_two])
       expect(graph).to have_received(graph_method_name).with(:key_two)
     end
 
     it 'contains the result of both Graph calls' do
-      result = described_class.public_send(method_name, graph, %i[key_one key_two])
+      result = helper.public_send(method_name, %i[key_one key_two])
       expect(result).to eq(%i[a b b c])
     end
   end
@@ -72,7 +74,7 @@ shared_examples_for 'a delegated GraphHelper method' do
     end
 
     it 'removes the nil' do
-      result = described_class.public_send(method_name, graph, %i[key_one key_two])
+      result = helper.public_send(method_name, %i[key_one key_two])
       expect(result).to eq(%i[a b])
     end
   end
@@ -84,15 +86,13 @@ shared_examples_for 'a delegated GraphHelper method' do
     end
 
     it 'ignores the empty array' do
-      result = described_class.public_send(method_name, graph, %i[key_one key_two])
+      result = helper.public_send(method_name, %i[key_one key_two])
       expect(result).to eq(%i[a b])
     end
   end
 end
 
 RSpec.describe Gql::QueryInterface::GraphHelper do
-  let(:graph) { Qernel::Graph.new }
-
   describe '.carriers' do
     include_examples 'a delegated GraphHelper method' do
       let(:method_name) { :carriers }

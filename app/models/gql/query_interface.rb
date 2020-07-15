@@ -40,6 +40,16 @@ module Gql
       @options = options
     end
 
+    # Public: A GraphHelper which wraps the energy graph.
+    def energy_graph_helper
+      @energy_graph_helper ||= GraphHelper.new(@graph)
+    end
+
+    # Public: A GraphHelper which wraps the molecule graph.
+    def molecule_graph_helper
+      @molecule_graph_helper ||= GraphHelper.new(@graph.plugin(:molecules).molecule_graph)
+    end
+
     # Following includes are responsible for caching of queries
     # The order of includes is important.
     #

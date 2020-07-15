@@ -39,21 +39,13 @@ module Gql::Runtime
       # @return [Numeric,Array] the result of {MAP}(LOOKUP(first_key, second_key),last_key) if the last argument is *not* a node key.
       #
       def V(*args)
-        # Given: V(..., primary_demand_of( CARRIER(...) ))
-        # args.last would be a Rubel message. Do not call LOOKUP for these.
-        last_key = args.last.respond_to?(:call) ? [] : TRY_LOOKUP(args.last)
-
-        if args.length == 1
-          last_key
-        elsif last_key.length > 0
-          LOOKUP(*args)
-        else
-          attr_name = args.pop
-          M(LOOKUP(*args), attr_name)
-        end
+        value_generic(@scope.energy_graph_helper, args)
       end
       alias VALUE V
 
+      def MV(*args)
+        value_generic(@scope.molecule_graph_helper, args)
+      end
 
       # QUERY() or Q() returns the result of another gquery with given key.
       #
@@ -69,71 +61,47 @@ module Gql::Runtime
       end
       alias QUERY Q
 
-      # Lookup objects by their corresponding key(s).
+      # Public: Lookup energy graph objects by their corresponding key(s).
       #
+      # For example, one or multiple nodes:
+      #   LOOKUP(foo)               # => [Node(foo)]
+      #   LOOKUP(foo, bar)          # => [Node(foo), Node(bar)]
       #
-      # @example One or multiple nodes
-      #   LOOKUP(foo)               # => [<Node foo>]
-      #   LOOKUP(foo, bar)          # => [<Node foo>, <Node bar>]
+      # Elements that are not node keys are simply returned:
+      #   LOOKUP(foo, 3.0)          # => [Node(foo), 3.0]
+      #   LOOKUP(foo, CARRIER(gas)) # => [Node(foo), Carrier(gas)]
       #
-      # @example Elements that are not node keys are simply returned
-      #   LOOKUP(foo, 3.0)          # => [<Node foo>, 3.0]
-      #   LOOKUP(foo, CARRIER(gas)) # => [<Node foo>,<Carrier Gas>]
+      # `nil` and duplicate elements are removed:
+      #   LOOKUP(foo, nil)          # => [Node(foo)]
+      #   LOOKUP(foo, LOOKUP(foo))  # => [Node(foo)]
       #
-      # @example nil and duplicate elements are removed
-      #   LOOKUP(foo, nil)          # => [<Node foo>]
-      #   LOOKUP(foo, LOOKUP(foo))  # => [<Node foo>]
-      #
-      # @example Nested arrays are flattened
+      # Nested arrays are flattened
       #   LOOKUP(foo, LOOKUP(bar, SECTOR(households)))
-      #   # => [<Node foo>,<Node bar>,...]
+      #   # => [Node(foo), Node(bar), ...]
       #
-      # @param [Array] keys One or more of:
-      #   - Node key
-      #   - {Qernel::Base} objects, e.g. LOOKUP(CARRIER(foo))
-      #   - Arrays thereof, e.g. LOOKUP(LOOKUP(),LOOKUP())
+      # keys - Provided keys should be energy graph node keys or Qernel objects (for example,
+      #        `L(CARRIER(foo))`).
       #
-      # @return [Array] An array of the elements of the query.
-      #                 Duplicates and nil values are removed.
-      #
+      # Returns an array of the elements of the query: matching nodes or objects. Duplicates and nil
+      # values are removed.
       def L(*keys)
-        keys.flatten!
-        keys.map! do |key|
-          # Given LOOKUP( key_1 ) key_1 will respond_to to_sym because
-          # it comes from Rubel::Base#method_missing, which returns Symbols.
-          if key.respond_to?(:to_sym)
-            # prevents lookup for strings from V(.., "demand*2") or Rubel
-            # messages V(.., foo(1))
-            @scope.nodes(key).tap do |arr|
-              if arr.empty?
-                ActiveSupport::Notifications.instrument("warn: No node found with key: #{key}")
-              end
-            end
-          else
-            key
-          end
-        end
-        keys.flatten!
-        keys.compact!
-        keys.uniq!
-        keys
+        lookup_generic(@scope.energy_graph_helper, keys)
       end
       alias LOOKUP L
 
-      # Similar to LOOKUP, checks if a node with that key exists.
-      # Does not log a warning if not found. Mainly used for the V() method.
+      # Public: Lookup energy graph objects by their corresponding key(s).
       #
-      # @private
+      # See Functions::Core#V.
       #
-      def TRY_LOOKUP(key)
-        if key.respond_to?(:to_sym)
-          # prevents lookup for strings from V(.., "demand*2") or Rubel
-          # messages V(.., foo(1))
-          @scope.nodes(key)
-        else
-          [key]
-        end
+      # keys - Provided keys should be energy graph node keys or Qernel objects (for example,
+      #        `L(CARRIER(foo))`).
+      #
+      # Returns an array of the elements of the query: matching nodes or objects. Duplicates and nil
+      # values are removed.
+      def ML(*keys)
+        lookup_generic(@scope.molecule_graph_helper, keys)
       end
+      alias MLOOKUP ML
 
       # Access attributes of one or more objects.
       #
@@ -203,6 +171,61 @@ module Gql::Runtime
         else
           # to_s imported, for when MAP(..., demand) demand comes through method_missing (as a symbol)
           object.instance_eval(attr_name.to_s)
+        end
+      end
+
+      private
+
+      # Internal: Looks up objects in a graph and extracts values. See Functions::Core#V.
+      def value_generic(graph_helper, args)
+        # Given: V(..., primary_demand_of( CARRIER(...) ))
+        # args.last would be a Rubel message. Do not call LOOKUP for these.
+        last_key = args.last.respond_to?(:call) ? [] : try_lookup(graph_helper, args.last)
+
+        if args.length == 1
+          last_key
+        elsif last_key.length.positive?
+          lookup_generic(graph_helper, args)
+        else
+          attr_name = args.pop
+          M(lookup_generic(graph_helper, args), attr_name)
+        end
+      end
+
+      # Internal: Looks up objects in a graph. See Functions::Core#L.
+      def lookup_generic(graph_helper, keys)
+        keys.flatten!
+        keys.map! do |key|
+          # Given LOOKUP( key_1 ) key_1 will respond_to to_sym because
+          # it comes from Rubel::Base#method_missing, which returns Symbols.
+          if key.respond_to?(:to_sym)
+            # prevents lookup for strings from V(.., "demand*2") or Rubel
+            # messages V(.., foo(1))
+            graph_helper.nodes(keys).tap do |arr|
+              if arr.empty?
+                ActiveSupport::Notifications.instrument(
+                  "warn: No #{graph_helper.graph.name} node found with key: #{key}"
+                )
+              end
+            end
+          else
+            key
+          end
+        end
+        keys.flatten!
+        keys.compact!
+        keys.uniq!
+        keys
+      end
+
+      # Internal: Similar to LOOKUP, checks if a node with the key exists. Does not emit a warning
+      # if none is found. Used within Functions::Core#V.
+      def try_lookup(graph_helper, key)
+        if key.respond_to?(:to_sym)
+          # Prevents lookup for strings from V(.., "demand*2") or Rubel messages V(.., foo(1)).
+          graph_helper.nodes(key)
+        else
+          [key]
         end
       end
     end
