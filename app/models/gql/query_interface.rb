@@ -40,6 +40,11 @@ module Gql
       @options = options
     end
 
+    # Public: Returns the molecule flow graph.
+    def molecules
+      @graph.plugin(:molecules).molecule_graph
+    end
+
     # Public: A GraphHelper which wraps the energy graph.
     def energy_graph_helper
       @energy_graph_helper ||= GraphHelper.new(@graph)
@@ -47,7 +52,7 @@ module Gql
 
     # Public: A GraphHelper which wraps the molecule graph.
     def molecule_graph_helper
-      @molecule_graph_helper ||= GraphHelper.new(@graph.plugin(:molecules).molecule_graph)
+      @molecule_graph_helper ||= GraphHelper.new(molecules)
     end
 
     # Following includes are responsible for caching of queries
