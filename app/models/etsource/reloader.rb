@@ -30,11 +30,10 @@ module Etsource
       carriers
       config
       datasets
-      edges
       gqueries
+      graphs
       initializer_inputs
       inputs
-      nodes
       presets
     ].freeze
 
