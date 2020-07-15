@@ -306,7 +306,7 @@ class Graph
 
   # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of nodes.
   def inspect
-    "<Qernel::Graph>"
+    "<Qernel::Graph #{@name}>"
   end
 
   # --- Calculation ----------------------------------------------------------
