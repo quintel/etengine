@@ -30,6 +30,8 @@ module Qernel
           with_callback(:recalculation) { do_calculation }
         end
       end
+
+      with_callback(:finish) {}
     end
 
     # Public: A helper function which can be triggered by a plugin callback,
