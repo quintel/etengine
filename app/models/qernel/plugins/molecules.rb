@@ -8,15 +8,75 @@ module Qernel
     class Molecules
       include Plugin
 
+      after :finish, :calculate
+
+      # The molecule graph. If this is called after the energy graph calculation, the molecule graph
+      # demands will also have been calculated.
+      #
+      # Returns a Qernel::Graph.
+      attr_reader :molecule_graph
+
       def self.enabled?(graph)
         graph.energy?
       end
 
-      # Public: Returns the molecules Qernel::Graph.
-      def molecule_graph
-        @molecule_graph ||= Etsource::Loader.instance.molecule_graph.tap do |mg|
-          mg.dataset = @graph.dataset
-          mg.calculate
+      # Public: A unique name to represent the plugin.
+      #
+      # Returns a symbol.
+      def self.plugin_name
+        :molecules
+      end
+
+      def initialize(graph)
+        super
+
+        @molecule_graph = Etsource::Loader.instance.molecule_graph
+        @molecule_graph.dataset = @graph.dataset
+      end
+
+      private
+
+      # Internal: For each molecule node with a conversion, determines its demand from the
+      # appropriate energy source node.
+      def calculate
+        # Dataset is nil in some tests. Skip the molecule graph calculation.
+        return nil if Rails.env.test? && @graph.dataset.nil?
+
+        @molecule_graph.dataset = @graph.dataset
+
+        Etsource::Molecules.import.each do |node_key|
+          molecule_node = @molecule_graph.node(node_key)
+          conversion    = molecule_node.from_energy
+          energy_node   = @graph.node(conversion.source)
+
+          molecule_node.demand = demand_from_source(energy_node, conversion)
+        end
+
+        @molecule_graph.calculate
+      end
+
+      # Internal: Reads the appropriate value from the source node and calculates what should be
+      # set on the molecule node.
+      #
+      # Conversions without a "direction" are assumed to take the demand of the source node and
+      # optionally multiply it by the "conversion" attribute. Those whose direction is :input or
+      # :output will specify each carrier and conversion separately.
+      #
+      # Returns a Numeric.
+      def demand_from_source(source, conversion)
+        direction = conversion.direction
+
+        if direction.nil?
+          source.demand * conversion.conversion_of(nil)
+        else
+          conversion.conversion.sum do |carrier, _|
+            factor = conversion.conversion_of(carrier)
+
+            case direction
+            when :input  then source.query.input_of(carrier)  * factor
+            when :output then source.query.output_of(carrier) * factor
+            end
+          end
         end
       end
     end

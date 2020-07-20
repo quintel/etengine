@@ -48,7 +48,7 @@ describe Gql::Runtime::Functions::Core, :etsource_fixture do
   end
 
   describe 'MV(m_left, demand)' do
-    it('returns 1000000.0') { expect(result).to eq(1_000_000) }
+    it('returns 100.0') { expect(result).to eq(100) }
   end
 
   # L

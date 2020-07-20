@@ -89,6 +89,7 @@ class Node
     demand
     excel_id
     fever
+    from_energy
     heat_network
     hydrogen
     merit_order

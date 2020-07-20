@@ -1,2 +1,2 @@
-- groups = [preset_demand]
-~ demand = 1.0
+- groups = []
+- from_energy.source = foo
