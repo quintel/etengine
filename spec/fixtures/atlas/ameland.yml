@@ -151,6 +151,12 @@ Atlas::EnergyNode:
   :cpd_natural_gas:
     :preset_demand: 0.5
 
+  # Molecule Demand Source
+  # ----------------------
+  :molecule_source:
+    :preset_demand: 1.0e-4
+    :demand: 1.0e-4
+
 # ----------------------------------------------------------------------------
 
 Atlas::EnergyEdge:

@@ -1,2 +1,2 @@
 - groups = []
-- from_energy.source = foo
+- from_energy.source = molecule_source
