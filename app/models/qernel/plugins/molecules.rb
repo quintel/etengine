@@ -70,13 +70,36 @@ module Qernel
           source.demand * conversion.conversion_of(nil)
         else
           conversion.conversion.sum do |carrier, _|
-            factor = conversion.conversion_of(carrier)
+            slot = conversion_slot(source, direction, carrier)
+            factor = conversion_factor(slot, conversion)
 
-            case direction
-            when :input  then source.query.input_of(carrier)  * factor
-            when :output then source.query.output_of(carrier) * factor
-            end
+            slot.external_value * factor
           end
+        end
+      end
+
+      def conversion_factor(slot, conversion)
+        factor = conversion.conversion_of(slot.carrier.key)
+
+        return factor if factor.is_a?(Numeric)
+
+        if factor.to_s.start_with?('carrier:')
+          attribute = factor[8..].strip
+          begin
+            factor = slot.carrier.public_send(attribute)
+          rescue NoMethodError
+            raise "Invalid attribute for #{slot.carrier.key} carrier in `from_energy` " \
+                  "on #{slot.node.key} node"
+          end
+        end
+
+        factor
+      end
+
+      def conversion_slot(source, direction, carrier)
+        case direction
+        when :input  then source.input(carrier)
+        when :output then source.output(carrier)
         end
       end
     end
