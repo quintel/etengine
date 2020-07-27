@@ -331,27 +331,27 @@ module Qernel
     def method_missing(method_id, *arguments)
       ActiveSupport::Notifications.instrument('gql.debug', "NodeApi:method_missing #{method_id}")
 
-      method_id = method_id.to_s
+      method_id_s = method_id.to_s
 
       # electricity_
-      if (m = /^(.*)_(input|output)_edge_(share|value)$/.match(method_id))
+      if (m = /^(.*)_(input|output)_edge_(share|value)$/.match(method_id_s))
         carrier_name, side, method = m.captures
         self.class.create_input_edge_method_and_execute(self, method_id, carrier_name, side, method)
-      elsif (m = /^share_of_(\w*)$/.match(method_id)) && (match = m.captures.first)
+      elsif (m = /^share_of_(\w*)$/.match(method_id_s)) && (match = m.captures.first)
         self.class.create_share_of_node_method_and_execute(self, match)
-      elsif (m = /^cost_(\w*)$/.match(method_id)) && (method_name = m.captures.first)
+      elsif (m = /^cost_(\w*)$/.match(method_id_s)) && (method_name = m.captures.first)
         send(method_name)
-      elsif /^primary_demand(\w*)$/.match?(method_id)
+      elsif /^primary_demand(\w*)$/.match?(method_id_s)
         node.send(method_id, *arguments)
-      elsif /^demand_of_(\w*)$/.match?(method_id)
+      elsif /^demand_of_(\w*)$/.match?(method_id_s)
         node.send(method_id, *arguments)
-      elsif /^dependent_supply(\w*)$/.match?(method_id)
+      elsif /^dependent_supply(\w*)$/.match?(method_id_s)
         node.send(method_id, *arguments)
-      elsif /^final_demand(\w*)$/.match?(method_id)
+      elsif /^final_demand(\w*)$/.match?(method_id_s)
         node.send(method_id, *arguments)
       else
         Rails.logger.info("NodeApi#method_missing: #{method_id}")
-        super
+        super(method_id)
       end
     end
   end
