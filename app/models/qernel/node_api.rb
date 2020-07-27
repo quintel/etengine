@@ -97,6 +97,9 @@ module Qernel
       dataset_set(:marginal_cost_curve, curve&.any? ? curve : nil)
     end
 
+    alias_method :steam_hot_water_output_capacity, :heat_output_capacity
+    alias_method :useable_heat_output_capacity, :heat_output_capacity
+
     # Returns a NodeApi instance based on the given Node.
     #
     # Most nodes will get a NodeApi, but for some it makes sense to

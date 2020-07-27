@@ -79,13 +79,23 @@ module Qernel
       end
 
       def input_capacity
-        cap = source_api.input_capacity || source_api.output_capacity
+        cap = source_api.input_capacity || total_node_output_capacity
         cap * input_efficiency
       end
 
       def output_capacity
-        cap = source_api.output_capacity || source_api.input_capacity
+        cap = total_node_output_capacity || source_api.input_capacity
         cap * output_efficiency
+      end
+
+      def total_node_output_capacity
+        carrier_specific = source_api.try(@context.carrier_named('%s_output_capacity'))
+
+        if carrier_specific
+          carrier_specific / output_efficiency
+        else
+          source_api.output_capacity
+        end
       end
 
       def producer_class
