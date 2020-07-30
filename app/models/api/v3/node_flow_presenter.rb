@@ -4,15 +4,14 @@ module Api
     class NodeFlowPresenter
       # Creates a new node flow presenter.
       #
-      # scenario - The Scenario whose node details are to be presented.
+      # graph - A computed graph, whose node demands and carrier flows will be included in the CSV.
       #
       # Returns an NodeFlowPresenter.
-      def initialize(scenario)
-        @graph = scenario.gql.future.graph
+      def initialize(graph)
+        @graph = graph
       end
 
-      # Public: Formats the nodes for the scenario as a CSV file
-      # containing the data.
+      # Public: Formats the nodes for the scenario as a CSV file containing the data.
       #
       # Returns a String.
       def as_csv(*)
@@ -25,8 +24,8 @@ module Api
       private
 
       def attributes
-        @attrs ||= ['key'] + (%w[input_of output_of].flat_map do |prefix|
-          @graph.carriers.map { |c| "#{ prefix }_#{ c.key }" }
+        @attributes ||= ['key'] + (%w[input_of output_of].flat_map do |prefix|
+          @graph.carriers.map { |c| "#{prefix}_#{c.key}" }
         end)
       end
 
@@ -34,8 +33,7 @@ module Api
         @graph.nodes.sort_by(&:key).map(&:query)
       end
 
-      # Internal: Creates an array/CSV row representing the node and its
-      # demands.
+      # Internal: Creates an array/CSV row representing the node and its demands.
       def node_row(node)
         attributes.map { |attr| node.try(attr) || 0.0 }
       end
