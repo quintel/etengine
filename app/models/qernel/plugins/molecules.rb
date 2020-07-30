@@ -100,6 +100,9 @@ module Qernel
         case direction
         when :input  then source.input(carrier)
         when :output then source.output(carrier)
+        else
+          raise "Expected there to be a #{carrier.inspect} #{direction.inspect} slot on " \
+                "#{source.key}, but no such slot was found"
         end
       end
     end
