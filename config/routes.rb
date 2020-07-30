@@ -15,9 +15,9 @@ Rails.application.routes.draw do
       resources :scenarios, :only => [:show, :create, :update] do
         member do
           get :batch
-          get :application_demands
-          get :production_parameters
-          get :energy_flow
+          get :application_demands, to: 'export#application_demands'
+          get :production_parameters, to: 'export#production_parameters'
+          get :energy_flow, to: 'export#energy_flow'
           get :merit
           put :dashboard
           post :interpolate
