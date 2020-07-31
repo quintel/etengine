@@ -53,7 +53,9 @@ module Api
       end
 
       def positions
-        NodePositions.new(Atlas.data_dir.join('config/node_positions.yml'))
+        NodePositions.new(
+          Atlas.data_dir.join('config/energy_node_positions.yml'), Atlas::EnergyNode
+        )
       end
     end
   end

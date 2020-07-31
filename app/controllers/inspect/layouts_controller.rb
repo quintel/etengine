@@ -1,9 +1,12 @@
 class Inspect::LayoutsController < Inspect::BaseController
+  GRAPHS = %w[energy molecules]
+
   before_action :find_models, :only => [:show, :edit]
 
   helper_method :attributes_for_json, :positions
-
   skip_authorize_resource :only => :show
+
+  before_action :assert_valid_graph
 
   def show
     respond_to do |format|
@@ -13,8 +16,9 @@ class Inspect::LayoutsController < Inspect::BaseController
   end
 
   def yaml
-    response.headers['Content-Disposition'] = 'attachment; filename="node_positions.yml"'
-    response.headers['Content-Type']        = 'application/x-yaml'
+    response.headers['Content-Type'] = 'application/x-yaml'
+    response.headers['Content-Disposition'] =
+      "attachment; filename=\"#{params[:id]}_node_positions.yml\""
 
     render plain: positions.to_yaml
   end
@@ -34,15 +38,32 @@ class Inspect::LayoutsController < Inspect::BaseController
     render plain: '', layout: nil
   end
 
-private
-  def result
-    unless @result
-      @result = {
-        'future' => graph_to_json(@gql.future_graph),
-        'present' => graph_to_json(@gql.present_graph)
-      }
+  private
+
+  def assert_valid_graph
+    render_not_found unless GRAPHS.include?(params[:id])
+  end
+
+  def graph(period)
+    raise "Invalid graph period: #{period.inspect}" unless %i[future present].include?(period)
+
+    interface = @gql.public_send(period)
+
+    if params[:id] == 'molecules'
+      interface.molecules
+    else
+      interface.graph
     end
-    @result
+  end
+
+  def node_class
+  end
+
+  def result
+    @result ||= {
+      'present' => graph_to_json(graph(:present)),
+      'future' => graph_to_json(graph(:future))
+    }
   end
 
   def attributes_for_json
@@ -52,7 +73,7 @@ private
   end
 
   def find_models
-    @nodes = @gql.present_graph.nodes
+    @nodes = graph(:present).nodes
   end
 
   def graph_to_json(graph)
@@ -66,11 +87,18 @@ private
   end
 
   def positions
-    @positions ||= NodePositions.new(Atlas.data_dir.join('config/node_positions.yml'))
+    @positions ||=
+      NodePositions.new(
+        Atlas.data_dir.join("config/#{params[:id]}_node_positions.yml"),
+        if params[:id] == 'molecules'
+          Atlas::MoleculeNode
+        else
+          Atlas::EnergyNode
+        end
+      )
   end
 
   def auto_number(n)
     self.class.helpers.auto_number(n)
   end
-
 end
