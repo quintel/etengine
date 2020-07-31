@@ -6,7 +6,10 @@
     %li.form
       %h6 Toggle sectors
       = graphviz_toggle_sectors
-    %li.edges
+    %li.admin
+      %ul
+        %li= link_to 'Edit layout', edit_inspect_layout_path
+    %li.controls
       %ul
         %li= link_to 'Deselect all', 'javascript:GRAPH.deselect_all()'
         %li= link_to 'Highlight off', 'javascript:GRAPH.highlight_off_all()'

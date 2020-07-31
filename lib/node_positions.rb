@@ -24,8 +24,9 @@ class NodePositions
     :bunkers      => '#5CD0A5'
   }.with_indifferent_access
 
-  def initialize(path)
+  def initialize(path, node_class)
     @path = Pathname.new(path)
+    @node_class = node_class
   end
 
   def find(node)
@@ -39,8 +40,9 @@ class NodePositions
 
     serialize =
       data.sort_by(&:first).each_with_object({}) do |(key, pos), hash|
-        hash[key.to_s] = pos.stringify_keys if Atlas::EnergyNode.exists?(key)
+        hash[key.to_s] = pos.stringify_keys if @node_class.exists?(key)
       end
+
 
     File.write(@path, YAML.dump(serialize))
   end

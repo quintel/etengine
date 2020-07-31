@@ -7,7 +7,6 @@ Rails.application.routes.draw do
 
   # Frontend
   resources :users, :except => :show
-  get '/graph' => 'inspect/blueprint_layouts#show', :defaults => {:api_scenario_id => 'latest', :id => 1}
 
   namespace :api do
     namespace :v3 do
@@ -102,9 +101,11 @@ Rails.application.routes.draw do
       root :to => "pages#index"
 
       # The Graphviz
-      resource :layout, :except => [:new, :index, :create, :destroy] do
+      resources :layouts, :except => [:new, :index, :create, :destroy] do
         member { get 'yaml' }
       end
+
+      get 'layout', to: redirect("api/v3/scenarios/%{api_scenario_id}/layout/energy")
 
       resources :gqueries, :only => [:index, :show] do
         get :result, :on => :member

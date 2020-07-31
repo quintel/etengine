@@ -319,8 +319,8 @@ class @Node
     @output_slot_element
 
   getSectorUseShortcut: ->
-    sector_shortcut = @sector.charAt(0).toUpperCase()
-    use_shortcut = @use.charAt(0).toUpperCase()
+    sector_shortcut = (@sector || '').charAt(0).toUpperCase()
+    use_shortcut = (@use || '').charAt(0).toUpperCase()
 
     shortcut = sector_shortcut
     if use_shortcut != 'U'
