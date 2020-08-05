@@ -51,7 +51,11 @@ module Api
 
       def find_node
         key = params[:id].presence&.to_sym
-        @node = NodePresenter.new(key, @scenario)
+        gql = @scenario.gql
+
+        render_not_found unless gql.present.graph.node(key)
+
+        @node = NodePresenter.new(gql.present.graph.node(key), gql.future.graph.node(key))
       rescue StandardError => e
         render_not_found(errors: [e.message])
       end

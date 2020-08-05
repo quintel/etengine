@@ -7,10 +7,11 @@
     %li.divider
     %li.nav-header Energy Graph
     %li= link_to 'Layout', inspect_layout_path(id: 'energy'), :target => '_blank'
-    %li= link_to 'Nodes',  inspect_nodes_path
+    %li= link_to 'Nodes',  inspect_nodes_path(graph_name: 'energy')
     %li.divider
     %li.nav-header Molecule Graph
     %li= link_to 'Layout', inspect_layout_path(id: 'molecules'), :target => '_blank'
+    %li= link_to 'Nodes',  inspect_nodes_path(graph_name: 'molecules')
     %li.divider
     %li= link_to 'Area', inspect_area_path
     %li= link_to 'Checks', {:controller => 'inspect/checks', :action => 'expected_demand'}.merge

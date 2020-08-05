@@ -116,7 +116,10 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :nodes, :only => [:index, :show]
+      scope '/graphs/:graph_name' do
+        resources :nodes, :only => [:index, :show]
+      end
+
       resources :carriers, :only => [:index, :show]
       resource  :area, :as => :area, :only => :show
 
