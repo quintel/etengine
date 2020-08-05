@@ -1,6 +1,6 @@
 #canvas
 :javascript
-  var node_url_prefix = "#{inspect_nodes_path()}";
+  var node_url_prefix = "#{inspect_nodes_path(graph_name: params[:id])}";
   var update_node_positions_path = "#{inspect_layout_path}";
   var data;
 

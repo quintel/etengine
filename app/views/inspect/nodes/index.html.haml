@@ -6,6 +6,7 @@
   .span12
     .page-header
       %h2
+        = params[:graph_name].singularize.humanize
         Nodes
         = render "search_box"
 
@@ -41,9 +42,9 @@
                   :target => :blank, class: 'btn btn-mini'
 
             - fields.each do |field|
-              - if node.key.present? and query = "V(#{node.key.to_s.downcase},#{field})"
+              - if node.key.present?
                 - begin
-                  - p, f = gql_query(query).results
+                  - p, f = node_query_value(node, field)
                   %td.tar{ :title => title_tag_number(p) }= auto_number(p)
                   %td.tar{ :title => title_tag_number(f) }= auto_number(f)
                 - rescue => e

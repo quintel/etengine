@@ -3,25 +3,29 @@ module Api
     class NodePresenter
       include NodePresenterData
 
-      def initialize(key = nil, scenario = nil)
-        raise "Missing Node Key" unless key
-        raise "Missing Scenario" unless scenario
-        @key      = key
-        @scenario = scenario
-        @gql      = @scenario.gql(prepare: true)
-        @present  = @gql.present_graph.graph.node(@key) rescue nil
-        @future   = @gql.future_graph.graph.node(@key) rescue nil
-        @node_api = @present.node_api rescue nil
-        @node     = @node_api.node
-        if @present.nil? || @future.nil?
-          raise "Node not found! (#{@key})"
-        end
+      #def initialize(key = nil, scenario = nil)
+      def initialize(present_node, future_node)
+        # raise "Missing Node Key" unless key
+        # raise "Missing Scenario" unless scenario
+        # @key      = key
+        # @scenario = scenario
+        # @gql      = @scenario.gql(prepare: true)
+        # @present  = @gql.present_graph.graph.node(@key) rescue nil
+        # @future   = @gql.future_graph.graph.node(@key) rescue nil
+        # @node_api = @present.node_api rescue nil
+        # @node     = @node_api.node
+        # if @present.nil? || @future.nil?
+        #   raise "Node not found! (#{@key})"
+        # end
+
+        @node = @present = present_node
+        @future = future_node
       end
 
       def as_json(*)
-        json = Hash.new
+        json = {}
 
-        json[:key]                  = @key
+        json[:key]                  = @present.key
         json[:sector]               = @present.sector_key
         json[:use]                  = @present.use_key
         json[:presentation_group]   = @present.presentation_group

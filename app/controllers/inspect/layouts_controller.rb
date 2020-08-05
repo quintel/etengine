@@ -1,5 +1,5 @@
 class Inspect::LayoutsController < Inspect::BaseController
-  GRAPHS = %w[energy molecules]
+  GRAPHS = %w[energy molecules].freeze
 
   before_action :find_models, :only => [:show, :edit]
 
@@ -41,7 +41,6 @@ class Inspect::LayoutsController < Inspect::BaseController
   private
 
   def assert_valid_graph
-    render_not_found unless GRAPHS.include?(params[:id])
   end
 
   def graph(period)
@@ -68,7 +67,7 @@ class Inspect::LayoutsController < Inspect::BaseController
 
   def attributes_for_json
     attrs = ['demand', 'primary_demand']
-    attrs << Qernel::NodeApi::ATTRIBUTES_USED.sort if params[:action] == 'edit'
+    attrs << Qernel::NodeApi::Attributes::ATTRIBUTES_USED.sort if params[:action] == 'edit'
     attrs.flatten
   end
 
