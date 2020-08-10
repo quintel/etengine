@@ -1,89 +1,110 @@
+# frozen_string_literal: true
+
+# Given Qernel::Node instances, draws a visual representation of the nodes using GraphViz.
 class GraphDiagram
-  attr_accessor :nodes, :nodes, :g
+  EDGE_COLORS = {
+    electricity: '#009900',
+    useable_heat: '#660000',
+    natural_gas: '#000099',
+    low_caloric_gas: '#000099',
+    high_caloric_gas: '#000099',
+    bio_gas: '#000099'
+  }.freeze
 
   def initialize(nodes, svg_path = nil)
     require 'graphviz'
+
     @svg_path = svg_path
-    self.nodes = {}
-    self.nodes = nodes.uniq
-    @g = GraphViz.new( :G, :type => :digraph )
+    @collection = {}
+    @nodes = nodes.uniq
+    @g = GraphViz.new(:G, type: :digraph)
+
     draw_nodes
     draw_edges
   end
 
   def to_png
-    @g.output( :png => String )
+    @g.output(png: String)
   end
 
   def to_svg
-    @g.output( :svg => String )
+    @g.output(svg: String)
   end
 
   private
-    def draw_nodes
-      nodes.each do |node|
-        smiley = case node.query.demand_expected?
-        when nil
-          "?"
-        when true
-          "&#x263A;"
-        when false
-          "&#x2639;"
-        end
-        d = (node.query.demand / 10**9).round(3) rescue ''
-        pd = (node.primary_demand / 10**9).round(3) rescue ''
-        co =  (node.primary_co2_emission / 10**9).round(3) rescue ''
-        nodes[node] = @g.add_node("#{node.to_s} \n (#{d}) [#{pd} / co2: #{co}] #{smiley}", node_settings(node))
+
+  def draw_nodes
+    @nodes.each do |node|
+      smiley = node_smiley(node)
+      demand = safe_node_attribute(node, :demand)
+      primary_demand = safe_node_attribute(node, :primary_demand)
+      co2 = safe_node_attribute(node, :primary_co2_emission)
+
+      @collection[node] = @g.add_node(
+        "#{node} \n (#{demand}) [#{primary_demand} / co2: #{co2}] #{smiley}",
+        node_settings(node)
+      )
+    end
+  end
+
+  def draw_edges
+    @nodes.map(&:input_edges).flatten.each do |edge|
+      left = @collection[edge.lft_node]
+
+      if left && (right = @collection[edge.rgt_node])
+        @g.add_edge(left, right, edge_settings(edge))
       end
     end
+  end
 
-    def draw_edges
-      nodes.map(&:input_edges).flatten.each do |edge|
-        p = nodes[edge.lft_node]
-        # don't draw if no child anymore.
-        if p and c = nodes[edge.rgt_node]
-          @g.add_edge p, c, edge_settings(edge)
-        end
-      end
+  def node_settings(node)
+    settings = {
+      fillcolor: node.output_edges.empty? ? '#dddddd' : nil,
+      group: %i[primary_energy_demand useful_demand] & node.groups,
+      shape: 'box'
+    }
+
+    settings[:href] = "#{@svg_path}#{node.key}.svg" if @svg_path
+    settings[:color] = '#ff0000' if node.demand.nil?
+
+    settings
+  end
+
+  def node_smiley(node)
+    case node.query.demand_expected?
+    when nil then '?'
+    when true then '&#x263A;'
+    when false then '&#x2639;'
+    end
+  end
+
+  def safe_node_attribute(node, attribute)
+    (node.query.public_send(attribute) / 10**9).round(3)
+  rescue RuntimeError
+    ''
+  end
+
+  def edge_settings(edge)
+    settings = {}
+    share = nil
+
+    if edge.share
+      share = "#{edge.share} "
+    else
+      settings[:color] = '#ff0000'
     end
 
-    def node_settings(node)
-      group = [:primary_energy_demand, :useful_demand] & node.groups
-      fillcolor = node.output_edges.empty? ? '#dddddd' : nil
-      hsh = {
-        :shape => 'box',
-        :group => group,
-        :fillcolor => fillcolor
-      }
+    settings[:color] ||= EDGE_COLORS[edge.carrier.key]
 
-      hsh[:href] = "#{@svg_path}#{node.key}.svg" if @svg_path
-
-      if node.demand.nil?
-        hsh[:color] = '#ff0000'
+    val =
+      begin
+        (edge.value / 10**9).round(3)
+      rescue StandardError
+        ''
       end
 
-      hsh
-    end
+    settings[:label] = "[#{edge.carrier.id} | #{edge.edge_type.to_s[0..2]} (#{share})] #{val}"
 
-    def edge_settings(edge)
-      opts = {}
-      share = nil
-      colors = {
-        :electricity      => '#009900',
-        :useable_heat     => '#660000',
-        :natural_gas      => '#000099',
-        :low_caloric_gas  => '#000099',
-        :high_caloric_gas => '#000099',
-        :bio_gas          => '#000099'      }
-      if edge.share
-        share = "#{edge.share} "
-      else
-        opts[:color] = '#ff0000'
-      end
-      opts[:color] ||= colors[edge.carrier.key]
-      val = (edge.value / 10**9).round(3) rescue ''
-      opts[:label] = "[#{edge.carrier.id} | #{edge.edge_type.to_s[0..2]} (#{share})] #{val}"
-
-      opts
-    end
+    settings
+  end
 end
