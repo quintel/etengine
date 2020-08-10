@@ -52,14 +52,23 @@ module Gql::Runtime
       #   EDGE( bar, foo ) => Qernel::Edge
       #
       def EDGE(lft, rgt)
-        lft,rgt = LOOKUP(lft, rgt).flatten
-        if lft.nil? || rgt.nil?
-          nil
-        else
-          edge = lft.input_edges.detect{|l| l.rgt_node == rgt.node}
-          edge ||= lft.output_edges.detect{|l| l.lft_node == rgt.node}
-          edge
-        end
+        left, right = LOOKUP(lft, rgt).flatten
+        edge_between_nodes(left, right)
+      end
+
+      # Returns the {Qernel::Edge} that goes from the first to the second node.
+      #
+      # MEDGE() performs a LOOKUP on the two keys.
+      #
+      # Examples
+      #
+      #   MEDGE(foo, bar) => Qernel::Edge
+      #   # works in the other direction too
+      #   MEDGE(bar, foo) => Qernel::Edge
+      #
+      def MEDGE(lft, rgt)
+        left, right = MLOOKUP(lft, rgt).flatten
+        edge_between_nodes(left, right)
       end
 
       # @example All edges on a node
@@ -200,6 +209,16 @@ module Gql::Runtime
         edges
       end
 
+      # Internal: Given two nodes, returns the first edge which connects the two edges in either
+      # direction.
+      #
+      # Returns an edge, or nil if no edge exists.
+      def edge_between_nodes(left, right)
+        return nil if left.nil? || right.nil?
+
+        left.input_edges.detect { |l| l.rgt_node == right.node } ||
+          left.output_edges.detect { |l| l.lft_node == right.node }
+      end
     end # Traversal
   end # Functions
 end # Gql::Runtime
