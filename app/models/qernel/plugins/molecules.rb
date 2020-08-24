@@ -2,108 +2,62 @@
 
 module Qernel
   module Plugins
-    # Simple implementation of a molecules graph. Each energy graph has a Molecules plugin which
-    # holds the molecules graph, calculation of which is triggered after the first calculation of
-    # the energy graph.
+    # Graph plugin which coordinates the calculation of flows in the molecule graph.
+    #
+    # The graph calcualtion process is:
+    #
+    # 1. Calculate energy graph.
+    # 2. Set molecule graph demands based on (1).
+    # 3. Calculate molecule graph.
+    # 4. Set energy graph demands based on (2).
+    # 5. Other energy graph plugins (i.e., Causality).
+    # 6. Re-calculate energy graph, PRESERVING demands set in (4).
+    # 7. Set molecule graph demands based on (6).
+    # 8. Re-calculate molecule graph.
+    #
+    # The Molecules plugin is responsible for steps 2-4, 7, and 8.
+    #
+    # When Causality is enabled, the dataset used by the molecule graph will be snapshoted prior to
+    # the first calculation, containing the result of any inputs set by end-users. The dataset will
+    # be restored by Causality prior to the final calculation of the molecule graph; therefore there
+    # is no need for Molecules to snapshot the dataset itself.
     class Molecules
       include Plugin
 
-      after :finish, :calculate
-
-      # The molecule graph. If this is called after the energy graph calculation, the molecule graph
-      # demands will also have been calculated.
-      #
-      # Returns a Qernel::Graph.
-      attr_reader :molecule_graph
+      after :first_calculation, :calculate
+      after :finish, :calculate_final
 
       def self.enabled?(graph)
         graph.energy?
       end
 
-      # Public: A unique name to represent the plugin.
-      #
-      # Returns a symbol.
-      def self.plugin_name
-        :molecules
-      end
-
-      def initialize(graph)
-        super
-
-        @molecule_graph = Etsource::Loader.instance.molecule_graph
-        @molecule_graph.dataset = @graph.dataset
+      def molecule_graph
+        @molecule_graph ||= create_molecule_graph
       end
 
       private
 
-      # Internal: For each molecule node with a conversion, determines its demand from the
-      # appropriate energy source node.
       def calculate
+        return unless run? && Qernel::Plugins::Causality.enabled?(@graph)
+
+        @calculation = Qernel::Molecules::Calculation.new(@graph, molecule_graph)
+        @calculation.run
+      end
+
+      def calculate_final
+        @calculation&.reinstall_demands
+        Qernel::Molecules::FinalCalculation.new(@graph, molecule_graph).run if run?
+      end
+
+      def run?
         # Dataset is nil in some tests. Skip the molecule graph calculation.
-        return nil if Rails.env.test? && @graph.dataset.nil?
-
-        @molecule_graph.dataset = @graph.dataset
-
-        Etsource::Molecules.import.each do |node_key|
-          molecule_node = @molecule_graph.node(node_key)
-          conversion    = molecule_node.from_energy
-          energy_node   = @graph.node(conversion.source)
-
-          molecule_node.demand = demand_from_source(energy_node, conversion)
-        end
-
-        @molecule_graph.calculate
+        !Rails.env.test? || @graph.dataset.present?
       end
 
-      # Internal: Reads the appropriate value from the source node and calculates what should be
-      # set on the molecule node.
-      #
-      # Conversions without a "direction" are assumed to take the demand of the source node and
-      # optionally multiply it by the "conversion" attribute. Those whose direction is :input or
-      # :output will specify each carrier and conversion separately.
-      #
-      # Returns a Numeric.
-      def demand_from_source(source, conversion)
-        direction = conversion.direction
-
-        if direction.nil?
-          source.demand * conversion.conversion_of(nil)
-        else
-          conversion.conversion.sum do |carrier, _|
-            slot = conversion_slot(source, direction, carrier)
-            factor = conversion_factor(slot, conversion)
-
-            slot.external_value * factor
-          end
-        end
-      end
-
-      def conversion_factor(slot, conversion)
-        factor = conversion.conversion_of(slot.carrier.key)
-
-        return factor if factor.is_a?(Numeric)
-
-        if factor.to_s.start_with?('carrier:')
-          attribute = factor[8..].strip
-          begin
-            factor = slot.carrier.public_send(attribute)
-          rescue NoMethodError
-            raise "Invalid attribute for #{slot.carrier.key} carrier in `from_energy` " \
-                  "on #{slot.node.key} node"
-          end
-        end
-
-        factor
-      end
-
-      def conversion_slot(source, direction, carrier)
-        case direction
-        when :input  then source.input(carrier)
-        when :output then source.output(carrier)
-        else
-          raise "Expected there to be a #{carrier.inspect} #{direction.inspect} slot on " \
-                "#{source.key}, but no such slot was found"
-        end
+      def create_molecule_graph
+        graph = Etsource::Loader.instance.molecule_graph
+        graph.dataset = @graph.dataset
+        graph
       end
     end
   end

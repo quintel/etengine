@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Qernel::Plugins::Molecules do
+RSpec.shared_examples_for 'running the molecule graph plugin' do
   let(:conversion_attributes) { { source: :molecule_source } }
 
   let(:graph) do
-    Scenario.default.gql do |gql|
+    graph = Scenario.default.gql do |gql|
       node = gql.future.graph.plugin(:molecules).molecule_graph.node(:m_left)
 
       node.dataset_set(
@@ -14,6 +14,9 @@ RSpec.describe Qernel::Plugins::Molecules do
         Atlas::NodeAttributes::EnergyToMolecules.new(conversion_attributes)
       )
     end.future.graph
+
+    allow(graph.area).to receive(:use_merit_order_demands).and_return(causality_enabled)
+    graph
   end
 
   let(:molecule_graph) { graph.plugin(:molecules).molecule_graph }
@@ -56,8 +59,8 @@ RSpec.describe Qernel::Plugins::Molecules do
     end
 
     before do
-      allow(energy_node.input(:electricity)).to receive(:external_value).and_return(100)
-      allow(energy_node.input(:natural_gas)).to receive(:external_value).and_return(10)
+      allow(energy_node.input(:electricity)).to receive(:conversion).and_return(1.0)
+      allow(energy_node.input(:natural_gas)).to receive(:conversion).and_return(0.1)
 
       graph.calculate
     end
@@ -83,8 +86,8 @@ RSpec.describe Qernel::Plugins::Molecules do
       allow(energy_node.input(:electricity).carrier)
         .to receive(:co2_conversion_per_mj).and_return(0.3)
 
-      allow(energy_node.input(:electricity)).to receive(:external_value).and_return(100)
-      allow(energy_node.input(:natural_gas)).to receive(:external_value).and_return(10)
+      allow(energy_node.input(:electricity)).to receive(:conversion).and_return(1.0)
+      allow(energy_node.input(:natural_gas)).to receive(:conversion).and_return(0.1)
 
       graph.calculate
     end
@@ -107,7 +110,8 @@ RSpec.describe Qernel::Plugins::Molecules do
 
     it 'raises an error' do
       expect { graph.calculate }.to raise_error(
-        'Invalid attribute for electricity carrier in `from_energy` on molecule_source node'
+        'Invalid molecule conversion attribute for electricity carrier on molecule_source node: ' \
+        '"carrier: not_a_real_attribute"'
       )
     end
   end
@@ -118,8 +122,8 @@ RSpec.describe Qernel::Plugins::Molecules do
     end
 
     before do
-      allow(energy_node.output(:electricity)).to receive(:external_value).and_return(100)
-      allow(energy_node.output(:natural_gas)).to receive(:external_value).and_return(10)
+      allow(energy_node.output(:electricity)).to receive(:conversion).and_return(1.0)
+      allow(energy_node.output(:natural_gas)).to receive(:conversion).and_return(0.1)
 
       graph.calculate
     end
@@ -130,6 +134,41 @@ RSpec.describe Qernel::Plugins::Molecules do
 
     it 'sets demand of the molecule node' do
       expect(molecule_node.demand).to eq(35) # 25% of elec. 100% of natural gas.
+    end
+  end
+end
+
+RSpec.describe Qernel::Plugins::Molecules do
+  context 'when Causality is disabled' do
+    include_examples 'running the molecule graph plugin' do
+      let(:causality_enabled) { false }
+
+      context 'when an energy node receives a value from the molecule graph' do
+        before { graph.calculate }
+
+        let(:energy_target) { graph.node(:molecule_target) }
+
+        it 'has no demand' do
+          expect(energy_target.demand).to be_nil
+        end
+      end
+    end
+  end
+
+  context 'when Causality is enabled' do
+    include_examples 'running the molecule graph plugin' do
+      let(:causality_enabled) { true }
+
+      context 'when an energy node receives a value from the molecule graph' do
+        before { graph.calculate }
+
+        let(:energy_target) { graph.node(:molecule_target) }
+
+        it 'has a demand' do
+          # m_left demand * 0.75 share to m_right_one * 0.75 conversion
+          expect(energy_target.demand).to eq(100 * 0.75 * 0.75)
+        end
+      end
     end
   end
 end

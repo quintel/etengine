@@ -14,6 +14,6 @@
                     == #{sub_key}: #{sub_value}
               - else
                 - if object_attribute_is_node?(key)
-                  = link_to value, inspect_node_path(id: value)
+                  = link_to value, object_attribute_node_path(value, object)
                 - else
                   = value

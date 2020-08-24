@@ -1,0 +1,3 @@
+# A node which receives a demand from the molecule graph.
+- from_molecules.source = m_right_one
+- from_molecules.conversion = 0.75

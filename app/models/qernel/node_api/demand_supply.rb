@@ -56,8 +56,11 @@ module Qernel
       end
 
       def output_of_carrier(carrier)
-        c = node.output(carrier)
-        c&.external_value || 0.0
+        if (slot = node.output(carrier))
+          node.demand * slot.conversion
+        else
+          0.0
+        end
       end
 
       # Public: Helper method to get all heat outputs (useable_heat, steam_hot_water)
@@ -112,8 +115,11 @@ module Qernel
       end
 
       def input_of_carrier(carrier)
-        c = node.input(carrier)
-        c&.external_value || 0.0
+        if (slot = node.input(carrier))
+          node.demand * slot.conversion
+        else
+          0.0
+        end
       end
 
       def supply_of_carrier(carrier)
