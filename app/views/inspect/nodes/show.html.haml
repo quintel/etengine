@@ -75,6 +75,8 @@
         %tr
           %td Use
           %td= @node_present.use_key
+        = render partial: 'object_attributes', locals: { name: 'Demand from energy graph', object: @node_future.from_energy }
+        = render partial: 'object_attributes', locals: { name: 'Demand from molecule graph', object: @node_future.from_molecules }
         = render partial: 'object_attributes', locals: { name: 'Fever (Heat)', object: @node_future.fever }
         = render partial: 'object_attributes', locals: { name: 'Heat network', object: @node_future.heat_network }
         = render partial: 'object_attributes', locals: { name: 'Hydrogen', object: @node_future.hydrogen }

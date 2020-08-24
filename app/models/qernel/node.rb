@@ -90,6 +90,7 @@ class Node
     excel_id
     fever
     from_energy
+    from_molecules
     heat_network
     hydrogen
     merit_order

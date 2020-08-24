@@ -1,2 +1,3 @@
 - groups = []
 - from_energy.source = molecule_source
+- input.co2 = 1.0

@@ -184,6 +184,10 @@ module InspectHelper
     end
   end
 
+  def object_attribute_node_path(key, object)
+    inspect_node_path(id: key, graph_name: object_attribute_graph_name(object))
+  end
+
   # Public: Returns if a node "object attribute" (`merit_order`, `fever`,
   # etc) identifies another node.
   #
@@ -194,7 +198,17 @@ module InspectHelper
       delegate
       demand_source
       output_capacity_from_demand_of
+      source
     ].include?(name)
+  end
+
+  # Public: Returns the graph referenced by an object attribute node key.
+  def object_attribute_graph_name(object)
+    if object.is_a?(Atlas::NodeAttributes::MoleculesToEnergy)
+      :molecules
+    else
+      :energy
+    end
   end
 
   # Public: Returns the scenario flexibility or heat network order as a string

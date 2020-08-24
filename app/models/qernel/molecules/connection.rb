@@ -1,0 +1,76 @@
+# frozen_string_literal: true
+
+module Qernel
+  module Molecules
+    # Assists in calculating how demand can flow from one graph to another. Takes a source node (on
+    # which demand is known) and an Atlas::NodeAttributes::GraphConnection to calculate the amount
+    # of demand.
+    class Connection
+      # Public: Calculates the demand from the source node, as determined by the config.
+      #
+      # source - A Qernel::Node, containing a demand.
+      # config - An Atlas::NodeConfig::GraphConnection with detailsfor how to calculate the demand
+      #          from the source node.
+      #
+      # Returns a numeric.
+      def self.demand(source, config)
+        new(source, config).demand
+      end
+
+      def initialize(source, config)
+        @source = source
+        @config = config
+      end
+
+      # Internal: Reads the appropriate value from the source node and calculates what should be
+      # set on the molecule node.
+      #
+      # Conversions without a "direction" are assumed to take the demand of the source node and
+      # optionally multiply it by the "conversion" attribute. Those whose direction is :input or
+      # :output will specify each carrier and conversion separately.
+      #
+      # Returns a Numeric.
+      def demand
+        direction = @config.direction
+
+        if direction.nil?
+          @source.demand * @config.conversion_of(nil)
+        else
+          @config.conversion.sum do |carrier, _|
+            slot = conversion_slot(direction, carrier)
+            factor = conversion_factor(slot)
+
+            @source.demand * slot.conversion * factor
+          end
+        end
+      end
+
+      def conversion_factor(slot)
+        factor = @config.conversion_of(slot.carrier.key)
+
+        return factor if factor.is_a?(Numeric)
+
+        if factor.to_s.start_with?('carrier:')
+          attribute = factor[8..].strip
+
+          return slot.carrier.public_send(attribute) if slot.carrier.respond_to?(attribute)
+
+          raise "Invalid molecule conversion attribute for #{slot.carrier.key} carrier " \
+                "on #{slot.node.key} node: #{factor.inspect}"
+        end
+
+        factor
+      end
+
+      def conversion_slot(direction, carrier)
+        case direction
+        when :input  then @source.input(carrier)
+        when :output then @source.output(carrier)
+        else
+          raise "Expected there to be a #{carrier.inspect} #{direction.inspect} slot on " \
+                "#{@source.key}, but no such slot was found"
+        end
+      end
+    end
+  end
+end

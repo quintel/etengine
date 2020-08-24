@@ -23,11 +23,11 @@ class Graph
   PLUGINS = [
     Plugins::DisableSectors,
     Plugins::SimpleMeritOrder,
+    Plugins::Molecules,
     Plugins::Causality,
     Plugins::FCE,
     Plugins::MaxDemandRecursive,
-    Plugins::ResettableSlots,
-    Plugins::Molecules
+    Plugins::ResettableSlots
   ].freeze
 
   # ---- DatasetAttributes ----------------------------------------------------
@@ -307,7 +307,7 @@ class Graph
 
   # Overwrite inspect to not inspect. Otherwise it crashes due to interlinkage of nodes.
   def inspect
-    "<Qernel::Graph #{@name}>"
+    "<Qernel::Graph #{@name} (#{period})>"
   end
 
   # --- Calculation ----------------------------------------------------------
