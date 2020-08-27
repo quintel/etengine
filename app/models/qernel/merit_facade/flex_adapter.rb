@@ -20,28 +20,15 @@ module Qernel
           HouseholdPowerToHeatAdapter
         when :curtailment
           CurtailmentAdapter
+        when :heat_storage
+          HeatStorageAdapter
         else
           self
         end
       end
 
       def inject!
-        full_load_hours = participant.full_load_hours / input_efficiency
-
-        full_load_seconds =
-          if !full_load_hours || full_load_hours.nan?
-            full_load_hours = 0.0
-          else
-            full_load_hours * 3600
-          end
-
-        target_api[:full_load_hours]   = full_load_hours
-        target_api[:full_load_seconds] = full_load_seconds
-
-        target_api.demand =
-          full_load_seconds *
-          participant.output_capacity_per_unit *
-          participant.number_of_units
+        inject_demand!
 
         inject_curve!(:input) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
@@ -104,6 +91,26 @@ module Qernel
 
       def marginal_costs
         @context.dispatchable_sorter.cost(@node, @config)
+      end
+
+      # Internal: Sets demand and related attributes on the target API.
+      def inject_demand!
+        full_load_hours = participant.full_load_hours / input_efficiency
+
+        full_load_seconds =
+          if !full_load_hours || full_load_hours.nan?
+            full_load_hours = 0.0
+          else
+            full_load_hours * 3600
+          end
+
+        target_api[:full_load_hours]   = full_load_hours
+        target_api[:full_load_seconds] = full_load_seconds
+
+        target_api.demand =
+          full_load_seconds *
+          participant.input_capacity_per_unit *
+          participant.number_of_units
       end
     end
   end

@@ -12,15 +12,54 @@ module Qernel
 
       def inject!
         super
+        inject_dumped_energy_attributes!
+      end
 
-        inject_infinite! if infinite_storage?
+      private
 
-        # If the capacity is set dynamically by this adapter, reflect the change
-        # on the source node.
-        if @config.output_capacity_from_demand_of
-          inject_dynamic_output_capacity!
+      def producer_attributes
+        attrs = super
+
+        attrs[:input_efficiency]  = input_efficiency
+        attrs[:output_efficiency] = output_efficiency
+
+        attrs.merge!(storage_attributes)
+
+        attrs
+      end
+
+      def storage_attributes
+        attrs = { volume_per_unit: storage_volume_per_unit }
+
+        decay_factor = source_api.storage.decay
+
+        if decay_factor&.positive?
+          attrs[:decay] = ->(_, amount) { amount * decay_factor }
         end
 
+        unless @context.carrier == :steam_hot_water
+          # Heat network storage requires the ability to fetch the full storage
+          # curve; not supported by SimpleReserve.
+          attrs[:reserve_class] = Merit::Flex::SimpleReserve
+        end
+
+        attrs
+      end
+
+      def storage_volume_per_unit
+        source_api.storage.volume
+      end
+
+      def producer_class
+        Merit::Flex::Storage
+      end
+
+      # Internal: Storage with two outputs uses one of the outputs to dump unused energy from the
+      # reserve.
+      #
+      # Energy emitted by the reserve to be used passes through the share edge, while all remaining
+      # unused energy is dumped throught he inversed_flexible.
+      def inject_dumped_energy_attributes!
         # If the output slot has two edges, one a share edge and one inversed
         # flexible, assume that unused energy is dumped through the flexible.
         # Adjust the share edge so that only energy actually emitted by the
@@ -44,60 +83,6 @@ module Qernel
           end
 
         share_edge.dataset_set(:share, new_share)
-      end
-
-      private
-
-      def producer_attributes
-        attrs = super
-
-        # This is done prior to calling `capacity_from_other_demand` as that
-        # feature specifies that it affects output capacity only, and input
-        # capacity should remain as defined by the node.
-        if linked_capacity?
-          attrs[:input_capacity_per_unit] = attrs[:output_capacity_per_unit]
-        end
-
-        if @config.output_capacity_from_demand_of
-          attrs[:output_capacity_per_unit] = capacity_from_other_demand
-        end
-
-        attrs[:input_efficiency]  = input_efficiency
-        attrs[:output_efficiency] = output_efficiency
-
-        attrs.merge!(storage_attributes)
-      end
-
-      def storage_attributes
-        attrs = { volume_per_unit: storage_volume_per_unit }
-
-        decay_factor = source_api.storage.decay
-
-        if decay_factor&.positive?
-          attrs[:decay] = ->(_, amount) { amount * decay_factor }
-        end
-
-        unless @context.carrier == :steam_hot_water
-          # Heat network storage requires the ability to fetch the full storage
-          # curve; not supported by SimpleReserve.
-          attrs[:reserve_class] = Merit::Flex::SimpleReserve
-        end
-
-        attrs
-      end
-
-      def storage_volume_per_unit
-        infinite_storage? ? Float::INFINITY : source_api.storage.volume
-      end
-
-      def producer_class
-        Merit::Flex::Storage
-      end
-
-      # Infinite storage has an infinitely large reserve, which is then resized
-      # after the calculation to be the maximum value stored.
-      def infinite_storage?
-        @config.group == :infinite
       end
 
       def inject_infinite!
@@ -128,14 +113,6 @@ module Qernel
         avg_load = node.demand / 8760 / 3600
 
         avg_load * @config.output_capacity_from_demand_share
-      end
-
-      # Internal: Indicates that the input conversions should be ignored and not
-      # used to set capacity, but instead the input capacity is equal to the
-      # output capacity. This permits the use of conversions to set storage
-      # efficiency.
-      def linked_capacity?
-        @config.subtype == :storage
       end
     end
   end
