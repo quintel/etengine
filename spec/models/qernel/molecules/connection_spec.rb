@@ -45,6 +45,28 @@ RSpec.describe Qernel::Molecules::Connection do
     end
   end
 
+  context 'when the config specifies to use primary_co2_emission (10) with conversion of 0.5' do
+    let(:config) do
+      Atlas::NodeAttributes::EnergyToMolecules.new(
+        attribute: :primary_co2_emission,
+        conversion: 0.5
+      )
+    end
+
+    before do
+      allow(source.query).to receive(:primary_co2_emission).and_return(10.0)
+    end
+
+    it 'calculates demand of 5' do
+      expect(connection.demand).to eq(5)
+    end
+
+    it 'calls the named method on the NodeApi' do
+      connection.demand
+      expect(source.query).to have_received(:primary_co2_emission)
+    end
+  end
+
   context 'when the config specifies to use electricity input (75) with conversion of 1.0' do
     let(:config) do
       Atlas::NodeAttributes::EnergyToMolecules.new(
