@@ -7,4 +7,8 @@ module NodesHelper
     func = node.graph.name == :molecules ? 'MV' : 'V'
     gql_query("#{func}(#{node.key}, #{attribute})").results
   end
+
+  def graph_unit(graph)
+    graph.molecules? ? 'kg' : 'MJ'
+  end
 end

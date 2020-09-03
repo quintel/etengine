@@ -19,7 +19,7 @@
                       %thead
                         %tr
                           %th.edge-target Node
-                          %th.energy MJ
+                          %th.energy= graph_unit(c.graph)
                           %th.share Share
                           %th.type Type
                       %tbody
@@ -68,7 +68,7 @@
                         %tr
                           %th.type Type
                           %th.share Share
-                          %th.energy MJ
+                          %th.energy= graph_unit(c.graph)
                           %th.edge-target Node
                       %tbody
                         - input_slot.edges.sort_by { |s| s.rgt_node.key }.each_with_index do |input_edge, i|
