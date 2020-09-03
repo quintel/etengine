@@ -2,6 +2,8 @@
 
 module Qernel
   module Molecules
+    ALLOWED_ATTRIBUTES = Set.new(Atlas::NodeAttributes::GraphConnection::ALLOWED_ATTRIBUTES).freeze
+
     # Assists in calculating how demand can flow from one graph to another. Takes a source node (on
     # which demand is known) and an Atlas::NodeAttributes::GraphConnection to calculate the amount
     # of demand.
@@ -20,6 +22,10 @@ module Qernel
       def initialize(source, config)
         @source = source
         @config = config
+
+        unless ALLOWED_ATTRIBUTES.include?(@config.attribute)
+          raise "Ilegal molecule conversion attribute: #{@config.attribute.inspect}"
+        end
       end
 
       # Internal: Reads the appropriate value from the source node and calculates what should be
@@ -32,15 +38,16 @@ module Qernel
       # Returns a Numeric.
       def demand
         direction = @config.direction
+        base_amount = @source.query.public_send(@config.attribute)
 
         if direction.nil?
-          @source.demand * @config.conversion_of(nil)
+          base_amount * @config.conversion_of(nil)
         else
           @config.conversion.sum do |carrier, _|
             slot = conversion_slot(direction, carrier)
             factor = conversion_factor(slot)
 
-            @source.demand * slot.conversion * factor
+            base_amount * slot.conversion * factor
           end
         end
       end
