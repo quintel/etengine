@@ -390,7 +390,7 @@ module Qernel
       #
       # Returns the typical fuel input of one plant in MJ.
       def typical_input
-        fetch(:typical_input) { input_capacity * full_load_seconds }
+        fetch(:typical_input) { input_capacity * capacity_to_demand_multiplier * full_load_hours }
       end
 
       # Internal: Determines the share of output energy which is accounted for when calculating fuel

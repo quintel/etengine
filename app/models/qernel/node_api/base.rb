@@ -19,17 +19,8 @@ module Qernel
       prepend DemandSupply
       prepend Employment
       prepend HelperCalculations
-      prepend RecursiveMethods
 
       prepend RecursiveFactor::Base
-      prepend RecursiveFactor::PrimaryDemand
-      prepend RecursiveFactor::BioDemand
-      prepend RecursiveFactor::DependentSupply
-      prepend RecursiveFactor::FinalDemand
-      prepend RecursiveFactor::PrimaryCo2
-      prepend RecursiveFactor::WeightedCarrier
-      prepend RecursiveFactor::Sustainable
-      prepend RecursiveFactor::MaxDemand
 
       EXPECTED_DEMAND_TOLERANCE = 0.001
 

@@ -72,7 +72,7 @@ class Node
                :use_key,
                :presentation_group
 
-  attr_accessor :node_api, :key, :graph
+  attr_accessor :node_api, :key, :graph, :graph_name
 
   # The API type used by the node.
   #
@@ -456,14 +456,16 @@ public
 
   # --------- API -------------------------------------------------------------
 
-  def query( method_name = nil)
-     if method_name.nil?
-      node_api
-    else
-      node_api.send(method_name)
-    end
+  # Public: The query object used by some GQL functions.
+  #
+  # method_name - An optional method name to be executed on the API, rather than returning the API
+  #               instance. Deprecated.
+  #
+  # Returns self.
+  def query(method_name = nil)
+    @query ||= NodeApi.from_node(self)
+    method_name ? @query.public_send(method_name) : @query
   end
-  alias_method :proxy, :query
 
   # Sort of a hack, because we sometimes call node on a
   # node_api object, to get the node.
