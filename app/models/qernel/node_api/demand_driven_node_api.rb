@@ -9,7 +9,7 @@ module Qernel
     # some cases this is nonsensical; for example, if housing insulation is improved, it makes no
     # sense for the reduced demand to manifest in fewer heating appliances. Instead, it is likely
     # that the same number of appliances will exist, but that they will be used less often.
-    class DemandDrivenNodeApi < Base
+    class DemandDrivenNodeApi < EnergyApi
       # How many seconds a year the node runs at full load. Varies
       # depending on the demand.
       def full_load_seconds

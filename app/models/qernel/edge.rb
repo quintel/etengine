@@ -56,6 +56,10 @@ module Qernel
       self.dataset_key # memoize dataset_key
     end
 
+    def graph_name
+      @lft_node.graph_name
+    end
+
     def dataset_group
       @dataset_group ||= @lft_node.dataset_group
     end
@@ -69,7 +73,7 @@ module Qernel
     #
     # Returns self.
     def query
-      @query ||= EdgeApi::Energy.new(self)
+      @query ||= EdgeApi.from_edge(self)
     end
 
     # Public: The sector to which the edge belongs. This is the same as the sector

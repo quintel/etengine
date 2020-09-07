@@ -10,7 +10,7 @@ module Qernel
     #   +-----------------+                    +-------+
     #   | Parent (nou=20) | <- (share: 0.3) <- | Child |
     #   +-----------------+                    +-------+
-    class InheritableNouNodeApi < Base
+    class InheritableNouNodeApi < EnergyApi
       def number_of_units
         fetch(:number_of_units, false) do
           raise(InvalidParents, self) if node.output_edges.length != 1

@@ -15,10 +15,11 @@ module Qernel
         dataset_get(:number_of_units) || fetch(:number_of_units, false) do
           # #to_i also checks if it is nil
           if input_capacity.nil? || input_capacity.zero? ||
-              full_load_seconds.nil? || full_load_seconds.zero?
+              full_load_hours.nil? || full_load_hours.zero?
             0
           else
-            (demand || preset_demand) / (input_capacity * full_load_seconds)
+            used_capacity = input_capacity * capacity_to_demand_multiplier * full_load_hours
+            (demand || preset_demand) / used_capacity
           end
         end
       end
@@ -61,6 +62,17 @@ module Qernel
             node.output(:steam_hot_water)
           ].map { |slot| slot and slot.conversion }.compact.sum
         end
+      end
+
+      # Public: Returns the constant by which a capacity must be multiplied to get an equivalent
+      # demand.
+      #
+      # Molecule nodes specify capacity and demand with the same unit (kg), but energy uses MW for
+      # capacity and MJ for demand.
+      #
+      # Returns a numeric.
+      def capacity_to_demand_multiplier
+        1.0
       end
     end
   end

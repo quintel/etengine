@@ -22,12 +22,14 @@ module Qernel
     #   The appropriate NodeApi subclass for the node.
     #
     def from_node(node)
+      return MoleculeApi.new(node) if node.graph_name == :molecules
+
       if node.groups.include?(:demand_driven)
-        NodeApi::DemandDrivenNodeApi.new(node)
+        DemandDrivenNodeApi.new(node)
       elsif node.groups.include?(:inheritable_nou)
-        NodeApi::InheritableNouNodeApi.new(node)
+        InheritableNouNodeApi.new(node)
       else
-        NodeApi::Base.new(node)
+        EnergyApi.new(node)
       end
     end
   end
