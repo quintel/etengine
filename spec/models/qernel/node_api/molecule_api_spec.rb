@@ -14,8 +14,8 @@ RSpec.describe Qernel::NodeApi::MoleculeApi do
   before do
     node.with(
       demand: demand,
-      molecule_input_capacity: input_capacity,
-      molecule_output_capacity: output_capacity
+      typical_input_capacity: input_capacity,
+      output_capacity: output_capacity
     )
 
     allow(api).to receive(:output_of_loss).and_return(output_of_loss)
