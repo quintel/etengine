@@ -238,7 +238,7 @@ class Slot
   # and flexible, returns the remainder. Otherwise 0.0
   #
   # @param carrier [Symbol,Carrier]
-  # @return [Float] The input conversion for the carrier, calculates #actual_conversion if #dynamic?
+  # @return [Float] The input conversion for the carrier.
   # @return 0.0 if no conversion defined for carrier
   # @return 1.0 if node is environment?
   #
