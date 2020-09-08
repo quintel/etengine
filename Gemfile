@@ -69,6 +69,7 @@ group :development do
   gem 'spring'
   # gem 'quiet_assets'
   gem 'better_errors'
+  gem 'binding_of_caller'
   gem 'listen'
 
   gem 'capistrano',             '~> 3.9',   require: false

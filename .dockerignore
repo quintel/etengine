@@ -1,0 +1,6 @@
+.docker-env
+.env
+.git
+.gitignore
+logs/*
+tmp/*

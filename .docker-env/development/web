@@ -1,0 +1,8 @@
+ACTION_MAILER_HOST=etengine.dev
+DATABASE_HOST=database
+DEVISE_SECRET_KEY=dev-046813ff7c8b21bafe5eaa331e3e
+DEVISE_SENDER=you@example.com
+MYSQL_DATABASE=etengine_development
+MYSQL_PASSWORD=dev
+MYSQL_USER=root
+RAILS_SECRET_KEY_BASE=dev-e2fe5525ecda23bff563e106b0ec
