@@ -22,12 +22,6 @@ module Qernel
       def non_renewable_share
         1.0 - (sustainability_share || 0.0)
       end
-
-      # Public: Returns the cost of MJ energy.
-      delegate :weighted_carrier_cost_per_mj, to: :node
-
-      # Public: Returns the CO2 emissions (in kg) per MJ energy.
-      delegate :weighted_carrier_co2_per_mj, to: :node
     end
   end
 end

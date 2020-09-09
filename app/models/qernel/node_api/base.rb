@@ -36,6 +36,8 @@ module Qernel
       include FallbackMethods
 
       include RecursiveFactor::Base
+      include RecursiveFactor::WeightedCarrier
+      include RecursiveFactor::MaxDemand
 
       # attributes updated by #initialize
       attr_reader :node, :dataset_group, :dataset_key

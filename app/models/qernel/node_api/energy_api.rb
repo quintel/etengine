@@ -11,9 +11,7 @@ module Qernel
       include RecursiveFactor::DependentSupply
       include RecursiveFactor::FinalDemand
       include RecursiveFactor::PrimaryCo2
-      include RecursiveFactor::WeightedCarrier
       include RecursiveFactor::Sustainable
-      include RecursiveFactor::MaxDemand
 
       private
 
