@@ -62,7 +62,7 @@ module Qernel::Plugins
       @heat_network.setup_dynamic
     end
 
-    def inject
+    def inject(lifecycle)
       merit_calc = Merit::StepwiseCalculator.new.calculate(@merit.order)
 
       heat_network_calc = Merit::StepwiseCalculator.new.calculate(
@@ -75,15 +75,7 @@ module Qernel::Plugins
         merit_calc.call(frame)
       end
 
-      # Detaching the dataset clears the goals. This would ordinarily be correct
-      # behaviour, but we need to preserve them for the second calculation.
-      @graph.retaining_lifecycle do
-        goals = @graph.goals
-        @graph.detach_dataset!
-
-        @graph.dataset = @original_dataset
-        @graph.goals   = goals
-      end
+      lifecycle.attach_dataset(@original_dataset)
 
       # Any subsequent calculations (one of which) must have the merit order
       # demands injected into the graph.

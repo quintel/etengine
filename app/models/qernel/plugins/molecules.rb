@@ -25,6 +25,7 @@ module Qernel
       include Plugin
 
       after :first_calculation, :calculate
+      after :change_dataset, :reinstall_energy_demands
       after :finish, :calculate_final
 
       def self.enabled?(graph)
@@ -44,8 +45,11 @@ module Qernel
         @calculation.run
       end
 
-      def calculate_final
+      def reinstall_energy_demands
         @calculation&.reinstall_demands
+      end
+
+      def calculate_final
         Qernel::Molecules::FinalCalculation.new(@graph, molecule_graph).run if run?
       end
 

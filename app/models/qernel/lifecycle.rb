@@ -44,6 +44,22 @@ module Qernel
       @must_recalculate = true
     end
 
+    # Public: Helper method which sends callbacks when a plugin changes the dataset attached to the
+    # graph.
+    #
+    # Prefer this over Graph#dataset= directly to ensure that other plugins are informed of the
+    # change of dataset.
+    def attach_dataset(dataset)
+      with_callback(:change_dataset) do
+        # Detaching the dataset clears the goals. This would ordinarily be correct behaviour, but we
+        # need to preserve them for the second calculation.
+        @graph.retaining_lifecycle do
+          @graph.detach_dataset!
+          @graph.dataset = dataset
+        end
+      end
+    end
+
     #######
     private
     #######
