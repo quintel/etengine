@@ -21,6 +21,12 @@ module Qernel
         end
       end
 
+      # Public: The price of CO2 emissions by the node. Molecule nodes do not have CO2 emissions so
+      # this is always zero.
+      def co2_emissions_costs_per_typical_input
+        0.0
+      end
+
       private
 
       # The input capacity of the molecule technology.
