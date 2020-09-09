@@ -138,7 +138,7 @@ class Node
 
     memoize_for_cache
 
-    self.node_api = Qernel::NodeApi.from_node(self)
+    @node_api = Qernel::NodeApi.from_node(self)
 
     @calculation_state = :initialized
   end
@@ -463,8 +463,7 @@ public
   #
   # Returns self.
   def query(method_name = nil)
-    @query ||= NodeApi.from_node(self)
-    method_name ? @query.public_send(method_name) : @query
+    method_name ? @node_api.public_send(method_name) : @node_api
   end
 
   # Sort of a hack, because we sometimes call node on a
