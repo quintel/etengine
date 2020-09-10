@@ -23,7 +23,7 @@
                   = number_with_precision(value, precision: 10, separator: '.', delimiter: ',', strip_insignificant_zeros: true)
               - elsif table.objects[row_idx].is_a?(Qernel::Node) && table.data[0][col_idx] == :key
                 %td.node
-                  = link_to(value, inspect_node_path(id: value))
+                  = link_to(value, inspect_node_path_auto(table.objects[row_idx]))
               - else
                 %td= value
 
