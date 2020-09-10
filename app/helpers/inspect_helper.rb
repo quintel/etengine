@@ -184,6 +184,10 @@ module InspectHelper
     end
   end
 
+  def inspect_node_path_auto(node)
+    inspect_node_path(id: node.key, graph_name: node.graph.name)
+  end
+
   def object_attribute_node_path(key, object)
     inspect_node_path(id: key, graph_name: object_attribute_graph_name(object))
   end
