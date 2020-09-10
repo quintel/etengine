@@ -23,6 +23,10 @@ module Qernel
       def co2_per_mj
         fetch(:co2_per_mj) { carrier.co2_per_mj }
       end
+
+      def potential_co2_per_mj
+        carrier.potential_co2_conversion_per_mj
+      end
     end
   end
 end
