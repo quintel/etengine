@@ -4,44 +4,49 @@ module Qernel
   module NodeApi
     # Implements `method_missing` for various occasionally-used helper methods in GQL.
     module FallbackMethods
-      # Creates a method during run time if method_missing
-      def self.create_share_of_node_method(node_key)
-        key = node_key.to_sym
-        define_fallback_method "share_of_#{key}" do
-          ol = node.output_edges.detect { |l| l.lft_node.key == key }
-          ol&.share
+      extend ActiveSupport::Concern
+
+      class_methods do
+        # Creates a method during run time if method_missing
+        def create_share_of_node_method(node_key)
+          key = node_key.to_sym
+          define_method "share_of_#{key}" do
+            ol = node.output_edges.detect { |l| l.lft_node.key == key }
+            ol&.share
+          end
         end
-      end
 
-      # Creates a method during run time if method_missing and returns the value.
-      def self.create_share_of_node_method_and_execute(caller, node_key)
-        create_share_of_node_method(node_key)
-        caller.send("share_of_#{node_key}")
-      end
-
-      # Creates a method during run time if method_missing.
-      def self.create_input_edge_method(method_id, carrier_name, side, method)
-        if /^(.*)_(constant|share|inversedflexible|flexible)$/.match?(carrier_name)
-          carrier_name, edge_type =
-            carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
-
-          edge_type = 'inversed_flexible' if edge_type == 'inversedflexible'
+        # Creates a method during run time if method_missing and returns the value.
+        def create_share_of_node_method_and_execute(caller, node_key)
+          create_share_of_node_method(node_key)
+          caller.send("share_of_#{node_key}")
         end
-        define_fallback_method method_id do
-          if (slot = node.send(side, carrier_name.to_sym))
-            edge = if edge_type.nil?
-              slot.edges.first
-            else
-              slot.edges.detect { |l| l.send("#{edge_type}?") }
+
+        # Creates a method during run time if method_missing.
+        def create_input_edge_method(method_id, carrier_name, side, method)
+          if /^(.*)_(constant|share|inversedflexible|flexible)$/.match?(carrier_name)
+            carrier_name, edge_type =
+              carrier_name.match(/^(.*)_(constant|share|inversedflexible|flexible)$/).captures
+
+            edge_type = 'inversed_flexible' if edge_type == 'inversedflexible'
+          end
+
+          define_method method_id do
+            if (slot = node.send(side, carrier_name.to_sym))
+              edge = if edge_type.nil?
+                slot.edges.first
+              else
+                slot.edges.detect { |l| l.send("#{edge_type}?") }
+              end
+
+              edge&.send(method)
             end
-
-            edge&.send(method)
           end
         end
       end
 
       # Creates a method during run time if method_missing and returns the value
-      def self.create_input_edge_method_and_execute(caller, method_id, carrier_name, side, method)
+      def create_input_edge_method_and_execute(caller, method_id, carrier_name, side, method)
         create_input_edge_method(method_id, carrier_name, side, method)
         caller.send(method_id)
       end
