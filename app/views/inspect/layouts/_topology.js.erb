@@ -34,6 +34,19 @@ node_keys = @nodes.map(&:key)
 
 GRAPH.draw(<%= action_name == 'show' %>, function() {
   $('#loading').remove();
+
+  if (!_.any(GRAPH.nodes, n => n.pos_x < window.innerWidth && n.pos_y < window.innerHeight)) {
+    // When no nodes are visible on the page after it has been loaded, show a message instructing
+    // the user to scroll.
+    $('#scroll').show();
+
+    var removeScrollInstruction = function() {
+      $('#scroll').fadeOut();
+      $(document).off('scroll', removeScrollInstruction);
+    }
+
+    $(document).scroll(removeScrollInstruction);
+  }
 });
 
 if ('btoa' in window) {

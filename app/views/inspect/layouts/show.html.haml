@@ -1,6 +1,11 @@
 = render partial: 'controls', locals: { show_actions: false }
 = render partial: 'loading'
 
+%span#scroll
+  Scroll to see the graph layout
+  %span.key ↔
+  %span.key ↕
+
 :javascript
   var inspect_json_url = "#{inspect_layout_path(:format => 'json')}";
 
