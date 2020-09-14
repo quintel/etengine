@@ -66,7 +66,12 @@ class Inspect::LayoutsController < Inspect::BaseController
   end
 
   def attributes_for_json
-    attrs = ['demand', 'primary_demand']
+    if params[:id] == 'molecules'
+      attrs = %w[demand]
+    else
+      attrs = %w[demand primary_demand]
+    end
+
     attrs << Qernel::NodeApi::Attributes::ATTRIBUTES_USED.sort if params[:action] == 'edit'
     attrs.flatten
   end
