@@ -32,7 +32,7 @@ node_keys = @nodes.map(&:key)
   <% end %>
 <% end %>
 
-GRAPH.draw(function() {
+GRAPH.draw(<%= action_name == 'show' %>, function() {
   $('#loading').remove();
 });
 

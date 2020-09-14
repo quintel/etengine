@@ -17,19 +17,44 @@ class @Graph
   constructor: (width = @GRID_X_SIZE, height = @GRID_Y_SIZE) ->
     @width = width
     @height = height
-    @r = Raphael("canvas", width, height)
     @selected = []
     @nodes = {}
     @edges = []
 
+  # When viewing the layout (not editing), remove an excess margins around the edge.
+  recalculateBounds: ->
+    nodeList = Object.values(@nodes)
+
+    minX = minY = 100000
+    maxX = maxY = 0
+
+    nodeList.forEach (node) ->
+      minX = node.pos_x if node.pos_x < minX
+      maxX = node.pos_x if node.pos_x > maxX
+      minY = node.pos_y if node.pos_y < minY
+      maxY = node.pos_y if node.pos_y > maxY
+
+    # Add extra space for labels and boxes.
+    @width = maxX - minX + 500
+    @height = maxY - minY + 200
+
+    surplusTop = Math.max(minX - 100, 0)
+    surplusLeft = Math.max(minY - 100, 0)
+
+    nodeList.forEach (node) ->
+      node.pos_x -= surplusTop
+      node.pos_y -= surplusLeft
+
   # Draws the graph
   #
-  draw: (cb) =>
-    @drawGrid()
-    edge.draw() for edge in @edges
+  draw: (autoPosition, cb) =>
+    @recalculateBounds() if autoPosition
+    @r = Raphael("canvas", @width, @height)
+    @drawGrid(@r)
+    edge.draw(@r) for edge in @edges
     for key, node of @nodes
-      node.draw()
-    edge.adjust_to_node() for edge in @edges
+      node.draw(@r)
+    edge.adjust_to_node(@r) for edge in @edges
     cb() if cb
 
   enableDragging: ->
@@ -37,18 +62,18 @@ class @Graph
 
   # Draw the grid.
   #
-  drawGrid: =>
+  drawGrid: (r) =>
     for i in [1..@width] by @GRID_STEP_SIZE
       # M0   1 L10000   1
       # M0 801 L10000 80
-      @r.path("M#{i},0L#{i},#{@height}")
+      r.path("M#{i},0L#{i},#{@height}")
         .attr({stroke : '#eee'})
         .node.setAttribute('class', 'grid')
 
     for i in [0..(@height - 1)] by @GRID_STEP_SIZE
       # M1   0 L1   8000
       # M801 0 L801 8000
-      @r.path("M0,#{i}L#{@width},#{i}")
+      r.path("M0,#{i}L#{@width},#{i}")
         .attr({stroke : '#eee', class: 'grid'})
         .node.setAttribute('class', 'grid')
 
@@ -127,7 +152,6 @@ class @Edge
 
     @output_node.edges.push(this)
     @input_node.edges.push(this)
-    @r = GRAPH.r
     GRAPH.edges.push(this)
 
   # Draw the Edge.
@@ -135,8 +159,8 @@ class @Edge
   #            We want the edges to appear behind the node boxes, therefore
   #            call draw() on edges first.
   #
-  draw: =>
-    @shape = @r.connection(@input_node.input_slot(),
+  draw: (r) =>
+    @shape = r.connection(@input_node.input_slot(),
                           @output_node.output_slot(),
                           @color,
                           @color+'|'+@style)
@@ -157,7 +181,7 @@ class @Edge
   # Needs to be called everytime we move/drag a Node.
   # Also has to be called after drawing the nodes.
   #
-  adjust_to_node: => @r.connection(@shape)
+  adjust_to_node: (r) => r.connection(@shape)
 
 class @Node
   STYLE_SELECTED : {fill : '#cff', 'stroke' : '#f00' }
@@ -176,7 +200,6 @@ class @Node
     @hidden = hidden
     @fill_color = fill_color
     @stroke_color = stroke_color
-    @r = GRAPH.r
 
     GRAPH.nodes[key] = this
 
@@ -185,12 +208,12 @@ class @Node
   #           We want the edges to appear behind the node boxes, therefore
   #           call draw() on nodes after the edges.
   #
-  draw: ->
-    @drawNodeBox()
+  draw: (r) ->
+    @drawNodeBox(r)
     @hide() if @isHidden()
     @addEventListeners()
 
-  drawNodeBox: =>
+  drawNodeBox: (r) =>
     txt_attributes =
       'text-anchor' : 'start'
       'font-weight' : 400
@@ -199,14 +222,14 @@ class @Node
     pos_x = @pos_x
     pos_y = @pos_y
 
-    box = @r.rect(pos_x, pos_y, 80, 50)
+    box = r.rect(pos_x, pos_y, 80, 50)
     box.attr(@getBoxAttributes())
     box.model = this
 
     # Creating text nodes of node
-    box.sector_node = @r.text(0, 0, @getSectorUseShortcut())
-    box.text_node = @r.text(0, 0, @key).attr({'text-anchor': 'start'})
-    box.value_node = @r.text(0,0, '').attr({'text-anchor': 'start'})
+    box.sector_node = r.text(0, 0, @getSectorUseShortcut())
+    box.text_node = r.text(0, 0, @key).attr({'text-anchor': 'start'})
+    box.value_node = r.text(0,0, '').attr({'text-anchor': 'start'})
 
     # Default styles for text nodes
     box.text_node.attr(txt_attributes)
@@ -375,4 +398,4 @@ class @Node
     att = if b.type == "rect" then  {x: x, y: y} else {cx: x, cy: y}
     b.attr(att)
     @position_subnodes()
-    edge.adjust_to_node() for edge in @edges
+    edge.adjust_to_node(GRAPH.r) for edge in @edges
