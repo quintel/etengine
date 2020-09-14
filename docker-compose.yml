@@ -23,6 +23,8 @@ services:
       - /tmp
     depends_on:
       - database
+    tty: true
+    stdin_open: true
 
   database:
     image: mysql
