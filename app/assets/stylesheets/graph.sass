@@ -12,7 +12,7 @@
 
 body
   font-family: -apple-system, BedgeMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
-  #instructions, #options, #loading
+  #instructions, #options, #loading, #scroll
     background: white
     border-radius: 4px
     border: 1px solid #ddd
@@ -24,15 +24,34 @@ body
     position: fixed
     z-index: 5
 
-  #loading
+  #loading, #scroll
     background: none
     border: none
     box-shadow: none
     color: #555
     font-size: 18px
     left: 50%
+    margin-left: -200px
     text-align: center
     top: 50%
+    width: 400px
+  #scroll
+    display: none
+    .key
+      background: #eee
+      border-radius: 3px
+      border: 1px solid #999
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
+      display: inline-block
+      font-size: 16px
+      height: 23px
+      line-height: 1.4
+      margin-top: -2px
+      text-align: center
+      vertical-align: text-top
+      width: 23px
+      &:first-of-type
+        margin-left: 0.5rem
   #instructions
     cursor: move
     top: 20px
