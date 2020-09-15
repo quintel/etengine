@@ -65,48 +65,70 @@ module Gql::Runtime
         keys.empty? ? scope.graph : scope.graph_query(keys.first)
       end
 
-
-      # Returns an Array of all {Qernel::Node}. Use wisely, as this
-      # could become a performance killer.
+      # Returns an Array of all {Qernel::Node} for nodes belonging to the energy graph.
+      #
+      # Use wisely, as this could become a performance killer.
       #
       # Examples
       #
       #   ALL()
       #
-      def ALL(*keys)
-        scope.all_nodes
+      def ALL
+        scope.all_energy_nodes
       end
 
-      # Returns an Array of {Qernel::Node} for given group.
+      # Returns an Array of all {Qernel::Node} for nodes belonging to the molecule graph.
+      def MALL
+        scope.all_molecule_nodes
+      end
+
+      # Returns an Array of {Qernel::Node} for given energy group.
       #
       # Examples
       #
       #   GROUP(households)
       #
       def GROUP(*keys)
-        scope.group_nodes(keys)
+        scope.group_energy_nodes(keys)
       end
       alias G GROUP
 
-      # Returns an Array of {Qernel::Edges} for given group.
+      # Returns an Array of {Qernel::Node} for given molecule group. See GROUP.
+      def MGROUP(*keys)
+        scope.group_molecule_nodes(keys)
+      end
+      alias MG MGROUP
+
+      # Returns an Array of {Qernel::Edges} for given energy group.
       #
       # Examples
       #
       #   EDGE_GROUP(households)
       #
       def EDGE_GROUP(*keys)
-        scope.group_edges(keys)
+        scope.group_energy_edges(keys)
       end
       alias EG EDGE_GROUP
 
-      # Returns an Array of {Qernel::Node} for given sector.
+      # Returns an Array of {Qernel::Edges} for given molecule group. See EDGE_GROUP.
+      def MEDGE_GROUP(*keys)
+        scope.group_molecule_edges(keys)
+      end
+      alias MEG EDGE_GROUP
+
+      # Returns an Array of {Qernel::Node} for given energy sector.
       #
       # Examples
       #
-      #   SECTORS(households)
+      #   SECTOR(households)
       #
       def SECTOR(*keys)
-        scope.sector_nodes(keys)
+        scope.energy_sector_nodes(keys)
+      end
+
+      # Returns an Array of {Qernel::Node} for given molecule sector. See SECTOR.
+      def MSECTOR(*keys)
+        scope.molecule_sector_nodes(keys)
       end
 
       # Returns an Array with {Qernel::Node} for given energy use.
@@ -120,10 +142,11 @@ module Gql::Runtime
       #   USE(undefined)
       #
       def USE(*keys)
-        scope.use_nodes(keys)
+        scope.energy_use_nodes(keys)
       end
 
-      # Returns an Array of {Qernel::Carrier} for given key(s)
+      # Returns an Array of {Qernel::Carrier} for given key(s). Returns carriers belonging to the
+      # energy graph.
       #
       # Examples
       #
@@ -131,7 +154,13 @@ module Gql::Runtime
       #   CARRIER(electricity, network_gas) # => [<Qernel::Carrier electricity>, <Qernel::Carrier network_gas>]
       #
       def CARRIER(*keys)
-        scope.carriers(keys)
+        scope.energy_carriers(keys)
+      end
+
+      # Returns an Array of {Qernel::Carrier} for given key(s). Returns carriers belonging to the
+      # molecules graph. See CARRIER.
+      def MCARRIER(*keys)
+        scope.molecule_carriers(keys)
       end
 
       # Returns an attribute {Qernel::Area}

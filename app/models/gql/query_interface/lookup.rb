@@ -46,19 +46,51 @@ module Gql
         graph.area.send(key)
       end
 
-      def all_nodes
+      def all_energy_nodes
         graph.nodes
       end
 
-      delegate(
-        :carriers,
-        :use_nodes,
-        :sector_nodes,
-        :group_nodes,
-        :nodes,
-        :group_edges,
-        to: :energy_graph_helper
-      )
+      def all_molecule_nodes
+        molecules.nodes
+      end
+
+      delegate :nodes, to: :energy_graph_helper
+
+      def energy_sector_nodes(keys)
+        energy_graph_helper.sector_nodes(keys)
+      end
+
+      def molecule_sector_nodes(keys)
+        molecule_graph_helper.sector_nodes(keys)
+      end
+
+      def energy_use_nodes(keys)
+        energy_graph_helper.use_nodes(keys)
+      end
+
+      def group_energy_nodes(keys)
+        energy_graph_helper.group_nodes(keys)
+      end
+
+      def group_molecule_nodes(keys)
+        molecule_graph_helper.group_nodes(keys)
+      end
+
+      def group_energy_edges(keys)
+        energy_graph_helper.group_nodes(keys)
+      end
+
+      def group_molecule_edges(keys)
+        molecule_graph_helper.group_nodes(keys)
+      end
+
+      def energy_carriers(keys)
+        energy_graph_helper.carriers(keys)
+      end
+
+      def molecule_carriers(keys)
+        molecule_graph_helper.carriers(keys)
+      end
     end
   end
 end
