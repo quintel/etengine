@@ -67,9 +67,6 @@ module Qernel
       # Public: Returns the constant by which a capacity must be multiplied to get an equivalent
       # demand.
       #
-      # Molecule nodes specify capacity and demand with the same unit (kg), but energy uses MW for
-      # capacity and MJ for demand.
-      #
       # Returns a numeric.
       def capacity_to_demand_multiplier
         1.0

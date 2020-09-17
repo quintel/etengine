@@ -16,9 +16,8 @@ module Qernel
 
       private
 
-      # Energy nodes use full_load_seconds in order to implicitly convert from MJ to MW, due to
-      # demands being specified in MJ and capacities in MW. Molecule node units and capacities use
-      # the same unit: kg.
+      # Energy nodes define demand in MJ, while capacities are specified as MW. 1MW per hour equals
+      # 3600 MJ.
       #
       # Returns a numeric.
       def capacity_to_demand_multiplier

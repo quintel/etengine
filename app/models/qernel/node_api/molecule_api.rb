@@ -11,11 +11,12 @@ module Qernel
       # Returns a numeric.
       def number_of_units
         return 0.0 if demand.zero?
+        return super unless full_load_hours&.positive?
 
         if input_capacity&.positive?
-          demand / input_capacity
+          demand / (input_capacity * full_load_hours)
         elsif output_capacity&.positive?
-          (demand - output_of_loss) / output_capacity
+          (demand - output_of_loss) / (output_capacity * full_load_hours)
         else
           super
         end
@@ -28,6 +29,13 @@ module Qernel
       end
 
       private
+
+      # Molecule nodes define demand in kg (kg/year), while capacities are specified in kg/hour.
+      #
+      # Returns a numeric.
+      def capacity_to_demand_multiplier
+        8760.0
+      end
 
       # The input capacity of the molecule technology.
       #
