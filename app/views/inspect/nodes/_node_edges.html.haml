@@ -37,7 +37,7 @@
                                 .more-info Reversed
                   %td.centered{ title: output_slot.carrier.key.to_s.humanize }
                     .carrier-name{ title: output_slot.class.name }
-                      = output_slot.carrier.key.to_s.humanize
+                      = link_to output_slot.carrier.key.to_s.humanize, inspect_carrier_path(id: output_slot.carrier.key)
                     - if output_slot.conversion
                       %span{ title: output_slot.conversion }
                         == #{ (100.0 * output_slot.conversion).round(2) } %
@@ -57,7 +57,7 @@
               %tr.carrier
                 %td.centered{ title: input_slot.carrier.key.to_s.humanize }
                   .carrier-name{ title: input_slot.class.name }
-                    = input_slot.carrier.key.to_s.humanize
+                    = link_to input_slot.carrier.key.to_s.humanize, inspect_carrier_path(id: input_slot.carrier.key)
                   - if input_slot.conversion
                     %span{ title: input_slot.conversion }
                       = "#{(100 * input_slot.conversion).round(2)} %"
