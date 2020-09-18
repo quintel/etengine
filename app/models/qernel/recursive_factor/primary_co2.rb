@@ -6,7 +6,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
 
   def primary_co2_emission
     fetch(:primary_co2_emission) do
-      primary_demand_with(:co2_per_mj, :co2) - captured_bio_emissions
+      primary_demand_with(:co2_per_mj, :co2) - inherited_captured_bio_emissions
     end
   end
 
@@ -70,15 +70,5 @@ module Qernel::RecursiveFactor::PrimaryCo2
       (free_co2_factor * carrier.co2_conversion_per_mj)
 
     @node.primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0
-  end
-
-  private
-
-  def captured_bio_emissions
-    if free_co2_factor.positive?
-      primary_co2_emission_of_bio_carriers * free_co2_factor
-    else
-      0.0
-    end
   end
 end
