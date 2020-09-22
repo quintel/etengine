@@ -77,11 +77,11 @@ module Gql
       end
 
       def group_energy_edges(keys)
-        energy_graph_helper.group_nodes(keys)
+        energy_graph_helper.group_edges(keys)
       end
 
       def group_molecule_edges(keys)
-        molecule_graph_helper.group_nodes(keys)
+        molecule_graph_helper.group_edges(keys)
       end
 
       def energy_carriers(keys)
