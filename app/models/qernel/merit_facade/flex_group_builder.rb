@@ -15,9 +15,12 @@ module Qernel
           end
 
         group_class =
-          case config['behavior']
-          when 'share' then Merit::Flex::ShareGroup
-          else              Merit::Flex::Group
+          if config['behavior'] == 'share'
+            Merit::Flex::ShareGroup
+          elsif key == 'export'
+            Merit::Flex::CostBasedShareGroup
+          else
+            Merit::Flex::Group
           end
 
         group_class.new(key.to_sym, sorting)
