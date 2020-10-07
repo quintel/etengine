@@ -156,7 +156,7 @@ module Api
             { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'ccs_investment_per(:mw_electricity)' =>
-            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
+            { label: 'Additional initial investment for CCS', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'decommissioning_costs_per(:mw_electricity)' =>
             { label: 'Decommissioning costs', unit:'kEUR / MWe',
@@ -266,20 +266,33 @@ module Api
         }
       }
 
-      # If the node belongs to the carbon_capturing presentation group then
-      # add these
-      CARBON_CAPTURING_ATTRIBUTES_AND_METHODS = {
+      CO2_CAPTURE_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capacity per unit', unit: 'MWe',
+            { label: 'Capture capacity per unit', unit: 'kg / hour',
               formatter: FORMAT_1DP },
-          :co_output_conversion=>
-            { label: 'Carbon monoxide output efficiency', unit: '%',
-            formatter: FORMAT_FAC_TO_PERCENT },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
+        },
+        :cost => {
+          'total_initial_investment_per(:plant)' =>
+            { label: 'Initial investment', unit: 'kEUR / unit',
+              formatter: FORMAT_KILO },
+          'fixed_operation_and_maintenance_costs_per(:plant)' =>
+            { label: 'Fixed operation and maintenance costs', unit:'kEUR / unit / year',
+              formatter: ->(n) { '%.2f' % (n / 1000) } },
+          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
+            { label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour',
+              formatter: ->(n) { n.to_i } },
+          :wacc  =>
+            {label: 'Weighted average cost of capital', unit: '%'}
+        },
+        :other => {
+          :technical_lifetime  =>
+            { label: 'Technical lifetime', unit: 'years',
+              formatter: ->(n) { n.to_i } }
         }
-      }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+      }
 
       # If the node belongs to the p2g presentation group then
       # add these
@@ -405,8 +418,8 @@ module Api
             CHP_ATTRIBUTES_AND_METHODS
           when :hydrogen_production
             HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS
-          when :carbon_capturing
-            CARBON_CAPTURING_ATTRIBUTES_AND_METHODS
+          when :co2_capture
+            CO2_CAPTURE_ATTRIBUTES_AND_METHODS
           when :p2g
             P2G_ATTRIBUTES_AND_METHODS
           when :p2h
