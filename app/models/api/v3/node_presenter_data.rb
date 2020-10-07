@@ -232,10 +232,7 @@ module Api
       FLEXIBILITY_COSTS_AND_OTHER = {
         :cost => {
           'total_initial_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Initial investment (excl CCS)', unit: 'kEUR / MWe',
-              formatter: FORMAT_KILO },
-          'ccs_investment_per(:mw_typical_input_capacity)' =>
-            { label: 'Additional inititial investment for CCS', unit: 'kEUR / MWe',
+            { label: 'Initial investment', unit: 'kEUR / MWe',
               formatter: FORMAT_KILO },
           'decommissioning_costs_per(:mw_typical_input_capacity)' =>
             { label: 'Decommissioning costs', unit:'kEUR / MWe',
@@ -244,10 +241,7 @@ module Api
             { label: 'Fixed operation and maintenance costs', unit:'kEUR / MWe / year',
               formatter: ->(n) { '%.2f' % (n / 1000) } },
           :variable_operation_and_maintenance_costs_per_full_load_hour  =>
-            { label: 'Variable operation and maintenance costs (excl CCS)', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour  =>
-            { label: 'Additional variable operation and maintenance costs for CCS', unit: 'EUR / full load hour',
+            { label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour',
               formatter: ->(n) { n.to_i } },
           :wacc  =>
             {label: 'Weighted average cost of capital', unit: '%'},
@@ -270,6 +264,34 @@ module Api
         :technical => {
           :typical_input_capacity =>
             { label: 'Capture capacity per unit', unit: 'tonne / hour',
+              formatter: FORMAT_KILO },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        },
+        :cost => {
+          'total_initial_investment_per(:plant)' =>
+            { label: 'Initial investment', unit: 'kEUR / unit',
+              formatter: FORMAT_KILO },
+          'fixed_operation_and_maintenance_costs_per(:plant)' =>
+            { label: 'Fixed operation and maintenance costs', unit:'kEUR / unit / year',
+              formatter: ->(n) { '%.2f' % (n / 1000) } },
+          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
+            { label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour',
+              formatter: ->(n) { n.to_i } },
+          :wacc  =>
+            {label: 'Weighted average cost of capital', unit: '%'}
+        },
+        :other => {
+          :technical_lifetime  =>
+            { label: 'Technical lifetime', unit: 'years',
+              formatter: ->(n) { n.to_i } }
+        }
+      }
+
+      CO2_STORAGE_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Storage capacity per unit', unit: 'tonne / hour',
               formatter: FORMAT_KILO },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
@@ -420,6 +442,8 @@ module Api
             HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS
           when :co2_capture
             CO2_CAPTURE_ATTRIBUTES_AND_METHODS
+          when :co2_storage
+            CO2_STORAGE_ATTRIBUTES_AND_METHODS
           when :p2g
             P2G_ATTRIBUTES_AND_METHODS
           when :p2h
