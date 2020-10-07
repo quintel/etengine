@@ -35,7 +35,7 @@ module Api
         gql  = @scenario.gql(prepare: true)
 
         render json: { nodes: Hash[keys.map do |key, graph_attributes|
-          [ key, NodeStatsPresenter.new(key.to_sym, gql, graph_attributes) ]
+          [key, NodeStatsPresenter.new(key.to_sym, gql, graph_attributes)]
         end] }
       end
 
@@ -52,16 +52,24 @@ module Api
       def find_node
         key = params[:id].presence&.to_sym
         gql = @scenario.gql
+        present_node = node_from_interface(gql.present, key)
 
-        render_not_found unless gql.present.graph.node(key)
+        render_not_found unless present_node
 
-        @node = NodePresenter.new(gql.present.graph.node(key), gql.future.graph.node(key))
+        @node = NodePresenter.new(
+          present_node,
+          node_from_interface(gql.future, key)
+        )
       rescue StandardError => e
         render_not_found(errors: [e.message])
       end
 
       def permitted_params
         params.permit(:scenario_id, keys: {})
+      end
+
+      def node_from_interface(interface, key)
+        interface.graph.node(key) || interface.molecules.node(key)
       end
     end
   end
