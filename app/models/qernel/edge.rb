@@ -143,10 +143,11 @@ module Qernel
     #
     # Returns a Numeric, or nil if no share can be calculated.
     def parent_share
-      @parent_share ||=
+      fetch(:parent_share) do
         if value && (slot_demand = rgt_output.external_value)
           slot_demand.zero? ? 0.0 : value / slot_demand
         end
+      end
     end
 
     # Calculation --------------------------------------------------------------
