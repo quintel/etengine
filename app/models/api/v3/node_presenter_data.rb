@@ -269,8 +269,8 @@ module Api
       CO2_CAPTURE_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
-            { label: 'Capture capacity per unit', unit: 'kg / hour',
-              formatter: FORMAT_1DP },
+            { label: 'Capture capacity per unit', unit: 'tonne / hour',
+              formatter: FORMAT_KILO },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
         },
