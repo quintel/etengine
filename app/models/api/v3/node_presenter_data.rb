@@ -260,14 +260,7 @@ module Api
         }
       }
 
-      CO2_CAPTURE_ATTRIBUTES_AND_METHODS = {
-        :technical => {
-          :typical_input_capacity =>
-            { label: 'Capture capacity per unit', unit: 'tonne / hour',
-              formatter: FORMAT_KILO },
-          :full_load_hours  =>
-            {label: 'Full load hours', unit: 'hour / year'},
-        },
+      CO2_GENERIC_ATTRIBUTES_AND_METHODS = {
         :cost => {
           'total_initial_investment_per(:plant)' =>
             { label: 'Initial investment', unit: 'kEUR / unit',
@@ -288,6 +281,16 @@ module Api
         }
       }
 
+      CO2_CAPTURE_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Capture capacity per unit', unit: 'tonne / hour',
+              formatter: FORMAT_KILO },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(CO2_GENERIC_ATTRIBUTES_AND_METHODS)
+
       CO2_STORAGE_ATTRIBUTES_AND_METHODS = {
         :technical => {
           :typical_input_capacity =>
@@ -295,26 +298,19 @@ module Api
               formatter: FORMAT_KILO },
           :full_load_hours  =>
             {label: 'Full load hours', unit: 'hour / year'},
-        },
-        :cost => {
-          'total_initial_investment_per(:plant)' =>
-            { label: 'Initial investment', unit: 'kEUR / unit',
-              formatter: FORMAT_KILO },
-          'fixed_operation_and_maintenance_costs_per(:plant)' =>
-            { label: 'Fixed operation and maintenance costs', unit:'kEUR / unit / year',
-              formatter: ->(n) { '%.2f' % (n / 1000) } },
-          :variable_operation_and_maintenance_costs_per_full_load_hour  =>
-            { label: 'Variable operation and maintenance costs', unit: 'EUR / full load hour',
-              formatter: ->(n) { n.to_i } },
-          :wacc  =>
-            {label: 'Weighted average cost of capital', unit: '%'}
-        },
-        :other => {
-          :technical_lifetime  =>
-            { label: 'Technical lifetime', unit: 'years',
-              formatter: ->(n) { n.to_i } }
         }
-      }
+      }.merge(CO2_GENERIC_ATTRIBUTES_AND_METHODS)
+
+      CO2_TRANSPORT_ATTRIBUTES_AND_METHODS = {
+        :technical => {
+          :typical_input_capacity =>
+            { label: 'Transport capacity per unit', unit: 'tonne / hour',
+              formatter: FORMAT_KILO },
+          :full_load_hours  =>
+            {label: 'Full load hours', unit: 'hour / year'},
+        }
+      }.merge(CO2_GENERIC_ATTRIBUTES_AND_METHODS)
+
 
       # If the node belongs to the p2g presentation group then
       # add these
@@ -444,6 +440,8 @@ module Api
             CO2_CAPTURE_ATTRIBUTES_AND_METHODS
           when :co2_storage
             CO2_STORAGE_ATTRIBUTES_AND_METHODS
+          when :co2_transport
+            CO2_TRANSPORT_ATTRIBUTES_AND_METHODS
           when :p2g
             P2G_ATTRIBUTES_AND_METHODS
           when :p2h
