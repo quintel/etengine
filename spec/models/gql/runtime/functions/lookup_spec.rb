@@ -17,6 +17,11 @@ module Gql::Runtime::Functions
     # SUM_CURVES
     # ----------
 
+    describe 'SUM_CURVES(0.0)' do
+      it('returns []') { expect(result).to eq([]) }
+      it('returns an Array') { expect(result).to be_a(Array) }
+    end
+
     describe 'SUM_CURVES([[1]])' do
       it('returns [1]') { expect(result).to eq([1]) }
       it('returns an Array') { expect(result).to be_a(Array) }

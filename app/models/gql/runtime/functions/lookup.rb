@@ -254,10 +254,15 @@ module Gql::Runtime
       #
       # Returns an array.
       def SUM_CURVES(*curves)
-        if curves.length == 1 && curves.first &&
-            !curves.first.first.is_a?(Numeric)
-          # Was given an array of curves as the sole argument.
-          curves = curves.first
+        if curves.length == 1 && curves.first
+          # Was given a single number; this is typically the result of calling `V(obj, attr)` on
+          # an `obj` which doesn't eixst.
+          return [] if curves.first == 0.0
+
+          unless curves.first.first.is_a?(Numeric)
+            # Was given an array of curves as the sole argument.
+            curves = curves.first
+          end
         end
 
         curves = curves.compact
