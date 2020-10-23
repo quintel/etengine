@@ -276,7 +276,7 @@ module Api
         },
         :other => {
           :technical_lifetime  =>
-            { label: 'Technical lifetime', unit: 'years',
+            { label: 'Economic lifetime', unit: 'years',
               formatter: ->(n) { n.to_i } }
         }
       }
