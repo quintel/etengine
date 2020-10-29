@@ -55,7 +55,7 @@ module DebugHelper
 
           haml_tag :p, :class => type do
             haml_tag "span.label.unfold_toggle", type.to_s, :class => LABELS[type]
-            haml_concat "&nbsp;"
+            haml_concat "&nbsp;".html_safe
 
             log_folding_tags(type)
             log_title(parent)
@@ -96,7 +96,7 @@ module DebugHelper
     else
       haml_tag 'span.attr_name', attr_name.to_s
       if log[:node]
-        haml_concat link_to(">>", inspect_node_path(:id => log[:node]))
+        haml_concat link_to(">>", inspect_node_path(id: log[:node], graph_name: :energy))
       end
     end
   end
