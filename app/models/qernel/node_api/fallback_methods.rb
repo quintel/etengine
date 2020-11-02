@@ -43,12 +43,12 @@ module Qernel
             end
           end
         end
-      end
 
-      # Creates a method during run time if method_missing and returns the value
-      def create_input_edge_method_and_execute(caller, method_id, carrier_name, side, method)
-        create_input_edge_method(method_id, carrier_name, side, method)
-        caller.send(method_id)
+        # Creates a method during run time if method_missing and returns the value
+        def create_input_edge_method_and_execute(caller, method_id, carrier_name, side, method)
+          create_input_edge_method(method_id, carrier_name, side, method)
+          caller.send(method_id)
+        end
       end
 
       def respond_to_missing?(name, include_private = false)
