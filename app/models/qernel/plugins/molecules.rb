@@ -46,6 +46,7 @@ module Qernel
       end
 
       def reinstall_energy_demands
+        molecule_graph.dataset = @graph.dataset
         @calculation&.reinstall_demands
       end
 

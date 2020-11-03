@@ -23,14 +23,6 @@ module Qernel
         @molecule_graph.calculate
         @molecule_graph
       end
-
-      private
-
-      def create_molecule_graph
-        graph = Etsource::Loader.instance.molecule_graph.tap
-        graph.dataset = @energy_graph.dataset
-        graph
-      end
     end
   end
 end
