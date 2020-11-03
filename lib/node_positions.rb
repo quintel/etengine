@@ -21,7 +21,8 @@ class NodePositions
     :environment  => '#32CD32',
     :buildings    => '#FF6666',
     :neighbor     => '#87CEEB',
-    :bunkers      => '#5CD0A5'
+    :bunkers      => '#5CD0A5',
+    :molecules    => '#4A69BD'
   }.with_indifferent_access
 
   def initialize(path, node_class)
