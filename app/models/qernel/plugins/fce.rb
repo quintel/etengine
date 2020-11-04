@@ -21,12 +21,17 @@ module Qernel::Plugins
       bio_ethanol
       coal
       crude_oil
+      diesel
+      gasoline
       greengas
+      heavy_fuel_oil
       imported_electricity
       imported_heat
+      kerosene
       natural_gas
       non_biogenic_waste
       lng
+      lpg
       uranium_oxide
       wood_pellets
     ].freeze
