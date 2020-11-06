@@ -41,14 +41,6 @@ module Qernel
       MJ_IN_MWH = 3600
 
       def inject!
-        if @number_of_units.zero? ||
-            participant.producer.output_curve.all?(&:zero?)
-          return
-        end
-
-        # Sets the load-adjusted efficiency of the primary component carriers.
-        # primary_adapter.inject!
-
         @node.node.output(:useable_heat)[:conversion] = 1.0
 
         # Set the demands and other attributes based on the whole producer and
