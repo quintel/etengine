@@ -51,7 +51,7 @@ module Qernel
           demand = participant.demand
           edge   = conv.output(:useable_heat).edges.first
 
-          edge.share = demand.positive? ? production / demand : 1.0
+          edge.share = demand.positive? ? production / demand : 0.0
         end
 
         # Internal: Inject input curves from the participant onto the node.
