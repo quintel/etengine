@@ -37,11 +37,17 @@ class GraphDiagram
     @nodes.each do |node|
       smiley = node_smiley(node)
       demand = safe_node_attribute(node, :demand)
-      primary_demand = safe_node_attribute(node, :primary_demand)
-      co2 = safe_node_attribute(node, :primary_co2_emission)
+
+      if node.graph.name == :energy
+        primary_demand = safe_node_attribute(node, :primary_demand)
+        co2 = safe_node_attribute(node, :primary_co2_emission)
+        attrs = " [#{primary_demand} / co2: #{co2}]"
+      else
+        attrs = ''
+      end
 
       @collection[node] = @g.add_node(
-        "#{node} \n (#{demand}) [#{primary_demand} / co2: #{co2}] #{smiley}",
+        "#{node.key} \n (#{demand})#{attrs} #{smiley}",
         node_settings(node)
       )
     end
@@ -64,7 +70,7 @@ class GraphDiagram
       shape: 'box'
     }
 
-    settings[:href] = "#{@svg_path}#{node.key}.svg" if @svg_path
+    settings[:href] = "#{@svg_path}/#{node.graph.name}/nodes/#{node.key}.svg" if @svg_path
     settings[:color] = '#ff0000' if node.demand.nil?
 
     settings

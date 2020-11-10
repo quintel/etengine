@@ -44,7 +44,7 @@ class Inspect::NodesController < Inspect::BaseController
 
   def diagram
     depth = params[:depth]&.to_i || 3
-    base_url = "/inspect/#{@api_scenario.id}/nodes/"
+    base_url = "/inspect/#{@api_scenario.id}/graphs"
     node = params[:graph] == 'future' ? @node_future : @node_present
     node.to_image(depth, base_url)
   end
