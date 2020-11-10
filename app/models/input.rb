@@ -283,18 +283,17 @@ class Input
   # Used when calculating a min, max, start, etc, value fails to provide users
   # with some idea of where the error occurred.
   class InputGQLError < RuntimeError
-    def initialize(original_exception, input, attribute)
-      @original  = original_exception
-      @key       = input.key
-      @attribute = attribute
+    def initialize(original, input, attribute)
+      @message = "Failed to calculate #{attribute} value for #{input.key} input, with error: " \
+                 "#{original.message}"
 
-      set_backtrace(@original.backtrace)
+      super(message)
+
+      set_backtrace(original.backtrace)
     end
 
-    def message
-      "Failed to calculate #{ @attribute } value for #{ @key } input, " \
-        "with error: #{ @original.message }"
+    def to_s
+      @message
     end
-  end # InputGQLError
-
+  end
 end # Input
