@@ -134,18 +134,36 @@ module Qernel
       dataset_get(:priority) || -Float::INFINITY
     end
 
-    # Public: The share of energy from the parent node carried away by this
-    # edge.
+    # Public: The share of the parent node energy carried away by this edge.
     #
-    # This is only able to return a meaningful value AFTER the graph has been
-    # calculated, since prior to this the edge or node may not yet have a
-    # demand.
+    # This can always return a value when the edge is reversed and has a value for its "share"
+    # attribute (is a type=share edge). Otherwise, a value can only be returned AFTER the graph has
+    # been calculated since, prior to this, the edge or node may not yet have a demand.
     #
     # Returns a Numeric, or nil if no share can be calculated.
     def parent_share
       fetch(:parent_share) do
-        if value && (slot_demand = rgt_output.external_value)
-          slot_demand.zero? ? 0.0 : value / slot_demand
+        if reversed? && share
+          share
+        elsif demand && (slot_demand = rgt_output.external_value)
+          slot_demand.zero? ? 0.0 : demand / slot_demand
+        end
+      end
+    end
+
+    # Public: The share of the child node energy provided by this edge.
+    #
+    # This can always return a value when the edge is reversed and has a value for its "share"
+    # attribute (is a type=share edge). Otherwise, a value can only be returned AFTER the graph has
+    # been calculated since, prior to this, the edge or node may not yet have a demand.
+    #
+    # Returns a Numeric, or nil if no share can be calculated.
+    def child_share
+      fetch(:child_share) do
+        if !reversed? && share
+          share
+        elsif demand && (slot_demand = lft_input.external_value)
+          slot_demand.zero? ? 0.0 : demand / slot_demand
         end
       end
     end
@@ -164,12 +182,13 @@ module Qernel
     # Updates the shares according to demand. This is needed so that
     # recursive_factors work correctly.
     def update_share
-      slot_demand = (lft_input && lft_input.expected_external_value) || 0.0
+      share_source = reversed? ? rgt_output : lft_input
+      slot_demand = share_source&.expected_external_value || 0.0
 
-      if self.value and slot_demand and slot_demand > 0
-        self.share = self.value / slot_demand
-      elsif value == 0.0
-        siblings_and_self = lft_input.edges
+      if demand && slot_demand&.positive?
+        self.share = value / slot_demand
+      elsif demand == 0.0
+        siblings_and_self = share_source.edges
 
         # if the value is 0.0, we have to set rules what edges
         # get what shares. In order to have recursive_factors work properly.
