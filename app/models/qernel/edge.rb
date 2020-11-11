@@ -153,7 +153,7 @@ module Qernel
 
     # Public: The share of the child node energy provided by this edge.
     #
-    # This can always return a value when the edge is reversed and has a value for its "share"
+    # This can always return a value when the edge is non-reversed and has a value for its "share"
     # attribute (is a type=share edge). Otherwise, a value can only be returned AFTER the graph has
     # been calculated since, prior to this, the edge or node may not yet have a demand.
     #
