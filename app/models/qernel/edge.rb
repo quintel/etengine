@@ -166,6 +166,12 @@ module Qernel
     def update_share
       slot_demand = (lft_input && lft_input.expected_external_value) || 0.0
 
+      # If this is a reversed share edge, and there's no demand on the parent (right) node,
+      # parent_share will be unable to calculate a value. Copy across the share.
+      if share? && reversed? && rgt_node.demand.zero?
+        dataset_set(:parent_share, share)
+      end
+
       if self.value and slot_demand and slot_demand > 0
         self.share = self.value / slot_demand
       elsif value == 0.0
