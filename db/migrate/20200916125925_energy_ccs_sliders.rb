@@ -21,14 +21,14 @@ class EnergyCcsSliders < ActiveRecord::Migration[5.2]
             total_capacity = non_ccs_value + ccs_value
             # New slider reflects relative ratio between CCS and non-CCS plants
             if total_capacity > 0
-              ccs_share = ccs_value / total_capacity
+              ccs_share = (ccs_value / total_capacity) * 100.0
             else
               ccs_share = 0.0
             end
           else
             # If only CCS plant is set, new CCS slider will be 100%
             total_capacity = scenario.user_values["capacity_of_#{ccs_plant}"]
-            ccs_share = 1.0
+            ccs_share = 100.0
           end
           scenario.user_values["capacity_of_#{regular_plant}"] = total_capacity
           scenario.user_values["share_of_#{ccs_plant}"] = ccs_share
