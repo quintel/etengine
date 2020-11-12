@@ -29,10 +29,8 @@
                               = link_to output_edge.lft_node.key, inspect_node_path(:id => output_edge.lft_node)
                               .more-info
                                 = link_to 'View .ad file', link_to_edge_file(output_edge)
-                            %td.value{:title => output_edge.demand}
-                              = auto_number output_edge.demand
-                            %td.share{:title => output_edge.parent_share}
-                              = "#{(100.0 * output_edge.parent_share).round(2)} %" unless output_slot.external_value == 0
+                            %td.value{:title => output_edge.value}= auto_number output_edge.value
+                            %td.share{:title => output_edge.share}= "#{(100.0 * output_edge.parent_share).round(2)} %" unless output_slot.external_value == 0
                             %td
                               = output_edge.edge_type.to_s.humanize
                               - if output_edge.reversed?
@@ -80,10 +78,8 @@
                               - if input_edge.reversed?
                                 .more-info Reversed
 
-                            %td.share{:title => input_edge.child_share}
-                              = "#{(100 * input_edge.child_share).round(2)} %" unless input_edge.child_share.nil?
-                            %td.value{:title => input_edge.demand}
-                              = auto_number input_edge.demand
+                            %td.share{:title => input_edge.share}= "#{(100 * input_edge.share).round(2)} %" unless input_edge.share.nil?
+                            %td.value{:title => input_edge.value}= auto_number input_edge.value
                             %td
                               = link_to input_edge.rgt_node.key, inspect_node_path(:id => input_edge.rgt_node)
                               .more-info
