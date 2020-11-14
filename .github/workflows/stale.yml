@@ -13,7 +13,7 @@ jobs:
     - uses: actions/stale@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'This issue has had no activity for sixty days. Remove the "Stale" label or post a comment if you do not wish it to be closed in seven days.'
+        stale-issue-message: 'This issue has had no activity for 60 days.  Removing the "Stale" label or posting a comment will prevent it from being closed automatically in 7 days'
         exempt-issue-labels: 'Pinned'
-        stale-pr-message: 'This pull request has had no activity for sixty days. Remove the "Stale" label or post a comment if you do not wish it to be closed in seven days.'
+        stale-pr-message: 'This pull request has had no activity for 60 days. Removing the "Stale" label or posting a comment will prevent it from being closed automatically in 7 days.'
         exempt-pr-labels: 'Pinned'
