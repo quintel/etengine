@@ -98,27 +98,8 @@ module Etsource
       #
       # Returns a string.
       def edge_key(edge)
-        type_key =
-          case edge.type
-            when :share             then :s
-            when :flexible          then :f
-            when :inversed_flexible then :i
-            when :dependent         then :d
-            when :constant          then :c
-          end
-
-        arrow =
-          if edge.reversed?
-            "<-- #{ type_key } --"
-          else
-            "-- #{ type_key } -->"
-          end
-
-        "#{ slot_key(edge.consumer, edge.carrier, :in) } " \
-        "#{ arrow } " \
-        "#{ slot_key(edge.supplier, edge.carrier, :out) }"
+        "#{edge.consumer}-#{edge.supplier}@#{edge.carrier}"
       end
-
     end # class << self
   end # FromAtlas
 end # Etsource
