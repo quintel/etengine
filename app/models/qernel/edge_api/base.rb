@@ -19,15 +19,16 @@ module Qernel
         :demand,
         :dependent?,
         :energetic?,
+        :flexible?,
         :input,
         :inversed_flexible?,
-        :flexible?,
+        :key,
         :lft_node,
+        :output,
+        :parent_share,
         :rgt_node,
         :sector,
-        :share?,
-        :output,
-        :parent_share
+        :share?
       )
 
       Etsource::Dataset::Import.new('nl').carrier_keys.each do |carrier_key|
