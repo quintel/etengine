@@ -98,7 +98,7 @@ module Etsource
       #
       # Returns a string.
       def edge_key(edge)
-        "#{edge.consumer}-#{edge.supplier}@#{edge.carrier}"
+        edge.key.to_s
       end
     end # class << self
   end # FromAtlas
