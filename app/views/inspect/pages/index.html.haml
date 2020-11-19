@@ -1,8 +1,6 @@
 = render 'inspect/shared/inspect_subnav'
 
-= button_to "Restart", inspect_restart_path,
-    :confirm =>"This will drop the sessions for ALL users! Please be patient, server restarts takes 30secs. Are you sure?", :class => 'btn'
-= button_to "Clear Cache", inspect_clear_cache_path, :confirm =>"Are you sure?", :class => 'btn'
+= button_to "Clear Cache", inspect_clear_cache_path(api_scenario_id: params[:api_scenario_id]), :confirm =>"Are you sure?", :class => 'btn', method: :post
 
 %p
   = link_to 'GQL Log', inspect_gql_log_path

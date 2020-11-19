@@ -92,13 +92,12 @@ Rails.application.routes.draw do
   namespace :inspect do
     get '/'             => 'pages#start_inspect'
     get  '/redirect'    => "base#redirect", :as => 'redirect'
-    post '/restart'     => 'pages#restart', :as => 'restart'
-    post '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
     get 'search.js' => 'search#index', as: :search_autocomplete
 
     scope '/:api_scenario_id' do
       root :to => "pages#index"
+      post '/clear_cache' => 'pages#clear_cache', :as => 'clear_cache'
 
       # The Graphviz
       resources :layouts, :except => [:new, :index, :create, :destroy] do
