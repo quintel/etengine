@@ -29,6 +29,20 @@ module Gql::Runtime
       def COALESCE_CURVE(curve, default = 0.0, length = 8760)
         curve&.any? ? curve : [default] * length
       end
+
+      # Public: Creates a new curve where each index (n) is the sum of (0..n) in the source curve.
+      #
+      # Returns an array.
+      def CUMULATIVE_CURVE(curve)
+        output = Array.new(curve.length)
+        running_total = 0.0
+
+        curve.each.with_index do |val, index|
+          output[index] = (running_total += val)
+        end
+
+        output
+      end
     end
   end
 end
