@@ -171,3 +171,7 @@ RSpec/ExampleLength:
 
 RSpec/NamedSubject:
   Enabled: false
+
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**/*'

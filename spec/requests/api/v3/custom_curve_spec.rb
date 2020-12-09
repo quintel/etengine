@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'Custom curves', :etsource_fixture do
+  # rubocop:disable RSpec/BeforeAfterAll
   before(:all) do
     NastyCache.instance.expire!
   end
+  # rubocop:enable RSpec/BeforeAfterAll
 
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves/#{curve_name}" }
@@ -230,7 +234,7 @@ describe 'Custom curves', :etsource_fixture do
         }
       end
 
-      before { file.write(((['1'*120]*8760).join("\n") + "\n")) }
+      before { file.write(((['1' * 120] * 8760).join("\n") + "\n")) }
 
       after { file.unlink }
 
