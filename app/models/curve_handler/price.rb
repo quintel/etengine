@@ -4,6 +4,10 @@ module CurveHandler
   # An extension to the Generic handler which reduces the precision of each point in the curve to
   # two decimal places.
   class Price < Generic
+    def self.presenter
+      CustomPriceCurveSerializer
+    end
+
     def sanitized_curve
       return nil unless valid?
 
