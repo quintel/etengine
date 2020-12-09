@@ -87,7 +87,15 @@ describe 'Custom curves', :etsource_fixture do
       it 'sends back JSON data about the curve' do
         expect(JSON.parse(response.body)).to include(
           'name' => 'price_curve.csv',
-          'size' => 35_039
+          'size' => 35_039,
+          'stats' => {
+            'length' => 8760,
+            'max' => 2.0,
+            'max_at' => 1,
+            'mean' => 1.5,
+            'min' => 1.0,
+            'min_at' => 0
+          }
         )
       end
     end

@@ -17,28 +17,14 @@ class CustomCurveSerializer
       name: @custom_curve.filename.to_s,
       size: @custom_curve.byte_size,
       date: @custom_curve.created_at.utc,
-      stats: stats,
-      source_scenario: @attachment.metadata_json
+      stats: stats
     }
   end
 
   private
 
   def stats
-    # Although it seems like one iteration through the curve would be
-    # better, wherein we would determine the min, max, and sum (for the
-    # mean), in fact this is not the case when benchmarked.
-    min = curve.min
-    max = curve.max
-
-    {
-      length: curve.length,
-      mean: curve.sum / curve.length,
-      min: min,
-      min_at: curve.index(min),
-      max: max,
-      max_at: curve.index(max)
-    }
+    {}
   end
 
   def curve
