@@ -2,13 +2,13 @@ module Api
   module V3
     # Provides the ability to upload or remove a custom curve from a scenario.
     #
-    # Currently only the imported electricity price curve can be changed, but
-    # this controller is intended to allow additional custom curves to be added
-    # later without requiring changes to the REST API.
+    # Currently only the imported electricity price curve can be changed, but this controller is
+    # intended to allow additional custom curves to be added later without requiring changes to the
+    # REST API.
     class CustomCurvesController < BaseController
-      # A map of permitted curves to the sanitizer class responsible for
-      # checking and formatting the contents of the curve.
-      CURVE_SANITIZERS = {
+      # A map of permitted curves to the handler class responsible for checking and formatting the
+      # contents of the curve.
+      CURVE_HANDLERS = {
         'interconnector_1_price' => CurveHandler::Price,
         'interconnector_2_price' => CurveHandler::Price,
         'interconnector_3_price' => CurveHandler::Price,
@@ -18,7 +18,7 @@ module Api
       }.freeze
 
       # A set containing the list of permitted curve names.
-      PERMITTED_CURVES = Set.new(CURVE_SANITIZERS.keys).freeze
+      PERMITTED_CURVES = Set.new(CURVE_HANDLERS.keys).freeze
 
       respond_to :json
 
@@ -27,20 +27,20 @@ module Api
       before_action :ensure_reasonable_file_size, only: :update
       before_action :ensure_curve_set, only: %i[show destroy]
 
-      # Sends information abuot all custom curves attached to the scenario.
+      # Sends information about all custom curves attached to the scenario.
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves
       def index
         curves =
-          CURVE_SANITIZERS.each_key.map do |key|
+          CURVE_HANDLERS.each_key.map do |key|
             attachment_json(attachment(key)).as_json.presence
           end
 
         render json: curves.compact
       end
 
-      # Sends the name of the current custom curve for the scenario, or an empty
-      # object if none is set.
+      # Sends the name of the current custom curve for the scenario, or an empty object if none is
+      # set.
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
@@ -52,20 +52,20 @@ module Api
       # PUT /api/v3/scenarios/:scenario_id/custom_curves/:name
       def update
         upload = params.require(:file)
-        sanitizer = create_sanitizer(params[:id], upload.tempfile)
+        handler = create_handler(params[:id], upload.tempfile)
 
-        if sanitizer.valid?
+        if handler.valid?
           update_or_create_attachment(params[:id], metadata_parameters)
 
           current_attachment.file.attach(
-            io: StringIO.new(sanitizer.sanitized_curve.join("\n")),
+            io: StringIO.new(handler.sanitized_curve.join("\n")),
             filename: upload.original_filename,
             content_type: 'text/csv'
           )
 
           render json: attachment_json(current_attachment)
         else
-          render json: errors_json(sanitizer), status: 422
+          render json: errors_json(handler), status: 422
         end
       end
 
@@ -118,20 +118,24 @@ module Api
       end
 
       def attachment_json(attachment)
-        attachment ? CustomCurveSerializer.new(attachment) : {}
+        attachment ? handler_class_for(attachment.key).presenter.new(attachment) : {}
       end
 
-      def errors_json(sanitizer)
-        { errors: sanitizer.errors, error_keys: sanitizer.error_keys }
+      def errors_json(handler)
+        { errors: handler.errors, error_keys: handler.error_keys }
       end
 
-      # Internal: Returns the sanitizer class responsible for the given custom
-      # curve name.
-      def create_sanitizer(curve_name, io)
+      # Internal: Fetches the handler class responsible for the given custom curve name.
+      def handler_class_for(curve_name)
+        CURVE_HANDLERS.fetch(curve_name.to_s.chomp('_curve'))
+      end
+
+      # Internal: Returns the handler based on the curve name, initialized with the IO.
+      def create_handler(curve_name, io)
         content = io.read
         io.rewind
 
-        CURVE_SANITIZERS.fetch(curve_name).from_string(content)
+        handler_class_for(curve_name).from_string(content)
       end
 
       # Asserts that the named curve is permitted to be changed.
@@ -161,9 +165,8 @@ module Api
         )
       end
 
-      # Asserts that the uploaded file is not too large; there's no reason for
-      # 8760 numeric values to exceed one megabyte. Short-circuiting prevents
-      # processing large files.
+      # Asserts that the uploaded file is not too large; there's no reason for 8760 numeric values
+      # to exceed one megabyte. Short-circuiting prevents processing large files.
       def ensure_reasonable_file_size
         return unless params.require(:file).size > 1.megabyte
 

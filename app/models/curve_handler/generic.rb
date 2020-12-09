@@ -14,6 +14,11 @@ module CurveHandler
       wrong_length: 'Curve must have 8760 numeric values, one for each hour in a typical year'
     }.freeze
 
+    # Public: Returns the presenter class used to return data about the curve through the JSON API.
+    def self.presenter
+      Api::V3::CustomCurvePresenter
+    end
+
     # Public: Takes a CSV file as a raw string, converts each line to a float and returns a
     # sanitizer.
     def self.from_string(string)
