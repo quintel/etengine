@@ -14,7 +14,7 @@ RSpec.describe CurveHandler::Config do
     let(:handler_key) { :price }
 
     it 'uses the Price handler' do
-      expect(config.handler).to eq(CurveHandler::Price)
+      expect(config.handler).to eq(CurveHandler::Processors::Price)
     end
 
     it 'sets no inputs' do
@@ -31,7 +31,7 @@ RSpec.describe CurveHandler::Config do
     let(:reducer_key) { :full_load_hours }
 
     it 'uses the Generic handler' do
-      expect(config.handler).to eq(CurveHandler::Generic)
+      expect(config.handler).to eq(CurveHandler::Processors::Generic)
     end
 
     it 'sets no inputs' do
@@ -49,7 +49,7 @@ RSpec.describe CurveHandler::Config do
     let(:input_keys)  { %i[a b] }
 
     it 'uses the Generic handler' do
-      expect(config.handler).to eq(CurveHandler::Generic)
+      expect(config.handler).to eq(CurveHandler::Processors::Generic)
     end
 
     it 'sets inputs' do
@@ -115,7 +115,7 @@ RSpec.describe CurveHandler::Config do
       end
 
       it 'sets the handler' do
-        expect(config.handler).to eq(CurveHandler::Generic)
+        expect(config.handler).to eq(CurveHandler::Processors::Generic)
       end
 
       it 'will set no inputs' do
@@ -133,7 +133,7 @@ RSpec.describe CurveHandler::Config do
       end
 
       it 'sets the handler' do
-        expect(config.handler).to eq(CurveHandler::Generic)
+        expect(config.handler).to eq(CurveHandler::Processors::Generic)
       end
 
       it 'will reduce a value to inputs' do
@@ -163,7 +163,7 @@ RSpec.describe CurveHandler::Config do
       end
 
       it 'sets the handler' do
-        expect(config.handler).to eq(CurveHandler::Generic)
+        expect(config.handler).to eq(CurveHandler::Processors::Generic)
       end
 
       it 'will reduce a value to inputs' do
