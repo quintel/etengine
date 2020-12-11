@@ -3,18 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe CurveHandler::Config do
-  let(:config) { described_class.new(key, handler_key, reducer_key, input_keys) }
+  let(:config) { described_class.new(key, processor_key, reducer_key, input_keys) }
 
   let(:key) { :unique_key }
-  let(:handler_key) { :generic }
+  let(:processor_key) { :generic }
   let(:reducer_key) { nil }
   let(:input_keys) { [] }
 
-  context 'when given handler_key=:price' do
-    let(:handler_key) { :price }
+  context 'when given processor_key=:price' do
+    let(:processor_key) { :price }
 
-    it 'uses the Price handler' do
-      expect(config.handler).to eq(CurveHandler::Processors::Price)
+    it 'uses the Price processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::Price)
     end
 
     it 'sets no inputs' do
@@ -26,12 +26,12 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
-  context 'when given handler_key=:generic and reducer=:full_load_hours' do
-    let(:handler_key) { :generic }
+  context 'when given processor_key=:generic and reducer=:full_load_hours' do
+    let(:processor_key) { :generic }
     let(:reducer_key) { :full_load_hours }
 
-    it 'uses the Generic handler' do
-      expect(config.handler).to eq(CurveHandler::Processors::Generic)
+    it 'uses the Generic processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::Generic)
     end
 
     it 'sets no inputs' do
@@ -43,13 +43,13 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
-  context 'when given handler_key=:generic and reducer=:full_load_hours and input_keys=%i[a b]' do
-    let(:handler_key) { :generic }
+  context 'when given processor_key=:generic and reducer=:full_load_hours and input_keys=%i[a b]' do
+    let(:processor_key) { :generic }
     let(:reducer_key) { :full_load_hours }
     let(:input_keys)  { %i[a b] }
 
-    it 'uses the Generic handler' do
-      expect(config.handler).to eq(CurveHandler::Processors::Generic)
+    it 'uses the Generic processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::Generic)
     end
 
     it 'sets inputs' do
@@ -69,19 +69,19 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
-  context 'when given handler_key=nil' do
-    let(:handler_key) { nil }
+  context 'when given processor_key=nil' do
+    let(:processor_key) { nil }
 
     it 'raises an error when creating the config' do
-      expect { config }.to raise_error(/cannot create .+ without a handler/i)
+      expect { config }.to raise_error(/cannot create .+ without a processor/i)
     end
   end
 
-  context 'when given handler_key=:invalid' do
-    let(:handler_key) { :invalid }
+  context 'when given processor_key=:invalid' do
+    let(:processor_key) { :invalid }
 
-    it 'raises an error when fetching the handler' do
-      expect { config.handler }.to raise_error(/unknown handler/i)
+    it 'raises an error when fetching the processor' do
+      expect { config.processor }.to raise_error(/unknown processor/i)
     end
   end
 
@@ -95,7 +95,7 @@ RSpec.describe CurveHandler::Config do
 
   context 'when given reducer_key=:invalid and some input keys' do
     let(:reducer_key) { :invalid }
-    let(:input_keys) { %w[a b]}
+    let(:input_keys) { %w[a b] }
 
     it 'raises an error when fetching the reducer' do
       expect { config.reducer }.to raise_error(/unknown reducer/i)
@@ -107,15 +107,15 @@ RSpec.describe CurveHandler::Config do
 
     context 'with a simple config hash' do
       let(:config_hash) do
-        { key: :my_curve, handler: :generic }
+        { key: :my_curve, type: :generic }
       end
 
       it 'sets the key' do
         expect(config.key).to eq(:my_curve)
       end
 
-      it 'sets the handler' do
-        expect(config.handler).to eq(CurveHandler::Processors::Generic)
+      it 'sets the processor' do
+        expect(config.processor).to eq(CurveHandler::Processors::Generic)
       end
 
       it 'will set no inputs' do
@@ -125,15 +125,15 @@ RSpec.describe CurveHandler::Config do
 
     context 'with a reducer config hash and a string input' do
       let(:config_hash) do
-        { key: :my_curve, handler: :generic, reduce: { as: :full_load_hours, sets: :my_input } }
+        { key: :my_curve, type: :generic, reduce: { as: :full_load_hours, sets: :my_input } }
       end
 
       it 'sets the key' do
         expect(config.key).to eq(:my_curve)
       end
 
-      it 'sets the handler' do
-        expect(config.handler).to eq(CurveHandler::Processors::Generic)
+      it 'sets the processor' do
+        expect(config.processor).to eq(CurveHandler::Processors::Generic)
       end
 
       it 'will reduce a value to inputs' do
@@ -153,7 +153,7 @@ RSpec.describe CurveHandler::Config do
       let(:config_hash) do
         {
           key: :my_curve,
-          handler: :generic,
+          type: :generic,
           reduce: { as: :full_load_hours, sets: %i[input_one input_two] }
         }
       end
@@ -162,8 +162,8 @@ RSpec.describe CurveHandler::Config do
         expect(config.key).to eq(:my_curve)
       end
 
-      it 'sets the handler' do
-        expect(config.handler).to eq(CurveHandler::Processors::Generic)
+      it 'sets the processor' do
+        expect(config.processor).to eq(CurveHandler::Processors::Generic)
       end
 
       it 'will reduce a value to inputs' do
@@ -183,7 +183,7 @@ RSpec.describe CurveHandler::Config do
       let(:config_hash) do
         {
           key: :my_curve,
-          handler: :generic,
+          type: :generic,
           reduce: { as: :full_load_hours, sets: %w[input_one input_two] }
         }
       end
