@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples_for 'a CurveHandler' do
+RSpec.shared_examples_for 'a CurveHandler processor' do
   let(:handler) { described_class.new(curve) }
 
   context 'with an empty curve' do
@@ -97,7 +97,7 @@ RSpec.shared_examples_for 'a CurveHandler' do
   end
 end
 
-RSpec.shared_examples_for 'a non-normalizing CurveHandler' do
+RSpec.shared_examples_for 'a non-normalizing CurveHandler processor' do
   let(:handler) { described_class.new(curve) }
 
   context 'with a curve containing 8760 floats' do

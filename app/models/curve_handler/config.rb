@@ -52,9 +52,9 @@ module CurveHandler
     def handler
       case @handler_key
       when :price
-        Price
+        Processors::Price
       when :generic
-        Generic
+        Processors::Generic
       else
         raise "Unknown handler #{@handler_key.inspect} for user curve #{@key.inspect}"
       end

@@ -9,12 +9,12 @@ module Api
       # A map of permitted curves to the handler class responsible for checking and formatting the
       # contents of the curve.
       CURVE_HANDLERS = {
-        'interconnector_1_price' => CurveHandler::Price,
-        'interconnector_2_price' => CurveHandler::Price,
-        'interconnector_3_price' => CurveHandler::Price,
-        'interconnector_4_price' => CurveHandler::Price,
-        'interconnector_5_price' => CurveHandler::Price,
-        'interconnector_6_price' => CurveHandler::Price
+        'interconnector_1_price' => CurveHandler::Processors::Price,
+        'interconnector_2_price' => CurveHandler::Processors::Price,
+        'interconnector_3_price' => CurveHandler::Processors::Price,
+        'interconnector_4_price' => CurveHandler::Processors::Price,
+        'interconnector_5_price' => CurveHandler::Processors::Price,
+        'interconnector_6_price' => CurveHandler::Processors::Price
       }.freeze
 
       # A set containing the list of permitted curve names.

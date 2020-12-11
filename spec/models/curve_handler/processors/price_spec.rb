@@ -3,11 +3,11 @@
 require 'spec_helper'
 require_relative './shared_examples'
 
-RSpec.describe CurveHandler::Price do
+RSpec.describe CurveHandler::Processors::Price do
   let(:handler) { described_class.new(curve) }
 
-  include_examples 'a CurveHandler'
-  include_examples 'a non-normalizing CurveHandler'
+  include_examples 'a CurveHandler processor'
+  include_examples 'a non-normalizing CurveHandler processor'
 
   context 'with a curve containing 8760 1.2345 floats' do
     let(:curve) { [1.2345] * 8760 }
