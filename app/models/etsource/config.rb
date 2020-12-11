@@ -59,6 +59,21 @@ module Etsource
       read('heat_network_order')
     end
 
+    # Public: Reads the hash of curves for which users may upload a custom curve.
+    #
+    # Returns a Hash.
+    def user_curve(wanted_key)
+      configs = NastyCache.instance.fetch('etsource.config.user_curves_objects') do
+        Hash[
+          read('user_curves').map do |key, config|
+            [key, CurveHandler::Config.from_etsource(config.deep_symbolize_keys.merge(key: key))]
+          end
+        ]
+      end
+
+      configs.fetch(wanted_key)
+    end
+
     private_class_method def read(name)
       NastyCache.instance.fetch("etsource.config.#{name}") do
         IceNine.deep_freeze(Atlas::Config.read(name))
