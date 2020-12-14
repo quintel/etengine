@@ -17,7 +17,7 @@ module CurveHandler
 
       # Public: Returns the presenter class which converts the curve information to JSON.
       def self.presenter
-        Api::V3::CustomCurvePresenter
+        CustomCurveSerializer
       end
 
       # Public: Takes a CSV file as a raw string, converts each line to a float and returns a

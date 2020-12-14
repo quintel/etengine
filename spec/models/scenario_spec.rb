@@ -490,11 +490,11 @@ describe Scenario do
       end
     end
 
-    context 'with a custom interconnector 3 electricity price curve' do
+    context 'with a custom interconnector 2 electricity price curve' do
       let(:preset_attachment) do
         preset
           .attachments
-          .create(key: 'interconnector_3_price_curve')
+          .create(key: 'interconnector_2_price_curve')
       end
 
       let(:scenario_attachment) do

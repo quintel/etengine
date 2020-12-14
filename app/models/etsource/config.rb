@@ -61,17 +61,22 @@ module Etsource
 
     # Public: Reads the hash of curves for which users may upload a custom curve.
     #
-    # Returns a Hash.
-    def user_curve(wanted_key)
-      configs = NastyCache.instance.fetch('etsource.config.user_curves_objects') do
+    # Returns a Hash of {String => CurveHandler::Config}.
+    def user_curves
+      NastyCache.instance.fetch('etsource.config.user_curves_objects') do
         Hash[
           read('user_curves').map do |key, config|
             [key, CurveHandler::Config.from_etsource(config.deep_symbolize_keys.merge(key: key))]
           end
         ]
       end
+    end
 
-      configs.fetch(wanted_key)
+    # Public: Reads a config for a single custom curve which a user may upload.
+    #
+    # Returns a CurveHandler::Config or raises a KeyError if no such config exists.
+    def user_curve(wanted_key)
+      user_curves.fetch(wanted_key)
     end
 
     private_class_method def read(name)

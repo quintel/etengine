@@ -18,13 +18,12 @@ class CustomPriceCurveSerializer < CustomCurveSerializer
     min = curve.min
     max = curve.max
 
-    {
-      length: curve.length,
+    super.merge(
       mean: curve.sum / curve.length,
       min: min,
       min_at: curve.index(min),
       max: max,
       max_at: curve.index(max)
-    }
+    )
   end
 end

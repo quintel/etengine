@@ -6,20 +6,6 @@ module Api
     # intended to allow additional custom curves to be added later without requiring changes to the
     # REST API.
     class CustomCurvesController < BaseController
-      # A map of permitted curves to the handler class responsible for checking and formatting the
-      # contents of the curve.
-      CURVE_HANDLERS = {
-        'interconnector_1_price' => CurveHandler::Processors::Price,
-        'interconnector_2_price' => CurveHandler::Processors::Price,
-        'interconnector_3_price' => CurveHandler::Processors::Price,
-        'interconnector_4_price' => CurveHandler::Processors::Price,
-        'interconnector_5_price' => CurveHandler::Processors::Price,
-        'interconnector_6_price' => CurveHandler::Processors::Price
-      }.freeze
-
-      # A set containing the list of permitted curve names.
-      PERMITTED_CURVES = Set.new(CURVE_HANDLERS.keys).freeze
-
       respond_to :json
 
       before_action :ensure_valid_curve_name, except: :index
@@ -32,7 +18,7 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/custom_curves
       def index
         curves =
-          CURVE_HANDLERS.each_key.map do |key|
+          Etsource::Config.user_curves.each_key.map do |key|
             attachment_json(attachment(key)).as_json.presence
           end
 
@@ -52,18 +38,10 @@ module Api
       # PUT /api/v3/scenarios/:scenario_id/custom_curves/:name
       def update
         upload = params.require(:file)
-        handler = create_handler(params[:id], upload.tempfile)
+        handler = create_handler(params[:id], upload)
 
         if handler.valid?
-          update_or_create_attachment(params[:id], metadata_parameters)
-
-          current_attachment.file.attach(
-            io: StringIO.new(handler.sanitized_curve.join("\n")),
-            filename: upload.original_filename,
-            content_type: 'text/csv'
-          )
-
-          render json: attachment_json(current_attachment)
+          render json: attachment_json(handler.call)
         else
           render json: errors_json(handler), status: 422
         end
@@ -90,19 +68,7 @@ module Api
       def attachment(type)
         return if scenario_attachments.empty?
 
-        scenario_attachments.find_by(key: "#{type}_curve")
-      end
-
-      def update_or_create_attachment(type, metadata)
-        unless current_attachment
-          ScenarioAttachment.create(
-            key: "#{type}_curve",
-            scenario_id: params[:scenario_id]
-          )
-        end
-
-        # If new metadata is not supplied, remove old metadata
-        current_attachment.update_or_remove_metadata(metadata)
+        scenario_attachments.find_by(key: config_for(type).db_key)
       end
 
       def metadata_parameters
@@ -117,30 +83,40 @@ module Api
         )
       end
 
+      # Serialization
+      # -------------
+
       def attachment_json(attachment)
-        attachment ? handler_class_for(attachment.key).presenter.new(attachment) : {}
+        attachment ? config_for(attachment.key).presenter.new(attachment) : {}
       end
 
       def errors_json(handler)
         { errors: handler.errors, error_keys: handler.error_keys }
       end
 
-      # Internal: Fetches the handler class responsible for the given custom curve name.
-      def handler_class_for(curve_name)
-        CURVE_HANDLERS.fetch(curve_name.to_s.chomp('_curve'))
+      # Factories
+      # ---------
+
+      def config_for(curve_name)
+        Etsource::Config.user_curve(curve_name.to_s.chomp('_curve'))
       end
 
       # Internal: Returns the handler based on the curve name, initialized with the IO.
       def create_handler(curve_name, io)
-        content = io.read
-        io.rewind
-
-        handler_class_for(curve_name).from_string(content)
+        CurveHandler::AttachService.new(
+          config_for(curve_name),
+          io,
+          Scenario.find(params[:scenario_id]),
+          metadata_parameters
+        )
       end
+
+      # Filters
+      # -------
 
       # Asserts that the named curve is permitted to be changed.
       def ensure_valid_curve_name
-        return if PERMITTED_CURVES.include?(params[:id])
+        return if Etsource::Config.user_curves.key?(params[:id])
 
         render(
           json: { errors: ["No such custom curve: #{params[:id].inspect}"] },

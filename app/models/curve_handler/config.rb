@@ -3,6 +3,8 @@
 module CurveHandler
   # Stores information about how to process an uploaded user curve.
   class Config
+    delegate :presenter, to: :processor
+
     # Public: Creates a new Config using a configuration hash from the ETSource YAML file. See
     # Etsource::Config.user_curves.
     def self.from_etsource(config_hash)
@@ -45,6 +47,11 @@ module CurveHandler
         @reducer_key = nil
         @input_keys = []
       end
+    end
+
+    # Public: The key used to store the file in the database.
+    def db_key
+      "#{@key}_curve"
     end
 
     # Public: Returns the processor class specified by the config. Raises an error if the processor
