@@ -24,7 +24,7 @@ class CustomCurveSerializer
   private
 
   def stats
-    {}
+    { length: curve.length }
   end
 
   def curve

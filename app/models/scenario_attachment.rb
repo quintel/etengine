@@ -2,15 +2,6 @@
 
 # Contains scenario attachments such as custom curves for interconnectors
 class ScenarioAttachment < ApplicationRecord
-  ATTACHMENT_KEYS = %w[
-    interconnector_1_price_curve
-    interconnector_2_price_curve
-    interconnector_3_price_curve
-    interconnector_4_price_curve
-    interconnector_5_price_curve
-    interconnector_6_price_curve
-  ].freeze
-
   # If the attachment originated from another scenario, the following attributes
   # are set. These metadata are primarily used for display in etmodel.
   SOURCE_SCENARIO_METADATA = %i[
@@ -32,11 +23,17 @@ class ScenarioAttachment < ApplicationRecord
   }
 
   validates :key, inclusion: {
-    in: ATTACHMENT_KEYS,
-    message: "should be one of: #{ATTACHMENT_KEYS}"
+    in: ->(*) { valid_keys },
+    message: ->(*) { "should be one of: #{valid_keys}" }
   }
 
   validate :validate_source_scenario_metadata
+
+  def self.valid_keys
+    NastyCache.instance.fetch('ScenearioAttachment.valid_keys') do
+      Etsource::Config.user_curves.map { |_, conf| conf.db_key }
+    end
+  end
 
   # Returns true for attachments which have all their 'source_scenario' metadata
   # set, indicating the attachment was imported from another scenario

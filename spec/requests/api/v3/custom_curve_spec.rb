@@ -56,8 +56,8 @@ describe 'Custom curves', :etsource_fixture do
     end
   end
 
-  context 'with a valid curve name' do
-    let(:curve_name) { 'interconnector_1_price' }
+  context 'with a valid generic curve name' do
+    let(:curve_name) { 'generic' }
 
     context 'when showing a curve and the scenario has nothing attached' do
       before { get(url) }
@@ -88,14 +88,7 @@ describe 'Custom curves', :etsource_fixture do
         expect(JSON.parse(response.body)).to include(
           'name' => 'price_curve.csv',
           'size' => 35_039,
-          'stats' => {
-            'length' => 8760,
-            'max' => 2.0,
-            'max_at' => 1,
-            'mean' => 1.5,
-            'min' => 1.0,
-            'min_at' => 0
-          }
+          'stats' => { 'length' => 8760 }
         )
       end
     end
@@ -127,7 +120,7 @@ describe 'Custom curves', :etsource_fixture do
             scenario
               .reload
               .attachments
-              .find_by(key: 'interconnector_1_price_curve')
+              .find_by(key: 'generic_curve')
               .present?
           }
           .from(false).to(true)
@@ -181,7 +174,7 @@ describe 'Custom curves', :etsource_fixture do
             scenario
               .reload
               .attachments
-              .find_by(key: 'interconnector_1_price_curve')
+              .find_by(key: 'generic_curve')
               .present?
           }
           .from(false).to(true)
@@ -226,7 +219,7 @@ describe 'Custom curves', :etsource_fixture do
             scenario
               .reload
               .attachments
-              .find_by(key: 'interconnector_1_price_curve')
+              .find_by(key: 'generic_curve')
               .present?
           }
           .from(false)
@@ -273,7 +266,7 @@ describe 'Custom curves', :etsource_fixture do
             scenario
               .reload
               .attachments
-              .find_by(key: 'interconnector_1_price_curve')
+              .find_by(key: 'generic_curve')
               .present?
           }
           .from(false)
@@ -305,7 +298,7 @@ describe 'Custom curves', :etsource_fixture do
             scenario
               .reload
               .attachments
-              .find_by(key: 'interconnector_1_price_curve')
+              .find_by(key: 'generic_curve')
               .present?
           }
           .from(true)
@@ -332,10 +325,85 @@ describe 'Custom curves', :etsource_fixture do
             scenario
               .reload
               .attachments
-              .find_by(key: 'interconnector_1_price_curve')
+              .find_by(key: 'generic_curve')
               .present?
           }
           .from(false)
+      end
+    end
+  end
+
+  context 'with a valid price curve name' do
+    let(:curve_name) { 'interconnector_1_price' }
+
+    context 'when showing a curve' do
+      before do
+        put url, params: {
+          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+        }
+
+        get(url)
+      end
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends back JSON data about the curve' do
+        expect(JSON.parse(response.body)).to include(
+          'name' => 'price_curve.csv',
+          'size' => 35_039,
+          'stats' => {
+            'length' => 8760,
+            'max' => 2.0,
+            'max_at' => 1,
+            'mean' => 1.5,
+            'min' => 1.0,
+            'min_at' => 0
+          }
+        )
+      end
+    end
+
+    context 'when uploading a valid curve file' do
+      let(:request) do
+        put url, params: {
+          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+        }
+      end
+
+      it 'succeeds' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'sends back JSON data about the curve' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'name' => 'price_curve.csv',
+          'size' => 35_039,
+          'stats' => {
+            'length' => 8760,
+            'max' => 2.0,
+            'max_at' => 1,
+            'mean' => 1.5,
+            'min' => 1.0,
+            'min_at' => 0
+          }
+        )
+      end
+
+      it 'attaches the file' do
+        expect { request }
+          .to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'interconnector_1_price_curve')
+              .present?
+          }
+          .from(false).to(true)
       end
     end
   end

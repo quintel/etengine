@@ -1,0 +1,89 @@
+---
+# Defines which curves end-users are allowed to upload via ETModel.
+#
+# Every curve must define a key and a type.
+#
+# key  - A unique identifier for the curve. Normally this should match the
+#        name of a curve in the ETSource datasets, as you might specify them
+#        to the "merit_order.group" attribute. For example:
+#        "buildings_cooling", "weather/solar_thermal".
+#
+# type - Tells ETEngine how to process the uploaded curve.
+#
+# #### Types
+#
+# `type: generic`
+#
+#   ETEngine will convert the uploaded file into a curve of 8760 numeric values,
+#   after asserting that the user curve _has_ 8760 values and that each value is
+#   numeric.
+#
+# `type: price`
+#
+#   ETEngine will treat this as a price curve. The behaviour is the same as the
+#   "generic" type, except that each value is rounded to two decimal places.
+#
+# `type: profile`
+#
+#   The uploaded curve is a profile. The values in the original curve are used
+#   to generate a profile such that the sum of the curve is 1 / 3600 (i.e., the
+#   shape of the user curve is retained, and useable as a demand profile, but
+#   the specific values are not).
+#
+# #### Setting an input
+#
+# Uploaded curves may be "reduced" to a single numeric value, with that value
+# then used to set one or more inputs in the user scenario. For example,
+# uploading a profile for a technology may require setting an input value to
+# assign a full_load_hours value which matches the curve.
+#
+# This is done with an optional "reduce" object containing "as" and "sets" keys.
+#
+# reduce.as   - Tells ETEngine how to reduce the curve to a numeric. Valid
+#               values are "full_load_hours" and "temperature_deviation".
+#
+# reduce.sets - Either a string or array of strings containing input keys whose
+#               values should be set.
+#
+# #### Examples
+#
+# # Configures an interconnector price curve.
+#
+# interconnector_1_price:
+#   type: price
+#
+# # Configures a profile for the offshore wind. Sets a single input.
+#
+# offshore_wind:
+#   type: profile
+#   reduce:
+#     as: full_load_hours
+#     sets: flh_of_energy_power_wind_turbine_offshore
+#
+# # Configures a profile for a (hypothetical) heating technology. Sets three
+# # inputs.
+#
+# theoretical_energy:
+#   type: profile
+#   reduce:
+#     as: full_load_hours
+#     sets:
+#       - flh_of_technology_1
+#       - flh_of_technology_2
+#       - flh_of_technology_3
+
+generic:
+  type: generic
+
+interconnector_1_price:
+  type: price
+
+interconnector_2_price:
+  type: price
+
+some_profile:
+  type: generic
+  reduce:
+    as: full_load_hours
+    sets:
+      - my_input_one
