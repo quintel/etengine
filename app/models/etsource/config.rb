@@ -72,13 +72,6 @@ module Etsource
       end
     end
 
-    # Public: Reads a config for a single custom curve which a user may upload.
-    #
-    # Returns a CurveHandler::Config or raises a KeyError if no such config exists.
-    def user_curve(wanted_key)
-      user_curves.fetch(wanted_key)
-    end
-
     private_class_method def read(name)
       NastyCache.instance.fetch("etsource.config.#{name}") do
         IceNine.deep_freeze(Atlas::Config.read(name))

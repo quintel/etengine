@@ -5,6 +5,40 @@ module CurveHandler
   class Config
     delegate :presenter, to: :processor
 
+    # Public: Retrieves a stored Config from ETSource, identified by the key.
+    #
+    # key       - A stringish key identifying the config to be loaded.
+    # allow_nil - Boolean indicating whether it is acceptable to find no matching key.
+    #
+    # Returns a CurveHandler::Config. In the event that nil_ok=false and no matching Config is
+    # found, KeyError is raised.
+    def self.find(key, allow_nil: false)
+      keyed = Etsource::Config.user_curves
+      allow_nil ? keyed[key.to_s] : keyed.fetch(key.to_s)
+    end
+
+    # Public: Returns if the `key` matches a stored config.
+    def self.key?(key)
+      Etsource::Config.user_curves.key?(key.to_s)
+    end
+
+    # Public: Retrieves a stored Config from ETSource, identified by its db_key.
+    #
+    # key       - A stringish key identifying the config to be loaded.
+    # allow_nil - Boolean indicating whether it is acceptable to find no matching db_key.
+    #
+    # Returns a CurveHandler::Config. In the event that nil_ok=false and no matching Config is
+    # found, KeyError is raised.
+    def self.find_by_db_key(key, allow_nil: false)
+      keyed = Etsource::Config.user_curves.values.index_by(&:db_key)
+      allow_nil ? keyed[key.to_s] : keyed.fetch(key.to_s)
+    end
+
+    # Public: Returns if the `key` matches a stored configs `db_key`.
+    def self.db_key?(key)
+      !find_by_db_key(key, allow_nil: true).nil?
+    end
+
     # Public: Creates a new Config using a configuration hash from the ETSource YAML file. See
     # Etsource::Config.user_curves.
     def self.from_etsource(config_hash)

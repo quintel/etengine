@@ -51,7 +51,7 @@ module Api
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        current_attachment&.destroy
+        current_attachment && CurveHandler::DetachService.call(current_attachment)
         head :no_content
       end
 
@@ -98,7 +98,7 @@ module Api
       # ---------
 
       def config_for(curve_name)
-        Etsource::Config.user_curve(curve_name.to_s.chomp('_curve'))
+        CurveHandler::Config.find(curve_name.to_s.chomp('_curve'))
       end
 
       # Internal: Returns the handler based on the curve name, initialized with the IO.
@@ -116,7 +116,7 @@ module Api
 
       # Asserts that the named curve is permitted to be changed.
       def ensure_valid_curve_name
-        return if Etsource::Config.user_curves.key?(params[:id])
+        return if CurveHandler::Config.key?(params[:id])
 
         render(
           json: { errors: ["No such custom curve: #{params[:id].inspect}"] },
