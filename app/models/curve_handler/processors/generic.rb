@@ -15,8 +15,8 @@ module CurveHandler
         wrong_length: 'Curve must have 8760 numeric values, one for each hour in a typical year'
       }.freeze
 
-      # Public: Returns the presenter class which converts the curve information to JSON.
-      def self.presenter
+      # Public: Returns the serializer class which converts the curve information to JSON.
+      def self.serializer
         CustomCurveSerializer
       end
 
