@@ -4,7 +4,7 @@ module CurveHandler
   module Processors
     # Normalizes the curve such that the the sum of the curve is 1 / 3600.
     class Profile < Generic
-      def self.presenter
+      def self.serializer
         Api::V3::CustomProfileCurvePresenter
       end
 

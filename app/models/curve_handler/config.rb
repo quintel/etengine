@@ -3,7 +3,7 @@
 module CurveHandler
   # Stores information about how to process an uploaded user curve.
   class Config
-    delegate :presenter, to: :processor
+    delegate :serializer, to: :processor
 
     # Public: Retrieves a stored Config from ETSource, identified by the key.
     #

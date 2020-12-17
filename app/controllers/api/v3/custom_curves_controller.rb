@@ -87,7 +87,7 @@ module Api
       # -------------
 
       def attachment_json(attachment)
-        attachment ? config_for(attachment.key).presenter.new(attachment) : {}
+        attachment ? config_for(attachment.key).serializer.new(attachment) : {}
       end
 
       def errors_json(handler)
