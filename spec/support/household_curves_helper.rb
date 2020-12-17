@@ -10,10 +10,16 @@ module HouseholdCurvesHelper
   def create_graph(**area_attributes)
     area_attributes = { area_code: :nl }.merge(area_attributes)
 
-    double(
+    graph = instance_double(
       Qernel::Graph,
-      query: double(Qernel::GraphApi::Energy),
-      area:  double(Qernel::Area, area_attributes)
+      query: instance_double(Qernel::GraphApi::Energy),
+      area: instance_double(Qernel::Area, area_attributes)
     )
+
+    allow(graph).to receive(:dataset_get)
+      .with(:custom_curves)
+      .and_return(Gql::CustomCurveCollection.new({}))
+
+    graph
   end
 end
