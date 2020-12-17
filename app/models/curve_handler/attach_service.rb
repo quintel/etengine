@@ -64,7 +64,7 @@ module CurveHandler
     def set_input_values
       return unless @config.sets_inputs?
 
-      reduced = @config.reducer.call(@processor)
+      reduced = @config.reducer.call(@processor.sanitized_curve)
 
       @config.input_keys.each do |key|
         @scenario.user_values[key] = reduced

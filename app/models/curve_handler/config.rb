@@ -92,10 +92,12 @@ module CurveHandler
     # key given does not match a known processor.
     def processor
       case @processor_key
-      when :price
-        Processors::Price
       when :generic
         Processors::Generic
+      when :price
+        Processors::Price
+      when :profile
+        Processors::Profile
       else
         raise "Unknown processor #{@processor_key.inspect} for user curve #{@key.inspect}"
       end
