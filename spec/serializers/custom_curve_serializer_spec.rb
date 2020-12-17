@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::CustomCurvePresenter do
+describe CustomCurveSerializer do
   let(:attachment) { FactoryBot.create(:scenario_attachment) }
   let(:json) { described_class.new(attachment).as_json }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Api::V3::NodeFlowPresenter do
+describe NodeFlowSerializer do
   subject do
     CSV.parse(
       described_class.new(graph).as_csv,

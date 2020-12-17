@@ -21,7 +21,7 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
-        render json: ScenarioPresenter.new(self, @scenario, filtered_params)
+        render json: ScenarioSerializer.new(self, @scenario, filtered_params)
       end
 
       # GET /api/v3/scenarios/:id/merit
@@ -30,7 +30,7 @@ module Api
       # information about each producer in the scenario, and the load profiles.
       #
       def merit
-        render json: MeritConfigPresenter.new(@scenario.gql.future_graph)
+        render json: MeritConfigSerializer.new(@scenario.gql.future_graph)
       end
 
       # GET /api/v3/scenarios/:id1,:id2,:id3,...,:id20/batch
@@ -43,25 +43,25 @@ module Api
 
         scenarios = Scenario.where(id: ids).includes(:scaler).index_by(&:id)
 
-        @presenters = ids.map do |id|
+        @serializers = ids.map do |id|
           scen = Preset.get(id).try(:to_scenario) || scenarios[id.to_i]
-          scen ? ScenarioPresenter.new(self, scen, filtered_params) : nil
+          scen ? ScenarioSerializer.new(self, scen, filtered_params) : nil
         end.compact
 
-        render json: @presenters
+        render json: @serializers
       end
 
       def dashboard
-        presenter = nil
+        serializer = nil
 
         Scenario.transaction do
-          presenter = ScenarioDashboardPresenter.new(self, @scenario, filtered_params)
+          serializer = ScenarioDashboardSerializer.new(self, @scenario, filtered_params)
         end
 
-        if presenter.errors.any?
-          render json: { errors: presenter.errors }, status: 422
+        if serializer.errors.any?
+          render json: { errors: serializer.errors }, status: 422
         else
-          render json: presenter
+          render json: serializer
         end
       end
 
@@ -72,7 +72,7 @@ module Api
       # page.
       #
       def templates
-        render(json: Preset.visible.map { |ps| PresetPresenter.new(self, ps) })
+        render(json: Preset.visible.map { |ps| PresetSerializer.new(self, ps) })
       end
 
       # POST /api/v3/scenarios
@@ -126,7 +126,7 @@ module Api
           @scenario.save!
         end
 
-        render json: ScenarioPresenter.new(self, @scenario, filtered_params)
+        render json: ScenarioSerializer.new(self, @scenario, filtered_params)
       rescue ActiveRecord::RecordInvalid
         render json: { errors: @scenario.errors }, status: 422
       end
@@ -143,7 +143,7 @@ module Api
           @interpolated.save!
         end
 
-        render json: ScenarioPresenter.new(self, @interpolated, {})
+        render json: ScenarioSerializer.new(self, @interpolated, {})
       rescue ActionController::ParameterMissing
         render(
           status: :bad_request,
@@ -189,22 +189,22 @@ module Api
       #
       def update
         updater       = ScenarioUpdater.new(@scenario, filtered_params)
-        presenter     = nil
+        serializer     = nil
 
         Scenario.transaction do
           updater.apply
 
-          presenter = ScenarioUpdatePresenter.new(
+          serializer = ScenarioUpdateSerializer.new(
             self, updater, filtered_params
           )
 
-          raise ActiveRecord::Rollback if presenter.errors.any?
+          raise ActiveRecord::Rollback if serializer.errors.any?
         end
 
-        if presenter.errors.any?
-          render json: { errors: presenter.errors }, status: 422
+        if serializer.errors.any?
+          render json: { errors: serializer.errors }, status: 422
         else
-          render json: presenter
+          render json: serializer
         end
       end
 
@@ -220,7 +220,7 @@ module Api
           scenario.save
 
           # redirect_to api_v3_scenario_url(scenario)
-          render json: ScenarioPresenter.new(self, scenario, filtered_params)
+          render json: ScenarioSerializer.new(self, scenario, filtered_params)
         else
           render json: { errors: merger.errors }, status: 422
         end

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Api::V3::PresetPresenter do
+describe PresetSerializer do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
   let(:preset)     { FactoryBot.create(:scenario, description: 'Hello!') }
 
   subject do
-    Api::V3::PresetPresenter.new(controller, preset).as_json
+    described_class.new(controller, preset).as_json
   end
 
   it { is_expected.to include(id:          preset.id) }
@@ -22,4 +22,4 @@ describe Api::V3::PresetPresenter do
 
     expect(subject[:url]).to eql('my_url')
   end
-end # Api::V3::PresetPresenter
+end

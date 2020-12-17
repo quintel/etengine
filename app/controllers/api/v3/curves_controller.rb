@@ -23,9 +23,9 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/merit_order.csv
       def merit_order
-        render_presenter Api::V3::MeritCSVPresenter.new(
+        render_serializer MeritCSVSerializer.new(
           scenario.gql.future_graph, :electricity, :merit_order,
-          Api::V3::MeritCSVPresenter::NodeCustomisation.new(
+          MeritCSVSerializer::NodeCustomisation.new(
             'merit_order_csv_include', 'merit_order_csv_exclude'
           )
         )
@@ -35,14 +35,14 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
       def electricity_price
-        csv_presenter = Api::V3::CarrierPriceCSVPresenter.new(
+        csv_serializer = CarrierPriceCSVSerializer.new(
           scenario.gql.future_graph.carrier(:electricity),
           scenario.gql.future_graph.year
         )
 
         respond_to do |format|
-          format.csv  { render_presenter csv_presenter }
-          format.json { render json: csv_presenter }
+          format.csv  { render_serializer csv_serializer }
+          format.json { render json: csv_serializer }
         end
       end
 
@@ -50,7 +50,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/heat_network.csv
       def heat_network
-        render_presenter Api::V3::MeritCSVPresenter.new(
+        render_serializer MeritCSVSerializer.new(
           scenario.gql.future_graph, :steam_hot_water, :heat_network
         )
       end
@@ -60,7 +60,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/household_heat.csv
       def household_heat_curves
-        render_presenter Api::V3::HouseholdHeatCSVPresenter.new(
+        render_serializer HouseholdHeatCSVSerializer.new(
           scenario.gql.future_graph
         )
       end
@@ -70,7 +70,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/hydrogen.csv
       def hydrogen
-        render_presenter Api::V3::ReconciliationCSVPresenter.new(
+        render_serializer ReconciliationCSVSerializer.new(
           scenario.gql.future_graph, :hydrogen
         )
       end
@@ -80,7 +80,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/network_gas.csv
       def network_gas
-        render_presenter Api::V3::ReconciliationCSVPresenter.new(
+        render_serializer ReconciliationCSVSerializer.new(
           scenario.gql.future_graph, :network_gas
         )
       end
@@ -93,9 +93,9 @@ module Api
         end
       end
 
-      def render_presenter(presenter)
-        send_csv(presenter.filename) do |csv|
-          presenter.to_csv_rows.each { |row| csv << row }
+      def render_serializer(serializer)
+        send_csv(serializer.filename) do |csv|
+          serializer.to_csv_rows.each { |row| csv << row }
         end
       end
 

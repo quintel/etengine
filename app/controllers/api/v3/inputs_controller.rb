@@ -11,7 +11,7 @@ module Api
       #
       def index
         extras = params[:include_extras]
-        render json: InputPresenter.collection(Input.all, @scenario, extras)
+        render json: InputSerializer.collection(Input.all, @scenario, extras)
       end
 
       # GET /api/v3/inputs/:id
@@ -27,10 +27,10 @@ module Api
         record =
           if params.key?(:id) && params[:id].include?(',')
             params[:id].split(',').compact.uniq.map do |id|
-              InputPresenter.presenter_for(fetch_input(id), @scenario, true)
+              InputSerializer.serializer_for(fetch_input(id), @scenario, true)
             end
           else
-            InputPresenter.presenter_for(
+            InputSerializer.serializer_for(
               fetch_input(params[:id]), @scenario, true
             )
           end

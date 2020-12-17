@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Api::V3::ScenarioPresenter do
+describe ScenarioSerializer do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
   let(:scenario)   { FactoryBot.create(:scenario, description: 'Hello!') }
 
-  shared_examples_for 'a scenario presenter' do
+  shared_examples_for 'a scenario serializer' do
     it { is_expected.to include(id:          scenario.id) }
     it { is_expected.to include(title:       scenario.title) }
     it { is_expected.to include(area_code:   scenario.area_code) }
@@ -25,10 +25,10 @@ describe Api::V3::ScenarioPresenter do
 
   context 'when "detailed=false", "include_inputs=false"' do
     subject do
-      Api::V3::ScenarioPresenter.new(controller, scenario).as_json
+      described_class.new(controller, scenario).as_json
     end
 
-    it_should_behave_like 'a scenario presenter'
+    it_should_behave_like 'a scenario serializer'
 
     it { is_expected.not_to have_key(:description) }
     it { is_expected.not_to have_key(:use_fce) }
@@ -37,11 +37,10 @@ describe Api::V3::ScenarioPresenter do
 
   context 'when "detailed=true"' do
     subject do
-      Api::V3::ScenarioPresenter.new(
-        controller, scenario, detailed: true).as_json
+      described_class.new(controller, scenario, detailed: true).as_json
     end
 
-    it_should_behave_like 'a scenario presenter'
+    it_should_behave_like 'a scenario serializer'
 
     it { is_expected.to include(use_fce:     scenario.use_fce) }
     it { is_expected.to include(description: 'Hello!') }
@@ -49,11 +48,10 @@ describe Api::V3::ScenarioPresenter do
 
   context 'when "include_inputs=true"' do
     subject do
-      Api::V3::ScenarioPresenter.new(
-        controller, scenario, include_inputs: true).as_json
+      described_class.new(controller, scenario, include_inputs: true).as_json
     end
 
-    it_should_behave_like 'a scenario presenter'
+    it_should_behave_like 'a scenario serializer'
 
     it 'should include the default input data' do
       expect(subject).to have_key(:inputs)
@@ -76,4 +74,4 @@ describe Api::V3::ScenarioPresenter do
 
     it { is_expected.to include(protected: true) }
   end
-end # Api::V3::ScenarioPresenter
+end

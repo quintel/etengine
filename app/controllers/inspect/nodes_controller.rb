@@ -30,8 +30,8 @@ class Inspect::NodesController < Inspect::BaseController
       return
     end
 
-    @node_api  = @node_present.node_api
-    @presenter = Api::V3::NodePresenter.new(@node_present, @node_future)
+    @node_api   = @node_present.node_api
+    @serializer = NodeSerializer.new(@node_present, @node_future)
 
     respond_to do |format|
       format.html { render :layout => true }

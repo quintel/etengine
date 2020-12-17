@@ -16,7 +16,7 @@ describe 'APIv3 Area details' do
 
     it 'sends the area data' do
       expect(JSON.parse(response.body)).to eq(
-        Api::V3::AreaPresenter.new(Area.get(:nl), detailed: true).as_json
+        AreaSerializer.new(Area.get(:nl), detailed: true).as_json
       )
     end
   end

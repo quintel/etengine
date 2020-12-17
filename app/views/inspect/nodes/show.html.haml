@@ -102,7 +102,7 @@
               - Input.with_queries_containing(node_key).sort_by(&:key).each do |input|
                 %li= link_to input.key, inspect_input_path(:id => input.id, :highlight => node_key)
 
-- if @presenter.attributes_and_methods_to_show.any?
+- if @serializer.attributes_and_methods_to_show.any?
   .row-fluid
     .span12
       .page-header
@@ -116,7 +116,7 @@
             %th Future
             %th Unit
         %tbody
-          - @presenter.attributes_and_methods_to_show.each_pair do |group, items|
+          - @serializer.attributes_and_methods_to_show.each_pair do |group, items|
             - next if items.empty?
             %tr
               %th{:colspan => 5}= group
@@ -125,10 +125,10 @@
                 %td= key
                 %td= opts[:label]
                 %td
-                  - val = @presenter.present_value(key)
+                  - val = @serializer.present_value(key)
                   = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
                 %td
-                  - val = @presenter.future_value(key)
+                  - val = @serializer.future_value(key)
                   = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
                 %td= opts[:unit]
 

@@ -118,7 +118,7 @@ module Api
       end
 
       def attachment_json(attachment)
-        attachment ? CustomCurvePresenter.new(attachment) : {}
+        attachment ? CustomCurveSerializer.new(attachment) : {}
       end
 
       def errors_json(sanitizer)

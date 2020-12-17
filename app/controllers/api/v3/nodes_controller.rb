@@ -35,7 +35,7 @@ module Api
         gql  = @scenario.gql(prepare: true)
 
         render json: { nodes: Hash[keys.map do |key, graph_attributes|
-          [key, NodeStatsPresenter.new(key.to_sym, gql, graph_attributes)]
+          [key, NodeStatsSerializer.new(key.to_sym, gql, graph_attributes)]
         end] }
       end
 
@@ -43,7 +43,7 @@ module Api
       # node_positions table
       #
       def topology
-        topology = TopologyPresenter.new(@scenario)
+        topology = TopologySerializer.new(@scenario)
         render :json => topology
       end
 
@@ -56,7 +56,7 @@ module Api
 
         render_not_found unless present_node
 
-        @node = NodePresenter.new(
+        @node = NodeSerializer.new(
           present_node,
           node_from_interface(gql.future, key)
         )

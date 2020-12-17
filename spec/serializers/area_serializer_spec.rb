@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V3::AreaPresenter do
+describe AreaSerializer do
   let(:area) do
     {
       'area' => 'nl',

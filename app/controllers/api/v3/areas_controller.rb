@@ -10,7 +10,7 @@ module Api
         detailed = params.fetch(:detailed, 'true') == 'true'
 
         data = Etsource::Dataset.region_codes.map do |code|
-          Api::V3::AreaPresenter.new(Area.get(code), detailed: detailed)
+          AreaSerializer.new(Area.get(code), detailed: detailed)
         end
 
         render json: data
@@ -18,7 +18,7 @@ module Api
 
       def show
         if Area.exists?(params[:id])
-          render json: Api::V3::AreaPresenter.new(
+          render json: AreaSerializer.new(
             Area.get(params[:id]),
             detailed: true
           )
