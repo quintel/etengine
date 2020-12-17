@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe CurveHandler::Reducers::FullLoadHours do
-  let(:processor) { Struct.new(:sanitized_curve).new(curve) }
-  let(:result) { described_class.call(processor) }
+  let(:result) { described_class.call(curve) }
 
   context 'when given [1, 1, 1, 1]' do
     let(:curve) { [1.0, 1.0, 1.0, 1.0] }

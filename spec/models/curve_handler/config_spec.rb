@@ -26,6 +26,14 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
+  context 'when given processor_key=:profile' do
+    let(:processor_key) { :profile }
+
+    it 'uses the Profile processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::Profile)
+    end
+  end
+
   context 'when given processor_key=:generic and reducer=:full_load_hours' do
     let(:processor_key) { :generic }
     let(:reducer_key) { :full_load_hours }

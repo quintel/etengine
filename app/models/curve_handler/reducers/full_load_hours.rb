@@ -2,8 +2,7 @@
 
 module CurveHandler
   module Reducers
-    FullLoadHours = lambda do |processor|
-      curve = processor.sanitized_curve
+    FullLoadHours = lambda do |curve|
       max = curve.max
 
       if curve.empty? || max.zero?
