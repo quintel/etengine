@@ -8,13 +8,11 @@ module Gql::Runtime
       # contents into a curve. If no attachment is set, nil is returned.
       def ATTACHED_CURVE(name)
         name = name.to_s
+        scenario = scope.gql.scenario
 
-        # Use to_a.find to take advantage of the eager-loaded attachments and blobs.
-        attachment = scope.gql.scenario.attachments.to_a.find { |a| a.key == name }
+        return nil unless scenario.attachment?(name)
 
-        return nil unless attachment&.file&.attached?
-
-        path = ActiveStorage::Blob.service.path_for(attachment.file.key)
+        path = ActiveStorage::Blob.service.path_for(scenario.attachment(name).file.key)
 
         # The graph wants an array. Loading a curve and converting to an array
         # is expensive since Merit::Curve has to deal with the possibility of

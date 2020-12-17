@@ -48,12 +48,30 @@ module Qernel
       # Internal: Loads a curve without performing rotation.
       def load_curve(name, node = nil)
         if prefix?(name, 'dynamic')
-          dynamic_profile(name.to_s[8..-1].strip.to_sym, node)
+          dynamic_profile(name.to_s[8..].strip.to_sym, node)
+        elsif attached_curve?(name)
+          attached_curve(name)
         elsif name.include?('/')
           curve_set_profile(name)
         else
           dataset.load_profile(name)
         end
+      end
+
+      # Internal: Determines if an attached curve matching the name is allowed to be used. Curves
+      # for which the config has been removed are ignored, and we fallback to the loading the curve
+      # from the CSV in ETSource.
+      #
+      # Returns a boolean.
+      def attached_curve?(key)
+        @graph.dataset_get(:custom_curves).key?(key)
+      end
+
+      # Internal: Loads a curve attached to the scenario, identified by its key.
+      #
+      # Returns a Merit::Curve.
+      def attached_curve(key)
+        Merit::Curve.new(@graph.dataset_get(:custom_curves).fetch(key))
       end
 
       # Internal: Loads a profile from a curve set.

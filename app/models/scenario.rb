@@ -6,6 +6,7 @@
 class Scenario < ApplicationRecord
   extend Scenario::Migratable
 
+  include Scenario::Attachments
   include Scenario::UserUpdates
   include Scenario::Persistable
   include Scenario::InputGroups

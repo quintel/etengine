@@ -259,6 +259,11 @@ module Gql
       @present_graph.use_fce = @scenario.use_fce
       @future_graph.use_fce = @scenario.use_fce
 
+      custom_curves = CustomCurveCollection.from_scenario(@scenario)
+
+      @present_graph.dataset_set(:custom_curves, custom_curves)
+      @future_graph.dataset_set(:custom_curves, custom_curves)
+
       @scenario.user_sortables.each do |sortable|
         order = sortable.useable_order
 
