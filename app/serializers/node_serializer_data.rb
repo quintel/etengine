@@ -63,8 +63,8 @@ module NodeSerializerData
       :wacc => { label: 'Weighted average cost of capital', unit: '%' },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -102,11 +102,15 @@ module NodeSerializerData
         label: 'Variable operation and maintenance costs',
         unit: 'EUR / full load hour'
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -140,11 +144,15 @@ module NodeSerializerData
         label: 'Variable operation and maintenance costs',
         unit: 'EUR / full load hour'
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -205,11 +213,15 @@ module NodeSerializerData
         unit: 'EUR / full load hour',
         formatter: ->(n) { n.to_i }
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -254,11 +266,15 @@ module NodeSerializerData
         label: 'Additional variable operation and maintenance costs for CCS',
         unit: 'EUR / full load hour'
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -294,11 +310,15 @@ module NodeSerializerData
         unit: 'EUR / full load hour',
         formatter: ->(n) { n.to_i }
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -329,7 +349,11 @@ module NodeSerializerData
         unit: 'EUR / full load hour',
         formatter: ->(n) { n.to_i }
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' }
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      }
     },
     other: {
       technical_lifetime: { label: 'Economic lifetime', unit: 'years', formatter: ->(n) { n.to_i } }
@@ -456,11 +480,15 @@ module NodeSerializerData
         label: 'Variable operation and maintenance costs',
         unit: 'EUR / full load hour'
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
-        unit: 'yes / no',
-        formatter: ->(x) { x == 1 ? 'yes' : 'no' }
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
       }
     },
     other: {
@@ -519,7 +547,8 @@ module NodeSerializerData
       @node.input_edges.each do |edge|
         fuel_mix["#{edge.carrier.key}_input_conversion"] = {
           label: edge.carrier.key.to_s.humanize,
-          unit: '%'
+          unit: '%',
+          formatter: FORMAT_FAC_TO_PERCENT
         }
       end
       out[:current_fuel_input_mix] = fuel_mix
