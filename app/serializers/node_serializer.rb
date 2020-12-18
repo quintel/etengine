@@ -30,7 +30,7 @@ class NodeSerializer
     json[:data] = {}
 
     attributes_and_methods_to_show.each_pair do |group, items|
-      group_label = group.to_s.humanize
+      group_label = group
       json[:data][group_label] = {}
 
       items.each_pair do |attr, opts|
@@ -42,7 +42,7 @@ class NodeSerializer
         pres = opts[:formatter].call(pres).to_s if opts[:formatter]
         fut =  opts[:formatter].call(fut).to_s if opts[:formatter]
 
-        json[:data][group_label][attr] = {
+        json[:data][group_label][format_key(attr)] = {
           present: pres,
           future: fut,
           unit: opts[:unit],
@@ -68,6 +68,10 @@ class NodeSerializer
   end
 
   private
+
+  def format_key(key)
+    key.to_s.parameterize.underscore
+  end
 
   def format_value(graph, attribute)
     # the instance_eval lets us pass arguments to methods
