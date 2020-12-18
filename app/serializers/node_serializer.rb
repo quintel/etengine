@@ -1,21 +1,10 @@
+# frozen_string_literal: true
+
+# Converts a Node to JSON data.
 class NodeSerializer
   include NodeSerializerData
 
-  #def initialize(key = nil, scenario = nil)
   def initialize(present_node, future_node)
-    # raise "Missing Node Key" unless key
-    # raise "Missing Scenario" unless scenario
-    # @key      = key
-    # @scenario = scenario
-    # @gql      = @scenario.gql(prepare: true)
-    # @present  = @gql.present_graph.graph.node(@key) rescue nil
-    # @future   = @gql.future_graph.graph.node(@key) rescue nil
-    # @node_api = @present.node_api rescue nil
-    # @node     = @node_api.node
-    # if @present.nil? || @future.nil?
-    #   raise "Node not found! (#{@key})"
-    # end
-
     @node = @present = present_node
     @future = future_node
   end
@@ -36,11 +25,14 @@ class NodeSerializer
       items.each_pair do |attr, opts|
         pres = present_value(attr)
         fut = future_value(attr)
-        next unless (pres || fut)
+
+        next unless pres || fut
         next if pres <= 0.0 && opts[:hide_if_zero]
 
-        pres = opts[:formatter].call(pres).to_s if opts[:formatter]
-        fut =  opts[:formatter].call(fut).to_s if opts[:formatter]
+        if opts[:formatter]
+          pres = opts[:formatter].call(pres).to_s
+          fut =  opts[:formatter].call(fut).to_s
+        end
 
         json[:data][group_label][format_key(attr)] = {
           present: pres,
@@ -60,11 +52,11 @@ class NodeSerializer
   end
 
   def present_value(attr)
-    format_value @present, attr
+    format_value(@present, attr)
   end
 
   def future_value(attr)
-    format_value @future, attr
+    format_value(@future, attr)
   end
 
   private
