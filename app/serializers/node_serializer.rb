@@ -34,7 +34,7 @@ class NodeSerializer
           fut =  opts[:formatter].call(fut).to_s
         end
 
-        json[:data][group_label][format_key(attr)] = {
+        json[:data][group_label][format_key(opts[:key] || attr)] = {
           present: pres,
           future: fut,
           unit: opts[:unit],

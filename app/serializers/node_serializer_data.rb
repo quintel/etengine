@@ -450,6 +450,7 @@ module NodeSerializerData
         'storage[:volume]' => { label: 'Storage capacity per unit', unit: 'MWh' },
         '1.0/electricity_input_conversion * electricity_output_conversion' => {
           label: 'Round trip efficiency',
+          key: :round_trip_efficiency,
           unit: '%',
           formatter: FORMAT_FAC_TO_PERCENT
         }
@@ -464,6 +465,7 @@ module NodeSerializerData
       :full_load_hours => { label: 'Full load hours', unit: 'hour / year' },
       '1.0 - loss_output_conversion' => {
         label: 'Efficiency',
+        key: :efficiency,
         unit: '%',
         formatter: FORMAT_FAC_TO_PERCENT
       }
