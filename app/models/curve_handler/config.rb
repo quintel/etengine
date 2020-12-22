@@ -109,6 +109,8 @@ module CurveHandler
       case @reducer_key
       when :full_load_hours
         Reducers::FullLoadHours
+      when :temperature
+        Reducers::Temperature
       when nil
         nil
       else
