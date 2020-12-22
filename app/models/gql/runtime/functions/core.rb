@@ -167,7 +167,13 @@ module Gql::Runtime
         object = object.respond_to?(:query) ? object.query : object
 
         if attr_name.respond_to?(:call)
-          object.instance_exec(&attr_name)
+          if !attr_name.respond_to?(:arity) || attr_name.arity.zero?
+            # Backwards compatibility; rather than yielding each element in
+            # the array, sets "self" to each object.
+            object.instance_exec(&attr_name)
+          else
+            attr_name.call(object)
+          end
         else
           # to_s imported, for when MAP(..., demand) demand comes through method_missing (as a symbol)
           object.instance_eval(attr_name.to_s)
