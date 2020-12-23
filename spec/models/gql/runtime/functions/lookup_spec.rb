@@ -14,6 +14,21 @@ module Gql::Runtime::Functions
       end
     end
 
+    # INVERT_CURVE
+    # ------------
+
+    describe 'INVERT_CURVE([1, 2, 3, -4, -5, -6])' do
+      it('returns [-1, -2, -3, 4, 5, 6]') { expect(result).to eq([-1, -2, -3, 4, 5, 6]) }
+    end
+
+    describe 'INVERT_CURVE(0.0)' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'INVERT_CURVE(nil)' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
     # SUM_CURVES
     # ----------
 
