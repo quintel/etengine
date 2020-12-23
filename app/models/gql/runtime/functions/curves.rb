@@ -43,6 +43,43 @@ module Gql::Runtime
 
         output
       end
+
+      # Inverts a single curve by swapping positive numbers to be negative, and
+      # vice-versa.
+      #
+      # Returns an array.
+      def INVERT_CURVE(curve)
+        return [] if curve.nil? || curve == 0.0
+
+        curve.map(&:-@)
+      end
+
+      # Adds the values in multiple curves.
+      #
+      # For example:
+      #   SUM_CURVES([1, 2], [3, 4]) # => [4, 6]
+      #   SUM_CURVES([[1, 2], [3, 4]]) # => [4, 6]
+      #
+      # Returns an array.
+      def SUM_CURVES(*curves)
+        if curves.length == 1 && curves.first
+          # Was given a single number; this is typically the result of calling `V(obj, attr)` on
+          # an `obj` which doesn't eixst.
+          return [] if curves.first == 0.0
+
+          unless curves.first.first.is_a?(Numeric)
+            # Was given an array of curves as the sole argument.
+            curves = curves.first
+          end
+        end
+
+        curves = curves.compact
+        return [] if curves.none?
+
+        return curves.first.to_a if curves.one?
+
+        Merit::CurveTools.add_curves(curves).to_a
+      end
     end
   end
 end
