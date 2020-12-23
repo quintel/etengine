@@ -278,6 +278,8 @@ module Gql::Runtime
       #
       # Returns an array.
       def INVERT_CURVE(curve)
+        return [] if curve.nil? || curve == 0.0
+
         curve.map(&:-@)
       end
 
