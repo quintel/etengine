@@ -175,3 +175,7 @@ RSpec/NamedSubject:
 RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'
+
+RSpec/RepeatedExampleGroupBody:
+  Exclude:
+    - 'spec/models/gql/runtime/functions/*.rb'
