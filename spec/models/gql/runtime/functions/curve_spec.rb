@@ -102,10 +102,6 @@ module Gql::Runtime::Functions
       it('returns [1, 2]') { expect(result).to eq([1, 2]) }
     end
 
-    describe 'SUM_CURVES([[1, 2], [3, 4], [5, 6]])' do
-      it('returns [9, 12]') { expect(result).to eq([9, 12]) }
-    end
-
     describe 'SUM_CURVES([1, 2], [3, 4], [5, 6])' do
       it('returns [9, 12]') { expect(result).to eq([9, 12]) }
     end
