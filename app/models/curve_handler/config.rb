@@ -57,7 +57,7 @@ module CurveHandler
       end
     end
 
-    attr_reader :key, :input_keys
+    attr_reader :key, :input_keys, :processor_key
 
     # Public: Creates a new Config.
     #
