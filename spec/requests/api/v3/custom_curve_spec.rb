@@ -47,7 +47,7 @@ describe 'Custom curves', :etsource_fixture do
       it 'sends data about the attached curve' do
         expect(JSON.parse(response.body)).to include(
           hash_including(
-            'type' => 'interconnector_1_price',
+            'key' => 'interconnector_1_price',
             'name' => 'price_curve.csv',
             'size' => 35_039
           )

@@ -12,8 +12,14 @@ class CustomCurveSerializer
   def as_json(*)
     return {} unless @custom_curve.attached?
 
+    key = @attachment.key.chomp('_curve')
+    config = CurveHandler::Config.find(key)
+
     {
-      type: @attachment.key.chomp('_curve'),
+      key: key,
+      type: config.processor_key,
+      overrides: config.input_keys,
+      attached: true,
       name: @custom_curve.filename.to_s,
       size: @custom_curve.byte_size,
       date: @custom_curve.created_at.utc,
