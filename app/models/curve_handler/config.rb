@@ -98,6 +98,8 @@ module CurveHandler
         Processors::Price
       when :profile
         Processors::Profile
+      when :temperature
+        Processors::Temperature
       else
         raise "Unknown processor #{@processor_key.inspect} for user curve #{@key.inspect}"
       end
