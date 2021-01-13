@@ -43,7 +43,8 @@ Rails.application.routes.draw do
         resource :heat_network_order, only: [:show, :update],
           controller: :user_sortables, sortable_type: :heat_network
 
-        resources :custom_curves, only: %i[index show update destroy]
+        resources :custom_curves, only: %i[index show update destroy],
+          constraints: { id: %r{[a-z\d_\-/]+} }
 
         get 'curves/merit_order',
           to: 'curves#merit_order',
