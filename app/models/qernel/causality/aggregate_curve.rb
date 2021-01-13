@@ -15,7 +15,7 @@ module Qernel
       #
       # Returns Merit::Curve.
       def build(mix)
-        return zeroed_profile if mix.empty?
+        return zeroed_profile if mix.empty? || mix.values.sum.zero?
         return mix.keys.first if mix.length == 1
 
         Merit::CurveTools.add_curves(

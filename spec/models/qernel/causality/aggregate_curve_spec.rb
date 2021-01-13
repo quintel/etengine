@@ -10,6 +10,14 @@ describe Qernel::Causality::AggregateCurve do
 
   let(:curve) { described_class.build(mix) }
 
+  describe 'with a 0/0 mix' do
+    let(:mix) { { profile_one => 0.0, profile_two => 0.0 } }
+
+    it 'returns a zeroed curve' do
+      expect(curve.sum).to eq(0)
+    end
+  end
+
   describe 'with a 50/50 mix' do
     let(:mix) { { profile_one => 0.5, profile_two => 0.5 } }
 
