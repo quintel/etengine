@@ -19,7 +19,11 @@ module Api
       def index
         curves =
           Etsource::Config.user_curves.each_key.map do |key|
-            attachment_json(attachment(key)).as_json.presence
+            if attachment(key).blank? && params[:show_unattached]
+              UnattachedCustomCurveSerializer.new(key).as_json
+            else
+              attachment_json(attachment(key)).as_json.presence
+            end
           end
 
         render json: curves.compact
@@ -65,10 +69,10 @@ module Api
         attachment(params[:id])
       end
 
-      def attachment(type)
+      def attachment(key)
         return if scenario_attachments.empty?
 
-        scenario_attachments.find_by(key: config_for(type).db_key)
+        scenario_attachments.find_by(key: config_for(key).db_key)
       end
 
       def metadata_parameters
@@ -83,11 +87,17 @@ module Api
         )
       end
 
+      # Internal: Internally attachment keys may have a "/", such as "weather/air_temperature".
+      def internal_key
+        # params[:id].to_s.gsub('__', '/')
+        params[:id]
+      end
+
       # Serialization
       # -------------
 
       def attachment_json(attachment)
-        attachment ? config_for(attachment.key).serializer.new(attachment) : {}
+        config_for(attachment.key).serializer.new(attachment) if attachment
       end
 
       def errors_json(handler)
