@@ -82,8 +82,11 @@ interconnector_2_price:
   type: price
 
 some_profile:
-  type: generic
+  type: profile
   reduce:
     as: full_load_hours
     sets:
       - my_input_one
+
+some_profile_without_reduce:
+  type: profile

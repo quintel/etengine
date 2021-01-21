@@ -12,9 +12,6 @@ class CustomCurveSerializer
   def as_json(*)
     return {} unless @custom_curve.attached?
 
-    key = @attachment.key.chomp('_curve')
-    config = CurveHandler::Config.find(key)
-
     {
       key: key,
       type: config.processor_key,
@@ -28,6 +25,14 @@ class CustomCurveSerializer
   end
 
   private
+
+  def key
+    @attachment.key.chomp('_curve')
+  end
+
+  def config
+    CurveHandler::Config.find(key)
+  end
 
   def stats
     { length: curve.length }
