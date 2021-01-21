@@ -73,14 +73,8 @@ module CurveHandler
 
       @key = key
       @processor_key = processor_key.to_sym
-
-      if reducer_key && input_keys.any?
-        @reducer_key = reducer_key.to_sym
-        @input_keys = input_keys
-      else
-        @reducer_key = nil
-        @input_keys = []
-      end
+      @reducer_key = reducer_key&.to_sym
+      @input_keys = input_keys || []
     end
 
     # Public: The key used to store the file in the database.
