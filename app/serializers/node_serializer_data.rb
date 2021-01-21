@@ -12,55 +12,40 @@ module NodeSerializerData
   # add these
   ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS = {
     technical: {
-      electricity_output_capacity: {
-        label: 'Electrical capacity per unit',
-        unit: 'MW',
-        formatter: FORMAT_1DP
+      'electricity_output_capacity * number_of_units' => {
+        label: 'Installed electrical capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
       },
       electricity_output_conversion: {
         label: 'Electrical efficiency',
         unit: '%',
         formatter: FORMAT_FAC_TO_PERCENT
       },
-      full_load_hours: { label: 'Full load hours', unit: 'hour / year' },
-      heat_output_conversion: {
-        label: 'Heat efficiency',
-        unit: '%',
-        formatter: FORMAT_FAC_TO_PERCENT
-      }
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:mw_electricity)' => {
-        label: 'Initial investment (excl CCS)',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
-      },
-      'ccs_investment_per(:mw_electricity)' => {
-        label: 'Additional initial investment for CCS',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
-      },
-      'decommissioning_costs_per(:mw_electricity)' => {
-        label: 'Decommissioning costs',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_electricity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
       },
       'fixed_operation_and_maintenance_costs_per(:mw_electricity)' => {
         label: 'Fixed operation and maintenance costs',
-        unit: 'kEUR / MWe / year',
-        formatter: ->(n) { format('%.2f', (n / 1000)) }
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
       },
       :variable_operation_and_maintenance_costs_per_full_load_hour => {
-        label: 'Variable operation and maintenance costs (excl CCS)',
+        label: 'Variable operation and maintenance costs',
         unit: 'EUR / full load hour',
         formatter: ->(n) { n.to_i }
       },
-      :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => {
-        label: 'Additional variable operation and maintenance costs for CCS',
-        unit: 'EUR / full load hour',
-        formatter: ->(n) { n.to_i }
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
       },
-      :wacc => { label: 'Weighted average cost of capital', unit: '%' },
       :takes_part_in_ets => {
         label: 'Do emissions have to be paid through the ETS?',
         unit: 'boolean',
@@ -68,8 +53,6 @@ module NodeSerializerData
       }
     },
     other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
-      construction_time: { label: 'Construction time', unit: 'years', formatter: FORMAT_1DP },
       technical_lifetime: {
         label: 'Technical lifetime',
         unit: 'years',
@@ -78,130 +61,38 @@ module NodeSerializerData
     }
   }.freeze
 
-  # If the node belongs to the traditional_heat presentation group then
+  # If the node belongs to the electricity_production presentation group then
   # add these
-  HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS = {
+  ELECTRICITY_PRODUCTION_CCS_ATTRIBUTES_AND_METHODS = {
     technical: {
-      heat_output_capacity: { label: 'Heat capacity per unit', unit: 'MW', formatter: FORMAT_1DP },
-      full_load_hours: { label: 'Full load hours', unit: 'hour / year' },
-      heat_output_conversion: {
-        label: 'Heat efficiency',
-        unit: '%',
-        formatter: FORMAT_FAC_TO_PERCENT
-      }
-    },
-    cost: {
-      'total_initial_investment_per(:plant)' => { label: 'Initial purchase price', unit: 'EUR' },
-      'cost_of_installing_per(:plant)' => { label: 'Cost of installing', unit: 'EUR' },
-      'decommissioning_costs_per(:plant)' => { label: 'Decommissioning costs', unit: 'EUR' },
-      'fixed_operation_and_maintenance_costs_per(:plant)' => {
-        label: 'Fixed operation and maintenance costs',
-        unit: 'EUR / year'
-      },
-      'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
-        label: 'Variable operation and maintenance costs',
-        unit: 'EUR / full load hour'
-      },
-      :wacc => {
-        label: 'Weighted average cost of capital',
-        unit: '%',
-        formatter: FORMAT_FAC_TO_PERCENT
-      },
-      :takes_part_in_ets => {
-        label: 'Do emissions have to be paid through the ETS?',
-        unit: 'boolean',
-        formatter: ->(x) { x == 1 }
-      }
-    },
-    other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
-      technical_lifetime: { label: 'Technical lifetime', unit: 'years' }
-    }
-  }.freeze
-
-  # If the node belongs to the heat_pumps presentation group then
-  # add these
-  HEAT_PUMP_ATTRIBUTES_AND_METHODS = {
-    technical: {
-      heat_output_capacity: { label: 'Heat capacity per unit', unit: 'MW' },
-      coefficient_of_performance: { label: 'Coefficient of Performance', unit: '' },
-      full_load_hours: { label: 'Full load hours', unit: 'hour / year' },
-      heat_and_cold_output_conversion: {
-        label: 'Efficiency (after COP)',
-        unit: '%',
-        formatter: FORMAT_FAC_TO_PERCENT
-      }
-    },
-    cost: {
-      'total_initial_investment_per(:plant)' => { label: 'Initial purchase price', unit: 'EUR' },
-      'cost_of_installing_per(:plant)' => { label: 'Cost of installing', unit: 'EUR' },
-      'decommissioning_costs_per(:plant)' => { label: 'Decommissioning costs', unit: 'EUR' },
-      'fixed_operation_and_maintenance_costs_per(:plant)' => {
-        label: 'Fixed operation and maintenance costs',
-        unit: 'EUR / year'
-      },
-      'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
-        label: 'Variable operation and maintenance costs',
-        unit: 'EUR / full load hour'
-      },
-      :wacc => {
-        label: 'Weighted average cost of capital',
-        unit: '%',
-        formatter: FORMAT_FAC_TO_PERCENT
-      },
-      :takes_part_in_ets => {
-        label: 'Do emissions have to be paid through the ETS?',
-        unit: 'boolean',
-        formatter: ->(x) { x == 1 }
-      }
-    },
-    other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
-      technical_lifetime: { label: 'Technical lifetime', unit: 'years' }
-    }
-  }.freeze
-
-  # If the node belongs to the chps presentation group then
-  # add these
-  CHP_ATTRIBUTES_AND_METHODS = {
-    technical: {
-      electricity_output_capacity: {
-        label: 'Electrical capacity per unit',
-        unit: 'MW',
-        formatter: FORMAT_1DP
+      'electricity_output_capacity * number_of_units' => {
+        label: 'Installed electrical capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
       },
       electricity_output_conversion: {
         label: 'Electrical efficiency',
         unit: '%',
         formatter: FORMAT_FAC_TO_PERCENT
       },
-      full_load_hours: { label: 'Full load hours', unit: 'hour / year' },
-      heat_output_conversion: {
-        label: 'Heat efficiency',
-        unit: '%',
-        formatter: FORMAT_FAC_TO_PERCENT
-      }
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:mw_electricity)' => {
-        label: 'Initial investment (excl CCS)',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_electricity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
       },
       'ccs_investment_per(:mw_electricity)' => {
         label: 'Additional initial investment for CCS',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
-      },
-      'decommissioning_costs_per(:mw_electricity)' => {
-        label: 'Decommissioning costs',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
       },
       'fixed_operation_and_maintenance_costs_per(:mw_electricity)' => {
         label: 'Fixed operation and maintenance costs',
-        unit: 'kEUR / MWe / year',
-        formatter: ->(n) { format('%.2f', (n / 1000)) }
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
       },
       :variable_operation_and_maintenance_costs_per_full_load_hour => {
         label: 'Variable operation and maintenance costs (excl CCS)',
@@ -225,8 +116,252 @@ module NodeSerializerData
       }
     },
     other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
-      construction_time: { label: 'Construction time', unit: 'years' },
+      technical_lifetime: {
+        label: 'Technical lifetime',
+        unit: 'years',
+        formatter: ->(n) { n.to_i }
+      }
+    }
+  }.freeze
+
+  WIND_SOLAR_COST_AND_OTHER = {
+    cost: {
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_electricity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:mw_electricity)' => {
+        label: 'Fixed operation and maintenance costs',
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
+      },
+      :variable_operation_and_maintenance_costs_per_full_load_hour => {
+        label: 'Variable operation and maintenance costs',
+        unit: 'EUR / full load hour',
+        formatter: ->(n) { n.to_i }
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    },
+    other: {
+      'land_use_per_unit / electricity_output_capacity' => {
+        label: 'Land use',
+        key: :land_use_per_unit_electricity_output_capacity,
+        unit: 'km2 / MW'
+      },
+      technical_lifetime: {
+        label: 'Technical lifetime',
+        unit: 'years',
+        formatter: ->(n) { n.to_i }
+      }
+    }
+  }.freeze
+
+  # If the node belongs to the solar_panel presentation group then
+  # add these
+
+  SOLAR_PANEL_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      'electricity_output_capacity * number_of_units' => {
+        label: 'Installed electrical capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
+      },
+      'electricity_output_capacity' => {
+        label: 'Capacity per unit',
+        key: :typical_input_capacity,
+        unit: 'MW'
+      },
+      electricity_output_conversion: {
+        label: 'Electrical efficiency',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+    }
+  }.merge(WIND_SOLAR_COST_AND_OTHER)
+
+  # If the node belongs to the wind_solar_pv_plant presentation group then
+  # add these
+
+  SOLAR_PV_PLANT_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      'electricity_output_capacity * number_of_units' => {
+        label: 'Installed electrical capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
+      },
+      electricity_output_conversion: {
+        label: 'Electrical efficiency',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+    }
+  }.merge(WIND_SOLAR_COST_AND_OTHER)
+
+  # If the node belongs to the wind_turbine presentation group then
+  # add these
+
+  WIND_TURBINE_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      'electricity_output_capacity * number_of_units' => {
+        label: 'Installed electrical capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+    }
+  }.merge(WIND_SOLAR_COST_AND_OTHER)
+
+  # If the node belongs to the traditional_heat presentation group then
+  # add these
+  HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      heat_output_conversion: {
+        label: 'Heat efficiency (LHV)',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      heat_output_capacity: {
+        label: 'Heat capacity per unit',
+        unit: 'MW / unit',
+        formatter: ->(n) { n.round(3) }
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+    },
+    cost: {
+      'total_investment_over_lifetime_per(:plant)' => {
+        label: 'Initial purchase price',
+        key: :total_investment_over_lifetime_per_plant,
+        unit: 'EUR / unit'
+      },
+      'fixed_operation_and_maintenance_costs_per(:plant)' => {
+        label: 'Fixed operation and maintenance costs',
+        unit: 'EUR / unit / year'
+      },
+      'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
+        label: 'Variable operation and maintenance costs',
+        unit: 'EUR / full load hour'
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    },
+    other: {
+      technical_lifetime: { label: 'Technical lifetime', unit: 'years' }
+    }
+  }.freeze
+
+  # If the node belongs to the heat_pumps presentation group then
+  # add these
+  HEAT_PUMP_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      coefficient_of_performance: { label: 'Coefficient of Performance', unit: '' },
+      heat_output_capacity: {
+        label: 'Heat capacity per unit',
+        unit: 'MW / unit',
+        formatter: ->(n) { n.round(3) }
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+    },
+    cost: {
+      'total_investment_over_lifetime_per(:plant)' => {
+        label: 'Initial purchase price',
+        key: :total_investment_over_lifetime_per_plant,
+        unit: 'EUR / unit'
+      },
+      'fixed_operation_and_maintenance_costs_per(:plant)' => {
+        label: 'Fixed operation and maintenance costs',
+        unit: 'EUR / unit / year'
+      },
+      'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
+        label: 'Variable operation and maintenance costs',
+        unit: 'EUR / full load hour'
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    },
+    other: {
+      technical_lifetime: { label: 'Technical lifetime', unit: 'years' }
+    }
+  }.freeze
+
+  # If the node belongs to the chps presentation group then
+  # add these
+  CHP_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      'electricity_output_capacity * number_of_units' => {
+        label: 'Installed electrical capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
+      },
+      electricity_output_conversion: {
+        label: 'Electrical efficiency',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      heat_output_conversion: {
+        label: 'Heat efficiency',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+    },
+    cost: {
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_electricity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:mw_electricity)' => {
+        label: 'Fixed operation and maintenance costs',
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
+      },
+      :variable_operation_and_maintenance_costs_per_full_load_hour => {
+        label: 'Variable operation and maintenance costs',
+        unit: 'EUR / full load hour',
+        formatter: ->(n) { n.to_i }
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    },
+    other: {
       technical_lifetime: { label: 'Technical lifetime', unit: 'years' }
     }
   }.freeze
@@ -235,10 +370,10 @@ module NodeSerializerData
   # add these
   HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS = {
     technical: {
-      typical_input_capacity: {
-        label: 'Capacity per unit',
-        unit: 'MW input',
-        formatter: ->(n) { n && FORMAT_1DP.call(n) }
+      'typical_input_capacity * number_of_units' => {
+        label: 'Installed input capacity',
+        key: :total_installed_input_capacity,
+        unit: 'MW'
       },
       hydrogen_output_conversion: {
         label: 'Hydrogen output efficiency',
@@ -249,14 +384,23 @@ module NodeSerializerData
       free_co2_factor: { label: 'CCS capture rate', unit: '%', formatter: FORMAT_FAC_TO_PERCENT }
     },
     cost: {
-      'total_initial_investment_per(:plant)' => { label: 'Investment costs', unit: 'EUR' },
-      'ccs_investment_per(:plant)' => {
-        label: 'Additional initial investment for CCS',
-        unit: 'EUR'
+      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
       },
-      'fixed_operation_and_maintenance_costs_per(:plant)' => {
+      'ccs_investment_per(:mw_typical_input_capacity)' => {
+        label: 'Additional initial investment for CCS',
+        key: :ccs_investment_per_mw_typical_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' => {
         label: 'Fixed operation and maintenance costs',
-        unit: 'EUR / year'
+        key: :fixed_operation_and_maintenance_costs_per_mw_typical_input_capacity,
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
       },
       'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
         label: 'Variable operation and maintenance costs',
@@ -278,8 +422,6 @@ module NodeSerializerData
       }
     },
     other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
-      construction_time: { label: 'Construction time', unit: 'years', formatter: FORMAT_1DP },
       technical_lifetime: {
         label: 'Technical lifetime',
         unit: 'years',
@@ -290,20 +432,16 @@ module NodeSerializerData
 
   FLEXIBILITY_COSTS_AND_OTHER = {
     cost: {
-      'total_initial_investment_per(:mw_typical_input_capacity)' => {
+      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
         label: 'Initial investment',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
-      },
-      'decommissioning_costs_per(:mw_typical_input_capacity)' => {
-        label: 'Decommissioning costs',
-        unit: 'kEUR / MWe',
-        formatter: FORMAT_KILO
+        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
       },
       'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' => {
         label: 'Fixed operation and maintenance costs',
-        unit: 'kEUR / MWe / year',
-        formatter: ->(n) { format('%.2f', (n / 1000)) }
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
       },
       :variable_operation_and_maintenance_costs_per_full_load_hour => {
         label: 'Variable operation and maintenance costs',
@@ -322,8 +460,6 @@ module NodeSerializerData
       }
     },
     other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
-      construction_time: { label: 'Construction time', unit: 'years', formatter: FORMAT_1DP },
       technical_lifetime: {
         label: 'Technical lifetime',
         unit: 'years',
@@ -332,17 +468,109 @@ module NodeSerializerData
     }
   }.freeze
 
+  # If the node belongs to the p2g presentation group then
+  # add these
+  P2G_ATTRIBUTES_AND_METHODS =
+    {
+      technical: {
+        'typical_input_capacity * number_of_units': {
+          label: 'Installed capacity',
+          key: :total_installed_capacity,
+          unit: 'MWe'
+        },
+        hydrogen_output_conversion: {
+          label: 'Hydrogen output efficiency',
+          unit: '%',
+          formatter: FORMAT_FAC_TO_PERCENT
+        },
+        full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+      }
+    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+  # If the node belongs to the p2h presentation group then
+  # add these
+  P2H_ATTRIBUTES_AND_METHODS =
+    {
+      technical: {
+        'typical_input_capacity * number_of_units': {
+          label: 'Installed capacity',
+          key: :total_installed_capacity,
+          unit: 'MWe'
+        },
+        heat_output_conversion: {
+          label: 'Heat efficiency',
+          unit: '%',
+          formatter: FORMAT_FAC_TO_PERCENT
+        },
+        full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+      }
+    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+  # If the node belongs to the p2kerosene presentation group then
+  # add these
+  P2KEROSENE_ATTRIBUTES_AND_METHODS =
+    {
+      technical: {
+        'typical_input_capacity * number_of_units' => {
+          label: 'Installed capacity',
+          key: :total_installed_capacity,
+          unit: 'MWe'
+        },
+        kerosene_output_conversion: {
+          label: 'Kerosene output efficiency',
+          unit: '%',
+          formatter: FORMAT_FAC_TO_PERCENT
+        },
+        full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
+      }
+    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+  # If the node belongs to the p2p presentation group then
+  # add these
+  P2P_ATTRIBUTES_AND_METHODS =
+    {
+      technical: {
+        'typical_input_capacity * number_of_units' => {
+          label: 'Installed capacity',
+          key: :total_installed_capacity,
+          unit: 'MW'
+        },
+        'storage[:volume] * number_of_units' => {
+          label: 'Total storage capacity',
+          key: :total_storage_capacity,
+          unit: 'MWh'
+        },
+        '1.0/electricity_input_conversion * electricity_output_conversion' => {
+          label: 'Round trip efficiency',
+          key: :round_trip_efficiency,
+          unit: '%',
+          formatter: FORMAT_FAC_TO_PERCENT
+        }
+      }
+    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
+  # If the node belongs to the V2G presentation group then
+  # add these
+  V2G_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      :electricity_output_conversion => {
+        label: 'Round trip efficiency',
+        key: :round_trip_efficiency,
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      }
+    }
+  }.freeze
+
   CO2_GENERIC_ATTRIBUTES_AND_METHODS = {
     cost: {
       'total_initial_investment_per(:plant)' => {
         label: 'Initial investment',
-        unit: 'kEUR / unit',
-        formatter: FORMAT_KILO
+        unit: 'EUR / unit'
       },
       'fixed_operation_and_maintenance_costs_per(:plant)' => {
         label: 'Fixed operation and maintenance costs',
-        unit: 'kEUR / unit / year',
-        formatter: ->(n) { format('%.2f', (n / 1000)) }
+        unit: 'EUR / unit / year'
       },
       :variable_operation_and_maintenance_costs_per_full_load_hour => {
         label: 'Variable operation and maintenance costs',
@@ -363,9 +591,16 @@ module NodeSerializerData
   CO2_CAPTURE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        typical_input_capacity: {
+        'typical_input_capacity * 8760 * number_of_units' => {
+          label: 'Total installed capture capacity',
+          key: :total_installed_capture_capacity,
+          unit: 'T_CO2 / year',
+          formatter: FORMAT_KILO
+        },
+        'typical_input_capacity * 8760' => {
           label: 'Capture capacity per unit',
-          unit: 'tonne / hour',
+          key: :typical_input_capacity_co2_capture,
+          unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
         full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
@@ -375,9 +610,16 @@ module NodeSerializerData
   CO2_STORAGE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        typical_input_capacity: {
+        'typical_input_capacity * 8760 * number_of_units' => {
+          label: 'Total installed storage capacity',
+          key: :total_installed_storage_capacity,
+          unit: 'T_CO2 / year',
+          formatter: FORMAT_KILO
+        },
+        'typical_input_capacity * 8760' => {
           label: 'Storage capacity per unit',
-          unit: 'tonne / hour',
+          key: :typical_input_capacity_co2_storage,
+          unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
         full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
@@ -387,81 +629,31 @@ module NodeSerializerData
   CO2_TRANSPORT_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        typical_input_capacity: {
+        'typical_input_capacity * 8760 * number_of_units' => {
+          label: 'Total installed transport capacity',
+          key: :total_installed_transport_capacity,
+          unit: 'T_CO2 / year',
+          formatter: FORMAT_KILO
+        },
+        'typical_input_capacity * 8760' => {
           label: 'Transport capacity per unit',
-          unit: 'tonne / hour',
+          key: :typical_input_capacity_co2_transport,
+          unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
         full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
       }
     }.merge(CO2_GENERIC_ATTRIBUTES_AND_METHODS)
 
-  # If the node belongs to the p2g presentation group then
-  # add these
-  P2G_ATTRIBUTES_AND_METHODS =
-    {
-      technical: {
-        typical_input_capacity: { label: 'Capacity per unit', unit: 'MWe', formatter: FORMAT_1DP },
-        hydrogen_output_conversion: {
-          label: 'Hydrogen output efficiency',
-          unit: '%',
-          formatter: FORMAT_FAC_TO_PERCENT
-        },
-        full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
-      }
-    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
-
-  # If the node belongs to the p2h presentation group then
-  # add these
-  P2H_ATTRIBUTES_AND_METHODS =
-    {
-      technical: {
-        typical_input_capacity: { label: 'Capacity per unit', unit: 'MWe', formatter: FORMAT_1DP },
-        useable_heat_output_conversion: {
-          label: 'Heat efficiency',
-          unit: '%',
-          formatter: FORMAT_FAC_TO_PERCENT
-        },
-        full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
-      }
-    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
-
-  # If the node belongs to the p2kerosene presentation group then
-  # add these
-  P2KEROSENE_ATTRIBUTES_AND_METHODS =
-    {
-      technical: {
-        typical_input_capacity: { label: 'Capacity per unit', unit: 'MWe', formatter: FORMAT_1DP },
-        kerosene_output_conversion: {
-          label: 'Kerosene output efficiency',
-          unit: '%',
-          formatter: FORMAT_FAC_TO_PERCENT
-        },
-        full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
-      }
-    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
-
-  # If the node belongs to the p2p presentation group then
-  # add these
-  P2P_ATTRIBUTES_AND_METHODS =
-    {
-      technical: {
-        :typical_input_capacity => { label: 'Charging capacity per unit', unit: 'MW' },
-        'storage[:volume]' => { label: 'Storage capacity per unit', unit: 'MWh' },
-        '1.0/electricity_input_conversion * electricity_output_conversion' => {
-          label: 'Round trip efficiency',
-          key: :round_trip_efficiency,
-          unit: '%',
-          formatter: FORMAT_FAC_TO_PERCENT
-        }
-      }
-    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
-
   # If the node belongs to the traditional_heat presentation group then
   # add these
   BIOMASS_ATTRIBUTES_AND_METHODS = {
     technical: {
-      :typical_input_capacity => { label: 'Capacity per unit', unit: 'MW', formatter: FORMAT_1DP },
+      'typical_input_capacity * number_of_units' => {
+        label: 'Installed input capacity',
+        key: :total_installed_input_capacity,
+        unit: 'MW'
+      },
       :full_load_hours => { label: 'Full load hours', unit: 'hour / year' },
       '1.0 - loss_output_conversion' => {
         label: 'Efficiency',
@@ -471,12 +663,17 @@ module NodeSerializerData
       }
     },
     cost: {
-      'total_initial_investment_per(:plant)' => { label: 'Initial purchase price', unit: 'EUR' },
-      'cost_of_installing_per(:plant)' => { label: 'Cost of installing', unit: 'EUR' },
-      'decommissioning_costs_per(:plant)' => { label: 'Decommissioning costs', unit: 'EUR' },
-      'fixed_operation_and_maintenance_costs_per(:plant)' => {
+      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' => {
         label: 'Fixed operation and maintenance costs',
-        unit: 'EUR / year'
+        key: :fixed_operation_and_maintenance_costs_per_mw_typical_input_capacity,
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
       },
       'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
         label: 'Variable operation and maintenance costs',
@@ -494,7 +691,6 @@ module NodeSerializerData
       }
     },
     other: {
-      land_use_per_unit: { label: 'Land use per unit', unit: 'km2' },
       technical_lifetime: { label: 'Technical lifetime', unit: 'years' }
     }
   }.freeze
@@ -515,6 +711,14 @@ module NodeSerializerData
         HEAT_PRODUCTION_ATTRIBUTES_AND_METHODS
       when :electricity_production
         ELECTRICITY_PRODUCTION_ATTRIBUTES_AND_METHODS
+      when :electricity_production_ccs
+        ELECTRICITY_PRODUCTION_CCS_ATTRIBUTES_AND_METHODS
+      when :solar_panel
+        SOLAR_PANEL_ATTRIBUTES_AND_METHODS
+      when :solar_pv_plant
+        SOLAR_PV_PLANT_ATTRIBUTES_AND_METHODS
+      when :wind_turbine
+        WIND_TURBINE_ATTRIBUTES_AND_METHODS
       when :heat_pumps
         HEAT_PUMP_ATTRIBUTES_AND_METHODS
       when :chps
@@ -535,6 +739,8 @@ module NodeSerializerData
         P2KEROSENE_ATTRIBUTES_AND_METHODS
       when :p2p
         P2P_ATTRIBUTES_AND_METHODS
+      when :v2g
+        V2G_ATTRIBUTES_AND_METHODS
       when :biomass
         BIOMASS_ATTRIBUTES_AND_METHODS
       else
