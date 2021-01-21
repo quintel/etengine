@@ -25,9 +25,9 @@ module NodeSerializerData
       full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:mw_electricity) + decommissioning_costs_per(:mw_electricity)' => {
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
         label: 'Initial investment',
-        key: :total_initial_investment_per_mw_electricity,
+        key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
@@ -78,9 +78,9 @@ module NodeSerializerData
       full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:mw_electricity) + decommissioning_costs_per(:mw_electricity)' => {
-        label: 'Initial investment (excl CCS)',
-        key: :total_initial_investment_per_mw_electricity,
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
@@ -126,9 +126,9 @@ module NodeSerializerData
 
   WIND_SOLAR_COST_AND_OTHER = {
     cost: {
-      'total_initial_investment_per(:mw_electricity) + decommissioning_costs_per(:mw_electricity)' => {
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
         label: 'Initial investment',
-        key: :total_initial_investment_per_mw_electricity,
+        key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
@@ -241,9 +241,9 @@ module NodeSerializerData
       full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:plant) + cost_of_installing_per(:plant) + decommissioning_costs_per(:plant)' => {
+      'total_investment_over_lifetime_per(:plant)' => {
         label: 'Initial purchase price',
-        key: :total_initial_investment_per_plant,
+        key: :total_investment_over_lifetime_per_plant,
         unit: 'EUR / unit'
       },
       'fixed_operation_and_maintenance_costs_per(:plant)' => {
@@ -283,9 +283,9 @@ module NodeSerializerData
       full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:plant) + cost_of_installing_per(:plant) + decommissioning_costs_per(:plant)' => {
+      'total_investment_over_lifetime_per(:plant)' => {
         label: 'Initial purchase price',
-        key: :total_initial_investment_per_plant,
+        key: :total_investment_over_lifetime_per_plant,
         unit: 'EUR / unit'
       },
       'fixed_operation_and_maintenance_costs_per(:plant)' => {
@@ -334,9 +334,9 @@ module NodeSerializerData
       full_load_hours: { label: 'Full load hours', unit: 'hour / year' }
     },
     cost: {
-      'total_initial_investment_per(:mw_electricity) + decommissioning_costs_per(:mw_electricity)' => {
+      'total_investment_over_lifetime_per(:mw_electricity)' => {
         label: 'Initial investment',
-        key: :total_initial_investment_per_mw_electricity,
+        key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
@@ -384,9 +384,9 @@ module NodeSerializerData
       free_co2_factor: { label: 'CCS capture rate', unit: '%', formatter: FORMAT_FAC_TO_PERCENT }
     },
     cost: {
-      'total_initial_investment_per(:mw_typical_input_capacity)' => {
-        label: 'Investment costs',
-        key: :total_initial_investment_per_mw_typical_input_capacity,
+      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
@@ -432,9 +432,9 @@ module NodeSerializerData
 
   FLEXIBILITY_COSTS_AND_OTHER = {
     cost: {
-      'total_initial_investment_per(:mw_typical_input_capacity) + decommissioning_costs_per(:mw_typical_input_capacity)' => {
+      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
         label: 'Initial investment',
-        key: :total_initial_investment_per_mw_typical_input_capacity,
+        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
@@ -645,9 +645,9 @@ module NodeSerializerData
       }
     },
     cost: {
-      'total_initial_investment_per(:mw_typical_input_capacity) + cost_of_installing_per(:mw_typical_input_capacity) + decommissioning_costs_per(:mw_typical_input_capacity)' => {
-        label: 'Investment costs',
-        key: :total_initial_investment_per_mw_typical_input_capacity,
+      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
+        label: 'Initial investment',
+        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
