@@ -74,7 +74,7 @@ module CurveHandler
       @key = key
       @processor_key = processor_key.to_sym
       @reducer_key = reducer_key&.to_sym
-      @input_keys = input_keys || []
+      @input_keys = reducer_key && input_keys || []
     end
 
     # Public: The key used to store the file in the database.
