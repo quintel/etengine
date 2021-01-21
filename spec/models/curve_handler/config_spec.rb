@@ -46,7 +46,29 @@ RSpec.describe CurveHandler::Config do
       expect(config.sets_inputs?).to be(false)
     end
 
-    it 'has no reducer' do
+    it 'uses the FullLoadHours reducer' do
+      expect(config.reducer).to be(CurveHandler::Reducers::FullLoadHours)
+    end
+  end
+
+  context 'when given reducer=nil and input_keys=%[a b]' do
+    let(:processor_key) { :generic }
+    let(:reducer_key) { nil }
+    let(:input_keys)  { %i[a b] }
+
+    it 'uses the Generic processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::Generic)
+    end
+
+    it 'sets no inputs' do
+      expect(config.sets_inputs?).to be(false)
+    end
+
+    it 'has no input keys set' do
+      expect(config.input_keys).to eq([])
+    end
+
+    it 'sets no reducer' do
       expect(config.reducer).to be_nil
     end
   end
