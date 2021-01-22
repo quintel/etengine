@@ -12,9 +12,7 @@ module Gql
 
       new(
         curve_attachments.each_with_object({}) do |attachment, state|
-          # rubocop:disable Rails/DynamicFindBy
-          config = CurveHandler::Config.find_by_db_key(attachment.key)
-          # rubocop:enable Rails/DynamicFindBy
+          config = CurveHandler::Config.find_by(db_key: attachment.key)
 
           state[config.key] = Merit::Curve.reader.read(
             ActiveStorage::Blob.service.path_for(attachment.file.key)

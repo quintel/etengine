@@ -7,9 +7,7 @@ module CurveHandler
     # Public: Calls the DetachService, removing the attachment. Looks up the config based on the
     # attachment type.
     def self.call(attachment)
-      # rubocop:disable Rails/DynamicFindBy
-      new(Config.find_by_db_key(attachment.key, allow_nil: true)).call(attachment)
-      # rubocop:enable Rails/DynamicFindBy
+      new(Config.find_by(db_key: attachment.key, allow_nil: true)).call(attachment)
     end
 
     def initialize(config)
