@@ -36,7 +36,19 @@ class CustomCurveSerializer
   end
 
   def stats
-    { length: curve.length }
+    min_index = 0
+    max_index = 0
+
+    curve.each_with_index do |value, index|
+      max_index = index if value > curve[max_index]
+      min_index = index if value < curve[min_index]
+    end
+
+    {
+      length: curve.length,
+      min_at: min_index,
+      max_at: max_index
+    }
   end
 
   def curve

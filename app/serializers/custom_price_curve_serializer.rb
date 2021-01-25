@@ -12,18 +12,12 @@ class CustomPriceCurveSerializer < CustomCurveSerializer
   private
 
   def stats
-    # Although it seems like one iteration through the curve would be
-    # better, wherein we would determine the min, max, and sum (for the
-    # mean), in fact this is not the case when benchmarked.
-    min = curve.min
-    max = curve.max
+    attrs = super
 
-    super.merge(
-      mean: curve.sum / curve.length,
-      min: min,
-      min_at: curve.index(min),
-      max: max,
-      max_at: curve.index(max)
-    )
+    attrs[:max]  = curve[attrs[:max_at]]
+    attrs[:min]  = curve[attrs[:min_at]]
+    attrs[:mean] = curve.sum / curve.length
+
+    attrs
   end
 end
