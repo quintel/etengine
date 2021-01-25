@@ -15,6 +15,7 @@ class CustomCurveSerializer
     {
       key: key,
       type: config.processor_key,
+      display_group: config.display_group,
       overrides: config.input_keys,
       attached: true,
       name: @custom_curve.filename.to_s,

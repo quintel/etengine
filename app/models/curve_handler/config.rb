@@ -50,24 +50,27 @@ module CurveHandler
           key,
           processor_key,
           config_hash[:reduce][:as],
-          Array(config_hash[:reduce][:sets]).map(&:to_s)
+          Array(config_hash[:reduce][:sets]).map(&:to_s),
+          config_hash[:display_group]
         )
       else
-        new(key, processor_key)
+        new(key, processor_key, nil, nil, config_hash[:display_group])
       end
     end
 
-    attr_reader :key, :input_keys, :processor_key
+    attr_reader :display_group, :input_keys, :key, :processor_key
 
     # Public: Creates a new Config.
     #
-    # key         - A unique key for the uploaded curve.
+    # key           - A unique key for the uploaded curve.
     # processor_key - A symbol identifying what type of InputHandler is used by the curve.
-    # reducer_key - An optional symbol identifying how to reduce the curve to a single value, which
-    #               may then be used to set inputs.
-    # input_keys  - An array of symbols, each matching the key of an input whose value will be set
-    #               by the reducer.
-    def initialize(key, processor_key, reducer_key = nil, input_keys = [])
+    # reducer_key   - An optional symbol identifying how to reduce the curve to a single value,
+    #                 which may then be used to set inputs.
+    # input_keys    - An array of symbols, each matching the key of an input whose value will be set
+    #                 by the reducer.
+    # display_group - An optional attribute which allows this curve to be shown alongside other
+    #                 curves in the front-end.
+    def initialize(key, processor_key, reducer_key = nil, input_keys = [], display_group = nil)
       raise "Cannot create a #{self.class.name} without a key"       if key.nil?
       raise "Cannot create a #{self.class.name} without a processor" if processor_key.nil?
 
@@ -75,6 +78,7 @@ module CurveHandler
       @processor_key = processor_key.to_sym
       @reducer_key = reducer_key&.to_sym
       @input_keys = reducer_key && input_keys || []
+      @display_group = display_group&.to_sym
     end
 
     # Public: The key used to store the file in the database.

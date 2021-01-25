@@ -14,6 +14,7 @@ class UnattachedCustomCurveSerializer
     {
       key: @key,
       type: config.processor_key,
+      display_group: config.display_group,
       attached: false,
       overrides: config.input_keys
     }
