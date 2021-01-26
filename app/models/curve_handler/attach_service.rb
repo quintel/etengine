@@ -35,7 +35,7 @@ module CurveHandler
       attachment = update_or_create_attachment
 
       attachment.file.attach(
-        io: StringIO.new(@processor.sanitized_curve.join("\n")),
+        io: StringIO.new(@processor.curve_for_storage.join("\n")),
         filename: @filename,
         content_type: 'text/csv'
       )

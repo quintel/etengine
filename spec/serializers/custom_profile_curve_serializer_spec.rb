@@ -13,7 +13,7 @@ describe CustomProfileCurveSerializer do
 
     before do
       attachment.file.attach(
-        io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
+        io: File.open(Rails.root.join('spec/fixtures/files/capacity_curve.csv')),
         filename: 'price_curve.csv',
         content_type: 'text/csv'
       )

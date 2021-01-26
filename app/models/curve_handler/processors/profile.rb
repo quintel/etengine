@@ -8,15 +8,16 @@ module CurveHandler
         CustomProfileCurveSerializer
       end
 
-      def sanitized_curve
+      def curve_for_storage
         return nil unless valid?
 
-        sum = @curve.sum
+        curve = sanitized_curve
+        sum = curve.sum
 
-        return Array.new(@curve.length, 0.0) if sum.zero?
+        return Array.new(curve.length, 0.0) if sum.zero?
 
         divisor = sum * 3600
-        @curve.map { |value| value / divisor }
+        curve.map { |value| value / divisor }
       end
     end
   end

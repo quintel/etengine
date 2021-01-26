@@ -3,13 +3,12 @@
 module CurveHandler
   module Reducers
     FullLoadHours = lambda do |curve|
-      max = curve.max
+      sum = curve.sum
 
-      if curve.empty? || max.zero?
+      if curve.empty? || sum.zero?
         0.0
       else
-        hours_per_el = 8760.0 / curve.length
-        curve.sum { |value| value / max } * hours_per_el
+        (sum * (8760.0 / curve.length)).clamp(0.0, 8760.0)
       end
     end
   end

@@ -37,8 +37,32 @@ RSpec.describe CurveHandler::Reducers::FullLoadHours do
     end
   end
 
+  context 'when given [0.5, 0.5, 0.5, 0.5]' do
+    let(:curve) { [0.5, 0.5, 0.5, 0.5] }
+
+    it 'returns 4380' do
+      expect(result).to eq(4380)
+    end
+  end
+
   context 'when given [0, 0, 0, 0]' do
     let(:curve) { [0.0, 0.0, 0.0, 0.0] }
+
+    it 'returns 0' do
+      expect(result).to eq(0)
+    end
+  end
+
+  context 'when given [2, 2, 2, 2]' do
+    let(:curve) { [2.0, 2.0, 2.0, 2.0] }
+
+    it 'returns 8760' do
+      expect(result).to eq(8760)
+    end
+  end
+
+  context 'when given [-1, -1, -1, -1]' do
+    let(:curve) { [-1.0, -1.0, -1.0, -1.0] }
 
     it 'returns 0' do
       expect(result).to eq(0)

@@ -42,11 +42,17 @@ module CurveHandler
       end
 
       # Public: Provided the curve contains valid data, creates a sanitized version of the curve
-      # which may be used in the calculation.
+      # provided by the user.
       #
       # Returns an array.
       def sanitized_curve
         valid? ? @curve : nil
+      end
+
+      # Public: Returns the curve as it should be stored. May performs additional processing on the
+      # `sanitized_curve` immediately prior to being stored.
+      def curve_for_storage
+        sanitized_curve
       end
 
       # Public: Determines if the curve provided by the user contains valid data allowing it to be

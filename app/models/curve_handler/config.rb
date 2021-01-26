@@ -96,6 +96,8 @@ module CurveHandler
         Processors::Price
       when :profile
         Processors::Profile
+      when :capacity_profile
+        Processors::CapacityProfile
       when :temperature
         Processors::Temperature
       else
@@ -108,6 +110,10 @@ module CurveHandler
     def reducer
       case @reducer_key
       when :full_load_hours
+        unless @processor_key == :capacity_profile
+          raise "Cannot use a full_load_hours reducer with a #{@processor_key} curve"
+        end
+
         Reducers::FullLoadHours
       when :temperature
         Reducers::Temperature
