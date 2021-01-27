@@ -21,6 +21,10 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
     it 'does not return a sanitized curve' do
       expect(handler.sanitized_curve).to be_nil
     end
+
+    it 'does not return a curve_for_storage' do
+      expect(handler.curve_for_storage).to be_nil
+    end
   end
 
   context 'with nil instead of a curve' do
@@ -42,6 +46,10 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
     it 'does not return a sanitized curve' do
       expect(handler.sanitized_curve).to be_nil
     end
+
+    it 'does not return a curve_for_storage' do
+      expect(handler.curve_for_storage).to be_nil
+    end
   end
 
   context 'with a curve containing nil' do
@@ -62,6 +70,10 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
     it 'does not return a sanitized curve' do
       expect(handler.sanitized_curve).to be_nil
     end
+
+    it 'does not return a curve_for_storage' do
+      expect(handler.curve_for_storage).to be_nil
+    end
   end
 
   context 'with a curve containing a string' do
@@ -81,6 +93,10 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
 
     it 'does not return a sanitized curve' do
       expect(handler.sanitized_curve).to be_nil
+    end
+
+    it 'does not return a curve_for_storage' do
+      expect(handler.curve_for_storage).to be_nil
     end
   end
 
@@ -110,6 +126,10 @@ RSpec.shared_examples_for 'a non-normalizing CurveHandler processor' do
     it 'changes no values when sanitizing' do
       expect(handler.sanitized_curve).to eq(curve)
     end
+
+    it 'has an identical sanitized_curve and curve_for_storage' do
+      expect(handler.curve_for_storage).to eq(handler.sanitized_curve)
+    end
   end
 
   context 'with a curve containing 8760 integers' do
@@ -121,6 +141,10 @@ RSpec.shared_examples_for 'a non-normalizing CurveHandler processor' do
 
     it 'converts each value to a float' do
       expect(handler.sanitized_curve).to eq(curve.map(&:to_f))
+    end
+
+    it 'has an identical sanitized_curve and curve_for_storage' do
+      expect(handler.curve_for_storage).to eq(handler.sanitized_curve)
     end
   end
 
@@ -168,6 +192,10 @@ RSpec.shared_examples_for 'a non-normalizing CurveHandler processor' do
 
       it 'sanitizes the curve' do
         expect(handler.sanitized_curve).to eq([1.0] * 8760)
+      end
+
+      it 'has an identical sanitized_curve and curve_for_storage' do
+        expect(handler.curve_for_storage).to eq(handler.sanitized_curve)
       end
     end
 

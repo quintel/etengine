@@ -34,12 +34,12 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
-  context 'when given processor_key=:generic and reducer=:full_load_hours' do
-    let(:processor_key) { :generic }
+  context 'when given processor_key=:capacity_profile and reducer=:full_load_hours' do
+    let(:processor_key) { :capacity_profile }
     let(:reducer_key) { :full_load_hours }
 
-    it 'uses the Generic processor' do
-      expect(config.processor).to eq(CurveHandler::Processors::Generic)
+    it 'uses the CapacityProfile processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::CapacityProfile)
     end
 
     it 'sets no inputs' do
@@ -51,12 +51,21 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
+  context 'when given processor_key=:generic and reducer=:full_load_hours' do
+    let(:processor_key) { :generic }
+    let(:reducer_key) { :full_load_hours }
+
+    it 'raises an error when fetching the reducer' do
+      expect { config.reducer }.to raise_error(/cannot use a full_load_hours reducer/i)
+    end
+  end
+
   context 'when given reducer=nil and input_keys=%[a b]' do
     let(:processor_key) { :generic }
     let(:reducer_key) { nil }
     let(:input_keys)  { %i[a b] }
 
-    it 'uses the Generic processor' do
+    it 'uses the CapacityProfile processor' do
       expect(config.processor).to eq(CurveHandler::Processors::Generic)
     end
 
@@ -73,13 +82,14 @@ RSpec.describe CurveHandler::Config do
     end
   end
 
-  context 'when given processor_key=:generic and reducer=:full_load_hours and input_keys=%i[a b]' do
-    let(:processor_key) { :generic }
+  context 'when given processor_key=:capacity_profile and reducer=:full_load_hours ' \
+          'and input_keys=%i[a b]' do
+    let(:processor_key) { :capacity_profile }
     let(:reducer_key) { :full_load_hours }
     let(:input_keys)  { %i[a b] }
 
-    it 'uses the Generic processor' do
-      expect(config.processor).to eq(CurveHandler::Processors::Generic)
+    it 'uses the CapacityProfile processor' do
+      expect(config.processor).to eq(CurveHandler::Processors::CapacityProfile)
     end
 
     it 'sets inputs' do
@@ -155,7 +165,11 @@ RSpec.describe CurveHandler::Config do
 
     context 'with a reducer config hash and a string input' do
       let(:config_hash) do
-        { key: :my_curve, type: :generic, reduce: { as: :full_load_hours, sets: :my_input } }
+        {
+          key: :my_curve,
+          type: :capacity_profile,
+          reduce: { as: :full_load_hours, sets: :my_input }
+        }
       end
 
       it 'sets the key' do
@@ -163,7 +177,7 @@ RSpec.describe CurveHandler::Config do
       end
 
       it 'sets the processor' do
-        expect(config.processor).to eq(CurveHandler::Processors::Generic)
+        expect(config.processor).to eq(CurveHandler::Processors::CapacityProfile)
       end
 
       it 'will reduce a value to inputs' do
@@ -184,7 +198,7 @@ RSpec.describe CurveHandler::Config do
         {
           key: :my_curve,
           type: :generic,
-          reduce: { as: :full_load_hours, sets: %i[input_one input_two] }
+          reduce: { as: :temperature, sets: %i[input_one input_two] }
         }
       end
 
@@ -201,7 +215,7 @@ RSpec.describe CurveHandler::Config do
       end
 
       it 'sets the reducer' do
-        expect(config.reducer).to eq(CurveHandler::Reducers::FullLoadHours)
+        expect(config.reducer).to eq(CurveHandler::Reducers::Temperature)
       end
 
       it 'sets input keys as Strings' do
@@ -214,7 +228,7 @@ RSpec.describe CurveHandler::Config do
         {
           key: :my_curve,
           type: :generic,
-          reduce: { as: :full_load_hours, sets: %w[input_one input_two] }
+          reduce: { as: :temperature, sets: %w[input_one input_two] }
         }
       end
 

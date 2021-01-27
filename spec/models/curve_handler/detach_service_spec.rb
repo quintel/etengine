@@ -58,8 +58,17 @@ RSpec.describe CurveHandler::DetachService do
   end
 
   context 'with an attached curve and a reducer setting two inputs' do
+    let(:file) do
+      fixture_file_upload('files/capacity_curve.csv', 'text/csv')
+    end
+
     let(:config) do
-      CurveHandler::Config.new(:generic, :generic, :full_load_hours, %w[input_one input_two])
+      CurveHandler::Config.new(
+        :generic,
+        :capacity_profile,
+        :full_load_hours,
+        %w[input_one input_two]
+      )
     end
 
     include_examples 'a successful CurveHandler::DetachService'
@@ -73,9 +82,18 @@ RSpec.describe CurveHandler::DetachService do
     end
   end
 
-  context 'with an attached curve, reducer setting two inputs, but one inputs is not set' do
+  context 'with an attached curve, reducer setting two inputs, but one input is not set' do
+    let(:file) do
+      fixture_file_upload('files/capacity_curve.csv', 'text/csv')
+    end
+
     let(:config) do
-      CurveHandler::Config.new(:generic, :generic, :full_load_hours, %w[input_one input_two])
+      CurveHandler::Config.new(
+        :generic,
+        :capacity_profile,
+        :full_load_hours,
+        %w[input_one input_two]
+      )
     end
 
     before do

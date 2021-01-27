@@ -54,8 +54,10 @@ RSpec.describe CurveHandler::AttachService do
   end
 
   describe 'when attaching a curve with a full_load_hours reducer' do
+    let(:file) { fixture_file_upload('files/capacity_curve.csv', 'text/csv') }
+
     let(:config) do
-      CurveHandler::Config.new(:generic, :generic, :full_load_hours, %w[i1 i2])
+      CurveHandler::Config.new(:generic, :capacity_profile, :full_load_hours, %w[i1 i2])
     end
 
     # Asserts that the original scenario values are not overwritten.
