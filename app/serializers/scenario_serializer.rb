@@ -29,6 +29,7 @@ class ScenarioSerializer < PresetSerializer
     json[:source]     = @resource.source
     json[:template]   = @resource.preset_scenario_id
     json[:created_at] = @resource.created_at
+    json[:updated_at] = @resource.updated_at
     json[:protected]  = @resource.protected?
 
     if @detailed
