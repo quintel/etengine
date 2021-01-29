@@ -12,6 +12,10 @@ class ScenarioAttachment < ApplicationRecord
     source_end_year
   ].freeze
 
+  VALID_FILE_KEYS = %w[
+    esdl_file
+  ].freeze
+
   has_one_attached :file
   belongs_to :scenario
   belongs_to :source_scenario, class_name: 'Scenario'
@@ -31,7 +35,7 @@ class ScenarioAttachment < ApplicationRecord
 
   def self.valid_keys
     NastyCache.instance.fetch('ScenearioAttachment.valid_keys') do
-      Etsource::Config.user_curves.map { |_, conf| conf.db_key }
+      Etsource::Config.user_curves.map { |_, conf| conf.db_key }.push(*VALID_FILE_KEYS)
     end
   end
 
