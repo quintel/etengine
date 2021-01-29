@@ -38,7 +38,7 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
       handler.valid?
 
       expect(handler.errors).to include(
-        'Curve must be a CSV file containing 8760 numeric values, ' \
+        'Curve must be a file containing 8760 numeric values, ' \
         'one for each hour in a typical year'
       )
     end
@@ -100,6 +100,31 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
     end
   end
 
+  context 'with a curve containing arrays' do
+    let(:curve) { [[1.0, 1.0], [2.0, 2.0]] * 4380 }
+
+    it 'is not valid' do
+      expect(handler).not_to be_valid
+    end
+
+    it 'has an error message' do
+      handler.valid?
+
+      expect(handler.errors).to include(
+        'Curve must contain only a single numeric value on each line; multiple values separated ' \
+        'by commas are not permitted'
+      )
+    end
+
+    it 'does not return a sanitized curve' do
+      expect(handler.sanitized_curve).to be_nil
+    end
+
+    it 'does not return a curve_for_storage' do
+      expect(handler.curve_for_storage).to be_nil
+    end
+  end
+
   describe '.from_string' do
     let(:handler) { described_class.from_string(input) }
 
@@ -108,6 +133,23 @@ RSpec.shared_examples_for 'a CurveHandler processor' do
 
       it 'is not valid' do
         expect(handler).not_to be_valid
+      end
+    end
+
+    context 'when given a string with commas' do
+      let(:input) { +"1,2\n3,4" }
+
+      it 'is not valid' do
+        expect(handler).not_to be_valid
+      end
+
+      it 'has a relevant error message' do
+        handler.valid?
+
+        expect(handler.errors).to include(
+          'Curve must contain only a single numeric value on each line; multiple values ' \
+          'separated by commas are not permitted'
+        )
       end
     end
   end

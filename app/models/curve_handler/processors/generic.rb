@@ -8,8 +8,12 @@ module CurveHandler
 
       MESSAGES = {
         illegal_value: 'Curve must only contain numeric values',
+        too_many_columns: <<-MSG.squish,
+          Curve must contain only a single numeric value on each line; multiple values separated
+          by commas are not permitted
+        MSG
         not_a_curve: <<-MSG.squish,
-          Curve must be a CSV file containing 8760 numeric values, one for each hour in a typical
+          Curve must be a file containing 8760 numeric values, one for each hour in a typical
           year
         MSG
         wrong_length: 'Curve must have 8760 numeric values, one for each hour in a typical year'
@@ -27,7 +31,15 @@ module CurveHandler
       # Public: Takes a CSV file as a raw string, converts each line to a float and returns a
       # sanitizer.
       def self.from_string(string)
-        new(CSV.parse(remove_bom(string), converters: :float).flatten.compact)
+        array = CSV.parse(remove_bom(string), converters: :float)
+
+        # If any row has more than one value, the file probably contains commas. Allow those where
+        # the comma was simply a trailing value after a valid number.
+        if array.find { |row| row.length > 1 && !(row.length == 2 && row.last.nil?) }
+          new(array)
+        else
+          new(array.flatten.compact)
+        end
       rescue CSV::MalformedCSVError
         new(nil)
       end
@@ -64,6 +76,11 @@ module CurveHandler
 
         unless @curve.is_a?(Array)
           add_error(:not_a_curve)
+          return false
+        end
+
+        if @curve.first.is_a?(Array)
+          add_error(:too_many_columns)
           return false
         end
 
