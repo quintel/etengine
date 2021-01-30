@@ -28,8 +28,9 @@ class ScenarioSerializer < PresetSerializer
     json = super
     json[:source]     = @resource.source
     json[:template]   = @resource.preset_scenario_id
-    json[:created_at] = @resource.created_at
-    json[:updated_at] = @resource.updated_at
+    # TODO: Remove fallback values for created_at/updated_at when presets are entirely removed.
+    json[:created_at] = @resource.created_at || Time.now.utc
+    json[:updated_at] = @resource.updated_at || Time.now.utc
     json[:protected]  = @resource.protected?
 
     if @detailed
