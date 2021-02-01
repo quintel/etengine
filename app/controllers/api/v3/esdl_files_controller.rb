@@ -12,13 +12,9 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/esdl_file
       def show
-        render json: { errors: ['No file was found'] }, status: 422 and return unless esdl_file
+        render json: {} and return unless esdl_file
 
-        if params[:download]
-          render json: { file: esdl_file.file.download, filename: esdl_file.file.filename }
-        else
-          render json: { filename: esdl_file.file.filename }
-        end
+        render json: EsdlFileSerializer.new(esdl_file, params[:download] == 'true').as_json
       end
 
       # Creates or updates an attached esdl file for a scenario.
@@ -40,7 +36,7 @@ module Api
       private
 
       def esdl_file
-        @esdl_file ||= ScenarioAttachment.where(scenario: @scenario, key: 'esdl_file').last
+        @esdl_file ||= @scenario.attachment('esdl_file')
       end
 
       def setup_handler(upload, filename)
