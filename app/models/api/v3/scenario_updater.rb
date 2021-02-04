@@ -11,9 +11,6 @@ module Api
       validate :validate_user_values
       validate :validate_groups_balance
 
-      validates_with ActiveRecord::Validations::AssociatedValidator,
-        attributes: [:scenario]
-
       # @return [Scenario]
       #   Returns the scenario being updated.
       #
@@ -58,7 +55,16 @@ module Api
       # @return [true, false]
       #
       def valid?(*args)
-        super
+        self_valid = super
+        scenario_valid = @scenario.valid?
+
+        unless scenario_valid
+          @scenario.errors.each do |attribute, message|
+            errors.add(:base, "Scenario #{attribute} #{message}")
+          end
+        end
+
+        self_valid && scenario_valid
       rescue RuntimeError => e
         # TODO: Perhaps it is better to notify Airbrake, and add an error
         #      message with "something went wrong" and the Airbrake ID?

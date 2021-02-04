@@ -188,8 +188,8 @@ module Api
       # }
       #
       def update
-        updater       = ScenarioUpdater.new(@scenario, filtered_params)
-        serializer     = nil
+        updater    = ScenarioUpdater.new(@scenario, filtered_params)
+        serializer = nil
 
         Scenario.transaction do
           updater.apply

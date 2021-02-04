@@ -560,10 +560,28 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
-  context 'when the scenario does not exist' do
-    it 'with an illegal scenario ID' do
+  context 'with an out-of-range scenario ID' do
+    it 'returns 404' do
       put '/api/v3/scenarios/100000000000'
       expect(response.status).to be(404)
+    end
+  end
+
+  context 'when the scenario is invalid' do
+    before do
+      scenario.area_code = 'invalid'
+      scenario.save(validate: false)
+
+      put_scenario({}, scenario: { end_year: 2030 })
+    end
+
+    it 'responds 422' do
+      expect(response.status).to be(422)
+    end
+
+    it 'has an error message about the scenario' do
+      expect(JSON.parse(response.body)['errors'])
+        .to include('Scenario area_code is unknown or not supported')
     end
   end
 
