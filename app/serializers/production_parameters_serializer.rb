@@ -21,7 +21,7 @@ class ProductionParametersSerializer
         electricity_output_capacity
         heat_output_capacity
         full_load_hours
-        initial_investment_per_plant
+        total_initial_investment_per_plant
         fixed_operation_and_maintenance_costs_per_year
         variable_operation_and_maintenance_costs_per_full_load_hour
         wacc
@@ -57,7 +57,7 @@ class ProductionParametersSerializer
       node.query.electricity_output_capacity,
       node.query.heat_output_capacity,
       node.query.full_load_hours,
-      node.query.initial_investment_per(:plant),
+      node.query.total_initial_investment_per(:plant),
       node.query.fixed_operation_and_maintenance_costs_per_year,
       node.query.variable_operation_and_maintenance_costs_per_full_load_hour,
       node.query.wacc,
