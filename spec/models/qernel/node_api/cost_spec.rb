@@ -401,6 +401,37 @@ describe 'Qernel::NodeApi cost calculations' do
   end
 
   describe '#total_initial_investment' do
+    it 'returns nil when values are not set' do
+      node.with(
+        initial_investment: nil,
+        ccs_investment: nil,
+        cost_of_installing: nil,
+        storage_costs: 0.0
+      )
+
+      expect(node.node_api.total_initial_investment).to be_nil
+    end
+
+    it 'returns initial_investment when only it is set' do
+      node.with(initial_investment: 10.0)
+      expect(node.node_api.total_initial_investment).to eq(10)
+    end
+
+    it 'returns ccs_investment when only it is set' do
+      node.with(ccs_investment: 11.0)
+      expect(node.node_api.total_initial_investment).to eq(11)
+    end
+
+    it 'returns cost_of_installing when only it is set' do
+      node.with(cost_of_installing: 12.0)
+      expect(node.node_api.total_initial_investment).to eq(12)
+    end
+
+    it 'returns storage_costs when only it is set' do
+      node.with(storage_costs: 13.0)
+      expect(node.node_api.total_initial_investment).to eq(13)
+    end
+
     it 'calculates when everything is set' do
       node.with(
         initial_investment: 500,
