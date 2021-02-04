@@ -560,6 +560,13 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
+  context 'when the scenario does not exist' do
+    it 'with an illegal scenario ID' do
+      put '/api/v3/scenarios/100000000000'
+      expect(response.status).to be(404)
+    end
+  end
+
   context 'when the input does not exist' do
     before do
       put_scenario(does_not_exist: 50)

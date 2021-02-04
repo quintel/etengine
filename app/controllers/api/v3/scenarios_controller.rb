@@ -240,7 +240,7 @@ module Api
 
       def find_scenario
         @scenario = Scenario.find_for_calculation(params[:id])
-      rescue ActiveRecord::RecordNotFound
+      rescue ActiveRecord::RecordNotFound, ActiveModel::RangeError
         render_not_found(errors: ['Scenario not found'])
       end
 
