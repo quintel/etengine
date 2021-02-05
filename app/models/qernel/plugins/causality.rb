@@ -37,6 +37,7 @@ module Qernel::Plugins
       @merit = Qernel::Causality::Electricity.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
       @heat_network = Qernel::Causality::HeatNetwork.new(graph)
+      @reconciliation = Qernel::Causality::ReconciliationWrapper.new(@graph)
     end
 
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
@@ -60,6 +61,8 @@ module Qernel::Plugins
 
       @merit.setup_dynamic
       @heat_network.setup_dynamic
+
+      @reconciliation.setup
     end
 
     def inject(lifecycle)
@@ -89,9 +92,6 @@ module Qernel::Plugins
     # This is performed after the recalculation of the graph, ensuring that and
     # changes in demand caused in `inject` are correctly accounted for.
     def inject_reconciliation
-      @reconciliation = Qernel::Causality::ReconciliationWrapper.new(@graph)
-      @reconciliation.setup
-
       @reconciliation.inject_values!
     end
   end
