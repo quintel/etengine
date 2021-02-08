@@ -56,6 +56,10 @@ class Gquery
     @command ||= command_for(:query)
   end
 
+  def api_allowed?
+    !nodes?
+  end
+
   def nodes?
     unit == 'nodes'
   end

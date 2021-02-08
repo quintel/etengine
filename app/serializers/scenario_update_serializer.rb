@@ -70,7 +70,12 @@ class ScenarioUpdateSerializer
   def perform_gqueries!
     gql = @updater.scenario.gql
 
-    queries.each_with_object(Hash.new) do |query, results|
+    queries.each_with_object({}) do |query, results|
+      unless query.api_allowed?
+        @errors.push("#{query.key} may not be requested via the API")
+        next
+      end
+
       present = perform_query(gql, :present, query)
       future  = perform_query(gql, :future,  query)
 
