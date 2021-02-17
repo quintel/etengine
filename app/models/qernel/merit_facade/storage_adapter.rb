@@ -13,6 +13,7 @@ module Qernel
       def inject!
         super
         inject_dumped_energy_attributes!
+        inject_storage_curve!
       end
 
       private
@@ -37,11 +38,9 @@ module Qernel
           attrs[:decay] = ->(_, amount) { amount * decay_factor }
         end
 
-        unless @context.carrier == :steam_hot_water
-          # Heat network storage requires the ability to fetch the full storage
-          # curve; not supported by SimpleReserve.
-          attrs[:reserve_class] = Merit::Flex::SimpleReserve
-        end
+        # Random access to the reserve's `add` and `take` methods aren't
+        # required, so we may use the faster reserve.
+        attrs[:reserve_class] = Merit::Flex::SimpleReserve
 
         attrs
       end
@@ -86,12 +85,7 @@ module Qernel
       end
 
       def inject_infinite!
-        reserve = @participant.reserve
-        stored = Array.new(8760) { |frame| reserve.at(frame) }
-
-        source_api.storage.volume = stored.max.ceil.to_f
-
-        inject_curve!(full_name: :storage_curve) { stored }
+        source_api.storage.volume = @participant.reserve.to_a.max.ceil.to_f
       end
 
       def inject_dynamic_output_capacity!
@@ -103,6 +97,10 @@ module Qernel
         elsif @context.carrier == :steam_hot_water
           target_api.heat_output_capacity = capacity
         end
+      end
+
+      def inject_storage_curve!
+        inject_curve!(full_name: :storage_curve) { @participant.reserve.to_a }
       end
 
       # Internal: When "output_capacity_from_demand_of" is set, set the capacity
