@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 module Api
   module V3
-    # Provides the ability to attach and download an esdl file from a scenario.
+    # Provides the ability to attach and download an esdl file to/from a scenario.
     class EsdlFilesController < BaseController
       respond_to :json
 
       before_action :ensure_reasonable_file_size, only: :update
       before_action :set_current_scenario
 
-      # Sends data on the current attached esdl file for the scenario, or an empty object if none is set.
-      # When the parameter download is set, also sends the file
+      # Sends data on the current attached esdl file for the scenario, or an empty object if none is
+      # set. When the parameter download is set, also sends the file.
       #
       # GET /api/v3/scenarios/:scenario_id/esdl_file
       def show
