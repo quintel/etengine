@@ -194,7 +194,7 @@ module Qernel::RecursiveFactor::Base
           # [A] should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
           input = self.input(edge.carrier)
 
-          parent_conversion = (input and input.conversion) || 1.0
+          parent_conversion = input&.conversion || 1.0
 
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
@@ -269,7 +269,7 @@ module Qernel::RecursiveFactor::Base
   def loss_compensation_factor
     fetch(:loss_compensation_factor) do
       loss_conversion = loss_output_conversion
-      (loss_conversion == 1.0) ? 0.0 : (1.0 / (1.0 - loss_conversion))
+      loss_conversion == 1.0 ? 0.0 : (1.0 / (1.0 - loss_conversion))
     end
   end
 
@@ -302,10 +302,16 @@ module Qernel::RecursiveFactor::Base
   def demanding_share(edge)
     return 0.0 if edge.loss?
 
-    demanding_share = (edge.value || 0.0) / (self.demand || 0.0)
+    demanding_share = (edge.demand || 0.0) / (demand || 0.0)
 
     if demanding_share.nan? || demanding_share.infinite?
       demanding_share = 0.0
+    elsif edge.rgt_output.conversion > 1.0
+      # When the node to the right has a conversion higher than 1.0 it is outputting more energy
+      # (due to an output efficiency) than it has as input. To correctly propagate values from the
+      # right of the graph to the left, the share must be adjusted to effectively cap the conversion
+      # to a max of 1.0.
+      demanding_share /= edge.rgt_output.conversion
     end
 
     demanding_share
