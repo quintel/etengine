@@ -39,6 +39,10 @@ class ScenarioAttachment < ApplicationRecord
     end
   end
 
+  def self.valid_non_curve_keys
+    VALID_FILE_KEYS
+  end
+
   def loadable_curve?
     file&.attached? && CurveHandler::Config.db_key?(key)
   end

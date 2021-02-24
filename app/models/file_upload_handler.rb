@@ -17,6 +17,7 @@ class FileUploadHandler
     @scenario = scenario
   end
 
+  # Public: attaches the file to the scenario as content type xml
   def call
     attachment = ScenarioAttachment.create!(key: @key, scenario: @scenario)
 
@@ -32,6 +33,10 @@ class FileUploadHandler
 
     if @scenario.attachments.find_by(key: @key)
       @errors.push("This scenario already has a file of type #{@key} attached.")
+    end
+
+    unless ScenarioAttachment.valid_non_curve_keys.include?(@key)
+      @errors.push("This handler cannot attach files of type #{@key}.")
     end
 
     @errors.none?

@@ -21,7 +21,7 @@ describe 'ESDL files', :etsource_fixture do
         expect(response).to be_successful
       end
 
-      it 'sends no curve data' do
+      it 'sends no esdl data' do
         expect(JSON.parse(response.body)).to eq({})
       end
     end
