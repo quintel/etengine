@@ -109,11 +109,31 @@ describe 'ESDL files', :etsource_fixture do
   end
 
   context('when uploading an esdl file larger than 5MB') do
+    let(:file) { Tempfile.new('large_esdl_file.esdl') }
     let(:request) do
       put url, params: {
-        file: fixture_file_upload('files/huge_invalid_esdl_file.esdl', 'text/xml').read,
+        file: file.read,
         filename: 'my esdl'
       }
+    end
+
+    before do
+      file.write(
+        "<?xml version='1.0' encoding='UTF-8'?>\n
+        <esdl:EnergySystem xmlns:xsi='foo' xmlns:esdl='foo' name='my_esdl' id='1'>\n" +
+        (["<measures id='measures'>\n
+            <measure xsi:type='esdl:Measure'>\n
+              <asset xsi:type='esdl:WindTurbine' id='1' fullLoadHours='1920' power='3000000.0'/>\n
+            </measure>\n
+          </measures>"] * 25_000).join("\n") +
+        '</esdl:EnergySystem>'
+      )
+      file.rewind
+    end
+
+    after do
+      file.close
+      file.unlink
     end
 
     it 'fails' do
