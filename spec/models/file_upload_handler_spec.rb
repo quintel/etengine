@@ -38,25 +38,20 @@ describe 'FileUploadHandler' do
     end
   end
 
-  # We don't really care - should we?
   context 'when attachting a file that is not content type xml' do
     let(:key) { 'esdl_file' }
     let(:file) { ("1.0\n" * 8760) }
 
-    it 'is valid' do
-      expect(file_handler).to be_valid
+    it 'is not valid' do
+      expect(file_handler).not_to be_valid
     end
 
-    it 'attaches the file' do
-      expect { file_handler.call }
-        .to change {
-          scenario
-            .reload
-            .attachments
-            .find_by(key: 'esdl_file')
-            .present?
-        }
-        .from(false).to(true)
+    it 'returns errors' do
+      file_handler.valid?
+
+      expect(file_handler.errors).to include(
+        'This file does not contain ESDL'
+      )
     end
   end
 

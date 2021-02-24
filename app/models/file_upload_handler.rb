@@ -11,7 +11,8 @@ class FileUploadHandler
   # key      - The key of the ScenarioAttachment, e.g. 'esdl_file'
   # scenario - The scenario the file should be attached to
   def initialize(file, filename, key, scenario)
-    @file = file
+    @file = Tempfile.new(filename)
+    @file.write(file)
     @filename = filename
     @key = key
     @scenario = scenario
@@ -21,11 +22,13 @@ class FileUploadHandler
   def call
     attachment = ScenarioAttachment.create!(key: @key, scenario: @scenario)
 
+    @file.rewind
     attachment.file.attach(
-      io: StringIO.new(@file),
+      io: @file,
       filename: @filename,
       content_type: 'text/xml'
     )
+    @file.unlink
   end
 
   def valid?
@@ -33,10 +36,16 @@ class FileUploadHandler
 
     if @scenario.attachments.find_by(key: @key)
       @errors.push("This scenario already has a file of type #{@key} attached.")
+      return false
     end
 
     unless ScenarioAttachment.valid_non_curve_keys.include?(@key)
       @errors.push("This handler cannot attach files of type #{@key}.")
+    end
+
+    if @key == 'esdl_file'
+      header = File.open(@file.path) { |file| file.gets(nil, 1024) }
+      errors.push('This file does not contain ESDL') unless header.include?('<esdl:EnergySystem')
     end
 
     @errors.none?
