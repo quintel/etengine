@@ -13,7 +13,6 @@ describe 'ESDL files', :etsource_fixture do
   let(:url) { "/api/v3/scenarios/#{scenario.id}/esdl_file" }
 
   context('when requesting attached esdl file') do
-
     context 'when nothing is attached' do
       before { get(url) }
 
