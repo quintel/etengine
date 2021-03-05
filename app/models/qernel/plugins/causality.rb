@@ -62,7 +62,7 @@ module Qernel::Plugins
       @merit.setup_dynamic
       @heat_network.setup_dynamic
 
-      @reconciliation.setup
+      @reconciliation.setup_early
     end
 
     def inject(lifecycle)
@@ -92,6 +92,7 @@ module Qernel::Plugins
     # This is performed after the recalculation of the graph, ensuring that and
     # changes in demand caused in `inject` are correctly accounted for.
     def inject_reconciliation
+      @reconciliation.setup
       @reconciliation.inject_values!
     end
   end

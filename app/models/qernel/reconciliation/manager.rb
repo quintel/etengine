@@ -13,6 +13,13 @@ module Qernel
         )
       end
 
+      # Public: Creates the adapters. Useful when adapters need to be initialized prior to the main
+      # calculation of Merit/Fever.
+      def initialize_adapters
+        adapters
+        nil
+      end
+
       # Public: Triggers the adapters whose demands are static.
       def setup_static
         setup_adapters(phase: :static)

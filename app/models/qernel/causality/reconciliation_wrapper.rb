@@ -12,6 +12,10 @@ module Qernel
           end
       end
 
+      def setup_early
+        @managers.each(&:initialize_adapters)
+      end
+
       def setup
         @managers.each(&:setup_static)
       end
