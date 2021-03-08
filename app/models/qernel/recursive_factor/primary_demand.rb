@@ -81,22 +81,16 @@ module Qernel::RecursiveFactor::PrimaryDemand
   # Internal: Calculates the primary demand factor of the given edge.
   #
   # edge           - The edge whose primary demand factor is to be calculated.
-  # stop_condition - A method to be called on self to determine if the edge has
-  #                  any primary energy demand to be included in the
-  #                  calculation.
+  # stop_condition - A method to be called on self to determine if the edge has any primary energy
+  #                  demand to be included in the calculation.
   #
   # Returns a numeric.
   def factor_for_primary_demand(stop_condition = :primary_energy_demand?)
-    stop = public_send(stop_condition)
-
-    # If a node has infinite resources (such as wind, solar/sun), we
-    # take the output of energy (1 - losses).
-    if infinite? && stop
-      (1 - loss_output_conversion)
-    elsif stop # Normal case.
-      1.0
-    else
-      0.0
-    end
+    # If the stop condition is satisfied, return the output share of the node minus loss. Losses
+    # should not be included in the share from the primary demand node itself, see
+    # https://github.com/quintel/etengine/issues/1147.
+    #
+    # Nodes that do not met the stop condition are at the far-right of the graph.
+    public_send(stop_condition) ? 1.0 - loss_output_conversion : 0.0
   end
 end
