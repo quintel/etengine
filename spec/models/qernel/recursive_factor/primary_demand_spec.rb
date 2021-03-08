@@ -63,4 +63,51 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryDemand do
       expect(left.query.primary_demand).to eq(50.0)
     end
   end
+
+  context 'when the primary demand node has 20% loss' do
+    let(:loss) { Qernel::Carrier.new(key: :loss).with({}) }
+    let(:right) { super().with(demand: 125.0) }
+    let(:rgt_conversion) { 0.8 }
+
+    before do
+      right.add_slot(Qernel::Slot.new(nil, right, loss, :output).with(conversion: 0.2))
+    end
+
+    it 'has primary_demand of 100' do
+      # Without omitting the loss, the primary_demand would be 125.
+      expect(left.query.primary_demand).to eq(100.0)
+    end
+
+    it 'has primary_demand_of_natural_gas 100' do
+      # Without omitting the loss, the primary_demand would be 125.
+      expect(left.query.primary_demand_of_natural_gas).to eq(100.0)
+    end
+  end
+
+  context 'when the primary demand and middle nodes have 20% loss' do
+    let(:loss) { Qernel::Carrier.new(key: :loss).with({}) }
+    let(:right) { super().with(demand: 125.0) }
+    let(:rgt_conversion) { 0.8 }
+
+    before do
+      right.add_slot(Qernel::Slot.new(nil, right, loss, :output).with(conversion: 0.2))
+      middle.add_slot(Qernel::Slot.new(nil, right, loss, :output).with(conversion: 0.2))
+
+      mid_left_edge = left.input_edges.first
+      mid_left_edge.with(value: 80.0)
+      mid_left_edge.query.with(value: 80.0)
+    end
+
+    it 'has primary_demand of 100' do
+      # Without omitting the PD loss, the primary_demand would be 125. Adjustments are not made for
+      # enroute losses.
+      expect(left.query.primary_demand).to eq(100.0)
+    end
+
+    it 'has primary_demand_of_natural_gas 100' do
+      # Without omitting the PD loss, the primary_demand would be 125. Adjustments are not made for
+      # enroute losses.
+      expect(left.query.primary_demand_of_natural_gas).to eq(100.0)
+    end
+  end
 end
