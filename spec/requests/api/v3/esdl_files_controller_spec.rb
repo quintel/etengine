@@ -183,7 +183,7 @@ describe 'ESDL files', :etsource_fixture do
       request
 
       expect(JSON.parse(response.body)).to include(
-        'errors' => ['\"file\" was not a valid multipart/form-data file']
+        'errors' => ['"file" was not a valid multipart/form-data file']
       )
     end
 
