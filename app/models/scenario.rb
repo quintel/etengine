@@ -250,4 +250,8 @@ class Scenario < ApplicationRecord
   def user_sortables
     [flexibility_order, heat_network_order]
   end
+
+  def started_from_esdl?
+    attachment?('esdl_file')
+  end
 end

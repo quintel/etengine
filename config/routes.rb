@@ -46,6 +46,8 @@ Rails.application.routes.draw do
         resources :custom_curves, only: %i[index show update destroy],
           constraints: { id: %r{[a-z\d_\-/]+} }
 
+        resource :esdl_file, only: %i[show update]
+
         get 'curves/merit_order',
           to: 'curves#merit_order',
           as: :curves_merit_order_download

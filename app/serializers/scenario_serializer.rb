@@ -32,6 +32,7 @@ class ScenarioSerializer < PresetSerializer
     json[:created_at] = @resource.created_at || Time.now.utc
     json[:updated_at] = @resource.updated_at || Time.now.utc
     json[:protected]  = @resource.protected?
+    json[:esdl_exportable] = @resource.started_from_esdl?
 
     if @detailed
       json[:use_fce]     = @resource.use_fce
