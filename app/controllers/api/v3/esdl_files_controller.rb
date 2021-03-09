@@ -6,6 +6,7 @@ module Api
     class EsdlFilesController < BaseController
       respond_to :json
 
+      before_action :ensure_upload_is_file, only: :update
       before_action :ensure_reasonable_file_size, only: :update
       before_action :set_current_scenario
 
@@ -24,8 +25,7 @@ module Api
       # PUT /api/v3/scenarios/:scenario_id/esdl_file
       def update
         upload = params.require(:file)
-        filename = params.require(:filename)
-        handler = setup_handler(upload, filename)
+        handler = setup_handler(upload)
 
         if handler.valid?
           handler.call
@@ -41,17 +41,29 @@ module Api
         @esdl_file ||= @scenario.attachment('esdl_file')
       end
 
-      def setup_handler(upload, filename)
+      def setup_handler(upload)
         FileUploadHandler.new(
           upload,
-          filename,
           'esdl_file',
           @scenario
         )
       end
 
+      # Asserts that the user uploaded a file, and not a string or other object.
+      def ensure_upload_is_file
+        return if params.require(:file).respond_to?(:tempfile)
+
+        render(
+          json: {
+            errors: ['"file" was not a valid multipart/form-data file'],
+            error_keys: [:not_multipart_form_data]
+          },
+          status: 422
+        )
+      end
+
       def ensure_reasonable_file_size
-        return unless params.require(:file).bytesize > 5.megabyte
+        return unless params.require(:file).size > 5.megabyte
 
         render(
           json: {

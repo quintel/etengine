@@ -4,11 +4,11 @@ require 'spec_helper'
 
 describe 'FileUploadHandler' do
   let(:scenario) { FactoryBot.create(:scenario) }
-  let(:file_handler) { FileUploadHandler.new(file, 'my_esdl', key, scenario) }
+  let(:file_handler) { FileUploadHandler.new(file, key, scenario) }
 
   context 'when a file was already attached' do
     let(:key) { 'esdl_file' }
-    let(:file) { fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml').read }
+    let(:file) { fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml') }
 
     before { file_handler.call }
 
@@ -19,7 +19,7 @@ describe 'FileUploadHandler' do
 
   context 'when attaching a valid esdl file' do
     let(:key) { 'esdl_file' }
-    let(:file) { fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml').read }
+    let(:file) { fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml') }
 
     it 'is valid' do
       expect(file_handler).to be_valid
@@ -40,7 +40,11 @@ describe 'FileUploadHandler' do
 
   context 'when attachting a file that is not content type xml' do
     let(:key) { 'esdl_file' }
-    let(:file) { ("1.0\n" * 8760) }
+    let(:file) { Tempfile.new('generic_curve') }
+
+    before { file.write(("1.0\n" * 8760)) }
+
+    after { file.unlink }
 
     it 'is not valid' do
       expect(file_handler).not_to be_valid
@@ -57,7 +61,11 @@ describe 'FileUploadHandler' do
 
   context 'when trying to upload a curve' do
     let(:key) { 'generic_curve' }
-    let(:file) { ("1.0\n" * 8760) }
+    let(:file) { Tempfile.new('generic_curve') }
+
+    before { file.write(("1.0\n" * 8760)) }
+
+    after { file.unlink }
 
     it 'is not valid' do
       expect(file_handler).not_to be_valid

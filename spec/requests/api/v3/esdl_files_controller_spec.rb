@@ -28,8 +28,7 @@ describe 'ESDL files', :etsource_fixture do
     context 'when file is attached' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml').read,
-          filename: 'my esdl'
+          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml')
         }
 
         get(url)
@@ -45,7 +44,7 @@ describe 'ESDL files', :etsource_fixture do
 
       it 'sends data about the esdl file' do
         expect(JSON.parse(response.body)).to include(
-          'filename' => 'my esdl'
+          'filename' => 'valid_esdl_file.esdl'
         )
       end
     end
@@ -53,8 +52,7 @@ describe 'ESDL files', :etsource_fixture do
     context 'with download parameter set' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml').read,
-          filename: 'my esdl'
+          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml'),
         }
 
         get(url, params: { download: true })
@@ -70,7 +68,7 @@ describe 'ESDL files', :etsource_fixture do
 
       it 'sends data about the esdl file' do
         expect(JSON.parse(response.body)).to include(
-          'filename' => 'my esdl'
+          'filename' => 'valid_esdl_file.esdl'
         )
       end
 
@@ -85,8 +83,7 @@ describe 'ESDL files', :etsource_fixture do
   context('when uploading a valid esdl file') do
     let(:request) do
       put url, params: {
-        file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml').read,
-        filename: 'my esdl'
+        file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml'),
       }
     end
 
@@ -112,8 +109,7 @@ describe 'ESDL files', :etsource_fixture do
     let(:file) { Tempfile.new('large_esdl_file.esdl') }
     let(:request) do
       put url, params: {
-        file: file.read,
-        filename: 'my esdl'
+        file: fixture_file_upload(file.path, 'text/xml')
       }
     end
 
@@ -168,5 +164,48 @@ describe 'ESDL files', :etsource_fixture do
         }
         .from(false)
     end
+  end
+
+  context('when UPDATE and wrong content-type') do
+    let(:file) { '12345' }
+    let(:request) do
+      put url, params: {
+        file: file
+      }
+    end
+
+    it 'fails' do
+      request
+      expect(response).not_to be_successful
+    end
+
+    it 'sends back JSON data with errors' do
+      request
+
+      expect(JSON.parse(response.body)).to include(
+        'errors' => ["\"file\" was not a valid multipart/form-data file"]
+      )
+    end
+
+    it 'sends back JSON data with error keys' do
+      request
+
+      expect(JSON.parse(response.body)).to include(
+        'error_keys' => %w[not_multipart_form_data]
+      )
+    end
+
+    it 'does not change the attachment' do
+      expect { request }
+        .not_to change {
+          scenario
+            .reload
+            .attachments
+            .find_by(key: 'esdl_file')
+            .present?
+        }
+        .from(false)
+    end
+
   end
 end

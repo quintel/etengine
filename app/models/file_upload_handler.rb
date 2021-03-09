@@ -10,10 +10,8 @@ class FileUploadHandler
   # filename - The name of the file
   # key      - The key of the ScenarioAttachment, e.g. 'esdl_file'
   # scenario - The scenario the file should be attached to
-  def initialize(file, filename, key, scenario)
-    @file = Tempfile.new(filename)
-    @file.write(file)
-    @filename = filename
+  def initialize(file, key, scenario)
+    @file = file
     @key = key
     @scenario = scenario
   end
@@ -22,13 +20,11 @@ class FileUploadHandler
   def call
     attachment = ScenarioAttachment.create!(key: @key, scenario: @scenario)
 
-    @file.rewind
     attachment.file.attach(
       io: @file,
-      filename: @filename,
+      filename: @file.original_filename,
       content_type: 'text/xml'
     )
-    @file.unlink
   end
 
   def valid?
