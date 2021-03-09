@@ -52,7 +52,7 @@ describe 'ESDL files', :etsource_fixture do
     context 'with download parameter set' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml'),
+          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml')
         }
 
         get(url, params: { download: true })
@@ -83,7 +83,7 @@ describe 'ESDL files', :etsource_fixture do
   context('when uploading a valid esdl file') do
     let(:request) do
       put url, params: {
-        file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml'),
+        file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml')
       }
     end
 
@@ -183,7 +183,7 @@ describe 'ESDL files', :etsource_fixture do
       request
 
       expect(JSON.parse(response.body)).to include(
-        'errors' => ["\"file\" was not a valid multipart/form-data file"]
+        'errors' => ['\"file\" was not a valid multipart/form-data file']
       )
     end
 
@@ -206,6 +206,5 @@ describe 'ESDL files', :etsource_fixture do
         }
         .from(false)
     end
-
   end
 end
