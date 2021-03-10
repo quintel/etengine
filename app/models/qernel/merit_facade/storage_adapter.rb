@@ -100,6 +100,7 @@ module Qernel
       end
 
       def inject_storage_curve!
+        @participant.reserve.at(8759) # Ensure any trailing values are set to zero.
         inject_curve!(full_name: :storage_curve) { @participant.reserve.to_a }
       end
 
