@@ -24,7 +24,7 @@ module Qernel
       def inject!
         super
 
-        inject_curve!(:input) { participant.producer.inptu_curve }
+        inject_curve!(:input) { participant.producer.input_curve }
       end
 
       def input?(*)
