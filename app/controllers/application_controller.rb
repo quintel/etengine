@@ -7,9 +7,9 @@ class ApplicationController < ActionController::Base
   # TODO refactor move the hooks and corresponding actions into a "concern"
   before_action :initialize_memory_cache
   before_action :locale
+  before_action :store_user_location!, if: :storable_location?
 
   rescue_from CanCan::AccessDenied do |exception|
-    store_location
     redirect_to new_user_session_url, :alert => "Please log in first."
   end
 
@@ -42,25 +42,30 @@ class ApplicationController < ActionController::Base
 
   private
 
-    def store_location
-      session[:redirect_to] = request.url
+  def require_no_user
+    if current_user
+      store_location
+      flash[:notice] = "You must be logged out to access this page"
+      redirect_to root_path
+      throw(:abort)
     end
+  end
 
-    def clear_stored_location
-      session[:redirect_to] = nil
-    end
+  # Its important that the location is NOT stored if:
+  # - The request method is not GET (non idempotent)
+  # - The request is handled by a Devise controller such as Devise::SessionsController as that could cause an
+  #    infinite redirect loop.
+  # - The request is an Ajax request as this can lead to very unexpected behaviour.
+  def storable_location?
+    request.get? && is_navigational_format? && !devise_controller? && !request.xhr?
+  end
 
-    def redirect_back_or_default(default = root_path)
-      redirect_to(session[:redirect_to] || default)
-      clear_stored_location
-    end
+  def store_user_location!
+    # :user is the scope we are authenticating
+    store_location_for(:user, request.fullpath)
+  end
 
-    def require_no_user
-      if current_user
-        store_location
-        flash[:notice] = "You must be logged out to access this page"
-        redirect_to root_path
-        throw(:abort)
-      end
-    end
+  def after_sign_in_path_for(resource_or_scope)
+    stored_location_for(resource_or_scope) || super
+  end
 end
