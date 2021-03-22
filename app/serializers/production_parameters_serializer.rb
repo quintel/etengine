@@ -18,15 +18,15 @@ class ProductionParametersSerializer
       csv << %w[
         key
         number_of_units
-        electricity_output_capacity
-        heat_output_capacity
+        electricity_output_capacity\ (MW)
+        heat_output_capacity\ (MW)
         full_load_hours
-        total_initial_investment_per_plant
-        fixed_operation_and_maintenance_costs_per_year
-        variable_operation_and_maintenance_costs_per_full_load_hour
-        wacc
-        technical_lifetime
-        total_investment_over_lifetime_per_node
+        total_initial_investment_per_plant\ (Euros)
+        fixed_operation_and_maintenance_costs_per_year\ (Euros)
+        variable_operation_and_maintenance_costs_per_full_load_hour\ (Euros)
+        wacc\ (factor)
+        technical_lifetime\ (years)
+        total_investment_over_lifetime_per_node\ (Euros)
       ]
 
       nodes.each do |node|
