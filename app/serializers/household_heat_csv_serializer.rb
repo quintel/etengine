@@ -22,10 +22,10 @@ class HouseholdHeatCSVSerializer
 
   def headers
     [
-      'Production',
-      'Demand',
-      'Buffering and time-shifting',
-      'Deficit'
+      'Production (MW)',
+      'Demand (MW)',
+      'Buffering and time-shifting (MW)',
+      'Deficit (MW)'
     ]
   end
 

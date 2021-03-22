@@ -5,8 +5,9 @@ class NodeFlowSerializer
   # graph - A computed graph, whose node demands and carrier flows will be included in the CSV.
   #
   # Returns an NodeFlowSerializer.
-  def initialize(graph)
+  def initialize(graph, unit)
     @graph = graph
+    @unit = unit
   end
 
   # Public: Formats the nodes for the scenario as a CSV file containing the data.
@@ -14,12 +15,16 @@ class NodeFlowSerializer
   # Returns a String.
   def as_csv(*)
     CSV.generate do |csv|
-      csv << attributes
+      csv << attributes_with_unit
       nodes.each { |node| csv << node_row(node) }
     end
   end
 
   private
+
+  def attributes_with_unit
+    ['key'] + attributes[1..].map { |a| "#{a} (#{@unit})" }
+  end
 
   def attributes
     @attributes ||= ['key'] + (%w[input_of output_of].flat_map do |prefix|

@@ -100,7 +100,7 @@ class CurvesCSVSerializer
   # flows in a chosen direction.
   def column_from_node(node, direction)
     [
-      "#{node.key}.#{direction}",
+      "#{node.key}.#{direction} (MW)",
       *@adapter.node_curve(node, direction).map { |v| v.round(4) }
     ]
   end

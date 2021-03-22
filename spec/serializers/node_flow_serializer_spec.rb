@@ -5,7 +5,7 @@ require 'spec_helper'
 describe NodeFlowSerializer do
   subject do
     CSV.parse(
-      described_class.new(graph).as_csv,
+      described_class.new(graph, 'MJ').as_csv,
       headers: true
     )
   end

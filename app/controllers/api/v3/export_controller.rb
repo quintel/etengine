@@ -24,14 +24,17 @@ module Api
       #
       # Returns a CSV file containing the energetic inputs and outputs of every node in the graph.
       def energy_flow
-        send_csv(NodeFlowSerializer.new(scenario.gql.future.graph), 'energy_flow.%d.csv')
+        send_csv(NodeFlowSerializer.new(scenario.gql.future.graph, 'MJ'), 'energy_flow.%d.csv')
       end
 
       # GET /api/v3/scenarios/:id/molecule_flow
       #
       # Returns a CSV file containing the flow of molecules through the molecule graph.
       def molecule_flow
-        send_csv(NodeFlowSerializer.new(scenario.gql.future.molecules), 'molecule_flow.%d.csv')
+        send_csv(
+          NodeFlowSerializer.new(scenario.gql.future.molecules, 'kg'),
+          'molecule_flow.%d.csv'
+        )
       end
 
       private

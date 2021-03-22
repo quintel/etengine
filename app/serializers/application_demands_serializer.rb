@@ -22,8 +22,8 @@ class ApplicationDemandsSerializer
     CSV.generate do |csv|
       csv << [
         'key', 'primary_co2_emission',
-        *primary_carriers.map { |c| "primary_demand_of_#{ c }" },
-        *final_carriers.map { |c| "final_demand_of_#{ c }" }
+        *primary_carriers.map { |c| "primary_demand_of_#{c} (MJ)" },
+        *final_carriers.map { |c| "final_demand_of_#{c} (MJ)" }
       ]
 
       @graph.group_nodes(:application_group).each do |node|
