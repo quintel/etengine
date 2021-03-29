@@ -256,6 +256,30 @@ describe Input do
     end
   end # when the input has GQL start, minimum, and maximum
 
+  context 'when the input returns NaN' do
+    let(:input) do
+      FactoryBot.build(:input, {
+        key:             'test-input',
+        start_value_gql: 'present:0.0 / 0',
+        min_value_gql:   'present:0.0 / 0',
+        max_value_gql:   'present:0.0 / 0'
+      })
+    end
+
+    it 'coerces the min value to nil' do
+      expect(input.min_value_for(gql)).to be_nil
+    end
+
+    it 'coerces the max value to nil' do
+      expect(input.max_value_for(gql)).to be_nil
+    end
+
+    it 'coerces the start value to nil' do
+      expect(input.start_value_for(gql)).to be_nil
+    end
+  end
+
+
   context 'when the input returns a non-numeric value' do
     let(:input) do
       input = FactoryBot.build(:input, {

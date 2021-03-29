@@ -129,9 +129,11 @@ class Input
     if gql_or_scenario.is_a?(Scenario)
       cache_for(gql_or_scenario).read(gql_or_scenario, self)[:label]
     else
-      value = wrap_gql_errors(:label, true) do
-        gql_or_scenario.query_present(@label_query)
-      end
+      value = coerce_nan(
+        wrap_gql_errors(:label, true) do
+          gql_or_scenario.query_present(@label_query)
+        end
+      )
 
       value && value.round(2) || nil
     end
@@ -150,9 +152,10 @@ class Input
     if gql_or_scenario.is_a?(Scenario)
       cache_for(gql_or_scenario).read(gql_or_scenario, self)[:default]
     elsif @start_value_gql.present?
-      start = wrap_gql_errors(:start, true) do
-        gql_or_scenario.query(@start_value_gql)
-      end
+      start =
+        coerce_nan(wrap_gql_errors(:start, true) do
+          gql_or_scenario.query(@start_value_gql)
+        end)
 
       start || min_value_for(gql_or_scenario)
     else
@@ -173,7 +176,9 @@ class Input
     if gql_or_scenario.is_a?(Scenario)
       cache_for(gql_or_scenario).read(gql_or_scenario, self)[:min]
     elsif @min_value_gql.present?
-      wrap_gql_errors(:min) { gql_or_scenario.query(@min_value_gql) }
+      coerce_nan(
+        wrap_gql_errors(:min) { gql_or_scenario.query(@min_value_gql) }
+      )
     else
       @min_value || 0.0
     end
@@ -192,11 +197,29 @@ class Input
     if gql_or_scenario.is_a?(Scenario)
       cache_for(gql_or_scenario).read(gql_or_scenario, self)[:max]
     elsif @max_value_gql.present?
-      wrap_gql_errors(:max) { gql_or_scenario.query(@max_value_gql) }
+      coerce_nan(
+        wrap_gql_errors(:max) { gql_or_scenario.query(@max_value_gql) }
+      )
     else
       @max_value || 0.0
     end
   end
+
+  # Ensures that a min/max/start value is not NaN. Coerces NaNs to nil.
+  #
+  # @param [Object] value
+  #   A value returned by running a query.
+  #
+  # return [Object]
+  #   If the object responds to nan?, it will be returned provided is is not a
+  #   NaN, otherwise returns nil. Non-numeric objects will be returned as they
+  #   are.
+  #
+  def coerce_nan(value)
+    value.respond_to?(:nan?) && value.nan? ? nil : value
+  end
+
+  private :coerce_nan
 
   # Area Dependent Min / Max / Disabled Settings -----------------------------
 
