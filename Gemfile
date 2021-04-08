@@ -34,7 +34,7 @@ gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
 
 gem 'sass-rails'
-gem 'mini_racer'
+gem 'mini_racer', '>= 0.4.0.beta1'
 gem 'coffee-rails'
 
 gem 'dotenv-rails', groups: [:development, :test, :production, :staging]

@@ -207,7 +207,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.1)
     kaminari-core (1.2.1)
-    libv8 (8.4.255.0)
+    libv8-node (15.12.0.0.beta1)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -224,8 +224,8 @@ GEM
     mime-types-data (3.2016.0521)
     mini_mime (1.1.0)
     mini_portile2 (2.5.0)
-    mini_racer (0.3.1)
-      libv8 (~> 8.4.255)
+    mini_racer (0.4.0.beta1)
+      libv8-node (~> 15.12.0.0.beta1)
     minitest (5.14.4)
     msgpack (1.2.0)
     multi_json (1.12.2)
@@ -434,7 +434,7 @@ DEPENDENCIES
   json
   kaminari
   listen
-  mini_racer
+  mini_racer (>= 0.4.0.beta1)
   msgpack
   mysql2
   newrelic_rpm
