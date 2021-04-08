@@ -51,8 +51,8 @@ module Etsource
 
         watched_dirs = DIRS.map(&Regexp.method(:escape)).join('|')
 
-        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s) do |(path, *)|
-          path = Pathname.new(path).relative_path_from(Atlas.data_dir)
+        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s) do |(modified_path, *)|
+          path = Pathname.new(modified_path).relative_path_from(Atlas.data_dir)
           type = path.to_s.split('/').first
 
           if RECORD_RELOAD.include?(type)
