@@ -80,7 +80,7 @@ module Qernel
 
           @heat_output_curve[point] = heat
 
-          decay.get(wanted)
+          decay.get(point)
         end
       end
 
