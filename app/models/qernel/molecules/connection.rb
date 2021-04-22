@@ -43,9 +43,14 @@ module Qernel
         if direction.nil?
           base_amount * @config.conversion_of(nil)
         else
-          @config.conversion.sum do |carrier, _|
+          @config.conversion.sum do |carrier, conv_config|
             slot = conversion_slot(direction, carrier)
             factor = conversion_factor(slot)
+
+            if factor.nil?
+              raise 'Expected a numeric conversion but got nil when calculating a molecule ' \
+                    "connection with #{carrier} #{conv_config.inspect} using #{@source.key}"
+            end
 
             base_amount * slot.conversion * factor
           end

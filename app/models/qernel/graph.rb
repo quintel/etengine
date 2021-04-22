@@ -25,7 +25,6 @@ class Graph
     Plugins::SimpleMeritOrder,
     Plugins::Molecules,
     Plugins::Causality,
-    Plugins::FCE,
     Plugins::MaxDemandRecursive,
     Plugins::ResettableSlots
   ].freeze

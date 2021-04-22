@@ -52,7 +52,7 @@ module Etsource
 
           runner.calculate
 
-          contents = dump(Atlas::Exporter.dump(runner.refinery_graph))
+          contents = dump(Atlas::Exporter.dump(runner))
           location = data_path(dataset_key)
 
           FileUtils.mkdir_p(location.dirname)
