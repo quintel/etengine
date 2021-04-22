@@ -54,7 +54,7 @@ gem 'quintel_merit', ref: '1ebfc82',  github: 'quintel/merit'
 gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
 gem 'turbine-graph', '>=0.1',         require: 'turbine'
 gem 'refinery',      ref: '72eacf8',  github: 'quintel/refinery'
-gem 'atlas',         ref: '95bdd0f',  github: 'quintel/atlas'
+gem 'atlas',         branch: 'ds-simplify', github: 'quintel/atlas'
 
 # system gems
 gem 'mysql2'
@@ -69,7 +69,6 @@ group :development do
   gem 'spring'
   # gem 'quiet_assets'
   gem 'better_errors'
-  gem 'binding_of_caller'
   gem 'listen'
 
   gem 'capistrano',             '~> 3.9',   require: false

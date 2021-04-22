@@ -68,14 +68,14 @@ module Etsource
     protected
 
     def load_dataset_hash
-      graph_objects = self.class.loader.load(@country)
+      precalculated_objects = self.class.loader.load(@country)
 
       {
-        area:            load_region_data,
-        carriers:        load_carrier_data,
-        energy_graph:    load_energy_graph_dataset(graph_objects),
-        molecules_graph: load_molecules_graph_dataset(graph_objects),
-        time_curves:     load_time_curves
+        area: load_region_data,
+        carriers: load_carrier_data(precalculated_objects),
+        energy_graph: load_energy_graph_dataset(precalculated_objects),
+        molecules_graph: load_molecules_graph_dataset(precalculated_objects),
+        time_curves: load_time_curves
       }
     end
 
@@ -111,8 +111,8 @@ module Etsource
     # Internal: Loads the carrier data.
     #
     # Returns a hash, each key-pair being a carrier.
-    def load_carrier_data
-      Atlas::Carrier.all.each_with_object({}) do |carrier, data|
+    def load_carrier_data(objects)
+      objects.carriers.each_with_object({}) do |carrier, data|
         data[carrier.key] = carrier.to_hash
       end
     end
