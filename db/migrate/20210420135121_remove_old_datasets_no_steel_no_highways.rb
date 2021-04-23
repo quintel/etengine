@@ -32,7 +32,7 @@ class RemoveOldDatasetsNoSteelNoHighways < ActiveRecord::Migration[5.2]
   end
 
   def remove_suffix(scenario, suffix)
-    return false unless scenario.area_code.ends_with?(suffix)
+    return false unless scenario.area_code&.ends_with?(suffix)
 
     scenario.update(area_code: scenario.area_code.delete_suffix(suffix))
     true
