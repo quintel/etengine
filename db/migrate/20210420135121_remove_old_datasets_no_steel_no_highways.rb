@@ -18,23 +18,13 @@ class RemoveOldDatasetsNoSteelNoHighways < ActiveRecord::Migration[5.2]
     end
 
     # Change all no_highways- and no_steel-dataset scenarios in standard-dataset scenarios
-    Scenario.all.each do |scenario|
-      remove_any_suffix_from_area_code(scenario)
-    end
-  end
-
-  private
-
-  def remove_any_suffix_from_area_code(scenario)
     REMOVE_SUFFIX.each do |suffix|
-      return if remove_suffix(scenario, suffix)
+      say_with_time "remove #{suffix.inspect} suffix" do
+        Scenario.where('area_code LIKE ?', "%#{suffix}%").find_each do |scenario|
+          scenario.area_code = scenario.area_code.delete_suffix(suffix)
+          scenario.save(validate: false, touch: false)
+        end
+      end
     end
-  end
-
-  def remove_suffix(scenario, suffix)
-    return false unless scenario.area_code&.ends_with?(suffix)
-
-    scenario.update(area_code: scenario.area_code.delete_suffix(suffix))
-    true
   end
 end
