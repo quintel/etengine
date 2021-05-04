@@ -606,7 +606,6 @@ describe Scenario do
     let(:scenario) do
       Scenario.create!(
         title:           'Test',
-        use_fce:         true,
         end_year:        2030,
         area_code:       'nl',
         user_values:     { 1 => 2, 3 => 4 },
@@ -637,10 +636,6 @@ describe Scenario do
 
     it 'clones balanced values' do
       expect(dup.balanced_values).to eql(scenario.balanced_values)
-    end
-
-    it 'clones the FCE status' do
-      expect(dup.use_fce).to be_truthy
     end
 
     it 'does not clone the scenario ID' do

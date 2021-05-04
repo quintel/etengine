@@ -93,7 +93,6 @@ class Scenario < ApplicationRecord
     {
       :area_code => 'nl',
       :user_values => {},
-      :use_fce => false,
       :end_year => 2050,
       :title => 'API'
     }.with_indifferent_access

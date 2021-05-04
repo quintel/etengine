@@ -7,15 +7,6 @@ class Carrier
   include DatasetAttributes
   extend DatasetCurveAttributes
 
-  CO2_FCE_COMPONENTS = [
-    :co2_conversion_per_mj,
-    :co2_exploration_per_mj,
-    :co2_extraction_per_mj,
-    :co2_treatment_per_mj,
-    :co2_transportation_per_mj,
-    :co2_waste_treatment_per_mj
-  ].freeze
-
   DATASET_ATTRIBUTES = Atlas::Carrier.attribute_set.map(&:name)
 
   dataset_accessors DATASET_ATTRIBUTES

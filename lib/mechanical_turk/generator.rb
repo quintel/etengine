@@ -10,7 +10,7 @@ module MechanicalTurk
     end
 
     def settings_for_load_scenario
-      settings.slice(:area_code, :end_year, :use_fce, :scenario_id).map do |key, value|
+      settings.slice(:area_code, :end_year, :scenario_id).map do |key, value|
         "#{key}: #{value.inspect}"
       end.join(", ")
     end

@@ -297,21 +297,6 @@ module Gql::Runtime
       def UPDATE_COLLECTION()
         scope.update_collection || []
       end
-
-      # Updates FCE values.
-      #
-      # @example
-      #      UPDATE_FCE( coal, australia, USER_INPUT() / 100)
-      #      # equivalent
-      #      UPDATE_FCE( CARRIER(coal), "australia", USER_INPUT() / 100)
-      #
-      def UPDATE_FCE(carrier, origin, user_input)
-        carrier = carrier.first if carrier.is_a?(Array)
-        carrier = carrier.key   if carrier.is_a?(Qernel::Carrier)
-
-        scope.graph.plugin(:fce).update(carrier, origin, user_input)
-      end
     end
-
   end
 end

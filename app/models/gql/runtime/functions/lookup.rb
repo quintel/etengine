@@ -179,19 +179,6 @@ module Gql::Runtime
         keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
 
-      # Returns the share of an "origin" for a FCE-enabled carrier.
-      #
-      # @example
-      #      FCE_START_VALUE(CARRIER(coal), australia)
-      #      FCE_START_VALUE(CARRIER(coal), "australia")
-      #
-      def FCE_START_VALUE(carrier, country)
-        carrier = carrier.first if carrier.is_a?(Array)
-        carrier = carrier.key   if carrier.is_a?(Qernel::Carrier)
-
-        scope.graph.plugin(:fce).share_of(carrier, country)
-      end
-
       # Returns a time curve, as stored in the ETSource CSV files, as a hash
       # where each key is a year, and each value is in PJ. You need to specify
       # the name of the time curve and attribute to be read.

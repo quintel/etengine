@@ -31,7 +31,6 @@ describe ScenarioSerializer do
     it_should_behave_like 'a scenario serializer'
 
     it { is_expected.not_to have_key(:description) }
-    it { is_expected.not_to have_key(:use_fce) }
     it { is_expected.not_to have_key(:inputs) }
   end
 
@@ -42,7 +41,6 @@ describe ScenarioSerializer do
 
     it_should_behave_like 'a scenario serializer'
 
-    it { is_expected.to include(use_fce:     scenario.use_fce) }
     it { is_expected.to include(description: 'Hello!') }
   end
 

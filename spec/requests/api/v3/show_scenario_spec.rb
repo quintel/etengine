@@ -33,7 +33,6 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should not include detailed attributes' do
-      expect(json).not_to have_key('use_fce')
       expect(json).not_to have_key('description')
     end
   end
@@ -61,7 +60,6 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should include detailed attributes' do
-      expect(json).to include('use_fce'     => scenario.use_fce)
       expect(json).to include('description' => scenario.description)
     end
   end

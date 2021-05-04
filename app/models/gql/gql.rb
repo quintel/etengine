@@ -256,9 +256,6 @@ module Gql
       @present_graph.number_of_years = @scenario.years
       @future_graph.number_of_years = @scenario.years
 
-      @present_graph.use_fce = @scenario.use_fce
-      @future_graph.use_fce = @scenario.use_fce
-
       custom_curves = CustomCurveCollection.from_scenario(@scenario)
 
       @present_graph.dataset_set(:custom_curves, custom_curves)

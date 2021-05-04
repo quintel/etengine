@@ -35,7 +35,6 @@ class ScenarioSerializer < PresetSerializer
     json[:esdl_exportable] = @resource.started_from_esdl?
 
     if @detailed
-      json[:use_fce]     = @resource.use_fce
       json[:user_values] = @resource.user_values
     else
       json.delete(:description)
