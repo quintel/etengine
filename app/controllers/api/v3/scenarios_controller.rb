@@ -260,7 +260,7 @@ module Api
         attrs = params.permit(scenario: [
           :area_code, :author, :country, :descale, :description, :end_year,
           :preset_scenario_id, :protected, :region, :scenario_id, :source,
-          :title, :use_fce, user_values: {}
+          :title, user_values: {}
         ])
 
         attrs = (attrs[:scenario] || {}).merge(

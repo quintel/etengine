@@ -10,10 +10,6 @@ module Qernel
         Qernel::Plugins::Causality.enabled?(graph)
       end
 
-      def fce_enabled?
-        graph.use_fce
-      end
-
       # NON GQL-able
 
       def area_footprint

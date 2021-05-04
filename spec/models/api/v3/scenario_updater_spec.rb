@@ -72,7 +72,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   context 'with parameters, but no user values' do
     before do
       scenario.update!(
-        use_fce: true,
+        end_year: 2035,
         user_values: { 'foo_demand' => 1.0 }
       )
     end
@@ -84,7 +84,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     it 'saves the scenario attributes' do
       allow(scenario).to receive(:save)
       updater.apply
-      expect(scenario.reload.use_fce).to be_truthy
+      expect(scenario.reload.end_year).to eq(2035)
     end
 
     it 'does not change the user values' do

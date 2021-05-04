@@ -93,39 +93,6 @@ describe "API v3scenario life cycle", :etsource_fixture do
     scenario = JSON.parse(response.body)
     expect(scenario['area_code']).to eq('nl')
     expect(scenario['end_year']).to eq(2050)
-
-    id = scenario['id']
-    url = "/api/v3/scenarios/#{id}"
-
-    # ---- fce disabled by default ------------------------------------------------
-
-    put url, params: { :gqueries => ['fce_enabled'] }
-
-    result = JSON.parse(response.body)['gqueries']
-    expect(result['fce_enabled']['present']).to eq(0.0)
-    expect(result['fce_enabled']['future']).to  eq(0.0)
-
-    # ---- enable fce -------------------------------------------------------------
-
-    put url, params: {
-               :scenario => {:use_fce => 1},
-               :gqueries => ['fce_enabled']
-             }
-
-    result = JSON.parse(response.body)['gqueries']
-    expect(result['fce_enabled']['present']).to eq(1)
-    expect(result['fce_enabled']['future']).to  eq(1)
-
-    # ---- disable fce -------------------------------------------------------------
-
-    put url, params: {
-               :scenario => {:use_fce => 0},
-               :gqueries => ['fce_enabled']
-             }
-
-    result = JSON.parse(response.body)['gqueries']
-    expect(result['fce_enabled']['present']).to eq(0)
-    expect(result['fce_enabled']['future']).to  eq(0)
   end
 
 

@@ -2,7 +2,6 @@
 - title = Hidden Preset
 - end_year = 2040
 - area_code = nl
-- use_fce = false
 - in_start_menu = false
 - display_group = Keizersgracht
 - user_values.foo_demand = 10

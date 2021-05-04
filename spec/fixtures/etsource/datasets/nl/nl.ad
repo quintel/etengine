@@ -11,7 +11,6 @@
 - has_cold_network = false
 - has_electricity_storage = true
 - has_employment = true
-- has_fce = true
 - has_industry = true
 - has_lignite = false
 - has_merit_order = true

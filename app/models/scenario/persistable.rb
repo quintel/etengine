@@ -14,7 +14,6 @@ module Scenario::Persistable
     # the memoized def inputs_present will not pick up the changes.
     @inputs_present  = nil
     @inputs_future   = nil
-    self.use_fce = false
   end
 
   # Stores the current settings into the attributes. For when we want to save
@@ -60,7 +59,6 @@ module Scenario::Persistable
 
     self.end_year  = preset.end_year
     self.area_code = preset.area_code
-    self.use_fce   = preset.use_fce
   end
 
   #######

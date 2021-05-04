@@ -26,7 +26,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       expect(data['url']).to match(%r{/scenarios/#{ data['id'] }$})
 
-      expect(data).not_to have_key('use_fce')
       expect(data).not_to have_key('description')
       expect(data).not_to have_key('inputs')
     end
@@ -54,7 +53,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data     = JSON.parse(response.body)
       scenario = Scenario.last
 
-      expect(data).to have_key('use_fce')
       expect(data).to have_key('description')
 
       expect(data).not_to have_key('inputs')

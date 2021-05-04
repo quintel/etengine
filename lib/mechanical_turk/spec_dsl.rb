@@ -101,9 +101,8 @@ module MechanicalTurk
     def api_params
       params = {
         settings: {
-          area_code:   scenario.area_code,
-          end_year:    scenario.end_year,
-          use_fce:     scenario.use_fce,
+          area_code: scenario.area_code,
+          end_year: scenario.end_year
         },
         input:  api_user_values,
         result: @gqueries.uniq

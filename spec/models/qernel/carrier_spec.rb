@@ -43,11 +43,6 @@ describe Carrier do
        get :show, params: { :id => @api_scenario.id, :use_fce => false }
        expect(@carrier.co2_per_mj).to be_near(9.6)
      end
-
-     skip it "should sum all the co2 attrs when fce is used" do
-       get :show, params: { :id => @api_scenario.id, :use_fce => true }
-       expect(@carrier.co2_per_mj).to be_near(13.6)
-     end
    end
 
  end

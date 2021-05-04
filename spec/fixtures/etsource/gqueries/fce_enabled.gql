@@ -1,1 +1,0 @@
-- query = IF( GRAPH(fce_enabled?), 1, 0 )

@@ -35,7 +35,6 @@ class Graph
 
   dataset_accessors :calculated,
                     :year,
-                    :use_fce,
                     :flexibility_order,
                     :heat_network_order,
                     # graphs do not know the number of years, that is defined
