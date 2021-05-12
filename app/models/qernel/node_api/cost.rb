@@ -10,13 +10,9 @@ module Qernel
       # Public: Calculates the input capacity of a typical plant, based on the  output capacity in
       # MW.
       #
-      # If the node has an electrical efficiency and capacity this is used to calculate the input
-      # capacity. Otherwise it checks for a heat capacity and heat efficiency. If this can also not
-      # be found it will try cooling.
-      #
-      # Finally it will try the attribute typical_input_capacity (currently only used for electric
-      # transport). If all return nil 0.0 will be used. This should only happen for statistical
-      # nodes.
+      # If the node has a "typical_input_capacity" defined, this value is always used. When no
+      # typical input capacity is defined (in the node document), the input capacity will be
+      # calculated based on the electricity, heat, or cooling inputs.
       #
       # Return a float of the input capacity of a typical plant in MWinput
       def input_capacity
