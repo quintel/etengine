@@ -19,7 +19,7 @@ module Api
       def index
         curves =
           Etsource::Config.user_curves.each_key.map do |key|
-            if attachment(key).blank? && params[:show_unattached]
+            if attachment(key).blank? && params[:include_unattached]
               UnattachedCustomCurveSerializer.new(key).as_json
             else
               attachment_json(attachment(key)).as_json.presence

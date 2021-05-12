@@ -12,6 +12,22 @@ describe 'Custom curves', :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves/#{curve_name}" }
 
+  context 'when requesting all curves with include_unattached=true' do
+    let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves?include_unattached=true" }
+
+    context 'when nothing is attached' do
+      before { get(url) }
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends data about all available curves' do
+        expect(JSON.parse(response.body).length).to eq(Etsource::Config.user_curves.length)
+      end
+    end
+  end
+
   context 'when requesting all attached curves' do
     let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves" }
 
