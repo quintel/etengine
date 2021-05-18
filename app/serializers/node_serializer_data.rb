@@ -26,7 +26,7 @@ module NodeSerializerData
     },
     cost: {
       'total_investment_over_lifetime_per(:mw_electricity)' => {
-        label: 'Initial investment',
+        label: 'Investment over lifetime per MW',
         key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
@@ -127,7 +127,7 @@ module NodeSerializerData
   WIND_SOLAR_COST_AND_OTHER = {
     cost: {
       'total_investment_over_lifetime_per(:mw_electricity)' => {
-        label: 'Initial investment',
+        label: 'Investment over lifetime per MW',
         key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
@@ -242,7 +242,7 @@ module NodeSerializerData
     },
     cost: {
       'total_investment_over_lifetime_per(:plant)' => {
-        label: 'Initial purchase price',
+        label: 'Investment over lifetime per plant',
         key: :total_investment_over_lifetime_per_plant,
         unit: 'EUR / unit'
       },
@@ -284,7 +284,7 @@ module NodeSerializerData
     },
     cost: {
       'total_investment_over_lifetime_per(:plant)' => {
-        label: 'Initial purchase price',
+        label: 'Investment over lifetime per plant',
         key: :total_investment_over_lifetime_per_plant,
         unit: 'EUR / unit'
       },
@@ -335,7 +335,7 @@ module NodeSerializerData
     },
     cost: {
       'total_investment_over_lifetime_per(:mw_electricity)' => {
-        label: 'Initial investment',
+        label: 'Investment over lifetime per MW',
         key: :total_investment_over_lifetime_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
@@ -433,7 +433,7 @@ module NodeSerializerData
   FLEXIBILITY_COSTS_AND_OTHER = {
     cost: {
       'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
-        label: 'Initial investment',
+        label: 'Investment over lifetime per MW input',
         key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
@@ -664,7 +664,7 @@ module NodeSerializerData
     },
     cost: {
       'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
-        label: 'Initial investment',
+        label: 'Investment over lifetime per MW input',
         key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
