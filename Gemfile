@@ -49,9 +49,10 @@ gem 'msgpack'
 gem 'parallel'
 
 # own gems
+gem 'quintel_merit', ref: '1ebfc82', github: 'quintel/merit'
+
 gem 'atlas',         ref: 'f958164', github: 'quintel/atlas'
 gem 'fever',         ref: 'f80677d', github: 'quintel/fever'
-gem 'quintel_merit', ref: '1ebfc82', github: 'quintel/merit'
 gem 'refinery',      ref: '72eacf8', github: 'quintel/refinery'
 gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'
 gem 'turbine-graph', '>=0.1',        require: 'turbine'
