@@ -30,9 +30,5 @@ module Qernel
         molecules_graph: { graph: {} }
       }
     end
-
-    def time_curves
-      @data[:time_curves]
-    end
   end
 end
