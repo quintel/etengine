@@ -49,12 +49,12 @@ gem 'msgpack'
 gem 'parallel'
 
 # own gems
-gem 'rubel',         ref: 'e36554a',  github: 'quintel/rubel'
-gem 'quintel_merit', ref: '1ebfc82',  github: 'quintel/merit'
-gem 'fever',         ref: 'f80677d',  github: 'quintel/fever'
-gem 'turbine-graph', '>=0.1',         require: 'turbine'
-gem 'refinery',      ref: '72eacf8',  github: 'quintel/refinery'
-gem 'atlas',         branch: 'ds-simplify', github: 'quintel/atlas'
+gem 'atlas',         ref: 'f958164', github: 'quintel/atlas'
+gem 'fever',         ref: 'f80677d', github: 'quintel/fever'
+gem 'quintel_merit', ref: '1ebfc82', github: 'quintel/merit'
+gem 'refinery',      ref: '72eacf8', github: 'quintel/refinery'
+gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'
+gem 'turbine-graph', '>=0.1',        require: 'turbine'
 
 # system gems
 gem 'mysql2'

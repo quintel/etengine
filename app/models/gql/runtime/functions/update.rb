@@ -2,20 +2,6 @@ module Gql::Runtime
   module Functions
     module Update
 
-      # Lookup a named time series value by year.
-      #
-      # @example
-      #     TIME_SERIE_VALUE(gas_reserves, preset_demand, 2030)
-      #
-      # @example useage in inputs with USER_INPUT()
-      #     TIME_SERIE_VALUE(gas_reserves, preset_demand, USER_INPUT())
-      #
-      def TIME_SERIE_VALUE(*keys)
-        # TODO: make the following dynamic.
-        key_1, key_2, year = keys.flatten
-        scope.graph.time_curves[key_1.to_sym][key_2.to_sym][year.to_i] rescue nil
-      end
-
       # Run multiple (update) queries.
       #
       # @example Multiple UPDATE statements inside one input
@@ -29,9 +15,6 @@ module Gql::Runtime
           value_term
         end
       end
-
-
-
 
       # == Remark about update_type
       #

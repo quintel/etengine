@@ -56,7 +56,6 @@ class Graph
                 :finished_nodes,
                 :area
 
-  delegate :time_curves, to: :dataset
   delegate :insulation_costs, :weather_properties, to: :area
 
   def self.dataset_group_with_name(name)

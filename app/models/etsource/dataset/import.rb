@@ -74,8 +74,7 @@ module Etsource
         area: load_region_data,
         carriers: load_carrier_data(precalculated_objects),
         energy_graph: load_energy_graph_dataset(precalculated_objects),
-        molecules_graph: load_molecules_graph_dataset(precalculated_objects),
-        time_curves: load_time_curves
+        molecules_graph: load_molecules_graph_dataset(precalculated_objects)
       }
     end
 
@@ -114,26 +113,6 @@ module Etsource
     def load_carrier_data(objects)
       objects.carriers.each_with_object({}) do |carrier, data|
         data[carrier.key] = carrier.to_hash
-      end
-    end
-
-    # Internal: Loads time curve data via the Atlas CSVs.
-    #
-    # Returns a hash where each key is the key for a node, and the values are
-    # hashes containing attributes and values.
-    def load_time_curves
-      @atlas_ds.time_curves.each_with_object({}) do |(key, csv), data|
-        headers = csv.table.headers - [:year]
-        curves  = {}
-
-        data[key] = csv.table.each do |row|
-          headers.each do |header|
-            curves[header] ||= {}
-            curves[header][row[:year]] = row[header].to_f * 1_000_000
-          end
-        end
-
-        data[key] = curves
       end
     end
 
