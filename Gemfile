@@ -76,7 +76,7 @@ group :development do
   gem 'capistrano-rbenv',       '~> 2.1',   require: false
   gem 'capistrano-rails',       '~> 1.1',   require: false
   gem 'capistrano-bundler',     '~> 1.1',   require: false
-  gem 'capistrano3-puma',       '~> 3.1.1', require: false
+  gem 'capistrano3-puma',       '~> 5.0.4', require: false
 end
 
 group :test, :development do
@@ -101,7 +101,7 @@ group :test do
 end
 
 group :production, :staging do
-  gem 'puma'
+  gem 'puma', '< 5'
   gem 'gctools', require: false
   gem 'newrelic_rpm'
 end
