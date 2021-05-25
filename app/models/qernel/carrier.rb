@@ -58,18 +58,6 @@ class Carrier
     :carriers
   end
 
-  def co2_conversion_per_mj
-    fetch(:co2_conversion_per_mj) { 0.0 }
-  end
-
-  def cost_per_mj
-    fetch(:cost_per_mj) { 0.0 }
-  end
-
-  def potential_co2_conversion_per_mj
-    fetch(:potential_co2_conversion_per_mj) { 0.0 }
-  end
-
   # The effective total co2 emission that gets emitted from
   # exploration until waste treatment. The user can change the
   # individual co2_xxx_per_mj only indirectly by specifying

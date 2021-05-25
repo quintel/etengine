@@ -6,14 +6,14 @@ RSpec.shared_examples_for 'running the molecule graph plugin' do
   let(:conversion_attributes) { { source: :molecule_source } }
 
   let(:graph) do
-    graph = Scenario.default.gql do |gql|
-      node = gql.future.graph.plugin(:molecules).molecule_graph.node(:m_left)
+    gql = Scenario.default.gql
+    graph = gql.future_graph
+    node = graph.plugin(:molecules).molecule_graph.node(:m_left)
 
-      node.dataset_set(
-        :from_energy,
-        Atlas::NodeAttributes::EnergyToMolecules.new(conversion_attributes)
-      )
-    end.future.graph
+    node.dataset_set(
+      :from_energy,
+      Atlas::NodeAttributes::EnergyToMolecules.new(conversion_attributes)
+    )
 
     allow(graph.area).to receive(:use_merit_order_demands).and_return(causality_enabled)
     graph
