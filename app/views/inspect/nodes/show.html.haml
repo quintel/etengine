@@ -24,23 +24,23 @@
     .energy
       .present
         %span.name Present
-        %span.output(title="Output flow")
+        %span.output{ title: "Output flow: #{node_flow(@node_present, :outputs)}" }
           = auto_number node_flow(@node_present, :outputs)
         &larr;
-        %span.demand(title="Demand")<
+        %span.demand{ title: "Demand: #{@node_present.demand}" }<
           = auto_number @node_present.demand
         &larr;
-        %span.input(title="Input flow")
+        %span.input{ title: "Input flow #{node_flow(@node_present, :inputs) }" }
           = auto_number node_flow(@node_present, :inputs)
       .future
         %span.name Future
-        %span.output(title="Output flow")
+        %span.output{ title: "Output flow: #{node_flow(@node_future, :outputs)}" }
           = auto_number node_flow(@node_future, :outputs)
         &larr;
-        %span.demand(title="Demand")<
+        %span.demand{ title: "Demand: #{@node_future.demand}" }<
           = auto_number @node_future.demand
         &larr;
-        %span.input(title="Input flow")
+        %span.input{ title: "Input flow #{node_flow(@node_future, :inputs) }" }
           = auto_number node_flow(@node_future, :inputs)
     - delta = (@node_future.demand / @node_present.demand) * 100 - 100
     - if delta.abs > 1e-5

@@ -7,7 +7,7 @@
             %tr
               %th.centered
                 Edges
-                %span.aggregate-demand
+                %span.aggregate-demand{ title: node_flow(c, :outputs) }
                   = auto_number node_flow(c, :outputs)
               %th.centered Outputs
           %tbody
