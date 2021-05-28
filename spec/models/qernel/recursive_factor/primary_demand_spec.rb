@@ -2,112 +2,295 @@
 
 require 'spec_helper'
 
+# This creates examples which test the primary demand and primary_demand_of_* methods for all three
+# nodes. Include the shares examples within a context, defining the expected primary demands in
+# `let` blocks.
+#
+#     include_examples 'expected primary demand values' do
+#       let(:expected_left_demand) { 50 }
+#       let(:expected_middle_demand) { 100 }
+#       let(:expected_right_demand) { 100 }
+#     end
+#
+RSpec.shared_examples_for 'expected primary demand values' do
+  it 'the left node has the expected primary_demand' do
+    expect(graph.node(:left).query.primary_demand).to eq(expected_left_demand)
+  end
+
+  it 'the left node has the expected primary_demand_of_natural_gas' do
+    expect(graph.node(:left).query.primary_demand_of_natural_gas).to eq(expected_left_demand)
+  end
+
+  it 'the left node no primary_demand_of_coal' do
+    expect(graph.node(:left).query.primary_demand_of_coal).to eq(0)
+  end
+
+  it 'the middle node has the expected primary_demand' do
+    expect(graph.node(:middle).query.primary_demand).to eq(expected_middle_demand)
+  end
+
+  it 'the middle node has the expected primary_demand_of_natural_gas' do
+    expect(graph.node(:middle).query.primary_demand_of_natural_gas).to eq(expected_middle_demand)
+  end
+
+  it 'the middle node no primary_demand_of_coal' do
+    expect(graph.node(:middle).query.primary_demand_of_coal).to eq(0)
+  end
+
+  it 'the right node has the expected primary_demand' do
+    expect(graph.node(:right).query.primary_demand).to eq(expected_right_demand)
+  end
+
+  it 'the right node has the expected primary_demand_of_natural_gas' do
+    expect(graph.node(:right).query.primary_demand_of_natural_gas).to eq(expected_right_demand)
+  end
+
+  it 'the right node no primary_demand_of_coal' do
+    expect(graph.node(:right).query.primary_demand_of_coal).to eq(0)
+  end
+end
+
+# All primary demand specs are performed on a graph derived from this simple structure:
+#
+#     [left] <- [middle] <- [right]
+#
+# The "right" node belongs to the primary demand group. All edges are of the "natural_gas" carrier.
+# Specs may define additional nodes, edges, or slots as needed.
 RSpec.describe Qernel::RecursiveFactor::PrimaryDemand do
-  let(:middle_output_conversion) { 1.0 }
+  let(:builder) do
+    TestGraphBuilder.new.tap do |builder|
+      builder.add(:left)
+      builder.add(:middle)
+      builder.add(:right, demand: 100, groups: %i[primary_energy_demand])
 
-  # Create a graph:
-  #
-  # [Left] <- [Middle] <- [Right]
-  let(:left) do
-    Qernel::Node.new(key: :left, graph_name: nil).with(demand: 100.0 * middle_output_conversion)
-  end
-
-  let(:middle) do
-    Qernel::Node.new(key: :middle, graph_name: nil).with(demand: 100.0)
-  end
-
-  let(:right) do
-    Qernel::Node
-      .new(key: :right, graph_name: nil, groups: [:primary_energy_demand])
-      .with(demand: 100.0)
-  end
-
-  let(:gas) { Qernel::Carrier.new(key: :natural_gas).with({}) }
-
-  def create_edge(left, right, carrier, demand, rgt_conversion = 1.0)
-    left.add_slot(Qernel::Slot.new(nil, left, carrier, :input).with(conversion: 1.0))
-    right.add_slot(Qernel::Slot.new(nil, right, carrier, :output).with(conversion: rgt_conversion))
-
-    edge = Qernel::Edge.new(
-      "#{left.key} <- #{right.key} @ #{carrier.key}", left, right, carrier, :flexible, true
-    )
-
-    edge.with(value: demand)
-    edge.query.with(value: demand)
-    edge
-  end
-
-  before do
-    create_edge(left, middle, gas, 100.0 * middle_output_conversion, middle_output_conversion)
-    create_edge(middle, right, gas, 100.0, 1.0)
-  end
-
-  context 'when energy flows right-to-left with no shares or conversions' do
-    it 'has primary_demand of 100' do
-      expect(left.query.primary_demand).to eq(100.0)
+      builder.connect(:right, :middle, :natural_gas, type: :share)
+      builder.connect(:middle, :left, :natural_gas, type: :share)
     end
   end
 
-  context 'when energy flows right-to-left with an output conversion of 2.0' do
-    let(:middle_output_conversion) { 2.0 }
+  let(:graph) { builder.to_qernel }
 
-    it 'has primary_demand of 100' do
-      expect(left.query.primary_demand).to eq(100.0)
+  context 'when all shares and conversions are 1.0' do
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 100 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
     end
   end
 
-  context 'when energy flows right-to-left with an output conversion of 0.5' do
-    let(:middle_output_conversion) { 0.5 }
-
-    it 'has primary_demand of 50' do
-      expect(left.query.primary_demand).to eq(50.0)
-    end
-  end
-
-  context 'when the primary demand node has 20% loss' do
-    let(:loss) { Qernel::Carrier.new(key: :loss).with({}) }
-    let(:right) { super().with(demand: 125.0) }
-    let(:rgt_conversion) { 0.8 }
-
+  context 'when the right-most node is connected to an input' do
+    # Asserts that recursion stops when reaching the primary demand node.
     before do
-      right.add_slot(Qernel::Slot.new(nil, right, loss, :output).with(conversion: 0.2))
+      builder.add(:input)
+      builder.connect(:input, :right, :natural_gas)
     end
 
-    it 'has primary_demand of 100' do
-      # Without omitting the loss, the primary_demand would be 125.
-      expect(left.query.primary_demand).to eq(100.0)
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 100 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
     end
 
-    it 'has primary_demand_of_natural_gas 100' do
-      # Without omitting the loss, the primary_demand would be 125.
-      expect(left.query.primary_demand_of_natural_gas).to eq(100.0)
+    it 'the input node has no primary_demand' do
+      expect(graph.node(:input).query.primary_demand).to eq(0)
+    end
+
+    it 'the input node has no primary_demand_of_natural_gas' do
+      expect(graph.node(:input).query.primary_demand_of_natural_gas).to eq(0)
     end
   end
 
-  context 'when the primary demand and middle nodes have 20% loss' do
-    let(:loss) { Qernel::Carrier.new(key: :loss).with({}) }
-    let(:right) { super().with(demand: 125.0) }
-    let(:rgt_conversion) { 0.8 }
-
+  context 'when the right-most node does not belong to the PD group' do
+    # Asserts that recursion stops when reaching the primary demand node.
     before do
-      right.add_slot(Qernel::Slot.new(nil, right, loss, :output).with(conversion: 0.2))
-      middle.add_slot(Qernel::Slot.new(nil, right, loss, :output).with(conversion: 0.2))
-
-      mid_left_edge = left.input_edges.first
-      mid_left_edge.with(value: 80.0)
-      mid_left_edge.query.with(value: 80.0)
+      builder.node(:right).set(:groups, [])
     end
 
-    it 'has primary_demand of 100' do
-      # Without omitting the PD loss, the primary_demand would be 125. Adjustments are not made for
-      # enroute losses.
-      expect(left.query.primary_demand).to eq(100.0)
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 0 }
+      let(:expected_middle_demand) { 0 }
+      let(:expected_right_demand) { 0 }
+    end
+  end
+
+  context 'when the middle node has a conversion of 2.0' do
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 2.0)
     end
 
-    it 'has primary_demand_of_natural_gas 100' do
-      # Without omitting the PD loss, the primary_demand would be 125. Adjustments are not made for
-      # enroute losses.
-      expect(left.query.primary_demand_of_natural_gas).to eq(100.0)
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 100 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+  end
+
+  context 'when the middle node has a conversion of 0.5' do
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.5)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 50 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+  end
+
+  context 'when the middle node has two output conversions, each of 0.6' do
+    # When the sum of output conversions exceed 1.0, the conversion is normalized so that it
+    # represents a percentage of the total (two outputs with conversion of 0.6 result in effective
+    # conversions of 0.5 each).
+    before do
+      builder.add(:middle_elec)
+      builder.connect(:middle, :middle_elec, :electricity)
+
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.6)
+      builder.node(:middle).slots.out(:electricity).set(:share, 0.6)
+    end
+
+    # https://github.com/quintel/etengine/issues/1172
+    xit 'the left node has primary_demand of 50' do
+      expect(graph.node(:left).query.primary_demand).to eq(50.0)
+    end
+
+    # https://github.com/quintel/etengine/issues/1172
+    xit 'the left node has primary_demand_of_natural_gas of 50' do
+      expect(graph.node(:left).query.primary_demand_of_natural_gas).to eq(50.0)
+    end
+
+    it 'the middle node has primary_demand of 100' do
+      expect(graph.node(:middle).query.primary_demand).to eq(100.0)
+    end
+
+    it 'the middle node has primary_demand_of_natural_gas of 100' do
+      expect(graph.node(:middle).query.primary_demand_of_natural_gas).to eq(100.0)
+    end
+
+    it 'the right node has primary_demand of 100' do
+      expect(graph.node(:right).query.primary_demand).to eq(100.0)
+    end
+
+    it 'the right node has primary_demand_of_natural_gas of 100' do
+      expect(graph.node(:right).query.primary_demand_of_natural_gas).to eq(100.0)
+    end
+  end
+
+  context 'when the right (PD) node has 20% loss' do
+    # Energy lost on the PD node itself (but not others on the path) is not counted towards primary
+    # demand.
+    #
+    # https://github.com/quintel/etengine/issues/1147
+    before do
+      builder.node(:right).slots.out(:natural_gas).set(:share, 0.8)
+      builder.node(:right).slots.out.add(:loss, share: 0.2)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 80 }
+      let(:expected_middle_demand) { 80 }
+      let(:expected_right_demand) { 80 }
+    end
+  end
+
+  context 'when the middle node has 80% gas and 20% loss output' do
+    # Similar to the above; but losses on the path are ignored.
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.8)
+      builder.node(:middle).slots.out.add(:loss, share: 0.2)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 100 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+  end
+
+  context 'when the middle node has 80% gas and 20% electricity output' do
+    # This is a variation on the above, where instead of loss on the middle node we have
+    # electricity. This energy is _not_ ignored when calculating recursively as loss is.
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.8)
+      builder.node(:middle).slots.out.add(:electricity, share: 0.2)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 80 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+  end
+
+  context 'when the left node has a sibling with equal demand of the same carrier' do
+    before do
+      builder.add(:sibling)
+      builder.connect(:middle, :sibling, :natural_gas, parent_share: 0.5)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 50 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+  end
+
+  context 'when the left node has a sibling with equal demand of a different carrier' do
+    before do
+      builder.add(:sibling)
+      builder.connect(:middle, :sibling, :electricity)
+      builder.node(:middle).slots.out(:electricity).set(:share, 0.5)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 50 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+
+    it 'the sibling node has primary_demand of 50' do
+      expect(graph.node(:sibling).query.primary_demand).to eq(50.0)
+    end
+
+    it 'the sibling node has primary_demand_of_natural_gas of 50' do
+      expect(graph.node(:sibling).query.primary_demand_of_natural_gas).to eq(50.0)
+    end
+  end
+
+  context 'when the middle and right (PD) nodes both have 20% loss' do
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.8)
+      builder.node(:middle).slots.out.add(:loss, share: 0.2)
+
+      builder.node(:right).slots.out(:natural_gas).set(:share, 0.8)
+      builder.node(:right).slots.out.add(:loss, share: 0.2)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 80 }
+      let(:expected_middle_demand) { 80 }
+      let(:expected_right_demand) { 80 }
+    end
+  end
+
+  context 'with another level to the left with a different carrier' do
+    before do
+      builder.add(:far_left)
+      builder.connect(:left, :far_left, :coal)
+    end
+
+    include_examples 'expected primary demand values' do
+      let(:expected_left_demand) { 100 }
+      let(:expected_middle_demand) { 100 }
+      let(:expected_right_demand) { 100 }
+    end
+
+    it 'the far left node has primary_demand of 100' do
+      expect(graph.node(:far_left).query.primary_demand).to eq(100.0)
+    end
+
+    it 'the far left node has primary_demand_of_natural_gas of 100' do
+      expect(graph.node(:far_left).query.primary_demand_of_natural_gas).to eq(100.0)
     end
   end
 end
