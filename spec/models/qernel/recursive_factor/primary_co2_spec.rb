@@ -3,18 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
-  RSpec::Matchers.define(:have_query_value) do |attribute, expected|
-    match do |object|
-      values_match?(expected, object.query.public_send(attribute))
-    end
-
-    failure_message do |object|
-      "  object: #{object.inspect} #{attribute}\n" \
-      "expected: #{expected.inspect}\n" \
-      "     got: #{object.query.public_send(attribute).inspect}"
-    end
-  end
-
   let(:builder) do
     TestGraphBuilder.new.tap do |builder|
       builder.add(:left)
