@@ -3,99 +3,331 @@
 require 'spec_helper'
 
 RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
-  let(:middle_output_conversion) { 1.0 }
-
-  # Create a graph:
-  #
-  # [Left] <- [Middle] <- [Right]
-  let(:left) do
-    Qernel::Node.new(key: :left, graph_name: nil).with(demand: 100.0 * middle_output_conversion)
-  end
-
-  let(:middle) do
-    Qernel::Node.new(key: :middle, graph_name: nil).with(demand: 100.0)
-  end
-
-  let(:right) do
-    Qernel::Node.new(key: :right, graph_name: nil, groups: [:primary_energy_demand])
-      .with(demand: 100.0, sustainability_share: 0.25)
-  end
-
-  let(:gas) { Qernel::Carrier.new(key: :natural_gas).with({ co2_conversion_per_mj: 0.5 }) }
-
-  def create_edge(left, right, carrier, demand, rgt_conversion = 1.0)
-    left.add_slot(Qernel::Slot.new(nil, left, carrier, :input).with(conversion: 1.0))
-    right.add_slot(Qernel::Slot.new(nil, right, carrier, :output).with(conversion: rgt_conversion))
-
-    edge = Qernel::Edge.new(
-      "#{left.key} <- #{right.key} @ #{carrier.key}", left, right, carrier, :flexible, true
-    )
-
-    edge.with(value: demand)
-    edge.query.with(value: demand)
-    edge
-  end
-
-  before do
-    create_edge(left, middle, gas, 100.0 * middle_output_conversion, middle_output_conversion)
-    create_edge(middle, right, gas, 100.0, 1.0)
-  end
-
-  context 'when energy flows right-to-left with no shares or conversions' do
-    it 'has primary_co2_emission of 50' do
-      expect(left.query.primary_co2_emission).to eq(50)
+  RSpec::Matchers.define(:have_query_value) do |attribute, expected|
+    match do |object|
+      values_match?(expected, object.query.public_send(attribute))
     end
 
-    it 'has primary_demand_of_sustainable of 25' do
-      expect(left.query.primary_demand_of_sustainable).to eq(25)
-    end
-
-    it 'has primary_demand_of_fossil of 100' do
-      expect(left.query.primary_demand_of_fossil).to eq(75)
-    end
-
-    it 'has sustainability_share of 0.5' do
-      expect(left.query.sustainability_share).to eq(0.25)
+    failure_message do |object|
+      "  object: #{object.inspect} #{attribute}\n" \
+      "expected: #{expected.inspect}\n" \
+      "     got: #{object.query.public_send(attribute).inspect}"
     end
   end
 
-  context 'when energy flows right-to-left with an output conversion of 2.0' do
-    let(:middle_output_conversion) { 2.0 }
+  let(:builder) do
+    TestGraphBuilder.new.tap do |builder|
+      builder.add(:left)
+      builder.add(:middle)
 
-    it 'has primary_co2_emission of 50' do
-      expect(left.query.primary_co2_emission).to eq(50)
-    end
+      builder.add(
+        :right,
+        demand: 100,
+        groups: %i[primary_energy_demand],
+        sustainability_share: 0.25
+      )
 
-    it 'has primary_demand_of_sustainable of 25' do
-      expect(left.query.primary_demand_of_sustainable).to eq(25)
-    end
+      builder.connect(:right, :middle, :natural_gas, type: :share)
+      builder.connect(:middle, :left, :natural_gas, type: :share)
 
-    it 'has primary_demand_of_fossil of 75' do
-      expect(left.query.primary_demand_of_fossil).to eq(75)
-    end
-
-    it 'has sustainability_share of 0.5' do
-      expect(left.query.sustainability_share).to eq(0.25)
+      builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.5)
     end
   end
 
-  context 'when energy flows right-to-left with an output conversion of 0.5' do
-    let(:middle_output_conversion) { 0.5 }
+  let(:graph) { builder.to_qernel }
 
-    it 'has primary_co2_emission of 25' do
-      expect(left.query.primary_co2_emission).to eq(25)
+  context 'when all shares and conversions are 1.0' do
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
 
-    it 'has primary_demand_of_sustainable of 12.5' do
-      expect(left.query.primary_demand_of_sustainable).to eq(12.5)
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
 
-    it 'has primary_demand_of_fossil of 37.5' do
-      expect(left.query.primary_demand_of_fossil).to eq(37.5)
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      xit { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the middle node conversions natural_gas=2.0' do
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 2.0)
     end
 
-    it 'has sustainability_share of 0.25' do
-      expect(left.query.sustainability_share).to eq(0.25)
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the middle node has converions natural_gas=0.5' do
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.5)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 12.5) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 37.5) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the middle node has outputs natural_gas=0.6 and electricity=0.6' do
+    # When the sum of output conversions exceed 1.0, the conversion is normalized so that it
+    # represents a percentage of the total (two outputs with conversion of 0.6 result in effective
+    # conversions of 0.5 each).
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.6)
+      builder.node(:middle).slots.out.add(:electricity, share: 0.6)
+    end
+
+    xdescribe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 12.5) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 37.5) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the middle node has inputs natural_gas=0.6 and electricity=0.4' do
+    # The left and middle nodes now have demand of 100 / 0.75 = 125
+    before do
+      builder.node(:middle).slots.in(:natural_gas).set(:share, 0.8)
+      builder.node(:middle).slots.in.add(:electricity, share: 0.2)
+
+      builder.add(:elec, groups: %i[primary_energy_demand], sustainability_share: 0.1)
+      builder.connect(:elec, :middle, :electricity)
+
+      builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.25)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_co2_emission,
+          100 * 0.5 + # From natural_gas
+            25 * 0.25 # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_demand_of_sustainable,
+          100 * 0.25 + # From natural_gas
+            25 * 0.1   # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_demand_of_fossil,
+          100 * 0.75 + # From natural_gas
+            25 * 0.9   # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :sustainability_share,
+          0.25 * 0.8 + # From natural_gas
+            0.1 * 0.2  # From electricity
+        )
+      end
+    end
+  end
+
+  context 'when the middle node has inputs natural_gas=0.8 and electricity=0.8' do
+    # "left" and "middle" have a demand of 125, while "right" and "elec" each have 100.
+    before do
+      builder.node(:middle).slots.in(:natural_gas).set(:share, 0.8)
+      builder.node(:middle).slots.in.add(:electricity, share: 0.8)
+
+      builder.add(:elec, groups: %i[primary_energy_demand], sustainability_share: 0.1)
+      builder.connect(:elec, :middle, :electricity)
+
+      builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.25)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_co2_emission,
+          100 * 0.5 +  # From natural_gas
+            100 * 0.25 # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_demand_of_sustainable,
+          100 * 0.25 + # From natural_gas
+            100 * 0.1  # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_demand_of_fossil,
+          100 * 0.75 + # From natural_gas
+            100 * 0.9  # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :sustainability_share,
+          0.25 * 0.8 + # From natural_gas
+            0.1 * 0.8  # From electricity
+        )
+      end
+    end
+  end
+
+  context 'when the middle node has inputs natural_gas=0.5' do
+    # "left" and "middle" have demand of 200, while "right" has 100.
+    before do
+      builder.node(:middle).slots.in(:natural_gas).set(:share, 0.5)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      xit { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the right node has outputs natural_gas=2.0' do
+    before do
+      builder.node(:right).slots.out(:natural_gas).set(:share, 2.0)
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      xit { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the right node has outputs natural_gas=0.6 and electricity=0.6' do
+    # These examples should adjust the values returned by recursive factor methods so that the
+    # demand remains 100% that of the node, not 120%.
+    before do
+      builder.node(:right).slots.out(:natural_gas).set(:share, 0.6)
+      builder.node(:right).slots.out.add(:electricity, share: 0.6)
+    end
+
+    xdescribe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 12.5) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 37.5) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      xit { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the right node has two natural_gas output edges with shares 0.5' do
+    before do
+      builder.add(:middle_sibling)
+      builder.connect(:right, :middle_sibling, :natural_gas, parent_share: 0.5)
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 12.5) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 37.5) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      xit { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
   end
 end
