@@ -12,6 +12,10 @@ RSpec::Matchers.define(:have_query_value) do |attribute, expected|
     values_match?(expected, object.query.public_send(attribute))
   end
 
+  description do
+    "have #{attribute} of #{expected.inspect}"
+  end
+
   failure_message do |object|
     "  object: #{object.inspect} #{attribute}\n" \
     "expected: #{expected.inspect}\n" \
