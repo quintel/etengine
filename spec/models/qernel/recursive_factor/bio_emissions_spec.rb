@@ -12,107 +12,129 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
   # All three suppliers have 50 demand. 100% of torrefied biomass is converted to CO2 and 100% is
   # captured on [CCS Plant 1]. 50% of green gas is converted to CO2, and 50% is captured on
   # [CCS Plant 2]. Coal produces no capturable CO2.
-  let(:terminus)     { Qernel::Node.new(key: :terminus, graph_name: nil).with(demand: 150.0) }
-  let(:ccs_plant_1)  { Qernel::Node.new(key: :ccs_plant_1, graph_name: nil).with(demand: 50.0) }
-  let(:ccs_plant_2)  { Qernel::Node.new(key: :ccs_plant_2, graph_name: nil).with(demand: 50.0) }
-  let(:normal_plant) { Qernel::Node.new(key: :normal_plant, graph_name: nil).with(demand: 50.0) }
-  let(:biomass)      { Qernel::Node.new(key: :biomass, graph_name: nil).with(demand: 50.0) }
-  let(:greengas)     { Qernel::Node.new(key: :greengas, graph_name: nil).with(demand: 50.0) }
-  let(:coal)         { Qernel::Node.new(key: :coal, graph_name: nil).with(demand: 50.0) }
+  let(:builder) do
+    TestGraphBuilder.new.tap do |builder|
+      builder.add(:terminus)
 
-  let(:electricity_carrier) { Qernel::Carrier.new(key: :electricity).with({}) }
-  let(:biomass_carrier) { Qernel::Carrier.new(key: :torrefied_biomass_pellets).with({}) }
-  let(:greengas_carrier) { Qernel::Carrier.new(key: :greengas).with({}) }
-  let(:coal_carrier) { Qernel::Carrier.new(key: :coal).with({}) }
+      builder.add(:ccs_plant_1, demand: 50, ccs_capture_rate: 1.0)
+      builder.add(:ccs_plant_2, demand: 50, ccs_capture_rate: 0.5)
+      builder.add(:normal_plant, demand: 50)
 
-  def create_edge(left, right, carrier, demand)
-    left.add_slot(Qernel::Slot.new(nil, left, carrier, :input).with(conversion: 1.0))
-    right.add_slot(Qernel::Slot.new(nil, right, carrier, :output).with(conversion: 1.0))
+      builder.add(:biomass_prod)
+      builder.add(:greengas_prod)
+      builder.add(:coal_prod)
 
-    edge = Qernel::Edge.new(
-      "#{left.key} <- #{right.key} @ #{carrier.key}", left, right, carrier, :flexible, true
-    )
+      builder.connect(:biomass_prod, :ccs_plant_1, :biomass)
+      builder.connect(:greengas_prod, :ccs_plant_2, :greengas)
+      builder.connect(:coal_prod, :normal_plant, :coal)
 
-    edge.with(value: demand)
+      builder.connect(:ccs_plant_1, :terminus, :electricity)
+      builder.connect(:ccs_plant_2, :terminus, :electricity)
+      builder.connect(:normal_plant, :terminus, :electricity)
+
+      builder.carrier_attrs(:biomass, potential_co2_conversion_per_mj: 1.0)
+      builder.carrier_attrs(:greengas, potential_co2_conversion_per_mj: 0.5)
+    end
   end
 
-  before do
-    create_edge(terminus, ccs_plant_1, electricity_carrier, 50.0)
-    create_edge(terminus, ccs_plant_2, electricity_carrier, 50.0)
-    create_edge(terminus, normal_plant, electricity_carrier, 50.0)
+  let(:graph) { builder.to_qernel }
 
-    create_edge(ccs_plant_1, biomass, biomass_carrier, 50.0)
-    create_edge(ccs_plant_2, greengas, greengas_carrier, 50.0)
-    create_edge(normal_plant, coal, coal_carrier, 50.0)
-
-    biomass_carrier.with(potential_co2_conversion_per_mj: 1.0)
-    greengas_carrier.with(potential_co2_conversion_per_mj: 0.5)
-
-    ccs_plant_1.with(ccs_plant_1.dataset_attributes.merge(ccs_capture_rate: 1.0))
-    ccs_plant_2.with(ccs_plant_2.dataset_attributes.merge(ccs_capture_rate: 0.5))
-  end
+  let(:ccs_plant_1) { graph.node(:ccs_plant_1) }
+  let(:ccs_plant_2) { graph.node(:ccs_plant_2) }
+  let(:normal_plant) { graph.node(:normal_plant) }
+  let(:terminus) { graph.node(:terminus) }
 
   context 'when the CCS plants have capture' do
     it 'captures 50 on CCS Plant #1' do
-      expect(ccs_plant_1.query.captured_bio_emissions).to eq(50)
+      expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 50)
     end
 
     it 'captures 12.5 on CCS Plant #2' do
-      expect(ccs_plant_2.query.captured_bio_emissions).to eq(12.5)
+      expect(ccs_plant_2).to have_query_value(:captured_bio_emissions, 12.5)
     end
 
     it 'captures nothing on Normal Plant' do
-      expect(normal_plant.query.captured_bio_emissions).to eq(0)
+      expect(normal_plant).to have_query_value(:captured_bio_emissions, 0)
     end
 
     it 'captures nothing on Terminus' do
-      expect(terminus.query.captured_bio_emissions).to eq(0)
+      expect(terminus).to have_query_value(:captured_bio_emissions, 0)
     end
 
-    it 'Terminus inherits 62.5 captured CO2' do
-      expect(terminus.query.inherited_captured_bio_emissions).to eq(62.5)
+    it 'Terminus inherits 62.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 62.5)
     end
   end
 
   context 'when CCS plant 1 has no capture' do
     before do
-      ccs_plant_1.with(ccs_plant_1.dataset_attributes.merge(ccs_capture_rate: 0.0))
+      builder.node(:ccs_plant_1).set(:ccs_capture_rate, 0.0)
     end
 
     it 'captures nothing on CCS Plant #1' do
-      expect(ccs_plant_1.query.captured_bio_emissions).to eq(0)
+      expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 0)
     end
 
-    it 'Terminus inherits 12.5 captured CO2' do
-      expect(terminus.query.inherited_captured_bio_emissions).to eq(12.5)
+    it 'Terminus inherits 12.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 12.5)
     end
   end
 
   context 'when CCS plant 1 has nil capture' do
     before do
-      ccs_plant_1.with(ccs_plant_1.dataset_attributes.merge(ccs_capture_rate: nil))
+      builder.node(:ccs_plant_1).set(:ccs_capture_rate, nil)
     end
 
     it 'captures nothing on CCS Plant #1' do
-      expect(ccs_plant_1.query.captured_bio_emissions).to eq(0)
+      expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 0)
     end
 
-    it 'Terminus inherits 12.5 captured CO2' do
-      expect(terminus.query.inherited_captured_bio_emissions).to eq(12.5)
+    it 'Terminus inherits 12.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 12.5)
     end
   end
 
   context 'when the normal plant has capture' do
     before do
-      normal_plant.with(normal_plant.dataset_attributes.merge(ccs_capture_rate: 1.0))
+      builder.node(:normal_plant).set(:ccs_capture_rate, 1.0)
     end
 
     it 'captures nothing on the Normal Plant' do
-      expect(normal_plant.query.captured_bio_emissions).to eq(0)
+      expect(normal_plant).to have_query_value(:captured_bio_emissions, 0)
     end
 
-    it 'Terminus inherits 62.5 captured CO2' do
-      expect(terminus.query.inherited_captured_bio_emissions).to eq(62.5)
+    it 'Terminus inherits 62.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 62.5)
+    end
+  end
+
+  context 'when CCS plant #1 has outputs electricity=0.5 loss=0.5' do
+    before do
+      builder.node(:ccs_plant_1).slots.out(:electricity).set(:share, 0.5)
+      builder.node(:ccs_plant_1).slots.out.add(:loss, share: 0.5)
+    end
+
+    it 'captures 50 on CCS Plant #1' do
+      expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 50)
+    end
+
+    xit 'Terminus inherits 62.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 62.5)
+    end
+  end
+
+  context 'when CCS plant #1 has outputs electricity=0.5 gas=0.5' do
+    before do
+      builder.node(:ccs_plant_1).slots.out(:electricity).set(:share, 0.5)
+      builder.node(:ccs_plant_1).slots.out.add(:gas, share: 0.5)
+    end
+
+    it 'captures 50 on CCS Plant #1' do
+      expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 50)
+    end
+
+    it 'Terminus inherits 37.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 37.5)
     end
   end
 end
