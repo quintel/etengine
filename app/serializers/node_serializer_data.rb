@@ -79,7 +79,7 @@ module NodeSerializerData
     },
     cost: {
       'initial_investment_per(:mw_electricity) + cost_of_installing_per(:mw_electricity) + decommissioning_costs_per(:mw_electricity)' => {
-        label: 'Initial investment',
+        label: 'Investment over lifetime per MW input',
         key: :total_initial_investment_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
@@ -179,7 +179,7 @@ module NodeSerializerData
       },
       'electricity_output_capacity' => {
         label: 'Capacity per unit',
-        key: :typical_input_capacity,
+        key: :input_capacity,
         unit: 'MW'
       },
       electricity_output_conversion: {
@@ -370,7 +370,7 @@ module NodeSerializerData
   # add these
   HYDROGEN_PRODUCTION_ATTRIBUTES_AND_METHODS = {
     technical: {
-      'typical_input_capacity * number_of_units' => {
+      'input_capacity * number_of_units' => {
         label: 'Installed input capacity',
         key: :total_installed_input_capacity,
         unit: 'MW'
@@ -384,21 +384,21 @@ module NodeSerializerData
       free_co2_factor: { label: 'CCS capture rate', unit: '%', formatter: FORMAT_FAC_TO_PERCENT }
     },
     cost: {
-      'initial_investment_per(:mw_typical_input_capacity) + cost_of_installing_per(:mw_typical_input_capacity) + decommissioning_costs_per(:mw_typical_input_capacity)' => {
-        label: 'Initial investment',
-        key: :total_initial_investment_per_mw_typical_input_capacity,
+      'initial_investment_per(:mw_input_capacity) + cost_of_installing_per(:mw_input_capacity) + decommissioning_costs_per(:mw_input_capacity)' => {
+        label: 'Investment over lifetime per MW input',
+        key: :total_initial_investment_per_mw_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
-      'ccs_investment_per(:mw_typical_input_capacity)' => {
+      'ccs_investment_per(:mw_input_capacity)' => {
         label: 'Additional initial investment for CCS',
-        key: :ccs_investment_per_mw_typical_input_capacity,
+        key: :ccs_investment_per_mw_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
-      'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' => {
+      'fixed_operation_and_maintenance_costs_per(:mw_input_capacity)' => {
         label: 'Fixed operation and maintenance costs',
-        key: :fixed_operation_and_maintenance_costs_per_mw_typical_input_capacity,
+        key: :fixed_operation_and_maintenance_costs_per_mw_input_capacity,
         unit: 'EUR / MW / year',
         formatter: ->(n) { n.to_i }
       },
@@ -432,13 +432,13 @@ module NodeSerializerData
 
   FLEXIBILITY_COSTS_AND_OTHER = {
     cost: {
-      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
+      'total_investment_over_lifetime_per(:mw_input_capacity)' => {
         label: 'Investment over lifetime per MW input',
-        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
+        key: :total_investment_over_lifetime_per_mw_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
-      'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' => {
+      'fixed_operation_and_maintenance_costs_per(:mw_input_capacity)' => {
         label: 'Fixed operation and maintenance costs',
         unit: 'EUR / MW / year',
         formatter: ->(n) { n.to_i }
@@ -473,7 +473,7 @@ module NodeSerializerData
   P2G_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * number_of_units': {
+        'input_capacity * number_of_units': {
           label: 'Installed capacity',
           key: :total_installed_capacity,
           unit: 'MWe'
@@ -492,7 +492,7 @@ module NodeSerializerData
   P2H_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * number_of_units': {
+        'input_capacity * number_of_units': {
           label: 'Installed capacity',
           key: :total_installed_capacity,
           unit: 'MWe'
@@ -511,7 +511,7 @@ module NodeSerializerData
   P2KEROSENE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * number_of_units' => {
+        'input_capacity * number_of_units' => {
           label: 'Installed capacity',
           key: :total_installed_capacity,
           unit: 'MWe'
@@ -530,7 +530,7 @@ module NodeSerializerData
   P2P_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * number_of_units' => {
+        'input_capacity * number_of_units' => {
           label: 'Installed capacity',
           key: :total_installed_capacity,
           unit: 'MW'
@@ -591,15 +591,15 @@ module NodeSerializerData
   CO2_CAPTURE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * 8760 * number_of_units' => {
+        'input_capacity * 8760 * number_of_units' => {
           label: 'Total installed capture capacity',
           key: :total_installed_capture_capacity,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
-        'typical_input_capacity * 8760' => {
+        'input_capacity * 8760' => {
           label: 'Capture capacity per unit',
-          key: :typical_input_capacity_co2_capture,
+          key: :input_capacity_co2_capture,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
@@ -610,15 +610,15 @@ module NodeSerializerData
   CO2_STORAGE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * 8760 * number_of_units' => {
+        'input_capacity * 8760 * number_of_units' => {
           label: 'Total installed storage capacity',
           key: :total_installed_storage_capacity,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
-        'typical_input_capacity * 8760' => {
+        'input_capacity * 8760' => {
           label: 'Storage capacity per unit',
-          key: :typical_input_capacity_co2_storage,
+          key: :input_capacity_co2_storage,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
@@ -629,15 +629,15 @@ module NodeSerializerData
   CO2_TRANSPORT_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'typical_input_capacity * 8760 * number_of_units' => {
+        'input_capacity * 8760 * number_of_units' => {
           label: 'Total installed transport capacity',
           key: :total_installed_transport_capacity,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
-        'typical_input_capacity * 8760' => {
+        'input_capacity * 8760' => {
           label: 'Transport capacity per unit',
-          key: :typical_input_capacity_co2_transport,
+          key: :input_capacity_co2_transport,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
@@ -649,7 +649,7 @@ module NodeSerializerData
   # add these
   BIOMASS_ATTRIBUTES_AND_METHODS = {
     technical: {
-      'typical_input_capacity * number_of_units' => {
+      'input_capacity * number_of_units' => {
         label: 'Installed input capacity',
         key: :total_installed_input_capacity,
         unit: 'MW'
@@ -663,15 +663,15 @@ module NodeSerializerData
       }
     },
     cost: {
-      'total_investment_over_lifetime_per(:mw_typical_input_capacity)' => {
+      'total_investment_over_lifetime_per(:mw_input_capacity)' => {
         label: 'Investment over lifetime per MW input',
-        key: :total_investment_over_lifetime_per_mw_typical_input_capacity,
+        key: :total_investment_over_lifetime_per_mw_input_capacity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
       },
-      'fixed_operation_and_maintenance_costs_per(:mw_typical_input_capacity)' => {
+      'fixed_operation_and_maintenance_costs_per(:mw_input_capacity)' => {
         label: 'Fixed operation and maintenance costs',
-        key: :fixed_operation_and_maintenance_costs_per_mw_typical_input_capacity,
+        key: :fixed_operation_and_maintenance_costs_per_mw_input_capacity,
         unit: 'EUR / MW / year',
         formatter: ->(n) { n.to_i }
       },

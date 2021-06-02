@@ -128,10 +128,8 @@ module Qernel
             cost * number_of_units
 
           # MW capacity
-          when :mw_input
+          when :mw_input, :mw_input_capacity, :mw_typical_input_capacity
             cost / input_capacity.to_f
-          when :mw_typical_input_capacity
-            cost / typical_input_capacity.to_f
           when :mw_electricity
             cost / electricity_output_capacity.to_f
           when :mw_heat
