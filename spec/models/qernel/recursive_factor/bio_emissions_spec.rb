@@ -118,7 +118,7 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
       expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 50)
     end
 
-    xit 'Terminus inherits 62.5 captures CO2' do
+    it 'Terminus inherits 62.5 captures CO2' do
       expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 62.5)
     end
   end
@@ -127,6 +127,21 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
     before do
       builder.node(:ccs_plant_1).slots.out(:electricity).set(:share, 0.5)
       builder.node(:ccs_plant_1).slots.out.add(:gas, share: 0.5)
+    end
+
+    it 'captures 50 on CCS Plant #1' do
+      expect(ccs_plant_1).to have_query_value(:captured_bio_emissions, 50)
+    end
+
+    it 'Terminus inherits 37.5 captures CO2' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 37.5)
+    end
+  end
+
+  context 'when CCS plant #1 has outputs electricity=0.6 gas=0.6' do
+    before do
+      builder.node(:ccs_plant_1).slots.out(:electricity).set(:share, 0.6)
+      builder.node(:ccs_plant_1).slots.out.add(:gas, share: 0.6)
     end
 
     it 'captures 50 on CCS Plant #1' do
