@@ -9,7 +9,8 @@
 #
 RSpec::Matchers.define(:have_query_value) do |attribute, expected|
   match do |object|
-    values_match?(expected, object.query.public_send(attribute))
+    @actual_value = object.query.public_send(attribute)&.round(6)
+    values_match?(expected.round(6), @actual_value)
   end
 
   description do
@@ -18,7 +19,7 @@ RSpec::Matchers.define(:have_query_value) do |attribute, expected|
 
   failure_message do |object|
     "  object: #{object.inspect} #{attribute}\n" \
-    "expected: #{expected.inspect}\n" \
-    "     got: #{object.query.public_send(attribute).inspect}"
+    "expected: #{expected.round(6).inspect}\n" \
+    "     got: #{@actual_value.inspect}"
   end
 end
