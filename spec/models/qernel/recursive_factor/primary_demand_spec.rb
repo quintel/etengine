@@ -132,7 +132,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryDemand do
     include_examples 'zero carrier-specific primary demands'
   end
 
-  xcontext 'when the middle node has two output conversions, each of 0.6' do
+  context 'when the middle node has two output conversions, each of 0.6' do
     # When the sum of output conversions exceed 1.0, the conversion is normalized so that it
     # represents a percentage of the total (two outputs with conversion of 0.6 result in effective
     # conversions of 0.5 each).

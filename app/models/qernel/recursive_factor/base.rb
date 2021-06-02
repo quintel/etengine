@@ -69,7 +69,7 @@ module Qernel::RecursiveFactor::Base
         # "compensation factor" to include losses.
         #
         # See https://github.com/quintel/etengine/issues/518.
-        loss_compensation_factor = parent.query.loss_compensation_factor
+        parent_output_compensation_factor = parent.query.output_compensation_factor
 
         # What part is considered to be contributing to the outcome?
         # (e.g. 80% when free_co2_factor is 20%). This is 100% when the
@@ -79,7 +79,7 @@ module Qernel::RecursiveFactor::Base
         if demanding_share.zero?
           # The node has no demand, we can safely omit it.
           0.0
-        elsif loss_compensation_factor.zero?
+        elsif parent_output_compensation_factor.zero?
           # The node is 100% loss, so there is no point in recursing
           # further on this edge.
           0.0
@@ -93,7 +93,7 @@ module Qernel::RecursiveFactor::Base
             include_abroad: include_abroad
           )
 
-          demanding_share * loss_compensation_factor *
+          demanding_share * parent_output_compensation_factor *
             node_share * parent_value
         end
       end
@@ -239,13 +239,33 @@ module Qernel::RecursiveFactor::Base
     @domestic_dead_end
   end
 
-  # Public: The loss compensation factor is the amount by which we must
-  # multiply the demand of a edge in order to account for the losses of the
-  # parent (right-hand) node.
+  # Public: A combination of output and loss output compensation factors.
   #
-  # A factor of 0.0 means that the node is 100% loss. A factor of
-  # precisely 1.0 indicates the node has zero loss, while a factor
-  # greater than one means that the node has *some* loss.
+  # Allows the adjustment of recursivelly calculated values for loss outputs, and nodes where the
+  # sum of outputs exceed 1.
+  #
+  # This is used in `recursive_factor`, but not `recursive_factor_without_losses`.
+  #
+  # ### Why compensate for losses?
+  #
+  # When a supplier node has 200 demand, gives 100 to a consumer and loses 100, we need to
+  # compensate for this loss. When calculating the primary demand on the consumer node, we want to
+  # know how much energy was needed on the supplier to provide 100 to the consumer. Losses are
+  # therefore _included_ in the resulting value: the supplier has 200 primary demand.
+  #
+  # See Base#loss_compensation_factor
+  # See Base#output_efficiency_compensation_factor
+  def output_compensation_factor
+    fetch(:output_compensation_factor) do
+      loss_compensation_factor * output_efficiency_compensation_factor
+    end
+  end
+
+  # Public: The loss compensation factor is the amount by which we must multiply the demand of a
+  # edge in order to account for the losses of the parent (right-hand) node.
+  #
+  # A factor of 0.0 means that the node is 100% loss. A factor of precisely 1.0 indicates the node
+  # has zero loss, while a factor greater than one means that the node has *some* loss.
   #
   # For example:
   #
@@ -267,54 +287,49 @@ module Qernel::RecursiveFactor::Base
   #
   # Returns a float.
   def loss_compensation_factor
-    fetch(:loss_compensation_factor) do
-      loss_conversion = loss_output_conversion
-      loss_conversion == 1.0 ? 0.0 : (1.0 / (1.0 - loss_conversion))
-    end
+    loss_conversion = loss_output_conversion
+    loss_conversion == 1.0 ? 0.0 : (1.0 / (1.0 - loss_conversion))
   end
 
-  # Public: In contrast to edge.share, demanding_share takes also into account
-  # losses and zero-demands.
+  # Internal: Factor which compensates for output efficiencies greater than zero.
   #
-  # For example:
+  # When the sum of non-loss outputs exceed 1.0, more energy leaves the node than enters. This is
+  # typically the result of conversions being used to model output efficiency. In these situations
+  # recursive_factor will return values which are too high.
   #
-  #   # +--------------+ <--(key:ab_heat share:0.0 carrier:heat)-- +---+
-  #   # | A (5 demand) | <--(key:ab_elec share:0.9 carrier:elec)-- | B |
-  #   # +--------------+ <--(key:ab_loss share:0.1 carrier:loss)-- +---+
+  # For example, imagine a supplier which outputs 60% of its input as electricity, and 60% as heat.
   #
-  #   ab_heat.share            # => 0.0
-  #   demanding_share(ab_heat) # => 0.0 (edge has no demand [share is 0.0])
+  #                 [Supplier = 100]
+  #                     /      \
+  #      [Electricity = 60]  [Heat = 60]
   #
-  #   ab_elec.share            # => 0.8
-  #   demanding_share(ab_elec) # => 0.8
+  # The primary demand of the electricity node is 50: 50 energy is needed on the supplier to produce
+  # 60 electricity.
   #
-  #   ab_loss.share            # => 0.1
-  #   demanding_share(ab_loss) # => 0.0 (carrier is :loss)
+  # The output efficiency compensation factor is a value which may be used in recursive factor
+  # calculations to fix this error. In this example, the factor will be 0.833... the number which
+  # 60 must be multiplied by to get the correct value of 50.
   #
-  #   # +--------------+                                           +---+
-  #   # | X (0 demand) | <--(key:xy_elec share:0.9 carrier:elec)-- | Y |
-  #   # +--------------+                                           +---+
+  # When the sum of non-loss outputs is less than one, no compensation is needed and this method
+  # always returns 1.0.
   #
-  #   xy_elec.share            # => 0.8
-  #   demanding_share(xy_elec) # => 0.0 (node has no share)
+  # Returns a numeric.
+  def output_efficiency_compensation_factor
+    factor = outputs.sum { |output| output.loss? ? 0.0 : output.conversion }
+    factor > 1 ? 1.0 / factor : 1.0
+  end
+
+  # Public: The parent share of the edge.
+  #
+  # Always returns 0.0 when the edge represents loss (preventing further recursion) or if the share
+  # is incalculable.
   #
   # Returns a float.
   def demanding_share(edge)
     return 0.0 if edge.loss?
 
     demanding_share = (edge.demand || 0.0) / (demand || 0.0)
-
-    if demanding_share.nan? || demanding_share.infinite?
-      demanding_share = 0.0
-    elsif edge.rgt_output.conversion > 1.0
-      # When the node to the right has a conversion higher than 1.0 it is outputting more energy
-      # (due to an output efficiency) than it has as input. To correctly propagate values from the
-      # right of the graph to the left, the share must be adjusted to effectively cap the conversion
-      # to a max of 1.0.
-      demanding_share /= edge.rgt_output.conversion
-    end
-
-    demanding_share
+    demanding_share.nan? || demanding_share.infinite? ? 0.0 : demanding_share
   end
 
   # Public: Determines the weighting to be assigned to this node when doing
@@ -328,5 +343,4 @@ module Qernel::RecursiveFactor::Base
   def node_share(method)
     method.nil? ? 1.0 : (public_send(method) || 0.0)
   end
-
 end
