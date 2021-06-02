@@ -82,7 +82,7 @@ end
 group :test, :development do
   gem 'pry-byebug'
   gem 'pry-rails'
-  gem 'rspec-rails', '~> 3.7'
+  gem 'rspec-rails', '~> 5.0'
   gem 'watchr'
   gem 'binding_of_caller'
 
