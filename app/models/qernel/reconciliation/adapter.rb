@@ -62,6 +62,18 @@ module Qernel
       # Returns nothing.
       def inject!(_calculator); end
 
+      # Public: Performs actions prior to the recalculation of the graph triggered by Causality.
+      #
+      # Note that most adapters will not have been configured - let alone calculated - at this
+      # point. Changes to the graph are only possible when you are sure the adapter and its node
+      # will not be influenced by any change resulting from Merit/Fever.
+      #
+      # You should only implement this method when the `demand_phase` is `:manual` and you will
+      # trigger the adapter set-up manually.
+      #
+      # Returns nothing.
+      def before_graph_recalculation!; end
+
       private
 
       def calculate_carrier_demand

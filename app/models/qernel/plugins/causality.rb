@@ -85,6 +85,12 @@ module Qernel::Plugins
       @fever.inject_values!
       @heat_network.inject_values!
       @merit.inject_values!
+
+      # Adapters which need to make changes to the graph must do so prior to its re-calculation.
+      #
+      # Note that Reconciliation has not been calculated at this point; only adapters whose demands
+      # are not changed by Fever/Merit can perform this action.
+      @reconciliation.before_graph_recalculation
     end
 
     # Internal: Calculate and inject "Reconciliation" curves.
