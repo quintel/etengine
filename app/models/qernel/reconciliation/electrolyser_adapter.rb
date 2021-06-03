@@ -32,6 +32,8 @@ module Qernel
 
         # Pre-compute electricity while demand is set on the node.
         max_available_electricity
+
+        setup(phase: demand_phase)
       end
 
       # Public: Capacity-limited demand curve describing the amount of
@@ -44,9 +46,7 @@ module Qernel
         end
       end
 
-      def inject!(*)
-        super
-
+      def before_graph_recalculation!
         return if carrier_demand.zero?
 
         @node.demand =
@@ -64,6 +64,10 @@ module Qernel
       end
 
       private
+
+      def demand_phase
+        :manual
+      end
 
       # Internal: The maximum amount of electricity available for conversion to
       # the carrier.

@@ -32,6 +32,11 @@ module Qernel
         setup_adapters(phase: :final)
       end
 
+      # Public: Assigns electrolyzer shares prior to graph recalculation.
+      def before_graph_recalculation
+        each_adapter(&:before_graph_recalculation!)
+      end
+
       # Public: Sets up and returns the time-resolved reconciliation calculator.
       # Memoizes after the first call.
       #

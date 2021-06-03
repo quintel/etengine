@@ -29,6 +29,15 @@ module Qernel
         end
       end
 
+      # Internal: A hook which is called by Causality prior to the recalculation of the energy
+      # graph.
+      #
+      # This is needed to allow electrolyzers to set the shares of some edges prior to the graph
+      # being recalculated.
+      def before_graph_recalculation
+        @managers.each(&:before_graph_recalculation)
+      end
+
       private
 
       def create_manager(graph, carrier, node_key_map)
