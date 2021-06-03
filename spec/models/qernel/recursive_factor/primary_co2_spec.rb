@@ -49,7 +49,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
-      pending { is_expected.to have_query_value(:sustainability_share, 0.25) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
   end
 
@@ -263,7 +263,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
-      pending { is_expected.to have_query_value(:sustainability_share, 0.25) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
   end
 
@@ -290,7 +290,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
-      pending { is_expected.to have_query_value(:sustainability_share, 0.25) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
   end
 
@@ -315,7 +315,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
-      pending { is_expected.to have_query_value(:sustainability_share, 0.25) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
   end
 end
