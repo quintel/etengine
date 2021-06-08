@@ -21,10 +21,41 @@ module Qernel
 
       def inject!
         install_demand!
+        inject_self_shares!
         inject_curve!(:output) { @participant.load_curve }
       end
 
       private
+
+      def inject_self_shares!
+        return unless @config.subtype == :must_run
+        return unless @config.group.to_s.delete(' ') == 'self:electricity_output_curve'
+        return unless source_api.merit_order&.subtype == :dispatchable
+
+        # This heat producer is also part of the electricity merit order, where it behaves as a
+        # dispatchable. Since it is dispatchable, the electricity load for hour n is not known until
+        # the heat network is calculated for n + 1. Therefore the last hour of electricity doesn't
+        # generate any heat in the network.
+        #
+        # To ensure that the energy flows from the node are consistent with the hourly heat
+        # calculation, we must adjust the heat output.
+        #
+        # See https://github.com/quintel/etengine/issues/1175
+
+        heat_output = target_api.output(@context.carrier)
+
+        load_curve = @participant.load_curve
+        sum = load_curve.sum
+
+        # The last hour of heat is lost.
+        excess = load_curve.get(8760)
+
+        return if sum.zero? || excess.zero?
+
+        excess_share = heat_output.conversion * (excess / (sum + excess))
+
+        heat_output.conversion -= excess_share
+      end
 
       def producer_attributes
         attrs = super
