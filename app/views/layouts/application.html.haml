@@ -1,7 +1,14 @@
 !!! 5
 %html{:lang => 'en'}
   %head
-    %title EnergyTransitionModel
+    %title
+      - if @api_scenario && @api_scenario.title != 'API'
+        = @api_scenario.title
+        \-
+      - if content_for?(:title)
+        = content_for(:title)
+        \-
+      EnergyTransitionModel
     = javascript_include_tag 'application'
     - if current_user
       = javascript_include_tag '/inspect/search.js'

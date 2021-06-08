@@ -1,3 +1,5 @@
+- content_for(:title, "#{params[:graph_name].singularize.humanize} Nodes")
+
 = render "inspect/shared/inspect_subnav"
 
 - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)

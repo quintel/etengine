@@ -1,3 +1,5 @@
+- content_for(:title, params[:query].to_s.gsub(/[\s\n]/, '').truncate(40).presence || 'Debug')
+
 = render 'subnav'
 
 .row
