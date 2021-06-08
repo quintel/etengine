@@ -15,7 +15,7 @@ module Qernel
 
       def to_a
         if @values.last.present?
-          @values.dup
+          @values.length > length ? @values[0...length] : @values.dup
         else
           Array.new(length) { |frame| get(frame) }
         end
