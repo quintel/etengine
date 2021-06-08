@@ -220,9 +220,30 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it do
         expect(subject).to have_query_value(
           :sustainability_share,
-          0.25 * 0.8 + # From natural_gas
-            0.1 * 0.8  # From electricity
+          0.25 * 0.5 + # From natural_gas
+            0.1 * 0.5  # From electricity
         )
+      end
+    end
+
+    context 'when sustainability shares are 0.75' do
+      subject { graph.node(:left) }
+
+      before do
+        builder.node(:right).set(:sustainability_share, 0.75)
+        builder.node(:elec).set(:sustainability_share, 0.75)
+      end
+
+      it do
+        expect(subject).to have_query_value(:primary_demand_of_sustainable, 150)
+      end
+
+      it do
+        expect(subject).to have_query_value(:primary_demand_of_fossil, 50)
+      end
+
+      it do
+        expect(subject).to have_query_value(:sustainability_share, 0.75)
       end
     end
   end
@@ -239,7 +260,56 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
-      pending { is_expected.to have_query_value(:sustainability_share, 0.25) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the middle node has inputs natural_gas=0.4 and electricity=0.4' do
+    # "left" and "middle" have a demand of 250, while "right" and "elec" each have 100.
+    before do
+      builder.node(:middle).slots.in(:natural_gas).set(:share, 0.4)
+      builder.node(:middle).slots.in.add(:electricity, share: 0.4)
+
+      builder.add(:elec, groups: %i[primary_energy_demand], sustainability_share: 0.1)
+      builder.connect(:elec, :middle, :electricity)
+
+      builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.25)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_co2_emission,
+          100 * 0.5 +  # From natural_gas
+            100 * 0.25 # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_demand_of_sustainable,
+          100 * 0.25 + # From natural_gas
+            100 * 0.1  # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :primary_demand_of_fossil,
+          100 * 0.75 + # From natural_gas
+            100 * 0.9  # From electricity
+        )
+      end
+
+      it do
+        expect(subject).to have_query_value(
+          :sustainability_share,
+          0.25 * 0.5 + # From natural_gas
+            0.1 * 0.5  # From electricity
+        )
+      end
     end
   end
 

@@ -3,7 +3,7 @@ module Qernel::RecursiveFactor::Sustainable
   # attribute.
   def primary_demand_of_sustainable
     fetch(:primary_demand_of_sustainable) do
-      (demand || 0.0) * recursive_factor(:sustainable_factor)
+      primary_demand * sustainability_share
     end
   end
 
@@ -12,7 +12,7 @@ module Qernel::RecursiveFactor::Sustainable
   # i.e. (primary_demand - primary_demand_of_sustainable)
   def primary_demand_of_fossil
     fetch(:primary_demand_of_fossil) do
-      primary_demand - recursive_factor(:sustainable_factor) * (demand || 0.0)
+      primary_demand * (1.0 - sustainability_share)
     end
   end
 
@@ -22,7 +22,7 @@ module Qernel::RecursiveFactor::Sustainable
   # A.sustainability_share == 0.4*0.85 + 0.6 * 1.0
   def sustainability_share
     fetch(:sustainability_share_calc, false) do
-      recursive_factor_without_losses(:sustainability_share_factor)
+      recursive_factor_without_losses(:sustainability_share_factor, value_type: :value)
     end
   end
 
@@ -35,32 +35,7 @@ module Qernel::RecursiveFactor::Sustainable
     # If the node has a sustainability share which has been explicitly
     # set (through research data or a graph plugin), use that in preference to
     # the carrier sustainability.
-    share = query.dataset_get(:sustainability_share) || edge.carrier.sustainable
-
-    if share && edge.input.conversion > 1.0
-      # Adjust for slots with a greater than 1.0 conversion, which typically
-      # indicates input loss in storage (such as P2P batteries).
-      share / edge.input.conversion
-    else
-      share
-    end
-  end
-
-  def sustainable_factor(edge)
-    return 0.0 if domestic_dead_end? && !primary_energy_demand?
-    return nil unless primary_energy_demand?
-
-    edge ||= output_edges.first
-
-    if query.dataset_get(:sustainability_share)
-      query.dataset_get(:sustainability_share)
-    elsif infinite?
-      (1 - loss_output_conversion)
-    elsif edge && edge.carrier.sustainable
-      edge.carrier.sustainable
-    else
-      0.0
-    end
+    query.dataset_get(:sustainability_share) || edge.carrier.sustainable || 0.0
   end
 
   # Total amount of energy that are losses

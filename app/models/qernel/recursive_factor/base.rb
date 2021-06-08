@@ -105,23 +105,37 @@ module Qernel::RecursiveFactor::Base
   # Public: Calculates the recursive factor without including losses in the
   # calculations.
   #
-  # WARNING: This method should only be used for attributes unrelated to
-  # demand. See the exceptions in the code for why.
+  # WARNING: This method should only be used for attributes unrelated to demand.
   #
-  # strategy_method        - The method name that controls the flow.
+  # strategy_method   - The method name that controls the flow.
+  # node_share_method - Additional method_name that gives a weight to a node. For example, use
+  #                     `co2_factor` to exclude nodes that have co2 filters.
+  # edge              - The edge through which we called the recursive_factor (this is nil for the
+  #                     first node; recursive_factor uses it internally).
+  # type:             - See "value types".
+  # *args             - Additional arguments passed along to the strategy method.
   #
-  # node_share_method - Additional method_name that gives a weight to a
-  #                          node. For example, use #co2_factor to
-  #                          exclude nodes that have co2 filters.
+  # See `recursive_factor` for more information.
   #
-  # edge                   - The edge through which we called the
-  #                          recursive_factor (this is nil for the first
-  #                          node; recursive_factor uses it internally).
+  # ### Value types
   #
-  # *args                  - Additional arguments passed along to the strategy
-  #                          method.
+  # `recursive_factor_without_losses` is typically used to calculate a factor describing the shares
+  # and conversions for a path between the current node and a terminal node on the right of the
+  # graph. These factors are then multiplied by a value from the current node to get a final value.
   #
-  # See +recursive_factor+ for more information.
+  # When instead you intend to read a value from the terminal node, propagating that value back
+  # towards the the current node, `type` should be set to `:value` so that input shares can be
+  # compensated for. This is because input efficiencies would otherwise influence the propagated
+  # value:
+  #
+  #     +----------+ - - - - - +      + - - - - - +----------+
+  #     | Consumer | gas @ 0.6 |  <-  | gas @ 1.0 | Producer |
+  #     +----------+ - - - - - +      + - - - - - +----------+
+  #
+  # If the producer has a `sustainability_share` of 0.5, then so should the consumer, since the
+  # producer is the sole supplier of energy. However, if `type` is _not_ set to `:value` and instead
+  # remains as `:factor`, the producer sustainability share will be multiplied by 0.6, resulting in
+  # the wrong recursive value on the consumer of 0.5 * 0.6 = 0.3.
   #
   # Returns a float.
   def recursive_factor_without_losses(
@@ -129,7 +143,8 @@ module Qernel::RecursiveFactor::Base
     node_share_method = nil,
     edge = nil,
     *args,
-    include_abroad: false
+    include_abroad: false,
+    value_type: :factor
   )
     if (!include_abroad && abroad?) || recursive_factor_ignore?
       0.0
@@ -199,10 +214,12 @@ module Qernel::RecursiveFactor::Base
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
             strategy_method, node_share_method, edge, *args,
-            include_abroad: include_abroad
+            include_abroad: include_abroad,
+            value_type: value_type
           )
 
-          edge_share * parent_value * parent_conversion
+          edge_share * parent_value * parent_conversion *
+            (value_type == :value ? input_compensation_factor : 1.0)
         end
       end
 
@@ -317,6 +334,16 @@ module Qernel::RecursiveFactor::Base
   def output_efficiency_compensation_factor
     factor = outputs.sum { |output| output.loss? ? 0.0 : output.conversion }
     factor > 1 ? 1.0 / factor : 1.0
+  end
+
+  # Internal: Used only by `recursive_factor_without_losses` when propagating values, this ensures
+  # that value are preserved even when the node has inputs which don't sum to 1.0.
+  #
+  # See "Value types" for `recursive_factor_without_losses`.
+  #
+  # Returns a numeric.
+  def input_compensation_factor
+    1.0 / inputs.sum(&:conversion)
   end
 
   # Public: The parent share of the edge.
