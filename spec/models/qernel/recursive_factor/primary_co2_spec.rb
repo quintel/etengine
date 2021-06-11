@@ -313,6 +313,32 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
     end
   end
 
+  context 'when the middle node has inputs natural_gas=1.0 and coupling_carrier=1.0' do
+    # Coupling carrier does not count.
+    before do
+      builder.node(:middle).slots.in(:natural_gas).set(:share, 1.0)
+      builder.node(:middle).slots.in.add(:coupling_carrier, share: 1.0)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
   context 'when the right node has outputs natural_gas=2.0' do
     before do
       builder.node(:right).slots.out(:natural_gas).set(:share, 2.0)

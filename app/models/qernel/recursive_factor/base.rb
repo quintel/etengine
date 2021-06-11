@@ -332,7 +332,10 @@ module Qernel::RecursiveFactor::Base
   #
   # Returns a numeric.
   def output_efficiency_compensation_factor
-    factor = outputs.sum { |output| output.loss? ? 0.0 : output.conversion }
+    factor = outputs.sum do |output|
+      output.carrier.loss? || output.carrier.coupling_carrier? ? 0.0 : output.conversion
+    end
+
     factor > 1 ? 1.0 / factor : 1.0
   end
 
@@ -343,7 +346,7 @@ module Qernel::RecursiveFactor::Base
   #
   # Returns a numeric.
   def input_compensation_factor
-    1.0 / inputs.sum(&:conversion)
+    1.0 / inputs.sum { |input| input.carrier.coupling_carrier? ? 0.0 : input.conversion }
   end
 
   # Public: The parent share of the edge.
