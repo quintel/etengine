@@ -156,6 +156,25 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryDemand do
     include_examples 'zero carrier-specific primary demands'
   end
 
+  context 'when the middle node has two output conversions, natural_gas=1 coupling_carrier=1' do
+    # Coupling carrier does not count.
+    before do
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 1.0)
+      builder.node(:middle).slots.out.add(:coupling_carrier, share: 1.0)
+    end
+
+    it { expect(left).to have_query_value(:primary_demand, 100) }
+    it { expect(left).to have_query_value(:primary_demand_of_natural_gas, 100) }
+
+    it { expect(middle).to have_query_value(:primary_demand, 100) }
+    it { expect(middle).to have_query_value(:primary_demand_of_natural_gas, 100) }
+
+    it { expect(right).to have_query_value(:primary_demand, 100) }
+    it { expect(right).to have_query_value(:primary_demand_of_natural_gas, 100) }
+
+    include_examples 'zero carrier-specific primary demands'
+  end
+
   context 'when the right (PD) node has 20% loss' do
     # Energy lost on the PD node itself (but not others on the path) is not counted towards primary
     # demand.
