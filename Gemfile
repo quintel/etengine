@@ -49,7 +49,7 @@ gem 'msgpack'
 gem 'parallel'
 
 # own gems
-gem 'quintel_merit', ref: '1ebfc82', github: 'quintel/merit'
+gem 'quintel_merit', ref: 'a1c9170', github: 'quintel/merit'
 
 gem 'atlas',         ref: '0546b99', github: 'quintel/atlas'
 gem 'fever',         ref: 'f80677d', github: 'quintel/fever'

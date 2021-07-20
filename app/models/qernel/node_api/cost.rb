@@ -70,7 +70,8 @@ module Qernel
       def marginal_costs
         fetch(:marginal_costs) do
           variable_costs_per_typical_input(include_waste: false) *
-            SECS_PER_HOUR / electricity_output_conversion
+            SECS_PER_HOUR / # Highlighting
+            (output(:electricity) ? electricity_output_conversion : 1.0)
         end
       end
 

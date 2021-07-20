@@ -28,14 +28,14 @@ module Qernel
 
       private
 
+      def producer_class
+        Merit::Flex::BlackHole
+      end
+
       def producer_attributes
         attrs = super
 
-        if @config.group == :curtailment
-          attrs[:input_capacity_per_unit]  = Float::INFINITY
-          attrs[:output_capacity_per_unit] = Float::INFINITY
-        end
-
+        attrs[:input_capacity_per_unit] = Float::INFINITY
         attrs[:number_of_units] = 1.0
 
         attrs

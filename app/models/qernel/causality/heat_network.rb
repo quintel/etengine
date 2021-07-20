@@ -22,17 +22,6 @@ module Qernel
         Etsource::Config.flexibility_groups(@context.attribute)
       end
 
-      def sort_nodes(type, nodes)
-        if type == :flex
-          # Curtailment always comes last.
-          nodes.sort_by do |conv|
-            @context.node_config(conv).group == :curtailment ? 1 : 0
-          end
-        else
-          nodes
-        end
-      end
-
       def etsource_data
         Etsource::MeritOrder.new.import_heat_network
       end

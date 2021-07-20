@@ -130,7 +130,7 @@ module Qernel::Plugins
     def nodes(type, subtype)
       type_data = etsource_data[type.to_s]
 
-      nodes = (type_data || {}).map do |key, profile|
+      (type_data || {}).map do |key, profile|
         node = @graph.node(key)
 
         if !subtype.nil? && @context.node_config(node).subtype != subtype
@@ -141,8 +141,6 @@ module Qernel::Plugins
 
         node
       end.compact
-
-      sort_nodes(type, nodes)
     end
 
     # Internal: Fetches the adapter matching the given participant `key`.
@@ -150,24 +148,6 @@ module Qernel::Plugins
     # Returns a MeritFacade::Adapter or nil.
     def adapter(key)
       adapters[key]
-    end
-
-    # Internal: Given the flexible merit order participant nodes, sorts
-    # them to match to FlexibilityOrder assigned to the current scenario.
-    #
-    # Returns an array of Qernel::Node.
-    def sort_nodes(type, nodes)
-      return nodes unless type == :flex
-
-      order = @graph.flexibility_order.map(&:to_sym)
-      index = -1
-
-      nodes.sort_by do |conv|
-        [
-          order.index(@context.node_config(conv).group) || Float::INFINITY,
-          index += 1 # Ensure stable sort.
-        ]
-      end
     end
 
     def household_heat
