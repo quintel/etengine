@@ -197,6 +197,12 @@ describe 'Qernel::NodeApi cost calculations' do
         electricity_output_conversion: 0.5
       )
 
+      node.add_slot(
+        Qernel::Slot.factory(
+          nil, 1, node, Qernel::Carrier.new(key: :electricity), :output
+        )
+      )
+
       expect(node.node_api.send(:marginal_costs)).to eq(720_000.0)
     end
   end
