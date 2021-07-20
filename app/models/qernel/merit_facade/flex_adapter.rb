@@ -90,7 +90,7 @@ module Qernel
       end
 
       def marginal_costs
-        @context.dispatchable_sorter.cost(@node, @config)
+        @context.dispatchable_sorter.cost(source_api, @config)
       end
 
       # Internal: Sets demand and related attributes on the target API.
