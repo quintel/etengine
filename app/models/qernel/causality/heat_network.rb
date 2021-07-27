@@ -18,10 +18,6 @@ module Qernel
 
       private
 
-      def flex_groups
-        Etsource::Config.flexibility_groups(@context.attribute)
-      end
-
       def etsource_data
         Etsource::MeritOrder.new.import_heat_network
       end
