@@ -148,7 +148,7 @@ RSpec.describe Scenario::YearInterpolator do
     end
   end
 
-  context 'when the scenario has a flexibility order' do
+  context 'when the scenario has a heat network order' do
     let(:source) do
       FactoryBot.create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
@@ -158,26 +158,26 @@ RSpec.describe Scenario::YearInterpolator do
     end
 
     let(:techs) do
-      FlexibilityOrder.default_order.shuffle
+      HeatNetworkOrder.default_order.shuffle
     end
 
     let(:interpolated) { described_class.call(source, 2040) }
 
     before do
-      FlexibilityOrder.create!(scenario: source, order: techs)
+      HeatNetworkOrder.create!(scenario: source, order: techs)
     end
 
-    it 'creates a flexibility order for the interpolated scenario' do
-      expect(interpolated.flexibility_order).not_to be_nil
+    it 'creates a heat network order for the interpolated scenario' do
+      expect(interpolated.heat_network_order).not_to be_nil
     end
 
-    it 'does not reuse the original flexibility order' do
-      expect(interpolated.flexibility_order.id)
-        .not_to eq(source.flexibility_order.id)
+    it 'does not reuse the original heat network order' do
+      expect(interpolated.heat_network_order.id)
+        .not_to eq(source.heat_network_order.id)
     end
 
-    it 'copies the flexibility order attributes' do
-      expect(interpolated.flexibility_order.order).to eq(techs)
+    it 'copies the heat network order attributes' do
+      expect(interpolated.heat_network_order.order).to eq(techs)
     end
   end
 end
