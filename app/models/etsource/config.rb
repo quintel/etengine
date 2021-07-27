@@ -36,13 +36,6 @@ module Etsource
       read('fever').map(&:to_sym)
     end
 
-    # Public: Reads the flexibility order options.
-    #
-    # Returns an array of strings.
-    def flexibility_order
-      read('flexibility_order')
-    end
-
     # Public: Reads the order of dispatchables to be used in the heat network.
     #
     # Returns an array of strings.

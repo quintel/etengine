@@ -37,11 +37,12 @@ Rails.application.routes.draw do
 
         resources :inputs, :only => [:index, :show]
 
-        resource :flexibility_order, only: [:show, :update],
-          controller: :user_sortables, sortable_type: :flexibility
+        # Flexibility orders have been removed. Endpoint returns a 404 with a useful message.
+        get   '/flexibility_order', to: 'removed_features#flexibility_order'
+        put   '/flexibility_order', to: 'removed_features#flexibility_order'
+        patch '/flexibility_order', to: 'removed_features#flexibility_order'
 
-        resource :heat_network_order, only: [:show, :update],
-          controller: :user_sortables, sortable_type: :heat_network
+        resource :heat_network_order, only: [:show, :update], controller: :heat_network_orders
 
         resources :custom_curves, only: %i[index show update destroy],
           constraints: { id: %r{[a-z\d_\-/]+} }
