@@ -29,7 +29,6 @@ class Inspect::ScenariosController < Inspect::BaseController
 
       update_user_sortables!(
         user_sortable_attributes,
-        flexibility_order: @scenario.flexibility_order,
         heat_network_order: @scenario.heat_network_order
       )
     end
@@ -62,7 +61,6 @@ class Inspect::ScenariosController < Inspect::BaseController
 
       update_user_sortables!(
         user_sortable_attributes,
-        flexibility_order: @scenario.flexibility_order,
         heat_network_order: @scenario.heat_network_order
       )
 
@@ -86,13 +84,12 @@ class Inspect::ScenariosController < Inspect::BaseController
     attrs = params.require(:scenario).permit!
     attrs[:protected] = attrs[:protected] == '1'
 
-    attrs.except(:flexibility_order, :heat_network_order)
+    attrs.except(:heat_network_order)
   end
 
   def user_sortable_attributes
     params.require(:scenario).permit(
-      heat_network_order: [:order],
-      flexibility_order: [:order]
+      heat_network_order: [:order]
     )
   end
 
