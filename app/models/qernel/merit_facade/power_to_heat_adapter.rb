@@ -41,9 +41,6 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        attrs[:excess_share] = excess_share
-        attrs[:group] = @config.group
-
         if source_api.number_of_units.positive?
           # Swap back to the slower Reserve which supports decay.
           attrs[:reserve_class] = Merit::Flex::Reserve
@@ -94,31 +91,6 @@ module Qernel
 
       def total_demand
         @context.graph.node(@config.demand_source).node_api.demand
-      end
-
-      # Internal: Participants belonging to a group with others should receive
-      # a share of excess proportional to their capacity.
-      #
-      # Returns a numeric.
-      def excess_share
-        self_cap = source_api.input_capacity * source_api.number_of_units
-        group_cap = 0.0
-
-        return 0.0 if self_cap.zero?
-
-        # Find all flex nodes belonging to the same group.
-        @context.plugin.each_adapter do |adapter|
-          aconf = adapter.config
-          conv = adapter.node
-
-          next if aconf.group != @config.group || aconf.type != @config.type
-
-          group_cap += conv.input_capacity * conv.number_of_units
-        end
-
-        return 1.0 if group_cap.zero?
-
-        self_cap / group_cap
       end
     end
   end
