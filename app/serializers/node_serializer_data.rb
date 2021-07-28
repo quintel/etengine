@@ -274,7 +274,7 @@ module NodeSerializerData
   # add these
   HEAT_PUMP_ATTRIBUTES_AND_METHODS = {
     technical: {
-      coefficient_of_performance: { label: 'Coefficient of Performance', unit: '' },
+      coefficient_of_performance: { label: 'Coefficient of Performance', unit: 'COP' },
       heat_output_capacity: {
         label: 'Heat capacity per unit',
         unit: 'MW / unit',
