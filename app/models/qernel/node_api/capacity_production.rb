@@ -101,11 +101,19 @@ module Qernel
 
       def coefficient_of_performance
         fetch(:coefficient_of_performance) do
-          1 / (1 - (
-            ambient_heat_input_conversion +
-            ambient_cold_input_conversion +
-            geothermal_input_conversion
-          ))
+          if fever&.efficiency_based_on && fever&.efficiency_balanced_with
+            # When a Fever participant defines which carriers are used by a heat pump, use these
+            # rather than guessing.
+            heat_pump_coefficient_of_performance
+          else
+            non_ambient_share = 1 - (
+              ambient_heat_input_conversion +
+              ambient_cold_input_conversion +
+              geothermal_input_conversion
+            )
+
+            non_ambient_share <= 0 ? 1.0 : 1 / non_ambient_share
+          end
         end
       end
 
@@ -230,6 +238,23 @@ module Qernel
       # Returns a value in MJ.
       def typical_heat_production_per_unit
         heat_output_conversion * input_capacity * full_load_seconds if input_capacity
+      end
+
+      private
+
+      # Internal: Calculates the coefficienct of performance
+      def heat_pump_coefficient_of_performance
+        secondary_carriers = inputs.map { |input| input.carrier.key } -
+          [fever.efficiency_based_on, fever.efficiency_balanced_with]
+
+        primary_carrier = input(fever.efficiency_based_on)
+        secondary_conversions = secondary_carriers.sum { |carrier| input(carrier).conversion }
+
+        if primary_carrier.conversion.zero?
+          1.0
+        else
+          (1 - secondary_conversions) / primary_carrier.conversion
+        end
       end
     end
   end
