@@ -21,7 +21,7 @@ module Qernel::RecursiveFactor::Sustainable
   #
   # A.sustainability_share == 0.4*0.85 + 0.6 * 1.0
   def sustainability_share
-    fetch(:sustainability_share_calc, false) do
+    fetch(:sustainability_share, false) do
       recursive_factor_without_losses(:sustainability_share_factor, value_type: :value)
     end
   end
@@ -35,7 +35,10 @@ module Qernel::RecursiveFactor::Sustainable
     # If the node has a sustainability share which has been explicitly
     # set (through research data or a graph plugin), use that in preference to
     # the carrier sustainability.
-    query.dataset_get(:sustainability_share) || edge.carrier.sustainable || 0.0
+    query.dataset_get(:sustainability_share) ||
+      (infinite? && (1.0 - loss_output_conversion)) ||
+      edge.carrier.sustainable ||
+      0.0
   end
 
   # Total amount of energy that are losses

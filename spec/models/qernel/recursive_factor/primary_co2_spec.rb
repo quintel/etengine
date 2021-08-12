@@ -414,4 +414,22 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       it { is_expected.to have_query_value(:sustainability_share, 0.25) }
     end
   end
+
+  context 'when the right node has an infinite carrier and no sustainability values' do
+    before do
+      builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 1.0, infinite: true)
+
+      builder.node(:right).set(:sustainability_share, nil)
+      builder.node(:right).set(:share, 0.6)
+      builder.node(:right).slots.out.add(:loss, share: 0.4)
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 60) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 40) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.6) }
+    end
+  end
 end

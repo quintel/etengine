@@ -41,6 +41,8 @@ module Qernel
           allow(graph.node(:left).input_edges.first.carrier)
             .to receive(:sustainable).and_return(0.5)
 
+          graph.carrier(:useable_heat).with({})
+
           graph
         end
 
