@@ -240,6 +240,28 @@ module Qernel
         heat_output_conversion * input_capacity * full_load_seconds if input_capacity
       end
 
+      # Public: Returns the electricity output capacity of the node.
+      #
+      # If no value is assigned in the ETSource data, a capacity will attempt to be derived from the
+      # `typical_input_capacity`. Note that we do not call `input_capacity` and instead rely on the
+      # typical capacity, as `input_capacity` may itself call `electricity_output_capacity`.
+      def electricity_output_capacity
+        fetch(:electricity_output_capacity) do
+          typical_input_capacity ? typical_input_capacity * electricity_output_conversion : 0.0
+        end
+      end
+
+      # Public: Returns the heat output capacity of the node.
+      #
+      # If no value is assigned in the ETSource data, a capacity will attempt to be derived from the
+      # `typical_input_capacity`. Note that we do not call `input_capacity` and instead rely on the
+      # typical capacity, as `input_capacity` may itself call `heat_output_capacity`.
+      def heat_output_capacity
+        fetch(:heat_output_capacity) do
+          typical_input_capacity ? typical_input_capacity * heat_output_conversion : 0.0
+        end
+      end
+
       private
 
       # Internal: Calculates the coefficienct of performance
