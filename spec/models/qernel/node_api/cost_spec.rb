@@ -57,18 +57,6 @@ describe 'Qernel::NodeApi cost calculations' do
 
       expect(node.node_api.input_capacity).to eq(0)
     end
-
-    it 'raises error when incomplete' do
-      node.with(
-        electricity_output_conversion: 0.4,
-        electricity_output_capacity: nil,
-        heat_and_cold_output_conversion: nil,
-        heat_output_capacity: 400
-      )
-
-      expect { node.node_api.input_capacity }
-        .to raise_error(NoMethodError)
-    end
   end
 
   describe '#total_cost' do
