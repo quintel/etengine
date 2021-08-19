@@ -36,7 +36,7 @@ module Qernel::RecursiveFactor::Sustainable
     # set (through research data or a graph plugin), use that in preference to
     # the carrier sustainability.
     query.dataset_get(:sustainability_share) ||
-      (infinite? && (1.0 - loss_output_conversion)) ||
+      (infinite? && 1.0) ||
       edge.carrier.sustainable ||
       0.0
   end
