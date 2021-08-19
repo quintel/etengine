@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: a0374bab1d3e18d74a36d7dd2e4317e7544543b8
-  ref: a0374ba
+  revision: 2fb6a9da87f73a9eb158daccc8aaf5d8760fe543
+  ref: 2fb6a9d
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
@@ -24,8 +24,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: 8601c64bd214d3c6d846296ed90cf58fd8a7bac2
-  ref: 8601c64
+  revision: 1b16d742d84219da888efa64cae32fd5bb9ba84b
+  ref: 1b16d74
   specs:
     quintel_merit (0.1.0)
       terminal-table
