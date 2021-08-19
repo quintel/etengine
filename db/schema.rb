@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_30_132228) do
+ActiveRecord::Schema.define(version: 2021_08_19_121829) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
@@ -133,6 +133,7 @@ ActiveRecord::Schema.define(version: 2021_04_30_132228) do
     t.string "area_code"
     t.string "source"
     t.text "balanced_values", limit: 16777215
+    t.index ["created_at"], name: "index_scenarios_on_created_at"
   end
 
   create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
