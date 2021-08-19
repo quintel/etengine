@@ -5,6 +5,11 @@ module Qernel
     # Creates a merit order calculation for participants in the electricity
     # merit order.
     class Electricity < Qernel::MeritFacade::Manager
+      def setup
+        super
+        @order.fallback_price = @context.graph.carrier(@context.carrier).fallback_price
+      end
+
       private
 
       def inject_graph_values!

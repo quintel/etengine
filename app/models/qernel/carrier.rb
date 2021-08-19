@@ -91,6 +91,17 @@ class Carrier
     dataset_get(:cost_curve) || ([merit_order_cost_per_mj * 3600] * 8760)
   end
 
+  # Public: Sets the fallback price of the carrier.
+  #
+  # This is used by Merit to calculate the price of electricity when no participant can set the
+  # price; typically when all producers are running at full capacity. Attempting to set the fallback
+  # price on any other carrier will raise an error.
+  def fallback_price=(price)
+    raise "Cannot set fallback_price on #{@key} carrier" unless electricity?
+
+    dataset_set(:fallback_price, price)
+  end
+
   def ==(other)
     return false if other.nil?
     if other.is_a?(Symbol)
