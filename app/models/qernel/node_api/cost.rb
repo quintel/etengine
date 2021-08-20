@@ -75,6 +75,17 @@ module Qernel
         end
       end
 
+      # Public: Returns the maximum price the node is willing to pay for energy.
+      #
+      # This is used only by flexibility technologies which participate in the electricity merit
+      # order. A value may be defined in the ETSource data for the node, or by the user with an
+      # input. If neither, this defaults to returning the node's marginal costs.
+      #
+      # Returns the price per MWh.
+      def max_consumption_price
+        dataset_get(:max_consumption_price) || marginal_costs
+      end
+
       # Public: Set a marginal cost for the node (in euro /MWh), bypassing the normal marginal cost
       # calculation.
       #
@@ -326,7 +337,7 @@ module Qernel
         fetch(:co2_emissions_costs_per_typical_input) do
           weighted_carrier_co2_per_mj * area.co2_price *
             (1 - area.co2_percentage_free) *
-            takes_part_in_ets * ((1 - free_co2_factor))
+            (takes_part_in_ets || 1.0) * ((1 - free_co2_factor))
         end
       end
 
