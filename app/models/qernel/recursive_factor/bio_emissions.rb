@@ -45,23 +45,25 @@ module Qernel
         end
       end
 
-      private
-
-      # Internal: Determines the total amount of CO2 capturable by this node.
+      # Public: Calculates and returns the combined emissions of fossil and bio carriers caused by
+      # the node.
       #
-      # Note that the _actual_ amount of CO2 captured may be lower.
-      # See BioEmissions#captured_bio_emissions.
+      # Returns a numeric in kg.
+      def primary_co2_emission_of_bio_and_fossil
+        primary_co2_emission + primary_co2_emission_of_bio_carriers
+      end
+
+      # Public: Determines the total amount of bio-carrier CO2 emissions caused by the demand of
+      # this node.
       #
       # Returns a numeric in kg.
       def primary_co2_emission_of_bio_carriers
         fetch(:primary_co2_emission_of_bio_carriers) do
-          if ccs_capture_rate&.positive?
-            (demand || 0.0) * recursive_factor(:bio_co2_per_mj_factor)
-          else
-            0.0
-          end
+          (demand || 0.0) * recursive_factor(:bio_co2_per_mj_factor)
         end
       end
+
+      private
 
       # Internal: Determines the factor of CO2 which may be captured resulting from energy demand on
       # this node.
