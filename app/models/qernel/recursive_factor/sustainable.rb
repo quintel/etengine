@@ -35,10 +35,10 @@ module Qernel::RecursiveFactor::Sustainable
     # If the node has a sustainability share which has been explicitly
     # set (through research data or a graph plugin), use that in preference to
     # the carrier sustainability.
-    query.dataset_get(:sustainability_share) ||
-      (infinite? && 1.0) ||
-      edge.carrier.sustainable ||
-      0.0
+    share = query.dataset_get(:sustainability_share) || edge.carrier.sustainable
+
+    share ||
+      raise("Missing sustainability_share or carriers with sustainable value for #{key} node")
   end
 
   # Total amount of energy that are losses

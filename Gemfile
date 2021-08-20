@@ -51,7 +51,7 @@ gem 'parallel'
 # own gems
 gem 'quintel_merit', ref: '1ebfc82', github: 'quintel/merit'
 
-gem 'atlas',         ref: '0546b99', github: 'quintel/atlas'
+gem 'atlas',         ref: '184a502', github: 'quintel/atlas'
 gem 'fever',         ref: 'f80677d', github: 'quintel/fever'
 gem 'refinery',      ref: '72eacf8', github: 'quintel/refinery'
 gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'

@@ -58,27 +58,6 @@ module Qernel
           expect(sustainability).to eq(0.25 * 0.25)
         end
       end # two nodes connected with a systainable=0.5 carrier
-
-      context 'two nodes connected with a sustainable=0.5 carrier' do
-        let(:graph) do
-          layout = <<-LAYOUT.strip_heredoc
-            useable_heat: left(100) == s(0.25) ==> right
-          LAYOUT
-
-          graph = GraphParser.new(layout).build
-
-          allow(graph.node(:left).input_edges.first.carrier)
-            .to receive(:sustainable).and_return(nil)
-
-          graph
-        end
-
-        let(:sustainability) { graph.node(:left).query.sustainability_share }
-
-        it 'is 0' do
-          expect(sustainability).to eq(0)
-        end
-      end # two nodes connected with a systainable=nil carrier
     end
   end
 
