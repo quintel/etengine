@@ -85,6 +85,13 @@ module Qernel
       def max_consumption_price
         dataset_get(:max_consumption_price) || marginal_costs
       end
+      
+      # Public: Sets the maximum allowed price at which a flex technology will consume energy.
+      #
+      # Returns the price.
+      def max_consumption_price=(new_price)
+        dataset_set(:max_consumption_price, new_price)
+      end
 
       # Public: Set a marginal cost for the node (in euro /MWh), bypassing the normal marginal cost
       # calculation.
