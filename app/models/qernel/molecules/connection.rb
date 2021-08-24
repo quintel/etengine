@@ -24,7 +24,7 @@ module Qernel
         @config = config
 
         unless ALLOWED_ATTRIBUTES.include?(@config.attribute)
-          raise "Ilegal molecule conversion attribute: #{@config.attribute.inspect}"
+          raise "Illegal molecule conversion attribute: #{@config.attribute.inspect}"
         end
       end
 
