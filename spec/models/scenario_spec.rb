@@ -25,6 +25,13 @@ describe Scenario do
           .to raise_error(ActiveRecord::RecordNotFound)
       end
     end
+
+    context 'when the scenario ID exists and is nearly out-of-range' do
+      it 'returns the scenario' do
+        scenario = FactoryBot.create(:scenario, id: (1 << 31) - 1)
+        expect(described_class.find_for_calculation((1 << 31) - 1)).to eq(scenario)
+      end
+    end
   end
 
   describe "#default" do
