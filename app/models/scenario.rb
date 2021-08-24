@@ -113,6 +113,18 @@ class Scenario < ApplicationRecord
   #
   # Returns the Scenario, or raises ActiveRecord::RecordNotFound if the scenario does not exist.
   def self.find_for_calculation(id)
+    # where() doesn't raise RecordNotFound when the given ID is out-of-range (unlike find()). Detect
+    # an out-of-range ID...
+    id_attr = type_for_attribute(:id)
+    id = id_attr.cast(id)
+
+    if id.to_i >= 1 << (id_attr.limit * 8 - 1)
+      raise(
+        ActiveRecord::RecordNotFound,
+        "Couldn't find Scenario with an out of range value for 'id'"
+      )
+    end
+
     where(id: id).with_attachments.first!
   end
 
