@@ -20,9 +20,9 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
       builder.add(:ccs_plant_2, demand: 50, ccs_capture_rate: 0.5)
       builder.add(:normal_plant, demand: 50)
 
-      builder.add(:biomass_prod)
-      builder.add(:greengas_prod)
-      builder.add(:coal_prod)
+      builder.add(:biomass_prod, groups: [:primary_energy_demand])
+      builder.add(:greengas_prod, groups: [:primary_energy_demand])
+      builder.add(:coal_prod, groups: [:primary_energy_demand])
 
       builder.connect(:biomass_prod, :ccs_plant_1, :biomass)
       builder.connect(:greengas_prod, :ccs_plant_2, :greengas)
@@ -150,6 +150,28 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
 
     it 'Terminus inherits 37.5 captures CO2' do
       expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 37.5)
+    end
+  end
+
+  context 'when the CCS plants have capture and fossil emissions' do
+    before do
+      builder.carrier_attrs(:coal, co2_conversion_per_mj: 0.5)
+      builder.node(:ccs_plant_1).set(:ccs_capture_rate, 0.0)
+      builder.node(:ccs_plant_2).set(:ccs_capture_rate, 0.0)
+    end
+
+    it 'has 25 emissions on Terminus' do
+      # Comes from the "normal" plant.
+      expect(terminus).to have_query_value(:primary_co2_emission, 25.0)
+    end
+
+    it 'captures nothing on Terminus' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 0.0)
+    end
+
+    it 'has 100 CO2 and bio CO2 on Terminus' do
+      # 25 primary CO2 from the "normal" plant, and 75 via the two CCS plants.
+      expect(terminus).to have_query_value(:primary_co2_emission_of_bio_and_fossil, 100.0)
     end
   end
 end
