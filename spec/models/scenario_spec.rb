@@ -18,6 +18,13 @@ describe Scenario do
           .to raise_error(ActiveRecord::RecordNotFound)
       end
     end
+
+    context 'when the scenario ID is out-of-range' do
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect { described_class.find_for_calculation(1 << 31) }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   describe "#default" do
