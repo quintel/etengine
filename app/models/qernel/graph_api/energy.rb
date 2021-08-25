@@ -156,6 +156,8 @@ module Qernel
         conversion_loss        = node.output(:loss).conversion
         conversion_electricity = node.output(:electricity).conversion
 
+        return 0.0 if conversion_electricity.zero?
+
         (transformer_demand + own_use_of_sector) * conversion_loss / conversion_electricity
       end
 
