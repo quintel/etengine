@@ -4,10 +4,42 @@ module Qernel::RecursiveFactor::PrimaryCo2
       recursive_factor(:co2_per_mj_of_carrier_factor, nil, nil, carrier_key)
   end
 
+  # Public: Returns the total primary CO2 emissions due to fossil carriers minus any bio emissions
+  # captured on this or ancestor nodes.
+  #
+  # Returns a numeric in kg.
   def primary_co2_emission
     fetch(:primary_co2_emission) do
-      primary_demand_with(:co2_per_mj, :co2) - inherited_captured_bio_emissions
+      primary_co2_emission_of_fossil - inherited_captured_bio_emissions
     end
+  end
+
+  # Public: Returns the total primary CO2 emissions due to fossil carriers minus any "free"
+  # fossil CO2 (determined by the `free_co2_factor` of any ancestor nodes).
+  #
+  # Returns a numeric in kg.
+  def primary_co2_emission_of_fossil
+    fetch(:primary_co2_emission_of_fossil) do
+      primary_demand_with(:co2_per_mj, :co2)
+    end
+  end
+
+  # Public: Returns the total primary CO2 fossil emissions including any "free" CO2 on this or
+  # ancestor nodes (determined by the `free_co2_factor`).
+  #
+  # Returns a numeric in kg.
+  def primary_co2_emission_without_capture
+    fetch(:primary_co2_emission_without_capture) do
+      primary_demand_with(:co2_per_mj_without_capture)
+    end
+  end
+
+  # Public: Calculates and returns the combined emissions of fossil and bio carriers caused by
+  # the node _including_ any captured by CCS or otherwise ignored by the `free_co2_factor`.
+  #
+  # Returns a numeric in kg.
+  def primary_co2_emission_of_bio_and_fossil_without_capture
+    primary_co2_emission_without_capture + primary_co2_emission_of_bio_carriers
   end
 
   # TODO: Add documentation.
@@ -57,18 +89,31 @@ module Qernel::RecursiveFactor::PrimaryCo2
   # @return [Float]
   #   co2_per_mj of primary_energy_demand carrier
   #
-  def co2_per_mj_factor(edge)
+  # Accepts a `co2_free` keyword argument, which defaults to `free_co2_factor`. Normally,
+  # calculating the CO2 per MJ should omit any "free" CO2 (such as that which is captured). You may
+  # specify a custom value instead, such as when calculating the captured emissions.
+  #
+  def co2_per_mj_factor(edge, co2_free: free_co2_factor)
     return nil unless domestic_dead_end? || primary_energy_demand?
 
     edge ||= output_edges.first
 
     carrier = edge.nil? ? output_carriers.reject(&:loss?).first : edge.carrier
 
-    return 0.0 if free_co2_factor == 1.0 || carrier.co2_conversion_per_mj.nil?
+    return 0.0 if co2_free == 1.0 || carrier.co2_conversion_per_mj.nil?
 
-    co2_ex_free = edge.query.co2_per_mj -
-      (free_co2_factor * carrier.co2_conversion_per_mj)
+    co2_ex_free = edge.query.co2_per_mj - (co2_free * carrier.co2_conversion_per_mj)
 
     @node.primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0
+  end
+
+  # Internal: Calculates the factor (used by RF) of CO2 emitted by primary demand nodes without
+  # regard for the `free_co2_factor` attribute.
+  #
+  # See primary_co2_emission_without_capture
+  #
+  # Returns a numeric.
+  def co2_per_mj_without_capture_factor(edge)
+    co2_per_mj_factor(edge, co2_free: 0.0)
   end
 end

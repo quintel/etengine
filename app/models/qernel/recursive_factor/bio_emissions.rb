@@ -45,14 +45,6 @@ module Qernel
         end
       end
 
-      # Public: Calculates and returns the combined emissions of fossil and bio carriers caused by
-      # the node.
-      #
-      # Returns a numeric in kg.
-      def primary_co2_emission_of_bio_and_fossil
-        primary_co2_emission + primary_co2_emission_of_bio_carriers
-      end
-
       # Public: Determines the total amount of bio-carrier CO2 emissions caused by the demand of
       # this node.
       #

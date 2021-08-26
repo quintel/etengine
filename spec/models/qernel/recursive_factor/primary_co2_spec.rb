@@ -53,6 +53,66 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
     end
   end
 
+  describe 'when the right node has free_co2_factor=0.5' do
+    before do
+      builder.node(:right).set(:free_co2_factor, 0.5)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+    end
+  end
+
+  describe 'when the middle node has free_co2_factor=0.5' do
+    before do
+      builder.node(:middle).set(:free_co2_factor, 0.5)
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 25) }
+      it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
+    end
+  end
+
   context 'when the middle node conversions natural_gas=2.0' do
     before do
       builder.node(:middle).slots.out(:natural_gas).set(:share, 2.0)
@@ -77,7 +137,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
     end
   end
 
-  context 'when the middle node has converions natural_gas=0.5' do
+  context 'when the middle node has conversions natural_gas=0.5' do
     before do
       builder.node(:middle).slots.out(:natural_gas).set(:share, 0.5)
     end

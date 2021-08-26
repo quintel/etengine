@@ -171,7 +171,10 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
 
     it 'has 100 CO2 and bio CO2 on Terminus' do
       # 25 primary CO2 from the "normal" plant, and 75 via the two CCS plants.
-      expect(terminus).to have_query_value(:primary_co2_emission_of_bio_and_fossil, 100.0)
+      expect(terminus).to have_query_value(
+        :primary_co2_emission_of_bio_and_fossil_without_capture,
+        100.0
+      )
     end
   end
 end
