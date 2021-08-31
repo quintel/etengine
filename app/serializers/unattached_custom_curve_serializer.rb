@@ -4,19 +4,23 @@
 class UnattachedCustomCurveSerializer
   # Renders information about a file which can be attached to a scenario, but which currently has no
   # attachment.
-  def initialize(key)
-    @key = key
+  #
+  # config - A CurveHandler::Config.
+  def initialize(config)
+    @config = config
   end
 
   def as_json(*)
-    config = CurveHandler::Config.find(@key)
-
-    {
-      key: @key,
-      type: config.processor_key,
-      display_group: config.display_group,
+    data = {
+      key: @config.key,
+      type: @config.processor_key,
+      display_group: @config.display_group,
       attached: false,
-      overrides: config.input_keys
+      overrides: @config.input_keys
     }
+
+    data[:internal] = true if @config.internal?
+
+    data
   end
 end

@@ -45,17 +45,14 @@ module CurveHandler
       key = config_hash.fetch(:key)
       processor_key = config_hash.fetch(:type)
 
-      if config_hash[:reduce]
-        new(
-          key,
-          processor_key,
-          config_hash[:reduce][:as],
-          Array(config_hash[:reduce][:sets]).map(&:to_s),
-          config_hash[:display_group]
-        )
-      else
-        new(key, processor_key, nil, nil, config_hash[:display_group])
-      end
+      new(
+        key,
+        processor_key,
+        config_hash.dig(:reduce, :as),
+        Array(config_hash.dig(:reduce, :sets)).map(&:to_s),
+        config_hash[:display_group],
+        internal: config_hash[:internal]
+      )
     end
 
     attr_reader :display_group, :input_keys, :key, :processor_key
@@ -70,7 +67,11 @@ module CurveHandler
     #                 by the reducer.
     # display_group - An optional attribute which allows this curve to be shown alongside other
     #                 curves in the front-end.
-    def initialize(key, processor_key, reducer_key = nil, input_keys = [], display_group = nil)
+    # internal      - Indicates that the curve is intended for use by internal and experienced users
+    #                 only.
+    def initialize(
+      key, processor_key, reducer_key = nil, input_keys = [], display_group = nil, internal: false
+    )
       raise "Cannot create a #{self.class.name} without a key"       if key.nil?
       raise "Cannot create a #{self.class.name} without a processor" if processor_key.nil?
 
@@ -79,6 +80,7 @@ module CurveHandler
       @reducer_key = reducer_key&.to_sym
       @input_keys = reducer_key && input_keys || []
       @display_group = display_group&.to_sym
+      @internal = !!internal
     end
 
     # Public: The key used to store the file in the database.
@@ -127,6 +129,11 @@ module CurveHandler
     # Public: Returns whether the processor should set any input values for the scenario.
     def sets_inputs?
       @reducer_key && @input_keys.any? || false
+    end
+
+    # Public: Returns if the curve is for internal use and experienced users only.
+    def internal?
+      @internal
     end
 
     # Public: Human-readable version of the Config for debugging.

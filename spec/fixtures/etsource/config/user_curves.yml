@@ -17,3 +17,7 @@ some_profile:
 
 some_profile_without_reduce:
   type: profile
+
+internal:
+  type: generic
+  internal: true
