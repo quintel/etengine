@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 describe 'Custom curves', :etsource_fixture do
+  def public_curves
+    Etsource::Config.user_curves.reject { |_key, value| value.internal? }
+  end
+
   # rubocop:disable RSpec/BeforeAfterAll
   before(:all) do
     NastyCache.instance.expire!
@@ -22,8 +26,8 @@ describe 'Custom curves', :etsource_fixture do
         expect(response).to be_successful
       end
 
-      it 'sends data about all available curves' do
-        expect(JSON.parse(response.body).length).to eq(Etsource::Config.user_curves.length)
+      it 'sends data about all public curves' do
+        expect(JSON.parse(response.body).length).to eq(public_curves.length)
       end
     end
   end
@@ -67,6 +71,68 @@ describe 'Custom curves', :etsource_fixture do
             'name' => 'price_curve.csv',
             'size' => 35_039
           )
+        )
+      end
+    end
+
+    context 'with no attached curves and include_internal and include_unattached both set' do
+      let(:url) do
+        "/api/v3/scenarios/#{scenario.id}/custom_curves" \
+          '?include_internal=true&include_unattached=true'
+      end
+
+      before { get(url) }
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends data about all available curves' do
+        expect(JSON.parse(response.body).length).to eq(Etsource::Config.user_curves.length)
+      end
+    end
+
+    context 'with an attached internal curve and not setting an include_internal param' do
+      before do
+        put "#{url}/internal", params: {
+          file: fixture_file_upload('files/random_curve.csv', 'text/csv')
+        }
+
+        get(url)
+      end
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends no curve data' do
+        expect(JSON.parse(response.body)).to eq([])
+      end
+    end
+
+    context 'with an attached internal curve and setting an include_internal param' do
+      let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves?include_internal=true" }
+
+      before do
+        put "#{url.split('?').first}/internal", params: {
+          file: fixture_file_upload('files/random_curve.csv', 'text/csv')
+        }
+
+        get(url)
+      end
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends data for attached curves only' do
+        expect(JSON.parse(response.body).length).to eq(1)
+      end
+
+      it 'sends data about the attached curve' do
+        expect(JSON.parse(response.body).first).to include(
+          'key' => 'internal',
+          'internal' => true
         )
       end
     end

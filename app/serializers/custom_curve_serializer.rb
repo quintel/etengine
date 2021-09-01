@@ -12,17 +12,17 @@ class CustomCurveSerializer
   def as_json(*)
     return {} unless @custom_curve.attached?
 
-    {
-      key: key,
-      type: config.processor_key,
-      display_group: config.display_group,
-      overrides: config.input_keys,
+    data = UnattachedCustomCurveSerializer.new(config).as_json
+
+    data.merge!(
       attached: true,
       name: @custom_curve.filename.to_s,
       size: @custom_curve.byte_size,
       date: @custom_curve.created_at.utc,
       stats: stats
-    }
+    )
+
+    data
   end
 
   private

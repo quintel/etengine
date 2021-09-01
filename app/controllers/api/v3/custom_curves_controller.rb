@@ -17,14 +17,19 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves
       def index
-        curves =
-          Etsource::Config.user_curves.each_key.map do |key|
-            if attachment(key).blank? && params[:include_unattached]
-              UnattachedCustomCurveSerializer.new(key).as_json
-            else
-              attachment_json(attachment(key)).as_json.presence
-            end
+        available_curves = Etsource::Config.user_curves
+
+        unless params[:include_internal]
+          available_curves = available_curves.reject { |_key, config| config.internal? }
+        end
+
+        curves = available_curves.values.map do |config|
+          if attachment(config.key).blank? && params[:include_unattached]
+            UnattachedCustomCurveSerializer.new(config).as_json
+          else
+            attachment_json(attachment(config.key)).as_json.presence
           end
+        end
 
         render json: curves.compact
       end
@@ -85,12 +90,6 @@ module Api
           :source_dataset_key,
           :source_end_year
         )
-      end
-
-      # Internal: Internally attachment keys may have a "/", such as "weather/air_temperature".
-      def internal_key
-        # params[:id].to_s.gsub('__', '/')
-        params[:id]
       end
 
       # Serialization

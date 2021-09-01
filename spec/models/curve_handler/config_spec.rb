@@ -161,6 +161,20 @@ RSpec.describe CurveHandler::Config do
       it 'will set no inputs' do
         expect(config.sets_inputs?).to be(false)
       end
+
+      it 'is not marked as internal' do
+        expect(config.internal?).to be(false)
+      end
+    end
+
+    context 'with a single config hash where internal is true' do
+      let(:config_hash) do
+        { key: :my_curve, type: :generic, internal: true }
+      end
+
+      it 'is marked as internal' do
+        expect(config.internal?).to be(true)
+      end
     end
 
     context 'with a reducer config hash and a string input' do
