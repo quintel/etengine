@@ -118,6 +118,60 @@ module Qernel
         end
       end
 
+      # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
+      #
+      # Capital expenditures (CAPEX) are major investments that are designed to be
+      # used over the long term. The yearly costs for these investments are based on
+      # the WACC and plant lifetime. If the plant does not have CCS installed, these
+      # costs are zero.
+      #
+      # Returns the yearly capital expenditure for CCS in euro.
+      def capital_expenditures_ccs
+        fetch(:capital_expenditures_ccs) do
+          return 0.0 if ccs_investment.nil?
+
+          ccs_investment * expenditure_factor_per_lifetime_year
+        end
+      end
+
+      # Public: Calculates the CAPEX (capital expenditures) excluding CCS for the node
+      #
+      # Capital expenditures (CAPEX) are major investments that are designed to be
+      # used over the long term. The yearly costs for these investments are based on
+      # the WACC and plant lifetime.
+      #
+      # Returns the yearly capital expenditure excluding CCS in euro.
+      def capital_expenditures_excluding_ccs
+        fetch(:capital_expenditures_excluding_ccs) do
+          (total_investment_over_lifetime - (ccs_investment || 0.0)) *
+            expenditure_factor_per_lifetime_year
+        end
+      end
+
+      # Public: Calculates the OPEX (operating expenses) for CCS for the node
+      #
+      # Operating expenses for CCS include varaible O&M costs and CO2 emissions costs.
+      #
+      # Returns the yearly operating expenses for CCS in euro.
+      def operating_expenses_ccs
+        fetch(:operating_expenses_ccs) do
+          variable_operation_and_maintenance_costs_for_ccs + co2_emissions_costs
+        end
+      end
+
+      # Public: Calculates the OPEX (operating expenses) excluding CCS for the node.
+      #
+      # Operating expenses inculde variable O&M costs and fixed O&M costs, without CCS.
+      #
+      # Returns the yearly operating expenses excluding CCS in euro.
+      def operating_expenses_excluding_ccs
+        fetch(:operating_expenses_excluding_ccs) do
+          variable_operation_and_maintenance_costs -
+            variable_operation_and_maintenance_costs_for_ccs +
+            fixed_operation_and_maintenance_costs_per_year
+        end
+      end
+
       private
 
       # Internal: Calculates the total cost of a plant in euro per plant per year.
@@ -289,6 +343,21 @@ module Qernel
         end
       end
 
+      # Internal: Calculates the variable operation and maintenance costs for CCS for one plant.
+      #
+      # Only CCS plants have O&M costs for CCS.
+      #
+      # Returns the yearly variable operation and maintenance costs for CCS per plant.
+      def variable_operation_and_maintenance_costs_for_ccs
+        fetch(:variable_operation_and_maintenance_costs_for_ccs) do
+          return 0.0 if input_capacity.zero?
+
+          typical_input *
+            variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour /
+            (input_capacity * 3600.0)
+        end
+      end
+
       # Internal: Calculates the variable operation and maintenance costs per typical input (in MJ).
       #
       # Unlike the variable_operation_and_maintenance_costs (defined above), this function does not
@@ -444,6 +513,18 @@ module Qernel
         end
 
         [costable, loss, total]
+      end
+
+      # Internal: Calculates the yearly factor needed to calculate the CAPEX (capital expenditure)
+      # of the node.
+      #
+      # Defines what part of the initial capital investments will be spent on a yearly basis
+      #
+      # Returns a factor that can be multiplied with an investment
+      def expenditure_factor_per_lifetime_year
+        raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
+
+        (wacc + 1) / (technical_lifetime + construction_time)
       end
     end
   end

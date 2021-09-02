@@ -510,4 +510,126 @@ describe 'Qernel::NodeApi cost calculations' do
       end
     end
   end
+
+  describe '#capital_expenditures_ccs' do
+    let(:ccs_investment) { 10.0 }
+    let(:technical_lifetime) { 1.0 }
+    let(:wacc) { 0.0 }
+
+    before do
+      node.with(
+        ccs_investment: ccs_investment,
+        construction_time: 0,
+        technical_lifetime: technical_lifetime,
+        wacc: wacc
+      )
+    end
+
+    it 'equals investment when expenditure factor is 1.0' do
+      expect(node.node_api.capital_expenditures_ccs).to eq(ccs_investment)
+    end
+
+    context 'when wacc=1.0 (expenditure factor = 2.0)' do
+      let(:wacc) { 1.0 }
+
+      it 'equals twice the investment' do
+        expect(node.node_api.capital_expenditures_ccs).to eq(ccs_investment * 2)
+      end
+    end
+
+    context 'when plant lifetime doubles (expenditure factor = 0.5)' do
+      let(:technical_lifetime) { 2.0 }
+
+      it 'equals half the investment' do
+        expect(node.node_api.capital_expenditures_ccs).to eq(ccs_investment / 2)
+      end
+    end
+
+    context 'with no ccs_investment' do
+      let(:ccs_investment) { nil }
+
+      it 'is zero' do
+        expect(node.node_api.capital_expenditures_ccs).to eq(0)
+      end
+    end
+  end
+
+  describe '#capital_expenditures_excluding_ccs' do
+    let(:basic_investment) { 10.0 }
+    let(:ccs_investment) { 10.0 }
+    let(:technical_lifetime) { 1.0 }
+    let(:wacc) { 0.0 }
+
+    before do
+      node.with(
+        ccs_investment: ccs_investment,
+        initial_investment: basic_investment,
+        cost_of_installing: basic_investment,
+        storage_costs: basic_investment,
+        decommissioning_costs: basic_investment,
+        construction_time: 0,
+        technical_lifetime: technical_lifetime,
+        wacc: wacc
+      )
+    end
+
+    it 'equals investment when expenditure factor is 1.0' do
+      expect(node.node_api.capital_expenditures_excluding_ccs).to eq(4 * basic_investment)
+    end
+
+    context 'when wacc=1.0 (expenditure factor = 2.0)' do
+      let(:wacc) { 1.0 }
+
+      it 'equals twice the investment' do
+        expect(node.node_api.capital_expenditures_excluding_ccs).to eq(8 * basic_investment)
+      end
+    end
+
+    context 'when plant lifetime doubles (expenditure factor = 0.5)' do
+      let(:technical_lifetime) { 2.0 }
+
+      it 'equals half the investment' do
+        expect(node.node_api.capital_expenditures_excluding_ccs).to eq(2 * basic_investment)
+      end
+    end
+
+    context 'with no ccs_investment' do
+      let(:ccs_investment) { nil }
+
+      it 'makes no difference' do
+        expect(node.node_api.capital_expenditures_excluding_ccs).to eq(4 * basic_investment)
+      end
+    end
+  end
+
+  describe '#operating_expenses_ccs' do
+    before do
+      node.with(
+        co2_emissions_costs: 1.5,
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 3600.0,
+        input_capacity: 10.0,
+        typical_input: 5.0
+      )
+    end
+
+    it 'calculates when everything is set' do
+      expect(node.node_api.operating_expenses_ccs).to eq(2)
+    end
+  end
+
+  describe '#operating_expenses_excluding_ccs' do
+    before do
+      node.with(
+        fixed_operation_and_maintenance_costs_per_year: 1.5,
+        variable_operation_and_maintenance_costs_per_full_load_hour: 3600.0,
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 3600.0,
+        input_capacity: 10.0,
+        typical_input: 5.0
+      )
+    end
+
+    it 'calculates when everything is set' do
+      expect(node.node_api.operating_expenses_excluding_ccs).to eq(2)
+    end
+  end
 end
