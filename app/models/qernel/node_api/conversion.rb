@@ -105,6 +105,22 @@ module Qernel
         convert_to(total_investment_over_lifetime, unit)
       end
 
+      def capital_expenditures_ccs_per(unit)
+        convert_to(capital_expenditures_ccs, unit)
+      end
+
+      def capital_expenditures_excluding_ccs_per(unit)
+        convert_to(capital_expenditures_excluding_ccs, unit)
+      end
+
+      def operating_expenses_ccs_per(unit)
+        convert_to(operating_expenses_ccs, unit)
+      end
+
+      def operating_expenses_excluding_ccs_per(unit)
+        convert_to(operating_expenses_excluding_ccs, unit)
+      end
+
       private
 
       # Internal: Converts the cost of one (typical sized) 'plant' to another unit.
