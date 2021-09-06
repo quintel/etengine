@@ -27,17 +27,6 @@ module Api
           sortable.save
           render json: sortable
         else
-          # There is no reason for invalid options to have been provided, unless
-          # the front-end is unaware of a change. Notify.
-          Raven.capture_message(
-            "Invalid #{sortable_name.to_s.humanize.downcase}",
-            extra: {
-              errors: sortable.errors.full_messages,
-              order: sortable_params[:order],
-              scenario_id: params[:scenario_id]
-            }
-          )
-
           render_errors(sortable)
         end
       end
