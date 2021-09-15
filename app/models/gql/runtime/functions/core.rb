@@ -194,7 +194,8 @@ module Gql::Runtime
           lookup_generic(graph_helper, args)
         else
           attr_name = args.pop
-          M(lookup_generic(graph_helper, args), attr_name)
+          objects = lookup_generic(graph_helper, args)
+          objects.any? || args.length == 1 ? M(objects, attr_name) : []
         end
       end
 

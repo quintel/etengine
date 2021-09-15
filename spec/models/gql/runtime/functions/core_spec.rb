@@ -36,6 +36,22 @@ describe Gql::Runtime::Functions::Core, :etsource_fixture do
     it('returns [60, 50]') { expect(result).to eq([60, 40]) }
   end
 
+  describe 'V(bar, baz, no, demand)' do
+    it('returns [60, 50]') { expect(result).to eq([60, 40]) }
+  end
+
+  describe 'V(no)' do
+    it('returns 0.0') { expect(result).to eq([]) }
+  end
+
+  describe 'V(no, no)' do
+    it('returns an empty array') { expect(result).to eq([]) }
+  end
+
+  describe 'V(no, nope, none)' do
+    it('returns an empty array') { expect(result).to eq([]) }
+  end
+
   # MV
   # --
 
