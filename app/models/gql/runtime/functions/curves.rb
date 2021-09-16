@@ -78,6 +78,38 @@ module Gql::Runtime
 
         Merit::CurveTools.add_curves(curves).to_a
       end
+
+      # Public: Multiplies two curves elementwise.
+      #
+      # For example:
+      #   PRODUCT_CURVES([1, 2, 3], [4, 5, 6])
+      #   # => [4, 10, 18]
+      #
+      # Note that unlike `SUM_CURVES`, `PRODUCT_CURVES` expects exactly two arguments, each one a
+      # single curve.
+      #
+      # An error will be raised if either parameter is an array of curves, or if the curves don't
+      # have matching lengths.
+      #
+      # Returns an array of numerics.
+      def PRODUCT_CURVES(left, right)
+        return [] if left.nil? && right.nil?
+        return left if right.nil?
+        return right if left.nil?
+
+        if (left_invalid = left.first.is_a?(Array)) || right.first.is_a?(Array)
+          raise 'PRODUCT_CURVES can only multiply a single curve with a single curve ' \
+                "(#{left_invalid ? 'first' : 'second'} parameter had " \
+                "#{(left_invalid ? left : right).length} nested curves)"
+        end
+
+        if left.length != right.length
+          raise 'Mismatch in curve lengths given to PRODUCT_CURVES ' \
+                "(got #{left.length} and #{right.length})"
+        end
+
+        left.map.with_index { |value, index| value * right[index] }
+      end
     end
   end
 end

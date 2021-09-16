@@ -120,5 +120,48 @@ module Gql::Runtime::Functions
 
       it('returns an Array') { expect(result).to be_a(Array) }
     end
+
+    # PRODUCT_CURVES
+    # --------------
+
+    describe 'PRODUCT_CURVES([1, 2], [3, 4])' do
+      it('returns [4, 6]') { expect(result).to eq([3, 8]) }
+    end
+
+    describe 'PRODUCT_CURVES([1, 2], nil)' do
+      it('returns [1, 2]') { expect(result).to eq([1, 2]) }
+    end
+
+    describe 'PRODUCT_CURVES([], [])' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'PRODUCT_CURVES(nil, nil)' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'PRODUCT_CURVES(Merit.const_get(:Curve).new([1]), [2])' do
+      it('returns [2]') { expect(result).to eq([2]) }
+      it('returns an Array') { expect(result).to be_a(Array) }
+    end
+
+    describe 'PRODUCT_CURVES([[1, 2]], [3, 4])' do
+      it('raises an error') do
+        expect { result }.to raise_error(/first parameter had 1 nested curves/)
+      end
+    end
+
+    describe 'PRODUCT_CURVES([1, 2], [[3, 4], [5, 6]])' do
+      it('raises an error') do
+        expect { result }.to raise_error(/second parameter had 2 nested curves/)
+      end
+    end
+
+    describe 'PRODUCT_CURVES([1, 2, 3], [4, 5])' do
+      it('returns [4, 6]') do
+        expect { result }
+          .to raise_error('Mismatch in curve lengths given to PRODUCT_CURVES (got 3 and 2)')
+      end
+    end
   end
 end
