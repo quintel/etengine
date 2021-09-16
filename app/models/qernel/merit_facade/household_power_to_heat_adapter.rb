@@ -9,7 +9,7 @@ module Qernel
 
       # A Merit participant whose energy is not available to be re-emitted, and
       # where consumption needs to be communicated to a delegate.
-      class DelegatingBlackHole < Merit::Flex::BlackHole
+      class DelegatingBlackHole < Merit::Flex::Base
         def initialize(opts)
           super
           @delegate = opts[:delegate]
@@ -34,15 +34,9 @@ module Qernel
         attrs[:delegate] = @context.graph.plugin(:time_resolve)
           .fever.group(:households_hot_water).calculator
 
-        # TODO: Does input capacity /efficiency prevent the need to model input
-        # constraints in Fever?
         attrs[:input_capacity_per_unit] = source_api.input_capacity
-
-        # Do not emit anything; it has been converted to hot water.
-        #
-        # TODO This may not be necessary since BlackHole always sets max_load_at
-        # to zero.
         attrs[:output_capacity_per_unit] = 0.0
+        attrs[:consume_from_dispatchables] = false
 
         attrs
       end
