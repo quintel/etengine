@@ -99,7 +99,7 @@ class @Graph
 
   deselect_all: =>
     for node in @selected
-      node.node.unselect()
+      node.model.unselect()
     return false
 
   highlight_off_all: =>
