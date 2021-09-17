@@ -129,7 +129,11 @@ module Gql::Runtime::Functions
     end
 
     describe 'PRODUCT_CURVES([1, 2], nil)' do
-      it('returns [1, 2]') { expect(result).to eq([1, 2]) }
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'PRODUCT_CURVES(nil, [1, 2])' do
+      it('returns []') { expect(result).to eq([]) }
     end
 
     describe 'PRODUCT_CURVES([], [])' do

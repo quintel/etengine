@@ -93,9 +93,7 @@ module Gql::Runtime
       #
       # Returns an array of numerics.
       def PRODUCT_CURVES(left, right)
-        return [] if left.nil? && right.nil?
-        return left if right.nil?
-        return right if left.nil?
+        return [] if left.blank? || right.blank?
 
         if (left_invalid = left.first.is_a?(Array)) || right.first.is_a?(Array)
           raise 'PRODUCT_CURVES can only multiply a single curve with a single curve ' \
