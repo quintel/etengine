@@ -18,6 +18,7 @@ Rails.application.routes.draw do
           get :production_parameters, to: 'export#production_parameters'
           get :energy_flow, to: 'export#energy_flow'
           get :molecule_flow, to: 'export#molecule_flow'
+          get :costs_parameters, to: 'export#costs_parameters'
           get :merit
           put :dashboard
           post :interpolate
