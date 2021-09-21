@@ -41,15 +41,25 @@ describe Gql::Runtime::Functions::Core, :etsource_fixture do
   end
 
   describe 'V(no)' do
-    it('returns 0.0') { expect(result).to eq([]) }
+    it('returns []') { expect(result).to eq([]) }
   end
 
-  describe 'V(no, no)' do
-    it('returns an empty array') { expect(result).to eq([]) }
+  describe 'V(no, nope)' do
+    # There's no way of knowing if "nope" is an attribute or the key of another object. V assumes
+    # the former.
+    it('returns 0') { expect(result).to eq(0) }
   end
 
   describe 'V(no, nope, none)' do
-    it('returns an empty array') { expect(result).to eq([]) }
+    it('returns []') { expect(result).to eq([]) }
+  end
+
+  describe 'V(no, total_costs_per(:mwh_electricity))' do
+    it('returns 0') { expect(result).to eq(0) }
+  end
+
+  describe 'V(no, demand)' do
+    it('returns 0') { expect(result).to eq(0) }
   end
 
   # MV
