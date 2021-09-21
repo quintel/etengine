@@ -34,6 +34,14 @@ describe Gql::Runtime::Functions::Update, :etsource_fixture do
     end
   end
 
+  describe 'UPDATE(V(no), demand, 10)' do
+    before { result }
+
+    it 'does not raise an error' do
+      expect { result }.not_to raise_error
+    end
+  end
+
   describe 'UPDATE(V(no, nope, also_no), demand, 10)' do
     before { result }
 
