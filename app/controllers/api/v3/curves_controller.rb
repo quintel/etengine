@@ -16,6 +16,15 @@ module Api
         render json: { errors: ['Scenario not found'] }, status: 404
       end
 
+      rescue_from Atlas::DocumentNotFoundError do |e|
+        raise(e) unless e.message.start_with?('Could not find a dataset')
+
+        render(
+          json: { errors: ["Scenario uses an unsupported area code: #{scenario.area_code}"] },
+          status: 500
+        )
+      end
+
       before_action :merit_required
 
       # Downloads the load on each participant in the electricity merit order as
