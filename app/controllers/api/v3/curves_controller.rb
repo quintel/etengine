@@ -20,8 +20,11 @@ module Api
         raise(e) unless e.message.start_with?('Could not find a dataset')
 
         render(
-          json: { errors: ["Scenario uses an unsupported area code: #{scenario.area_code}"] },
-          status: 500
+          json: { errors: [
+            'Scenario uses an unsupported area code and is no longer available: ' \
+            "#{scenario.area_code}"
+          ] },
+          status: 410
         )
       end
 
