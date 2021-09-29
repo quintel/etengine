@@ -48,6 +48,10 @@ Rails.application.routes.draw do
 
         resource :esdl_file, only: %i[show update]
 
+        get 'curves/buildings_heat',
+          to: 'curves#buildings_heat_curves',
+          as: :curves_buildings_heat_download
+
         get 'curves/merit_order',
           to: 'curves#merit_order',
           as: :curves_merit_order_download

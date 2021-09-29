@@ -1,11 +1,12 @@
-# Creates CSV rows describing household heat demand and supply.
-class HouseholdHeatCSVSerializer
-  def initialize(graph)
-    @graph = graph
-  end
+# frozen_string_literal: true
 
-  def filename
-    'household_heat'
+# Creates CSV rows describing heat demand and supply for one or more fever groups.
+class FeverCSVSerializer
+  attr_reader :filename
+  def initialize(graph, groups, filename)
+    @graph = graph
+    @groups = groups.map(&:to_sym)
+    @filename = filename.freeze
   end
 
   def to_csv_rows
@@ -38,10 +39,9 @@ class HouseholdHeatCSVSerializer
   end
 
   def curve(type)
-    Merit::CurveTools.add_curves([
-      summary(:space_heating).public_send(type),
-      summary(:households_hot_water).public_send(type)
-    ])
+    Merit::CurveTools.add_curves(
+      @groups.map { |group| summary(group).public_send(type) }
+    )
   end
 
   def summary(group)

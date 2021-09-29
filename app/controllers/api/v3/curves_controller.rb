@@ -67,13 +67,27 @@ module Api
         )
       end
 
-      # Downloads the supply and demand of heat, including deficits and
-      # surpluses due to buffering and time-shifting.
+      # Downloads the supply and demand of heat in households, including deficits and surpluses due
+      # to buffering and time-shifting.
       #
       # GET /api/v3/scenarios/:scenario_id/curves/household_heat.csv
       def household_heat_curves
-        render_serializer HouseholdHeatCSVSerializer.new(
-          scenario.gql.future_graph
+        render_serializer FeverCSVSerializer.new(
+          scenario.gql.future_graph,
+          %i[space_heating households_hot_water],
+          'household_heat'
+        )
+      end
+
+      # Downloads the supply and demand of heat in buildings, including deficits and surpluses due
+      # to buffering and time-shifting.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/building_heat.csv
+      def buildings_heat_curves
+        render_serializer FeverCSVSerializer.new(
+          scenario.gql.future_graph,
+          %i[buildings_space_heating],
+          'buildings_heat'
         )
       end
 
