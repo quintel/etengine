@@ -144,7 +144,7 @@ module Etsource
         destination = path.dirname.join("#{ path.basename('.gpg') }.csv")
 
         unless destination.file?
-          system("gpg -d --passphrase '#{ passphrase }' " \
+          system("gpg -d --batch --passphrase '#{ passphrase }' " \
                  "'#{ path.to_s }' > '#{ destination.to_s }'")
         end
       end
