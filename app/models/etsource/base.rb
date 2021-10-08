@@ -138,14 +138,19 @@ module Etsource
     #
     # Returns nothing.
     def decrypt!(directory)
-      passphrase = gpg_passphrase
+      crypto = GPGME::Crypto.new(password: gpg_passphrase)
 
       Pathname.glob(directory.join('**/*.gpg')) do |path|
         destination = path.dirname.join("#{ path.basename('.gpg') }.csv")
 
         unless destination.file?
-          system("gpg -d --batch --passphrase '#{ passphrase }' " \
-                 "'#{ path.to_s }' > '#{ destination.to_s }'")
+          File.open(destination, 'wb') do |out|
+            crypto.decrypt(
+              path.read,
+              pinentry_mode: GPGME::PINENTRY_MODE_LOOPBACK,
+              output: out
+            )
+          end
         end
       end
     end

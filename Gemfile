@@ -60,6 +60,7 @@ gem 'turbine-graph', '>=0.1',        require: 'turbine'
 # system gems
 gem 'mysql2'
 gem 'dalli'
+gem 'gpgme'
 
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
