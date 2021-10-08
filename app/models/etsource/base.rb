@@ -138,25 +138,14 @@ module Etsource
     #
     # Returns nothing.
     def decrypt!(directory)
-      password = gpg_passphrase
+      passphrase = gpg_passphrase
 
       Pathname.glob(directory.join('**/*.gpg')) do |path|
         destination = path.dirname.join("#{path.basename('.gpg')}.csv")
 
         unless destination.file?
-          # Use Ctx so that we can decrypt without verification. This should be changed to
-          # GPG::Crypto as soon as the broken encrypted files are fixed.
-          ctx = GPGME::Ctx.new(
-            password: password,
-            pinentry_mode: GPGME::PINENTRY_MODE_LOOPBACK,
-          )
-
-          File.open(destination, 'wb') do |out|
-            ctx.decrypt(
-              GPGME::Data.new(path.read),
-              GPGME::Data.new(out)
-            )
-          end
+          system("gpg -d --batch --ignore-mdc-error --passphrase '#{passphrase}' " \
+                 "'#{path}' > '#{destination}'")
         end
       end
     end
