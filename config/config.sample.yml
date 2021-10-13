@@ -4,7 +4,7 @@ development: &DEV
   etsource_export: ../etsource
 
   # etsource working copy - directory you've git cloned to
-  etsource_working_copy: ../etsource
+  etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '../src/etsource') %>
 
   # if for some reason you don't want to clear the etsource_export directory
   etsource_disable_export: false
@@ -44,6 +44,7 @@ production: &PRODUCTION
   <<: *DEV
   etsource_lazy_load_dataset: false
   etsource_export: tmp/etsource
+  etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/usr/src/etsource') %>
 
 staging:
   <<: *PRODUCTION

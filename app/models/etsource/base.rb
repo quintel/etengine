@@ -159,6 +159,8 @@ module Etsource
     #
     # Returns a string.
     def gpg_passphrase
+      return ENV['ETSOURCE_KEY'] if ENV.key?('ETSOURCE_KEY')
+
       passphrase_path = [
         Rails.root.join('config/.etsource_password'), # Production and staging.
         ETSOURCE_DIR.join('.password')                # Local development.
