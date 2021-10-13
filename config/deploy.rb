@@ -6,11 +6,30 @@ set :pty, true
 set :application, 'etengine'
 set :repo_url, 'https://github.com/quintel/etengine.git'
 
-# Set up rbenv
-set :rbenv_type, :user
-set :rbenv_ruby, '2.6.6'
-set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
+# rbenv Options
+# =============
+
+set :rbenv_type, :system
+set :rbenv_ruby, File.read('.ruby-version').strip
+set :rbenv_prefix, "#{fetch(:rbenv_path)}/bin/rbenv exec"
 set :rbenv_map_bins, %w[rake gem bundle ruby rails]
+
+# Puma Options
+# ============
+
+# If these are changed, be sure to run `cap $stage puma:config` in order to
+# update the config on the server.
+
+set :puma_init_active_record, true
+set :puma_preload_app, true
+set :puma_service_unit_env_vars, ["RBENV_ROOT=#{fetch(:rbenv_path)}"]
+set :puma_systemctl_user, :user
+set :puma_threads, [1, 1]
+set :puma_workers, 8
+
+
+# Bundler Options
+# ===============
 
 set :bundle_binstubs, -> { shared_path.join('sbin') }
 

@@ -8,6 +8,8 @@ AllCops:
   Exclude:
   - 'bin/**/*'
   - 'config/application.rb'
+  - 'config/deploy.rb'
+  - 'config/deploy/*.rb'
   - 'config/routes.rb'
   - 'db/migrate/**/*'
   - 'db/schema.rb'

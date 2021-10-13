@@ -28,8 +28,7 @@ set :branch, 'master'
 
 set :puma_threads, [1, 1]
 set :puma_workers, 4
-set :puma_init_active_record, true
-set :puma_preload_app, true
+
 
 # Custom SSH Options
 # ==================
