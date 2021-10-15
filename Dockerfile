@@ -9,6 +9,7 @@ RUN apt-get update -yqq && \
     build-essential \
     default-libmysqlclient-dev \
     git \
+    gnupg \
     less \
     libreadline-dev \
     libxml2-dev \
