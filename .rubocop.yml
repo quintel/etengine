@@ -157,6 +157,7 @@ Style/MethodCallWithArgsParentheses:
   - yield
   Exclude:
   - Gemfile
+  - config/puma.rb
 
 Metrics:
   Enabled: false
@@ -165,6 +166,13 @@ Metrics:
 Naming/MethodName:
   Exclude:
     - 'app/models/gql/runtime/functions/*'
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - production
+    - staging
+    - test
 
 # Don't require methods to be in separate spec files.
 RSpec/FilePath:

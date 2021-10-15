@@ -1,4 +1,5 @@
-FROM ruby:2.6.6-slim-buster
+ARG RUBY_VERSION
+FROM ruby:2.6.6-slim
 
 LABEL maintainer="dev@quintel.com"
 
@@ -9,20 +10,23 @@ RUN apt-get update -yqq && \
     build-essential \
     default-libmysqlclient-dev \
     git \
-    less \
     libreadline-dev \
     libxml2-dev \
     libxslt1-dev \
     libyaml-dev \
     nodejs \
-    vim \
     zlib1g \
     zlib1g-dev
 
+# Throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
+
 COPY Gemfile* /app/
 WORKDIR /app
-RUN bundle install --jobs=4 --retry=3
+RUN bundle install --jobs=4 --retry=3 --without="development test" --deployment
 
 COPY . /app/
 
-CMD ["bin/rails", "s", "-b", "0.0.0.0"]
+RUN RAILS_ENV=production bundle exec rails assets:precompile
+
+CMD ["bundle", "exec", "--keep-file-descriptors", "puma", "-C", "config/puma.rb"]
