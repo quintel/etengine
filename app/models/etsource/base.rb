@@ -53,8 +53,12 @@ module Etsource
     # of stale files) unless you disable this in your config.yml.
     def export(sha_id)
       return false if APP_CONFIG[:etsource_disable_export]
-      FileUtils.rm_rf(@export_dir)
-      FileUtils.mkdir(@export_dir)
+
+      if @export_dir.exist?
+        @export_dir.children.each { |child| FileUtils.rm_rf(child) }
+      else
+        FileUtils.mkdir(@export_dir)
+      end
 
       # Make 100% sure that the branch is placed back at the HEAD; it seems
       # other Git.open calls can cause Git commands belong to fail, citing that
