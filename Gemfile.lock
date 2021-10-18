@@ -146,7 +146,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.8)
     crass (1.0.6)
-    dalli (2.7.6)
+    dalli (3.0.2)
     debug_inspector (0.0.3)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)

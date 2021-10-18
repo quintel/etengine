@@ -16,7 +16,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
 
   # Use a different cache store in production
-  config.cache_store = :dalli_store
+  config.cache_store = :mem_cache_store
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
