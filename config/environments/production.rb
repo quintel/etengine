@@ -84,7 +84,4 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-
-  # Make Haml faster in production mode
-  Haml::Template::options[:ugly] = true
 end
