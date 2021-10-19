@@ -39,8 +39,6 @@ namespace :deploy do
 
     verbose(false) do
       cd(etsource) do
-        # Ensure the revision is real...
-        sh("git rev-parse '#{revision}'")
         real_rev = `git rev-parse 'origin/#{revision}'`.strip
       end
     end
@@ -48,7 +46,7 @@ namespace :deploy do
     puts 'Loading ETSource files...'
     Etsource::Base.instance.export(real_rev)
 
-    NastyCache.instance.expire!
+    NastyCache.instance.expire!(keep_atlas_dataset: ARGV.include?('deploy:calculate_datasets'))
 
     puts "ETSource #{real_rev[0..6]} ready at #{destination}"
   end
