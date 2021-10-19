@@ -1,4 +1,4 @@
-FROM ruby:2.6.6-slim-buster
+FROM ruby:2.7.4-slim-buster
 
 LABEL maintainer="dev@quintel.com"
 
@@ -19,6 +19,8 @@ RUN apt-get update -yqq && \
     vim \
     zlib1g \
     zlib1g-dev
+
+RUN gem install bundler:1.17.3
 
 COPY Gemfile* /app/
 WORKDIR /app

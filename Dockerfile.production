@@ -1,5 +1,4 @@
-ARG RUBY_VERSION
-FROM ruby:2.6.6-slim
+FROM ruby:2.7.4-slim
 
 LABEL maintainer="dev@quintel.com"
 
@@ -18,6 +17,8 @@ RUN apt-get update -yqq && \
     nodejs \
     zlib1g \
     zlib1g-dev
+
+RUN gem install bundler:1.17.3
 
 # Throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1
