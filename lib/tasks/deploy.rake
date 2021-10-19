@@ -1,28 +1,7 @@
+# frozen_string_literal: true
+
 # Tasks used during deployment of the application.
 namespace :deploy do
-  desc 'Creates the production config.yml file'
-  task :app_config do
-    require 'pathname'
-
-    root       = Pathname.new(__FILE__).join('../../..').realpath
-    defaults   = YAML.load_file(root.join('config/config.sample.yml'))
-    local_path = root.join('../..').join('shared/config/config.local.yml')
-
-    unless local_path.file?
-      fail 'This does not appear to be a production/beta server'
-    end
-
-    # Server-specific configuration is stored in config.local.yml in the
-    # deployment "shared/config" directory.
-
-    local  = YAML.load_file(local_path)
-    config = {}
-
-    local.keys.each { |env| config[env] = defaults[env].merge(local[env]) }
-
-    File.write(root.join('config/config.yml'), YAML.dump(config))
-  end # app_config
-
   desc <<-DESC
     Forcefully loads a specific ETSource commit
 
@@ -43,13 +22,13 @@ namespace :deploy do
   task load_etsource: :environment do
     etsource    = Pathname.new(ETSOURCE_DIR).expand_path
     destination = Pathname.new(ETSOURCE_EXPORT_DIR).expand_path
-    revision    = (ENV['REV'] || '').strip
+    revision    = (ENV['REV'] || Rails.env.production? ? 'production' : 'master').strip
     real_rev    = nil
 
-    fail "You didn't provide a REV to load!" if revision.empty?
+    raise "You didn't provide a REV to load!" if revision.empty?
 
     if etsource == destination
-      fail <<-MESSAGE.strip_heredoc
+      raise <<-MESSAGE.strip_heredoc
         Cannot load a new ETSource version manually when the etsource_export
         and etsource_working_copy paths are the same.
       MESSAGE
@@ -61,8 +40,8 @@ namespace :deploy do
     verbose(false) do
       cd(etsource) do
         # Ensure the revision is real...
-        sh("git rev-parse '#{ revision }'")
-        real_rev = `git rev-parse '#{ revision }'`.strip
+        sh("git rev-parse '#{revision}'")
+        real_rev = `git rev-parse '#{revision}'`.strip
       end
     end
 
@@ -71,8 +50,8 @@ namespace :deploy do
 
     NastyCache.instance.expire!
 
-    puts "ETSource #{ real_rev[0..6] } ready at #{ destination }"
-  end # load_etsource
+    puts "ETSource #{real_rev[0..6]} ready at #{destination}"
+  end
 
   desc <<-DESC
     Calculates the datasets for each region using Atlas and Refinery.
@@ -82,7 +61,7 @@ namespace :deploy do
   DESC
   task calculate_datasets: :environment do
     if APP_CONFIG[:etsource_lazy_load_dataset]
-      abort <<-MESSAGE.strip_heredoc
+      abort(<<-MESSAGE.strip_heredoc)
         Cannot calculate datasets when etsource_lazy_load_dataset is "true".
 
         The datasets can only be calculated in a Rails environment where this
@@ -94,16 +73,16 @@ namespace :deploy do
     end
 
     Etsource::Dataset::Import.loader.reload! do |region_code, calculator|
-      print "Calculating #{ region_code.inspect }... "
+      print "Calculating #{region_code.inspect}... "
 
       begin
         calculator.call
-      rescue StandardError => ex
+      rescue StandardError => e
         puts ''
-        raise ex
+        raise e
       end
 
       puts 'done.'
     end
-  end # calculate_datasets
-end # deploy
+  end
+end

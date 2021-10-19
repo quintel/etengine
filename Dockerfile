@@ -28,4 +28,4 @@ RUN bundle install --jobs=4 --retry=3
 
 COPY . /app/
 
-CMD ["bin/rails", "s", "-b", "0.0.0.0"]
+CMD [".docker/entrypoint.sh"]

@@ -15,8 +15,8 @@ services:
       - rails_cache:/app/tmp/cache
       - storage:/app/storage
     env_file:
-      - .docker-env/development/database
-      - .docker-env/development/web
+      - .docker/env/development/database
+      - .docker/env/development/web
     tmpfs:
       - /tmp
     depends_on:
@@ -28,7 +28,7 @@ services:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     env_file:
-      - .docker-env/development/database
+      - .docker/env/development/database
     volumes:
       - db_data:/var/lib/mysql
 
