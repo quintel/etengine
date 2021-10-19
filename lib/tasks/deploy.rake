@@ -78,7 +78,7 @@ namespace :deploy do
       end
     )
 
-    path.mktree
+    path.mkpath
 
     Etsource::AtlasLoader::PreCalculated.new(path).reload! do |region_code, calculator|
       print "Calculating #{region_code.inspect}... "
