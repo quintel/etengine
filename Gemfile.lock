@@ -458,6 +458,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   ruby-graphviz
+  ruby-progressbar
   ruby_deep_clone (~> 0.8)
   sass-rails
   sentry-raven

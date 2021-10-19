@@ -23,7 +23,6 @@
 #  * Anything else: master ETSource branch
 
 set -e
-set -x
 
 mkdir -p /tmp/atlas
 

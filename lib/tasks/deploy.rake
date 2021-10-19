@@ -78,17 +78,14 @@ namespace :deploy do
 
     path.mkpath
 
-    Etsource::AtlasLoader::PreCalculated.new(path).reload! do |region_code, calculator|
-      print "Calculating #{region_code.inspect}... "
+    loader = Etsource::AtlasLoader::PreCalculated.new(path)
 
-      begin
-        calculator.call
-      rescue StandardError => e
-        puts ''
-        raise e
-      end
-
-      puts 'done.'
+    loader.reload!(progress: true) do |region_code, calculator|
+      calculator.call
+    rescue StandardError => e
+      puts
+      puts "Error calculating #{region_code}"
+      raise e
     end
   end
 end

@@ -47,6 +47,7 @@ gem 'git',                            github: 'bradhe/ruby-git'
 gem 'fnv'
 gem 'msgpack'
 gem 'parallel'
+gem 'ruby-progressbar'
 
 # own gems
 gem 'quintel_merit', ref: '1ebfc82', github: 'quintel/merit'

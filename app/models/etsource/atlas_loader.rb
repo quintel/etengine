@@ -113,11 +113,14 @@ module Etsource
       # Public: Forces calculation of all the regions which are enabled for use in ETEngine.
       #
       # Returns nothing.
-      def reload!
-        super
+      def reload!(progress: false)
+        super()
 
-        Parallel.each(Etsource::Dataset.region_codes(refresh: true)) do |code|
-          calculator = ->{ calculate!(code) }
+        Parallel.each(
+          Etsource::Dataset.region_codes(refresh: true),
+          progress: progress && { title: 'Calculating datasets' }
+        ) do |code|
+          calculator = -> { calculate!(code) }
 
           yield(code, calculator) if block_given?
 
