@@ -15,17 +15,17 @@ namespace :deploy do
     desired ETSource version before starting the app. It is not intended for use
     on local development machines.
 
-    Provide the desired ETSource commit in a REV variable:
+    Provide the desired ETSource commit in a ETSOURCE_REF variable:
 
-    rake etsource:load REF=a9b8c7d6e5f4
+    rake etsource:load ETSOURCE_REF=a9b8c7d6e5f4
   DESC
   task load_etsource: :environment do
     etsource    = Pathname.new(ETSOURCE_DIR).expand_path
     destination = Pathname.new(ETSOURCE_EXPORT_DIR).expand_path
-    revision    = (ENV['REV'] || Rails.env.production? ? 'production' : 'master').strip
+    revision    = (ENV['ETSOURCE_REF'] || Rails.env.production? ? 'production' : 'master').strip
     real_rev    = nil
 
-    raise "You didn't provide a REV to load!" if revision.empty?
+    raise "You didn't provide an ETSOURCE_REF to load!" if revision.empty?
 
     if etsource == destination
       raise <<-MESSAGE.strip_heredoc
@@ -41,7 +41,7 @@ namespace :deploy do
       cd(etsource) do
         # Ensure the revision is real...
         sh("git rev-parse '#{revision}'")
-        real_rev = `git rev-parse '#{revision}'`.strip
+        real_rev = `git rev-parse 'origin/#{revision}'`.strip
       end
     end
 
@@ -72,7 +72,15 @@ namespace :deploy do
       MESSAGE
     end
 
-    Etsource::Dataset::Import.loader.reload! do |region_code, calculator|
+    path = Pathname.new(
+      ENV.fetch('CACHED_DATASETS_PATH') do
+        Etsource::Dataset::Import::CACHED_DATASETS_PATH
+      end
+    )
+
+    path.mktree
+
+    Etsource::AtlasLoader::PreCalculated.new(path).reload! do |region_code, calculator|
       print "Calculating #{region_code.inspect}... "
 
       begin

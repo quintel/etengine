@@ -6,6 +6,8 @@ module Etsource
   class Dataset::Import
     attr_reader :country
 
+    CACHED_DATASETS_PATH = Rails.root.join('tmp/atlas').freeze
+
     # Public: The loader used to create and fetch Atlas::ProductionMode
     # instances.
     #
@@ -15,9 +17,9 @@ module Etsource
       # the values of class variables when reloading code.
       @loader ||=
         if APP_CONFIG[:etsource_lazy_load_dataset]
-          AtlasLoader::Lazy.new(Rails.root.join('tmp/atlas'))
+          AtlasLoader::Lazy.new(CACHED_DATASETS_PATH)
         else
-          AtlasLoader::PreCalculated.new(Rails.root.join('tmp/atlas'))
+          AtlasLoader::PreCalculated.new(CACHED_DATASETS_PATH)
         end
     end
 
