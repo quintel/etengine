@@ -17,7 +17,7 @@ default: &default
 
 development: &development
   <<: *default
-  database: <%= ENV.fetch('MYSQL_DATABASE', 'etengine_dev') %>
+  database: <%= ENV.fetch('MYSQL_DATABASE', 'etengine_development') %>
   host: <%= ENV.fetch('DATABASE_HOST', nil) %>
   username: <%= ENV.fetch('MYSQL_USER', 'root') %>
   password: <%= ENV.fetch('MYSQL_PASSWORD', nil) %>
