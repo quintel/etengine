@@ -35,7 +35,7 @@ namespace :deploy do
           ENV['ETSOURCE_REV']
         else
           begin
-            capture("cat #{current_path}/tmp/etsource/REVISION")
+            within(deploy_path.join('shared/etsource')) { capture('git rev-parse HEAD') }
           rescue
             raise <<-MESSAGE.gsub(/^\s+/, '')
               Unknown existing ETSource version, and no ETSOURCE_REV was provided.
@@ -48,10 +48,10 @@ namespace :deploy do
         end
 
       within release_path do
-        with rev: rev.strip, rails_env: fetch(:rails_env) do
+        with etsource_ref: rev.strip, rails_env: fetch(:rails_env) do
           execute :rake, 'deploy:load_etsource deploy:calculate_datasets'
         end
       end
     end
-  end # load_etsource
-end # deploy
+  end
+end
