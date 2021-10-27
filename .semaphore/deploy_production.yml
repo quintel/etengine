@@ -17,7 +17,7 @@ blocks:
             - 'docker push quintel/etengine:latest'
             - ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_deploy deploy@23.88.68.183 "cd /var/www/etengine && docker-compose pull && docker-compose run --rm web .docker/calculate-datasets.sh && docker-compose down && docker-compose up -d"
       secrets:
-        - name: Deploy Key
-        - name: Docker Hub Credentials
+        - name: Deploy key
+        - name: Docker Hub credentials
     run:
       when: branch = 'docker'
