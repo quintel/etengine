@@ -10,6 +10,8 @@ blocks:
       jobs:
         - name: Build, publish, deploy
           commands:
+            - chmod 0600 ~/.ssh/id_rsa
+            - ssh-add ~/.ssh/id_rsa
             - checkout
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             - 'docker build -f Dockerfile.production -t etengine:beta .'
