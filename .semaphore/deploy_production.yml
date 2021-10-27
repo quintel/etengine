@@ -1,0 +1,24 @@
+version: v1.0
+name: Deploy to production
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Docker
+    task:
+      jobs:
+        - name: Build, publish, deploy
+          commands:
+            - checkout
+            - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+            - 'docker build -f Dockerfile.production -t etengine:latest .'
+            - 'docker tag etengine:latest quintel/etengine:latest'
+            - 'docker push quintel/etengine:latest'
+            - docker images
+            - echo 'Deploy...'
+      secrets:
+        - name: Deploy Key
+        - name: Docker Hub Credentials
+    run:
+      when: branch = 'production'

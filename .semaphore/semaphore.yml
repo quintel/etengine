@@ -1,0 +1,27 @@
+version: v1.0
+name: Test ETEngine
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: RSpec
+    task:
+      jobs:
+        - name: Test
+          commands:
+            - checkout
+            - sem-version c 8
+            - sem-service start mysql 8
+            - cache restore
+            - 'gem install bundler:1.17.3'
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - bundle exec rspec
+promotions:
+  - name: Deploy to staging
+    pipeline_file: deploy_staging.yml
+  - name: Deploy to production
+    pipeline_file: deploy_production.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'docker'"
