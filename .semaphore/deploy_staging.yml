@@ -16,9 +16,11 @@ blocks:
             - 'docker tag etengine:beta quintel/etengine:beta'
             - 'docker push quintel/etengine:beta'
             - docker images
-            - echo 'Deploy...'
+            - 'gem install bundler:1.17.3'
+            - bundle install --deployment --path vendor/bundle
+            - DOMAIN=beta.et-engine.com bundle exec cap staging deploy
       secrets:
-        - name: Deploy Key
-        - name: Docker Hub Credentials
+        - name: Deploy key old
+        - name: Docker Hub credentials
     run:
       when: branch = 'docker'
