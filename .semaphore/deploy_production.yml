@@ -15,9 +15,10 @@ blocks:
             - 'docker build -f Dockerfile.production -t etengine:latest .'
             - 'docker tag etengine:latest quintel/etengine:latest'
             - 'docker push quintel/etengine:latest'
-            - ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_deploy deploy@23.88.68.183 "cd /var/www/etengine && docker-compose pull && docker-compose run --rm web .docker/calculate-datasets.sh && docker-compose down && docker-compose up -d"
+            - ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && docker-compose pull && docker-compose run --rm web .docker/calculate-datasets.sh && docker-compose down && docker-compose up -d"
       secrets:
         - name: Deploy key
         - name: Docker Hub credentials
+        - name: Production SSH settings
     run:
       when: branch = 'docker'
