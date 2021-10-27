@@ -14,9 +14,11 @@ blocks:
             - ssh-add ~/.ssh/id_deploy
             - checkout
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+            - cache restore
             - 'docker build -f Dockerfile.production -t etengine:latest .'
             - 'docker tag etengine:latest quintel/etengine:latest'
             - 'docker push quintel/etengine:latest'
+            - cache store
             - ssh -o "StrictHostKeyChecking=no" -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && docker-compose pull && docker-compose run --rm web .docker/calculate-datasets.sh && docker-compose down && docker-compose up -d"
       secrets:
         - name: Deploy key
