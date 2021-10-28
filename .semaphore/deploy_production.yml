@@ -22,7 +22,6 @@ blocks:
             - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
             - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && docker-compose pull && docker-compose run --rm web .docker/calculate-datasets.sh && docker-compose down && docker-compose up -d"
       secrets:
-        - name: Deploy key
         - name: Docker Hub credentials
         - name: Production SSH settings
     run:
