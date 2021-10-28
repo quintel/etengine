@@ -1,5 +1,5 @@
 version: v1.0
-name: Deploy to production
+name: Deploy to staging
 agent:
   machine:
     type: e1-standard-2
