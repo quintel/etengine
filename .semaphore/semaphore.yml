@@ -21,7 +21,7 @@ blocks:
 promotions:
   - name: Deploy to staging
     pipeline_file: deploy_staging.yml
-  - name: Deploy to production
-    pipeline_file: deploy_production.yml
     auto_promote:
       when: "result = 'passed' and branch = 'docker'"
+  - name: Deploy to production
+    pipeline_file: deploy_production.yml

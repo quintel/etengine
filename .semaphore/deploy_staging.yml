@@ -10,21 +10,23 @@ blocks:
       jobs:
         - name: Build and publish Docker image
           commands:
+            - chmod 0600 ~/.ssh/id_deploy
+            - ssh-add ~/.ssh/id_deploy
             - checkout
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             - 'docker build -f Dockerfile.production -t etengine:beta .'
             - 'docker tag etengine:beta quintel/etengine:beta'
             - 'docker push quintel/etengine:beta'
-        - name: Deploy with Capistrano
-          commands:
-            - chmod 0600 ~/.ssh/id_rsa
-            - ssh-add ~/.ssh/id_rsa
-            - checkout
-            - cache restore
-            - 'gem install bundler:1.17.3'
-            - bundle install --deployment --path vendor/bundle
-            - cache store
-            - bundle exec cap staging deploy
+        # - name: Deploy with Capistrano
+        #   commands:
+        #     - chmod 0600 ~/.ssh/id_rsa
+        #     - ssh-add ~/.ssh/id_rsa
+        #     - checkout
+        #     - cache restore
+        #     - 'gem install bundler:1.17.3'
+        #     - bundle install --deployment --path vendor/bundle
+        #     - cache store
+        #     - bundle exec cap staging deploy
       secrets:
         - name: Deploy key old
         - name: Docker Hub credentials
