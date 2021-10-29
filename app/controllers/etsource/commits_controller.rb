@@ -8,10 +8,6 @@ class Etsource::CommitsController < ApplicationController
 
   authorize_resource :class => false
 
-  # etsource/commits/current
-  def show
-  end
-
   def index
     @branch = params[:branch] || @etsource.current_branch || 'master'
     @branch = 'master' if @etsource.detached_branch?

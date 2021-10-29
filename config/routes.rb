@@ -175,7 +175,7 @@ Rails.application.routes.draw do
   namespace :etsource do
     root :to => 'commits#index'
 
-    resources :commits, :only => [:index, :show] do
+    resources :commits, :only => [:index] do
       get :import, :on => :member
     end
   end
