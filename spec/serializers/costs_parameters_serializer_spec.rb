@@ -8,8 +8,8 @@ describe CostsParametersSerializer do
   end
 
   it 'has 31 rows' do
-    # 10 queries, 6 totals, 15 subtotals = 31 rows minimum (when no nodes in groups)
-    expect(subject.length).to eq(31)
+    # 10 queries, 6 totals, 24 subtotals = 40 rows minimum (when no nodes in groups)
+    expect(subject.length).to eq(40)
   end
 
   it 'has a row for each node' do

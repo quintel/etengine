@@ -46,8 +46,8 @@ class CostsParametersSerializer
     CSV.generate do |csv|
       csv << [
         'Group', 'Subgroup', 'Key',
-        'CAPEX (ex ccs)', 'OPEX (ex ccs)', 'CAPEX (ccs)', 'OPEX (ccs)',
-        'Total (ex ccs)'
+        'CAPEX ex ccs (Euro)', 'OPEX ex ccs (Euro)', 'CAPEX ccs (Euro)', 'OPEX ccs (Euro)',
+        'Total ex ccs (Euro)', 'Number of units', 'Total input (MJ)', 'Total output (MJ)'
       ]
 
       groups_with_subtotal.each do |group|
@@ -65,6 +65,11 @@ class CostsParametersSerializer
   private
 
   # Row generation -------------------------------------------------------------
+
+  # Round all number to 2
+  def format_num(value)
+    value&.round(2)
+  end
 
   # Internal: Creates rows for each subgroup in the group
   #
@@ -106,11 +111,14 @@ class CostsParametersSerializer
         group,
         subgroup,
         node.key,
-        node.query.capital_expenditures_excluding_ccs_per(:node),
-        node.query.operating_expenses_excluding_ccs_per(:node),
-        node.query.capital_expenditures_ccs_per(:node),
-        node.query.operating_expenses_ccs_per(:node),
-        nil
+        format_num(node.query.capital_expenditures_excluding_ccs_per(:node)),
+        format_num(node.query.operating_expenses_excluding_ccs_per(:node)),
+        format_num(node.query.capital_expenditures_ccs_per(:node)),
+        format_num(node.query.operating_expenses_ccs_per(:node)),
+        nil,
+        format_num(node.query.number_of_units),
+        format_num(node_flow(node, :inputs)),
+        format_num(node_flow(node, :outputs))
       ]
     end
   end
@@ -143,7 +151,8 @@ class CostsParametersSerializer
       subgroup,
       name.presence || query,
       nil, nil, nil, nil,
-      @query_results[query]
+      format_num(@query_results[query]),
+      nil, nil, nil
     ]
   end
 
@@ -179,12 +188,12 @@ class CostsParametersSerializer
 
   # Internal: Returns all groups for which a subtotal line per subgroup should be added
   def groups_with_subtotal
-    %i[costs_building_and_installations costs_production costs_storage_and_conversion]
+    %i[costs_building_and_installations costs_production costs_storage_and_conversion costs_carriers]
   end
 
   # Internal: Returns all groups that should not have a subtotal line per subgroup
   def groups_without_subtotal
-    %i[costs_carriers costs_infrastructure costs_co2]
+    %i[costs_infrastructure costs_co2]
   end
 
   # Internal: Returns all groups
@@ -215,7 +224,7 @@ class CostsParametersSerializer
 
   # Internal: Carriers for which the costs_carriers group is valid
   #
-  # This group does not need subtotal group queries
+  # This group only needs subtotal group queries
   def costs_carriers
     %w[biomass oil_and_products coal_and_products uranium heat natural_gas waste
        electricity hydrogen]
@@ -233,5 +242,23 @@ class CostsParametersSerializer
   # This group does not need subtotal group queries
   def costs_co2
     %w[molecule_nodes energy_nodes]
+  end
+
+  # Internal: Sums the input or output flows of the node
+  #
+  # Copied from inspect_helper
+  def node_flow(node, direction)
+    slots = node.public_send(direction == :inputs ? :inputs : :outputs)
+
+    return nil if slots.none?
+
+    slots.sum do |slot|
+      if slot.edges.any?
+        slot.external_value
+      else
+        # Fallback for left-most or right-most slots with no edges.
+        slot.node.demand * slot.conversion
+      end
+    end
   end
 end
