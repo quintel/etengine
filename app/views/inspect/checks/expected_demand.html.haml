@@ -27,7 +27,7 @@
         %tr
           %td
             %a{:id => key}= node.dataset_get(:excel_id)
-          %td= link_to key, inspect_node_path(:id => key)
+          %td= link_to key, inspect_node_path_auto(node)
           %td.align-right= auto_number node.demand
           %td.align-right= auto_number node.demand_expected_value
           %td
@@ -51,7 +51,7 @@
       %tr
         %td
           %a{:id => key}= node.dataset_get(:excel_id)
-        %td= link_to key, inspect_node_path(:id => key)
+        %td= link_to key, inspect_node_path_auto(node)
         %td.align-right= auto_number node.demand
         %td.align-right= auto_number node.demand_expected_value
         %td
