@@ -7,11 +7,12 @@ agent:
 blocks:
   - name: Docker
     task:
+      prologue:
+        - chmod 0600 ~/.ssh/id_deploy
+        - ssh-add ~/.ssh/id_deploy
       jobs:
         - name: Build, publish, deploy
           commands:
-            - chmod 0600 ~/.ssh/id_deploy
-            - ssh-add ~/.ssh/id_deploy
             - checkout
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             - cache restore
