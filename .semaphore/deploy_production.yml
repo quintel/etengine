@@ -8,8 +8,9 @@ blocks:
   - name: Docker
     task:
       prologue:
-        - chmod 0600 ~/.ssh/id_deploy
-        - ssh-add ~/.ssh/id_deploy
+        commands:
+          - chmod 0600 ~/.ssh/id_deploy
+          - ssh-add ~/.ssh/id_deploy
       jobs:
         - name: Build, publish, deploy
           commands:
