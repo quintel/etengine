@@ -6,7 +6,8 @@ class SteelInputs < ActiveRecord::Migration[5.2]
   KEYS = {
     "industry_steel_blastfurnace_current_consumption_useable_heat_share" => "industry_steel_blastfurnace_bof_share",
     "industry_steel_electricfurnace_electricity_share" => "industry_steel_scrap_hbi_eaf_share",
-    "industry_steel_hisarna_consumption_useable_heat_share" => "industry_steel_cyclonefurnace_bof_share"
+    "industry_steel_hisarna_consumption_useable_heat_share" => "industry_steel_cyclonefurnace_bof_share",
+    "energy_steel_hisarna_transformation_coal_woodpellets_share" => "industry_steel_cyclonefurnace_bof_wood_pellets_share"
   }.freeze
 
   def up
