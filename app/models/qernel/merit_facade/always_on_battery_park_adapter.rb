@@ -72,9 +72,9 @@ module Qernel
 
         # binding.pry
 
-        find_edge(curtailment_node).dataset_set(:share, curtailment_demand / total_demand)
-        find_edge(storage_node).dataset_set(:share, storage_demand / total_demand)
-        find_edge(output_node).dataset_set(:share, output_demand / total_demand)
+        find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
+        find_edge(storage_node).dataset_set(:share, safe_div(storage_demand, total_demand))
+        find_edge(output_node).dataset_set(:share, safe_div(output_demand, total_demand))
 
         # Producer node
         # -------------
@@ -105,8 +105,6 @@ module Qernel
         # ------------
 
         @storage.inject!
-
-        # TODO Ensure storage losses are set.
       end
 
       private
@@ -120,6 +118,10 @@ module Qernel
         end
 
         edge
+      end
+
+      def safe_div(num, denom)
+        num.zero? || denom.zero? ? 0.0 : num / denom
       end
 
       def producer_attributes
