@@ -40,7 +40,9 @@ module Qernel
           :costs_per_mj => ['', ''],
           :wacc => ['', ''],
           :profitability => ['', 'profitable / unprofitable / conditionally_profitable'], # Used by merit order
-          :profit_per_mwh_electricity => ['', 'eur/MWh']  # Used by merit order
+          :profit_per_mwh_electricity => ['', 'eur/MWh'],  # Used by merit order,
+          :marginal_costs => ['', 'euro / MWh'],
+          :max_consumption_price => ['', 'euro / MWh']
         },
 
         :merit_order => {

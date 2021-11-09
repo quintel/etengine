@@ -6,11 +6,7 @@ module Qernel
     # in the merit order.
     class MarginalCostSorter
       def cost(node, config)
-        if config.type == :flex
-          node.max_consumption_price
-        else
-          node.marginal_costs
-        end
+        node.marginal_costs || (config.type == :flex ? 0.0 : nil)
       end
     end
   end

@@ -68,11 +68,25 @@ module Qernel
       #
       # Returns the marginal costs per MWh (produced electricity)
       def marginal_costs
-        fetch(:marginal_costs) do
-          variable_costs_per_typical_input(include_waste: false) *
-            SECS_PER_HOUR / # Highlighting
-            (output(:electricity) ? electricity_output_conversion : 1.0)
+        fetch(:marginal_costs, false) do
+          if output(:electricity).nil?
+            nil
+          elsif electricity_output_conversion.zero?
+            0.0
+          else
+            variable_costs_per_typical_input(include_waste: false) *
+              SECS_PER_HOUR / # Highlighting
+              electricity_output_conversion
+          end
         end
+      end
+
+      # Public: Set a marginal cost for the node (in euro /MWh), bypassing the normal marginal cost
+      # calculation.
+      #
+      # Returns the cost.
+      def marginal_costs=(value)
+        dataset_set(:marginal_costs, value)
       end
 
       # Public: Returns the maximum price the node is willing to pay for energy.
@@ -85,20 +99,12 @@ module Qernel
       def max_consumption_price
         dataset_get(:max_consumption_price) || marginal_costs
       end
-      
+
       # Public: Sets the maximum allowed price at which a flex technology will consume energy.
       #
       # Returns the price.
       def max_consumption_price=(new_price)
         dataset_set(:max_consumption_price, new_price)
-      end
-
-      # Public: Set a marginal cost for the node (in euro /MWh), bypassing the normal marginal cost
-      # calculation.
-      #
-      # Returns the cost.
-      def marginal_costs=(value)
-        dataset_set(:marginal_costs, value)
       end
 
       # Public: Sets an array to be used as a marginal cost curve.
