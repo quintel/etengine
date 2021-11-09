@@ -75,7 +75,7 @@ module Qernel
       end
 
       def marginal_costs
-        source_api.marginal_costs
+        source_api.marginal_costs || :null
       end
 
       def output_capacity_per_unit
