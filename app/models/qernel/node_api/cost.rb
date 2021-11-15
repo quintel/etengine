@@ -158,19 +158,28 @@ module Qernel
         end
       end
 
-      # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
+      # Public: Calculates the total CAPEX (operating expenses) for the node
       #
       # Capital expenditures (CAPEX) are major investments that are designed to be
       # used over the long term. The yearly costs for these investments are based on
       # the WACC and plant lifetime. If the plant does not have CCS installed, these
       # costs are zero.
       #
+
+      def capital_expenditures
+        fetch(:capital_expenditures) do
+          (cost_of_capital || 0.0) +
+            (depreciation_costs || 0.0)
+        end
+      end
+
+      # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
+      #
       # Returns the yearly capital expenditure for CCS in euro.
       def capital_expenditures_ccs
         fetch(:capital_expenditures_ccs) do
-          return 0.0 if ccs_investment.nil?
-
-          ccs_investment * expenditure_factor_per_lifetime_year
+          (cost_of_capital_ccs || 0.0) +
+            (depreciation_costs_ccs || 0.0)
         end
       end
 
@@ -183,14 +192,25 @@ module Qernel
       # Returns the yearly capital expenditure excluding CCS in euro.
       def capital_expenditures_excluding_ccs
         fetch(:capital_expenditures_excluding_ccs) do
-          (total_investment_over_lifetime - (ccs_investment || 0.0)) *
-            expenditure_factor_per_lifetime_year
+          (capital_expenditures) -
+            (capital_expenditures_ccs)
+        end
+      end
+
+      # Public: Calculates the total OPEX (operating expenses) for the node
+      #
+      # Operating expenses for CCS include varaible O&M costs and CO2 emissions costs.
+
+      def operating_expenses
+        fetch(:operating_expenses) do
+          variable_operation_and_maintenance_costs +
+          fixed_operation_and_maintenance_costs_per_year +
+          co2_emissions_costs
+
         end
       end
 
       # Public: Calculates the OPEX (operating expenses) for CCS for the node
-      #
-      # Operating expenses for CCS include varaible O&M costs and CO2 emissions costs.
       #
       # Returns the yearly operating expenses for CCS in euro.
       def operating_expenses_ccs
@@ -264,6 +284,22 @@ module Qernel
         end
       end
 
+
+      ### Retuns the yearly cost of capital for the CCS part of one plant per year
+      def cost_of_capital_ccs
+        fetch(:cost_of_capital_ccs) do
+          if technical_lifetime.zero?
+            raise IllegalZeroError.new(self, :technical_lifetime)
+          end
+
+          average_investment_ccs * wacc *
+            (construction_time + technical_lifetime) / # syntax
+            technical_lifetime
+        end
+      end
+
+
+
       # Internal: Determines the yearly depreciation of the plant over its life.
       #
       # The straight-line depreciation methodology is used.
@@ -284,6 +320,27 @@ module Qernel
           end
 
           investment / technical_lifetime
+        end
+      end
+
+
+      ## Returns the yearly depreciation costs for the CCS part of one plant per yar
+
+      def depreciation_costs_ccs
+        fetch(:depreciation_costs) do
+          if technical_lifetime.zero?
+            raise IllegalZeroError.new(self, :technical_lifetime)
+          end
+
+          investment = ccs_investment
+
+          if investment && investment < 0
+            raise IllegalNegativeError.new(
+              self, :total_investment_over_lifetime, investment
+            )
+          end
+
+          average_investment_ccs / technical_lifetime
         end
       end
 
@@ -420,6 +477,12 @@ module Qernel
       # Returns a float representing cost per plant per year.
       def average_investment
         fetch(:average_investment) { total_investment_over_lifetime / 2 }
+      end
+
+
+      # Returns a float representing cost of the ccs part of one plant per year.
+      def average_investment_ccs
+        fetch(:average_investment_ccs) { (ccs_investment || 0.0) / 2 }
       end
 
       # Internal: This method calculates the input capacity of a plant based on the electrical
