@@ -126,7 +126,7 @@ module Qernel
 
       def producer_attributes
         attrs = super
-        attrs[:load_curve] = @park.output_curve
+        attrs[:load_curve] = Merit::Curve.new(@park.output_curve)
         attrs
       end
 
