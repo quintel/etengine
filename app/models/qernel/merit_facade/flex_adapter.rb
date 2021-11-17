@@ -45,6 +45,7 @@ module Qernel
         attrs = super
 
         attrs[:marginal_costs] = marginal_costs
+        attrs[:consumption_price] = source_api.max_consumption_price
 
         attrs[:output_capacity_per_unit] = output_capacity
         attrs[:input_capacity_per_unit] = input_capacity
