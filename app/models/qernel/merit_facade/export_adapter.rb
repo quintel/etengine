@@ -62,7 +62,7 @@ module Qernel
         attrs = super
         attrs[:output_capacity_per_unit] = 0.0
         attrs[:group] = @config.group
-        attrs[:consume_from_dispatchables] = @config.satisfy_with_dispatchables
+        attrs[:consume_from_dispatchables] = true
         attrs
       end
 
