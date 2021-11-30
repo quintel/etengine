@@ -4,9 +4,18 @@ class RemoveFlexibilityOrder < ActiveRecord::Migration[5.2]
   include ETEngine::ScenarioMigration
 
   INPUT_DEFAULTS = {
-    wtp_of_energy_hydrogen_flexibility_p2g_electricity: 3.5,
-    wtp_of_energy_flexibility_hv_opac_electricity: 4.5
-    # etc MICHIEL please fill this in :)
+    wtp_of_energy_hydrogen_flexibility_p2g_electricity: 0.4,
+    wtp_of_energy_flexibility_hv_opac_electricity: 0.6,
+    wtp_of_energy_flexibility_mv_batteries_electricity: 0.8,
+    wtp_of_energy_flexibility_pumped_storage_electricity: 0.5,
+    wtp_of_energy_heat_flexibility_p2h_boiler_electricity: 0.2,
+    wtp_of_energy_heat_flexibility_p2h_heatpump_electricity: 0.1,
+    wtp_of_households_flexibility_p2p_electricity: 0.9,
+    wtp_of_transport_car_flexibility_p2p_electricity: 0.7,
+    wtp_of_industry_other_paper_flexibility_p2h_electricity: 0.3,
+    wtp_of_industry_chemicals_other_flexibility_p2h_electricity: 0.3,
+    wtp_of_industry_chemicals_refineries_flexibility_p2h_electricity: 0.3,
+    wtp_of_industry_other_food_flexibility_p2h_electricity: 0.3,
   }.freeze
 
   EURO_MW_STEP = 0.1
