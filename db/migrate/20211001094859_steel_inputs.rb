@@ -23,6 +23,13 @@ class SteelInputs < ActiveRecord::Migration[5.2]
       if scenario.user_values.key?('industry_steel_blastfurnace_current_consumption_useable_heat_share')
         scenario.user_values['industry_steel_blastfurnace_current_consumption_useable_heat_share'] += bat
       end
+
+      # Cap biomass cyclone furnace input to 40%
+      if scenario.user_values.key?('energy_steel_hisarna_transformation_coal_woodpellets_share')
+        if scenario.user_values['energy_steel_hisarna_transformation_coal_woodpellets_share'] > 40.0
+          scenario.user_values['energy_steel_hisarna_transformation_coal_woodpellets_share'] = 40.0
+        end
+      end
       # Rename inputs
       KEYS.each do |old, new|
         if scenario.user_values.key?(old)
