@@ -19,7 +19,7 @@ class RemoveFlexibilityOrder < ActiveRecord::Migration[5.2]
   }.freeze
 
   EURO_MW_STEP = 0.1
-  DEFAULT_WHEN_ORDER_SET = 0.0
+  DEFAULT_WHEN_ORDER_SET = 0.1
 
   INPUTS_MAP = {
     'power_to_gas' => :wtp_of_energy_hydrogen_flexibility_p2g_electricity,
@@ -38,6 +38,14 @@ class RemoveFlexibilityOrder < ActiveRecord::Migration[5.2]
     ]
   }.freeze
 
+  BATTERY_WTA = {
+    wta_of_energy_flexibility_hv_opac_electricity: 1.6,
+    wta_of_energy_flexibility_mv_batteries_electricity: 1.8,
+    wta_of_energy_flexibility_pumped_storage_electricity: 1.5,
+    wta_of_households_flexibility_p2p_electricity: 1.9,
+    wta_of_transport_car_flexibility_p2p_electricity: 1.7,
+  }.freeze
+
   def up
     # Get all flexibility orders from the db, as the AR model has already been removed
     flex_order_records = ActiveRecord::Base.connection.execute('SELECT * FROM flexibility_orders')
@@ -50,6 +58,10 @@ class RemoveFlexibilityOrder < ActiveRecord::Migration[5.2]
 
     # Update inputs
     migrate_scenarios do |scenario|
+      BATTERY_WTA.each do |input, value|
+        scenario.user_values[input] = value
+      end
+
       if scenarios_with_flex_order.key?(scenario.id)
         scenario.user_values.update(scenarios_with_flex_order[scenario.id])
       else
