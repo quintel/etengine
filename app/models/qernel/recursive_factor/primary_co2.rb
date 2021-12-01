@@ -42,6 +42,16 @@ module Qernel::RecursiveFactor::PrimaryCo2
     primary_co2_emission_without_capture + primary_co2_emission_of_bio_carriers
   end
 
+  # Public: The same as `primary_co2_emission_of_bio_and_fossil_without_capture` but instead returns
+  # the factor/share instead of the amount in MJ.
+  #
+  # Returns a numeric.
+  def primary_co2_emission_of_bio_and_fossil_without_capture_factor
+    fetch(:primary_co2_emission_of_bio_and_fossil_without_capture_factor) do
+      recursive_factor(:co2_per_mj_factor) + recursive_factor(:bio_co2_per_mj_factor)
+    end
+  end
+
   # TODO: Add documentation.
   def co2_factor
     1.0 - free_co2_factor
