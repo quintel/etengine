@@ -160,6 +160,25 @@ RSpec.describe Qernel::Molecules::Connection do
     end
   end
 
+  context 'when the config specifies to use natural_gas input with edge attribute with no demand' do
+    let(:config) do
+      Atlas::NodeAttributes::EnergyToMolecules.new(
+        direction: :input, conversion: {
+          natural_gas: 'edges: primary_co2_emission_of_bio_and_fossil_without_capture_factor'
+        }
+      )
+    end
+
+    before do
+      builder.node(:electricity_input).set(:demand, 100)
+      builder.node(:natural_gas_input).set(:demand, 0)
+    end
+
+    it 'calculates demand' do
+      expect(connection.demand).to be_zero
+    end
+  end
+
   context 'when the config specifies to use natural_gas input with edge attribute and ' \
           'multiple edges' do
     let(:config) do
