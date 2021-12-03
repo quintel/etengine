@@ -40,6 +40,10 @@ module Qernel::Plugins
       )
     end
 
+    def battery_optimization
+      Qernel::MeritFacade::BatteryOptimization.new(adapters.values)
+    end
+
     # Simple-mode does not need a full-run, and profiles for must-runs will
     # suffice.
     #
@@ -98,7 +102,13 @@ module Qernel::Plugins
         # the calculation, even if the participant isn't used in Merit.
         participant = adapter.participant
 
-        @order.add(participant) if adapter.installed?
+        next unless adapter.installed?
+
+        if participant.is_a?(Array)
+          participant.each { |part| @order.add(part) }
+        else
+          @order.add(participant)
+        end
       end
     end
 

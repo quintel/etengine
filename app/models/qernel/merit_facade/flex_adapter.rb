@@ -22,6 +22,8 @@ module Qernel
           CurtailmentAdapter
         when :heat_storage
           HeatStorageAdapter
+        when :optimizing_storage
+          OptimizingStorageAdapter
         else
           self
         end
