@@ -11,7 +11,6 @@ module Qernel
       delegated_calculation :primary_demand_of_carrier, true
       delegated_calculation :sustainability_share
       delegated_calculation :dependent_supply_of_carrier, true
-      delegated_calculation :primary_co2_emission_of_bio_and_fossil_without_capture_factor, true
 
       # Public: Returns how much CO2 is emitted per MJ passing through the edge.
       #
@@ -27,6 +26,10 @@ module Qernel
 
       def potential_co2_per_mj
         carrier.potential_co2_conversion_per_mj
+      end
+
+      def primary_co2_emission_of_bio_and_fossil_without_capture_factor
+        rgt_node.query.primary_co2_emission_of_bio_and_fossil_without_capture_factor
       end
     end
   end
