@@ -25,6 +25,8 @@ gem 'distribution', '~> 0.6'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
 
+gem 'numo-narray', require: 'numo/narray'
+
 # Rails gem
 gem 'simple_form'
 gem 'devise', '~> 4.7'
