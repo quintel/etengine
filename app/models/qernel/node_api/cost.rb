@@ -33,14 +33,15 @@ module Qernel
       # Returns a numeric value representing cost per plant.
       def total_initial_investment
         fetch(:total_initial_investment) do
-          if initial_investment.nil? && ccs_investment.nil? &&
-              cost_of_installing.nil? && storage_costs&.zero?
+          if initial_investment.nil? && ccs_investment.nil? && cost_of_installing.nil? &&
+              storage_costs&.zero? && capacity_costs&.zero?
             nil
           else
             (initial_investment || 0.0) +
               (ccs_investment || 0.0) +
               (cost_of_installing || 0.0) +
-              (storage_costs || 0.0)
+              (storage_costs || 0.0) +
+              (capacity_costs || 0.0)
           end
         end
       end
@@ -137,6 +138,20 @@ module Qernel
         fetch(:storage_costs) do
           if (storage = dataset_get(:storage))
             (storage.volume || 0.0) * (storage.cost_per_mwh || 0.0)
+          else
+            0.0
+          end
+        end
+      end
+
+      # Public: Calculates a fixed price for the input capacity of the node.
+      #
+      # This is rarely used, but features in some types of storage which have a cost associated with
+      # the total installed input capacity.
+      def capacity_costs
+        fetch(:capacity_costs) do
+          if fixed_costs_per_mw_input_capacity
+            fixed_costs_per_mw_input_capacity * input_capacity
           else
             0.0
           end
