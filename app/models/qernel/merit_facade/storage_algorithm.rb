@@ -11,39 +11,6 @@ module Qernel
       # Stores each hour and its current value.
       Frame = Struct.new(:index, :value)
 
-      # Public: Runs the optimization. Returns the energy stored in the battery in each hour.
-      #
-      # Arguments:
-      # loads - The residual load curve
-      #
-      # Keyword arguments:
-      # volume      - The volume of the battery in MWh (required).
-      # capacity    - The volume of the battery in MW (required).
-      # lookbehind  - How many hours the algorithm can look into the past to search for the minimum.
-      #
-      # Returns an array containing the amount stored in the battery in each hour.
-      def run(loads, capacity:, volume:, lookbehind: 72)
-        loads = Numo::DFloat.cast(loads)
-        mean_loads = mean_curve(loads)
-
-        charging_target, discharging_target = target_curves(loads, mean_loads)
-
-        # When optimizing towards the mean, the algorithm produces better results when each value is
-        # converted to the difference between itself and the target. This means that instead of
-        # matching the absolute max with the absolute mean, we find hours which are furthest from
-        # the target curves.
-        relative_loads = loads - Numo::DFloat.cast(mean_loads)
-
-        optimize(
-          relative_loads,
-          charging_target,
-          discharging_target,
-          capacity: capacity,
-          lookbehind: lookbehind,
-          volume: volume
-        )
-      end
-
       # Runs the optimization. Returns the energy stored in the battery in each hour.
       #
       # Arguments:
@@ -57,14 +24,17 @@ module Qernel
       # lookbehind  - How many hours the algorithm can look into the past to search for the minimum.
       #
       # Returns an array containing the amount stored in the battery in each hour.
-      def optimize(
+      def run(
         data,
-        charging_target,
-        discharging_target,
         capacity:,
         lookbehind: 72,
         volume:
       )
+        # Creates curves which describe the maximum amount by which the battery can charge or
+        # discharge in each hour.
+        charging_target = Numo::DFloat.cast([capacity] * data.length)
+        discharging_target = charging_target.dup
+
         # All values for the year converted into a frame.
         frames = data.to_a.map.with_index { |value, index| Frame.new(index, value) }
 
@@ -74,11 +44,6 @@ module Qernel
 
         # Keeps track of how much energy is stored in each hour.
         reserve = Numo::DFloat.zeros(data.length)
-
-        # Convert the charging and discharging targets to narrays constrained by the capacity of
-        # the battery.
-        charging_target = Numo::DFloat.cast(charging_target).clip(0, capacity)
-        discharging_target = Numo::DFloat.cast(discharging_target).clip(0, capacity)
 
         while charge_frames.length.positive?
           max_frame = charge_frames.pop
@@ -138,7 +103,10 @@ module Qernel
           max_frame.value -= available_energy
 
           charging_target[min_frame.index] -= available_energy
+          discharging_target[min_frame.index] = 0 # Frame is no longer allowed to discharge.
+
           discharging_target[max_frame.index] -= available_energy
+          charging_target[max_frame.index] = 0 # Frame is no longer allowed to charge.
 
           next unless discharging_target[max_frame.index].positive?
 
@@ -154,44 +122,6 @@ module Qernel
 
         reserve
       end
-
-      private_class_method :optimize
-
-      # Creates a curve containing the moving average of each point in the original. The default 72
-      # samples means that the previous 36 hours and following 35 hours will be used to generate the
-      # moving average for the current hour.
-      def mean_curve(values, samples: 72)
-        values = values.to_a
-        margin = samples / 2
-        wrapped = Numo::DFloat.cast(
-          values[(values.length - margin)..] + values + values[0...margin]
-        )
-
-        # TODO: Performance can likely be improved by using a moving window.
-        Array.new(values.length) do |index|
-          wrapped[index...(index + samples)].mean
-        end
-      end
-
-      private_class_method :mean_curve
-
-      # Given the load curve and moving average mean curve, returns two new curves describing the
-      # amount of charging or discharging which would be needed in each hour for a new curve to
-      # match the mean.
-      def target_curves(load_curve, mean_curve)
-        deviation_curve = Numo::DFloat.cast(load_curve) - Numo::DFloat.cast(mean_curve)
-
-        charging_curve = deviation_curve.clip(-Float::INFINITY, 0).map(&:abs).to_a
-        discharging_curve = deviation_curve.clip(0, Float::INFINITY).to_a
-
-        # discharging_curve = deviation_curve.to_a.map.with_index do |value, index|
-        #   value.positive? ? [value, [load_curve[index], 0.0].max].min : 0.0
-        # end
-
-        [charging_curve, discharging_curve]
-      end
-
-      private_class_method :target_curves
     end
   end
 end

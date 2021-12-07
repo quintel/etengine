@@ -178,7 +178,7 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
       let(:adapters) do
         [
           consumer_double(:must_run, ([1000.0] * 6 + [500.0] * 6) * 365),
-          battery_double(key: :first, volume: 1000.0, capacity: 200.0),
+          battery_double(key: :first, volume: 500.0, capacity: 250.0),
           battery_double(key: :second, volume: 500.0, capacity: 100.0)
         ]
       end
