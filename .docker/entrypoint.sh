@@ -13,4 +13,5 @@ if [[ -z "${PREBUILT_DATASETS}" && ( "${RAILS_ENV}" == "production" || "${RAILS_
   echo "Starting server..."
 fi
 
+bundle exec rails db:migrate
 bundle exec --keep-file-descriptors puma -C config/puma.rb
