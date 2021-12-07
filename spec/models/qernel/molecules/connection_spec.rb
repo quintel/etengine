@@ -3,26 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Qernel::Molecules::Connection do
-  # def build_slot(node, carrier, direction, conversion)
-  #   Qernel::Slot.factory(nil, nil, node, carrier, direction).with(conversion: conversion)
-  # end
-
-  # let(:electricity) { Qernel::Carrier.new(key: :electricity).with(co2_conversion_per_mj: 0.0) }
-  # let(:natural_gas) { Qernel::Carrier.new(key: :natural_gas).with(co2_conversion_per_mj: 0.05) }
-
-  # # Demand: 100
-  # # Inputs: electricity at 75%, natural_gas at 25%
-  # # Outputs: electricity at 10%, natural_gas at 90%
-  # let(:source) do
-  #   Qernel::Node.new(key: :molecule_source, graph_name: :energy).tap do |node|
-  #     node.add_slot(build_slot(node, electricity, :input, 0.75))
-  #     node.add_slot(build_slot(node, natural_gas, :input, 0.25))
-  #     node.add_slot(build_slot(node, electricity, :output, 0.1))
-  #     node.add_slot(build_slot(node, natural_gas, :output, 0.9))
-  #     node.with(demand: 100)
-  #   end
-  # end
-
   let(:builder) do
     TestGraphBuilder.build do |builder|
       builder.add(:molecule_source, demand: 100)
