@@ -27,6 +27,10 @@ module Qernel
       def potential_co2_per_mj
         carrier.potential_co2_conversion_per_mj
       end
+
+      def primary_co2_emission_of_bio_and_fossil_without_capture_factor
+        rgt_node.query.primary_co2_emission_of_bio_and_fossil_without_capture_factor
+      end
     end
   end
 end
