@@ -35,11 +35,6 @@ module Qernel
           battery(key).optimizing_storage_params.output_efficiency
         )
 
-        # reserve = reserve_for(key)
-        # loads = reserve.map.with_index do |value, index|
-        #   reserve[index - 1] - value
-        # end
-
         self.class.reserve_to_load(
           reserve_for(key),
           input_efficiency: input_efficiency,
@@ -57,23 +52,14 @@ module Qernel
         return @reserves unless @reserves.nil?
 
         @reserves = {}
-
-        loads = residual_load.to_a
+        res_load = residual_load.to_a
 
         batteries.each.with_index do |battery, index|
-          params = battery.optimizing_storage_params
-
-
-          @reserves[battery.node.key] =
-            if params.capacity.zero? || params.volume.zero? || params.output_efficiency.zero?
-              Array.new(8760, 0.0)
-            else
-              StorageAlgorithm.run(loads, capacity: params.capacity, volume: params.volume).to_a
-            end
+          @reserves[battery.node.key] = run_algorithm(battery.optimizing_storage_params, res_load)
 
           if index < batteries.length - 1
-            loads = add_curves(
-              loads,
+            res_load = add_curves(
+              res_load,
               self.class.reserve_to_load(@reserves[battery.node.key]).map(&:-@)
             )
           end
@@ -82,10 +68,27 @@ module Qernel
         @reserves
       end
 
+      # Internal: Runs the optimization algorithm, returning the amount of energy stored in the
+      # reserve in each hour.
+      def run_algorithm(params, residual_load)
+        if params.installed?
+          StorageAlgorithm.run(
+            residual_load,
+            input_capacity: params.input_capacity,
+            output_capacity: params.output_capacity,
+            volume: params.volume
+          ).to_a
+        else
+          Array.new(8760, 0.0)
+        end
+      end
+
+      # Internal: Retrieves an optimizing storage adapter by its node key.
       def battery(key)
         batteries.find { |b| b.node.key == key } || raise("No such optimizing storage: #{key}")
       end
 
+      # Internal: Returns all optimizing storage adapters.
       def batteries
         @adapters.select { |a| a.config.type == :flex && a.config.subtype == :optimizing_storage }
       end
