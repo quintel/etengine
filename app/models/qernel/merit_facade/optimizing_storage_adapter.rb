@@ -5,7 +5,19 @@ module Qernel
     # A storage technology whose hourly load is calculated outside of Merit by an algorithm which
     # tries to flatten a residual load curve.
     class OptimizingStorageAdapter < Adapter
-      Params = Struct.new(:capacity, :volume, :output_efficiency)
+      # Contains useful information about the storage technology for the optimization algorithm.
+      Params = Struct.new(
+        :input_capacity,
+        :output_capacity,
+        :volume,
+        :output_efficiency,
+        keyword_init: true
+      ) do
+        def installed?
+          input_capacity.positive? && output_capacity.positive? &&
+            volume.positive? && output_efficiency.positive?
+        end
+      end
 
       def initialize(*args)
         super
@@ -21,9 +33,10 @@ module Qernel
 
       def optimizing_storage_params
         Params.new(
-          source_api.input_capacity,
-          source_api.storage.volume * source_api.number_of_units,
-          output_efficiency
+          input_capacity:    source_api.input_capacity,
+          output_capacity:   @context.carrier_named('%s_output_capacity'),
+          volume:            source_api.storage.volume * source_api.number_of_units,
+          output_efficiency: output_efficiency
         )
       end
 
