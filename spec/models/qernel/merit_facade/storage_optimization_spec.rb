@@ -39,7 +39,13 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
     allow(node).to receive(:key).and_return(key)
     allow(adapter).to receive(:node).and_return(node)
 
-    params = Qernel::MeritFacade::OptimizingStorageAdapter::Params.new(capacity, volume, efficiency)
+    params = Qernel::MeritFacade::OptimizingStorageAdapter::Params.new(
+      input_capacity: capacity,
+      output_capacity: capacity,
+      volume: volume,
+      output_efficiency: efficiency
+    )
+
     allow(adapter).to receive(:optimizing_storage_params).and_return(params)
 
     adapter

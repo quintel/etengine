@@ -19,14 +19,16 @@ module Qernel
       # discharging_target - Curve describing the desired discharging in each hour
       #
       # Keyword arguments:
-      # volume      - The volume of the battery in MWh.
-      # capacity    - The volume of the battery in MW.
-      # lookbehind  - How many hours the algorithm can look into the past to search for the minimum.
+      # volume          - The volume of the battery in MWh.
+      # input_capacity  - The input capacity of the battery in MW.
+      # output_capacity - The output capacity of the battery in MW.
+      # lookbehind      - How many hours the algorithm can look into the past to search for the minimum.
       #
       # Returns an array containing the amount stored in the battery in each hour.
       def run(
         data,
-        capacity:,
+        input_capacity:,
+        output_capacity:,
         lookbehind: 72,
         output_efficiency: 1.0,
         volume:
@@ -35,8 +37,8 @@ module Qernel
 
         # Creates curves which describe the maximum amount by which the battery can charge or
         # discharge in each hour.
-        charging_target = Numo::DFloat.cast([capacity] * data.length)
-        discharging_target = charging_target.dup
+        charging_target = Numo::DFloat.cast([input_capacity] * data.length)
+        discharging_target = Numo::DFloat.cast([output_capacity] * data.length)
 
         # All values for the year converted into a frame.
         frames = data.to_a.map.with_index { |value, index| Frame.new(index, value) }
@@ -85,6 +87,11 @@ module Qernel
           # We now have either the min frame, or nil in whihc case no optimization can be performed
           # on the max frame.
           next if min_frame.nil?
+
+          # The amount of energy to be charged in the min frame and discharged at the max frame.
+          # Limited to 1/4 of the difference in order to assign frames back on to the stack to so
+          # that their energy may be more fairly shared with other nearby frames.
+          available_energy = [charging_target[min_frame.index], available_energy].min
 
           # The amount of energy to be charged in the min frame and discharged at the max frame.
           # Limited to 1/4 of the difference in order to assign frames back on to the stack to so
