@@ -28,8 +28,11 @@ module Qernel
         data,
         capacity:,
         lookbehind: 72,
+        output_efficiency: 1.0,
         volume:
       )
+        input_efficiency, output_efficiency = normalized_efficiencies(output_efficiency)
+
         # Creates curves which describe the maximum amount by which the battery can charge or
         # discharge in each hour.
         charging_target = Numo::DFloat.cast([capacity] * data.length)
@@ -99,13 +102,16 @@ module Qernel
             reserve[min_frame.index...max_frame.index] += available_energy
           end
 
-          min_frame.value += available_energy
-          max_frame.value -= available_energy
+          input_energy = available_energy * input_efficiency
+          output_energy = available_energy * output_efficiency
 
-          charging_target[min_frame.index] -= available_energy
+          min_frame.value += input_energy
+          max_frame.value -= output_energy
+
+          charging_target[min_frame.index] -= input_energy
           discharging_target[min_frame.index] = 0 # Frame is no longer allowed to discharge.
 
-          discharging_target[max_frame.index] -= available_energy
+          discharging_target[max_frame.index] -= output_energy
           charging_target[max_frame.index] = 0 # Frame is no longer allowed to charge.
 
           next unless discharging_target[max_frame.index].positive?
@@ -121,6 +127,22 @@ module Qernel
         end
 
         reserve
+      end
+
+      # Determines the input and output efficiency of a battery based on a given output efficiency.
+      #
+      # The simulation of energy stored in the battery assumes energy in equals energy out. To
+      # adjust the residual load curve currently, we have to account for the output efficiency of
+      # the battery. This is done either by lowering the amount of energy discharged when the
+      # efficiency is lower than 1.0, or lowering the charge amount when greater than 1.0.
+      #
+      # Returns an array containing the input and output efficiencies.
+      def normalized_efficiencies(output_efficiency)
+        if output_efficiency > 1.0
+          [1.0 / output_efficiency, 1.0]
+        else
+          [1.0, output_efficiency]
+        end
       end
     end
   end
