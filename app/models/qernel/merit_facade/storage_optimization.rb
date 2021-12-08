@@ -10,9 +10,10 @@ module Qernel
 
       # Public: Converts the amount of energy stored in a reserve to hour charging (positive) and
       # discharging (negative) loads.
-      def self.reserve_to_load(reserve)
+      def self.reserve_to_load(reserve, input_efficiency: 1.0, output_efficiency: 1.0)
         reserve.map.with_index do |value, index|
-          reserve[index - 1] - value
+          value = reserve[index - 1] - value
+          value.negative? ? value * input_efficiency : value * output_efficiency
         end
       end
 
@@ -30,7 +31,20 @@ module Qernel
       # Public: Returns the hourly load of the named battery. Negative loads indicate charging while
       # negative loads are charging.
       def load_for(key)
-        self.class.reserve_to_load(reserve_for(key))
+        input_efficiency, output_efficiency = StorageAlgorithm.normalized_efficiencies(
+          battery(key).optimizing_storage_params.output_efficiency
+        )
+
+        # reserve = reserve_for(key)
+        # loads = reserve.map.with_index do |value, index|
+        #   reserve[index - 1] - value
+        # end
+
+        self.class.reserve_to_load(
+          reserve_for(key),
+          input_efficiency: input_efficiency,
+          output_efficiency: output_efficiency
+        )
       end
 
       def residual_load
@@ -49,8 +63,13 @@ module Qernel
         batteries.each.with_index do |battery, index|
           params = battery.optimizing_storage_params
 
+
           @reserves[battery.node.key] =
-            StorageAlgorithm.run(loads, capacity: params.capacity, volume: params.volume).to_a
+            if params.capacity.zero? || params.volume.zero? || params.output_efficiency.zero?
+              Array.new(8760, 0.0)
+            else
+              StorageAlgorithm.run(loads, capacity: params.capacity, volume: params.volume).to_a
+            end
 
           if index < batteries.length - 1
             loads = add_curves(
@@ -61,6 +80,10 @@ module Qernel
         end
 
         @reserves
+      end
+
+      def battery(key)
+        batteries.find { |b| b.node.key == key } || raise("No such optimizing storage: #{key}")
       end
 
       def batteries
