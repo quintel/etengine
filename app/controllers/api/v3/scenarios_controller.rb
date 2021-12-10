@@ -117,6 +117,8 @@ module Api
           end
         end
 
+        attrs[:area_code] = 'nl' if attrs[:area_code] == 'nl2019'
+
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
