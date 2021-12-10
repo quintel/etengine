@@ -84,7 +84,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(data['end_year']).to eql(2031)
     end
 
-    it 'should save custom end years' do
+    it 'should save custom area codes' do
       pending 'awaiting reintroduction of non-NL regions'
       running_this = -> {
         post '/api/v3/scenarios', params: { scenario: { area_code: 'uk' } }
@@ -96,6 +96,19 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data = JSON.parse(response.body)
 
       expect(data['area_code']).to eql('de')
+    end
+
+    it 'converts nl2019 area code to nl' do
+      running_this = -> {
+        post '/api/v3/scenarios', params: { scenario: { area_code: 'nl2019' } }
+      }
+
+      expect(&running_this).to change { Scenario.count }.by(1)
+      expect(response.status).to eql(200)
+
+      data = JSON.parse(response.body)
+
+      expect(data['area_code']).to eql('nl')
     end
   end
 
