@@ -31,9 +31,10 @@ module Qernel
       # Public: Returns the hourly load of the named battery. Negative loads indicate charging while
       # negative loads are charging.
       def load_for(key)
-        input_efficiency, output_efficiency = StorageAlgorithm.normalized_efficiencies(
-          battery(key).optimizing_storage_params.output_efficiency
-        )
+        input_efficiency, output_efficiency =
+          Merit::Flex::OptimizingStorage.normalized_efficiencies(
+            battery(key).optimizing_storage_params.output_efficiency
+          )
 
         self.class.reserve_to_load(
           reserve_for(key),
@@ -72,7 +73,7 @@ module Qernel
       # reserve in each hour.
       def run_algorithm(params, residual_load)
         if params.installed?
-          StorageAlgorithm.run(
+          Merit::Flex::OptimizingStorage.run(
             residual_load,
             input_capacity: params.input_capacity,
             output_capacity: params.output_capacity,
