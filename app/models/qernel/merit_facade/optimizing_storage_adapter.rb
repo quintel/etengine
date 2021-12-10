@@ -34,7 +34,7 @@ module Qernel
       def optimizing_storage_params
         Params.new(
           input_capacity:    source_api.input_capacity,
-          output_capacity:   @context.carrier_named('%s_output_capacity'),
+          output_capacity:   output_capacity,
           volume:            source_api.storage.volume * source_api.number_of_units,
           output_efficiency: output_efficiency
         )
@@ -73,7 +73,7 @@ module Qernel
       private
 
       def production_participant
-        @production_participant ||= Merit::CurveProducer.new(
+        @production_participant ||= Merit::Flex::OptimizingStorage::Producer.new(
           key: :"#{@node.key}_producer",
           marginal_costs: :null,
           load_curve: @context.storage_optimization.load_for(source_api.key).map do |v|
@@ -83,7 +83,7 @@ module Qernel
       end
 
       def consumption_participant
-        @consumption_participant ||= Merit::User.create(
+        @consumption_participant ||= Merit::Flex::OptimizingStorage::Consumer.new(
           key: :"#{@node.key}_consumer",
           load_curve: @context.storage_optimization.load_for(source_api.key).map do |v|
             v.negative? ? v.abs : 0.0
@@ -100,14 +100,24 @@ module Qernel
         end
       end
 
-      def output_capacity_per_unit
-        source_api.public_send(@context.carrier_named('%s_output_conversion')) *
-          source_api.input_capacity
+      def output_capacity
+        cap = total_node_output_capacity || source_api.input_capacity
+        cap * output_efficiency
+      end
+
+      def total_node_output_capacity
+        carrier_specific = source_api.try(@context.carrier_named('%s_output_capacity'))
+
+        if carrier_specific
+          carrier_specific / output_efficiency
+        else
+          source_api.output_capacity
+        end
       end
 
       def output_efficiency
-        conversion = @context.carrier_named('%s_output_conversion')
-        converstion.zero? ? 0.0 : 1.0 / conversion
+        conversion = source_api.public_send(@context.carrier_named('%s_output_conversion'))
+        conversion.zero? ? 0.0 : 1.0 / conversion
       end
 
       def producer_class
