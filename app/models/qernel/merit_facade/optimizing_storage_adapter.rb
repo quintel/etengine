@@ -33,8 +33,8 @@ module Qernel
 
       def optimizing_storage_params
         Params.new(
-          input_capacity:    source_api.input_capacity,
-          output_capacity:   output_capacity,
+          input_capacity:    source_api.input_capacity * source_api.number_of_units,
+          output_capacity:   output_capacity * source_api.number_of_units,
           volume:            source_api.storage.volume * source_api.number_of_units,
           output_efficiency: output_efficiency
         )
