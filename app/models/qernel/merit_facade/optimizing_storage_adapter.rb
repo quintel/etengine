@@ -52,7 +52,7 @@ module Qernel
           target_api.number_of_units
 
         inject_curve!(full_name: :storage_curve) do
-          @context.storage_optimization.reserve_for(source_api.key)
+          @context.storage_optimization.reserve_for(@node.key)
         end
 
         inject_curve!(:input) do
@@ -76,7 +76,7 @@ module Qernel
         @production_participant ||= Merit::Flex::OptimizingStorage::Producer.new(
           key: :"#{@node.key}_producer",
           marginal_costs: :null,
-          load_curve: @context.storage_optimization.load_for(source_api.key).map do |v|
+          load_curve: @context.storage_optimization.load_for(@node.key).map do |v|
             v.positive? ? v : 0.0
           end
         )
@@ -85,7 +85,7 @@ module Qernel
       def consumption_participant
         @consumption_participant ||= Merit::Flex::OptimizingStorage::Consumer.new(
           key: :"#{@node.key}_consumer",
-          load_curve: @context.storage_optimization.load_for(source_api.key).map do |v|
+          load_curve: @context.storage_optimization.load_for(@node.key).map do |v|
             v.negative? ? v.abs : 0.0
           end
         )
@@ -109,14 +109,15 @@ module Qernel
         carrier_specific = source_api.try(@context.carrier_named('%s_output_capacity'))
 
         if carrier_specific
-          carrier_specific / output_efficiency
+          eff = output_efficiency
+          eff.zero? ? 0.0 : carrier_specific / output_efficiency
         else
           source_api.output_capacity
         end
       end
 
       def output_efficiency
-        conversion = source_api.public_send(@context.carrier_named('%s_output_conversion'))
+        conversion = target_api.public_send(@context.carrier_named('%s_output_conversion'))
         conversion.zero? ? 0.0 : 1.0 / conversion
       end
 
