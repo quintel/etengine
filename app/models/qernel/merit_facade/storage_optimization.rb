@@ -55,14 +55,38 @@ module Qernel
         @reserves = {}
         res_load = residual_load.to_a
 
-        batteries.each.with_index do |battery, index|
-          @reserves[battery.node.key] = run_algorithm(battery.optimizing_storage_params, res_load)
+        allowed_input  = [Float::INFINITY] * 8760
+        allowed_output = [Float::INFINITY] * 8760
 
-          if index < batteries.length - 1
-            res_load = add_curves(
-              res_load,
-              self.class.reserve_to_load(@reserves[battery.node.key]).map(&:-@)
-            )
+        last_battery = batteries.last
+
+        batteries.each do |battery|
+          key = battery.node.key
+
+          @reserves[key] = run_algorithm(
+            battery.optimizing_storage_params,
+            res_load,
+            allowed_input,
+            allowed_output
+          )
+
+          break if battery == last_battery
+
+          res_load = add_curves(
+            res_load,
+            self.class.reserve_to_load(@reserves[key]).map(&:-@)
+          )
+
+          # Update the allowed input and output to prevent subsequent batteries from charging when
+          # a previous battery discharged, and vice-versa.
+          self.class.reserve_to_load(@reserves[key]).each_with_index do |value, index|
+            if value.positive?
+              # Battery is discharging. Future batteries may not charge here.
+              allowed_input[index] = 0
+            elsif value.negative?
+              # Battery is charging. Future batteries may not discharge here.
+              allowed_output[index] = 0
+            end
           end
         end
 
@@ -71,12 +95,14 @@ module Qernel
 
       # Internal: Runs the optimization algorithm, returning the amount of energy stored in the
       # reserve in each hour.
-      def run_algorithm(params, residual_load)
+      def run_algorithm(params, residual_load, allowed_input, allowed_output)
         if params.installed?
           Merit::Flex::OptimizingStorage.run(
             residual_load,
             input_capacity: params.input_capacity,
             output_capacity: params.output_capacity,
+            charging_limit: allowed_input,
+            discharging_limit: allowed_output,
             volume: params.volume
           ).to_a
         else
