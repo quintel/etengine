@@ -19,6 +19,11 @@ module Qernel
         end
       end
 
+      def installed?
+        # Skip storage when there is no volume or capacity.
+        super && optimizing_storage_params.installed?
+      end
+
       def initialize(*args)
         super
 
