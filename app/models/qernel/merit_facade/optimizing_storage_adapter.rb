@@ -32,10 +32,12 @@ module Qernel
       end
 
       def optimizing_storage_params
+        multiple = source_api.number_of_units * target_api.availability
+
         Params.new(
-          input_capacity:    source_api.input_capacity * source_api.number_of_units,
-          output_capacity:   output_capacity * source_api.number_of_units,
-          volume:            source_api.storage.volume * source_api.number_of_units,
+          input_capacity:    source_api.input_capacity * multiple,
+          output_capacity:   output_capacity * multiple,
+          volume:            source_api.storage.volume * multiple,
           output_efficiency: output_efficiency
         )
       end
