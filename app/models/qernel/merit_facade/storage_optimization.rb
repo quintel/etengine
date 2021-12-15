@@ -117,7 +117,10 @@ module Qernel
 
       # Internal: Returns all optimizing storage adapters.
       def batteries
-        @adapters.select { |a| a.config.type == :flex && a.config.subtype == :optimizing_storage }
+        @batteries ||=
+          @adapters
+            .select { |a| a.config.type == :flex && a.config.subtype == :optimizing_storage }
+            .sort_by { |a| a.node.key }
       end
 
       # Internal: Returns a Merit::Curve describing the sum of production for each hour.
