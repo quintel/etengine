@@ -68,9 +68,16 @@ module Qernel
       #
       # Returns the marginal costs per MWh (produced electricity)
       def marginal_costs
-        fetch(:marginal_costs) do
-          variable_costs_per_typical_input(include_waste: false) *
-            SECS_PER_HOUR / electricity_output_conversion
+        fetch(:marginal_costs, false) do
+          if output(:electricity).nil?
+            nil
+          elsif electricity_output_conversion.zero?
+            0.0
+          else
+            variable_costs_per_typical_input(include_waste: false) *
+              SECS_PER_HOUR / # Highlighting
+              electricity_output_conversion
+          end
         end
       end
 
@@ -80,6 +87,24 @@ module Qernel
       # Returns the cost.
       def marginal_costs=(value)
         dataset_set(:marginal_costs, value)
+      end
+
+      # Public: Returns the maximum price the node is willing to pay for energy.
+      #
+      # This is used only by flexibility technologies which participate in the electricity merit
+      # order. A value may be defined in the ETSource data for the node, or by the user with an
+      # input. If neither, this defaults to returning the node's marginal costs.
+      #
+      # Returns the price per MWh.
+      def max_consumption_price
+        dataset_get(:max_consumption_price) || marginal_costs
+      end
+
+      # Public: Sets the maximum allowed price at which a flex technology will consume energy.
+      #
+      # Returns the price.
+      def max_consumption_price=(new_price)
+        dataset_set(:max_consumption_price, new_price)
       end
 
       # Public: Sets an array to be used as a marginal cost curve.
@@ -325,7 +350,7 @@ module Qernel
         fetch(:co2_emissions_costs_per_typical_input) do
           weighted_carrier_co2_per_mj * area.co2_price *
             (1 - area.co2_percentage_free) *
-            takes_part_in_ets * ((1 - free_co2_factor))
+            (takes_part_in_ets || 1.0) * ((1 - free_co2_factor))
         end
       end
 

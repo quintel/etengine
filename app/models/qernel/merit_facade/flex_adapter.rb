@@ -22,6 +22,8 @@ module Qernel
           CurtailmentAdapter
         when :heat_storage
           HeatStorageAdapter
+        when :optimizing_storage
+          OptimizingStorageAdapter
         else
           self
         end
@@ -45,6 +47,7 @@ module Qernel
         attrs = super
 
         attrs[:marginal_costs] = marginal_costs
+        attrs[:consumption_price] = source_api.max_consumption_price
 
         attrs[:output_capacity_per_unit] = output_capacity
         attrs[:input_capacity_per_unit] = input_capacity
@@ -90,7 +93,7 @@ module Qernel
       end
 
       def marginal_costs
-        @context.dispatchable_sorter.cost(@node, @config)
+        @context.dispatchable_sorter.cost(source_api, @config)
       end
 
       # Internal: Sets demand and related attributes on the target API.

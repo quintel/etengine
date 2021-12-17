@@ -58,6 +58,12 @@ module Qernel
       def curve_name(direction)
         :"#{@carrier}_#{direction}_curve"
       end
+
+      # Public: Returns the StorageOptimization which can generate load curves for optimizing
+      # batteries.
+      def storage_optimization
+        @storage_optimization ||= StorageOptimization.new(plugin.adapters.values)
+      end
     end
   end
 end
