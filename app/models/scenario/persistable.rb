@@ -50,7 +50,6 @@ module Scenario::Persistable
         other_scaler.attributes.except('id', 'scenario_id'))
     end
 
-    self.flexibility_order = cloned_user_sortable(preset, :flexibility_order)
     self.heat_network_order = cloned_user_sortable(preset, :heat_network_order)
 
     cloned_attachments(preset) do |cloned_attachment|
@@ -96,8 +95,8 @@ module Scenario::Persistable
     end
   end
 
-  # Internal: If the source preset has a flexibility/heat network order, creates
-  # a clone to be used by the new scenario.
+  # Internal: If the source preset has one or more user sortables, creates a clone to be used by the
+  # new scenario.
   #
   # Returns a UserSortable or nil.
   def cloned_user_sortable(preset, attribute)

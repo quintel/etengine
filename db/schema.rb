@@ -47,12 +47,6 @@ ActiveRecord::Schema.define(version: 2021_12_14_084245) do
     t.string "carrier"
   end
 
-  create_table "flexibility_orders", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
-    t.integer "scenario_id"
-    t.text "order"
-    t.index ["scenario_id"], name: "index_flexibility_orders_on_scenario_id", unique: true
-  end
-
   create_table "gquery_groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "group_key"
     t.datetime "created_at"

@@ -14,11 +14,6 @@ module Qernel
         %i[consumer flex producer].freeze
       end
 
-      def setup
-        super
-        setup_flex_groups
-      end
-
       # Internal: After the first graph is calculated, demands are passed into
       # the Merit order to determine in which order to run the plants. The
       # results are stored for future use.
@@ -56,18 +51,6 @@ module Qernel
           adapter(participant.key)
             .node[:merit_order_position] = position + 1
         end
-      end
-
-      def setup_flex_groups
-        flex_groups.each do |key, config|
-          order.participants.flex_groups.define(
-            FlexGroupBuilder.build(key, config)
-          )
-        end
-      end
-
-      def flex_groups
-        {}
       end
 
       def household_heat

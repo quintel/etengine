@@ -33,28 +33,9 @@ module Qernel
           input_edge.dataset_set(:calculated, true)
         end
 
-        if @config.satisfy_with_dispatchables
-          inject_curve!(:input) { @participant.load_curve }
-        else
-          inject_curve!(:input) do
-            @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
-          end
+        inject_curve!(:input) do
+          @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
         end
-      end
-
-      def participant
-        # Export is price-sensitive. An IC wants to export at full capacity all
-        # the time, but only if it is cost-effective to do so.
-        @participant ||=
-          if @config.satisfy_with_dispatchables
-            Merit::User::PriceSensitive.new(
-              inner_consumer,
-              cost_strategy,
-              @config.group
-            )
-          else
-            Merit::Flex::Base.new(producer_attributes)
-          end
       end
 
       private
@@ -79,7 +60,9 @@ module Qernel
       # Not used when the participant is a PriceSensitive.
       def producer_attributes
         attrs = super
+        attrs[:output_capacity_per_unit] = 0.0
         attrs[:group] = @config.group
+        attrs[:consume_from_dispatchables] = true
         attrs
       end
 

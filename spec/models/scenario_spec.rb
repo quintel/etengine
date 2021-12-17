@@ -402,20 +402,19 @@ describe Scenario do
       end
     end
 
-    context 'when the preset has a flexibility order' do
-      let(:atlas_preset) { Atlas::Preset.find(:with_flexibility_order) }
+    context 'when the preset has a heat network order' do
+      let(:atlas_preset) { Atlas::Preset.find(:with_heat_network_order) }
       let(:preset) { Preset.get(atlas_preset.id) }
 
-      it 'assigns a flexibility order' do
-        expect(scenario.flexibility_order).to_not be_nil
+      it 'assigns a heat network order' do
+        expect(scenario.heat_network_order).not_to be_nil
       end
 
-      it 'copies the flexibility order attributes' do
-        expect(scenario.flexibility_order.order)
-          .to eq(atlas_preset.flexibility_order)
+      it 'copies the heat network order attributes' do
+        expect(scenario.heat_network_order.order).to eq(atlas_preset.heat_network_order)
       end
     end
-  end # with a preset Preset
+  end
 
   describe 'with a preset scenario' do
     let(:preset) do
@@ -457,9 +456,9 @@ describe Scenario do
       expect(scenario.scaler.scenario).to eq(scenario) # Not `preset`.
     end
 
-    context 'with no preset flexibility order' do
-      it 'should create no flexibilty order' do
-        expect(scenario[:flexibility_order]).to be_nil
+    context 'with no preset heat network order' do
+      it 'should create no heat network order' do
+        expect(scenario[:heat_network_order]).to be_nil
       end
     end
 
@@ -531,21 +530,21 @@ describe Scenario do
       end
     end
 
-    context 'with a preset flexibility order' do
+    context 'with a preset heat network order' do
       let(:techs) do
-        FlexibilityOrder.default_order.shuffle
+        HeatNetworkOrder.default_order.shuffle
       end
 
-      let!(:order) do
-        FlexibilityOrder.create!(scenario: preset, order: techs)
+      before do
+        HeatNetworkOrder.create!(scenario: preset, order: techs)
       end
 
       it 'copies the flexibility order attributes' do
-        expect(scenario.flexibility_order).to_not be_nil
-        expect(scenario.flexibility_order.id).to_not eq(preset.flexibility_order.id)
+        expect(scenario.heat_network_order).to_not be_nil
+        expect(scenario.heat_network_order.id).to_not eq(preset.heat_network_order.id)
 
-        expect(scenario.flexibility_order.order).to eq(techs)
-        expect(scenario.flexibility_order.scenario).to eq(scenario) # Not `preset`.
+        expect(scenario.heat_network_order.order).to eq(techs)
+        expect(scenario.heat_network_order.scenario).to eq(scenario) # Not `preset`.
       end
     end
   end
