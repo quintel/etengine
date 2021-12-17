@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: 543ecdf6a29e9b1291a9ae334537faadf627d989
-  ref: 543ecdf
+  revision: dd2f88cadd013c368590d5b9f48d578886e24229
+  ref: dd2f88c
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
@@ -24,8 +24,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: b4d00b9340e632f91943b601722f599e5b9590a5
-  ref: b4d00b9
+  revision: 1441cfd6f11b68575013100c5c77848319b40547
+  ref: 1441cfd
   specs:
     quintel_merit (0.1.0)
       numo-narray
