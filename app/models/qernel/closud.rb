@@ -2,9 +2,6 @@ module Qernel
   # Provides a calculation of electricity load on different layers (typically
   # LV, MV, and HV) including an analysis of the peak load of each layers.
   module Closud
-    CONSUMER_TYPES = Set.new(%i[consumer flex])
-    PRODUCER_TYPES = Set.new(%i[producer flex])
-
     module_function
 
     # Defines participant keys and the network level for participants which do
@@ -48,29 +45,40 @@ module Qernel
     #   #      hv: { consumers: [...], producers: [...], flexibles: [...] }
     #   #    }
     #
-    def partition_participants(graph)
+    private_class_method def partition_participants(graph)
+      participants = graph.plugin(:merit).order.participants
+
       by_level = Hash.new do |h, k|
         h[k] = { consumers: [], producers: [], flexibles: [] }
       end
 
-      adapters = graph.plugin(:merit).adapters.values
+      participants.each do |part|
+        node = graph.node(part.key)
 
-      adapters.each do |adapter|
-        node = adapter.node.query
-        level = adapter.config.level || :hv
+        if node
+          config = node.merit_order
+          level = config.level
+          type = closud_type(config.type)
 
-        if CONSUMER_TYPES.include?(adapter.config.type)
-          by_level[level][:consumers].push(Merit::Curve.new(node.query.electricity_input_curve))
+          next if level == :omit
+        else
+          level = PARTICIPANT_LEVELS[part.key] || :hv
+          type = :consumers
         end
 
-        if PRODUCER_TYPES.include?(adapter.config.type)
-          by_level[level][:producers].push(Merit::Curve.new(node.query.electricity_output_curve))
-        end
+        by_level[level][type].push(part.load_curve)
       end
 
       by_level
     end
 
-    private_class_method :partition_participants
+    # Internal: Converts the merit config type to the appropriate Closud type.
+    private def closud_type(part_type)
+      case part_type
+      when :consumer then :consumers
+      when :flex     then :flexibles
+      else                :producers
+      end
+    end
   end
 end
