@@ -48,19 +48,24 @@ module Qernel
     #   #    }
     #
     def partition_participants(graph)
-      participants = graph.plugin(:merit).order.participants
+      adapters = graph.plugin(:merit).adapters.values.select(&:installed?)
+
+      participants = adapters.map do |adapter|
+        Array(adapter.participant).map { |v| { participant: v, node: adapter.node } }
+      end.flatten
 
       by_level = Hash.new do |h, k|
         h[k] = { consumers: [], producers: [], flexibles: [] }
       end
 
-      participants.each do |part|
-        node = graph.node(part.key)
+      participants.each do |pair|
+        node = pair[:node]
+        part = pair[:participant]
 
         if node
           config = node.merit_order
           level = config.level
-          type = closud_type(config.type)
+          type = closud_type(part)
 
           next if level == :omit
         else
@@ -77,11 +82,13 @@ module Qernel
     private_class_method :partition_participants
 
     # Internal: Converts the merit config type to the appropriate Closud type.
-    def closud_type(part_type)
-      case part_type
-      when :consumer then :consumers
-      when :flex     then :flexibles
-      else                :producers
+    def closud_type(part)
+      if part.flex?
+        :flexibles
+      elsif part.user?
+        :consumers
+      else
+        :producers
       end
     end
 
