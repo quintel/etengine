@@ -10,6 +10,7 @@ RUN apt-get update -yqq && \
     default-libmysqlclient-dev \
     git \
     gnupg \
+    graphviz \
     less \
     libreadline-dev \
     libxml2-dev \
