@@ -76,8 +76,6 @@ module Qernel
 
     private_class_method :partition_participants
 
-    private
-
     # Internal: Converts the merit config type to the appropriate Closud type.
     def closud_type(part_type)
       case part_type
@@ -86,5 +84,7 @@ module Qernel
       else                :producers
       end
     end
+
+    private_class_method :closud_type
   end
 end
