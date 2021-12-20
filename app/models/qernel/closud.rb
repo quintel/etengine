@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Qernel
   # Provides a calculation of electricity load on different layers (typically
   # LV, MV, and HV) including an analysis of the peak load of each layers.
@@ -10,7 +12,7 @@ module Qernel
       fever_hot_water: :lv,
       fever_space_heating: :lv,
       ev_demand: :lv
-    }
+    }.freeze
 
     # Public: Builds a Closud network based on the `graph`.
     #
@@ -45,7 +47,7 @@ module Qernel
     #   #      hv: { consumers: [...], producers: [...], flexibles: [...] }
     #   #    }
     #
-    private_class_method def partition_participants(graph)
+    def partition_participants(graph)
       participants = graph.plugin(:merit).order.participants
 
       by_level = Hash.new do |h, k|
@@ -72,8 +74,12 @@ module Qernel
       by_level
     end
 
+    private_class_method :partition_participants
+
+    private
+
     # Internal: Converts the merit config type to the appropriate Closud type.
-    private def closud_type(part_type)
+    def closud_type(part_type)
       case part_type
       when :consumer then :consumers
       when :flex     then :flexibles
