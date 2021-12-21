@@ -48,11 +48,7 @@ module Qernel
     #   #    }
     #
     def partition_participants(graph)
-      adapters = graph.plugin(:merit).adapters.values.select(&:installed?)
-
-      participants = adapters.map do |adapter|
-        Array(adapter.participant).map { |v| { participant: v, node: adapter.node } }
-      end.flatten
+      participants = installed_participants(graph)
 
       by_level = Hash.new do |h, k|
         h[k] = { consumers: [], producers: [], flexibles: [] }
@@ -93,5 +89,21 @@ module Qernel
     end
 
     private_class_method :closud_type
+
+    # Internal: Returns a mapping of all participants in the merit order to the node's to which it
+    # belongs.
+    def installed_participants(graph)
+      # Select all installed participants. If this is for the present graph, those which cannot be
+      # installed due to depending on other time-resolved curves, are omitted.
+      adapters = graph.plugin(:merit).adapters.values.select do |adapter|
+        adapter.installed? && (graph.future? || !adapter.config.group.to_s.start_with?('self'))
+      end
+
+      adapters.map do |adapter|
+        Array(adapter.participant).map { |part| { participant: part, node: adapter.node } }
+      end.flatten
+    end
+
+    private_class_method :installed_participants
   end
 end
