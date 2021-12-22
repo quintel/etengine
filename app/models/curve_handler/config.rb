@@ -51,7 +51,8 @@ module CurveHandler
         config_hash.dig(:reduce, :as),
         Array(config_hash.dig(:reduce, :sets)).map(&:to_s),
         config_hash[:display_group],
-        internal: config_hash[:internal]
+        internal: config_hash[:internal],
+        disables: config_hash[:disables]
       )
     end
 
@@ -69,8 +70,16 @@ module CurveHandler
     #                 curves in the front-end.
     # internal      - Indicates that the curve is intended for use by internal and experienced users
     #                 only.
+    # disables      - A list of inputs which are disabled whenever a curve is set. It is not
+    #                 necessary to duplicate the "input_keys" values.
     def initialize(
-      key, processor_key, reducer_key = nil, input_keys = [], display_group = nil, internal: false
+      key,
+      processor_key,
+      reducer_key = nil,
+      input_keys = [],
+      display_group = nil,
+      disables: [],
+      internal: false
     )
       raise "Cannot create a #{self.class.name} without a key"       if key.nil?
       raise "Cannot create a #{self.class.name} without a processor" if processor_key.nil?
@@ -81,11 +90,17 @@ module CurveHandler
       @input_keys = reducer_key && input_keys || []
       @display_group = display_group&.to_sym
       @internal = !!internal
+      @disables = disables
     end
 
     # Public: The key used to store the file in the database.
     def db_key
       "#{@key}_curve"
+    end
+
+    # Public: An array containing all inputs which are be disabled when a curve is set.
+    def disabled_inputs
+      [*@disables, *@input_keys].uniq.sort
     end
 
     # Public: Returns the processor class specified by the config. Raises an error if the processor

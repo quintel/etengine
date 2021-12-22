@@ -207,6 +207,20 @@ RSpec.describe CurveHandler::Config do
       end
     end
 
+    context 'with disabled inputs' do
+      let(:config_hash) do
+        {
+          key: :my_curve,
+          type: :generic,
+          disables: %w[one two]
+        }
+      end
+
+      it 'disables two inputs' do
+        expect(config.disabled_inputs).to eq(%w[one two])
+      end
+    end
+
     context 'with a reducer config hash and an array of Symbol inputs' do
       let(:config_hash) do
         {
@@ -248,6 +262,29 @@ RSpec.describe CurveHandler::Config do
 
       it 'sets input keys as Strings' do
         expect(config.input_keys).to eq(%w[input_one input_two])
+      end
+
+      it 'disables the inputs' do
+        expect(config.disabled_inputs).to eq(%w[input_one input_two])
+      end
+    end
+
+    context 'with a reducer config hash and an array of String inputs and disables' do
+      let(:config_hash) do
+        {
+          key: :my_curve,
+          type: :generic,
+          reduce: { as: :temperature, sets: %w[input_one input_two] },
+          disables: %w[other input_one]
+        }
+      end
+
+      it 'sets input keys as Strings' do
+        expect(config.input_keys).to eq(%w[input_one input_two])
+      end
+
+      it 'disables the reduce and custom inputs' do
+        expect(config.disabled_inputs).to eq(%w[input_one input_two other])
       end
     end
   end
