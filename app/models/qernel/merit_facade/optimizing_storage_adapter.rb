@@ -56,7 +56,7 @@ module Qernel
         target_api.demand =
           target_api[:full_load_seconds] *
           source_api.input_capacity *
-          target_api.number_of_units
+          source_api.number_of_units
 
         inject_curve!(full_name: :storage_curve) do
           @context.storage_optimization.reserve_for(@node.key)
