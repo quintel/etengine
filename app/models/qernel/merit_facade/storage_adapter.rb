@@ -21,7 +21,7 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        attrs[:consumption_price] = source_api.max_consumption_price
+        attrs[:consumption_price] = target_api.max_consumption_price
 
         attrs[:input_efficiency]  = input_efficiency
         attrs[:output_efficiency] = output_efficiency
