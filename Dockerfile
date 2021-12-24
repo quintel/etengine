@@ -1,4 +1,4 @@
-FROM ruby:2.7.4-slim-buster
+FROM ruby:2.7-slim-buster
 
 LABEL maintainer="dev@quintel.com"
 
