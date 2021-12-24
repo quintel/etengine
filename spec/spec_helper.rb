@@ -3,7 +3,7 @@ ENV['ETSOURCE_DIR'] ||= 'spec/fixtures/etsource'
 if ENV["COVERAGE"]
   require 'simplecov'
   SimpleCov.start do
-    add_group "ETsource", "app/models/etsource"
+    add_group "ETSource", "app/models/etsource"
     add_group "Qernel", "app/models/qernel"
     add_group "GQL", "app/models/gql"
     #add_group "Controllers", "app/controllers"

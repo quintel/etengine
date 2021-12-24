@@ -190,12 +190,12 @@ Password for all the screencasts below is `quintel`.
 
 How to use this documentation.
 
-#### [GQL Console and ETsource](http://vimeo.com/40707436)
+#### [GQL Console and ETSource](http://vimeo.com/40707436)
 
 How to work with different etsource directories, make changes and load them in
 the gql console.
 
-#### [ETsource: Create a new basic etmodel](http://vimeo.com/40709640)
+#### [ETSource: Create a new basic etmodel](http://vimeo.com/40709640)
 
 We build a new etmodel with 3 nodes from scratch. This helps you
 understand how the etsource works.
