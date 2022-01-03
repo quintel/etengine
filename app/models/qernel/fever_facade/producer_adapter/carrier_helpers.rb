@@ -43,7 +43,7 @@ module Qernel
 
           slots =
             @node.node.inputs.reject do |slot|
-              slot.carrier.key == :ambient_heat
+              %i[ambient_heat solar_thermal].include? slot.carrier.key 
             end
 
           if slots.length != 1
