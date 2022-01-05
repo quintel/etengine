@@ -17,6 +17,8 @@ module Qernel
           ImportAdapter
         when :backup
           BackupAdapter
+        when :always_on_battery_park
+          AlwaysOnBatteryParkAdapter
         else
           raise "Unknown #{context.attribute}.subtype " \
                 "#{config.subtype.to_s.inspect} for #{node.key}"
