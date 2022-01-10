@@ -340,7 +340,7 @@ module Qernel
             )
           end
 
-          average_investment_ccs / technical_lifetime
+          ccs_investment / technical_lifetime
         end
       end
 
