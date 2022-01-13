@@ -65,13 +65,16 @@ class InputSerializer
     json[:max]         = values[:max]
     json[:default]     = values[:default]
 
+    json[:unit] = @input.unit
+
     json[:user]        = user_val           if user_val.present?
     json[:disabled]    = true               if values[:disabled]
     json[:cache_error] = values[:error]     if values[:error]
 
     json[:share_group] = @input.share_group if @input.share_group.present?
+    json[:disables_inputs] = @input.disables if @input.disables.present?
 
-    if parent = @scenario.parent
+    if (parent = @scenario.parent)
       json[:default] =
         parent.user_values[@input.key] ||
         parent.balanced_values[@input.key] ||
@@ -81,12 +84,9 @@ class InputSerializer
     if @extra_attributes
       json[:step] = values[:step] || @input.step_value
       json[:code] = @input.key
-      json[:unit] = @input.unit
     end
 
-    if values[:label].present?
-      json[:label] = { value: values[:label], suffix: @input.label }
-    end
+    json[:label] = { value: values[:label], suffix: @input.label } if values[:label].present?
 
     json
   end

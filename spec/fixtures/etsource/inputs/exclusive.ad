@@ -1,0 +1,4 @@
+- query =
+- priority = 1
+- disables = [both_input, future_input]
+- update_period = future

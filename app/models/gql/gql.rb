@@ -294,7 +294,7 @@ module Gql
 
     def update_present
       instrument('gql.performance.present.update_present') do
-        scenario.inputs_present.each do |input, value|
+        scenario.inputs.present.each do |input, value|
           update_graph(present, input, value)
         end
       end
@@ -302,11 +302,11 @@ module Gql
 
     def update_future
       instrument('gql.performance.future.update_future') do
-        scenario.inputs_before.each do |input, value|
+        scenario.inputs.before.each do |input, value|
           update_graph(future, input, value)
         end
 
-        scenario.inputs_future.each do |input, value|
+        scenario.inputs.future.each do |input, value|
           update_graph(future, input, value)
         end
       end
