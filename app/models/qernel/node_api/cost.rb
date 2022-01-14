@@ -158,22 +158,11 @@ module Qernel
         end
       end
 
-      # Public: Calculates the total CAPEX (operating expenses) for the node
+      # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
       #
       # Capital expenditures (CAPEX) are major investments that are designed to be
       # used over the long term. The yearly costs for these investments are based on
-      # the WACC and plant lifetime. If the plant does not have CCS installed, these
-      # costs are zero.
-      #
-
-      def capital_expenditures
-        fetch(:capital_expenditures) do
-          (cost_of_capital || 0.0) +
-            (depreciation_costs || 0.0)
-        end
-      end
-
-      # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
+      # the WACC and plant lifetime.
       #
       # Returns the yearly capital expenditure for CCS in euro.
       def capital_expenditures_ccs
@@ -192,21 +181,9 @@ module Qernel
       # Returns the yearly capital expenditure excluding CCS in euro.
       def capital_expenditures_excluding_ccs
         fetch(:capital_expenditures_excluding_ccs) do
-          (capital_expenditures) -
-            (capital_expenditures_ccs)
-        end
-      end
-
-      # Public: Calculates the total OPEX (operating expenses) for the node
-      #
-      # Operating expenses for CCS include varaible O&M costs and CO2 emissions costs.
-
-      def operating_expenses
-        fetch(:operating_expenses) do
-          variable_operation_and_maintenance_costs +
-          fixed_operation_and_maintenance_costs_per_year +
-          co2_emissions_costs
-
+          (cost_of_capital || 0.0) +
+            (depreciation_costs || 0.0) -
+            capital_expenditures_ccs
         end
       end
 
@@ -284,21 +261,24 @@ module Qernel
         end
       end
 
-
-      ### Retuns the yearly cost of capital for the CCS part of one plant per year
+      # Internal: the yearly cost of capital for the CCS part of one plant per year
+      #
+      # Based on the average yearly payment, the weighted average cost of capital (WACC) and a
+      # factor to include the construction time in the total rent period of the loan.
+      #
+      # The ETM assumes that capital has to be held during construction time (and so interest has to
+      # be paid during this period) and that technical and economic lifetime are the same.
+      #
+      # Returns the yearly cost of capital for CCS for one plant per year.
       def cost_of_capital_ccs
         fetch(:cost_of_capital_ccs) do
-          if technical_lifetime.zero?
-            raise IllegalZeroError.new(self, :technical_lifetime)
-          end
+          raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
 
           average_investment_ccs * wacc *
             (construction_time + technical_lifetime) / # syntax
             technical_lifetime
         end
       end
-
-
 
       # Internal: Determines the yearly depreciation of the plant over its life.
       #
@@ -323,24 +303,24 @@ module Qernel
         end
       end
 
-
-      ## Returns the yearly depreciation costs for the CCS part of one plant per yar
-
+      # Internal: Returns the yearly depreciation costs for the CCS part of one plant per yar
+      #
+      # The straight-line depreciation methodology is used.
+      #
+      # Returns the yearly depreciation costs per plant per year.
       def depreciation_costs_ccs
-        fetch(:depreciation_costs) do
-          if technical_lifetime.zero?
-            raise IllegalZeroError.new(self, :technical_lifetime)
-          end
+        fetch(:depreciation_costs_ccs) do
+          raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
 
           investment = ccs_investment
 
-          if investment && investment < 0
+          if investment && investment.negative?
             raise IllegalNegativeError.new(
-              self, :total_investment_over_lifetime, investment
+              self, :ccs_investment, investment
             )
           end
 
-          ccs_investment / technical_lifetime
+          (ccs_investment || 0) / technical_lifetime
         end
       end
 
@@ -479,7 +459,9 @@ module Qernel
         fetch(:average_investment) { total_investment_over_lifetime / 2 }
       end
 
-
+      # Internal: The average yearly installment of capital cost repayments for ccs, assuming a
+      # linear repayment scheme. That is why divided by 2, to be at 50% between initial cost and 0.
+      #
       # Returns a float representing cost of the ccs part of one plant per year.
       def average_investment_ccs
         fetch(:average_investment_ccs) { (ccs_investment || 0.0) / 2 }
@@ -616,18 +598,6 @@ module Qernel
         end
 
         [costable, loss, total]
-      end
-
-      # Internal: Calculates the yearly factor needed to calculate the CAPEX (capital expenditure)
-      # of the node.
-      #
-      # Defines what part of the initial capital investments will be spent on a yearly basis
-      #
-      # Returns a factor that can be multiplied with an investment
-      def expenditure_factor_per_lifetime_year
-        raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
-
-        (wacc + 1) / (technical_lifetime + construction_time)
       end
     end
   end
