@@ -14,6 +14,7 @@ class Scenario < ApplicationRecord
 
   store :user_values
   store :balanced_values
+  store :metadata, coder: JSON
 
   belongs_to :user
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
@@ -37,6 +38,7 @@ class Scenario < ApplicationRecord
   }
 
   validate  :validate_no_yaml_error
+  validate  :validate_metadata_size
 
   validates_associated :scaler, on: :create
 
