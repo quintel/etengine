@@ -1,7 +1,6 @@
 # Included in scenario so that copies of the scenario are correctly
 # configured, and don't pollute the original.
 module Scenario::Copies
-
   private
 
   # Sets up clones and dups of the scenario.
@@ -14,10 +13,7 @@ module Scenario::Copies
   #
   def initialize_copy(orig)
     super
-    @gql            = nil
-    @inputs_before  = nil
-    @inputs_present = nil
-    @inputs_future  = nil
+    @gql    = nil
+    @inputs = nil
   end
-
-end # Scenario::Copies
+end
