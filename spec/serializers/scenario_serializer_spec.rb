@@ -42,6 +42,8 @@ describe ScenarioSerializer do
     it_should_behave_like 'a scenario serializer'
 
     it { is_expected.to include(description: 'Hello!') }
+
+    it { is_expected.to include(metadata: {}) }
   end
 
   context 'when "include_inputs=true"' do

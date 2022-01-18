@@ -260,12 +260,13 @@ module Api
         attrs = params.permit(scenario: [
           :area_code, :author, :country, :descale, :description, :end_year,
           :preset_scenario_id, :protected, :region, :scenario_id, :source,
-          :title, user_values: {}
+          :title, user_values: {}, metadata: {}
         ])
 
-        attrs = (attrs[:scenario] || {}).merge(
-          user_values: filtered_user_values(attrs[:scenario])
-        )
+        attrs = (attrs[:scenario] || {}).merge({
+          user_values: filtered_user_values(attrs[:scenario]),
+          metadata: filtered_metadata(attrs[:scenario])
+        })
 
         attrs[:descale] = attrs[:descale] == 'true'
 
@@ -282,6 +283,17 @@ module Api
           .permit!
           .to_h
           .with_indifferent_access
+      end
+
+      # Internal: All metadata for the scenario, filtered.
+      #
+      # Returns a ActionController::Parameters.
+      def filtered_metadata(scenario)
+        return {} unless scenario&.key?(:metadata)
+
+        scenario[:metadata]
+          .permit!
+          .to_h
       end
 
       # Internal: Attributes for creating a scaled scenario.
