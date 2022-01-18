@@ -263,10 +263,13 @@ module Api
           :title, user_values: {}, metadata: {}
         ])
 
-        attrs = (attrs[:scenario] || {}).merge({
-          user_values: filtered_user_values(attrs[:scenario]),
-          metadata: filtered_metadata(attrs[:scenario])
-        })
+        attrs = (attrs[:scenario] || {}).merge(
+          user_values: filtered_user_values(attrs[:scenario])
+        )
+
+        if attrs[:scenario]&.key?(:metadata)
+          attrs = attrs.merge(metadata: filtered_metadata(attrs[:scenario]))
+        end
 
         attrs[:descale] = attrs[:descale] == 'true'
 

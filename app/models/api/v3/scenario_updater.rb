@@ -10,6 +10,7 @@ module Api
 
       validate :validate_user_values
       validate :validate_groups_balance
+      validate :validate_metadata_size
 
       # @return [Scenario]
       #   Returns the scenario being updated.
@@ -43,7 +44,8 @@ module Api
         ).merge(
           @scenario_data.except(:area_code, :end_year).merge(
             balanced_values: balanced_values,
-            user_values: user_values
+            user_values: user_values,
+            metadata: metadata
           )
         )
 
@@ -155,6 +157,10 @@ module Api
         end
       end
 
+      def validate_metadata_size
+        errors.add(:base, 'Metadata can not exceed 64Kb') if metadata.to_s.bytesize > 64_000
+      end
+
       # User Values and Balancing --------------------------------------------
 
       # The values provided by the user in the current request.
@@ -259,6 +265,14 @@ module Api
         # It is acceptable for a balancer to fail; validation will catch if and
         # notify the user.
         nil
+      end
+
+      # Internal: Makes sure the scenario's current metadata object is not overwritten
+      # when a new metadata object was not supplied in the params
+      #
+      # Returns a hash of metadata
+      def metadata
+        @scenario_data.key?(:metadata) ? @scenario_data[:metadata] : @scenario.metadata.dup
       end
 
       # Given a collection of user values, yields the name of each group to
