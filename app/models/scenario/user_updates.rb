@@ -100,7 +100,7 @@ module Scenario::UserUpdates
 
   # Validation method for when a user sets their metadata.
   def validate_metadata_size
-    errors.add(:metadata, 'can not exceed 64Kb') if metadata.to_s.bytesize > 64_000
+    errors.add(:metadata, 'can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
   end
 
   #######

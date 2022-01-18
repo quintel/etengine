@@ -158,7 +158,7 @@ module Api
       end
 
       def validate_metadata_size
-        errors.add(:base, 'Metadata can not exceed 64Kb') if metadata.to_s.bytesize > 64_000
+        errors.add(:base, 'Metadata can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
       end
 
       # User Values and Balancing --------------------------------------------
