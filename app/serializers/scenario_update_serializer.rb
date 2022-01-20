@@ -83,9 +83,6 @@ class ScenarioUpdateSerializer
         present: present, future: future, unit: query.unit
       }
     end
-  rescue Exception => exception
-    # An error while setting up the graph.
-    @errors.push(([exception.message] + exception.backtrace).join("\n"))
   end
 
   # Performs an individual query.
