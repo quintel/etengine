@@ -70,15 +70,15 @@ module NodeSerializerData
       }
     },
     cost: {
-      'fixed_costs_per(:plant)' => {
+      'cost_of_capital_per(:plant) + depreciation_costs_per(:plant)' => {
         label: 'Annual CAPEX',
         key: :steel_fixed_costs_per_plant,
         unit: 'EUR / MT',
         formatter: ->(n) { n.to_i }
       },
-      'variable_costs_per(:plant)' => {
+      'fixed_operation_and_maintenance_costs_per(:plant)' => {
         label: 'Annual OPEX',
-        key: :steel_variable_costs_per_plant,
+        key: :steel_fixed_operation_and_maintenance_costs_per_plant,
         unit: 'EUR / MT',
         formatter: ->(n) { n.to_i }
       },
