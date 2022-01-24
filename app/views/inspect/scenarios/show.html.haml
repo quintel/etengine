@@ -23,10 +23,9 @@
 
 .row
   .span10
-    - {future: :inputs_future, present: :inputs_present}.each do |name, method|
+    - {future: @scenario.inputs.future, present: @scenario.inputs.present}.each do |name, inputs|
 
       %h3== Inputs #{name}
-      - inputs = @scenario.send(method)
       - if inputs.empty?
         %p No updates
       - else

@@ -620,9 +620,7 @@ describe Scenario do
     end
 
     before(:each) do
-      scenario.inputs_present
-      scenario.inputs_future
-      scenario.inputs_before
+      scenario.inputs
       scenario.gql
     end
 
@@ -648,26 +646,16 @@ describe Scenario do
       expect(dup.id).to be_nil
     end
 
-    it 'does not clone inputs_present' do
-      expect(dup.inputs_present).to_not equal(scenario.inputs_present)
+    it 're-generates the same present inputs as for the original' do
+      expect(dup.inputs.present).to eq(scenario.inputs.present)
     end
 
-    it 'preserves inputs_present of the original' do
-      old_obj = scenario.inputs_present
-      dup
-      expect(scenario.inputs_present).to equal(old_obj)
+    it 're-generates the same present future as for the original' do
+      expect(dup.inputs.future).to eq(scenario.inputs.future)
     end
 
-    it 're-generates the same inputs_present as for the original' do
-      expect(dup.inputs_present).to eq(scenario.inputs_present)
-    end
-
-    it 'does not clone inputs_before' do
-      expect(dup.inputs_before).not_to equal(scenario.inputs_before)
-    end
-
-    it 'does not clone inputs_future' do
-      expect(dup.inputs_future).not_to equal(scenario.inputs_future)
+    it 'does not clone inputs' do
+      expect(dup.inputs).not_to equal(scenario.inputs)
     end
   end
 

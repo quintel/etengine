@@ -10,10 +10,10 @@ module Scenario::Persistable
   #
   def reset!
     self.user_values = {}
-    # @inputs_present/future have to be nil, not an empty hash. otherwise
-    # the memoized def inputs_present will not pick up the changes.
-    @inputs_present  = nil
-    @inputs_future   = nil
+
+    # @inputs have to be nil, not an empty hash. otherwise
+    # the memoized inputs will not pick up the changes.
+    @inputs = nil
   end
 
   # Stores the current settings into the attributes. For when we want to save
