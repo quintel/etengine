@@ -6,6 +6,22 @@ RSpec.describe Scenario::Inputs do
   let(:scenario) { Scenario.new }
   let(:inputs) { described_class.new(scenario) }
 
+  context 'when the scenario is not protected' do
+    let(:scenario) { FactoryBot.build(:scenario, protected: false) }
+
+    it 'does not mark inputs as disabled' do
+      expect(inputs.disabled?(Input.get(:exclusive))).to be(false)
+    end
+  end
+
+  context 'when the scenario is protected' do
+    let(:scenario) { FactoryBot.build(:scenario, protected: true) }
+
+    it 'marks inputs as disabled' do
+      expect(inputs.disabled?(Input.get(:exclusive))).to be(true)
+    end
+  end
+
   context 'when a scenario has no inputs' do
     it 'has no before inputs' do
       expect(inputs.before).to be_empty

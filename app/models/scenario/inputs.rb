@@ -32,6 +32,16 @@ class Scenario < ApplicationRecord
       @future ||= inputs_for_graph(:future)
     end
 
+    # Public: Returns if the input should be disabled due to constraints or flags set on the
+    # scenario.
+    #
+    # input - The input to check.
+    #
+    # Returns a boolean.
+    def disabled?(input)
+      @scenario.protected? || disabled_by_exclusivity?(input)
+    end
+
     # Public: A set of inputs which are set in the scenario which are disabled due to the presence
     # of one or more conflicting exclusive inputs.
     #

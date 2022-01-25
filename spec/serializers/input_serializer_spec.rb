@@ -22,6 +22,15 @@ RSpec.describe InputSerializer do
     end
   end
 
+  context 'when the scenario is protected' do
+    let(:input) { Input.get(:exclusive) }
+    let(:scenario) { FactoryBot.build(:scenario, protected: true) }
+
+    it 'flags the input as disabled' do
+      expect(json[:disabled]).to be(true)
+    end
+  end
+
   context 'when the input is disabled by a set mutually-exclusive input' do
     let(:input) { Input.get(:disabled_by_future) }
 

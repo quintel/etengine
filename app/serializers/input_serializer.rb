@@ -69,8 +69,7 @@ class InputSerializer
     json[:user] = user_val if user_val.present?
     json[:cache_error] = values[:error] if values[:error]
 
-    # An input is disabled if the cache says so, or if a mutually-exclusive input is present.
-    json[:disabled] = true if values[:disabled] || @scenario.inputs.disabled_by_exclusivity?(@input)
+    json[:disabled] = true if values[:disabled] || @scenario.inputs.disabled?(@input)
     json[:disabled_by] = @input.disabled_by if @input.disabled_by.present?
 
     json[:share_group] = @input.share_group if @input.share_group.present?
@@ -98,7 +97,7 @@ class InputSerializer
   class IndifferentScenario
     attr_reader :original
 
-    delegate :inputs, to: :original
+    delegate :inputs, :protected?, to: :original
 
     def self.from(scenario)
       scenario.is_a?(self) ? scenario : new(scenario)
