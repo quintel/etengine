@@ -4,6 +4,8 @@ module Api
   module V3
     # Provides the ability to attach and download an esdl file to/from a scenario.
     class EsdlFilesController < BaseController
+      include UsesScenario
+
       respond_to :json
 
       before_action :ensure_upload_is_file, only: :update

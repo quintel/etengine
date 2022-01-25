@@ -355,6 +355,33 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
+    context 'when uploading a curve to a protected scenario' do
+      before do
+        scenario.update!(protected: true)
+      end
+
+      let(:request) do
+        put url, params: { file: fixture_file_upload('files/price_curve.csv', 'text/csv') }
+      end
+
+      it 'responds with 403 Forbidden' do
+        request
+        expect(response).to be_forbidden
+      end
+
+      it 'does not change the attachment' do
+        expect { request }
+          .not_to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'generic_curve')
+              .present?
+          }
+          .from(false)
+      end
+    end
+
     context 'when removing an attached curve' do
       before do
         put url, params: {
@@ -385,6 +412,41 @@ describe 'Custom curves', :etsource_fixture do
           }
           .from(true)
           .to(false)
+      end
+    end
+
+    context 'when removing an attached curve from a protected scenario' do
+      before do
+        # Attach a curve.
+        put url, params: {
+          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+        }
+
+        scenario.update!(protected: true)
+      end
+
+      let(:request) { delete url }
+
+      it 'returns 403 Forbidden' do
+        request
+        expect(response).to be_forbidden
+      end
+
+      it 'sends an error' do
+        request
+        expect(JSON.parse(response.body)).to eq('errors' => ['Cannot modify a protected scenario'])
+      end
+
+      it 'does not remove the attachment' do
+        expect { request }
+          .not_to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'generic_curve')
+              .present?
+          }
+          .from(true)
       end
     end
 

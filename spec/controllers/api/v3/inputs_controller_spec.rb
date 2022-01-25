@@ -27,7 +27,12 @@ describe Api::V3::InputsController do
   # --------------------------------------------------------------------------
 
   describe 'GET /api/v3/scenarios/:scenario_id/inputs' do
-    let(:json) { JSON.parse(get(:index, params: { id: scenario.id }).body) }
+    let(:json) { JSON.parse(get(:index, params: { scenario_id: scenario.id }).body) }
+
+    it 'is successful' do
+      json
+      expect(response).to be_ok
+    end
 
     it 'should contain each input' do
       expect(json).to have_key(static_input.key)

@@ -142,6 +142,17 @@ describe 'APIv3 heat network orders' do
       end
     end
 
+    context 'when the sceanrio is protected' do
+      before do
+        scenario.update!(protected: true)
+        put url, params: { heat_network_order: { order: valid_options.reverse } }
+      end
+
+      it 'responds with 403 Forbidden' do
+        expect(response).to be_forbidden
+      end
+    end
+
     context 'when the heat network order does not exist, given valid data' do
       let(:request) do
         put url, params: {

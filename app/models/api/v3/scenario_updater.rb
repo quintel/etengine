@@ -6,6 +6,25 @@ module Api
     # scenario with the data, or presents a useful error to sent back to the
     # client.
     class ScenarioUpdater
+      # An updater which does nothing.
+      class Null
+        include ActiveModel::Validations
+
+        attr_reader :scenario
+
+        def initialize(scenario, _params)
+          @scenario = scenario
+        end
+
+        def apply
+          true
+        end
+
+        def valid?
+          true
+        end
+      end
+
       include ActiveModel::Validations
 
       validate :validate_user_values
@@ -16,6 +35,11 @@ module Api
       #   Returns the scenario being updated.
       #
       attr_reader :scenario
+
+      # Public: Returns an updater for the scenario.
+      def self.for_scenario(scenario, params)
+        (scenario.protected? ? Null : self).new(scenario, params)
+      end
 
       # Creates a new ScenarioUpdater.
       #

@@ -6,10 +6,9 @@ module Api
       before_action :find_scenario, only: %i[interpolate update]
       around_action :wrap_with_raven_context, only: :update
 
-      before_action :find_preset_or_scenario, only: [
-        :show, :merit, :dashboard, :application_demands,
-        :production_parameters, :energy_flow
-      ]
+      before_action :find_preset_or_scenario, only: %i[show merit dashboard]
+
+      authorize_resource except: %i[update]
 
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
@@ -188,15 +187,16 @@ module Api
       # }
       #
       def update
-        updater    = ScenarioUpdater.new(@scenario, filtered_params)
+        final_params = filtered_params.to_h
+
+        authorize!(final_params[:scenario].present? ? :update : :read, @scenario)
+
+        updater    = ScenarioUpdater.for_scenario(@scenario, final_params)
         serializer = nil
 
         Scenario.transaction do
           updater.apply
-
-          serializer = ScenarioUpdateSerializer.new(
-            self, updater, filtered_params
-          )
+          serializer = ScenarioUpdateSerializer.new(self, updater, final_params)
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end
@@ -240,8 +240,6 @@ module Api
 
       def find_scenario
         @scenario = Scenario.find_for_calculation(params[:id])
-      rescue ActiveRecord::RecordNotFound, ActiveModel::RangeError
-        render_not_found(errors: ['Scenario not found'])
       end
 
       # Internal: All the request parameters, filtered.
@@ -263,15 +261,17 @@ module Api
           :title, user_values: {}, metadata: {}
         ])
 
-        attrs = (attrs[:scenario] || {}).merge(
-          user_values: filtered_user_values(attrs[:scenario])
-        )
+        attrs = attrs[:scenario] || {}
 
-        if attrs[:scenario]&.key?(:metadata)
-          attrs = attrs.merge(metadata: filtered_metadata(attrs[:scenario]))
+        if (user_vals = filtered_user_values(attrs[:scenario])).present?
+          attrs[:user_values] = user_vals
         end
 
-        attrs[:descale] = attrs[:descale] == 'true'
+        if attrs[:scenario]&.key?(:metadata)
+          attrs[:metadata] = filtered_metadata(attrs[:scenario])
+        end
+
+        attrs[:descale] = true if attrs[:descale] == 'true'
 
         attrs
       end

@@ -6,6 +6,8 @@ module Api
     # intended to allow additional custom curves to be added later without requiring changes to the
     # REST API.
     class CustomCurvesController < BaseController
+      include UsesScenario
+
       respond_to :json
 
       before_action :ensure_valid_curve_name, except: :index
@@ -115,7 +117,7 @@ module Api
         CurveHandler::AttachService.new(
           config_for(curve_name),
           io,
-          Scenario.find(params[:scenario_id]),
+          scenario,
           metadata_parameters
         )
       end

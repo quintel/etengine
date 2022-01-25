@@ -143,6 +143,8 @@ Style/MethodCallWithArgsParentheses:
   Enabled: true
   IgnoreMacros: true
   IgnoredMethods:
+  - can
+  - cannot
   - describe
   - head
   - not_to

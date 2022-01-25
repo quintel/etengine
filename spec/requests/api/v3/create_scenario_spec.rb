@@ -136,6 +136,31 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
+  context 'when inheriting a protected scenario' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }
+    end
+
+    let(:parent) do
+      FactoryBot.create(:scenario, protected: true, user_values: { unrelated_one: 1.0 })
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response.status).to be(200)
+    end
+
+    it 'saves the user values' do
+      expect(Scenario.find(json['id']).user_values).to eq(parent.user_values)
+    end
+
+
+    it 'does not mark the new scenario as protected' do
+      expect(Scenario.find(json['id'])).not_to be_protected
+    end
+  end
+
   context 'when inheriting a scaled preset' do
     before do
       post '/api/v3/scenarios', params: { scenario: { scenario_id: Preset.get(6000).id } }

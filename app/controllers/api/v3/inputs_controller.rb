@@ -1,7 +1,10 @@
 module Api
   module V3
     class InputsController < ::Api::V3::BaseController
-      before_action :set_current_scenario, :only => [:index, :show]
+      before_action do
+        @scenario = Scenario.find(params[:scenario_id])
+        authorize!(:read, @scenario)
+      end
 
       # GET /api/v3/inputs
       # GET /api/v3/scenarios/:scenario_id/inputs

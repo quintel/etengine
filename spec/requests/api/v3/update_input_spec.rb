@@ -560,6 +560,35 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
+  context 'when querying a protected scenario' do
+    before do
+      scenario.update!(protected: true)
+      autobalance_scenario({})
+    end
+
+    it 'returns 200 OK' do
+      expect(response.status).to be(200)
+    end
+  end
+
+  context 'when updating a protected scenario' do
+    before do
+      scenario.update!(protected: true)
+    end
+
+    it 'returns 403' do
+      autobalance_scenario({ scenario: { user_values: { 'unrelated_one' => 25.0 } } })
+      expect(response.status).to be(403)
+    end
+
+    it 'does not update the user values' do
+      expect { autobalance_scenario(scenario: { user_values: { 'unrelated_one' => 25.0 } }) }
+        .not_to(change { scenario.reload.user_values })
+    end
+  end
+
+  # --------------------------------------------------------------------------
+
   context 'with an out-of-range scenario ID' do
     it 'returns 404' do
       put '/api/v3/scenarios/100000000000'

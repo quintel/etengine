@@ -117,7 +117,7 @@ GEM
       msgpack (~> 1.0)
     builder (3.2.4)
     byebug (9.1.0)
-    cancancan (2.1.2)
+    cancancan (3.3.0)
     capistrano (3.16.0)
       airbrussh (>= 1.0.0)
       i18n
@@ -412,7 +412,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   bootsnap
-  cancancan (~> 2.0)
+  cancancan (~> 3.0)
   capistrano (~> 3.9)
   capistrano-bundler (~> 1.1)
   capistrano-rails (~> 1.6)

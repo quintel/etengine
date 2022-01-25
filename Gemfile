@@ -30,7 +30,7 @@ gem 'numo-narray', require: 'numo/narray'
 # Rails gem
 gem 'simple_form'
 gem 'devise', '~> 4.7'
-gem 'cancancan', '~> 2.0'
+gem 'cancancan', '~> 3.0'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'

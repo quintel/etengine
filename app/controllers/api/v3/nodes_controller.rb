@@ -1,7 +1,8 @@
 module Api
   module V3
     class NodesController < BaseController
-      before_action :set_current_scenario
+      load_and_authorize_resource :scenario
+
       before_action :find_node, :only => :show
 
       # GET /api/v3/nodes/:id

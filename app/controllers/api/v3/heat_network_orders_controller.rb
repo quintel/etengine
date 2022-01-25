@@ -4,9 +4,7 @@ module Api
   module V3
     # Shows and updates heat network orders.
     class HeatNetworkOrdersController < BaseController
-      rescue_from ActiveRecord::RecordNotFound do
-        render json: { errors: ['Scenario not found'] }, status: 404
-      end
+      include UsesScenario
 
       rescue_from NoMethodError do |e|
         raise e unless e.message.starts_with?("undefined method `permit'")
@@ -41,10 +39,6 @@ module Api
       end
 
       private
-
-      def scenario
-        @scenario ||= Scenario.find(params[:scenario_id])
-      end
 
       def heat_network_order
         @heat_network_order ||= scenario.heat_network_order
