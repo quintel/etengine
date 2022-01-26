@@ -587,6 +587,33 @@ describe 'Updating inputs with API v3' do
     end
   end
 
+  context 'when setting an unprotected scenario to protected with updates' do
+    let(:request) do
+      put "/api/v3/scenarios/#{scenario.id}",params: {
+        scenario: { user_values: { 'unrelated_one' => 20.0 }, protected: true }
+      }
+    end
+
+    before do
+      scenario.update!(user_values: {})
+    end
+
+    it 'returns 200 OK' do
+      request
+      expect(response).to be_ok
+    end
+
+    it 'sets the scenario to protected' do
+      expect { request }.to(change { scenario.reload.protected }.from(nil).to(true))
+    end
+
+    it 'sets the user values' do
+      expect { request }.to(
+        change { scenario.reload.user_values }.from({}).to({ 'unrelated_one' => 20.0 })
+      )
+    end
+  end
+
   # --------------------------------------------------------------------------
 
   context 'with an out-of-range scenario ID' do
