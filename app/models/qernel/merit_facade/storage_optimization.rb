@@ -13,7 +13,7 @@ module Qernel
       def self.reserve_to_load(reserve, input_efficiency: 1.0, output_efficiency: 1.0)
         reserve.map.with_index do |value, index|
           value = reserve[index - 1] - value
-          value.negative? ? value * input_efficiency : value * output_efficiency
+          value.positive? ? value * output_efficiency : value * input_efficiency
         end
       end
 

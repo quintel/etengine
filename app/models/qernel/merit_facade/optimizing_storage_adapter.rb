@@ -117,19 +117,11 @@ module Qernel
       end
 
       def total_node_output_capacity
-        carrier_specific = source_api.try(@context.carrier_named('%s_output_capacity'))
-
-        if carrier_specific
-          eff = output_efficiency
-          eff.zero? ? 0.0 : carrier_specific / output_efficiency
-        else
-          source_api.output_capacity
-        end
+        source_api.try(@context.carrier_named('%s_output_capacity')) || source_api.output_capacity
       end
 
       def output_efficiency
-        conversion = target_api.public_send(@context.carrier_named('%s_output_conversion'))
-        conversion.zero? ? 0.0 : 1.0 / conversion
+        target_api.public_send(@context.carrier_named('%s_output_conversion'))
       end
 
       def producer_class
