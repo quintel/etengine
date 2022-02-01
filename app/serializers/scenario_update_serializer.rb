@@ -8,7 +8,7 @@ class ScenarioUpdateSerializer
     @errors  = []
     @results = {}
 
-    if @requested_queries.any? && assert_valid_gqueries!
+    if @requested_queries.any? && assert_valid_gqueries! && @updater.errors.empty?
       @results = perform_gqueries!
     end
   end
