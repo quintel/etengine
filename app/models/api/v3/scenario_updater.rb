@@ -169,7 +169,7 @@ module Api
       def validate_numeric_input(key, input, value)
         # If the value was nil, the value provided by the visitor could not
         # be coerced into a valid number.
-        if value.nil?
+        if value.blank?
           errors.add(:base, "Input #{key} must be numeric")
           return
         end
