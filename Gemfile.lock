@@ -6,12 +6,13 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: c2273e4e112c05b24669b675e4171815cf36a9fa
-  ref: c2273e4
+  revision: cfa8b8c32b41146905b57c32feb24b5ddaa3c0dc
+  ref: cfa8b8c
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
       activesupport (>= 4.1.14.1)
+      gpgme (~> 2.0)
       turbine-graph (>= 0.1)
       virtus (~> 1.0)
 
@@ -145,7 +146,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.1.8)
+    concurrent-ruby (1.1.9)
     crass (1.0.6)
     dalli (3.0.2)
     debug_inspector (0.0.3)
@@ -189,7 +190,7 @@ GEM
     highline (1.7.10)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.8.10)
+    i18n (1.9.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jquery-rails (4.3.1)
@@ -227,7 +228,7 @@ GEM
     mini_portile2 (2.6.1)
     mini_racer (0.4.0.beta1)
       libv8-node (~> 15.12.0.0.beta1)
-    minitest (5.14.4)
+    minitest (5.15.0)
     msgpack (1.4.2)
     multi_json (1.12.2)
     multipart-post (2.1.1)
@@ -428,7 +429,6 @@ DEPENDENCIES
   fnv
   gctools
   git!
-  gpgme
   gravatar_image_tag
   haml (~> 5.0)
   highline

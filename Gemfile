@@ -54,7 +54,7 @@ gem 'ruby-progressbar'
 # own gems
 gem 'quintel_merit', ref: '7ab6abf', github: 'quintel/merit'
 
-gem 'atlas',         ref: 'c2273e4', github: 'quintel/atlas'
+gem 'atlas',         ref: 'cfa8b8c', github: 'quintel/atlas'
 gem 'fever',         ref: 'f80677d', github: 'quintel/fever'
 gem 'refinery',      ref: '72eacf8', github: 'quintel/refinery'
 gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'
@@ -63,7 +63,6 @@ gem 'turbine-graph', '>=0.1',        require: 'turbine'
 # system gems
 gem 'mysql2'
 gem 'dalli'
-gem 'gpgme'
 
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false

@@ -49,7 +49,6 @@ you have to follow these steps to run ET-Engine.
    region:
    1. `cd ..; git clone git@github.com:quintel/etsource.git`
    1. `cd etsource; bundle install`
-   1. `rake decrypt` –– to decrypt the energy balance data files
    1. Edit "config/config.yml" and enter the ETSource directory into the
    "etsource_export" and "etsource_working_copy" options –– or leave at default if possible.
 
