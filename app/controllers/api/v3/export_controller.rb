@@ -46,7 +46,7 @@ module Api
       #
       # Returns a CSV file containing the cost paramaters of nodes belonging to costs groups.
       def costs_parameters
-        send_csv(CostsParametersSerializer.new(scenario), 'costs_parameters.%d.csv')
+        send_csv(CostsParametersSerializer.new(@scenario), 'costs_parameters.%d.csv')
       end
 
       private
