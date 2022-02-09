@@ -78,13 +78,6 @@ Rails.application.routes.draw do
           as: :curves_network_gas_download
       end
 
-      resources :nodes, :only => :show do
-        get :topology, :on => :collection
-      end
-
-      get 'converters', to: redirect('/api/v3/nodes')
-      get 'converters/*rest', to: redirect('/api/v3/nodes/%{rest}')
-
       resources :inputs, :only => [:index, :show] do
         get :list, :on => :collection
       end
