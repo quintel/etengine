@@ -104,7 +104,7 @@ group :test do
 end
 
 group :production, :staging do
-  gem 'puma', '< 5'
+  gem 'puma', '< 6'
   gem 'gctools', require: false
   gem 'newrelic_rpm'
 end
