@@ -24,6 +24,8 @@ module Qernel
           HeatStorageAdapter
         when :optimizing_storage
           OptimizingStorageAdapter
+        when :load_shifting
+          LoadShiftingAdapter
         else
           self
         end
