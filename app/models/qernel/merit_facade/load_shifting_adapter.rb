@@ -44,6 +44,15 @@ module Qernel
       def producer_attributes
         attrs = super
         attrs[:limiting_curve] = limiting_curve
+
+        if @config.load_shifting_hours
+          attrs[:deficit_capacity] =
+            attrs[:output_capacity_per_unit] *
+            attrs[:number_of_units] *
+            target_api.availability *
+            @config.load_shifting_hours
+        end
+
         attrs
       end
 
