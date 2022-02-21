@@ -9,7 +9,7 @@ module Qernel
       end
 
       def cost(node, _config)
-        @order.index(node.key) || Float::INFINITY
+        (@order.index(node.key) || Float::INFINITY) + 1
       end
     end
   end
