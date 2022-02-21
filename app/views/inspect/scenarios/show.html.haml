@@ -1,5 +1,8 @@
 - content_for(:title, 'Scenario')
 
+%div{ style: 'float: right' }
+  = link_to 'Edit scenario', edit_inspect_scenario_path(@scenario), class: 'btn btn-primary'
+
 .row
   .span4
     %table.table
