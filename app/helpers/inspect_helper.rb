@@ -1,4 +1,17 @@
 module InspectHelper
+  # Returns all keys which may be searched for in the inspect interface.
+  def search_keys_json
+    return '[]' unless current_user
+
+    Rails.cache.fetch('/inspect/search/keys.js') do
+      [
+        *Etsource::Loader.instance.energy_graph.nodes.map(&:key),
+        *Etsource::Loader.instance.molecule_graph.nodes.map(&:key),
+        *Gquery.all.map(&:key)
+      ].to_json
+    end
+  end
+
   def title_tag_number(value)
     if value.is_a?(Numeric) && value.to_f.finite?
       if value.between?(-1, 1)

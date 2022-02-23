@@ -1,29 +1,51 @@
 %h2 Search
 
-%h3 Gqueries
+#search-results
+  %ul
+    %li
+      %a{ href: '#gqueries' }
+        %strong Gqueries:
+        = @gqueries.count
+        matches
 
-- if @gqueries
-  #{@gqueries.count} results found
+    %li
+      %a{ href: '#energy-nodes' }
+        %strong Energy nodes:
+        = @energy_nodes.count
+        matches
 
-  %table
-    - @gqueries.each do |g|
-      %tr
-        %td= link_to highlight(g.key, params[:search]), inspect_gquery_path(id: g.key)
-- else
+    %li
+      %a{ href: '#molecule-nodes' }
+        %strong Molecule nodes:
+        = @molecule_nodes.count
+        matches
 
-  No gqueries found
+  - if @gqueries.any?
+    %details#gqueries{ open: true }
+      %summary
+        Gqueries
+        %small== #{@gqueries.count} matches
 
-%h3 Nodes
+      %ul
+        - @gqueries.each do |g|
+          %li= link_to highlight(g.key, params[:search]), inspect_gquery_path(id: g.key)
 
-- if @nodes
+  - if @energy_nodes.any?
+    %details#energy-nodes{ open: true }
+      %summary
+        Energy Nodes
+        %small== #{@energy_nodes.count} matches
 
-  #{@nodes.count} results found
+      %ul
+        - @energy_nodes.each do |c|
+          %li= link_to highlight(c.key.to_s, params[:search]), inspect_node_path_auto(c)
 
-  %table
-    - @nodes.each do |c|
-      %tr
-        %td= link_to highlight(c.key.to_s, params[:search]), inspect_node_path(id: c.key)
+  - if @molecule_nodes.any?
+    %details#molecule-nodes{ open: true }
+      %summary
+        Molecule Nodes
+        %small== #{@molecule_nodes.count} matches
 
-- else
-
-  No Nodes found
+      %ul
+        - @molecule_nodes.each do |c|
+          %li= link_to highlight(c.key.to_s, params[:search]), inspect_node_path_auto(c)
