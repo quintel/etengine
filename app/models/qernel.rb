@@ -36,4 +36,4 @@ module Qernel
   IllegalNegativeError = error_class(IllegalValueError) do |obj, attr, value|
     super(obj, attr, "Negative value (#{ value })")
   end
-end # Qernel
+end

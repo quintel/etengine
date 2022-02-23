@@ -10,7 +10,6 @@ module Etm
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
-    config.autoloader = :classic
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -22,7 +21,7 @@ module Etm
     # config.time_zone = 'Central Time (US & Canada)'
     config.time_zone = 'Etc/UTC'
 
-    # config.eager_load_paths << Rails.root.join("extras")
+    config.eager_load_paths << Rails.root.join("lib")
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
@@ -65,10 +64,6 @@ module Etm
       end
     end
   end
-
-  require_relative '../lib/instrumentable'
-  require_relative '../lib/node_positions'
-  require_relative '../app/models/qernel/errors'
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end

@@ -12,6 +12,11 @@
 #   inflect.uncountable %w( fish sheep )
 # end
 
+# rubocop:disable Style/MethodCallWithArgsParentheses
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-   inflect.irregular 'serie', 'series'
+  inflect.acronym 'CSV'
+  inflect.acronym 'HHP' # Hybrid heat pump
+  inflect.irregular 'serie', 'series'
+  inflect.uncountable 'ETEngine'
 end
+# rubocop:enable Style/MethodCallWithArgsParentheses
