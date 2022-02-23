@@ -4,7 +4,7 @@ class BulkUpdateHelpers
       return show_diff(scenario, user_values) if dry_run
 
       if user_values != scenario.user_values
-        scenario.update_attributes(:user_values => user_values)
+        scenario.update(:user_values => user_values)
         true
       end
     end

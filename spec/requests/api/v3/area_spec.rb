@@ -11,7 +11,7 @@ describe 'APIv3 Area details' do
     end
 
     it 'replies with JSON' do
-      expect(response.content_type).to eq('application/json')
+      expect(response.media_type).to eq('application/json')
     end
 
     it 'sends the area data' do

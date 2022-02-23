@@ -93,7 +93,7 @@ describe Api::V3::InputsController do
 
     context '"user" attribute' do
       before do
-        scenario.update_attributes(user_values: { gql_input.key => 42.0 })
+        scenario.update(user_values: { gql_input.key => 42.0 })
       end
 
       it 'should be present when an input has a user value' do
@@ -223,7 +223,7 @@ describe Api::V3::InputsController do
 
    context '"user" attribute' do
      it 'is present when an input has a user value' do
-       scenario.update_attributes(user_values: { static_input.key => 42.0 })
+       scenario.update(user_values: { static_input.key => 42.0 })
        expect(json['user']).to eql(42.0)
      end
 

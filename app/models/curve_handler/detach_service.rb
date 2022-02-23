@@ -16,6 +16,7 @@ module CurveHandler
 
     def call(attachment)
       scenario = attachment.scenario
+
       attachment.destroy
 
       if @config&.sets_inputs?

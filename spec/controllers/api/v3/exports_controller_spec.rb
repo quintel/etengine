@@ -15,7 +15,7 @@ describe Api::V3::ExportController do
     end
 
     it 'sets the content type to text/csv' do
-      expect(response.content_type).to eq('text/csv')
+      expect(response.media_type).to eq('text/csv')
     end
 
     it 'sets the CSV filename' do
@@ -37,7 +37,7 @@ describe Api::V3::ExportController do
     end
 
     it 'sets the content type to text/csv' do
-      expect(response.content_type).to eq('text/csv')
+      expect(response.media_type).to eq('text/csv')
     end
 
     it 'sets the CSV filename' do

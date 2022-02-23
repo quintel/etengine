@@ -17,6 +17,8 @@ shared_examples_for 'a blob-removing CurveHandler::DetachService' do
   it 'removes the blob' do
     blob_id = attachment.file.blob.id
 
+    # binding.pry
+
     expect { service.call(attachment) }
       .to change { ActiveStorage::Blob.find_by(id: blob_id) }
       .from(attachment.file.blob).to(nil)

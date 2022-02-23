@@ -59,9 +59,7 @@ describe Qernel::Slot::Elastic do
       electricity[0.5;0.5(elastic)]: irrelevant   == s(1.0)  ==> network
     LAYOUT
 
-    expect(-> { Qernel::GraphParser.new(layout).build }).to \
-      raise_error(Qernel::Slot::Elastic::TooManyElasticSlots,
-                 /already has an elastic slot/)
+    expect { Qernel::GraphParser.new(layout).build }
+      .to raise_error(Qernel::Slot::Elastic::TooManyElasticSlots, /already has an elastic slot/)
   end
-
-end # Qernel::Slot::Elastic
+end
