@@ -27,7 +27,7 @@ end
 
 RSpec.describe CurveHandler::DetachService do
   let(:file) do
-    fixture_file_upload('files/price_curve.csv', 'text/csv')
+    fixture_file_upload('price_curve.csv', 'text/csv')
   end
 
   let(:scenario) do
@@ -41,7 +41,9 @@ RSpec.describe CurveHandler::DetachService do
   end
 
   let!(:attachment) do
-    CurveHandler::AttachService.new(attach_config, file, scenario, {}).call
+    CurveHandler::AttachService.new(attach_config, file, scenario, {}).call.tap do |attachment|
+      attachment.scenario.reload
+    end
   end
 
   let(:service) do
@@ -61,7 +63,7 @@ RSpec.describe CurveHandler::DetachService do
 
   context 'with an attached curve and a reducer setting two inputs' do
     let(:file) do
-      fixture_file_upload('files/capacity_curve.csv', 'text/csv')
+      fixture_file_upload('capacity_curve.csv', 'text/csv')
     end
 
     let(:config) do
@@ -86,7 +88,7 @@ RSpec.describe CurveHandler::DetachService do
 
   context 'with an attached curve, reducer setting two inputs, but one input is not set' do
     let(:file) do
-      fixture_file_upload('files/capacity_curve.csv', 'text/csv')
+      fixture_file_upload('capacity_curve.csv', 'text/csv')
     end
 
     let(:config) do

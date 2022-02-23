@@ -1,6 +1,6 @@
 # This file is used by Rack-based servers to start the application.
 
-require ::File.expand_path('../config/environment',  __FILE__)
+require_relative "config/environment"
 
 if defined?(Unicorn::HttpRequest)
   require 'gctools/oobgc'
@@ -14,4 +14,5 @@ use Rack::Cors do
   end
 end
 
-run Etm::Application
+run Rails.application
+Rails.application.load_server

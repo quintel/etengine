@@ -50,7 +50,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'with an attached curve for interconnector 1' do
       before do
         put "#{url}/interconnector_1_price", params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -95,7 +95,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'with an attached internal curve and not setting an include_internal param' do
       before do
         put "#{url}/internal", params: {
-          file: fixture_file_upload('files/random_curve.csv', 'text/csv')
+          file: fixture_file_upload('random_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -115,7 +115,7 @@ describe 'Custom curves', :etsource_fixture do
 
       before do
         put "#{url.split('?').first}/internal", params: {
-          file: fixture_file_upload('files/random_curve.csv', 'text/csv')
+          file: fixture_file_upload('random_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -156,7 +156,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when showing a curve' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -178,7 +178,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when uploading a valid curve file' do
       let(:request) do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
       end
 
@@ -266,7 +266,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when uploading an invalid curve' do
       let(:request) do
         put url, params: {
-          file: fixture_file_upload('files/invalid_price_curve.csv', 'text/csv')
+          file: fixture_file_upload('invalid_price_curve.csv', 'text/csv')
         }
       end
 
@@ -361,7 +361,7 @@ describe 'Custom curves', :etsource_fixture do
       end
 
       let(:request) do
-        put url, params: { file: fixture_file_upload('files/price_curve.csv', 'text/csv') }
+        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }
       end
 
       it 'responds with 403 Forbidden' do
@@ -385,7 +385,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when removing an attached curve' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
       end
 
@@ -419,7 +419,7 @@ describe 'Custom curves', :etsource_fixture do
       before do
         # Attach a curve.
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         scenario.update!(protected: true)
@@ -483,7 +483,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when showing a curve' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -512,7 +512,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when uploading a valid curve file' do
       let(:request) do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
       end
 
@@ -557,7 +557,7 @@ describe 'Custom curves', :etsource_fixture do
 
     it 'rejects the request' do
       put url, params: {
-        file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+        file: fixture_file_upload('price_curve.csv', 'text/csv')
       }
 
       expect(response).not_to be_successful

@@ -85,8 +85,8 @@ module Api
         scenario_valid = @scenario.valid?
 
         unless scenario_valid
-          @scenario.errors.each do |attribute, message|
-            errors.add(:base, "Scenario #{attribute} #{message}")
+          @scenario.errors.each do |error|
+            errors.add(:base, "Scenario #{error.attribute} #{error.message}")
           end
         end
 

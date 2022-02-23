@@ -19,7 +19,7 @@ describe ScenarioAttachment do
   context 'with all source scenario attributes set' do
     subject do
       described_class.new(
-        metadata.merge(key: 'interconnector_1_price_curve')
+        metadata.merge(key: 'interconnector_1_price_curve', scenario: scenario),
       )
     end
 
@@ -31,7 +31,8 @@ describe ScenarioAttachment do
       described_class.new(
         key: 'interconnector_1_price_curve',
         source_dataset_key: 'nl',
-        source_end_year: 2050
+        source_end_year: 2050,
+        scenario: scenario
       )
     end
 
@@ -41,7 +42,8 @@ describe ScenarioAttachment do
   context 'with no source scenario attributes set' do
     subject do
       described_class.new(
-        key: 'interconnector_1_price_curve'
+        key: 'interconnector_1_price_curve',
+        scenario: scenario
       )
     end
 

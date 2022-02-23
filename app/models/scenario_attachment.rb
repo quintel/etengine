@@ -18,7 +18,7 @@ class ScenarioAttachment < ApplicationRecord
 
   has_one_attached :file
   belongs_to :scenario
-  belongs_to :source_scenario, class_name: 'Scenario'
+  belongs_to :source_scenario, class_name: 'Scenario', optional: true
 
   validates :key, presence: true, uniqueness: {
     scope: :scenario_id,

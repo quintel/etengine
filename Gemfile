@@ -9,7 +9,7 @@ end
 
 gem 'bootsnap', require: false
 
-gem 'rails',        '~> 6.0.0'
+gem 'rails',        '~> 6.1.0'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json'

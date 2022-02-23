@@ -556,7 +556,7 @@ describe Scenario do
         user_values:     { 'grouped_input_one' => 2 },
         balanced_values: { 'grouped_input_two' => 8 },
 
-        scaler: ScenarioScaling.create!(
+        scaler: ScenarioScaling.new(
           area_attribute: 'number_of_residences',
           value:          1000
         )

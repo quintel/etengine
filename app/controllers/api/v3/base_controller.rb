@@ -2,7 +2,7 @@ module Api
   module V3
     class BaseController < ApplicationController
       rescue_from ActionController::ParameterMissing do |e|
-        render status: 400, json: { errors: [e.message] }
+        render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
       end
 
       rescue_from ActiveRecord::RecordNotFound do |e|
