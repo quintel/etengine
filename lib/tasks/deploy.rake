@@ -40,6 +40,7 @@ namespace :deploy do
     verbose(false) do
       cd(etsource) do
         real_rev = `git rev-parse 'origin/#{revision}'`.strip
+        real_rev = real_rev.split('/').last if real_rev.include?('/')
       end
     end
 
