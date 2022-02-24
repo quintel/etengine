@@ -40,7 +40,6 @@ module Etm
     end
 
     config.assets.enabled = true
-    config.assets.precompile += ['graph.js', 'graph.css']
 
     # Store files locally.
     config.active_storage.service = :local
