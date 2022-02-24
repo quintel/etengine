@@ -59,5 +59,3 @@ module Etm
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
 end
-
-GC_DISABLING_HACK_ENABLED = true
