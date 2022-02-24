@@ -6,12 +6,12 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: 550a49ffefc336b25350ad8bd7c25ab6a81c7dd2
-  ref: 550a49f
+  revision: b879783a64d7a655aa2de6c4136a6553f528c2af
+  ref: b879783
   specs:
     atlas (1.0.0)
-      activemodel (>= 4.1.14.1)
-      activesupport (>= 4.1.14.1)
+      activemodel (>= 7)
+      activesupport (>= 7)
       csv (>= 3)
       gpgme (~> 2.0)
       turbine-graph (>= 0.1)
@@ -19,8 +19,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/fever.git
-  revision: f80677d99dac64a8100bb84e44e6bc30e2b27821
-  ref: f80677d
+  revision: bf092b2974efd3999e197907b5214362edd25e63
+  ref: bf092b2
   specs:
     fever (0.1.0)
 
@@ -185,7 +185,6 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.5.0)
     digest (3.1.0)
-    distribution (0.8.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
@@ -471,7 +470,6 @@ DEPENDENCIES
   coffee-rails
   dalli
   devise (~> 4.7)
-  distribution (~> 0.6)
   dotenv-rails
   factory_bot_rails
   fever!
@@ -486,7 +484,7 @@ DEPENDENCIES
   json
   kaminari
   listen
-  mini_racer (>= 0.4.0.beta1)
+  mini_racer
   msgpack
   mysql2
   newrelic_rpm
@@ -523,7 +521,7 @@ DEPENDENCIES
   watchr
 
 RUBY VERSION
-   ruby 2.7.4p191
+   ruby 3.1.1p18
 
 BUNDLED WITH
    2.3.8

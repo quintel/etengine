@@ -61,7 +61,7 @@ module Scenario::UserUpdates
   end
 
   def user_values_as_yaml=(values)
-    loaded = YAML.safe_load(values.to_s, [
+    loaded = YAML.safe_load(values.to_s, permitted_classes: [
       ActiveSupport::HashWithIndifferentAccess, Symbol
     ])
 

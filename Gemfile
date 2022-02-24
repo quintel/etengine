@@ -1,4 +1,4 @@
-ruby '~> 2.7.0'
+ruby '~> 3.1.0'
 
 source 'https://rubygems.org'
 
@@ -21,7 +21,6 @@ gem 'gravatar_image_tag'
 # Ruby gems
 gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
 gem 'ice_nine'
-gem 'distribution', '~> 0.6'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
 
@@ -36,7 +35,7 @@ gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
 
 gem 'sass-rails'
-gem 'mini_racer', '>= 0.4.0.beta1'
+gem 'mini_racer'
 gem 'coffee-rails'
 
 gem 'dotenv-rails', groups: [:development, :test, :production, :staging]
@@ -54,8 +53,8 @@ gem 'ruby-progressbar'
 # own gems
 gem 'quintel_merit', ref: '7ab6abf', github: 'quintel/merit'
 
-gem 'atlas',         ref: '550a49f', github: 'quintel/atlas'
-gem 'fever',         ref: 'f80677d', github: 'quintel/fever'
+gem 'atlas',         ref: 'b879783', github: 'quintel/atlas'
+gem 'fever',         ref: 'bf092b2', github: 'quintel/fever'
 gem 'refinery',      ref: '72eacf8', github: 'quintel/refinery'
 gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'
 gem 'turbine-graph', '>=0.1',        require: 'turbine'
