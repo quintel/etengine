@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_23_142107) do
-
+ActiveRecord::Schema[7.0].define(version: 2022_02_24_113745) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
     t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -28,8 +27,8 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.string "content_type"
     t.text "metadata"
     t.bigint "byte_size", null: false
-    t.string "checksum", null: false
-    t.datetime "created_at", null: false
+    t.string "checksum"
+    t.datetime "created_at", precision: nil, null: false
     t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
@@ -49,15 +48,15 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.float "co2_transportation_per_mj"
     t.float "co2_conversion_per_mj"
     t.float "co2_waste_treatment_per_mj"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "carrier"
   end
 
   create_table "gquery_groups", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "group_key"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "description"
   end
 
@@ -73,8 +72,8 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.integer "column"
     t.string "name"
     t.text "gquery"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["query_table_id"], name: "index_query_table_cells_on_query_table_id"
   end
 
@@ -83,14 +82,14 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.text "description"
     t.integer "row_count"
     t.integer "column_count"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "roles", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "scenario_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -121,15 +120,15 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.string "author"
     t.string "title"
     t.text "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "user_values", size: :medium
     t.integer "end_year", default: 2040
     t.boolean "in_start_menu"
     t.integer "user_id"
     t.integer "preset_scenario_id"
     t.boolean "use_fce"
-    t.datetime "present_updated_at"
+    t.datetime "present_updated_at", precision: nil
     t.boolean "protected"
     t.string "area_code"
     t.string "source"
@@ -146,8 +145,8 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.string "heared_first_at", default: ".."
     t.string "password_salt"
     t.integer "role_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "openid_identifier"
     t.string "phone_number"
     t.string "group"
@@ -157,11 +156,11 @@ ActiveRecord::Schema.define(version: 2022_02_23_142107) do
     t.string "old_crypted_password"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.index ["trackable"], name: "index_users_on_trackable"

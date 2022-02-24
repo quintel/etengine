@@ -9,7 +9,7 @@ end
 
 gem 'bootsnap', require: false
 
-gem 'rails',        '~> 6.1.0'
+gem 'rails',        '~> 7.0.0'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json'
@@ -70,7 +70,6 @@ gem 'highline',                require: false
 gem 'sentry-raven'
 
 group :development do
-  gem 'spring'
   # gem 'quiet_assets'
   gem 'better_errors'
   gem 'listen'
