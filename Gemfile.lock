@@ -6,12 +6,13 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: cfa8b8c32b41146905b57c32feb24b5ddaa3c0dc
-  ref: cfa8b8c
+  revision: 05821d99d9533ffb9f5f7545217d6efa4fe29bd4
+  ref: 05821d9
   specs:
     atlas (1.0.0)
       activemodel (>= 4.1.14.1)
       activesupport (>= 4.1.14.1)
+      csv (>= 3)
       gpgme (~> 2.0)
       turbine-graph (>= 0.1)
       virtus (~> 1.0)
@@ -148,6 +149,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.9)
     crass (1.0.6)
+    csv (3.2.2)
     dalli (3.0.2)
     debug_inspector (0.0.3)
     descendants_tracker (0.0.4)
