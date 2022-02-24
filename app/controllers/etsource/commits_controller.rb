@@ -151,7 +151,8 @@ class Etsource::CommitsController < ApplicationController
   # less than three minutes old, then the user may not import.
   def can_import?
     (APP_CONFIG[:etsource_export] != APP_CONFIG[:etsource_working_copy]) &&
-    (! import_in_progress?)
+      (! import_in_progress?) &&
+      !ENV['DISABLE_ETSOURCE_IMPORT']
   end
 
   # Returns if an import is currently being performed.
