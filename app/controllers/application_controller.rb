@@ -1,7 +1,4 @@
 class ApplicationController < ActionController::Base
-  # include ApplicationController::PerformanceProfiling
-  include ApplicationController::ClientIdentification
-
   helper :all
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
