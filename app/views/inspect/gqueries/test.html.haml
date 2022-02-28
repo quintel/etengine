@@ -6,10 +6,16 @@
   .span12
     %h2(style="margin-bottom: .5em") Test GQL
 
-    = form_tag test_inspect_gqueries_path, class: 'gql-debug' do |f|
-      = text_area_tag :query, params[:query]
+    = form_tag test_inspect_gqueries_path, style: 'width: 861px', class: 'gql-debug' do |f|
+      = text_area_tag :query, params[:query], data: { codemirror: 'ruby' }
       %p
-        = submit_tag 'Run GQL', :class => 'btn btn-primary btn-large', title: 'Ctrl+↩'
+        = button_tag class: 'btn btn-primary btn-large', type: 'submit' do
+          Run GQL
+          %span.hotkey
+            %kbd Ctrl
+            %span.plus +
+            %kbd ↩
+        &nbsp;
         = submit_tag 'Debug', :class => 'btn btn-large'
 
 - if @result

@@ -76,7 +76,7 @@ class Inspect::ScenariosController < Inspect::BaseController
     if params[:id] == 'current'
       @scenario = @api_scenario
     else
-      @scenario = Scenario.find params[:id]
+      @scenario = Scenario::Editable.new(Scenario.find(params[:id]))
     end
   end
 

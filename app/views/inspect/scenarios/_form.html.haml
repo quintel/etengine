@@ -2,18 +2,22 @@
   .alert.alert-danger
     %strong Sorry, there were errors updating the scenario.
 
-= simple_form_for [:data, @scenario],
-    :url => @scenario.new_record? ? inspect_scenarios_path : inspect_scenario_path(:id => @scenario) do |f|
-  = f.input :title
-  = f.input :author
-  = f.input :description
-  = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
-  = f.input :end_year
-  = f.input :area_code, collection: Etsource::Dataset.region_codes.sort
-  = f.input :user_values_as_yaml, :as => :text, :hint => "Position (values) of all the sliders"
-  = f.simple_fields_for :heat_network_order, @scenario.heat_network_order do |hno|
-    = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order) }, label: 'Heat network dispatchables order', hint: 'Delete all lines to revert to default'
-  = f.button :submit
+.row
+  .span12
+    = simple_form_for [:data, @scenario],
+        :url => @scenario.new_record? ? inspect_scenarios_path : inspect_scenario_path(:id => @scenario) do |f|
+      = f.input :title
+      = f.input :author
+      = f.input :description
+      = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
+      = f.input :end_year
+      = f.input :area_code, collection: Etsource::Dataset.region_codes.sort
+      = f.input :user_values, label: 'User values (YAML)', as: :text, :hint => "Position (values) of all the sliders", input_html: { data: { codemirror: 'yaml' } }
+      = f.input :balanced_values, label: 'Balanced values (YAML)', as: :text, :hint => "Values set automatically by ETEngine ensuring groups sum to 100%", input_html: { data: { codemirror: 'yaml' } }
+      = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }
+      = f.simple_fields_for :heat_network_order, @scenario.heat_network_order do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order) }, label: 'Heat network dispatchables order', hint: 'Delete all lines to revert to default'
+      = f.button :submit
 
   :css
     #scenario_user_values_as_yaml,

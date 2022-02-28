@@ -37,7 +37,6 @@ class Scenario < ApplicationRecord
     message: 'is unknown or not supported'
   }
 
-  validate  :validate_no_yaml_error
   validate  :validate_metadata_size
 
   validates_associated :scaler, on: :create
@@ -261,5 +260,12 @@ class Scenario < ApplicationRecord
 
   def started_from_esdl?
     attachment?('esdl_file')
+  end
+
+  private
+
+  # Validation method for when a user sets their metadata.
+  def validate_metadata_size
+    errors.add(:metadata, 'can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
   end
 end

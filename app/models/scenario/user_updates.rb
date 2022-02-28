@@ -54,36 +54,4 @@ module Scenario::UserUpdates
   def delete_from_user_values(id)
     user_values.delete(id)
   end
-
-  # These two methods are only used in the edit scenario form
-  def user_values_as_yaml
-    @yaml_error ? @invalid_yaml_values : user_values.to_hash.to_yaml
-  end
-
-  def user_values_as_yaml=(values)
-    loaded = YAML.safe_load(values.to_s, permitted_classes: [
-      ActiveSupport::HashWithIndifferentAccess, Symbol
-    ])
-
-    self.user_values = (loaded || {}).with_indifferent_access
-  rescue Psych::SyntaxError => ex
-    @invalid_yaml_values = values.to_s
-    @yaml_error = ex
-  end
-
-  def validate_no_yaml_error
-    if @yaml_error
-      errors.add(
-        :user_values_as_yaml,
-        "contains invalid YAML: #{@yaml_error.message}"
-      )
-    end
-  end
-
-  private
-
-  # Validation method for when a user sets their metadata.
-  def validate_metadata_size
-    errors.add(:metadata, 'can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
-  end
 end

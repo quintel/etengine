@@ -659,41 +659,6 @@ describe Scenario do
     end
   end
 
-  describe '#user_values_as_yaml=' do
-    let(:scenario) { Scenario.new }
-
-    it 'permits an empty string' do
-      scenario.user_values_as_yaml = ''
-      expect(scenario.user_values).to eq({})
-    end
-
-    it 'permits nil' do
-      scenario.user_values_as_yaml = nil
-      expect(scenario.user_values).to eq({})
-    end
-
-    it 'permits a hash' do
-      scenario.user_values_as_yaml = "---\na: 1\nb: 2.5"
-      expect(scenario.user_values).to eq('a' => 1, 'b' => 2.5)
-    end
-
-    it 'permits an indifferent access hash' do
-      scenario.user_values_as_yaml = <<-YAML.strip_heredoc
-        --- !ruby/hash:ActiveSupport::HashWithIndifferentAccess
-        a: 1
-        b: 2.8
-      YAML
-
-      expect(scenario.user_values).to eq('a' => 1, 'b' => 2.8)
-    end
-
-    it 'denies a Set' do
-      expect do
-        scenario.user_values_as_yaml = "--- !ruby/object:Set\nhash: {}\n"
-      end.to raise_error(Psych::DisallowedClass)
-    end
-  end
-
   context 'with two scenarios using the same attached curve' do
     let(:scenario_one_attachment) { FactoryBot.create(:scenario_attachment) }
     let(:scenario_two_attachment) { FactoryBot.create(:scenario_attachment) }
