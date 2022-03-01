@@ -57,8 +57,7 @@
                       = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
                   %li
                     %form#area_code_selector.navbar-form.form.form-inline{:action => '#', :method => :get}
-                      - opts = Etsource::Dataset.region_codes.sort
-                      = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1'
+                      = select_tag 'area_code', grouped_options_for_select(grouped_region_options), :prompt => "New scenario:", :class => 'span1'
 
                 %li.divider-vertical
                 %li
