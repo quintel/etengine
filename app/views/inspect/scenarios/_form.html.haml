@@ -15,7 +15,7 @@
       = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }
       = f.simple_fields_for :heat_network_order, @scenario.heat_network_order do |hno|
         = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order) }, label: 'Heat network dispatchables order', hint: 'Delete all lines to revert to default'
-      = f.button :submit
+      = f.button :submit, class: 'btn btn-primary btn-large'
 
   :css
     #scenario_user_values_as_yaml,
