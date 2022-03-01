@@ -9,7 +9,7 @@
       = f.input :title
       = f.input :author
       = f.input :description
-      = f.input :protected, :as => :boolean, :hint => "A protected scenario won't be overwritten during a deploy"
+      = f.input :protected, :as => :boolean, :hint => "Protected scenarios are migrated during deploys, and are read-only through the API"
       = f.input :end_year
       = f.input :area_code, collection: Etsource::Dataset.region_codes.sort
       = f.input :user_values, label: 'User values (YAML)', as: :text, :hint => "Position (values) of all the sliders", input_html: { data: { codemirror: 'yaml' } }

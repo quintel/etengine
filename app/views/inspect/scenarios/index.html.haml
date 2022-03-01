@@ -12,7 +12,9 @@
     = submit_tag "search", :class => 'btn'
 
 %p
-  = link_to "create new scenario", new_inspect_scenario_path, class: 'btn'
+  = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
+  - if params[:api_scenario_id]
+    = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'
 
 %table.table.table-condensed.scenario-list
   %thead
