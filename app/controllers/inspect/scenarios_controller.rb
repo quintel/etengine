@@ -41,14 +41,6 @@ class Inspect::ScenariosController < Inspect::BaseController
   def show
     respond_to do |format|
       format.html
-
-      format.ad do
-        render(
-          plain: Preset.from_scenario(@scenario).to_active_document,
-          layout: nil,
-          content_type: 'text/x-active-document'
-        )
-      end
     end
   end
 
