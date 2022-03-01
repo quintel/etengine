@@ -2,17 +2,16 @@ require 'spec_helper'
 
 describe PresetSerializer do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
-  let(:preset)     { FactoryBot.create(:scenario, description: 'Hello!') }
+  let(:preset)     { FactoryBot.create(:scenario) }
 
   subject do
     described_class.new(controller, preset).as_json
   end
 
-  it { is_expected.to include(id:          preset.id) }
-  it { is_expected.to include(title:       preset.title) }
-  it { is_expected.to include(area_code:   preset.area_code) }
-  it { is_expected.to include(end_year:    preset.end_year) }
-  it { is_expected.to include(description: preset.description) }
+  it { is_expected.to include(id:        preset.id) }
+  it { is_expected.to include(title:     preset.title) }
+  it { is_expected.to include(area_code: preset.area_code) }
+  it { is_expected.to include(end_year:  preset.end_year) }
 
   it { is_expected.to include(url: 'url') }
 

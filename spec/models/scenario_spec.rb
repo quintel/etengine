@@ -93,7 +93,6 @@ describe Scenario do
         :scenario,
         user_values: { a: 1 },
         source: 'ETM',
-        title: 'Hello'
       )
     end
 
@@ -105,16 +104,6 @@ describe Scenario do
       it 'includes scenarios with no source' do
         scenario.update_attribute(:source, nil)
         is_expected.to include(scenario)
-      end
-
-      it 'includes scenarios with no title' do
-        scenario.update_attribute(:title, nil)
-        is_expected.to include(scenario)
-      end
-
-      it 'omits recent scenarios where title="test"' do
-        scenario.update_attribute(:title, 'test')
-        is_expected.not_to include(scenario)
       end
 
       it 'omits recent scenarios where source="Mechanical Turk"' do
@@ -148,16 +137,6 @@ describe Scenario do
       it 'includes scenarios with no source' do
         scenario.update_attribute(:source, nil)
         is_expected.to include(scenario)
-      end
-
-      it 'includes scenarios with no title' do
-        scenario.update_attribute(:title, nil)
-        is_expected.to include(scenario)
-      end
-
-      it 'omits recent scenarios where title="test"' do
-        scenario.update_attribute(:title, 'test')
-        is_expected.not_to include(scenario)
       end
 
       it 'omits recent scenarios where source="Mechanical Turk"' do
@@ -564,7 +543,7 @@ describe Scenario do
     end
 
     let(:scenario) do
-      scenario = Scenario.new(title: '1')
+      scenario = Scenario.new
       scenario.descale     = true
       scenario.scenario_id = preset.id
       scenario.save!
@@ -611,7 +590,6 @@ describe Scenario do
   describe 'dup' do
     let(:scenario) do
       Scenario.create!(
-        title:           'Test',
         end_year:        2030,
         area_code:       'nl',
         user_values:     { 1 => 2, 3 => 4 },

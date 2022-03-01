@@ -6,9 +6,7 @@
   .span12
     = simple_form_for [:data, @scenario],
         :url => @scenario.new_record? ? inspect_scenarios_path : inspect_scenario_path(:id => @scenario) do |f|
-      = f.input :title
       = f.input :author
-      = f.input :description
       = f.input :protected, :as => :boolean, :hint => "Protected scenarios are migrated during deploys, and are read-only through the API"
       = f.input :end_year
       = f.input :area_code, collection: grouped_region_types, as: :grouped_select, group_method: :regions, group_label_method: :human_name, value_method: :key, label_method: :key, include_blank: false

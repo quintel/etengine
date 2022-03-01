@@ -20,11 +20,11 @@ class PresetSerializer
     json = Hash.new
 
     json[:id]             = @resource.id
-    json[:title]          = @resource.title
+    json[:title]          = @resource.try(:metadata)&.[]('title')
     json[:area_code]      = @resource.area_code
     json[:start_year]     = @resource.start_year
     json[:end_year]       = @resource.end_year
-    json[:description]    = @resource.description
+    json[:description]    = @resource.try(:metadata)&.[]('description')
     json[:url]            = @controller.api_v3_scenario_url(@resource)
     json[:ordering]       = @resource.ordering
     json[:display_group]  = @resource.display_group

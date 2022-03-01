@@ -104,22 +104,19 @@
 
     GET /scenarios/:id
 
-If you set the optional `detailed` parameter then the `description` and
-`user_values` fields will be returned, too.
+If you set the optional `detailed` parameter then the `user_values` fields will be returned, too.
 
 #### Response
 
     Status: 200 OK
 
     {
-      "title": "My scenario"
       "url": "http://et-engine.com/scenarios/999",
       "id": 999,
       "area_code": "nl",
       "end_year": 2040,
       "template": 12345,
       "source": "ETM",
-      "description": "...",
       "user_values": {
         "households_number_of_inhabitants": 2.3
       }
@@ -157,7 +154,6 @@ You can pass the scenario attributes enclosed in a `scenario` JSON object. The
 available attributes are:
 
 * `area_code`: optional string, default: `nl`
-* `title`: optional string, default: `API`
 * `end_year`: optional integer, default: `2040`
 * `source`: optional (but highly recommended) required string, the application that makes the request
 * `scenario_id`: optional id of the scenario used as template / preset_scenario_id. This should be renamed into template!
@@ -165,7 +161,6 @@ available attributes are:
 ##### Example
 
     "scenario" : {
-      "title": "My scenario",
       "area_code": "nl",
       "end_year": 2040,
       "scenario_id": 12345,
@@ -179,7 +174,6 @@ available attributes are:
     {
       "url": "http://et-engine.com/scenarios/999",
       "id": 999,
-      "title": "My scenario",
       "area_code": "nl",
       "end_year": 2040,
       "template": 12345,
@@ -234,7 +228,6 @@ The slider update is a proper PUT/PATCH request instead.
         "gquery_2"
       ],
       "scenario": {
-        "title": "New title",
         "user_values": {
           "123": 4.56,
           "households_replacement_of_existing_houses": 5.67
@@ -280,7 +273,6 @@ Here is a complete server response that mixes valid and not valid data:
 
     {
       "scenario": {
-        "title": "API",
         "url": "http://etengine.dev/api/v3/scenarios/30324",
         "id": 30324,
         "area_code": "nl",

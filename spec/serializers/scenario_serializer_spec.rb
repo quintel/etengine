@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ScenarioSerializer do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
-  let(:scenario)   { FactoryBot.create(:scenario, description: 'Hello!') }
+  let(:scenario)   { FactoryBot.create(:scenario) }
 
   shared_examples_for 'a scenario serializer' do
     it { is_expected.to include(id:          scenario.id) }
@@ -30,7 +30,6 @@ describe ScenarioSerializer do
 
     it_should_behave_like 'a scenario serializer'
 
-    it { is_expected.not_to have_key(:description) }
     it { is_expected.not_to have_key(:inputs) }
   end
 
@@ -40,8 +39,6 @@ describe ScenarioSerializer do
     end
 
     it_should_behave_like 'a scenario serializer'
-
-    it { is_expected.to include(description: 'Hello!') }
 
     it { is_expected.to include(metadata: {}) }
   end

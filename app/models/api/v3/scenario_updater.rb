@@ -63,13 +63,19 @@ module Api
       def apply
         return true if @data.empty?
 
+        # Temporary while we continue to support `title` and `description` as part of the public
+        # API.
+        md = metadata
+        md[:title] = @scenario_data[:title] if @scenario_data.key?(:title)
+        md[:description] = @scenario_data[:description] if @scenario_data.key?(:description)
+
         @scenario.attributes = @scenario.attributes.except(
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
-          @scenario_data.except(:area_code, :end_year).merge(
+          @scenario_data.except(:area_code, :end_year, :title, :description).merge(
             balanced_values: balanced_values,
             user_values: user_values,
-            metadata: metadata
+            metadata: md
           )
         )
 

@@ -37,8 +37,6 @@ class ScenarioSerializer < PresetSerializer
     if @detailed
       json[:user_values] = @resource.user_values
       json[:metadata] = @resource.metadata
-    else
-      json.delete(:description)
     end
 
     if @inputs

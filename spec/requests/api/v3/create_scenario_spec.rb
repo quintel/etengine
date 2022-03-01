@@ -5,6 +5,57 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     NastyCache.instance.expire!
   end
 
+  context 'without a title' do
+    before do
+      post '/api/v3/scenarios'
+    end
+
+    it 'it has no title' do
+      expect(JSON.parse(response.body)).to include('title' => nil)
+    end
+
+    it 'saves no title with the metadata' do
+      expect(JSON.parse(response.body)).to include('metadata' => {})
+    end
+  end
+
+  context 'with a title (DEPRECATED)' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { title: 'Hello world!' } }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'includes the title with the main scenario data' do
+      expect(JSON.parse(response.body)).to include('title' => 'Hello world!')
+    end
+
+    it 'saves the title with metadata' do
+      expect(JSON.parse(response.body)).to include('metadata' => { 'title' => 'Hello world!' })
+    end
+  end
+
+  context 'with a description (DEPRECATED)' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { description: 'Hello world!' } }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'includes the description with the main scenario data' do
+      expect(JSON.parse(response.body)).to include('description' => 'Hello world!')
+    end
+
+    it 'saves the description with the metadata' do
+      expect(JSON.parse(response.body))
+        .to include('metadata' => { 'description' => 'Hello world!' })
+    end
+  end
+
   context 'with valid parameters' do
     it 'should save the scenario' do
       expect { post '/api/v3/scenarios' }.to change { Scenario.count }.by(1)
@@ -14,7 +65,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data     = JSON.parse(response.body)
       scenario = Scenario.last
 
-      expect(data).to include('title'      => scenario.title)
       expect(data).to include('id'         => scenario.id)
       expect(data).to include('area_code'  => 'nl')
       expect(data).to include('start_year' => scenario.start_year)
@@ -26,7 +76,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       expect(data['url']).to match(%r{/scenarios/#{ data['id'] }$})
 
-      expect(data).not_to have_key('description')
       expect(data).not_to have_key('inputs')
     end
 
@@ -53,8 +102,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data     = JSON.parse(response.body)
       scenario = Scenario.last
 
-      expect(data).to have_key('description')
-
+      expect(data).to have_key('user_values')
+      expect(data).to have_key('metadata')
       expect(data).not_to have_key('inputs')
     end
 

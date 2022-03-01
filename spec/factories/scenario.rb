@@ -1,6 +1,5 @@
 FactoryBot.define do
   factory :scenario do
-    title { "Some scenario" }
     area_code { "nl" }
     end_year { 2040 }
   end

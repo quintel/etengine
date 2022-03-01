@@ -100,6 +100,16 @@ module Api
           attrs[:user_values] = attrs[:user_values].transform_values(&:to_f)
         end
 
+        if attrs.key?(:title)
+          attrs[:metadata] ||= {}
+          attrs[:metadata][:title] = attrs.delete(:title)
+        end
+
+        if attrs.key?(:description)
+          attrs[:metadata] ||= {}
+          attrs[:metadata][:description] = attrs.delete(:description)
+        end
+
         @scenario = Scenario.new
 
         if scaler_attributes && ! attrs[:descale]
@@ -125,7 +135,7 @@ module Api
           @scenario.save!
         end
 
-        render json: ScenarioSerializer.new(self, @scenario, filtered_params)
+        render json: ScenarioSerializer.new(self, @scenario, filtered_params.merge(detailed: true))
       rescue ActiveRecord::RecordInvalid
         render json: { errors: @scenario.errors }, status: 422
       end

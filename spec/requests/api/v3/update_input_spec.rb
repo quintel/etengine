@@ -727,4 +727,50 @@ describe 'Updating inputs with API v3' do
       expect(response.status).to eq(400)
     end
   end
+
+  # --------------------------------------------------------------------------
+
+  context 'when providing a title (DEPRECATED)' do
+    before do
+      put "/api/v3/scenarios/#{scenario.id}", params: {
+        detailed: true,
+        scenario: { title: 'Hello world' }
+      }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'responds with the title in the scenario' do
+      expect(JSON.parse(response.body)['scenario']).to include('title' => 'Hello world')
+    end
+
+    it 'saves the title with the metadata' do
+      expect(JSON.parse(response.body)['scenario'])
+        .to include('metadata' => { 'title' => 'Hello world' })
+    end
+  end
+
+  context 'when providing a description (DEPRECATED)' do
+    before do
+      put "/api/v3/scenarios/#{scenario.id}", params: {
+        detailed: true,
+        scenario: { description: 'Hello world' }
+      }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'responds with the description in the scenario' do
+      expect(JSON.parse(response.body)['scenario']).to include('description' => 'Hello world')
+    end
+
+    it 'saves the description with the metadata' do
+      expect(JSON.parse(response.body)['scenario'])
+        .to include('metadata' => { 'description' => 'Hello world' })
+    end
+  end
 end

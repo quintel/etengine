@@ -42,7 +42,6 @@ describe Api::V3::ScenariosController do
       parsed = JSON.parse(response.body)
 
       expect(parsed.length).to eq(Preset.visible.length)
-      expect(parsed.map { |v| v['title'] }).to_not include('Hidden Preset')
     end
   end
 

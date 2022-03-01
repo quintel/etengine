@@ -21,12 +21,13 @@ class Scenario < ApplicationRecord
     # Returns an ActiveRecord::Relation
     def migratable_since(since)
       Scenario.where(
-        '(protected = ? OR updated_at >= ?) AND ' \
-        'COALESCE(source, "") != ? AND ' \
-        'COALESCE(title, "") != ? AND ' \
-        'user_values IS NOT NULL AND user_values != ?',
-        true, since, 'Mechanical Turk', 'test',
-        ActiveSupport::HashWithIndifferentAccess.new.to_yaml
+        '(protected = :protected OR updated_at >= :updated_at) AND ' \
+        'COALESCE(source, "") != :mechanical_turk_source AND ' \
+        'user_values IS NOT NULL AND user_values != :empty_user_values',
+        protected: true,
+        updated_at: since,
+        mechanical_turk_source: 'Mechanical Turk',
+        empty_user_values: ActiveSupport::HashWithIndifferentAccess.new.to_yaml
       )
     end
   end

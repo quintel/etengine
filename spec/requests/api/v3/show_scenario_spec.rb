@@ -31,10 +31,6 @@ describe 'APIv3 Scenarios' do
 
       expect(json['url']).to match(%r{/scenarios/#{ scenario.id }$})
     end
-
-    it 'should not include detailed attributes' do
-      expect(json).not_to have_key('description')
-    end
   end
 
   context 'with the "detailed" param' do
@@ -57,10 +53,6 @@ describe 'APIv3 Scenarios' do
       expect(json).to have_key('created_at')
 
       expect(json['url']).to match(%r{/scenarios/#{ scenario.id }$})
-    end
-
-    it 'should include detailed attributes' do
-      expect(json).to include('description' => scenario.description)
     end
   end
 

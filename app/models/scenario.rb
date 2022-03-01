@@ -28,8 +28,7 @@ class Scenario < ApplicationRecord
     foreign_key: :source_scenario_id,
     inverse_of: :source_scenario
 
-  validates_presence_of :title, on: :create, message: 'Please provide a title'
-  validates             :area_code, presence: true
+  validates :area_code, presence: true
   validates :end_year,  numericality: true
 
   validates :area_code, inclusion: {
@@ -42,7 +41,6 @@ class Scenario < ApplicationRecord
   validates_associated :scaler, on: :create
 
   scope :in_start_menu, ->    { where(:in_start_menu => true) }
-  scope :by_name,       ->(q) { where("title LIKE ?", "%#{q}%")}
   scope :by_id,         ->(q) { where(id: q)}
 
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
@@ -58,7 +56,6 @@ class Scenario < ApplicationRecord
     where(%q[
         in_start_menu IS NULL
         AND protected IS NULL
-        AND title = "API"
         AND author IS NULL
         AND user_id IS NULL
         AND (
@@ -93,14 +90,13 @@ class Scenario < ApplicationRecord
     {
       :area_code => 'nl',
       :user_values => {},
-      :end_year => 2050,
-      :title => 'API'
+      :end_year => 2050
     }.with_indifferent_access
   end
 
   def self.new_attributes(settings = {})
     settings ||= {}
-    attributes = Scenario.default_attributes.merge(:title => "API")
+    attributes = Scenario.default_attributes
     out = attributes.merge(settings)
     # strip invalid attributes
     valid_attributes = [column_names, 'scenario_id'].flatten
@@ -230,6 +226,10 @@ class Scenario < ApplicationRecord
   # shortcut to run GQL queries
   def query(q)
     gql(prepare: true).query(q)
+  end
+
+  def title
+    metadata['title'].presence
   end
 
   # Public: Given an input, returns the value of that input as it will be used

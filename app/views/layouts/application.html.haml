@@ -2,7 +2,7 @@
 %html{:lang => 'en'}
   %head
     %title
-      - if @api_scenario && @api_scenario.title != 'API'
+      - if @api_scenario && @api_scenario.title.present?
         = @api_scenario.title
         \-
       - if content_for?(:title)
