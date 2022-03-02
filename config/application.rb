@@ -11,6 +11,17 @@ module Etm
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    # config.hosts << /.*/
+    config.action_controller.forgery_protection_origin_check = false
+
+    config.hosts = [
+      IPAddr.new("0.0.0.0/0"),        # All IPv4 addresses.
+      IPAddr.new("::/0"),             # All IPv6 addresses.
+      "localhost",                    # The localhost reserved domain.
+      ".energytransitionmodel.com",
+      ENV["RAILS_DEVELOPMENT_HOSTS"]  # Additional comma-separated hosts for development.
+    ]
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
