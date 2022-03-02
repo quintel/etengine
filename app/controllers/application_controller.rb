@@ -6,8 +6,6 @@ class ApplicationController < ActionController::Base
   before_action :locale
   before_action :store_user_location!, if: :storable_location?
 
-  skip_before_action :verify_authenticity_token
-
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to new_user_session_url, :alert => "Please log in first."
   end

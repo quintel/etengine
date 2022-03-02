@@ -1,6 +1,8 @@
 module Api
   module V3
     class BaseController < ApplicationController
+      skip_before_action :verify_authenticity_token
+
       rescue_from ActionController::ParameterMissing do |e|
         render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
       end
