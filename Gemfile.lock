@@ -191,7 +191,6 @@ GEM
       activesupport (>= 5.0)
     gpgme (2.0.20)
       mini_portile2 (~> 2.3)
-    gravatar_image_tag (1.2.0)
     haml (5.2.2)
       temple (>= 0.8.0)
       tilt
@@ -462,7 +461,6 @@ DEPENDENCIES
   fnv
   gctools
   git!
-  gravatar_image_tag
   haml (~> 5.0)
   highline
   ice_nine

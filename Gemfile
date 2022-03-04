@@ -16,8 +16,6 @@ gem 'json'
 
 gem 'rake'
 
-gem 'gravatar_image_tag'
-
 # Ruby gems
 gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
 gem 'ice_nine'
