@@ -19,6 +19,9 @@ Rails.application.configure do
   # Enable server timing
   config.server_timing = true
 
+  # Enable hostname for puma-dev
+  config.hosts << "etengine.test"
+
   # Always use a memory store so that we don't reload datasets on every request.
   config.cache_store = :memory_store, { size: 512 * (1024**3) } # 512 Mb
   # config.cache_store = :dalli_store
