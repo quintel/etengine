@@ -20,7 +20,7 @@ module Qernel
         target_api.demand =
           main_participant.output_capacity_per_unit *
           main_participant.number_of_units *
-          flh
+          target_api.full_load_seconds
 
         # TODO: Set input and output capacities.
         target_api.typical_input_capacity = input_capacity
