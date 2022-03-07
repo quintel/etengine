@@ -103,11 +103,11 @@ module Qernel
 
       # Calculates the full load hours of the load shifting based on the amount of energy produced.
       def full_load_hours
-        if source_api.input_capacity.zero? || source_api.number_of_units.zero?
+        if source_api.number_of_units.zero?
           0.0
         else
           production = main_participant.load_curve.sum { |v| v.positive? ? v : 0.0 }
-          production / (source_api.input_capacity * source_api.number_of_units)
+          production / (input_capacity * source_api.number_of_units)
         end
       end
     end
