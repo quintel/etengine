@@ -1,4 +1,4 @@
-FROM ruby:3.1-slim-buster
+FROM ruby:3.1-slim
 
 LABEL maintainer="dev@quintel.com"
 
@@ -8,6 +8,7 @@ RUN apt-get update -yqq && \
     autoconf \
     build-essential \
     default-libmysqlclient-dev \
+    default-mysql-client \
     git \
     gnupg \
     graphviz \
