@@ -75,10 +75,7 @@ end
 # DB file.
 def import_db_commands(import_command, file)
   [
-    # Setup required for when the DB doesn't exist yet.
-    'bundle exec rails RAILS_ENV=development db:setup > /dev/null',
-    'bundle exec rails RAILS_ENV=development db:environment:set db:drop db:create' \
-      '> /dev/null',
+    'bundle exec rails RAILS_ENV=development db:environment:set db:drop db:setup > /dev/null',
     Kernel.format(import_command, file.path.shellescape),
     'bundle exec rails RAILS_ENV=development db:environment:set > /dev/null'
   ]
