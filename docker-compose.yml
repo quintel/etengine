@@ -26,7 +26,7 @@ services:
     stdin_open: true
 
   database:
-    image: mariadb
+    image: mariadb:10
     command: --default-authentication-plugin=mysql_native_password
     env_file:
       - .docker/env/development/database
