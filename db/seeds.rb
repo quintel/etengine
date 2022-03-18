@@ -20,3 +20,5 @@ puts <<~MSG
   | Please change this password if you're deploying to a production environment! |
   +------------------------------------------------------------------------------+
 MSG
+
+Scenario.create!(Scenario.default_attributes)
