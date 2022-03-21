@@ -21,4 +21,4 @@ puts <<~MSG
   +------------------------------------------------------------------------------+
 MSG
 
-Scenario.create!(Scenario.default_attributes)
+Scenario.new(Scenario.default_attributes).save(validate: false)
