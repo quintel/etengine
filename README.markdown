@@ -44,23 +44,23 @@ New users are recommended to use Docker to run ETEngine. Doing so will avoid the
     │     ├─ ...
     ```
 
-1. Build the ETEngine image:
+2. Build the ETEngine image:
 
-    ```
+    ```sh
     docker-compose build
     ```
 
-2. Install dependencies and seed the database:
+3. Install dependencies and seed the database:
 
-   ```
+   ```sh
    docker-compose run --rm web bash -c 'bin/rails db:drop && bin/setup'
    ```
 
    The command drops any existing ETEngine database; be sure only to run this during the initial setup! This step will also provide you with an e-mail address and password for an administrator account.
 
-3. Launch the containers:
+4. Launch the containers:
 
-   ```
+   ```sh
    docker-compose up
    ```
 
