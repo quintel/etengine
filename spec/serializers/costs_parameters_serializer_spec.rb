@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe CostsParametersSerializer do
-  let(:scenario) { FactoryBot.create(:scenario) }
-
   subject do
     CSV.parse(described_class.new(scenario).as_csv, headers: true)
   end
+
+  let(:scenario) { FactoryBot.create(:scenario) }
 
   it 'has 31 rows' do
     # 10 queries, 6 totals, 24 subtotals = 40 rows minimum (when no nodes in groups)

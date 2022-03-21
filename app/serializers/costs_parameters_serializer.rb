@@ -6,22 +6,30 @@ class CostsParametersSerializer
   QUERIES = {
     costs_building_and_installations_households: %w[
       costs_building_and_installations_households_insulation
-    ], costs_building_and_installations_buildings: %w[
+    ],
+    costs_building_and_installations_buildings: %w[
       costs_building_and_installations_buildings_insulation
-    ], costs_storage_and_conversion_storage: %w[
+    ],
+    costs_storage_and_conversion_storage: %w[
       costs_hydrogen_storage
       heat_infrastructure_storage_annualised_costs
-    ], costs_infrastructure_electricity: %w[
+    ],
+    costs_infrastructure_electricity: %w[
       total_costs_of_electricity_network_calculation
-    ], costs_infrastructure_heat: %w[
+    ],
+    costs_infrastructure_heat: %w[
       heat_infrastructure_total_annualised_costs
-    ], costs_infrastructure_hydrogen: %w[
+    ],
+    costs_infrastructure_hydrogen: %w[
       costs_infrastructure_hydrogen
-    ], costs_infrastructure_network_gas: %w[
+    ],
+    costs_infrastructure_network_gas: %w[
       gas_network_total_costs
-    ], costs_co2_molecule_nodes: %w[
+    ],
+    costs_co2_molecule_nodes: %w[
       costs_co2_ccs
-    ], costs_co2_energy_nodes: %w[
+    ],
+    costs_co2_energy_nodes: %w[
       costs_co2_ccs
     ]
   }.freeze
@@ -188,7 +196,11 @@ class CostsParametersSerializer
 
   # Internal: Returns all groups for which a subtotal line per subgroup should be added
   def groups_with_subtotal
-    %i[costs_building_and_installations costs_production costs_storage_and_conversion costs_carriers]
+    %i[
+      costs_building_and_installations
+      costs_production costs_storage_and_conversion
+      costs_carriers
+    ]
   end
 
   # Internal: Returns all groups that should not have a subtotal line per subgroup
