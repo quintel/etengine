@@ -19,11 +19,10 @@ services:
       - .docker/env/development/web
     tmpfs:
       - /tmp
+      - /app/tmp/pids
     depends_on:
       database:
         condition: service_healthy
-    tty: true
-    stdin_open: true
 
   database:
     image: mariadb:10

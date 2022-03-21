@@ -19,11 +19,60 @@ which each use ETEngine's REST API for manipulating and calculating scenarios.
 
 The ETE is released under the [MIT License](LICENSE.txt).
 
-## Installation
+## Installation with Docker
+
+New users are recommended to use Docker to run ETEngine. Doing so will avoid the need to install additional dependencies.
+
+1. Get a copy of [ETEngine](https://github.com/quintel/etengine) and [ETSource](https://github.com/quintel/etsource); placing them in the same parent directory:
+
+    ```
+    ├─ parent_dir
+    │  ├─ etengine
+    │  └─ etsource
+    ```
+
+    Place the ETSource decryption password in a file called `.password` in the ETSource directory. This is required to decrypt a small number of datasets for which we're not authorised to publicly release the source data.
+
+    ```
+    ├─ parent_dir
+    │  ├─ etengine
+    │  └─ etsource
+    │     ├─ .password   # <- password goes here
+    │     ├─ carriers
+    │     ├─ config
+    │     ├─ datasets
+    │     ├─ ...
+    ```
+
+1. Build the ETEngine image:
+
+    ```
+    docker-compose build
+    ```
+
+2. Install dependencies and seed the database:
+
+   ```
+   docker-compose run --rm web bash -c 'bin/rails db:drop && bin/setup'
+   ```
+
+   The command drops any existing ETEngine database; be sure only to run this during the initial setup! This step will also provide you with an e-mail address and password for an administrator account.
+
+3. Launch the containers:
+
+   ```
+   docker-compose up
+   ```
+
+   After starting application will become available at http://localhost:3000 after a few seconds. This is indicated by the message "Listening on http://0.0.0.0:3000".
+
+Before the application can start serving scenarios, it must calculate the default dataset (Netherlands). This process will begin the first time a scenario is requested and will take several seconds. Signing in to the administrator account will also begin the calculation. Please be patient! Further requests to ETEngine will happen much faster.
+
+## Installation without Docker
 
 Installing ETEngine on a local machine can be a bit involved, owing to the
 number of dependencies. Assuming you can run a 'normal' rails application on your local machine,
-you have to follow these steps to run ET-Engine.
+you have to follow these steps to run ETEngine.
 
 1. Install the "Graphviz" library
    * Mac users with [Homebrew][homebrew]: `brew install graphviz`
