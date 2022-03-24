@@ -90,7 +90,12 @@ module Qernel
       end
 
       def total_demand
-        @context.graph.node(@config.demand_source).node_api.demand
+        if @config.demand_source.length > 1
+          raise 'Cannot use multiple nodes as a demand_source on P2H merit order node ' \
+                "#{source_api.key}: got #{@config.demand_source.inspect}"
+        end
+
+        @context.graph.node(@config.demand_source.first).node_api.demand
       end
     end
   end
