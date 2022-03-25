@@ -535,11 +535,11 @@ describe 'Qernel::NodeApi cost calculations' do
       expect(node.node_api.capital_expenditures_ccs).to eq(ccs_investment)
     end
 
-    context 'when wacc=1.0 (expenditure factor = 2.0)' do
+    context 'when wacc=1.0 (expenditure factor = 1.5)' do
       let(:wacc) { 1.0 }
 
-      it 'equals twice the investment' do
-        expect(node.node_api.capital_expenditures_ccs).to eq(ccs_investment * 2)
+      it 'equals 1.5 times the investment' do
+        expect(node.node_api.capital_expenditures_ccs).to eq(ccs_investment * 1.5)
       end
     end
 
@@ -583,11 +583,11 @@ describe 'Qernel::NodeApi cost calculations' do
       expect(node.node_api.capital_expenditures_excluding_ccs).to eq(4 * basic_investment)
     end
 
-    context 'when wacc=1.0 (expenditure factor = 2.0)' do
+    context 'when wacc=1.0 (expenditure factor = 1.5)' do
       let(:wacc) { 1.0 }
 
       it 'equals twice the investment' do
-        expect(node.node_api.capital_expenditures_excluding_ccs).to eq(8 * basic_investment)
+        expect(node.node_api.capital_expenditures_excluding_ccs).to eq(6 * basic_investment)
       end
     end
 
