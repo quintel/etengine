@@ -79,10 +79,10 @@ group :test, :development do
   gem 'watchr'
   gem 'binding_of_caller'
 
-  gem 'rubocop',             '~> 0.85.0', require: false
-  gem 'rubocop-performance',              require: false
-  gem 'rubocop-rails',                    require: false
-  gem 'rubocop-rspec',                    require: false
+  gem 'rubocop',             '~> 1.27', require: false
+  gem 'rubocop-performance',            require: false
+  gem 'rubocop-rails',                  require: false
+  gem 'rubocop-rspec',                  require: false
 end
 
 group :test do
