@@ -355,9 +355,9 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when uploading a curve to a protected scenario' do
+    context 'when uploading a curve to a read-only scenario' do
       before do
-        scenario.update!(protected: true)
+        scenario.update!(api_read_only: true)
       end
 
       let(:request) do
@@ -415,14 +415,14 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when removing an attached curve from a protected scenario' do
+    context 'when removing an attached curve from a read-only scenario' do
       before do
         # Attach a curve.
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
-        scenario.update!(protected: true)
+        scenario.update!(api_read_only: true)
       end
 
       let(:request) { delete url }
@@ -434,7 +434,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'sends an error' do
         request
-        expect(JSON.parse(response.body)).to eq('errors' => ['Cannot modify a protected scenario'])
+        expect(JSON.parse(response.body)).to eq('errors' => ['Cannot modify a read-only scenario'])
       end
 
       it 'does not remove the attachment' do

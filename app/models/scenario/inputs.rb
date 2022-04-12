@@ -39,7 +39,7 @@ class Scenario < ApplicationRecord
     #
     # Returns a boolean.
     def disabled?(input)
-      @scenario.protected? || disabled_by_exclusivity?(input)
+      @scenario.api_read_only? || disabled_by_exclusivity?(input)
     end
 
     # Public: A set of inputs which are set in the scenario which are disabled due to the presence

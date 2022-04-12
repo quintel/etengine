@@ -16,9 +16,10 @@ class Scenario::Editable < SimpleDelegator
 
   def update!(params)
     self.metadata = params[:metadata]
+    self.mutability = params[:mutability]
     self.user_values = params[:user_values]
     self.balanced_values = params[:balanced_values]
-    @scenario.attributes = params.except(:metadata, :user_values, :balanced_values)
+    @scenario.attributes = params.except(:metadata, :user_values, :balanced_values, :mutability)
 
     raise ActiveRecord::RecordInvalid if @scenario.errors.any?
 
@@ -66,6 +67,21 @@ class Scenario::Editable < SimpleDelegator
     @scenario.metadata = JSON.parse(@raw[:metadata])
   rescue JSON::ParserError => e
     @scenario.errors.add(:metadata, "is not valid JSON: #{e.message}")
+  end
+
+  # Public: Sets the scenario immutability and compatibility using a string.
+  def mutability=(value)
+    case value
+    when 'api-read-only'
+      @scenario.api_read_only = true
+      @scenario.keep_compatible = true
+    when 'keep-compatible'
+      @scenario.api_read_only = false
+      @scenario.keep_compatible = true
+    else
+      @scenario.api_read_only = false
+      @scenario.keep_compatible = false
+    end
   end
 
   private

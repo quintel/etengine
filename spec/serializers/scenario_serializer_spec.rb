@@ -56,19 +56,21 @@ describe ScenarioSerializer do
     end
   end
 
-  context 'with an unprotected scenario' do
+  context 'with a mutable scenario' do
     subject { described_class.new(controller, scenario).as_json }
 
-    before { scenario.update!(protected: false) }
+    before { scenario.update!(api_read_only: false) }
 
+    it { is_expected.to include(read_only: false) }
     it { is_expected.to include(protected: false) }
   end
 
-  context 'with a protected scenario' do
+  context 'with a read-only scenario' do
     subject { described_class.new(controller, scenario).as_json }
 
-    before { scenario.update!(protected: true) }
+    before { scenario.update!(api_read_only: true) }
 
+    it { is_expected.to include(read_only: true) }
     it { is_expected.to include(protected: true) }
   end
 end

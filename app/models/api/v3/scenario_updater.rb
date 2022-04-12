@@ -31,6 +31,9 @@ module Api
       validate :validate_groups_balance
       validate :validate_metadata_size
 
+      # Boolean API values which are considered truthy.
+      TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
+
       # @return [Scenario]
       #   Returns the scenario being updated.
       #
@@ -38,7 +41,7 @@ module Api
 
       # Public: Returns an updater for the scenario.
       def self.for_scenario(scenario, params)
-        (scenario.protected? ? Null : self).new(scenario, params)
+        (scenario.api_read_only? ? Null : self).new(scenario, params)
       end
 
       # Creates a new ScenarioUpdater.
@@ -69,10 +72,20 @@ module Api
         md[:title] = @scenario_data[:title] if @scenario_data.key?(:title)
         md[:description] = @scenario_data[:description] if @scenario_data.key?(:description)
 
+        apply_protection_attributes
+
         @scenario.attributes = @scenario.attributes.except(
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
-          @scenario_data.except(:area_code, :end_year, :title, :description).merge(
+          @scenario_data.except(
+            :area_code,
+            :description,
+            :end_year,
+            :keep_compatible,
+            :protected,
+            :read_only,
+            :title
+          ).merge(
             balanced_values: balanced_values,
             user_values: user_values,
             metadata: md
@@ -303,6 +316,12 @@ module Api
       # Returns a hash of metadata
       def metadata
         @scenario_data.key?(:metadata) ? @scenario_data[:metadata] : @scenario.metadata.dup
+      end
+
+      # Internal: Sets whether the scenario is API immutable and to be kept compatible. Cancancan
+      # prevents updating th escenario when `api_read_only`` is true.
+      def apply_protection_attributes
+        SetScenarioProtectionAttributes.call(params: @scenario_data, scenario: @scenario)
       end
 
       # Given a collection of user values, yields the name of each group to

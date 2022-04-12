@@ -50,16 +50,16 @@ describe Api::V3::ScenariosController do
       @scenario = FactoryBot.create(:scenario, :user_values => {'foo' => 23.0})
     end
 
-    context 'when the scenario is protected' do
-      it 'allows queries to a protected scenario' do
-        @scenario.update!(protected: true)
+    context 'when the scenario is read-only' do
+      it 'allows queries' do
+        @scenario.update!(api_read_only: true)
         put :update, params: { id: @scenario.id }
 
         expect(response).to be_successful
       end
 
       it 'disallows requests which update the scenario' do
-        @scenario.update!(protected: true)
+        @scenario.update!(api_read_only: true)
         put :update, params: { id: @scenario.id, scenario: { user_values: { foo: 5 } } }
 
         expect(response).to be_forbidden

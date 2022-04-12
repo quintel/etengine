@@ -560,9 +560,9 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
-  context 'when querying a protected scenario' do
+  context 'when querying a read-only scenario' do
     before do
-      scenario.update!(protected: true)
+      scenario.update!(api_read_only: true)
       autobalance_scenario({})
     end
 
@@ -571,9 +571,9 @@ describe 'Updating inputs with API v3' do
     end
   end
 
-  context 'when updating a protected scenario' do
+  context 'when updating a read-only scenario' do
     before do
-      scenario.update!(protected: true)
+      scenario.update!(api_read_only: true)
     end
 
     it 'returns 403' do
@@ -587,10 +587,10 @@ describe 'Updating inputs with API v3' do
     end
   end
 
-  context 'when setting an unprotected scenario to protected with updates' do
+  context 'when setting a mutable scenario to read-only with updates' do
     let(:request) do
       put "/api/v3/scenarios/#{scenario.id}",params: {
-        scenario: { user_values: { 'unrelated_one' => 20.0 }, protected: true }
+        scenario: { user_values: { 'unrelated_one' => 20.0 }, read_only: true }
       }
     end
 
@@ -603,8 +603,8 @@ describe 'Updating inputs with API v3' do
       expect(response).to be_ok
     end
 
-    it 'sets the scenario to protected' do
-      expect { request }.to(change { scenario.reload.protected }.from(nil).to(true))
+    it 'sets the scenario to read-only' do
+      expect { request }.to(change { scenario.reload.api_read_only? }.from(false).to(true))
     end
 
     it 'sets the user values' do

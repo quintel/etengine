@@ -110,6 +110,10 @@ module Api
           attrs[:metadata][:description] = attrs.delete(:description)
         end
 
+        if attrs.key?(:protected) && !attrs.key?(:read_only)
+          attrs[:keep_compatible] = attrs[:api_read_only] = attrs.delete(:protected)
+        end
+
         @scenario = Scenario.new
 
         if scaler_attributes && ! attrs[:descale]
@@ -129,7 +133,9 @@ module Api
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs
+        @scenario.attributes = attrs.except(:read_only, :protected, :keep_compatible)
+
+        SetScenarioProtectionAttributes.call(params: attrs, scenario: @scenario)
 
         Scenario.transaction do
           @scenario.save!
@@ -146,7 +152,7 @@ module Api
           @scenario, params.require(:end_year).to_i
         )
 
-        @interpolated.protected = true if params[:protected]
+        SetScenarioProtectionAttributes.call(params: params, scenario: @interpolated)
 
         Scenario.transaction do
           @interpolated.save!
@@ -267,7 +273,8 @@ module Api
       def scenario_attributes
         attrs = params.permit(scenario: [
           :area_code, :author, :country, :descale, :description, :end_year,
-          :preset_scenario_id, :protected, :region, :scenario_id, :source,
+          :preset_scenario_id, :region, :scenario_id, :source,
+          :protected, :read_only, :keep_compatible,
           :title, user_values: {}, metadata: {}
         ])
 

@@ -55,7 +55,8 @@ class Scenario < ApplicationRecord
   scope(:deletable, lambda do
     where(%q[
         in_start_menu IS NULL
-        AND protected IS NULL
+        AND api_read_only = ?
+        AND keep_compatible = ?
         AND author IS NULL
         AND user_id IS NULL
         AND (
@@ -63,7 +64,7 @@ class Scenario < ApplicationRecord
           OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
         )
         AND updated_at < ?
-      ], Date.today - 5)
+      ], false, false, Time.zone.today - 5)
   end)
 
   attr_accessor :input_errors, :ordering, :display_group, :descale
@@ -73,6 +74,10 @@ class Scenario < ApplicationRecord
       scenario.copy_scenario_state(preset)
     end
   end
+
+  # before_save do |scenario|
+  #   scenario.keep_compatible = true if api_read_only? && api_read_only_changed?
+  # end
 
   def test_scenario=(flag)
     @test_scenario = flag
@@ -230,6 +235,21 @@ class Scenario < ApplicationRecord
 
   def title
     metadata['title'].presence
+  end
+
+  # String form of the scenario mutability. Used in the admin scenario form.
+  def mutability
+    if api_read_only?
+      'api-read-only'
+    elsif keep_compatible?
+      'keep-compatible'
+    else
+      'public'
+    end
+  end
+
+  def outdated?
+    !keep_compatible? && created_at < Scenario.default_migratable_date
   end
 
   # Public: Given an input, returns the value of that input as it will be used

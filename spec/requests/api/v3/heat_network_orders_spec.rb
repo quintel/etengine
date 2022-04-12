@@ -142,9 +142,9 @@ describe 'APIv3 heat network orders' do
       end
     end
 
-    context 'when the sceanrio is protected' do
+    context 'when the sceanrio is read-only' do
       before do
-        scenario.update!(protected: true)
+        scenario.update!(api_read_only: true)
         put url, params: { heat_network_order: { order: valid_options.reverse } }
       end
 

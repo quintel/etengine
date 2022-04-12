@@ -185,13 +185,87 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
-  context 'when inheriting a protected scenario' do
+  context 'when setting read_only to true' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { read_only: true } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'sets the scenario to be read-only' do
+      expect(json['read_only']).to be(true)
+    end
+
+    it 'sets the scenario to be kept compatible' do
+      expect(json['keep_compatible']).to be(true)
+    end
+
+    it 'includes protected=true in the response' do
+      expect(json['protected']).to be(true)
+    end
+  end
+
+  context 'when setting keep_compatible to true' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { keep_compatible: true } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'sets the scenario to be kept compatible' do
+      expect(json['keep_compatible']).to be(true)
+    end
+
+    it 'includes protected=false in the response' do
+      expect(json['protected']).to be(false)
+    end
+  end
+
+  # Legacy attribute.
+  context 'when setting protected to true' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { protected: true } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'sets the scenario to be read-only' do
+      expect(json['read_only']).to be(true)
+    end
+
+    it 'sets the scenario to be kept compatible' do
+      expect(json['keep_compatible']).to be(true)
+    end
+
+    it 'includes protected=false in the response' do
+      expect(json['protected']).to be(true)
+    end
+  end
+
+  context 'when inheriting a read-only scenario' do
     before do
       post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }
     end
 
     let(:parent) do
-      FactoryBot.create(:scenario, protected: true, user_values: { unrelated_one: 1.0 })
+      FactoryBot.create(
+        :scenario,
+        api_read_only: true,
+        keep_compatible: true,
+        user_values: { unrelated_one: 1.0 }
+      )
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -204,9 +278,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(Scenario.find(json['id']).user_values).to eq(parent.user_values)
     end
 
+    it 'does not mark the new scenario as read-only' do
+      expect(Scenario.find(json['id'])).not_to be_api_read_only
+    end
 
-    it 'does not mark the new scenario as protected' do
-      expect(Scenario.find(json['id'])).not_to be_protected
+    it 'does not mark the new scenario as kept compatible' do
+      expect(Scenario.find(json['id'])).not_to be_keep_compatible
     end
   end
 

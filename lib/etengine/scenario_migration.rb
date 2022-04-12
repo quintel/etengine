@@ -21,9 +21,9 @@ module ETEngine
     #   where this might not be noticed. (default: true)
     #
     # since: -
-    #   By default, all protected scenarios and unprotected scenarios modified
+    #   By default, all read-only scenarios and writeable scenarios modified
     #   in the last month are migrated. `since` allows you to provide a custom
-    #   cutoff date for migrating unprotected scenarios.
+    #   cutoff date for migrating writable scenarios.
     #
     # Returns nothing.
     def migrate_scenarios(raise_if_no_changes: true, since: nil)

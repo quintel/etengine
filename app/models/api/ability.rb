@@ -19,7 +19,7 @@ module Api
       can :update, Scenario
 
       # ... but not to a protected one.
-      cannot :update, Scenario, protected: true
+      cannot :update, Scenario, api_read_only: true
     end
   end
 end

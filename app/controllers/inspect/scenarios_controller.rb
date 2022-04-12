@@ -13,7 +13,7 @@ class Inspect::ScenariosController < Inspect::BaseController
       end
     end
     base = base.in_start_menu if params[:in_start_menu]
-    base = base.where(:protected => true) if params[:protected]
+    base = base.where(api_read_only: true) if params[:api_read_only]
     @scenarios = base.page(params[:page]).per(35)
   end
 
@@ -73,10 +73,7 @@ class Inspect::ScenariosController < Inspect::BaseController
   end
 
   def scenario_attributes
-    attrs = params.require(:scenario).permit!
-    attrs[:protected] = attrs[:protected] == '1'
-
-    attrs.except(:heat_network_order)
+    params.require(:scenario).permit!.except(:heat_network_order)
   end
 
   def user_sortable_attributes

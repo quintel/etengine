@@ -21,8 +21,8 @@ module Api
 
       rescue_from CanCan::AccessDenied do |ex|
         if (request.post? || request.put? || request.delete?) &&
-            ex.subject.is_a?(Scenario) && ex.subject.protected?
-          render status: 403, json: { errors: ['Cannot modify a protected scenario'] }
+            ex.subject.is_a?(Scenario) && ex.subject.api_read_only?
+          render status: 403, json: { errors: ['Cannot modify a read-only scenario'] }
         else
           render status: 404, json: { errors: ['Not found'] }
         end

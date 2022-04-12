@@ -7,8 +7,8 @@
     = search_field_tag :q, params[:q], :placeholder => 'search'
     = check_box_tag :in_start_menu, 1, params[:in_start_menu]
     = label_tag "In start menu", nil, for: "in_start_menu"
-    = check_box_tag :protected, 1, params[:protected]
-    = label_tag "Protected", nil, for: "protected"
+    = check_box_tag :api_read_only, 1, params[:api_read_Only]
+    = label_tag "API read-only", nil, for: "api_read_only"
     = submit_tag "search", :class => 'btn'
 
 %p
@@ -21,12 +21,12 @@
     %tr
       %th{:colspan => 8} Scenario count: #{Scenario.count}
     %tr
-      %th Id
+      %th ID
       %th Title
       %th End Year
       %th Area
-      %th In start menu
-      %th Protected
+      %th.narrow Mutability
+      %th.narrow Compatibility
       %th
   %tfoot
     %tr
@@ -37,10 +37,12 @@
         %td
           = link_to s.id, inspect_scenario_path(:id => s.id)
           - if s.id.to_s == params[:api_scenario_id]
-            %span.tag Current Scenario
+            %span.tag.green &#9733; Current Scenario
         %td= s.title
         %td= s.end_year
         %td= s.area_code
-        %td= '✓' if s.in_start_menu
-        %td= '✓' if s.protected?
-        %td= link_to 'edit', edit_inspect_scenario_path(:id => s.id)
+        %td.narrow
+          = formatted_scenario_mutability(s)
+        %td.narrow
+          = formatted_scenario_compatibility(s)
+        %td.actions= link_to 'Edit', edit_inspect_scenario_path(:id => s.id)

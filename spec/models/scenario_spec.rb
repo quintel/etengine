@@ -96,7 +96,7 @@ describe Scenario do
       )
     end
 
-    context 'with unprotected scenarios' do
+    context 'with a writeable scenarios' do
       it 'includes recent scenarios' do
         is_expected.to include(scenario)
       end
@@ -127,8 +127,8 @@ describe Scenario do
       end
     end
 
-    context 'with protected scenarios' do
-      before { scenario.update_attribute(:protected, true) }
+    context 'with a keep_compatible scenario' do
+      before { scenario.update(keep_compatible: true) }
 
       it 'includes recent scenarios' do
         is_expected.to include(scenario)

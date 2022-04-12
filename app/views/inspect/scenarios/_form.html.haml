@@ -6,10 +6,29 @@
   .span12
     = simple_form_for [:data, @scenario],
         :url => @scenario.new_record? ? inspect_scenarios_path : inspect_scenario_path(:id => @scenario) do |f|
-      = f.input :author
-      = f.input :protected, :as => :boolean, :hint => "Protected scenarios are migrated during deploys, and are read-only through the API"
       = f.input :end_year
       = f.input :area_code, collection: grouped_region_types, as: :grouped_select, group_method: :regions, group_label_method: :human_name, value_method: :key, label_method: :key, include_blank: false
+
+      = scenario_mutability_select(f)
+
+      %dl.hint{ style: 'margin: 0 0 10px' }
+        %dt Read and write
+        %dd
+          Any ETM user can read, query, and write to this scenario. The scenario
+          %strong is not
+          migrated when the model is updated.
+        %dt Read and write; keep compatible with model updates
+        %dd
+          Any ETM user can read, query, and write to this scenario. The scenario
+          %strong is
+          migrated when the model is updated.
+        %dt API read-only; keep compatible with model updates
+        %dd
+          Any ETM user can read and query this scenario, but cannot make any changes. The scenario
+          %strong is
+          migrated when the model is updated.
+          %br
+          The scenario can still be edited on this admin page.
       = f.input :user_values, label: 'User values (YAML)', as: :text, :hint => "Position (values) of all the sliders", input_html: { data: { codemirror: 'yaml' } }
       = f.input :balanced_values, label: 'Balanced values (YAML)', as: :text, :hint => "Values set automatically by ETEngine ensuring groups sum to 100%", input_html: { data: { codemirror: 'yaml' } }
       = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }

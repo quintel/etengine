@@ -175,19 +175,42 @@ pre.backtrace
 
 table.scenario-list
   tr.active td
-    background: #e6f5e7
+    background-color: #ecfdf5
     &:first-child
-      font-weight: bold
-    .tag
-      background: #38a03b
-      border-radius: 3px
-      color: #fff
-      font-size: 11px
-      font-weight: normal
-      line-height: 1
-      margin-left: 0.4em
-      padding: 3px 4px
-      text-transform: uppercase
+      font-weight: 600
+      .tag
+        margin-left: 0.4em
+        display: inline-block
+        vertical-align: middle
+        margin-top: -2px
+        font-weight: 500
+  .narrow
+    text-align: center
+    white-space: nowrap
+    width: 1px
+  .actions
+    text-align: center
+
+.tag
+  border-radius: 3px
+  font-size: 13px
+  line-height: 1
+  padding: 3px 4px
+  &.green
+    background: #d1fae5
+    color: #047857
+  &.orange
+    background-color: #ffedd5
+    color: #c2410c
+  &.purple
+    background-color: #ede9fe
+    color: #7c3aed
+  &.gray
+    background-color: #f5f5f5
+    color: #737373
+  &.red
+    background-color: #fee2e2
+    color: #b91c1c
 
 .CodeMirror
   border-radius: 4px

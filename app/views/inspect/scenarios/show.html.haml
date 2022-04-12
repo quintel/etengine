@@ -1,10 +1,12 @@
 - content_for(:title, 'Scenario')
 
+= render "inspect/shared/inspect_subnav"
+
 %div{ style: 'float: right' }
   = link_to 'Edit scenario', edit_inspect_scenario_path(@scenario), class: 'btn btn-primary'
 
 .row
-  .span4
+  .span8
     %table.table
       %tr
         %th Area
@@ -19,7 +21,18 @@
         %th Preset
         %td
           = preset_or_scenario_edge(@scenario.preset_scenario_id)
-
+      %tr
+        %th Created
+        %td= @scenario.created_at.to_formatted_s(:long)
+      %tr
+        %th Last updated
+        %td= @scenario.updated_at.to_formatted_s(:long)
+      %tr
+        %th Mutability
+        %td= formatted_scenario_mutability(@scenario)
+      %tr
+        %th Compatibility
+        %td= formatted_scenario_compatibility(@scenario)
 
 .row
   .span10
