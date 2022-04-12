@@ -3,13 +3,11 @@
 = render "inspect/shared/inspect_subnav"
 
 %section#search_box
-  = form_tag inspect_scenarios_path, :method => :get do
-    = search_field_tag :q, params[:q], :placeholder => 'search'
-    = check_box_tag :in_start_menu, 1, params[:in_start_menu]
-    = label_tag "In start menu", nil, for: "in_start_menu"
-    = check_box_tag :api_read_only, 1, params[:api_read_Only]
-    = label_tag "API read-only", nil, for: "api_read_only"
-    = submit_tag "search", :class => 'btn'
+  = form_tag inspect_scenarios_path, method: :get do
+    = search_field_tag :q, params[:q], placeholder: 'Scenario ID'
+    = check_box_tag :api_read_only, 1, @list_params[:api_read_only]
+    = label_tag 'api_read_only', 'API read-only'
+    = submit_tag 'Search', class: 'btn'
 
 %p
   = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
@@ -49,5 +47,5 @@
           - if params[:api_scenario_id] == s.id.to_s
             %span.muted Make active
           - else
-            = link_to 'Make active', inspect_scenarios_path(api_scenario_id: s.id)
+            = link_to 'Make active', inspect_scenarios_path(@list_params.to_h.symbolize_keys.merge(api_scenario_id: s.id))
           = link_to 'Edit', edit_inspect_scenario_path(:id => s.id)

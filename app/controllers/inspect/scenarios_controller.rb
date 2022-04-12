@@ -4,17 +4,15 @@ class Inspect::ScenariosController < Inspect::BaseController
   before_action :find_scenario, :only => [:show, :edit, :update]
 
   def index
+    @list_params = params.permit(:api_scenario_id, :q, :api_read_only, :page)
     base = Scenario.recent_first
-    if params[:q]
-      if params[:q] =~ /^\d+$/
-        base = base.by_id(params[:q])
-      else
-        base = base.by_name(params[:q]) if params[:q]
-      end
-    end
-    base = base.in_start_menu if params[:in_start_menu]
-    base = base.where(api_read_only: true) if params[:api_read_only]
-    @scenarios = base.page(params[:page]).per(35)
+    base = base.by_id(@list_params[:q]) if @list_params[:q].present?
+    # rubocop:disable Rails/WhereEquals
+    # Use interpolation since `api_read_only: true` creates SQL which matches on equality with
+    # `TRUE` rather than `1`.
+    base = base.where('api_read_only = ?', true) if @list_params[:api_read_only]
+    # rubocop:enable Rails/WhereEquals
+    @scenarios = base.page(@list_params[:page]).per(100)
   end
 
   def new
