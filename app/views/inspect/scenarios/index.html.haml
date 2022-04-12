@@ -45,4 +45,9 @@
           = formatted_scenario_mutability(s)
         %td.narrow
           = formatted_scenario_compatibility(s)
-        %td.actions= link_to 'Edit', edit_inspect_scenario_path(:id => s.id)
+        %td.actions
+          - if params[:api_scenario_id] == s.id.to_s
+            %span.muted Make active
+          - else
+            = link_to 'Make active', inspect_scenarios_path(api_scenario_id: s.id)
+          = link_to 'Edit', edit_inspect_scenario_path(:id => s.id)
