@@ -62,9 +62,14 @@ module Qernel
         storage
       ]
 
+      # Curves which may be set by an external source.
+      dataset_curve_accessor :availability_curve
+      dataset_curve_accessor :marginal_cost_curve
+
+      # Curves set by Causality.
       dataset_curve_reader :curtailment_output_curve
-      dataset_curve_reader :marginal_cost_curve
       dataset_curve_reader :storage_curve
+
       dataset_carrier_curve_reader :electricity
       dataset_carrier_curve_reader :hydrogen
       dataset_carrier_curve_reader :heat

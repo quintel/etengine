@@ -107,14 +107,16 @@ module CurveHandler
     # key given does not match a known processor.
     def processor
       case @processor_key
+      when :availability
+        Processors::Availability
+      when :capacity_profile
+        Processors::CapacityProfile
       when :generic
         Processors::Generic
       when :price
         Processors::Price
       when :profile
         Processors::Profile
-      when :capacity_profile
-        Processors::CapacityProfile
       when :temperature
         Processors::Temperature
       else
@@ -122,7 +124,7 @@ module CurveHandler
       end
     end
 
-    # Public: Returns the reudcer callable specified by the config. Raises an error if the reducer
+    # Public: Returns the reducer callable specified by the config. Raises an error if the reducer
     # given does not match a known processor.
     def reducer
       case @reducer_key

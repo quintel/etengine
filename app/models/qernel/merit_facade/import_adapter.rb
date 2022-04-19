@@ -5,6 +5,7 @@ module Qernel
     # Implements behaviour specific to the import interconnector.
     class ImportAdapter < ProducerAdapter
       include OptionalCostCurve
+      include OptionalAvailabilityCurve
 
       def initialize(*)
         super
@@ -38,8 +39,12 @@ module Qernel
 
       private
 
-      def producer_class
+      def non_variable_availability_producer_class
         Merit::DispatchableProducer
+      end
+
+      def variable_availability_producer_class
+        Merit::VariableDispatchableProducer
       end
 
       def output_capacity_per_unit
