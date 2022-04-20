@@ -175,6 +175,34 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
+    context 'when downloading a curve as CSV' do
+      before do
+        put url, params: {
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
+        }
+
+        get(url, headers: { 'Accept' => 'text/csv' })
+      end
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends back CSV data about the curve' do
+        expect(response.body.strip).to eq(File.read('spec/fixtures/files/price_curve.csv').strip)
+      end
+    end
+
+    context 'when downloading an unattached curve as CSV' do
+      before do
+        get(url, headers: { 'Accept' => 'text/csv' })
+      end
+
+      it 'response with Not Found' do
+        expect(response).to be_not_found
+      end
+    end
+
     context 'when uploading a valid curve file' do
       let(:request) do
         put url, params: {
