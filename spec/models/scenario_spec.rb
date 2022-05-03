@@ -371,30 +371,6 @@ describe Scenario do
     end
   end
 
-  describe 'with a preset Preset' do
-    let(:preset)   { Preset.get(2999) }
-    let(:scenario) { Scenario.new(scenario_id: preset.id) }
-
-    describe '#parent' do
-      it 'should retrieve a copy of the parent' do
-        expect(scenario.parent).to eq(preset.to_scenario)
-      end
-    end
-
-    context 'when the preset has a heat network order' do
-      let(:atlas_preset) { Atlas::Preset.find(:with_heat_network_order) }
-      let(:preset) { Preset.get(atlas_preset.id) }
-
-      it 'assigns a heat network order' do
-        expect(scenario.heat_network_order).not_to be_nil
-      end
-
-      it 'copies the heat network order attributes' do
-        expect(scenario.heat_network_order.order).to eq(atlas_preset.heat_network_order)
-      end
-    end
-  end
-
   describe 'with a preset scenario' do
     let(:preset) do
       FactoryBot.create(:scenario, {

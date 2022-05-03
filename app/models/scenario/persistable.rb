@@ -100,7 +100,7 @@ module Scenario::Persistable
   #
   # Returns a UserSortable or nil.
   def cloned_user_sortable(preset, attribute)
-    if (order = preset.try(attribute))
+    if (order = preset.try(attribute)) && order.persisted?
       order.class.new(order.attributes.except('id', 'scenario_id'))
     end
   end

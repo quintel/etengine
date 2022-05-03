@@ -164,9 +164,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
-  context 'when inheriting a preset' do
+  context 'when inheriting from another scenario' do
+    let(:parent) do
+      FactoryBot.create(:scenario_with_user_values)
+    end
+
     before do
-      post '/api/v3/scenarios', params: { scenario: { scenario_id: Preset.all.first.id } }
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -179,9 +183,23 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       scenario = Scenario.find(json['id'])
 
       expect(scenario.user_values).not_to be_blank
+      expect(scenario.user_values).to eql(parent.user_values.stringify_keys)
+    end
+  end
 
-      expect(scenario.user_values).to eql(
-        Preset.all.first.user_values.stringify_keys)
+  context 'when inheriting from a non-existant scenario' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: 99_999 } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is not successful' do
+      expect(response.status).to eq(422)
+    end
+
+    it 'has an error' do
+      expect(JSON.parse(response.body)['errors']).to include('scenario_id' => ['does not exist'])
     end
   end
 
@@ -287,9 +305,11 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
-  context 'when inheriting a scaled preset' do
+  context 'when inheriting a scaled scenario' do
     before do
-      post '/api/v3/scenarios', params: { scenario: { scenario_id: Preset.get(6000).id } }
+      post '/api/v3/scenarios', params: {
+        scenario: { scenario_id: FactoryBot.create(:scaled_scenario).id }
+      }
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -360,7 +380,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         }
       end
 
-      let(:preset) { Preset.all.detect {|p| p.key == :test } }
+      let(:preset) { FactoryBot.create(:scenario_with_user_values) }
       let(:json)   { JSON.parse(response.body) }
       let(:multi)  { 500_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
 
@@ -388,7 +408,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       context 'when the preset has a heat network order' do
         let(:preset) do
-          Preset.all.detect { |p| p.key == :with_heat_network_order }
+          FactoryBot.create(:scenario_with_heat_network)
         end
 
         it 'creates a heat network order' do
@@ -398,7 +418,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     context 'with an already-scaled scenario' do
-      let(:preset) { Preset.all.detect {|p| p.key == :test } }
+      let(:preset) { FactoryBot.create(:scenario_with_user_values) }
 
       context '(re-scaling)' do
         before do
@@ -465,14 +485,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           scenario = Scenario.find(json['id'])
 
           expect(scenario.user_values['foo_demand']).
-            to eq(preset.user_values[:foo_demand])
+            to be_within(1e-5).of(preset.user_values[:foo_demand])
 
           expect(scenario.user_values['input_2']).
-            to eq(preset.user_values[:input_2])
+            to be_within(1e-5).of(preset.user_values[:input_2])
 
           # Input 3 is a non-scaled input
           expect(scenario.user_values['input_3']).
-            to eq(preset.user_values[:input_3])
+            to be_within(1e-5).of(preset.user_values[:input_3])
         end
       end # unscaling
 

@@ -36,7 +36,8 @@ class Scenario < ApplicationRecord
     message: 'is unknown or not supported'
   }
 
-  validate  :validate_metadata_size
+  validate :validate_metadata_size
+  validate :validate_parent_scenario_exists, on: :create
 
   validates_associated :scaler, on: :create
 
@@ -200,10 +201,10 @@ class Scenario < ApplicationRecord
 
   # used when loading an existing scenario, preset or user-created
   def scenario_id=(preset_id)
-    if preset = Preset.get(preset_id) || Scenario.find_by_id(preset_id)
-      copy_scenario_state(preset)
-      self.preset_scenario_id = preset_id
-    end
+    return unless new_record?
+
+    copy_scenario_state(Scenario.find(preset_id)) if Scenario.exists?(preset_id)
+    self.preset_scenario_id = preset_id
   end
 
   # Public: Returns the parent preset or scenario.
@@ -287,5 +288,12 @@ class Scenario < ApplicationRecord
   # Validation method for when a user sets their metadata.
   def validate_metadata_size
     errors.add(:metadata, 'can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
+  end
+
+  # Validates that the parent exists if the user specified one during scenario creation.
+  def validate_parent_scenario_exists
+    if preset_scenario_id && !Scenario.exists?(preset_scenario_id)
+      errors.add(:scenario_id, 'does not exist')
+    end
   end
 end

@@ -4,6 +4,16 @@ FactoryBot.define do
     end_year { 2040 }
   end
 
+  factory :scenario_with_user_values, parent: :scenario do
+    user_values do
+      {
+        foo_demand: 10.0,
+        input_2: 20.0,
+        input_3: 30.0
+      }
+    end
+  end
+
   factory :scenario_visible_in_homepage, parent: :scenario do
     in_start_menu { true }
   end
@@ -11,5 +21,22 @@ FactoryBot.define do
   factory :scenario_attachment do
     key { 'interconnector_1_price_curve' }
     scenario
+  end
+
+  factory :scaled_scenario, parent: :scenario_with_user_values do
+    scaler do
+      ScenarioScaling.new(
+        area_attribute: 'number_of_residences',
+        base_value: 8_000_000.0,
+        has_agriculture: true,
+        has_energy: true,
+        has_industry: false,
+        value: 100.0
+      )
+    end
+  end
+
+  factory :scenario_with_heat_network, parent: :scenario_with_user_values do
+    heat_network_order { HeatNetworkOrder.new(order: HeatNetworkOrder.default_order.reverse) }
   end
 end
