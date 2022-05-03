@@ -42,6 +42,17 @@ module Api
         )
       end
 
+      # GET /api/v3/scenarios/:id/sankey
+      #
+      # Creates a CSV by reading a configuration file from ETSource consisting of literal values and
+      # queries to be executed.
+      def sankey
+        send_csv(
+          ConfiguredCSVSerializer.new(Etsource::Config.sankey_csv, @scenario.gql),
+          'sankey.%d.csv'
+        )
+      end
+
       # GET /api/v3/scenarios/:id/costs_parameters
       #
       # Returns a CSV file containing the cost paramaters of nodes belonging to costs groups.
