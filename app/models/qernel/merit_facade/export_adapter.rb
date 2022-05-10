@@ -5,6 +5,7 @@ module Qernel
     # Implements behaviour specific to the export interconnector.
     class ExportAdapter < FlexAdapter
       include OptionalCostCurve
+      include OptionalAvailabilityCurve
 
       def initialize(*)
         super
@@ -40,19 +41,20 @@ module Qernel
 
       private
 
+      def non_variable_availability_producer_class
+        Merit::Flex::Base
+      end
+
+      def variable_availability_producer_class
+        Merit::Flex::VariableConsumer
+      end
+
       def cost_strategy
         if cost_curve?
           Merit::CostStrategy::FromCurve.new(nil, cost_curve)
         else
           Merit::CostStrategy::Constant.new(nil, marginal_costs)
         end
-      end
-
-      def inner_consumer
-        @inner_consumer ||= Merit::User.create(
-          key: source_api.key,
-          load_curve: Merit::Curve.new([total_input_capacity] * Merit::POINTS)
-        )
       end
 
       # Internal: Creates the attributes for initializing the participant.

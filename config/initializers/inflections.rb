@@ -19,5 +19,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym 'ETEngine'
   inflect.acronym 'HHP' # Hybrid heat pump
   inflect.irregular 'serie', 'series'
+  inflect.irregular 'curve', 'curves'
 end
 # rubocop:enable Style/MethodCallWithArgsParentheses
