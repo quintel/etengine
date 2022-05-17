@@ -30,18 +30,26 @@ class MeritConfigSerializer
 
   # Public: Creates a hash with the merit order data.
   def as_json(*)
-    order = Qernel::MeritFacade::Manager.new(@graph).order
+    manager = Qernel::MeritFacade::Manager.new(@graph)
     data  = { profiles: {}, participants: [] }
     area  = Atlas::Dataset.find(@graph.area.area_code)
 
-    order.participants.producers.each do |producer|
+    manager.order.participants.producers.each do |producer|
       if include_producer?(producer)
         data[:participants].push(participant_data(producer))
       end
     end.compact
 
-    data[:participants].map { |p| p[:profile] }.uniq.compact.each do |key|
-      data[:profiles][key] ||= area.load_profile(key).to_a
+    data[:participants].pluck(:profile).uniq.compact.each do |profile_key|
+      next unless profile_key
+
+      participant, profile = profile_key.split('-', 2)
+      data[:profiles][profile_key] ||=
+        if participant && profile # dynamic curve
+          manager.curves.curve(profile, @graph.node(participant).node_api).to_a
+        else
+          area.load_profile(profile_key).to_a
+        end
     end
 
     data
@@ -51,8 +59,8 @@ class MeritConfigSerializer
 
   def participant_data(participant)
     data = {
-      profile: profile_key(participant),
-      type:    participant_type(participant)
+      profile:  profile_key(participant),
+      type:     participant_type(participant)
     }
 
     attribute_keys(data).each_with_object(data) do |key, hash|
@@ -61,10 +69,16 @@ class MeritConfigSerializer
   end
 
   def profile_key(participant)
+    key = load_profile_key(participant)
+    key&.start_with?('dynamic') ? "#{participant.key}-#{key}" : key
+  end
+
+  def load_profile_key(participant)
     @graph.node(participant.key).node_api.load_profile_key
   end
 
   def participant_type(participant)
+    # TODO: make sure this is the Merit class name
     participant.class.name.split('::').last
       .underscore.sub(/_producer\z/, ''.freeze)
   end
@@ -78,6 +92,7 @@ class MeritConfigSerializer
   end
 
   def include_producer?(producer)
+    # TODO: check which flex producers we do want to have
     return false unless producer.number_of_units > 0
     return false if     producer.is_a?(Merit::Flex::Base)
 
