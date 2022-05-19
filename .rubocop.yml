@@ -193,3 +193,6 @@ RSpec/DescribeClass:
 RSpec/RepeatedExampleGroupBody:
   Exclude:
     - 'spec/models/gql/runtime/functions/*.rb'
+
+RSpec/VariableNumber:
+  Enabled: false

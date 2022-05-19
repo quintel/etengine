@@ -43,6 +43,15 @@ module Etsource
       read('heat_network_order')
     end
 
+    # Public: Contains a configuration for the sankey CSV export.
+    #
+    # See ConfiguredCSVSerializer.
+    #
+    # Returns a hash.
+    def sankey_csv
+      read('sankey_csv')
+    end
+
     # Public: Reads the hash of curves for which users may upload a custom curve.
     #
     # Returns a Hash of {String => CurveHandler::Config}.
