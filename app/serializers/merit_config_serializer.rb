@@ -21,6 +21,16 @@ class MeritConfigSerializer
     availability fixed_costs_per_unit fixed_om_costs_per_unit
   ).map(&:to_sym).freeze
 
+  # TODO: how will we handle the new cost calculations?
+  FLEX_KEYS = %i[
+    key marginal_costs input_capacity_per_unit output_capacity_per_unit
+    number_of_units
+  ].freeze
+
+  USER_KEYS = %i[
+    key
+  ]
+
   # Public: Creates a new serializer. Requires a copy of the Qernel::Graph
   # from which it can retrieve information about each participant. Typically
   # this should be the "future" graph.
@@ -30,23 +40,32 @@ class MeritConfigSerializer
 
   # Public: Creates a hash with the merit order data.
   def as_json(*)
-    manager = Qernel::MeritFacade::Manager.new(@graph)
+    @manager = Qernel::MeritFacade::Manager.new(@graph)
     data  = { profiles: {}, participants: [] }
     area  = Atlas::Dataset.find(@graph.area.area_code)
 
-    manager.order.participants.producers.each do |producer|
-      if include_producer?(producer)
-        data[:participants].push(participant_data(producer))
-      end
+    # TODO: refactor these three in something more generic
+    @manager.order.participants.producers.each do |producer|
+      data[:participants].push(participant_data(producer)) if include_participant?(producer)
     end.compact
+
+    # TODO: add interconnector price curves if there is one
+    @manager.order.participants.flex.each do |flex|
+      data[:participants].push(participant_data(flex)) if include_participant?(flex)
+    end.compact
+
+    @manager.order.participants.users.each do |user|
+      data[:participants].push(participant_data(user)) if include_user?(user)
+    end
 
     data[:participants].pluck(:profile).uniq.compact.each do |profile_key|
       next unless profile_key
 
-      participant, profile = profile_key.split('-', 2)
+      participant, profile = profile_key.split('.', 2)
+
       data[:profiles][profile_key] ||=
         if participant && profile # dynamic curve
-          manager.curves.curve(profile, @graph.node(participant).node_api).to_a
+          @manager.curves.curve(profile, @graph.node(participant).node_api).to_a
         else
           area.load_profile(profile_key).to_a
         end
@@ -64,13 +83,18 @@ class MeritConfigSerializer
     }
 
     attribute_keys(data).each_with_object(data) do |key, hash|
-      hash[key] = format_value(participant.public_send(key))
+      hash[key] =
+        if key == :total_consumption
+          @manager.adapters[participant.key].input_of_carrier
+        else
+          format_value(participant.public_send(key))
+        end
     end
   end
 
   def profile_key(participant)
     key = load_profile_key(participant)
-    key&.start_with?('dynamic') ? "#{participant.key}-#{key}" : key
+    key&.start_with?('dynamic', 'weather', 'fever') ? "#{participant.key}.#{key}" : key
   end
 
   def load_profile_key(participant)
@@ -78,27 +102,38 @@ class MeritConfigSerializer
   end
 
   def participant_type(participant)
-    # TODO: make sure this is the Merit class name
     participant.class.name.split('::').last
-      .underscore.sub(/_producer\z/, ''.freeze)
+      .underscore.sub(/_producer\z/, ''.freeze).sub(/base\z/, 'generic'.freeze)
   end
 
   def attribute_keys(data)
-    if data[:profile].present?
+    if data[:type] == 'generic'
+      FLEX_KEYS
+    elsif data[:type] == 'storage'
+      FLEX_KEYS + [:volume_per_unit]
+    elsif data[:type] == 'total_consumption'
+      USER_KEYS + [:total_consumption]
+    elsif data[:type] == 'with_curve'
+      USER_KEYS + [:load_curve]
+    elsif data[:type] == 'consumption_loss'
+      USER_KEYS + [:consumption_share]
+    elsif data[:profile].present?
       DISPATCHABLE_KEYS + [:full_load_hours]
     else
       DISPATCHABLE_KEYS
     end
   end
 
-  def include_producer?(producer)
-    # TODO: check which flex producers we do want to have
-    return false unless producer.number_of_units > 0
-    return false if     producer.is_a?(Merit::Flex::Base)
+  def include_participant?(participant)
+    return false unless participant.number_of_units.positive?
+    return false if participant.is_a?(Merit::Flex::BlackHole)
 
-    # Exclude import which has no profile.
-    group = @graph.node(producer.key).dataset_get(:merit_order).group
-    group ? group.to_sym != :import : true
+    true
+  end
+
+  # TODO: specify which users should be included
+  def include_user?(user)
+    true
   end
 
   def format_value(value)
