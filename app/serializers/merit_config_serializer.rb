@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Creates JSON with the data necessary to run the merit order externally.
 #
 # The JSON contains two keys: "curves" and "participants". The latter
@@ -130,7 +132,7 @@ class MeritConfigSerializer
 
   def participant_type(participant)
     participant.class.name.split('::').last
-      .underscore.sub(/_producer\z/, ''.freeze).sub(/base\z/, 'generic'.freeze)
+      .underscore.sub(/_producer\z/, '').sub(/base\z/, 'generic')
   end
 
   def attribute_keys(data)
