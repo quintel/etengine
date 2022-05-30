@@ -7,11 +7,13 @@ agent:
 blocks:
   - name: Docker
     task:
+      prologue:
+        commands:
+          - chmod 0600 ~/.ssh/id_deploy
+          - ssh-add ~/.ssh/id_deploy
       jobs:
         - name: Build, publish, deploy
           commands:
-            - chmod 0600 ~/.ssh/id_deploy
-            - ssh-add ~/.ssh/id_deploy
             - checkout
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             - cache restore
@@ -20,7 +22,7 @@ blocks:
             - 'docker push quintel/etengine:beta'
             - cache store
             - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
-            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && docker-compose pull && docker-compose run --rm web .docker/calculate-datasets.sh && docker-compose down && docker-compose up -d"
+            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && ./deploy.sh"
       secrets:
         - name: Docker Hub credentials
         - name: Staging SSH settings

@@ -7,7 +7,7 @@ class Preset
   include ActiveModel::Serializers::JSON
   # include ActiveModel::Serializers::Xml
 
-  COLUMNS = Atlas::Preset.attribute_set.map(&:name)
+  COLUMNS = Atlas::Preset.attribute_set.map(&:name) - [:title, :description]
   SCALING_COLUMNS = Atlas::Preset::Scaling.attribute_set.map(&:name).freeze
 
   attr_accessor *COLUMNS
@@ -25,10 +25,6 @@ class Preset
       attrs[:scaling] = Atlas::Preset::Scaling.new(
         ScenarioScaling.from_scenario(scenario).attributes
       )
-    end
-
-    unless scenario.flexibility_order.default?
-      attrs[:flexibility_order] = scenario.flexibility_order.order.dup
     end
 
     unless scenario.heat_network_order.default?
@@ -50,17 +46,6 @@ class Preset
 
   def scaler
     @scaling && ScenarioScaling.new(@scaling.attributes)
-  end
-
-  # Public: The preset flexibility order, if one is assigned.
-  #
-  # If Atlas returns an empty array, no custom flexibility order is set. In this
-  # case, a FlexibilityOrder is not returned and the app will use the defaults.
-  #
-  # Returns a FlexibilityOrder.
-  def flexibility_order
-    @flexibility_order&.any? &&
-      FlexibilityOrder.new(order: @flexibility_order.dup)
   end
 
   # Public: The preset heat network order, if one is assigned.
@@ -91,20 +76,10 @@ class Preset
     attrs = attributes
     id = attrs.delete(:id)
 
-    Scenario.new(
-      attrs.except(:scaling, :flexibility_order, :heat_network_order)
-    ).tap do |scenario|
+    Scenario.new(attrs.except(:scaling, :heat_network_order)).tap do |scenario|
       scenario.id = id
-
       scenario.scaler = scaler.dup if scaler
-
-      if flexibility_order
-        scenario.flexibility_order = flexibility_order.dup.tap(&:readonly!)
-      end
-
-      if heat_network_order
-        scenario.heat_network_order = heat_network_order.dup.tap(&:readonly!)
-      end
+      scenario.heat_network_order = heat_network_order.dup.tap(&:readonly!) if heat_network_order
 
       scenario.readonly!
     end
@@ -145,12 +120,10 @@ class Preset
       attrs[:scaling] = scaler.attributes.symbolize_keys.slice(*SCALING_COLUMNS)
     end
 
-    %i[flexibility_order heat_network_order].each do |sortable|
-      if (record = public_send(sortable)) && !record.default?
-        attrs[sortable] = record.order
-      else
-        attrs.delete(sortable)
-      end
+    if heat_network_order && !heat_network_order.default?
+      attrs[:heat_network_order] = heat_network_order.order
+    else
+      attrs.delete(:heat_network_order)
     end
 
     "#{ Atlas::HashToTextParser.new(attrs.compact).to_text }\n"

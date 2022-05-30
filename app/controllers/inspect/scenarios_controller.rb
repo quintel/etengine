@@ -4,17 +4,15 @@ class Inspect::ScenariosController < Inspect::BaseController
   before_action :find_scenario, :only => [:show, :edit, :update]
 
   def index
+    @list_params = params.permit(:api_scenario_id, :q, :api_read_only, :page)
     base = Scenario.recent_first
-    if params[:q]
-      if params[:q] =~ /^\d+$/
-        base = base.by_id(params[:q])
-      else
-        base = base.by_name(params[:q]) if params[:q]
-      end
-    end
-    base = base.in_start_menu if params[:in_start_menu]
-    base = base.where(:protected => true) if params[:protected]
-    @scenarios = base.page(params[:page]).per(35)
+    base = base.by_id(@list_params[:q]) if @list_params[:q].present?
+    # rubocop:disable Rails/WhereEquals
+    # Use interpolation since `api_read_only: true` creates SQL which matches on equality with
+    # `TRUE` rather than `1`.
+    base = base.where('api_read_only = ?', true) if @list_params[:api_read_only]
+    # rubocop:enable Rails/WhereEquals
+    @scenarios = base.page(@list_params[:page]).per(100)
   end
 
   def new
@@ -29,7 +27,6 @@ class Inspect::ScenariosController < Inspect::BaseController
 
       update_user_sortables!(
         user_sortable_attributes,
-        flexibility_order: @scenario.flexibility_order,
         heat_network_order: @scenario.heat_network_order
       )
     end
@@ -42,14 +39,6 @@ class Inspect::ScenariosController < Inspect::BaseController
   def show
     respond_to do |format|
       format.html
-
-      format.ad do
-        render(
-          plain: Preset.from_scenario(@scenario).to_active_document,
-          layout: nil,
-          content_type: 'text/x-active-document'
-        )
-      end
     end
   end
 
@@ -62,7 +51,6 @@ class Inspect::ScenariosController < Inspect::BaseController
 
       update_user_sortables!(
         user_sortable_attributes,
-        flexibility_order: @scenario.flexibility_order,
         heat_network_order: @scenario.heat_network_order
       )
 
@@ -78,21 +66,17 @@ class Inspect::ScenariosController < Inspect::BaseController
     if params[:id] == 'current'
       @scenario = @api_scenario
     else
-      @scenario = Scenario.find params[:id]
+      @scenario = Scenario::Editable.new(Scenario.find(params[:id]))
     end
   end
 
   def scenario_attributes
-    attrs = params.require(:scenario).permit!
-    attrs[:protected] = attrs[:protected] == '1'
-
-    attrs.except(:flexibility_order, :heat_network_order)
+    params.require(:scenario).permit!.except(:heat_network_order)
   end
 
   def user_sortable_attributes
     params.require(:scenario).permit(
-      heat_network_order: [:order],
-      flexibility_order: [:order]
+      heat_network_order: [:order]
     )
   end
 

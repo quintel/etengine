@@ -1,5 +1,5 @@
 Rails.application.config.to_prepare do
-  ActiveSupport::Reloader.to_prepare do
+  Rails.application.reloader.to_prepare do
     cache_time = Rails.cache.read(NastyCache::MEMORY_CACHE_KEY)
     nl_data    = Etsource::Loader.instance.dataset('nl').data
 

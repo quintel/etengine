@@ -26,7 +26,7 @@ class Inspect::QueryTableCellsController < Inspect::BaseController
 
   def update
     @query_table_cell = QueryTableCell.find(params[:id])
-    if @query_table_cell.update_attributes(params[:query_table_cell])
+    if @query_table_cell.update(params[:query_table_cell])
       flash[:notice] = "Successfully updated query table."
       redirect_to inspect_query_table_path(:id => @query_table_cell.query_table)
     else

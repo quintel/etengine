@@ -15,7 +15,7 @@ module Listen
 end
 
 module Etsource
-  # Watches for changes to ETsource files. Changes made to dataset, gquery,
+  # Watches for changes to ETSource files. Changes made to dataset, gquery,
   # input, or topology files will clear out the caches, forcing these files to
   # be reloaded upon the next request.
   #
@@ -65,7 +65,7 @@ module Etsource
         @listener.only(%r{(?:#{ watched_dirs })/.*})
         @listener.start
 
-        Rails.logger.info 'ETsource live reload: Listener started.'
+        Rails.logger.info 'ETSource live reload: Listener started.'
 
         Kernel.at_exit { stop! }
 
@@ -86,7 +86,7 @@ module Etsource
         class_name.constantize.clear!
         Etsource::Loader.instance.clear!(type)
 
-        Rails.logger.info "ETsource live reload: Cleared cache for #{type}."
+        Rails.logger.info "ETSource live reload: Cleared cache for #{type}."
       end
 
       def reload!(type = nil)
@@ -103,7 +103,7 @@ module Etsource
           Atlas::ActiveDocument::Manager.clear_all!
         end
 
-        Rails.logger.info 'ETsource live reload: Caches cleared.'
+        Rails.logger.info 'ETSource live reload: Caches cleared.'
       end
     end # class << self
   end # Reloader

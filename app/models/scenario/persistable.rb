@@ -10,10 +10,10 @@ module Scenario::Persistable
   #
   def reset!
     self.user_values = {}
-    # @inputs_present/future have to be nil, not an empty hash. otherwise
-    # the memoized def inputs_present will not pick up the changes.
-    @inputs_present  = nil
-    @inputs_future   = nil
+
+    # @inputs have to be nil, not an empty hash. otherwise
+    # the memoized inputs will not pick up the changes.
+    @inputs = nil
   end
 
   # Stores the current settings into the attributes. For when we want to save
@@ -50,7 +50,6 @@ module Scenario::Persistable
         other_scaler.attributes.except('id', 'scenario_id'))
     end
 
-    self.flexibility_order = cloned_user_sortable(preset, :flexibility_order)
     self.heat_network_order = cloned_user_sortable(preset, :heat_network_order)
 
     cloned_attachments(preset) do |cloned_attachment|
@@ -96,12 +95,12 @@ module Scenario::Persistable
     end
   end
 
-  # Internal: If the source preset has a flexibility/heat network order, creates
-  # a clone to be used by the new scenario.
+  # Internal: If the source preset has one or more user sortables, creates a clone to be used by the
+  # new scenario.
   #
   # Returns a UserSortable or nil.
   def cloned_user_sortable(preset, attribute)
-    if (order = preset.try(attribute))
+    if (order = preset.try(attribute)) && order.persisted?
       order.class.new(order.attributes.except('id', 'scenario_id'))
     end
   end

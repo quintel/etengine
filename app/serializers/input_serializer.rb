@@ -52,26 +52,29 @@ class InputSerializer
   #   The Hash containing the input attributes.
   #
   def as_json(*)
-    json     = Hash.new
+    json = {}
+    values = Input.cache(@scenario.original).read(@scenario.original, @input)
 
-    values   = Input.cache(@scenario.original).read(@scenario.original, @input)
-
-    user_values      = @scenario.user_values
-    balanced_values  = @scenario.balanced_values
+    user_values = @scenario.user_values
+    balanced_values = @scenario.balanced_values
 
     user_val = user_values[@input.key] || balanced_values[@input.key]
 
-    json[:min]         = values[:min]
-    json[:max]         = values[:max]
-    json[:default]     = values[:default]
+    json[:min] = values[:min]
+    json[:max] = values[:max]
+    json[:default] = values[:default]
 
-    json[:user]        = user_val           if user_val.present?
-    json[:disabled]    = true               if values[:disabled]
-    json[:cache_error] = values[:error]     if values[:error]
+    json[:unit] = @input.unit
+
+    json[:user] = user_val if user_val.present?
+    json[:cache_error] = values[:error] if values[:error]
+
+    json[:disabled] = true if values[:disabled] || @scenario.inputs.disabled?(@input)
+    json[:disabled_by] = @input.disabled_by if @input.disabled_by.present?
 
     json[:share_group] = @input.share_group if @input.share_group.present?
 
-    if parent = @scenario.parent
+    if (parent = @scenario.parent)
       json[:default] =
         parent.user_values[@input.key] ||
         parent.balanced_values[@input.key] ||
@@ -81,12 +84,9 @@ class InputSerializer
     if @extra_attributes
       json[:step] = values[:step] || @input.step_value
       json[:code] = @input.key
-      json[:unit] = @input.unit
     end
 
-    if values[:label].present?
-      json[:label] = { value: values[:label], suffix: @input.label }
-    end
+    json[:label] = { value: values[:label], suffix: @input.label } if values[:label].present?
 
     json
   end
@@ -96,6 +96,8 @@ class InputSerializer
   # hashes for each and every input being presented.
   class IndifferentScenario
     attr_reader :original
+
+    delegate :inputs, :api_read_only?, to: :original
 
     def self.from(scenario)
       scenario.is_a?(self) ? scenario : new(scenario)

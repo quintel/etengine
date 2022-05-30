@@ -93,11 +93,10 @@ describe Scenario do
         :scenario,
         user_values: { a: 1 },
         source: 'ETM',
-        title: 'Hello'
       )
     end
 
-    context 'with unprotected scenarios' do
+    context 'with a writeable scenarios' do
       it 'includes recent scenarios' do
         is_expected.to include(scenario)
       end
@@ -105,16 +104,6 @@ describe Scenario do
       it 'includes scenarios with no source' do
         scenario.update_attribute(:source, nil)
         is_expected.to include(scenario)
-      end
-
-      it 'includes scenarios with no title' do
-        scenario.update_attribute(:title, nil)
-        is_expected.to include(scenario)
-      end
-
-      it 'omits recent scenarios where title="test"' do
-        scenario.update_attribute(:title, 'test')
-        is_expected.not_to include(scenario)
       end
 
       it 'omits recent scenarios where source="Mechanical Turk"' do
@@ -138,8 +127,8 @@ describe Scenario do
       end
     end
 
-    context 'with protected scenarios' do
-      before { scenario.update_attribute(:protected, true) }
+    context 'with a keep_compatible scenario' do
+      before { scenario.update(keep_compatible: true) }
 
       it 'includes recent scenarios' do
         is_expected.to include(scenario)
@@ -148,16 +137,6 @@ describe Scenario do
       it 'includes scenarios with no source' do
         scenario.update_attribute(:source, nil)
         is_expected.to include(scenario)
-      end
-
-      it 'includes scenarios with no title' do
-        scenario.update_attribute(:title, nil)
-        is_expected.to include(scenario)
-      end
-
-      it 'omits recent scenarios where title="test"' do
-        scenario.update_attribute(:title, 'test')
-        is_expected.not_to include(scenario)
       end
 
       it 'omits recent scenarios where source="Mechanical Turk"' do
@@ -392,31 +371,6 @@ describe Scenario do
     end
   end
 
-  describe 'with a preset Preset' do
-    let(:preset)   { Preset.get(2999) }
-    let(:scenario) { Scenario.new(scenario_id: preset.id) }
-
-    describe '#parent' do
-      it 'should retrieve a copy of the parent' do
-        expect(scenario.parent).to eq(preset.to_scenario)
-      end
-    end
-
-    context 'when the preset has a flexibility order' do
-      let(:atlas_preset) { Atlas::Preset.find(:with_flexibility_order) }
-      let(:preset) { Preset.get(atlas_preset.id) }
-
-      it 'assigns a flexibility order' do
-        expect(scenario.flexibility_order).to_not be_nil
-      end
-
-      it 'copies the flexibility order attributes' do
-        expect(scenario.flexibility_order.order)
-          .to eq(atlas_preset.flexibility_order)
-      end
-    end
-  end # with a preset Preset
-
   describe 'with a preset scenario' do
     let(:preset) do
       FactoryBot.create(:scenario, {
@@ -457,9 +411,9 @@ describe Scenario do
       expect(scenario.scaler.scenario).to eq(scenario) # Not `preset`.
     end
 
-    context 'with no preset flexibility order' do
-      it 'should create no flexibilty order' do
-        expect(scenario[:flexibility_order]).to be_nil
+    context 'with no preset heat network order' do
+      it 'should create no heat network order' do
+        expect(scenario[:heat_network_order]).to be_nil
       end
     end
 
@@ -531,21 +485,21 @@ describe Scenario do
       end
     end
 
-    context 'with a preset flexibility order' do
+    context 'with a preset heat network order' do
       let(:techs) do
-        FlexibilityOrder.default_order.shuffle
+        HeatNetworkOrder.default_order.shuffle
       end
 
-      let!(:order) do
-        FlexibilityOrder.create!(scenario: preset, order: techs)
+      before do
+        HeatNetworkOrder.create!(scenario: preset, order: techs)
       end
 
       it 'copies the flexibility order attributes' do
-        expect(scenario.flexibility_order).to_not be_nil
-        expect(scenario.flexibility_order.id).to_not eq(preset.flexibility_order.id)
+        expect(scenario.heat_network_order).to_not be_nil
+        expect(scenario.heat_network_order.id).to_not eq(preset.heat_network_order.id)
 
-        expect(scenario.flexibility_order.order).to eq(techs)
-        expect(scenario.flexibility_order.scenario).to eq(scenario) # Not `preset`.
+        expect(scenario.heat_network_order.order).to eq(techs)
+        expect(scenario.heat_network_order.scenario).to eq(scenario) # Not `preset`.
       end
     end
   end
@@ -557,7 +511,7 @@ describe Scenario do
         user_values:     { 'grouped_input_one' => 2 },
         balanced_values: { 'grouped_input_two' => 8 },
 
-        scaler: ScenarioScaling.create!(
+        scaler: ScenarioScaling.new(
           area_attribute: 'number_of_residences',
           value:          1000
         )
@@ -565,7 +519,7 @@ describe Scenario do
     end
 
     let(:scenario) do
-      scenario = Scenario.new(title: '1')
+      scenario = Scenario.new
       scenario.descale     = true
       scenario.scenario_id = preset.id
       scenario.save!
@@ -612,7 +566,6 @@ describe Scenario do
   describe 'dup' do
     let(:scenario) do
       Scenario.create!(
-        title:           'Test',
         end_year:        2030,
         area_code:       'nl',
         user_values:     { 1 => 2, 3 => 4 },
@@ -621,9 +574,7 @@ describe Scenario do
     end
 
     before(:each) do
-      scenario.inputs_present
-      scenario.inputs_future
-      scenario.inputs_before
+      scenario.inputs
       scenario.gql
     end
 
@@ -649,61 +600,16 @@ describe Scenario do
       expect(dup.id).to be_nil
     end
 
-    it 'does not clone inputs_present' do
-      expect(dup.inputs_present).to_not equal(scenario.inputs_present)
+    it 're-generates the same present inputs as for the original' do
+      expect(dup.inputs.present).to eq(scenario.inputs.present)
     end
 
-    it 'preserves inputs_present of the original' do
-      old_obj = scenario.inputs_present
-      dup
-      expect(scenario.inputs_present).to equal(old_obj)
+    it 're-generates the same present future as for the original' do
+      expect(dup.inputs.future).to eq(scenario.inputs.future)
     end
 
-    it 're-generates the same inputs_present as for the original' do
-      expect(dup.inputs_present).to eq(scenario.inputs_present)
-    end
-
-    it 'does not clone inputs_before' do
-      expect(dup.inputs_before).not_to equal(scenario.inputs_before)
-    end
-
-    it 'does not clone inputs_future' do
-      expect(dup.inputs_future).not_to equal(scenario.inputs_future)
-    end
-  end
-
-  describe '#user_values_as_yaml=' do
-    let(:scenario) { Scenario.new }
-
-    it 'permits an empty string' do
-      scenario.user_values_as_yaml = ''
-      expect(scenario.user_values).to eq({})
-    end
-
-    it 'permits nil' do
-      scenario.user_values_as_yaml = nil
-      expect(scenario.user_values).to eq({})
-    end
-
-    it 'permits a hash' do
-      scenario.user_values_as_yaml = "---\na: 1\nb: 2.5"
-      expect(scenario.user_values).to eq('a' => 1, 'b' => 2.5)
-    end
-
-    it 'permits an indifferent access hash' do
-      scenario.user_values_as_yaml = <<-YAML.strip_heredoc
-        --- !ruby/hash:ActiveSupport::HashWithIndifferentAccess
-        a: 1
-        b: 2.8
-      YAML
-
-      expect(scenario.user_values).to eq('a' => 1, 'b' => 2.8)
-    end
-
-    it 'denies a Set' do
-      expect do
-        scenario.user_values_as_yaml = "--- !ruby/object:Set\nhash: {}\n"
-      end.to raise_error(Psych::DisallowedClass)
+    it 'does not clone inputs' do
+      expect(dup.inputs).not_to equal(scenario.inputs)
     end
   end
 
@@ -756,6 +662,82 @@ describe Scenario do
 
       expect { scenario_two_attachment.file.purge }
         .to change(ActiveStorage::Blob, :count).by(-1)
+    end
+  end
+
+  describe '#metadata' do
+    let(:scenario) { described_class.new }
+
+    context 'with no metadata' do
+      it 'responds with nil when requesting a key' do
+        expect(scenario.metadata[:ctm_scenario_id]).to be_nil
+      end
+    end
+
+    context 'with empty metadata' do
+      before { scenario.metadata = {} }
+
+      it 'responds with nil when requesting a key' do
+        expect(scenario.metadata[:ctm_scenario_id]).to be_nil
+      end
+    end
+
+    context 'with metadata present' do
+      before { scenario.metadata = { ctm_scenario_id: 12_345, kittens: 'mew' } }
+
+      it 'stores numeric data' do
+        expect(scenario.metadata[:ctm_scenario_id]).to eq(12_345)
+      end
+
+      it 'stores string data' do
+        expect(scenario.metadata[:kittens]).to eq('mew')
+      end
+
+      it 'does not have metadata accesible by accessor' do
+        expect { scenario.kittens }.to raise_error(NoMethodError)
+      end
+    end
+
+    context 'when setting metadata' do
+      it 'permits JSON object' do
+        scenario.metadata = JSON.generate({})
+        expect(scenario.metadata).to eq({})
+      end
+
+      it 'permits a hash' do
+        scenario.metadata = {}
+        expect(scenario.metadata).to eq({})
+      end
+
+      it 'permits nil' do
+        scenario.metadata = nil
+        expect(scenario.metadata).to eq({})
+      end
+
+      it 'permits empty string' do
+        scenario.metadata = ''
+        expect(scenario.metadata).to eq({})
+      end
+
+      it 'denies objects larger than 64Kb' do
+        scenario.metadata = (0..15_000).to_h { |i| [i, i] }
+
+        expect(scenario).not_to be_valid
+      end
+    end
+
+    context 'when creating a clone of a scenario' do
+      before { scenario.metadata = { ctm_scenario_id: 12_345, kittens: 'mew' } }
+
+      let(:scenario_clone) { described_class.new(scenario_id: scenario.id) }
+
+      it 'keeps the original metadata' do
+        expect(scenario.metadata).not_to eq({})
+      end
+
+      it 'does not copy the metadata' do
+        expect(scenario_clone.metadata).to eq({})
+      end
     end
   end
 end

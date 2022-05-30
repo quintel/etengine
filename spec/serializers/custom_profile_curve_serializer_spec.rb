@@ -4,7 +4,9 @@ require 'spec_helper'
 require_relative './custom_curve_shared_examples'
 
 describe CustomProfileCurveSerializer do
-  let(:attachment) { FactoryBot.create(:scenario_attachment, key: 'some_profile_curve') }
+  let(:attachment) do
+    FactoryBot.create(:scenario_attachment, key: 'some_profile_curve')
+  end
 
   include_examples 'a custom curve Serializer'
 

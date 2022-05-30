@@ -11,7 +11,7 @@ RSpec.describe Gql::CustomCurveCollection do
       %w[price_curve random_curve].each.with_index do |file, index|
         CurveHandler::AttachService.new(
           CurveHandler::Config.find(Etsource::Config.user_curves.keys[index]),
-          fixture_file_upload("files/#{file}.csv", 'text/csv'),
+          fixture_file_upload("#{file}.csv", 'text/csv'),
           scenario
         ).call
       end
@@ -45,7 +45,7 @@ RSpec.describe Gql::CustomCurveCollection do
     before do
       attachment = CurveHandler::AttachService.new(
         CurveHandler::Config.find(Etsource::Config.user_curves.keys[0]),
-        fixture_file_upload('files/price_curve.csv', 'text/csv'),
+        fixture_file_upload('price_curve.csv', 'text/csv'),
         scenario
       ).call
 

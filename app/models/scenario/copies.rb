@@ -14,10 +14,7 @@ module Scenario::Copies
   #
   def initialize_copy(orig)
     super
-    @gql            = nil
-    @inputs_before  = nil
-    @inputs_present = nil
-    @inputs_future  = nil
+    @gql    = nil
+    @inputs = nil
   end
-
 end # Scenario::Copies

@@ -143,6 +143,8 @@ Style/MethodCallWithArgsParentheses:
   Enabled: true
   IgnoreMacros: true
   IgnoredMethods:
+  - can
+  - cannot
   - describe
   - head
   - not_to
@@ -191,3 +193,6 @@ RSpec/DescribeClass:
 RSpec/RepeatedExampleGroupBody:
   Exclude:
     - 'spec/models/gql/runtime/functions/*.rb'
+
+RSpec/VariableNumber:
+  Enabled: false

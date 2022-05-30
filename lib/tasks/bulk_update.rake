@@ -4,7 +4,7 @@ class BulkUpdateHelpers
       return show_diff(scenario, user_values) if dry_run
 
       if user_values != scenario.user_values
-        scenario.update_attributes(:user_values => user_values)
+        scenario.update(:user_values => user_values)
         true
       end
     end
@@ -129,7 +129,7 @@ namespace :bulk_update do
             # Deleted region.
             @defaults[s.area_code.to_sym].nil? ||
             # Old scenario.
-            (!s.protected? && s.title == "API" && s.updated_at < 365.days.ago ) ||
+            (!s.keep_updated? && s.title == "API" && s.updated_at < 365.days.ago ) ||
             # Internal use.
             s.source == "Mechanical Turk" ||
             # Very old scenario.

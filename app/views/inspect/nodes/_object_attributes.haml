@@ -14,6 +14,9 @@
                     == #{sub_key}: #{sub_value}
               - else
                 - if object_attribute_is_node?(key)
-                  = link_to value, object_attribute_node_path(value, object)
+                  - value_array = Array(value)
+                  - value_array.each.with_index do |node_key, index|
+                    = succeed(index == value_array.length - 1 ? '' : ', ') do
+                      = link_to node_key, object_attribute_node_path(node_key, object)
                 - else
                   = value

@@ -1,0 +1,7 @@
+- query =
+- priority = 1
+- update_period = future
+- min_value = 0.0
+- max_value = 100.0
+- start_value = 50.0
+- disabled_by = exclusive

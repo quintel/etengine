@@ -1,3 +1,7 @@
 %li
   %a.dropdown-toggle{ href: '/inspect' }
     Data / Debug
+
+- if params[:api_session_id]
+  %li
+    = link_to 'Scenarios', inspect_scenarios_path

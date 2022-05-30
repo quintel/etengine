@@ -8,7 +8,7 @@ describe 'FileUploadHandler' do
 
   context 'when a file was already attached' do
     let(:key) { 'esdl_file' }
-    let(:file) { fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml') }
+    let(:file) { fixture_file_upload('valid_esdl_file.esdl', 'text/xml') }
 
     before { file_handler.call }
 
@@ -19,7 +19,7 @@ describe 'FileUploadHandler' do
 
   context 'when attaching a valid esdl file' do
     let(:key) { 'esdl_file' }
-    let(:file) { fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml') }
+    let(:file) { fixture_file_upload('valid_esdl_file.esdl', 'text/xml') }
 
     it 'is valid' do
       expect(file_handler).to be_valid

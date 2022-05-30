@@ -1,4 +1,4 @@
-FROM ruby:2.7.4-slim-buster
+FROM ruby:3.1-slim
 
 LABEL maintainer="dev@quintel.com"
 
@@ -8,8 +8,10 @@ RUN apt-get update -yqq && \
     autoconf \
     build-essential \
     default-libmysqlclient-dev \
+    default-mysql-client \
     git \
     gnupg \
+    graphviz \
     less \
     libreadline-dev \
     libxml2-dev \
@@ -19,8 +21,6 @@ RUN apt-get update -yqq && \
     vim \
     zlib1g \
     zlib1g-dev
-
-RUN gem install bundler:1.17.3
 
 COPY Gemfile* /app/
 WORKDIR /app

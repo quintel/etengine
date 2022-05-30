@@ -22,11 +22,13 @@ module Api
         render(
           json: { errors: [
             'Scenario uses an unsupported area code and is no longer available: ' \
-            "#{scenario.area_code}"
+            "#{@scenario.area_code}"
           ] },
           status: 410
         )
       end
+
+      load_and_authorize_resource :scenario
 
       before_action :merit_required
 
@@ -36,7 +38,7 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/merit_order.csv
       def merit_order
         render_serializer MeritCSVSerializer.new(
-          scenario.gql.future_graph, :electricity, :merit_order,
+          @scenario.gql.future_graph, :electricity, :merit_order,
           MeritCSVSerializer::NodeCustomisation.new(
             'merit_order_csv_include', 'merit_order_csv_exclude'
           )
@@ -48,8 +50,8 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
       def electricity_price
         csv_serializer = CarrierPriceCSVSerializer.new(
-          scenario.gql.future_graph.carrier(:electricity),
-          scenario.gql.future_graph.year
+          @scenario.gql.future_graph.carrier(:electricity),
+          @scenario.gql.future_graph.year
         )
 
         respond_to do |format|
@@ -63,7 +65,7 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/heat_network.csv
       def heat_network
         render_serializer MeritCSVSerializer.new(
-          scenario.gql.future_graph, :steam_hot_water, :heat_network
+          @scenario.gql.future_graph, :steam_hot_water, :heat_network
         )
       end
 
@@ -73,7 +75,7 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/household_heat.csv
       def household_heat_curves
         render_serializer FeverCSVSerializer.new(
-          scenario.gql.future_graph,
+          @scenario.gql.future_graph,
           %i[space_heating households_hot_water],
           'household_heat'
         )
@@ -85,7 +87,7 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/building_heat.csv
       def buildings_heat_curves
         render_serializer FeverCSVSerializer.new(
-          scenario.gql.future_graph,
+          @scenario.gql.future_graph,
           %i[buildings_space_heating],
           'buildings_heat'
         )
@@ -97,7 +99,7 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/hydrogen.csv
       def hydrogen
         render_serializer ReconciliationCSVSerializer.new(
-          scenario.gql.future_graph, :hydrogen
+          @scenario.gql.future_graph, :hydrogen
         )
       end
 
@@ -107,14 +109,14 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/curves/network_gas.csv
       def network_gas
         render_serializer ReconciliationCSVSerializer.new(
-          scenario.gql.future_graph, :network_gas
+          @scenario.gql.future_graph, :network_gas
         )
       end
 
       private
 
       def merit_required
-        unless Qernel::Plugins::Causality.enabled?(scenario.gql.future_graph)
+        unless Qernel::Plugins::Causality.enabled?(@scenario.gql.future_graph)
           render :merit_required, format: :html, layout: false
         end
       end
@@ -129,14 +131,8 @@ module Api
         send_data(
           CSV.generate { |csv| yield csv },
           type: 'text/csv',
-          filename: "#{ name }.#{ scenario.id }.csv"
+          filename: "#{name}.#{@scenario.id}.csv"
         )
-      end
-
-      def scenario
-        @scenario ||=
-          Preset.get(params[:scenario_id]).try(:to_scenario) ||
-          Scenario.find(params[:scenario_id])
       end
     end # CurvesController
   end # V3

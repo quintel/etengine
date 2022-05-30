@@ -5,6 +5,57 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     NastyCache.instance.expire!
   end
 
+  context 'without a title' do
+    before do
+      post '/api/v3/scenarios'
+    end
+
+    it 'it has no title' do
+      expect(JSON.parse(response.body)).to include('title' => nil)
+    end
+
+    it 'saves no title with the metadata' do
+      expect(JSON.parse(response.body)).to include('metadata' => {})
+    end
+  end
+
+  context 'with a title (DEPRECATED)' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { title: 'Hello world!' } }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'includes the title with the main scenario data' do
+      expect(JSON.parse(response.body)).to include('title' => 'Hello world!')
+    end
+
+    it 'saves the title with metadata' do
+      expect(JSON.parse(response.body)).to include('metadata' => { 'title' => 'Hello world!' })
+    end
+  end
+
+  context 'with a description (DEPRECATED)' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { description: 'Hello world!' } }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'includes the description with the main scenario data' do
+      expect(JSON.parse(response.body)).to include('description' => 'Hello world!')
+    end
+
+    it 'saves the description with the metadata' do
+      expect(JSON.parse(response.body))
+        .to include('metadata' => { 'description' => 'Hello world!' })
+    end
+  end
+
   context 'with valid parameters' do
     it 'should save the scenario' do
       expect { post '/api/v3/scenarios' }.to change { Scenario.count }.by(1)
@@ -14,7 +65,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data     = JSON.parse(response.body)
       scenario = Scenario.last
 
-      expect(data).to include('title'      => scenario.title)
       expect(data).to include('id'         => scenario.id)
       expect(data).to include('area_code'  => 'nl')
       expect(data).to include('start_year' => scenario.start_year)
@@ -26,7 +76,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       expect(data['url']).to match(%r{/scenarios/#{ data['id'] }$})
 
-      expect(data).not_to have_key('description')
       expect(data).not_to have_key('inputs')
     end
 
@@ -53,8 +102,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data     = JSON.parse(response.body)
       scenario = Scenario.last
 
-      expect(data).to have_key('description')
-
+      expect(data).to have_key('user_values')
+      expect(data).to have_key('metadata')
       expect(data).not_to have_key('inputs')
     end
 
@@ -115,9 +164,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
-  context 'when inheriting a preset' do
+  context 'when inheriting from another scenario' do
+    let(:parent) do
+      FactoryBot.create(:scenario_with_user_values)
+    end
+
     before do
-      post '/api/v3/scenarios', params: { scenario: { scenario_id: Preset.all.first.id } }
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -130,15 +183,133 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       scenario = Scenario.find(json['id'])
 
       expect(scenario.user_values).not_to be_blank
-
-      expect(scenario.user_values).to eql(
-        Preset.all.first.user_values.stringify_keys)
+      expect(scenario.user_values).to eql(parent.user_values.stringify_keys)
     end
   end
 
-  context 'when inheriting a scaled preset' do
+  context 'when inheriting from a non-existant scenario' do
     before do
-      post '/api/v3/scenarios', params: { scenario: { scenario_id: Preset.get(6000).id } }
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: 99_999 } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is not successful' do
+      expect(response.status).to eq(422)
+    end
+
+    it 'has an error' do
+      expect(JSON.parse(response.body)['errors']).to include('scenario_id' => ['does not exist'])
+    end
+  end
+
+  context 'when setting read_only to true' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { read_only: true } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'sets the scenario to be read-only' do
+      expect(json['read_only']).to be(true)
+    end
+
+    it 'sets the scenario to be kept compatible' do
+      expect(json['keep_compatible']).to be(true)
+    end
+
+    it 'includes protected=true in the response' do
+      expect(json['protected']).to be(true)
+    end
+  end
+
+  context 'when setting keep_compatible to true' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { keep_compatible: true } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'sets the scenario to be kept compatible' do
+      expect(json['keep_compatible']).to be(true)
+    end
+
+    it 'includes protected=false in the response' do
+      expect(json['protected']).to be(false)
+    end
+  end
+
+  # Legacy attribute.
+  context 'when setting protected to true' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { protected: true } }
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'sets the scenario to be read-only' do
+      expect(json['read_only']).to be(true)
+    end
+
+    it 'sets the scenario to be kept compatible' do
+      expect(json['keep_compatible']).to be(true)
+    end
+
+    it 'includes protected=false in the response' do
+      expect(json['protected']).to be(true)
+    end
+  end
+
+  context 'when inheriting a read-only scenario' do
+    before do
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }
+    end
+
+    let(:parent) do
+      FactoryBot.create(
+        :scenario,
+        api_read_only: true,
+        keep_compatible: true,
+        user_values: { unrelated_one: 1.0 }
+      )
+    end
+
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response.status).to be(200)
+    end
+
+    it 'saves the user values' do
+      expect(Scenario.find(json['id']).user_values).to eq(parent.user_values)
+    end
+
+    it 'does not mark the new scenario as read-only' do
+      expect(Scenario.find(json['id'])).not_to be_api_read_only
+    end
+
+    it 'does not mark the new scenario as kept compatible' do
+      expect(Scenario.find(json['id'])).not_to be_keep_compatible
+    end
+  end
+
+  context 'when inheriting a scaled scenario' do
+    before do
+      post '/api/v3/scenarios', params: {
+        scenario: { scenario_id: FactoryBot.create(:scaled_scenario).id }
+      }
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -209,16 +380,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         }
       end
 
-      let(:preset) { Preset.all.detect {|p| p.key == :test } }
+      let(:preset) { FactoryBot.create(:scenario_with_user_values) }
       let(:json)   { JSON.parse(response.body) }
       let(:multi)  { 500_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
 
       it 'should be successful' do
         expect(response.status).to eql(200)
-      end
-
-      it 'does not create a default flexibility order' do
-        expect(FlexibilityOrder.where(scenario_id: json['id']).count).to be_zero
       end
 
       it 'does not create a default heat network order' do
@@ -239,29 +406,19 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           to eq(preset.user_values[:input_3])
       end
 
-      context 'when the preset has a flexibility order' do
-        let(:preset) do
-          Preset.all.detect { |p| p.key == :with_flexibility_order }
-        end
-
-        it 'creates a flexibility order' do
-          expect(FlexibilityOrder.where(scenario_id: json['id']).count).to eq(1)
-        end
-      end
-
       context 'when the preset has a heat network order' do
         let(:preset) do
-          Preset.all.detect { |p| p.key == :with_flexibility_order }
+          FactoryBot.create(:scenario_with_heat_network)
         end
 
         it 'creates a heat network order' do
           expect(HeatNetworkOrder.where(scenario_id: json['id']).count).to eq(1)
         end
       end
-    end # with a preset
+    end
 
     context 'with an already-scaled scenario' do
-      let(:preset) { Preset.all.detect {|p| p.key == :test } }
+      let(:preset) { FactoryBot.create(:scenario_with_user_values) }
 
       context '(re-scaling)' do
         before do
@@ -328,14 +485,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           scenario = Scenario.find(json['id'])
 
           expect(scenario.user_values['foo_demand']).
-            to eq(preset.user_values[:foo_demand])
+            to be_within(1e-5).of(preset.user_values[:foo_demand])
 
           expect(scenario.user_values['input_2']).
-            to eq(preset.user_values[:input_2])
+            to be_within(1e-5).of(preset.user_values[:input_2])
 
           # Input 3 is a non-scaled input
           expect(scenario.user_values['input_3']).
-            to eq(preset.user_values[:input_3])
+            to be_within(1e-5).of(preset.user_values[:input_3])
         end
       end # unscaling
 

@@ -5,7 +5,7 @@
     %a.sha{ href: "https://github.com/quintel/#{ repo }/commit/#{ commit.sha }" }
       = truncate(commit.message.split("\n").first, length: 80)
   %span.author
-    = gravatar_image_tag(commit.author.email, size: 140, class: 'avatar', gravatar: { default: asset_url('quintel-avatar.png') })
+    = gravatar_image_tag(commit.author.email, size: 140, class_name: 'avatar')
     = commit.author.name
     %span.date
       == authored #{ time_ago_in_words(commit.date) } ago

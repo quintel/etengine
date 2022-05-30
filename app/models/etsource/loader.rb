@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Etsource
-  # Loader is an interface to the ETsource. It takes care of loading and caching of ETsource
+  # Loader is an interface to the ETSource. It takes care of loading and caching of ETSource
   # components.
   class Loader
     include Singleton
@@ -105,7 +105,7 @@ module Etsource
       "etsource/#{NastyCache.instance.local_timestamp}/"
     end
 
-    # A Qernel::Graph from ETsource where the nodes are ordered in a way that
+    # A Qernel::Graph from ETSource where the nodes are ordered in a way that
     #  is optimal for the calculation.
     #
     def optimized_graph

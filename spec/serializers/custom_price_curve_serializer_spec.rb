@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_relative './custom_curve_shared_examples'
 
-describe Api::V3::CustomPriceCurveSerializer do
+describe CustomPriceCurveSerializer do
   let(:attachment) { FactoryBot.create(:scenario_attachment) }
 
   include_examples 'a custom curve Serializer'

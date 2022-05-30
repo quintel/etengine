@@ -1,8 +1,0 @@
-<% cache("/inspect/search/keys.js") do %>
-var search_keys = <%=
-  [
-    *Etsource::Loader.instance.energy_graph.nodes.map(&:key),
-    *Gquery.all.map(&:key)
-  ].to_json.html_safe
-%>
-<% end %>

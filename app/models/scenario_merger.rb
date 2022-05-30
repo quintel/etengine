@@ -77,7 +77,6 @@ class ScenarioMerger
     Scenario.new(attrs.merge(
       area_code: area_code,
       end_year:  end_year,
-      title:    'Merged Scenario',
       source:   'ETEngine Merger'
     ))
   end

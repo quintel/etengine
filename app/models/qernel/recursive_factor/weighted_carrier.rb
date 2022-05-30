@@ -14,11 +14,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
     # these are excluded from this calculation
     return unless edge
 
-    if edge.carrier.electricity? || edge.carrier.steam_hot_water?
-      0.0
-    elsif edge.carrier.cost_per_mj || domestic_dead_end?
-      edge.carrier.cost_per_mj
-    end
+    edge.carrier.cost_per_mj if edge.carrier.cost_per_mj || domestic_dead_end?
 
     # Else: continue traversing right.
   end

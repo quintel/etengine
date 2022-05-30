@@ -8,7 +8,7 @@ class ScenarioUpdateSerializer
     @errors  = []
     @results = {}
 
-    if @requested_queries.any? && assert_valid_gqueries!
+    if @requested_queries.any? && assert_valid_gqueries! && @updater.errors.empty?
       @results = perform_gqueries!
     end
   end
@@ -83,9 +83,6 @@ class ScenarioUpdateSerializer
         present: present, future: future, unit: query.unit
       }
     end
-  rescue Exception => exception
-    # An error while setting up the graph.
-    @errors.push(([exception.message] + exception.backtrace).join("\n"))
   end
 
   # Performs an individual query.

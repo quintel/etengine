@@ -2,7 +2,7 @@
 %html{:lang => 'en'}
   %head
     %title
-      - if @api_scenario && @api_scenario.title != 'API'
+      - if @api_scenario && @api_scenario.title.present?
         = @api_scenario.title
         \-
       - if content_for?(:title)
@@ -10,9 +10,6 @@
         \-
       EnergyTransitionModel
     = javascript_include_tag 'application'
-    - if current_user
-      = javascript_include_tag '/inspect/search.js'
-
     = stylesheet_link_tag 'application'
 
   %body#data
@@ -33,7 +30,7 @@
 
             - if current_user
               %ul.nav
-                %li= link_to 'ETsource',  etsource_commits_path
+                %li= link_to 'ETSource',  etsource_commits_path
 
                 - if params[:api_scenario_id]
                   = render partial: 'header_menus_with_scenario'
@@ -60,8 +57,7 @@
                       = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
                   %li
                     %form#area_code_selector.navbar-form.form.form-inline{:action => '#', :method => :get}
-                      - opts = Etsource::Dataset.region_codes.sort
-                      = select_tag 'area_code', options_for_select(opts), :prompt => "New scenario:", :class => 'span1'
+                      = select_tag 'area_code', grouped_options_for_select(grouped_region_options), :prompt => "New scenario:", :class => 'span1'
 
                 %li.divider-vertical
                 %li
@@ -90,9 +86,8 @@
 :javascript
   $('[rel=tooltip]').tooltip();
   $('.typeahead').typeahead({
-    source: search_keys,
+    source: #{search_keys_json.html_safe},
     items: 15,
     matcher: function(item) { return item.match(new RegExp(this.query.replace(/_/g, '._').replace(/\./g, '.*'))) != null }
   }).change( function() { this.form.submit(); });
-
 

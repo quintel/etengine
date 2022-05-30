@@ -1,11 +1,38 @@
 module Api
   module V3
     class BaseController < ApplicationController
+      skip_before_action :verify_authenticity_token
+
       rescue_from ActionController::ParameterMissing do |e|
-        render status: 400, json: { errors: [e.message] }
+        render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
+      end
+
+      rescue_from ActiveRecord::RecordNotFound do |e|
+        if e.model
+          render_not_found(errors: ["#{e.model.underscore.humanize} not found"])
+        else
+          render_not_found(errors: ['Not found'])
+        end
+      end
+
+      rescue_from ActiveModel::RangeError do
+        render_not_found(errors: ['Not found'])
+      end
+
+      rescue_from CanCan::AccessDenied do |ex|
+        if (request.post? || request.put? || request.delete?) &&
+            ex.subject.is_a?(Scenario) && ex.subject.api_read_only?
+          render status: 403, json: { errors: ['Cannot modify a read-only scenario'] }
+        else
+          render status: 404, json: { errors: ['Not found'] }
+        end
       end
 
       private
+
+      def current_ability
+        @current_ability ||= Api::Ability.new(current_user)
+      end
 
       # Many API actions require an active scenario. Let's set it here
       # and let's prepare the field for the calculations.
@@ -16,8 +43,6 @@ module Api
         else
           Scenario.last
         end
-      rescue ActiveRecord::RecordNotFound
-        render :json => {:errors => ["Scenario not found"]}, :status => 404 and return
       end
 
       # Send a 404 response with an optional JSON body.

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Etsource::Dataset::InsulationCostMap do
   let(:map) do
-    described_class.new(Atlas::Dataset::InsulationCostCSV.new(csv.path.to_s))
+    described_class.new(Atlas::Dataset::InsulationCostCSV.read(csv.path.to_s))
   end
 
   after do

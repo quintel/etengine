@@ -43,23 +43,28 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(response_data).to include('end_year' => 2040)
     end
 
-    it 'does not mark the scenario as protected' do
+    it 'does not mark the scenario as read-only' do
       send_data
-      expect(Scenario.find(response_data['id'])).not_to be_protected
+      expect(Scenario.find(response_data['id'])).not_to be_api_read_only
     end
   end
 
-  context 'with valid parameters and protected=true' do
+  context 'with valid parameters and read_only=true' do
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
-        params: { end_year: 2040, protected: true }
+        params: { end_year: 2040, read_only: true }
     end
 
     before { source }
 
-    it 'marks the scenario as protected' do
+    it 'marks the scenario as read-only' do
       send_data
-      expect(Scenario.find(response_data['id'])).to be_protected
+      expect(Scenario.find(response_data['id'])).to be_api_read_only
+    end
+
+    it 'marks the scenario as kept compatible' do
+      send_data
+      expect(Scenario.find(response_data['id'])).to be_keep_compatible
     end
   end
 

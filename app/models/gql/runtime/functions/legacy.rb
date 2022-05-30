@@ -79,13 +79,6 @@ module Gql::Runtime
         value.ceil(precision)
       end
 
-      # NORMCDF(upper_boundary, mean, std_dev)
-      def NORMCDF(*values)
-        # lower_Boundary is always -Infinity
-        upper_boundary, mean, std_dev = flatten_compact(values)
-        Distribution::Normal.cdf( (upper_boundary.to_f - mean.to_f) / std_dev.to_f )
-      end
-
       # SQRT(2) => [4]
       # SQRT(2,3) => [4,9]
       # SUM(SQRT(2,3)) => 13

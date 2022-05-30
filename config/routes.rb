@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
   devise_for :users
 
@@ -18,6 +18,8 @@ Rails.application.routes.draw do
           get :production_parameters, to: 'export#production_parameters'
           get :energy_flow, to: 'export#energy_flow'
           get :molecule_flow, to: 'export#molecule_flow'
+          get :costs_parameters, to: 'export#costs_parameters'
+          get :sankey, to: 'export#sankey'
           get :merit
           put :dashboard
           post :interpolate
@@ -37,11 +39,12 @@ Rails.application.routes.draw do
 
         resources :inputs, :only => [:index, :show]
 
-        resource :flexibility_order, only: [:show, :update],
-          controller: :user_sortables, sortable_type: :flexibility
+        # Flexibility orders have been removed. Endpoint returns a 404 with a useful message.
+        get   '/flexibility_order', to: 'removed_features#flexibility_order'
+        put   '/flexibility_order', to: 'removed_features#flexibility_order'
+        patch '/flexibility_order', to: 'removed_features#flexibility_order'
 
-        resource :heat_network_order, only: [:show, :update],
-          controller: :user_sortables, sortable_type: :heat_network
+        resource :heat_network_order, only: [:show, :update], controller: :heat_network_orders
 
         resources :custom_curves, only: %i[index show update destroy],
           constraints: { id: %r{[a-z\d_\-/]+} }
@@ -76,13 +79,6 @@ Rails.application.routes.draw do
           to: 'curves#network_gas',
           as: :curves_network_gas_download
       end
-
-      resources :nodes, :only => :show do
-        get :topology, :on => :collection
-      end
-
-      get 'converters', to: redirect('/api/v3/nodes')
-      get 'converters/*rest', to: redirect('/api/v3/nodes/%{rest}')
 
       resources :inputs, :only => [:index, :show] do
         get :list, :on => :collection
@@ -175,7 +171,7 @@ Rails.application.routes.draw do
   namespace :etsource do
     root :to => 'commits#index'
 
-    resources :commits, :only => [:index, :show] do
+    resources :commits, :only => [:index] do
       get :import, :on => :member
     end
   end

@@ -50,7 +50,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'with an attached curve for interconnector 1' do
       before do
         put "#{url}/interconnector_1_price", params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -95,7 +95,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'with an attached internal curve and not setting an include_internal param' do
       before do
         put "#{url}/internal", params: {
-          file: fixture_file_upload('files/random_curve.csv', 'text/csv')
+          file: fixture_file_upload('random_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -115,7 +115,7 @@ describe 'Custom curves', :etsource_fixture do
 
       before do
         put "#{url.split('?').first}/internal", params: {
-          file: fixture_file_upload('files/random_curve.csv', 'text/csv')
+          file: fixture_file_upload('random_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -156,7 +156,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when showing a curve' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -175,10 +175,38 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
+    context 'when downloading a curve as CSV' do
+      before do
+        put url, params: {
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
+        }
+
+        get(url, headers: { 'Accept' => 'text/csv' })
+      end
+
+      it 'succeeds' do
+        expect(response).to be_successful
+      end
+
+      it 'sends back CSV data about the curve' do
+        expect(response.body.strip).to eq(File.read('spec/fixtures/files/price_curve.csv').strip)
+      end
+    end
+
+    context 'when downloading an unattached curve as CSV' do
+      before do
+        get(url, headers: { 'Accept' => 'text/csv' })
+      end
+
+      it 'response with Not Found' do
+        expect(response).to be_not_found
+      end
+    end
+
     context 'when uploading a valid curve file' do
       let(:request) do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
       end
 
@@ -266,7 +294,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when uploading an invalid curve' do
       let(:request) do
         put url, params: {
-          file: fixture_file_upload('files/invalid_price_curve.csv', 'text/csv')
+          file: fixture_file_upload('invalid_price_curve.csv', 'text/csv')
         }
       end
 
@@ -355,10 +383,37 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
+    context 'when uploading a curve to a read-only scenario' do
+      before do
+        scenario.update!(api_read_only: true)
+      end
+
+      let(:request) do
+        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }
+      end
+
+      it 'responds with 403 Forbidden' do
+        request
+        expect(response).to be_forbidden
+      end
+
+      it 'does not change the attachment' do
+        expect { request }
+          .not_to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'generic_curve')
+              .present?
+          }
+          .from(false)
+      end
+    end
+
     context 'when removing an attached curve' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
       end
 
@@ -385,6 +440,41 @@ describe 'Custom curves', :etsource_fixture do
           }
           .from(true)
           .to(false)
+      end
+    end
+
+    context 'when removing an attached curve from a read-only scenario' do
+      before do
+        # Attach a curve.
+        put url, params: {
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
+        }
+
+        scenario.update!(api_read_only: true)
+      end
+
+      let(:request) { delete url }
+
+      it 'returns 403 Forbidden' do
+        request
+        expect(response).to be_forbidden
+      end
+
+      it 'sends an error' do
+        request
+        expect(JSON.parse(response.body)).to eq('errors' => ['Cannot modify a read-only scenario'])
+      end
+
+      it 'does not remove the attachment' do
+        expect { request }
+          .not_to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'generic_curve')
+              .present?
+          }
+          .from(true)
       end
     end
 
@@ -421,7 +511,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when showing a curve' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
         get(url)
@@ -450,7 +540,7 @@ describe 'Custom curves', :etsource_fixture do
     context 'when uploading a valid curve file' do
       let(:request) do
         put url, params: {
-          file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
       end
 
@@ -495,7 +585,7 @@ describe 'Custom curves', :etsource_fixture do
 
     it 'rejects the request' do
       put url, params: {
-        file: fixture_file_upload('files/price_curve.csv', 'text/csv')
+        file: fixture_file_upload('price_curve.csv', 'text/csv')
       }
 
       expect(response).not_to be_successful

@@ -43,7 +43,7 @@ class Inspect::ChecksController < Inspect::BaseController
   end
 
   # @return [Array<Inspect::ShareGroupsController::ShareGroup>]
-  #   Returns a ShareGroup for each one defined in ETsource.
+  #   Returns a ShareGroup for each one defined in ETSource.
   def share_groups_for_area(area)
     gql    = Scenario.new(area_code: area, end_year: 2050).gql
     groups = Input.all.map(&:share_group)

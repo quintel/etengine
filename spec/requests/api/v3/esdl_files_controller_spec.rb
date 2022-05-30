@@ -28,7 +28,7 @@ describe 'ESDL files', :etsource_fixture do
     context 'when file is attached' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml')
+          file: fixture_file_upload('valid_esdl_file.esdl', 'text/xml')
         }
 
         get(url)
@@ -52,7 +52,7 @@ describe 'ESDL files', :etsource_fixture do
     context 'with download parameter set' do
       before do
         put url, params: {
-          file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml')
+          file: fixture_file_upload('valid_esdl_file.esdl', 'text/xml')
         }
 
         get(url, params: { download: true })
@@ -74,7 +74,7 @@ describe 'ESDL files', :etsource_fixture do
 
       it 'sends the full esdl file' do
         expect(JSON.parse(response.body)['file']).to eq(
-          fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml').read
+          fixture_file_upload('valid_esdl_file.esdl', 'text/xml').read
         )
       end
     end
@@ -83,7 +83,7 @@ describe 'ESDL files', :etsource_fixture do
   context('when uploading a valid esdl file') do
     let(:request) do
       put url, params: {
-        file: fixture_file_upload('files/valid_esdl_file.esdl', 'text/xml')
+        file: fixture_file_upload('valid_esdl_file.esdl', 'text/xml')
       }
     end
 

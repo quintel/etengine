@@ -560,6 +560,62 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
+  context 'when querying a read-only scenario' do
+    before do
+      scenario.update!(api_read_only: true)
+      autobalance_scenario({})
+    end
+
+    it 'returns 200 OK' do
+      expect(response.status).to be(200)
+    end
+  end
+
+  context 'when updating a read-only scenario' do
+    before do
+      scenario.update!(api_read_only: true)
+    end
+
+    it 'returns 403' do
+      autobalance_scenario({ scenario: { user_values: { 'unrelated_one' => 25.0 } } })
+      expect(response.status).to be(403)
+    end
+
+    it 'does not update the user values' do
+      expect { autobalance_scenario(scenario: { user_values: { 'unrelated_one' => 25.0 } }) }
+        .not_to(change { scenario.reload.user_values })
+    end
+  end
+
+  context 'when setting a mutable scenario to read-only with updates' do
+    let(:request) do
+      put "/api/v3/scenarios/#{scenario.id}",params: {
+        scenario: { user_values: { 'unrelated_one' => 20.0 }, read_only: true }
+      }
+    end
+
+    before do
+      scenario.update!(user_values: {})
+    end
+
+    it 'returns 200 OK' do
+      request
+      expect(response).to be_ok
+    end
+
+    it 'sets the scenario to read-only' do
+      expect { request }.to(change { scenario.reload.api_read_only? }.from(false).to(true))
+    end
+
+    it 'sets the user values' do
+      expect { request }.to(
+        change { scenario.reload.user_values }.from({}).to({ 'unrelated_one' => 20.0 })
+      )
+    end
+  end
+
+  # --------------------------------------------------------------------------
+
   context 'with an out-of-range scenario ID' do
     it 'returns 404' do
       put '/api/v3/scenarios/100000000000'
@@ -669,6 +725,52 @@ describe 'Updating inputs with API v3' do
 
     it 'responds 400 Bad Request' do
       expect(response.status).to eq(400)
+    end
+  end
+
+  # --------------------------------------------------------------------------
+
+  context 'when providing a title (DEPRECATED)' do
+    before do
+      put "/api/v3/scenarios/#{scenario.id}", params: {
+        detailed: true,
+        scenario: { title: 'Hello world' }
+      }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'responds with the title in the scenario' do
+      expect(JSON.parse(response.body)['scenario']).to include('title' => 'Hello world')
+    end
+
+    it 'saves the title with the metadata' do
+      expect(JSON.parse(response.body)['scenario'])
+        .to include('metadata' => { 'title' => 'Hello world' })
+    end
+  end
+
+  context 'when providing a description (DEPRECATED)' do
+    before do
+      put "/api/v3/scenarios/#{scenario.id}", params: {
+        detailed: true,
+        scenario: { description: 'Hello world' }
+      }
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'responds with the description in the scenario' do
+      expect(JSON.parse(response.body)['scenario']).to include('description' => 'Hello world')
+    end
+
+    it 'saves the description with the metadata' do
+      expect(JSON.parse(response.body)['scenario'])
+        .to include('metadata' => { 'description' => 'Hello world' })
     end
   end
 end

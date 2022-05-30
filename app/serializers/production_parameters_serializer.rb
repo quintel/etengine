@@ -22,11 +22,8 @@ class ProductionParametersSerializer
         heat_output_capacity\ (MW)
         full_load_hours
         total_initial_investment_per_plant\ (Euros)
-        fixed_operation_and_maintenance_costs_per_year\ (Euros)
-        variable_operation_and_maintenance_costs_per_full_load_hour\ (Euros)
         wacc\ (factor)
         technical_lifetime\ (years)
-        total_investment_over_lifetime_per_node\ (Euros)
       ]
 
       nodes.each do |node|
@@ -41,10 +38,11 @@ class ProductionParametersSerializer
     (
       @graph.group_nodes(:heat_production) +
       @graph.group_nodes(:electricity_production) +
-      @graph.group_nodes(:cost_hydrogen_production) +
-      @graph.group_nodes(:cost_hydrogen_infrastructure) +
-      @graph.group_nodes(:cost_flexibility) +
-      @graph.group_nodes(:cost_other)
+      @graph.group_nodes(:costs_production_dedicated_hydrogen_production) +
+      @graph.group_nodes(:costs_infrastructure_hydrogen) +
+      @graph.group_nodes(:costs_storage_and_conversion_p2g) +
+      @graph.group_nodes(:costs_storage_and_conversion_p2h) +
+      @graph.group_nodes(:costs_storage_and_conversion_p2p)
     ).uniq.sort_by(&:key)
   end
 
@@ -58,15 +56,8 @@ class ProductionParametersSerializer
       node.query.heat_output_capacity,
       node.query.full_load_hours,
       node.query.total_initial_investment_per(:plant),
-      node.query.fixed_operation_and_maintenance_costs_per_year,
-      node.query.variable_operation_and_maintenance_costs_per_full_load_hour,
       node.query.wacc,
-      node.query.technical_lifetime,
-      begin
-        node.query.total_investment_over_lifetime_per(:node)
-      rescue StandardError
-        nil
-      end
+      node.query.technical_lifetime
     ]
   end
 

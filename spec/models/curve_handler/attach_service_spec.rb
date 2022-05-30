@@ -15,7 +15,7 @@ shared_examples_for 'a valid CurveHandler::AttachService' do
 end
 
 RSpec.describe CurveHandler::AttachService do
-  let(:file) { fixture_file_upload('files/price_curve.csv', 'text/csv') }
+  let(:file) { fixture_file_upload('price_curve.csv', 'text/csv') }
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:metadata) { {} }
 
@@ -54,7 +54,7 @@ RSpec.describe CurveHandler::AttachService do
   end
 
   describe 'when attaching a curve with a full_load_hours reducer' do
-    let(:file) { fixture_file_upload('files/capacity_curve.csv', 'text/csv') }
+    let(:file) { fixture_file_upload('capacity_curve.csv', 'text/csv') }
 
     let(:config) do
       CurveHandler::Config.new(:generic, :capacity_profile, :full_load_hours, %w[i1 i2])

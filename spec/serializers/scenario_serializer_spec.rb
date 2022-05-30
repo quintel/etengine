@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ScenarioSerializer do
   let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
-  let(:scenario)   { FactoryBot.create(:scenario, description: 'Hello!') }
+  let(:scenario)   { FactoryBot.create(:scenario) }
 
   shared_examples_for 'a scenario serializer' do
     it { is_expected.to include(id:          scenario.id) }
@@ -30,7 +30,6 @@ describe ScenarioSerializer do
 
     it_should_behave_like 'a scenario serializer'
 
-    it { is_expected.not_to have_key(:description) }
     it { is_expected.not_to have_key(:inputs) }
   end
 
@@ -41,7 +40,7 @@ describe ScenarioSerializer do
 
     it_should_behave_like 'a scenario serializer'
 
-    it { is_expected.to include(description: 'Hello!') }
+    it { is_expected.to include(metadata: {}) }
   end
 
   context 'when "include_inputs=true"' do
@@ -57,19 +56,21 @@ describe ScenarioSerializer do
     end
   end
 
-  context 'with an unprotected scenario' do
+  context 'with a mutable scenario' do
     subject { described_class.new(controller, scenario).as_json }
 
-    before { scenario.update!(protected: false) }
+    before { scenario.update!(api_read_only: false) }
 
+    it { is_expected.to include(read_only: false) }
     it { is_expected.to include(protected: false) }
   end
 
-  context 'with a protected scenario' do
+  context 'with a read-only scenario' do
     subject { described_class.new(controller, scenario).as_json }
 
-    before { scenario.update!(protected: true) }
+    before { scenario.update!(api_read_only: true) }
 
+    it { is_expected.to include(read_only: true) }
     it { is_expected.to include(protected: true) }
   end
 end

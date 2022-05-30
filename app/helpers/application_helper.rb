@@ -1,4 +1,14 @@
 module ApplicationHelper
+  def gravatar_image_tag(address, size: 64, class_name: '')
+    default = Rails.env.development? ? 'identicon' : asset_url('quintel-avatar.png')
+
+    image_tag(
+      "https://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(address.downcase)}" \
+        "?size=#{size.to_i}&default=#{default}",
+      class: class_name
+    )
+  end
+
   def format_result(result, indent = 0)
     lead  = '  ' * indent
 

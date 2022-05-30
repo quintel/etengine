@@ -13,27 +13,9 @@
 module Scenario::UserUpdates
   extend ActiveSupport::Concern
 
-  # Inputs that run all the time and before the regular updates.
-  # These should not be stored in the user_values, because they
-  # will often change, by the researchers.
-  # The inputs get the end_year as value.
-  #
-  def inputs_before
-    unless @inputs_before
-      @inputs_before = {}
-      Input.before_inputs.each do |input|
-        @inputs_before[input] = self.end_year
-      end
-    end
-    @inputs_before
-  end
-
-  def inputs_present
-    @inputs_present ||= input_values_for_graph(:present)
-  end
-
-  def inputs_future
-    @inputs_future ||= input_values_for_graph(:future)
+  # Public: Returns a helper object for retrieving the user-specified values for the scenario.
+  def inputs
+    @inputs ||= Scenario::Inputs.new(self)
   end
 
   # This will process an {:input_id => :value} hash and update the inputs as needed
@@ -72,65 +54,4 @@ module Scenario::UserUpdates
   def delete_from_user_values(id)
     user_values.delete(id)
   end
-
-  # These two methods are only used in the edit scenario form
-  def user_values_as_yaml
-    @yaml_error ? @invalid_yaml_values : user_values.to_hash.to_yaml
-  end
-
-  def user_values_as_yaml=(values)
-    loaded = YAML.safe_load(values.to_s, [
-      ActiveSupport::HashWithIndifferentAccess, Symbol
-    ])
-
-    self.user_values = (loaded || {}).with_indifferent_access
-  rescue Psych::SyntaxError => ex
-    @invalid_yaml_values = values.to_s
-    @yaml_error = ex
-  end
-
-  def validate_no_yaml_error
-    if @yaml_error
-      errors.add(
-        :user_values_as_yaml,
-        "contains invalid YAML: #{@yaml_error.message}"
-      )
-    end
-  end
-
-  #######
-  private
-  #######
-
-  # Internal: The inputs for which the user - or balancer - has specified a
-  # value.
-  #
-  # Returns an array of inputs, in order of their execution priority.
-  def inputs
-    @inputs ||=
-      combined_values.map { |key, _| Input.get(key) }.
-      compact.sort_by { |input| [-input.priority, input.key] }
-  end
-
-  # Internal: A hash of inputs, and the values to be set on the named graph.
-  #
-  # name - The "name" of the graph for which you want values; :future or
-  #        :present.
-  #
-  # Returns a hash.
-  def input_values_for_graph(name)
-    inputs.select { |input| input.public_send(:"updates_#{ name }?") }.
-      each_with_object(Hash.new) do |input, hash|
-        hash[input] = combined_values[input.key]
-      end
-  end
-
-  # Internal: All of the inputs values to be set; includes the values
-  # specified by the user, and any values from the balancer.
-  #
-  # Returns an hash.
-  def combined_values
-    @combined_values ||= balanced_values.merge(user_values)
-  end
-
-end  # Input
+end

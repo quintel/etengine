@@ -29,7 +29,7 @@ class Inspect::QueryTablesController < Inspect::BaseController
 
   def update
     @query_table = QueryTable.find(params[:id])
-    if @query_table.update_attributes(params[:query_table])
+    if @query_table.update(params[:query_table])
       flash[:notice] = "Successfully updated query table."
       redirect_to inspect_query_table_path(:id => @query_table.id)
     else

@@ -43,7 +43,7 @@ module Etsource
           raise "No weather_properties.csv found at #{variant.path}"
         end
 
-        Atlas::CSVDocument.new(variant.curve_path('weather_properties'))
+        Atlas::CSVDocument.read(variant.curve_path('weather_properties'))
       end
     end
 

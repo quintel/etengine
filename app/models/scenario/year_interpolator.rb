@@ -21,7 +21,6 @@ class Scenario::YearInterpolator
     clone.copy_scenario_state(@scenario)
 
     clone.end_year = @year
-    clone.title    = "#{@scenario.title} (interpolated: #{@year})"
     clone.source   = @scenario.source
 
     if @year != @scenario.end_year

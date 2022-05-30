@@ -46,3 +46,6 @@ node_modules/
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# Ignore Mac specific files
+.DS_Store

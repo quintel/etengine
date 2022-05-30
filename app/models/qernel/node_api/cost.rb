@@ -33,14 +33,15 @@ module Qernel
       # Returns a numeric value representing cost per plant.
       def total_initial_investment
         fetch(:total_initial_investment) do
-          if initial_investment.nil? && ccs_investment.nil? &&
-              cost_of_installing.nil? && storage_costs&.zero?
+          if initial_investment.nil? && ccs_investment.nil? && cost_of_installing.nil? &&
+              storage_costs&.zero? && capacity_costs&.zero?
             nil
           else
             (initial_investment || 0.0) +
               (ccs_investment || 0.0) +
               (cost_of_installing || 0.0) +
-              (storage_costs || 0.0)
+              (storage_costs || 0.0) +
+              (capacity_costs || 0.0)
           end
         end
       end
@@ -68,9 +69,16 @@ module Qernel
       #
       # Returns the marginal costs per MWh (produced electricity)
       def marginal_costs
-        fetch(:marginal_costs) do
-          variable_costs_per_typical_input(include_waste: false) *
-            SECS_PER_HOUR / electricity_output_conversion
+        fetch(:marginal_costs, false) do
+          if output(:electricity).nil?
+            nil
+          elsif electricity_output_conversion.zero?
+            0.0
+          else
+            variable_costs_per_typical_input(include_waste: false) *
+              SECS_PER_HOUR / # Highlighting
+              electricity_output_conversion
+          end
         end
       end
 
@@ -80,6 +88,24 @@ module Qernel
       # Returns the cost.
       def marginal_costs=(value)
         dataset_set(:marginal_costs, value)
+      end
+
+      # Public: Returns the maximum price the node is willing to pay for energy.
+      #
+      # This is used only by flexibility technologies which participate in the electricity merit
+      # order. A value may be defined in the ETSource data for the node, or by the user with an
+      # input. If neither, this defaults to returning the node's marginal costs.
+      #
+      # Returns the price per MWh.
+      def max_consumption_price
+        dataset_get(:max_consumption_price) || marginal_costs
+      end
+
+      # Public: Sets the maximum allowed price at which a flex technology will consume energy.
+      #
+      # Returns the price.
+      def max_consumption_price=(new_price)
+        dataset_set(:max_consumption_price, new_price)
       end
 
       # Public: Sets an array to be used as a marginal cost curve.
@@ -118,19 +144,31 @@ module Qernel
         end
       end
 
+      # Public: Calculates a fixed price for the input capacity of the node.
+      #
+      # This is rarely used, but features in some types of storage which have a cost associated with
+      # the total installed input capacity.
+      def capacity_costs
+        fetch(:capacity_costs) do
+          if fixed_costs_per_mw_input_capacity
+            fixed_costs_per_mw_input_capacity * input_capacity
+          else
+            0.0
+          end
+        end
+      end
+
       # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
       #
       # Capital expenditures (CAPEX) are major investments that are designed to be
       # used over the long term. The yearly costs for these investments are based on
-      # the WACC and plant lifetime. If the plant does not have CCS installed, these
-      # costs are zero.
+      # the WACC and plant lifetime.
       #
       # Returns the yearly capital expenditure for CCS in euro.
       def capital_expenditures_ccs
         fetch(:capital_expenditures_ccs) do
-          return 0.0 if ccs_investment.nil?
-
-          ccs_investment * expenditure_factor_per_lifetime_year
+          (cost_of_capital_ccs || 0.0) +
+            (depreciation_costs_ccs || 0.0)
         end
       end
 
@@ -143,14 +181,13 @@ module Qernel
       # Returns the yearly capital expenditure excluding CCS in euro.
       def capital_expenditures_excluding_ccs
         fetch(:capital_expenditures_excluding_ccs) do
-          (total_investment_over_lifetime - (ccs_investment || 0.0)) *
-            expenditure_factor_per_lifetime_year
+          (cost_of_capital || 0.0) +
+            (depreciation_costs || 0.0) -
+            capital_expenditures_ccs
         end
       end
 
       # Public: Calculates the OPEX (operating expenses) for CCS for the node
-      #
-      # Operating expenses for CCS include varaible O&M costs and CO2 emissions costs.
       #
       # Returns the yearly operating expenses for CCS in euro.
       def operating_expenses_ccs
@@ -224,6 +261,25 @@ module Qernel
         end
       end
 
+      # Internal: the yearly cost of capital for the CCS part of one plant per year
+      #
+      # Based on the average yearly payment, the weighted average cost of capital (WACC) and a
+      # factor to include the construction time in the total rent period of the loan.
+      #
+      # The ETM assumes that capital has to be held during construction time (and so interest has to
+      # be paid during this period) and that technical and economic lifetime are the same.
+      #
+      # Returns the yearly cost of capital for CCS for one plant per year.
+      def cost_of_capital_ccs
+        fetch(:cost_of_capital_ccs) do
+          raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
+
+          average_investment_ccs * wacc *
+            (construction_time + technical_lifetime) / # syntax
+            technical_lifetime
+        end
+      end
+
       # Internal: Determines the yearly depreciation of the plant over its life.
       #
       # The straight-line depreciation methodology is used.
@@ -244,6 +300,27 @@ module Qernel
           end
 
           investment / technical_lifetime
+        end
+      end
+
+      # Internal: Returns the yearly depreciation costs for the CCS part of one plant per yar
+      #
+      # The straight-line depreciation methodology is used.
+      #
+      # Returns the yearly depreciation costs per plant per year.
+      def depreciation_costs_ccs
+        fetch(:depreciation_costs_ccs) do
+          raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
+
+          investment = ccs_investment
+
+          if investment && investment.negative?
+            raise IllegalNegativeError.new(
+              self, :ccs_investment, investment
+            )
+          end
+
+          (ccs_investment || 0) / technical_lifetime
         end
       end
 
@@ -325,7 +402,7 @@ module Qernel
         fetch(:co2_emissions_costs_per_typical_input) do
           weighted_carrier_co2_per_mj * area.co2_price *
             (1 - area.co2_percentage_free) *
-            takes_part_in_ets * ((1 - free_co2_factor))
+            (takes_part_in_ets || 1.0) * ((1 - free_co2_factor))
         end
       end
 
@@ -380,6 +457,14 @@ module Qernel
       # Returns a float representing cost per plant per year.
       def average_investment
         fetch(:average_investment) { total_investment_over_lifetime / 2 }
+      end
+
+      # Internal: The average yearly installment of capital cost repayments for ccs, assuming a
+      # linear repayment scheme. That is why divided by 2, to be at 50% between initial cost and 0.
+      #
+      # Returns a float representing cost of the ccs part of one plant per year.
+      def average_investment_ccs
+        fetch(:average_investment_ccs) { (ccs_investment || 0.0) / 2 }
       end
 
       # Internal: This method calculates the input capacity of a plant based on the electrical
@@ -513,18 +598,6 @@ module Qernel
         end
 
         [costable, loss, total]
-      end
-
-      # Internal: Calculates the yearly factor needed to calculate the CAPEX (capital expenditure)
-      # of the node.
-      #
-      # Defines what part of the initial capital investments will be spent on a yearly basis
-      #
-      # Returns a factor that can be multiplied with an investment
-      def expenditure_factor_per_lifetime_year
-        raise IllegalZeroError.new(self, :technical_lifetime) if technical_lifetime.zero?
-
-        (wacc + 1) / (technical_lifetime + construction_time)
       end
     end
   end

@@ -37,10 +37,13 @@ module Qernel
           :fixed_operation_and_maintenance_costs_per_year => ['', 'euro / unit / year'],
           :variable_operation_and_maintenance_costs_per_full_load_hour => ['', 'euro / full load hour'],
           :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => ['', 'euro / full load hour'],
+          :fixed_costs_per_mw_input_capacity => ['', 'euro / MWinput'],
           :costs_per_mj => ['', ''],
           :wacc => ['', ''],
           :profitability => ['', 'profitable / unprofitable / conditionally_profitable'], # Used by merit order
-          :profit_per_mwh_electricity => ['', 'eur/MWh']  # Used by merit order
+          :profit_per_mwh_electricity => ['', 'eur/MWh'],  # Used by merit order,
+          :marginal_costs => ['', 'euro / MWh'],
+          :max_consumption_price => ['', 'euro / MWh']
         },
 
         :merit_order => {

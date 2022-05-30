@@ -31,12 +31,13 @@ class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Mi
       #
       # ### Candidate scenarios
       #
-      # By default, all protected scenarios are migrated, along with any
-      # unprotected scenarios modified in the last month. You may supply a
+      # By default, all `keep_updated` scenarios are migrated, along with any
+      # other scenarios modified in the last month. You may supply a
       # custom cutoff date for migrating unprotected scenarios with the `since`
       # keyword argument.
       #
-      # For example, to migrate unprotected scenarios up to three months old:
+      # For example, to migrate scenarios up to three months old whose
+      # `keep_updated` attribute is false:
       #
       #   migrate_scenarios(since: 3.months.ago) do |scenario|
       #     # ...

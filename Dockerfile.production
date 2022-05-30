@@ -1,4 +1,4 @@
-FROM ruby:2.7.4-slim
+FROM ruby:3.1-slim
 
 LABEL maintainer="dev@quintel.com"
 
@@ -10,6 +10,7 @@ RUN apt-get update -yqq && \
     default-libmysqlclient-dev \
     git \
     gnupg \
+    graphviz \
     libreadline-dev \
     libxml2-dev \
     libxslt1-dev \
@@ -25,7 +26,8 @@ RUN bundle config --global frozen 1
 
 COPY Gemfile* /app/
 WORKDIR /app
-RUN bundle install --jobs=4 --retry=3 --without="development test" --deployment
+RUN bundle config set --local deployment 'true'
+RUN bundle install --jobs=4 --retry=3 --without="development test"
 
 COPY . /app/
 

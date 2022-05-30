@@ -6,6 +6,8 @@ module Api
     # intended to allow additional custom curves to be added later without requiring changes to the
     # REST API.
     class CustomCurvesController < BaseController
+      include UsesScenario
+
       respond_to :json
 
       before_action :ensure_valid_curve_name, except: :index
@@ -37,9 +39,25 @@ module Api
       # Sends the name of the current custom curve for the scenario, or an empty object if none is
       # set.
       #
+      # If the request wants CSV, the file contents will be sent.
+      #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
-        render json: attachment_json(current_attachment)
+        attachment = current_attachment
+
+        respond_to do |format|
+          format.csv do
+            send_data(
+              attachment.file.blob.download,
+              type: 'text/csv',
+              filename: "#{attachment.key}.#{attachment.scenario_id}.csv"
+            )
+          end
+
+          format.any do
+            render json: attachment_json(attachment)
+          end
+        end
       end
 
       # Creates or updates a custom curve for a scenario.
@@ -52,7 +70,7 @@ module Api
         if handler.valid?
           render json: attachment_json(handler.call)
         else
-          render json: errors_json(handler), status: 422
+          render json: errors_json(handler), status: :unprocessable_entity
         end
       end
 
@@ -115,7 +133,7 @@ module Api
         CurveHandler::AttachService.new(
           config_for(curve_name),
           io,
-          Scenario.find(params[:scenario_id]),
+          scenario,
           metadata_parameters
         )
       end

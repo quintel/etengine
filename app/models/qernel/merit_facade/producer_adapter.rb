@@ -8,14 +8,20 @@ module Qernel
         config = context.node_config(node)
 
         case config.subtype
+        when :dispatchable
+          DispatchableAdapter
         when :must_run, :volatile
           curtailment = config.production_curtailment
           curtailment&.positive? ? CurtailedAlwaysOnAdapter : AlwaysOnAdapter
+        when :import
+          ImportAdapter
         when :backup
           BackupAdapter
-        when :dispatchable
-          group = config.group
-          group == :import ? ImportAdapter : DispatchableAdapter
+        when :always_on_battery_park
+          AlwaysOnBatteryParkAdapter
+        else
+          raise "Unknown #{context.attribute}.subtype " \
+                "#{config.subtype.to_s.inspect} for #{node.key}"
         end
       end
 
@@ -71,7 +77,7 @@ module Qernel
       end
 
       def marginal_costs
-        source_api.marginal_costs
+        source_api.marginal_costs || :null
       end
 
       def output_capacity_per_unit

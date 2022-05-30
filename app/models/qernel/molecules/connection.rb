@@ -69,6 +69,15 @@ module Qernel
 
           raise "Invalid molecule conversion attribute for #{slot.carrier.key} carrier " \
                 "on #{slot.node.key} node: #{factor.inspect}"
+        elsif factor.to_s.start_with?('edges:')
+          attribute = factor[6..].strip
+          total = slot.edges.sum(&:demand)
+
+          return 0.0 if total.zero?
+
+          return slot.edges.sum do |edge|
+            edge.query.public_send(attribute) * (edge.demand / total)
+          end
         end
 
         factor

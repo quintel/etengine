@@ -1,4 +1,4 @@
-# Sets up the necessary stubs to use the fixture version of ETsource located
+# Sets up the necessary stubs to use the fixture version of ETSource located
 # at spec/fixtures/etsource.
 module ETSourceFixtureHelper
   # A custom Atlas loader which will not attempt to calculate the dataset in

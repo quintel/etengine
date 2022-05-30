@@ -6,15 +6,43 @@ module Api
     # scenario with the data, or presents a useful error to sent back to the
     # client.
     class ScenarioUpdater
+      # An updater which does nothing.
+      class Null
+        include ActiveModel::Validations
+
+        attr_reader :scenario
+
+        def initialize(scenario, _params)
+          @scenario = scenario
+        end
+
+        def apply
+          true
+        end
+
+        def valid?
+          true
+        end
+      end
+
       include ActiveModel::Validations
 
       validate :validate_user_values
       validate :validate_groups_balance
+      validate :validate_metadata_size
+
+      # Boolean API values which are considered truthy.
+      TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
 
       # @return [Scenario]
       #   Returns the scenario being updated.
       #
       attr_reader :scenario
+
+      # Public: Returns an updater for the scenario.
+      def self.for_scenario(scenario, params)
+        (scenario.api_read_only? ? Null : self).new(scenario, params)
+      end
 
       # Creates a new ScenarioUpdater.
       #
@@ -38,12 +66,29 @@ module Api
       def apply
         return true if @data.empty?
 
+        # Temporary while we continue to support `title` and `description` as part of the public
+        # API.
+        md = metadata
+        md[:title] = @scenario_data[:title] if @scenario_data.key?(:title)
+        md[:description] = @scenario_data[:description] if @scenario_data.key?(:description)
+
+        apply_protection_attributes
+
         @scenario.attributes = @scenario.attributes.except(
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
-          @scenario_data.except(:area_code, :end_year).merge(
+          @scenario_data.except(
+            :area_code,
+            :description,
+            :end_year,
+            :keep_compatible,
+            :protected,
+            :read_only,
+            :title
+          ).merge(
             balanced_values: balanced_values,
-            user_values: user_values
+            user_values: user_values,
+            metadata: md
           )
         )
 
@@ -59,8 +104,8 @@ module Api
         scenario_valid = @scenario.valid?
 
         unless scenario_valid
-          @scenario.errors.each do |attribute, message|
-            errors.add(:base, "Scenario #{attribute} #{message}")
+          @scenario.errors.each do |error|
+            errors.add(:base, "Scenario #{error.attribute} #{error.message}")
           end
         end
 
@@ -143,7 +188,7 @@ module Api
       def validate_numeric_input(key, input, value)
         # If the value was nil, the value provided by the visitor could not
         # be coerced into a valid number.
-        if value.nil?
+        if value.blank?
           errors.add(:base, "Input #{key} must be numeric")
           return
         end
@@ -153,6 +198,10 @@ module Api
         elsif value > (max = input[:max])
           errors.add(:base, "Input #{key} cannot be greater than #{max}")
         end
+      end
+
+      def validate_metadata_size
+        errors.add(:base, 'Metadata can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
       end
 
       # User Values and Balancing --------------------------------------------
@@ -259,6 +308,20 @@ module Api
         # It is acceptable for a balancer to fail; validation will catch if and
         # notify the user.
         nil
+      end
+
+      # Internal: Makes sure the scenario's current metadata object is not overwritten
+      # when a new metadata object was not supplied in the params
+      #
+      # Returns a hash of metadata
+      def metadata
+        @scenario_data.key?(:metadata) ? @scenario_data[:metadata] : @scenario.metadata.dup
+      end
+
+      # Internal: Sets whether the scenario is API immutable and to be kept compatible. Cancancan
+      # prevents updating th escenario when `api_read_only`` is true.
+      def apply_protection_attributes
+        SetScenarioProtectionAttributes.call(params: @scenario_data, scenario: @scenario)
       end
 
       # Given a collection of user values, yields the name of each group to

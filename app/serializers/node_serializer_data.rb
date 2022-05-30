@@ -61,6 +61,47 @@ module NodeSerializerData
     }
   }.freeze
 
+  STEEL_ATTRIBUTES_AND_METHODS = {
+    technical: {
+    'number_of_units' => {
+        label: 'Annual steel production',
+        key: :annual_steel_production,
+        unit: 'MT'
+      }
+    },
+    cost: {
+      'cost_of_capital_per(:plant) + depreciation_costs_per(:plant)' => {
+        label: 'Annual CAPEX',
+        key: :steel_fixed_costs_per_plant,
+        unit: 'EUR / MT',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:plant)' => {
+        label: 'Annual OPEX',
+        key: :steel_fixed_operation_and_maintenance_costs_per_plant,
+        unit: 'EUR / MT',
+        formatter: ->(n) { n.to_i }
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    },
+    other: {
+      technical_lifetime: {
+        label: 'Technical lifetime',
+        unit: 'years',
+        formatter: ->(n) { n.to_i }
+      }
+    }
+  }.freeze
+
   # If the node belongs to the electricity_production presentation group then
   # add these
   ELECTRICITY_PRODUCTION_CCS_ATTRIBUTES_AND_METHODS = {
@@ -743,6 +784,8 @@ module NodeSerializerData
         V2G_ATTRIBUTES_AND_METHODS
       when :biomass
         BIOMASS_ATTRIBUTES_AND_METHODS
+      when :steel
+        STEEL_ATTRIBUTES_AND_METHODS
       else
         {}
       end

@@ -69,8 +69,6 @@ module Etsource
       commit.gcommit.archive(archive, format: 'tar')
       system("tar -x -C '#{ @export_dir }' -f '#{ archive }'")
 
-      decrypt!(@export_dir)
-
       archive.delete
 
       update_latest_import_sha(sha_id)
@@ -135,47 +133,6 @@ module Etsource
 
     def git
       @git ||= Git.open(@base_dir)
-    end
-
-    # Internal: Given the path to an ETSource directory, decrypts the
-    # GPG-protected private files.
-    #
-    # Returns nothing.
-    def decrypt!(directory)
-      crypto = GPGME::Crypto.new(password: gpg_passphrase)
-
-      Pathname.glob(directory.join('**/*.gpg')) do |path|
-        destination = path.dirname.join("#{path.basename('.gpg')}.csv")
-
-        unless destination.file?
-          File.open(destination, 'wb') do |out|
-            crypto.decrypt(
-              path.read,
-              pinentry_mode: GPGME::PINENTRY_MODE_LOOPBACK,
-              output: out
-            )
-          end
-        end
-      end
-    end
-
-    # Internal: Retrieves the passphrase to be used to decrypt private files.
-    #
-    # Returns a string.
-    def gpg_passphrase
-      return ENV['ETSOURCE_KEY'] if ENV.key?('ETSOURCE_KEY')
-
-      passphrase_path = [
-        Rails.root.join('config/.etsource_password'), # Production and staging.
-        ETSOURCE_DIR.join('.password')                # Local development.
-      ].detect(&:file?)
-
-      if passphrase_path.nil?
-        raise RuntimeError, "Cannot decrypt GPG-protected files; no password " \
-                            "file was found"
-      end
-
-      passphrase_path.read.strip
     end
   end
 end

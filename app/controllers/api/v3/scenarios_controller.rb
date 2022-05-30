@@ -6,10 +6,9 @@ module Api
       before_action :find_scenario, only: %i[interpolate update]
       around_action :wrap_with_raven_context, only: :update
 
-      before_action :find_preset_or_scenario, only: [
-        :show, :merit, :dashboard, :application_demands,
-        :production_parameters, :energy_flow
-      ]
+      before_action :find_preset_or_scenario, only: %i[show merit dashboard]
+
+      authorize_resource except: %i[update]
 
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
@@ -101,6 +100,20 @@ module Api
           attrs[:user_values] = attrs[:user_values].transform_values(&:to_f)
         end
 
+        if attrs.key?(:title)
+          attrs[:metadata] ||= {}
+          attrs[:metadata][:title] = attrs.delete(:title)
+        end
+
+        if attrs.key?(:description)
+          attrs[:metadata] ||= {}
+          attrs[:metadata][:description] = attrs.delete(:description)
+        end
+
+        if attrs.key?(:protected) && !attrs.key?(:read_only)
+          attrs[:keep_compatible] = attrs[:api_read_only] = attrs.delete(:protected)
+        end
+
         @scenario = Scenario.new
 
         if scaler_attributes && ! attrs[:descale]
@@ -120,13 +133,15 @@ module Api
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs
+        @scenario.attributes = attrs.except(:read_only, :protected, :keep_compatible)
+
+        SetScenarioProtectionAttributes.call(params: attrs, scenario: @scenario)
 
         Scenario.transaction do
           @scenario.save!
         end
 
-        render json: ScenarioSerializer.new(self, @scenario, filtered_params)
+        render json: ScenarioSerializer.new(self, @scenario, filtered_params.merge(detailed: true))
       rescue ActiveRecord::RecordInvalid
         render json: { errors: @scenario.errors }, status: 422
       end
@@ -137,7 +152,7 @@ module Api
           @scenario, params.require(:end_year).to_i
         )
 
-        @interpolated.protected = true if params[:protected]
+        SetScenarioProtectionAttributes.call(params: params, scenario: @interpolated)
 
         Scenario.transaction do
           @interpolated.save!
@@ -188,15 +203,16 @@ module Api
       # }
       #
       def update
-        updater    = ScenarioUpdater.new(@scenario, filtered_params)
+        final_params = filtered_params.to_h
+
+        authorize!(final_params[:scenario].present? ? :update : :read, @scenario)
+
+        updater    = ScenarioUpdater.for_scenario(@scenario, final_params)
         serializer = nil
 
         Scenario.transaction do
           updater.apply
-
-          serializer = ScenarioUpdateSerializer.new(
-            self, updater, filtered_params
-          )
+          serializer = ScenarioUpdateSerializer.new(self, updater, final_params)
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end
@@ -240,8 +256,6 @@ module Api
 
       def find_scenario
         @scenario = Scenario.find_for_calculation(params[:id])
-      rescue ActiveRecord::RecordNotFound, ActiveModel::RangeError
-        render_not_found(errors: ['Scenario not found'])
       end
 
       # Internal: All the request parameters, filtered.
@@ -259,15 +273,22 @@ module Api
       def scenario_attributes
         attrs = params.permit(scenario: [
           :area_code, :author, :country, :descale, :description, :end_year,
-          :preset_scenario_id, :protected, :region, :scenario_id, :source,
-          :title, user_values: {}
+          :preset_scenario_id, :region, :scenario_id, :source,
+          :protected, :read_only, :keep_compatible,
+          :title, user_values: {}, metadata: {}
         ])
 
-        attrs = (attrs[:scenario] || {}).merge(
-          user_values: filtered_user_values(attrs[:scenario])
-        )
+        attrs = attrs[:scenario] || {}
 
-        attrs[:descale] = attrs[:descale] == 'true'
+        if (user_vals = filtered_user_values(attrs[:scenario])).present?
+          attrs[:user_values] = user_vals
+        end
+
+        if attrs[:scenario]&.key?(:metadata)
+          attrs[:metadata] = filtered_metadata(attrs[:scenario])
+        end
+
+        attrs[:descale] = true if attrs[:descale] == 'true'
 
         attrs
       end
@@ -282,6 +303,17 @@ module Api
           .permit!
           .to_h
           .with_indifferent_access
+      end
+
+      # Internal: All metadata for the scenario, filtered.
+      #
+      # Returns a ActionController::Parameters.
+      def filtered_metadata(scenario)
+        return {} unless scenario&.key?(:metadata)
+
+        scenario[:metadata]
+          .permit!
+          .to_h
       end
 
       # Internal: Attributes for creating a scaled scenario.

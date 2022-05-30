@@ -15,6 +15,7 @@ module Qernel
 
         if cost_curve?
           attrs.delete(:marginal_costs)
+          attrs.delete(:consumption_price)
           attrs[:cost_curve] = Merit::Curve.new(@context.curves.rotate(cost_curve))
         end
 

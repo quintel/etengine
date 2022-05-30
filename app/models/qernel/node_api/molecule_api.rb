@@ -5,6 +5,7 @@ module Qernel
     # Contains methods and attributes specific to querying molecule nodes.
     class MoleculeApi < Base
       dataset_accessors :output_capacity
+      dataset_accessors :from_energy
 
       # Public: Calculates the number of units, based on the demand and input or output capacity.
       #

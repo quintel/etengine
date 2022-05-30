@@ -22,7 +22,7 @@ namespace :deploy do
   task load_etsource: :environment do
     etsource    = Pathname.new(ETSOURCE_DIR).expand_path
     destination = Pathname.new(ETSOURCE_EXPORT_DIR).expand_path
-    revision    = (ENV['ETSOURCE_REF'] || Rails.env.production? ? 'production' : 'master').strip
+    revision    = (ENV['ETSOURCE_REF'] || (Rails.env.production? ? 'production' : 'master')).strip
     real_rev    = nil
 
     raise "You didn't provide an ETSOURCE_REF to load!" if revision.empty?
@@ -40,6 +40,7 @@ namespace :deploy do
     verbose(false) do
       cd(etsource) do
         real_rev = `git rev-parse 'origin/#{revision}'`.strip
+        real_rev = real_rev.split('/').last if real_rev.include?('/')
       end
     end
 

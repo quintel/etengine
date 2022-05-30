@@ -46,6 +46,14 @@ class Input
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
+  def disabled_by
+    @disabled_by || []
+  end
+
+  def disabled_by=(disabled_by)
+    @disabled_by = Array(disabled_by).map { |key| key.to_s.freeze }.freeze
+  end
+
   def before_update?
     update_period == 'before'
   end
