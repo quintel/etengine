@@ -109,7 +109,8 @@ module Qernel
             non_ambient_share = 1 - (
               ambient_heat_input_conversion +
               ambient_cold_input_conversion +
-              geothermal_input_conversion
+              geothermal_input_conversion +
+              solar_thermal_input_conversion
             )
 
             non_ambient_share <= 0 ? 1.0 : 1 / non_ambient_share
