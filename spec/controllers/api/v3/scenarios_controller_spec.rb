@@ -189,4 +189,29 @@ describe Api::V3::ScenariosController do
       end
     end
   end
+
+  describe 'GET merit' do
+    context 'with no extra settings' do
+      before { get :merit,  params: { id: scenario.id } }
+
+      it 'returns the merit config' do
+        expect(response).to be_successful
+      end
+
+      it 'includes curves and participants' do
+        parsed = JSON.parse(response.body)
+        expect(parsed.keys).to include('curves', 'participants')
+      end
+    end
+
+    context 'with include_curves=false' do
+      it 'does not include curves' do
+        get :merit, params: { id: scenario.id, include_curves: false }
+
+        parsed = JSON.parse(response.body)
+
+        expect(parsed.keys).not_to include('curves')
+      end
+    end
+  end
 end

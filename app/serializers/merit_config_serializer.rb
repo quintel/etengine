@@ -39,15 +39,17 @@ class MeritConfigSerializer
   # Public: Creates a new serializer. Requires a copy of the Qernel::Graph
   # from which it can retrieve information about each participant. Typically
   # this should be the "future" graph.
-  def initialize(graph)
+  def initialize(graph, include_curves: true)
     @graph = graph
+    @include_curves = include_curves
   end
 
   # Public: Creates a hash with the merit order data.
   def as_json(*)
     @manager = Qernel::MeritFacade::Manager.new(@graph)
     @area = Atlas::Dataset.find(@graph.area.area_code)
-    data = { curves: {}, participants: [] }
+
+    data = @include_curves ? { curves: {}, participants: [] } : { participants: [] }
 
     # Add participant data
     participants.each do |participant|
@@ -55,11 +57,7 @@ class MeritConfigSerializer
     end.compact
 
     # Add curves
-    data[:participants].pluck(:curve).uniq.compact.each do |joined_curve_key|
-      next unless joined_curve_key
-
-      data[:curves][joined_curve_key] ||= curve_data(joined_curve_key)
-    end
+    add_curve_data_to(data) if @include_curves
 
     data
   end
@@ -73,10 +71,8 @@ class MeritConfigSerializer
   end
 
   def participant_data(participant)
-    data = {
-      curve:  curve_key(participant),
-      type:   participant_type(participant)
-    }
+    data = { type: participant_type(participant) }
+    data[:curve] = curve_key(participant) if @include_curves
 
     attribute_keys(data).each_with_object(data) do |key, hash|
       hash[key] =
@@ -112,6 +108,17 @@ class MeritConfigSerializer
     "#{participant.key}.marginal_cost_curve"
   end
 
+  # Internal: Adds the curve data to the data object
+  # The data object should already be populated with participants and their
+  # curve keys
+  def add_curve_data_to(data)
+    data[:participants].pluck(:curve).uniq.compact.each do |joined_curve_key|
+      next unless joined_curve_key
+
+      data[:curves][joined_curve_key] ||= curve_data(joined_curve_key)
+    end
+  end
+
   # Internal: splits the joined participant.curve key if possible, and determines the way on how
   # to access the curve data. For dynamic, fever and weather curves, the MeritFacadeManagers
   # curveset is used. The interconnectors use the general node API, and the standard curves
@@ -143,7 +150,7 @@ class MeritConfigSerializer
     elsif data[:type] == 'total_consumption'
       USER_KEYS + [:total_consumption]
     elsif data[:type] == 'with_curve'
-      USER_KEYS + [:load_curve]
+      USER_KEYS
     elsif data[:type] == 'consumption_loss'
       USER_KEYS + [:consumption_share]
     elsif data[:curve].present?

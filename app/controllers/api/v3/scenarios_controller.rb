@@ -29,7 +29,9 @@ module Api
       # information about each producer in the scenario, and the load profiles.
       #
       def merit
-        render json: MeritConfigSerializer.new(@scenario.gql.future_graph)
+        render json: MeritConfigSerializer.new(
+          @scenario.gql.future_graph, include_curves: include_curves_in_merit?
+        )
       end
 
       # GET /api/v3/scenarios/:id1,:id2,:id3,...,:id20/batch
@@ -326,6 +328,20 @@ module Api
             :has_agriculture, :has_energy, :has_industry
           )
         end
+      end
+
+      # Internal: Parameters for the merit config
+      #
+      # Returns a ActionController::Parameters.
+      def merit_parameters
+        params.permit(:include_curves)
+      end
+
+      # Internal: Checks if curves should be included in the merit config
+      #
+      # Returns a Bool
+      def include_curves_in_merit?
+        merit_parameters[:include_curves] != 'false'
       end
 
       # Internal: Wraps an action with information about a scenario, so that if
