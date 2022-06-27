@@ -4,7 +4,9 @@ class Inspect::LayoutsController < Inspect::BaseController
   before_action :find_models, :only => [:show, :edit]
 
   helper_method :attributes_for_json, :positions
+
   skip_authorize_resource :only => :show
+  skip_before_action :verify_authenticity_token, only: :update
 
   before_action :assert_valid_graph
 
