@@ -20,13 +20,15 @@ module Api
       # GET /api/v3/scenarios/:scenario_id/custom_curves
       def index
         available_curves = Etsource::Config.user_curves
+        include_internal = ActiveModel::Type::Boolean.new.cast(params[:include_internal])
+        include_unattached = ActiveModel::Type::Boolean.new.cast(params[:include_unattached])
 
-        unless params[:include_internal]
+        unless include_internal
           available_curves = available_curves.reject { |_key, config| config.internal? }
         end
 
         curves = available_curves.values.map do |config|
-          if attachment(config.key).blank? && params[:include_unattached]
+          if attachment(config.key).blank? && include_unattached
             UnattachedCustomCurveSerializer.new(config).as_json
           else
             attachment_json(attachment(config.key)).as_json.presence

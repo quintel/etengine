@@ -3,7 +3,7 @@ class ScenarioUpdateSerializer
     @controller = controller
     @updater = updater
     @requested_queries = params[:gqueries] || []
-    @detailed = params[:detailed].present?
+    @detailed = ActiveModel::Type::Boolean.new.cast(params[:detailed])
 
     @errors  = []
     @results = {}

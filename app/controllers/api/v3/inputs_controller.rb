@@ -13,7 +13,7 @@ module Api
       # passed then the action will use the latest scenario.
       #
       def index
-        extras = params[:include_extras]
+        extras = ActiveModel::Type::Boolean.new.cast(params[:include_extras])
         render json: InputSerializer.collection(Input.all, @scenario, extras)
       end
 

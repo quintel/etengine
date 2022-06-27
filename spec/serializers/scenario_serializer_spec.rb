@@ -25,11 +25,23 @@ describe ScenarioSerializer do
 
   context 'when "detailed=false", "include_inputs=false"' do
     subject do
-      described_class.new(controller, scenario).as_json
+      described_class.new(controller, scenario, detailed: false, include_inputs: false).as_json
     end
 
     it_should_behave_like 'a scenario serializer'
 
+    it { is_expected.not_to have_key(:user_values) }
+    it { is_expected.not_to have_key(:inputs) }
+  end
+
+  context 'when detailed="false", include_inputs="false"' do
+    subject do
+      described_class.new(controller, scenario, detailed: 'false', include_inputs: 'false').as_json
+    end
+
+    it_should_behave_like 'a scenario serializer'
+
+    it { is_expected.not_to have_key(:user_values) }
     it { is_expected.not_to have_key(:inputs) }
   end
 
@@ -40,6 +52,7 @@ describe ScenarioSerializer do
 
     it_should_behave_like 'a scenario serializer'
 
+    it { is_expected.to have_key(:user_values) }
     it { is_expected.to include(metadata: {}) }
   end
 

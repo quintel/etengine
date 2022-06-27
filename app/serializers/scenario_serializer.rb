@@ -13,8 +13,8 @@ class ScenarioSerializer < PresetSerializer
   def initialize(controller, scenario, options = {})
     super(controller, scenario)
 
-    @detailed = options[:detailed].present?
-    @inputs   = options[:include_inputs].present?
+    @detailed = ActiveModel::Type::Boolean.new.cast(options[:detailed])
+    @inputs   = ActiveModel::Type::Boolean.new.cast(options[:include_inputs])
   end
 
   # Creates a Hash suitable for conversion to JSON by Rails.
