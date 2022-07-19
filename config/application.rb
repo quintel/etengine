@@ -55,6 +55,10 @@ module Etm
         raise "Missing e-mail settings for #{ Rails.env.inspect } environment"
       end
     end
+
+    # Allow commonly used classes in `serialize` columns (user and balanced values)
+    config.active_record.yaml_column_permitted_classes =
+      [Symbol, ActiveSupport::HashWithIndifferentAccess]
   end
 
   Date::DATE_FORMATS[:default] = "%d-%m-%Y"
