@@ -61,6 +61,10 @@ module Qernel
       def availability_curve
         source_api.availability_curve
       end
+
+      def positive_availability?
+        availability_curve? || super
+      end
     end
   end
 end

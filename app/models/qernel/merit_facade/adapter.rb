@@ -42,8 +42,7 @@ module Qernel
       #
       # Returns true or false.
       def installed?
-        source_api.number_of_units.positive? &&
-          target_api.availability.positive?
+        source_api.number_of_units.positive? && positive_availability?
       end
 
       private
@@ -121,6 +120,11 @@ module Qernel
         target_api.dataset_lazy_set(name) do
           @context.curves.derotate(yield.to_a)
         end
+      end
+
+      # Internal: Returns if the adapter has non-zero availability.
+      def positive_availability?
+        target_api.availability.positive?
       end
     end
   end
