@@ -51,6 +51,10 @@ class ScenarioAttachment < ApplicationRecord
     key.ends_with?('_curve')
   end
 
+  def curve_config
+    Etsource::Config.user_curves[key.chomp('_curve')]
+  end
+
   # Returns true for attachments which have all their 'source_scenario' metadata
   # set, indicating the attachment was imported from another scenario
   def source_scenario?

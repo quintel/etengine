@@ -39,17 +39,7 @@ class Scenario < ApplicationRecord
     #
     # Returns a boolean.
     def disabled?(input)
-      @scenario.api_read_only? || disabled_by_exclusivity?(input)
-    end
-
-    # Public: A set of inputs which are set in the scenario which are disabled due to the presence
-    # of one or more conflicting exclusive inputs.
-    #
-    # input - The input to check for exclusivity conflicts.
-    #
-    # Returns a Set[Input].
-    def disabled_by_exclusivity?(input)
-      input.disabled_by.any? { |key| combined_values.key?(key) }
+      @scenario.api_read_only? || disabled_by_exclusivity?(input) || disabled_by_curve?(input)
     end
 
     private
@@ -82,8 +72,10 @@ class Scenario < ApplicationRecord
     # Returns an array of inputs, in order of their execution priority.
     def enabled_inputs
       @enabled_inputs ||= all
-        .reject { |input| disabled_by_exclusivity?(input) }
+        .reject { |input| disabled_by_exclusivity?(input) || disabled_by_curve?(input) }
         .sort_by { |input| [-input.priority, input.key] }
+
+      @enabled_inputs
     end
 
     # Internal: All inputs active in the scenario, including those which may later be considered
@@ -98,6 +90,30 @@ class Scenario < ApplicationRecord
     # Returns an hash.
     def combined_values
       @combined_values ||= @scenario.balanced_values.merge(@scenario.user_values)
+    end
+
+    # Internal: A set of inputs which are set in the scenario which are disabled due to the presence
+    # of one or more conflicting exclusive inputs.
+    #
+    # input - The input to check for exclusivity conflicts.
+    #
+    # Returns a Set[Input].
+    def disabled_by_exclusivity?(input)
+      input.disabled_by.any? { |key| combined_values.key?(key) }
+    end
+
+    # Internal: Returns if the input is disabled by a custom user curve which has been set.
+    def disabled_by_curve?(input)
+      inputs_disabled_by_curves.include?(input.key)
+    end
+
+    def inputs_disabled_by_curves
+      @inputs_disabled_by_curves ||= Set.new(
+        @scenario.attachments
+          .select(&:curve?)
+          .select(&:loadable_curve?)
+          .flat_map { |attachment| attachment.curve_config.disabled_inputs }
+      )
     end
   end
 end
