@@ -94,7 +94,7 @@ class Scenario < ApplicationRecord
 
   def self.default_attributes
     {
-      :area_code => 'nl',
+      :area_code => Etsource::Config.default_dataset_key,
       :user_values => {},
       :end_year => 2050
     }.with_indifferent_access

@@ -6,7 +6,7 @@ module Etsource
       @graph_config = graph_config
     end
 
-    def graph(country = 'nl')
+    def graph(country = Etsource::Config.default_dataset_key)
       @graph ||= import
       @graph.dataset = Etsource::Dataset.new(country).import
       @graph

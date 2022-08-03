@@ -66,7 +66,7 @@ module Qernel
     end
 
     # Enables edge.electricity?, edge.network_gas?, etc.
-    Etsource::Dataset::Import.new('nl').carrier_keys.each do |carrier_key|
+    Etsource::Dataset::Import.default.carrier_keys.each do |carrier_key|
       delegate :"#{carrier_key}?", to: :carrier
     end
 

@@ -4,6 +4,11 @@ module Etsource
   module Config
     module_function
 
+    # Public: A string identifying the key of the default dataset
+    def default_dataset_key
+      read(:default_dataset).to_s
+    end
+
     # Public: Inputs whose unit should not be scaled for small scenarios and
     # regions.
     #

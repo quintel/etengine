@@ -1,7 +1,8 @@
 Rails.application.config.to_prepare do
   Rails.application.reloader.to_prepare do
-    cache_time = Rails.cache.read(NastyCache::MEMORY_CACHE_KEY)
-    nl_data    = Etsource::Loader.instance.dataset('nl').data
+    dataset_key = Etsource::Config.default_dataset_key
+    cache_time  = Rails.cache.read(NastyCache::MEMORY_CACHE_KEY)
+    data        = Etsource::Loader.instance.dataset(dataset_key).data
 
     NastyCache.instance.expire_cache!
 
@@ -11,6 +12,6 @@ Rails.application.config.to_prepare do
 
     # Create a new NL dataset with the original data. Shaves 2s off reloading
     # time in development.
-    Etsource::Loader.instance.warm_dataset_with_data('nl', nl_data)
+    Etsource::Loader.instance.warm_dataset_with_data(dataset_key, data)
   end
 end

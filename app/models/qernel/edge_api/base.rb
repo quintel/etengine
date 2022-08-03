@@ -37,7 +37,7 @@ module Qernel
       # to the API _and_ the edge.
       def_delegator(:@edge, :dataset_attributes) if Rails.env.development? || Rails.env.test?
 
-      Etsource::Dataset::Import.new('nl').carrier_keys.each do |carrier_key|
+      Etsource::Dataset::Import.default.carrier_keys.each do |carrier_key|
         def_delegator :@edge, :"#{carrier_key}?"
       end
 

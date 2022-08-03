@@ -44,10 +44,12 @@ namespace :merit do
         scenario = Scenario.find(scenario_id)
       end
     else
-      puts "Creating archive with a new " \
-           "#{ (env['AREA'] || 'NL').upcase } scenario"
+      default_key = Etsource::Config.default_dataset_key
 
-      scenario = Scenario.default(area_code: (env['AREA'] || 'nl').downcase)
+      puts "Creating archive with a new " \
+           "#{ (env['AREA'] || default_key).upcase } scenario"
+
+      scenario = Scenario.default(area_code: (env['AREA'] || default_key).downcase)
     end
 
     graph = scenario.gql.future_graph

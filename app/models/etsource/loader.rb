@@ -115,7 +115,7 @@ module Etsource
         if @etsource.cache_topology?
           NastyCache.instance.fetch_cached('optimized_graph') do
             graph = unoptimized_graph(graph_config)
-            graph.dataset = dataset('nl')
+            graph.dataset = dataset(Etsource::Config.default_dataset_key)
 
             merit = graph.area.dataset_get(:use_merit_order_demands)
 
@@ -149,7 +149,7 @@ module Etsource
     #
     # Returns a Qernel::Graph.
     def load_topology(config)
-      Topology.new(config, dataset('nl')).import
+      Topology.new(config, dataset(Etsource::Config.default_dataset_key)).import
     end
   end
 end

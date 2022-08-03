@@ -31,6 +31,11 @@ module Etsource
       @loader = loader
     end
 
+    # Public: Creates an Import for the default dataset.
+    def self.default
+      new(Etsource::Config.default_dataset_key)
+    end
+
     def initialize(country)
       @country  = country
       @dataset  = Qernel::Dataset.new(Hashpipe.hash(country))

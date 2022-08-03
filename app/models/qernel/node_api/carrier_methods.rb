@@ -53,7 +53,7 @@ module Qernel
         end
       end
 
-      create_methods_for_each_carrier(Etsource::Dataset::Import.new('nl').carrier_keys)
+      create_methods_for_each_carrier(Etsource::Dataset::Import.default.carrier_keys)
 
       private
 
