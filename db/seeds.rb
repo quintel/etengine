@@ -21,4 +21,13 @@ puts <<~MSG
   +------------------------------------------------------------------------------+
 MSG
 
-Scenario.new(Scenario.default_attributes).save(validate: false)
+begin
+  Scenario.new(Scenario.default_attributes).save(validate: false)
+rescue Atlas::ConfigNotFoundError
+  # Typically happens in the CI environment due to no config file.
+  puts <<~MSG
+    Skipping scenario creation, no config file found. Create a
+    scenario manually through the Rails console before accessing
+    the admin pages.
+  MSG
+end
