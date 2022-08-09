@@ -560,8 +560,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         end
 
         it 'should retain the scaled user values' do
-          unscaled = Scenario.first
-          scaled   = Scenario.last
+          unscaled = Scenario.find(json['template'])
+          scaled   = Scenario.find(json['id'])
 
           expect(scaled.user_values['foo_demand']).
             to eq(unscaled.user_values[:foo_demand].to_f * multi)
@@ -576,7 +576,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
               scale: { area_attribute: 'number_of_residences', value: 500_000 }
             }
           }
+        end
 
+        let(:create_scenario) do
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: Scenario.last.id, descale: true
@@ -587,11 +589,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         let(:json) { JSON.parse(response.body) }
 
         it 'should be successful' do
-          expect(response.status).to eql(200)
+          create_scenario
+          expect(response.status).to eq(200)
         end
 
         it 'should create a second scenario from the base dataset' do
-          expect(Scenario.count).to eq(2)
+          expect { create_scenario }.to change(Scenario, :count).by(1)
         end
       end
     end # with a derived dataset
