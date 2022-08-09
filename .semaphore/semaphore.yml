@@ -20,7 +20,7 @@ blocks:
             - bundle config set --local deployment 'true'
             - bundle install
             - cache store
-            - bundle exec rails db:setup
+            - RAILS_ENV=test bundle exec rails db:setup
             - bundle exec rspec
 promotions:
   - name: Deploy to staging
