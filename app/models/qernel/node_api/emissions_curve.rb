@@ -36,22 +36,6 @@ module Qernel
           co2 * (value / sum)
         end
       end
-
-      # def primary_co2_emissions_curve_with_conversion(curve, electricity_conversion)
-      #   return [0.0] * 8760 if demand.zero? || !electricity_conversion.positive? || curve.empty?
-
-      #   co2_per_mwh = primary_co2_emission / demand * MJ_PER_MWH
-
-      #   curve.map do |electricity_in_hour|
-      #     # Convert the electricity output for the current hour (MWh) to the equivalent
-      #     # demand (MWh) on the node
-      #     demand_in_hour = electricity_in_hour / electricity_conversion
-
-      #     # Multiply the demand (in MWh) by the CO2 emissions per MWh to get the
-      #     # amount of primary CO2 emission in this hour.
-      #     demand_in_hour * co2_per_mwh
-      #   end
-      # end
     end
   end
 end
