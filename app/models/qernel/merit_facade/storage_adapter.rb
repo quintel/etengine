@@ -18,6 +18,11 @@ module Qernel
 
       private
 
+      def marginal_costs
+        # Read cost from the target API, since its cost may differ from that set on the source.
+        @context.dispatchable_sorter.cost(target_api, @config)
+      end
+
       def producer_attributes
         attrs = super
 
