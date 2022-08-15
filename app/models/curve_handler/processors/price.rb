@@ -39,14 +39,6 @@ module CurveHandler
       end
 
       private_class_method :from_table_csv
-
-      def sanitized_curve
-        return nil unless valid?
-
-        @curve.map do |value|
-          value < 0.0 ? 0.0 : value.round(2)
-        end
-      end
     end
   end
 end

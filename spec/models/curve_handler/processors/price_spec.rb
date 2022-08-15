@@ -16,8 +16,16 @@ RSpec.describe CurveHandler::Processors::Price do
       expect(handler).to be_valid
     end
 
-    it 'rounds each value to two decimal places' do
-      expect(handler.sanitized_curve).to eq(curve.map { |v| v.round(2) })
+    it 'keeps each value verbatim' do
+      expect(handler.sanitized_curve).to eq(curve)
+    end
+  end
+
+  context 'with a curve containing negatives' do
+    let(:curve) { [0.0, -1.0, 1.0, 0.0] * 8760 }
+
+    it 'is not valid' do
+      expect(handler).not_to be_valid
     end
   end
 
