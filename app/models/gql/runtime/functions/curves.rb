@@ -108,6 +108,31 @@ module Gql::Runtime
 
         left.map.with_index { |value, index| value * right[index] }
       end
+
+      # Creates a smoothed curve using a moving average.
+      #
+      # curve       - An array of numbers.
+      # window_size - The number of points to average over.
+      #
+      # Returns an array of numerics.
+      def SMOOTH_CURVE(curve, window_size)
+        return [] if curve.blank?
+
+        window_size = [window_size, curve.length].min.to_i
+        half_window = window_size / 2
+
+        curve_with_window = curve[-half_window..] + curve + curve[0..half_window]
+        sum = curve_with_window[0...window_size].sum.to_f
+
+        Array.new(curve.length) do |index|
+          value = sum / window_size
+
+          sum += curve_with_window[index + window_size]
+          sum -= curve_with_window[index]
+
+          value
+        end
+      end
     end
   end
 end
