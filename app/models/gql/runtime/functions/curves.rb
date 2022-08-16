@@ -93,20 +93,30 @@ module Gql::Runtime
       #
       # Returns an array of numerics.
       def PRODUCT_CURVES(left, right)
-        return [] if left.blank? || right.blank?
-
-        if (left_invalid = left.first.is_a?(Array)) || right.first.is_a?(Array)
-          raise 'PRODUCT_CURVES can only multiply a single curve with a single curve ' \
-                "(#{left_invalid ? 'first' : 'second'} parameter had " \
-                "#{(left_invalid ? left : right).length} nested curves)"
+        with_elementwise_curves('PRODUCT_CURVES', left, right) do
+          left.map.with_index { |value, index| value * right[index] }
         end
+      end
 
-        if left.length != right.length
-          raise 'Mismatch in curve lengths given to PRODUCT_CURVES ' \
-                "(got #{left.length} and #{right.length})"
+      # Public: Divides two curves elementwise.
+      #
+      # For example:
+      #   DIVIDE_CURVES([1, 2, 3], [4, 5, 6])
+      #   # => [0.25, 0.4, 0.5]
+      #
+      # Note that unlike `SUM_CURVES`, `DIVIDE_CURVES` expects exactly two arguments, each one a
+      # single curve.
+      #
+      # An error will be raised if either parameter is an array of curves, or if the curves don't
+      # have matching lengths.
+      #
+      # Returns an array of numerics.
+      def DIVIDE_CURVES(left, right)
+        with_elementwise_curves('DIVIDE_CURVES', left, right) do
+          left.map.with_index do |value, index|
+            right[index].zero? ? 0.0 : value.to_f / right[index]
+          end
         end
-
-        left.map.with_index { |value, index| value * right[index] }
       end
 
       # Creates a smoothed curve using a moving average.
@@ -132,6 +142,25 @@ module Gql::Runtime
 
           value
         end
+      end
+
+      private
+
+      def with_elementwise_curves(caller_name, left, right)
+        return [] if left.blank? || right.blank?
+
+        if (left_invalid = left.first.is_a?(Array)) || right.first.is_a?(Array)
+          raise "#{caller_name} can only multiply a single curve with a single curve " \
+                "(#{left_invalid ? 'first' : 'second'} parameter had " \
+                "#{(left_invalid ? left : right).length} nested curves)"
+        end
+
+        if left.length != right.length
+          raise "Mismatch in curve lengths given to #{caller_name} " \
+                "(got #{left.length} and #{right.length})"
+        end
+
+        yield
       end
     end
   end

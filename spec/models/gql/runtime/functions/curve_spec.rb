@@ -168,6 +168,57 @@ module Gql::Runtime::Functions
       end
     end
 
+    # DIVIDE_CURVES
+    # -------------
+
+    describe 'DIVIDE_CURVES([1, 3], [2, 4])' do
+      it('returns [0.5, 0.75]') { expect(result).to eq([0.5, 0.75]) }
+    end
+
+    describe 'DIVIDE_CURVES([0, 2], [3, 0])' do
+      it('returns [0, 0]') { expect(result).to eq([0, 0]) }
+    end
+
+    describe 'DIVIDE_CURVES([1, 2], nil)' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'DIVIDE_CURVES(nil, [1, 2])' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'DIVIDE_CURVES([], [])' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'DIVIDE_CURVES(nil, nil)' do
+      it('returns []') { expect(result).to eq([]) }
+    end
+
+    describe 'DIVIDE_CURVES(Merit.const_get(:Curve).new([1]), [2])' do
+      it('returns [0.5]') { expect(result).to eq([0.5]) }
+      it('returns an Array') { expect(result).to be_a(Array) }
+    end
+
+    describe 'DIVIDE_CURVES([[1, 2]], [3, 4])' do
+      it('raises an error') do
+        expect { result }.to raise_error(/first parameter had 1 nested curves/)
+      end
+    end
+
+    describe 'DIVIDE_CURVES([1, 2], [[3, 4], [5, 6]])' do
+      it('raises an error') do
+        expect { result }.to raise_error(/second parameter had 2 nested curves/)
+      end
+    end
+
+    describe 'DIVIDE_CURVES([1, 2, 3], [4, 5])' do
+      it('returns [4, 6]') do
+        expect { result }
+          .to raise_error('Mismatch in curve lengths given to DIVIDE_CURVES (got 3 and 2)')
+      end
+    end
+
     # SMOOTH_CURVE
     # ------------
 
