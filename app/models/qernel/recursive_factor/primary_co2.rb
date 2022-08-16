@@ -104,7 +104,13 @@ module Qernel::RecursiveFactor::PrimaryCo2
   # specify a custom value instead, such as when calculating the captured emissions.
   #
   def co2_per_mj_factor(edge, co2_free: free_co2_factor)
-    return nil unless domestic_dead_end? || primary_energy_demand?
+    # Normally CO2 is only included on nodes which are a member of the primary energy demand group.
+    # In rare cases, we want to exclude a node from being included in the primary demand calculation
+    # while opting in to the CO2 calculation. This is done by omitting the node from the PD group
+    # and instead adding it to the "include_primary_co2" group.
+    force_co2 = domestic_dead_end? && @node.groups.include?(:force_primary_co2)
+
+    return nil unless domestic_dead_end? || primary_energy_demand? || force_co2
 
     edge ||= output_edges.first
 
@@ -114,7 +120,11 @@ module Qernel::RecursiveFactor::PrimaryCo2
 
     co2_ex_free = edge.query.co2_per_mj - (co2_free * carrier.co2_conversion_per_mj)
 
-    @node.primary_energy_demand? && carrier.co2_conversion_per_mj ? co2_ex_free : 0.0
+    if (@node.primary_energy_demand? || force_co2) && carrier.co2_conversion_per_mj
+      co2_ex_free
+    else
+      0.0
+    end
   end
 
   # Internal: Calculates the factor (used by RF) of CO2 emitted by primary demand nodes without
