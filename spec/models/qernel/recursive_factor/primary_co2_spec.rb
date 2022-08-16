@@ -53,6 +53,73 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
     end
   end
 
+  context 'when the right node does not belong to the PD group' do
+    before do
+      builder.node(:right).set(:groups, [])
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 0) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 0) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 0) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
+  context 'when the right node does not belong to the PD group, but does belong to ' \
+          'include_primary_co2' do
+    before do
+      builder.node(:right).set(:groups, [:force_primary_co2])
+    end
+
+    describe 'the left node' do
+      subject { graph.node(:left) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 0) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the middle node' do
+      subject { graph.node(:middle) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 0) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+
+    describe 'the right node' do
+      subject { graph.node(:right) }
+
+      it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_demand_of_sustainable, 0) }
+      it { is_expected.to have_query_value(:primary_demand_of_fossil, 0) }
+      it { is_expected.to have_query_value(:sustainability_share, 0.25) }
+    end
+  end
+
   describe 'when the right node has free_co2_factor=0.5' do
     before do
       builder.node(:right).set(:free_co2_factor, 0.5)
