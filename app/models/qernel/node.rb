@@ -127,7 +127,7 @@ class Node
 
     @id         = opts[:id] || Hashpipe.hash(opts[:key])
     @key        = opts[:key]
-    @groups     = opts[:groups] || []
+    @groups     = Set.new(opts[:groups] || [])
     @use_key    = opts[:use_id]
     @sector_key = opts[:sector_id]
     @presentation_group = opts[:presentation_group]
