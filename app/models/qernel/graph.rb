@@ -286,7 +286,7 @@ class Graph
 
   # Return the node with given key.
   #
-  # @param id [Integer,String] lookup key for node
+  # @param id [String, Symbol] lookup key for node
   # @return [Node]
   #
   def node(id)
