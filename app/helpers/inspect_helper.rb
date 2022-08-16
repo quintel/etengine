@@ -97,7 +97,7 @@ module InspectHelper
   # Since the group table has been dropped we need to fetch the list from ETSource
   def node_groups(graph)
     Rails.cache.fetch("#{graph.name}_node_group_list") do
-      graph.nodes.flat_map(&:groups).sort.uniq
+      graph.nodes.flat_map { |n| n.groups.to_a }.sort.uniq
     end
   end
 

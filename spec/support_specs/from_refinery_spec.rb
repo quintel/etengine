@@ -84,7 +84,7 @@ RSpec.describe FromRefinery do
     end
 
     it 'sets the groups on A1' do
-      expect(graph.node(:a1).groups).to eq(%w[one two three])
+      expect(graph.node(:a1).groups).to eq(Set.new(%w[one two three]))
     end
   end
 
