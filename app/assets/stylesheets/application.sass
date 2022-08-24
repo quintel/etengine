@@ -58,8 +58,15 @@ th.output-demand
   td:first-child
     vertical-align: middle
   .present, .future
+    align-items: center
+    display: flex
+    gap: 0.25rem
     margin: 0.5rem 0
     position: relative
+    svg
+      color: #777
+      height: 20px
+      width: 20px
   .input, .output, .demand, .name
     background: white
     box-sizing: border-box
@@ -78,18 +85,25 @@ th.output-demand
     background: #444
     border-radius: 3px
     color: #fff
-    margin: 1px 2px 0
+    border: 1px solid #444
   .present
     color: #999
     .demand
       background: #aaa
+      border-color: #aaa
   .delta
+    align-items: center
     background: #eee
     border-radius: 3px
-    font-size: 1rem
-    padding: 8px
     color: #444
+    display: flex
+    font-size: 1rem
     margin-top: 22px
+    padding: 8px
+    svg
+      height: 24px
+      margin: -0.125rem 0
+      width: 24px
 
 .edge-flows
   .nav-tabs
