@@ -31,10 +31,14 @@ module ETEngine
       total = collection.count
       changed = 0
 
-      say "#{total} candidate scenarios for migration"
+      say("#{total} candidate scenarios for migration")
 
       collection.find_each.with_index do |scenario, index|
-        yield(scenario)
+        begin
+          yield(scenario)
+        rescue Psych::DisallowedClass
+          say("Skipping #{scenario.id} - invalid YAML", true)
+        end
 
         if scenario.changed?
           scenario.save(validate: false, touch: false)
@@ -42,11 +46,11 @@ module ETEngine
         end
 
         if index.positive? && ((index + 1) % 1000).zero?
-          say "#{index + 1}/#{total} (#{changed} migrated)"
+          say("#{index + 1}/#{total} (#{changed} migrated)")
         end
       end
 
-      say "#{total}/#{total} (#{changed} migrated)"
+      say("#{total}/#{total} (#{changed} migrated)")
 
       # With continuous deployment, it might go unnoticed if no scenarios are
       # migrated. If the developer knows that zero migrated scenarios is an
