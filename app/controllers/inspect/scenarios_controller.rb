@@ -21,7 +21,9 @@ class Inspect::ScenariosController < Inspect::BaseController
 
   def create
     Scenario.transaction do
-      @scenario = Scenario.create!(
+      @scenario = Scenario.new
+
+      Scenario::Editable.new(@scenario).update!(
         scenario_attributes.merge(source: 'ETEngine Admin UI')
       )
 
