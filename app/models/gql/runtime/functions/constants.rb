@@ -19,6 +19,7 @@ module Gql::Runtime
       #NIL = nil if !defined?(NIL)
       EURO_SIGN = '&euro;'
       MONTHS_PER_YEAR = 12.0
+      INFINITY = Float::INFINITY
 
 
       # 2011-12-09 GQL grammar does not allow "." inside V(...; ___ ).
