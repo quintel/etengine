@@ -1,4 +1,26 @@
 class InputSerializer
+  # Fetches the default value for an input from the dataset.
+  class DefaultFromDataset
+    def initialize(*); end
+
+    def call(values)
+      values[:default]
+    end
+  end
+
+  # Fetches the default value for an input from the parent scenario, if set, otherwise from the
+  # dataset.
+  class DefaultFromParent
+    def initialize(input, parent)
+      @key = input.key
+      @parent = parent
+    end
+
+    def call(values)
+      @parent.user_values[@key] || @parent.balanced_values[@key] || values[:default]
+    end
+  end
+
   # Given an array of inputs, returns JSON for all of them.
   #
   # @param [Array<Input>] inputs
@@ -8,11 +30,11 @@ class InputSerializer
   # @param [true, false] extras
   #   Do you want the extra attributes (key, unit, step) to be included in
   #   the output?
-  def self.collection(inputs, scenario, extras = false)
+  def self.collection(inputs, scenario, extra_attributes: false, default_values_from: :parent)
     scenario = IndifferentScenario.from(scenario)
 
     inputs.each_with_object({}) do |input, data|
-      data[input.key] = serializer_for(input, scenario, extras)
+      data[input.key] = serializer_for(input, scenario, extra_attributes:, default_values_from:)
     end
   end
 
@@ -25,9 +47,9 @@ class InputSerializer
   #
   # @return [InputSerializer]
   #   Returns the input serializer (or subclass) instance.
-  def self.serializer_for(input, *args)
+  def self.serializer_for(input, *args, **kwargs)
     klass = input.unit == 'enum' ? EnumInputSerializer : self
-    klass.new(input, *args)
+    klass.new(input, *args, **kwargs)
   end
 
   # Creates a new Input API serializer.
@@ -36,14 +58,24 @@ class InputSerializer
   #   The input for which we want JSON.
   # @param [Scenario] scenario
   #   The scenario whose values are being rendered.
-  # @param [true, false] extra_attributes
+  # @param [boolean] extra_attributes
   #   Do you want the extra attributes (key, unit, step) to be included in
   #   the output?
+  # @param [:parent, :original] default_values_from
+  #   When a scenario inherits from another, the default values are set to be those from the parent
+  #   scenario. Set this to `:original` to use the default values for the dataset instead.
   #
-  def initialize(input, scenario, extra_attributes = false)
-    @input            = input
-    @scenario         = IndifferentScenario.from(scenario)
-    @extra_attributes = extra_attributes
+  def initialize(input, scenario, extra_attributes: false, default_values_from: :parent)
+    @input               = input
+    @scenario            = IndifferentScenario.from(scenario)
+    @extra_attributes    = extra_attributes
+
+    @default_values_from =
+      if default_values_from == :parent && scenario.parent
+        DefaultFromParent.new(input, scenario.parent)
+      else
+        DefaultFromDataset.new
+      end
   end
 
   # Creates a Hash suitable for conversion to JSON by Rails.
@@ -62,7 +94,7 @@ class InputSerializer
 
     json[:min] = values[:min]
     json[:max] = values[:max]
-    json[:default] = values[:default]
+    json[:default] = @default_values_from.call(values)
 
     json[:unit] = @input.unit
 
@@ -73,13 +105,6 @@ class InputSerializer
     json[:disabled_by] = @input.disabled_by if @input.disabled_by.present?
 
     json[:share_group] = @input.share_group if @input.share_group.present?
-
-    if (parent = @scenario.parent)
-      json[:default] =
-        parent.user_values[@input.key] ||
-        parent.balanced_values[@input.key] ||
-        json[:default]
-    end
 
     if @extra_attributes
       json[:step] = values[:step] || @input.step_value

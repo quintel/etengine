@@ -42,7 +42,7 @@ class ScenarioSerializer < PresetSerializer
     end
 
     if @inputs
-      json[:inputs] = InputSerializer.collection(Input.all, @resource, true)
+      json[:inputs] = InputSerializer.collection(Input.all, @resource, extra_attributes: true)
     end
 
     json

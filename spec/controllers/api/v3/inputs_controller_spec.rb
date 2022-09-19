@@ -164,6 +164,42 @@ describe Api::V3::InputsController do
         )
       end
     end
+
+    context 'when the scenario has a parent, and defaults=parent' do
+      let(:scenario) do
+        FactoryBot.create(
+          :scenario,
+          scenario_id: FactoryBot.create(:scenario, user_values: { gql_input.key => 42.0 }).id
+        )
+      end
+
+      let(:json) do
+        JSON.parse(get(:index, params: { scenario_id: scenario.id, defaults: 'parent' }).body)
+      end
+
+      it 'has a "default" attribute for each input based on the parent' do
+        expect(json[static_input.key]).to include('default' => 10)
+        expect(json[gql_input.key]).to    include('default' => 42)
+      end
+    end
+
+    context 'when the scenario has a parent, and defaults=dataset' do
+      let(:scenario) do
+        FactoryBot.create(
+          :scenario,
+          scenario_id: FactoryBot.create(:scenario, user_values: { gql_input.key => 42.0 }).id
+        )
+      end
+
+      let(:json) do
+        JSON.parse(get(:index, params: { scenario_id: scenario.id, defaults: 'original' }).body)
+      end
+
+      it 'has a "default" attribute for each input based on the dataset' do
+        expect(json[static_input.key]).to include('default' => 10)
+        expect(json[gql_input.key]).to    include('default' => 8)
+      end
+    end
   end # GET /api/v3/scenarios/:scenario_id/inputs
 
  # ---------------------------------------------------------------------------

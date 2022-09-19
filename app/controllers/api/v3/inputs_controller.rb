@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class InputsController < ::Api::V3::BaseController
@@ -14,7 +16,12 @@ module Api
       #
       def index
         extras = ActiveModel::Type::Boolean.new.cast(params[:include_extras])
-        render json: InputSerializer.collection(Input.all, @scenario, extras)
+
+        render json: InputSerializer.collection(
+          Input.all,
+          @scenario,
+          **serializer_args(extra_attributes: extras)
+        )
       end
 
       # GET /api/v3/inputs/:id
@@ -30,11 +37,15 @@ module Api
         record =
           if params.key?(:id) && params[:id].include?(',')
             params[:id].split(',').compact.uniq.map do |id|
-              InputSerializer.serializer_for(fetch_input(id), @scenario, true)
+              InputSerializer.serializer_for(
+                fetch_input(id),
+                @scenario,
+                **serializer_args(extra_attributes: true)
+              )
             end
           else
             InputSerializer.serializer_for(
-              fetch_input(params[:id]), @scenario, true
+              fetch_input(params[:id]), @scenario, **serializer_args(extra_attributes: true)
             )
           end
 
@@ -53,14 +64,18 @@ module Api
         render json: Input.all.map{|i| {id: i.id, key: i.key}}
       end
 
-      #######
       private
-      #######
 
       def fetch_input(id)
         (input = Input.get(id)) ? input : raise(ActiveRecord::RecordNotFound)
       end
 
-    end # InputsController
-  end # V3
-end # Api
+      def serializer_args(extra_attributes:)
+        {
+          default_values_from: params[:defaults] ? params[:defaults].to_sym : :parent,
+          extra_attributes:
+        }
+      end
+    end
+  end
+end
