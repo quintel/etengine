@@ -63,6 +63,13 @@ RSpec.describe CurveHandler::AttachService do
     # Asserts that the original scenario values are not overwritten.
     let(:scenario) { FactoryBot.create(:scenario, user_values: { 'orig' => 1.0 }) }
 
+    before do
+      # Skip clamping of values and just set the value.
+      allow(scenario).to receive(:update_input_clamped) do |key, value|
+        scenario.user_values[key] = value
+      end
+    end
+
     include_examples 'a valid CurveHandler::AttachService'
 
     it 'sets the scenario input value with the reduced value' do

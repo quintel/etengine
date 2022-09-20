@@ -279,6 +279,113 @@ describe Input do
     end
   end
 
+  describe '#clamp' do
+    context 'with a fixed min of 5 and max of 10' do
+      let(:input) { described_class.new(min_value: 5, max_value: 10, start_value: 5) }
+
+      it 'clamps 0 to 5' do
+        expect(input.clamp(scenario, 0)).to eq(5)
+      end
+
+      it 'clamps 5 to 5' do
+        expect(input.clamp(scenario, 5)).to eq(5)
+      end
+
+      it 'clamps 7 to 7' do
+        expect(input.clamp(scenario, 7)).to eq(7)
+      end
+
+      it 'clamps 10 to 10' do
+        expect(input.clamp(scenario, 10)).to eq(10)
+      end
+
+      it 'clamps 11 to 10' do
+        expect(input.clamp(scenario, 11)).to eq(10)
+      end
+
+      it 'clamps nil to nil' do
+        expect(input.clamp(scenario, nil)).to be_nil
+      end
+
+      it 'clamps "invalid" to "invalid"' do
+        expect(input.clamp(scenario, 'invalid')).to eq('invalid')
+      end
+    end
+
+    context 'with a calculated min of 10 and max of 20' do
+      let(:input) do
+        described_class.new(
+          min_value_gql: 'present:5*2',
+          max_value_gql: 'present:5*4',
+          start_value: 10
+        )
+      end
+
+      it 'clamps 0 to 10' do
+        expect(input.clamp(scenario, 0)).to eq(10)
+      end
+
+      it 'clamps 10 to 10' do
+        expect(input.clamp(scenario, 10)).to eq(10)
+      end
+
+      it 'clamps 15 to 15' do
+        expect(input.clamp(scenario, 15)).to eq(15)
+      end
+
+      it 'clamps 20 to 20' do
+        expect(input.clamp(scenario, 20)).to eq(20)
+      end
+
+      it 'clamps 21 to 20' do
+        expect(input.clamp(scenario, 21)).to eq(20)
+      end
+
+      it 'clamps nil to nil' do
+        expect(input.clamp(scenario, nil)).to be_nil
+      end
+
+      it 'clamps "invalid" to "invalid"' do
+        expect(input.clamp(scenario, 'invalid')).to eq('invalid')
+      end
+    end
+
+    context 'with an invalid min and max of 20' do
+      let(:input) do
+        described_class.new(
+          min_value_gql: 'present:0.0/0',
+          max_value_gql: 'present:5*4',
+          start_value: 10
+        )
+      end
+
+      it 'clamps 0 to nil' do
+        expect(input.clamp(scenario, 0)).to be_nil
+      end
+
+      it 'clamps 21 to nil' do
+        expect(input.clamp(scenario, 21)).to be_nil
+      end
+    end
+
+    context 'with a min of 5 and invalid max' do
+      let(:input) do
+        described_class.new(
+          min_value_gql: 'present:5',
+          max_value_gql: 'present:0.0/0',
+          start_value: 10
+        )
+      end
+
+      it 'clamps 0 to nil' do
+        expect(input.clamp(scenario, 0)).to be_nil
+      end
+
+      it 'clamps 10 to nil' do
+        expect(input.clamp(scenario, 10)).to be_nil
+      end
+    end
+  end
 
   context 'when the input returns a non-numeric value' do
     let(:input) do

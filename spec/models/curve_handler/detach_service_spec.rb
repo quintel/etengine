@@ -31,7 +31,14 @@ RSpec.describe CurveHandler::DetachService do
   end
 
   let(:scenario) do
-    FactoryBot.create(:scenario, user_values: { unaffected: 1.0 })
+    scenario = FactoryBot.create(:scenario, user_values: { unaffected: 1.0 })
+
+    # Skip clamping of values and just set the value.
+    allow(scenario).to receive(:update_input_clamped) do |key, value|
+      scenario.user_values[key] = value
+    end
+
+    scenario
   end
 
   # Config used when adding the attachment. This may be set differently to `config`, for example

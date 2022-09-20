@@ -89,6 +89,28 @@ class Input
     nil
   end
 
+  # Public: Given a `value` restricts it to be within the input's min/max.
+  #
+  # Clamp will ignore non-numeric values and return them without modification.
+  #
+  # @param [Scenario, Gql::Gql] gql_or_scenario
+  #   When given a GQL instance, the start value will be determined by
+  #   performing the input's "label_query" query. When given a Scenario,
+  #   the cached value will instead be returned.
+  #
+  # @return [Numeric] value
+  #   The value to be clamped.
+  def clamp(gql_or_scenario, value)
+    return value if enum? || !value.is_a?(Numeric)
+
+    min = min_value_for(gql_or_scenario)
+    max = max_value_for(gql_or_scenario)
+
+    return nil if min.nil? || max.nil?
+
+    value.clamp(min, max)
+  end
+
   # Public: A list of the attributes whose values are required to be numeric for
   # this input.
   #

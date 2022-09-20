@@ -40,12 +40,20 @@ module Scenario::UserUpdates
   # @param input <Object> the updated input element
   # @param value <Float> the posted value
   #
-  # @tested 2010-12-06 seb
-  #
   def update_input(input, value)
-    key = input.key
-    self.user_values.merge! key => value
+    if value.nil?
+      user_values.delete(input.key)
+    else
+      user_values[input.key] = value
+    end
+
     value
+  end
+
+  def update_input_clamped(input, value)
+    input = Input.get(input) unless input.is_a?(Input)
+
+    update_input(input, input.clamp(self, value))
   end
 
   #
