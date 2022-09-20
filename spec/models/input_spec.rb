@@ -296,7 +296,7 @@ describe Input do
     it 'should cache an error' do
       data = Input.cache.read(scenario, input)
       expect(data).to have_key(:error)
-      expect(data[:error]).to eql('Non-numeric GQL value')
+      expect(data[:error]).to eql('Non-numeric GQL value: default')
     end
 
     it 'should disable the input' do

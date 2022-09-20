@@ -66,10 +66,14 @@ class Input
       values[:min] = values[:min].map(&:to_s) if input.unit == 'enum'
 
       values = Scaler.call(input, scaler_for(gql), values)
-      required_numerics = values.values_at(*input.required_numeric_attributes)
 
-      if required_numerics.any? { |value| ! value.is_a?(Numeric) }
-        { disabled: true, error: 'Non-numeric GQL value' }
+      required_numerics = input.required_numeric_attributes
+      missing_numerics = values.filter_map.with_index do |(_, value), index|
+        value.is_a?(Numeric) ? nil : required_numerics[index]
+      end
+
+      if missing_numerics.any?
+        { disabled: true, error: "Non-numeric GQL value: #{missing_numerics.join(', ')}" }
       else
         values
       end
