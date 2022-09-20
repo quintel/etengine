@@ -216,8 +216,12 @@ RSpec.describe CurveHandler::Config do
         }
       end
 
-      it 'disables two inputs' do
-        expect(config.disabled_inputs).to eq(%w[one two])
+      it 'disables two inputs publicly' do
+        expect(config.public_disabled_inputs).to eq(%w[one two])
+      end
+
+      it 'disables two inputs internally' do
+        expect(config.internal_disabled_inputs).to eq(%w[one two])
       end
     end
 
@@ -249,6 +253,14 @@ RSpec.describe CurveHandler::Config do
       it 'sets input keys as Strings' do
         expect(config.input_keys).to eq(%w[input_one input_two])
       end
+
+      it 'disables two inputs publicly' do
+        expect(config.public_disabled_inputs).to eq(%w[input_one input_two])
+      end
+
+      it 'disables no inputs internally' do
+        expect(config.internal_disabled_inputs).to eq([])
+      end
     end
 
     context 'with a reducer config hash and an array of String inputs' do
@@ -264,8 +276,12 @@ RSpec.describe CurveHandler::Config do
         expect(config.input_keys).to eq(%w[input_one input_two])
       end
 
-      it 'disables the inputs' do
-        expect(config.disabled_inputs).to eq(%w[input_one input_two])
+      it 'disables the inputs publicaly' do
+        expect(config.public_disabled_inputs).to eq(%w[input_one input_two])
+      end
+
+      it 'disables no inputs internally' do
+        expect(config.internal_disabled_inputs).to eq([])
       end
     end
 
@@ -283,8 +299,12 @@ RSpec.describe CurveHandler::Config do
         expect(config.input_keys).to eq(%w[input_one input_two])
       end
 
-      it 'disables the reduce and custom inputs' do
-        expect(config.disabled_inputs).to eq(%w[input_one input_two other])
+      it 'disables the inputs publicaly' do
+        expect(config.public_disabled_inputs).to eq(%w[input_one input_two other])
+      end
+
+      it 'disables no inputs internally' do
+        expect(config.internal_disabled_inputs).to eq(%w[other input_one])
       end
     end
   end

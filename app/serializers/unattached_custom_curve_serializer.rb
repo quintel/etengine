@@ -16,7 +16,7 @@ class UnattachedCustomCurveSerializer
       type: @config.processor_key,
       display_group: @config.display_group,
       attached: false,
-      overrides: @config.disabled_inputs
+      overrides: @config.public_disabled_inputs
     }
 
     data[:internal] = true if @config.internal?

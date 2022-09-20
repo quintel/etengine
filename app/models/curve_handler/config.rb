@@ -98,9 +98,16 @@ module CurveHandler
       "#{@key}_curve"
     end
 
-    # Public: An array containing all inputs which are be disabled when a curve is set.
-    def disabled_inputs
+    # Public: An array containing all inputs which may not be set by an end-user when the curve is
+    # attached.
+    def public_disabled_inputs
       [*@disables, *@input_keys].uniq.sort
+    end
+
+    # Public: An array containing all inputs whose values should be ignored entirely when setting
+    # up the scenario. This excludes inputs whose value are set by a reducer; those need to be kept.
+    def internal_disabled_inputs
+      @disables || []
     end
 
     # Public: Returns the processor class specified by the config. Raises an error if the processor

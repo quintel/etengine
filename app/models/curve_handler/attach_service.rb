@@ -69,7 +69,7 @@ module CurveHandler
         .call(@processor.sanitized_curve)
 
       @config.input_keys.each do |key|
-        @scenario.user_values[key] = reduced
+        @scenario.update_input_clamped(key, reduced)
       end
 
       @scenario.save(validate: false)

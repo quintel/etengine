@@ -112,7 +112,7 @@ class Scenario < ApplicationRecord
         @scenario.attachments
           .select(&:curve?)
           .select(&:loadable_curve?)
-          .flat_map { |attachment| attachment.curve_config.disabled_inputs }
+          .flat_map { |attachment| attachment.curve_config.internal_disabled_inputs }
       )
     end
   end
