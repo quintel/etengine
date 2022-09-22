@@ -44,20 +44,20 @@
         %h4
           Commits on
           = date.to_formatted_s(:long)
+        - latest_sha = @etsource.get_latest_import_sha
         - commits.each do |commit|
-          .commit{ id: "rev-#{ commit.sha }", class: @etsource.get_latest_import_sha == commit.sha ? 'current' : '' }
-            .action
-              - if @etsource.get_latest_import_sha == commit.sha
-                .current ✓ &nbsp;Loaded&nbsp;
-              - elsif import_in_progress?
-                .wait Please wait&hellip;
-              - elsif !can_import?
-                .wait Import disabled
-              - else
-                - cache("etsource.status.#{ commit.sha }") do
+          - cache("etsource.commit.#{ commit.sha }") do
+            .commit{ id: "rev-#{ commit.sha }", class: latest_sha == commit.sha ? 'current' : '' }
+              .action
+                - if latest_sha == commit.sha
+                  .current ✓ &nbsp;Loaded&nbsp;
+                - elsif import_in_progress?
+                  .wait Please wait&hellip;
+                - elsif !can_import?
+                  .wait Import disabled
+                - else
                   - if commit.can_import?
                     %a.import{ href: import_etsource_commit_path(:id => commit.sha) } Import
                   - else
                     .incompatible(title="Incompatible due to non-matching dependencies") Incompatible
-            - cache("etsource.info.#{ commit.sha }") do
               = render partial: 'commit', locals: { commit: commit.gcommit }
