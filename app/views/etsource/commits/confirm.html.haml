@@ -1,15 +1,28 @@
 - breadcrumb link_to("ETSource", etsource_root_path)
 
 .row
-  .compat-warning.span8.alert.alert-error
-    %h3(style="font-size: 16px") Please confirm this ETSource import
-    This release of ETEngine has more recent versions of Atlas and Refinery than
-    were used to test your chosen ETSource import. While it is likely the
-    import will work, please check the versions below before deciding how to
-    proceeed.
-    %div(style="padding: 15px 0 5px")
-      %a.btn.btn-large.btn-success{ href: import_etsource_commit_path(id: params[:id], force: true) } Import ETSource
-      %a.btn.btn-large.btn-inverse{ href: etsource_commits_path } Cancel
+  .compat-warning.span9.alert.alert-error
+    - if @commit.can_import?
+      %h3
+        :plain
+          <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M114.2,40l-88,152A16,16,0,0,0,40,216H216a16,16,0,0,0,13.8-24l-88-152A15.9,15.9,0,0,0,114.2,40Z" opacity="0.2"></path><line x1="128" y1="112" x2="128" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><path d="M114.2,40l-88,152A16,16,0,0,0,40,216H216a16,16,0,0,0,13.8-24l-88-152A15.9,15.9,0,0,0,114.2,40Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="128" cy="180" r="12"></circle></svg>
+        Please confirm this ETSource import
+      %p
+        This release of ETEngine has more recent versions of Atlas and Refinery than
+        were used to test your chosen ETSource import. While it is likely the
+        import will work, please check the versions below before deciding how to
+        proceeed.
+      %div(style="padding: 15px 0 5px")
+        %a.btn.btn-large.btn-success{ href: import_etsource_commit_path(id: params[:id], force: true) } Import ETSource
+        %a.btn.btn-large.btn-inverse{ href: etsource_commits_path } Cancel
+    - else
+      %h3
+        :plain
+          <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M114.2,40l-88,152A16,16,0,0,0,40,216H216a16,16,0,0,0,13.8-24l-88-152A15.9,15.9,0,0,0,114.2,40Z" opacity="0.2"></path><line x1="128" y1="112" x2="128" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><path d="M114.2,40l-88,152A16,16,0,0,0,40,216H216a16,16,0,0,0,13.8-24l-88-152A15.9,15.9,0,0,0,114.2,40Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="128" cy="180" r="12"></circle></svg>
+        Cannot import this commit
+      %p
+        This commit was created with a newer version of Atlas or Refinery than is currently
+        loaded by ETEngine. Please update the ETEngine dependencies, deploy, and try again.
 
 .commit-group
   %h4 Atlas Versions

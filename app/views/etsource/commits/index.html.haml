@@ -53,11 +53,6 @@
                   .current ✓ &nbsp;Loaded&nbsp;
                 - elsif import_in_progress?
                   .wait Please wait&hellip;
-                - elsif !can_import?
-                  .wait Import disabled
                 - else
-                  - if commit.can_import?
-                    %a.import{ href: import_etsource_commit_path(:id => commit.sha) } Import
-                  - else
-                    .incompatible(title="Incompatible due to non-matching dependencies") Incompatible
+                  %a.import{ href: import_etsource_commit_path(:id => commit.sha) } Import
               = render partial: 'commit', locals: { commit: commit.gcommit }

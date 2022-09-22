@@ -25,11 +25,14 @@ class Etsource::CommitsController < ApplicationController
   def import
     # Prevent other processes from doing an import while this one is in
     # progress.
-    (redirect_to(etsource_commits_path) ; return) unless can_import?
+    unless can_import?
+      redirect_to(etsource_commits_path)
+      return
+    end
 
     @commit = Etsource::Base.instance.commit(params[:id])
 
-    if @commit.requires_confirmation? && ! params[:force]
+    if (@commit.requires_confirmation? && !params[:force]) || !@commit.can_import?
       # When a commit uses different Atlas and Refinery versions than are
       # currently loaded, seek confirmation from the user before proceeding.
       render action: 'confirm'
