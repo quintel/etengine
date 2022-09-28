@@ -82,6 +82,7 @@ module Qernel
       def production_participant
         @production_participant ||= Merit::Flex::OptimizingStorage::Producer.new(
           key: :"#{@node.key}_producer",
+          number_of_units: 1.0,
           marginal_costs: :null,
           load_curve: Merit::Curve.new(
             @context.storage_optimization.load_for(@node.key).map do |v|
@@ -94,6 +95,7 @@ module Qernel
       def consumption_participant
         @consumption_participant ||= Merit::Flex::OptimizingStorage::Consumer.new(
           key: :"#{@node.key}_consumer",
+          number_of_units: 1.0,
           load_curve: Merit::Curve.new(
             @context.storage_optimization.load_for(@node.key).map do |v|
               v.negative? ? v.abs : 0.0
