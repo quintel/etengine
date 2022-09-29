@@ -632,13 +632,13 @@ module NodeSerializerData
   CO2_CAPTURE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'input_capacity * 8760 * number_of_units' => {
+        'input_capacity * full_load_hours * number_of_units' => {
           label: 'Total installed capture capacity',
           key: :total_installed_capture_capacity,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
-        'input_capacity * 8760' => {
+        'input_capacity * full_load_hours' => {
           label: 'Capture capacity per unit',
           key: :input_capacity_co2_capture,
           unit: 'T_CO2 / year',
@@ -651,13 +651,13 @@ module NodeSerializerData
   CO2_STORAGE_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'input_capacity * 8760 * number_of_units' => {
+        'input_capacity * full_load_hours * number_of_units' => {
           label: 'Total installed storage capacity',
           key: :total_installed_storage_capacity,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
-        'input_capacity * 8760' => {
+        'input_capacity * full_load_hours' => {
           label: 'Storage capacity per unit',
           key: :input_capacity_co2_storage,
           unit: 'T_CO2 / year',
@@ -670,13 +670,13 @@ module NodeSerializerData
   CO2_TRANSPORT_ATTRIBUTES_AND_METHODS =
     {
       technical: {
-        'input_capacity * 8760 * number_of_units' => {
+        'input_capacity * full_load_hours * number_of_units' => {
           label: 'Total installed transport capacity',
           key: :total_installed_transport_capacity,
           unit: 'T_CO2 / year',
           formatter: FORMAT_KILO
         },
-        'input_capacity * 8760' => {
+        'input_capacity * full_load_hours' => {
           label: 'Transport capacity per unit',
           key: :input_capacity_co2_transport,
           unit: 'T_CO2 / year',
