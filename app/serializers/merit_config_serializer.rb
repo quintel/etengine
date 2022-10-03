@@ -79,9 +79,15 @@ class MeritConfigSerializer
         if key == :total_consumption
           @manager.adapters[participant.key].input_of_carrier
         elsif participant.respond_to?(key)
-          format_value(participant.public_send(key))
+          value_for(participant, key)
         end
     end
+  end
+
+  def value_for(participant, key)
+    format_value(participant.public_send(key))
+  rescue NoMethodError
+    nil
   end
 
   # Internal: Returns the key of the curve that should accompany the participant. Multiple
@@ -92,6 +98,8 @@ class MeritConfigSerializer
   def curve_key(participant)
     if participant.key.to_s.include?('interconnector')
       interconnector_price_curve_key(participant)
+    elsif participant.key.to_s.end_with?('consumer', 'producer')
+      "#{participant.key}.load_curve"
     else
       key = load_profile_key(participant)
       key&.start_with?('dynamic', 'weather', 'fever') ? "#{participant.key}.#{key}" : key
@@ -99,13 +107,32 @@ class MeritConfigSerializer
   end
 
   def load_profile_key(participant)
-    @graph.node(participant.key).node_api.load_profile_key
+    node(participant.key).node_api.load_profile_key
   end
 
   def interconnector_price_curve_key(participant)
-    return if @graph.node(participant.key).node_api.marginal_cost_curve.empty?
+    return if node(participant.key).node_api.marginal_cost_curve.empty?
 
     "#{participant.key}.marginal_cost_curve"
+  end
+
+  # Internal: Returns the associated node
+  # If the participant does not have a node (for example it is some kind of subtype like '_consumer'
+  # or '_producer' as for OptimizingStorage) the last word is removed from the key and checked
+  # again.
+  def node(participant_key)
+    @graph.node(participant_key) ||
+      @graph.node(participant_key.to_s.sub(/_[^_]*$/, '')) ||
+      raise("No such node: #{participant_key}")
+  end
+
+  # Internal: Finds the participant again based on its key by looking at the adapters
+  # Only used for finding the '_consumer' or '_producer' participants for storage optimization
+  def participant_from(key)
+    adapter = @manager.adapters[key.to_s.sub(/_[^_]*$/, '').to_sym]
+    if adapter&.participant.is_a?(Array)
+      key.end_with?('producer') ? adapter.participant[0] : adapter.participant[1]
+    end
   end
 
   # Internal: Adds the curve data to the data object
@@ -129,9 +156,11 @@ class MeritConfigSerializer
     participant_key, curve_name = joined_key.split('.', 2)
 
     if curve_name == 'marginal_cost_curve' # interconnector
-      @graph.node(participant_key).node_api.marginal_cost_curve
+      node(participant_key).node_api.marginal_cost_curve
+    elsif curve_name == 'load_curve' # optimizing_storage
+      participant_from(participant_key)&.load_curve
     elsif participant_key && curve_name # dynamic curve
-      @manager.curves.curve(curve_name, @graph.node(participant_key).node_api).to_a
+      @manager.curves.curve(curve_name, node(participant_key).node_api).to_a
     else
       @area.load_profile(joined_key).to_a
     end
