@@ -103,7 +103,7 @@ module Qernel
 
       # Internal: Sets demand and related attributes on the target API.
       def inject_demand!
-        full_load_hours = participant.full_load_hours / input_efficiency
+        full_load_hours = participant.full_load_hours
 
         full_load_seconds =
           if !full_load_hours || full_load_hours.nan?
@@ -116,7 +116,7 @@ module Qernel
         target_api[:full_load_seconds] = full_load_seconds
 
         target_api.demand =
-          full_load_seconds *
+          (full_load_seconds / input_efficiency) *
           participant.input_capacity_per_unit *
           participant.number_of_units
       end
