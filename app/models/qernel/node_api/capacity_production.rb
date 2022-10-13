@@ -141,7 +141,7 @@ module Qernel
       #
       # Returns a numeric value in MJ.
       def hydrogen_production_based_on_number_of_units
-        fetch(:production_based_on_number_of_units) do
+        fetch(:hydrogen_production_based_on_number_of_units) do
           number_of_units * typical_hydrogen_production_per_unit
         end
       end
@@ -151,7 +151,7 @@ module Qernel
       #
       # Returns a numeric value in MJ.
       def ammonia_production_based_on_number_of_units
-        fetch(:production_based_on_number_of_units) do
+        fetch(:ammonia_production_based_on_number_of_units) do
           number_of_units * typical_ammonia_production_per_unit
         end
       end
