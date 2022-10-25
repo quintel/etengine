@@ -12,28 +12,38 @@ module Qernel
       # Returns a curve containing numeric values in kg.
       def primary_co2_emission_curve
         fetch(:primary_co2_emission_curve) do
-          if electricity_output_conversion.positive? && electricity_output_curve.any?
-            primary_co2_emissions_curve_with_curve(electricity_output_curve)
-          elsif electricity_input_conversion.positive?
-            primary_co2_emissions_curve_with_curve(electricity_input_curve)
-          else
-            []
-          end
+          emissions_curve_with_curve(detect_emission_curve_profile_base, primary_co2_emission)
+        end
+      end
+
+      def primary_captured_co2_emission_curve
+        fetch(:primary_captured_co2_emission_curve) do
+          emissions_curve_with_curve(
+            detect_emission_curve_profile_base,
+            primary_captured_co2_emission
+          )
         end
       end
 
       private
 
-      def primary_co2_emissions_curve_with_curve(curve)
-        return [] if demand.zero? || curve.empty?
+      def detect_emission_curve_profile_base
+        if electricity_output_conversion.positive? && electricity_output_curve.any?
+          electricity_output_curve
+        elsif electricity_input_conversion.positive?
+          electricity_input_curve
+        end
+      end
+
+      def emissions_curve_with_curve(curve, base_value)
+        return [] if demand.zero? || curve.nil? || curve.empty?
 
         sum = curve.sum
-        co2 = primary_co2_emission
 
         return [] if sum.zero?
 
         curve.map do |value|
-          co2 * (value / sum)
+          base_value * (value / sum)
         end
       end
     end
