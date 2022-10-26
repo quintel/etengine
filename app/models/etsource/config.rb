@@ -57,6 +57,13 @@ module Etsource
       read('sankey_csv')
     end
 
+    # Public: Contains a configuration for the residual load CSV export.
+    #
+    # Returns an array of hashes.
+    def residual_load_csv
+      read('residual_load_csv').map(&:symbolize_keys)
+    end
+
     # Public: Reads the hash of curves for which users may upload a custom curve.
     #
     # Returns a Hash of {String => CurveHandler::Config}.

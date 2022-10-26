@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Creates CSV rows describing hydrogen production.
-class ReconciliationCSVSerializer < CurvesCSVSerializer
+class ReconciliationCSVSerializer < CausalityCurvesCSVSerializer
   private
 
   def producer_types

@@ -113,6 +113,17 @@ module Api
         )
       end
 
+      # Downloads the residual loads of various carriers.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/residual_load.csv
+      def residual_load
+        render_serializer QueryCurveCSVSerializer.new(
+          Etsource::Config.residual_load_csv,
+          @scenario.gql,
+          'residual_load'
+        )
+      end
+
       private
 
       def merit_required
