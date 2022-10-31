@@ -93,10 +93,6 @@ module Qernel
         # Output node
         # -----------
 
-        output_node.dataset_lazy_set(:electricity_input_curve) do
-          @context.curves.derotate(@park.output_curve)
-        end
-
         output_node.dataset_lazy_set(:electricity_output_curve) do
           @context.curves.derotate(@park.output_curve)
         end
