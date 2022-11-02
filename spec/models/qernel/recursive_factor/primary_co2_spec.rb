@@ -30,6 +30,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
 
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
       it { is_expected.to have_query_value(:primary_co2_emission_of_fossil, 50) }
+      it { is_expected.to have_query_value(:primary_captured_co2_emission, 0) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
       it { is_expected.to have_query_value(:sustainability_share, 0.25) }
@@ -39,6 +40,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       subject { graph.node(:middle) }
 
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_captured_co2_emission, 0) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
       it { is_expected.to have_query_value(:sustainability_share, 0.25) }
@@ -48,6 +50,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
       subject { graph.node(:right) }
 
       it { is_expected.to have_query_value(:primary_co2_emission, 50) }
+      it { is_expected.to have_query_value(:primary_captured_co2_emission, 0) }
       it { is_expected.to have_query_value(:primary_demand_of_sustainable, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
       it { is_expected.to have_query_value(:sustainability_share, 0.25) }
@@ -133,6 +136,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
 
       it { is_expected.to have_query_value(:primary_co2_emission, 25) }
       it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_captured_co2_emission, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
     end
 
@@ -141,6 +145,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
 
       it { is_expected.to have_query_value(:primary_co2_emission, 25) }
       it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_captured_co2_emission, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
     end
 
@@ -149,6 +154,7 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryCo2 do
 
       it { is_expected.to have_query_value(:primary_co2_emission, 25) }
       it { is_expected.to have_query_value(:primary_co2_emission_without_capture, 50) }
+      it { is_expected.to have_query_value(:primary_captured_co2_emission, 25) }
       it { is_expected.to have_query_value(:primary_demand_of_fossil, 75) }
     end
   end

@@ -141,8 +141,18 @@ module Qernel
       #
       # Returns a numeric value in MJ.
       def hydrogen_production_based_on_number_of_units
-        fetch(:production_based_on_number_of_units) do
+        fetch(:hydrogen_production_based_on_number_of_units) do
           number_of_units * typical_hydrogen_production_per_unit
+        end
+      end
+
+      # Public: Calculates the total ammonia production of the node, based on the value per unit
+      # and the number of units.
+      #
+      # Returns a numeric value in MJ.
+      def ammonia_production_based_on_number_of_units
+        fetch(:ammonia_production_based_on_number_of_units) do
+          number_of_units * typical_ammonia_production_per_unit
         end
       end
 
@@ -166,6 +176,16 @@ module Qernel
         end
       end
 
+      # Public: Calculates the ammmonia output capacity based on the output conversion and total
+      # input capacity of the node.
+      #
+      # Returns a numeric value in MW.
+      def typical_ammonia_production_capacity
+        fetch(:typical_ammonia_production_capacity) do
+          ammonia_output_conversion * input_capacity
+        end
+      end
+
       # Public: Calculates the electricity production of one unit of the technology.
       #
       # Returns a numeric value in MJ.
@@ -181,6 +201,15 @@ module Qernel
       def typical_hydrogen_production_per_unit
         fetch(:typical_hydrogen_production_per_unit) do
           typical_hydrogen_production_capacity * full_load_seconds
+        end
+      end
+
+      # Public: Calculates the ammonia production of one unit of the technology.
+      #
+      # Returns a numeric value in MJ.
+      def typical_ammonia_production_per_unit
+        fetch(:typical_ammonia_production_per_unit) do
+          typical_ammonia_production_capacity * full_load_seconds
         end
       end
 

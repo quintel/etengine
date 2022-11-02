@@ -40,6 +40,23 @@ module Qernel
         set_preset_demand_by_carrier_production(value, :hydrogen)
       end
 
+      # Updates a (ammonia production plant) node demand by its ammonia output.
+      #
+      # That means we have to divide by the conversion of the ammonia slot. So that the ammonia
+      # output edge receive that value, otherwise one part would go away to losses.
+      #
+      # For example:
+      #
+      #     UPDATE(... , preset_demand_by_ammonia_production, 1000)
+      #
+      #     1000 ammonia --> +------+
+      #                       | 1030 |
+      #           30 loss --> +------+
+      #
+      def preset_demand_by_ammonia_production=(value)
+        set_preset_demand_by_carrier_production(value, :ammonia)
+      end
+
       # Is the calculated near the demand_expected_value?
       #
       # Returns nil if demand or expected is nil. Returns true if demand is within tolerance

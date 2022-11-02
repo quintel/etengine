@@ -34,6 +34,14 @@ module Qernel::RecursiveFactor::PrimaryCo2
     end
   end
 
+  # Public: Calculates the total amount of CO2 captured based on the energy demand of the node.
+  # Capture may occur due to the `free_co2_factor` of parent nodes or as a result of bio capture.
+  #
+  # Returns a numeric in kg.
+  def primary_captured_co2_emission
+    primary_co2_emission_without_capture - primary_co2_emission
+  end
+
   # Public: Calculates and returns the combined emissions of fossil and bio carriers caused by
   # the node _including_ any captured by CCS or otherwise ignored by the `free_co2_factor`.
   #
