@@ -151,6 +151,7 @@ Style/MethodCallWithArgsParentheses:
   - puts
   - raise
   - render
+  - render_serializer
   - require
   - require_dependency
   - require_relative

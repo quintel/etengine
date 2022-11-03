@@ -12,7 +12,7 @@ RSpec.describe QueryCurveCSVSerializer do
       {
         name: 'Query two',
         query: 'query_2'
-      },
+      }
     ]
   end
 
