@@ -17,6 +17,7 @@ MILLIONS = 10.0**6
 THOUSANDS = 1000.0
 #NIL = nil if !defined?(NIL)
 EURO_SIGN = '&euro;'
+INFINITY = Float::INFINITY
 
 # Periods in which peak loads are measured: sd = summer day, se = summer
 # evening, wd = winter day, we = winter evening.

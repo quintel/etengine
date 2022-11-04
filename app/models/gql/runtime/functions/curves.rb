@@ -21,6 +21,28 @@ module Gql::Runtime
         Merit::Curve.reader.read(path)
       end
 
+      # Public: Restricts the values in a curve to be between the minimum and maximum. Raises an
+      # error if min > max.
+      #
+      # Returns an array.
+      def CLAMP_CURVE(curve, min, max)
+        unless min.is_a?(Numeric)
+          raise ArgumentError, "CLAMP_CURVE: min must be numeric, was #{min.inspect}"
+        end
+
+        unless max.is_a?(Numeric)
+          raise ArgumentError, "CLAMP_CURVE: max must be numeric, was #{max.inspect}"
+        end
+
+        if min >= max
+          raise ArgumentError, "CLAMP_CURVE: min must be less than max, was #{min} > #{max}"
+        end
+
+        return [] if curve.blank?
+
+        curve.map { |value| value.clamp(min, max) }
+      end
+
       # Public: If the given `curve` is an array of non-zero length, it is
       # returned. If the curve is nil or empty, a new curve of `length` length
       # is created, with each value set to `default`.

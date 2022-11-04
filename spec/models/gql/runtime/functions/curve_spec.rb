@@ -267,5 +267,80 @@ module Gql::Runtime::Functions
         expect(result).to eq([3.5, 3.5, 3.5, 3.5, 3.5, 3.5])
       end
     end
+
+    # CLAMP_CURVE
+    # -----------
+
+    describe 'CLAMP_CURVE(nil, 0, 2)' do
+      it 'returns []' do
+        expect(result).to eq([])
+      end
+    end
+
+    describe 'CLAMP_CURVE([], 0, 2)' do
+      it 'returns []' do
+        expect(result).to eq([])
+      end
+    end
+
+    describe 'CLAMP_CURVE([], 2, 0)' do
+      it 'raises an error' do
+        expect { result }.to raise_error(/min must be less than max, was 2 > 0/)
+      end
+    end
+
+    describe 'CLAMP_CURVE([], 2, 2)' do
+      it 'raises an error' do
+        expect { result }.to raise_error(/min must be less than max, was 2 > 2/)
+      end
+    end
+
+    describe 'CLAMP_CURVE([], INFINITY, -INFINITY)' do
+      it 'raises an error' do
+        expect { result }.to raise_error(/min must be less than max, was Infinity > -Infinity/)
+      end
+    end
+
+    describe 'CLAMP_CURVE([], nil, INFINITY)' do
+      it 'raises an error' do
+        expect { result }.to raise_error(/min must be numeric, was nil/)
+      end
+    end
+
+    describe 'CLAMP_CURVE([], 0, "oops")' do
+      it 'raises an error' do
+        expect { result }.to raise_error(/max must be numeric, was "oops"/)
+      end
+    end
+
+    describe 'CLAMP_CURVE([-1, 0, 1, 2, 3, 4], 2, INFINITY)' do
+      it 'returns [2, 2, 2, 2, 3, 4]' do
+        expect(result).to eq([2, 2, 2, 2, 3, 4])
+      end
+    end
+
+    describe 'CLAMP_CURVE([-1, 0, -1, 2, -3, 4], 0, INFINITY)' do
+      it 'returns [0, 0, 0, 2, 0, 4]' do
+        expect(result).to eq([0, 0, 0, 2, 0, 4])
+      end
+    end
+
+    describe 'CLAMP_CURVE([-1, 0, -1, 2, -3, 4], -1, INFINITY)' do
+      it 'returns [-1, 0, -1, 2, -1, 4]' do
+        expect(result).to eq([-1, 0, -1, 2, -1, 4])
+      end
+    end
+
+    describe 'CLAMP_CURVE([-1, 0, -1, 2, -3, 4], -INFINITY, 0)' do
+      it 'returns [-1, 0, -1, 0, -3, 0]' do
+        expect(result).to eq([-1, 0, -1, 0, -3, 0])
+      end
+    end
+
+    describe 'CLAMP_CURVE([-1, 0, -1, 2, -3, 4], -INFINITY, INFINITY)' do
+      it 'returns [-1, 0, -1, 2, -3, 4]' do
+        expect(result).to eq([-1, 0, -1, 2, -3, 4])
+      end
+    end
   end
 end

@@ -78,6 +78,10 @@ Rails.application.routes.draw do
         get 'curves/network_gas',
           to: 'curves#network_gas',
           as: :curves_network_gas_download
+
+        get 'curves/residual_load',
+          to: 'curves#residual_load',
+          as: :curves_residual_load_download
       end
 
       resources :inputs, :only => [:index, :show] do
