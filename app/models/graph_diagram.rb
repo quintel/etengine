@@ -66,7 +66,7 @@ class GraphDiagram
   def node_settings(node)
     settings = {
       fillcolor: node.output_edges.empty? ? '#dddddd' : nil,
-      group: %i[primary_energy_demand useful_demand] & node.groups,
+      group: %i[primary_energy_demand useful_demand] & node.groups.to_a,
       shape: 'box'
     }
 
