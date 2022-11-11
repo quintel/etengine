@@ -49,7 +49,7 @@ gem 'parallel'
 gem 'ruby-progressbar'
 
 # own gems
-gem 'quintel_merit', ref: 'c504a27', github: 'quintel/merit'
+gem 'quintel_merit', ref: '280cb72', github: 'quintel/merit'
 
 gem 'atlas',         ref: '7ce81f0', github: 'quintel/atlas'
 gem 'fever',         ref: 'bf092b2', github: 'quintel/fever'
