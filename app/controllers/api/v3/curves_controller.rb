@@ -127,9 +127,12 @@ module Api
       private
 
       def merit_required
-        unless Qernel::Plugins::Causality.enabled?(@scenario.gql.future_graph)
-          render :merit_required, format: :html, layout: false, status: :not_found
-        end
+        return if Qernel::Plugins::Causality.enabled?(@scenario.gql.future_graph)
+
+        render(
+          plain: 'Merit order and time-resolved calculation are not enabled for this scenario',
+          status: :not_found
+        )
       end
 
       def render_serializer(serializer)
