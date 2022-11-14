@@ -43,6 +43,46 @@ describe Scenario do
     describe '#end_year' do
       subject { super().end_year }
       it { is_expected.to eq(2050) }
+
+      context 'when it not provided' do
+        it 'has an error' do
+          scenario = described_class.default(end_year: nil)
+          scenario.valid?
+
+          expect(scenario.errors[:end_year]).to include("can't be blank")
+        end
+      end
+
+      context 'given a float' do
+        it 'has an error' do
+          scenario = described_class.default(end_year: 2019.5)
+          scenario.valid?
+
+          expect(scenario.errors[:end_year]).to include("must be an integer")
+        end
+      end
+
+      context 'when it is greater than the start year' do
+        it 'has no error' do
+          scenario = described_class.default(end_year: 2020)
+          allow(scenario).to receive(:start_year).and_return(2019)
+
+          scenario.valid?
+
+          expect(scenario.errors[:end_year]).to be_empty
+        end
+      end
+
+      context 'when it is equal to the start year' do
+        it 'has an error' do
+          scenario = described_class.default(end_year: 2019)
+          allow(scenario).to receive(:start_year).and_return(2019)
+
+          scenario.valid?
+
+          expect(scenario.errors[:end_year]).to include('must be greater than 2019')
+        end
+      end
     end
 
     describe '#start_year' do
@@ -58,8 +98,8 @@ describe Scenario do
           described_class.default.tap { |s| s.area_code = 'invalid'}
         end
 
-        it 'returns 2015' do
-          expect(scenario.start_year).to eq(2015)
+        it 'returns 2019' do
+          expect(scenario.start_year).to eq(2019)
         end
       end
     end

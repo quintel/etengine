@@ -128,7 +128,7 @@ module Api
 
       def merit_required
         unless Qernel::Plugins::Causality.enabled?(@scenario.gql.future_graph)
-          render :merit_required, format: :html, layout: false
+          render :merit_required, format: :html, layout: false, status: :not_found
         end
       end
 

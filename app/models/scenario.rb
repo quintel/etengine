@@ -29,7 +29,12 @@ class Scenario < ApplicationRecord
     inverse_of: :source_scenario
 
   validates :area_code, presence: true
-  validates :end_year,  numericality: true
+
+  validates :end_year, presence: true, numericality: {
+    allow_nil: true,
+    only_integer: true,
+    greater_than: ->(s) { s.start_year }
+  }
 
   validates :area_code, inclusion: {
     in: ->(*) { Etsource::Dataset.region_codes },
@@ -145,7 +150,7 @@ class Scenario < ApplicationRecord
     @start_year ||=
       (Atlas::Dataset.exists?(area_code) &&
         Atlas::Dataset.find(area_code).analysis_year) ||
-      2015
+      2019
   end
 
   def years
