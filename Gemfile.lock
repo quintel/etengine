@@ -154,7 +154,7 @@ GEM
     concurrent-ruby (1.1.10)
     crass (1.0.6)
     csv (3.2.2)
-    dalli (3.2.1)
+    dalli (3.2.3)
     debug_inspector (1.1.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
