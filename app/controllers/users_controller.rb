@@ -41,23 +41,13 @@ class UsersController < ApplicationController
     end
   end
 
-  def destroy
-    @user.destroy
-    redirect_to users_path, :notice => 'User deleted'
-  end
-
-  #######
   private
-  #######
 
   def find_user
     @user = User.find(params[:id])
   end
 
   def user_attributes
-    params.require(:user).permit(
-      :company_school, :email, :group, :heared_first_at, :name,
-      :phone_number, :send_score, :trackable, :password, :password_confirmation
-    )
+    params.require(:user).permit(:email, :name, :password)
   end
 end

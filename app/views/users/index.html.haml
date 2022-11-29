@@ -8,7 +8,7 @@
       %th Id
       %th Name
       %th Email
-      %th Role
+      %th Admin
       %th
   %tbody
     - @users.each do |u|
@@ -16,5 +16,4 @@
         %td= u.id
         %td= u.name
         %td= link_to u.email, edit_user_path(u)
-        %td= u.role.name if u.role
-        %td= link_to 'Delete', user_path(u), method: 'delete', confirm: "Are you sure?", class: 'btn btn-mini btn-danger'
+        %td= u.admin

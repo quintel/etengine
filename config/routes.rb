@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   root :to => 'pages#index'
 
   # Frontend
-  resources :users, :except => :show
+  resources :users, :except => %i[show destroy]
 
   namespace :api do
     namespace :v3 do
