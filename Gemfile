@@ -26,11 +26,14 @@ gem 'numo-narray', require: 'numo/narray'
 
 # Rails gem
 gem 'simple_form'
-gem 'devise', '~> 4.7'
-gem 'cancancan', '~> 3.0'
 gem 'ruby-graphviz',                  require: 'graphviz'
 gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
+
+# Authentication and authorization
+gem 'devise', '~> 4.7'
+gem 'doorkeeper'
+gem 'cancancan', '~> 3.0'
 
 gem 'sass-rails'
 gem 'mini_racer'
