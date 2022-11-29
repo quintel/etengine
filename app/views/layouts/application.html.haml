@@ -71,9 +71,9 @@
     .subnav.subnav-fixed= yield :subnav
 
     .container-fluid
-      - if flash[:notice].present?
+      - if notice.present?
         .alert.notice= notice_message
-      - if flash[:alert].present?
+      - if alert.present?
         .alert.alert= alert_message
 
       #content= yield

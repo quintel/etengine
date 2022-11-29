@@ -22,14 +22,6 @@ module InspectHelper
     end
   end
 
-  def notice_message
-    capture_haml do
-      if flash[:notice]
-        haml_tag '#notice', flash[:notice]
-      end
-    end
-  end
-
   def result_fields(present, future, attr_name = nil)
     present_value = present.instance_eval(attr_name.to_s)
     future_value  = future.instance_eval(attr_name.to_s)
