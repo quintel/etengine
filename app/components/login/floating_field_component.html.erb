@@ -1,0 +1,9 @@
+<div class="floating-label-field">
+  <% if field? %>
+    <%= field %>
+  <% else %>
+    <%= @form.public_send("#{@type}_field", @name, placeholder: @title, class: "peer", **@field_attributes) %>
+  <% end %>
+
+  <%= @form.label @name, @title, class: "absolute bg-white px-1.5 left-3 -top-2.5 text-gray-500 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-placeholder-shown:cursor-text" %>
+</div>

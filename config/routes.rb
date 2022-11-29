@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   use_doorkeeper
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
-  devise_for :users
+  devise_for :users, path: 'identity'
+  get '/identity', to: 'users/profile#root', as: :user_root
 
   root :to => 'pages#index'
 

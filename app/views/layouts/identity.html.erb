@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Identity</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%#= favicon_link_tag asset_path("favicon.svg") %>
+
+    <%= stylesheet_link_tag "auth", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="with-bg pb-12">
+    <div class="py-8">
+      <div
+        class="
+          w-[872px]
+          mx-auto
+          flex
+          justify-center
+          items-center
+          text-gray-500
+          font-medium
+        "
+      >
+        <span
+          class="
+            text-midnight-600
+            font-medium
+            text-base
+            inline-flex
+            items-center
+            hover:text-midnight-800
+            cursor-pointer
+          "
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Return to the Energy Transition Model</span>
+      </div>
+    </div>
+    <div class="w-[872px] mx-auto">
+      <%= turbo_frame_tag :toast do %>
+        <% if notice %>
+          <%= render(ToastComponent.new(type: :notice, message: notice)) %>
+        <% end %>
+
+        <% if alert %>
+          <%= render(ToastComponent.new(type: :alert, message: alert)) %>
+        <% end %>
+      <% end %>
+
+      <%= yield %>
+    </div>
+
+    <%= turbo_frame_tag :modal do %>
+    <% end %>
+  </body>
+</html>

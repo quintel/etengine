@@ -70,4 +70,20 @@ module ApplicationHelper
       "translation missing, #{I18n.locale.to_s.split('-').first} #{key}"
     end
   end
+
+  def notice_message
+    if notice.is_a?(Hash)
+      notice[:message] || notice['message']
+    else
+      notice
+    end
+  end
+
+  def alert_message
+    if alert.is_a?(Hash)
+      alert[:message] || alert['message']
+    else
+      alert
+    end
+  end
 end

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Identity</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%#= favicon_link_tag asset_path("favicon.svg") %>
+
+    <%= stylesheet_link_tag "auth", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="with-bg guest">
+    <div class="min-h-screen flex items-center justify-center">
+      <div class="container mx-auto">
+        <main class="w-[30rem] mb-24 mx-auto mt-12 bg-white rounded-lg shadow-xl">
+          <div
+            class="
+              bg-gray-500
+              bg-gradient-to-b
+              from-[rgba(255,255,255,0.2)]
+              to-transparent
+              flex
+              items-center
+              justify-center
+              py-4
+              rounded-t-md
+            "
+          >
+            <%= image_tag 'logo.png', height: 30, width: 284, alt: '' %>
+          </div>
+          <div class="p-12">
+            <%= yield(:header) %>
+
+            <% if flash[:notice].present? %>
+              <p
+                class="
+                  bg-green-100
+                  border
+                  border-green-300
+                  p-2
+                  rounded
+                  font-medium
+                  text-green-800
+                  mt-4
+                  mb-8
+                "
+              ><%= notice_message %></p>
+            <% end %>
+
+            <% if flash[:alert].present? %>
+              <p
+                class="
+                  bg-red-100
+                  border
+                  border-red-300
+                  p-2
+                  rounded
+                  font-medium
+                  text-red-800
+                  mt-4
+                  mb-8
+                "
+              ><%= alert_message %></p>
+            <% end %>
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

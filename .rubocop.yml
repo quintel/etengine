@@ -170,6 +170,9 @@ Naming/MethodName:
   Exclude:
     - 'app/models/gql/runtime/functions/*'
 
+Naming/VariableNumber:
+  Enabled: false
+
 Rails/UnknownEnv:
   Environments:
     - development
@@ -194,6 +197,3 @@ RSpec/DescribeClass:
 RSpec/RepeatedExampleGroupBody:
   Exclude:
     - 'spec/models/gql/runtime/functions/*.rb'
-
-RSpec/VariableNumber:
-  Enabled: false

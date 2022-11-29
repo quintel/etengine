@@ -71,12 +71,10 @@
     .subnav.subnav-fixed= yield :subnav
 
     .container-fluid
-      - if flash.any?
-        #flash
-          - flash.each do |type, msg|
-            .alert{:class => type}
-              %a.close x
-              %p= msg
+      - if flash[:notice].present?
+        .alert.notice= flash_message
+      - if flash[:alert].present?
+        .alert.alert= flash_alert
 
       #content= yield
       #footer

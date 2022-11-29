@@ -1,0 +1,30 @@
+<% content_for(:header) do %>
+  <%= render(LoginHeaderComponent.new(
+    title: "Create an account",
+    subtext: "Sign up to the Energy Transition Model to continue"
+  )) %>
+<% end %>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="mb-6">
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :name, type: :text, title: "Your name", autofocus: true, autocomplete: "name")) %>
+  </div>
+
+  <div class="mb-6">
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: "E-mail address", autocomplete: "email")) %>
+  </div>
+
+  <div class="mb-4">
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :password, title: "Password")) do |c| %>
+      <% c.field do %>
+        <%= render(PasswordFieldComponent.new(form: f, name: :password, autocomplete: "new-password", class: "peer mb-1", placeholder: "Password")) %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= render(Login::ButtonComponent.new(form: f).with_content("Sign up")) %>
+<% end %>
+
+<%= render "devise/shared/links" %>

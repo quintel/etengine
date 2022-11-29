@@ -35,6 +35,15 @@ gem 'devise', '~> 4.7'
 gem 'doorkeeper'
 gem 'cancancan', '~> 3.0'
 
+# Auth front-end
+gem 'erb-formatter'
+gem 'importmap-rails'
+gem 'inline_svg'
+gem 'stimulus-rails'
+gem 'tailwindcss-rails'
+gem 'turbo-rails'
+gem 'view_component'
+
 gem 'sass-rails'
 gem 'mini_racer'
 gem 'coffee-rails'
