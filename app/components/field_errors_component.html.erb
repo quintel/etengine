@@ -1,0 +1,10 @@
+<% if @messages.any? %>
+  <ul class="text-sm text-red-600 mt-2">
+    <% @messages.each do |message| %>
+      <li class="flex mb-1 last:mb-0">
+        <%= inline_svg_tag("hero/20/minus-small.svg", class: "-ml-1") %>
+        <%= message %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

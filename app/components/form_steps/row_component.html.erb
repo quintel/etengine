@@ -1,0 +1,47 @@
+<div class="row <%= icon? ? "" : "numbered" %> mb-6">
+  <label for="<%= @label_for %>" class="text-base font-medium">
+    <% if icon? %>
+      <!-- // --tw-bg-opacity: 1; // --tw-text-opacity: 1; // align-items:
+      center; // background-color: rgb(156 163 175/var(--tw-bg-opacity)); //
+      border-radius: 9999px; // color: rgb(249 250 251/var(--tw-text-opacity));
+      // content: counter(form-steps); // counter-increment: form-steps; //
+      display: inline-flex; // flex-shrink: 0; // font-size: .875rem; //
+      height: 1.75rem; // justify-content: center; // line-height: 1.25rem; //
+      - margin-left: -2.5rem; // - margin-right: 0.75rem; // - width: 1.75rem;
+      --> <!-- @apply h-7 w-7 bg-gray-400 text-gray-50 text-sm rounded-full
+      mr-3 -ml-10; align-items: center; content: counter(form-steps);
+      counter-increment: form-steps; display: inline-flex; flex-shrink: 0;
+      justify-content: center; -->
+      <div
+        aria-hidden="true"
+        class="
+          -ml-10
+          bg-gray-400
+          flex-shrink-0
+          h-7
+          inline-flex
+          items-center
+          justify-center
+          mr-3
+          rounded-full
+          text-gray-50
+          text-sm
+          w-7
+        "
+      >
+        <%= icon %>
+      </div>
+    <% end %>
+    <%= @title %>
+  </label>
+
+  <div class="mt-2">
+    <%= content %>
+  </div>
+
+  <% if @hint.present? %>
+    <p class="text-gray-500 mt-2"><%= @hint %></p>
+  <% end %>
+
+  <%= after_hint %>
+</div>

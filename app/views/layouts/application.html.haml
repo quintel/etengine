@@ -72,9 +72,9 @@
 
     .container-fluid
       - if flash[:notice].present?
-        .alert.notice= flash_message
+        .alert.notice= notice_message
       - if flash[:alert].present?
-        .alert.alert= flash_alert
+        .alert.alert= alert_message
 
       #content= yield
       #footer

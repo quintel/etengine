@@ -1,0 +1,52 @@
+<%= turbo_frame_tag stimulus.turbo_frame_id do %>
+  <div
+    data-controller="<%= stimulus.controller %>"
+    data-action="<%= stimulus.keyboard_close_action %>"
+  >
+    <div
+      class="modal-backdrop <%= stimulus.enabled? ? "" : "animate-none transition-none" %>"
+      data-modal-target="backdrop"
+    ></div>
+    <div class="modal-wrapper" data-action="<%= stimulus.backdrop_close_action %>">
+      <div
+        aria-labelledby="modal-title"
+        aria-modal="true"
+        class="modal <%= stimulus.enabled? ? "" : "animate-none transition-none" %>"
+        data-modal-target="dialog"
+        role="dialog"
+        tabindex="-1"
+      >
+        <%# begin: header %>
+        <div class="border-b px-8 pt-5 pb-4 flex items-center">
+          <h2 class="text-lg font-semibold" id="modal-title">
+            <%= @title %>
+          </h2>
+          <% if stimulus.enabled? %>
+            <button
+              class="
+                p-1
+                -mr-2
+                rounded
+                ml-auto
+                transition
+                text-gray-600
+                hover:bg-gray-200
+                active:bg-gray-300
+              "
+              data-action="<%= stimulus.button_close_action %>"
+              aria-label="Close"
+            >
+              <%= inline_svg_tag("hero/20/x-mark.svg") %>
+            </button>
+          <% end %>
+        </div>
+        <%# end: header %>
+        <%# begin: content %>
+        <div class="px-8 py-6 bg-gray-50 rounded-b">
+          <%= content %>
+        </div>
+        <%# end: content %>
+      </div>
+    </div>
+  </div>
+<% end %>

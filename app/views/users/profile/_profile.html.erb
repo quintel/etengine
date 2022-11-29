@@ -1,4 +1,34 @@
 <%= turbo_frame_tag "profile" do %>
   <%= render(Identity::CardComponent.new(title: "Your profile", icon: "phosphor/identification-card.svg", id: "profile")) do |c| %>
+    <% c.header_right do %>
+      <%= button_to destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex items-center text-sm font-medium" do %>
+        Sign out
+        <%= inline_svg_tag 'hero/20/logout.svg', class: "ml-2" %>
+      <% end %>
+    <% end %>
+
+    <%= render(Identity::ProfileRowComponent.new(title: "Name")) do %>
+      <div class="flex items-center">
+        <%= current_user.name %>
+        <%= link_to "Change name…", user_edit_name_path, data: { turbo_frame: :modal }, class: button_classes("text-sm font-normal ml-auto", color: :link, negate_padding: :y) %>
+      </div>
+    <% end %>
+
+    <%= render(Identity::ProfileRowComponent.new(title: "E-mail")) do %>
+      <%= render(Identity::ProfileEmailComponent.new(email: current_user.email, confirmed: current_user.confirmed_at)) %>
+    <% end %>
+
+    <% if current_user.unconfirmed_email %>
+      <%= render(Identity::ProfileRowComponent.new(title: "New e-mail address")) do %>
+        <%= render(Identity::ProfileEmailComponent.new(email: current_user.unconfirmed_email, confirmed: false, show_change_button: false)) %>
+      <% end %>
+    <% end %>
+
+    <%= render(Identity::ProfileRowComponent.new(title: "Password")) do %>
+      <div class="flex items-center">
+        <span>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+        <%= link_to "Change password…", user_edit_password_path, data: { turbo_frame: :modal }, class: button_classes("text-sm font-normal ml-auto", color: :link, negate_padding: :y) %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

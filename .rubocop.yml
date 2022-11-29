@@ -150,6 +150,7 @@ Style/MethodCallWithArgsParentheses:
   - not_to
   - puts
   - raise
+  - redirect_to
   - render
   - render_serializer
   - require
@@ -186,6 +187,11 @@ RSpec/FilePath:
 
 RSpec/ExampleLength:
   Enabled: false
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/components/**/*_spec.rb
+    - spec/system/**/*_spec.rb
 
 RSpec/NamedSubject:
   Enabled: false

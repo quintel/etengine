@@ -1,0 +1,28 @@
+<%= render(Identity::CardComponent.new(title: "Personal access tokens", icon: "phosphor/keyhole.svg", id: "tokens")) do |c| %>
+  <%= render(Identity::EmptyStateComponent.new(title: "You have no access tokens")) do |es| %>
+    <p>
+      Need an API token for scripts or testing? Personal access tokens allow
+      you to send requests to the API on behalf of your account.
+    </p>
+
+    <% es.buttons do %>
+      <button
+        name="button"
+        type="submit"
+        class="<%= button_classes(color: :success, size: :lg) %>"
+        disabled
+      >
+        Create an access token
+      </button>
+
+      <button
+        name="button"
+        type="button"
+        class="<%= button_classes(size: :lg) %>"
+        disabled
+      >
+        Learn more
+      </button>
+    <% end %>
+  <% end %>
+<% end %>

@@ -2,8 +2,24 @@ Rails.application.routes.draw do
   use_doorkeeper
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
-  devise_for :users, path: 'identity'
-  get '/identity', to: 'users/profile#root', as: :user_root
+  devise_for :users, path: 'identity', controllers: {
+    registrations: 'users/registrations'
+  }
+
+  devise_scope :user do
+    get '/identity', to: 'users/profile#root', as: :user_profile
+
+    get '/identity/change_name', to: 'users/profile#edit_name', as: :user_edit_name
+    post '/identity/change_name', to: 'users/profile#update_name'
+
+    get '/identity/change_email', to: 'users/profile#edit_email', as: :user_edit_email
+    post '/identity/change_email', to: 'users/profile#update_email'
+
+    get '/identity/change_password', to: 'users/profile#edit_password', as: :user_edit_password
+    post '/identity/change_password', to: 'users/profile#update_password'
+
+    get '/logout', to: 'users/sessions#destroy'
+  end
 
   root :to => 'pages#index'
 

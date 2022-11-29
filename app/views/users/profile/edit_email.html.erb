@@ -1,0 +1,36 @@
+<%= render(ModalComponent.new(title: "Change your e-mail address")) do |modal| %>
+  <%= turbo_frame_tag :change_email_form do %>
+    <%= form_for(@user, url: user_edit_email_path, html: { method: :post }) do |f| %>
+      <%= render(FormSteps::WrapperComponent.new) do |steps| %>
+        <%= render(FormSteps::RowComponent.new(title: "Current password", hint: "Confirm the password you currently use to sign in", label_for: "user_current_password")) do |row| %>
+          <div class="relative">
+            <%= render(PasswordFieldComponent.new(form: f, name: :current_password, class: "field", autofocus: true, required: true)) %>
+          </div>
+
+          <% row.icon { inline_svg_tag("hero/20/key.svg") } %>
+
+          <% row.after_hint do %>
+            <%= render(FieldErrorsComponent.new(record: @user, attribute: :current_password)) %>
+          <% end %>
+        <% end %>
+
+        <%= render(FormSteps::RowComponent.new(title: "New e-mail address", label_for: "user_email", hint: "A confirmation will be sent to this address before the change takes effect")) do |row| %>
+          <div class="relative">
+            <%= f.email_field :email, value: action_name == "edit_email" ? "" : @user.email, required: true, class: "field" %>
+          </div>
+
+          <% row.icon { inline_svg_tag("hero/20/mail.svg") } %>
+
+          <% row.after_hint do %>
+            <%= render(FieldErrorsComponent.new(record: @user, attribute: :email)) %>
+          <% end %>
+        <% end %>
+
+        <div class="mt-6 pb-2 flex items-center gap-2">
+          <%= button_tag "Change e-mail address", class: button_classes("text-base", size: :lg, color: :success) %>
+          <%= modal.close_link("Cancel", user_profile_path, modal:, class: button_classes("text-base", size: :lg)) %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

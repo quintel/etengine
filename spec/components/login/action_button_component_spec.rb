@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe Login::ActionButtonComponent, type: :component do
   let(:form) do
     ActionView::Helpers::FormBuilder.new(:user, User.new, template, {})
