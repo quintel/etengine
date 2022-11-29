@@ -8,6 +8,7 @@ git_source(:github) do |repo_name|
 end
 
 gem 'bootsnap', require: false
+gem 'puma'
 
 gem 'rails',        '~> 7.0.0'
 gem 'jquery-rails', '~> 4.0'
@@ -44,7 +45,8 @@ gem 'tailwindcss-rails'
 gem 'turbo-rails'
 gem 'view_component'
 
-gem 'sass-rails'
+# gem 'sass-rails'
+gem 'sprockets-rails'
 gem 'mini_racer'
 gem 'coffee-rails'
 
@@ -87,7 +89,7 @@ end
 group :test, :development do
   gem 'pry-byebug'
   gem 'pry-rails'
-  gem 'rspec-rails', '~> 5.0'
+  gem 'rspec-rails', '~> 6.0'
   gem 'watchr'
   gem 'binding_of_caller'
 
@@ -102,11 +104,15 @@ group :test do
   gem 'rails-controller-testing'
   gem 'shoulda-matchers'
 
+  # System tests
+  gem 'capybara'
+  gem 'selenium-webdriver'
+  gem 'webdrivers'
+
   gem 'simplecov', '~> 0.7.1', require: false
 end
 
 group :production, :staging do
-  gem 'puma'
   gem 'gctools', require: false
   gem 'newrelic_rpm'
 end

@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "profile" do %>
+  <%= render(Identity::CardComponent.new(title: "Your profile", icon: "phosphor/identification-card.svg", id: "profile")) do |c| %>
+  <% end %>
+<% end %>

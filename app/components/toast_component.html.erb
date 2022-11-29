@@ -1,0 +1,62 @@
+<div
+  data-controller="toast"
+  data-action="mouseover->toast#mouseover mouseout->toast#mouseout"
+  class="
+    toast
+    backdrop-blur-sm
+    bg-gray-900/[.85]
+    bottom-4
+    duration-500
+    min-w-[18rem]
+    max-w-md
+    fixed
+    flex
+    pl-6
+    pr-10
+    py-4
+    right-4
+    rounded-md
+    text-gray-200
+    transition
+  "
+>
+  <% if @type == :alert %>
+    <%= inline_svg_tag("hero/20/exclamation.svg", class: "flex-shrink-0 text-amber-400 mr-2 mt-0.5") %>
+  <% else %>
+    <%= inline_svg_tag("hero/20/circle-check.svg", class: "flex-shrink-0 text-emerald-400 mr-2 mt-0.5") %>
+  <% end %>
+  <div>
+    <% if @title %>
+      <div class="text-base text-gray-200 font-medium">
+        <%= @title %>
+      </div>
+      <div class="text-sm text-gray-350">
+        <%= @message %>
+      </div>
+    <% else %>
+      <div class="text-sm text-gray-200 font-medium mt-0.5">
+        <%= @message %>
+      </div>
+    <% end %>
+    <button
+      aria-label="Close"
+      data-action="click->toast#close"
+      class="
+        absolute
+        hiadden
+        p-0.5
+        right-1
+        rounded
+        text-gray-350
+        top-1
+        transition
+        hover:bg-gray-600
+        hover:text-gray-200
+        active:bg-gray-700
+        active:text-gray-300
+      "
+    >
+      <%= inline_svg_tag("hero/20/x-mark.svg") %>
+    </button>
+  </div>
+</div>

@@ -1,12 +1,11 @@
 FactoryBot.define do
   factory :user do
-    name { "Username" }
-    sequence(:email) {|n| "person#{n}@quintel.com" }
-    password { "password" }
-    password_confirmation { "password" }
+    name { 'John Doe' }
+    sequence(:email) { |n| "hello.#{n}@quintel.com" }
+    password { 'password' }
   end
 
   factory :admin, parent: :user do
-    association :role, factory: :admin_role
+    admin { true }
   end
 end

@@ -1,0 +1,433 @@
+/**
+ *= require bootstrap.css
+ *= require codemirror.css
+ *
+ *= require highlightjs-github.css
+ *= require inspect/bootstrap-styles.css
+ *= require inspect/checks.css
+ *= require inspect/debugger.css
+ *= require inspect/etsource.css
+ *= require inspect/gem-info.css
+ *= require inspect/node.css
+ *= require inspect/search.css
+ *
+ *= require_self
+ */
+
+ body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.future-edges h2 a,
+.present-edges h2 a {
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.future-edges h2 a:hover,
+.present-edges h2 a:hover {
+  text-decoration: none;
+}
+
+.brand .server {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.brand .server.production {
+  color: #d74343;
+}
+
+.brand .server.beta {
+  color: #f0c000;
+}
+
+.brand .server.local {
+  color: #999;
+}
+
+.slot-unit {
+  color: #666;
+  display: block;
+  font-size: 11px;
+}
+
+th.input-demand,
+th.output-demand {
+  font-weight: normal;
+  color: #888;
+}
+
+th.output-demand {
+  text-align: right;
+}
+
+.node-flows {
+  text-align: center;
+}
+
+.node-flows .node-flows-inner {
+  display: inline-block;
+  text-align: left;
+}
+
+.node-flows .energy,
+.node-flows .delta {
+  float: left;
+}
+
+.node-flows .energy {
+  min-width: 300px;
+  padding-right: 30px;
+}
+
+.node-flows td:first-child {
+  vertical-align: middle;
+}
+
+.node-flows .present,
+.node-flows .future {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  margin: 0.5rem 0;
+  position: relative;
+}
+
+.node-flows .present svg,
+.node-flows .future svg {
+  color: #777;
+  height: 20px;
+  width: 20px;
+}
+
+.node-flows .input,
+.node-flows .output,
+.node-flows .demand,
+.node-flows .name {
+  background: white;
+  box-sizing: border-box;
+  display: inline-block;
+  min-width: 80px;
+  padding: 5px 8px 4px;
+  text-align: center;
+}
+
+.node-flows .name {
+  background: none;
+  color: #999;
+  text-align: left;
+}
+
+.node-flows .input,
+.node-flows .output {
+  border-radius: 3px;
+  border: 1px solid #ddd;
+}
+
+.node-flows .demand {
+  background: #444;
+  border-radius: 3px;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.node-flows .present {
+  color: #999;
+}
+
+.node-flows .present .demand {
+  background: #aaa;
+  border-color: #aaa;
+}
+
+.node-flows .delta {
+  align-items: center;
+  background: #eee;
+  border-radius: 3px;
+  color: #444;
+  display: flex;
+  font-size: 1rem;
+  margin-top: 22px;
+  padding: 8px;
+}
+
+.node-flows .delta svg {
+  height: 24px;
+  margin: -0.125rem 0;
+  width: 24px;
+}
+
+.edge-flows .nav-tabs {
+  font-size: 16px;
+}
+
+.edge-flows .nav-tabs .active {
+  font-weight: bold;
+}
+
+.node-attrs {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono",
+    Menlo, Courier, monospace;
+  font-size: 12px;
+  margin-bottom: -0.5em;
+  overflow: hidden;
+}
+
+.node-attrs .attribute {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  float: left;
+  margin: 0 0.5em 0.5em 0;
+  white-space: nowrap;
+}
+
+.node-attrs .key,
+.node-attrs .value {
+  display: inline-block;
+  padding: 3px 6px 2px;
+}
+
+.node-attrs .key {
+  background: #ddd;
+}
+
+.node-attrs .sub-attribute:not(:last-child) {
+  border-right: 1px solid #ccc;
+  margin-right: 0.5em;
+}
+
+.node-list td.buttons {
+  white-space: nowrap;
+}
+
+.subnav ul.nav.nav-pills {
+  margin-left: 9px;
+}
+
+section#search_box form input,
+section#search_box form label {
+  line-height: 18px;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+section#search_box form input#q {
+  margin-right: 7px;
+}
+
+section#search_box form label {
+  display: inline;
+  margin-right: 7px;
+}
+
+section#search_box form label:hover {
+  cursor: pointer;
+}
+
+pre.backtrace {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  white-space: pre;
+}
+
+.import-warning {
+  position: relative;
+  text-shadow: none;
+}
+
+.simple_form label {
+  font-weight: bold;
+}
+
+.simple_form .field_with_errors textarea,
+.simple_form .field_with_errors input,
+.simple_form .field_with_errors select {
+  border-color: #b94a48;
+}
+
+.simple_form .field_with_errors label {
+  color: #b94a48;
+}
+
+.simple_form .error {
+  color: #b94a48;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.simple_form .hint {
+  font-size: 12px;
+}
+
+.simple_form label + .hint {
+  display: block;
+  margin: -3px 0 3px;
+}
+
+#search_box input[type="checkbox"] {
+  height: 14px;
+  margin-top: 0;
+  vertical-align: middle;
+  width: 14px;
+}
+
+table.scenario-list tr.active td {
+  background-color: #ecfdf5;
+}
+
+table.scenario-list tr.active td:first-child {
+  font-weight: 600;
+}
+
+table.scenario-list tr.active td:first-child .tag {
+  margin-left: 0.4em;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -2px;
+  font-weight: 500;
+}
+
+table.scenario-list .narrow {
+  text-align: center;
+  white-space: nowrap;
+  width: 1px;
+}
+
+table.scenario-list .actions {
+  text-align: center;
+}
+
+table.scenario-list .actions a,
+table.scenario-list .actions span.muted {
+  padding: 5px 5px;
+}
+
+table.scenario-list .actions span.muted {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.tag {
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1;
+  padding: 3px 4px;
+}
+
+.tag.green {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.tag.orange {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.tag.purple {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+.tag.gray {
+  background-color: #f5f5f5;
+  color: #737373;
+}
+
+.tag.red {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.CodeMirror {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.08), 0 0 0 rgba(82, 168, 236, 0);
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  transition: all ease 0.2s;
+  margin-bottom: 10px;
+  height: auto;
+}
+
+.CodeMirror .CodeMirror-scroll {
+  min-height: 100px;
+  overflow: auto;
+}
+
+.CodeMirror-focused {
+  border-color: rgba(82, 168, 236, 0.8);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.08),
+    0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+.btn .hotkey {
+  display: inline-block;
+  font-size: 75%;
+  line-height: 1;
+  margin-left: 0.25rem;
+  margin-top: -2px;
+  vertical-align: middle;
+}
+
+.btn .hotkey span.plus {
+  margin: 0 -2px;
+}
+
+.btn .hotkey kbd {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 2px 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-bottom-color: rgba(0, 0, 0, 0.6);
+}
+
+.gql-debug .CodeMirror .CodeMirror-scroll {
+  min-height: 150px;
+}
+
+.new_scenario .scenario_area_code select,
+.edit_scenario .scenario_area_code select {
+  width: auto;
+}
+
+.compat-warning {
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 20px;
+  text-align: center;
+  text-shadow: none;
+}
+
+.compat-warning svg {
+  height: 32px;
+  width: 32px;
+}
+
+.compat-warning h3 {
+  align-items: center;
+  display: flex;
+  font-size: 20px;
+  font-weight: 600;
+  gap: 0.375rem;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 0;
+}
+
+.compat-warning p:last-child {
+  margin-bottom: 0;
+}
+
+.compat-warning .btn + .btn {
+  margin-left: 0.5rem;
+}

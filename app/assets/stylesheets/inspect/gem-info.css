@@ -1,0 +1,12 @@
+.gem-info .compare {
+  float: right;
+  font-size: 11px;
+}
+
+.gem-info .version {
+  font-family: Menlo, Monaco, Consolas, monospace;
+}
+
+.gem-info .date {
+  color: #aaa;
+}

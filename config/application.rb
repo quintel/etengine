@@ -39,7 +39,7 @@ module Etm
       g.test_framework  :rspec, :fixture => false
     end
 
-    config.assets.enabled = true
+    # config.assets.enabled = true
 
     # Store files locally.
     config.active_storage.service = :local

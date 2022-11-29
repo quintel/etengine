@@ -1,0 +1,200 @@
+@keyframes edge-glow {
+  from {
+    color: #1949c4;
+  }
+
+  to {
+    color: #5fa021;
+  }
+
+}
+
+@-webkit-keyframes edge-glow {
+  from {
+    color: #1949c4;
+  }
+
+  to {
+    color: #5fa021;
+  }
+
+}
+
+body {
+  font-family: -apple-system, BedgeMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+body #instructions,
+body #options,
+body #loading,
+body #scroll {
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-bottom-color: #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  left: 20px;
+  opacity: 0.95;
+  position: fixed;
+  z-index: 5;
+}
+
+body #loading,
+body #scroll {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: #555;
+  font-size: 18px;
+  left: 50%;
+  margin-left: -200px;
+  text-align: center;
+  top: 50%;
+  width: 400px;
+}
+
+body #scroll {
+  display: none;
+}
+
+body #scroll .key {
+  background: #eee;
+  border-radius: 3px;
+  border: 1px solid #999;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  font-size: 16px;
+  height: 23px;
+  line-height: 1.4;
+  margin-top: -2px;
+  text-align: center;
+  vertical-align: text-top;
+  width: 23px;
+}
+
+body #scroll .key:first-of-type {
+  margin-left: 0.5rem;
+}
+
+body #instructions {
+  cursor: move;
+  top: 20px;
+  width: 350px;
+}
+
+body #instructions ul {
+  list-style: none;
+  margin: 1rem;
+  padding: 0;
+}
+
+body #instructions li {
+  margin-bottom: 0.5rem;
+}
+
+body #instructions li:last-child {
+  margin-bottom: 0;
+}
+
+body #instructions li.form {
+  margin: 1rem 0;
+}
+
+body #instructions .help {
+  color: #777;
+  padding-top: 0.5rem;
+}
+
+body #instructions select {
+  font-size: 14px;
+  margin-right: 0.25rem;
+  max-width: 150px;
+}
+
+body #instructions h6 {
+  margin: 0 0 0.25rem;
+  font-size: 14px;
+}
+
+body #instructions .actions {
+  background: #f5f5f5;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-top: 1px solid #ddd;
+  margin: 1rem -1rem -1rem !important;
+  padding: 1rem;
+}
+
+body #instructions .actions li:first-child {
+  font-weight: bold;
+}
+
+body #instructions .admin {
+  font-weight: bold;
+}
+
+body #instructions .admin ul,
+body #instructions .controls ul,
+body #instructions .actions ul {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body #instructions .admin ul li,
+body #instructions .controls ul li,
+body #instructions .actions ul li {
+  border-left: 1px solid #ccc;
+  float: left;
+  margin: 0 0.5rem 0 0;
+  padding: 0 0 0 0.5rem;
+}
+
+body #instructions .admin ul li:first-child,
+body #instructions .controls ul li:first-child,
+body #instructions .actions ul li:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+
+body #options {
+  bottom: 10px;
+  color: #777;
+  padding: 1rem;
+}
+
+body #canvas {
+  width: 100%;
+  height: 100%;
+}
+
+body #canvas path.grid,
+body #canvas rect {
+  shape-rendering: crispEdges;
+}
+
+body a {
+  color: #1949c4;
+}
+
+body a:hover {
+  color: black;
+}
+
+body a.glow {
+  color: #4e8816;
+  font-weight: bold;
+  animation: edge-glow 2s;
+  -webkit-animation: edge-glow 0.5s infinite alternate;
+}
+
+body #graph_saving {
+  color: white;
+  background-color: #1949c4;
+  display: none;
+  padding: 1rem;
+  position: fixed;
+  z-index: 10;
+}

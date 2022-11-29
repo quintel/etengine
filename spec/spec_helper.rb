@@ -17,9 +17,14 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'shoulda/matchers'
 
+require 'view_component/test_helpers'
+
+require 'capybara/rails'
+require 'capybara/rspec'
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 ActiveRecord::Migration.maintain_test_schema!
 
@@ -50,10 +55,29 @@ RSpec.configure do |config|
 
   config.infer_spec_type_from_file_location!
 
+  config.include(FactoryBot::Syntax::Methods)
+
   config.include(Devise::Test::ControllerHelpers, type: :controller)
   config.include(MechanicalTurkHelper)
 
   config.include(HouseholdCurvesHelper, household_curves: true)
+
+  config.include(ViewComponentHelpers, type: :component)
+
+  # System tests
+  config.include(SystemHelpers, type: :system)
+
+  config.before(:each, type: :system) do
+    driven_by :rack_test
+  end
+
+  config.before(:each, type: :system, js: true) do
+    driven_by :selenium_chrome_headless
+  end
+
+  config.before(:each, type: :system, debug: true) do
+    driven_by :selenium_chrome
+  end
 
   # Prevent the static YML file from being deleted.
   config.before(:suite) do

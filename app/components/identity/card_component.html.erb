@@ -1,0 +1,14 @@
+<div class="p-10 bg-white shadow-xl rounded-md mb-12 text-base"<% if @id %> id="<%= @id %>"<% end %>>
+  <div class="flex items-center border-b-2 text-xl font-semibold pb-4 mb-6">
+    <%= inline_svg_tag @icon, class: "h-8 w-8 mr-1.5 -mt-px" %>
+    <h2><%= @title %></h2>
+
+    <% if header_right? %>
+      <div class="text-base ml-auto font-medium">
+        <%= header_right %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= content %>
+</div>

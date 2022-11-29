@@ -1,0 +1,234 @@
+#debugger textarea {
+  height: 200px;
+}
+
+#debugger ul {
+  margin-left: 15px;
+  border-left: 1px solid #eee;
+}
+
+#debugger p {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid #eee;
+}
+
+#debugger p span.label {
+  vertical-align: absmiddle;
+}
+
+#debugger p.gql {
+  font-weight: bold;
+}
+
+form.gql-debug textarea#query {
+  border-radius: 4px 4px 0 0;
+  color: black;
+  font: 14px/20px Menlo, Monaco, Consolas, "Courier New", monospace;
+  height: auto;
+  margin: 0;
+  min-height: 100px;
+  padding: 10px;
+  width: 839px;
+}
+
+form.gql-debug p {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 0 0 4px 4px;
+  margin-top: -1px;
+  padding: 10px;
+  width: 839px;
+}
+
+table.results tbody:first-child tr:first-child td:first-child {
+  border-radius: 0;
+}
+
+table.results tbody .year,
+table.results tbody tr:hover td.year {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+table.results tbody th,
+table.results tbody td {
+  background: linear-gradient(#eee, white 30px);
+  border-radius: 0;
+}
+
+table.results .spacing {
+  width: 110px;
+}
+
+.results {
+  border-radius: 0;
+}
+
+.tal pre,
+.tal textarea {
+  font: 14px/20px Menlo, Monaco, Consolas, "Courier New", monospace;
+  background: none;
+  border: none;
+  margin: -8px;
+  max-height: 500px;
+  padding: 10px;
+  overflow: auto;
+  width: 711px;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.tal textarea {
+  cursor: text;
+  color: black;
+  margin: 0;
+}
+
+.tal .mi {
+  color: #099;
+}
+
+.tal .s2 {
+  color: #d14;
+}
+
+.tal .ss {
+  color: #990073;
+}
+
+.tal .nb {
+  color: #333;
+}
+
+.tal .suffix {
+  color: #bbb;
+  font-size: 11px;
+  line-height: 1;
+  margin-left: 0.5rem;
+  user-select: none;
+}
+
+pre.highlight {
+  border: none;
+  border-radius: 0;
+  line-height: 1.4;
+  padding: 1.5em;
+}
+
+pre.highlight,
+pre.highlight code,
+pre.highlight span {
+  font-size: 14px;
+}
+
+pre.highlight a {
+  border-bottom: 1px dotted #bbb;
+  color: inherit;
+}
+
+pre.highlight a:hover {
+  border-bottom: 1px solid #999;
+  text-decoration: none;
+}
+
+.table-raw-switcher {
+  border-bottom: 1px solid #ddd;
+  font-size: 12px;
+  line-height: 1;
+  padding: 3px 10px 0;
+  text-align: right;
+}
+
+.table-raw-switcher .btn-group button.btn-primary {
+  z-index: 3;
+}
+
+.table-raw-switcher button:focus {
+  outline: none;
+}
+
+.debug-table-wrapper {
+  background: #fff;
+  max-height: 500px;
+  margin-bottom: 0;
+  overflow: auto;
+  width: 732px;
+}
+
+.results td.table {
+  padding: 0;
+}
+
+table.results tbody td .debug-table {
+  font-size: 12px;
+  margin: 0;
+  width: 100%;
+}
+
+table.results tbody td .debug-table td {
+  background: white;
+}
+
+table.results tbody td .debug-table td.numeric {
+  font: 12px Menlo, Monaco, Consolas, "Courier New", monospace;
+  padding: 7px 10px 3px;
+  text-align: right;
+}
+
+table.results tbody td .debug-table td.node a {
+  color: black;
+}
+
+table.results tbody td .debug-table.floatThead-table {
+  border-top: none !important;
+}
+
+table.results tbody td .debug-table.floatThead-table tbody tr:first td {
+  border-top: none !important;
+}
+
+table.results tbody td .debug-table thead tr th:first-child,
+table.results tbody td .debug-table tbody tr td:first-child {
+  border-left: none;
+}
+
+table.results tbody td .debug-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table.results tbody td .debug-table thead th {
+  background: linear-gradient(white, #eee);
+  color: #777;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+table.results tbody td .debug-table thead th,
+table.results tbody td .debug-table tbody td {
+  border-bottom: 1px solid #ddd;
+  border-radius: 0 !important;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+table.results tbody td .debug-table thead th.tablesorter-header:after {
+  margin-top: -10px;
+}
+
+table.results tbody td .debug-table thead th.tablesorter-headerSortUp,
+table.results tbody td .debug-table thead th.tablesorter-headerSortDown {
+  background: linear-gradient(#eee, white);
+}
+
+table.results tbody td .debug-table thead th.tablesorter-headerSortUp:after,
+table.results tbody td .debug-table thead th.tablesorter-headerSortDown:after {
+  visibility: visible !important;
+}
+
+.results .tal.table textarea {
+  box-shadow: none;
+  display: none;
+  min-width: 712px;
+}
