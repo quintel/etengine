@@ -62,7 +62,11 @@
 
                 %li.divider-vertical
                 %li
-                  = link_to "Logout", destroy_user_session_path, :class => 'pull-right', :title => "Logged in as #{current_user.email}", :rel => 'tooltip', 'data-placement' => 'bottom', :method => :delete
+                  = link_to 'Profile', user_profile_path, class: 'compact-link'
+                %li.divider-vertical
+                %li{ style: 'margin-right: -12px' }
+                  = link_to destroy_user_session_path, method: :delete, class: 'compact-link' do
+                    = inline_svg 'hero/20/logout.svg', aria_label: 'Sign out'
             - else
               %ul.nav
                 %li= link_to 'login', new_user_session_path

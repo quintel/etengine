@@ -50,6 +50,16 @@
   color: #999;
 }
 
+.nav .compact-link {
+  padding: 10px 5px !important;
+}
+
+.nav .compact-link svg {
+  height: 20px;
+  margin: -4px 0;
+  width: 20px;
+}
+
 .slot-unit {
   color: #666;
   display: block;
