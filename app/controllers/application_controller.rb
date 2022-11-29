@@ -6,8 +6,8 @@ class ApplicationController < ActionController::Base
   before_action :locale
   before_action :store_user_location!, if: :storable_location?
 
-  rescue_from CanCan::AccessDenied do |exception|
-    redirect_to new_user_session_url, :alert => "Please log in first."
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to new_user_session_url
   end
 
   def initialize_memory_cache
