@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "profile" do %>
   <%= render(Identity::CardComponent.new(title: "Your profile", icon: "phosphor/identification-card.svg", id: "profile")) do |c| %>
     <% c.header_right do %>
-      <%= button_to destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex items-center text-sm font-medium" do %>
+      <%= button_to destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex items-center text-sm font-medium text-midnight-600 hover:text-midnight-800 transition" do %>
         Sign out
         <%= inline_svg_tag 'hero/20/logout.svg', class: "ml-2" %>
       <% end %>
