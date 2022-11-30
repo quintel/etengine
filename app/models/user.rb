@@ -8,12 +8,11 @@ class User < ApplicationRecord
          :confirmable, :trackable
 
   # rubocop:disable Rails/InverseOf
-  # rubocop:disable Rails/HasManyOrHasOneDependent
 
   has_many :access_grants,
-  class_name: 'Doorkeeper::AccessGrant',
-  foreign_key: :resource_owner_id,
-  dependent: :delete_all
+    class_name: 'Doorkeeper::AccessGrant',
+    foreign_key: :resource_owner_id,
+    dependent: :delete_all
 
   has_many :access_tokens,
     class_name: 'Doorkeeper::AccessToken',
@@ -22,10 +21,10 @@ class User < ApplicationRecord
 
   has_many :oauth_applications,
     class_name: 'Doorkeeper::Application',
+    dependent: :delete_all,
     as: :owner
 
-  # rubocop:enable Rails/InverseOf Rails/HasManyOrHasOneDependent
-  # rubocop:enable Rails/HasManyOrHasOneDependent
+  # rubocop:enable Rails/InverseOf
 
   has_many :scenarios
 

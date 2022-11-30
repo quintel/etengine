@@ -10,6 +10,7 @@ task import_users: :environment do
 
   maybe = ->(value) { value.presence == 'NULL' ? nil : value }
 
+  User.find_by(email: 'dev@quintel.com')&.destroy
   User.delete_all
   User.connection.execute("ALTER TABLE #{User.table_name} AUTO_INCREMENT = 1;")
 
@@ -31,4 +32,32 @@ task import_users: :environment do
       updated_at: imported_at
     }, record_timestamps: false)
   end
+
+  dev_user = if (user = User.find_by(email: 'dev@quintel.com'))
+    user.update!(admin: true, password: SecureRandom.urlsafe_base64(48))
+    user
+  else
+    User.create!(
+      name: 'Quintel Developers',
+      email: 'dev@quintel.com',
+      password: SecureRandom.urlsafe_base64(48),
+      admin: true,
+      confirmed_at: Time.zone.now
+    )
+  end
+
+  dev_user.oauth_applications.create!(
+    name: 'Personal Access Tokens',
+    scopes: 'public'
+  )
+
+  dev_user.oauth_applications.create!(
+    name: 'ETModel',
+    scopes: 'public'
+  )
+
+  dev_user.oauth_applications.create!(
+    name: 'Transition Paths',
+    scopes: 'public'
+  )
 end

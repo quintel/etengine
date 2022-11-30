@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe User do
+  it { is_expected.to validate_presence_of(:email) }
+  it { is_expected.to validate_presence_of(:name) }
+
+  it { is_expected.to have_many(:access_grants) }
+  it { is_expected.to have_many(:access_tokens) }
+  it { is_expected.to have_many(:oauth_applications) }
+  it { is_expected.to have_many(:scenarios) }
+
   describe '#valid_password?' do
     let(:user) { create(:user, password: 'password123') }
 
