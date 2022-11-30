@@ -9,17 +9,17 @@
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <div class="mb-6">
-    <%= render(Login::FloatingFieldComponent.new(form: f, name: :name, type: :text, title: "Your name", autofocus: true, autocomplete: "name")) %>
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :name, type: :text, title: "Your name", autofocus: true, autocomplete: "name", required: true)) %>
   </div>
 
   <div class="mb-6">
-    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: "E-mail address", autocomplete: "email")) %>
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: "E-mail address", autocomplete: "email", required: true)) %>
   </div>
 
   <div class="mb-4">
     <%= render(Login::FloatingFieldComponent.new(form: f, name: :password, title: "Password")) do |c| %>
       <% c.field do %>
-        <%= render(PasswordFieldComponent.new(form: f, name: :password, autocomplete: "new-password", class: "peer mb-1", placeholder: "Password")) %>
+        <%= render(PasswordFieldComponent.new(form: f, name: :password, autocomplete: "new-password", class: "peer mb-1", placeholder: "Password", required: true)) %>
       <% end %>
     <% end %>
   </div>
