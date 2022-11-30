@@ -16,7 +16,7 @@ module Etsource
       # We have to set a default loader when it is nil, since Rails deletes
       # the values of class variables when reloading code.
       @loader ||=
-        if APP_CONFIG[:etsource_lazy_load_dataset]
+        if Settings.etsource_lazy_load_dataset
           AtlasLoader::Lazy.new(CACHED_DATASETS_PATH)
         else
           AtlasLoader::PreCalculated.new(CACHED_DATASETS_PATH)

@@ -14,6 +14,8 @@ class CreateDoorkeeperTables < ActiveRecord::Migration[7.0]
       t.string  :scopes,       null: false, default: ''
       t.boolean :confidential, null: false, default: true
 
+      t.boolean :first_party, null: false, default: false
+
       t.integer :owner_id,  null: false
       t.string :owner_type, null: false
 

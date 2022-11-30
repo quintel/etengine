@@ -51,7 +51,8 @@ gem 'sprockets-rails'
 gem 'mini_racer'
 gem 'coffee-rails'
 
-gem 'dotenv-rails', groups: [:development, :test, :production, :staging]
+# gem 'dotenv-rails', groups: [:development, :test, :production, :staging]
+gem 'config'
 
 # API
 gem 'rest-client'

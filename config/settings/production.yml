@@ -1,0 +1,3 @@
+etsource_lazy_load_dataset: false
+etsource_export: tmp/etsource
+etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>

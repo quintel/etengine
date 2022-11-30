@@ -1,0 +1,35 @@
+# Directory where ETSource revisions will be exported.
+etsource_export: "../etsource"
+
+# The path where the ETSource Git repository can be found.
+etsource_working_copy: "../etsource"
+
+# If for some reason you don't want to clear the etsource_export directory
+etsource_disable_export: false
+
+# Enables "live" reloading of the ETSource export. When enabled, changes to datasets/, gqueries/,
+# inputs/, and topology/ will be detected and ETSource will expire its cached copy. The files will
+# be reloaded the on the next request.
+#
+# Note that this setting only applies to the development environment; live reloading is always
+# disabled in production and test environments.
+etsource_live_reload: true
+
+# Enables lazy loading of datasets from Refinery.
+#
+# With this disabled, ETEngine will expect that tmp/atlas contains YML files for each region. These
+# are created by Atlas during a production deployment, or when changing the loaded version of
+# ETESource in the admin interface.
+#
+# When enabled, ETEngine will load Atlas and Refinery, and calculate the graph in Refinery the first
+# time you load a scenario for the region. This is preferable for development environments, when you
+# don't want to have to worry about creating the YML files manually.
+etsource_lazy_load_dataset: true
+
+# URL to be called after a clean etsource import Usually you would set something like
+# http://beta.et-model.com/pages/refresh_gqueries
+client_refresh_url:
+
+# set to true if the server won't have online access. this disables Sentry,
+# etc.
+standalone: false

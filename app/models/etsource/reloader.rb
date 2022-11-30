@@ -92,9 +92,7 @@ module Etsource
       def reload!(type = nil)
         Rails.cache.clear
 
-        NastyCache.instance.expire!(
-          keep_atlas_dataset: ! APP_CONFIG[:etsource_lazy_load_dataset])
-
+        NastyCache.instance.expire!(keep_atlas_dataset: !Settings.etsource_lazy_load_dataset)
         NastyCache.instance.expire_local!
 
         if type

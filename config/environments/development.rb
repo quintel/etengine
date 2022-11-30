@@ -91,8 +91,7 @@ Rails.application.configure do
   config.after_initialize do
     # Start ETSource reloader only when running as a server (i.e., not as a rake
     # task).
-    if (defined?(Rails::Server) || defined?(Puma)) &&
-          APP_CONFIG[:etsource_live_reload]
+    if (defined?(Rails::Server) || defined?(Puma)) && Settings.etsource_live_reload
       Etsource::Reloader.start!
     end
   end

@@ -6,7 +6,7 @@
       A new ETSource commit is already being imported. Refresh this page in a
       minute to see the changes, and import another new version if you wish.
 
-- if APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
+- if Settings.etsource_disable_export
   %h4 Looks like you're loading ETSource from the local working copy.
   %p Use Git to checkout your desired ETSource revision; imports are disabled.
 
@@ -20,7 +20,7 @@
             = submit_tag "Checkout", :class => 'btn'
             = submit_tag "Refresh", :class => 'btn btn-primary'
           Click "Checkout" to move to a different branch.
-      - if APP_CONFIG[:etsource_export] != APP_CONFIG[:etsource_working_copy]
+      - if Settings.etsource_disable_export
         .span6
           %h4(style="margin-bottom: 20px")
             Latest import:

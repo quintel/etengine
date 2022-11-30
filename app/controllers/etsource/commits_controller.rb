@@ -19,7 +19,7 @@ class Etsource::CommitsController < ApplicationController
     end
     @commits = @etsource.commits
 
-    @using_repository = APP_CONFIG[:etsource_export] == APP_CONFIG[:etsource_working_copy]
+    @using_repository = Settings.etsource_export == Settings.etsource_working_copy
   end
 
   def import
@@ -68,7 +68,7 @@ class Etsource::CommitsController < ApplicationController
       render action: 'failure'
     else
       # Clients might need to flush their cache
-      update_remote_client(APP_CONFIG[:client_refresh_url])
+      update_remote_client(Settings.client_refresh_url)
     ensure
       if backup_dir && backup_dir.directory?
         backup_dir.children.each(&:delete)
@@ -153,7 +153,7 @@ class Etsource::CommitsController < ApplicationController
   # time. If another import is already in progress, or the previous semaphore is
   # less than three minutes old, then the user may not import.
   def can_import?
-    (APP_CONFIG[:etsource_export] != APP_CONFIG[:etsource_working_copy]) &&
+    (Settings.etsource_export != Settings.etsource_working_copy) &&
       (! import_in_progress?) &&
       !ENV['DISABLE_ETSOURCE_IMPORT']
   end

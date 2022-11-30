@@ -164,7 +164,7 @@ module Gql
       if rescue_with == :debug
         ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
       elsif rescue_with == :airbrake
-        Raven.capture_exception(e) unless APP_CONFIG[:standalone]
+        Raven.capture_exception(e) unless Settings.standalone
         ResultSet::INVALID
       elsif rescue_with.present?
         rescue_with

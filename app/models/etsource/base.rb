@@ -9,7 +9,7 @@ module Etsource
     def initialize
       @base_dir       = ETSOURCE_DIR
       @export_dir     = ETSOURCE_EXPORT_DIR
-      @cache_topology = APP_CONFIG.fetch(:etsource_cache_topology, true)
+      @cache_topology = Settings.etsource_cache_topology
     end
 
     def self.loader(base_dir = nil)
@@ -49,10 +49,10 @@ module Etsource
 
     # Exports a revision. Git doesn't have a command similar to `svn export`, so this
     # emulates it. The revision passed as parameter will be exported to the
-    # APP_CONFIG[:etsource_export_dir]. The directory will first be deleted (to get rid
+    # Settings.etsource_export_dir. The directory will first be deleted (to get rid
     # of stale files) unless you disable this in your config.yml.
     def export(sha_id)
-      return false if APP_CONFIG[:etsource_disable_export]
+      return false if Settings.etsource_disable_export
 
       if @export_dir.exist?
         @export_dir.children.each { |child| FileUtils.rm_rf(child) }
