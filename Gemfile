@@ -37,6 +37,7 @@ gem 'doorkeeper'
 gem 'cancancan', '~> 3.0'
 
 # Auth front-end
+gem 'dry-struct'
 gem 'erb-formatter'
 gem 'importmap-rails'
 gem 'inline_svg'

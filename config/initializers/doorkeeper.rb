@@ -276,10 +276,9 @@ Doorkeeper.configure do
   # Callable objects such as proc, lambda, block or any object that responds to
   # #call can be used in order to allow conditional checks (to allow non-SSL
   # redirects to localhost for example).
-  #
-  force_ssl_in_redirect_uri !Rails.env.development?
-  #
-  # force_ssl_in_redirect_uri { |uri| uri.host != 'localhost' }
+  force_ssl_in_redirect_uri do |uri|
+    !(Rails.env.development? || uri.host != 'localhost' || uri.host.split('.').last != 'test')
+  end
 
   # Specify what redirect URI's you want to block during Application creation.
   # Any redirect URI is allowed by default.

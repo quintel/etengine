@@ -24,6 +24,8 @@ class User < ApplicationRecord
     dependent: :delete_all,
     as: :owner
 
+  has_many :staff_applications, dependent: :destroy
+
   # rubocop:enable Rails/InverseOf
 
   has_many :scenarios

@@ -8,10 +8,14 @@ task import_users: :environment do
   admins = Set.new(YAML.load_file('tmp/users/admins.yml'))
   imported_at = Time.zone.now
 
-  maybe = ->(value) { value.presence == 'NULL' ? nil : value }
+  def maybe(value) = value.presence == 'NULL' ? nil : value
 
-  User.find_by(email: 'dev@quintel.com')&.destroy
+  StaffApplication.delete_all
+  Doorkeeper::Application.destroy_all
   User.delete_all
+
+  User.connection.execute("ALTER TABLE #{StaffApplication.table_name} AUTO_INCREMENT = 1;")
+  User.connection.execute("ALTER TABLE #{Doorkeeper::Application.table_name} AUTO_INCREMENT = 1;")
   User.connection.execute("ALTER TABLE #{User.table_name} AUTO_INCREMENT = 1;")
 
   CSV.foreach('tmp/users/users.csv', headers: true) do |row|
@@ -20,13 +24,13 @@ task import_users: :environment do
       email: row['email'],
       name: row['name'],
       encrypted_password: row['crypted_password'],
-      legacy_password_salt: maybe.call(row['password_salt']),
+      legacy_password_salt: maybe(row['password_salt']),
       admin: admins.include?(row['email']),
       sign_in_count: row['login_count'],
-      current_sign_in_at: maybe.call(row['current_login_at']),
-      last_sign_in_at: maybe.call(row['last_login_at']),
-      current_sign_in_ip: maybe.call(row['current_login_ip']),
-      last_sign_in_ip: maybe.call(row['last_login_ip']),
+      current_sign_in_at: maybe(row['current_login_at']),
+      last_sign_in_at: maybe(row['last_login_at']),
+      current_sign_in_ip: maybe(row['current_login_ip']),
+      last_sign_in_ip: maybe(row['last_login_ip']),
       confirmed_at: imported_at,
       created_at: imported_at,
       updated_at: imported_at
@@ -46,18 +50,12 @@ task import_users: :environment do
     )
   end
 
-  dev_user.oauth_applications.create!(
-    name: 'Personal Access Tokens',
-    scopes: 'public'
-  )
+  dev_user.oauth_applications.create!(name: 'Personal Access Tokens', scopes: 'public')
+  dev_user.oauth_applications.create!(name: 'ETModel', scopes: 'public')
+  dev_user.oauth_applications.create!(name: 'Transition Paths', scopes: 'public')
 
-  dev_user.oauth_applications.create!(
-    name: 'ETModel',
-    scopes: 'public'
-  )
-
-  dev_user.oauth_applications.create!(
-    name: 'Transition Paths',
-    scopes: 'public'
-  )
+  # Create OAuth clients for each staff member.
+  admins.each do |email|
+    CreateStaffApplications.call(User.find_by!(email:))
+  end
 end

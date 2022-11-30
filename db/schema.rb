@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_30_105900) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_30_141700) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -213,6 +213,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_105900) do
     t.index ["user_id"], name: "index_scenarios_on_user_id"
   end
 
+  create_table "staff_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "user_id", null: false
+    t.bigint "application_id", null: false
+    t.index ["application_id"], name: "fk_rails_6768c0af4c"
+    t.index ["user_id", "name"], name: "index_staff_applications_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_staff_applications_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -248,4 +257,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_105900) do
   add_foreign_key "scenario_attachments", "scenarios"
   add_foreign_key "scenario_attachments", "scenarios", column: "source_scenario_id", name: "index_scenario_attachments_on_source_scenario_id"
   add_foreign_key "scenarios", "users"
+  add_foreign_key "staff_applications", "oauth_applications", column: "application_id"
+  add_foreign_key "staff_applications", "users"
 end
