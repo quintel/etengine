@@ -1,7 +1,7 @@
 <% content_for(:header) do %>
   <%= render(Login::HeaderComponent.new(
-    title: "Resend confirmation instructions",
-    subtext: "An email with instructions for how to confirm your account will be sent to the address below."
+    title: t('.title'),
+    subtext: t('.subtitle')
   )) %>
 <% end %>
 
@@ -9,10 +9,10 @@
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <div class="mb-4">
-    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: "E-mail address", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), autofocus: true, autocomplete: "email", required: true)) %>
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: t('activerecord.attributes.user.email'), value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), autofocus: true, autocomplete: "email", required: true)) %>
   </div>
 
-  <%= render(Login::ButtonComponent.new(form: f).with_content("Resend confirmation instructions")) %>
+  <%= render(Login::ButtonComponent.new(form: f).with_content(t('.submit'))) %>
 <% end %>
 
 <%= render "devise/shared/links" %>

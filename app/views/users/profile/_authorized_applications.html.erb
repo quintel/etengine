@@ -1,12 +1,5 @@
 <%= render(Identity::CardComponent.new(title: "Authorised applications", icon: "phosphor/plugs.svg", id: "authorized-applications")) do |c| %>
   <%= render(Identity::EmptyStateComponent.new(title: "You have no authorised third-party applications")) do %>
-    <p>
-      You can authorise third-parties to access data from your account without
-      providing them your password. These will ask for permission to access
-      your account, after which they will be listed here.
-    </p>
-    <p>
-      You may revoke these permissions at any time.
-    </p>
+    <%= format_paragraphs(t('.empty_state.message')) %>
   <% end %>
 <% end %>

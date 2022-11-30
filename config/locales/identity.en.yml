@@ -1,0 +1,59 @@
+---
+en:
+  identity:
+    cancel: Cancel
+    return_to_etm: Return to the Energy Transition Model
+    profile_email_component:
+      change_address: Change e-mail address
+      confirmed: Verified
+      not_confirmed: Not verified
+      not_confirmed_message: |
+        This e-mail address has not yet been verified. Please check your e-mail address for
+        instructions.
+      resend_confirmation: Resend confirmation instructions
+    sign_out: Sign out
+  users:
+    profile:
+      authorized_applications:
+        title: Authorised applications
+        empty_state:
+          title: You have no authorised third-party applications
+          message: |
+            You can authorise third-parties to access data from your account without providing them
+            your password. These will ask for permission to access your account, after which they
+            will be listed here.
+
+            You may revoke these permissions at any time.
+      edit_email:
+        new_email: New e-mail address
+        new_email_hint: A confirmation will be sent to this address before the change takes effect
+        submit: Change e-mail address
+        title: Change your e-mail address
+      edit_name:
+        new_name: New name
+        new_name_hint: |
+          This name will be used when we communicate with you, and alongside your public scenarios.
+        submit: Change name
+        title: Change your account name
+      edit_password:
+        current_password: Current password
+        current_password_hint: Confirm the password you currently use to sign in
+        new_password: New password
+        new_password_hint: |
+          Your password needs to be at least %{min_length} characters long. Use multiple words or
+          phrases, numbers, or symbols to make it more secure.
+        submit: Change password
+        title: Change your password
+      profile:
+        change_name: Change name
+        change_password: Change password
+        title: Your profile
+      tokens:
+        create_token: Create an access token
+        empty_state:
+          title: You have no access tokens
+          message: |
+            Access tokens allow third-party applications to access your account without having to
+            use your password. You can revoke access tokens at any time.
+        learn_more: Learn more
+        title: Personal access tokens

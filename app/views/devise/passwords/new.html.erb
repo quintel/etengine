@@ -1,16 +1,16 @@
 <%= render(Login::HeaderComponent.new(
-  title: "Reset your password",
-  subtext: "Enter your e-mail address and we'll send you a link to reset your password."
+  title: t('.title'),
+  subtext: t('.subtitle')
 )) %>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, data: { turbo: false } }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <div class="mb-4">
-    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: "E-mail address", autofocus: true, autocomplete: "email")) %>
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: t('activerecord.attributes.user.email'), autofocus: true, autocomplete: "email")) %>
   </div>
 
-  <%= render(Login::ButtonComponent.new(form: f).with_content("Reset password")) %>
+  <%= render(Login::ButtonComponent.new(form: f).with_content(t('.submit'))) %>
 <% end %>
 
 <%= render "devise/shared/links" %>

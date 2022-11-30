@@ -46,7 +46,7 @@ RSpec.describe 'Registrations', type: :system do
       fill_in 'Password', with: 'password123'
       click_button 'Sign up'
 
-      expect(page).to have_text("Name can't be blank")
+      expect(page).to have_text("Your name can't be blank")
     end
 
     it 'shows an error when registering without a password' do
@@ -66,7 +66,7 @@ RSpec.describe 'Registrations', type: :system do
       fill_in 'Password', with: 'password123'
       click_button 'Sign up'
 
-      expect(page).to have_text("E-mail can't be blank")
+      expect(page).to have_text("E-mail address can't be blank")
     end
 
     it 'shows an error when registering with an existing e-mail address' do
@@ -79,7 +79,7 @@ RSpec.describe 'Registrations', type: :system do
       fill_in 'Password', with: 'password123'
       click_button 'Sign up'
 
-      expect(page).to have_text('E-mail has already been taken')
+      expect(page).to have_text('E-mail address has already been taken')
     end
   end
 
@@ -125,7 +125,7 @@ RSpec.describe 'Registrations', type: :system do
 
         click_button 'Change name'
 
-        expect(page).to have_text("Name can't be blank")
+        expect(page).to have_text("Your name can't be blank")
       end
     end
   end
@@ -189,7 +189,7 @@ RSpec.describe 'Registrations', type: :system do
 
         click_button 'Change e-mail address'
 
-        expect(page).to have_text("E-mail can't be blank")
+        expect(page).to have_text("E-mail address can't be blank")
       end
     end
   end

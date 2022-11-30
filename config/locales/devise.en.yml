@@ -2,10 +2,21 @@
 
 en:
   devise:
+    links:
+      sign_in: Sign in
+      sign_up: Sign up
+      forgot_password: Forgotten your password?
+      resend_confirmation: Didn't receive confirmation instructions?
+      unlock: Didn't receive unlock instructions?
+      omniauth: Sign in with %{kind}
     confirmations:
       confirmed: "Your email address has been successfully confirmed."
       send_instructions: "You will receive an email with instructions for how to confirm your email address in a few minutes."
       send_paranoid_instructions: "If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes."
+      new:
+        title: Resend confirmation instructions
+        subtitle: An email with instructions for how to confirm your account will be sent to the address below
+        submit: Send confirmation instructions
     failure:
       already_authenticated: "You are already signed in."
       inactive: "Your account is not activated yet."
@@ -36,6 +47,16 @@ en:
       send_paranoid_instructions: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes."
       updated: "Your password has been changed successfully. You are now signed in."
       updated_not_active: "Your password has been changed successfully."
+      new:
+        title: Reset your password
+        subtitle: Enter your e-mail address and we'll send you a link to reset your password
+        submit: Reset my password
+      edit:
+        title: Change your password
+        subtitle: Choose a new password to recover your account with the Energy Transition Model
+        submit: Change password
+        password: New password
+        password_confirmation: Re-enter new password
     registrations:
       destroyed: "Bye! Your account has been successfully cancelled. We hope to see you again soon."
       signed_up: "Welcome! You have signed up successfully."
@@ -45,6 +66,10 @@ en:
       update_needs_confirmation: "You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirmation link to confirm your new email address."
       updated: "Your account has been updated successfully."
       updated_but_not_signed_in: "Your account has been updated successfully, but since your password was changed, you need to sign in again."
+      new:
+        title: Create an account
+        subtitle: Sign up to the Energy Transition Model to continue
+        submit: Sign up
     sessions:
       signed_in:
         title: Welcome!
@@ -55,6 +80,13 @@ en:
       already_signed_out:
         title: Goodbye
         message: You have signed out of your account.
+      new:
+        title: Welcome
+        subtitle: Sign in to your account to continue to the Energy Transition Model
+        dont_have_account: Don't have an account?
+        forgot_password: Forgotten your password?
+        sign_up: Sign up
+        submit: Continue
     unlocks:
       send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
       send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."

@@ -1,33 +1,33 @@
 <% content_for(:header) do %>
   <%= render(Login::HeaderComponent.new(
-    title: "Welcome",
-    subtext: "Sign in to your account to continue to the Energy Transition Model."
+    title: t('.title'),
+    subtext: t('.subtitle')
   )) %>
 <% end %>
 
 <%= form_for(resource, as: resource_name, url: session_path(resource_name), data: { turbo: false }) do |f| %>
   <div class="mb-6">
-    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: "E-mail address", autofocus: true, autocomplete: "email", required: true)) %>
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :email, type: :email, title: t('activerecord.attributes.user.email'), autofocus: true, autocomplete: "email", required: true)) %>
   </div>
 
   <div class="mb-4">
-    <%= render(Login::FloatingFieldComponent.new(form: f, name: :password, title: "Password")) do |c| %>
+    <%= render(Login::FloatingFieldComponent.new(form: f, name: :password, title: t('activerecord.attributes.user.password'))) do |c| %>
       <% c.field do %>
-        <%= render(PasswordFieldComponent.new(form: f, name: :password, autocomplete: "current-password", class: "peer mb-1", placeholder: "Password", required: true)) %>
+        <%= render(PasswordFieldComponent.new(form: f, name: :password, autocomplete: "current-password", class: "peer mb-1", placeholder: t('activerecord.attributes.user.password'), required: true)) %>
       <% end %>
     <% end %>
 
-    <%= link_to "Forgotten your password?", new_password_path(resource_name), class: "font-medium p-1 -m-1 mt-0 inline-block" %>
+    <%= link_to t('.forgot_password'), new_password_path(resource_name), class: "font-medium p-1 -m-1 mt-0 inline-block" %>
   </div>
 
   <% if devise_mapping.rememberable? %>
     <%= f.hidden_field :remember_me, value: '1' %>
   <% end %>
 
-  <%= render(Login::ButtonComponent.new(form: f).with_content("Continue")) %>
+  <%= render(Login::ButtonComponent.new(form: f).with_content(t('.submit'))) %>
 
   <p class="mt-4 text-gray-600 text-center">
-    Don&rsquo;t have an account?
-    <%= render(Login::DeviseFooterLinkComponent.new(path: new_registration_path(resource_name), class: 'text-midnight-600 hover:text-midnight-800 active:text-midnight-800').with_content("Sign up")) %>
+    <%= t('.dont_have_account') %>
+    <%= render(Login::DeviseFooterLinkComponent.new(path: new_registration_path(resource_name), class: 'text-midnight-600 hover:text-midnight-800 active:text-midnight-800').with_content(t('.sign_up'))) %>
   </p>
 <% end %>

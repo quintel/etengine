@@ -12,10 +12,10 @@
       "
     >
       <%= inline_svg_tag("hero/20/circle-check.svg", class: "mr-1") %>
-      Verified
+      <%= t('.confirmed') %>
     </span>
     <% if @show_change_button %>
-      <%= link_to "Change e-mail address…", user_edit_email_path, data: { turbo_frame: :modal }, class: button_classes("text-sm font-normal ml-auto", color: :link, negate_padding: :y) %>
+      <%= link_to "#{t('.change_address')}…", user_edit_email_path, data: { turbo_frame: :modal }, class: button_classes("text-sm font-normal ml-auto", color: :link, negate_padding: :y) %>
     <% end %>
   </div>
 <% else %>
@@ -32,7 +32,7 @@
       "
     >
       <%= inline_svg_tag("hero/20/exclamation.svg", class: "mr-1") %>
-      Not verified
+      <%= t('.not_confirmed') %>
     </span>
     <% if @show_change_button %>
       <%= link_to "Change e-mail address…", user_edit_email_path, data: { turbo_frame: :modal }, class: button_classes("text-sm font-normal ml-auto", color: :link, negate_padding: :y) %>
@@ -40,11 +40,10 @@
   </div>
   <div class="w-full">
     <div class="text-gray-500 text-sm mt-2 pr-32">
-      This e-mail address has not yet been confirmed. Please check your e-mail
-      address for instructions.
+      <%= t('.not_confirmed_message') %>
     </div>
     <%= button_to user_confirmation_path, params: { user: { email: @email } }, method: :post, class: 'text-midnight-600 text-sm mt-2 font-medium inline-flex items-center hover:underline hover:cursor-pointer hover:text-midnight-800' do %>
-      Resend confirmation instructions
+      <%= t('.resend_confirmation') %>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5 ml-0.5"

@@ -1,8 +1,8 @@
-<%= render(ModalComponent.new(title: "Change your account name")) do |modal| %>
+<%= render(ModalComponent.new(title: t('.title'))) do |modal| %>
   <%= turbo_frame_tag :change_name_form do %>
     <%= form_for(@user, url: user_edit_name_path, html: { method: :post }) do |f| %>
       <%= render(FormSteps::WrapperComponent.new) do |steps| %>
-        <%= render(FormSteps::RowComponent.new(title: "New name", label_for: "user_name", hint: "This name will be used when we communicate with you, and alongside your public scenarios.")) do |row| %>
+        <%= render(FormSteps::RowComponent.new(title: t('.new_name'), label_for: "user_name", hint: t('.new_name_hint'))) do |row| %>
           <div class="relative">
             <%= f.text_field :name, value: @user.name, required: true, autofocus: true, class: "field" %>
           </div>
@@ -15,8 +15,8 @@
         <% end %>
 
         <div class="mt-6 pb-2 flex items-center gap-2">
-          <%= button_tag "Change name", class: button_classes("text-base", size: :lg, color: :success) %>
-          <%= modal.close_link("Cancel", user_profile_path, modal:, class: button_classes("text-base", size: :lg)) %>
+          <%= button_tag t('.submit'), class: button_classes("text-base", size: :lg, color: :success) %>
+          <%= modal.close_link(t('identity.cancel'), user_profile_path, modal:, class: button_classes("text-base", size: :lg)) %>
         </div>
       <% end %>
     <% end %>
