@@ -50,9 +50,11 @@ task import_users: :environment do
     )
   end
 
-  dev_user.oauth_applications.create!(name: 'Personal Access Tokens', scopes: 'public')
-  dev_user.oauth_applications.create!(name: 'ETModel', scopes: 'public')
-  dev_user.oauth_applications.create!(name: 'Transition Paths', scopes: 'public')
+  dev_user.oauth_applications.create!(
+    name: 'Personal Access Tokens', scopes: 'public', first_party: true
+  )
+  dev_user.oauth_applications.create!(name: 'ETModel', scopes: 'public', first_party: true)
+  dev_user.oauth_applications.create!(name: 'Transition Paths', scopes: 'public', first_party: true)
 
   # Create OAuth clients for each staff member.
   admins.each do |email|

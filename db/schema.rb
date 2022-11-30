@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_30_141700) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_30_162202) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -103,6 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_141700) do
     t.text "redirect_uri"
     t.string "scopes", default: "", null: false
     t.boolean "confidential", default: true, null: false
+    t.boolean "first_party", default: false, null: false
     t.integer "owner_id", null: false
     t.string "owner_type", null: false
     t.datetime "created_at", null: false
