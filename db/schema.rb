@@ -66,6 +66,35 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_29_131529) do
     t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id", unique: true
   end
 
+  create_table "old_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "company_school"
+    t.boolean "allow_news", default: true
+    t.string "heared_first_at", default: ".."
+    t.string "password_salt"
+    t.integer "role_id"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.string "openid_identifier"
+    t.string "phone_number"
+    t.string "group"
+    t.string "trackable", limit: 191, default: "0"
+    t.boolean "send_score", default: false
+    t.boolean "new_round"
+    t.string "old_crypted_password"
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.index ["trackable"], name: "index_old_users_on_trackable"
+  end
+
   create_table "query_table_cells", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "query_table_id"
     t.integer "row"
@@ -142,6 +171,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_29_131529) do
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
+    t.string "legacy_password_salt"
     t.string "name", default: "", null: false
     t.boolean "admin", default: false, null: false
     t.string "reset_password_token"

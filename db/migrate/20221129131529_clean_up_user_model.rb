@@ -2,11 +2,12 @@ class CleanUpUserModel < ActiveRecord::Migration[7.0]
   # We're going to clean house and remove the existing users table. We'll be importing the users
   # from ETModel.
   def up
-    drop_table :users
+    rename_table :users, :old_users
 
     create_table 'users' do |t|
       t.string 'email', default: '', null: false
       t.string 'encrypted_password', default: '', null: false
+      t.string 'legacy_password_salt'
       t.string 'name', default: '', null: false
       t.boolean 'admin', default: false, null: false
       t.string 'reset_password_token'

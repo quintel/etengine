@@ -30,4 +30,13 @@ class User < ApplicationRecord
   has_many :scenarios
 
   validates :name, presence: true, length: { maximum: 191 }
+
+  def valid_password?(password)
+    return true if super
+
+    # Fallback to salting the password with the salt for users imported from ETModel.
+    return super("#{password}#{legacy_password_salt}") if legacy_password_salt.present?
+
+    false
+  end
 end
