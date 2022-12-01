@@ -7,17 +7,18 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
-  devise_scope :user do
-    get '/identity', to: 'users/settings#profile', as: :user_profile
+  scope '/identity' do
+    get '/', to: redirect('/identity/profile')
+    get 'profile', to: 'users/settings#profile', as: :user_profile
 
-    get '/identity/change_name', to: 'users/settings#edit_name', as: :user_edit_name
-    post '/identity/change_name', to: 'users/settings#update_name'
+    get 'change_name', to: 'users/settings#edit_name', as: :user_edit_name
+    post 'change_name', to: 'users/settings#update_name'
 
-    get '/identity/change_email', to: 'users/settings#edit_email', as: :user_edit_email
-    post '/identity/change_email', to: 'users/settings#update_email'
+    get 'change_email', to: 'users/settings#edit_email', as: :user_edit_email
+    post 'change_email', to: 'users/settings#update_email'
 
-    get '/identity/change_password', to: 'users/settings#edit_password', as: :user_edit_password
-    post '/identity/change_password', to: 'users/settings#update_password'
+    get 'change_password', to: 'users/settings#edit_password', as: :user_edit_password
+    post 'change_password', to: 'users/settings#update_password'
 
     get '/logout', to: 'users/sessions#destroy'
   end
