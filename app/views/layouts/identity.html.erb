@@ -76,8 +76,8 @@
         <% end %>
       <% end %>
 
-      <div class="flex">
-        <div class="sidebar flex-shrink-0 w-64 mr-8 pt-1">
+      <div class="flex items-start relative">
+        <div class="sidebar flex-shrink-0 w-64 mr-8 pt-1 sticky top-8">
           <%= link_to "https://energytransitionmodel.com", class: button_classes('rounded-full mb-8 !px-4', color: :primary) do %>
             <%= inline_svg 'hero/20/chevron-double-left.svg', class: 'mr-1 -ml-1' %>
             <%= t('identity.return_to_etm') %>
