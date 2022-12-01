@@ -1,56 +1,71 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Identity</title>
+    <title>
+      <%= content_for?(:page_title) ? "#{content_for(:page_title)} | " : "" %>
+      <%= t('identity.site_title') %>
+    </title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
-    <%#= favicon_link_tag asset_path("favicon.svg") %>
 
     <%= stylesheet_link_tag "auth", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags 'identity' %>
   </head>
 
   <body class="with-bg pb-12">
-    <div class="py-8">
-      <div
-        class="
-          w-[872px]
-          mx-auto
-          flex
-          justify-center
-          items-center
-          text-gray-500
-          font-medium
-        "
-      >
+    <header class="border-b mb-12">
+      <div class="w-[1024px] mx-auto py-3 flex text-sm items-center">
         <a
           href="https://energytransitionmodel.com"
           class="
-            font-medium
+            mr-auto
             text-base
-            inline-flex
+            font-medium
+            flex
             items-center
+            gap-2
+            transition
+            text-gray-600
+            hover:text-gray-900
+            active:text-gray-900
           "
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-2"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <%= t('identity.return_to_etm') %>
+          <%= image_tag 'logo-dark.png', height: 30, width: 30, alt: '' %>
+          Energy Transition Model
         </a>
+        <div class="flex items-center -my-1.5">
+          <button
+            class="
+              inline-flex
+              gap-1
+              font-medium
+              items-center
+              transition
+              text-gray-600
+              hover:text-gray-800
+              hover:bg-gray-100
+              active:text-gray-900
+              active:bg-gray-200
+              rounded-md
+              px-2.5
+              py-1.5
+              mr-1
+            "
+          >
+            <%= inline_svg 'hero/20/translate.svg' %>
+            <%= inline_svg 'hero/20/chevron-down.svg', class: '-mx-1' %>
+          </button>
+          <%= button_to(destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex gap-1 font-medium items-center transition text-gray-600 hover:text-gray-800 hover:bg-gray-100 active:text-gray-900 active:bg-gray-200 rounded-md px-2.5 py-1.5 -mr-2.5") do %>
+            <%= inline_svg 'phosphor/20/sign-out.svg' %>
+            <%= t('identity.sign_out') %>
+          <% end %>
+        </div>
       </div>
-    </div>
-    <div class="w-[872px] mx-auto">
+    </header>
+
+    <div class="w-[1024px] mx-auto">
       <%= turbo_frame_tag :toast do %>
         <% if notice %>
           <%= render(ToastComponent.new(type: :notice, message: notice)) %>
@@ -61,7 +76,19 @@
         <% end %>
       <% end %>
 
-      <%= yield %>
+      <div class="flex">
+        <div class="sidebar flex-shrink-0 w-64 mr-8 pt-1">
+          <%= link_to "https://energytransitionmodel.com", class: button_classes('rounded-full mb-8 !px-4', color: :primary) do %>
+            <%= inline_svg 'hero/20/chevron-double-left.svg', class: 'mr-1 -ml-1' %>
+            <%= t('identity.return_to_etm') %>
+          <% end %>
+
+          <%= content_for(:sidebar) %>
+        </div>
+        <div class="content">
+          <%= yield %>
+        </div>
+      </div>
     </div>
 
     <%= turbo_frame_tag :modal do %>

@@ -1,0 +1,5 @@
+<% content_for :sidebar do %>
+  <%= render(Identity::SidebarItemComponent.new(path: user_profile_path, title: t('users.settings.profile.title'), explanation: t('users.settings.profile.explanation'), active: controller_name == 'settings')) %>
+  <%= render(Identity::SidebarItemComponent.new(path: '#', title: t('users.settings.tokens.title'), explanation: t('users.settings.tokens.explanation'), active: false)) %>
+  <%= render(Identity::SidebarItemComponent.new(path: '#', title: t('users.settings.authorized_applications.title'), explanation: t('users.settings.authorized_applications.explanation'), active: false)) %>
+<% end %>

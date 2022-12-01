@@ -1,0 +1,38 @@
+<div class="flex items-center mb-4">
+  <div>
+    <!--
+    <a
+      href="https://energytransitionmodel.com"
+      class="
+        text-xs
+        font-medium
+        text-gray-400
+        hover:text-gray-600
+        transition
+        uppercase
+        mb-1
+        inline-flex
+        items-center
+      "
+    >
+      <%= inline_svg 'hero/20/chevron-double-left.svg', class: '-mt-px mr-1 !h-[15px] !w-[15px]' %>
+      Back to the ETM
+    </a>
+    -->
+    <h2 class="text-3xl font-semibold">
+      <%= @title %>
+    </h2>
+  </div>
+
+  <% if header_right? %>
+    <div class="ml-auto font-medium">
+      <%= header_right %>
+    </div>
+  <% end %>
+</div>
+
+<% if @message %>
+  <p class="text-gray-500 mb-4">
+    <%= @message %>
+  </p>
+<% end %>

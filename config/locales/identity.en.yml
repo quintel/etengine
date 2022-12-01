@@ -2,20 +2,21 @@
 en:
   identity:
     cancel: Cancel
-    return_to_etm: Return to the Energy Transition Model
+    return_to_etm: Return to the ETM
     profile_email_component:
       change_address: Change e-mail address
       confirmed: Verified
+      explanation: This address is used to sign in to your account, and to send you important notifications.
       not_confirmed: Not verified
       not_confirmed_message: |
         This e-mail address has not yet been verified. Please check your e-mail address for
         instructions.
       resend_confirmation: Resend confirmation instructions
     sign_out: Sign out
+    site_title: Energy Transition Model
   users:
-    profile:
+    settings:
       authorized_applications:
-        title: Authorised applications
         empty_state:
           title: You have no authorised third-party applications
           message: |
@@ -24,6 +25,8 @@ en:
             will be listed here.
 
             You may revoke these permissions at any time.
+        explanation: Control who can access your account and data.
+        title: Authorised applications
       edit_email:
         new_email: New e-mail address
         new_email_hint: A confirmation will be sent to this address before the change takes effect
@@ -45,8 +48,15 @@ en:
         submit: Change password
         title: Change your password
       profile:
+        account: Account
         change_name: Change name
         change_password: Change password
+        explanation: Change your e-mail address, password, or account settings.
+        name_explanation: This name will be shown on your public scenarios.
+        password_explanation: |
+          Your password is used to sign in. Never give this to anyone else: if another application
+          needs to access data on your account, create a personal access token.
+        profile: Profile
         title: Your profile
       tokens:
         create_token: Create an access token
@@ -55,5 +65,6 @@ en:
           message: |
             Access tokens allow third-party applications to access your account without having to
             use your password. You can revoke access tokens at any time.
+        explanation: Generate personal tokens to use the API.
         learn_more: Learn more
         title: Personal access tokens

@@ -1,4 +1,16 @@
-<div class="flex my-4">
-  <div class="w-48 font-medium flex-shrink-0"><%= @title %></div>
-  <div class="text-gray-600 flex-grow"><%= content %></div>
+<div class="flex my-4 mb-8 text-base">
+  <div class="w-44 text-gray-500 font-medium flex-shrink-0 "><%= @title %></div>
+  <div class="flex-grow">
+    <div class="font-medium"><%= content %></div>
+
+    <% if message? %>
+      <div class="text-gray-500 mt-2 text-sm"><%= message %></div>
+    <% end %>
+
+    <% if button? %>
+      <div class="mt-4 flex gap-4 text-sm">
+        <%= button %>
+      </div>
+    <% end %>
+  </div>
 </div>

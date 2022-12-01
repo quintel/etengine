@@ -8,16 +8,16 @@ Rails.application.routes.draw do
   }
 
   devise_scope :user do
-    get '/identity', to: 'users/profile#root', as: :user_profile
+    get '/identity', to: 'users/settings#profile', as: :user_profile
 
-    get '/identity/change_name', to: 'users/profile#edit_name', as: :user_edit_name
-    post '/identity/change_name', to: 'users/profile#update_name'
+    get '/identity/change_name', to: 'users/settings#edit_name', as: :user_edit_name
+    post '/identity/change_name', to: 'users/settings#update_name'
 
-    get '/identity/change_email', to: 'users/profile#edit_email', as: :user_edit_email
-    post '/identity/change_email', to: 'users/profile#update_email'
+    get '/identity/change_email', to: 'users/settings#edit_email', as: :user_edit_email
+    post '/identity/change_email', to: 'users/settings#update_email'
 
-    get '/identity/change_password', to: 'users/profile#edit_password', as: :user_edit_password
-    post '/identity/change_password', to: 'users/profile#update_password'
+    get '/identity/change_password', to: 'users/settings#edit_password', as: :user_edit_password
+    post '/identity/change_password', to: 'users/settings#update_password'
 
     get '/logout', to: 'users/sessions#destroy'
   end

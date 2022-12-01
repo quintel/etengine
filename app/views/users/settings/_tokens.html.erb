@@ -7,7 +7,7 @@
         name="button"
         type="submit"
         class="<%= button_classes(color: :success, size: :lg) %>"
-        disabled
+        <%= Settings.identity.personal_access_token_app.blank? ? 'disabled' : '' %>
       >
         <%= t('.create_token') %>
       </button>

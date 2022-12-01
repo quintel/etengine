@@ -3,7 +3,9 @@
 RSpec.describe Identity::ProfileEmailComponent, type: :component do
   context 'with a confirmed e-mail address' do
     let(:rendered) do
-      render_inline(described_class.new(email: 'hello@example.org', confirmed: true))
+      render_inline(described_class.new(
+        title: 'E-mail', email: 'hello@example.org', confirmed: true
+      ))
     end
 
     it 'renders the e-mail' do
@@ -17,7 +19,9 @@ RSpec.describe Identity::ProfileEmailComponent, type: :component do
 
   context 'with an unconfirmed e-mail address' do
     let(:rendered) do
-      render_inline(described_class.new(email: 'hello@example.org', confirmed: false))
+      render_inline(described_class.new(
+        title: 'E-mail', email: 'hello@example.org', confirmed: false
+      ))
     end
 
     it 'renders the e-mail' do

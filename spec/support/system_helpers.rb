@@ -3,7 +3,7 @@
 module SystemHelpers
   RSpec::Matchers.define(:be_signed_in_page) do
     match do |actual|
-      have_css('#profile', text: 'Your profile').matches?(actual)
+      have_css('header button', text: 'Sign out').matches?(actual)
     end
   end
 

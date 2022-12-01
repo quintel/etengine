@@ -2,67 +2,15 @@
 
 # Provides a helper method for creating CSS classes for buttons and button-like elements.
 module ButtonHelper
-  BASE_CLASSES = %w[
-    cursor-pointer
-    font-medium
-    inline-flex
-    items-center
-    rounded
-    transition
-    disabled:pointer-events-none
-    disabled:opacity-50
-    focus-visible:ring-2
-    focus-visible:outline-none
-  ].freeze
+  BASE_CLASSES = %w[button].freeze
 
   COLORS = {
-    default: %w[
-      text-gray-700
-      hover:text-gray-700
-      active:text-gray-800
-
-      bg-gray-200
-      hover:bg-gray-300
-      active:bg-gray-350
-
-      focus-visible:ring-midnight-600
-    ],
-
-    primary: %w[
-      text-midnight-50
-      hover:text-midnight-50
-      active:text-midnight-50
-
-      bg-midnight-600
-      hover:bg-midnight-700
-      active:bg-midnight-800
-
-      focus-visible:ring-midnight-800
-    ],
-
-    success: %w[
-      text-emerald-50
-      hover:text-emerald-50
-      active:text-emerald-50
-
-      bg-emerald-600
-      hover:bg-emerald-700
-      active:bg-emerald-800
-
-      focus-visible:ring-emerald-800
-    ],
-
-    link: %w[
-      text-midnight-600
-      hover:text-gray-700
-      active:text-gray-700
-
-      bg-transparent
-      hover:bg-gray-100
-      active:bg-gray-200
-
-      focus-visible:ring-midnight-500
-    ]
+    gray: %w[button-gray],
+    primary: %w[button-primary],
+    success: %w[button-success],
+    link: %w[button-link],
+    default: %w[button-default],
+    default_colored: %w[button-colored]
   }.freeze
 
   SIZES = {

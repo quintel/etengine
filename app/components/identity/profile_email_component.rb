@@ -4,7 +4,8 @@ module Identity
   class ProfileEmailComponent < ViewComponent::Base
     include ButtonHelper
 
-    def initialize(email:, confirmed:, show_change_button: true)
+    def initialize(title:, email:, confirmed:, show_change_button: true)
+      @title = title
       @email = email
       @confirmed = confirmed
       @show_change_button = show_change_button

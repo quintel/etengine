@@ -33,3 +33,7 @@ client_refresh_url:
 # set to true if the server won't have online access. this disables Sentry,
 # etc.
 standalone: false
+
+identity:
+  # The ID of the Doorkeeper::Application which is used to create personal access tokens.
+  personal_access_token_app: 1

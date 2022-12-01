@@ -27,7 +27,7 @@ RSpec.describe Login::ActionButtonComponent, type: :component do
     end
 
     it 'uses the emerald color styles' do
-      expect(rendered).to have_button(class: 'bg-emerald-600')
+      expect(rendered).to have_button(class: 'button-success')
     end
   end
 end

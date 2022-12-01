@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Users
-  class ProfileController < DeviseController
+  class SettingsController < DeviseController
     layout 'identity'
 
     before_action :authenticate_user!
