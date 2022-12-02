@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
   before_action :initialize_memory_cache
-  before_action :locale
+  before_action :set_locale
   before_action :store_user_location!, if: :storable_location?
 
   rescue_from CanCan::AccessDenied do |_exception|
@@ -14,16 +14,15 @@ class ApplicationController < ActionController::Base
     NastyCache.instance.initialize_request
   end
 
-  def locale
-    # update session if passed
-
-    if params[:locale]
+  def set_locale
+    if params[:locale] && I18n.available_locales.include?(params[:locale].to_sym)
       session[:locale] = params[:locale]
       redirect_to(params.permit!.except(:locale)) if request.get?
     end
 
     # set locale based on session or url
-    I18n.locale = session[:locale] || 'en'
+    I18n.locale =
+      session[:locale] || http_accept_language.preferred_language_from(I18n.available_locales)
   end
 
   ##

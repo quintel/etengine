@@ -5,6 +5,7 @@
   aria-label="<%= t('select_language') %>"
 >
   <button
+    id="select-locale-button"
     data-action="click->dropdown#toggle"
     class="
       inline-flex
@@ -28,7 +29,9 @@
   </button>
   <div
     role="menu"
+    aria-labelledby="select-locale-button"
     data-dropdown-target="content"
+    tabindex="-1"
     class="
       hidden
       absolute
@@ -49,10 +52,10 @@
       focus:outline-none
     "
     tabindex="0"
-    data-transition-enter-active="transition ease-out duration-125"
+    data-transition-enter-active="transition ease-out duration-100"
     data-transition-enter-from="transform opacity-0 scale-90"
     data-transition-enter-to="transform opacity-100 scale-100"
-    data-transition-leave-active="transition ease-in duration-200"
+    data-transition-leave-active="transition ease-in duration-150"
     data-transition-leave-from="transform opacity-100 scale-100"
     data-transition-leave-to="transform opacity-0 scale-95"
   >

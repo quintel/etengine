@@ -39,6 +39,7 @@ gem 'cancancan', '~> 3.0'
 # Auth front-end
 gem 'dry-struct'
 gem 'erb-formatter'
+gem 'http_accept_language'
 gem 'importmap-rails'
 gem 'inline_svg'
 gem 'stimulus-rails'

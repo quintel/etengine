@@ -13,7 +13,7 @@ nl:
         This e-mail address has not yet been verified. Please check your e-mail address for
         instructions.
       resend_confirmation: Resend confirmation instructions
-    sign_out: Sign out
+    sign_out: Afmelden
     site_title: Energy Transition Model
   users:
     settings:
