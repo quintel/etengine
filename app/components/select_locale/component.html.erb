@@ -59,7 +59,20 @@
     data-transition-leave-from="transform opacity-100 scale-100"
     data-transition-leave-to="transform opacity-0 scale-95"
   >
-    <%= render(SelectLocale::ItemComponent.new(selected: I18n.locale == :en, href: url_for(params.permit!.merge(locale: 'en'))).with_content('English')) %>
-    <%= render(SelectLocale::ItemComponent.new(selected: I18n.locale == :nl, href: url_for(params.permit!.merge(locale: 'nl'))).with_content('Nederlands')) %>
+    <%= render(SelectLocale::ItemComponent.new(
+      selected: I18n.locale == :en,
+      href: url_for(params.permit!.merge(locale: 'en'))
+    )) do %>
+      <%= image_tag 'locales/en.png', width: 23, height: 17, class: 'flex-shrink-0 mr-1 -mt-px' %>
+      English
+    <% end %>
+
+    <%= render(SelectLocale::ItemComponent.new(
+      selected: I18n.locale == :nl,
+      href: url_for(params.permit!.merge(locale: 'nl'))
+    )) do %>
+      <%= image_tag 'locales/nl.png', width: 23, height: 17, class: 'flex-shrink-0 mr-1 -mt-px' %>
+      Nederlands
+    <% end %>
   </div>
 </div>

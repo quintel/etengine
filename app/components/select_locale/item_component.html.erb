@@ -18,7 +18,7 @@
     role="menuitem"
     aria-disabled="true"
   >
-    <%= inline_svg 'hero/20/check.svg', class: '-ml-0.5 mr-1.5' %>
+    <%= inline_svg 'hero/20/check.svg', class: '-ml-0.5 mr-1.5 flex-shrink-0' %>
     <%= content %>
   </div>
 <% else %>
@@ -43,7 +43,7 @@
       focus:bg-midnight-500
     "
   >
-    <div class="mr-2 h-px w-4"></div>
+    <div class="mr-2 h-px w-4 flex-shrink-0"></div>
     <%= content %>
   </a>
 <% end %>
