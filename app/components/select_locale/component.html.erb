@@ -2,6 +2,7 @@
   class="relative"
   data-transition-target="content"
   data-controller="dropdown"
+  aria-label="<%= t('select_language') %>"
 >
   <button
     data-action="click->dropdown#toggle"
@@ -47,6 +48,7 @@
       z-10
       focus:outline-none
     "
+    tabindex="0"
     data-transition-enter-active="transition ease-out duration-125"
     data-transition-enter-from="transform opacity-0 scale-90"
     data-transition-enter-to="transform opacity-100 scale-100"
