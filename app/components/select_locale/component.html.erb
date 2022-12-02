@@ -1,0 +1,60 @@
+<div
+  class="relative"
+  data-transition-target="content"
+  data-controller="dropdown"
+>
+  <button
+    data-action="click->dropdown#toggle"
+    class="
+      inline-flex
+      gap-1
+      font-medium
+      items-center
+      transition
+      text-gray-600
+      hover:text-gray-800
+      hover:bg-gray-100
+      active:text-gray-900
+      active:bg-gray-200
+      rounded-md
+      px-2.5
+      py-1.5
+      mr-1
+    "
+  >
+    <%= inline_svg 'hero/20/translate.svg' %>
+    <%= inline_svg 'hero/20/chevron-down.svg', class: '-mx-1' %>
+  </button>
+  <div
+    role="menu"
+    data-dropdown-target="content"
+    class="
+      hidden
+      absolute
+      bg-white
+      font-medium
+      -left-8
+      mt-2
+      p-2
+      origin-center
+      ring-1
+      ring-black
+      ring-opacity-10
+      rounded-md
+      shadow-lg
+      text-gray-600
+      text-sm
+      z-10
+      focus:outline-none
+    "
+    data-transition-enter-active="transition ease-out duration-125"
+    data-transition-enter-from="transform opacity-0 scale-90"
+    data-transition-enter-to="transform opacity-100 scale-100"
+    data-transition-leave-active="transition ease-in duration-200"
+    data-transition-leave-from="transform opacity-100 scale-100"
+    data-transition-leave-to="transform opacity-0 scale-95"
+  >
+    <%= render(SelectLocale::ItemComponent.new(selected: I18n.locale == :en, href: url_for(params.permit!.merge(locale: 'en'))).with_content('English')) %>
+    <%= render(SelectLocale::ItemComponent.new(selected: I18n.locale == :nl, href: url_for(params.permit!.merge(locale: 'nl'))).with_content('Nederlands')) %>
+  </div>
+</div>

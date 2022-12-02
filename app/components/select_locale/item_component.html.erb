@@ -1,0 +1,47 @@
+<% if @selected %>
+  <div
+    class="
+      flex
+      w-full
+      cursor-pointer
+      items-center
+      whitespace-nowrap
+      rounded
+      py-1
+      pl-2
+      pr-16
+      outline-0
+      pointer-events-none
+      text-emerald-600
+    "
+    href="#"
+    role="menuitem"
+    aria-disabled="true"
+  >
+    <%= inline_svg 'hero/20/check.svg', class: '-ml-0.5 mr-1.5' %>
+    <%= content %>
+  </div>
+<% else %>
+  <a
+    role="menuitem"
+    href="<%= @href %>"
+    class="
+      flex
+      w-full
+      cursor-pointer
+      items-center
+      whitespace-nowrap
+      rounded
+      py-1
+      pl-2
+      pr-16
+      outline-0
+      text-gray-600
+      hover:text-white
+      hover:bg-midnight-500
+    "
+  >
+    <div class="mr-2 h-px w-4"></div>
+    <%= content %>
+  </a>
+<% end %>

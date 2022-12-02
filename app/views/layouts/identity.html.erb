@@ -36,27 +36,7 @@
           Energy Transition Model
         </a>
         <div class="flex items-center -my-1.5">
-          <button
-            class="
-              inline-flex
-              gap-1
-              font-medium
-              items-center
-              transition
-              text-gray-600
-              hover:text-gray-800
-              hover:bg-gray-100
-              active:text-gray-900
-              active:bg-gray-200
-              rounded-md
-              px-2.5
-              py-1.5
-              mr-1
-            "
-          >
-            <%= inline_svg 'hero/20/translate.svg' %>
-            <%= inline_svg 'hero/20/chevron-down.svg', class: '-mx-1' %>
-          </button>
+          <%= render(SelectLocale::Component.new) %>
           <%= button_to(destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex gap-1 font-medium items-center transition text-gray-600 hover:text-gray-800 hover:bg-gray-100 active:text-gray-900 active:bg-gray-200 rounded-md px-2.5 py-1.5 -mr-2.5") do %>
             <%= inline_svg 'phosphor/20/sign-out.svg' %>
             <%= t('identity.sign_out') %>
