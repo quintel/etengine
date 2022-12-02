@@ -15,7 +15,7 @@
   </head>
 
   <body class="with-bg pb-12">
-    <header class="border-b mb-12">
+    <header class="border-b mb-12 bg-gray-50">
       <div class="w-[1024px] mx-auto py-3 flex text-sm items-center">
         <a
           href="https://energytransitionmodel.com"
@@ -37,7 +37,7 @@
         </a>
         <div class="flex items-center -my-1.5">
           <%= render(SelectLocale::Component.new) %>
-          <%= button_to(destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex gap-1 font-medium items-center transition text-gray-600 hover:text-gray-800 hover:bg-gray-100 active:text-gray-900 active:bg-gray-200 rounded-md px-2.5 py-1.5 -mr-2.5") do %>
+          <%= button_to(destroy_user_session_path, method: :delete, data: { turbo: false }, class: "inline-flex gap-1 font-medium items-center transition text-gray-600 hover:text-gray-800 hover:bg-gray-200 active:text-gray-900 active:bg-gray-300 rounded-md px-2.5 py-1.5 -mr-2.5") do %>
             <%= inline_svg 'phosphor/20/sign-out.svg' %>
             <%= t('identity.sign_out') %>
           <% end %>
