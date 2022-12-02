@@ -16,7 +16,7 @@
 
         <%= render(FormSteps::RowComponent.new(title: t('.new_email'), label_for: "user_email", hint: t('.new_email_hint'))) do |row| %>
           <div class="relative">
-            <%= f.email_field :email, value: action_name == "edit_email" ? "" : @user.email, autocomplete: 'new-email', required: true, class: "field" %>
+            <%= f.email_field :email, value: action_name == "edit_email" ? "" : @user.email, autocomplete: 'email', required: true, class: "field" %>
           </div>
 
           <% row.icon { inline_svg_tag("hero/20/mail.svg") } %>
