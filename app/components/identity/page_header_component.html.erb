@@ -1,19 +1,19 @@
-<div class="flex items-center mb-4">
-  <div>
+<div class="border-b pb-12 mb-6 w-full">
+  <div class="flex items-center mb-4">
     <h2 class="text-3xl font-semibold">
       <%= @title %>
     </h2>
+
+    <% if header_right? %>
+      <div class="ml-auto font-medium">
+        <%= header_right %>
+      </div>
+    <% end %>
   </div>
 
-  <% if header_right? %>
-    <div class="ml-auto font-medium">
-      <%= header_right %>
-    </div>
+  <% if @message %>
+    <p class="text-gray-500 mb-4">
+      <%= @message %>
+    </p>
   <% end %>
 </div>
-
-<% if @message %>
-  <p class="text-gray-500 mb-4">
-    <%= @message %>
-  </p>
-<% end %>

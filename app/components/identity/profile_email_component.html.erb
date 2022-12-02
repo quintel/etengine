@@ -43,7 +43,7 @@
       <% end %>
 
       <% if @show_change_button %>
-        <%= link_to "#{t('.change_address')}…", user_edit_email_path, data: { turbo_frame: :modal }, class: button_classes(color: :default_colored) %>
+        <%= link_to "#{t('.change_address')}…", identity_edit_email_path, data: { turbo_frame: :modal }, class: button_classes(color: :default_colored) %>
       <% end %>
     <% end %>
   <% end %>

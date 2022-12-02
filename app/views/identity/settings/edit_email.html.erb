@@ -1,10 +1,10 @@
 <%= render(ModalComponent.new(title: t('.title'))) do |modal| %>
   <%= turbo_frame_tag :change_email_form do %>
-    <%= form_for(@user, url: user_edit_email_path, html: { method: :post }) do |f| %>
+    <%= form_for(@user, url: identity_edit_email_path, html: { method: :post }) do |f| %>
       <%= render(FormSteps::WrapperComponent.new) do |steps| %>
-        <%= render(FormSteps::RowComponent.new(title: t('users.settings.edit_password.current_password'), hint: t('users.settings.edit_password.current_password_hint'), label_for: "user_current_password")) do |row| %>
+        <%= render(FormSteps::RowComponent.new(title: t('identity.settings.edit_password.current_password'), hint: t('identity.settings.edit_password.current_password_hint'), label_for: "user_current_password")) do |row| %>
           <div class="relative">
-            <%= render(PasswordFieldComponent.new(form: f, name: :current_password, class: "field", autofocus: true, required: true)) %>
+            <%= render(PasswordFieldComponent.new(form: f, name: :current_password, class: "field", autofocus: true, autocomplete: 'current-password', required: true)) %>
           </div>
 
           <% row.icon { inline_svg_tag("hero/20/key.svg") } %>
@@ -16,7 +16,7 @@
 
         <%= render(FormSteps::RowComponent.new(title: t('.new_email'), label_for: "user_email", hint: t('.new_email_hint'))) do |row| %>
           <div class="relative">
-            <%= f.email_field :email, value: action_name == "edit_email" ? "" : @user.email, required: true, class: "field" %>
+            <%= f.email_field :email, value: action_name == "edit_email" ? "" : @user.email, autocomplete: 'new-email', required: true, class: "field" %>
           </div>
 
           <% row.icon { inline_svg_tag("hero/20/mail.svg") } %>
@@ -28,7 +28,7 @@
 
         <div class="mt-6 pb-2 flex items-center gap-2">
           <%= button_tag t('.submit'), class: button_classes("text-base", size: :lg, color: :success) %>
-          <%= modal.close_link(t('identity.cancel'), user_profile_path, class: button_classes("text-base", size: :lg)) %>
+          <%= modal.close_link(t('identity.cancel'), identity_profile_path, class: button_classes("text-base", size: :lg)) %>
         </div>
       <% end %>
     <% end %>

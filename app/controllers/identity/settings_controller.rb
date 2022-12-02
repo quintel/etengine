@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 
-module Users
-  class SettingsController < DeviseController
-    layout 'identity'
-
-    before_action :authenticate_user!
-
-    def edit
-      redirect_to user_profile_path
-    end
+module Identity
+  class SettingsController < ApplicationController
+    include IdentityController
 
     def edit_name
       @user = current_user
@@ -21,7 +15,7 @@ module Users
       @user = User.find(current_user.id)
 
       if @user.update(update_params)
-        redirect_to(user_profile_path, notice: {
+        redirect_to(identity_profile_path, notice: {
           title: 'Name changed',
           message: 'The name of your account was successfully updated.'
         })
@@ -43,7 +37,7 @@ module Users
       if @user.update_with_password(update_params)
         bypass_sign_in(current_user)
 
-        redirect_to(user_profile_path, notice: {
+        redirect_to(identity_profile_path, notice: {
           title: 'E-mail changed',
           message: 'Please check your inbox to confirm the change of e-mail address.'
         })
@@ -65,7 +59,7 @@ module Users
       if @user.update_with_password(password_params)
         bypass_sign_in(@user)
 
-        redirect_to(user_profile_path, notice: {
+        redirect_to(identity_profile_path, notice: {
           title: 'Password changed',
           message: 'Your password was successfully updated.'
         })

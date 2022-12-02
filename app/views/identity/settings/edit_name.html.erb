@@ -1,10 +1,10 @@
 <%= render(ModalComponent.new(title: t('.title'))) do |modal| %>
   <%= turbo_frame_tag :change_name_form do %>
-    <%= form_for(@user, url: user_edit_name_path, html: { method: :post }) do |f| %>
+    <%= form_for(@user, url: identity_edit_name_path, html: { method: :post }) do |f| %>
       <%= render(FormSteps::WrapperComponent.new) do |steps| %>
         <%= render(FormSteps::RowComponent.new(title: t('.new_name'), label_for: "user_name", hint: t('.new_name_hint'))) do |row| %>
           <div class="relative">
-            <%= f.text_field :name, value: @user.name, required: true, autofocus: true, class: "field" %>
+            <%= f.text_field :name, value: @user.name, required: true, autofocus: true, autocomlete: 'name', class: "field" %>
           </div>
 
           <% row.icon { inline_svg_tag("hero/20/identification.svg") } %>
@@ -16,7 +16,7 @@
 
         <div class="mt-6 pb-2 flex items-center gap-2">
           <%= button_tag t('.submit'), class: button_classes("text-base", size: :lg, color: :success) %>
-          <%= modal.close_link(t('identity.cancel'), user_profile_path, class: button_classes("text-base", size: :lg)) %>
+          <%= modal.close_link(t('identity.cancel'), identity_profile_path, class: button_classes("text-base", size: :lg)) %>
         </div>
       <% end %>
     <% end %>

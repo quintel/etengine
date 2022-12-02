@@ -15,9 +15,11 @@ en:
       resend_confirmation: Resend confirmation instructions
     sign_out: Sign out
     site_title: Energy Transition Model
-  users:
-    settings:
-      authorized_applications:
+
+    # Pages
+
+    authorized_applications:
+      index:
         empty_state:
           title: You have no authorised third-party applications
           message: |
@@ -28,6 +30,8 @@ en:
             You may revoke these permissions at any time.
         explanation: Control who can access your account and data.
         title: Authorised applications
+
+    settings:
       edit_email:
         new_email: New e-mail address
         new_email_hint: A confirmation will be sent to this address before the change takes effect
@@ -48,7 +52,7 @@ en:
           phrases, numbers, or symbols to make it more secure.
         submit: Change password
         title: Change your password
-      profile:
+      index:
         account: Account
         change_name: Change name
         change_password: Change password
@@ -59,7 +63,9 @@ en:
           needs to access data on your account, create a personal access token.
         profile: Profile
         title: Your profile
-      tokens:
+
+    tokens:
+      index:
         create_token: Create an access token
         empty_state:
           title: You have no access tokens

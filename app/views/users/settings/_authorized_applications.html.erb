@@ -1,5 +1,0 @@
-<%= render(Identity::CardComponent.new(title: "Authorised applications", icon: "phosphor/plugs.svg", id: "authorized-applications")) do |c| %>
-  <%= render(Identity::EmptyStateComponent.new(title: "You have no authorised third-party applications")) do %>
-    <%= format_paragraphs(t('.empty_state.message')) %>
-  <% end %>
-<% end %>

@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
   def index
-    return redirect_to(user_profile_path) if current_user && !current_user.admin?
+    return redirect_to(identity_profile_path) if current_user && !current_user.admin?
 
     scenario = Scenario.default(source: 'ETEngine Admin UI')
     scenario.save!

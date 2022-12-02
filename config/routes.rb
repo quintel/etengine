@@ -7,20 +7,23 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
-  scope '/identity' do
+  namespace :identity do
     get '/', to: redirect('/identity/profile')
-    get 'profile', to: 'users/settings#profile', as: :user_profile
+    get 'profile', to: 'settings#index', as: :profile
 
-    get 'change_name', to: 'users/settings#edit_name', as: :user_edit_name
-    post 'change_name', to: 'users/settings#update_name'
+    get 'change_name', to: 'settings#edit_name', as: :edit_name
+    post 'change_name', to: 'settings#update_name'
 
-    get 'change_email', to: 'users/settings#edit_email', as: :user_edit_email
-    post 'change_email', to: 'users/settings#update_email'
+    get 'change_email', to: 'settings#edit_email', as: :edit_email
+    post 'change_email', to: 'settings#update_email'
 
-    get 'change_password', to: 'users/settings#edit_password', as: :user_edit_password
-    post 'change_password', to: 'users/settings#update_password'
+    get 'change_password', to: 'settings#edit_password', as: :edit_password
+    post 'change_password', to: 'settings#update_password'
 
-    get '/logout', to: 'users/sessions#destroy'
+    get '/logout', to: 'sessions#destroy'
+
+    resources :tokens, only: [:index], as: :tokens
+    resources :authorized_applications, only: [:index], as: :authorized_applications
   end
 
   root :to => 'pages#index'

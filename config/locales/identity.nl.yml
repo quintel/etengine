@@ -15,7 +15,6 @@ nl:
       resend_confirmation: Resend confirmation instructions
     sign_out: Afmelden
     site_title: Energy Transition Model
-  users:
     settings:
       authorized_applications:
         empty_state:
