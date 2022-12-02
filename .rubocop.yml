@@ -131,6 +131,10 @@ Layout/MultilineOperationIndentation:
 Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
+Lint/MissingSuper:
+  Exclude:
+    - app/components/**/*.rb
+
 # Prefer alias_method over alias
 Style/Alias:
   EnforcedStyle: prefer_alias_method
