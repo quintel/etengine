@@ -1,13 +1,8 @@
 # frozen_string_literal: true
 
 module Identity
-  class EmptyStateComponent < ViewComponent::Base
+  class EmptyStateComponent < ApplicationComponent
     renders_one :buttons
-
-    def initialize(title:)
-      super
-
-      @title = title
-    end
+    option :title
   end
 end

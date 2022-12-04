@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Login
-  class ActionButtonComponent < ViewComponent::Base
+  class ActionButtonComponent < ApplicationComponent
     include ButtonHelper
 
     BASE_CLASSES = 'text-base flex items-center justify-center group'

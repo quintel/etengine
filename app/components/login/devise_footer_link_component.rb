@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Login
-  class DeviseFooterLinkComponent < ViewComponent::Base
+  class DeviseFooterLinkComponent < ApplicationComponent
     include CssClasses
 
     DEFAULT_CLASSES = %w[

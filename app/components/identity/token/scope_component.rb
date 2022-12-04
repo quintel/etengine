@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-class Identity::Token::ScopeComponent < ViewComponent::Base
-  def initialize(name:, enabled:, testid: nil)
-    @name = name
-    @enabled = enabled
-    @testid = testid
-  end
+class Identity::Token::ScopeComponent < ApplicationComponent
+  option :name
+  option :enabled
+  option :testid, optional: true
 
   def testid
     # rubocop:disable Rails/OutputSafety

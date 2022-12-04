@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-class Identity::PageHeaderComponent < ViewComponent::Base
+class Identity::PageHeaderComponent < ApplicationComponent
   renders_one :actions
 
-  def initialize(title:, message:)
-    @title = title
-    @message = message
-  end
+  option :title
+  option :message
 end

@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
 module Identity
-  class CardComponent < ViewComponent::Base
+  class CardComponent < ApplicationComponent
     renders_one :header_right
 
-    def initialize(title:, icon:, id: nil)
-      super
-
-      @title = title
-      @icon = icon
-      @id = id
-    end
+    option :title
+    option :icon
+    option :id, optional: true
   end
 end

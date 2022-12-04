@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 module SelectLocale
-  class ItemComponent < ViewComponent::Base
-    def initialize(href:, selected: false)
-      @href = href
-      @selected = selected
-    end
+  class ItemComponent < ApplicationComponent
+    option :href
+    option :selected, default: proc { false }
   end
 end

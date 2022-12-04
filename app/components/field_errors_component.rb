@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FieldErrorsComponent < ViewComponent::Base
+class FieldErrorsComponent < ApplicationComponent
   def initialize(record:, attribute:)
     @messages = record.errors.full_messages_for(attribute)
   end

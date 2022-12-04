@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-class Identity::SidebarItemComponent < ViewComponent::Base
-  def initialize(path:, title:, explanation:, active: false)
-    @path = path
-    @title = title
-    @explanation = explanation
-    @active = active
-  end
+class Identity::SidebarItemComponent < ApplicationComponent
+  option :path
+  option :title
+  option :explanation
+  option :active, default: proc { false }
 
   def css_classes
     if @active

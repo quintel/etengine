@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ModalComponent < ViewComponent::Base
+class ModalComponent < ApplicationComponent
   include Turbo::FramesHelper
 
   StimulusConfig = Struct.new(
@@ -16,9 +16,7 @@ class ModalComponent < ViewComponent::Base
     end
   end
 
-  def initialize(title:)
-    @title = title
-  end
+  option :title
 
   def stimulus
     @stimulus ||=

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ToastComponent < ViewComponent::Base
+class ToastComponent < ApplicationComponent
   def initialize(message:, type: :notice)
     @type = type
 

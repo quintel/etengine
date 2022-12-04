@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Identity::TokenComponent < ViewComponent::Base
+class Identity::TokenComponent < ApplicationComponent
   include ButtonHelper
   include Turbo::FramesHelper
 

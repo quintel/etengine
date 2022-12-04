@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 module Identity
-  class ProfileEmailComponent < ViewComponent::Base
+  class ProfileEmailComponent < ApplicationComponent
     include ButtonHelper
 
-    def initialize(title:, email:, confirmed:, show_change_button: true)
-      @title = title
-      @email = email
-      @confirmed = confirmed
-      @show_change_button = show_change_button
-    end
+    option :title
+    option :email
+    option :confirmed
+    option :show_change_button, default: proc { true }
   end
 end
