@@ -93,11 +93,12 @@ group :development do
 end
 
 group :test, :development do
+  gem 'binding_of_caller'
+  gem 'factory_bot_rails'
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'rspec-rails', '~> 6.0'
   gem 'watchr'
-  gem 'binding_of_caller'
 
   gem 'rubocop',             '~> 1.27', require: false
   gem 'rubocop-performance',            require: false
@@ -106,7 +107,6 @@ group :test, :development do
 end
 
 group :test do
-  gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'shoulda-matchers'
 
