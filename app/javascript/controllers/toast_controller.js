@@ -1,10 +1,10 @@
-import { Controller } from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 
 // Connects to data-controller="toast"
 export default class extends Controller {
   connect() {
     // Show the toast for one second per ten characters, minimum of 5 and max of 10.
-    const showFor = this.element.textContent.replace(/\s+/g, ' ').trim().length * 100;
+    const showFor = this.element.textContent.replace(/\s+/g, " ").trim().length * 100;
     this.desiredExit = new Date().getTime() + Math.min(10000, Math.max(5000, showFor));
 
     this.mouseout();
@@ -38,10 +38,10 @@ export default class extends Controller {
 
   close() {
     this.element.style.opacity = 0;
-    this.element.classList.add('translate-y-2');
-    this.element.style.pointerEvents = 'none';
+    this.element.classList.add("translate-y-2");
+    this.element.style.pointerEvents = "none";
 
-    this.element.addEventListener('transitionend', (event) => {
+    this.element.addEventListener("transitionend", (event) => {
       if (event.target === this.element) {
         this.element.remove();
       }

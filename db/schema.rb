@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_30_162202) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_03_004913) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -82,7 +82,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_162202) do
 
   create_table "oauth_access_tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "resource_owner_id"
-    t.bigint "application_id", null: false
+    t.bigint "application_id"
     t.string "token", null: false
     t.string "refresh_token"
     t.integer "expires_in"
@@ -139,6 +139,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_162202) do
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.index ["trackable"], name: "index_old_users_on_trackable"
+  end
+
+  create_table "personal_access_tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "oauth_access_token_id", null: false
+    t.string "name"
+    t.datetime "last_used_at"
+    t.index ["oauth_access_token_id"], name: "index_personal_access_tokens_on_oauth_access_token_id", unique: true
+    t.index ["user_id"], name: "index_personal_access_tokens_on_user_id"
   end
 
   create_table "query_table_cells", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -253,8 +262,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_162202) do
   add_foreign_key "heat_network_orders", "scenarios"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
-  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
+  add_foreign_key "personal_access_tokens", "oauth_access_tokens"
+  add_foreign_key "personal_access_tokens", "users"
   add_foreign_key "scenario_attachments", "scenarios"
   add_foreign_key "scenario_attachments", "scenarios", column: "source_scenario_id", name: "index_scenario_attachments_on_source_scenario_id"
   add_foreign_key "scenarios", "users"

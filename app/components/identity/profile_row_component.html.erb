@@ -1,6 +1,5 @@
-<div class="flex my-4 mb-8 text-base">
-  <div class="w-44 text-gray-500 font-medium flex-shrink-0 "><%= @title %></div>
-  <div class="flex-grow">
+<%= render(Identity::RowComponent.new(title: @title)) do %>
+  <div class="pb-8">
     <div class="font-medium"><%= content %></div>
 
     <% if message? %>
@@ -13,4 +12,4 @@
       </div>
     <% end %>
   </div>
-</div>
+<% end %>

@@ -30,6 +30,8 @@ class User < ApplicationRecord
 
   has_many :scenarios
 
+  has_many :personal_access_tokens, dependent: :destroy
+
   validates :name, presence: true, length: { maximum: 191 }
 
   def valid_password?(password)

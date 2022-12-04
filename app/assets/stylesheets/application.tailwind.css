@@ -13,6 +13,25 @@
   a {
     @apply text-midnight-600 hover:text-midnight-800 active:text-midnight-800;
   }
+
+  ::selection {
+    @apply bg-midnight-500 bg-opacity-30;
+  }
+
+  input[type="checkbox"], input[type="radio"] {
+    @apply accent-midnight-500 transition;
+  }
+
+  input:checked[type="checkbox"], input:checked[type="radio"],
+  input:checked[type="checkbox"]:focus, input:checked[type="radio"]:focus,
+  input:checked[type="checkbox"]:active, input:checked[type="radio"]:active {
+    @apply !bg-midnight-600;
+  }
+
+
+  input[type="checkbox"]:focus, input[type="radio"]:focus {
+    @apply ring-midnight-600;
+  }
 }
 
 @layer components {
@@ -183,7 +202,6 @@
     @apply active:text-emerald-50 active:bg-emerald-800;
 
     @apply focus-visible:ring-emerald-800;
-
   }
 
   .button-primary {
@@ -209,16 +227,12 @@
    @keyframes toast-enter {
     from {
       opacity: 0;
-      transform: scale(0.8) translateY(1rem);
-    }
-
-    50% {
-      transform: scale(1.05) translateY(-0.25rem);
+      transform: translateY(1rem);
     }
 
     to {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: translateY(0);
     }
   }
 

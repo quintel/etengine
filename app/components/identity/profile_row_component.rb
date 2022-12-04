@@ -5,8 +5,9 @@ module Identity
     renders_one :message
     renders_one :button
 
-    def initialize(title:)
+    def initialize(title:, compact: false)
       @title = title
+      @compact = compact
     end
   end
 end

@@ -236,7 +236,12 @@ Doorkeeper.configure do
   # https://doorkeeper.gitbook.io/guides/ruby-on-rails/scopes
   #
   default_scopes  :public
-  optional_scopes :write, :update, :openid, :profile, :email
+  optional_scopes :email,
+                  :openid,
+                  :profile,
+                  :'scenarios:read',
+                  :'scenarios:write',
+                  :'scenarios:delete'
 
   # Allows to restrict only certain scopes for grant_type.
   # By default, all the scopes will be available for all the grant types.

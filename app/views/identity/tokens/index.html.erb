@@ -1,28 +1,19 @@
 <%= content_for(:page_title, t('.title')) %>
 <% render partial: 'identity/sidebar' %>
 
-<%= render(Identity::PageHeaderComponent.new(title: t('.title'), message: t('.explanation'))) %>
-
-<%= render(Identity::EmptyStateComponent.new(title: t('.empty_state.title'))) do |es| %>
-  <%= format_paragraphs(t('.empty_state.message')) %>
-
-  <% es.buttons do %>
-    <button
-      name="button"
-      type="submit"
-      class="<%= button_classes(color: :success, size: :lg) %>"
-      <%= Settings.identity.personal_access_token_app.blank? ? 'disabled' : '' %>
-    >
+<%= render(Identity::PageHeaderComponent.new(
+  title: t('.title'), message: t('.explanation')
+)) do |header| %>
+  <%= header.actions do %>
+    <%= link_to new_identity_token_path, class: button_classes(color: :primary) do %>
+      <%= inline_svg 'hero/20/plus-sm.svg', class: '-ml-1 mr-1' %>
       <%= t('.create_token') %>
-    </button>
-
-    <button
-      name="button"
-      type="button"
-      class="<%= button_classes(size: :lg) %>"
-      disabled
-    >
-      <%= t('.learn_more') %>
-    </button>
+    <% end %>
   <% end %>
+<% end %>
+
+<% if @tokens.none? %>
+  <%= render partial: 'empty_state' %>
+<% else %>
+  <%= render(Identity::TokenComponent.with_collection(@tokens)) %>
 <% end %>

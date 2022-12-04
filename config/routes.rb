@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
     get '/logout', to: 'sessions#destroy'
 
-    resources :tokens, only: [:index], as: :tokens
+    resources :tokens, only: [:index, :new, :create, :destroy], as: :tokens
     resources :authorized_applications, only: [:index], as: :authorized_applications
   end
 

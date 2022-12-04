@@ -20,6 +20,24 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 nl:
+  time:
+    formats:
+      short: "%-d %b %H:%M"
+      long: "%A %-d %B, %Y at %H:%M"
+      time: "%H:%M"
+      only_second: "%S"
+      date: "%A %-d %B, %Y"
+  date:
+    formats:
+      short: "%-d %b"
+      long: "%A %-d %B, %Y"
+      date: "%A %-d %B, %Y"
+  activemodel:
+    attributes:
+      'create_personal_access_token/params':
+        name: Token name
+        expires_in: Expiration
+        permissions: Permissions
   activerecord:
     attributes:
       user:

@@ -8,6 +8,7 @@ module ButtonHelper
     gray: %w[button-gray],
     primary: %w[button-primary],
     success: %w[button-success],
+    warning: %w[button-warning],
     link: %w[button-link],
     default: %w[button-default],
     default_colored: %w[button-colored]

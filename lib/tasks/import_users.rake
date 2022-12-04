@@ -50,9 +50,6 @@ task import_users: :environment do
     )
   end
 
-  dev_user.oauth_applications.create!(
-    name: 'Personal Access Tokens', scopes: 'public', first_party: true
-  )
   dev_user.oauth_applications.create!(name: 'ETModel', scopes: 'public', first_party: true)
   dev_user.oauth_applications.create!(name: 'Transition Paths', scopes: 'public', first_party: true)
 

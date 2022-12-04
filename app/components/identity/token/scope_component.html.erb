@@ -1,0 +1,15 @@
+<% if @enabled %>
+  <div class="flex items-start gap-2 text-emerald-600 mb-2" <%= testid %>>
+    <%= inline_svg 'hero/20/check.svg', class: 'mt-0.5' %>
+    <%= @name %>
+  </div>
+<% else %>
+  <div
+    class="flex items-start gap-2 text-gray-700/25 mb-2"
+    aria-hidden="true"
+    <%= testid %>
+  >
+    <%= inline_svg 'hero/20/lock-closed.svg', class: 'mt-px' %>
+    <%= @name %>
+  </div>
+<% end %>

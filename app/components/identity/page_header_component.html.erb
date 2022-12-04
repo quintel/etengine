@@ -1,14 +1,10 @@
 <div class="border-b pb-12 mb-6 w-full">
   <div class="flex items-center mb-4">
-    <h2 class="text-3xl font-semibold">
+    <h2 class="text-3xl font-semibold mr-auto">
       <%= @title %>
     </h2>
 
-    <% if header_right? %>
-      <div class="ml-auto font-medium">
-        <%= header_right %>
-      </div>
-    <% end %>
+    <%= actions %>
   </div>
 
   <% if @message %>

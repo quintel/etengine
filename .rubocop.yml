@@ -79,6 +79,9 @@ Layout/FirstArrayElementIndentation:
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
+Layout/HashAlignment:
+  Enabled: false
+
 # Max line length is 100 characters. The RuboCop default is 120; the Ruby Style Guide makes a good
 # argument (https://rubystyle.guide/#max-line-length) for  keeping this at 80, but to do so is a
 # little limiting when there are multiple nested modules. We compromise at 100.

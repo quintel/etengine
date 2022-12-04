@@ -1,0 +1,158 @@
+<%= turbo_frame_tag(@token, class: 'group') do %>
+  <div
+    class="
+      border-b
+      pb-12
+      mb-6
+      group-last:border-b-0
+      group-last:pb-0
+      group-last:mb-0
+    "
+  >
+    <div class="flex items-center mb-8 gap-3">
+      <h3 class="text-xl font-semibold"><%= @token.name %></h3>
+    </div>
+
+    <div data-controller="clipboard">
+      <%= render(Identity::RowComponent.new(title: 'Token')) do |row| %>
+        <% if @show_full_token %>
+          <input
+            type="text"
+            class="
+              text-gray-800
+              p-0
+              ring-0
+              border-none
+              font-mono
+              w-full
+              focus:ring-0
+            "
+            spellcheck="false"
+            value="<%= token_string %>"
+            readonly
+            data-controller="select-contents"
+            data-action="click->select-contents#select"
+            data-clipboard-target="source"
+          />
+        <% else %>
+          <span class="font-mono select-none">
+            <%= token_string %>
+          </span>
+        <% end %>
+
+        <% if @show_full_token %>
+          <p class="mt-2 text-sm text-gray-500 mr-24">
+            <span
+              class="
+                inline-block
+                bg-yellow-200
+                text-yellow-800
+                rounded
+                px-1.5
+                py-0.5
+                -ml-1.5
+              "
+            >
+              The token string will only be shown briefly!
+            </span>
+            Make sure to copy it to your clipboard.
+          </p>
+          <button
+            class="<%= button_classes('text-sm mt-3') %>"
+            data-action="clipboard#copy"
+            data-clipboard-target="button"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z"/>
+              <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z"/>
+            </svg>
+            Copy token to clipboard
+          </button>
+          <span
+            class="
+              hidden
+              inline-flex
+              ml-2
+              items-center
+              gap-1
+              text-emerald-600
+              font-medium
+              text-sm
+            "
+            data-clipboard-target="notice"
+          >
+            <%= inline_svg 'hero/20/circle-check.svg' %>
+            Copied!
+          </span>
+        <% else %>
+          <p class="mt-2 text-sm text-gray-500 mr-24">
+            The full token is not shown here. If you have lost it you should
+            revoke this token and create a new one.
+          </p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= render(Identity::RowComponent.new(title: 'Expires')) do |row| %>
+      <div data-testid="expires">
+        <% if @access_token.expires_in.present? %>
+          <%= helpers.local_time(@access_token.expires_at, :long) %>
+          <span class="text-gray-500 font-normal text-sm ml-2">
+            (<%= t('time_from_now', time: time_ago_in_words(@access_token.expires_at)) %>)
+          </span>
+        <% else %>
+          Never
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= render(Identity::RowComponent.new(title: 'Permissions')) do |row| %>
+      <%= render(Identity::Token::ScopeComponent.new(
+        name: 'View your public scenarios',
+        enabled: @access_token.includes_scope?('public'),
+        testid: 'scope:public-own'
+      )) %>
+
+      <%= render(Identity::Token::ScopeComponent.new(
+        name: 'View other people’s public scenarios',
+        enabled: @access_token.includes_scope?('public'),
+        testid: 'scope:public-others'
+      )) %>
+
+      <%= render(Identity::Token::ScopeComponent.new(
+        name: 'View your private scenarios',
+        enabled: @access_token.includes_scope?('scenarios:read'),
+        testid: 'scope:scenarios:read'
+      )) %>
+
+      <%= render(Identity::Token::ScopeComponent.new(
+        name: 'Create new scenarios and change your public and private scenarios',
+        enabled: @access_token.includes_scope?('scenarios:write'),
+        testid: 'scope:scenarios:write'
+      )) %>
+
+      <%= render(Identity::Token::ScopeComponent.new(
+        name: 'Delete your public and private scenarios',
+        enabled: @access_token.includes_scope?('scenarios:delete'),
+        testid: 'scope:scenarios:delete'
+      )) %>
+    <% end %>
+
+    <%= render(Identity::RowComponent.new(title: 'Revoke')) do |row| %>
+      <%= button_to identity_token_path(@token), class: button_classes('text-sm text-red-600 hover:text-red-700 active:text-red-700'), method: :delete do %>
+        <%= inline_svg 'font-awesome/16/trash.svg', class: 'mr-1.5' %>
+        Revoke token
+      <% end %>
+
+      <p class="text-gray-500 text-sm mr-24 mt-3">
+        Revoking the token will immediately prevent it from being used to
+        access or modify your account.
+      </p>
+    <% end %>
+  </div>
+<% end %>

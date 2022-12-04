@@ -1,0 +1,105 @@
+<%= content_for(:page_title, t('.title')) %>
+<% render partial: 'identity/sidebar' %>
+
+<%= render(Identity::PageHeaderComponent.new(
+  title: t('identity.tokens.index.title'),
+  message: t('identity.tokens.index.explanation')
+)) %>
+
+<%= turbo_frame_tag 'new_personal_access_token' do %>
+  <h3 class="text-xl font-semibold mb-8"><%= t('.title') %></h3>
+
+  <%= form_for(@token, url: identity_tokens_path, html: { method: :post }) do |f| %>
+    <%= render(Identity::RowComponent.new(title: 'Token name')) do |row| %>
+      <% row.title_contents do %>
+        <%= f.label :name, class: 'block py-1.5' %>
+      <% end %>
+
+      <div class="mb-4">
+        <%= f.text_field :name, required: false, autofocus: true, autocomplete: 'name', class: "field" %>
+
+        <p class="text-sm text-gray-500 mt-2">
+          A name will help you recognise this token in the future.
+        </p>
+
+        <%= render(FieldErrorsComponent.new(record: @token, attribute: :name)) %>
+      </div>
+    <% end %>
+
+    <%= render(Identity::RowComponent.new(title: 'Expiration')) do |row| %>
+      <% row.title_contents do %>
+        <%= f.label :expires_in, class: 'block py-1.5' %>
+      <% end %>
+
+      <div class="mb-4" data-controller="select-with-message">
+        <%= f.select :expires_in, token_expiration_options(@token.expires_in || 30), {},
+          class: 'field w-auto',
+          data: {
+            action: 'select-with-message#change',
+            'select-with-message-target': 'select'
+          } %>
+
+        <p class="text-sm text-gray-500 mt-2" data-select-with-message-target="output">&nbsp;</p>
+      </div>
+    <% end %>
+
+    <div class="-mt-1.5"></div>
+
+    <%= render(Identity::RowComponent.new(title: 'Permissions')) do |row| %>
+      <% row.title_contents do %>
+        <%= f.label :permissions, class: 'block pb-1.5' %>
+      <% end %>
+
+      <div class="mb-4">
+        <label class="flex mb-3">
+          <%= f.radio_button :permissions, :public, class: 'mt-1 mr-3 w-4 h-4' %>
+          <div class="flex-grow">
+            <span class="font-medium">Read public scenarios only</span>
+            <p class="text-sm text-gray-500 mt-1">
+              This token will be able to read public scenarios created by you
+              and other people.
+            </p>
+          </div>
+        </label>
+
+        <label class="flex mb-3 last:mb-0">
+          <%= f.radio_button :permissions, :read, class: 'mt-1 mr-3 w-4 h-4' %>
+          <div class="flex-grow">
+            <span class="font-medium">Read public and private scenarios</span>
+            <p class="text-sm text-gray-500 mt-1">
+              This token will be able to read your public and private
+              scenarios, but will not permit changes.
+            </p>
+          </div>
+        </label>
+
+        <label class="flex mb-3 last:mb-0">
+          <%= f.radio_button :permissions, :write, class: 'mt-1 mr-3 w-4 h-4' %>
+          <div class="flex-grow">
+            <span class="font-medium">Read and write public and private scenarios</span>
+            <p class="text-sm text-gray-500 mt-1">
+              This token will be able to read and make changes to your public
+              and private scenarios, but will not be able to delete scenarios.
+            </p>
+          </div>
+        </label>
+
+        <label class="flex mb-3 last:mb-0">
+          <%= f.radio_button :permissions, :delete, class: 'mt-1 mr-3 w-4 h-4' %>
+          <div class="flex-grow">
+            <span class="font-medium">Read, write, and delete public and private scenarios</span>
+            <p class="text-sm text-gray-500 mt-1">
+              This token will be able to read and make changes to your public
+              and private scenarios, and also delete your scenarios.
+            </p>
+          </div>
+        </label>
+      </div>
+    <% end %>
+
+    <%= render(Identity::RowComponent.new(title: '')) do |row| %>
+      <%= f.submit t('identity.tokens.index.create_token'), class: button_classes(color: :success, size: :lg) %>
+      <%= link_to t('cancel'), identity_tokens_path, class: button_classes('ml-2', size: :lg) %>
+    <% end %>
+  <% end %>
+<% end %>
