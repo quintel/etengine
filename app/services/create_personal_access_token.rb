@@ -72,9 +72,12 @@ class CreatePersonalAccessToken
       # updating the token is easier.
       oauth_token.update!(token: "#{PersonalAccessToken::TOKEN_PREFIX}#{oauth_token.token}")
 
-      Success(
-        @user.personal_access_tokens.create!(name: @params.name, oauth_access_token: oauth_token)
+      token = @user.personal_access_tokens.create!(
+        name: @params.name,
+        oauth_access_token: oauth_token
       )
+
+      Success(token)
     end
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
     attempts += 1

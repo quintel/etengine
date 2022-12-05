@@ -27,6 +27,8 @@ module Identity
         @token = result.failure
         render :new
       else
+        Identity::TokenMailer.created_token(result.value!).deliver_later
+
         flash[:notice] = t('identity.tokens.created')
         redirect_to identity_tokens_path
       end

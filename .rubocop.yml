@@ -198,6 +198,7 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Exclude:
     - spec/components/**/*_spec.rb
+    - spec/mailers/**/*_spec.rb
     - spec/system/**/*_spec.rb
 
 RSpec/NamedSubject:

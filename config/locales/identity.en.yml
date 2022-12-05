@@ -67,6 +67,10 @@ en:
         profile: Profile
         title: Your profile
 
+    token_mailer:
+      created_token:
+        subject: You created a new token
+
     tokens:
       empty_state:
         title: You have no access tokens

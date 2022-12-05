@@ -1,0 +1,12 @@
+You just created a new personal access token for the Energy Transition Model.
+
+You chose to name it: <%= @token.name %>
+
+This token can be used to access your account using the API and has has
+these permissions:
+
+<%= token_permissions(@access_token) %>
+
+If you did not create this token, please visit the following link to revoke it:
+
+<%= identity_tokens_url %>
