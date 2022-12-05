@@ -20,18 +20,13 @@ RSpec.describe 'Revoking a personal access token', type: :system do
       # Scopes
 
       expect(page).to have_css(
-        '[data-testid="scope:public-own"]:not([aria-hidden="true"])',
-        text: 'View your public scenarios'
-      )
-
-      expect(page).to have_css(
-        '[data-testid="scope:public-others"]:not([aria-hidden="true"])',
-        text: 'View other people’s public scenarios'
+        '[data-testid="scope:public"]:not([aria-hidden="true"])',
+        text: 'Read public scenarios'
       )
 
       expect(page).to have_css(
         '[data-testid="scope:scenarios:read"]:not([aria-hidden="true"])',
-        text: 'View your private scenarios'
+        text: 'Read your private scenarios'
       )
 
       expect(page).to have_css(

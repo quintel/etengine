@@ -53,9 +53,9 @@
                 -ml-1.5
               "
             >
-              The token string will only be shown briefly!
+              <%= t('.token_shown_briefly') %>
             </span>
-            Make sure to copy it to your clipboard.
+            <%= t('.make_sure_to_copy') %>
           </p>
           <button
             class="<%= button_classes('text-sm mt-3') %>"
@@ -72,6 +72,7 @@
               <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z"/>
             </svg>
             Copy token to clipboard
+            <%= t('copy') %>
           </button>
           <span
             class="
@@ -87,12 +88,11 @@
             data-clipboard-target="notice"
           >
             <%= inline_svg 'hero/20/circle-check.svg' %>
-            Copied!
+            <%= t('.copied') %>
           </span>
         <% else %>
           <p class="mt-2 text-sm text-gray-500 mr-24">
-            The full token is not shown here. If you have lost it you should
-            revoke this token and create a new one.
+            <%= t('.full_token_not_shown') %>
           </p>
         <% end %>
       <% end %>
@@ -106,38 +106,32 @@
             (<%= t('time_from_now', time: time_ago_in_words(@access_token.expires_at)) %>)
           </span>
         <% else %>
-          Never
+          <%= t('identity.tokens.expiration_options.never') %>
         <% end %>
       </div>
     <% end %>
 
     <%= render(Identity::RowComponent.new(title: 'Permissions')) do |row| %>
       <%= render(Identity::Token::ScopeComponent.new(
-        name: 'View your public scenarios',
+        name: t('doorkeeper.scopes.public'),
         enabled: @access_token.includes_scope?('public'),
-        testid: 'scope:public-own'
+        testid: 'scope:public'
       )) %>
 
       <%= render(Identity::Token::ScopeComponent.new(
-        name: 'View other people’s public scenarios',
-        enabled: @access_token.includes_scope?('public'),
-        testid: 'scope:public-others'
-      )) %>
-
-      <%= render(Identity::Token::ScopeComponent.new(
-        name: 'View your private scenarios',
+        name: t('doorkeeper.scopes.scenarios:read'),
         enabled: @access_token.includes_scope?('scenarios:read'),
         testid: 'scope:scenarios:read'
       )) %>
 
       <%= render(Identity::Token::ScopeComponent.new(
-        name: 'Create new scenarios and change your public and private scenarios',
+        name: t('doorkeeper.scopes.scenarios:write'),
         enabled: @access_token.includes_scope?('scenarios:write'),
         testid: 'scope:scenarios:write'
       )) %>
 
       <%= render(Identity::Token::ScopeComponent.new(
-        name: 'Delete your public and private scenarios',
+        name: t('doorkeeper.scopes.scenarios:delete'),
         enabled: @access_token.includes_scope?('scenarios:delete'),
         testid: 'scope:scenarios:delete'
       )) %>
@@ -146,12 +140,11 @@
     <%= render(Identity::RowComponent.new(title: 'Revoke')) do |row| %>
       <%= button_to identity_token_path(@token), class: button_classes('text-sm text-red-600 hover:text-red-700 active:text-red-700'), method: :delete do %>
         <%= inline_svg 'font-awesome/16/trash.svg', class: 'mr-1.5' %>
-        Revoke token
+        <%= t('.revoke_token') %>
       <% end %>
 
       <p class="text-gray-500 text-sm mr-24 mt-3">
-        Revoking the token will immediately prevent it from being used to
-        access or modify your account.
+        <%= t('.revoke_warning') %>
       </p>
     <% end %>
   </div>

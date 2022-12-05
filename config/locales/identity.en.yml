@@ -21,6 +21,9 @@ en:
 
     # Pages
 
+    authorized_application_component:
+      revoke_application: Revoke application
+
     authorized_applications:
       index:
         empty_state:
@@ -68,6 +71,19 @@ en:
         profile: Profile
         title: Your profile
 
+    token_component:
+      copied: Copied!
+      copy: Copy token to clipboard
+      full_token_not_shown: |
+        The full token is not shown here. If you have lost it you should revoke this token and
+        create a new one.
+      make_sure_to_copy: Make sure to copy it to your clipboard.
+      revoke_token: Revoke token
+      revoke_warning: |
+        Revoking the token will immediately prevent it from being used to access or modify your
+        account.
+      token_shown_briefly: The full token will only be shown briefly!
+
     token_mailer:
       created_token:
         subject: You created a new token
@@ -91,9 +107,29 @@ en:
         message: The token can no longer be used to access the API.
       new:
         name: Token name
-        name_hint: This name will help you recognise the token.
+        name_hint: This name will help you recognise the token in the future.
         permissions: Scenario permissions
         title: Create a new access token
+        permissions:
+          public:
+            title: Read public scenarios only
+            hint: |
+              This token will be able to read public scenarios created by you and other people.
+          read:
+            title: Read public and private scenarios
+            hint: |
+              This token will be able to read your public and private scenarios, but will not permit
+              changes.
+          write:
+            title: Read and write public and private scenarios
+            hint: |
+              This token will be able to read and make changes to your public and private scenarios,
+              but will not be able to delete scenarios.
+          delete:
+            title: Read, write, and delete public and private scenarios
+            message: |
+              This token will be able to read and make changes to your public and private scenarios,
+              and also delete your scenarios.
       expiration_options:
         never: Never
         n_days: "%{n} days"
@@ -122,7 +158,7 @@ en:
             title: Application revoked
             message: The application no longer has access to your account.
     scopes:
-      "public": Read your public scenarios
+      "public": Read public scenarios
       "scenarios:read": Read your private scenarios
       "scenarios:write": Create new scenarios and change your public and private scenarios
       "scenarios:delete": Delete your public and private scenarios

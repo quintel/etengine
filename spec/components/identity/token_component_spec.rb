@@ -74,20 +74,15 @@ RSpec.describe Identity::TokenComponent, type: :component do
 
     it 'shows that the token may read public scenarios' do
       expect(rendered).to have_css(
-        '[data-testid="scope:public-own"]:not([aria-hidden="true"])',
-        text: 'View your public scenarios'
-      )
-
-      expect(rendered).to have_css(
-        '[data-testid="scope:public-others"]:not([aria-hidden="true"])',
-        text: 'View other people’s public scenarios'
+        '[data-testid="scope:public"]:not([aria-hidden="true"])',
+        text: 'Read public scenarios'
       )
     end
 
     it 'shows that the token may read private scenarios' do
       expect(rendered).to have_css(
         '[data-testid="scope:scenarios:read"]:not([aria-hidden="true"])',
-        text: 'View your private scenarios'
+        text: 'Read your private scenarios'
       )
     end
 

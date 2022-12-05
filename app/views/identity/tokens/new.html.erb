@@ -19,7 +19,7 @@
         <%= f.text_field :name, required: false, autofocus: true, autocomplete: 'name', class: "field" %>
 
         <p class="text-sm text-gray-500 mt-2">
-          A name will help you recognise this token in the future.
+          <%= t('.name_hint') %>
         </p>
 
         <%= render(FieldErrorsComponent.new(record: @token, attribute: :name)) %>
@@ -54,10 +54,9 @@
         <label class="flex mb-3">
           <%= f.radio_button :permissions, :public, class: 'mt-1 mr-3 w-4 h-4' %>
           <div class="flex-grow">
-            <span class="font-medium">Read public scenarios only</span>
+            <span class="font-medium"><%= t('.permissions.public.title') %></span>
             <p class="text-sm text-gray-500 mt-1">
-              This token will be able to read public scenarios created by you
-              and other people.
+              <%= t('.permissions.public.hint') %>
             </p>
           </div>
         </label>
@@ -65,10 +64,9 @@
         <label class="flex mb-3 last:mb-0">
           <%= f.radio_button :permissions, :read, class: 'mt-1 mr-3 w-4 h-4' %>
           <div class="flex-grow">
-            <span class="font-medium">Read public and private scenarios</span>
+            <span class="font-medium"><%= t('.permissions.read.title') %></span>
             <p class="text-sm text-gray-500 mt-1">
-              This token will be able to read your public and private
-              scenarios, but will not permit changes.
+              <%= t('.permissions.read.hint') %>
             </p>
           </div>
         </label>
@@ -76,10 +74,9 @@
         <label class="flex mb-3 last:mb-0">
           <%= f.radio_button :permissions, :write, class: 'mt-1 mr-3 w-4 h-4' %>
           <div class="flex-grow">
-            <span class="font-medium">Read and write public and private scenarios</span>
+            <span class="font-medium"><%= t('.permissions.write.title') %></span>
             <p class="text-sm text-gray-500 mt-1">
-              This token will be able to read and make changes to your public
-              and private scenarios, but will not be able to delete scenarios.
+              <%= t('.permissions.write.hint') %>
             </p>
           </div>
         </label>
@@ -87,10 +84,9 @@
         <label class="flex mb-3 last:mb-0">
           <%= f.radio_button :permissions, :delete, class: 'mt-1 mr-3 w-4 h-4' %>
           <div class="flex-grow">
-            <span class="font-medium">Read, write, and delete public and private scenarios</span>
+            <span class="font-medium"><%= t('.permissions.delete.title') %></span>
             <p class="text-sm text-gray-500 mt-1">
-              This token will be able to read and make changes to your public
-              and private scenarios, and also delete your scenarios.
+              <%= t('.permissions.delete.hint') %>
             </p>
           </div>
         </label>
