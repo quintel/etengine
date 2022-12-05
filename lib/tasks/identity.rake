@@ -20,4 +20,20 @@ namespace :identity do
       batch.delete_all
     end
   end
+
+  desc 'Notify users of soon-to-expire tokens'
+  task notify_expiring_tokens: :environment do
+    tokens = PersonalAccessToken
+      .joins(:oauth_access_token)
+      .where(<<~SQL.squish, { date: 3.days.from_now.beginning_of_day.utc })
+        oauth_access_tokens.expires_in IS NOT NULL AND
+          (DATE_ADD(oauth_access_tokens.created_at, INTERVAL oauth_access_tokens.expires_in SECOND) > :date AND
+            DATE_ADD(oauth_access_tokens.created_at, INTERVAL oauth_access_tokens.expires_in SECOND) < DATE_ADD(:date, INTERVAL 1 DAY))
+      SQL
+
+    tokens.find_each do |token|
+      puts "Expiring: #{token.inspect}"
+      Identity::TokenMailer.expiring_token(token).deliver_later
+    end
+  end
 end

@@ -88,6 +88,8 @@ en:
     token_mailer:
       created_token:
         subject: You created a new token
+      expiring_token:
+        subject: Your personal access token will expire soon
 
     tokens:
       empty_state:

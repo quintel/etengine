@@ -1,0 +1,14 @@
+You have an access token which will expire soon.
+
+Token name: <%= @token.name %>
+Expires at: <%= l(@access_token.expires_at, format: :long) %>
+
+Token permissions:
+
+<%= token_permissions(@access_token) %>
+
+Any applications using this token will stop working when the token expires.
+Please create a new token and provide to it to your application to ensure
+no interuption of service:
+
+<%= identity_tokens_url %>

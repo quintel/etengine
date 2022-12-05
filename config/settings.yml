@@ -36,4 +36,4 @@ standalone: false
 
 mailer:
   # E-mail address from which to send e-mails.
-  from: info@energytransitionmodel.com
+  from: "Energy Transition Model <info@energytransitionmodel.com>"
