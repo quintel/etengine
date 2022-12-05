@@ -7,7 +7,11 @@ class ApplicationController < ActionController::Base
   before_action :store_user_location!, if: :storable_location?
 
   rescue_from CanCan::AccessDenied do |_exception|
-    redirect_to new_user_session_url
+    if current_user
+      render_not_found
+    else
+      redirect_to new_user_session_url
+    end
   end
 
   def initialize_memory_cache
@@ -68,5 +72,35 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     stored_location_for(resource_or_scope) || super
+  end
+
+  # Internal: Renders a 404 page.
+  #
+  # thing - An optional noun, describing what thing could not be found. Leave
+  #         nil to say "the page cannot be found"
+  #
+  # For example
+  #   render_not_found('scenario') => 'the scenario cannot be found'
+  #
+  # Returns true.
+  def render_not_found(thing = nil)
+    content = Rails.root.join('public/404.html').read
+
+    unless thing.nil?
+      # Swap out the word "page" for something else, when appropriate.
+      document = Nokogiri::HTML.parse(content)
+      header = document.at_css('h1')
+      header.content = header.content.sub(/\bpage\b/, thing)
+
+      content = document.to_s
+    end
+
+    render(
+      html: content.html_safe,
+      status: :not_found,
+      layout: false
+    )
+
+    true
   end
 end
