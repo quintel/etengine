@@ -62,17 +62,11 @@
     <%= render(SelectLocale::ItemComponent.new(
       selected: I18n.locale == :en,
       href: url_for(params.permit!.merge(locale: 'en'))
-    )) do %>
-      <%= image_tag 'locales/en.png', width: 23, height: 17, class: 'flex-shrink-0 mr-1 -mt-px' %>
-      English
-    <% end %>
+    ).with_content('English')) %>
 
     <%= render(SelectLocale::ItemComponent.new(
       selected: I18n.locale == :nl,
       href: url_for(params.permit!.merge(locale: 'nl'))
-    )) do %>
-      <%= image_tag 'locales/nl.png', width: 23, height: 17, class: 'flex-shrink-0 mr-1 -mt-px' %>
-      Nederlands
-    <% end %>
+    ).with_content('Nederlands')) %>
   </div>
 </div>
