@@ -22,7 +22,11 @@ module ETEngine
         AppConfig.new(
           key: 'etmodel',
           name: 'ETModel (Local)',
-          redirect_uri: 'http://localhost:3000/auth/identity/callback',
+          redirect_uri: <<~URIS,
+            http://localhost:3000/auth/identity/callback
+            http://etmodel.test/auth/identity/callback
+            https://etmodel.test/auth/identity/callback
+          URIS
           config_path: 'config/settings/settings.local.yml',
           config_content: <<-YAML
             api_url: %<etengine_url>s
