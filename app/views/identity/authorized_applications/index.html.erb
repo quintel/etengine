@@ -1,8 +1,0 @@
-<%= content_for(:page_title, t('.title')) %>
-<% render partial: 'identity/sidebar' %>
-
-<%= render(Identity::PageHeaderComponent.new(title: t('.title'), message: t('.explanation'))) %>
-
-<%= render(Identity::EmptyStateComponent.new(title: "You have no authorised third-party applications")) do %>
-  <%= format_paragraphs(t('.empty_state.message')) %>
-<% end %>

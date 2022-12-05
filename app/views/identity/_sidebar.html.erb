@@ -14,7 +14,7 @@
   )) %>
 
   <%= render(Identity::SidebarItemComponent.new(
-    path: identity_authorized_applications_path,
+    path: oauth_authorized_applications_path,
     title: t('identity.authorized_applications.index.title'),
     explanation: t('identity.authorized_applications.index.explanation'),
     active: controller_name == 'authorized_applications'

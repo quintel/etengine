@@ -9,7 +9,7 @@
 <%= turbo_frame_tag 'new_personal_access_token' do %>
   <h3 class="text-xl font-semibold mb-8"><%= t('.title') %></h3>
 
-  <%= form_for(@token, url: identity_tokens_path, html: { method: :post }) do |f| %>
+  <%= form_for(@token, url: identity_tokens_path, html: { method: :post, name: 'token' }) do |f| %>
     <%= render(Identity::RowComponent.new(title: 'Token name')) do |row| %>
       <% row.title_contents do %>
         <%= f.label :name, class: 'block py-1.5' %>

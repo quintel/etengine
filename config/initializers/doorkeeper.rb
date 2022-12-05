@@ -441,7 +441,7 @@ Doorkeeper.configure do
   # For example if dealing with a trusted application.
   #
   skip_authorization do |_resource_owner, client|
-    client.first_party?
+    client.application.first_party?
   end
 
   # Configure custom constraints for the Token Introspection request.

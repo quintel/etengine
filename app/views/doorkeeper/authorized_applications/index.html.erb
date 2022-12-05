@@ -1,0 +1,27 @@
+<%= content_for(:page_title, t('identity.authorized_applications.index.title')) %>
+<% render partial: 'identity/sidebar' %>
+
+<%= render(Identity::PageHeaderComponent.new(
+  title: t('identity.authorized_applications.index.title'),
+  message: t('identity.authorized_applications.index.explanation')
+)) %>
+
+<% third_party = @applications.reject(&:first_party?) %>
+
+<% if third_party.any? %>
+  <% third_party.each do |application| %>
+    <%= turbo_frame_tag application do %>
+      <div class="flex items-center border-b pb-6 mb-6">
+        <div class="mr-auto text-base font-medium"><%= application.name %></div>
+        <%= button_to oauth_authorized_application_path(application), class: button_classes('text-sm text-red-600 hover:text-red-700 active:text-red-700'), method: :delete do %>
+          <%= inline_svg 'font-awesome/16/trash.svg', class: 'mr-1.5' %>
+          Revoke application
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= render(Identity::EmptyStateComponent.new(title: "You have no authorised third-party applications")) do %>
+    <%= format_paragraphs(t('identity.authorized_applications.index.empty_state.message')) %>
+  <% end %>
+<% end %>

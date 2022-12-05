@@ -46,6 +46,11 @@ module Etm
     # Store files locally.
     config.active_storage.service = :local
 
+    config.to_prepare do
+      Doorkeeper::AuthorizationsController.layout 'login'
+      Doorkeeper::AuthorizedApplicationsController.layout 'identity'
+    end
+
     # Mail
 
     if (email_conf = Rails.root.join('config/email.yml')).file?

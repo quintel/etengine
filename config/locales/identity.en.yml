@@ -100,3 +100,29 @@ en:
         one_year: One year
         never_message: This token will never expire!
         expires_at_message: This token will expire on %{date}.
+  doorkeeper:
+    authorizations:
+      buttons:
+        authorize: Authorise
+        deny: Deny
+      error:
+        title: An error has occurred
+      new:
+        title: Authorisation required
+        prompt: Authorise %{client_name} to use your account?
+        able_to: This application will be able to
+      show:
+        title: Authorisation code
+      form_post:
+        title: Submit this form
+    flash:
+      authorized_applications:
+        destroy:
+          notice:
+            title: Application revoked
+            message: The application no longer has access to your account.
+    scopes:
+      "public": Read your public scenarios
+      "scenarios:read": Read your private scenarios
+      "scenarios:write": Create new scenarios and change your public and private scenarios
+      "scenarios:delete": Delete your public and private scenarios
