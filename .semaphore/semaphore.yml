@@ -21,6 +21,7 @@ blocks:
             - bundle install
             - cache store
             - bundle exec rails db:setup
+            - bundle exec rails assets:precompile
             - bundle exec rspec
 promotions:
   - name: Deploy to staging
