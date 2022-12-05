@@ -22,6 +22,7 @@ en:
     # Pages
 
     authorized_application_component:
+      permissions: Permissions
       revoke_application: Revoke application
 
     authorized_applications:
@@ -158,7 +159,9 @@ en:
             title: Application revoked
             message: The application no longer has access to your account.
     scopes:
-      "public": Read public scenarios
+      public: Read public scenarios
+      email: See your e-mail address
+      profile: See your profile information
       "scenarios:read": Read your private scenarios
       "scenarios:write": Create new scenarios and change your public and private scenarios
       "scenarios:delete": Delete your public and private scenarios
