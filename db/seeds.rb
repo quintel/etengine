@@ -7,11 +7,10 @@ end
 password = SecureRandom.base58(8)
 
 User.create!(
-  name:                  'Admin',
-  email:                 "admin@example.org",
-  password:              password,
-  password_confirmation: password,
-  role:                  Role.create(id: 1, name: 'admin')
+  name:     'Admin',
+  email:    'admin@example.org',
+  password: password,
+  admin:    true
 )
 
 puts <<~MSG
