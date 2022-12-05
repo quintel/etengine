@@ -61,9 +61,10 @@ en:
         change_password: Change password
         explanation: Change your e-mail address, password, or account settings.
         name_explanation: This name will be shown on your public scenarios.
-        password_explanation: |
+        password_explanation_html: |
           Your password is used to sign in. Never give this to anyone else: if another application
-          needs to access data on your account, create a personal access token.
+          needs to access data on your account,
+          <a href="%{tokens_path}">create a personal access token</a>.
         profile: Profile
         title: Your profile
 

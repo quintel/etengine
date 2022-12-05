@@ -15,7 +15,7 @@
   <span class="tracking-wider">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
   <% row.message do %>
     <p>
-      <%= t('.password_explanation') %>
+      <%= t('.password_explanation_html', tokens_path: identity_tokens_path) %>
     </p>
   <% end %>
 
