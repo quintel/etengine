@@ -22,6 +22,8 @@ module ETEngine
         AppConfig.new(
           key: 'etmodel',
           name: 'ETModel (Local)',
+          scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+          uri: 'http://localhost:3000',
           redirect_uri: <<~URIS,
             http://localhost:3000/auth/identity/callback
             http://etmodel.test/auth/identity/callback
@@ -42,6 +44,8 @@ module ETEngine
         AppConfig.new(
           key: 'transition_paths',
           name: 'Transition Paths (Local)',
+          scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+          uri: 'http://localhost:3005',
           config_path: '.env.local',
           config_content: <<-ENV,
             # Protocol and host for ETEngine. No trailing slash please.

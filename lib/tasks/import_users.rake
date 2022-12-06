@@ -50,8 +50,17 @@ task import_users: :environment do
     )
   end
 
-  dev_user.oauth_applications.create!(name: 'ETModel', scopes: 'public', first_party: true)
-  dev_user.oauth_applications.create!(name: 'Transition Paths', scopes: 'public', first_party: true)
+  dev_user.oauth_applications.create!(
+    name: 'ETModel',
+    scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+    first_party: true
+  )
+
+  dev_user.oauth_applications.create!(
+    name: 'Transition Paths',
+    scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+    first_party: true
+  )
 
   # Create OAuth clients for each staff member.
   admins.each do |email|

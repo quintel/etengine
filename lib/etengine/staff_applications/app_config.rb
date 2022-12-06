@@ -6,6 +6,7 @@ module ETEngine
     class AppConfig < Dry::Struct
       attribute  :key,             Dry::Types['strict.string']
       attribute  :name,            Dry::Types['strict.string']
+      attribute  :uri,             Dry::Types['strict.string']
       attribute? :redirect_uri,    Dry::Types['strict.string']
       attribute  :confidential,    Dry::Types['strict.bool'].default(true)
       attribute  :scopes,          Dry::Types['strict.string'].default('public')
@@ -17,7 +18,7 @@ module ETEngine
 
       # Creates an attribute hash for the OAuth application.
       def to_model_attributes
-        { name:, redirect_uri:, confidential:, scopes: }
+        { name:, uri:, redirect_uri:, confidential:, scopes: }
       end
     end
   end
