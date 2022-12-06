@@ -33,6 +33,8 @@ module Users
 
     # Migrate a user to the new password hashing scheme.
     def migrate_legacy_password(resource, password)
+      resource.skip_password_change_notification!
+
       resource.update_with_password(
         password:,
         legacy_password_salt: nil,
