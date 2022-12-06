@@ -1,0 +1,7 @@
+<h1 class="font-semibold mb-4 text-2xl mr-auto -mt-4 text-center">
+  <%= t('doorkeeper.authorizations.error.title') %>
+</h1>
+
+<main role="main">
+  <p class="text-center"><%= @pre_auth.error_response.body[:error_description] %></p>
+</main>
