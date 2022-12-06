@@ -34,6 +34,7 @@ gem 'kaminari'
 # Authentication and authorization
 gem 'devise', '~> 4.7'
 gem 'doorkeeper'
+gem 'doorkeeper-openid_connect'
 gem 'cancancan', '~> 3.0'
 
 # Auth front-end

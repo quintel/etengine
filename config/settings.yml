@@ -37,3 +37,6 @@ standalone: false
 mailer:
   # E-mail address from which to send e-mails.
   from: "Energy Transition Model <info@energytransitionmodel.com>"
+
+auth:
+  issuer: <%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3000') %>

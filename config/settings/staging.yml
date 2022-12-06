@@ -3,4 +3,4 @@ etsource_export: tmp/etsource
 etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>
 
 auth:
-  issuer: https://engine.energytransitionmodel.com
+  issuer: https://beta.engine.energytransitionmodel.com
