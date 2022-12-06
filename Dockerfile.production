@@ -31,6 +31,6 @@ RUN bundle install --jobs=4 --retry=3 --without="development test"
 
 COPY . /app/
 
-RUN RAILS_ENV=production bundle exec rails assets:precompile
+RUN RAILS_ENV=production CI=true bundle exec rails assets:precompile
 
 CMD [".docker/entrypoint.sh"]
