@@ -19,8 +19,11 @@ module ETEngine
 
       key = OpenSSL::PKey::RSA.new(2048).to_pem
 
-      key_path.write(key)
-      key_path.chmod(0o600)
+      unless ENV['CI']
+        key_path.write(key)
+        key_path.chmod(0o600)
+      end
+
       key
     end
   end
