@@ -12,7 +12,7 @@ module ETEngine
 
       return key_path.read if key_path.exist?
 
-      unless Rails.env.test? || Rails.env.development?
+      unless Rails.env.test? || Rails.env.development? || ENV['CI']
         raise 'No signing key is present. Please set the OPENID_SIGNING_KEY environment ' \
               'variable or add the key to tmp/openid.key.'
       end
