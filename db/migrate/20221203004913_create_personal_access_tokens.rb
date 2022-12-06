@@ -7,8 +7,7 @@ class CreatePersonalAccessTokens < ActiveRecord::Migration[7.0]
       t.datetime :last_used_at
     end
 
-    change_table :oauth_access_tokens do |t|
-      t.references :application, null: true, after: :resource_owner_id
-    end
+    change_column :oauth_access_tokens, :application_id, :bigint,
+      null: true, after: :resource_owner_id
   end
 end
