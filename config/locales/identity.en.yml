@@ -130,7 +130,7 @@ en:
               but will not be able to delete scenarios.
           delete:
             title: Read, write, and delete public and private scenarios
-            message: |
+            hint: |
               This token will be able to read and make changes to your public and private scenarios,
               and also delete your scenarios.
       expiration_options:
