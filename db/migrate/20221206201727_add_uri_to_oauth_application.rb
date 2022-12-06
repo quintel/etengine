@@ -5,7 +5,7 @@ class AddUriToOAuthApplication < ActiveRecord::Migration[7.0]
     OAuthApplication.find_each do |app|
       next unless app.redirect_uri.present?
 
-      uri = URI.parse(app.redirect_uri)
+      uri = URI.parse(app.redirect_uri.split(/\s/).first)
       uri.path = ''
 
       app.update(uri: uri.to_s)
