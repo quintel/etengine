@@ -18,10 +18,10 @@ module Users
     def destroy
       super do
         # TODO: Add logout_urls to the application and validate that the URL is permitted.
-        if params[:return_to].present?
+        if params[:client_id].present? && (app = OAuthApplication.find_by(uid: params[:client_id]))
           # Don't set a flash when redirecting back to a client application.
           flash.delete(:notice) if is_flashing_format?
-          return redirect_to(params[:return_to], allow_other_host: true)
+          return redirect_to(app.uri, allow_other_host: true)
         end
 
         # Turbo requires redirects be :see_other (303); so override Devise default (302)

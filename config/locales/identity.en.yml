@@ -24,6 +24,7 @@ en:
     authorized_application_component:
       permissions: Permissions
       revoke_application: Revoke application
+      visit_website: Visit website
 
     authorized_applications:
       index:

@@ -18,6 +18,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym 'DSL'
   inflect.acronym 'ETEngine'
   inflect.acronym 'HHP' # Hybrid heat pump
+  inflect.acronym 'OAuth'
   inflect.irregular 'serie', 'series'
   inflect.irregular 'curve', 'curves'
 end

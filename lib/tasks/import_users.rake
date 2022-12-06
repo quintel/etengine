@@ -11,7 +11,7 @@ task import_users: :environment do
   def maybe(value) = value.presence == 'NULL' ? nil : value
 
   StaffApplication.delete_all
-  Doorkeeper::Application.destroy_all
+  OAuthApplication.destroy_all
   User.delete_all
 
   User.connection.execute("ALTER TABLE #{StaffApplication.table_name} AUTO_INCREMENT = 1;")

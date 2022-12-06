@@ -20,7 +20,7 @@ class User < ApplicationRecord
     dependent: :delete_all
 
   has_many :oauth_applications,
-    class_name: 'Doorkeeper::Application',
+    class_name: 'OAuthApplication',
     dependent: :delete_all,
     as: :owner
 
