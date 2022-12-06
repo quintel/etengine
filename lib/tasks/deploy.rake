@@ -59,7 +59,7 @@ namespace :deploy do
     etsource_lazy_load_dataset option is set to false).
   DESC
   task calculate_datasets: :environment do
-    if APP_CONFIG[:etsource_lazy_load_dataset]
+    if Settings.etsource_lazy_load_dataset
       abort(<<-MESSAGE.strip_heredoc)
         Cannot calculate datasets when etsource_lazy_load_dataset is "true".
 
