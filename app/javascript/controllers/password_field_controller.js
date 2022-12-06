@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["input", "showButton", "hideButton"];
 
   connect() {
-    console.log("hello");
     this.element.classList.remove("hidden");
   }
 
