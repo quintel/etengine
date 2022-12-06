@@ -25,7 +25,10 @@ module Users
         end
 
         # Turbo requires redirects be :see_other (303); so override Devise default (302)
-        return redirect_to(after_sign_out_path_for(resource_name), status: :see_other)
+        return redirect_to(
+          after_sign_out_path_for(resource_name),
+          status: :see_other, allow_other_host: true
+        )
       end
     end
 
@@ -42,6 +45,10 @@ module Users
       )
 
       bypass_sign_in(resource)
+    end
+
+    def after_sign_out_path_for(...)
+      Settings.auth.default_sign_out_url.presence || super
     end
   end
 end

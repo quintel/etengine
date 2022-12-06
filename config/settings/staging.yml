@@ -4,3 +4,4 @@ etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>
 
 auth:
   issuer: https://beta.engine.energytransitionmodel.com
+  default_sign_out_url: https://beta.energytransitionmodel.com
