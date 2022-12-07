@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   use_doorkeeper
   use_doorkeeper_openid_connect
 
-  devise_for :users, path: 'identity', controllers: {
+  devise_for :users, path: 'identity', sign_out_via: %i[get post delete], controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
@@ -21,8 +21,6 @@ Rails.application.routes.draw do
 
     get 'change_password', to: 'settings#edit_password', as: :edit_password
     post 'change_password', to: 'settings#update_password'
-
-    get '/logout', to: 'sessions#destroy'
 
     resources :tokens, only: [:index, :new, :create, :destroy], as: :tokens
     resources :authorized_applications, only: [:index], as: :authorized_applications
