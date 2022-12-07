@@ -24,7 +24,7 @@
   <% end %>
 
   <div class="flex items-center gap-2 mt-6">
-    <%= form_tag oauth_authorization_path, method: :post, class: 'w-2/3' do |f| %>
+    <%= form_tag oauth_authorization_path, method: :post, class: 'w-2/3', data: { turbo: false } do |f| %>
       <%= hidden_field_tag :client_id, @pre_auth.client.uid, id: nil %>
       <%= hidden_field_tag :redirect_uri, @pre_auth.redirect_uri, id: nil %>
       <%= hidden_field_tag :state, @pre_auth.state, id: nil %>
@@ -35,7 +35,7 @@
       <%= hidden_field_tag :code_challenge_method, @pre_auth.code_challenge_method, id: nil %>
       <%= submit_tag t('doorkeeper.authorizations.buttons.authorize'), class: button_classes('group text-base w-full justify-center', color: :success, size: :lg) %>
     <% end %>
-    <%= form_tag oauth_authorization_path, method: :delete, class: 'w-1/3' do %>
+    <%= form_tag oauth_authorization_path, method: :delete, class: 'w-1/3', data: { turbo: false } do %>
       <%= hidden_field_tag :client_id, @pre_auth.client.uid, id: nil %>
       <%= hidden_field_tag :redirect_uri, @pre_auth.redirect_uri, id: nil %>
       <%= hidden_field_tag :state, @pre_auth.state, id: nil %>
