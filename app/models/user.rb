@@ -42,4 +42,8 @@ class User < ApplicationRecord
 
     false
   end
+
+  def roles
+    admin? ? %w[user admin] : %w[user]
+  end
 end
