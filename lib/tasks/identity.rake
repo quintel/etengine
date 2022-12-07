@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 namespace :identity do
+  task scheduled: %i[trim_tokens notify_expiring_tokens]
+
   desc 'Clear our revoked and expired tokens'
   task trim_tokens: :environment do
     delete_before = (ENV['DOORKEEPER_DAYS_TRIM_THRESHOLD'] || 30).to_i.days.ago
