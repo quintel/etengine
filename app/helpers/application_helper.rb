@@ -93,4 +93,8 @@ module ApplicationHelper
     text.split("\n\n").map { |content| content_tag(:p, sanitize(content)) }.join.html_safe
     # rubocop:enable Rails/OutputSafety
   end
+
+  def identity_back_to_etm_url
+    session[:back_to_etm_url] || 'https://energytransitionmodel.com'
+  end
 end
