@@ -69,6 +69,15 @@ module Api
         )
       end
 
+      # Downloads the load on each participant in the agriculture heat merit order as a CSV.
+      #
+      # GET /api/v3/scenarios/:scenario_id/curves/agriculture_heat.csv
+      def agriculture_heat
+        render_serializer MeritCSVSerializer.new(
+          @scenario.gql.future_graph, :steam_hot_water, :agriculture_heat
+        )
+      end
+
       # Downloads the supply and demand of heat in households, including deficits and surpluses due
       # to buffering and time-shifting.
       #
