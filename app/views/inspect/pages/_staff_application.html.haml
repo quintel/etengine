@@ -10,17 +10,20 @@
     .info
       .app-config
         .path= staff_application.config_path
+        .config-content
+          .blocker{ onclick: "this.style.display = 'none'" }
+            %span.button Click to view config
+          - if staff_application.config_prologue
+            %pre.faded
+              = format_staff_config(staff_application.config_prologue, oauth_app)
 
-        - if staff_application.config_prologue
-          %pre.faded
-            = format_staff_config(staff_application.config_prologue, oauth_app)
+          %pre
+            = format_staff_config(staff_application.config_content, oauth_app)
 
-        %pre
-          = format_staff_config(staff_application.config_content, oauth_app)
+          - if staff_application.config_epilogue
+            %pre.faded
+              = format_staff_config(staff_application.config_epilogue, oauth_app)
 
-        - if staff_application.config_epilogue
-          %pre.faded
-            = format_staff_config(staff_application.config_epilogue, oauth_app)
       .attributes
         %dl
           %dt Run command&hellip;
