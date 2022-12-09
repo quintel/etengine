@@ -95,6 +95,7 @@ class Node
     hydrogen
     merit_order
     network_gas
+    agriculture_heat
     preset_demand
     storage
     waste_outputs

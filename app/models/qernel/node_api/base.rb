@@ -58,6 +58,7 @@ module Qernel
         hydrogen
         merit_order
         network_gas
+        agriculture_heat
         preset_demand
         storage
       ]
