@@ -36,6 +36,7 @@ gem 'devise', '~> 4.7'
 gem 'doorkeeper'
 gem 'doorkeeper-openid_connect'
 gem 'cancancan', '~> 3.0'
+gem 'sidekiq'
 
 # Auth front-end
 gem 'dry-initializer'

@@ -168,6 +168,7 @@ GEM
     config (4.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
+    connection_pool (2.3.0)
     crass (1.0.6)
     csv (3.2.2)
     dalli (3.2.3)
@@ -406,6 +407,8 @@ GEM
     rb-fsevent (0.11.1)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    redis-client (0.11.2)
+      connection_pool
     regexp_parser (2.3.0)
     responders (3.0.1)
       actionpack (>= 5.0)
@@ -467,6 +470,11 @@ GEM
       faraday (>= 1.0)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
+    sidekiq (7.0.2)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.11.0)
     simple_form (5.1.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
@@ -607,6 +615,7 @@ DEPENDENCIES
   selenium-webdriver
   sentry-raven
   shoulda-matchers
+  sidekiq
   simple_form
   simplecov (~> 0.7.1)
   sprockets-rails
