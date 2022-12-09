@@ -87,11 +87,11 @@
     - unless Settings.standalone
       = render "layouts/ga" if Rails.env.production?
 
-:javascript
-  $('[rel=tooltip]').tooltip();
-  $('.typeahead').typeahead({
-    source: #{search_keys_json.html_safe},
-    items: 15,
-    matcher: function(item) { return item.match(new RegExp(this.query.replace(/_/g, '._').replace(/\./g, '.*'))) != null }
-  }).change( function() { this.form.submit(); });
+    :javascript
+      $('[rel=tooltip]').tooltip();
+      $('.typeahead').typeahead({
+        source: #{search_keys_json.html_safe},
+        items: 15,
+        matcher: function(item) { return item.match(new RegExp(this.query.replace(/_/g, '._').replace(/\./g, '.*'))) != null }
+      }).change( function() { this.form.submit(); });
 

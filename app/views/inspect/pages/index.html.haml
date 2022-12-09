@@ -2,10 +2,6 @@
 
 = button_to "Clear Cache", inspect_clear_cache_path(api_scenario_id: params[:api_scenario_id]), :confirm =>"Are you sure?", :class => 'btn', method: :post
 
-%p
-  = link_to 'GQL Log', inspect_gql_log_path
-  = link_to 'GQL Warnings', inspect_gql_warnings_path
-
 %h3 System
 
 %table.table.table-condensed
@@ -18,15 +14,6 @@
     %td Ruby Version
     %td== #{ RUBY_VERSION}-p#{ RUBY_PATCHLEVEL }
 
-  - if @cache_stats.any?
-    - @cache_stats.each_pair do |store, info|
-      %tr
-        %th{:colspan => 2} Memcache: #{store}
-      - info.each_pair do |k,v|
-        %tr
-          %td= k
-          %td= v
-  - else
-    %tr
-      %th{:colspan => 2}
-        == Memcache: disabled in the #{ Rails.env } environment
+%h3{ style: 'border-top: 1px solid #ddd; margin: 2rem 0 1rem; padding: 1rem 0 0;' } Your applications
+
+= render partial: 'staff_application', collection: ETEngine::StaffApplications.all

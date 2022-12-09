@@ -1,0 +1,50 @@
+- user_app = current_user.staff_applications.find_by(name: staff_application.key)
+
+%div.staff-application{ id: "staff_application_#{staff_application.key}" }
+  - if user_app
+    - oauth_app = user_app.application
+
+    .title
+      %h4= link_to(staff_application.name, oauth_app.uri)
+
+    .info
+      .app-config
+        .path= staff_application.config_path
+
+        - if staff_application.config_prologue
+          %pre.faded
+            = format_staff_config(staff_application.config_prologue, oauth_app)
+
+        %pre
+          = format_staff_config(staff_application.config_content, oauth_app)
+
+        - if staff_application.config_epilogue
+          %pre.faded
+            = format_staff_config(staff_application.config_epilogue, oauth_app)
+      .attributes
+        %dl
+          %dt Run command&hellip;
+          %dd
+            %code= format_staff_run_command(staff_application.run_command, oauth_app)
+          %dt
+            = label_tag "staff_application_#{staff_application.key}_uri", 'Hosted at'
+          %dd
+            = form_tag inspect_staff_application_path(staff_application.key), method: :put do
+              = text_field_tag :uri, oauth_app.uri, style: 'margin: 0', id: "staff_application_#{staff_application.key}_uri"
+              %button.btn{ type: 'submit' } Change
+
+            %p.host-help
+              If you run the application at a different address, you must set the correct address
+              here for authentication to work correctly.
+  - else
+    .title
+      %h4= staff_application.name
+
+    %p
+      This application is not configured. Set the location where you run the app.
+      You can change this later.
+
+    = form_tag inspect_staff_application_path(staff_application.key), method: :put do
+      = label_tag "staff_application_#{staff_application.key}_uri", 'Hosted at'
+      = text_field_tag :uri, staff_application.uri, style: 'margin: 0', id: "staff_application_#{staff_application.key}_uri"
+      %button.btn{ type: 'submit' } Create application

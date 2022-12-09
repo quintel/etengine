@@ -16,11 +16,8 @@ class UsersController < ApplicationController
   def update
     @user.attributes = user_attributes
 
-    if current_user && current_user.admin?
-      @user.role_id = params[:user][:role_id]
-    end
-
     if @user.save
+      @user.staff_applications.destroy_all unless @user.admin?
       redirect_to users_path, notice: 'User updated'
     else
       render :edit
@@ -48,6 +45,6 @@ class UsersController < ApplicationController
   end
 
   def user_attributes
-    params.require(:user).permit(:email, :name, :password, :admin)
+    params.require(:user).permit(:email, :name, :admin)
   end
 end

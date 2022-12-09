@@ -1,0 +1,99 @@
+ .staff-application {
+  margin-bottom: 1.5rem;
+}
+
+.staff-application .title a {
+  color: inherit;
+}
+
+.staff-application .title {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.staff-application .info {
+  display: flex;
+  gap: 1.5rem
+}
+
+.staff-application .info .app-config, .staff-application .info .attributes {
+  width: 60%;
+  line-height: 1.5;
+}
+
+.staff-application .info .attributes {
+  width: 40%;
+}
+
+.staff-application .attributes dt {
+  margin-bottom:0.5rem;
+}
+
+.staff-application .attributes dd {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.app-config {
+  background: #eee;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 1.5rem 1.5rem 1px;
+}
+
+.app-config .path {
+  background: white;
+  border-bottom: 1px solid #ccc;
+  border-radius: 6px 6px 0 0;
+  font-weight: bold;
+  margin: -1.5rem -1.5rem 1.5rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.staff-application .path, .staff-application pre, .staff-application code {
+  font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.app-config pre {
+  background: none;
+  border: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.app-config .faded {
+  color: #aaa;
+}
+
+.app-config pre:first-child + pre {
+  margin-bottom: 1rem;
+}
+
+.app-config pre + pre:last-child {
+  margin-top: 1rem;
+}
+
+.staff-application code {
+  background: none;
+  border: none;
+  color: black;
+  padding: 0;
+}
+
+.staff-application label {
+  font-weight: bold;
+}
+
+.staff-application input[type="text"] {
+  width: 250px;
+}
+
+.staff-application .host-help {
+  color: #888;
+  margin-top: -0.5rem;
+  width: 400px;
+}

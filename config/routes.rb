@@ -123,6 +123,9 @@ Rails.application.routes.draw do
     get '/'             => 'pages#start_inspect'
     get  '/redirect'    => "base#redirect", :as => 'redirect'
 
+    # Updating a staff application
+    put '/staff_application/:id' => 'staff_applications#update', as: :staff_application
+
     get 'search.js' => 'search#index', as: :search_autocomplete
 
     scope '/:api_scenario_id' do

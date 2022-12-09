@@ -97,4 +97,15 @@ module ApplicationHelper
   def identity_back_to_etm_url
     session[:back_to_etm_url] || 'https://energytransitionmodel.com'
   end
+
+  # Formats a staff config excerpt for the given application.
+  def format_staff_config(config, app)
+    format(config, app.attributes.symbolize_keys.merge(
+      etengine_url: root_url,
+    ))
+  end
+
+  def format_staff_run_command(command, app)
+    format(command, port: app.uri ? URI.parse(app.uri).port : nil)
+  end
 end
