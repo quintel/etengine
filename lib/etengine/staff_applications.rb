@@ -26,7 +26,7 @@ module ETEngine
           uri: 'http://localhost:3001',
           redirect_path: '/auth/identity/callback',
           run_command: 'bundle exec rails server -p %<port>s',
-          config_path: 'config/settings/settings.local.yml',
+          config_path: 'config/settings.local.yml',
           config_content: <<~YAML,
             api_url: %<etengine_url>s
 
