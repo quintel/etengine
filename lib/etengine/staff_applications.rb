@@ -30,7 +30,7 @@ module ETEngine
           config_content: <<~YAML,
             api_url: %<etengine_url>s
 
-            auth:
+            identity:
               client_id: %<uid>s
               client_secret: %<secret>s
               client_uri: %<uri>s
