@@ -281,6 +281,7 @@ GEM
       bindata
       faraday (~> 2.0)
       faraday-follow_redirects
+    jwt (2.5.0)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.2)
@@ -570,6 +571,7 @@ DEPENDENCIES
   dry-struct
   erb-formatter
   factory_bot_rails
+  faraday
   fever!
   fnv
   gctools
@@ -582,6 +584,7 @@ DEPENDENCIES
   inline_svg
   jquery-rails (~> 4.0)
   json
+  jwt
   kaminari
   letter_opener
   listen

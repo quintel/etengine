@@ -32,10 +32,12 @@ gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
 
 # Authentication and authorization
+gem 'cancancan', '~> 3.0'
 gem 'devise', '~> 4.7'
 gem 'doorkeeper'
 gem 'doorkeeper-openid_connect'
-gem 'cancancan', '~> 3.0'
+gem 'faraday'
+gem 'jwt'
 gem 'sidekiq'
 
 # Auth front-end

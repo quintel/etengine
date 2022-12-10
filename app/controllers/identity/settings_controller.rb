@@ -19,6 +19,8 @@ module Identity
           title: 'Name changed',
           message: 'The name of your account was successfully updated.'
         })
+
+        SyncUserJob.perform_later(@user.id)
       else
         render(:edit_name, status: :unprocessable_entity)
       end

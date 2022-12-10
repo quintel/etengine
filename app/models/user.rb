@@ -46,4 +46,8 @@ class User < ApplicationRecord
   def roles
     admin? ? %w[user admin] : %w[user]
   end
+
+  def as_json(options = {})
+    super(options.merge(except: Array(options[:except]) + [:legacy_password_salt]))
+  end
 end

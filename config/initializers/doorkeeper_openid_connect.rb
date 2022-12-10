@@ -7,7 +7,7 @@ Doorkeeper::OpenidConnect.configure do
     Settings.auth.issuer
   end
 
-  signing_key ETEngine::Auth.openid_signing_key
+  signing_key ETEngine::Auth.signing_key_content
 
   subject_types_supported [:public]
 
