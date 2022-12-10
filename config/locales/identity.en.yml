@@ -72,6 +72,18 @@ en:
           <a href="%{tokens_path}">create a personal access token</a>.
         profile: Profile
         title: Your profile
+      update_email:
+        success:
+          title: E-mail changed
+          message: Please check your inbox to confirm the change of e-mail address.
+      update_name:
+        success:
+          title: Name changed
+          message: The name of your account was successfully updated.
+      update_password:
+        success:
+          title: Password changed
+          message: Your password was successfully updated.
 
     token_component:
       copied: Copied!
@@ -140,6 +152,7 @@ en:
         one_year: One year
         never_message: This token will never expire!
         expires_at_message: This token will expire on %{date}.
+
   doorkeeper:
     authorizations:
       buttons:
