@@ -14,14 +14,14 @@ module ETEngine
 
       return key_path.read if key_path.exist?
 
-      unless Rails.env.test? || Rails.env.development? || ENV['CI']
+      unless Rails.env.test? || Rails.env.development? || ENV['DOCKER_BUILD']
         raise 'No signing key is present. Please set the OPENID_SIGNING_KEY environment ' \
               'variable or add the key to tmp/openid.key.'
       end
 
       key = OpenSSL::PKey::RSA.new(2048).to_pem
 
-      unless ENV['CI']
+      unless ENV['DOCKER_BUILD']
         key_path.write(key)
         key_path.chmod(0o600)
       end
