@@ -95,7 +95,7 @@ module ApplicationHelper
   end
 
   def identity_back_to_etm_url
-    session[:back_to_etm_url] || 'https://energytransitionmodel.com'
+    session[:back_to_etm_url] || Settings.etmodel_uri || 'https://energytransitionmodel.com'
   end
 
   # Formats a staff config excerpt for the given application.
