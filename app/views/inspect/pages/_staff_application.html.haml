@@ -8,16 +8,22 @@
       %h4= link_to(staff_application.name, oauth_app.uri)
 
     .info
-      .app-config
+      .app-config{ data: { controller: 'clipboard' } }
         .path= staff_application.config_path
         .config-content
           .blocker{ onclick: "this.style.display = 'none'" }
             %span.button Click to view config
+          %button.copy{ data: { action: 'clipboard#copy', clipboard_target: 'button' }, aria: { label: 'Copy' } }
+            = inline_svg 'hero/20/duplicate.svg'
+            Copy
+          .copied.hidden{ data: { clipboard_target: 'notice' } }
+            = inline_svg 'hero/20/circle-check.svg'
+            Copied
           - if staff_application.config_prologue
             %pre.faded
               = format_staff_config(staff_application.config_prologue, oauth_app)
 
-          %pre
+          %pre{ data: { clipboard_target: 'source' } }
             = format_staff_config(staff_application.config_content, oauth_app)
 
           - if staff_application.config_epilogue
@@ -27,8 +33,15 @@
       .attributes
         %dl
           %dt Run command&hellip;
-          %dd
-            %code= format_staff_run_command(staff_application.run_command, oauth_app)
+          %dd{ data: { controller: 'clipboard' }, style: 'display: flex; align-items: center; gap: 0.25rem' }
+            %code{ data: { clipboard_target: 'source' } }= format_staff_run_command(staff_application.run_command, oauth_app)
+            .command-copy
+              %button.copy{ data: { action: 'clipboard#copy', clipboard_target: 'button' }, aria: { label: 'Copy' } }
+                = inline_svg 'hero/20/duplicate.svg'
+                Copy
+              .copied{ data: { clipboard_target: 'notice' }, class: 'hidden' }
+                = inline_svg 'hero/20/circle-check.svg'
+                Copied!
           %dt
             = label_tag "staff_application_#{staff_application.key}_uri", 'Hosted at'
           %dd
