@@ -12,6 +12,8 @@ describe ScenarioSerializer do
     it { is_expected.to include(template:    scenario.preset_scenario_id) }
     it { is_expected.to include(source:      scenario.source) }
     it { is_expected.to include(created_at:  scenario.created_at) }
+    it { is_expected.to include(user_values: scenario.user_values) }
+    it { is_expected.to include(metadata: {}) }
 
     it { is_expected.to include(url: 'url') }
 
@@ -23,37 +25,14 @@ describe ScenarioSerializer do
     end
   end
 
-  context 'when "detailed=false", "include_inputs=false"' do
-    subject do
-      described_class.new(controller, scenario, detailed: false, include_inputs: false).as_json
-    end
-
-    it_should_behave_like 'a scenario serializer'
-
-    it { is_expected.not_to have_key(:user_values) }
-    it { is_expected.not_to have_key(:inputs) }
-  end
-
-  context 'when detailed="false", include_inputs="false"' do
+  context 'when include_inputs="false"' do
     subject do
       described_class.new(controller, scenario, detailed: 'false', include_inputs: 'false').as_json
     end
 
     it_should_behave_like 'a scenario serializer'
 
-    it { is_expected.not_to have_key(:user_values) }
     it { is_expected.not_to have_key(:inputs) }
-  end
-
-  context 'when "detailed=true"' do
-    subject do
-      described_class.new(controller, scenario, detailed: true).as_json
-    end
-
-    it_should_behave_like 'a scenario serializer'
-
-    it { is_expected.to have_key(:user_values) }
-    it { is_expected.to include(metadata: {}) }
   end
 
   context 'when "include_inputs=true"' do
@@ -69,21 +48,19 @@ describe ScenarioSerializer do
     end
   end
 
-  context 'with a mutable scenario' do
+  context 'with a private scenario' do
     subject { described_class.new(controller, scenario).as_json }
 
-    before { scenario.update!(api_read_only: false) }
+    before { scenario.private = true }
 
-    it { is_expected.to include(read_only: false) }
-    it { is_expected.to include(protected: false) }
+    it { is_expected.to include(private: true) }
   end
 
-  context 'with a read-only scenario' do
+  context 'with a public scenario' do
     subject { described_class.new(controller, scenario).as_json }
 
-    before { scenario.update!(api_read_only: true) }
+    before { scenario.private = false }
 
-    it { is_expected.to include(read_only: true) }
-    it { is_expected.to include(protected: true) }
+    it { is_expected.to include(private: false) }
   end
 end

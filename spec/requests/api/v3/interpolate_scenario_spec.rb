@@ -22,13 +22,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     before { source }
 
-    it 'saves the scenario' do
-      expect { send_data }.to change(Scenario, :count).by(1)
-    end
-
     it 'returns 200 OK' do
       send_data
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
+    end
+
+    it 'saves the scenario' do
+      expect { send_data }.to change(Scenario, :count).by(1)
     end
 
     it 'sends the scenario ID' do
@@ -41,30 +41,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets the end year' do
       expect(response_data).to include('end_year' => 2040)
-    end
-
-    it 'does not mark the scenario as read-only' do
-      send_data
-      expect(Scenario.find(response_data['id'])).not_to be_api_read_only
-    end
-  end
-
-  context 'with valid parameters and read_only=true' do
-    let(:send_data) do
-      post "/api/v3/scenarios/#{source.id}/interpolate",
-        params: { end_year: 2040, read_only: true }
-    end
-
-    before { source }
-
-    it 'marks the scenario as read-only' do
-      send_data
-      expect(Scenario.find(response_data['id'])).to be_api_read_only
-    end
-
-    it 'marks the scenario as kept compatible' do
-      send_data
-      expect(Scenario.find(response_data['id'])).to be_keep_compatible
     end
   end
 
@@ -100,6 +76,81 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(response_data).to include('errors' => [
         'Interpolated scenario must have an end year'
       ])
+    end
+  end
+
+  context 'with a self-owned private scenario' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040 },
+        headers: access_token_header(user, :write)
+    end
+
+    let(:user) { create(:user) }
+
+    before { source.update!(user:, private: true) }
+
+    it 'returns 200 OK' do
+      send_data
+      expect(response.status).to eq(200)
+    end
+
+    it 'saves the scenario' do
+      expect { send_data }.to change(Scenario, :count).by(1)
+    end
+
+    it 'sets the new scenario to private' do
+      expect(response_data).to include('private' => true)
+    end
+
+    it 'sets the scenario owner' do
+      expect(response_data['user']['id']).to eq(user.id)
+    end
+  end
+
+  context 'with an other-owned public scenario' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040 },
+        headers: access_token_header(user, :write)
+    end
+
+    let(:user) { create(:user) }
+
+    before { source.update!(user: create(:user)) }
+
+    it 'returns 200 OK' do
+      send_data
+      expect(response.status).to eq(200)
+    end
+
+    it 'saves the scenario' do
+      expect { send_data }.to change(Scenario, :count).by(1)
+    end
+
+    it 'sets the new scenario to public' do
+      expect(response_data).to include('private' => false)
+    end
+
+    it 'sets the scenario owner' do
+      expect(response_data['user']['id']).to eq(user.id)
+    end
+  end
+
+  context 'with an other-owned private scenario' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040 },
+        headers: access_token_header(user, :write)
+    end
+
+    let(:user) { create(:user) }
+
+    before { source.update!(private: true, user: create(:user)) }
+
+    it 'returns 404 Not Found' do
+      send_data
+      expect(response).to be_not_found
     end
   end
 end

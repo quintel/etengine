@@ -32,6 +32,11 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
       })
     end
 
+    it 'is successful' do
+      request
+      expect(response.status).to eq(200)
+    end
+
     it 'creates a new scenario' do
       expect { request }.to change { Scenario.count }.by(1)
 
@@ -79,6 +84,24 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
     it 'returns an error response code'
     it 'includes a message about the missing scenario'
   end # with two scenarios one of which doesn't exist
+
+  context 'with two scenarios, one of which is private' do
+    let(:request) do
+      post('/api/v3/scenarios/merge', params: {
+        scenarios: [
+          { scenario_id: scenario_one.id, weight: 3.0 },
+          { scenario_id: scenario_two.id, weight: 1.0 }
+        ]
+      })
+    end
+
+    before { scenario_one.update!(user: create(:user), private: true) }
+
+    it 'returns 404' do
+      request
+      expect(response.status).to eq(404)
+    end
+  end
 
   context 'with only one scenario' do
     let(:request) do

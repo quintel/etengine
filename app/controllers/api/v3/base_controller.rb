@@ -1,7 +1,7 @@
 module Api
   module V3
-    class BaseController < ApplicationController
-      skip_before_action :verify_authenticity_token
+    class BaseController < ActionController::API
+      include ActionController::MimeResponds
 
       rescue_from ActionController::ParameterMissing do |e|
         render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
@@ -19,19 +19,27 @@ module Api
         render_not_found(errors: ['Not found'])
       end
 
-      rescue_from CanCan::AccessDenied do |ex|
-        if (request.post? || request.put? || request.delete?) &&
-            ex.subject.is_a?(Scenario) && ex.subject.api_read_only?
-          render status: 403, json: { errors: ['Cannot modify a read-only scenario'] }
+      rescue_from CanCan::AccessDenied do |e|
+        if e.subject.is_a?(Scenario) && !e.subject.private?
+          render status: :forbidden, json: { errors: ['Scenario does not belong to you'] }
         else
-          render status: 404, json: { errors: ['Not found'] }
+          render status: :not_found, json: { errors: ['Not found'] }
         end
       end
 
       private
 
       def current_ability
-        @current_ability ||= Api::Ability.new(current_user)
+        @current_ability ||=
+          if current_user
+            TokenAbility.new(doorkeeper_token, current_user)
+          else
+            GuestAbility.new
+          end
+      end
+
+      def current_user
+        @current_user ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
       end
 
       # Many API actions require an active scenario. Let's set it here

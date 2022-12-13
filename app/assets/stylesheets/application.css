@@ -20,6 +20,14 @@
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+.w-5 {
+  width: 1.25rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
 .future-edges h2 a,
 .present-edges h2 a {
   font-size: 12px;
@@ -293,18 +301,6 @@ table.scenario-list tr.active td {
   background-color: #ecfdf5;
 }
 
-table.scenario-list tr.active td:first-child {
-  font-weight: 600;
-}
-
-table.scenario-list tr.active td:first-child .tag {
-  margin-left: 0.4em;
-  display: inline-block;
-  vertical-align: middle;
-  margin-top: -2px;
-  font-weight: 500;
-}
-
 table.scenario-list .narrow {
   text-align: center;
   white-space: nowrap;
@@ -325,8 +321,11 @@ table.scenario-list .actions span.muted {
 }
 
 .tag {
+  align-items: center;
   border-radius: 3px;
+  display: inline-flex;
   font-size: 13px;
+  gap: 0.25rem;
   line-height: 1;
   padding: 3px 4px;
 }

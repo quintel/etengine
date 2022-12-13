@@ -5,10 +5,6 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    if user&.admin?
-      can :manage, :all
-    else
-      can :read, Qernel::Node
-    end
+    can :manage, :all if user&.admin?
   end
 end

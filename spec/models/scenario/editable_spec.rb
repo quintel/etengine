@@ -16,7 +16,7 @@ RSpec.describe Scenario::Editable do
           user_values: "---\nfoo: bar",
           balanced_values: "---\nbaz: qux",
           metadata: '{"a": "b"}',
-          api_read_only: true
+          keep_compatible: true
         )
       end
 
@@ -52,7 +52,7 @@ RSpec.describe Scenario::Editable do
       end
 
       it 'saves the changed attributes' do
-        expect { update }.to change { scenario.reload.api_read_only? }
+        expect { update }.to change { scenario.reload.keep_compatible? }
           .from(false)
           .to(true)
       end
@@ -64,7 +64,7 @@ RSpec.describe Scenario::Editable do
           user_values: "---\na: b: c",
           balanced_values: "---\nbaz: qux",
           metadata: '{"a": "b"}',
-          api_read_only: true
+          keep_compatible: true
         )
       end
 
@@ -97,7 +97,7 @@ RSpec.describe Scenario::Editable do
       end
 
       it 'does not change the attributes' do
-        expect { update_ignoring_errors }.not_to change { scenario.reload.api_read_only? }
+        expect { update_ignoring_errors }.not_to change { scenario.reload.keep_compatible? }
       end
     end
   end

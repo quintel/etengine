@@ -122,7 +122,7 @@ class InputSerializer
   class IndifferentScenario
     attr_reader :original
 
-    delegate :inputs, :api_read_only?, to: :original
+    delegate :inputs, to: :original
 
     def self.from(scenario)
       scenario.is_a?(self) ? scenario : new(scenario)

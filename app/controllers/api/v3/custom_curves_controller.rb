@@ -6,6 +6,7 @@ module Api
     # intended to allow additional custom curves to be added later without requiring changes to the
     # REST API.
     class CustomCurvesController < BaseController
+      include ActionController::MimeResponds
       include UsesScenario
 
       respond_to :json

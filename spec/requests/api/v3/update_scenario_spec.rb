@@ -12,8 +12,8 @@ describe 'Updating a scenario with API v3' do
     FactoryBot.create(:scenario)
   end
 
-  def update_scenario(params = {})
-    put("/api/v3/scenarios/#{scenario.id}", params:)
+  def update_scenario(params: {}, headers: {})
+    put("/api/v3/scenarios/#{scenario.id}", params:, headers:)
     scenario.reload
   end
 
@@ -21,66 +21,51 @@ describe 'Updating a scenario with API v3' do
     let(:params) { { scenario: { keep_compatible: true } } }
 
     it 'sets keep_compatible to true' do
-      expect { update_scenario(params) }.to change(scenario, :keep_compatible?).from(false).to(true)
-    end
-
-    it 'does not change api_read_only' do
-      expect { update_scenario(params) }.not_to change(scenario, :api_read_only?).from(false)
+      expect { update_scenario(params:) }
+        .to change(scenario, :keep_compatible?).from(false).to(true)
     end
   end
 
-  context 'when setting the scenario read_only to true' do
-    let(:params) { { scenario: { read_only: true } } }
+  context 'when setting the scenario to be private as a guest' do
+    let(:params) { { scenario: { private: true } } }
 
-    it 'sets api_read_only to true' do
-      expect { update_scenario(params) }
-        .to change(scenario, :api_read_only?)
-        .from(false).to(true)
-    end
-
-    it 'sets keep_compatible to true' do
-      expect { update_scenario(params) }.to change(scenario, :keep_compatible?).from(false).to(true)
+    it 'does not change the scenario privacy' do
+      expect { update_scenario(params:) }
+        .not_to change(scenario, :private?).from(false)
     end
   end
 
-  # Legacy attribute.
-  context 'when setting protected to true' do
-    let(:params) { { scenario: { protected: true } } }
-
-    it 'sets api_read_only to true' do
-      expect { update_scenario(params) }
-        .to change(scenario, :api_read_only?)
-        .from(false).to(true)
+  context 'when setting an owned public scenario to be private' do
+    before do
+      scenario.update!(user:, private: false)
     end
 
-    it 'sets keep_compatible to true' do
-      expect { update_scenario(params) }
-        .to change(scenario, :keep_compatible?)
-        .from(false).to(true)
-    end
-  end
+    let(:user) { create(:user) }
 
-  context 'when setting the scenario read_only to false' do
-    let(:params) { { scenario: { read_only: false } } }
-
-    it 'does not change api_read_only' do
-      expect { update_scenario(params) }.not_to change(scenario, :api_read_only?).from(false)
-    end
-
-    it 'does not change keep_compatible' do
-      expect { update_scenario(params) }.not_to change(scenario, :keep_compatible?).from(false)
+    it 'sets private to true' do
+      expect do
+        update_scenario(
+          params: { scenario: { private: true } },
+          headers: access_token_header(user, :write)
+        )
+      end.to change(scenario, :private?).from(false).to(true)
     end
   end
 
-  context 'when setting the scenario read_only to false and protected to true' do
-    let(:params) { { scenario: { read_only: false, protected: true } } }
-
-    it 'does not change api_read_only' do
-      expect { update_scenario(params) }.not_to change(scenario, :api_read_only?).from(false)
+  context 'when setting an owned private scenario to be public' do
+    before do
+      scenario.update!(user:, private: true)
     end
 
-    it 'does not change keep_compatible' do
-      expect { update_scenario(params) }.not_to change(scenario, :keep_compatible?).from(false)
+    let(:user) { create(:user) }
+
+    it 'sets private to false' do
+      expect do
+        update_scenario(
+          params: { scenario: { private: false } },
+          headers: access_token_header(user, :write)
+        )
+      end.to change(scenario, :private?).from(true).to(false)
     end
   end
 
@@ -93,25 +78,9 @@ describe 'Updating a scenario with API v3' do
       let(:params) { { scenario: { keep_compatible: false } } }
 
       it 'sets keep_compatible to false' do
-        expect { update_scenario(params) }
+        expect { update_scenario(params:) }
           .to change(scenario, :keep_compatible?)
           .from(true).to(false)
-      end
-    end
-
-    context 'when setting read_only to true, keep_compatible to false' do
-      let(:params) { { scenario: { read_only: true, keep_comptible: false } } }
-
-      it 'does not change keep_compatible' do
-        expect { update_scenario(params) }
-          .not_to change(scenario, :keep_compatible?)
-          .from(true)
-      end
-
-      it 'sets api_read_only to true' do
-        expect { update_scenario(params) }
-          .to change(scenario, :api_read_only?)
-          .from(false).to(true)
       end
     end
   end

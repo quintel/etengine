@@ -6,25 +6,6 @@ module Api
     # scenario with the data, or presents a useful error to sent back to the
     # client.
     class ScenarioUpdater
-      # An updater which does nothing.
-      class Null
-        include ActiveModel::Validations
-
-        attr_reader :scenario
-
-        def initialize(scenario, _params)
-          @scenario = scenario
-        end
-
-        def apply
-          true
-        end
-
-        def valid?
-          true
-        end
-      end
-
       include ActiveModel::Validations
 
       validate :validate_user_values
@@ -38,11 +19,6 @@ module Api
       #   Returns the scenario being updated.
       #
       attr_reader :scenario
-
-      # Public: Returns an updater for the scenario.
-      def self.for_scenario(scenario, params)
-        (scenario.api_read_only? ? Null : self).new(scenario, params)
-      end
 
       # Creates a new ScenarioUpdater.
       #
@@ -66,31 +42,17 @@ module Api
       def apply
         return true if @data.empty?
 
-        # Temporary while we continue to support `title` and `description` as part of the public
-        # API.
-        md = metadata
-        md[:title] = @scenario_data[:title] if @scenario_data.key?(:title)
-        md[:description] = @scenario_data[:description] if @scenario_data.key?(:description)
-
-        apply_protection_attributes
-
         @scenario.attributes = @scenario.attributes.except(
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
-          @scenario_data.except(
-            :area_code,
-            :description,
-            :end_year,
-            :keep_compatible,
-            :protected,
-            :read_only,
-            :title
-          ).merge(
-            balanced_values: balanced_values,
-            user_values: user_values,
-            metadata: md
-          )
+          @scenario_data
+            .except(:area_code, :end_year)
+            .merge(balanced_values:, user_values:, metadata:)
         )
+
+        # Legacy attributes.
+        @scenario.title = @scenario_data[:title] if @scenario_data.key?(:title)
+        @scenario.description = @scenario_data[:description] if @scenario_data.key?(:description)
 
         valid? ? @scenario.save(validate: false) : false
       end
@@ -316,12 +278,6 @@ module Api
       # Returns a hash of metadata
       def metadata
         @scenario_data.key?(:metadata) ? @scenario_data[:metadata] : @scenario.metadata.dup
-      end
-
-      # Internal: Sets whether the scenario is API immutable and to be kept compatible. Cancancan
-      # prevents updating th escenario when `api_read_only`` is true.
-      def apply_protection_attributes
-        SetScenarioProtectionAttributes.call(params: @scenario_data, scenario: @scenario)
       end
 
       # Given a collection of user values, yields the name of each group to

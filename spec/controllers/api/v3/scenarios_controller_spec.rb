@@ -30,40 +30,9 @@ describe Api::V3::ScenariosController do
     end
   end
 
-  describe "GET templates" do
-    it "should return the homepage scenarios" do
-      get :templates
-      expect(response).to be_successful
-    end
-
-    it "should not include in_start_menu=false scenarios" do
-      get :templates
-
-      parsed = JSON.parse(response.body)
-
-      expect(parsed.length).to eq(Preset.visible.length)
-    end
-  end
-
   describe "PUT scenario" do
     before do
       @scenario = FactoryBot.create(:scenario, :user_values => {'foo' => 23.0})
-    end
-
-    context 'when the scenario is read-only' do
-      it 'allows queries' do
-        @scenario.update!(api_read_only: true)
-        put :update, params: { id: @scenario.id }
-
-        expect(response).to be_successful
-      end
-
-      it 'disallows requests which update the scenario' do
-        @scenario.update!(api_read_only: true)
-        put :update, params: { id: @scenario.id, scenario: { user_values: { foo: 5 } } }
-
-        expect(response).to be_forbidden
-      end
     end
 
     it "should reset parameters" do

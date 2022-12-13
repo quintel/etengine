@@ -6,22 +6,6 @@ RSpec.describe Scenario::Inputs do
   let(:scenario) { Scenario.new }
   let(:inputs) { described_class.new(scenario) }
 
-  context 'when the scenario is not read-only' do
-    let(:scenario) { FactoryBot.build(:scenario, api_read_only: false) }
-
-    it 'does not mark inputs as disabled' do
-      expect(inputs.disabled?(Input.get(:exclusive))).to be(false)
-    end
-  end
-
-  context 'when the scenario is read-only' do
-    let(:scenario) { FactoryBot.build(:scenario, api_read_only: true) }
-
-    it 'marks inputs as disabled' do
-      expect(inputs.disabled?(Input.get(:exclusive))).to be(true)
-    end
-  end
-
   context 'when the scenario has an attached curve' do
     before do
       attachment = scenario.attachments.build(key: 'a_curve')

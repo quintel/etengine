@@ -2,17 +2,24 @@ module Api
   module V3
     class ScenariosController < BaseController
       respond_to :json
-
-      before_action :find_scenario, only: %i[interpolate update]
-      around_action :wrap_with_raven_context, only: :update
-
-      before_action :find_preset_or_scenario, only: %i[show merit dashboard]
-
-      authorize_resource except: %i[update]
+      check_authorization
 
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
       end
+
+      load_resource except: %i[show create destroy]
+      load_and_authorize_resource class: Scenario, only: %i[show create destroy]
+
+      before_action only: %i[batch dashboard merit] do
+        authorize!(:read, @scenario)
+      end
+
+      before_action only: %i[interpolate] do
+        authorize!(:clone, @scenario)
+      end
+
+      around_action :wrap_with_raven_context, only: :update
 
       # GET /api/v3/scenarios/:id
       #
@@ -42,12 +49,12 @@ module Api
       def batch
         ids = params[:id].split(',')
 
-        scenarios = Scenario.where(id: ids).includes(:scaler).index_by(&:id)
+        scenarios = Scenario.accessible_by(current_ability)
+          .where(id: ids).includes(:scaler)
 
-        @serializers = ids.map do |id|
-          scen = Preset.get(id).try(:to_scenario) || scenarios[id.to_i]
-          scen ? ScenarioSerializer.new(self, scen, filtered_params) : nil
-        end.compact
+        @serializers = scenarios.map do |scenario|
+          ScenarioSerializer.new(self, scenario, filtered_params)
+        end
 
         render json: @serializers
       end
@@ -66,16 +73,6 @@ module Api
         end
       end
 
-      # GET /api/v3/scenarios/templates
-      #
-      # Returns an array of the scenarions with the `in_start_menu`
-      # attribute set to true. The ETM uses it on its scenario selection
-      # page.
-      #
-      def templates
-        render(json: Preset.visible.map { |ps| PresetSerializer.new(self, ps) })
-      end
-
       # POST /api/v3/scenarios
       #
       # Creates a new scenario. This action is used when a user on the ETM
@@ -90,54 +87,50 @@ module Api
           params[:scenario][:user_values] = inputs
         end
 
-        attrs = Scenario.default_attributes.merge(scenario_attributes || {})
+        attrs = Scenario.default_attributes.merge(scenario_params || {})
+        parent = nil
 
         if attrs.key?(:scenario_id) || attrs.key?(:preset_scenario_id)
+          parent = Scenario.find_by(id: attrs[:scenario_id] || attrs[:preset_scenario_id])
+
+          unless parent && can?(:read, parent)
+            render(
+              json: { errors: { scenario_id: ['does not exist'] } },
+              status: :unprocessable_entity
+            )
+            return
+          end
+
           # If user_values is assigned after the preset ID, we would wipe out
           # the preset user values.
           attrs.delete(:user_values)
+
+          # Inherit the visibility if no explicity visibility is set.
+          attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
         end
 
         if attrs.key?(:user_values)
           attrs[:user_values] = attrs[:user_values].transform_values(&:to_f)
         end
 
-        if attrs.key?(:title)
-          attrs[:metadata] ||= {}
-          attrs[:metadata][:title] = attrs.delete(:title)
-        end
-
-        if attrs.key?(:description)
-          attrs[:metadata] ||= {}
-          attrs[:metadata][:description] = attrs.delete(:description)
-        end
-
-        if attrs.key?(:protected) && !attrs.key?(:read_only)
-          attrs[:keep_compatible] = attrs[:api_read_only] = attrs.delete(:protected)
-        end
-
         @scenario = Scenario.new
 
-        if scaler_attributes && ! attrs[:descale]
+        if scaler_attributes && !attrs[:descale]
           scaler = @scenario.build_scaler(scaler_attributes)
 
-          if parent_id = attrs[:scenario_id] || attrs[:preset_scenario_id]
-            if parent = Scenario.find_by_id(parent_id)
-              if parent.scaler
-                scaler.base_value = parent.scaler.base_value
-              else
-                scaler.set_base_with(parent)
-              end
-            end
+          if parent&.scaler
+            scaler.base_value = parent.scaler.base_value
+          elsif parent
+            scaler.set_base_with(parent)
           end
         end
 
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs.except(:read_only, :protected, :keep_compatible)
+        @scenario.attributes = attrs
 
-        SetScenarioProtectionAttributes.call(params: attrs, scenario: @scenario)
+        @scenario.user = current_user
 
         Scenario.transaction do
           @scenario.save!
@@ -151,10 +144,8 @@ module Api
       # POST /api/v3/scenarios/interpolate
       def interpolate
         @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i
+          @scenario, params.require(:end_year).to_i, current_user
         )
-
-        SetScenarioProtectionAttributes.call(params: params, scenario: @interpolated)
 
         Scenario.transaction do
           @interpolated.save!
@@ -209,7 +200,7 @@ module Api
 
         authorize!(final_params[:scenario].present? ? :update : :read, @scenario)
 
-        updater    = ScenarioUpdater.for_scenario(@scenario, final_params)
+        updater    = ScenarioUpdater.new(@scenario, final_params)
         serializer = nil
 
         Scenario.transaction do
@@ -231,7 +222,13 @@ module Api
       # Merges two or more scenarios.
       #
       def merge
+        authorize!(:create, Scenario)
+
         merge_params = params.permit(scenarios: [:scenario_id, :weight])
+
+        merge_params[:scenarios].each do |scenario|
+          authorize!(:read, Scenario.find(scenario[:scenario_id]))
+        end
 
         if (merger = ScenarioMerger.from_params(merge_params)).valid?
           scenario = merger.merged_scenario
@@ -266,18 +263,18 @@ module Api
       def filtered_params
         params.permit(
           :autobalance, :force, :reset, :detailed, :include_inputs, gqueries: []
-        ).merge(scenario: scenario_attributes)
+        ).merge(scenario: scenario_params)
       end
 
       # Internal: Cleaned up attributes for creating and updating scenarios.
       #
       # Returns a ActionController::Parameters.
-      def scenario_attributes
+      def scenario_params
         attrs = params.permit(scenario: [
           :area_code, :author, :country, :descale, :description, :end_year,
-          :preset_scenario_id, :region, :scenario_id, :source,
-          :protected, :read_only, :keep_compatible,
-          :title, user_values: {}, metadata: {}
+          :preset_scenario_id, :region, :scenario_id, :source, :private,
+          :keep_compatible, :title,
+          user_values: {}, metadata: {}
         ])
 
         attrs = attrs[:scenario] || {}

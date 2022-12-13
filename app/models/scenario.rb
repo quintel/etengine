@@ -43,6 +43,7 @@ class Scenario < ApplicationRecord
 
   validate :validate_metadata_size
   validate :validate_parent_scenario_exists, on: :create
+  validate :validate_visibility
 
   validates_associated :scaler, on: :create
 
@@ -61,9 +62,7 @@ class Scenario < ApplicationRecord
   scope(:deletable, lambda do
     where(%q[
         in_start_menu IS NULL
-        AND api_read_only = ?
         AND keep_compatible = ?
-        AND author IS NULL
         AND user_id IS NULL
         AND (
           user_values IS NULL
@@ -80,10 +79,6 @@ class Scenario < ApplicationRecord
       scenario.copy_scenario_state(preset)
     end
   end
-
-  # before_save do |scenario|
-  #   scenario.keep_compatible = true if api_read_only? && api_read_only_changed?
-  # end
 
   def test_scenario=(flag)
     @test_scenario = flag
@@ -243,15 +238,16 @@ class Scenario < ApplicationRecord
     metadata['title'].presence
   end
 
-  # String form of the scenario mutability. Used in the admin scenario form.
-  def mutability
-    if api_read_only?
-      'api-read-only'
-    elsif keep_compatible?
-      'keep-compatible'
-    else
-      'public'
-    end
+  def title=(title)
+    title.blank? ? metadata.delete('title') : metadata['title'] = title
+  end
+
+  def description
+    metadata['description'].presence
+  end
+
+  def description=(description)
+    description.blank? ? metadata.delete('description') : metadata['description'] = description
   end
 
   def outdated?
@@ -288,6 +284,18 @@ class Scenario < ApplicationRecord
     attachment?('esdl_file')
   end
 
+  # Returns whether a scenario based on this one should be private.
+  #
+  # @param actor [User] The user who is creating the clone.
+  # @return [Boolean]
+  def clone_should_be_private?(actor)
+    return false unless actor
+    return false if user_id.blank?
+    return private if user_id == actor.id
+
+    false
+  end
+
   private
 
   # Validation method for when a user sets their metadata.
@@ -300,5 +308,9 @@ class Scenario < ApplicationRecord
     if preset_scenario_id && !Scenario.exists?(preset_scenario_id)
       errors.add(:scenario_id, 'does not exist')
     end
+  end
+
+  def validate_visibility
+    errors.add(:private, 'can not be true on an unowned scenario') if private? && user_id.blank?
   end
 end

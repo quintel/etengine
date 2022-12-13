@@ -383,13 +383,15 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when uploading a curve to a read-only scenario' do
+    context "when uploading a curve to someone else's public scenario" do
       before do
-        scenario.update!(api_read_only: true)
+        scenario.update!(user: create(:user))
       end
 
       let(:request) do
-        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }
+        put url,
+          params: { file: fixture_file_upload('price_curve.csv', 'text/csv') },
+          headers: access_token_header(create(:user), :write)
       end
 
       it 'responds with 403 Forbidden' do
@@ -407,6 +409,37 @@ describe 'Custom curves', :etsource_fixture do
               .present?
           }
           .from(false)
+      end
+    end
+
+    context 'when uploading a curve to an owned private scenario' do
+      before do
+        scenario.update!(user:)
+      end
+
+      let(:user) { create(:user) }
+
+      let(:request) do
+        put url,
+          params: { file: fixture_file_upload('price_curve.csv', 'text/csv') },
+          headers: access_token_header(user, :write)
+      end
+
+      it 'succeeds' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'attaches the file' do
+        expect { request }
+          .to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'generic_curve')
+              .present?
+          }
+          .from(false).to(true)
       end
     end
 
@@ -443,14 +476,47 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when removing an attached curve from a read-only scenario' do
+    context 'when removing an attached curve from an owned scenario' do
+      before do
+        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }
+        scenario.update!(user:)
+      end
+
+      let(:user) { create(:user) }
+      let(:request) { delete url, headers: access_token_header(user, :write) }
+
+      it 'succeeds' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'sends no data' do
+        request
+        expect(response.body).to be_empty
+      end
+
+      it 'removes the attachment' do
+        expect { request }
+          .to change {
+            scenario
+              .reload
+              .attachments
+              .find_by(key: 'generic_curve')
+              .present?
+          }
+          .from(true)
+          .to(false)
+      end
+    end
+
+    context 'when removing an attached curve from a public scenario owned by someone else' do
       before do
         # Attach a curve.
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
-        scenario.update!(api_read_only: true)
+        scenario.update!(user: create(:user))
       end
 
       let(:request) { delete url }
@@ -462,7 +528,7 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'sends an error' do
         request
-        expect(JSON.parse(response.body)).to eq('errors' => ['Cannot modify a read-only scenario'])
+        expect(JSON.parse(response.body)).to eq('errors' => ['Scenario does not belong to you'])
       end
 
       it 'does not remove the attachment' do

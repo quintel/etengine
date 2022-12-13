@@ -142,14 +142,29 @@ describe 'APIv3 heat network orders' do
       end
     end
 
-    context 'when the sceanrio is read-only' do
+    context 'when the scenario is owned by someone else' do
       before do
-        scenario.update!(api_read_only: true)
+        scenario.update!(user: create(:user))
         put url, params: { heat_network_order: { order: valid_options.reverse } }
       end
 
       it 'responds with 403 Forbidden' do
         expect(response).to be_forbidden
+      end
+    end
+
+    context 'when the scenario is owned by the current user' do
+      before do
+        user = create(:user)
+        scenario.update!(user:)
+
+        put url,
+          params: { heat_network_order: { order: valid_options.reverse } },
+          headers: access_token_header(user, :write)
+      end
+
+      it 'responds with 200 OK' do
+        expect(response).to be_successful
       end
     end
 

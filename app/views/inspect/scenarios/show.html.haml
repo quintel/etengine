@@ -15,6 +15,13 @@
         %th End Year
         %td= @scenario.end_year
       %tr
+        %th Owner
+        %td
+          - if @scenario.user
+            = link_to(@scenario.user.name, user_path(@scenario.user))
+          - else
+            %span.muted No owner
+      %tr
         %th Source
         %td= @scenario.source
       - if @scenario.preset_scenario_id.present?
@@ -28,8 +35,12 @@
         %th Last updated
         %td= @scenario.updated_at.to_formatted_s(:long)
       %tr
-        %th Mutability
-        %td= formatted_scenario_mutability(@scenario)
+        %th Visibility
+        %td
+          - if @scenario.private?
+            %span.tag.red Private
+          - else
+            %span.tag.gray Public
       %tr
         %th Compatibility
         %td= formatted_scenario_compatibility(@scenario)

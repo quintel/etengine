@@ -26,25 +26,16 @@ module ScenariosHelper
     grouped.values.sort_by { |g| [order.index(g.name) || Float::INFINITY, g.human_name] }
   end
 
-  def scenario_mutability_select(form)
+  def scenario_compatibility_select(form)
     form.input(
-      :mutability,
+      :keep_compatible,
       include_blank: false,
       collection: [
-        ['Read and write', 'public'],
-        ['Read and write; keep compatible with model updates', 'keep-compatible'],
-        ['API read-only; keep compatible with model updates', 'api-read-only']
+        ['Current model version only', false],
+        ['Keep compatible with model updates', true]
       ],
       input_html: { style: 'width: auto' }
     )
-  end
-
-  def formatted_scenario_mutability(scenario)
-    if scenario.api_read_only?
-      tag.a('Read-only (API)', class: 'tag orange', href: 'https://docs.energytransitionmodel.com/api/scenario-basics#read-only-scenarios')
-    else
-      tag.a('Read and write', class: 'tag gray', href: 'https://docs.energytransitionmodel.com/api/scenario-basics#read-only-scenarios')
-    end
   end
 
   def formatted_scenario_compatibility(scenario)

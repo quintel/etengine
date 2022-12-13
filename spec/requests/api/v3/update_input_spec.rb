@@ -57,21 +57,22 @@ describe 'Updating inputs with API v3' do
     allow(Input).to receive(:all).and_return(Input.records.values)
   end
 
-  def put_scenario(user_values = {}, params = {})
-    user_values = Hash[user_values.map { |k, v| [k.to_s, v.to_s] }]
+  def put_scenario(values: {}, params: {}, headers: {})
+    values = values.map { |k, v| [k.to_s, v.to_s] }.to_h
 
     put "/api/v3/scenarios/#{scenario.id}",
-      params: params.merge(scenario: { user_values: user_values })
+      params: params.merge(scenario: { user_values: values }),
+      headers: headers
 
     scenario.reload
   end
 
-  def nonbalanced_scenario(user_values = {}, params = {})
-    put_scenario(user_values, params.merge(autobalance: false))
+  def nonbalanced_scenario(values: {}, params: {}, headers: {})
+    put_scenario(values:, params: params.merge(autobalance: false), headers:)
   end
 
-  def autobalance_scenario(user_values = {}, params = {})
-    put_scenario(user_values, params.merge(autobalance: true))
+  def autobalance_scenario(values: {}, params: {}, headers: {})
+    put_scenario(values:, params: params.merge(autobalance: true), headers:)
   end
 
   # --------------------------------------------------------------------------
@@ -91,7 +92,7 @@ describe 'Updating inputs with API v3' do
   context 'when autobalance=false,' do
     context 'when providing a non-grouped single value' do
       before do
-        nonbalanced_scenario(nongrouped: 50)
+        nonbalanced_scenario(values: { nongrouped: 50 })
       end
 
       it 'responds 200 OK' do
@@ -132,7 +133,7 @@ describe 'Updating inputs with API v3' do
 
         scenario.save!
 
-        nonbalanced_scenario(balanced_one: 100)
+        nonbalanced_scenario(values: { balanced_one: 100 })
       end
 
       it 'responds 200 OK' do
@@ -153,7 +154,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when providing an unbalanced single value' do
       before do
-        nonbalanced_scenario(balanced_one: 50)
+        nonbalanced_scenario(values: { balanced_one: 50 })
       end
 
       it 'responds 422 Unprocessable Entity' do
@@ -179,7 +180,7 @@ describe 'Updating inputs with API v3' do
 
         scenario.save!
 
-        nonbalanced_scenario(balanced_one: 45, balanced_two: 55)
+        nonbalanced_scenario(values: { balanced_one: 45, balanced_two: 55 })
       end
 
       it 'responds 200 OK' do
@@ -201,7 +202,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when providing a non-balancing single value' do
       before do
-        nonbalanced_scenario(balanced_one: 99)
+        nonbalanced_scenario(values: { balanced_one: 99 })
       end
 
       it 'responds 422 Unprocessable Entity' do
@@ -228,7 +229,7 @@ describe 'Updating inputs with API v3' do
 
           scenario.save!
 
-          nonbalanced_scenario(balanced_one: 'reset')
+          nonbalanced_scenario(values: { balanced_one: 'reset' })
         end
 
         it 'responds 422 Unprocessable Entity' do
@@ -255,7 +256,7 @@ describe 'Updating inputs with API v3' do
 
           scenario.save!
 
-          nonbalanced_scenario(balanced_one: 'reset')
+          nonbalanced_scenario(values: { balanced_one: 'reset' })
         end
 
         it 'responds 200 OK' do
@@ -276,7 +277,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when performing a scenario-level reset' do
       before do
-        nonbalanced_scenario({}, reset: true)
+        nonbalanced_scenario(params: { reset: true })
       end
 
       it 'responds 200 OK' do
@@ -298,7 +299,7 @@ describe 'Updating inputs with API v3' do
   context 'when autobalance=true,' do
     context 'when providing one member of a group' do
       before do
-        autobalance_scenario(balanced_one: 10)
+        autobalance_scenario(values: { balanced_one: 10 })
       end
 
       it 'responds 200 OK' do
@@ -325,7 +326,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when providing an unbalanceable member of a group' do
       before do
-        autobalance_scenario(balanced_one: 101)
+        autobalance_scenario(values: { balanced_one: 101 })
       end
 
       it 'responds 422 OK' do
@@ -346,7 +347,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when providing all unbalanceable members of a group' do
       before do
-        autobalance_scenario(balanced_one: 49, balanced_two: 50)
+        autobalance_scenario(values: { balanced_one: 49, balanced_two: 50 })
       end
 
       it 'responds 422 OK' do
@@ -367,7 +368,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when providing all members of a group' do
       before do
-        autobalance_scenario(balanced_one: 10, balanced_two: 90)
+        autobalance_scenario(values: { balanced_one: 10, balanced_two: 90 })
       end
 
       it 'responds 200 OK' do
@@ -399,7 +400,7 @@ describe 'Updating inputs with API v3' do
 
           scenario.save!
 
-          autobalance_scenario(balanced_one: 'reset')
+          autobalance_scenario(values: { balanced_one: 'reset' })
         end
 
         it 'responds 200 OK' do
@@ -421,7 +422,7 @@ describe 'Updating inputs with API v3' do
           scenario.preset_scenario_id = parent.id
           scenario.save!
 
-          autobalance_scenario(balanced_one: 'reset')
+          autobalance_scenario(values: { balanced_one: 'reset' })
         end
 
         let(:parent) do
@@ -451,7 +452,7 @@ describe 'Updating inputs with API v3' do
           scenario.preset_scenario_id = parent.id
           scenario.save!
 
-          autobalance_scenario({}, reset: true)
+          autobalance_scenario(params: { reset: true })
         end
 
         let(:parent) do
@@ -479,7 +480,7 @@ describe 'Updating inputs with API v3' do
           scenario.balanced_values['balanced_two'] = 10.0
           scenario.save!
 
-          autobalance_scenario(balanced_one: 'reset')
+          autobalance_scenario(values: { balanced_one: 'reset' })
         end
 
         it 'responds 200 OK' do
@@ -502,7 +503,7 @@ describe 'Updating inputs with API v3' do
           scenario.user_values['balanced_one'] = 100.0
           scenario.save!
 
-          autobalance_scenario(balanced_one: 'reset')
+          autobalance_scenario(values: { balanced_one: 'reset' })
         end
 
         it 'responds 200 OK' do
@@ -519,7 +520,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when resetting all members of the group' do
       before do
-        autobalance_scenario(balanced_one: 'reset', balanced_two: 'reset')
+        autobalance_scenario(values: { balanced_one: 'reset', balanced_two: 'reset' })
       end
 
       it 'responds 200 OK' do
@@ -541,7 +542,7 @@ describe 'Updating inputs with API v3' do
 
     context 'when performing a scenario-level reset' do
       before do
-        autobalance_scenario({}, reset: true)
+        autobalance_scenario(params: { reset: true })
       end
 
       it 'responds 200 OK' do
@@ -560,57 +561,70 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
-  context 'when querying a read-only scenario' do
+  context 'when updating a public scenario owned by someone else' do
     before do
-      scenario.update!(api_read_only: true)
-      autobalance_scenario({})
-    end
-
-    it 'returns 200 OK' do
-      expect(response.status).to be(200)
-    end
-  end
-
-  context 'when updating a read-only scenario' do
-    before do
-      scenario.update!(api_read_only: true)
+      scenario.update!(user: create(:user))
     end
 
     it 'returns 403' do
-      autobalance_scenario({ scenario: { user_values: { 'unrelated_one' => 25.0 } } })
+      autobalance_scenario(values: { 'unrelated_one' => 25.0 })
       expect(response.status).to be(403)
     end
 
     it 'does not update the user values' do
-      expect { autobalance_scenario(scenario: { user_values: { 'unrelated_one' => 25.0 } }) }
+      expect { autobalance_scenario(values: { 'unrelated_one' => 25.0 }) }
         .not_to(change { scenario.reload.user_values })
     end
   end
 
-  context 'when setting a mutable scenario to read-only with updates' do
-    let(:request) do
-      put "/api/v3/scenarios/#{scenario.id}",params: {
-        scenario: { user_values: { 'unrelated_one' => 20.0 }, read_only: true }
-      }
-    end
-
+  context 'when updating their own public scenario' do
     before do
-      scenario.update!(user_values: {})
-    end
+      scenario.update!(user:)
 
-    it 'returns 200 OK' do
-      request
-      expect(response).to be_ok
-    end
-
-    it 'sets the scenario to read-only' do
-      expect { request }.to(change { scenario.reload.api_read_only? }.from(false).to(true))
-    end
-
-    it 'sets the user values' do
-      expect { request }.to(
-        change { scenario.reload.user_values }.from({}).to({ 'unrelated_one' => 20.0 })
+      autobalance_scenario(
+        values: { 'unrelated_one' => 25.0 },
+        headers: access_token_header(user, :write)
       )
+    end
+
+    let(:user) { create(:user) }
+
+    it 'returns 200' do
+      expect(response.status).to be(200)
+    end
+  end
+
+  context 'when updating their own public scenario without the scenarios:write scope' do
+    before do
+      user = create(:user)
+
+      scenario.update!(user:)
+
+      autobalance_scenario(
+        values: { 'unrelated_one' => 25.0 },
+        headers: access_token_header(user, :read)
+      )
+    end
+
+    it 'returns 403' do
+      expect(response.status).to be(403)
+    end
+  end
+
+  context 'when updating their own private scenario' do
+    before do
+      user = create(:user)
+
+      scenario.update!(user:, private: true)
+
+      autobalance_scenario(
+        values: { 'unrelated_one' => 25.0 },
+        headers: access_token_header(user, :write)
+      )
+    end
+
+    it 'returns 200' do
+      expect(response.status).to be(200)
     end
   end
 
@@ -628,7 +642,7 @@ describe 'Updating inputs with API v3' do
       scenario.area_code = 'invalid'
       scenario.save(validate: false)
 
-      put_scenario({}, scenario: { end_year: 2030 })
+      put_scenario(params: { scenario: { end_year: 2030 } })
     end
 
     it 'responds 422' do
@@ -643,7 +657,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the input does not exist' do
     before do
-      put_scenario(does_not_exist: 50)
+      put_scenario(values: { does_not_exist: 50 })
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -658,7 +672,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the value is above the permitted maximum' do
     before do
-      put_scenario(nongrouped: 101)
+      put_scenario(values: { nongrouped: 101 })
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -673,7 +687,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the value is beneath the permitted minimum' do
     before do
-      put_scenario(nongrouped: -1)
+      put_scenario(values: { nongrouped: -1 })
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -686,9 +700,9 @@ describe 'Updating inputs with API v3' do
     end
   end
 
-  context 'when requesting a non-existent query' do
+  context 'when requesting a non-existant query' do
     before do
-      put_scenario({ nongrouped: 10 }, gqueries: %w[does_not_exist])
+      put_scenario(values: { nongrouped: 10 }, params: { gqueries: %w[does_not_exist] })
     end
 
     it 'responds 422 Unprocessable Entity' do

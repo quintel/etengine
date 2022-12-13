@@ -5,8 +5,6 @@
 %section#search_box
   = form_tag inspect_scenarios_path, method: :get do
     = search_field_tag :q, params[:q], placeholder: 'Scenario ID'
-    = check_box_tag :api_read_only, 1, @list_params[:api_read_only]
-    = label_tag 'api_read_only', 'API read-only'
     = submit_tag 'Search', class: 'btn'
 
 %p
@@ -19,11 +17,11 @@
     %tr
       %th{:colspan => 8} Scenario count: #{Scenario.count}
     %tr
+      %th.narrow.text-center Visibility
       %th ID
-      %th Title
+      %th Owner
       %th End Year
       %th Area
-      %th.narrow Mutability
       %th.narrow Compatibility
       %th
   %tfoot
@@ -32,15 +30,24 @@
   %tbody
     - @scenarios.each do |s|
       %tr{ class: s.id.to_s == params[:api_scenario_id] ? 'active' : '' }
+        %td.text-center
+          - if s.private?
+            %span.tag.red Private
+          - else
+            %span.tag.gray Public
         %td
           = link_to s.id, inspect_scenario_path(:id => s.id)
+          - if s.metadata[:title]
+            %span{ style: 'margin: 0 0.25rem 0 0.5rem; font-weight: normal' }= s.metadata[:title]
           - if s.id.to_s == params[:api_scenario_id]
             %span.tag.green &#9733; Current Scenario
-        %td= s.title
+        %td
+          - if s.user
+            = link_to(s.user.name, user_path(s.user))
+          - else
+            %span.muted No owner
         %td= s.end_year
         %td= s.area_code
-        %td.narrow
-          = formatted_scenario_mutability(s)
         %td.narrow
           = formatted_scenario_compatibility(s)
         %td.actions
