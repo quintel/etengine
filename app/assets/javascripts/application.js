@@ -12,7 +12,7 @@
 //= require codemirror/javascript/javascript.js
 //= require codemirror/yaml/yaml.js
 
-$(document).ready(function () {
+$(document).on("turbo:load", function () {
   $("#api_scenario_selector select").change(function (e) {
     e.preventDefault();
     var url = location.pathname;
