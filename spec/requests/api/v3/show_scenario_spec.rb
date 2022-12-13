@@ -19,7 +19,6 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should include the basic scenario data' do
-      expect(json).to include('title'      => scenario.title)
       expect(json).to include('id'         => scenario.id)
       expect(json).to include('area_code'  => 'nl')
       expect(json).to include('start_year' => scenario.start_year)
@@ -43,7 +42,6 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should include the basic scenario data' do
-      expect(json).to include('title'      => scenario.title)
       expect(json).to include('id'         => scenario.id)
       expect(json).to include('area_code'  => 'nl')
       expect(json).to include('end_year'   => scenario.end_year)
@@ -66,7 +64,6 @@ describe 'APIv3 Scenarios' do
     end
 
     it 'should include the basic scenario data' do
-      expect(json).to include('title'      => scenario.title)
       expect(json).to include('id'         => scenario.id)
       expect(json).to include('area_code'  => 'nl')
       expect(json).to include('end_year'   => scenario.end_year)

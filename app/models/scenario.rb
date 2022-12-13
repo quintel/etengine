@@ -17,6 +17,8 @@ class Scenario < ApplicationRecord
   store :metadata, coder: JSON
 
   belongs_to :user, optional: true
+  belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
+
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :heat_network_order, dependent: :destroy
@@ -205,22 +207,6 @@ class Scenario < ApplicationRecord
 
     copy_scenario_state(Scenario.find(preset_id)) if Scenario.exists?(preset_id)
     self.preset_scenario_id = preset_id
-  end
-
-  # Public: Returns the parent preset or scenario.
-  #
-  # Use this over `parent_scenario` since `parent_scenario` will not check for
-  # the existence of a preset.
-  #
-  # Returns a Scenario, or nil.
-  def parent
-    unless defined?(@parent)
-      @parent = preset_scenario_id &&
-        ( Preset.get(preset_scenario_id).try(:to_scenario) ||
-          Scenario.find(preset_scenario_id) )
-    end
-
-    @parent
   end
 
   # a identifier for the scenario selector drop down in data.

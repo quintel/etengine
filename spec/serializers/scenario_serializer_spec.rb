@@ -6,7 +6,6 @@ describe ScenarioSerializer do
 
   shared_examples_for 'a scenario serializer' do
     it { is_expected.to include(id:          scenario.id) }
-    it { is_expected.to include(title:       scenario.title) }
     it { is_expected.to include(area_code:   scenario.area_code) }
     it { is_expected.to include(end_year:    scenario.end_year) }
     it { is_expected.to include(template:    scenario.preset_scenario_id) }

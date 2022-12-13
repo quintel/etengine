@@ -77,14 +77,12 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       )
     end
 
-    let(:params) { { autobalance: true, scenario: { use_fce: false } } }
+    let(:params) { { autobalance: true, scenario: { keep_compatible: true } } }
 
     it_behaves_like 'a successful scenario update'
 
     it 'saves the scenario attributes' do
-      allow(scenario).to receive(:save)
-      updater.apply
-      expect(scenario.reload.end_year).to eq(2035)
+      expect { updater.apply }.to change { scenario.reload.keep_compatible? }.from(false).to(true)
     end
 
     it 'does not change the user values' do

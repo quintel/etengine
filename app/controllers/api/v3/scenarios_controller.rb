@@ -271,10 +271,16 @@ module Api
       # Returns a ActionController::Parameters.
       def scenario_params
         attrs = params.permit(scenario: [
-          :area_code, :author, :country, :descale, :description, :end_year,
-          :preset_scenario_id, :region, :scenario_id, :source, :private,
-          :keep_compatible, :title,
-          user_values: {}, metadata: {}
+          :area_code,
+          :descale,
+          :end_year,
+          :keep_compatible,
+          :preset_scenario_id,
+          :private,
+          :scenario_id,
+          :source,
+          { user_values: {} },
+          { metadata: {} }
         ])
 
         attrs = attrs[:scenario] || {}

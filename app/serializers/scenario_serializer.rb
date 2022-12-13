@@ -30,8 +30,6 @@ class ScenarioSerializer
       include: { user: { only: %i[id name] } }
     ).symbolize_keys
 
-    json[:title]           = @resource.metadata['title']
-    json[:description]     = @resource.metadata['description']
     json[:template]        = @resource.preset_scenario_id
     json[:esdl_exportable] = @resource.started_from_esdl?
     json[:url]             = @controller.api_v3_scenario_url(@resource)

@@ -50,10 +50,6 @@ module Api
             .merge(balanced_values:, user_values:, metadata:)
         )
 
-        # Legacy attributes.
-        @scenario.title = @scenario_data[:title] if @scenario_data.key?(:title)
-        @scenario.description = @scenario_data[:description] if @scenario_data.key?(:description)
-
         valid? ? @scenario.save(validate: false) : false
       end
 
