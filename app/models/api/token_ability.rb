@@ -7,6 +7,7 @@ module Api
 
     def initialize(token, user)
       can :read, Scenario, user_id: nil
+      can :read, Scenario, private: false
 
       # scenarios:read
       # --------------

@@ -16,8 +16,12 @@ RSpec.describe Api::TokenAbility do
       expect(ability).to be_able_to(:read, create(:scenario, user: nil, private: false))
     end
 
-    it 'may view an owned public scenario' do
+    it 'may view a self-owned public scenario' do
       expect(ability).to be_able_to(:read, create(:scenario, user:, private: false))
+    end
+
+    it 'may view an other-owned public scenario' do
+      expect(ability).to be_able_to(:read, create(:scenario, user: create(:user), private: false))
     end
 
     it 'may not view an owned private scenario' do
@@ -30,8 +34,12 @@ RSpec.describe Api::TokenAbility do
       expect(ability).to be_able_to(:read, create(:scenario, user: nil, private: false))
     end
 
-    it 'may view an owned public scenario' do
+    it 'may view a self-owned public scenario' do
       expect(ability).to be_able_to(:read, create(:scenario, user:, private: false))
+    end
+
+    it 'may view an other-owned public scenario' do
+      expect(ability).to be_able_to(:read, create(:scenario, user: create(:user), private: false))
     end
 
     it 'may view an owned private scenario' do

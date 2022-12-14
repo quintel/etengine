@@ -260,6 +260,10 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
+
     it 'sets the new scenario to be public' do
       expect(json['private']).to be(false)
     end
@@ -280,6 +284,10 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
+
     it 'sets the new scenario to be public' do
       expect(json['private']).to be(false)
     end
@@ -299,6 +307,10 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     let(:parent) { create(:scenario, user:, private: false) }
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
 
     it 'sets the new scenario to be private' do
       expect(json['private']).to be(true)
