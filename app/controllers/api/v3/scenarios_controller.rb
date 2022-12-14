@@ -217,6 +217,14 @@ module Api
         end
       end
 
+      # DELETE /api/v3/scenarios/:id
+      #
+      # Deletes a scenario.
+      def destroy
+        current_user.scenarios.find(params[:id]).destroy
+        head :ok
+      end
+
       # GET /api/v3/scenarios/merge
       #
       # Merges two or more scenarios.

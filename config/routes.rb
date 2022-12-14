@@ -40,7 +40,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v3 do
       resources :areas, :only => [:index, :show]
-      resources :scenarios, :only => [:show, :create, :update] do
+      resources :scenarios, :only => [:show, :create, :update, :destroy] do
         member do
           get :batch
           get :application_demands, to: 'export#application_demands'
