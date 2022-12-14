@@ -6,14 +6,14 @@ module Api
     include CanCan::Ability
 
     def initialize(token, user)
-      can :read, Scenario, private: false
+      can :read, Scenario, user_id: nil
 
       # scenarios:read
       # --------------
 
       return unless token.scopes.include?('scenarios:read')
 
-      can :read, Scenario, private: true, user_id: user.id
+      can :read, Scenario, user_id: user.id
 
       # scenarios:write
       # ---------------

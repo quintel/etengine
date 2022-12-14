@@ -9,7 +9,7 @@ module Api
       end
 
       load_resource except: %i[show create destroy]
-      load_and_authorize_resource class: Scenario, only: %i[show create destroy]
+      load_and_authorize_resource class: Scenario, only: %i[index show create destroy]
 
       before_action only: %i[batch dashboard merit] do
         authorize!(:read, @scenario)
@@ -20,6 +20,33 @@ module Api
       end
 
       around_action :wrap_with_raven_context, only: :update
+
+      # GET /api/v3/scenarios
+      #
+      # Lists all scenarios belonging to the current user.
+      #
+      def index
+        unless current_user
+          render(
+            json: { errors: ['You must be authenticated to access this resource'] },
+            status: :forbidden
+          )
+          return
+        end
+
+        scenarios = Scenario
+          .accessible_by(current_ability)
+          .where(user_id: current_user.id)
+          .order(created_at: :desc)
+          .page((params[:page].presence || 1).to_i)
+          .per((params[:limit].presence || 25).to_i.clamp(1, 100))
+
+        render json: PaginationSerializer.new(
+          collection: scenarios,
+          serializer: ->(item) { ScenarioSerializer.new(self, item, {}) },
+          url_for: ->(page, limit) { api_v3_scenarios_url(page:, limit:) }
+        )
+      end
 
       # GET /api/v3/scenarios/:id
       #
