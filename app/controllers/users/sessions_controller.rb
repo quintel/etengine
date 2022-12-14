@@ -16,12 +16,19 @@ module Users
     end
 
     def destroy
+      # current_user won't be available in the block as the sign out has already happened.
+      token = access_token
+
       super do
         # TODO: Add logout_urls to the application and validate that the URL is permitted.
-        if params[:client_id].present? && (app = OAuthApplication.find_by(uid: params[:client_id]))
+        if token
+          token.revoke if token.accessible?
+
           # Don't set a flash when redirecting back to a client application.
-          flash.delete(:notice) if is_flashing_format?
-          return redirect_to(app.uri, allow_other_host: true)
+          if token.application
+            flash.delete(:notice) if is_flashing_format?
+            return redirect_to(token.application.uri, allow_other_host: true)
+          end
         end
 
         # Turbo requires redirects be :see_other (303); so override Devise default (302)
@@ -33,6 +40,12 @@ module Users
     end
 
     private
+
+    def access_token
+      @access_token ||= if params[:access_token].present? && current_user
+        current_user.access_tokens.find_by(token: params[:access_token])
+      end
+    end
 
     # Migrate a user to the new password hashing scheme.
     def migrate_legacy_password(resource, password)

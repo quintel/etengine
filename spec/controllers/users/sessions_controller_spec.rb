@@ -12,20 +12,32 @@ RSpec.describe Users::SessionsController do
     )
   end
 
+  let(:token) do
+    Doorkeeper::AccessToken.create!(
+      application:,
+      resource_owner_id: user.id
+    )
+  end
+
   before do
     request.env['devise.mapping'] = Devise.mappings[:user]
   end
 
-  context 'when signing out with an application UID' do
+  context 'when signing out with an access token' do
     before { sign_in(user) }
 
     it 'redirects to the application URL' do
-      delete :destroy, params: { client_id: application.uid }
+      delete :destroy, params: { access_token: token.token }
       expect(response).to redirect_to('https://example.com')
+    end
+
+    it 'revokes the token' do
+      expect { delete(:destroy, params: { access_token: token.token }) }
+        .to change { token.reload.revoked? }.from(false).to(true)
     end
   end
 
-  context 'when signing out with no application UID' do
+  context 'when signing out with no access token' do
     before { sign_in(user) }
 
     it 'redirects to the root URL' do
@@ -34,12 +46,29 @@ RSpec.describe Users::SessionsController do
     end
   end
 
-  context 'when signing out with an application UID that does not exist' do
+  context 'when signing out with an access token that does not exist' do
     before { sign_in(user) }
 
     it 'redirects to the root URL' do
-      delete :destroy, params: { client_id: 'invalid' }
+      delete :destroy, params: { access_token: 'invalid' }
       expect(response).to redirect_to(root_url)
+    end
+  end
+
+  context 'when signing out with an access token that belongs to someone else' do
+    before do
+      token.update!(resource_owner_id: create(:user).id)
+      sign_in(user)
+    end
+
+    it 'redirects to the root URL' do
+      delete :destroy, params: { access_token: 'invalid' }
+      expect(response).to redirect_to(root_url)
+    end
+
+    it 'does not revoke the token' do
+      expect { delete(:destroy, params: { access_token: token.token }) }
+        .not_to change { token.reload.revoked? }.from(false)
     end
   end
 end
