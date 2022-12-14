@@ -267,7 +267,7 @@ class Scenario < ApplicationRecord
   end
 
   def started_from_esdl?
-    attachment?('esdl_file')
+    attachment?('esdl_file').present?
   end
 
   # Returns whether a scenario based on this one should be private.
