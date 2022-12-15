@@ -144,7 +144,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the scenario is owned by someone else' do
       before do
-        scenario.update!(user: create(:user))
+        scenario.update!(owner: create(:user))
         put url, params: { heat_network_order: { order: valid_options.reverse } }
       end
 
@@ -156,7 +156,7 @@ describe 'APIv3 heat network orders' do
     context 'when the scenario is owned by the current user' do
       before do
         user = create(:user)
-        scenario.update!(user:)
+        scenario.update!(owner: user)
 
         put url,
           params: { heat_network_order: { order: valid_options.reverse } },

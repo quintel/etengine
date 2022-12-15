@@ -28,8 +28,7 @@ class User < ApplicationRecord
 
   # rubocop:enable Rails/InverseOf
 
-  has_many :scenarios
-
+  has_many :scenarios, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
   has_many :personal_access_tokens, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 191 }

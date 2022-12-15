@@ -88,7 +88,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     let(:user) { create(:user) }
 
-    before { source.update!(user:, private: true) }
+    before { source.update!(owner: user, private: true) }
 
     it 'returns 200 OK' do
       send_data
@@ -104,7 +104,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(response_data['user']['id']).to eq(user.id)
+      expect(response_data['owner']['id']).to eq(user.id)
     end
   end
 
@@ -117,7 +117,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     let(:user) { create(:user) }
 
-    before { source.update!(user: create(:user)) }
+    before { source.update!(owner: create(:user)) }
 
     it 'returns 200 OK' do
       send_data
@@ -133,7 +133,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(response_data['user']['id']).to eq(user.id)
+      expect(response_data['owner']['id']).to eq(user.id)
     end
   end
 
@@ -146,7 +146,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     let(:user) { create(:user) }
 
-    before { source.update!(private: true, user: create(:user)) }
+    before { source.update!(private: true, owner: create(:user)) }
 
     it 'returns 404 Not Found' do
       send_data

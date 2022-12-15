@@ -562,7 +562,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when updating a public scenario owned by someone else' do
     before do
-      scenario.update!(user: create(:user))
+      scenario.update!(owner: create(:user))
     end
 
     it 'returns 403' do
@@ -578,7 +578,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when updating their own public scenario' do
     before do
-      scenario.update!(user:)
+      scenario.update!(owner: user)
 
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },
@@ -597,7 +597,7 @@ describe 'Updating inputs with API v3' do
     before do
       user = create(:user)
 
-      scenario.update!(user:)
+      scenario.update!(owner: user)
 
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },
@@ -614,7 +614,7 @@ describe 'Updating inputs with API v3' do
     before do
       user = create(:user)
 
-      scenario.update!(user:, private: true)
+      scenario.update!(owner: user, private: true)
 
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },

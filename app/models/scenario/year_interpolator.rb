@@ -24,7 +24,7 @@ class Scenario::YearInterpolator
     clone.end_year = @year
     clone.source   = @scenario.source
     clone.private  = @scenario.clone_should_be_private?(@current_user)
-    clone.user     = @current_user
+    clone.owner    = @current_user
 
     if @year != @scenario.end_year
       clone.user_values =

@@ -36,7 +36,7 @@ module Api
 
         scenarios = Scenario
           .accessible_by(current_ability)
-          .where(user_id: current_user.id)
+          .where(owner_id: current_user.id)
           .order(created_at: :desc)
           .page((params[:page].presence || 1).to_i)
           .per((params[:limit].presence || 25).to_i.clamp(1, 100))
@@ -157,7 +157,7 @@ module Api
         @scenario.descale    = attrs[:descale]
         @scenario.attributes = attrs
 
-        @scenario.user = current_user
+        @scenario.owner = current_user
 
         Scenario.transaction do
           @scenario.save!

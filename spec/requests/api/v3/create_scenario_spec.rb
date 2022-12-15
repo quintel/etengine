@@ -100,7 +100,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       post '/api/v3/scenarios',
         params: { scenario: { user_values: { foo_demand: 10.0 } } }
 
-      expect(JSON.parse(response.body)['user']).to be_nil
+      expect(JSON.parse(response.body)['owner']).to be_nil
     end
   end
 
@@ -116,7 +116,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(JSON.parse(response.body)['user']).to include('id' => user.id)
+      expect(JSON.parse(response.body)['owner']).to include('id' => user.id)
     end
   end
 
@@ -225,7 +225,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the owner of the new scenario' do
-      expect(json.fetch('user').fetch('id')).to eq(user.id)
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
     end
   end
 
@@ -236,7 +236,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: access_token_header(user, :write)
     end
 
-    let(:parent) { create(:scenario, user:, private: true) }
+    let(:parent) { create(:scenario, owner: user, private: true) }
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 
@@ -245,7 +245,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the owner of the new scenario' do
-      expect(json.fetch('user').fetch('id')).to eq(user.id)
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
     end
   end
 
@@ -256,7 +256,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: access_token_header(user, :write)
     end
 
-    let(:parent) { create(:scenario, user:, private: true) }
+    let(:parent) { create(:scenario, owner: user, private: true) }
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 
@@ -269,7 +269,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the owner of the new scenario' do
-      expect(json.fetch('user').fetch('id')).to eq(user.id)
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
     end
   end
 
@@ -280,7 +280,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: access_token_header(user, :write)
     end
 
-    let(:parent) { create(:scenario, user: create(:user), private: false) }
+    let(:parent) { create(:scenario, owner: create(:user), private: false) }
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 
@@ -293,7 +293,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the owner of the new scenario' do
-      expect(json.fetch('user').fetch('id')).to eq(user.id)
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
     end
   end
 
@@ -304,7 +304,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: access_token_header(user, :write)
     end
 
-    let(:parent) { create(:scenario, user:, private: false) }
+    let(:parent) { create(:scenario, owner: user, private: false) }
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 
@@ -317,7 +317,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the owner of the new scenario' do
-      expect(json.fetch('user').fetch('id')).to eq(user.id)
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
     end
   end
 
@@ -328,7 +328,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: access_token_header(user, :write)
     end
 
-    let(:parent) { create(:scenario, user: create(:user), private: true) }
+    let(:parent) { create(:scenario, owner: create(:user), private: true) }
     let(:user) { create(:user) }
     let(:json) { JSON.parse(response.body) }
 

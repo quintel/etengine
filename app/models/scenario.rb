@@ -16,7 +16,7 @@ class Scenario < ApplicationRecord
   store :balanced_values
   store :metadata, coder: JSON
 
-  belongs_to :user, optional: true
+  belongs_to :owner, class_name: 'User', optional: true
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
 
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
@@ -65,7 +65,7 @@ class Scenario < ApplicationRecord
     where(%q[
         in_start_menu IS NULL
         AND keep_compatible = ?
-        AND user_id IS NULL
+        AND owner_id IS NULL
         AND (
           user_values IS NULL
           OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
@@ -276,8 +276,8 @@ class Scenario < ApplicationRecord
   # @return [Boolean]
   def clone_should_be_private?(actor)
     return false unless actor
-    return false if user_id.blank?
-    return private if user_id == actor.id
+    return false if owner_id.blank?
+    return private if owner_id == actor.id
 
     false
   end
@@ -297,6 +297,6 @@ class Scenario < ApplicationRecord
   end
 
   def validate_visibility
-    errors.add(:private, 'can not be true on an unowned scenario') if private? && user_id.blank?
+    errors.add(:private, 'can not be true on an unowned scenario') if private? && owner_id.blank?
   end
 end

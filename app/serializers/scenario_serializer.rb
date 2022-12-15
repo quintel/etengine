@@ -27,7 +27,7 @@ class ScenarioSerializer
         created_at updated_at user_values metadata
       ],
       methods: %i[start_year],
-      include: { user: { only: %i[id name] } }
+      include: { owner: { only: %i[id name] } }
     ).symbolize_keys
 
     json[:template]        = @resource.preset_scenario_id

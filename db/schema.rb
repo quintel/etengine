@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_13_200433) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_15_192020) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -213,7 +213,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_200433) do
     t.text "user_values", size: :medium
     t.integer "end_year", default: 2040
     t.boolean "keep_compatible", default: false
-    t.bigint "user_id"
+    t.bigint "owner_id"
     t.boolean "private", default: false
     t.integer "preset_scenario_id"
     t.string "area_code"
@@ -221,7 +221,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_200433) do
     t.text "balanced_values", size: :medium
     t.text "metadata"
     t.index ["created_at"], name: "index_scenarios_on_created_at"
-    t.index ["user_id"], name: "index_scenarios_on_user_id"
+    t.index ["owner_id"], name: "index_scenarios_on_owner_id"
   end
 
   create_table "staff_applications", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -270,7 +270,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_200433) do
   add_foreign_key "personal_access_tokens", "users"
   add_foreign_key "scenario_attachments", "scenarios"
   add_foreign_key "scenario_attachments", "scenarios", column: "source_scenario_id", name: "index_scenario_attachments_on_source_scenario_id"
-  add_foreign_key "scenarios", "users"
+  add_foreign_key "scenarios", "users", column: "owner_id"
   add_foreign_key "staff_applications", "oauth_applications", column: "application_id"
   add_foreign_key "staff_applications", "users"
 end

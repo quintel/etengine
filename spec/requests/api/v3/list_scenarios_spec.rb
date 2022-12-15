@@ -23,12 +23,12 @@ describe 'Deleting a scenario with API v3' do
   context 'when authenticated' do
     let(:user) { create(:user) }
 
-    let!(:scenario1) { create(:scenario, user:, private: false, created_at: 5.minutes.ago) }
-    let!(:scenario2) { create(:scenario, user:, private: true,  created_at: 4.minutes.ago) }
-    let!(:scenario3) { create(:scenario, user:, private: false, created_at: 3.minutes.ago) }
+    let!(:scenario1) { create(:scenario, owner: user, private: false, created_at: 5.minutes.ago) }
+    let!(:scenario2) { create(:scenario, owner: user, private: true,  created_at: 4.minutes.ago) }
+    let!(:scenario3) { create(:scenario, owner: user, private: false, created_at: 3.minutes.ago) }
 
     let!(:public_scenario) { create(:scenario) }
-    let!(:other_scenario) { create(:scenario, user: create(:user)) }
+    let!(:other_scenario) { create(:scenario, owner: create(:user)) }
 
     let(:json) { JSON.parse(response.body) }
 
