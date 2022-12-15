@@ -59,7 +59,7 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
-        render json: ScenarioSerializer.new(self, @scenario, filtered_params)
+        render json: ScenarioSerializer.new(self, @scenario, params)
       end
 
       # GET /api/v3/scenarios/:id/merit
@@ -82,10 +82,10 @@ module Api
         ids = params[:id].split(',')
 
         scenarios = Scenario.accessible_by(current_ability)
-          .where(id: ids).includes(:scaler)
+          .where(id: ids).includes(:owner, :scaler)
 
         @serializers = scenarios.map do |scenario|
-          ScenarioSerializer.new(self, scenario, filtered_params)
+          ScenarioSerializer.new(self, scenario, params)
         end
 
         render json: @serializers
