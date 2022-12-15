@@ -29,6 +29,9 @@
           - if staff_application.config_epilogue
             %pre.faded
               = format_staff_config(staff_application.config_epilogue, oauth_app)
+          .reminder
+            = inline_svg_tag 'hero/20/exclamation.svg'
+            Don't forget to restart the app after changing the config!
 
       .attributes
         %dl
@@ -52,6 +55,9 @@
             %p.host-help
               If you run the application at a different address, you must set the correct address
               here for authentication to work correctly.
+
+            %p.host-help
+              %mark If you change the address, you must also update the config file.
   - else
     .title
       %h4= staff_application.name

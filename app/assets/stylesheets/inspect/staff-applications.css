@@ -49,7 +49,7 @@
 
 .app-config .config-content .blocker {
   align-items: center;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px) grayscale(1);
   border-radius: 0 0 6px 6px;
   cursor: pointer;
   display: block;
@@ -80,9 +80,20 @@
   background: white;
   border-bottom: 1px solid #ccc;
   border-radius: 6px 6px 0 0;
-  display: flex;
   font-weight: bold;
-  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+}
+
+.app-config .reminder {
+  align-items: center;
+  background: white;
+  border-radius: 0 0 4px 4px;
+  border-top: 1px solid #ccc;
+  color: #b91c1c;
+  display: flex;
+  gap: 0.25rem;
+  font-weight: 600;
+  margin: 0 -1.5rem;
   padding: 0.75rem 1.5rem;
 }
 
@@ -129,7 +140,14 @@
 .staff-application .host-help {
   color: #888;
   margin-top: -0.5rem;
-  width: 400px;
+  margin-bottom: 1rem;
+  width: 450px;
+}
+
+.staff-application .host-help mark {
+  background: #fef3c7;
+  color: #78350f;
+  padding: 2px;
 }
 
 .staff-application .hidden {
