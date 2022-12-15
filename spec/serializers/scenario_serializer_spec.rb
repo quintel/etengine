@@ -5,13 +5,14 @@ describe ScenarioSerializer do
   let(:scenario)   { FactoryBot.create(:scenario) }
 
   shared_examples_for 'a scenario serializer' do
-    it { is_expected.to include(id:          scenario.id) }
-    it { is_expected.to include(area_code:   scenario.area_code) }
-    it { is_expected.to include(end_year:    scenario.end_year) }
-    it { is_expected.to include(template:    scenario.preset_scenario_id) }
-    it { is_expected.to include(source:      scenario.source) }
-    it { is_expected.to include(created_at:  scenario.created_at) }
+    it { is_expected.to include(id: scenario.id) }
+    it { is_expected.to include(area_code: scenario.area_code) }
+    it { is_expected.to include(end_year: scenario.end_year) }
+    it { is_expected.to include(template: scenario.preset_scenario_id) }
+    it { is_expected.to include(source: scenario.source) }
+    it { is_expected.to include(created_at: scenario.created_at) }
     it { is_expected.to include(user_values: scenario.user_values) }
+    it { is_expected.to include(balanced_values: scenario.balanced_values) }
     it { is_expected.to include(metadata: {}) }
 
     it { is_expected.to include(url: 'url') }

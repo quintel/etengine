@@ -24,7 +24,7 @@ class ScenarioSerializer
     json = @resource.as_json(
       only: %i[
         id area_code end_year scaling source private keep_compatible
-        created_at updated_at user_values metadata
+        created_at updated_at user_values balanced_values metadata
       ],
       methods: %i[start_year],
       include: { owner: { only: %i[id name] } }
