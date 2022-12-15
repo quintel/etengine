@@ -42,8 +42,8 @@
           - if s.id.to_s == params[:api_scenario_id]
             %span.tag.green &#9733; Current Scenario
         %td
-          - if s.user
-            = link_to(s.user.name, user_path(s.user))
+          - if s.owner
+            = link_to(s.owner.name, user_path(s.owner))
           - else
             %span.muted No owner
         %td= s.end_year

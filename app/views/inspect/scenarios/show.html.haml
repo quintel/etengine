@@ -17,8 +17,8 @@
       %tr
         %th Owner
         %td
-          - if @scenario.user
-            = link_to(@scenario.user.name, user_path(@scenario.user))
+          - if @scenario.owner
+            = link_to(@scenario.owner.name, user_path(@scenario.owner))
           - else
             %span.muted No owner
       %tr
