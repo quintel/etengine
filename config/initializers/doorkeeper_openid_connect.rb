@@ -57,6 +57,10 @@ Doorkeeper::OpenidConnect.configure do
   # Expiration time on or after which the ID Token MUST NOT be accepted for processing. (default 120 seconds).
   # expiration 600
 
+  end_session_endpoint do
+    destroy_user_session_url
+  end
+
   claims do
     # rubocop:disable Style/SymbolProc
     normal_claim(:email) do |resource_owner|
