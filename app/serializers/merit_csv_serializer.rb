@@ -44,6 +44,7 @@ class MeritCSVSerializer < CausalityCurvesCSVSerializer
 
   private
 
+  # Remove curtailment
   def producers
     @node_customisation.customise_producers(
       super,
@@ -62,6 +63,10 @@ class MeritCSVSerializer < CausalityCurvesCSVSerializer
 
   def producer_types
     %i[producer flex]
+  end
+
+  def exclude_producer_subtypes
+    %i[curtailment]
   end
 
   def consumer_types
