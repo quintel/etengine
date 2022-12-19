@@ -11,4 +11,8 @@ class ReconciliationCSVSerializer < CausalityCurvesCSVSerializer
   def consumer_types
     %i[consumer export storage]
   end
+
+  def exclude_producer_subtypes
+    []
+  end
 end
