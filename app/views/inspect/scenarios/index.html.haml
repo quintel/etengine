@@ -32,7 +32,9 @@
       %tr{ class: s.id.to_s == params[:api_scenario_id] ? 'active' : '' }
         %td.text-center
           - if s.private?
-            %span.tag.red Private
+            %span.tag.private
+              = inline_svg_tag 'font-awesome/16/lock.svg'
+              Private
           - else
             %span.tag.gray Public
         %td

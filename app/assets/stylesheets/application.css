@@ -355,6 +355,17 @@ table.scenario-list .actions span.muted {
   color: #b91c1c;
 }
 
+.tag.private {
+  background: #b91c1c;
+  color: white;
+}
+
+.tag.private svg {
+  height: 11px;
+  margin-top: -1px;
+  width: 10px;
+}
+
 .CodeMirror {
   border-radius: 4px;
   border: 1px solid #ccc;

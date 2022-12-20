@@ -38,7 +38,9 @@
         %th Visibility
         %td
           - if @scenario.private?
-            %span.tag.red Private
+            %span.tag.private
+              = inline_svg_tag 'font-awesome/16/lock.svg'
+              Private
           - else
             %span.tag.gray Public
       %tr

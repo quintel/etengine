@@ -101,24 +101,8 @@ module InspectHelper
   #
   # Returns a string.
   def preset_or_scenario_edge(id)
-    if preset = Preset.get(id)
-      git_ref = Etsource::Base.instance.get_latest_import_sha
-      atl_doc = Atlas::Preset.all.find { |p| p.id == preset.id }
-
-      if atl_doc
-        edge = "https://github.com/quintel/etsource/blob/" +
-          "#{ git_ref }/data/" +
-          "#{ atl_doc.path.relative_path_from(Atlas.data_dir) }"
-
-        name = atl_doc.path.relative_path_from(Atlas::Preset.directory).to_s
-      else
-        edge = nil
-        name = id.to_s
-      end
-    else
-      edge = inspect_scenario_path(id: id)
-      name = id.to_s
-    end
+    edge = inspect_scenario_path(id:)
+    name = id.to_s
 
     edge ? link_to(name, edge) : name
   end
