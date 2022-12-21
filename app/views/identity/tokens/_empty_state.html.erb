@@ -6,13 +6,8 @@
       <%= t('identity.tokens.index.create_token') %>
     <% end %>
 
-    <button
-      name="button"
-      type="button"
-      class="<%= button_classes(size: :lg) %>"
-      disabled
-    >
+    <%= link_to 'https://docs.energytransitionmodel.com/api/authentication', target: '_blank', class: button_classes(size: lg) do %>
       <%= t('identity.tokens.index.learn_more') %>
-    </button>
+    <% end %>
   <% end %>
 <% end %>
