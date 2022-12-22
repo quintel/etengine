@@ -69,6 +69,14 @@ module Api
       rescue ActionDispatch::Http::Parameters::ParseError => e
         render status: 400, json: { errors: [e.message] }
       end
+
+      def doorkeeper_unauthorized_render_options(error:)
+        { json: { errors: [error.description] } }
+      end
+
+      def doorkeeper_forbidden_render_options(error:)
+        { json: { errors: [error.description] } }
+      end
     end
   end
 end
