@@ -113,6 +113,8 @@ Rails.application.routes.draw do
           as: :curves_residual_load_download
       end
 
+      resources :saved_scenarios
+
       resources :inputs, :only => [:index, :show] do
         get :list, :on => :collection
       end

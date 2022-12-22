@@ -60,8 +60,7 @@ module ETEngine
         conn.request(:authorization, 'Bearer', -> { user_jwt(user, scopes:) })
         conn.request(:json)
         conn.response(:json)
-
-        conn.adapter(Faraday.default_adapter)
+        conn.response(:raise_error)
       end
     end
   end

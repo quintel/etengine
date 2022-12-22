@@ -24,4 +24,11 @@ module AuthorizationHelper
     token = create(:access_token, resource_owner_id: user.id, scopes:, expires_in: expires_in.to_i)
     { 'Authorization' => "Bearer #{token.token}" }
   end
+
+  def stub_faraday_422(body)
+    faraday_response = instance_double(Faraday::Response)
+    allow(faraday_response).to receive(:[]).with(:body).and_return('errors' => body)
+
+    Faraday::UnprocessableEntityError.new(nil, faraday_response)
+  end
 end

@@ -569,6 +569,7 @@ DEPENDENCIES
   dry-initializer
   dry-monads
   dry-struct
+  dry-validation
   erb-formatter
   factory_bot_rails
   faraday
