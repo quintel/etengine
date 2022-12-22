@@ -147,10 +147,6 @@ describe 'Custom curves', :etsource_fixture do
       it 'is 404 Not Found' do
         expect(response).to be_not_found
       end
-
-      it 'sends an empty JSON object' do
-        expect(JSON.parse(response.body)).to eq({})
-      end
     end
 
     context 'when showing a curve' do
@@ -550,11 +546,6 @@ describe 'Custom curves', :etsource_fixture do
       it 'is 404 Not Found' do
         request
         expect(response).to be_not_found
-      end
-
-      it 'returns JSON representing no curve attached' do
-        request
-        expect(JSON.parse(response.body)).to eq({})
       end
 
       it 'does not change the attachment' do

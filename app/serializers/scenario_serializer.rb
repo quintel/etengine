@@ -5,14 +5,10 @@ class ScenarioSerializer
   #   The controller which created the serializer; required to
   # @param [Scenario] scenario
   #   The scenarios for which we want JSON.
-  # @param [Hash] options
-  #   Options for customising the returned JSON.
   #
-  def initialize(controller, scenario, options = {})
+  def initialize(controller, scenario)
     @controller = controller
     @resource   = scenario
-
-    @inputs = ActiveModel::Type::Boolean.new.cast(options[:include_inputs])
   end
 
   # Creates a Hash suitable for conversion to JSON by Rails.
@@ -23,20 +19,16 @@ class ScenarioSerializer
   def as_json(*)
     json = @resource.as_json(
       only: %i[
-        id area_code end_year scaling source private keep_compatible
+        id area_code end_year source private keep_compatible
         created_at updated_at user_values balanced_values metadata
       ],
-      methods: %i[start_year],
-      include: { owner: { only: %i[id name] } }
+      methods: %i[start_year]
     ).symbolize_keys
 
-    json[:template]        = @resource.preset_scenario_id
-    json[:esdl_exportable] = @resource.started_from_esdl?
-    json[:url]             = @controller.api_v3_scenario_url(@resource)
-
-    if @inputs
-      json[:inputs] = InputSerializer.collection(Input.all, @resource, extra_attributes: true)
-    end
+    json[:owner]    = @resource.owner&.as_json(only: %i[id name])
+    json[:scaling]  = @resource.scaler&.as_json(except: %i[id scenario_id])
+    json[:template] = @resource.preset_scenario_id
+    json[:url]      = @controller.api_v3_scenario_url(@resource)
 
     json
   end

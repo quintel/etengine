@@ -48,7 +48,7 @@ module Api
 
         render json: PaginationSerializer.new(
           collection: scenarios,
-          serializer: ->(item) { ScenarioSerializer.new(self, item, {}) },
+          serializer: ->(item) { ScenarioSerializer.new(self, item) },
           url_for: ->(page, limit) { api_v3_scenarios_url(page:, limit:) }
         )
       end
@@ -59,7 +59,7 @@ module Api
       # the action returns an empty hash and a 404 status code
       #
       def show
-        render json: ScenarioSerializer.new(self, @scenario, params)
+        render json: ScenarioSerializer.new(self, @scenario)
       end
 
       # GET /api/v3/scenarios/:id/merit
@@ -85,7 +85,7 @@ module Api
           .where(id: ids).includes(:owner, :scaler)
 
         @serializers = scenarios.map do |scenario|
-          ScenarioSerializer.new(self, scenario, params)
+          ScenarioSerializer.new(self, scenario)
         end
 
         render json: @serializers
@@ -168,7 +168,7 @@ module Api
           @scenario.save!
         end
 
-        render json: ScenarioSerializer.new(self, @scenario, filtered_params.merge(detailed: true))
+        render json: ScenarioSerializer.new(self, @scenario)
       rescue ActiveRecord::RecordInvalid
         render json: { errors: @scenario.errors }, status: 422
       end
@@ -183,7 +183,7 @@ module Api
           @interpolated.save!
         end
 
-        render json: ScenarioSerializer.new(self, @interpolated, {})
+        render json: ScenarioSerializer.new(self, @interpolated)
       rescue ActionController::ParameterMissing
         render(
           status: :bad_request,
@@ -275,7 +275,7 @@ module Api
           scenario.save
 
           # redirect_to api_v3_scenario_url(scenario)
-          render json: ScenarioSerializer.new(self, scenario, filtered_params)
+          render json: ScenarioSerializer.new(self, scenario)
         else
           render json: { errors: merger.errors }, status: 422
         end
@@ -302,7 +302,7 @@ module Api
       # Returns a ActionController::Parameters
       def filtered_params
         params.permit(
-          :autobalance, :force, :reset, :detailed, :include_inputs, gqueries: []
+          :autobalance, :force, :reset, gqueries: []
         ).merge(scenario: scenario_params)
       end
 

@@ -25,27 +25,14 @@ describe ScenarioSerializer do
     end
   end
 
-  context 'when include_inputs="false"' do
+  context 'when serializer a scenario' do
     subject do
-      described_class.new(controller, scenario, detailed: 'false', include_inputs: 'false').as_json
+      described_class.new(controller, scenario).as_json
     end
 
     it_should_behave_like 'a scenario serializer'
 
     it { is_expected.not_to have_key(:inputs) }
-  end
-
-  context 'when "include_inputs=true"' do
-    subject do
-      described_class.new(controller, scenario, include_inputs: true).as_json
-    end
-
-    it_should_behave_like 'a scenario serializer'
-
-    it 'should include the default input data' do
-      expect(subject).to have_key(:inputs)
-      expect(subject[:inputs].keys.sort).to eq(Input.all.map(&:key).sort)
-    end
   end
 
   context 'with a private scenario' do

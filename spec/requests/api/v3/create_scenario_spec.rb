@@ -56,19 +56,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(data).not_to have_key('inputs')
     end
 
-    it 'should optionally include inputs' do
-      expect do
-        post '/api/v3/scenarios', params: { include_inputs: true }
-      end.to change { Scenario.count }.by(1)
-
-      expect(response.status).to eql(200)
-
-      data     = JSON.parse(response.body)
-      scenario = Scenario.last
-
-      expect(data).to have_key('inputs')
-    end
-
     it 'should save custom end years' do
       running_this = -> {
         post '/api/v3/scenarios', params: { scenario: { end_year: 2031 } }

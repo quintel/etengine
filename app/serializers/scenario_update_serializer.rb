@@ -3,7 +3,6 @@ class ScenarioUpdateSerializer
     @controller = controller
     @updater = updater
     @requested_queries = params[:gqueries] || []
-    @detailed = ActiveModel::Type::Boolean.new.cast(params[:detailed])
 
     @errors  = []
     @results = {}
@@ -18,9 +17,7 @@ class ScenarioUpdateSerializer
   # @return [Hash]
   #
   def as_json(*)
-    serializer = ScenarioSerializer.new(
-      @controller, @updater.scenario, detailed: @detailed)
-
+    serializer = ScenarioSerializer.new(@controller, @updater.scenario)
     { scenario: serializer, gqueries: @results }
   end
 
@@ -51,7 +48,7 @@ class ScenarioUpdateSerializer
   # if a query is not present.
   #
   # @return [true, false]
-  #
+
   def assert_valid_gqueries!
     return true if queries.length == @requested_queries.length
 
