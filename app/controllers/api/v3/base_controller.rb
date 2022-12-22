@@ -11,19 +11,19 @@ module Api
         if e.model
           render_not_found(errors: ["#{e.model.underscore.humanize} not found"])
         else
-          render_not_found(errors: ['Not found'])
+          render_not_found
         end
       end
 
       rescue_from ActiveModel::RangeError do
-        render_not_found(errors: ['Not found'])
+        render_not_found
       end
 
       rescue_from CanCan::AccessDenied do |e|
         if e.subject.is_a?(Scenario) && !e.subject.private?
           render status: :forbidden, json: { errors: ['Scenario does not belong to you'] }
         else
-          render status: :not_found, json: { errors: ['Not found'] }
+          render_not_found
         end
       end
 
@@ -54,7 +54,7 @@ module Api
       end
 
       # Send a 404 response with an optional JSON body.
-      def render_not_found(body = {})
+      def render_not_found(body = { errors: ['Not found'] })
         render json: body, status: :not_found
       end
 
