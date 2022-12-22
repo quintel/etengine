@@ -91,6 +91,10 @@ RSpec.describe 'Registrations', type: :system do
       create(:user, name: 'John Doe')
     end
 
+    before do
+      allow(Identity::SyncUserJob).to receive(:perform_later)
+    end
+
     context 'when visiting signed out' do
       it 'tells the user to sign in' do
         visit '/identity/change_name'
