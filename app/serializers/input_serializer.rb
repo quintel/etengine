@@ -30,11 +30,15 @@ class InputSerializer
   # @param [true, false] extras
   #   Do you want the extra attributes (key, unit, step) to be included in
   #   the output?
-  def self.collection(inputs, scenario, extra_attributes: false, default_values_from: :parent)
+  def self.collection(
+    inputs, scenario, can_change: true, extra_attributes: false, default_values_from: :parent
+  )
     scenario = IndifferentScenario.from(scenario)
 
     inputs.each_with_object({}) do |input, data|
-      data[input.key] = serializer_for(input, scenario, extra_attributes:, default_values_from:)
+      data[input.key] = serializer_for(
+        input, scenario, can_change:, extra_attributes:, default_values_from:
+      )
     end
   end
 
@@ -65,10 +69,11 @@ class InputSerializer
   #   When a scenario inherits from another, the default values are set to be those from the parent
   #   scenario. Set this to `:original` to use the default values for the dataset instead.
   #
-  def initialize(input, scenario, extra_attributes: false, default_values_from: :parent)
-    @input               = input
-    @scenario            = IndifferentScenario.from(scenario)
-    @extra_attributes    = extra_attributes
+  def initialize(input, scenario, can_change: true, extra_attributes: false, default_values_from: :parent)
+    @input            = input
+    @scenario         = IndifferentScenario.from(scenario)
+    @can_change       = can_change
+    @extra_attributes = extra_attributes
 
     @default_values_from =
       if default_values_from == :parent && scenario.parent
@@ -101,7 +106,7 @@ class InputSerializer
     json[:user] = user_val if user_val.present?
     json[:cache_error] = values[:error] if values[:error]
 
-    json[:disabled] = true if values[:disabled] || @scenario.inputs.disabled?(@input)
+    json[:disabled] = !@can_change || values[:disabled] || @scenario.inputs.disabled?(@input)
     json[:disabled_by] = @input.disabled_by if @input.disabled_by.present?
 
     json[:share_group] = @input.share_group if @input.share_group.present?

@@ -4,7 +4,10 @@ require 'spec_helper'
 
 RSpec.describe InputSerializer do
   let(:scenario) { Scenario.default }
-  let(:json) { described_class.new(input, scenario, extra_attributes: false).as_json }
+
+  let(:json) do
+    described_class.new(input, scenario, can_change: true, extra_attributes: false).as_json
+  end
 
   context 'when the input is configured to be disabled by another' do
     let(:input) { Input.get(:disabled_by_future) }
@@ -22,12 +25,24 @@ RSpec.describe InputSerializer do
     end
   end
 
+  context 'when can_change is false' do
+    let(:input) { Input.get(:future_input) }
+
+    let(:json) do
+      described_class.new(input, scenario, can_change: false, extra_attributes: false).as_json
+    end
+
+    it 'does disables the input' do
+      expect(json[:disabled]).to be(true)
+    end
+  end
+
   context 'when the input is disabled by a set mutually-exclusive input' do
     let(:input) { Input.get(:disabled_by_future) }
 
     context 'when the exclusive input has no value' do
-      it 'does not have a "disabled" key' do
-        expect(json.key?(:disabled)).to be(false)
+      it 'is not disabled' do
+        expect(json[:disabled]).to be(false)
       end
     end
 

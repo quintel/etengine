@@ -72,6 +72,7 @@ module Api
 
       def serializer_args(extra_attributes:)
         {
+          can_change: current_ability.can?(:update, @scenario),
           default_values_from: params[:defaults] ? params[:defaults].to_sym : :parent,
           extra_attributes:
         }

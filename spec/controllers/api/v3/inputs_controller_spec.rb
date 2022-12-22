@@ -65,12 +65,12 @@ describe Api::V3::InputsController do
         expect(gql_input).to receive(:disabled_in_current_area?)    { false }
       end
 
-      it 'should be present when an input is disabled' do
+      it 'should be true when an input is disabled' do
         expect(json[static_input.key]).to include('disabled' => true)
       end
 
-      it 'should not be present when an input is not disabled' do
-        expect(json[gql_input.key]).not_to have_key('disabled')
+      it 'should be false when an input is not disabled' do
+        expect(json[gql_input.key]).to include('disabled' => false)
       end
     end # "disabled" attribute
 
@@ -237,9 +237,9 @@ describe Api::V3::InputsController do
        expect(json['disabled']).to be_truthy
      end
 
-     it 'is not present when an input is not disabled' do
+     it 'is false when an input is not disabled' do
        expect(static_input).to receive(:disabled_in_current_area?) { false }
-       expect(json).not_to have_key('disabled')
+       expect(json).to include('disabled' => false)
      end
    end # "disabled" attribute
 
