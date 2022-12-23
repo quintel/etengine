@@ -28,7 +28,7 @@ export default class extends Controller {
   copy(event) {
     event.preventDefault();
 
-    const text = this.sourceTarget.innerHTML || this.sourceTarget.value;
+    const text = this.sourceTarget.innerText || this.sourceTarget.value;
     navigator.clipboard.writeText(text).then(() => this.copied());
   }
 
