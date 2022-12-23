@@ -59,6 +59,7 @@ module ETEngine
 
             # Authentication.
             NEXTAUTH_URL=%<uri>s
+            NEXTAUTH_SECRET=none
             AUTH_CLIENT_ID=%<uid>s
             AUTH_CLIENT_SECRET=%<secret>s
 
