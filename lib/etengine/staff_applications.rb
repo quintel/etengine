@@ -5,7 +5,7 @@ module ETEngine
   module StaffApplications
     class << self
       def all
-        [etmodel]
+        [etmodel, transition_paths]
       end
 
       def find(key)
@@ -45,21 +45,23 @@ module ETEngine
         AppConfig.new(
           key: 'transition_paths',
           name: 'Transition Paths (Local)',
-          scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+          scopes: 'openid email profile public scenarios:read scenarios:write',
           uri: 'http://localhost:3005',
+          redirect_path: '/api/auth/callback/identity',
           run_command: 'yarn dev -p %<port>s',
           config_path: '.env.local',
           config_content: <<~ENV,
             # Protocol and host for ETEngine. No trailing slash please.
             NEXT_PUBLIC_ETENGINE_URL=%<etengine_url>s
 
-            # OAuth client credentials for ETEngine.
-            NEXT_PUBLIC_AUTH_CLIENT_ID=%<uid>s
-            NEXT_PUBLIC_AUTH_CLIENT_SECRET=%<secret>s
-          ENV
-          config_epilogue: <<~ENV
             # Protocol and host for ETModel. No trailing slash please.
             NEXT_PUBLIC_ETMODEL_URL=<your etmodel url>
+
+            # Authentication.
+            NEXTAUTH_URL=%<uri>s
+            AUTH_CLIENT_ID=%<uid>s
+            AUTH_CLIENT_SECRET=%<secret>s
+
           ENV
         )
       end
