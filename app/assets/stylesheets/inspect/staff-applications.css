@@ -77,11 +77,18 @@
 }
 
 .app-config .path {
+  align-items: center;
   background: white;
   border-bottom: 1px solid #ccc;
   border-radius: 6px 6px 0 0;
+  display: flex;
   font-weight: bold;
   padding: 0.75rem 1.5rem;
+}
+
+.app-config .path .app-path {
+  color: #999;
+  font-weight: normal;
 }
 
 .app-config .reminder {

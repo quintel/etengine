@@ -9,7 +9,10 @@
 
     .info
       .app-config{ data: { controller: 'clipboard' } }
-        .path= staff_application.config_path
+        .path
+          .app-path
+            == #{staff_application.name.chomp(' (Local)').downcase.gsub(' ', '_')}/
+          = staff_application.config_path
         .config-content
           .blocker{ onclick: "this.style.display = 'none'" }
             %span.button Click to view config
