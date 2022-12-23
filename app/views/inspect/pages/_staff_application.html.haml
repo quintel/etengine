@@ -34,7 +34,7 @@
               = format_staff_config(staff_application.config_epilogue, oauth_app)
           .reminder
             = inline_svg_tag 'hero/20/exclamation.svg'
-            Don't forget to restart the app after changing the config!
+            == Restart the #{staff_application.name.chomp(' (Local)')} application after changing the config!
 
       .attributes
         %dl
