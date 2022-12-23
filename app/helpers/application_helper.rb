@@ -101,7 +101,8 @@ module ApplicationHelper
   # Formats a staff config excerpt for the given application.
   def format_staff_config(config, app)
     format(config, app.attributes.symbolize_keys.merge(
-      etengine_url: root_url.chomp('/')
+      etengine_url: root_url.chomp('/'),
+      etmodel_url: Settings.etmodel_uri || 'http://YOUR_ETMODEL_URL'
     ))
   end
 

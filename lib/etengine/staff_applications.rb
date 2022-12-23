@@ -55,7 +55,7 @@ module ETEngine
             NEXT_PUBLIC_ETENGINE_URL=%<etengine_url>s
 
             # Protocol and host for ETModel. No trailing slash please.
-            NEXT_PUBLIC_ETMODEL_URL=<your etmodel url>
+            NEXT_PUBLIC_ETMODEL_URL=%<etmodel_url>s
 
             # Authentication.
             NEXTAUTH_URL=%<uri>s
