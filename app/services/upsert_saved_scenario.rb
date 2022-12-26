@@ -44,7 +44,7 @@ class UpsertSavedScenario
   def upsert_saved_scenario(client, params)
     Success(client.public_send(@method, @endpoint_path, params).body)
   rescue Faraday::UnprocessableEntityError => e
-    Failure(e.response[:body])
+    Failure(e.response[:body]['errors'])
   rescue Faraday::ResourceNotFound
     Failure(ServiceResponse.not_found)
   end

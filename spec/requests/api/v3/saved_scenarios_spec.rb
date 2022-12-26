@@ -234,7 +234,7 @@ RSpec.describe 'Saved scenarios API' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'returns the saved scenario data' do
+      it 'returns the error' do
         expect(JSON.parse(response.body)).to eq('errors' => { 'title' => ['is missing'] })
       end
     end
