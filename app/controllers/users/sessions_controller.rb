@@ -61,7 +61,7 @@ module Users
     end
 
     def after_sign_out_path_for(...)
-      Settings.auth.default_sign_out_url.presence || super
+      Settings.etmodel_uri.presence || super
     end
   end
 end

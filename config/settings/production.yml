@@ -6,4 +6,3 @@ etmodel_uri: https://energytransitionmodel.com
 
 auth:
   issuer: https://engine.energytransitionmodel.com
-  default_sign_out_url: https://energytransitionmodel.com

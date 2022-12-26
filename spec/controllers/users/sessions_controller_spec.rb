@@ -40,18 +40,18 @@ RSpec.describe Users::SessionsController do
   context 'when signing out with no access token' do
     before { sign_in(user) }
 
-    it 'redirects to the root URL' do
+    it 'redirects to ETModel' do
       delete :destroy
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(Settings.etmodel_uri)
     end
   end
 
   context 'when signing out with an access token that does not exist' do
     before { sign_in(user) }
 
-    it 'redirects to the root URL' do
+    it 'redirects to ETModel' do
       delete :destroy, params: { access_token: 'invalid' }
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(Settings.etmodel_uri)
     end
   end
 
@@ -61,9 +61,9 @@ RSpec.describe Users::SessionsController do
       sign_in(user)
     end
 
-    it 'redirects to the root URL' do
+    it 'redirects to ETModel' do
       delete :destroy, params: { access_token: 'invalid' }
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(Settings.etmodel_uri)
     end
 
     it 'does not revoke the token' do
