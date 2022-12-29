@@ -210,3 +210,21 @@ end
 if prompt.yes?("Do you want to remove the backup file? (#{file.name})")
   File.unlink(file.path)
 end
+
+puts <<-MESSAGE
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │            !!!️  CONNECTING ETMODEL AND TRANSITION PATHS  !!!️            │
+  ├─────────────────────────────────────────────────────────────────────────┤
+  │ Importing a database dump removed the credentials used to connect your  │
+  │ local ETModel or Transition Paths app with ETEngine.                    │
+  │                                                                         │
+  │ If you wish you connect ETModel or Transition Paths with your local     │
+  │ ETEngine:                                                               │
+  │                                                                         │
+  │ 1. Start ETEngine: bundle exec rails server.                            │
+  │ 2. Sign in to your account at http://localhost:3000.                    │
+  │ 3. Scroll down and create a new ETModel or Transition Path application. │
+  │ 4. Copy the generated config to the other application.                  │
+  │ 5. Restart the other application.                                       │
+  └─────────────────────────────────────────────────────────────────────────┘
+MESSAGE
