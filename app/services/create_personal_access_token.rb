@@ -7,7 +7,7 @@ class CreatePersonalAccessToken
     include ActiveModel::Validations
     extend ActiveModel::Translation
 
-    SCOPES_PUBLIC = 'public'
+    SCOPES_PUBLIC = 'openid public'
     SCOPES_READ   = "#{SCOPES_PUBLIC} scenarios:read".freeze
     SCOPES_WRITE  = "#{SCOPES_READ} scenarios:write".freeze
     SCOPES_DELETE = "#{SCOPES_WRITE} scenarios:delete".freeze
