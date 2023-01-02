@@ -108,9 +108,9 @@ RSpec.describe CreatePersonalAccessToken do
 
     include_examples 'creating a personal access token'
 
-    it 'sets scopes to "public scenarios:read scenarios:write"' do
+    it 'sets scopes to "openid public scenarios:read scenarios:write"' do
       expect(action.value!.oauth_access_token.scopes.to_a)
-        .to eq(%w[public scenarios:read scenarios:write])
+        .to eq(%w[openid public scenarios:read scenarios:write])
     end
   end
 
