@@ -1,19 +1,18 @@
 ---
 nl:
-  select_language: Language
+  select_language: Taal
   identity:
-    cancel: Cancel
-    return_to_etm: Return to the ETM
+    cancel: Annuleren
+    return_to_etm: Ga terug naar het ETM
     profile_email_component:
-      change_address: Change e-mail address
-      confirmed: Verified
-      explanation: This address is used to sign in to your account, and to send you important notifications.
-      not_confirmed: Not verified
+      change_address: Wijzig e-mailadres
+      confirmed: Bevestigd
+      explanation: Dit adres wordt gebuikt om in te loggen en om je belangrijke notificaties te sturen.
+      not_confirmed: Niet bevestigd
       not_confirmed_message: |
-        This e-mail address has not yet been verified. Please check your e-mail address for
-        instructions.
-      resend_confirmation: Resend confirmation instructions
-    sign_out: Afmelden
+        Dit e-mailadres is nog niet bevestigd. Controleer je e-mailadres op instructies.
+      resend_confirmation: Stuur nieuwe instructies ter bevestiging
+    sign_out: Uitloggen
     site_title: Energietransitiemodel
 
     # Pages
@@ -21,57 +20,58 @@ nl:
     authorized_applications:
       index:
         empty_state:
-          title: You have no authorised third-party applications
+          title: Je hebt geen geen applicaties van derden toestemming gegeven
           message: |
-            You can authorise third-parties to access data from your account without providing them
-            your password. These will ask for permission to access your account, after which they
-            will be listed here.
+            Je kunt derden toestemming geven om gegevens van je account op te vragen, zonder je 
+            wachtwoord te delen. Deze partijen zullen toestemming vragen om toegang te krijgen tot 
+            je account, waarna ze hier worden weergegeven.
 
-            You may revoke these permissions at any time.
-        explanation: Control who can access your account and data.
-        title: Authorised applications
+            Je kunt deze toestemming op elk moment intrekken.
+        explanation: Beheer wie toegang heeft tot je account en gegevens.
+        title: Geautoriseerde applicaties
 
     settings:
       edit_email:
-        new_email: New e-mail address
-        new_email_hint: A confirmation will be sent to this address before the change takes effect
-        submit: Change e-mail address
-        title: Change your e-mail address
+        new_email: Nieuw e-mailadres
+        new_email_hint: Er wordt een bevestiging naar dit adres verzonden voor de wijziging actief wordt
+        submit: Wijzig e-mailadres
+        title: Wijzig je e-mailadres
       edit_name:
-        new_name: New name
+        new_name: Nieuwe naam
         new_name_hint: |
-          This name will be used when we communicate with you, and alongside your public scenarios.
-        submit: Change name
-        title: Change your account name
+          Deze naam gebruiken we in onze communicatie naar jou en wordt weergegeven bij jouw openbare scenario's.
+        submit: Wijzig naam
+        title: Wijzig je accountnaam
       edit_password:
-        current_password: Current password
-        current_password_hint: Confirm the password you currently use to sign in
-        new_password: New password
+        current_password: Huidig wachtwoord
+        current_password_hint: Bevestig het wachtwoord dat je momenteel gebruikt om in te loggen
+        new_password: Nieuw wachtwoord
         new_password_hint: |
-          Your password needs to be at least %{min_length} characters long. Use multiple words or
-          phrases, numbers, or symbols to make it more secure.
-        submit: Change password
-        title: Change your password
+          Je wachtwoord moet ten minste %{min_length} tekens lang zijn. Gebruik meerdere woorden, 
+          cijfers of symbolen om het beter te beveiligen.
+        submit: Wijzig wachtwoord
+        title: Wijzig je wachtwoord
       index:
         account: Account
-        change_name: Change name
-        change_password: Change password
-        explanation: Change your e-mail address, password, or account settings.
-        name_explanation: This name will be shown on your public scenarios.
+        change_name: Wijzig naam
+        change_password: Wijzig wachtwoord
+        explanation: Wijzig je e-mailadres, wachtwoord of accountinstellingen.
+        name_explanation: Deze naam wordt weergegeven bij jouw openbare scenario's.
         password_explanation: |
-          Your password is used to sign in. Never give this to anyone else: if another application
-          needs to access data on your account, create a personal access token.
-        profile: Profile
-        title: Your profile
+          Dit wachtwoord wordt gebruikt om in te loggen. Deel dit wachtwoord nooit met iemand anders: 
+          als een andere applicatie toegang nodig heeft tot data van jouw account, maak dan een 
+          persoonlijk toegangstoken aan.
+        profile: Profiel
+        title: Jouw profiel
 
     tokens:
       index:
-        create_token: Create an access token
+        create_token: Maak een toegangstoken aan
         empty_state:
-          title: You have no access tokens
+          title: Je hebt geen toegangstokens
           message: |
-            Access tokens allow third-party applications to access your account without having to
-            use your password. You can revoke access tokens at any time.
-        explanation: Generate personal tokens to use the API.
-        learn_more: Learn more
-        title: Personal access tokens
+            Toegangstokens stellen derden in staat om toegang te krijgen tot jouw account zonder je 
+            wachtwoord te hoeven gebruiken. Je kunt toegangstokens op elk moment intrekken.
+        explanation: Maak persoonlijke tokens aan om de API te gebruiken.
+        learn_more: Meer informatie
+        title: Persoonlijke toegangstokens

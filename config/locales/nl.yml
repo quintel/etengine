@@ -43,7 +43,7 @@ nl:
       user:
         email: Emailadres
         password: Wachtwoord
-        password_confirmation: Re-enter password
-        current_password: Current password
-        unconfirmed_email: New e-mail address
-        name: Your name
+        password_confirmation: Voer wachtwoord nogmaals in
+        current_password: Huidig wachtwoord
+        unconfirmed_email: Nieuw e-mailadres
+        name: Jouw naam

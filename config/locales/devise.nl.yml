@@ -79,15 +79,15 @@ nl:
       success: Je bent succesvol ingelogd op je %{kind} account.
     passwords:
       new:
-        title: Reset your password
-        subtitle: Enter your e-mail address and we'll send you a link to reset your password
-        submit: Reset my password
+        title: Reset je wachtwoord
+        subtitle: Voer je e-mailadres in en we sturen je een link om je wachtwoord te resetten
+        submit: Reset je wachtwoord
       edit:
-        title: Change your password
-        subtitle: Choose a new password to recover your account with the Energy Transition Model
-        submit: Change password
-        password: New password
-        password_confirmation: Re-enter new password
+        title: Wijzig je wachtwoord
+        subtitle: Kies een nieuw wachtwoord om je account op het Energietransitiemodel te herstellen
+        submit: Wijzig wachtwoord
+        password: Nieuw wachtwoord
+        password_confirmation: Voer nieuw wachtwoord nogmaals in
       no_token: Deze pagina is alleen bereikbaar via een wachtwoord vergeten e-mail. Als je wel via een wachtwoord vergeten e-mail komt, zorg er dan voor dat je de volledige URL gebruikt.
       send_instructions: Je ontvangt een e-mail met instructies hoe je je wachtwoord opnieuw kan instellen.
       send_paranoid_instructions: Als we je e-mailadres terugvinden in onze database, zal je binnen enkele ogenblikken via e-mail een link ontvangen om je wachtwoord opnieuw in te stellen.
@@ -115,12 +115,12 @@ nl:
       updated_but_not_signed_in: Je account is succesvol bijgewerkt, maar omdat je wachtwoord is aangepast moet je opnieuw inloggen.
     sessions:
       new:
-        title: Welcome
-        subtitle: Sign in to your account to continue to the Energy Transition Model
-        dont_have_account: Don't have an account?
-        forgot_password: Forgotten your password?
-        sign_up: Sign up
-        submit: Continue
+        title: Welkom
+        subtitle: Log in om verder te gaan naar het Energietransitiemodel
+        dont_have_account: Nog geen account?
+        forgot_password: Wachtwoord vergeten?
+        sign_up: Account aanmaken
+        submit: Doorgaan
       signed_in:
         title: Welkom!
         message: Je bent succesvol ingelogd.
