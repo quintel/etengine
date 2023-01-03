@@ -21,9 +21,11 @@ class CreatePersonalAccessToken
 
     ExpiresType = Dry::Types['coercible.integer'] | Dry::Types['coercible.string']
 
-    attribute :name,        Dry::Types['coercible.string'].default('')
-    attribute :permissions, Dry::Types['coercible.symbol'].default(:public)
-    attribute :expires_in,  ExpiresType.default(30)
+    attribute :name,          Dry::Types['coercible.string'].default('')
+    attribute :permissions,   Dry::Types['coercible.symbol'].default(:public)
+    attribute :email_scope,   Dry::Types['params.bool'].default(false)
+    attribute :profile_scope, Dry::Types['params.bool'].default(false)
+    attribute :expires_in,    ExpiresType.default(30)
 
     transform_keys(&:to_sym)
 
@@ -36,13 +38,21 @@ class CreatePersonalAccessToken
     def to_oauth_token_params
       {
         expires_in: never_expires? ? nil : expires_in.to_i.days,
-        scopes: SCOPES[permissions]
+        scopes:
       }
     end
 
     def to_key = nil
 
     private
+
+    def scopes
+      [
+        SCOPES[permissions],
+        email_scope ? 'email' : nil,
+        profile_scope ? 'profile' : nil
+      ].compact.join(' ')
+    end
 
     def never_expires?
       expires_in == 'never'

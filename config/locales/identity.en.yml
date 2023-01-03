@@ -146,6 +146,15 @@ en:
             hint: |
               This token will be able to read and make changes to your public and private scenarios,
               and also delete your scenarios.
+          email:
+            title: E-mail address
+            hint: |
+              The token will be able to read your e-mail address.
+          profile:
+            title: Profile
+            hint: |
+              The token will be able to read your profile information including
+              your name.
       expiration_options:
         never: Never
         n_days: "%{n} days"

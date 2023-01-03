@@ -114,6 +114,30 @@ RSpec.describe CreatePersonalAccessToken do
     end
   end
 
+  context 'with email_scope="1"' do
+    let(:action) do
+      described_class.call(user:, params: { name: 'API access', email_scope: '1' })
+    end
+
+    include_examples 'creating a personal access token'
+
+    it 'sets scopes to "openid public email' do
+      expect(action.value!.oauth_access_token.scopes.to_a) .to eq(%w[openid public email])
+    end
+  end
+
+  context 'with profile_scope="1"' do
+    let(:action) do
+      described_class.call(user:, params: { name: 'API access', profile_scope: '1' })
+    end
+
+    include_examples 'creating a personal access token'
+
+    it 'sets scopes to "openid public profile' do
+      expect(action.value!.oauth_access_token.scopes.to_a) .to eq(%w[openid public profile])
+    end
+  end
+
   context 'when there is a single collision with the token' do
     before do
       allow(Doorkeeper::OAuth::Helpers::UniqueToken).to receive(:generate)

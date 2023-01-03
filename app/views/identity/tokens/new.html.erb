@@ -91,6 +91,32 @@
           </div>
         </label>
       </div>
+
+      <div class="border-t h-4"></div>
+
+      <div class="mb-4">
+        <label class="flex mb-3">
+          <%= f.check_box :email_scope, class: 'mt-1 mr-3 w-4 h-4' %>
+          <div class="flex-grow">
+            <span class="font-medium"><%= t('.permissions.email.title') %></span>
+            <p class="text-sm text-gray-500 mt-1">
+              <%= t('.permissions.email.hint') %>
+            </p>
+          </div>
+        </label>
+      </div>
+
+      <div class="mb-4">
+        <label class="flex mb-3">
+          <%= f.check_box :profile_scope, class: 'mt-1 mr-3 w-4 h-4' %>
+          <div class="flex-grow">
+            <span class="font-medium"><%= t('.permissions.profile.title') %></span>
+            <p class="text-sm text-gray-500 mt-1">
+              <%= t('.permissions.profile.hint') %>
+            </p>
+          </div>
+        </label>
+      </div>
     <% end %>
 
     <%= render(Identity::RowComponent.new(title: '')) do |row| %>

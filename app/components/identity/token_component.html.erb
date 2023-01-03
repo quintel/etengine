@@ -114,6 +114,22 @@
         enabled: @access_token.includes_scope?('scenarios:delete'),
         testid: 'scope:scenarios:delete'
       )) %>
+
+    <% if @access_token.includes_scope?('email') %>
+      <%= render(Identity::Token::ScopeComponent.new(
+          name: t('doorkeeper.scopes.email'),
+          enabled: true,
+          testid: 'scope:email'
+        )) %>
+    <% end %>
+
+    <% if @access_token.includes_scope?('profile') %>
+      <%= render(Identity::Token::ScopeComponent.new(
+          name: t('doorkeeper.scopes.profile'),
+          enabled: true,
+          testid: 'scope:profile'
+        )) %>
+    <% end %>
   <% end %>
 
   <%= render(Identity::RowComponent.new(title: 'Revoke')) do |row| %>

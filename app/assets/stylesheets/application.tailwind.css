@@ -24,6 +24,10 @@
     @apply bg-midnight-500 bg-opacity-30;
   }
 
+  input[type="checkbox"] {
+    @apply rounded;
+  }
+
   input[type="checkbox"], input[type="radio"] {
     @apply accent-midnight-500 transition;
   }
