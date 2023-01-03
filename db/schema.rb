@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_23_150204) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_03_164746) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -240,6 +240,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_23_150204) do
     t.string "encrypted_password", default: "", null: false
     t.string "legacy_password_salt"
     t.string "name", default: "", null: false
+    t.boolean "private_scenarios", default: false
     t.boolean "admin", default: false, null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"

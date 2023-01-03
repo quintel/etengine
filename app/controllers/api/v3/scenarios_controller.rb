@@ -139,6 +139,8 @@ module Api
 
           # Inherit the visibility if no explicity visibility is set.
           attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
+        elsif current_user && attrs[:private].nil?
+          attrs[:private] = current_user.private_scenarios?
         end
 
         if attrs.key?(:user_values)

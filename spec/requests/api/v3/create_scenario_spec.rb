@@ -216,6 +216,52 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
+  context 'when the signed-in user defaults their scenarios to be private' do
+    before do
+      post '/api/v3/scenarios',
+        params: { scenario: {} },
+        headers: access_token_header(user, :write)
+    end
+
+    let(:user) { create(:user, private_scenarios: true) }
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
+
+    it 'sets the new scenario to be private' do
+      expect(json['private']).to be(true)
+    end
+
+    it 'sets the owner of the new scenario' do
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
+    end
+  end
+
+  context 'when the signed-in user defaults their scenarios to be private but sends private=false' do
+    before do
+      post '/api/v3/scenarios',
+        params: { scenario: { private: false } },
+        headers: access_token_header(user, :write)
+    end
+
+    let(:user) { create(:user, private_scenarios: true) }
+    let(:json) { JSON.parse(response.body) }
+
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
+
+    it 'sets the new scenario to be public' do
+      expect(json['private']).to be(false)
+    end
+
+    it 'sets the owner of the new scenario' do
+      expect(json.fetch('owner').fetch('id')).to eq(user.id)
+    end
+  end
+
   context 'when inheriting an owned private scenario' do
     before do
       post '/api/v3/scenarios',

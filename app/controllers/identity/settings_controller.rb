@@ -69,5 +69,16 @@ module Identity
         render(:edit_password, status: :unprocessable_entity)
       end
     end
+
+    def update_scenario_privacy
+      privacy_params = params.require(:user).permit(:private_scenarios)
+
+      current_user.update(privacy_params)
+
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to(identity_profile_path) }
+      end
+    end
   end
 end

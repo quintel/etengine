@@ -84,6 +84,8 @@ en:
         success:
           title: Password changed
           message: Your password was successfully updated.
+      update_preference:
+        saved: Saved
 
     token_component:
       copied: Copied!

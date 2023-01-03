@@ -22,8 +22,8 @@ nl:
         empty_state:
           title: Je hebt geen geen applicaties van derden toestemming gegeven
           message: |
-            Je kunt derden toestemming geven om gegevens van je account op te vragen, zonder je 
-            wachtwoord te delen. Deze partijen zullen toestemming vragen om toegang te krijgen tot 
+            Je kunt derden toestemming geven om gegevens van je account op te vragen, zonder je
+            wachtwoord te delen. Deze partijen zullen toestemming vragen om toegang te krijgen tot
             je account, waarna ze hier worden weergegeven.
 
             Je kunt deze toestemming op elk moment intrekken.
@@ -47,7 +47,7 @@ nl:
         current_password_hint: Bevestig het wachtwoord dat je momenteel gebruikt om in te loggen
         new_password: Nieuw wachtwoord
         new_password_hint: |
-          Je wachtwoord moet ten minste %{min_length} tekens lang zijn. Gebruik meerdere woorden, 
+          Je wachtwoord moet ten minste %{min_length} tekens lang zijn. Gebruik meerdere woorden,
           cijfers of symbolen om het beter te beveiligen.
         submit: Wijzig wachtwoord
         title: Wijzig je wachtwoord

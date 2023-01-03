@@ -1,0 +1,25 @@
+<div class="inline-flex bg-gray-200 p-1 rounded-lg gap-1">
+  <% if @private %>
+    <%= button_to identity_change_scenario_privacy_path, method: :post, params: { user: { private_scenarios: false } }, class: button_classes('inline-flex items-center gap-1', color: :gray) do %>
+      <%= inline_svg 'hero/20/eye.svg', class: '-ml-0.5 mr-0.5 opacity-90' %>
+      Public
+    <% end %>
+    <button
+      class="<%= button_classes 'inline-flex items-center gap-1 pointer-events-none', color: :success %>"
+    >
+      <%= inline_svg 'hero/20/lock-closed.svg', class: '-ml-0.5' %>
+      Private
+    </button>
+  <% else %>
+    <button
+      class="<%= button_classes 'inline-flex items-center gap-1 pointer-events-none', color: :success %>"
+    >
+      <%= inline_svg 'hero/20/eye.svg', class: '-ml-0.5 mr-0.5' %>
+      Public
+    </button>
+    <%= button_to identity_change_scenario_privacy_path, method: :post, params: { user: { private_scenarios: true } }, class: button_classes('inline-flex items-center gap-1', color: :gray) do %>
+      <%= inline_svg 'hero/20/lock-closed.svg', class: '-ml-0.5 opacity-90' %>
+      Private
+    <% end %>
+  <% end %>
+</div>

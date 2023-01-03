@@ -279,7 +279,7 @@ class Scenario < ApplicationRecord
     return false if owner_id.blank?
     return private if owner_id == actor.id
 
-    false
+    actor.private_scenarios?
   end
 
   private

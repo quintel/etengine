@@ -28,6 +28,8 @@ Rails.application.routes.draw do
     get 'change_password', to: 'settings#edit_password', as: :edit_password
     post 'change_password', to: 'settings#update_password'
 
+    post 'change_scenario_privacy', to: 'settings#update_scenario_privacy'
+
     resources :tokens, only: [:index, :new, :create, :destroy], as: :tokens
     resources :authorized_applications, only: [:index], as: :authorized_applications
   end

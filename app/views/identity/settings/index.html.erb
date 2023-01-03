@@ -39,3 +39,25 @@
     <%= link_to "#{t('.change_name')}…", identity_edit_name_path, data: { turbo_frame: :modal }, class: button_classes(color: :default_colored) %>
   <% end %>
 <% end %>
+
+<h3 class="text-xl font-semibold mb-8 border-t pt-6 mt-12"><%= t('.settings') %></h3>
+
+<%= render(Identity::ProfileRowComponent.new(title: 'Privacy')) do |row| %>
+  New scenarios&hellip;
+  <% row.message do %>
+    <p class="mb-2">
+      Choose whether new scenarios and saved scenarios should be private or
+      public by default. You can override this on a per-scenario basis.
+    </p>
+    <p>
+      Public scenarios can be viewed (but not changed) by anyone with a link to
+      the scenario, while private scenarios can be viewed only by you.
+    </p>
+  <% end %>
+
+  <% row.button do %>
+    <%= turbo_frame_tag :scenario_privacy_setting do %>
+      <%= render(Identity::ScenarioPrivacyComponent.new(private: current_user.private_scenarios?)) %>
+    <% end %>
+  <% end %>
+<% end %>
