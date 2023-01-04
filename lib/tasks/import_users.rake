@@ -52,13 +52,13 @@ task import_users: :environment do
 
   dev_user.oauth_applications.create!(
     name: 'ETModel',
-    scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+    scopes: 'openid public profile email roles scenarios:read scenarios:write scenarios:delete',
     first_party: true
   )
 
   dev_user.oauth_applications.create!(
     name: 'Transition Paths',
-    scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+    scopes: 'openid public email profile scenarios:read scenarios:write scenarios:delete',
     first_party: true
   )
 

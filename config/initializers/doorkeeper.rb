@@ -239,6 +239,7 @@ Doorkeeper.configure do
   optional_scopes :email,
                   :openid,
                   :profile,
+                  :roles,
                   :'scenarios:read',
                   :'scenarios:write',
                   :'scenarios:delete'

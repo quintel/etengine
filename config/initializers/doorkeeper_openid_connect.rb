@@ -67,7 +67,7 @@ Doorkeeper::OpenidConnect.configure do
       resource_owner.email
     end
 
-    normal_claim(:roles, scope: :profile, response: %i[user_info]) do |resource_owner|
+    normal_claim(:roles, scope: :roles, response: %i[user_info]) do |resource_owner|
       resource_owner.roles
     end
 
