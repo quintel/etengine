@@ -66,9 +66,9 @@ Users will be e-mailed three days prior to the expiry of their token with a list
 
 While users can sign in to ETModel and interact with the web application using ETEngine's authentication, private data held in ETModel cannot be exposed this way: an API request knows nothing about the user who made the request. Additionally, the personal access tokens issued to users are random strings and do not disclose any information about the user.
 
-[JSON Web Tokens (JWT)](https://jwt.io/introduction) were initially considered for this purpose, but suffer from the drawback that once issued, it is not possible for force the expiry of a token. This means that if a user's access token is compromised, their data could be accessed by the attacker until the token expires.
+[JSON Web Tokens (JWT)](https://jwt.io/introduction) were initially considered use as access tokens, but suffer from the drawback that, once issued, it is not possible to force the expiry of a token. This means that if a user's access token is compromised, their data could be accessed by the attacker until the token expires.
 
-For these reasons, all API requests – even those intended for ETModel – are sent to ETEngine. ETEngine looks up the user by their personal access token, and then forwards the request to ETModel with [a short-life JWT containing the user information](https://github.com/quintel/etengine/blob/ab6f07f23c8ff5d7bf9fe8fd95c3eff2ade4721e/lib/etengine/auth.rb#L38-L55). This ensures that the user's identity is known to ETModel, and that the user's access token can be revoked if necessary.
+For these reasons, all API requests – even those intended for ETModel – are sent to ETEngine. ETEngine looks up the user by their alphanumeric personal access token, and then forwards the request to ETModel with [a short-life JWT containing the user information](https://github.com/quintel/etengine/blob/ab6f07f23c8ff5d7bf9fe8fd95c3eff2ade4721e/lib/etengine/auth.rb#L38-L55). This ensures that the user's identity is known to ETModel, and that the user's access token can still be revoked if necessary.
 
 These JWTs are never exposed to end-users and contain the following information:
 
