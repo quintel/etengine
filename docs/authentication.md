@@ -215,8 +215,9 @@ Currently, users must sign out of each application separately. It would be nice 
 
 I believe this could be implemented in Doorkeeper by keeping track of which applications a user has signed in to. When a user signs out of one application, it could send a request to the other applications to sign the user out. This would require a new API endpoint in ETEngine and ETModel.
 
-```
+```ruby
 # config/initializers/doorkeeper.rb
+
 after_successful_authorization do |controller, context|
   controller.session[:logout_application_ids] <<
     Doorkeeper::Application.find_by(controller.request.params.slice(:client_id)).id
