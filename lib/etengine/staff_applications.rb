@@ -22,7 +22,7 @@ module ETEngine
         AppConfig.new(
           key: 'etmodel',
           name: 'ETModel (Local)',
-          scopes: 'openid email profile public scenarios:read scenarios:write scenarios:delete',
+          scopes: 'openid email profile roles public scenarios:read scenarios:write scenarios:delete',
           uri: 'http://localhost:3001',
           redirect_path: '/auth/identity/callback',
           run_command: 'bundle exec rails server -p %<port>s',
