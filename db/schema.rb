@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_04_120312) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_05_155144) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -37,27 +37,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_120312) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "fce_values", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "using_country"
-    t.string "origin_country"
-    t.float "co2_exploration_per_mj"
-    t.float "co2_extraction_per_mj"
-    t.float "co2_treatment_per_mj"
-    t.float "co2_transportation_per_mj"
-    t.float "co2_conversion_per_mj"
-    t.float "co2_waste_treatment_per_mj"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.string "carrier"
-  end
-
-  create_table "gquery_groups", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "group_key"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.text "description"
   end
 
   create_table "heat_network_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -157,32 +136,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_04_120312) do
     t.datetime "last_used_at"
     t.index ["oauth_access_token_id"], name: "index_personal_access_tokens_on_oauth_access_token_id", unique: true
     t.index ["user_id"], name: "index_personal_access_tokens_on_user_id"
-  end
-
-  create_table "query_table_cells", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.integer "query_table_id"
-    t.integer "row"
-    t.integer "column"
-    t.string "name"
-    t.text "gquery"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.index ["query_table_id"], name: "index_query_table_cells_on_query_table_id"
-  end
-
-  create_table "query_tables", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name"
-    t.text "description"
-    t.integer "row_count"
-    t.integer "column_count"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-  end
-
-  create_table "roles", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
   end
 
   create_table "scenario_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
