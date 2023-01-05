@@ -75,9 +75,11 @@ end
 # DB file.
 def import_db_commands(import_command, file)
   [
-    'bundle exec rails RAILS_ENV=development db:environment:set db:drop db:create > /dev/null',
-    Kernel.format(import_command, file.path.shellescape),
-    'bundle exec rails RAILS_ENV=development db:environment:set > /dev/null'
+    ['Dump staff applications', 'bundle exec rails RAILS_ENV=development db:dump_staff_applications > /dev/null'],
+    ['Remove and recreate DB', 'bundle exec rails RAILS_ENV=development db:environment:set db:drop db:create > /dev/null'],
+    ['Import DB', Kernel.format(import_command, file.path.shellescape)],
+    ['Set DB environment', 'bundle exec rails RAILS_ENV=development db:environment:set > /dev/null'],
+    ['Load staff applications', 'bundle exec rails RAILS_ENV=development db:load_staff_applications']
   ]
 end
 
@@ -85,12 +87,12 @@ end
 # dbbot. These include database and ActiveStorage files.
 def import_dbbot_commands(file)
   [
-    'mkdir -p tmp/dbbot-backup',
-    Kernel.format('tar -jxf %s -C tmp/dbbot-backup --strip-components=1', file.path.shellescape),
-    'rm -rf storage',
-    'mv tmp/dbbot-backup/storage storage',
+    ['Make temporary directory', 'mkdir -p tmp/dbbot-backup'],
+    ['Decompressing archive', Kernel.format('tar -jxf %s -C tmp/dbbot-backup --strip-components=1', file.path.shellescape)],
+    ['Remove existing storage', 'rm -rf storage'],
+    ['Import new storage', 'mv tmp/dbbot-backup/storage storage'],
     *import_db_commands("bunzip2 -c tmp/dbbot-backup/database.sql.bz2 | bin/rails db", file),
-    'rm -rf tmp/dbbot-backup'
+    ['Remove temporary directory', 'rm -rf tmp/dbbot-backup']
   ]
 end
 
@@ -114,7 +116,7 @@ end
 if files.none?
   # If there are no files specified in ARGV, search for them in the source dir.
   files = Dir.glob(source_dir + '/*{.sql,.sql.bz2,.sql.gz,.tbz}')
-    .sort
+    .sort_by { |path| [path.include?('etengine_') ? 1 : 0, File.mtime(path)] }
     .reverse
     .map { |path| FileInfo.new(path) }
 end
@@ -163,7 +165,7 @@ commands =
   when /sql$/ then import_db_commands('bin/rails db < %s', file)
   end
 
-commands.each do |command|
+commands.each do |(_, command)|
   executable = command.split(' ').first
 
   # Assert that all commands are available prior to running.
@@ -178,7 +180,7 @@ end
 
 if show_commands
   puts
-  puts commands
+  puts commands.map(&:last)
   exit
 end
 
@@ -189,42 +191,22 @@ unless prompt.yes?('Happy to proceed?')
   exit
 end
 
-spinner = TTY::Spinner.new(
-  "[:spinner] Importing #{file.name}...",
-  format: :dots
-)
-
-spinner.run do
-  if commands.all? { |cmd| Kernel.system(cmd) }
-    spinner.success('done!')
-  else
-    spinner.error('error.')
-    puts
-    puts 'Try running again with the --show-commands argument to see'
-    puts 'what the script will execute. Run each command manually to'
-    puts 'see which one fails, and for a more useful error message.'
-    exit
+commands.each do |message, command|
+  spinner = TTY::Spinner.new("[:spinner] #{message} ", format: :classic)
+  spinner.run do
+    if Kernel.system(command)
+      spinner.success
+    else
+      spinner.error('- error')
+      puts
+      puts 'Try running again with the --show-commands argument to see'
+      puts 'what the script will execute. Run each command manually to'
+      puts 'see which one fails, and for a more useful error message.'
+      exit
+    end
   end
 end
 
 if prompt.yes?("Do you want to remove the backup file? (#{file.name})")
   File.unlink(file.path)
 end
-
-puts <<-MESSAGE
-  ┌─────────────────────────────────────────────────────────────────────────┐
-  │            !!!️  CONNECTING ETMODEL AND TRANSITION PATHS  !!!️            │
-  ├─────────────────────────────────────────────────────────────────────────┤
-  │ Importing a database dump removed the credentials used to connect your  │
-  │ local ETModel or Transition Paths app with ETEngine.                    │
-  │                                                                         │
-  │ If you wish you connect ETModel or Transition Paths with your local     │
-  │ ETEngine:                                                               │
-  │                                                                         │
-  │ 1. Start ETEngine: bundle exec rails server.                            │
-  │ 2. Sign in to your account at http://localhost:3000.                    │
-  │ 3. Scroll down and create a new ETModel or Transition Path application. │
-  │ 4. Copy the generated config to the other application.                  │
-  │ 5. Restart the other application.                                       │
-  └─────────────────────────────────────────────────────────────────────────┘
-MESSAGE
