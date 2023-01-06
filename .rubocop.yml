@@ -94,7 +94,7 @@ Layout/LineLength:
   Exclude:
   - config/deploy.rb
   - config/deploy/*.rb
-  IgnoredPatterns:
+  AllowedPatterns:
   - '(context|context|it|shared_examples_for)'
 
 # Multi-line method calls are indented by two spaces only.
@@ -152,7 +152,7 @@ Style/GuardClause:
 Style/MethodCallWithArgsParentheses:
   Enabled: true
   IgnoreMacros: true
-  IgnoredMethods:
+  AllowedMethods:
   - can
   - cannot
   - describe
