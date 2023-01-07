@@ -90,6 +90,19 @@
     </div>
   <% end %>
 
+  <%= render(Identity::RowComponent.new(title: 'Last used')) do |row| %>
+    <div data-testid="last-used">
+      <% if @token.last_used_at.present? %>
+        <%= helpers.local_time(@token.last_used_at, :long) %>
+        <span class="text-gray-500 font-normal text-sm ml-2">
+          (<%= t('time_ago', time: time_ago_in_words(@token.last_used_at)) %>)
+        </span>
+      <% else %>
+        <%= t('identity.tokens.expiration_options.never') %>
+      <% end %>
+    </div>
+  <% end %>
+
   <%= render(Identity::RowComponent.new(title: 'Permissions')) do |row| %>
     <%= render(Identity::Token::ScopeComponent.new(
         name: t('doorkeeper.scopes.public'),

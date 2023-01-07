@@ -3,6 +3,8 @@ module Api
     class BaseController < ActionController::API
       include ActionController::MimeResponds
 
+      after_action :track_token_use
+
       rescue_from ActionController::ParameterMissing do |e|
         render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
       end
@@ -76,6 +78,12 @@ module Api
 
       def doorkeeper_forbidden_render_options(error:)
         { json: { errors: [error.description] } }
+      end
+
+      def track_token_use
+        if response.status == 200 && doorkeeper_token && doorkeeper_token.application_id.nil?
+          TrackPersonalAccessTokenUse.perform_later(doorkeeper_token.id, Time.now.utc)
+        end
       end
     end
   end
