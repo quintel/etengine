@@ -18,7 +18,7 @@ blocks:
             - cache restore
             - gem install bundler
             - bundle config set --local deployment 'true'
-            - bundle install || (cache clear && bundle install)
+            - bundle install || (rm -rf vendor/bundle && cache clear && bundle install)
             - cache store
             - bundle exec rails db:setup
             - bundle exec rails assets:precompile
