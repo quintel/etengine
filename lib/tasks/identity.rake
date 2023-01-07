@@ -29,6 +29,7 @@ namespace :identity do
       .joins(:oauth_access_token)
       .where(<<~SQL.squish, { date: 3.days.from_now.beginning_of_day.utc })
         oauth_access_tokens.expires_in IS NOT NULL AND
+        oauth_access_tokens.revoked_at IS NULL AND
           (DATE_ADD(oauth_access_tokens.created_at, INTERVAL oauth_access_tokens.expires_in SECOND) > :date AND
             DATE_ADD(oauth_access_tokens.created_at, INTERVAL oauth_access_tokens.expires_in SECOND) < DATE_ADD(:date, INTERVAL 1 DAY))
       SQL
