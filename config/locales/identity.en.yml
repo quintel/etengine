@@ -90,6 +90,9 @@ en:
     token_component:
       copied: Copied!
       copy: Copy token to clipboard
+      expires: Expires
+      last_used: Last used
+      permissions: Permissions
       full_token_not_shown: |
         The full token is not shown here. If you have lost it you should revoke this token and
         create a new one.
@@ -98,6 +101,7 @@ en:
       revoke_warning: |
         Revoking the token will immediately prevent it from being used to access or modify your
         account.
+      token: Token
       token_shown_briefly: The full token will only be shown briefly!
 
     token_mailer:

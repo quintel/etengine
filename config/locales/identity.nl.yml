@@ -17,6 +17,11 @@ nl:
 
     # Pages
 
+    authorized_application_component:
+      permissions: Permissions
+      revoke_application: Revoke application
+      visit_website: Visit website
+
     authorized_applications:
       index:
         empty_state:
@@ -77,6 +82,23 @@ nl:
           message: Your password was successfully updated.
       update_preference:
         saved: Opgeslagen
+
+    token_component:
+      copied: Copied!
+      copy: Copy token to clipboard
+      expires: Expires
+      last_used: Last used
+      permissions: Permissions
+      full_token_not_shown: |
+        The full token is not shown here. If you have lost it you should revoke this token and
+        create a new one.
+      make_sure_to_copy: Make sure to copy it to your clipboard.
+      revoke_token: Revoke token
+      revoke_warning: |
+        Revoking the token will immediately prevent it from being used to access or modify your
+        account.
+      token: Token
+      token_shown_briefly: The full token will only be shown briefly!
 
     tokens:
       empty_state:
