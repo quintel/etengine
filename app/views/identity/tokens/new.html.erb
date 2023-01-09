@@ -121,7 +121,7 @@
 
     <%= render(Identity::RowComponent.new(title: '')) do |row| %>
       <%= f.submit t('identity.tokens.index.create_token'), class: button_classes(color: :success, size: :lg) %>
-      <%= link_to t('cancel'), identity_tokens_path, class: button_classes('ml-2', size: :lg) %>
+      <%= link_to t('identity.cancel'), identity_tokens_path, class: button_classes('ml-2', size: :lg) %>
     <% end %>
   <% end %>
 <% end %>
