@@ -1,6 +1,9 @@
 ---
 nl:
   select_language: Taal
+  time_from_now: '%{time} from now'
+  time_ago: '%{time} ago'
+
   identity:
     cancel: Annuleren
     return_to_etm: Ga terug naar het ETM
