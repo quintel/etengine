@@ -46,5 +46,5 @@ auth:
 
 # Optional settings to configure the Mailchimp integration.
 mailchimp:
-  list_id: <%= ENV.fetch('MAILCHIMP_LIST_ID', nil) %>
+  list_url: <%= ENV.fetch('MAILCHIMP_LIST_URL', nil) %>
   api_key: <%= ENV.fetch('MAILCHIMP_API_KEY', nil) %>

@@ -15,7 +15,7 @@ module ETEngine
               "'mailchimp.api_key' settings."
       end
 
-      Faraday.new("https://us19.api.mailchimp.com/3.0/lists/#{Settings.mailchimp.list_id}") do |conn|
+      Faraday.new(Settings.mailchimp.list_url) do |conn|
         conn.request(:authorization, :basic, '', Settings.mailchimp.api_key)
         conn.request(:json)
         conn.response(:json)
