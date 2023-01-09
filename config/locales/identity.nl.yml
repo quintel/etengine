@@ -21,14 +21,14 @@ nl:
     # Pages
 
     authorized_application_component:
-      permissions: Permissions
-      revoke_application: Revoke application
-      visit_website: Visit website
+      permissions: Bevoegdheden
+      revoke_application: Applicatie intrekken
+      visit_website: Bezoek website
 
     authorized_applications:
       index:
         empty_state:
-          title: Je hebt geen geen applicaties van derden toestemming gegeven
+          title: Je hebt geen applicaties van derden toestemming gegeven
           message: |
             Je kunt derden toestemming geven om gegevens van je account op te vragen, zonder je
             wachtwoord te delen. Deze partijen zullen toestemming vragen om toegang te krijgen tot
@@ -75,36 +75,36 @@ nl:
         privacy:
           title: Privacy
           choose: |
-            Choose whether new scenarios and saved scenarios should be private or public by default.
-            You can override this on a per-scenario basis.
+            Stel in of nieuwe scenario's en opgeslagen scenario's standaard privé of publiek zijn.
+            Je kunt deze instelling per scenario overschrijven.
           public_vs_private: |
-            Public scenarios can be viewed (but not changed) by anyone with a link to the scenario,
-            while private scenarios can be viewed only by you.
+            Publieke scenarios kunnen door iedereen met een link naar het scenario worden bekeken 
+            (maar niet worden gewijzigd), terwijl privéscenario's alleen door jou kunnen worden bekeken.
       update_email:
         success:
-          title: E-mail changed
-          message: Please check your inbox to confirm the change of e-mail address.
+          title: E-mail gewijzigd
+          message: Controleer je inbox om de wijziging van het e-mailadres te bevestigen.
       update_name:
         success:
-          title: Name changed
-          message: The name of your account was successfully updated.
+          title: Naam gewijzigd
+          message: De naam van je account is succesvol bijgewerkt.
       update_password:
         success:
-          title: Password changed
-          message: Your password was successfully updated.
+          title: Wachtwoord gewijzigd
+          message: Je wachtwoord is succesvol bijgewerkt.
       update_preference:
         saved: Opgeslagen
       newsletter_subscribed:
-        title: Subscribed to newsletter
+        title: Geabonneerd op de nieuwsbrief
         message: Kijk in je mailbox om je inschrijving te bevestigen.
       newsletter_unsubscribed:
-        title: Unsubscribed from newsletter
+        title: Afgemeld voor de nieuwsbrief
         message: Je hebt je uitgeschreven voor onze nieuwsbrief.
 
     newsletter_status_row_component:
       title: E-mail nieuwsbrief
-      subscribed: Subscribed
-      not_subscribed: Not subscribed
+      subscribed: Geabonneerd
+      not_subscribed: Niet geabonneerd
       unsubscribe: Uitschrijven
       not_subscribed_message: |
         We versturen ongeveer vier keer per jaar een nieuwsbrief met informatie over verbeteringen
@@ -115,21 +115,21 @@ nl:
         met verbeteringen en wijzigingen aan het model.
 
     token_component:
-      copied: Copied!
-      copy: Copy token to clipboard
-      expires: Expires
-      last_used: Last used
-      permissions: Permissions
+      copied: Gekopieerd!
+      copy: Kopieer token naar klembord
+      expires: Verloopt
+      last_used: Laatst gebruikt
+      permissions: Bevoegdheden
       full_token_not_shown: |
-        The full token is not shown here. If you have lost it you should revoke this token and
-        create a new one.
-      make_sure_to_copy: Make sure to copy it to your clipboard.
-      revoke_token: Revoke token
+        Het volledige token wordt hier niet getoond. Als dit verloren is gegaan, moet je dit token 
+        intrekken en een nieuwe aanmaken.
+      make_sure_to_copy: Zorg dat je het kopieert naar het klembord.
+      revoke_token: Token intrekken
       revoke_warning: |
-        Revoking the token will immediately prevent it from being used to access or modify your
-        account.
+        Als je het token intrekt, verliest dit onmiddelijk de mogelijkheid om toegang te krijgen 
+        tot jouw account of wijzigingen te maken.
       token: Token
-      token_shown_briefly: The full token will only be shown briefly!
+      token_shown_briefly: Het volledige token wordt slechts kortstondig getoond!
 
     tokens:
       empty_state:
@@ -143,51 +143,49 @@ nl:
         learn_more: Meer informatie
         title: Persoonlijke toegangstokens
       created:
-        title: Token created
-        message: Your new token has been created. Please copy it now as it will not be shown again.
+        title: Token aangemaakt
+        message: Jouw nieuwe token is aangemaakt. Kopieer dit nu aangezien het niet nogmaals wordt getoond.
       revoked:
-        title: Token revoked
-        message: The token can no longer be used to access the API.
+        title: Token ingetrokken
+        message: Het token kan niet langer worden gebruikt om toegang te krijgen tot de API.
       new:
-        name: Token name
-        name_hint: This name will help you recognise the token in the future.
-        permissions: Scenario permissions
-        title: Create a new access token
+        name: Token naam
+        name_hint: Deze naam helpt je om in de toekomst het token te herkennen.
+        permissions: Bevoegdheden
+        title: Maak een nieuw toegangstoken aan
         permissions:
           public:
-            title: Read public scenarios only
+            title: Alleen-lezen van publieke scenario's
             hint: |
-              This token will be able to read public scenarios created by you and other people.
+              Dit token kan enkel publieke scenario's lezen die door jou en anderen zijn gemaakt.
           read:
-            title: Read public and private scenarios
+            title: Alleen-lezen van publieke en privéscenario's
             hint: |
-              This token will be able to read your public and private scenarios, but will not permit
-              changes.
+              Dit token kan jouw publieke en privéscenario's lezen, maar kan geen wijzigingen aanbrengen.
           write:
-            title: Read and write public and private scenarios
+            title: Lees en bewerk publieke en privéscenario's
             hint: |
-              This token will be able to read and make changes to your public and private scenarios,
-              but will not be able to delete scenarios.
+              Dit token kan jouw publieke en privéscenario's lezen en kan wijzigingen aanbrengen, maar kan geen 
+              scenario's verwijderen.
           delete:
-            title: Read, write, and delete public and private scenarios
+            title: Lees, bewerk en verwijder publieke en privéscenario's
             hint: |
-              This token will be able to read and make changes to your public and private scenarios,
-              and also delete your scenarios.
+              Dit token kan jouw publieke en privéscenario's lezen, kan wijzigingen aanbrengen en kan jouw 
+              scenario's verwijderen.
           email:
-            title: E-mail address
+            title: E-mailadres
             hint: |
-              The token will be able to read your e-mail address.
+              Dit token kan jouw e-mailadres lezen.
           profile:
-            title: Profile
+            title: Profiel
             hint: |
-              The token will be able to read your profile information including
-              your name.
+              Dit token kan jouw profielinformatie lezen, waaronder jouw naam.
       expiration_options:
-        never: Never
+        never: Nooit
         n_days: "%{n} days"
-        one_year: One year
-        never_message: This token will never expire!
-        expires_at_message: This token will expire on %{date}.
+        one_year: Één jaar
+        never_message: Dit token vervalt nooit!
+        expires_at_message: Dit token zal vervallen op %{date}.
 
   doorkeeper:
     authorizations:
