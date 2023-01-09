@@ -47,6 +47,16 @@ nl:
           Deze naam gebruiken we in onze communicatie naar jou en wordt weergegeven bij jouw openbare scenario's.
         submit: Wijzig naam
         title: Wijzig je accountnaam
+      edit_newsletter:
+        title: E-mail nieuwsbrief
+        unsubscribe: Uitschrijven
+        unsubscribed_message: |
+          We versturen ongeveer vier keer per jaar een nieuwsbrief met informatie over verbeteringen
+          en wijzigingen aan het ETM. Je kan je op elk moment uitschrijven.
+        subscribe: Inschrijven
+        subscribed_message: |
+          Je bent ingeschreven voor onze nieuwsbrief. We versturen ongeveer vier e-mails per jaar
+          met verbeteringen en wijzigingen aan het model.
       edit_password:
         current_password: Huidig wachtwoord
         current_password_hint: Bevestig het wachtwoord dat je momenteel gebruikt om in te loggen
@@ -82,6 +92,12 @@ nl:
           message: Your password was successfully updated.
       update_preference:
         saved: Opgeslagen
+      newsletter_subscribe:
+        title: Subscribed to newsletter
+        message: Kijk in je mailbox om je inschrijving te bevestigen.
+      newsletter_unsubscribed:
+        title: Unsubscribed from newsletter
+        message: Je hebt je uitgeschreven voor onze nieuwsbrief.
 
     token_component:
       copied: Copied!
