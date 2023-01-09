@@ -30,6 +30,9 @@ Rails.application.routes.draw do
 
     post 'change_scenario_privacy', to: 'settings#update_scenario_privacy'
 
+    get 'newsletter', to: 'newsletter#edit', as: :edit_newsletter
+    post 'newsletter', to: 'newsletter#update'
+
     resources :tokens, only: [:index, :new, :create, :destroy], as: :tokens
     resources :authorized_applications, only: [:index], as: :authorized_applications
   end

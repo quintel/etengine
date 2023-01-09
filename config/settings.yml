@@ -43,3 +43,8 @@ mailer:
 
 auth:
   issuer: <%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3000') %>
+
+# Optional settings to configure the Mailchimp integration.
+mailchimp:
+  list_id: <%= ENV.fetch('MAILCHIMP_LIST_ID', nil) %>
+  api_key: <%= ENV.fetch('MAILCHIMP_API_KEY', nil) %>

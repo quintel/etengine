@@ -61,3 +61,11 @@
     <% end %>
   <% end %>
 <% end %>
+
+<% if ETEngine::Mailchimp.enabled? %>
+  <%= turbo_frame_tag :newsletter, src: identity_edit_newsletter_path do %>
+    <%= render(Identity::ProfileRowComponent.new(title: t('identity.newsletter_status_row_component.title'))) do |row| %>
+      &hellip;
+    <% end %>
+  <% end %>
+<% end %>

@@ -1,0 +1,15 @@
+<turbo-stream action="update" target="newsletter">
+  <template>
+    <%= render(Identity::NewsletterStatusRowComponent.new(subscribed: @subscribed)) %>
+  </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="toast">
+  <template>
+    <% if @subscribed %>
+      <%= render(ToastComponent.new(type: :notice, message: I18n.t('identity.settings.newsletter_subscribed'))) %>
+    <% else %>
+      <%= render(ToastComponent.new(type: :notice, message: I18n.t('identity.settings.newsletter_unsubscribed'))) %>
+    <% end %>
+  </template>
+</turbo-stream>

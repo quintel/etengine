@@ -1,0 +1,32 @@
+<%= render(Identity::ProfileRowComponent.new(title: t('.title'))) do |row| %>
+  <% if @subscribed %>
+    <div class="flex items-center gap-1 text-emerald-600">
+      <%= inline_svg_tag 'hero/20/circle-check.svg', class: '-ml-0.5' %>
+      <%= t('.subscribed') %>
+    </div>
+
+    <% row.message do %>
+      <p>
+        <%= t('.subscribed_message') %>
+      </p>
+    <% end %>
+
+    <% row.button do %>
+      <%= button_to t('.unsubscribe'), identity_edit_newsletter_path, params: { subscribed: false }, class: button_classes(color: :default_colored) %>
+    <% end %>
+  <% else %>
+    <div class="flex items-center gap-1">
+      <%= t('.not_subscribed') %>
+    </div>
+
+    <% row.message do %>
+      <p>
+        <%= t('.not_subscribed_message') %>
+      </p>
+    <% end %>
+
+    <% row.button do %>
+      <%= button_to t('.subscribe'), identity_edit_newsletter_path, params: { subscribed: true }, class: button_classes(color: :default_colored) %>
+    <% end %>
+  <% end %>
+<% end %>

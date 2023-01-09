@@ -51,16 +51,6 @@ en:
           This name will be used when we communicate with you, and alongside your public scenarios.
         submit: Change name
         title: Change your account name
-      edit_newsletter:
-        title: E-mail newsletter
-        unsubscribe: Unsubscribe
-        unsubscribed_message: |
-          We occasionally publish a newsletter with information about improvements and changes to
-          the ETM. We send roughly four messages a year and you can unsubscribe at any time.
-        subscribe: Subscribe
-        subscribed_message: |
-          You are subscribed to our newsletter. We send roughly four e-mails a year with information
-          about improvements and changes to the model.
       edit_password:
         current_password: Current password
         current_password_hint: Confirm the password you currently use to sign in
@@ -96,12 +86,25 @@ en:
           message: Your password was successfully updated.
       update_preference:
         saved: Saved
-      newsletter_subscribe:
+      newsletter_subscribed:
         title: Subscribed to newsletter
         message: Please check your e-mail inbox to confirm your subscription.
       newsletter_unsubscribed:
         title: Unsubscribed from newsletter
         message: You have been unsubscribed from our newsletter.
+
+    newsletter_status_row_component:
+      subscribed: Subscribed
+      not_subscribed: Not subscribed
+      title: E-mail newsletter
+      unsubscribe: Unsubscribe
+      not_subscribed_message: |
+        We occasionally publish a newsletter with information about improvements and changes to
+        the ETM. We send roughly four messages a year and you can unsubscribe at any time.
+      subscribe: Subscribe
+      subscribed_message: |
+        You are subscribed to our newsletter. We send roughly four e-mails a year with information
+        about improvements and changes to the model.
 
     token_component:
       copied: Copied!
