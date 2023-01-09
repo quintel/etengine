@@ -42,16 +42,13 @@
 
 <h3 class="text-xl font-semibold mb-8 border-t pt-6 mt-12"><%= t('.settings') %></h3>
 
-<%= render(Identity::ProfileRowComponent.new(title: 'Privacy')) do |row| %>
-  New scenarios&hellip;
+<%= render(Identity::ProfileRowComponent.new(title: t('.privacy.title'))) do |row| %>
   <% row.message do %>
-    <p class="mb-2">
-      Choose whether new scenarios and saved scenarios should be private or
-      public by default. You can override this on a per-scenario basis.
+    <p class="-mt-2 mb-2">
+      <%= t('.privacy.choose') %>
     </p>
     <p>
-      Public scenarios can be viewed (but not changed) by anyone with a link to
-      the scenario, while private scenarios can be viewed only by you.
+      <%= t('.privacy.public_vs_private') %>
     </p>
   <% end %>
 

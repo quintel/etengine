@@ -71,6 +71,14 @@ nl:
           persoonlijk toegangstoken aan.
         profile: Profiel
         title: Jouw profiel
+        privacy:
+          title: Privacy
+          choose: |
+            Choose whether new scenarios and saved scenarios should be private or public by default.
+            You can override this on a per-scenario basis.
+          public_vs_private: |
+            Public scenarios can be viewed (but not changed) by anyone with a link to the scenario,
+            while private scenarios can be viewed only by you.
       update_email:
         success:
           title: E-mail changed
