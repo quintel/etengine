@@ -6,12 +6,12 @@ module ETEngine
     module_function
 
     def enabled?
-      Settings.dig(:mailchimp, :list_id).present? && Settings.dig(:mailchimp, :api_key).present?
+      Settings.dig(:mailchimp, :list_url).present? && Settings.dig(:mailchimp, :api_key).present?
     end
 
     def client
       unless enabled?
-        raise "Mailchimp is not configured. Please set the 'mailchimp.list_id' and " \
+        raise "Mailchimp is not configured. Please set the 'mailchimp.list_url' and " \
               "'mailchimp.api_key' settings."
       end
 
