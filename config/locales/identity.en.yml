@@ -71,6 +71,7 @@ en:
           needs to access data on your account,
           <a href="%{tokens_path}">create a personal access token</a>.
         profile: Profile
+        settings: Settings
         title: Your profile
         privacy:
           title: Privacy

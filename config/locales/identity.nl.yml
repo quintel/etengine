@@ -70,6 +70,7 @@ nl:
           als een andere applicatie toegang nodig heeft tot data van jouw account, maak dan een
           persoonlijk toegangstoken aan.
         profile: Profiel
+        settings: Settings
         title: Jouw profiel
         privacy:
           title: Privacy
