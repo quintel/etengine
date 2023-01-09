@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 class CreateNewsletterSubscription
-  include Dry::Monads[:result]
+  include Dry::Monads[:result, :maybe]
 
   def call(user:)
-    subscriber = ETEngine::Mailchimp.fetch_subscriber(user.email)
-
-    if %w[pending subscribed].include?(subscriber['status'])
-      # User is already subscribed.
+    case FetchNewsletterSubscriber.new.call(email: user.email)
+    in Success(Some({ status: 'pending' | 'subscribed', ** } => subscriber))
+      # User is already subscribed. Nothing to do.
       Success(subscriber)
-    else
+    in Success(Some(subscriber))
+      # User is known. Update their status to pending.
       update_subscription(subscriber)
+    in Success(None())
+      # New user.
+      create_subscription(user)
+    in Failure(_) => failure
+      failure
     end
-  rescue Faraday::ResourceNotFound
-    create_subscription(user)
   rescue Faraday::Error => e
     Failure(e)
   end
@@ -25,16 +28,16 @@ class CreateNewsletterSubscription
       ETEngine::Mailchimp.client.post('members', {
         email_address: user.email,
         status: 'pending'
-      }).body
+      }).body.symbolize_keys
     )
   end
 
   def update_subscription(subscriber)
     Success(
       ETEngine::Mailchimp.client.patch(
-        "members/#{subscriber['id']}",
+        "members/#{subscriber[:id]}",
         status: 'pending'
-      ).body
+      ).body.symbolize_keys
     )
   end
 end

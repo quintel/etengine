@@ -94,4 +94,16 @@ RSpec.describe CreateNewsletterSubscription do
       expect(described_class.new.call(user:)).to be_failure
     end
   end
+
+  context 'when fetching the user fails' do
+    before do
+      allow(ETEngine::Mailchimp)
+        .to receive(:fetch_subscriber)
+        .and_raise(Faraday::ClientError)
+    end
+
+    it 'returns a failure' do
+      expect(described_class.new.call(user:)).to be_failure
+    end
+  end
 end
