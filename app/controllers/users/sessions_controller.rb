@@ -63,5 +63,14 @@ module Users
     def after_sign_out_path_for(...)
       Settings.etmodel_uri.presence || super
     end
+
+    def respond_to_on_destroy
+      respond_to do |format|
+        format.all { head :no_content }
+        format.any(*navigational_formats) do
+          redirect_to after_sign_out_path_for(resource_name), allow_other_host: true
+        end
+      end
+    end
   end
 end
