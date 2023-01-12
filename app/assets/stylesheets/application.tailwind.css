@@ -222,6 +222,14 @@
     @apply focus-visible:ring-midnight-800;
   }
 
+  .button-warning {
+    @apply text-red-50 bg-red-600;
+    @apply hover:text-red-50 hover:bg-red-700;
+    @apply active:text-red-50 active:bg-red-800;
+
+    @apply focus-visible:ring-red-800;
+  }
+
   .button-gray {
     @apply text-gray-700 bg-gray-200;
     @apply hover:text-gray-700 hover:bg-gray-300;

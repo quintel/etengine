@@ -37,6 +37,10 @@ Rails.application.routes.draw do
     resources :authorized_applications, only: [:index], as: :authorized_applications
   end
 
+  devise_scope :user do
+    get 'identity/delete_account', to: 'users/registrations#confirm_destroy', as: :delete_account
+  end
+
   root :to => 'pages#index'
 
   # Frontend

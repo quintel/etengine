@@ -81,3 +81,18 @@
     <% end %>
   <% end %>
 <% end %>
+
+<%= render(Identity::ProfileRowComponent.new(title: t('devise.registrations.confirm_destroy.title'))) do |row| %>
+  <% row.message do %>
+    <p class="-mt-2 mb-2">
+      <%= t('devise.registrations.confirm_destroy.information') %>
+    </p>
+  <% end %>
+
+  <% row.button do %>
+    <%= link_to delete_account_path, class: button_classes('text-sm text-red-600 hover:text-red-700 active:text-red-700'), data: { turbo_frame: :modal } do %>
+      <%= inline_svg 'font-awesome/16/trash.svg', class: 'mr-1.5' %>
+      <%= t('devise.registrations.confirm_destroy.title') %>
+    <% end %>
+  <% end %>
+<% end %>

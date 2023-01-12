@@ -49,4 +49,8 @@ class User < ApplicationRecord
   def as_json(options = {})
     super(options.merge(except: Array(options[:except]) + [:legacy_password_salt]))
   end
+
+  def active_for_authentication?
+    super && deleted_at.nil?
+  end
 end
