@@ -78,7 +78,7 @@ nl:
             Stel in of nieuwe scenario's en opgeslagen scenario's standaard privé of publiek zijn.
             Je kunt deze instelling per scenario overschrijven.
           public_vs_private: |
-            Publieke scenarios kunnen door iedereen met een link naar het scenario worden bekeken 
+            Publieke scenarios kunnen door iedereen met een link naar het scenario worden bekeken
             (maar niet worden gewijzigd), terwijl privéscenario's alleen door jou kunnen worden bekeken.
       update_email:
         success:
@@ -121,12 +121,12 @@ nl:
       last_used: Laatst gebruikt
       permissions: Bevoegdheden
       full_token_not_shown: |
-        Het volledige token wordt hier niet getoond. Als dit verloren is gegaan, moet je dit token 
+        Het volledige token wordt hier niet getoond. Als dit verloren is gegaan, moet je dit token
         intrekken en een nieuwe aanmaken.
       make_sure_to_copy: Zorg dat je het kopieert naar het klembord.
       revoke_token: Token intrekken
       revoke_warning: |
-        Als je het token intrekt, verliest dit onmiddelijk de mogelijkheid om toegang te krijgen 
+        Als je het token intrekt, verliest dit onmiddelijk de mogelijkheid om toegang te krijgen
         tot jouw account of wijzigingen te maken.
       token: Token
       token_shown_briefly: Het volledige token wordt slechts kortstondig getoond!
@@ -165,12 +165,12 @@ nl:
           write:
             title: Lees en bewerk publieke en privéscenario's
             hint: |
-              Dit token kan jouw publieke en privéscenario's lezen en kan wijzigingen aanbrengen, maar kan geen 
+              Dit token kan jouw publieke en privéscenario's lezen en kan wijzigingen aanbrengen, maar kan geen
               scenario's verwijderen.
           delete:
             title: Lees, bewerk en verwijder publieke en privéscenario's
             hint: |
-              Dit token kan jouw publieke en privéscenario's lezen, kan wijzigingen aanbrengen en kan jouw 
+              Dit token kan jouw publieke en privéscenario's lezen, kan wijzigingen aanbrengen en kan jouw
               scenario's verwijderen.
           email:
             title: E-mailadres
@@ -215,3 +215,42 @@ nl:
       "scenarios:read": Read your private scenarios
       "scenarios:write": Create new scenarios and change your public and private scenarios
       "scenarios:delete": Delete your public and private scenarios
+  devise:
+    registrations:
+      confirm_destroy:
+        title: Account verwijderen
+        submit: Permanently delete account
+        information: |
+          Als u niet langer lid wilt zijn van het Energietransitiemodel, kunt u uw account
+          verwijderen. U wordt om bevestiging gevraagd op de volgende pagina.
+        warning_header: You are about to delete your account!
+        warning: |
+          All of your data – including your name and e-mail address, scenarios, and transition paths
+          – will be deleted. If you have shared scenarios with other users, they will no longer be
+          able to access them.
+        irreversible: Dit is onomkeerbaar.
+        confirm: |
+          Please enter your password to confirm you want to remove your account.
+        will_remove: 'Deleting your account will remove:'
+        entities:
+          data: Your account, personal data, and preferences
+          scenario:
+            zero: No scenarios
+            one: One scenario
+            other: '%{count} scenarios'
+          saved_scenario:
+            zero: No saved scenarios
+            one: One saved scenario
+            other: '%{count} saved scenarios'
+          oauth_application:
+            zero: No OAuth applications
+            one: One OAuth application
+            other: '%{count} OAuth applications'
+          transition_path:
+            zero: No transition paths
+            one: One transition path
+            other: '%{count} transition paths'
+          personal_access_token:
+            zero: No personal access tokens
+            one: One personal access token
+            other: '%{count} personal access tokens'

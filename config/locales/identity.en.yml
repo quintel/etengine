@@ -224,3 +224,42 @@ en:
       "scenarios:read": Read your private scenarios
       "scenarios:write": Create new scenarios and change your public and private scenarios
       "scenarios:delete": Delete your public and private scenarios
+  devise:
+    registrations:
+      confirm_destroy:
+        title: Delete account
+        submit: Permanently delete account
+        information: |
+          If you no longer wish to be a member of the Energy Transition Model, you may delete your
+          account. You'll be prompted for confirmation on the next page.
+        warning_header: You are about to delete your account!
+        warning: |
+          All of your data – including your name and e-mail address, scenarios, and transition paths
+          – will be deleted. If you have shared scenarios with other users, they will no longer be
+          able to access them.
+        irreversible: This is irreversible!
+        confirm: |
+          Please enter your password to confirm you want to remove your account.
+        will_remove: 'Deleting your account will remove:'
+        entities:
+          data: Your account, personal data, and preferences
+          scenario:
+            zero: No scenarios
+            one: One scenario
+            other: '%{count} scenarios'
+          saved_scenario:
+            zero: No saved scenarios
+            one: One saved scenario
+            other: '%{count} saved scenarios'
+          oauth_application:
+            zero: No OAuth applications
+            one: One OAuth application
+            other: '%{count} OAuth applications'
+          transition_path:
+            zero: No transition paths
+            one: One transition path
+            other: '%{count} transition paths'
+          personal_access_token:
+            zero: No personal access tokens
+            one: One personal access token
+            other: '%{count} personal access tokens'

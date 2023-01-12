@@ -1,0 +1,91 @@
+<%= render(ModalComponent.new(title: t('.title'))) do |modal| %>
+  <%= turbo_frame_tag :delete_account_form do %>
+    <%= form_for(current_user, url: user_registration_path, html: { method: :delete, data: { turbo: false } }) do |f| %>
+      <div class="flex mb-4">
+        <div
+          class="
+            w-7
+            h-7
+            inline-flex
+            items-center
+            justify-center
+            rounded-full
+            bg-red-600
+            text-gray-50
+            flex-shrink-0
+            -ml-2
+            mr-3
+          "
+        >
+          <%= inline_svg_tag 'hero/20/exclamation.svg' %>
+        </div>
+        <div class="mt-0.5">
+          <p class="text-base font-medium mb-2 text-red-600">
+            <%= t('.warning_header') %>
+          </p>
+          <p class="mb-2">
+            <%= t('.warning') %>
+          </p>
+          <p class="mb-2">
+            <%= t('.will_remove') %>
+          </p>
+          <ul class="mb-2 list-disc ml-8">
+            <li><%= t('.entities.data') %></li>
+
+            <% if @counts[:saved_scenarios].positive? %>
+              <li>
+                <%= t('.entities.saved_scenario', count: @counts[:saved_scenarios]) %>
+              </li>
+            <% end %>
+
+            <% if @counts[:scenarios].positive? %>
+              <li>
+                <%= t('.entities.scenario', count: @counts[:scenarios]) %>
+              </li>
+            <% end %>
+
+            <% if @counts[:transition_paths].positive? %>
+              <li>
+                <%= t('.entities.transition_path', count: @counts[:transition_paths]) %>
+              </li>
+            <% end %>
+
+            <% if @counts[:personal_access_tokens].positive? %>
+              <li>
+                <%= t('.entities.personal_access_token', count: @counts[:personal_access_tokens]) %>
+              </li>
+            <% end %>
+
+            <% if @counts[:oauth_applications].positive? %>
+              <li>
+                <%= t('.entities.oauth_application', count: @counts[:oauth_applications]) %>
+              </li>
+            <% end %>
+          </ul>
+
+          <p class="font-semibold">
+            <%= t('.irreversible') %>
+          </p>
+        </div>
+      </div>
+      <%= render(FormSteps::WrapperComponent.new) do |steps| %>
+        <%= render(FormSteps::RowComponent.new(title: t('activerecord.attributes.user.password'), hint: t('.confirm'), label_for: "user_current_password")) do |row| %>
+          <div class="relative">
+            <%= render(PasswordFieldComponent.new(form: f, name: :current_password, class: "field", required: true, autofocus: "true", autocomplete: 'current-password')) %>
+          </div>
+
+          <% row.icon { inline_svg_tag("hero/20/identification.svg") } %>
+
+          <% row.after_hint do %>
+            <%= render(FieldErrorsComponent.new(record: current_user, attribute: :current_password)) %>
+          <% end %>
+        <% end %>
+
+        <div class="mt-6 pb-2 flex items-center gap-2">
+          <%= button_tag t('.submit'), class: button_classes("text-base", size: :lg, color: :warning) %>
+          <%= modal.close_link(t('identity.cancel'), identity_profile_path, class: button_classes("text-base", size: :lg)) %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
