@@ -24,7 +24,7 @@ module Api
         authorize!(:clone, @scenario)
       end
 
-      around_action :wrap_with_raven_context, only: :update
+      around_action :wrap_with_sentry_context, only: :update
 
       # GET /api/v3/scenarios
       #
@@ -394,8 +394,8 @@ module Api
       # scenario which caused the error.
       #
       # Returns the result of the block.
-      def wrap_with_raven_context
-        ScenarioRavenContext.with_context(@scenario) { yield }
+      def wrap_with_sentry_context
+        ScenarioSentryContext.with_context(@scenario) { yield }
       end
     end
   end

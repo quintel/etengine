@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-Raven.configure do |config|
-  config.dsn = ENV['SENTRY_DSN']
-  config.environments = %w[production staging]
+Sentry.init do |config|
+  config.dsn = ENV.fetch('SENTRY_DSN', nil)
+  config.enabled_environments = %w[production staging]
 
-  config.sanitize_fields =
-    Rails.application.config.filter_parameters.map(&:to_s)
-
-  config.processors -= [Raven::Processor::PostData]
+  # This sends information such as the query params and request body, and IP address. Sentry is
+  # configured to filter out and not store the IP address since we only want the params and body.
+  config.send_default_pii = true
 end

@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   # TODO refactor move the hooks and corresponding actions into a "concern"
   before_action :initialize_memory_cache
   before_action :set_locale
+  before_action :configure_sentry
   before_action :store_user_location!, if: :storable_location?
 
   rescue_from CanCan::AccessDenied do |_exception|
@@ -72,6 +73,12 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     stored_location_for(resource_or_scope) || super
+  end
+
+  def configure_sentry
+    if respond_to?(:current_user) && current_user
+      Sentry.set_user(id: current_user.id, email: current_user.email)
+    end
   end
 
   # Internal: Renders a 404 page.

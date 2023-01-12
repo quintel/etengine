@@ -5,17 +5,17 @@ module Api
     # Allows a block (typically a Rails action) to be wrapped with information
     # about the active scenario, so that any exceptions raised can provide
     # Sentry with relevant information.
-    module ScenarioRavenContext
+    module ScenarioSentryContext
       module_function
 
-      # Public: Wraps a block with Raven contexts about the scenario.
+      # Public: Wraps a block with Sentry contexts about the scenario.
       #
       # scenario - The scenario whose information should be provided to Sentry
       #            if an exception happens.
       #
       # For example:
       #
-      #   SentryRavenContext.with_context(scenario) do
+      #   SentrySentryContext.with_context(scenario) do
       #     # any raised exceptions will provide sentry with scenario data.
       #   end
       #
@@ -23,10 +23,11 @@ module Api
       def with_context(scenario)
         res = nil
 
-        Raven.tags_context(etsource_tags) do
-          Raven.extra_context(extra_context(scenario)) do
-            res = yield
-          end
+        Sentry.with_scope do |scope|
+          scope.set_tags(etsource_tags)
+          scope.set_extras(extra_context(scenario))
+
+          res = yield
         end
 
         res

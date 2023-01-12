@@ -164,7 +164,7 @@ module Gql
       if rescue_with == :debug
         ResultSet.create([[2010, e.inspect], [2040, e.inspect]])
       elsif rescue_with == :airbrake
-        Raven.capture_exception(e) unless Settings.standalone
+        Sentry.capture_exception(e) unless Settings.standalone
         ResultSet::INVALID
       elsif rescue_with.present?
         rescue_with
@@ -222,7 +222,7 @@ module Gql
     #
     def query_multiple(gquery_keys)
       gquery_keys = gquery_keys - ["null", "undefined"]
-      rescue_with = Raven.configuration.capture_allowed? ? :airbrake : :debug
+      rescue_with = Sentry.configuration.enabled_in_current_env? ? :airbrake : :debug
 
       gquery_keys.inject({}) do |hsh, key|
         result = if gquery = (Gquery.get(key) rescue nil) and !gquery.nodes?

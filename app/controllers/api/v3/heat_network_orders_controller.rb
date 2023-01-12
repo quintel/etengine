@@ -25,14 +25,15 @@ module Api
         else
           # There is no reason for invalid options to have been provided, unless
           # the front-end is unaware of a change. Notify.
-          Raven.capture_message(
-            'Invalid heat network order',
-            extra: {
+          Sentry.with_scope do |scope|
+            scope.set_extras(
               errors: heat_network_order.errors.full_messages,
               order: heat_network_order_params[:order],
               scenario_id: params[:scenario_id]
-            }
-          )
+            )
+
+            Sentry.capture_message('Invalid heat network order')
+          end
 
           render_errors(heat_network_order)
         end

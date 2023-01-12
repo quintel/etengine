@@ -468,8 +468,14 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sentry-raven (3.1.2)
-      faraday (>= 1.0)
+    sentry-rails (5.7.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.7.0)
+    sentry-ruby (5.7.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+    sentry-sidekiq (5.7.0)
+      sentry-ruby (~> 5.7.0)
+      sidekiq (>= 3.0)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
     sidekiq (7.0.2)
@@ -618,7 +624,9 @@ DEPENDENCIES
   ruby-progressbar
   ruby_deep_clone (~> 0.8)
   selenium-webdriver
-  sentry-raven
+  sentry-rails
+  sentry-ruby
+  sentry-sidekiq
   shoulda-matchers
   sidekiq
   simple_form

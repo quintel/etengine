@@ -90,7 +90,9 @@ gem 'dalli'
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
 
-gem 'sentry-raven'
+gem 'sentry-ruby'
+gem "sentry-rails"
+gem "sentry-sidekiq"
 
 group :development do
   # gem 'quiet_assets'
