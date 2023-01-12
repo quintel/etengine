@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_05_155144) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_12_121358) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -167,9 +167,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_05_155144) do
     t.datetime "updated_at", precision: nil
     t.text "user_values", size: :medium
     t.integer "end_year", default: 2040
-    t.boolean "keep_compatible", default: false
+    t.boolean "keep_compatible", default: false, null: false
     t.bigint "owner_id"
-    t.boolean "private", default: false
+    t.boolean "private", default: false, null: false
     t.integer "preset_scenario_id"
     t.string "area_code"
     t.string "source"
@@ -186,6 +186,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_05_155144) do
     t.index ["application_id"], name: "fk_rails_6768c0af4c"
     t.index ["user_id", "name"], name: "index_staff_applications_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_staff_applications_on_user_id"
+  end
+
+  create_table "transition_path_scenarios", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "transition_path_id"
+    t.integer "scenario_id", null: false
+    t.index ["scenario_id"], name: "index_transition_path_scenarios_on_scenario_id"
+    t.index ["transition_path_id"], name: "index_transition_path_scenarios_on_transition_path_id"
+  end
+
+  create_table "transition_paths", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "owner_id", null: false
+    t.string "title", null: false
+    t.integer "source_scenario_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id"], name: "fk_rails_e4d384d760"
+    t.index ["source_scenario_id"], name: "fk_rails_464d59c95d"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -209,6 +226,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_05_155144) do
     t.string "unconfirmed_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -229,4 +247,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_05_155144) do
   add_foreign_key "scenarios", "users", column: "owner_id"
   add_foreign_key "staff_applications", "oauth_applications", column: "application_id"
   add_foreign_key "staff_applications", "users"
+  add_foreign_key "transition_path_scenarios", "scenarios"
+  add_foreign_key "transition_path_scenarios", "transition_paths"
+  add_foreign_key "transition_paths", "scenarios", column: "source_scenario_id", on_delete: :nullify
+  add_foreign_key "transition_paths", "users", column: "owner_id", on_delete: :cascade
 end
