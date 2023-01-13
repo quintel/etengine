@@ -101,6 +101,10 @@ Rails.application.routes.draw do
           to: 'curves#heat_network',
           as: :curves_heat_network_download
 
+        get 'curves/agriculture_heat',
+          to: 'curves#agriculture_heat',
+          as: :curves_agriculture_heat_download
+
         get 'curves/household_heat',
           to: 'curves#household_heat_curves',
           as: :curves_household_heat_download
