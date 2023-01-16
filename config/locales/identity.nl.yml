@@ -209,48 +209,48 @@ nl:
             title: Application revoked
             message: The application no longer has access to your account.
     scopes:
-      public: Read public scenarios
-      email: See your e-mail address
-      profile: See your profile information
-      "scenarios:read": Read your private scenarios
-      "scenarios:write": Create new scenarios and change your public and private scenarios
-      "scenarios:delete": Delete your public and private scenarios
+      public: Lees publieke scenario's
+      email: Bekijk jouw e-mailadres
+      profile: Bekijk jouw profielinformatie
+      "scenarios:read": Lees jouw privéscenario's
+      "scenarios:write": Maak nieuwe scenario's aan en wijzig jouw publieke en privéscenario's
+      "scenarios:delete": Verwijder jouw publieke en privéscenario's
   devise:
     registrations:
       confirm_destroy:
         title: Account verwijderen
-        submit: Permanently delete account
+        submit: Account permanent verwijderen
         information: |
           Als u niet langer lid wilt zijn van het Energietransitiemodel, kunt u uw account
           verwijderen. U wordt om bevestiging gevraagd op de volgende pagina.
-        warning_header: You are about to delete your account!
+        warning_header: Je staat op het punt om jouw account te verwijderen!
         warning: |
-          All of your data – including your name and e-mail address, scenarios, and transition paths
-          – will be deleted. If you have shared scenarios with other users, they will no longer be
-          able to access them.
+          Al jouw data - waaronder jouw naam en e-mailadres, scenario's en transitiepaden - zullen 
+          worden verwijderd. Als je gedeelde scenario's hebt met andere gebruikers zullen zij niet 
+          langer toegang hebben tot deze scenario's.
         irreversible: Dit is onomkeerbaar.
         confirm: |
-          Please enter your password to confirm you want to remove your account.
-        will_remove: 'Deleting your account will remove:'
+          Vul je wachtwoord in om te bevestigen dat je jouw account wilt verwijderen.
+        will_remove: 'Het verwijderen van jouw account wist:'
         entities:
-          data: Your account, personal data, and preferences
+          data: Jouw account, persoonlijke data en voorkeuren
           scenario:
-            zero: No scenarios
-            one: One scenario
-            other: '%{count} scenarios'
+            zero: Geen scenario's
+            one: Één scenario
+            other: "%{count} scenario's"
           saved_scenario:
-            zero: No saved scenarios
-            one: One saved scenario
-            other: '%{count} saved scenarios'
+            zero: Geen opgeslagen scenario's
+            one: Één opgeslagen scenario
+            other: "%{count} opgeslagen scenario's"
           oauth_application:
-            zero: No OAuth applications
-            one: One OAuth application
-            other: '%{count} OAuth applications'
+            zero: Geen OAuth applicaties
+            one: Één OAuth applicatie
+            other: '%{count} OAuth applicaties'
           transition_path:
-            zero: No transition paths
-            one: One transition path
-            other: '%{count} transition paths'
+            zero: Geen transitiepaden
+            one: Één transitiepaden
+            other: '%{count} transitiepaden'
           personal_access_token:
-            zero: No personal access tokens
-            one: One personal access token
-            other: '%{count} personal access tokens'
+            zero: Geen persoonlijke toegangstokens
+            one: Één persoonlijk toegangstoken
+            other: '%{count} persoonlijke toegangstokens'
