@@ -74,7 +74,7 @@ class CausalityCurvesCSVSerializer
 
   def producers
     nodes_of_type(producer_types).select do |producer|
-      next if exclude_producer_subtypes.include?(@adapter.node_config(producer).subtype)
+      next if exclude_producer_subtypes.include?(@adapter.node_config(producer).try(:subtype))
 
       @adapter.node_curve(producer, :output)&.any?
     end
