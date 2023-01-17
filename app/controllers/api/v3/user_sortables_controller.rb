@@ -59,7 +59,11 @@ module Api
       end
 
       def sortable_params
-        params.require(sortable_name).permit(order: [])
+        if params.key?(:order)
+          params.permit(order: [])
+        else
+          params.require(sortable_name).permit(order: [])
+        end
       end
 
       def render_errors(sortable)

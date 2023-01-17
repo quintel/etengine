@@ -145,7 +145,7 @@ describe 'APIv3 heat network orders' do
     context 'when the scenario is owned by someone else' do
       before do
         scenario.update!(owner: create(:user))
-        put url, params: { heat_network_order: { order: valid_options.reverse } }
+        put url, params: { order: valid_options.reverse }
       end
 
       it 'responds with 403 Forbidden' do
@@ -159,7 +159,7 @@ describe 'APIv3 heat network orders' do
         scenario.update!(owner: user)
 
         put url,
-          params: { heat_network_order: { order: valid_options.reverse } },
+          params: { order: valid_options.reverse },
           headers: access_token_header(user, :write)
       end
 
@@ -169,6 +169,19 @@ describe 'APIv3 heat network orders' do
     end
 
     context 'when the heat network order does not exist, given valid data' do
+      let(:request) do
+        put url, params: { order: valid_options.reverse }
+      end
+
+      include_examples 'a successful heat network order update'
+
+      it 'saves the record' do
+        expect { request }.to change(HeatNetworkOrder, :count).by(1)
+      end
+    end
+
+    # Backwards compatibility.
+    context 'when the heat network order does not exist, given valid data as a sub-key' do
       let(:request) do
         put url, params: {
           heat_network_order: { order: valid_options.reverse }
@@ -184,9 +197,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the scenario does not exist, given valid data' do
       let(:request) do
-        put url, params: {
-          heat_network_order: { order: valid_options.reverse }
-        }
+        put url, params: { order: valid_options.reverse }
       end
 
       before do
@@ -205,9 +216,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the heat network order does not exist, given invalid data' do
       let(:request) do
-        put url, params: {
-          heat_network_order: { order: %w[invalid] }
-        }
+        put url, params: { order: %w[invalid] }
       end
 
       include_examples 'a failed heat network order update'
@@ -218,6 +227,26 @@ describe 'APIv3 heat network orders' do
     end
 
     context 'when the heat network order exists, given valid data' do
+      let(:request) do
+        put url, params: { order: valid_options.reverse }
+      end
+
+      before do
+        HeatNetworkOrder.create!(
+          scenario_id: scenario.id,
+          order: HeatNetworkOrder.default_order
+        )
+      end
+
+      include_examples 'a successful heat network order update'
+
+      it 'does not save a new record' do
+        expect { request }.not_to change(HeatNetworkOrder, :count)
+      end
+    end
+
+    # Supported for backwards compatibility.
+    context 'when the heat network order exists, given valid data as a sub-key' do
       let(:request) do
         put url, params: {
           heat_network_order: { order: valid_options.reverse }
@@ -240,9 +269,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the heat network order exists, given invalid data' do
       let(:request) do
-        put url, params: {
-          heat_network_order: { order: %w[invalid] }
-        }
+        put url, params: { order: %w[invalid] }
       end
 
       before do
@@ -257,27 +284,6 @@ describe 'APIv3 heat network orders' do
       it 'does not change the saved record' do
         order = HeatNetworkOrder.find_by(scenario_id: scenario.id)
         expect { request }.not_to(change { order.reload.attributes })
-      end
-    end
-
-    context 'when the request is missing the heat_network_order key' do
-      let(:request) do
-        put url, params: { order: valid_options.reverse }
-      end
-
-      it 'is a failed request' do
-        request
-        expect(response).not_to be_successful
-      end
-
-      it 'responds with a list of errors' do
-        request
-
-        expect(JSON.parse(response.body)).to include(
-          'errors' => [
-            'param is missing or the value is empty: heat_network_order'
-          ]
-        )
       end
     end
 
