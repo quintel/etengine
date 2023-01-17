@@ -82,7 +82,11 @@ Rails.application.routes.draw do
         put   '/flexibility_order', to: 'removed_features#flexibility_order'
         patch '/flexibility_order', to: 'removed_features#flexibility_order'
 
-        resource :heat_network_order, only: [:show, :update], controller: :heat_network_orders
+        resource :heat_network_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :heat_network
+
+        resource :forecast_storage_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :forecast_storage
 
         resources :custom_curves, only: %i[index show update destroy],
           constraints: { id: %r{[a-z\d_\-/]+} }

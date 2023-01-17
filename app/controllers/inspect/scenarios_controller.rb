@@ -24,6 +24,7 @@ class Inspect::ScenariosController < Inspect::BaseController
 
       update_user_sortables!(
         user_sortable_attributes,
+        forecast_storage_order: @scenario.forecast_storage_order,
         heat_network_order: @scenario.heat_network_order
       )
     end
@@ -48,6 +49,7 @@ class Inspect::ScenariosController < Inspect::BaseController
 
       update_user_sortables!(
         user_sortable_attributes,
+        forecast_storage_order: @scenario.forecast_storage_order,
         heat_network_order: @scenario.heat_network_order
       )
 
@@ -68,11 +70,12 @@ class Inspect::ScenariosController < Inspect::BaseController
   end
 
   def scenario_attributes
-    params.require(:scenario).permit!.except(:heat_network_order)
+    params.require(:scenario).permit!.except(:forecast_storage_order, :heat_network_order)
   end
 
   def user_sortable_attributes
     params.require(:scenario).permit(
+      forecast_storage_order: [:order],
       heat_network_order: [:order]
     )
   end

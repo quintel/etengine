@@ -35,6 +35,7 @@ class Graph
 
   dataset_accessors :calculated,
                     :year,
+                    :forecast_storage_order,
                     :heat_network_order,
                     # graphs do not know the number of years, that is defined
                     # in scenario and assigned in a 2nd step by the gql.
