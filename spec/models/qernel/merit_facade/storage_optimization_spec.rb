@@ -294,6 +294,26 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
         end
       end
       # rubocop:enable RSpec/MultipleExpectations
+
+      it 'does not re-sort the batteries' do
+        expect(opt.send(:batteries).map { |b| b.node.key }).to eq(%i[first second])
+      end
+    end
+
+    context 'with two batteries and a custom order' do
+      let(:opt) { described_class.new(adapters, %i[second first]) }
+
+      let(:adapters) do
+        [
+          consumer_double(:must_run, (([1000.0] * 6) + ([500.0] * 6)) * 365),
+          battery_double(key: :first, volume: 500.0, capacity: 250.0),
+          battery_double(key: :second, volume: 500.0, capacity: 100.0)
+        ]
+      end
+
+      it 'sorts the batteries according to the order' do
+        expect(opt.send(:batteries).map { |b| b.node.key }).to eq(%i[second first])
+      end
     end
   end
 end

@@ -18,8 +18,9 @@ module Qernel
       end
 
       # Public: Creates a new Optimization which receives all of the adapters from the Merit plugin.
-      def initialize(adapters)
+      def initialize(adapters, order = [])
         @adapters = adapters
+        @order = order.map(&:to_s)
       end
 
       # Public: Returns an array describing how much energy will be stored in the named battery in
@@ -117,10 +118,15 @@ module Qernel
 
       # Internal: Returns all optimizing storage adapters.
       def batteries
-        @batteries ||=
-          @adapters
-            .select { |a| a.config.type == :flex && a.config.subtype == :optimizing_storage }
-            .sort_by { |a| a.node.key }
+        @batteries ||= begin
+          optimizing = @adapters.select do |adapter|
+            adapter.config.subtype == :optimizing_storage && adapter.config.type == :flex
+          end
+
+          optimizing.sort_by.with_index do |adapter, index|
+            [@order.index(adapter.node.key.to_s) || Float::INFINITY, index]
+          end
+        end
       end
 
       # Internal: Returns a Merit::Curve describing the sum of production for each hour.

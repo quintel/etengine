@@ -24,21 +24,18 @@
       = f.input :user_values, label: 'User values (YAML)', as: :text, :hint => "Position (values) of all the sliders", input_html: { data: { codemirror: 'yaml' } }
       = f.input :balanced_values, label: 'Balanced values (YAML)', as: :text, :hint => "Values set automatically by ETEngine ensuring groups sum to 100%", input_html: { data: { codemirror: 'yaml' } }
       = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }
+      = f.simple_fields_for :forecast_storage_order, @scenario.forecast_storage_order do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.forecast_storage_order) }, label: 'Forecast storage order', hint: 'Delete all lines to revert to default'
       = f.simple_fields_for :heat_network_order, @scenario.heat_network_order do |hno|
         = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order) }, label: 'Heat network dispatchables order', hint: 'Delete all lines to revert to default'
       = f.button :submit, class: 'btn btn-primary btn-large'
 
   :css
-    #scenario_heat_network_order_order {
+    #scenario_heat_network_order_order, #scenario_forecast_storage_order_order {
       font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",  "Courier New", monospace;
-      width: 800px;
-      height: 300px;
-      margin-right: 10px;
-    }
-
-    #scenario_heat_network_order_order {
-      height: 220px;
       width: 400px;
+      height: 220px;
+      margin-right: 10px;
     }
 
     .text .hint {

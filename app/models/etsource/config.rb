@@ -48,6 +48,13 @@ module Etsource
       read('heat_network_order')
     end
 
+    # Public: Reads the order of storage in when forecasting is enabled.
+    #
+    # Returns an array of strings.
+    def forecast_storage_order
+      read('forecast_storage_order')
+    end
+
     # Public: Contains a configuration for the sankey CSV export.
     #
     # See ConfiguredCSVSerializer.
