@@ -5,6 +5,12 @@ module ETEngine
   module ScenarioMigration
     NoScenariosMigrated = Class.new(RuntimeError)
 
+    REDUNDANT_AGGREGATE_KEYS = %w[
+      industry_useful_demand_for_chemical_aggregated_industry
+      industry_useful_demand_for_chemical_aggregated_industry_electricity_efficiency
+      industry_useful_demand_for_chemical_aggregated_industry_useable_heat_efficiency
+    ].freeze
+
     # Public: Yields all migrateable scenarios. If a scenario is changed while
     # yielded it will be saved.
     #
@@ -30,6 +36,8 @@ module ETEngine
       collection = scenarios(since)
       total = collection.count
       changed = 0
+      uv_changed = 0
+      unrelated_changes = 0
 
       say("#{total} candidate scenarios for migration")
 
@@ -41,12 +49,18 @@ module ETEngine
         end
 
         if scenario.changed?
+          uv_changed += 1 if scenario.user_values_changed?
+          unless overlap(scenario.user_values_change)
+            say(scenario.user_values_change)
+            unrelated_changes += 1
+          end
+
           scenario.save(validate: false, touch: false)
           changed += 1
         end
 
         if index.positive? && ((index + 1) % 1000).zero?
-          say("#{index + 1}/#{total} (#{changed} migrated)")
+          say("#{index + 1}/#{total} (#{changed} migrated, #{uv_changed} changed user values of which #{unrelated_changes} unrelated)")
         end
       end
 
@@ -68,6 +82,14 @@ module ETEngine
 
     def scenarios(since)
       since.nil? ? Scenario.migratable : Scenario.migratable_since(since)
+    end
+
+    def overlap(uv_changes)
+      REDUNDANT_AGGREGATE_KEYS.each do |key|
+        return true if uv_changes[0].include?(key)
+      end
+
+      false
     end
   end
 end

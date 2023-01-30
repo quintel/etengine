@@ -11,9 +11,9 @@ class RemoveRedundantAggregateInputs < ActiveRecord::Migration[7.0]
 
 
   def up
-    migrate_scenarios(since: Date.new(2021, 1, 1)) do |scenario|
+    migrate_scenarios(since: Date.new(2022, 1, 1)) do |scenario|
       REDUNDANT_AGGREGATE_KEYS.each do |key|
-        scenario.user_values.delete(key)
+        scenario.user_values.delete(key) if scenario.user_values.include? key
       end
     end
   end
