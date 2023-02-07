@@ -13,7 +13,7 @@ these energy scenarios; that role is instead fulfilled by separate applications
 such as [ETModel][etmodel], [ETFlex][etflex], and the [EnergyMixer][energymixer],
 which each use ETEngine's REST API for manipulating and calculating scenarios.
 
-[![Build Status](https://semaphoreci.com/api/v1/quintel/etengine/branches/master/badge.svg)](https://semaphoreci.com/quintel/etengine)
+[![Build Status](https://quintel.semaphoreci.com/badges/etengine/branches/master.svg)](https://quintel.semaphoreci.com/projects/etengine)
 
 ## License
 
