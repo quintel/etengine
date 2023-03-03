@@ -21,7 +21,7 @@ class CostsParametersSerializer
       costs_infrastructure_heat
     ],
     costs_infrastructure_hydrogen: %w[
-      costs_infrastructure_hydrogen
+      
     ],
     costs_infrastructure_network_gas: %w[
       gas_network_total_costs
