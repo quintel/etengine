@@ -147,7 +147,8 @@ class CostsParametersSerializer
   # If no subgroup was supplied, gets the query with the name of the main group
   def group_total_row(group, subgroup = nil)
     query = subgroup ? "#{group}_#{subgroup}" : group.to_s
-    query_row(group, subgroup, query, 'Total')
+    subgroup_name = subgroup ? subgroup : 'Group total'
+    query_row(group, subgroup_name, query, 'Total')
   end
 
   # Internal: Returns a row based on a query.
