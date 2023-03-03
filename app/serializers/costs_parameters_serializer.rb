@@ -27,10 +27,10 @@ class CostsParametersSerializer
       gas_network_total_costs
     ],
     costs_co2_molecule_nodes: %w[
-      costs_co2_ccs
+      costs_co2_energy_graph
     ],
     costs_co2_energy_nodes: %w[
-      costs_co2_ccs
+      costs_molecule_graph
     ]
   }.freeze
 
