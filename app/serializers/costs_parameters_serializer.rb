@@ -18,7 +18,7 @@ class CostsParametersSerializer
       total_costs_of_electricity_network_calculation
     ],
     costs_infrastructure_heat: %w[
-      heat_infrastructure_total_annualised_costs
+      costs_infrastructure_heat
     ],
     costs_infrastructure_hydrogen: %w[
       costs_infrastructure_hydrogen
