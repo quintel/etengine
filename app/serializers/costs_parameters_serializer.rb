@@ -240,7 +240,7 @@ class CostsParametersSerializer
   # This group only needs subtotal group queries
   def costs_carriers
     %w[biomass oil_and_products coal_and_products uranium heat natural_gas waste
-       electricity hydrogen]
+       electricity hydrogen ammonia]
   end
 
   # Internal: Carriers for which the costs_infrastructure group is valid
