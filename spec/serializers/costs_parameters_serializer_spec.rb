@@ -9,9 +9,9 @@ describe CostsParametersSerializer do
 
   let(:scenario) { FactoryBot.create(:scenario) }
 
-  it 'has 39 rows' do
-    # 10 queries, 6 totals, 23 subtotals = 39 rows minimum (when no nodes in groups)
-    expect(subject.length).to eq(39)
+  it 'has 40 rows' do
+    # 10 queries, 6 totals, 24 subtotals = 40 rows minimum (when no nodes in groups)
+    expect(subject.length).to eq(40)
   end
 
   it 'has a row for each node' do
