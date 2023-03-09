@@ -18,19 +18,19 @@ class CostsParametersSerializer
       total_costs_of_electricity_network_calculation
     ],
     costs_infrastructure_heat: %w[
-      heat_infrastructure_total_annualised_costs
+      costs_infrastructure_heat
     ],
     costs_infrastructure_hydrogen: %w[
-      costs_infrastructure_hydrogen
+      
     ],
     costs_infrastructure_network_gas: %w[
       gas_network_total_costs
     ],
     costs_co2_molecule_nodes: %w[
-      costs_co2_ccs
+      costs_co2_energy_graph
     ],
     costs_co2_energy_nodes: %w[
-      costs_co2_ccs
+      costs_molecule_graph
     ]
   }.freeze
 
@@ -147,7 +147,8 @@ class CostsParametersSerializer
   # If no subgroup was supplied, gets the query with the name of the main group
   def group_total_row(group, subgroup = nil)
     query = subgroup ? "#{group}_#{subgroup}" : group.to_s
-    query_row(group, subgroup, query, 'Total')
+    subgroup_name = subgroup ? subgroup : 'Group total'
+    query_row(group, subgroup_name, query, 'Total')
   end
 
   # Internal: Returns a row based on a query.
@@ -239,7 +240,7 @@ class CostsParametersSerializer
   # This group only needs subtotal group queries
   def costs_carriers
     %w[biomass oil_and_products coal_and_products uranium heat natural_gas waste
-       electricity hydrogen]
+       electricity hydrogen ammonia]
   end
 
   # Internal: Carriers for which the costs_infrastructure group is valid
