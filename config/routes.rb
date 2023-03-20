@@ -58,6 +58,7 @@ Rails.application.routes.draw do
           get :molecule_flow, to: 'export#molecule_flow'
           get :costs_parameters, to: 'export#costs_parameters'
           get :sankey, to: 'export#sankey'
+          get :storage_parameters, to: 'export#storage_parameters'
           get :merit
           put :dashboard
           post :interpolate
