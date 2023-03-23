@@ -53,6 +53,17 @@ module Api
         )
       end
 
+      # GET /api/v3/scenarios/:id/storage_parameters
+      #
+      # Creates a CSV by reading a configuration file from ETSource consisting of literal values and
+      # queries to be executed.
+      def storage_parameters
+        send_csv(
+          ConfiguredCSVSerializer.new(Etsource::Config.storage_parameters_csv, @scenario.gql),
+          'storage_parameters.%d.csv'
+        )
+      end
+
       # GET /api/v3/scenarios/:id/costs_parameters
       #
       # Returns a CSV file containing the cost paramaters of nodes belonging to costs groups.

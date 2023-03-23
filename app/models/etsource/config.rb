@@ -64,6 +64,16 @@ module Etsource
       read('sankey_csv')
     end
 
+    # Public: Contains a configuration for the storage parameters CSV export.
+    #
+    # See ConfiguredCSVSerializer.
+    #
+    # Returns a hash.
+    def storage_parameters_csv
+      read('storage_parameters_csv')
+    end
+
+
     # Public: Contains a configuration for the residual load CSV export.
     #
     # Returns an array of hashes.
