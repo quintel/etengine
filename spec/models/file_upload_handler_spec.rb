@@ -12,8 +12,8 @@ describe 'FileUploadHandler' do
 
     before { file_handler.call }
 
-    it 'is not valid' do
-      expect(file_handler).not_to be_valid
+    it 'replaces the file' do
+      expect(file_handler).to be_valid
     end
   end
 
