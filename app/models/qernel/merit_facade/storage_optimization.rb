@@ -13,7 +13,7 @@ module Qernel
       def self.reserve_to_load(reserve, input_efficiency: 1.0, output_efficiency: 1.0)
         reserve.map.with_index do |value, index|
           value = reserve[index - 1] - value
-          value.positive? ? value * output_efficiency : value * input_efficiency
+          value.positive? ? value * output_efficiency : value
         end
       end
 
@@ -104,7 +104,8 @@ module Qernel
             output_capacity: params.output_capacity,
             charging_limit: allowed_input,
             discharging_limit: allowed_output,
-            volume: params.volume
+            volume: params.volume,
+            output_efficiency: params.output_efficiency,
           ).to_a
         else
           Array.new(8760, 0.0)

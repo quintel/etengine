@@ -62,14 +62,6 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
       end
     end
 
-    context 'with [1, 2, 1, 0] and an input efficiency of 0.75' do
-      it 'returns [-0.75, -0.75, 1, 1]' do
-        expect(
-          described_class.reserve_to_load([1, 2, 1, 0], input_efficiency: 0.75)
-        ).to eq([-0.75, -0.75, 1, 1])
-      end
-    end
-
     context 'with [1, 2, 1, 0], and an output efficiency of 0.75' do
       it 'returns [-1, -1, 0.75, 0.75]' do
         expect(
@@ -78,15 +70,14 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
       end
     end
 
-    context 'with [1, 2, 1, 0] and an input efficiency of 0.5 and output efficiency of 0.1' do
+    context 'with [1, 2, 1, 0] and an output efficiency of 0.1' do
       it 'returns [-0.5, -0.5, 0.1, 0.1]' do
         expect(
           described_class.reserve_to_load(
             [1, 2, 1, 0],
-            input_efficiency: 0.5,
             output_efficiency: 0.1
           )
-        ).to eq([-0.5, -0.5, 0.1, 0.1])
+        ).to eq([-1, -1, 0.1, 0.1])
       end
     end
 
@@ -224,17 +215,18 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
 
       it 'calculates the battery reserve' do
         expect(opt.reserve_for(:a_battery)[24...36]).to eq([
-          5000, 4000, 3000, 2000, 1000, 0, 0, 1000, 2000, 3000, 4000, 5000
+          4680.0, 3800.0, 2800.0, 1800.0, 800.0, 120.0, 720.0, 1440.0, 2160.0, 3160.0, 4080.0, 5000
         ])
       end
 
       it 'calculates the battery load' do
         expect(opt.load_for(:a_battery)[24...36]).to eq([
-          0, 800, 800, 800, 800, 800, 0, -1000, -1000, -1000, -1000, -1000
+          256.0, 704.0, 800.0, 800.0, 800.0, 544.0, -600.0, -720.0, -720.0, -1000.0, -920.0, -920.0
         ])
       end
     end
 
+    # TODO: ask mathijs
     context 'with a single battery with an output efficiency of 1.2' do
       let(:adapters) do
         [
