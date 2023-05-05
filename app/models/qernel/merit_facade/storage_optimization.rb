@@ -8,9 +8,9 @@ module Qernel
       EMPTY_CURVE = Merit::Curve.new([0.0] * 8760).freeze
       PRODUCTION_TYPES = %i[must_run volatile].freeze
 
-      # Public: Converts the amount of energy stored in a reserve to hour charging (positive) and
-      # discharging (negative) loads.
-      def self.reserve_to_load(reserve, input_efficiency: 1.0, output_efficiency: 1.0)
+      # Public: Converts the amount of energy stored in a reserve to hour charging (negative) and
+      # discharging (positive) loads.
+      def self.reserve_to_load(reserve, output_efficiency: 1.0)
         reserve.map.with_index do |value, index|
           value = reserve[index - 1] - value
           value.positive? ? value * output_efficiency : value
@@ -32,15 +32,9 @@ module Qernel
       # Public: Returns the hourly load of the named battery. Negative loads indicate charging while
       # negative loads are charging.
       def load_for(key)
-        input_efficiency, output_efficiency =
-          Merit::Flex::OptimizingStorage.normalized_efficiencies(
-            battery(key).optimizing_storage_params.output_efficiency
-          )
-
         self.class.reserve_to_load(
           reserve_for(key),
-          input_efficiency: input_efficiency,
-          output_efficiency: output_efficiency
+          output_efficiency: battery(key).optimizing_storage_params.output_efficiency
         )
       end
 

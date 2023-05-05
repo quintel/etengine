@@ -208,42 +208,41 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
     context 'with a single battery with an output efficiency of 0.8' do
       let(:adapters) do
         [
-          consumer_double(:must_run, ([10_000.0] * 6 + [5000.0] * 6) * 365),
+          consumer_double(:must_run, (([15_000] * 5 + [30_000]) + ([5_000] * 6 )) * 365),
           battery_double(key: :a_battery, volume: 5000.0, capacity: 1000.0, efficiency: 0.8)
         ]
       end
 
       it 'calculates the battery reserve' do
-        expect(opt.reserve_for(:a_battery)[24...36]).to eq([
-          4680.0, 3800.0, 2800.0, 1800.0, 800.0, 120.0, 720.0, 1440.0, 2160.0, 3160.0, 4080.0, 5000
+        expect(opt.reserve_for(:a_battery)[0...12]).to eq([
+          4250.0, 4250.0, 3500.0, 2750.0, 2000.0, 750.0, 1500.0, 2250.0, 3000.0, 3750.0, 4000.0, 5000.0
         ])
       end
 
       it 'calculates the battery load' do
-        expect(opt.load_for(:a_battery)[24...36]).to eq([
-          256.0, 704.0, 800.0, 800.0, 800.0, 544.0, -600.0, -720.0, -720.0, -1000.0, -920.0, -920.0
+        expect(opt.load_for(:a_battery)[0...12]).to eq([
+          600.0, 0.0, 600.0, 600.0, 600.0, 1000.0, -750.0, -750.0, -750.0, -750.0, -250.0, -1000.0
         ])
       end
     end
 
-    # TODO: ask mathijs
     context 'with a single battery with an output efficiency of 1.2' do
       let(:adapters) do
         [
-          consumer_double(:must_run, ([10_000.0] * 6 + [5000.0] * 6) * 365),
+          consumer_double(:must_run, (([15_000] * 5 + [30_000]) + ([5_000] * 6 )) * 365),
           battery_double(key: :a_battery, volume: 5000.0, capacity: 1000.0, efficiency: 1.2)
         ]
       end
 
       it 'calculates the battery reserve' do
-        expect(opt.reserve_for(:a_battery)[24...36]).to eq([
-          5000, 4000, 3000, 2000, 1000, 0, 0, 1000, 2000, 3000, 4000, 5000
+        expect(opt.reserve_for(:a_battery)[0...12].map(&:to_i)).to eq([
+          833, 833, 833, 833, 833, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 833
         ])
       end
 
       it 'calculates the battery load' do
-        expect(opt.load_for(:a_battery)[24...36].map(&:to_i)).to eq([
-          0, 1000, 1000, 1000, 1000, 1000, 0, -833, -833, -833, -833, -833
+        expect(opt.load_for(:a_battery)[0...12].map(&:to_i)).to eq([
+          0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 0, -833
         ])
       end
     end
