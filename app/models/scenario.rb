@@ -287,6 +287,10 @@ class Scenario < ApplicationRecord
     actor.private_scenarios?
   end
 
+  def coupled?
+    coupled_sliders.any?
+  end
+
   private
 
   # Validation method for when a user sets their metadata.

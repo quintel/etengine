@@ -23,6 +23,10 @@ class Input
     all.select{|input| input.share_group == q}
   end
 
+  def self.with_coupling_group
+    all.select { |input| input.coupling_groups.present? }
+  end
+
   def self.by_name(q)
     q.present? ? all.select{|input| input.key.include?(q)} : all
   end
@@ -44,6 +48,10 @@ class Input
 
   def self.inputs_grouped
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
+  end
+
+  def self.coupling_sliders_keys
+    @coupling_sliders_keys ||= Input.with_coupling_group.map(&:id)
   end
 
   def disabled_by
