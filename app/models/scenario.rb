@@ -287,6 +287,10 @@ class Scenario < ApplicationRecord
     actor.private_scenarios?
   end
 
+  def coupling
+    coupled?
+  end
+
   def coupled?
     coupled_sliders.any?
   end
