@@ -108,6 +108,7 @@ class InputSerializer
 
     json[:disabled] = !@can_change || values[:disabled] || @scenario.inputs.disabled?(@input)
     json[:disabled_by] = @input.disabled_by if @input.disabled_by.present?
+    json[:coupling_groups] = @input.disabled_by_coupling_groups.any?
 
     json[:share_group] = @input.share_group if @input.share_group.present?
 
