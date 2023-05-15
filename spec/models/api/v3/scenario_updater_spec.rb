@@ -256,6 +256,8 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
 
     before do
+      allow(Input).to receive(:coupling_sliders_keys).and_return(['exclusive'])
+
       scenario.user_values = {
         exclusive: 10.0,
         input_2: 100

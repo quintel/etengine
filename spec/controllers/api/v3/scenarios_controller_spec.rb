@@ -82,7 +82,7 @@ describe Api::V3::ScenariosController do
 
     context 'when uncoupling the scenario' do
       before do
-        allow_any_instance_of(Scenario).to receive(:coupled_sliders).and_return(['exclusive'])
+        allow(Input).to receive(:coupling_sliders_keys).and_return(['exclusive'])
         @scenario.update(user_values: { 'foo' => 23.0, 'exclusive' => 10.0 })
 
         put :update, params: { id: @scenario.id, coupling: false }
