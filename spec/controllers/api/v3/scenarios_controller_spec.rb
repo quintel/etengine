@@ -80,6 +80,21 @@ describe Api::V3::ScenariosController do
       expect(@scenario.reload.area_code).to eq('nl')
     end
 
+    context 'when uncoupling the scenario' do
+      before do
+        allow_any_instance_of(Scenario).to receive(:coupled_sliders).and_return(['exclusive'])
+        @scenario.update(user_values: { 'foo' => 23.0, 'exclusive' => 10.0 })
+
+        put :update, params: { id: @scenario.id, coupling: false }
+
+        response
+      end
+
+      it "removes the coupled inputs" do
+        expect(@scenario.reload.user_values).to eq({ 'foo' => 23.0 })
+      end
+    end
+
     # The whole object should be overwritten
     context 'when updating the metadata' do
       before do

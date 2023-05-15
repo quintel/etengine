@@ -4,3 +4,4 @@
 - min_value = 0.0
 - max_value = 100.0
 - start_value = 50.0
+- coupling_groups = [coupled]
