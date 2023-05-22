@@ -282,6 +282,11 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
       updater.apply
       expect(scenario.reload.user_values).to have_key('foo_demand')
     end
+
+    it 'shows as not coupled' do
+      updater.apply
+      expect(scenario.reload.coupled?).to be_falsey
+    end
   end
 
   context 'when uncoupling a scenario that was not coupled' do
@@ -310,6 +315,11 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     it 'sets new input values' do
       updater.apply
       expect(scenario.reload.user_values).to have_key('foo_demand')
+    end
+
+    it 'shows as not coupled' do
+      updater.apply
+      expect(scenario.reload.coupled?).to be_falsey
     end
   end
 
@@ -340,6 +350,11 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     it 'removes coupled input values' do
       updater.apply
       expect(scenario.reload.user_values).not_to have_key('exclusive')
+    end
+
+    it 'shows as not coupled' do
+      updater.apply
+      expect(scenario.reload.coupled?).to be_falsey
     end
   end
 
