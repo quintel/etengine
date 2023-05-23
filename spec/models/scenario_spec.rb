@@ -411,6 +411,37 @@ describe Scenario do
     end
   end
 
+  describe "#coupled?" do
+    subject { @scenario.coupled? }
+
+    before do
+      @scenario = Scenario.default
+      allow(Input).to receive(:coupling_sliders_keys).and_return(
+        ['coupled_slider_1']
+      )
+    end
+
+    context 'when no coupled input is set' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when a coupled input is set' do
+      before do
+        @scenario.user_values = { coupled_slider_1: 1 }
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when a coupled input is part of balanced values' do
+      before do
+        @scenario.balanced_values = { coupled_slider_1: 1 }
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
   describe 'with a preset scenario' do
     let(:preset) do
       FactoryBot.create(:scenario, {

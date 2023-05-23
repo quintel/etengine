@@ -247,6 +247,117 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
   end
 
+  context 'when uncoupling a scenario that was coupled' do
+    let(:params) do
+      {
+        coupling: false,
+        scenario: { user_values: { foo_demand: 1 } }
+      }
+    end
+
+    before do
+      allow(Input).to receive(:coupling_sliders_keys).and_return(['exclusive'])
+
+      scenario.user_values = {
+        exclusive: 10.0,
+        input_2: 100
+      }
+
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'removes coupled input values' do
+      updater.apply
+      expect(scenario.reload.user_values).not_to have_key('exclusive')
+    end
+
+    it 'keeps other input values' do
+      updater.apply
+      expect(scenario.reload.user_values).to have_key('input_2')
+    end
+
+    it 'sets new input values' do
+      updater.apply
+      expect(scenario.reload.user_values).to have_key('foo_demand')
+    end
+
+    it 'shows as not coupled' do
+      updater.apply
+      expect(scenario.reload.coupled?).to be_falsey
+    end
+  end
+
+  context 'when uncoupling a scenario that was not coupled' do
+    let(:params) do
+      {
+        coupling: false,
+        scenario: { user_values: { foo_demand: 1 } }
+      }
+    end
+
+    before do
+      scenario.user_values = {
+        input_2: 100
+      }
+
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'keeps other input values' do
+      updater.apply
+      expect(scenario.reload.user_values).to have_key('input_2')
+    end
+
+    it 'sets new input values' do
+      updater.apply
+      expect(scenario.reload.user_values).to have_key('foo_demand')
+    end
+
+    it 'shows as not coupled' do
+      updater.apply
+      expect(scenario.reload.coupled?).to be_falsey
+    end
+  end
+
+  context 'when resetting and uncoupling a scenario simultaneously' do
+    let(:params) do
+      {
+        coupling: false,
+        reset: true
+      }
+    end
+
+    before do
+      scenario.user_values = {
+        exclusive: 10.0,
+        input_2: 100
+      }
+
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'removes other input values' do
+      updater.apply
+      expect(scenario.reload.user_values).not_to have_key('input_2')
+    end
+
+    it 'removes coupled input values' do
+      updater.apply
+      expect(scenario.reload.user_values).not_to have_key('exclusive')
+    end
+
+    it 'shows as not coupled' do
+      updater.apply
+      expect(scenario.reload.coupled?).to be_falsey
+    end
+  end
+
   context 'when resetting a single value' do
     let(:params) do
       {

@@ -22,7 +22,7 @@ class ScenarioSerializer
         id area_code end_year source private keep_compatible
         created_at updated_at user_values balanced_values metadata
       ],
-      methods: %i[start_year]
+      methods: %i[start_year coupling]
     ).symbolize_keys
 
     json[:owner]    = @resource.owner&.as_json(only: %i[id name])

@@ -304,7 +304,7 @@ module Api
       # Returns a ActionController::Parameters
       def filtered_params
         params.permit(
-          :autobalance, :force, :reset, gqueries: []
+          :autobalance, :force, :reset, :coupling, gqueries: []
         ).merge(scenario: scenario_params)
       end
 

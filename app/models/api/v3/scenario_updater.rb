@@ -14,6 +14,7 @@ module Api
 
       # Boolean API values which are considered truthy.
       TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
+      FALSEY_VALUES = Set.new([false, 'false', '0']).freeze
 
       # @return [Scenario]
       #   Returns the scenario being updated.
@@ -83,6 +84,11 @@ module Api
       #
       def reset?
         @data.fetch(:reset, false)
+      end
+
+      # Returns if the scenario should be uncoupled
+      def uncouple?
+        FALSEY_VALUES.include?(@data.fetch(:coupling, true))
       end
 
       # Validation -----------------------------------------------------------
@@ -338,7 +344,7 @@ module Api
             provided_values.dup
           end
         else
-          @scenario.user_values.dup
+          uncoupled_base_user_values
         end
       end
 
@@ -347,7 +353,28 @@ module Api
         if reset?
           @scenario.parent&.balanced_values || {}
         else
-          (@scenario.balanced_values || {}).dup
+          uncoupled_base_balanced_values
+        end
+      end
+
+      # Internal: A hash of starting user values after uncoupling
+      def uncoupled_base_user_values
+        values = @scenario.user_values.dup
+
+        if uncouple?
+          values.except!(*@scenario.coupled_sliders)
+        else
+          values
+        end
+      end
+
+      def uncoupled_base_balanced_values
+        values = (@scenario.balanced_values || {}).dup
+
+        if uncouple?
+          values.except!(*@scenario.coupled_sliders)
+        else
+          values
         end
       end
     end
