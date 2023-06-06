@@ -39,7 +39,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_143107) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "forecast_storage_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "forecast_storage_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
     t.text "order"
     t.index ["scenario_id"], name: "index_forecast_storage_orders_on_scenario_id", unique: true
