@@ -22,7 +22,7 @@ blocks:
             - 'docker push quintel/etengine:tyndp2024'
             - cache store
             - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
-            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_tyndp2024 && ./deploy.sh"
+            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine-tyndp2024 && ./deploy.sh"
       secrets:
         - name: Docker Hub credentials
         - name: Production SSH settings
