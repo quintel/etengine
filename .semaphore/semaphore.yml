@@ -24,14 +24,6 @@ blocks:
             - bundle exec rails assets:precompile
             - bundle exec rspec
 promotions:
-  - name: Deploy to staging
-    pipeline_file: deploy_staging.yml
-    auto_promote:
-      when: "result = 'passed' and branch = 'master'"
-  - name: Deploy to production
-    pipeline_file: deploy_production.yml
-    auto_promote:
-      when: "result = 'passed' and branch = 'production'"
   - name: Deploy to TYNDP 2024
     pipeline_file: deploy_tyndp.yml
     auto_promote:
