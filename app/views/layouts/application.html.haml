@@ -8,7 +8,7 @@
       - if content_for?(:title)
         = content_for(:title)
         \-
-      EnergyTransitionModel
+      EnergyTransitionModel - TYNDP version
     = csrf_meta_tag
     = javascript_include_tag 'application'
     = stylesheet_link_tag 'application'
@@ -23,12 +23,7 @@
           - else
             %a.brand{:href => safe_inspect_path}
               ETEngine
-              - if Rails.env.production?
-                %span.server.production Production
-              - elsif Rails.env.staging?
-                %span.server.beta Beta
-              - else
-                %span.server.local Local
+                %span.server.local TYNDP2024
 
             - if current_user
               %ul.nav
