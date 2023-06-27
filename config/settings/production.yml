@@ -1,8 +1,10 @@
+#  Overwritten for TYNDP 2024
+
 etsource_lazy_load_dataset: false
 etsource_export: tmp/etsource
 etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>
 
-etmodel_uri: https://energytransitionmodel.com
+etmodel_uri: https://tyndp2024.energytransitionmodel.com
 
 auth:
-  issuer: https://engine.energytransitionmodel.com
+  issuer: https://tyndp.2024.engine.energytransitionmodel.com
