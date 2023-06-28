@@ -79,6 +79,7 @@ class ApplicationController < ActionController::Base
     if respond_to?(:current_user) && current_user
       Sentry.set_user(id: current_user.id, email: current_user.email)
     end
+    Sentry.set_tags(subdomain_name: 'tyndp2024')
   end
 
   # Internal: Renders a 404 page.
