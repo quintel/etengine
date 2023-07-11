@@ -37,7 +37,7 @@ module Qernel::Plugins
       super
       @merit = Qernel::Causality::Electricity.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
-      @heat_network = Qernel::Causality::HeatNetwork.new(graph)
+      @heat_network = Qernel::Causality::HeatNetworkWrapper.new(graph)
       @agriculture_heat = Qernel::Causality::AgricultureHeat.new(graph)
       @reconciliation = Qernel::Causality::ReconciliationWrapper.new(@graph)
     end
@@ -70,13 +70,7 @@ module Qernel::Plugins
     end
 
     def inject(lifecycle)
-      # QUESTION: do we need to put in our agri heat in some special order? Last!
-
       merit_calc = Merit::StepwiseCalculator.new.calculate(@merit.order)
-
-      heat_network_calc = Merit::StepwiseCalculator.new.calculate(
-        @heat_network.order
-      )
 
       agriculture_heat_calc = Merit::StepwiseCalculator.new.calculate(
         @agriculture_heat.order
@@ -84,7 +78,7 @@ module Qernel::Plugins
 
       8760.times do |frame|
         @fever.calculate_frame(frame)
-        heat_network_calc.call(frame)
+        @heat_network.calculate_frame(frame)
         merit_calc.call(frame)
         agriculture_heat_calc.call(frame)
       end

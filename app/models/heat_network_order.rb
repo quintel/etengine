@@ -6,10 +6,10 @@ class HeatNetworkOrder < ApplicationRecord
   include UserSortable
 
   def self.default_order
-    Etsource::Config.heat_network_order
+    Etsource::Config.heat_network_order_ht
   end
 
   def graph_key
-    :heat_network_order
+    :heat_network_order_ht
   end
 end
