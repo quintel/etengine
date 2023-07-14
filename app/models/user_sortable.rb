@@ -9,7 +9,6 @@ module UserSortable
   included do
     serialize :order, Array
     belongs_to :scenario
-    validates :scenario_id, presence: true, uniqueness: true
 
     validates_with Atlas::UserSortableValidator,
       attribute: :order,

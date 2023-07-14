@@ -21,7 +21,7 @@ class Scenario < ApplicationRecord
 
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
-  has_one    :heat_network_order, dependent: :destroy
+  has_many   :heat_network_orders, dependent: :destroy
   has_one    :forecast_storage_order, dependent: :destroy
   has_many   :attachments, dependent: :destroy, class_name: 'ScenarioAttachment'
 
@@ -259,8 +259,9 @@ class Scenario < ApplicationRecord
       input.start_value_for(self)
   end
 
-  def heat_network_order
-    super || HeatNetworkOrder.default(scenario_id: id)
+  def heat_network_order(temperature = :mt)
+    heat_network_orders.find_by(temperature: temperature) ||
+      HeatNetworkOrder.default(scenario_id: id, temperature: temperature)
   end
 
   def forecast_storage_order
@@ -268,7 +269,7 @@ class Scenario < ApplicationRecord
   end
 
   def user_sortables
-    [forecast_storage_order, heat_network_order]
+    %i[lt mt ht].map { |temp| heat_network_order(temp) } << forecast_storage_order
   end
 
   def started_from_esdl?

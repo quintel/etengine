@@ -36,7 +36,16 @@ FactoryBot.define do
     end
   end
 
+  factory :heat_network_order do
+    scenario
+    order { HeatNetworkOrder.default_order.reverse }
+  end
+
   factory :scenario_with_heat_network, parent: :scenario_with_user_values do
-    heat_network_order { HeatNetworkOrder.new(order: HeatNetworkOrder.default_order.reverse) }
+    after(:create) do |scenario, evaluator|
+      create_list(:heat_network_order, 1, scenario: scenario)
+
+      scenario.reload
+    end
   end
 end

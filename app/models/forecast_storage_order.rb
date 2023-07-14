@@ -4,6 +4,8 @@
 class ForecastStorageOrder < ApplicationRecord
   include UserSortable
 
+  validates :scenario_id, presence: true, uniqueness: true
+
   def self.default_order
     Etsource::Config.forecast_storage_order
   end

@@ -568,7 +568,7 @@ describe Scenario do
       it 'copies the flexibility order attributes' do
         expect(scenario.heat_network_order).to_not be_nil
         expect(scenario.heat_network_order.id).to_not eq(preset.heat_network_order.id)
-
+        scenario.save!
         expect(scenario.heat_network_order.order).to eq(techs)
         expect(scenario.heat_network_order.scenario).to eq(scenario) # Not `preset`.
       end
