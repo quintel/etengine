@@ -25,7 +25,9 @@ class Inspect::ScenariosController < Inspect::BaseController
       update_user_sortables!(
         user_sortable_attributes,
         forecast_storage_order: @scenario.forecast_storage_order,
-        heat_network_order: @scenario.heat_network_order
+        heat_network_order_ht: @scenario.heat_network_order(:ht),
+        heat_network_order_mt: @scenario.heat_network_order(:mt),
+        heat_network_order_lt: @scenario.heat_network_order(:lt)
       )
     end
 
@@ -50,7 +52,9 @@ class Inspect::ScenariosController < Inspect::BaseController
       update_user_sortables!(
         user_sortable_attributes,
         forecast_storage_order: @scenario.forecast_storage_order,
-        heat_network_order: @scenario.heat_network_order
+        heat_network_order_ht: @scenario.heat_network_order(:ht),
+        heat_network_order_mt: @scenario.heat_network_order(:mt),
+        heat_network_order_lt: @scenario.heat_network_order(:lt)
       )
 
       redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
@@ -70,13 +74,20 @@ class Inspect::ScenariosController < Inspect::BaseController
   end
 
   def scenario_attributes
-    params.require(:scenario).permit!.except(:forecast_storage_order, :heat_network_order)
+    params.require(:scenario).permit!.except(
+      :forecast_storage_order,
+      :heat_network_order_ht,
+      :heat_network_order_mt,
+      :heat_network_order_lt
+    )
   end
 
   def user_sortable_attributes
     params.require(:scenario).permit(
       forecast_storage_order: [:order],
-      heat_network_order: [:order]
+      heat_network_order_ht: [:order],
+      heat_network_order_mt: [:order],
+      heat_network_order_lt: [:order]
     )
   end
 
@@ -86,7 +97,7 @@ class Inspect::ScenariosController < Inspect::BaseController
     records.each do |key, record|
       # Assign the sortable to the scenario explicity, so that we may preserve
       # the object (and errors) when re-rendering the edit view.
-      record.scenario.public_send("#{key}=", record)
+      record.scenario.public_send("#{key}=", record) if record.scenario.respond_to?("#{key}=")
       record.order = attrs[key][:order].to_s.split
     end
 

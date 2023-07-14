@@ -86,7 +86,9 @@
         = render partial: 'object_attributes', locals: { name: 'Demand from energy graph', object: @node_future.from_energy }
         = render partial: 'object_attributes', locals: { name: 'Demand from molecule graph', object: @node_future.from_molecules }
         = render partial: 'object_attributes', locals: { name: 'Fever (Heat)', object: @node_future.fever }
-        = render partial: 'object_attributes', locals: { name: 'Heat network', object: @node_future.heat_network }
+        = render partial: 'object_attributes', locals: { name: 'Heat network (HT)', object: @node_future.heat_network_ht }
+        = render partial: 'object_attributes', locals: { name: 'Heat network (MT)', object: @node_future.heat_network_mt }
+        = render partial: 'object_attributes', locals: { name: 'Heat network (LT)', object: @node_future.heat_network_lt }
         = render partial: 'object_attributes', locals: { name: 'Hydrogen', object: @node_future.hydrogen }
         = render partial: 'object_attributes', locals: { name: 'Merit Order', object: @node_future.merit_order }
         = render partial: 'object_attributes', locals: { name: 'Network Gas', object: @node_future.network_gas }
