@@ -32,6 +32,18 @@ module Qernel
         network_calculators.each { |calc| calc.call(frame) }
       end
 
+      # Public: Returns the Qernel::Causality::HeatNetwork Manager for the given
+      # node if it's connected to a heat network.
+      #
+      # Raises when the node was not connected to any heat network
+      def manager_for(node)
+        index = ordered_keys.find_index { |network| node.public_send(network) }
+
+        raise "Missing participant: undefined heat network for: #{node.key}" if index.nil?
+
+        @heat_networks[index]
+      end
+
       private
 
       def network_calculators
@@ -40,6 +52,13 @@ module Qernel
             network.order
           )
         end
+      end
+
+      # Internal: returns the keys of the heat networks in the same order as @heat_networks
+      #
+      # IDEA: check which network is most common and have that one as the first for optimisation
+      def ordered_keys
+        %i[heat_network_ht heat_network_mt heat_network_lt]
       end
     end
   end
