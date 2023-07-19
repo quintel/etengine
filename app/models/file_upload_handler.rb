@@ -47,7 +47,7 @@ class FileUploadHandler
   def current_attachment
     return @current_attachment if defined?(@current_attachment)
 
-    @current_attatchment = @scenario.attachments.find_by(key: @key)
+    @current_attachment = @scenario.attachments.find_by(key: @key)
   end
 
   def update_or_create_attachment
