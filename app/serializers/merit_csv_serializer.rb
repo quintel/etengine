@@ -37,8 +37,8 @@ class MeritCSVSerializer < CausalityCurvesCSVSerializer
     end
   end
 
-  def initialize(graph, carrier, attribute = carrier, conv_cust = nil)
-    super(graph, carrier, attribute)
+  def initialize(graph, carrier, attribute = carrier, conv_cust = nil, prefix: nil)
+    super(graph, carrier, attribute, prefix: prefix)
     @node_customisation = conv_cust || NodeCustomisation.new
   end
 
@@ -87,10 +87,14 @@ class MeritCSVSerializer < CausalityCurvesCSVSerializer
     end)
 
     deficit =
-      consumption.map.with_index do |amount, index|
-        (amount - production[index]).round(4)
+      if consumption.nil?
+        Array.new(8760, 0.0)
+      else
+        consumption.map.with_index do |amount, index|
+          (amount - production[index]).round(4)
+        end
       end
 
-    { name: 'deficit', curve: deficit }
+    { name: "#{@prefix}deficit", curve: deficit }
   end
 end

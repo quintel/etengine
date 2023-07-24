@@ -29,9 +29,10 @@ class CausalityCurvesCSVSerializer
     end
   end
 
-  def initialize(graph, carrier, attribute = carrier)
+  def initialize(graph, carrier, attribute = carrier, prefix: nil)
     @graph = graph
     @adapter = Adapter.new(carrier, attribute)
+    @prefix = "#{prefix}." if prefix
   end
 
   # Used as the name of the CSV file when sent to the user. Omit the file
@@ -52,10 +53,16 @@ class CausalityCurvesCSVSerializer
     end
 
     CurvesCSVSerializer.new(
-      [*producer_columns, *consumer_columns, *extra_columns],
+      raw_columns,
       @graph.year,
       ''
     ).to_csv_rows
+  end
+
+  # Public: Returns the columns to be turned into the final CSV
+  # Also used to create combined downloads from different serializers
+  def raw_columns
+    [*producer_columns, *consumer_columns, *extra_columns]
   end
 
   private
@@ -90,7 +97,7 @@ class CausalityCurvesCSVSerializer
   # flows in a chosen direction.
   def column_from_node(node, direction)
     {
-      name: "#{node.key}.#{direction} (MW)",
+      name: "#{@prefix}#{node.key}.#{direction} (MW)",
       curve: @adapter.node_curve(node, direction).map { |v| v.round(4) }
     }
   end

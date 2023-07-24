@@ -60,12 +60,12 @@ module Api
         end
       end
 
-      # Downloads the load on each participant in the heat merit order as a CSV.
+      # Downloads the load on each participant in the heat merit orders as a CSV.
       #
       # GET /api/v3/scenarios/:scenario_id/curves/heat_network.csv
       def heat_network
-        render_serializer MeritCSVSerializer.new(
-          @scenario.gql.future_graph, :steam_hot_water, :heat_network
+        render_serializer HeatNetworkCSVSerializer.new(
+          @scenario.gql.future_graph
         )
       end
 
