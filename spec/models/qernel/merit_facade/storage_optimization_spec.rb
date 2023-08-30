@@ -216,13 +216,13 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
       it 'calculates the battery reserve' do
         puts opt.reserve_for(:a_battery)[24...36]
         expect(opt.reserve_for(:a_battery)[24...36]).to eq([
-          5000.0, 4250.0, 3500.0, 2750.0, 2000.0, 750.0, 1500.0, 2250.0, 3000.0, 3750.0, 4000.0, 5000.0
+          5000.0, 4500.0, 3750.0, 3000.0, 2250.0, 1000.0, 1750.0, 2500.0, 3000.0, 3750.0, 4000.0, 5000.0
         ])
       end
 
       it 'calculates the battery load' do
         expect(opt.load_for(:a_battery)[24...36]).to eq([
-          0.0, 600.0, 600.0, 600.0, 600.0, 1000.0, -750.0, -750.0, -750.0, -750.0, -250.0, -1000.0
+          0.0, 400.0, 600.0, 600.0, 600.0, 1000.0, -750.0, -750.0, -500.0, -750.0, -250.0, -1000.0
         ])
       end
     end
@@ -238,13 +238,13 @@ RSpec.describe Qernel::MeritFacade::StorageOptimization do
       it 'calculates the battery reserve' do
         puts opt.reserve_for(:a_battery)[24...36]
         expect(opt.reserve_for(:a_battery)[24...36].map(&:to_i)).to eq([
-          833, 833, 833, 833, 833, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 833
+          4166, 3333, 2499, 1666, 833, 0, 833, 1666, 2499, 3333, 4166, 4999
         ])
       end
 
       it 'calculates the battery load' do
         expect(opt.load_for(:a_battery)[24...36].map(&:to_i)).to eq([
-          0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 0, -833
+          999, 1000, 999, 999, 999, 1000, -833, -833, -833, -833, -833, -833
         ])
       end
     end
