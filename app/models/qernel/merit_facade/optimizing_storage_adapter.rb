@@ -114,8 +114,7 @@ module Qernel
       end
 
       def output_capacity
-        cap = total_node_output_capacity || source_api.input_capacity
-        cap * output_efficiency
+        total_node_output_capacity || source_api.input_capacity
       end
 
       def total_node_output_capacity
