@@ -20,6 +20,10 @@ class HeatNetworkOrder < ApplicationRecord
     Etsource::Config.public_send("heat_network_order_#{temperature}")
   end
 
+  def self.specify_default
+    :temperature
+  end
+
   def graph_key
     :"heat_network_order_#{temperature}"
   end

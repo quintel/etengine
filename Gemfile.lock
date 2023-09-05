@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: a92a1aeeccd3fff944d188734c84c7612d8803de
-  ref: a92a1ae
+  revision: 6925eff2a8cb3f8ccc70d94ff6c3c8f84bc0d93e
+  ref: 6925eff
   specs:
     atlas (1.0.0)
       activemodel (>= 7)
@@ -251,7 +251,7 @@ GEM
     gctools (0.2.4)
     globalid (1.0.1)
       activesupport (>= 5.0)
-    gpgme (2.0.22)
+    gpgme (2.0.23)
       mini_portile2 (~> 2.7)
     haml (5.2.2)
       temple (>= 0.8.0)

@@ -12,13 +12,19 @@ module UserSortable
 
     validates_with Atlas::UserSortableValidator,
       attribute: :order,
-      in: -> { default_order }
+      with: specify_default,
+      in: ->(w) { w.nil? ? default_order : default_order(w) }
   end
 
   class_methods do
     def default(attrs = {})
-      new(attrs.merge(order: default_order))
+      use_order = specify_default.nil? ? default_order : default_order(attrs[specify_default])
+
+      new(attrs.merge(order: use_order))
     end
+
+    # Which attribute to use to specify the default order. Default nil.
+    def specify_default; end
   end
 
   def as_json(*)
@@ -28,7 +34,7 @@ module UserSortable
   # Public: The flexibility order with any invalid options removed, and any
   # missing options appended with the default sorting.
   def useable_order
-    defaults = self.class.default_order
+    defaults = specified_defaults
     intersection = order & defaults
 
     if intersection.length != defaults.length
@@ -40,10 +46,19 @@ module UserSortable
   end
 
   def default?
-    order.empty? || useable_order == self.class.default_order
+    order.empty? || useable_order == specified_defaults
   end
 
   def graph_key
     raise NotImplementedError
+  end
+
+  # We need this extra method in order to use the different temperature levels for heat networks
+  def specified_defaults
+    if self.class.specify_default.nil?
+      self.class.default_order
+    else
+      self.class.default_order(public_send(self.class.specify_default))
+    end
   end
 end
