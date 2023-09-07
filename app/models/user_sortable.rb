@@ -12,7 +12,7 @@ module UserSortable
 
     validates_with Atlas::UserSortableValidator,
       attribute: :order,
-      with: specify_default,
+      with: -> { specify_default },
       in: ->(w) { w.nil? ? default_order : default_order(w) }
   end
 
@@ -22,9 +22,6 @@ module UserSortable
 
       new(attrs.merge(order: use_order))
     end
-
-    # Which attribute to use to specify the default order. Default nil.
-    def specify_default; end
   end
 
   def as_json(*)

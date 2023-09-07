@@ -10,6 +10,9 @@ class ForecastStorageOrder < ApplicationRecord
     Etsource::Config.forecast_storage_order
   end
 
+  # Which attribute to use to specify the default order. Here nil
+  def self.specify_default; end
+
   def graph_key
     :forecast_storage_order
   end

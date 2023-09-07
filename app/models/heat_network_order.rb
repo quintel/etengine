@@ -20,6 +20,7 @@ class HeatNetworkOrder < ApplicationRecord
     Etsource::Config.public_send("heat_network_order_#{temperature}")
   end
 
+  # Which attribute to use to specify the default order.
   def self.specify_default
     :temperature
   end
