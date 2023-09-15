@@ -94,7 +94,7 @@ module Api
       # Validation -----------------------------------------------------------
 
       # Asserts that the values provided by the user are within the permitted
-      # mininum and maximum.
+      # mininum and maximum, and of the correct type (e.g. boolean).
       def validate_user_values
         provided_values_without_resets.each do |key, value|
           input = Input.get(key)
@@ -104,6 +104,8 @@ module Api
             errors.add(:base, "Input #{key} does not exist")
           elsif input.enum?
             validate_enum_input(key, input_data, value)
+          elsif input.unit == 'bool'
+            validate_bool_input(key, value)
           else
             validate_numeric_input(key, input_data, value)
           end
@@ -162,6 +164,12 @@ module Api
         elsif value > (max = input[:max])
           errors.add(:base, "Input #{key} cannot be greater than #{max}")
         end
+      end
+
+      def validate_bool_input(key, value)
+        return if value.present? && value.in?([0, 1])
+
+        errors.add(:base, "Input '#{key}' had value '#{value}', but must be one 0 or 1")
       end
 
       def validate_metadata_size
