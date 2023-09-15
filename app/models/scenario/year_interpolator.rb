@@ -3,7 +3,6 @@
 # Receives a scenario and creates a new scenario with a new end year. Input
 # values will be adjusted to linearly interpolate new values based on the year.
 class Scenario::YearInterpolator
-  class InterpolationError < RuntimeError; end
 
   def self.call(scenario, year, current_user = nil)
     new(scenario, year, current_user).run
@@ -85,11 +84,13 @@ class Scenario::YearInterpolator
   #
   # Returns a Numeric or String value for the new user values.
   def interpolate_input(input, value, total_years, num_years)
-    return value if input.enum?
+    return value if input.enum? || input.unit == 'bool'
 
     start = input.start_value_for(@scenario)
     change_per_year = (value - start) / total_years
 
-    start + change_per_year * (total_years - num_years)
+    start + (change_per_year * (total_years - num_years))
   end
+
+  class InterpolationError < RuntimeError; end
 end

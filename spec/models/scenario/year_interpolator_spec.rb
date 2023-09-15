@@ -94,6 +94,35 @@ RSpec.describe Scenario::YearInterpolator do
     end
   end
 
+  context 'with a scenario containing a boolean input' do
+    let(:source) do
+      FactoryBot.create(:scenario, {
+        id: 99999,
+        end_year: 2050,
+        user_values: {
+          'grouped_input_one' => 75,
+          'bool' => 0
+        }
+      })
+    end
+
+    let(:interpolated) { described_class.call(source, 2030) }
+
+    it 'sets the inputs' do
+      expect(interpolated.user_values.keys.sort)
+        .to eq(%w[bool grouped_input_one])
+    end
+
+    it 'interpolates the numeric inputs' do
+      expect(interpolated.user_values['grouped_input_one'])
+        .to be_within(1e-2).of(87.82)
+    end
+
+    it 'retains the value of the boolean input' do
+      expect(interpolated.user_values['bool']).to eq(0)
+    end
+  end
+
   context 'with a year older than the analysis year' do
     let(:source) do
       FactoryBot.create(:scenario, {
