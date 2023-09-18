@@ -51,7 +51,19 @@ describe 'Updating inputs with API v3' do
           :input,
           key: 'nongrouped',
           priority: 0
-        )
+        ),
+      'boolean_one' =>
+        FactoryBot.build(
+          :input,
+          key: 'boolean_one',
+          start_value: 0.0,
+          min_value: 0.0,
+          max_value: 1.0,
+          step_value: 1.0,
+          unit: 'bool',
+          share_group: '',
+          priority: 0
+        ),
     )
 
     allow(Input).to receive(:all).and_return(Input.records.values)
@@ -696,6 +708,42 @@ describe 'Updating inputs with API v3' do
     it 'has an error message' do
       expect(JSON.parse(response.body)['errors'])
         .to include('Input nongrouped cannot be less than 0')
+    end
+  end
+
+  context 'when the value for a boolean input is set' do
+    it 'returns 200 for value 0' do
+      put_scenario(values: { boolean_one: 0 })
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'returns 200 for value 1' do
+      put_scenario(values: { boolean_one: 1 })
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  context 'when the value for a boolean input is set to an invalid value' do
+    before do
+      put_scenario(values: { boolean_one: 1.5 })
+    end
+
+    it 'responds 422 Unprocessable Entity' do
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it 'has an error message' do
+      expect(
+        response.parsed_body['errors']
+      ).to include(
+        "Input 'boolean_one' had value '1.5', but must be one 0 or 1"
+      )
+    end
+
+    it 'does not set the scenario attributes' do
+      expect(scenario.user_values).not_to have_key('boolean_one')
     end
   end
 

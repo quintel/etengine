@@ -101,7 +101,7 @@ RSpec.describe Scenario::YearInterpolator do
         end_year: 2050,
         user_values: {
           'grouped_input_one' => 75,
-          'bool' => 0
+          'bool' => 1
         }
       })
     end
@@ -119,7 +119,7 @@ RSpec.describe Scenario::YearInterpolator do
     end
 
     it 'retains the value of the boolean input' do
-      expect(interpolated.user_values['bool']).to eq(0)
+      expect(interpolated.user_values['bool']).to eq(1)
     end
   end
 
