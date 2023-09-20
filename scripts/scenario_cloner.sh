@@ -3,8 +3,8 @@
 ###
 # Bash script to clone scenarios between a source and a target environment,
 # e.g. to clone scenarios from production to beta or your local development environment.
-# Tip! The script can also clone from and to the same environment to a quick dupicate
-# of one or more scenarios in a convenient manner.
+# Tip! The script can also clone from and to the same environment
+# to quickly dupicate one or more scenarios in a convenient manner.
 #
 # Required installed binaries:
 # - curl: to perform HTTP requests towards the different environments
