@@ -25,7 +25,7 @@ R=$(tput setaf 1)
 G=$(tput setaf 2)
 ERROR_STR="${B}${R}ERROR${N}"
 VALID_ENVS=(
-  'p' 'pro' 'prod'
+  'p' 'pro' 'prod' 'production'
   'b' 's' 'beta' 'staging'
   'd' 'l' 'dev' 'local'
 )
@@ -90,14 +90,14 @@ function process_user_input () {
 
   # Set source and target url + path for scenarios
   case $REQUESTED_SOURCE_ENV in
-    p | pro | prod)          SOURCE_SCENARIO_URL="https://$URL_DOMAIN_PROD/$URL_PATH_API/$URL_PATH_SCENARIOS";;
-    b | s | beta | staging)  SOURCE_SCENARIO_URL="https://$URL_DOMAIN_BETA/$URL_PATH_API/$URL_PATH_SCENARIOS";;
-    d | l | dev  | local)    SOURCE_SCENARIO_URL="http://$URL_DOMAIN_DEV/$URL_PATH_API/$URL_PATH_SCENARIOS";;
+    p | pro | prod | production)  SOURCE_SCENARIO_URL="https://$URL_DOMAIN_PROD/$URL_PATH_API/$URL_PATH_SCENARIOS";;
+    b | s | beta | staging)       SOURCE_SCENARIO_URL="https://$URL_DOMAIN_BETA/$URL_PATH_API/$URL_PATH_SCENARIOS";;
+    d | l | dev  | local)         SOURCE_SCENARIO_URL="http://$URL_DOMAIN_DEV/$URL_PATH_API/$URL_PATH_SCENARIOS";;
   esac
   case $REQUESTED_TARGET_ENV in
-    p | pro | prod)          TARGET_SCENARIO_URL="https://$URL_DOMAIN_PROD/$URL_PATH_API/$URL_PATH_SCENARIOS";;
-    b | s | beta | staging)  TARGET_SCENARIO_URL="https://$URL_DOMAIN_BETA/$URL_PATH_API/$URL_PATH_SCENARIOS";;
-    d | l | dev  | local)    TARGET_SCENARIO_URL="http://$URL_DOMAIN_DEV/$URL_PATH_API/$URL_PATH_SCENARIOS";;
+    p | pro | prod | production)  TARGET_SCENARIO_URL="https://$URL_DOMAIN_PROD/$URL_PATH_API/$URL_PATH_SCENARIOS";;
+    b | s | beta | staging)       TARGET_SCENARIO_URL="https://$URL_DOMAIN_BETA/$URL_PATH_API/$URL_PATH_SCENARIOS";;
+    d | l | dev  | local)         TARGET_SCENARIO_URL="http://$URL_DOMAIN_DEV/$URL_PATH_API/$URL_PATH_SCENARIOS";;
   esac
 
   # Pre-fill variable containing info on source -> new (cloned) scenario id
