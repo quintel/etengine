@@ -160,7 +160,7 @@ function create_scenario () {
   printf " %s! New scenario created with id %s\n" "${B}${G}Success${N}" "${B}${CLONED_SCENARIO_ID}${N}"
 }
 
-# Attach custom curves, obtain from the source scenario, to the cloned scenario
+# Attach custom curves obtained from the source scenario to the cloned scenario
 function post_custom_curves_for_scenario () {
   # Return if a custom_curve directory was not created for this scenario (meaning no attached custom curves were found)
   [ ! -d "$SCENARIO_TEMP_DIR/custom_curves" ] && return
@@ -275,7 +275,7 @@ done
 
 printf "Done!\n\n"
 
-if [ "${#SCENARIO_IDS[@]}" == "0" ]; then
+if [ ${#ERROR_SCENARIO_IDS[@]} -gt 0 ]; then
   printf "%sErrors were encountered while cloning the following scenarios from %s:%s" "$B" "$REQUESTED_SOURCE_ENV" "$N"
   printf "%s\n" "${ERROR_SCENARIO_IDS[@]}"
 fi
