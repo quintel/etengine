@@ -22,6 +22,7 @@
       %th Owner
       %th End Year
       %th Area
+      %th.narrow Keep compatible?
       %th.narrow Compatibility
       %th
   %tfoot
@@ -50,6 +51,8 @@
             %span.muted No owner
         %td= s.end_year
         %td= s.area_code
+        %td.narrow
+          = s.keep_compatible ? 'True' : 'False'
         %td.narrow
           = formatted_scenario_compatibility(s)
         %td.actions

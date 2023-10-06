@@ -40,9 +40,9 @@ module ScenariosHelper
 
   def formatted_scenario_compatibility(scenario)
     if scenario.keep_compatible?
-      tag.a('Keep compatible', class: 'tag green', href: 'https://docs.energytransitionmodel.com/api/scenario-basics#forward-compatibility')
+      tag.a('Fully compatible', class: 'tag green', href: 'https://docs.energytransitionmodel.com/api/scenarios#forward-compatibility')
     elsif scenario.outdated?
-      tag.span('Outdated - not guaranteed', class: 'tag red')
+      tag.span('Possibly outdated - not guaranteed', class: 'tag red')
     else
       tag.span('Current model version only', class: 'tag gray')
     end

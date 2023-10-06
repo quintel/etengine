@@ -44,6 +44,9 @@
           - else
             %span.tag.gray Public
       %tr
+        %th Keep compatible?
+        %td= @scenario.keep_compatible ? 'True' : 'False'
+      %tr
         %th Compatibility
         %td= formatted_scenario_compatibility(@scenario)
 
