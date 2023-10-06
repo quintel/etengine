@@ -26,8 +26,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: c7225363bfa200171711537d788dfb0f93211daf
-  ref: c722536
+  revision: 421f3fb1ca2895d6f10a458e7d897ecd527c4be6
+  ref: 421f3fb
   specs:
     quintel_merit (0.1.0)
       numo-narray
@@ -339,7 +339,7 @@ GEM
       net-protocol
     netrc (0.11.0)
     newrelic_rpm (8.5.0)
-    nio4r (2.5.8)
+    nio4r (2.5.9)
     nokogiri (1.15.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -365,7 +365,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (5.0.0)
-    puma (5.6.4)
+    puma (5.6.7)
       nio4r (~> 2.0)
     racc (1.7.0)
     rack (2.2.7)
