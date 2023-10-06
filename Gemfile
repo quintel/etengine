@@ -38,6 +38,7 @@ gem 'doorkeeper'
 gem 'doorkeeper-openid_connect', '~> 1.8.7'
 gem 'faraday'
 gem 'jwt'
+gem 'json-jwt'
 gem 'sidekiq'
 
 # Auth front-end
