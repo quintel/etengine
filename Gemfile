@@ -35,9 +35,10 @@ gem 'kaminari'
 gem 'cancancan', '~> 3.0'
 gem 'devise', '~> 4.7'
 gem 'doorkeeper'
-gem 'doorkeeper-openid_connect'
+gem 'doorkeeper-openid_connect', '~> 1.8.7'
 gem 'faraday'
 gem 'jwt'
+gem 'json-jwt'
 gem 'sidekiq'
 
 # Auth front-end
