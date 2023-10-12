@@ -16,7 +16,6 @@ class CreateHtHeatNetworkOrderAsDefault < ActiveRecord::Migration[7.0]
     "capacity_of_energy_heat_burner_coal" => "capacity_of_energy_heat_burner_ht_coal",
     "energy_heat_distribution_loss_share" => "energy_heat_distribution_ht_loss_share",
     "volume_of_imported_heat" => "volume_of_ht_imported_heat",
-    "co2_emissions_of_imported_heat" => "co2_emissions_of_imported_heat",
     "heat_storage_enabled" => "heat_storage_enabled_ht",
     "energy_heat_network_storage_loss_share" => "energy_heat_network_storage_ht_loss_share",
     "energy_heat_network_storage_output_capacity_share" => "energy_heat_network_storage_ht_steam_hot_water_output_capacity_share",
@@ -24,7 +23,8 @@ class CreateHtHeatNetworkOrderAsDefault < ActiveRecord::Migration[7.0]
     "share_of_industry_chemicals_fertilizers_reused_residual_heat" => "share_of_industry_chemicals_fertilizers_reused_residual_heat",
     "share_of_industry_chemicals_refineries_reused_residual_heat" => "share_of_industry_chemicals_refineries_reused_residual_heat",
     "share_of_industry_other_ict_reused_residual_heat" => "share_of_industry_other_ict_reused_residual_heat",
-    "share_of_energy_chp_supercritical_ccs_waste_mix" => "share_of_energy_chp_supercritical_ccs_ht_waste_mix"
+    "share_of_energy_chp_supercritical_ccs_waste_mix" => "share_of_energy_chp_supercritical_ccs_ht_waste_mix",
+    "costs_heat_network_storage" => "costs_heat_network_storage_ht_steam_hot_water"
   }
 
   ORDER_TRANSLATIONS = {
