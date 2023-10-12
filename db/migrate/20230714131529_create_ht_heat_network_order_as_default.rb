@@ -24,7 +24,10 @@ class CreateHtHeatNetworkOrderAsDefault < ActiveRecord::Migration[7.0]
     "share_of_industry_chemicals_refineries_reused_residual_heat" => "share_of_industry_chemicals_refineries_reused_residual_heat",
     "share_of_industry_other_ict_reused_residual_heat" => "share_of_industry_other_ict_reused_residual_heat",
     "share_of_energy_chp_supercritical_ccs_waste_mix" => "share_of_energy_chp_supercritical_ccs_ht_waste_mix",
-    "costs_heat_network_storage" => "costs_heat_network_storage_ht_steam_hot_water"
+    "costs_heat_network_storage" => "costs_heat_network_storage_ht_steam_hot_water",
+    "households_heater_district_heating_steam_hot_water_share" => "households_heater_district_heating_ht_steam_hot_water_share",
+    "buildings_space_heater_district_heating_steam_hot_water_share" => "buildings_space_heater_district_heating_ht_steam_hot_water_share",
+    "agriculture_final_demand_central_steam_hot_water_share" => "agriculture_final_demand_ht_central_steam_hot_water_share"
   }
 
   ORDER_TRANSLATIONS = {
