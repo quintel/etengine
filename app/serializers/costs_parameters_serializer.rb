@@ -6,9 +6,11 @@ class CostsParametersSerializer
   QUERIES = {
     costs_building_and_installations_households: %w[
       costs_building_and_installations_households_insulation
+      costs_building_and_installations_households_heat_delivery_system
     ],
     costs_building_and_installations_buildings: %w[
       costs_building_and_installations_buildings_insulation
+      costs_building_and_installations_buildings_heat_delivery_system
     ],
     costs_storage_and_conversion_storage: %w[
       costs_hydrogen_storage
