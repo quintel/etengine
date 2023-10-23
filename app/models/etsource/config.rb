@@ -44,8 +44,22 @@ module Etsource
     # Public: Reads the order of dispatchables to be used in the heat network.
     #
     # Returns an array of strings.
-    def heat_network_order
-      read('heat_network_order')
+    def heat_network_order_lt
+      read('heat_network_order_lt')
+    end
+
+    # Public: Reads the order of dispatchables to be used in the heat network.
+    #
+    # Returns an array of strings.
+    def heat_network_order_mt
+      read('heat_network_order_mt')
+    end
+
+    # Public: Reads the order of dispatchables to be used in the heat network.
+    #
+    # Returns an array of strings.
+    def heat_network_order_ht
+      read('heat_network_order_ht')
     end
 
     # Public: Reads the order of storage in when forecasting is enabled.

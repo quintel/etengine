@@ -51,7 +51,7 @@ module Qernel
       # Internal: Creates a dynamic curve which reads demand from a heat network
       # Merit order participant.
       def heat_network_merit_self_curve(node, carrier, direction)
-        merit_self_curve(node, carrier, direction, @plugin.heat_network)
+        merit_self_curve(node, carrier, direction, @plugin.heat_network.manager_for(node))
       end
 
       # Internal: Creates a dynamic curve which reads demand from a Merit order

@@ -50,11 +50,14 @@ module Scenario::Persistable
         other_scaler.attributes.except('id', 'scenario_id'))
     end
 
-    self.heat_network_order = cloned_user_sortable(preset, :heat_network_order)
     self.forecast_storage_order = cloned_user_sortable(preset, :forecast_storage_order)
 
     cloned_attachments(preset) do |cloned_attachment|
       self.attachments << cloned_attachment
+    end
+
+    cloned_heat_network_orders(preset) do |cloned_order|
+      self.heat_network_orders << cloned_order
     end
 
     self.end_year  = preset.end_year
@@ -103,6 +106,20 @@ module Scenario::Persistable
   def cloned_user_sortable(preset, attribute)
     if (order = preset.try(attribute)) && order.persisted?
       order.class.new(order.attributes.except('id', 'scenario_id'))
+    end
+  end
+
+  # Internal: If the source preset has one or more heat_orders, creates a clone of each to be used
+  # by the new scenario.
+  #
+  # Yields UserSortables or returns nil.
+  def cloned_heat_network_orders(preset)
+    heat_network_orders = preset.heat_network_orders
+
+    return if heat_network_orders.blank?
+
+    heat_network_orders.each do |order|
+      yield order.class.new(order.attributes.except('id', 'scenario_id'))
     end
   end
 

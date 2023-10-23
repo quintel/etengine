@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_17_143107) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_25_142213) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -48,7 +48,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_17_143107) do
   create_table "heat_network_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
     t.text "order"
-    t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id", unique: true
+    t.string "temperature", default: "mt"
+    t.index ["scenario_id", "temperature"], name: "index_heat_network_orders_on_scenario_id_and_temperature", unique: true
+    t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id"
   end
 
   create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

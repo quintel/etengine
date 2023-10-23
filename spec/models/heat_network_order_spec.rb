@@ -3,10 +3,10 @@
 require 'spec_helper'
 
 describe HeatNetworkOrder do
-  it { is_expected.to have_db_index(:scenario_id).unique }
+  it { is_expected.to have_db_index([:scenario_id, :temperature]).unique }
 
   describe '#order' do
-    let(:preset) { described_class.new(order: order) }
+    let(:preset) { described_class.new(order: order, temperature: :ht) }
 
     context 'when the order is nil' do
       let(:order) { nil }
@@ -26,7 +26,7 @@ describe HeatNetworkOrder do
     end
 
     context 'when the order contains one of two valid values' do
-      let(:order) { [Etsource::Config.heat_network_order.first] }
+      let(:order) { [Etsource::Config.heat_network_order_ht.first] }
 
       it 'has no errors' do
         preset.valid?
@@ -36,7 +36,7 @@ describe HeatNetworkOrder do
     end
 
     context 'when the order contains all valid values' do
-      let(:order) { Etsource::Config.heat_network_order }
+      let(:order) { Etsource::Config.heat_network_order_ht }
 
       it 'has no errors' do
         preset.valid?
@@ -47,8 +47,8 @@ describe HeatNetworkOrder do
     context 'when the order repeats a valid value' do
       let(:order) do
         [
-          Etsource::Config.heat_network_order.first,
-          Etsource::Config.heat_network_order.first
+          Etsource::Config.heat_network_order_ht.first,
+          Etsource::Config.heat_network_order_ht.first
         ]
       end
 
@@ -109,6 +109,37 @@ describe HeatNetworkOrder do
 
       it 'omits the invalid option' do
         expect(fo.useable_order).to eq(described_class.default_order)
+      end
+    end
+  end
+
+  context 'when an order with the "ht" temperature level already exists' do
+    before do
+      described_class.create!(
+        scenario_id: scenario.id,
+        temperature: :ht
+      )
+    end
+
+    let(:scenario) { FactoryBot.create(:scenario) }
+
+    context 'with a new "ht" order' do
+      let(:order) do
+        described_class.new(
+          scenario_id: scenario.id,
+          temperature: 'ht'
+        )
+      end
+
+      it 'is invalid' do
+        expect(order).not_to be_valid
+      end
+
+      it 'has an error on temperature' do
+        order.valid?
+
+        expect(order.errors[:temperature])
+          .to include('already exists for this scenario')
       end
     end
   end

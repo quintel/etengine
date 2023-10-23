@@ -5,7 +5,7 @@ require 'spec_helper'
 describe 'APIv3 heat network orders' do
   let(:valid_options) { HeatNetworkOrder.default_order }
   let(:scenario) { FactoryBot.create(:scenario) }
-  let(:url) { api_v3_scenario_heat_network_order_url(scenario_id: scenario.id) }
+  let(:url) { api_v3_scenario_heat_network_order_url(scenario_id: scenario.id, subtype: :ht) }
 
   context 'when fetching the heat network order' do
     let(:request) { get(url) }
@@ -33,7 +33,8 @@ describe 'APIv3 heat network orders' do
       before do
         HeatNetworkOrder.create!(
           scenario_id: scenario.id,
-          order: HeatNetworkOrder.default_order.reverse
+          order: HeatNetworkOrder.default_order.reverse,
+          temperature: :ht
         )
       end
 
@@ -79,7 +80,8 @@ describe 'APIv3 heat network orders' do
       before do
         HeatNetworkOrder.create!(
           scenario_id: scenario.id,
-          order: [HeatNetworkOrder.default_order.last]
+          order: [HeatNetworkOrder.default_order.last],
+          temperature: :ht
         )
       end
 
@@ -234,7 +236,8 @@ describe 'APIv3 heat network orders' do
       before do
         HeatNetworkOrder.create!(
           scenario_id: scenario.id,
-          order: HeatNetworkOrder.default_order
+          order: HeatNetworkOrder.default_order,
+          temperature: :ht
         )
       end
 
@@ -256,7 +259,8 @@ describe 'APIv3 heat network orders' do
       before do
         HeatNetworkOrder.create!(
           scenario_id: scenario.id,
-          order: HeatNetworkOrder.default_order
+          order: HeatNetworkOrder.default_order,
+          temperature: :ht
         )
       end
 

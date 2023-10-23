@@ -26,12 +26,16 @@
       = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }
       = f.simple_fields_for :forecast_storage_order, @scenario.forecast_storage_order do |hno|
         = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.forecast_storage_order) }, label: 'Forecast storage order', hint: 'Delete all lines to revert to default'
-      = f.simple_fields_for :heat_network_order, @scenario.heat_network_order do |hno|
-        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order) }, label: 'Heat network dispatchables order', hint: 'Delete all lines to revert to default'
+      = f.simple_fields_for :heat_network_order_ht, @scenario.heat_network_order(:ht) do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order(:ht)) }, label: 'Heat network (HT) dispatchables order', hint: 'Delete all lines to revert to default'
+      = f.simple_fields_for :heat_network_order_mt, @scenario.heat_network_order(:mt) do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order(:mt)) }, label: 'Heat network (MT) dispatchables order', hint: 'Delete all lines to revert to default'
+      = f.simple_fields_for :heat_network_order_lt, @scenario.heat_network_order(:lt) do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order(:lt)) }, label: 'Heat network (LT) dispatchables order', hint: 'Delete all lines to revert to default'
       = f.button :submit, class: 'btn btn-primary btn-large'
 
   :css
-    #scenario_heat_network_order_order, #scenario_forecast_storage_order_order {
+    #scenario_heat_network_order_ht_order, #scenario_heat_network_order_mt_order,#scenario_heat_network_order_lt_order,#scenario_forecast_storage_order_order {
       font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",  "Courier New", monospace;
       width: 400px;
       height: 220px;

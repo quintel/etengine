@@ -44,7 +44,11 @@ module Api
       private
 
       def sortable
-        @sortable ||= scenario.public_send(sortable_name)
+        @sortable ||= if sortable_subtype
+          scenario.public_send(sortable_name, sortable_subtype)
+        else
+          scenario.public_send(sortable_name)
+        end
       end
 
       def assert_valid_sortable_type
@@ -56,6 +60,11 @@ module Api
         when :forecast_storage then :forecast_storage_order
         when :heat_network then :heat_network_order
         end
+      end
+
+      # Used for the types of heat networks (lt, mt and ht)
+      def sortable_subtype
+        params.permit(:subtype)[:subtype] if params.key?(:subtype)
       end
 
       def sortable_params

@@ -187,7 +187,7 @@ RSpec.describe Scenario::YearInterpolator do
     end
 
     let(:techs) do
-      HeatNetworkOrder.default_order.shuffle
+      HeatNetworkOrder.default_order.reverse
     end
 
     let(:interpolated) { described_class.call(source, 2040) }
@@ -197,16 +197,16 @@ RSpec.describe Scenario::YearInterpolator do
     end
 
     it 'creates a heat network order for the interpolated scenario' do
-      expect(interpolated.heat_network_order).not_to be_nil
+      expect(interpolated.heat_network_orders.first).not_to be_nil
     end
 
     it 'does not reuse the original heat network order' do
-      expect(interpolated.heat_network_order.id)
+      expect(interpolated.heat_network_orders.first.id)
         .not_to eq(source.heat_network_order.id)
     end
 
     it 'copies the heat network order attributes' do
-      expect(interpolated.heat_network_order.order).to eq(techs)
+      expect(interpolated.heat_network_orders.first.order).to eq(techs)
     end
   end
 end

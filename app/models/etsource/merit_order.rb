@@ -20,8 +20,28 @@ module Etsource
     # See MeritOrder#import
     #
     # Returns a hash.
-    def import_heat_network
-      import(:heat_network)
+    def import_heat_network_lt
+      import(:heat_network_lt)
+    end
+
+    # Public: reads the heat network merit order definitions from Atlas Node
+    # data.
+    #
+    # See MeritOrder#import
+    #
+    # Returns a hash.
+    def import_heat_network_mt
+      import(:heat_network_mt)
+    end
+
+    # Public: reads the heat network merit order definitions from Atlas Node
+    # data.
+    #
+    # See MeritOrder#import
+    #
+    # Returns a hash.
+    def import_heat_network_ht
+      import(:heat_network_ht)
     end
 
     # Public: reads the agriculture heat merit order definitions from Atlas Node

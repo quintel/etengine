@@ -54,7 +54,9 @@ module Qernel
       dataset_accessors %i[
         demand
         fever
-        heat_network
+        heat_network_lt
+        heat_network_mt
+        heat_network_ht
         hydrogen
         merit_order
         network_gas
