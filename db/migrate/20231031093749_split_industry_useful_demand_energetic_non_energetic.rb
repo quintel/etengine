@@ -2,22 +2,44 @@
 
 require 'etengine/scenario_migration'
 
-# Renames industry_useful_demand_for_aggregated_other to '...energetic'
-# and adds a non-energetic input with the same value
+SET_KEYS = %w[
+  industry_useful_demand_for_aggregated_other
+  industry_aggregated_other_industry_coal_share
+  industry_aggregated_other_industry_crude_oil_share
+  industry_aggregated_other_industry_hydrogen_share
+  industry_aggregated_other_industry_network_gas_share
+  industry_aggregated_other_industry_wood_pellets_share
+]
+
+# Adds energetic and non_energetic input values for the 
+# inputs listed above.
 #
 # See https://github.com/quintel/etmodel/issues/4116
 class SplitIndustryUsefulDemandEnergeticNonEnergetic < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
-  old_key   = 'industry_useful_demand_for_aggregated_other'
-  new_key_1 = 'industry_useful_demand_for_aggregated_other_energetic'
-  new_key_1 = 'industry_useful_demand_for_aggregated_other_non_energetic'
-
   def change
     migrate_scenarios do |scenario|
-      if scenario.user_values[old_key].present?
-        scenario.user_values[new_key_1] = scenario.user_values[old_key]
-        scenario.user_values[new_key_2] = scenario.user_values[old_key]
+      # Quickly check if any of the keys is set in the scenario (intersect)
+      intersect_keys = scenario.user_values.keys & SET_KEYS
+      next if intersect_keys.empty?
+
+      # Loop over the keys for which a value was set
+      intersect_keys.each do |key|
+        next if scenario.user_values[key].blank?
+
+        case
+        when key.include?('useful_demand')
+          scenario.user_values["#{key}_energetic"] = scenario.user_values[key]
+          scenario.user_values["#{key}_non_energetic"] = scenario.user_values[key]
+        when key.include?('coal')
+          scenario.user_values["#{key}_energetic"] = scenario.user_values[key]
+          scenario.user_values["industry_aggregated_other_industry_cokes_share_energetic"] = 0
+        else
+          scenario.user_values["#{key}_energetic"] = scenario.user_values[key]
+        end
+
+        scenario.user_values.delete(key)
       end
     end
   end
