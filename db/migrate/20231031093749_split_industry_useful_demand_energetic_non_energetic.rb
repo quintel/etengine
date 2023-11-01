@@ -26,6 +26,7 @@ class SplitIndustryUsefulDemandEnergeticNonEnergetic < ActiveRecord::Migration[7
 
       # Loop over the keys for which a value was set
       intersect_keys.each do |key|
+        
         next if scenario.user_values[key].blank?
 
         case
@@ -34,7 +35,10 @@ class SplitIndustryUsefulDemandEnergeticNonEnergetic < ActiveRecord::Migration[7
           scenario.user_values["#{key}_non_energetic"] = scenario.user_values[key]
         when key.include?('coal')
           scenario.user_values["#{key}_energetic"] = scenario.user_values[key]
-          scenario.user_values["industry_aggregated_other_industry_cokes_share_energetic"] = 0
+          scenario.user_values['industry_aggregated_other_industry_cokes_share_energetic'] = 0
+        when key.include?('hydrogen')
+          scenario.user_values["#{key}_energetic"] = scenario.user_values[key]
+          scenario.user_values['industry_aggregated_other_industry_hydrogen_share_non_energetic'] = 0
         else
           scenario.user_values["#{key}_energetic"] = scenario.user_values[key]
         end
