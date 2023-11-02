@@ -113,7 +113,7 @@ class RemodelingOfResidualHeat < ActiveRecord::Migration[7.0]
   # Calculates the residual heat for a sector based on sector properties
   def residual_heat_for_sector(
     initial_demand, sector_size, sector_efficiency, used_residual_heat,
-    available_share_residual_heat_1, available_share_residual_heat_2, end_year, start_year
+    available_share_residual_heat_1, available_share_residual_heat_2, start_year, end_year
   )
 
     (initial_demand / 1000) * # convert TJ
@@ -132,7 +132,7 @@ class RemodelingOfResidualHeat < ActiveRecord::Migration[7.0]
     residual_heat_for_sector(
       dataset_values['industry_useful_demand_for_other_ict_electricity'], # initial_demand
       scenario.user_values['industry_useful_demand_for_other_ict'] || 100, # sector_size
-      0, # sector_efficiency
+      scenario.user_values['industry_useful_demand_for_other_ict_efficiency'] || 0, # sector_efficiency
       scenario.user_values['share_of_industry_other_ict_reused_residual_heat'], # used_residual_heat
       dataset_values['industry_useful_demand_for_other_ict_electricity_industry_other_ict_potential_residual_heat_from_servers_electricity_parent_share'],
       0,
@@ -174,8 +174,8 @@ class RemodelingOfResidualHeat < ActiveRecord::Migration[7.0]
       scenario.user_values['external_coupling_industry_chemical_refineries_useable_heat'] || 100, # sector_size
       0, # sector_efficiency
       scenario.user_values['share_of_industry_chemicals_refineries_reused_residual_heat'], # used_residual_heat
-      scenario.user_values['external_coupling_industry_chemical_refineries_residual_heat_processes_share'],
-      scenario.user_values['external_coupling_industry_chemical_refineries_residual_heat_flue_gasses_share'],
+      scenario.user_values['external_coupling_industry_chemical_refineries_residual_heat_processes_share'] / 100,
+      scenario.user_values['external_coupling_industry_chemical_refineries_residual_heat_flue_gasses_share']  / 100,
       scenario.start_year,
       scenario.end_year
     )
@@ -214,8 +214,8 @@ class RemodelingOfResidualHeat < ActiveRecord::Migration[7.0]
       scenario.user_values['external_coupling_industry_chemical_other_useable_heat'] || 100, # sector_size
       0, # sector_efficiency
       scenario.user_values['share_of_industry_chemicals_other_reused_residual_heat'], # used_residual_heat
-      scenario.user_values['external_coupling_industry_chemical_other_residual_heat_processes_share'],
-      scenario.user_values['external_coupling_industry_chemical_other_residual_heat_flue_gasses_share'],
+      scenario.user_values['external_coupling_industry_chemical_other_residual_heat_processes_share'] / 100,
+      scenario.user_values['external_coupling_industry_chemical_other_residual_heat_flue_gasses_share'] / 100,
       scenario.start_year,
       scenario.end_year
     )
@@ -228,9 +228,9 @@ class RemodelingOfResidualHeat < ActiveRecord::Migration[7.0]
     return 0 if dataset_values['industry_chemicals_fertilizers_production'].zero?
     return residual_heat_from_fertilizers_external_coupling(scenario, dataset_values) if fertilizers_coupled?(scenario)
 
-    # Note MB: de sector efficiency grijpt niet direct aan op de
-    # industry_chemicals_fertilizers_production node, dus hier kan een verschil ontstaan.
-    # Dit moeten we denk ik maar voor lief nemen...
+    # Note: useable heat efficiency does not directly affect the useable demand node in the fertilizer sector
+    # Treating the efficiency input in the same way as for the other sectors therefore may not exactly replicate
+    # the residual heat output, but solving this would be too complicated. Any deviation for this sector is accepted.
     residual_heat_for_sector(
       dataset_values['industry_chemicals_fertilizers_production'], # initial_demand
       scenario.user_values['industry_useful_demand_for_chemical_fertilizers'] || 100, # sector_size
@@ -257,8 +257,8 @@ class RemodelingOfResidualHeat < ActiveRecord::Migration[7.0]
       scenario.user_values['external_coupling_industry_chemical_fertilizers_total_excluding_electricity'] || 100, # sector_size
       0, # sector_efficiency
       scenario.user_values['share_of_industry_chemicals_fertilizers_reused_residual_heat'], # used_residual_heat
-      scenario.user_values['external_coupling_industry_chemical_fertilizers_residual_heat_processes_share'],
-      scenario.user_values['external_coupling_industry_chemical_fertilizers_residual_heat_flue_gasses_share'],
+      scenario.user_values['external_coupling_industry_chemical_fertilizers_residual_heat_processes_share'] / 100,
+      scenario.user_values['external_coupling_industry_chemical_fertilizers_residual_heat_flue_gasses_share'] / 100,
       scenario.start_year,
       scenario.end_year
     )
