@@ -97,6 +97,14 @@ Rails.application.routes.draw do
 
         resource :esdl_file, only: %i[show update]
 
+        resources :users, only: %i[index create update destroy], controller: 'scenario_users' do
+          collection do
+            put :update
+            patch :update
+            delete :destroy
+          end
+        end
+
         get 'curves/buildings_heat',
           to: 'curves#buildings_heat_curves',
           as: :curves_buildings_heat_download
