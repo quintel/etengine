@@ -16,7 +16,9 @@ class Scenario < ApplicationRecord
   store :balanced_values
   store :metadata, coder: JSON
 
-  belongs_to :owner, class_name: 'User', optional: true
+  has_many :scenario_users, dependent: :destroy
+  has_many :users, through: :scenario_users
+
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
 
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'

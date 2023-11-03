@@ -15,10 +15,11 @@
         %th End Year
         %td= @scenario.end_year
       %tr
-        %th Owner
+        %th Users
         %td
-          - if @scenario.owner
-            = link_to(@scenario.owner.name, user_path(@scenario.owner))
+          - if @scenario.users.present?
+            - @scenario.users.each do |user|
+              = link_to("#{user.name}, #{User::ROLES.key(user.id)}", user_path(user))
           - else
             %span.muted No owner
       %tr

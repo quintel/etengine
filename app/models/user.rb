@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  ROLES = {
+    1 => :scenario_viewer,
+    2 => :scenario_collaborator,
+    3 => :scenario_owner
+  }.freeze
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable, :registerable
   devise :database_authenticatable, :registerable,
@@ -28,7 +34,8 @@ class User < ApplicationRecord
 
   # rubocop:enable Rails/InverseOf
 
-  has_many :scenarios, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :scenario_users, dependent: :destroy
+  has_many :scenarios, through: :scenario_users
   has_many :personal_access_tokens, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 191 }

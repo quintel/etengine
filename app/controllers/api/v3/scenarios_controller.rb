@@ -164,7 +164,7 @@ module Api
         @scenario.descale    = attrs[:descale]
         @scenario.attributes = attrs
 
-        @scenario.owner = current_user
+        @scenario.scenario_users << ScenarioUser(scenario: @scenario, user: current_user, role: User::ROLES.key(:owner))
 
         Scenario.transaction do
           @scenario.save!
