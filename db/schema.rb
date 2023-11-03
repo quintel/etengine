@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_31_093749) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_03_104416) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -168,6 +168,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_31_093749) do
     t.boolean "has_industry", default: false, null: false
     t.boolean "has_energy", default: true, null: false
     t.index ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true
+  end
+
+  create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "scenario_id", null: false
+    t.integer "role_id", null: false
+    t.string "user_email"
+    t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx"
+    t.index ["user_email"], name: "scenario_users_user_email_idx"
   end
 
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
