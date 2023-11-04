@@ -82,7 +82,7 @@ module Api
         ids = params[:id].split(',')
 
         scenarios = Scenario.accessible_by(current_ability)
-          .where(id: ids).includes(:owner, :scaler)
+          .where(id: ids).includes(:users, :scaler)
 
         @serializers = scenarios.map do |scenario|
           ScenarioSerializer.new(self, scenario)
@@ -164,7 +164,7 @@ module Api
         @scenario.descale    = attrs[:descale]
         @scenario.attributes = attrs
 
-        @scenario.scenario_users << ScenarioUser(scenario: @scenario, user: current_user, role: User::ROLES.key(:owner))
+        @scenario.scenario_users << ScenarioUser(scenario: @scenario, user: current_user, role: User::ROLES.key(:scenario_owner))
 
         Scenario.transaction do
           @scenario.save!
