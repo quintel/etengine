@@ -3,8 +3,8 @@
 # rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe UpsertTransitionPath do
   let!(:user)      { create(:user) }
-  let!(:scenario1) { create(:scenario, end_year: 2040, owner: user) }
-  let!(:scenario2) { create(:scenario, end_year: 2050, owner: user) }
+  let!(:scenario1) { create(:scenario, end_year: 2040, user: user) }
+  let!(:scenario2) { create(:scenario, end_year: 2050, user: user) }
 
   let!(:token) do
     create(
@@ -40,7 +40,7 @@ RSpec.describe UpsertTransitionPath do
               'end_year'     => scenario2.end_year,
               'created_at'   => '2022-12-21T19:45:09Z',
               'updated_at'   => '2022-12-22T12:34:50Z',
-              'owner'        => { 'id' => user.id, 'name' => user.name }
+              'user'         => { 'id' => user.id, 'name' => user.name }
             }
           ]
         end
@@ -69,7 +69,7 @@ RSpec.describe UpsertTransitionPath do
         'end_year' => scenario2.end_year,
         'created_at' => '2022-12-21T19:45:09Z',
         'updated_at' => '2022-12-22T12:34:50Z',
-        'owner' => { 'id' => user.id, 'name' => user.name }
+        'user' => { 'id' => user.id, 'name' => user.name }
       })
     end
   end
@@ -92,7 +92,9 @@ RSpec.describe UpsertTransitionPath do
 
   context 'when a scenario is not accessible' do
     before do
-      scenario1.update!(owner: create(:user), private: true)
+      scenario1.scenario_users.destroy_all
+      scenario1.reload.update(user: create(:user))
+      scenario1.reload.update(private: true)
     end
 
     it 'returns a Failure' do

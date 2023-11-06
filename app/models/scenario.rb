@@ -136,6 +136,30 @@ class Scenario < ApplicationRecord
     where(id: id).with_attachments.first!
   end
 
+  def self.owned_by?(user)
+    joins(:scenario_users)
+      .where(
+        'scenario_users.user_id': user.id,
+        'scenario_users.role_id': User::ROLES.key(:scenario_owner)
+      )
+  end
+
+  def self.collaborated_by?(user)
+    joins(:scenario_users)
+      .where(
+        'scenario_users.user_id': user.id,
+        'scenario_users.role_id': User::ROLES.key(:scenario_collaborator)..
+      )
+  end
+
+  def self.viewable_by?(user)
+    joins(:scenario_users)
+      .where(
+        'scenario_users.user_id': user.id,
+        'scenario_users.role_id': User::ROLES.key(:scenario_viewer)..
+      )
+  end
+
   def area
     Area.get(area_code)
   end
@@ -292,8 +316,8 @@ class Scenario < ApplicationRecord
   # @return [Boolean]
   def clone_should_be_private?(actor)
     return false unless actor
-    return false if owner_id.blank?
-    return private if owner_id == actor.id
+    return false if scenario_users.count.zero?
+    return private if owner?(actor)
 
     actor.private_scenarios?
   end
@@ -304,6 +328,41 @@ class Scenario < ApplicationRecord
 
   def coupled?
     coupled_sliders.any?
+  end
+
+  def owned?
+    scenario_users.where(role_id: User::ROLES.key(:scenario_owner)).count.positive?
+  end
+
+  def owner?(user)
+    return false if user.blank?
+
+    ssu = scenario_users.find_by(user_id: user.id)
+    ssu.present? && ssu.role_id == User::ROLES.key(:scenario_owner)
+  end
+
+  def collaborator?(user)
+    return false if user.blank?
+
+    ssu = scenario_users.find_by(user_id: user.id)
+    ssu.present? && ssu.role_id >= User::ROLES.key(:scenario_collaborator)
+  end
+
+  def viewer?(user)
+    return false if user.blank?
+
+    ssu = scenario_users.find_by(user_id: user.id)
+    ssu.present? && ssu.role_id >= User::ROLES.key(:scenario_viewer)
+  end
+
+  # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
+  # Scenario.create(user: User). Only works when no users are associated yet.
+  def user=(user)
+    return false if user.blank? || scenario_users.count > 0
+
+    return false unless valid?
+
+    ScenarioUser.create(scenario: self, user: user, role_id: User::ROLES.key(:scenario_owner))
   end
 
   private
@@ -321,6 +380,8 @@ class Scenario < ApplicationRecord
   end
 
   def validate_visibility
-    errors.add(:private, 'can not be true on an unowned scenario') if private? && owner_id.blank?
+    if private? && scenario_users.map(&:role_id).none?(User::ROLES.key(:scenario_owner))
+      errors.add(:private, 'can not be true on an unowned scenario')
+    end
   end
 end

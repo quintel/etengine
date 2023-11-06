@@ -39,9 +39,10 @@ module Api
           return
         end
 
+        # We only fetch the scenarios owned by the user for this listing
         scenarios = Scenario
           .accessible_by(current_ability)
-          .where(owner_id: current_user.id)
+          .viewable_by?(current_user)
           .order(created_at: :desc)
           .page((params[:page].presence || 1).to_i)
           .per((params[:limit].presence || 25).to_i.clamp(1, 100))
@@ -164,7 +165,13 @@ module Api
         @scenario.descale    = attrs[:descale]
         @scenario.attributes = attrs
 
-        @scenario.scenario_users << ScenarioUser(scenario: @scenario, user: current_user, role: User::ROLES.key(:scenario_owner))
+        if current_user.present?
+          @scenario.scenario_users << ScenarioUser.new(
+            scenario: @scenario,
+            user: current_user,
+            role_id: User::ROLES.key(:scenario_owner)
+          )
+        end
 
         Scenario.transaction do
           @scenario.save!

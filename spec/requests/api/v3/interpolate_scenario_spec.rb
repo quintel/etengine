@@ -80,15 +80,19 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   end
 
   context 'with a self-owned private scenario' do
+    let(:user) { create(:user) }
+
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
         params: { end_year: 2040 },
         headers: access_token_header(user, :write)
     end
 
-    let(:user) { create(:user) }
-
-    before { source.update!(owner: user, private: true) }
+    before do
+      source.scenario_users.destroy_all
+      source.user = user
+      source.reload.update!(private: true)
+    end
 
     it 'returns 200 OK' do
       send_data
@@ -104,7 +108,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(response_data['owner']['id']).to eq(user.id)
+      expect(response_data['users'].first).to include('role' => 'scenario_owner')
     end
   end
 
@@ -117,7 +121,10 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     let(:user) { create(:user) }
 
-    before { source.update!(owner: create(:user)) }
+    before do
+      source.scenario_users.destroy_all
+      source.user = user
+    end
 
     it 'returns 200 OK' do
       send_data
@@ -133,7 +140,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(response_data['owner']['id']).to eq(user.id)
+      expect(response_data['users'].first).to include('role' => 'scenario_owner')
     end
   end
 
@@ -146,7 +153,11 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     let(:user) { create(:user) }
 
-    before { source.update!(private: true, owner: create(:user)) }
+    before do
+      source.scenario_users.destroy_all
+      source.user = create(:user)
+      source.reload.update(private: true)
+    end
 
     it 'returns 404 Not Found' do
       send_data
