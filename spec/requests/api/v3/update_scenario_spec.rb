@@ -37,16 +37,17 @@ describe 'Updating a scenario with API v3' do
 
   context 'when setting an owned public scenario to be private' do
     before do
-      scenario.update!(owner:, private: false)
+      scenario.scenario_users.destroy_all
+      scenario.update!(user: user, private: false)
     end
 
-    let(:owner) { create(:user) }
+    let(:user) { create(:user) }
 
     it 'sets private to true' do
       expect do
         update_scenario(
           params: { scenario: { private: true } },
-          headers: access_token_header(owner, :write)
+          headers: access_token_header(user, :write)
         )
       end.to change(scenario, :private?).from(false).to(true)
     end
@@ -54,16 +55,18 @@ describe 'Updating a scenario with API v3' do
 
   context 'when setting an owned private scenario to be public' do
     before do
-      scenario.update!(owner:, private: true)
+      scenario.scenario_users.destroy_all
+      scenario.update(user: user)
+      scenario.reload.update(private: true)
     end
 
-    let(:owner) { create(:user) }
+    let(:user) { create(:user) }
 
     it 'sets private to false' do
       expect do
         update_scenario(
           params: { scenario: { private: false } },
-          headers: access_token_header(owner, :write)
+          headers: access_token_header(user, :write)
         )
       end.to change(scenario, :private?).from(true).to(false)
     end

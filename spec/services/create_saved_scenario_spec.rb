@@ -5,7 +5,7 @@ require 'spec_helper'
 # rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe CreateSavedScenario do
   let!(:user)     { create(:user) }
-  let!(:scenario) { create(:scenario, owner: user) }
+  let!(:scenario) { create(:scenario, user: user) }
 
   let!(:token) do
     create(
@@ -89,7 +89,9 @@ RSpec.describe CreateSavedScenario do
 
   context 'when the scenario is not accessible' do
     before do
-      scenario.update(owner: create(:user), private: true)
+      scenario.scenario_users.destroy_all
+      scenario.reload.update(user: create(:user))
+      scenario.reload.update(private: true)
     end
 
     it 'returns a Failure' do
