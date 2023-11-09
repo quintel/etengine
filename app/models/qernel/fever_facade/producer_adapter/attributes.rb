@@ -10,6 +10,7 @@ module Qernel
         # Internal: Calculates what share of the total heat demand will be
         # supplied by this producer.
         def share
+          # TODO: make this one dependent on a consuuuumer icm his new share attribute
           edge = @node.node.output(:useable_heat).edges.first
 
           if edge.lft_node.key.to_s.include?('aggregator')

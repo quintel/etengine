@@ -21,6 +21,7 @@ module Qernel
 
       # Public: The Fever calculation which will compute the group.
       def calculator
+        # will be the new thing of calculators
         @calculator ||= Fever::Calculator.new(consumer, activities)
       end
 
@@ -48,11 +49,13 @@ module Qernel
       # Internal: The adapters which map nodes from the graph to activities
       # within Fever.
       def adapters
+        # TODO: delegate to calculators
         adapters_by_type.values.flatten
       end
 
       # Internal: Maps Fever types (:consumer, :storage, etc) to adapters.
       def adapters_by_type
+        # TODO: delegate to calculators
         return @adapters if @adapters
 
         @adapters =

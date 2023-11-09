@@ -23,14 +23,16 @@ module Qernel
         end
       end
 
-      def participant
+      def participant(active_share)
+        # TODO: move share from producer attributes to something calculated per consumer
+        # remove old share method in Attributes
         @participant ||=
           if @config.defer_for&.positive?
             Fever::DeferrableActivity.new(
-              producer, share: share, expire_after: @config.defer_for
+              producer, share: active_share, expire_after: @config.defer_for
             )
           else
-            Fever::Activity.new(producer, share: share)
+            Fever::Activity.new(producer, share: active_share)
           end
       end
 
