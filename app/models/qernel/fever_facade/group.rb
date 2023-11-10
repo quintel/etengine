@@ -19,10 +19,11 @@ module Qernel
         @context = Context.new(plugin, plugin.graph)
       end
 
-      # Public: The Fever calculation which will compute the group.
-      def calculator
-        # will be the new thing of calculators
-        @calculator ||= Fever::Calculator.new(consumer, activities)
+      # Public: Sets up calculator where consumers and producers are matched
+      def calculators
+        @calculators ||= Qernel::FeverFacade::Calculators.new(
+          ordered_producers, ordered_consumers, context
+        )
       end
 
       # Public: Instructs the calculator to compute a single frame.
@@ -30,7 +31,11 @@ module Qernel
       # frame - The frame number to be calculated.
       #
       # Returns nothing.
-      delegate :calculate_frame, to: :calculator
+      delegate :calculate_frame, to: :calculators
+
+      # Internal: The adapters which map nodes from the graph to activities
+      # within Fever.
+      delegate :adapters, to: :calculators
 
       # Public: Returns a curve which describes the demand for electricity
       # caused by the activities within the calculator.
@@ -41,62 +46,22 @@ module Qernel
       # Public: Returns the adapter for the node matching `key` or nil if
       # the node is not a participant in the group.
       def adapter(key)
-        if (config = @context.graph.node(key).fever)
-          adapters_by_type[config.type].find { |a| a.node.key == key }
-        end
+        adapters.find { |a| a.node.key == key } if @context.graph.node(key).fever
       end
 
-      # Internal: The adapters which map nodes from the graph to activities
-      # within Fever.
-      def adapters
-        # TODO: delegate to calculators
-        adapters_by_type.values.flatten
+      # We need: priority of producrers (etsource config)
+      # priority of consumers (etsource config)
+      def ordered_producers
+        # Etsource::Fever.group(@name).keys(:producers) <- and then have them ordered from the config
+        # TODO: INCLUDING VALIDATION!! THAT THEY ARE NODES IN THE GROUP -> or already in Atlas?
       end
 
-      # Internal: Maps Fever types (:consumer, :storage, etc) to adapters.
-      def adapters_by_type
-        # TODO: delegate to calculators
-        return @adapters if @adapters
-
-        @adapters =
-          Manager::TYPES.each_with_object({}) do |type, data|
-            data[type] =
-              Etsource::Fever.group(@name).keys(type).map do |node_key|
-                Adapter.adapter_for(
-                  @context.graph.node(node_key), @context
-                )
-              end
-          end
+      def ordered_consumers
+        # TODO: INCLUDING VALIDATION!! THAT THEY ARE NODES IN THE GROUP -> or already in Atlas?
       end
 
-      private
-
-      def consumer
-        if adapters_by_type[:consumer].length == 1
-          return adapters_by_type[:consumer].first.participant
-        end
-
-        # Group has multiple consumers; Fever supports only one so we need to
-        # create a new consumer summing the individual demand curves.
-        Fever::Consumer.new(
-          Merit::CurveTools.add_curves(
-            adapters_by_type[:consumer].map do |adapter|
-              adapter.participant.demand_curve
-            end
-          ).to_a
-        )
-      end
-
-      def activities
-        storage = adapters_by_type[:storage]
-          .select(&:installed?)
-          .map(&:participant)
-
-        producers = adapters_by_type[:producer]
-          .select(&:installed?)
-          .map(&:participant)
-
-        [storage, producers]
+      def producer_adapters
+        adapters.select { |adapter| adapter.config.type == :producer }
       end
     end
   end

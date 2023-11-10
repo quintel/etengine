@@ -6,9 +6,6 @@ module Qernel
     class Calculators
       def initialize(ordered_producers, ordered_consumers, context)
         @context = context
-
-        # We need: priority of producrers (etsource config)
-        # priority of consumers (etsource config)
         @ordered_consumers = ordered_consumers
         @ordered_producers = ordered_producers
 
@@ -27,6 +24,7 @@ module Qernel
         calculators.each { |calc| calc.calculate_frame(frame) }
       end
 
+      # TODO: Is it in an array so that its faster? could also be a hash -> check what's optimal
       def matched_consumers
         @matched_consumers ||= @ordered_consumers.inject({}) do |consumers, consumer_node_key|
           consumers[consumer_node_key] = [
@@ -39,8 +37,10 @@ module Qernel
         end
       end
 
+      # Sets up the adapters and matched consumers to create e network to intialize the calculators
       def setup_network
         ordered_producers.each do |producer_node_key|
+          # VERIFY that they are in the group (NO WE DO THAT IN THE ETSOUCRE THING)
           producer = Adapter.adapter_for(
             @context.graph.node(producer_node_key), @context
           )
@@ -85,18 +85,10 @@ module Qernel
         end
       end
 
+      # Internal: The adapters which map nodes from the graph to activities
+      # within Fever.
       def adapters
         @adapters ||= []
-        # we need all adapters grouped as we need them for the elec demand curve
-        # TODO: DELEGATE this method from Group
-
-        # TODO: find out what that means and if that's a thing for all producers combined like
-        # I think it is!
-
-        # is it faster to find all of them afetr setting them all p in a list. or
-        # can we better psh them into an array?
-        # later later we refactor
-        # first it has to work!!!
       end
     end
   end

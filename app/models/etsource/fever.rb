@@ -2,6 +2,8 @@ module Etsource
   module Fever
     module_function
 
+    # TODO: update this stuff
+
     FeverConfig = Struct.new(:name, :keys_by_type) do
       # Public: Retrieves an array of node keys for the given Fever participant
       # type.

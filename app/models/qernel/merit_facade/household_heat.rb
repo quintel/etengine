@@ -21,7 +21,7 @@ module Qernel
 
         return 0.0 unless group
 
-        group.adapters_by_type[:producer].sum do |adapt|
+        group.producer_adapters.sum do |adapt|
           adapt.node.input_of_electricity
         end
       end
