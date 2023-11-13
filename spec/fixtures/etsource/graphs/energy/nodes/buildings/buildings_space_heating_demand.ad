@@ -1,0 +1,7 @@
+- use = energetic
+- energy_balance_group = after savings
+- groups = [useful_demand]
+- fever.curve = weather/buildings_heating
+- fever.group = buildings_space_heating
+- fever.type = consumer
+- free_co2_factor = 0.0

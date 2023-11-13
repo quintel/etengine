@@ -16,7 +16,7 @@ module Qernel
 
       def calculators
         @calculators ||= matched_consumers.values.map do |consumer, activities|
-          Fever::Calculator.new(consumer, activities)
+          Fever::Calculator.new(consumer.participant, activities)
         end
       end
 
@@ -28,9 +28,7 @@ module Qernel
       def matched_consumers
         @matched_consumers ||= @ordered_consumers.inject({}) do |consumers, consumer_node_key|
           consumers[consumer_node_key] = [
-            Adapter.adapter_for(
-              @context.graph.node(consumer_node_key), @context
-            ), # consumer
+            adapter_for(consumer_node_key), # consumer
             [] # activities
           ]
           consumers
@@ -39,14 +37,10 @@ module Qernel
 
       # Sets up the adapters and matched consumers to create e network to intialize the calculators
       def setup_network
-        ordered_producers.each do |producer_node_key|
-          # VERIFY that they are in the group (NO WE DO THAT IN THE ETSOUCRE THING)
-          producer = Adapter.adapter_for(
-            @context.graph.node(producer_node_key), @context
-          )
-          adapters << producer
+        @ordered_producers.each do |producer_node_key|
+          producer = adapter_for(producer_node_key)
 
-          producer_share = producer.config.share_in_group
+          producer_share = producer.share_in_group
           # verify this is correct behaviour. what happens with the share zero things in fever itsefl?
           next if producer_share.zero?
 
@@ -76,7 +70,8 @@ module Qernel
             @matched_consumers[consumer_node_key][1] << producer.participant(consumer_share_met_by_producer)
 
             # TODO: set share on edge -> new method on consumer: inject_share_to(producer)
-            consumer.node
+            consumer
+              .node
               .input(:useable_heat)
               .edges
               .detect { |e| e.rgt_node == producer_node_key }
@@ -89,6 +84,17 @@ module Qernel
       # within Fever.
       def adapters
         @adapters ||= []
+      end
+
+      private
+
+      def adapter_for(node_key)
+        adapter = Adapter.adapter_for(
+          @context.graph.node(node_key), @context
+        )
+        adapters << adapter
+
+        adapter
       end
     end
   end

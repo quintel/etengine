@@ -41,7 +41,11 @@ module Etsource
       read('fever.groups').map(&:to_sym)
     end
 
-    # TODO: add our friends here! -> or we need some extra config?
+    # Public: Fetches the list of ordered consumers and producers for fever groups
+    # in which they should be calculated
+    def fever_order(group, type)
+      read("fever.#{group}_#{type}_order").map(&:to_sym)
+    end
 
     # Public: Reads the order of dispatchables to be used in the heat network.
     #

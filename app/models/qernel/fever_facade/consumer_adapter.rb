@@ -23,7 +23,7 @@ module Qernel
       end
 
       # TODO: method: inject_share_to(producer)
-      # check how merit does this!!!
+      # grab from calculator
 
       def participant
         @participant ||= Fever::Consumer.new(demand_curve.to_a)
@@ -56,7 +56,7 @@ module Qernel
       end
 
       def total_in_group
-        # Can be a method higher up so we don't have to this case for each consumer
+        # TODO: Can be a method higher up so we don't have to this case for each consumer
         case @config.group
         when :household_space_heating then @node.dataset_get(:number_of_residences)
         when :households_hot_water then @node.dataset_get(:number_of_residences)

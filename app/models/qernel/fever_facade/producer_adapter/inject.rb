@@ -10,9 +10,9 @@ module Qernel
 
         # Internal: Sets demand and FLH attributes on the node.
         def inject_demand!
-          producer   = participant.producer
           production = producer.output_curve.sum
 
+          # TODO: get aggerate curve etc.
           inject_aggregator_attributes!(production)
 
           # MWh -> MJ
@@ -48,6 +48,7 @@ module Qernel
 
           return unless conv.groups.include?(:aggregator_producer)
 
+          # TODO: fix this one! this is where the deficits are calculated
           demand = participant.demand
           edge   = conv.output(:useable_heat).edges.first
 

@@ -19,10 +19,10 @@ module Qernel
         @context = Context.new(plugin, plugin.graph)
       end
 
-      # Public: Sets up calculator where consumers and producers are matched
+      # Public: Sets up calculators where consumers and producers are matched
       def calculators
         @calculators ||= Qernel::FeverFacade::Calculators.new(
-          ordered_producers, ordered_consumers, context
+          ordered_producers, ordered_consumers, @context
         )
       end
 
@@ -49,15 +49,12 @@ module Qernel
         adapters.find { |a| a.node.key == key } if @context.graph.node(key).fever
       end
 
-      # We need: priority of producrers (etsource config)
-      # priority of consumers (etsource config)
       def ordered_producers
-        # Etsource::Fever.group(@name).keys(:producers) <- and then have them ordered from the config
-        # TODO: INCLUDING VALIDATION!! THAT THEY ARE NODES IN THE GROUP -> or already in Atlas?
+        Etsource::Fever.group(@name).keys(:producer)
       end
 
       def ordered_consumers
-        # TODO: INCLUDING VALIDATION!! THAT THEY ARE NODES IN THE GROUP -> or already in Atlas?
+        Etsource::Fever.group(@name).keys(:consumer)
       end
 
       def producer_adapters

@@ -24,16 +24,13 @@ module Qernel
       end
 
       def participant(active_share)
-        # TODO: move share from producer attributes to something calculated per consumer
-        # remove old share method in Attributes
-        @participant ||=
-          if @config.defer_for&.positive?
-            Fever::DeferrableActivity.new(
-              producer, share: active_share, expire_after: @config.defer_for
-            )
-          else
-            Fever::Activity.new(producer, share: active_share)
-          end
+        if @config.defer_for&.positive?
+          Fever::DeferrableActivity.new(
+            producer, share: active_share, expire_after: @config.defer_for
+          )
+        else
+          Fever::Activity.new(producer, share: active_share)
+        end
       end
 
       def inject!
@@ -43,14 +40,15 @@ module Qernel
       end
 
       def producer
-        if (st = @node.dataset_get(:storage)) && st.volume.positive?
-          Fever::BufferingProducer.new(
-            capacity, reserve,
-            input_efficiency: input_efficiency
-          )
-        else
-          Fever::Producer.new(capacity, input_efficiency: input_efficiency)
-        end
+        @producer ||=
+          if (st = @node.dataset_get(:storage)) && st.volume.positive?
+            Fever::BufferingProducer.new(
+              capacity, reserve,
+              input_efficiency: input_efficiency
+            )
+          else
+            Fever::Producer.new(capacity, input_efficiency: input_efficiency)
+          end
       end
 
       # Public: Returns if this adapter has any units installed.

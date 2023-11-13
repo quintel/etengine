@@ -9,7 +9,7 @@ module Qernel
         # Public: Returns the Fever producer which takes the given carrier key
         # as input, or nil if the adapter does not contains such a producer.
         def producer_for_carrier(carrier)
-          participant.producer if input?(carrier)
+          producer if input?(carrier)
         end
 
         # Public: Returns if the named carrier (a Symbol) is one of the inputs

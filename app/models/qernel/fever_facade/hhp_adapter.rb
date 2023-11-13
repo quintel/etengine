@@ -74,7 +74,7 @@ module Qernel
       # Internal: The Fever producer which will be the first one asked to
       # satisfy demand.
       def primary_component
-        @primary_component ||= primary_adapter.participant.producer
+        @primary_component ||= primary_adapter.producer
       end
 
       # Internal: The Fever producer which will be used when the primary
