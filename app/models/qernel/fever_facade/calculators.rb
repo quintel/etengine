@@ -11,7 +11,7 @@ module Qernel
 
         # first build then refactor
         # make sure we can forget what we don't need
-        setup_network
+        setup
       end
 
       def calculators
@@ -36,7 +36,7 @@ module Qernel
       end
 
       # Sets up the adapters and matched consumers to create e network to intialize the calculators
-      def setup_network
+      def setup
         @ordered_producers.each do |producer_node_key|
           producer = adapter_for(producer_node_key)
 
@@ -69,13 +69,7 @@ module Qernel
 
             @matched_consumers[consumer_node_key][1] << producer.participant(consumer_share_met_by_producer)
 
-            # TODO: set share on edge -> new method on consumer: inject_share_to(producer)
-            consumer
-              .node
-              .input(:useable_heat)
-              .edges
-              .detect { |e| e.rgt_node == producer_node_key }
-              .share = consumer_share_met_by_producer
+            consumer.inject_share_to_producer(producer, consumer_share_met_by_producer)
           end
         end
       end

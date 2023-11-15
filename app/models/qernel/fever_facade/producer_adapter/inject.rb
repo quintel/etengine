@@ -49,6 +49,7 @@ module Qernel
           return unless conv.groups.include?(:aggregator_producer)
 
           # TODO: fix this one! this is where the deficits are calculated
+          # Here we need to bring in the aggegrated curves! -> grab them from curve set
           demand = participant.demand
           edge   = conv.output(:useable_heat).edges.first
 
