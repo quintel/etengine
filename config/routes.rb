@@ -99,8 +99,8 @@ Rails.application.routes.draw do
 
         resources :users, only: %i[index create update destroy], controller: 'scenario_users' do
           collection do
+            post :create
             put :update
-            patch :update
             delete :destroy
           end
         end
