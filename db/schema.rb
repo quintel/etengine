@@ -171,12 +171,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_03_104416) do
   end
 
   create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.integer "user_id", null: false
     t.integer "scenario_id", null: false
     t.integer "role_id", null: false
+    t.integer "user_id"
     t.string "user_email"
-    t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx"
-    t.index ["user_email"], name: "scenario_users_user_email_idx"
+    t.index ["scenario_id", "user_email"], name: "scenario_users_scenario_id_user_email_idx", unique: true
+    t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
   end
 
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
