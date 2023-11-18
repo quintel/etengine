@@ -84,7 +84,7 @@ module Api
       def destroy
         param_user_ids = permitted_params[:scenario_users].pluck(:id).compact.uniq
         param_user_emails = permitted_params[:scenario_users].pluck(:email).compact.uniq
-        users_ids = User.where(email: param_user_emails).pluck(:id)
+        user_ids = User.where(email: param_user_emails).pluck(:id)
 
         scenario_users = @scenario.scenario_users.where(
           'user_id IN (?) OR user_id IN (?) OR user_email IN (?)',
@@ -95,7 +95,7 @@ module Api
         # a) Could not find one of the requested users, or
         # b) There are duplicate entries in the request that we filtered out
         if scenario_users.count < permitted_params[:scenario_users].length
-          diff = user_ids - scenario_users.pluck(:user_id)
+          diff = (param_user_ids + param_user_emails) - scenario_users.pluck(:user_id)
 
           if diff.present?
             render json: { error: "Could not find user(s) with id: #{diff.join(',')}" }, status: :not_found
