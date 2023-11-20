@@ -124,9 +124,14 @@ module Api
           return false
         end
 
-        @scenario = current_user.scenarios.find(permitted_params[:scenario_id])
+        @scenario = \
+          if current_user.admin?
+            Scenario.find(permitted_params[:scenario_id])
+          else
+            current_user.scenarios.find(permitted_params[:scenario_id])
+          end
 
-        if @scenario.blank? || (@scenario.present? && !@scenario.owner?(current_user))
+        if @scenario.blank? || (@scenario.present? && !@scenario.owner?(current_user) && !current_user.admin?)
           render json: { error: "Saved scenario with id #{permitted_params[:scenario_id]} not found." }, status: :not_found
 
           return false
