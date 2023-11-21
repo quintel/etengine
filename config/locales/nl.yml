@@ -47,3 +47,6 @@ nl:
         current_password: Huidig wachtwoord
         unconfirmed_email: Nieuw e-mailadres
         name: Jouw naam
+  scenario_invitation_mailer:
+    invite_user:
+      subject: Je bent uitgenodigd om deel te nemen aan een Energie Transitie Model scenario!
