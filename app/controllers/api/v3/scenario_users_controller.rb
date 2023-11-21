@@ -15,15 +15,21 @@ module Api
 
       def create
         permitted_params[:scenario_users].each do |user_params|
+          scenario_user = new_scenario_user_from(user_params)
+
           begin
-            scenario_user = new_scenario_user_from(user_params)
             scenario_user.save!
           rescue ActiveRecord::RecordInvalid
-            render json: user_params.merge({ error: "#{scenario_user.errors.first.attribute} is invalid." }),
+            render json: user_params.merge({ error: "#{scenario_user.errors.first&.attribute} is invalid." }),
               status: :unprocessable_entity and return
           rescue ActiveRecord::RecordNotUnique
             render json: user_params.merge({ error: 'A user with this ID or email already exists for this scenario' }),
               status: :unprocessable_entity and return
+          end
+
+          # Send an invitation if stated in the params
+          if permitted_params.dig(:invitation_args, :invite) == true
+            send_invitation_mail(scenario_user)
           end
         end
 
@@ -114,7 +120,7 @@ module Api
       private
 
       def permitted_params
-        params.permit(:scenario_id, scenario_users: [%i[id role email]])
+        params.permit(:scenario_id, scenario_users: [%i[id role email invite]], invitation_args: %i[invite user_name id title])
       end
 
       def find_and_authorize_scenario
@@ -165,6 +171,24 @@ module Api
           role_id: User::ROLES.key(user_params.try(:[], :role).try(:to_sym)),
           user_id: user.present? ? user.id : user_params.try(:[], :id),
           user_email: user.present? ? nil : user_params.try(:[], :email)
+        )
+      end
+
+      # Make sure a user knows it was added to a scenario by sending an email notifying them.
+      def send_invitation_mail(scenario_user)
+        if scenario_user.user_id.present?
+          user_type = 'existing'
+          email = scenario_user.user.email
+        else
+          user_type = 'new'
+          email = scenario_user.user_email
+        end
+
+        ScenarioInvitationMailer.invite_user(
+          user_type,
+          email,
+          permitted_params[:invitation_args][:user_name],
+          permitted_params[:invitation_args].slice(:id, :title)
         )
       end
     end
