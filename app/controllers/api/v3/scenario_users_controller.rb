@@ -51,30 +51,20 @@ module Api
             break
           end
 
-          if user_params.try(:[], :id).present?
-            su = @scenario.scenario_users.find_by(user_id: user_params.try(:[], :id))
-          elsif user_params.try(:[], :email).present?
-            su = @scenario.scenario_users.find_by(user_email: user_params.try(:[], :email))
-
-            # Maybe the 'nameless' user got converted to actual user already. Search for them
-            if su.blank?
-              user = User.find_by(email: user_params.try(:[], :email))
-
-              if user.present?
-                su = @scenario.scenario_users.find_by(user_id: user.id)
-              end
-            end
-          end
-
-          if su.blank?
+          scenario_user = find_scenario_user_by_params(user_params)
+          if scenario_user.blank?
             scenario_user_error = user_params.merge({ error: 'Scenario user not found' })
             http_error_status = :not_found
 
             break
           end
 
-          unless (scenario_users_updated = su.update(role_id: User::ROLES.key(user_params.try(:[], :role).try(:to_sym))))
-            scenario_user_error = su.errors
+          unless (
+            scenario_users_updated = scenario_user.update(
+              role_id: User::ROLES.key(user_params.try(:[], :role).try(:to_sym))
+            )
+          )
+            scenario_user_error = scenario_user.errors
 
             break
           end
@@ -101,12 +91,19 @@ module Api
         # a) Could not find one of the requested users, or
         # b) There are duplicate entries in the request that we filtered out
         if scenario_users.count < permitted_params[:scenario_users].length
-          diff = (param_user_ids + param_user_emails) - scenario_users.pluck(:user_id)
+          missing_ids = param_user_ids - scenario_users.pluck(:id)
+          missing_emails = param_user_emails - scenario_users.map { |su| su.user.email }
 
-          if diff.present?
-            render json: { error: "Could not find user(s) with id: #{diff.join(',')}" }, status: :not_found
+          if missing_ids.present? || missing_emails.present?
+            render \
+              json: {
+                error: "Could not find user(s) with id or email: #{(missing_ids + missing_emails).join(',')}"
+              },
+              status: :not_found
           else
-            render json: { error: "Duplicate user ids found in request, please revise." }, status: :unprocessable_entity
+            render \
+              json: { error: "Duplicate user ids found in request, please revise." },
+              status: :unprocessable_entity
           end
 
           return
@@ -172,6 +169,27 @@ module Api
           user_id: user.present? ? user.id : user_params.try(:[], :id),
           user_email: user.present? ? nil : user_params.try(:[], :email)
         )
+      end
+
+      def find_scenario_user_by_params(user_params)
+        if user_params.try(:[], :id).present?
+          scenario_user = @scenario.scenario_users.find_by(user_id: user_params.try(:[], :id))
+        elsif user_params.try(:[], :email).present?
+          scenario_user = @scenario.scenario_users.find_by(user_email: user_params.try(:[], :email))
+
+          # It may have happened the user was registered through e-mail but was saved by
+          # its ID. Search all users for this email, then search for the found ID
+          # through the users for this scenario just to be sure.
+          if scenario_user.blank?
+            user = User.find_by(email: user_params.try(:[], :email))
+
+            if user.present?
+              scenario_user = @scenario.scenario_users.find_by(user_id: user.id)
+            end
+          end
+        end
+
+        scenario_user
       end
 
       # Make sure a user knows it was added to a scenario by sending an email notifying them.
