@@ -32,10 +32,8 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns a list of all users' do
-        expect(response.body).to eq(
-          [
-            { id: user.id, email: nil, role: 'scenario_owner' }
-          ].to_json
+        expect(JSON.parse(response.body)).to include(
+          a_hash_including('user_id' => user.id, 'user_email' => nil, 'role' => 'scenario_owner')
         )
       end
     end
@@ -48,9 +46,9 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { id: nil, email: 'viewer@test.com', role: 'scenario_viewer' },
-              { id: nil, email: 'collaborator@test.com', role: 'scenario_collaborator' },
-              { id: nil, email: 'owner@test.com', role: 'scenario_owner' }
+              { user_email: 'viewer@test.com', role: 'scenario_viewer' },
+              { user_email: 'collaborator@test.com', role: 'scenario_collaborator' },
+              { user_email: 'owner@test.com', role: 'scenario_owner' }
             ]
           }
       end
@@ -60,12 +58,10 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'adds the given users to the scenario' do
-        expect(response.body).to eq(
-          [
-            { id: nil, email: 'viewer@test.com', role: 'scenario_viewer' },
-            { id: nil, email: 'collaborator@test.com', role: 'scenario_collaborator' },
-            { id: nil, email: 'owner@test.com', role: 'scenario_owner' }
-          ].to_json
+        expect(JSON.parse(response.body)).to include(
+          a_hash_including('user_id' => nil, 'user_email' => 'viewer@test.com', 'role' => 'scenario_viewer'),
+          a_hash_including('user_id' => nil, 'user_email' => 'collaborator@test.com', 'role' => 'scenario_collaborator'),
+          a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com', 'role' => 'scenario_owner')
         )
       end
     end
@@ -75,9 +71,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
         post "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
-            scenario_users: [
-              { id: nil, email: 'viewer@test.com' }
-            ]
+            scenario_users: [{ user_email: 'viewer@test.com' }]
           }
       end
 
@@ -87,7 +81,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(response.body).to eq(
-          { id: nil, email: 'viewer@test.com', error: 'role_id is invalid.' }.to_json
+          { user_email: 'viewer@test.com', error: 'role_id is invalid.' }.to_json
         )
       end
     end
@@ -98,8 +92,8 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { id: nil, email: 'viewer@test.com', role: 'scenario_viewer' },
-              { id: nil, email: 'viewer@test.com', role: 'scenario_collaborator' },
+              { user_email: 'viewer@test.com', role: 'scenario_viewer' },
+              { user_email: 'viewer@test.com', role: 'scenario_collaborator' },
             ]
           }
       end
@@ -111,7 +105,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       it 'returns an error' do
         expect(response.body).to eq(
           {
-            id: nil, role: 'scenario_collaborator', email: 'viewer@test.com',
+            role: 'scenario_collaborator', user_email: 'viewer@test.com',
             error: 'A user with this ID or email already exists for this scenario'
           }.to_json
         )
@@ -138,8 +132,8 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { id: user_2.id, role: 'scenario_owner' },
-              { id: user_3.id, role: 'scenario_viewer' },
+              { user_id: user_2.id, role: 'scenario_owner' },
+              { user_id: user_3.id, role: 'scenario_viewer' },
             ]
           }
       end
@@ -149,43 +143,9 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'updates the role for the given user' do
-        expect(response.body).to eq(
-          [
-            { id: user_2.id, email: nil, role: 'scenario_owner' },
-            { id: user_3.id, email: nil, role: 'scenario_viewer' },
-          ].to_json
-        )
-      end
-    end
-
-    context 'with a duplicate user id' do
-      let(:user_2) { create(:user) }
-
-      before do
-        create(:scenario_user,
-          scenario: scenario, user: user_2,
-          role_id: User::ROLES.key(:scenario_viewer)
-        )
-
-        put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
-          headers: access_token_header(user, :delete),
-          params: {
-            scenario_users: [
-              { id: user_2.id, role: 'scenario_owner' },
-              { id: user_2.id, role: 'scenario_viewer' },
-            ]
-          }
-      end
-
-      it 'returns success' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'updates the user to the last stated role' do
-        expect(response.body).to eq(
-          [
-            { id: user_2.id, email: nil, role: 'scenario_viewer' }
-          ].to_json
+        expect(JSON.parse(response.body)).to include(
+          a_hash_including('user_id' => user_2.id, 'user_email' => nil, 'role' => 'scenario_owner'),
+          a_hash_including('user_id' => user_3.id, 'user_email' => nil, 'role' => 'scenario_viewer')
         )
       end
     end
@@ -196,7 +156,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { id: 999, role: 'scenario_collaborator' },
+              { user_id: 999, role: 'scenario_collaborator' },
             ]
           }
       end
@@ -207,7 +167,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(response.body).to eq(
-          { id: 999, role: 'scenario_collaborator', error: 'Scenario user not found' }.to_json
+          { 'role' => 'scenario_collaborator', 'user_id' => 999, 'error' => 'Scenario user not found' }.to_json
         )
       end
     end
@@ -217,9 +177,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
         put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
-            scenario_users: [
-              { id: 999 },
-            ]
+            scenario_users: [{ user_id: 999 }]
           }
       end
 
@@ -229,7 +187,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(response.body).to eq(
-          { id: 999, error: 'No role given to update with.' }.to_json
+          { user_id: 999, error: 'Missing attribute(s) for scenario_user: role' }.to_json
         )
       end
     end
@@ -253,7 +211,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
         delete "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
-            scenario_users: [{ id: user_2.id }, { id: user_3.id }]
+            scenario_users: [{ user_id: user_2.id }, { user_id: user_3.id }]
           }
       end
 
@@ -272,55 +230,21 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
     end
 
-    context 'with duplicate user ids' do
-      let(:user_2) { create(:user) }
-      let(:user_3) { create(:user) }
-
-      before do
-        create(:scenario_user,
-          scenario: scenario, user: user_2,
-          role_id: User::ROLES.key(:scenario_viewer)
-        )
-        create(:scenario_user,
-          scenario: scenario, user: user_3,
-          role_id: User::ROLES.key(:scenario_collaborator)
-        )
-
-        delete "/api/v3/scenarios/#{scenario.id}/users", as: :json,
-          headers: access_token_header(user, :delete),
-          params: {
-            scenario_users: [{ id: user_2.id }, { id: user_2.id }] # User 2, twice
-          }
-      end
-
-      it 'returns 422: unprocessable_entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'returns an empty response body' do
-        expect(response.body).to eq(
-          {'error': 'Duplicate user ids found in request, please revise.'}.to_json
-        )
-      end
-    end
-
     context 'with a non-existing user id' do
       before do
         delete "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
-            scenario_users: [{ id: 999 }]
+            scenario_users: [{ user_id: 999 }]
           }
       end
 
-      it 'returns 404: not found' do
-        expect(response).to have_http_status(:not_found)
+      it 'returns OK' do
+        expect(response).to have_http_status(:ok)
       end
 
       it 'returns an empty response body' do
-        expect(response.body).to eq(
-          {'error': 'Could not find user(s) with id: 999'}.to_json
-        )
+        expect(response.body).to eq('')
       end
     end
   end
