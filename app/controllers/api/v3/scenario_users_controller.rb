@@ -128,8 +128,6 @@ module Api
         # Check if all scenario_users have the requested attributes
         permitted_params[:scenario_users].each do |user_params|
           attributes.each do |attribute|
-            pp attribute
-
             # If this is an array of attributes, at least one of the entries should be present
             valid = \
               if attribute.is_a? Array
