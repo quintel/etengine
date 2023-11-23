@@ -4,18 +4,19 @@ module Qernel
   module FeverFacade
     # Represents a Fever participant which will describe total demand.
     class ConsumerAdapter < Adapter
+      include CalculableActivity
+
       def initialize(node, context)
         super
         @was = @node.demand
-      end
-
-      def share_in_total
-        @share ||= @node.number_of_units / total_in_group
+        # TODO: at the init we should set all edges shares to 0!!!
+        # Then set them again -rigth? or is it not neccesary? how does future graph work? they are unset right?
       end
 
       # How much has the consumer already been filled with
       def share_met
         @share_met ||= 0.0
+        # Of kan dat toch vanuit de summed edges zoals we in de vorige commit hadden?
       end
 
       # TODO: is this correct?
@@ -39,12 +40,12 @@ module Qernel
           .share = share
       end
 
-      def participant
-        @participant ||= Fever::Consumer.new(demand_curve.to_a)
+      def participant_for(tech_type, share)
+        Fever::Consumer.new(demand_curve(tech_type, share).to_a)
       end
 
       def inject!
-        inject_curve!(:input) { participant.demand_curve }
+        inject_curve!(:input) { demand_curve_from_activities }
       end
 
       def input?(*)
@@ -59,23 +60,16 @@ module Qernel
         true
       end
 
+      def number_of_units
+        @node.number_of_units
+      end
+
       private
 
-      def demand_curve
-        @context.curves.curve(@config.curve, @node) * @node.demand
-      end
-
-      def number_of_units
-        1.0
-      end
-
-      def total_in_group
-        # TODO: Can be a method higher up so we don't have to this case for each consumer
-        case @config.group
-        when :space_heating then @node.dataset_get(:number_of_residences)
-        when :households_hot_water then @node.dataset_get(:number_of_residences)
-        when :buildings_space_heating then @node.dataset_get(:number_of_buildings)
-        end
+      def demand_curve(tech_type, demand_share)
+        # TODO: curve for tech_type is available for config.curve in FeverAttributes
+        # make it a hash? -> check which smart things are already in place!
+        @context.curves.curve(@config.curve, @node) * (@node.demand * demand_share)
       end
     end
   end

@@ -223,6 +223,8 @@ module Gql::Runtime
         ).to_a
       end
 
+      # TODO: lookup methods for the fever intermediate curves and deficits
+
       # Public: Creates an array containing the name of all the variants of a
       # curve set available for the current dataset.
       #

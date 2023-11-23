@@ -14,25 +14,16 @@ module Qernel
         setup
       end
 
+      # A list of CalculatorTechActivities
       def calculators
-        @calculators ||= matched_consumers.values.map do |consumer, activities|
-          Fever::Calculator.new(consumer.participant, activities)
+        @calculators ||= @ordered_consumer_adapters.flat_map do |consumer|
+          consumer.finish_setup!
+          consumer.calculable_activities.values
         end
       end
 
       def calculate_frame(frame)
         calculators.each { |calc| calc.calculate_frame(frame) }
-      end
-
-      # TODO: Is it in an array so that its faster? could also be a hash -> check what's optimal
-      def matched_consumers
-        @matched_consumers ||= @ordered_consumers.inject({}) do |consumers, consumer_node_key|
-          consumers[consumer_node_key] = [
-            adapter_for(consumer_node_key), # consumer
-            [] # activities
-          ]
-          consumers
-        end
       end
 
       # Sets up the adapters and matched consumers to create e network to intialize the calculators
@@ -45,30 +36,31 @@ module Qernel
           next if producer_share.zero?
 
           # For each ordered consumer, check if an activity should be added to it's calculator
-          @ordered_consumers.each do |consumer_node_key|
+          @ordered_consumer_adapters.each do |consumer|
             # Check if the producer is either done or did not join in the first place
             # TODO: not just next, but we can break here! if the "next" above is correct
             next if producer_share.zero?
 
-            consumer = @matched_consumers[consumer_node_key][0]
-
             # Another producer already filled up the whole consumer or there are no hh in consumer
-            next if consumer.share_met == 1.0 || consumer.share_in_total.zero?
+            next if consumer.share_met == 1.0 || consumer.number_of_units.zero?
 
             # Now we calculate the share between this consumer and the producer.
             # The maximum share of buildings/houses the producer can supply to is:
             # The minimum of the share of houses the producers still has to deliver to,
             # and the share of houses/buldings the consumer represents, multiplied by
             # if other producers already met a piece of its demand.
-            consumer_share = min(producer_share, (1.0 - consumer.share_met) * consumer.share_in_total)
+            consumer_share = min(
+              producer_share,
+              (consumer.number_of_units / total_number_of_units) * (1.0 - consumer.share_met)
+            )
 
             # Keep track on to how many housholds/buidlings the producer still needs to deliver
             producer_share -= consumer_share
 
             consumer_share_met_by_producer = consumer_share / consumer.share_in_total
 
-            @matched_consumers[consumer_node_key][1] << producer.participant(consumer_share_met_by_producer)
-
+            # TODO: Can this be one thing?
+            consumer.build_activity(producer, consumer_share_met_by_producer)
             consumer.inject_share_to_producer(producer, consumer_share_met_by_producer)
           end
         end
@@ -78,6 +70,16 @@ module Qernel
       # within Fever.
       def adapters
         @adapters ||= []
+      end
+
+      # Always in correct order!
+      # TODO: how does this one live together with the plain "adapters"?
+      def ordered_consumer_adapters
+        @ordered_consumer_adapters ||= @ordered_consumers.map { |node_key| adapter_for(node_key) }
+      end
+
+      def total_number_of_units
+        @total_number_of_units ||= ordered_consumer_adapters.sum(&:number_of_units)
       end
 
       private
