@@ -11,9 +11,9 @@ module Qernel
 
         # TODO: do we setup like this and check for empty, or dynamically add keys when we need them?
         def calculable_activities
-          @calculable_activities ||= tech_curves.keys.inject({}) do |tech_activities, tech_type|
-            tech_activities[tech_type] = CalculatorTechActivity.new
-            tech_activities
+          @calculable_activities ||= technology_curve_types.inject({}) do |activities, tech_type|
+            activities[tech_type] = CalculatorTechActivity.new
+            activities
           end
         end
 
@@ -25,19 +25,14 @@ module Qernel
           end
         end
 
-        def participant_for(tech_type, share)
-          Fever::Consumer.new(demand_curve(tech_type, share).to_a)
-        end
-
         def build_activity(producer, share)
-          calculable_activities[producer.tech_type].add(producer, share)
+          calculable_activities[producer.technology_curve_type].add(producer, share)
         end
 
         # After calculations have run for each tech component of the consumer,
         # the curves are summed back together
         def demand_curve_from_activities
           # TODO: this is not so nice -> maybe do like the top todo, because now we need a filter map
-          # what if they are all empty? do we get an error or will Merit gently give us an empty curve?
           Merit::CurveTools.add_curves(
             calculable_activities.filter_map do |activity|
               activity.consumer_participant.demand_curve unless activity.empty?

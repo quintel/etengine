@@ -41,7 +41,7 @@ module Qernel
       end
 
       def participant_for(tech_type, share)
-        Fever::Consumer.new(demand_curve(tech_type, share).to_a)
+        Fever::Consumer.new(demand_curve_for(tech_type, share).to_a)
       end
 
       def inject!
@@ -66,10 +66,12 @@ module Qernel
 
       private
 
-      def demand_curve(tech_type, demand_share)
-        # TODO: curve for tech_type is available for config.curve in FeverAttributes
-        # make it a hash? -> check which smart things are already in place!
-        @context.curves.curve(@config.curve, @node) * (@node.demand * demand_share)
+      def demand_curve_for(tech_type, demand_share)
+        @context.curves.curve(@config.curve[tech_type], @node) * (@node.demand * demand_share)
+      end
+
+      def technology_curve_types
+        @config.curve.keys
       end
     end
   end
