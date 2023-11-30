@@ -93,9 +93,9 @@ module Qernel
         consumer = @group.adapter(consumer_key)
         producer = @group.adapter(producer_key)
 
-        return unless consumer && producer
+        return [1.0] * 8760 unless consumer && producer
 
-        consumer.production_curve_for(producer)
+        consumer.production_curve_for(producer).to_a
       end
 
       private

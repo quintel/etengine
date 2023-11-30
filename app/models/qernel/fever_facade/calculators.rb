@@ -36,7 +36,7 @@ module Qernel
           next if producer_share.zero?
 
           # For each ordered consumer, check if an activity should be added to it's calculator
-          @ordered_consumer_adapters.each do |consumer|
+          ordered_consumer_adapters.each do |consumer|
             # Check if the producer is either done or did not join in the first place
             # TODO: not just next, but we can break here! if the "next" above is correct
             next if producer_share.zero?
@@ -44,24 +44,26 @@ module Qernel
             # Another producer already filled up the whole consumer or there are no hh in consumer
             next if consumer.share_met == 1.0 || consumer.number_of_units.zero?
 
+            consumer_share_in_total = consumer.number_of_units / total_number_of_units
+
             # Now we calculate the share between this consumer and the producer.
             # The maximum share of buildings/houses the producer can supply to is:
             # The minimum of the share of houses the producers still has to deliver to,
             # and the share of houses/buldings the consumer represents, multiplied by
             # if other producers already met a piece of its demand.
-            consumer_share = min(
+            consumer_share = [
               producer_share,
-              (consumer.number_of_units / total_number_of_units) * (1.0 - consumer.share_met)
-            )
+              consumer_share_in_total * (1.0 - consumer.share_met)
+            ].min
 
             # Keep track on to how many housholds/buidlings the producer still needs to deliver
             producer_share -= consumer_share
 
-            consumer_share_met_by_producer = consumer_share / consumer.share_in_total
+            consumer_share_met_by_producer = consumer_share / consumer_share_in_total
 
             # TODO: Can this be one thing?
             consumer.build_activity(producer, consumer_share_met_by_producer)
-            consumer.inject_share_to_producer(producer, consumer_share_met_by_producer)
+            consumer.inject_share_to_producer(producer, consumer_share_met_by_producer, producer_share)
           end
         end
       end

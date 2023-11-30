@@ -33,9 +33,10 @@ module Qernel
       end
 
       def activity(producer)
-        return unless producers.include?(producer)
+        producer_keys = producers.map { |p, _| p.node.key }
+        return unless producer_keys.include?(producer.node.key)
 
-        activities[producers.index(producer)]
+        activities[producer_keys.index(producer.node.key)]
       end
 
       def producers

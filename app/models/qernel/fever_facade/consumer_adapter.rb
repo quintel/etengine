@@ -19,9 +19,10 @@ module Qernel
         # Of kan dat toch vanuit de summed edges zoals we in de vorige commit hadden?
       end
 
-      # TODO: is this correct?
+      # TODO: is this correct? ADD VALIDATION that they are indeed connected
+      # TODO: clean this up now with these two ugly shares!
       # Injects share prior to calculation
-      def inject_share_to_producer(producer, share)
+      def inject_share_to_producer(producer, share, edge_share)
         @share_met += share
 
         prod_node = producer.node.node
@@ -36,8 +37,8 @@ module Qernel
         @node
           .input(:useable_heat)
           .edges
-          .detect { |e| e.rgt_node == producer_node_key }
-          .share = share
+          .detect { |e| e.rgt_node.key == producer_node_key }
+          .share = edge_share
       end
 
       def participant_for(tech_type, share)
