@@ -35,7 +35,7 @@ module Qernel
 
       def inject!
         inject_demand!
-        inject_curve!(:output) { participant.producer.output_curve.to_a }
+        inject_curve!(:output) { producer.output_curve.to_a }
         inject_input_curves!
       end
 

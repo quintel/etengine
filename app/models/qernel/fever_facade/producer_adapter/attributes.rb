@@ -9,6 +9,10 @@ module Qernel
           @config.share_in_group || 0.0
         end
 
+        def technology_curve_type
+          @config.technology_curve_type
+        end
+
         private
 
         def output_efficiency

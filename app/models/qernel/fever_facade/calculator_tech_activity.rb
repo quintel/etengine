@@ -32,6 +32,12 @@ module Qernel
         end
       end
 
+      def activity(producer)
+        return unless producers.include?(producer)
+
+        activities[producers.index(producer)]
+      end
+
       def producers
         @producers ||= []
       end

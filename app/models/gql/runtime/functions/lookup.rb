@@ -224,6 +224,34 @@ module Gql::Runtime
       end
 
       # TODO: lookup methods for the fever intermediate curves and deficits
+      def FEVER_PRODUCTION_CURVE(producer, consumer)
+        return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
+        producer = producer.first
+        consumer = consumer.first
+
+        plugin = scope.graph.plugin(:time_resolve).fever
+        group = producer.fever.group #or equivalent
+        # TODO if not resond to Fever: give an error message
+
+        # find the group in the plugin -> OR -> do it through summary?
+        # yeah mayb thats best
+        plugin.summary(group).production_curve_for(producer.key, consumer.key)
+      end
+
+      # TODO: lookup methods for the fever intermediate curves and deficits
+      def FEVER_DEFICIT(producer, consumer)
+        return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
+        producer = producer.first
+        consumer = consumer.first
+
+        plugin = scope.graph.plugin(:time_resolve).fever
+        group = producer.fever.group #or equivalent
+        # TODO if not resond to Fever: give an error message
+
+        # find the group in the plugin -> OR -> do it through summary?
+        # yeah mayb thats best
+        plugin.summary(group).deficit_for(producer.key, consumer.key)
+      end
 
       # Public: Creates an array containing the name of all the variants of a
       # curve set available for the current dataset.

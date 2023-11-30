@@ -80,6 +80,24 @@ module Qernel
         @surplus
       end
 
+      def deficit_for(producer_key, consumer_key)
+        consumer = @group.adapter(consumer_key)
+        producer = @group.adapter(producer_key)
+
+        return unless consumer && producer
+
+        consumer.deficit_for(producer)
+      end
+
+      def production_curve_for(producer_key, consumer_key)
+        consumer = @group.adapter(consumer_key)
+        producer = @group.adapter(producer_key)
+
+        return unless consumer && producer
+
+        consumer.production_curve_for(producer)
+      end
+
       private
 
       # Internal: Compares production and demand and creates two new curves

@@ -39,6 +39,24 @@ module Qernel
             end
           ) || EMPTY_CURVE
         end
+
+        def coupled_activity_for(producer)
+          calculable_activities[producer.technology_curve_type]&.activity(producer)
+        end
+
+        def deficit_for(producer)
+          activity = coupled_activity_for(producer)
+          return unless activity
+
+          production = activity.producer.output_curve.sum
+          demand = activity.demand
+
+          demand - production
+        end
+
+        def production_curve_for(producer)
+          coupled_activity_for(producer)&.producer&.output_curve || EMPTY_CURVE
+        end
       end
     end
   end
