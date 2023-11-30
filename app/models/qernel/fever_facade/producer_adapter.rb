@@ -76,7 +76,7 @@ module Qernel
       end
 
       def add_participant(participant)
-        @participants << participant
+        participants << participant
 
         participant
       end

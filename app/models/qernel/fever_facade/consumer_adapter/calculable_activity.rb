@@ -18,8 +18,8 @@ module Qernel
         end
 
         def finish_setup!
-          @calculable_activities.each do |tech_type, activity|
-            next if activity.empty?
+          calculable_activities.each do |tech_type, activity|
+            # next if activity.empty?
 
             activity.consumer_participant = participant_for(tech_type, activity.total_share)
           end

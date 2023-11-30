@@ -26,7 +26,7 @@ FactoryBot.define do
   factory :scaled_scenario, parent: :scenario_with_user_values do
     scaler do
       ScenarioScaling.new(
-        area_attribute: 'number_of_residences',
+        area_attribute: 'present_number_of_residences',
         base_value: 8_000_000.0,
         has_agriculture: true,
         has_energy: true,

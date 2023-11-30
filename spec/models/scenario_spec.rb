@@ -470,14 +470,14 @@ describe Scenario do
     it 'should copy the scaler attributes' do
       ScenarioScaling.create!(
         scenario:       preset,
-        area_attribute: 'number_of_residences',
+        area_attribute: 'present_number_of_residences',
         value:          1000
       )
 
       expect(scenario.scaler).to_not be_nil
       expect(scenario.scaler.id).to_not eq(preset.scaler.id)
 
-      expect(scenario.scaler.area_attribute).to eq('number_of_residences')
+      expect(scenario.scaler.area_attribute).to eq('present_number_of_residences')
       expect(scenario.scaler.value).to eq(1000)
       expect(scenario.scaler.scenario).to eq(scenario) # Not `preset`.
     end
@@ -583,7 +583,7 @@ describe Scenario do
         balanced_values: { 'grouped_input_two' => 8 },
 
         scaler: ScenarioScaling.new(
-          area_attribute: 'number_of_residences',
+          area_attribute: 'present_number_of_residences',
           value:          1000
         )
       })
@@ -598,7 +598,7 @@ describe Scenario do
       scenario
     end
 
-    let(:multiplier) { Atlas::Dataset.find(:nl).number_of_residences / 1000 }
+    let(:multiplier) { Atlas::Dataset.find(:nl).present_number_of_residences / 1000 }
 
     it 'creates the scenario' do
       expect(scenario).to_not be_new_record

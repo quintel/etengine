@@ -17,7 +17,7 @@ describe Qernel::NodeApi::DemandDrivenNodeApi do
   let(:supply_two) { graph.nodes.detect { |c| c.key == :supply_two } }
 
   before do
-    allow(graph.area).to receive(:number_of_residences).and_return(200)
+    allow(graph.area).to receive(:present_number_of_residences).and_return(200)
 
     supply_one.node_api = described_class.new(supply_one)
     supply_two.node_api = described_class.new(supply_two)

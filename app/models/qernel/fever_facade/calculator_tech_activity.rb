@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Qernel
-  module Fever
+  module FeverFacade
     # Sets up and represents a Fever::Calculator for the tech variant of a consumer
     class CalculatorTechActivity
       attr_accessor :consumer_participant

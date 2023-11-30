@@ -30,7 +30,7 @@ describe Qernel::FeverFacade::ConsumerAdapter do
         allow(node_api).to receive(:key).and_return(:cons)
         allow(node_api).to receive(:demand).and_return(300)
         allow(node_api).to receive(:dataset_get).with(:number_of_cons).and_return(10.0)
-        allow(node_api).to receive(:dataset_get).with(:number_of_residences).and_return(100.0)
+        allow(node_api).to receive(:dataset_get).with(:present_number_of_residences).and_return(100.0)
 
         node = instance_double('Qernel::Node')
         allow(node).to receive(:node_api).and_return(node_api)

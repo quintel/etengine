@@ -61,7 +61,7 @@ describe Input do
       before do
         scenario.save!
         scenario.create_scaler!(
-          area_attribute: 'number_of_residences',
+          area_attribute: 'present_number_of_residences',
           value: 10000
         )
       end
@@ -133,7 +133,7 @@ describe Input do
       before {
         scenario.update_attribute(:area_code, 'ameland')
         scenario.create_scaler(
-          area_attribute: 'number_of_residences',
+          area_attribute: 'present_number_of_residences',
           value: 100
         )
       }

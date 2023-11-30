@@ -62,7 +62,7 @@
 - interconnector_capacity = 5850.0
 - land_available_for_solar = 19175.489
 - number_of_buildings = 392358.0
-- number_of_residences = 1000
+- present_number_of_residences = 1000
 - number_of_inhabitants = 16530388.0
 - number_of_new_residences = 1607895.0
 - number_of_old_residences = 5602493.0
@@ -71,7 +71,7 @@
 - residences_roof_surface_available_for_pv = 266.7
 - buildings_roof_surface_available_for_pv = 133.3
 - base_dataset = nl
-- scaling.area_attribute = number_of_residences
+- scaling.area_attribute = present_number_of_residences
 - scaling.base_value = 7449298
 - scaling.has_agriculture =
 - scaling.has_energy =

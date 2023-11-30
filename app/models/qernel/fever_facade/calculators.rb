@@ -16,7 +16,7 @@ module Qernel
 
       # A list of CalculatorTechActivities
       def calculators
-        @calculators ||= @ordered_consumer_adapters.flat_map do |consumer|
+        @calculators ||= ordered_consumer_adapters.flat_map do |consumer|
           consumer.finish_setup!
           consumer.calculable_activities.values
         end

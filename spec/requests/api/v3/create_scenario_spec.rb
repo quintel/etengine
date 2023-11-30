@@ -391,7 +391,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       scenario = Scenario.find(JSON.parse(response.body)['id'])
 
       expect(scenario.scaler).to_not be_nil
-      expect(scenario.scaler.area_attribute).to eq('number_of_residences')
+      expect(scenario.scaler.area_attribute).to eq('present_number_of_residences')
       expect(scenario.scaler.value).to eq(100)
     end
   end
@@ -401,7 +401,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       before do
         post '/api/v3/scenarios', params: {
           scenario: {
-            scale: { area_attribute: 'number_of_residences', value: 500_000 } }
+            scale: { area_attribute: 'present_number_of_residences', value: 500_000 } }
         }
       end
 
@@ -413,7 +413,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         scenario = Scenario.find(JSON.parse(response.body)['id'])
 
         expect(scenario.scaler).to_not be_nil
-        expect(scenario.scaler.area_attribute).to eq('number_of_residences')
+        expect(scenario.scaler.area_attribute).to eq('present_number_of_residences')
         expect(scenario.scaler.value).to eq(500_000)
       end
     end # with all valid attributes
@@ -444,14 +444,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         post '/api/v3/scenarios', params: {
           scenario: {
             scenario_id: preset.id,
-            scale: { area_attribute: 'number_of_residences', value: 500_000 }
+            scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
           }
         }
       end
 
       let(:preset) { FactoryBot.create(:scenario_with_user_values) }
       let(:json)   { JSON.parse(response.body) }
-      let(:multi)  { 500_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
+      let(:multi)  { 500_000 / Atlas::Dataset.find(:nl).present_number_of_residences.to_f }
 
       it 'should be successful' do
         expect(response.status).to eql(200)
@@ -494,20 +494,20 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: preset.id,
-              scale: { area_attribute: 'number_of_residences', value: 500_000 }
+              scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
           }
 
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: Scenario.last.id,
-              scale: { area_attribute: 'number_of_residences', value: 250_000 }
+              scale: { area_attribute: 'present_number_of_residences', value: 250_000 }
             }
           }
         end
 
         let(:json)  { JSON.parse(response.body) }
-        let(:multi) { 250_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
+        let(:multi) { 250_000 / Atlas::Dataset.find(:nl).present_number_of_residences.to_f }
 
         it 'should be successful' do
           expect(response.status).to eql(200)
@@ -533,7 +533,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: preset.id,
-              scale: { area_attribute: 'number_of_residences', value: 500_000 }
+              scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
           }
 
@@ -570,7 +570,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: preset.id,
-              scale: { area_attribute: 'number_of_residences', value: 500_000 }
+              scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
           }
 
@@ -578,7 +578,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         end
 
         let(:json) { JSON.parse(response.body) }
-        let(:multi) { 500_000 / Atlas::Dataset.find(:nl).number_of_residences.to_f }
+        let(:multi) { 500_000 / Atlas::Dataset.find(:nl).present_number_of_residences.to_f }
 
         it 'should be successful' do
           expect(response.status).to eql(200)
@@ -616,13 +616,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
             scenario: {
               scenario_id: Scenario.last.id,
               area_code: 'ameland',
-              scale: { area_attribute: 'number_of_residences', value: 100 }
+              scale: { area_attribute: 'present_number_of_residences', value: 100 }
             }
           }
         end
 
         let(:json) { JSON.parse(response.body) }
-        let(:multi) { 100 / Atlas::Dataset.find(:ameland).number_of_residences.to_f }
+        let(:multi) { 100 / Atlas::Dataset.find(:ameland).present_number_of_residences.to_f }
 
         it 'should be successful' do
           expect(response.status).to eql(200)
@@ -642,7 +642,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           post '/api/v3/scenarios', params: {
             scenario: {
               area_code: 'ameland',
-              scale: { area_attribute: 'number_of_residences', value: 500_000 }
+              scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
           }
         end

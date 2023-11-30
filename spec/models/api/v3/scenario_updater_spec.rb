@@ -537,7 +537,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     let(:scenario) do
       ScenarioScaling.create!(
         scenario: super(),
-        area_attribute: 'number_of_residences',
+        area_attribute: 'present_number_of_residences',
         value: 1_000_000
       ).scenario
     end
