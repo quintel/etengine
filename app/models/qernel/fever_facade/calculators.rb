@@ -63,7 +63,7 @@ module Qernel
 
             # TODO: Can this be one thing?
             consumer.build_activity(producer, consumer_share_met_by_producer)
-            consumer.inject_share_to_producer(producer, consumer_share_met_by_producer, producer_share)
+            consumer.inject_share_to_producer(producer, consumer_share_met_by_producer)
           end
         end
       end

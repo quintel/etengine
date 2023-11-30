@@ -80,6 +80,7 @@ module Qernel
         @surplus
       end
 
+      # TODO: check for curve rotation!!
       def deficit_for(producer_key, consumer_key)
         consumer = @group.adapter(consumer_key)
         producer = @group.adapter(producer_key)

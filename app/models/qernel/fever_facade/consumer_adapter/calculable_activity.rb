@@ -26,6 +26,8 @@ module Qernel
         end
 
         def build_activity(producer, share)
+          @share_met += share
+
           calculable_activities[producer.technology_curve_type].add(producer, share)
         end
 

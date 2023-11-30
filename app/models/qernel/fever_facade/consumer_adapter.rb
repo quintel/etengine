@@ -19,12 +19,8 @@ module Qernel
         # Of kan dat toch vanuit de summed edges zoals we in de vorige commit hadden?
       end
 
-      # TODO: is this correct? ADD VALIDATION that they are indeed connected
-      # TODO: clean this up now with these two ugly shares!
-      # Injects share prior to calculation
-      def inject_share_to_producer(producer, share, edge_share)
-        @share_met += share
-
+      # Injects share after to calculation
+      def inject_share_to_producer(producer, share)
         prod_node = producer.node.node
 
         producer_node_key =
@@ -38,7 +34,7 @@ module Qernel
           .input(:useable_heat)
           .edges
           .detect { |e| e.rgt_node.key == producer_node_key }
-          .share = edge_share
+          .share = share
       end
 
       def participant_for(tech_type, share)
@@ -46,6 +42,16 @@ module Qernel
       end
 
       def inject!
+        # TODO: this feels very very nasty, but I think we have to! Otherwise the
+        # graph wil try to solve it himself based on something unknown
+        @node.input(:useable_heat).edges.each { |e| e.share = 0.0 }
+
+        calculable_activities.each_value do |calc_activity|
+          calc_activity.producers.each do |producer, share|
+            inject_share_to_producer(producer, share)
+          end
+        end
+
         inject_curve!(:input) { demand_curve_from_activities }
       end
 
