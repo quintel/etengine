@@ -25,11 +25,11 @@ module Qernel
 
       def participant(active_share)
         if @config.defer_for&.positive?
-          Fever::DeferrableActivity.new(
+          add_participant(Fever::DeferrableActivity.new(
             producer, share: active_share, expire_after: @config.defer_for
-          )
+          ))
         else
-          Fever::Activity.new(producer, share: active_share)
+          add_participant(Fever::Activity.new(producer, share: active_share))
         end
       end
 
@@ -56,6 +56,11 @@ module Qernel
         @node.number_of_units.positive?
       end
 
+      # TODO: should be a new object keeping the collection and adding methods for deficits etc
+      def participants
+        @participants ||= []
+      end
+
       private
 
       # Internal: The Fever participant is an alias of a producer in another
@@ -68,6 +73,12 @@ module Qernel
         alias_group.adapters.detect do |adapter|
           adapter.node.key == @config.alias_of
         end
+      end
+
+      def add_participant(participant)
+        @participants << participant
+
+        participant
       end
     end
   end
