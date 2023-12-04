@@ -18,32 +18,34 @@ describe Qernel::FeverFacade::ConsumerAdapter do
   #   adapter
   # end
 
-  describe 'share_in_total' do
-    let(:consumer) { described_class.new(node, instance_double('Context')) }
+  # This method does not exit anymore
+  # describe 'share_in_total' do
+  #   let(:consumer) { described_class.new(node, instance_double('Context')) }
 
-    context 'when there are 100 residences and 10 of this type' do
-      let(:node) do
-        # TODO: look into this: wtf is happening with these nodes and nodeAPi
-        # -> will this work? can we do a dataset_get? lets find out
-        node_api = instance_double('Qernel::Node')
+  #   context 'when there are 100 residences and 10 of this type' do
+  #     let(:node) do
+  #       # TODO: look into this: wtf is happening with these nodes and nodeAPi
+  #       # -> will this work? can we do a dataset_get? lets find out
+  #       node_api = instance_double('Qernel::Node')
 
-        allow(node_api).to receive(:key).and_return(:cons)
-        allow(node_api).to receive(:demand).and_return(300)
-        allow(node_api).to receive(:dataset_get).with(:number_of_cons).and_return(10.0)
-        allow(node_api).to receive(:dataset_get).with(:present_number_of_residences).and_return(100.0)
+  #       allow(node_api).to receive(:key).and_return(:cons)
+  #       allow(node_api).to receive(:demand).and_return(300)
+  #       allow(node_api).to receive(:demand).and_return(300)
+  #       allow(node_api).to receive(:dataset_get).with(:number_of_cons).and_return(10.0)
+  #       allow(node_api).to receive(:dataset_get).with(:present_number_of_residences).and_return(100.0)
 
-        node = instance_double('Qernel::Node')
-        allow(node).to receive(:node_api).and_return(node_api)
-        allow(node).to receive(:dataset_get).with(:fever).and_return(
-          Atlas::NodeAttributes::Fever.new(type: :consumer, group: :household_space_heating)
-        )
+  #       node = instance_double('Qernel::Node')
+  #       allow(node).to receive(:node_api).and_return(node_api)
+  #       allow(node).to receive(:dataset_get).with(:fever).and_return(
+  #         Atlas::NodeAttributes::Fever.new(type: :consumer, group: :household_space_heating)
+  #       )
 
-        node
-      end
+  #       node
+  #     end
 
-      it 'the share is 0.1' do
-        expect(consumer.share_in_total).to eq(0.1)
-      end
-    end
-  end
+  #     it 'the share is 0.1' do
+  #       expect(consumer.share_in_total).to eq(0.1)
+  #     end
+  #   end
+  # end
 end

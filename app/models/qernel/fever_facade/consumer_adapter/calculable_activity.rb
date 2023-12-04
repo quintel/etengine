@@ -56,6 +56,8 @@ module Qernel
           demand - production
         end
 
+        # TODO: this is sthe total output curve! Save the one on Activity to get only the one for
+        # the consumer! (IS THAT POSSIBLE????)
         def production_curve_for(producer)
           coupled_activity_for(producer)&.producer&.output_curve || EMPTY_CURVE
         end
