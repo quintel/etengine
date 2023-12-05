@@ -44,19 +44,20 @@ module Qernel
       #
       def number_of_units
         fetch(:number_of_units, false) do
+          heat_edges = demand_driven_edges
+
           if fever
             tech_share = fever.share_in_group
           else
-            # TODO: for now backwards compatible -> check if it can be removed!
-            heat_edges = demand_driven_edges
-
+            # TODO: for now backwards compatible -> check if this else case can be removed!
             return 0.0 if heat_edges.empty?
+            puts key
 
             tech_share = sum_unless_empty(heat_edges.map(&:share)) || 0
             tech_share = 0.0 if tech_share.abs < 1e-6
           end
 
-          units      = tech_share * (area.present_number_of_residences || 0)
+          units      = tech_share * number_of_units_from(heat_edges)
           supplied   = households_supplied_per_unit
 
           # Sanity check; if households_supplied_per_unit is zero, it may
@@ -92,6 +93,10 @@ module Qernel
         conv.output_edges.select do |edge|
           edge.carrier && (edge.useable_heat? || edge.steam_hot_water?)
         end
+      end
+
+      def number_of_units_from(heat_edges)
+        heat_edges.sum(0.0) { |edge| edge.lft_node.node_api.number_of_units }
       end
     end
   end
