@@ -80,23 +80,26 @@ module Qernel
         @surplus
       end
 
-      # TODO: check for curve rotation!!
-      def deficit_for(producer_key, consumer_key)
-        consumer = @group.adapter(consumer_key)
-        producer = @group.adapter(producer_key)
-
-        return unless consumer && producer
-
-        consumer.deficit_for(producer)
-      end
-
+      # Public: A curve describing the production in MWh of a specific producer
+      # for a specific consumer
       def production_curve_for(producer_key, consumer_key)
         consumer = @group.adapter(consumer_key)
         producer = @group.adapter(producer_key)
 
-        return [1.0] * 8760 unless consumer && producer
+        return [0.0] * 8760 unless consumer && producer
 
         consumer.production_curve_for(producer).to_a
+      end
+
+      # Public: A curve describing the demand in MWh of a specific consumer
+      # on a specific producer
+      def demand_curve_for(producer_key, consumer_key)
+        consumer = @group.adapter(consumer_key)
+        producer = @group.adapter(producer_key)
+
+        return [0.0] * 8760 unless consumer && producer
+
+        consumer.demand_curve_for(producer).to_a
       end
 
       private

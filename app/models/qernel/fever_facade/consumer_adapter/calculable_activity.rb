@@ -49,16 +49,18 @@ module Qernel
           activity = coupled_activity_for(producer)
           return unless activity
 
-          production = activity.producer.output_curve.sum
-          demand = activity.demand
+          production = activity.production_curve
+          demand = activity.demand_curve
 
           demand - production
         end
 
-        # TODO: this is sthe total output curve! Save the one on Activity to get only the one for
-        # the consumer! (IS THAT POSSIBLE????)
         def production_curve_for(producer)
-          coupled_activity_for(producer)&.producer&.output_curve || EMPTY_CURVE
+          coupled_activity_for(producer)&.production_curve || EMPTY_CURVE
+        end
+
+        def demand_curve_for(producer)
+          coupled_activity_for(producer)&.demand_curve || EMPTY_CURVE
         end
       end
     end
