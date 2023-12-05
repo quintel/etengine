@@ -27,7 +27,8 @@ class Inspect::ScenariosController < Inspect::BaseController
         forecast_storage_order: @scenario.forecast_storage_order,
         heat_network_order_ht: @scenario.heat_network_order(:ht),
         heat_network_order_mt: @scenario.heat_network_order(:mt),
-        heat_network_order_lt: @scenario.heat_network_order(:lt)
+        heat_network_order_lt: @scenario.heat_network_order(:lt),
+        households_space_heating_producer_order: @scenario.households_space_heating_producer_order
       )
     end
 
@@ -54,7 +55,8 @@ class Inspect::ScenariosController < Inspect::BaseController
         forecast_storage_order: @scenario.forecast_storage_order,
         heat_network_order_ht: @scenario.heat_network_order(:ht),
         heat_network_order_mt: @scenario.heat_network_order(:mt),
-        heat_network_order_lt: @scenario.heat_network_order(:lt)
+        heat_network_order_lt: @scenario.heat_network_order(:lt),
+        households_space_heating_producer_order: @scenario.households_space_heating_producer_order
       )
 
       redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
@@ -78,7 +80,8 @@ class Inspect::ScenariosController < Inspect::BaseController
       :forecast_storage_order,
       :heat_network_order_ht,
       :heat_network_order_mt,
-      :heat_network_order_lt
+      :heat_network_order_lt,
+      :households_space_heating_producer_order
     )
   end
 
@@ -87,7 +90,8 @@ class Inspect::ScenariosController < Inspect::BaseController
       forecast_storage_order: [:order],
       heat_network_order_ht: [:order],
       heat_network_order_mt: [:order],
-      heat_network_order_lt: [:order]
+      heat_network_order_lt: [:order],
+      households_space_heating_producer_order: [:order]
     )
   end
 

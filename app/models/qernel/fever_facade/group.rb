@@ -50,7 +50,11 @@ module Qernel
       end
 
       def ordered_producers
-        Etsource::Fever.group(@name).keys(:producer)
+        if @name == :space_heating
+          @context.graph.households_space_heating_producer_order
+        else
+          Etsource::Fever.group(@name).keys(:producer)
+        end
       end
 
       def ordered_consumers

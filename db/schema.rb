@@ -53,6 +53,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_02_101132) do
     t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id"
   end
 
+  create_table "households_space_heating_producer_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id"
+    t.text "order"
+    t.index ["scenario_id"], name: "index_households_space_heating_producer_orders_on_scenario_id", unique: true
+  end
+
   create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
@@ -227,6 +233,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_02_101132) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "forecast_storage_orders", "scenarios"
   add_foreign_key "heat_network_orders", "scenarios"
+  add_foreign_key "households_space_heating_producer_orders", "scenarios"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
