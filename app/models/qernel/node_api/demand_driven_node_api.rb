@@ -44,20 +44,11 @@ module Qernel
       #
       def number_of_units
         fetch(:number_of_units, false) do
+          return 0.0 unless fever
+
           heat_edges = demand_driven_edges
 
-          if fever
-            tech_share = fever.share_in_group
-          else
-            # TODO: for now backwards compatible -> check if this else case can be removed!
-            return 0.0 if heat_edges.empty?
-            puts key
-
-            tech_share = sum_unless_empty(heat_edges.map(&:share)) || 0
-            tech_share = 0.0 if tech_share.abs < 1e-6
-          end
-
-          units      = tech_share * number_of_units_from(heat_edges)
+          units      = fever.share_in_group * number_of_units_from(heat_edges)
           supplied   = households_supplied_per_unit
 
           # Sanity check; if households_supplied_per_unit is zero, it may
