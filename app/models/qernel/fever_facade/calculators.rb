@@ -32,14 +32,11 @@ module Qernel
           producer = adapter_for(producer_node_key)
 
           producer_share = producer.share_in_group
-          # verify this is correct behaviour. what happens with the share zero things in fever itsefl?
-          next if producer_share.zero?
 
           # For each ordered consumer, check if an activity should be added to it's calculator
           ordered_consumer_adapters.each do |consumer|
             # Check if the producer is either done or did not join in the first place
-            # TODO: not just next, but we can break here! if the "next" above is correct
-            next if producer_share.zero?
+            break if producer_share.zero?
 
             # Another producer already filled up the whole consumer or there are no hh in consumer
             next if consumer.share_met == 1.0 || consumer.number_of_units.zero?
@@ -59,11 +56,7 @@ module Qernel
             # Keep track on to how many housholds/buidlings the producer still needs to deliver
             producer_share -= consumer_share
 
-            consumer_share_met_by_producer = consumer_share / consumer_share_in_total
-
-            # TODO: Can this be one thing?
-            consumer.build_activity(producer, consumer_share_met_by_producer)
-            consumer.inject_share_to_producer(producer, consumer_share_met_by_producer)
+            consumer.build_activity(producer, (consumer_share / consumer_share_in_total))
           end
         end
       end

@@ -34,7 +34,6 @@ module Qernel
         # After calculations have run for each tech component of the consumer,
         # the curves are summed back together
         def demand_curve_from_activities
-          # TODO: this is not so nice -> maybe do like the top todo, because now we need a filter map
           Merit::CurveTools.add_curves(
             calculable_activities.filter_map do |activity|
               activity.consumer_participant.demand_curve unless activity.empty?

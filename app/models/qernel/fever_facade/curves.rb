@@ -9,10 +9,10 @@ module Qernel
     class Curves < Causality::Curves
       # Traverse the graph to get the technology curve shares of connected producers
       # to mix the curve for consumers correctly
+      # TODO: check if the shares are ok at this point!
       def mixed_consumer_curve(consumer)
         curve_shares = consumer.fever.curve.keys.index_with { |_| 0.0 }
 
-        puts consumer.key
         consumer.input(:useable_heat).edges.each do |edge|
           node = edge.rgt_node
 
