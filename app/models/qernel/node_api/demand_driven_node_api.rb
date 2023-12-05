@@ -44,12 +44,18 @@ module Qernel
       #
       def number_of_units
         fetch(:number_of_units, false) do
-          heat_edges = demand_driven_edges
+          if fever
+            tech_share = fever.share_in_group
+          else
+            # TODO: for now backwards compatible -> check if it can be removed!
+            heat_edges = demand_driven_edges
 
-          return 0.0 if heat_edges.empty?
+            return 0.0 if heat_edges.empty?
 
-          tech_share = sum_unless_empty(heat_edges.map(&:share)) || 0
-          tech_share = 0.0 if tech_share.abs < 1e-6
+            tech_share = sum_unless_empty(heat_edges.map(&:share)) || 0
+            tech_share = 0.0 if tech_share.abs < 1e-6
+          end
+
           units      = tech_share * (area.present_number_of_residences || 0)
           supplied   = households_supplied_per_unit
 

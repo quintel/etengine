@@ -51,7 +51,7 @@ module Qernel
       end
 
       def producer
-        Fever::CompositeProducer.new([primary_component, secondary_component])
+        @producer ||= Fever::CompositeProducer.new([primary_component, secondary_component])
       end
 
       def producer_for_carrier(carrier)
