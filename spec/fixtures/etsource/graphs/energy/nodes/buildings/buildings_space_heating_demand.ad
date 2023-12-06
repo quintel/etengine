@@ -1,7 +1,8 @@
-- use = energetic
-- energy_balance_group = after savings
-- groups = [useful_demand]
-- fever.curve.tech_constant = weather/buildings_heating
+- groups = []
+- fever.curve.default = weather/buildings_heating
 - fever.group = buildings_space_heating
 - fever.type = consumer
-- free_co2_factor = 0.0
+
+- demand = 100.0
+- preset_demand = 100.0
+- number_of_units = 200.0

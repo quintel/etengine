@@ -17,19 +17,23 @@ describe Qernel::NodeApi::DemandDrivenNodeApi do
   let(:supply_two) { graph.nodes.detect { |c| c.key == :supply_two } }
 
   before do
-    allow(graph.area).to receive(:present_number_of_residences).and_return(200)
+    allow(network.node_api).to receive(:number_of_units).and_return(200)
 
     supply_one.node_api = described_class.new(supply_one)
     supply_two.node_api = described_class.new(supply_two)
 
-    [supply_one, supply_two].each do |node|
+    [[supply_one, 0.25], [supply_two, 0.75]].each do |node, share|
       node.graph = graph
+
+      fever = instance_double(Atlas::NodeAttributes::Fever)
+      allow(fever).to receive(:share_in_group).and_return(share)
 
       api = node.node_api
       allow(api).to receive(:nominal_capacity_heat_output_per_unit).and_return(20)
       allow(api).to receive(:demand_of_hot_water).and_return(0)
       allow(api).to receive(:demand_of_steam_hot_water).and_return(0)
       allow(api).to receive(:demand_of_useable_heat).and_return(0)
+      allow(api).to receive(:fever).and_return(fever)
     end
   end
 

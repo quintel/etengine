@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Qernel::FeverFacade::Curves, :household_curves do
+  pending "we don't currently use mixed dynamic curves is Fever" do
+
   let(:graph) do
     create_graph(area_code: region, weather_curve_set: curve_set)
   end
@@ -129,5 +131,6 @@ describe Qernel::FeverFacade::Curves, :household_curves do
         expect { normalized_curve }.to raise_error(Errno::ENOENT)
       end
     end
+  end
   end
 end

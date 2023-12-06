@@ -11,7 +11,11 @@ describe Etsource::Fever do
 
       it 'returns the producers in the right order' do
         expect(group.keys(:producer)).to eq(
-          %i[buildings_space_heater_heatpump buildings_space_heater_coal buildings_space_heater_gas]
+          %i[
+            buildings_space_heater_heatpump_1
+            buildings_space_heater_heatpump
+            buildings_space_heater_heatpump_2
+          ]
         )
       end
     end
