@@ -7,7 +7,7 @@ class HouseholdsSpaceHeatingProducerOrder < ApplicationRecord
   validates :scenario_id, presence: true, uniqueness: true
 
   def self.default_order
-    Etsource::Config.fever_order(:space_heating, :producer)
+    Etsource::Config.fever_order(:space_heating, :producer).map(&:to_s)
   end
 
   # Which attribute to use to specify the default order. Here nil
