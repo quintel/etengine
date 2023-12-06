@@ -24,7 +24,7 @@ module Qernel
 
         # TODO: Set input and output capacities.
         target_api.typical_input_capacity = input_capacity
-        target_api.electricity_output_capacity = input_capacity
+        target_api.electricity_output_capacity = output_capacity
 
         inject_curve!(:input) do
           main_participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
@@ -79,12 +79,12 @@ module Qernel
       end
 
       def input_capacity
-        # The input capacity will be further affected in Merit by the availability of the node.
-        @input_capacity ||= limiting_curve.max
+        @input_capacity = (@config.input_capacity_from_share || 0.0) * output_capacity
       end
 
       def output_capacity
-        input_capacity
+        # The input capacity will be further affected in Merit by the availability of the node.
+        @output_capacity ||= limiting_curve.max
       end
 
       # Finds all the participants for the nodes named in the `demand_sources` config attribute.
