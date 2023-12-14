@@ -14,7 +14,9 @@ class CostsParametersSerializer
     ],
     costs_storage_and_conversion_storage: %w[
       costs_hydrogen_storage
-      heat_infrastructure_storage_annualised_costs
+      heat_infrastructure_ht_storage_annualised_costs
+      heat_infrastructure_mt_storage_annualised_costs
+      heat_infrastructure_lt_storage_annualised_costs
     ],
     costs_infrastructure_electricity: %w[
       total_costs_of_electricity_network_calculation
