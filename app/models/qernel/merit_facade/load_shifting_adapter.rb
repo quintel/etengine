@@ -79,11 +79,12 @@ module Qernel
       end
 
       def input_capacity
+        # The input capacity will be further affected in Merit by the availability of the node.
         @input_capacity = (@config.input_capacity_from_share || 0.0) * output_capacity
       end
 
       def output_capacity
-        # The input capacity will be further affected in Merit by the availability of the node.
+        # The output capacity will be further affected in Merit by the availability of the node.
         @output_capacity ||= limiting_curve.max
       end
 
