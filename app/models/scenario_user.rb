@@ -8,10 +8,20 @@ class ScenarioUser < ApplicationRecord
   validates :user_email, format: { with: Devise.email_regexp }, allow_blank: true
   validates :role_id, inclusion: { in: User::ROLES.keys }
 
+  before_create :couple_existing_user
+
   # Always make sure one owner is left on the Scenario this record is part of
   # before changing its role or removing it.
   before_save :ensure_one_owner_left_before_save
   before_destroy :ensure_one_owner_left_before_destroy
+
+  # If email is supplied on create, see if we can find a user in the system
+  def couple_existing_user
+    return unless user_email.present? && user_id.blank?
+
+    self.user = User.find_by(email: user_email)
+    self.user_email = nil if user
+  end
 
   # Either user_id or user_email should be present, but not both
   def user_id_or_email
@@ -38,5 +48,17 @@ class ScenarioUser < ApplicationRecord
 
     # Cancel this action of there are other users and none of them is an owner
     throw(:abort) if other_users.count > 0 && other_role_ids.none?(User::ROLES.key(:scenario_owner))
+  end
+
+  # How to recognise the record for error messages
+  def email
+    user_email || user.email
+  end
+
+  def as_json(*)
+    params = super
+
+    params[:role] = User::ROLES[role_id]
+    params.except(:role_id)
   end
 end

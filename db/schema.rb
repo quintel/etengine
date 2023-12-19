@@ -176,7 +176,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
     t.index ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true
   end
 
-  create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "scenario_id", null: false
     t.integer "role_id", null: false
     t.integer "user_id"

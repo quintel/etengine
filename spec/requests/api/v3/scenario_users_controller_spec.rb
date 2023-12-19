@@ -24,7 +24,6 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       before do
         get "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete)
-
       end
 
       it 'returns success' do
@@ -40,8 +39,14 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
   end
 
   describe 'POST /api/v3/scenarios/:id/users' do
+    let(:json) { JSON.parse(response.body) }
+
     context 'with proper params' do
+      let(:user_viewer) { create(:user, email: 'viewer@test.com') }
+
       before do
+        user_viewer
+
         post "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
@@ -58,15 +63,17 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'adds the given users to the scenario' do
-        expect(JSON.parse(response.body)).to include(
-          a_hash_including('user_id' => nil, 'user_email' => 'viewer@test.com', 'role' => 'scenario_viewer'),
+        expect(json).to include(
+          a_hash_including('user_id' => user_viewer.id, 'user_email' => nil, 'role' => 'scenario_viewer'),
           a_hash_including('user_id' => nil, 'user_email' => 'collaborator@test.com', 'role' => 'scenario_collaborator'),
           a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com', 'role' => 'scenario_owner')
         )
       end
+
+      # TODO: Test for mailer?
     end
 
-    context 'with malformed user params' do
+    context 'with missing role information' do
       before do
         post "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
@@ -80,9 +87,25 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(response.body).to eq(
-          { user_email: 'viewer@test.com', error: 'role_id is invalid.' }.to_json
-        )
+        expect(json['errors']['viewer@test.com']).to include('Role is not included in the list')
+      end
+    end
+
+    context 'with incorrect email' do
+      before do
+        post "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [{ user_email: 'viewer', role: :scenario_collaborator }]
+          }
+      end
+
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns an error' do
+        expect(json['errors']['viewer']).to include('User email is invalid')
       end
     end
 
@@ -103,12 +126,33 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(response.body).to eq(
-          {
-            role: 'scenario_collaborator', user_email: 'viewer@test.com',
-            error: 'A user with this ID or email already exists for this scenario'
-          }.to_json
+        expect(json['errors']['viewer@test.com']).to include('duplicate')
+      end
+    end
+
+    context 'when the user was already present on the scenario' do
+      let(:user_viewer) { create(:user, email: 'viewer@test.com') }
+
+      before do
+        create(
+          :scenario_user, scenario: scenario, user: user_viewer,
+          role_id: User::ROLES.key(:scenario_viewer)
         )
+        post "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [
+              { user_email: 'viewer@test.com', role: 'scenario_viewer' }
+            ]
+          }
+      end
+
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns an error' do
+        expect(json['errors']['viewer@test.com']).to include('duplicate')
       end
     end
   end

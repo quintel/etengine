@@ -27,6 +27,22 @@ describe ScenarioUser do
     end.to_not raise_error
   end
 
+  context 'when creating a new scenario user with a known email adres' do
+    let(:user) { create(:user, email: email) }
+    let(:email) { 'hi@me.com' }
+    let(:scenario_user) { create(:scenario_user, user_email: email, user_id: nil) }
+
+    before { user }
+
+    it 'sets the user on the scenario user' do
+      expect(scenario_user.user_id).to eq(user.id)
+    end
+
+    it 'removes the email from the scenario_user' do
+      expect(scenario_user.user_email).to be_nil
+    end
+  end
+
   it 'allows updating the role if not the last scenario owner' do
     # The first user added will automatically become the scenario owner
     scenario.user = create(:user)
