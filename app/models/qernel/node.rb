@@ -417,17 +417,17 @@ public
   def update_demand
     if output_edges.any?(&:inversed_flexible?) || output_edges.any?(&:reversed?)
       @calculation_state = :update_demand_if_inversed_flexible_or_reversed
-      slots.map{ |s| s.internal_value.try(:nan?) ? 0.0 : s.internal_value }.compact.max
+      slots.map(&:internal_value).compact.max
     elsif output_edges.empty?
       @calculation_state = :update_demand_if_no_output_edges
       # 2010-06-23: If there is no output edges we take the highest value from input.
       # otherwise left dead end nodes don't get values
-      inputs.map{ |s| s.internal_value.try(:nan?) ? 0.0 : s.internal_value }.compact.max
+      inputs.map(&:internal_value).compact.max
     else
       @calculation_state = :update_demand
       # 2010-06-23: The normal case. Just take the highest value from outputs.
       # We did this to make the gas_extraction gas_import_export thing work
-      outputs.map{ |s| s.internal_value.try(:nan?) ? 0.0 : s.internal_value }.compact.max
+      outputs.map(&:internal_value).compact.max
     end
   end
 
