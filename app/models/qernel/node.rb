@@ -403,7 +403,7 @@ public
     output_edges.select(&:inversed_flexible?).each(&:calculate)
   end
 
-  protected
+protected
 
   # The highest internal_value of in/output slots is the demand of
   # this node. If there are slots with different internal_values
@@ -415,7 +415,7 @@ public
   # @return [Float] The demand of this node
   #
   def update_demand
-    if output_edges.any?(&:inversed_flexible?) || output_edges.any?(&:reversed?)
+    if output_edges.any?(&:inversed_flexible?) or output_edges.any?(&:reversed?)
       @calculation_state = :update_demand_if_inversed_flexible_or_reversed
       slots.map(&:internal_value).compact.max
     elsif output_edges.empty?
@@ -433,7 +433,7 @@ public
 
   # --------- Carriers --------------------------------------------------------
 
-  public
+public
 
   # @return [Array<Carrier>] Carriers of input
   #
