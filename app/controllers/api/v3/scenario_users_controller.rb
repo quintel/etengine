@@ -13,29 +13,33 @@ module Api
       end
 
       def create
-        permitted_params[:scenario_users].each do |user_params|
-          scenario_user = new_scenario_user_from(user_params)
+        new_users = permitted_params[:scenario_users].filter_map do |scenario_user_params|
+          scenario_user = new_scenario_user_from(scenario_user_params)
+
+          unless scenario_user.valid?
+            add_error(scenario_user, scenario_user.errors.full_messages)
+            next
+          end
 
           begin
             scenario_user.save!
-          rescue ActiveRecord::RecordInvalid
-            render json: user_params.merge({ error: "#{scenario_user.errors.first&.attribute} is invalid." }),
-              status: :unprocessable_entity and return
           rescue ActiveRecord::RecordNotUnique
-            render json: user_params.merge({ error: 'A user with this ID or email already exists for this scenario' }),
-              status: :unprocessable_entity and return
+            add_error(scenario_user, ['duplicate'])
+            next
           end
 
-          # Send an email invitation to the added user only if stated in the params
+          # Send an email invitation to the added user
           if permitted_params.dig(:invitation_args, :invite) == true
             send_invitation_mail_for(scenario_user)
           end
+
+          scenario_user
         end
 
-        if @scenario.save
-          render json: users_return_values, status: :created
+        if errors.empty? && @scenario.save
+          render json: new_users, status: :created
         else
-          render json: @scenario.errors, status: :unprocessable_entity
+          render json: { success: new_users, errors: errors }, status: :unprocessable_entity
         end
       end
 
@@ -188,19 +192,21 @@ module Api
         end
       end
 
-      # Create a new ScenarioUser record from given user_params
-      def new_scenario_user_from(user_params)
-        if user_params[:user_id].present?
-          user = User.find(user_params[:user_id])
-        elsif user_params[:user_email].present?
-          user = User.find_by(email: user_params[:email])
-        end
+      def errors
+        @errors ||= {}
+      end
 
+      # TODO: make it so we can add more errors on the same user, not overwrite
+      def add_error(scenario_user, message)
+        errors[scenario_user.email] = message
+      end
+
+      # Create a new ScenarioUser record from given user_params
+      def new_scenario_user_from(scenario_user_params)
         ScenarioUser.new(
           scenario: @scenario,
-          role_id: User::ROLES.key(user_params.try(:[], :role).try(:to_sym)),
-          user_id: user&.id,
-          user_email: user&.email || user_params.try(:[], :user_email)
+          role_id: User::ROLES.key(scenario_user_params[:role]&.to_sym),
+          user_email: scenario_user_params[:user_email]
         )
       end
 
@@ -224,4 +230,3 @@ module Api
     end
   end
 end
-
