@@ -33,7 +33,7 @@ module Qernel
             adapters_for(sector),
             @order,
             optimizing_type: subtype_key_for(sector)
-        )
+          )
         end
       end
 

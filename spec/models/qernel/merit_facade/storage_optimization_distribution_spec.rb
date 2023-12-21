@@ -135,5 +135,39 @@ RSpec.describe Qernel::MeritFacade::StorageOptimizationDistribution do
         ])
       end
     end
+
+    context 'with one battery targeted towards the households sector, and one towards system, but only household demand' do
+      let(:adapters) do
+        [
+          consumer_double(:must_run, ([10_000.0] * 6 + [5000.0] * 6) * 365),
+          battery_double(key: :hh_battery, volume: 5000.0, capacity: 1000.0, subtype: :optimizing_storage_households),
+          battery_double(key: :system_battery, volume: 5000.0, capacity: 1000.0)
+        ]
+      end
+
+      it 'calculates the households battery reserve' do
+        expect(opt_dist.reserve_for(:hh_battery)[24...36]).to eq([
+          5000, 4000, 3000, 2000, 1000, 0, 0, 1000, 2000, 3000, 4000, 5000
+        ])
+      end
+
+      it 'calculates the households battery load' do
+        expect(opt_dist.load_for(:hh_battery)[24...36]).to eq([
+          0, 1000, 1000, 1000, 1000, 1000, 0, -1000, -1000, -1000, -1000, -1000
+        ])
+      end
+
+      it 'calculates the systems battery reserve' do
+        expect(opt_dist.reserve_for(:system_battery)[24...36]).to eq([
+          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        ])
+      end
+
+      it 'calculates the systems battery load' do
+        expect(opt_dist.load_for(:system_battery)[24...36]).to eq([
+          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        ])
+      end
+    end
   end
 end
