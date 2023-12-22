@@ -18,7 +18,10 @@ RSpec.describe Qernel::MeritFacade::StorageOptimizationDistribution do
 
     node = instance_double('Qernel::Node')
     allow(node).to receive(:sector_key).and_return(sector)
-    allow(adapter).to receive(:node).and_return(node)
+
+    node_api = instance_double('Qernel::NodeApi::EnergyApi')
+    allow(node_api).to receive(:node).and_return(node)
+    allow(adapter).to receive(:node).and_return(node_api)
 
     adapter
   end
@@ -41,7 +44,6 @@ RSpec.describe Qernel::MeritFacade::StorageOptimizationDistribution do
 
     node = instance_double('Qernel::Node')
     allow(node).to receive(:key).and_return(key)
-    allow(node).to receive(:sector_key).and_return(sector)
     allow(adapter).to receive(:node).and_return(node)
 
     params = Qernel::MeritFacade::OptimizingStorageAdapter::Params.new(

@@ -61,7 +61,7 @@ module Qernel
       def select_adapter?(sector, adapter)
         return true if adapter.config.subtype == subtype_key_for(sector)
         return false if adapter.config.type == :flex
-        return true if adapter.node.sector_key == sector
+        return true if adapter.node.node.sector_key == sector
 
         false
       end
