@@ -158,6 +158,8 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
   end
 
   describe 'PUT /api/v3/scenarios/:id/users' do
+    let(:json) { JSON.parse(response.body) }
+
     context 'with proper params' do
       let(:user_2) { create(:user) }
       let(:user_3) { create(:user) }
@@ -194,9 +196,29 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
     end
 
-    context 'with a non-existing user id' do
+    context 'when downgrading the only owner' do
       before do
         put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [{ user_id: user.id, role: 'scenario_viewer' }]
+          }
+      end
+
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns an error' do
+        expect(json['errors'][user.email]).to include(
+          'Role change is not allowed for last owner'
+        )
+      end
+    end
+
+    context 'with a non-existing scenario' do
+      before do
+        put "/api/v3/scenarios/#{scenario.id - 10}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
@@ -210,18 +232,18 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(response.body).to eq(
-          { 'role' => 'scenario_collaborator', 'user_id' => 999, 'error' => 'Scenario user not found' }.to_json
-        )
+        expect(json['errors']).to include('Scenario not found')
       end
     end
 
-    context 'with a missing role' do
+    context 'with a non-existing user id' do
       before do
         put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
-            scenario_users: [{ user_id: 999 }]
+            scenario_users: [
+              { user_id: 999, role: 'scenario_collaborator' },
+            ]
           }
       end
 
@@ -230,8 +252,64 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(response.body).to eq(
-          { user_id: 999, error: 'Missing attribute(s) for scenario_user: role' }.to_json
+        expect(json['errors']['999']).to include(
+          'Scenario user not found'
+        )
+      end
+    end
+
+    context 'with a missing role' do
+      let(:user_2) { create(:user) }
+
+      before do
+        create(:scenario_user,
+          scenario: scenario, user: user_2,
+          role_id: User::ROLES.key(:scenario_viewer)
+        )
+
+        put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [{ user_id: user_2.id }]
+          }
+      end
+
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns an error' do
+        expect(json['errors'][user_2.email]).to include(
+          'Role change is not allowed for unvalidated users'
+        )
+      end
+    end
+
+    context 'when trying to update the role of a non validated user' do
+      let(:unvalidated_user) do
+        create(:scenario_user,
+          scenario: scenario, user_email: 'viewer@test.com', user: nil,
+          role_id: User::ROLES.key(:scenario_viewer)
+        )
+      end
+
+      before do
+        put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [
+              { user_email: unvalidated_user.user_email, role: 'scenario_collaborator' }
+            ]
+          }
+      end
+
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns an error' do
+        expect(json['errors'][unvalidated_user.user_email]).to include(
+          'Role change is not allowed for unvalidated users'
         )
       end
     end

@@ -29,9 +29,7 @@ module Api
           end
 
           # Send an email invitation to the added user
-          if permitted_params.dig(:invitation_args, :invite) == true
-            send_invitation_mail_for(scenario_user)
-          end
+          send_invitation_mail_for(scenario_user) if invite?
 
           scenario_user
         end
@@ -44,6 +42,13 @@ module Api
       end
 
       def update
+        # TODO: render sucessful users in the same way as create
+        # TODO: return errors in the same json structure as create
+        # TODO: clean up this method
+        # TODO: check if specs work now (they are already converted to the 'new' format)
+
+        # TODO: this line can go - we validate when updating each record. If one is invalid we
+        # continue and collect errors and successes
         return unless validate_scenario_user_params(['role', ['id', 'user_id', 'user_email']])
 
         http_error_status, scenario_user_error = nil, nil
@@ -74,6 +79,10 @@ module Api
       end
 
       def destroy
+        # TODO: update specs to see if we missed anything, and to use common response format
+        # TODO: return errors in the same json structure as create
+        # TODO: clean up this method
+
         return unless validate_scenario_user_params([['id', 'user_id', 'user_email']])
 
         # Find scenario_users by id, user_id, user_email,
@@ -122,6 +131,12 @@ module Api
         end
       end
 
+      def invite?
+        permitted_params.dig(:invitation_args, :invite) == true
+      end
+
+      # TODO: this method can probably go, as we update one by one anyway and the model contains a
+      # lot of validations
       def validate_scenario_user_params(attributes)
         if permitted_params[:scenario_users].blank?
           render json: { error: 'No users given to perform action on.' }, status: :unprocessable_entity
@@ -154,6 +169,8 @@ module Api
 
       # Find an existing ScenarioUser record by given user_params
       def find_scenario_user_by_params(user_params)
+
+        # TODO: why not just use a return in the if statements?
         scenario_user = nil
 
         if user_params[:id]&.present?
@@ -178,6 +195,8 @@ module Api
         scenario_user
       end
 
+      # TODO: after correcting the responses, this method should go. Only for INDEX we have to find
+      # another solution
       # Format the return values for the users in the given scenario
       def users_return_values
         if permitted_params[:scenario_users].present?
