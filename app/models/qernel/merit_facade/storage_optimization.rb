@@ -18,9 +18,10 @@ module Qernel
       end
 
       # Public: Creates a new Optimization which receives all of the adapters from the Merit plugin.
-      def initialize(adapters, order = [])
+      def initialize(adapters, order = [], optimizing_type: :optimizing_storage)
         @adapters = adapters
         @order = order.map(&:to_s)
+        @optimizing_type = optimizing_type
       end
 
       # Public: Returns an array describing how much energy will be stored in the named battery in
@@ -40,6 +41,11 @@ module Qernel
 
       def residual_load
         Merit::CurveTools.add_curves([consumption_curve, production_curve])
+      end
+
+      # Public: Returns wether the given battery is being optimized
+      def optimizing?(key)
+        reserves.key?(key)
       end
 
       private
@@ -115,7 +121,7 @@ module Qernel
       def batteries
         @batteries ||= begin
           optimizing = @adapters.select do |adapter|
-            adapter.config.subtype == :optimizing_storage && adapter.config.type == :flex
+            adapter.config.subtype == @optimizing_type && adapter.config.type == :flex
           end
 
           optimizing.sort_by.with_index do |adapter, index|

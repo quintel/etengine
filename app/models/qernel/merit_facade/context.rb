@@ -59,10 +59,10 @@ module Qernel
         :"#{@carrier}_#{direction}_curve"
       end
 
-      # Public: Returns the StorageOptimization which can generate load curves for optimizing
-      # batteries.
+      # Public: Returns the StorageOptimizationDistribution which can generate load curves for
+      # optimizing batteries.
       def storage_optimization
-        @storage_optimization ||= StorageOptimization.new(
+        @storage_optimization ||= StorageOptimizationDistribution.new(
           plugin.adapters.values,
           graph.forecast_storage_order
         )

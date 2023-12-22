@@ -22,7 +22,7 @@ module Qernel
           CurtailmentAdapter
         when :heat_storage
           HeatStorageAdapter
-        when :optimizing_storage
+        when :optimizing_storage, :optimizing_storage_households
           OptimizingStorageAdapter
         when :load_shifting
           LoadShiftingAdapter
