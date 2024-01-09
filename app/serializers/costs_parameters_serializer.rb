@@ -10,12 +10,14 @@ class CostsParametersSerializer
       costs_of_insulation_detached_houses
       costs_of_insulation_semi_detached_houses
       costs_of_insulation_terraced_houses
+      costs_building_and_installations_households_insulation
       households_ht_heat_delivery_system
       households_mt_heat_delivery_system
       households_lt_heat_delivery_system
     ],
     costs_building_and_installations_buildings: %w[
       costs_of_insulation_buildings
+      costs_building_and_installations_buildings_insulation
       buildings_ht_heat_delivery_system
       buildings_mt_heat_delivery_system
       buildings_lt_heat_delivery_system
