@@ -15,7 +15,7 @@ class CostsParametersSerializer
       households_lt_heat_delivery_system
     ],
     costs_building_and_installations_buildings: %w[
-      costs_building_and_installations_buildings_insulation
+      costs_of_insulation_buildings
       buildings_ht_heat_delivery_system
       buildings_mt_heat_delivery_system
       buildings_lt_heat_delivery_system
@@ -38,7 +38,7 @@ class CostsParametersSerializer
       hv_net_costs_present
       hv_net_costs_delta_present_future
       interconnection_net_costs_present
-      interconnection_net_costs_costs_delta_present_future
+      interconnection_net_costs_delta_present_future
       offshore_net_costs_present
       offshore_net_costs_delta_present_future
     ],
@@ -57,7 +57,7 @@ class CostsParametersSerializer
       heat_infrastructure_lt_indoor
     ],
     costs_infrastructure_network_gas: %w[
-      gas_network
+      gas_network_costs
     ]
   }.freeze
 
