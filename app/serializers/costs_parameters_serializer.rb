@@ -5,7 +5,11 @@
 class CostsParametersSerializer
   QUERIES = {
     costs_building_and_installations_households: %w[
-      costs_building_and_installations_households_insulation
+      costs_of_insulation_apartments
+      costs_of_insulation_corner_houses
+      costs_of_insulation_detached_houses
+      costs_of_insulation_semi_detached_houses
+      costs_of_insulation_terraced_houses
       households_ht_heat_delivery_system
       households_mt_heat_delivery_system
       households_lt_heat_delivery_system
@@ -79,7 +83,7 @@ class CostsParametersSerializer
         # Creates the header
         'Group', 'Subgroup', 'Key',
         'Total costs (eur)', 'Total CAPEX (eur)', 'Total OPEX (eur)',
-        'Capital costs (eur)', 'Depreciation costs (eur)', 'Fixed operational and maintenance costs  (eur)', 'Variable operational and maintenance costs  (eur)',
+        'Capital costs (eur)', 'Depreciation costs (eur)', 'Fixed operational and maintenance costs (eur)', 'Variable operational and maintenance costs (eur)',
         'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
         'CO2 emission costs (eur)', 'Number of units', 
         # 'Fuel costs (eur)'
@@ -146,15 +150,13 @@ class CostsParametersSerializer
         group, # Group
         subgroup, # Subgroup
         node.key, # Key
-        format_num(node.query.total_costs_per(:node)), # Total costs (eur)
-        format_num(node.query.capital_expenditures_excluding_ccs_per(:node) + 
-          node.query.capital_expenditures_ccs_per(:node)), # Total CAPEX (eur)
-        format_num(node.query.operating_expenses_excluding_ccs_per(:node) + 
-          node.query.operating_expenses_ccs_per(:node)), # Total OPEX (eur)
+        format_num(node.query.total_costs_excluding_fuel_costs_per(:node)), # Total costs (eur)
+        format_num(node.query.capital_expenditures_per(:node)), # Total CAPEX (eur)
+        format_num(node.query.operating_expenses_per(:node)), # Total OPEX (eur)
         format_num(node.query.cost_of_capital_per(:node)), # 'Capital costs (eur)'
         format_num(node.query.depreciation_costs_per(:node)), # 'Depreciation costs (eur)'
-        format_num(node.query.fixed_operation_and_maintenance_costs_per_year), # 'Fixed operational and maintenance costs  (eur)'
-        format_num(node.query.variable_operation_and_maintenance_costs_per(:node)), # 'Variable operational and maintenance costs  (eur)'
+        format_num(node.query.fixed_operation_and_maintenance_costs_per(:node)), # 'Fixed operational and maintenance costs (eur)'
+        format_num(node.query.variable_operation_and_maintenance_costs_per(:node)), # 'Variable operational and maintenance costs (eur)'
         format_num(node.query.total_investment_over_lifetime_per(:node)), # 'Total investment over lifetime (eur)'
         format_num(node.query.wacc), # 'WACC'
         format_num(node.query.construction_time), # 'Construction time (years)'

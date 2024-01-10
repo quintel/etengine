@@ -158,6 +158,15 @@ module Qernel
         end
       end
 
+      # Public: Calculates the CAPEX (operating expenses) including CCS for the node
+      #
+      # Returns the yearly operating expenses including CCS in euro.
+      def capital_expenditures
+        fetch(:capital_expenditures) do
+          capital_expenditures_ccs + capital_expenditures_excluding_ccs if capital_expenditures_ccs && capital_expenditures_excluding_ccs
+        end
+      end
+
       # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
       #
       # Capital expenditures (CAPEX) are major investments that are designed to be
@@ -184,6 +193,15 @@ module Qernel
           (cost_of_capital || 0.0) +
             (depreciation_costs || 0.0) -
             capital_expenditures_ccs
+        end
+      end
+
+      # Public: Calculates the OPEX (operating expenses) including CCS for the node
+      #
+      # Returns the yearly operating expenses including CCS in euro.
+      def operating_expenses
+        fetch(:operating_expenses) do
+          operating_expenses_ccs + operating_expenses_excluding_ccs if operating_expenses_ccs && operating_expenses_excluding_ccs
         end
       end
 
@@ -219,6 +237,17 @@ module Qernel
       def total_costs
         fetch(:total_costs) do
           fixed_costs + variable_costs if fixed_costs && variable_costs
+        end
+      end
+
+      # Internal: Calculates the total cost excluding fuel costs of a plant in euro per plant per year.
+      #
+      # Total cost is made up of OPEX and CAPEX (excluding fuel costs).
+      #
+      # Returns the total costs excluding fuel costs for one plant per year.
+      def total_costs_excluding_fuel_costs
+        fetch(:total_costs_excluding_fuel_costs) do
+          capital_expenditures + operating_expenses if capital_expenditures && operating_expenses
         end
       end
 
@@ -403,6 +432,34 @@ module Qernel
           weighted_carrier_co2_per_mj * area.co2_price *
             (1 - area.co2_percentage_free) *
             (takes_part_in_ets || 1.0) * ((1 - free_co2_factor))
+        end
+      end
+
+      # Internal: Calculates the fixed operation and maintenance costs for one plant.
+      #
+      # These costs are made up of fixed O&M costs for the plant.
+      #
+      # Returns the yearly fixed operation and maintenance costs per plant.
+      def fixed_operation_and_maintenance_costs
+        fetch(:fixed_operation_and_maintenance_costs) do
+          typical_input *
+          fixed_operation_and_maintenance_costs_per_typical_input
+        end
+      end
+
+      # Internal: Calculates the fixed operation and maintenance costs per typical input (in MJ).
+      #
+      # Unlike the fixed_operation_and_maintenance_costs (defined above), this function does not
+      # explicity depend on the production of the plant.
+      #
+      # Returns the yearly fixed operation and maintenance costs per MJ input.
+      def fixed_operation_and_maintenance_costs_per_typical_input
+        fetch(:fixed_operation_and_maintenance_costs_per_typical_input) do
+          return 0.0 if input_capacity.zero?
+          return 0.0 if fixed_operation_and_maintenance_costs_per_year.nil?
+
+          (fixed_operation_and_maintenance_costs_per_year) / # highlighting
+            (input_capacity * 3600.0)
         end
       end
 
