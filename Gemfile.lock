@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: 79a66035965fb9d367fe8095ec0be311f2b070a9
-  ref: 79a6603
+  revision: f684c547e0c0fce05fac04e6578c61ee253a633d
+  ref: f684c54
   specs:
     atlas (1.0.0)
       activemodel (>= 7)
@@ -41,8 +41,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/refinery.git
-  revision: 72eacf84c980ef797a0b7e63f55a39f5ca98640b
-  ref: 72eacf8
+  revision: de8e83c5ec209976828d369b1064ea168cc288f3
+  ref: de8e83c
   specs:
     refinery (0.0.1)
       ruby-graphviz
