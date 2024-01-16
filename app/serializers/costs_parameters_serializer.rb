@@ -61,6 +61,8 @@ class CostsParametersSerializer
     ]
   }.freeze
 
+  COLUMN_COUNT = 16
+
   # Creates a new costs csv serializer.
   #
   # scenario - The Scenario whose node costs are to be presented.
@@ -185,11 +187,30 @@ class CostsParametersSerializer
 
   # Internal: The row containing the (sub)total of the (sub)group
   #
-  # If no subgroup was supplied, gets the query with the name of the main group
+  # Returns an array containing the summed values of the requested group and optional subgroup.
   def group_total_row(group, subgroup = nil)
-    query = subgroup ? "#{group}_#{subgroup}" : group.to_s
-    subgroup_name = subgroup ? subgroup : 'Group total'
-    query_row(group, subgroup_name, query, 'Total')
+    rows = \
+      if subgroup.present?
+        rows_for_subgroup(group, subgroup)
+      else
+        rows_for(group, false)
+      end
+
+    # Prefill the row with zeros
+    totals_row = Array.new(COLUMN_COUNT) { 0.0 }
+
+    # Add column identifier names to the first three columns
+    totals_row[0] = group
+    totals_row[1] = subgroup || 'Group total'
+    totals_row[2] = subgroup.present? ? 'Subgroup total' : ''
+
+    # Return the totals row with empty values (zeros) if no rows are present
+    return totals_row if rows.empty?
+
+    # Sum all columns one by one, except for the first three identifier columns
+    (3..(COLUMN_COUNT - 1)).each { |idx| totals_row[idx] = rows.sum { |row| row[idx].to_f } }
+
+    totals_row
   end
 
   # Internal: Returns a row based on a query.
