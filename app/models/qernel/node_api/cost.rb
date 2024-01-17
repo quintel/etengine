@@ -210,7 +210,7 @@ module Qernel
       # Returns the yearly operating expenses for CCS in euro.
       def operating_expenses_ccs
         fetch(:operating_expenses_ccs) do
-          variable_operation_and_maintenance_costs_for_ccs + co2_emissions_costs
+          variable_operation_and_maintenance_costs_for_ccs
         end
       end
 
