@@ -61,7 +61,15 @@ class CostsParametersSerializer
     ]
   }.freeze
 
-  COLUMN_COUNT = 16
+  CSV_HEADER = [
+    'Group', 'Subgroup', 'Key',
+    'Total costs (eur)', 'Total CAPEX (eur)', 'Total OPEX (eur)',
+    'Capital costs (eur)', 'Depreciation costs (eur)',
+    'Fixed operational and maintenance costs (eur)', 'Variable operational and maintenance costs (eur)',
+    'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
+    'CO2 emission costs (eur)', 'Number of units'
+    # , 'Fuel costs (eur)'
+  ]
 
   # Creates a new costs csv serializer.
   #
@@ -70,6 +78,7 @@ class CostsParametersSerializer
   # Returns a CostsCsvSerializer.
   def initialize(scenario)
     @graph = scenario.gql.future.graph
+    @molecule_graph = Qernel::Plugins::Molecules.new(@graph).molecule_graph
     @gql = scenario.gql
   end
 
@@ -81,15 +90,7 @@ class CostsParametersSerializer
     perform_queries!
 
     CSV.generate do |csv|
-      csv << [
-        # Creates the header
-        'Group', 'Subgroup', 'Key',
-        'Total costs (eur)', 'Total CAPEX (eur)', 'Total OPEX (eur)',
-        'Capital costs (eur)', 'Depreciation costs (eur)', 'Fixed operational and maintenance costs (eur)', 'Variable operational and maintenance costs (eur)',
-        'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
-        'CO2 emission costs (eur)', 'Number of units', 
-        # 'Fuel costs (eur)'
-      ]
+      csv << CSV_HEADER
 
       groups_with_subtotal.each do |group|
         rows_for(group).each { |row| csv << row }
@@ -134,7 +135,11 @@ class CostsParametersSerializer
   #
   # Returns an array of arrays of Strings: an array containing all rows for the subgroup
   def rows_for_subgroup(group, subgroup)
-    node_rows_for_subgroup(group, subgroup) +
+    # Process nodes for the energy graph first
+    node_rows_for_subgroup(@graph, group, subgroup) +
+      # then process nodes for the molecule graph
+      node_rows_for_subgroup(@molecule_graph, group, subgroup) +
+      # and finally process queries for the energy graph
       query_rows_for_subgroup(group, subgroup)
   end
 
@@ -146,8 +151,8 @@ class CostsParametersSerializer
   #
   # Returns an array of arrays of Strings: an array containing all node rows for the subgroup
   # Returns an empty [] when no nodes were in the group.
-  def node_rows_for_subgroup(group, subgroup)
-    @graph.group_nodes(:"#{group}_#{subgroup}").map do |node|
+  def node_rows_for_subgroup(graph, group, subgroup)
+    graph.group_nodes(:"#{group}_#{subgroup}").map do |node|
       [
         group, # Group
         subgroup, # Subgroup
@@ -197,7 +202,7 @@ class CostsParametersSerializer
       end
 
     # Prefill the row with zeros
-    totals_row = Array.new(COLUMN_COUNT) { 0.0 }
+    totals_row = Array.new(CSV_HEADER.length) { 0.0 }
 
     # Add column identifier names to the first three columns
     totals_row[0] = group
@@ -208,7 +213,7 @@ class CostsParametersSerializer
     return totals_row if rows.empty?
 
     # Sum all columns one by one, except for the first three identifier columns
-    (3..(COLUMN_COUNT - 1)).each { |idx| totals_row[idx] = rows.sum { |row| row[idx].to_f } }
+    (3..(CSV_HEADER.length - 1)).each { |idx| totals_row[idx] = rows.sum { |row| row[idx].to_f } }
 
     totals_row
   end
