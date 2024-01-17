@@ -26,6 +26,42 @@ class CostsParametersSerializer
       heat_infrastructure_mt_storage
       heat_infrastructure_lt_storage
     ],
+    costs_carriers_biomass: %w[
+      costs_carriers_biomass
+    ],
+    costs_carriers_oil_and_products: %w[
+      costs_carriers_oil_and_products
+    ],
+    costs_carriers_coal_and_products: %w[
+      costs_carriers_coal_and_products
+    ],
+    costs_carriers_uranium: %w[
+      costs_carriers_uranium
+    ],
+    costs_carriers_heat: %w[
+      costs_carriers_heat
+    ],
+    costs_carriers_natural_gas: %w[
+      costs_carriers_natural_gas
+    ],
+    costs_carriers_waste: %w[
+      costs_carriers_waste
+    ],
+    costs_carriers_electricity: %w[
+      costs_carriers_electricity
+    ],
+    costs_carriers_hydrogen: %w[
+      costs_carriers_hydrogen
+    ],
+    costs_carriers_liquid_hydrogen: %w[
+      costs_carriers_liquid_hydrogen
+    ],
+    costs_carriers_lohc: %w[
+      costs_carriers_lohc
+    ],
+    costs_carriers_ammonia: %w[
+      costs_carriers_ammonia
+    ],
     costs_infrastructure_electricity: %w[
       lv_net_costs_present
       lv_net_costs_delta_present_future
