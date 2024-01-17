@@ -130,12 +130,12 @@ class CostsParametersSerializer
 
       groups_with_subtotal.each do |group|
         rows_for(group).each { |row| csv << row }
-        csv << group_total_row(group)
+        # csv << group_total_row(group)
       end
 
       groups_without_subtotal.each do |group|
         rows_for(group, false).each { |row| csv << row }
-        csv << group_total_row(group)
+        # csv << group_total_row(group)
       end
     end
   end
@@ -159,7 +159,7 @@ class CostsParametersSerializer
   def rows_for(group, add_subtotal = true)
     send(group).flat_map do |subgroup|
       if add_subtotal
-        rows_for_subgroup(group, subgroup) << group_total_row(group, subgroup)
+        rows_for_subgroup(group, subgroup) # << group_total_row(group, subgroup)
       else
         rows_for_subgroup(group, subgroup)
       end
