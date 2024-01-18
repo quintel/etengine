@@ -227,7 +227,7 @@ module Gql::Runtime
       # for a specific consumer within Fever
       #
       # Returns an array
-      def FEVER_PRODUCTION_CURVE(producer, consumer)
+      def FEVER_PRODUCTION_CURVE_FOR_COUPLE(producer, consumer)
         return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
 
         producer = producer.first
@@ -245,7 +245,7 @@ module Gql::Runtime
       # on a specific producer within Fever
       #
       # Returns an array
-      def FEVER_DEMAND_CURVE(producer, consumer)
+      def FEVER_DEMAND_CURVE_FOR_COUPLE(producer, consumer)
         return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
 
         producer = producer.first
@@ -257,6 +257,46 @@ module Gql::Runtime
         group = producer.fever.group
 
         plugin.summary(group).demand_curve_for(producer.key, consumer.key)
+      end
+
+      # Public: A curve describing the production in MWh of/for a specific consumer
+      # or producer within Fever
+      #
+      # Returns an array
+      def FEVER_PRODUCTION_CURVE(node)
+        return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
+
+        node = node.first
+        return [] unless node.fever
+
+        plugin = scope.graph.plugin(:time_resolve).fever
+        group = node.fever.group
+
+        if node.fever.type == :consumer
+          plugin.summary(group).total_production_curve_for_consumer(node.key)
+        else
+          plugin.summary(group).total_production_curve_for_producer(node.key)
+        end
+      end
+
+      # Public: A curve describing the demand in MWh of/for a specific consumer
+      # or producer within Fever
+      #
+      # Returns an array
+      def FEVER_DEMAND_CURVE(node)
+        return [] unless Qernel::Plugins::Causality.enabled?(scope.graph)
+
+        node = node.first
+        return [] unless node.fever
+
+        plugin = scope.graph.plugin(:time_resolve).fever
+        group = node.fever.group
+
+        if node.fever.type == :consumer
+          plugin.summary(group).total_demand_curve_for_consumer(node.key)
+        else
+          plugin.summary(group).total_demand_curve_for_producer(node.key)
+        end
       end
 
       # Public: Creates an array containing the name of all the variants of a

@@ -35,8 +35,16 @@ module Qernel
         # the curves are summed back together
         def demand_curve_from_activities
           Merit::CurveTools.add_curves(
-            calculable_activities.filter_map do |activity|
+            calculable_activities.filter_map do |_, activity|
               activity.consumer_participant.demand_curve unless activity.empty?
+            end
+          ) || EMPTY_CURVE
+        end
+
+        def production_curve_from_activities
+          Merit::CurveTools.add_curves(
+            calculable_activities.filter_map do |_, activity|
+              activity.activities.sum(&:production_curve) unless activity.empty?
             end
           ) || EMPTY_CURVE
         end
