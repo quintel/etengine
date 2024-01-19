@@ -5,19 +5,15 @@ module Qernel
     class ProducerAdapter < Adapter
       # Calculates values used by Fever producers.
       module Attributes
-        private
-
-        # Internal: Calculates what share of the total heat demand will be
-        # supplied by this producer.
-        def share
-          edge = @node.node.output(:useable_heat).edges.first
-
-          if edge.lft_node.key.to_s.include?('aggregator')
-            edge.lft_node.output(:useable_heat).edges.first.share
-          else
-            edge.share
-          end
+        def share_in_group
+          @config.share_in_group || 0.0
         end
+
+        def technology_curve_type
+          @config.technology_curve_type
+        end
+
+        private
 
         def output_efficiency
           slots = @node.node.outputs.reject(&:loss?)
@@ -36,7 +32,7 @@ module Qernel
 
           DelegatedCapacityCurve.new(
             total_value(:heat_output_capacity),
-            aliased_adapter.participant.producer,
+            aliased_adapter.producer,
             input_efficiency
           )
         end

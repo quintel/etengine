@@ -40,17 +40,15 @@ module Qernel
       # Finally, the number of units is adjusted according to how many households are supplied with
       # heat. For example, if 50% of households are supplied with energy from the node, but each
       # unit provides energy for 100 homes, the number_of_units will equal 50% of
-      # number_of_residences divided by 100.
+      # present_number_of_residences divided by 100.
       #
       def number_of_units
         fetch(:number_of_units, false) do
+          return 0.0 unless fever
+
           heat_edges = demand_driven_edges
 
-          return 0.0 if heat_edges.empty?
-
-          tech_share = sum_unless_empty(heat_edges.map(&:share)) || 0
-          tech_share = 0.0 if tech_share.abs < 1e-6
-          units      = tech_share * (area.number_of_residences || 0)
+          units      = fever.share_in_group * number_of_units_from(heat_edges)
           supplied   = households_supplied_per_unit
 
           # Sanity check; if households_supplied_per_unit is zero, it may
@@ -86,6 +84,10 @@ module Qernel
         conv.output_edges.select do |edge|
           edge.carrier && (edge.useable_heat? || edge.steam_hot_water?)
         end
+      end
+
+      def number_of_units_from(heat_edges)
+        heat_edges.sum(0.0) { |edge| edge.lft_node.node_api.number_of_units }
       end
     end
   end

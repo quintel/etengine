@@ -131,7 +131,7 @@ module Qernel
                 "#{node.key}"
         end
 
-        participant = adapter.participant.producer
+        participant = adapter.producer
 
         Qernel::Causality::LazyCurve.new do |frame|
           participant.output_at(frame) * conversion

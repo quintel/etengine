@@ -11,7 +11,7 @@ class AreaSerializer
     geo_id
     group
     number_of_inhabitants
-    number_of_residences
+    present_number_of_residences
     scaling
     useable
   ]).freeze

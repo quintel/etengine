@@ -51,6 +51,10 @@ module Scenario::Persistable
     end
 
     self.forecast_storage_order = cloned_user_sortable(preset, :forecast_storage_order)
+    self.households_space_heating_producer_order = cloned_user_sortable(
+      preset,
+      :households_space_heating_producer_order
+    )
 
     cloned_attachments(preset) do |cloned_attachment|
       self.attachments << cloned_attachment

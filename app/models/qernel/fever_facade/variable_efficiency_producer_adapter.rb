@@ -25,8 +25,6 @@ module Qernel
       #
       # Returns a numeric.
       def load_adjusted_input_efficiency
-        producer = participant.producer
-
         efficiency = input_efficiency
 
         sum_input = 0.0

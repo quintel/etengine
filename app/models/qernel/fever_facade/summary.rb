@@ -80,6 +80,64 @@ module Qernel
         @surplus
       end
 
+      # Public: A curve describing the production in MWh of a specific producer
+      # for a specific consumer
+      def production_curve_for(producer_key, consumer_key)
+        consumer = @group.adapter(consumer_key)
+        producer = @group.adapter(producer_key)
+
+        return [0.0] * 8760 unless consumer && producer
+
+        consumer.production_curve_for(producer).to_a
+      end
+
+      # Public: A curve describing the demand in MWh of a specific consumer
+      # on a specific producer
+      def demand_curve_for(producer_key, consumer_key)
+        consumer = @group.adapter(consumer_key)
+        producer = @group.adapter(producer_key)
+
+        return [0.0] * 8760 unless consumer && producer
+
+        consumer.demand_curve_for(producer).to_a
+      end
+
+      # Public: returns all demand for a consumer
+      def total_demand_curve_for_consumer(consumer_key)
+        consumer = @group.adapter(consumer_key)
+
+        return [0.0] * 8760 unless consumer
+
+        consumer.demand_curve_from_activities.to_a
+      end
+
+      # Public: returns all production for a consumer
+      def total_production_curve_for_consumer(consumer_key)
+        consumer = @group.adapter(consumer_key)
+
+        return [0.0] * 8760 unless consumer
+
+        consumer.production_curve_from_activities.to_a
+      end
+
+      # Public: returns all demand for a producer
+      def total_demand_curve_for_producer(producer_key)
+        producer = @group.adapter(producer_key)
+
+        return [0.0] * 8760 unless producer || producer.participants.empty?
+
+        Merit::CurveTools.add_curves(producer.participants.map(&:demand_curve)).to_a
+      end
+
+      # Public: returns all production for a producer
+      def total_production_curve_for_producer(producer_key)
+        producer = @group.adapter(producer_key)
+
+        return [0.0] * 8760 unless producer
+
+        producer.producer.output_curve
+      end
+
       private
 
       # Internal: Compares production and demand and creates two new curves

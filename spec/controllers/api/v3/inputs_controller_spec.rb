@@ -109,12 +109,12 @@ describe Api::V3::InputsController do
       before do
         ScenarioScaling.create(
           scenario:       scenario,
-          area_attribute: 'number_of_residences',
+          area_attribute: 'present_number_of_residences',
           value:          1_000_000)
       end
 
       let(:divisor) do
-        Atlas::Dataset.find(:nl).number_of_residences / 1_000_000
+        Atlas::Dataset.find(:nl).present_number_of_residences / 1_000_000
       end
 
       it 'scales static input values' do

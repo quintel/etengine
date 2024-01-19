@@ -19,9 +19,11 @@ module Qernel
         @context = Context.new(plugin, plugin.graph)
       end
 
-      # Public: The Fever calculation which will compute the group.
-      def calculator
-        @calculator ||= Fever::Calculator.new(consumer, activities)
+      # Public: Sets up calculators where consumers and producers are matched
+      def calculators
+        @calculators ||= Qernel::FeverFacade::Calculators.new(
+          ordered_producers, ordered_consumers, @context
+        )
       end
 
       # Public: Instructs the calculator to compute a single frame.
@@ -29,7 +31,11 @@ module Qernel
       # frame - The frame number to be calculated.
       #
       # Returns nothing.
-      delegate :calculate_frame, to: :calculator
+      delegate :calculate_frame, to: :calculators
+
+      # Internal: The adapters which map nodes from the graph to activities
+      # within Fever.
+      delegate :adapters, to: :calculators
 
       # Public: Returns a curve which describes the demand for electricity
       # caused by the activities within the calculator.
@@ -40,60 +46,23 @@ module Qernel
       # Public: Returns the adapter for the node matching `key` or nil if
       # the node is not a participant in the group.
       def adapter(key)
-        if (config = @context.graph.node(key).fever)
-          adapters_by_type[config.type].find { |a| a.node.key == key }
+        adapters.find { |a| a.node.key == key } if @context.graph.node(key).fever
+      end
+
+      def ordered_producers
+        if @name == :space_heating
+          @context.graph.households_space_heating_producer_order
+        else
+          Etsource::Fever.group(@name).keys(:producer)
         end
       end
 
-      # Internal: The adapters which map nodes from the graph to activities
-      # within Fever.
-      def adapters
-        adapters_by_type.values.flatten
+      def ordered_consumers
+        Etsource::Fever.group(@name).keys(:consumer)
       end
 
-      # Internal: Maps Fever types (:consumer, :storage, etc) to adapters.
-      def adapters_by_type
-        return @adapters if @adapters
-
-        @adapters =
-          Manager::TYPES.each_with_object({}) do |type, data|
-            data[type] =
-              Etsource::Fever.group(@name).keys(type).map do |node_key|
-                Adapter.adapter_for(
-                  @context.graph.node(node_key), @context
-                )
-              end
-          end
-      end
-
-      private
-
-      def consumer
-        if adapters_by_type[:consumer].length == 1
-          return adapters_by_type[:consumer].first.participant
-        end
-
-        # Group has multiple consumers; Fever supports only one so we need to
-        # create a new consumer summing the individual demand curves.
-        Fever::Consumer.new(
-          Merit::CurveTools.add_curves(
-            adapters_by_type[:consumer].map do |adapter|
-              adapter.participant.demand_curve
-            end
-          ).to_a
-        )
-      end
-
-      def activities
-        storage = adapters_by_type[:storage]
-          .select(&:installed?)
-          .map(&:participant)
-
-        producers = adapters_by_type[:producer]
-          .select(&:installed?)
-          .map(&:participant)
-
-        [storage, producers]
+      def producer_adapters
+        adapters.select { |adapter| adapter.config.type == :producer }
       end
     end
   end

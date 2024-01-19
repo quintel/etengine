@@ -39,7 +39,11 @@ module Etsource
             group_name,
             grouped_nodes[group_name]
               .group_by { |node| node.fever.type }
-              .transform_values { |nodes| nodes.map(&:key) }
+              .transform_values do |nodes|
+                nodes.sort_by do |node|
+                  Config.fever_order(group_name, node.fever.type).index(node.key) || nodes.length
+                end.map(&:key)
+              end
           )
         end
       end

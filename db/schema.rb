@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_02_101132) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_18_205201) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -51,6 +51,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_02_101132) do
     t.string "temperature", default: "mt"
     t.index ["scenario_id", "temperature"], name: "index_heat_network_orders_on_scenario_id_and_temperature", unique: true
     t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id"
+  end
+
+  create_table "households_space_heating_producer_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id"
+    t.text "order"
+    t.index ["scenario_id"], name: "index_households_space_heating_producer_orders_on_scenario_id", unique: true
   end
 
   create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -227,6 +233,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_02_101132) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "forecast_storage_orders", "scenarios"
   add_foreign_key "heat_network_orders", "scenarios"
+  add_foreign_key "households_space_heating_producer_orders", "scenarios"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"

@@ -1,0 +1,8 @@
+- groups = []
+- fever.curve.default = weather/buildings_heating
+- fever.group = buildings_space_heating
+- fever.type = consumer
+
+- demand = 100.0
+- preset_demand = 100.0
+- number_of_units = 200.0

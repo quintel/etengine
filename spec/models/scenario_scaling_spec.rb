@@ -3,13 +3,13 @@ require 'spec_helper'
 describe ScenarioScaling do
   let(:scaling) do
     ScenarioScaling.new(
-      area_attribute: :number_of_residences,
+      area_attribute: :present_number_of_residences,
       value:          500_000,
       scenario:       FactoryBot.build(:scenario)
     )
   end
 
-  let(:divisor) { Atlas::Dataset.find(:nl).number_of_residences / 500_000 }
+  let(:divisor) { Atlas::Dataset.find(:nl).present_number_of_residences / 500_000 }
 
   # ----------------------------------------------------------------------------
 
