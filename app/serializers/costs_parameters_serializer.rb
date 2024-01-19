@@ -101,7 +101,7 @@ class CostsParametersSerializer
     'Group', 'Subgroup', 'Key',
     'Total costs (eur)', 'Total CAPEX (eur)', 'Total OPEX (eur)',
     'Capital costs (eur)', 'Depreciation costs (eur)',
-    'Fixed operational and maintenance costs (eur)', 'Variable operational and maintenance costs (eur)',
+    'Fixed operation and maintenance costs (eur)', 'Variable operation and maintenance costs (eur)',
     'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
     'CO2 emission costs (eur)', 'Number of units'
     # , 'Fuel costs (eur)'
@@ -194,7 +194,7 @@ class CostsParametersSerializer
         subgroup, # Subgroup
         node.key, # Key
         format_num(node.query.total_costs_per(:node) - 
-          node.query.fuel_costs_per(:node)), # Total costs (eur)
+          node.query.fuel_costs_per(:node) - node.query.co2_emissions_costs_per(:node)), # Total costs (eur)
         format_num(node.query.capital_expenditures_excluding_ccs_per(:node) + 
           node.query.capital_expenditures_ccs_per(:node)), # Total CAPEX (eur)
         format_num(node.query.operating_expenses_excluding_ccs_per(:node) + 
