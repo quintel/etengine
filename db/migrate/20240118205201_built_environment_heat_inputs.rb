@@ -84,18 +84,18 @@ class BuiltEnvironmentHeatInputs < ActiveRecord::Migration[7.0]
         next
       end
 
-      total_future = total_residences * value_or_default(scenario, housing_share)
+      total_future = total_residences * value_or_default(scenario, housing_share) / 100.0
 
       # Add the corner houses to the semi_detached if there are semi_detached houses
       if housing_type_base == 'semi_detached_houses'
         total_future += total_residences *
-          value_or_default(scenario, 'households_corner_houses_share')
+          value_or_default(scenario, 'households_corner_houses_share') / 100.0
       end
       # Add the corner houses and semi_detached to the detached if there are no semi_detached houses
       if housing_type_base == 'detached_houses' && !scenario.area['has_semi_detached_houses']
         total_future += total_residences *
           (value_or_default(scenario, 'households_corner_houses_share') +
-          value_or_default(scenario, 'households_semi_detached_houses_share'))
+          value_or_default(scenario, 'households_semi_detached_houses_share')) / 100.0
       end
 
       total_present = HOUSING_STOCK_AGES_NEW.sum(0.0) do |age|
@@ -156,7 +156,7 @@ class BuiltEnvironmentHeatInputs < ActiveRecord::Migration[7.0]
 
     # Set new insulation inputs based on calculated deltas
     deltas.each do |housing_type, delta|
-      HOUSING_STOCK_AGES_NEW.each do |age|
+      (HOUSING_STOCK_AGES_NEW + ['future']).each do |age|
         scenario.user_values["households_insulation_level_#{housing_type}_#{age}"] = (
           scenario.area["typical_useful_demand_for_space_heating_#{housing_type}_#{age}"] *
           (1.0 - delta) *
@@ -216,7 +216,8 @@ class BuiltEnvironmentHeatInputs < ActiveRecord::Migration[7.0]
     return scenario.balanced_values[key] if scenario.balanced_values.key? key
 
     # Do a lookup in the defaults
-    @defaults[scenario.area_code.to_s][key]
+    value = @defaults[scenario.area_code.to_s][key]
+    key.end_with?('share') ? value * 100.0 : value
   end
 
   # The change in the scenario for the value between the start and end year
