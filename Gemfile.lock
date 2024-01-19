@@ -164,7 +164,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     config (4.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -325,7 +325,7 @@ GEM
     mini_portile2 (2.8.2)
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
-    minitest (5.18.0)
+    minitest (5.21.2)
     msgpack (1.4.5)
     multi_json (1.15.0)
     mysql2 (0.5.3)
@@ -530,8 +530,8 @@ GEM
       unf_ext
     unf_ext (0.0.8)
     unicode-display_width (2.4.2)
-    view_component (2.78.0)
-      activesupport (>= 5.0.0, < 8.0)
+    view_component (2.83.0)
+      activesupport (>= 5.2.0, < 8.0)
       concurrent-ruby (~> 1.0)
       method_source (~> 1.0)
     virtus (1.0.5)
