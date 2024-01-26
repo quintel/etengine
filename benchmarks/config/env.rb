@@ -15,6 +15,5 @@ load 'benchmarks/runners/base.rb'
 load 'benchmarks/runners/input.rb'
 load 'benchmarks/runners/scenario.rb'
 
-load 'benchmarks/utils/curve.rb'
 load 'benchmarks/utils/input.rb'
 load 'benchmarks/utils/scenario.rb'

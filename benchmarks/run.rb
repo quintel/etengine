@@ -2,9 +2,6 @@
 
 load 'benchmarks/config/env.rb'
 
-## Uncomment line below to turn off logging info messages to STDOUT.
-# logger.level = :error
-
 ##
 # The profiler used by default is StackProf. This proved to be the most
 # stable and fast profiler tested. Currently RubyProf is also available
