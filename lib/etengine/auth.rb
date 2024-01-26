@@ -14,7 +14,7 @@ module ETEngine
 
       return key_path.read if key_path.exist?
 
-      unless Rails.env.test? || Rails.env.development? || ENV['DOCKER_BUILD']
+      unless Rails.env.test? || Rails.env.development? || Rails.env.profiling? || ENV['DOCKER_BUILD']
         raise 'No signing key is present. Please set the OPENID_SIGNING_KEY environment ' \
               'variable or add the key to tmp/openid.key.'
       end
