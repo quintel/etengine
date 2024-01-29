@@ -12,7 +12,6 @@ module Qernel
         def inject_demand!
           production = producer.output_curve.sum
 
-          # TODO: get aggerate curve etc.
           inject_aggregator_attributes!(production)
 
           # MWh -> MJ

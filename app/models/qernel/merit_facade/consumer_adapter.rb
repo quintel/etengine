@@ -51,13 +51,19 @@ module Qernel
       end
 
       def installed?
-        @input_of_carrier.positive?
+        @input_of_carrier.positive? || active_fever_participant?
       end
 
       private
 
       def consumption_profile
         @context.curves.curve(@config.group, @node)
+      end
+
+      def active_fever_participant?
+        return false unless @node.respond_to?(:fever) && @node.fever
+
+        @node.fever.share_in_group.positive?
       end
     end
   end
