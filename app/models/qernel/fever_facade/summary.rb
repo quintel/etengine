@@ -138,6 +138,10 @@ module Qernel
         producer.producer.output_curve
       end
 
+      def nodes
+        @group.adapters.map(&:node)
+      end
+
       private
 
       # Internal: Compares production and demand and creates two new curves

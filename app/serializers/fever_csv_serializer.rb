@@ -16,32 +16,41 @@ class FeverCSVSerializer
                 'enabled for this scenario']]
     end
 
-    [headers, *data]
+    data
   end
 
   private
 
-  def headers
+  def columns_for(node, summary)
     [
-      'Production (MW)',
-      'Demand (MW)',
-      'Buffering and time-shifting (MW)',
-      'Deficit (MW)'
+      ["#{node.key}_demand"] + safe_curve(demand_curve_for(node, summary)),
+      ["#{node.key}_supply"] + safe_curve(production_curve_for(node, summary))
     ]
   end
 
-  def data
-    curve(:production).zip(
-      curve(:demand),
-      curve(:surplus),
-      curve(:deficit)
-    )
+  def safe_curve(curve)
+    curve.empty? ? [0.0] * 8760 : curve
   end
 
-  def curve(type)
-    Merit::CurveTools.add_curves(
-      @groups.map { |group| summary(group).public_send(type) }
-    )
+  def demand_curve_for(node, summary)
+    case node.fever.type
+    when :consumer then summary.total_demand_curve_for_consumer(node.key)
+    when :producer then summary.total_demand_curve_for_producer(node.key)
+    end
+  end
+
+  def production_curve_for(node, summary)
+    case node.fever.type
+    when :consumer then summary.total_production_curve_for_consumer(node.key)
+    when :producer then summary.total_production_curve_for_producer(node.key)
+    end
+  end
+
+  def data
+    @groups.flat_map do |group|
+      summary = summary(group)
+      summary.nodes.flat_map { |node| columns_for(node, summary) }
+    end.transpose
   end
 
   def summary(group)
