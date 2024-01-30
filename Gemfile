@@ -100,20 +100,6 @@ group :development do
   gem 'listen'
 end
 
-group :test, :development do
-  gem 'binding_of_caller'
-  gem 'factory_bot_rails'
-  gem 'pry-byebug'
-  gem 'pry-rails'
-  gem 'rspec-rails', '~> 6.0'
-  gem 'watchr'
-
-  gem 'rubocop',             '~> 1.27', require: false
-  gem 'rubocop-performance',            require: false
-  gem 'rubocop-rails',                  require: false
-  gem 'rubocop-rspec',                  require: false
-end
-
 group :test do
   gem 'rails-controller-testing'
   gem 'shoulda-matchers'
@@ -124,6 +110,30 @@ group :test do
   gem 'webdrivers'
 
   gem 'simplecov', '~> 0.7.1', require: false
+end
+
+# benchmarking / profiling
+group :profile do
+  gem 'stackprof'
+  gem 'ruby-prof'
+  gem 'ruby-prof-flamegraph'
+end
+
+group :test, :development do
+  gem 'binding_of_caller'
+  gem 'factory_bot_rails'
+  gem 'rspec-rails', '~> 6.0'
+  gem 'watchr'
+
+  gem 'rubocop', '~> 1.27',     require: false
+  gem 'rubocop-performance',    require: false
+  gem 'rubocop-rails',          require: false
+  gem 'rubocop-rspec',          require: false
+end
+
+group :test, :development, :profile do
+  gem 'pry-byebug'
+  gem 'pry-rails'
 end
 
 group :production, :staging do
