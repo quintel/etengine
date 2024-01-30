@@ -49,6 +49,10 @@ module Qernel
 
           # TODO: should be a method on collection of participants
           demand = participants.sum(&:demand)
+          # puts @node.key
+          # puts demand
+          # puts production
+          # debugger if @node.key == :buildings_space_heater_heatpump_air_water_network_gas
           edge   = conv.output(:useable_heat).edges.first
 
           edge.share = demand.positive? ? production / demand : 0.0
