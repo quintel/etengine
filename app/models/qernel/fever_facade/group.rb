@@ -62,7 +62,7 @@ module Qernel
       end
 
       def producer_adapters
-        adapters.select { |adapter| adapter.config.type == :producer }
+        adapters.select { |adapter| adapter.is_a?(Qernel::FeverFacade::ProducerAdapter) }
       end
     end
   end

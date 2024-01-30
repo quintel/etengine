@@ -18,7 +18,7 @@ module Qernel
 
         suppliers =
           @group.adapters.select do |adapter|
-            adapter.installed? && adapter.participant.is_a?(Fever::Consumer)
+            adapter.installed? && adapter.is_a?(Qernel::FeverFacade::ConsumerAdapter)
           end
 
         return [0.0] * 8760 if suppliers.none?
@@ -34,10 +34,7 @@ module Qernel
       def production
         return @production if @production
 
-        suppliers =
-          @group.adapters.reject do |adapter|
-            adapter.participant.is_a?(Fever::Consumer)
-          end
+        suppliers = @group.producer_adapters
 
         return [0.0] * 8760 if suppliers.none?
 
