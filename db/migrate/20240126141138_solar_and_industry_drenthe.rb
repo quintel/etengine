@@ -65,7 +65,7 @@ class SolarAndIndustryDrenthe < ActiveRecord::Migration[7.0]
     SOLAR_THERMAL.each do |key|
       next unless scenario.user_values.key?(key)
 
-      scenario.user_value[key] = scenario.user_value[key] / 2.0
+      scenario.user_values[key] = scenario.user_values[key] / 2.0
     end
   end
 
