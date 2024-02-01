@@ -9,8 +9,11 @@ class SolarAndIndustryDrenthe < ActiveRecord::Migration[7.0]
   ].freeze
 
   # Slider names and constants for the solar part of the migration
-  SOLAR = {
-    'households_solar_pv_solar_radiation_market_penetration' => 'capacity_of_households_solar_pv_solar_radiation',
+  SOLAR_HH = {
+    'households_solar_pv_solar_radiation_market_penetration' => 'capacity_of_households_solar_pv_solar_radiation'
+  }.freeze
+
+  SOLAR_B = {
     'buildings_solar_pv_solar_radiation_market_penetration' => 'capacity_of_buildings_solar_pv_solar_radiation'
   }.freeze
 
@@ -48,7 +51,8 @@ class SolarAndIndustryDrenthe < ActiveRecord::Migration[7.0]
   def up
     migrate_scenarios do |scenario|
       migrate_solar_thermal(scenario)
-      migrate_solar(scenario)
+      migrate_solar_hh(scenario)
+      migrate_solar_b(scenario)
       migrate_industry_efficiency(scenario)
     end
   end
@@ -79,14 +83,28 @@ class SolarAndIndustryDrenthe < ActiveRecord::Migration[7.0]
   #      land_use_per_unit and then
   #   3. multiplying this by the capacity of one unit (solar panel) using the
   #      electricity_output_capacity.
-  def migrate_solar(scenario)
+  def migrate_solar_hh(scenario)
     return unless Atlas::Dataset.exists?(scenario.area_code)
 
-    SOLAR.each do |old_key, new_key|
+    SOLAR_HH.each do |old_key, new_key|
       if scenario.user_values.key?(old_key)
         scenario.user_values[new_key] = (
           (scenario.user_values.delete(old_key) / 100.0) *
           (scenario.area['residences_roof_surface_available_for_pv'] / LAND_USE_PER_UNIT_SOLAR) *
+          ELEC_OUTPUT_CAP_SOLAR
+        )
+      end
+    end
+  end
+
+  def migrate_solar_b(scenario)
+    return unless Atlas::Dataset.exists?(scenario.area_code)
+
+    SOLAR_B.each do |old_key, new_key|
+      if scenario.user_values.key?(old_key)
+        scenario.user_values[new_key] = (
+          (scenario.user_values.delete(old_key) / 100.0) *
+          (scenario.area['buildings_roof_surface_available_for_pv'] / LAND_USE_PER_UNIT_SOLAR) *
           ELEC_OUTPUT_CAP_SOLAR
         )
       end
