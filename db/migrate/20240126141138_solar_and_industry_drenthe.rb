@@ -111,7 +111,7 @@ class SolarAndIndustryDrenthe < ActiveRecord::Migration[7.0]
     end
   end
 
-  # INDUSTRY EFFICENCIES
+  # INDUSTRY EFFICIENCIES
   # We have changed the efficiency sliders in industry from % per year to % total. This means
   # those sliders need to be recalculated in existing scenario's
   def migrate_industry_efficiency(scenario)
