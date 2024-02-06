@@ -3,6 +3,17 @@
 # Creates CSV rows describing heat demand and supply for one or more fever groups.
 class FeverCSVSerializer
   attr_reader :filename
+
+  def self.time_column(year)
+    # We don't model leap days: 1970 is a safe choice for accurate times in the CSV.
+    base_date = Time.utc(1970, 1, 1)
+
+    ['Time'] +
+      Array.new(8760) do |i|
+        (base_date + i.hours).strftime("#{year}-%m-%d %R")
+      end
+  end
+
   def initialize(graph, groups, filename)
     @graph = graph
     @groups = groups.map(&:to_sym)
@@ -55,10 +66,12 @@ class FeverCSVSerializer
   end
 
   def data
-    @groups.flat_map do |group|
-      summary = summary(group)
-      summary.nodes.flat_map { |node| columns_for(node, summary) }
-    end.transpose
+    (
+      [self.class.time_column(@graph.year)] + @groups.flat_map do |group|
+        summary = summary(group)
+        summary.nodes.flat_map { |node| columns_for(node, summary) }
+      end
+    ).transpose
   end
 
   def summary(group)
