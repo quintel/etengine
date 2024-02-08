@@ -47,6 +47,13 @@ module Etsource
       read("fever.#{group}_#{type}_order").map(&:to_sym)
     end
 
+    # Public: Reads the order of dispatchables to be used for hydrogen.
+    #
+    # Returns an array of strings.
+    def hydrogen_order
+      read('hydrogen_order')
+    end
+
     # Public: Reads the order of dispatchables to be used in the heat network.
     #
     # Returns an array of strings.

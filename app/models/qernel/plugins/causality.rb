@@ -38,6 +38,7 @@ module Qernel::Plugins
       super
       @merit = Qernel::Causality::Electricity.new(graph)
       @fever = Qernel::FeverFacade::Manager.new(graph)
+      @hydrogen = Qernel::Causality::Hydrogen.new(graph)
       @heat_network = Qernel::Causality::HeatNetworkWrapper.new(graph)
       @agriculture_heat = Qernel::Causality::AgricultureHeat.new(graph)
       @reconciliation = Qernel::Causality::ReconciliationWrapper.new(@graph)
@@ -59,6 +60,7 @@ module Qernel::Plugins
     # Internal: Sets up Fever and Merit.
     def setup
       @merit.setup
+      @hydrogen.setup
       @heat_network.setup
       @agriculture_heat.setup
 
@@ -75,6 +77,7 @@ module Qernel::Plugins
 
     def inject(lifecycle)
       merit_calc = Merit::StepwiseCalculator.new.calculate(@merit.order)
+      hydrogen_calc = Merit::StepwiseCalculator.new.calculate(@hydrogen.order)
 
       agriculture_heat_calc = Merit::StepwiseCalculator.new.calculate(
         @agriculture_heat.order
@@ -84,6 +87,7 @@ module Qernel::Plugins
         @fever.calculate_frame(frame)
         @heat_network.calculate_frame(frame)
         merit_calc.call(frame)
+        hydrogen_calc.call(frame)
         agriculture_heat_calc.call(frame)
       end
 
@@ -94,6 +98,7 @@ module Qernel::Plugins
       @fever.inject_values!
       @heat_network.inject_values!
       @merit.inject_values!
+      @hydrogen.inject_values!
       @agriculture_heat.inject_values!
 
       # Adapters which need to make changes to the graph must do so prior to its re-calculation.
