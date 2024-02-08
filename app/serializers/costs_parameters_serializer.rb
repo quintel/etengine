@@ -5,19 +5,37 @@
 class CostsParametersSerializer
   QUERIES = {
     costs_building_and_installations_households: %w[
-      costs_of_insulation_apartments
-      costs_of_insulation_corner_houses
-      costs_of_insulation_detached_houses
-      costs_of_insulation_semi_detached_houses
-      costs_of_insulation_terraced_houses
-      costs_building_and_installations_households_insulation
+      costs_of_insulation_apartments_before_1945
+      costs_of_insulation_apartments_1945_1964
+      costs_of_insulation_apartments_1965_1984
+      costs_of_insulation_apartments_1985_2004
+      costs_of_insulation_apartments_2005_present
+      costs_of_insulation_apartments_future
+      costs_of_insulation_detached_houses_before_1945
+      costs_of_insulation_detached_houses_1945_1964
+      costs_of_insulation_detached_houses_1965_1984
+      costs_of_insulation_detached_houses_1985_2004
+      costs_of_insulation_detached_houses_2005_present
+      costs_of_insulation_detached_houses_future
+      costs_of_insulation_semi_detached_houses_before_1945
+      costs_of_insulation_semi_detached_houses_1945_1964
+      costs_of_insulation_semi_detached_houses_1965_1984
+      costs_of_insulation_semi_detached_houses_1985_2004
+      costs_of_insulation_semi_detached_houses_2005_present
+      costs_of_insulation_semi_detached_houses_future
+      costs_of_insulation_terraced_houses_before_1945
+      costs_of_insulation_terraced_houses_1945_1964
+      costs_of_insulation_terraced_houses_1965_1984
+      costs_of_insulation_terraced_houses_1985_2004
+      costs_of_insulation_terraced_houses_2005_present
+      costs_of_insulation_terraced_houses_future
       households_ht_heat_delivery_system
       households_mt_heat_delivery_system
       households_lt_heat_delivery_system
     ],
     costs_building_and_installations_buildings: %w[
-      costs_of_insulation_buildings
-      costs_building_and_installations_buildings_insulation
+      costs_of_insulation_buildings_present
+      costs_of_insulation_buildings_future
       buildings_ht_heat_delivery_system
       buildings_mt_heat_delivery_system
       buildings_lt_heat_delivery_system
@@ -106,7 +124,6 @@ class CostsParametersSerializer
     'Fixed operation and maintenance costs (eur)', 'Variable operation and maintenance costs (eur)',
     'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
     'CO2 emission costs (eur)', 'Number of units'
-    # , 'Fuel costs (eur)'
   ]
 
   # Creates a new costs csv serializer.
@@ -132,12 +149,10 @@ class CostsParametersSerializer
 
       groups_with_subtotal.each do |group|
         rows_for(group).each { |row| csv << row }
-        # csv << group_total_row(group)
       end
 
       groups_without_subtotal.each do |group|
         rows_for(group, false).each { |row| csv << row }
-        # csv << group_total_row(group)
       end
     end
   end
@@ -161,7 +176,7 @@ class CostsParametersSerializer
   def rows_for(group, add_subtotal = true)
     send(group).flat_map do |subgroup|
       if add_subtotal
-        rows_for_subgroup(group, subgroup) # << group_total_row(group, subgroup)
+        rows_for_subgroup(group, subgroup)
       else
         rows_for_subgroup(group, subgroup)
       end
@@ -211,8 +226,7 @@ class CostsParametersSerializer
         format_num(node.query.construction_time), # 'Construction time (years)'
         format_num(node.query.technical_lifetime), # 'Technical lifetime (years)'
         format_num(node.query.co2_emissions_costs_per(:node)), # CO2 emission costs (eur)
-        format_num(node.query.number_of_units), # Number of units
-        # format_num(node.query.fuel_costs_per(:node)) # Fuel costs (eur) --> to be removed
+        format_num(node.query.number_of_units) # Number of units
       ]
     end
   end
@@ -226,34 +240,6 @@ class CostsParametersSerializer
   # Returns an empty [] when no queries were requested.
   def query_rows_for_subgroup(group, subgroup)
     queries_for(group, subgroup).map { |query| query_row(group, subgroup, query) }
-  end
-
-  # Internal: The row containing the (sub)total of the (sub)group
-  #
-  # Returns an array containing the summed values of the requested group and optional subgroup.
-  def group_total_row(group, subgroup = nil)
-    rows = \
-      if subgroup.present?
-        rows_for_subgroup(group, subgroup)
-      else
-        rows_for(group, false)
-      end
-
-    # Prefill the row with zeros
-    totals_row = Array.new(CSV_HEADER.length) { 0.0 }
-
-    # Add column identifier names to the first three columns
-    totals_row[0] = group
-    totals_row[1] = subgroup || 'Group total'
-    totals_row[2] = subgroup.present? ? 'Subgroup total' : ''
-
-    # Return the totals row with empty values (zeros) if no rows are present
-    return totals_row if rows.empty?
-
-    # Sum all columns one by one, except for the first three identifier columns
-    (3..(CSV_HEADER.length - 1)).each { |idx| totals_row[idx] = rows.sum { |row| row[idx].to_f } }
-
-    totals_row
   end
 
   # Internal: Returns a row based on a query.
@@ -276,8 +262,7 @@ class CostsParametersSerializer
       format_num(@query_results["#{query}_construction_time"]),
       format_num(@query_results["#{query}_technical_lifetime"]),
       nil, # CO2 emission costs (eur)
-      nil, # Number of units
-      # nil  # Fuel costs (eur) --> to be removed
+      nil # Number of units
     ]
   end
 
