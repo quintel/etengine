@@ -135,8 +135,9 @@ module Qernel
         producer.producer.output_curve
       end
 
+      # In the summary and export first the consumers and then the producers are shown
       def nodes
-        @group.adapters.map(&:node)
+        @group.consumer_adapters.map(&:node) + @group.producer_adapters.map(&:node)
       end
 
       private

@@ -64,6 +64,10 @@ module Qernel
       def producer_adapters
         adapters.select { |adapter| adapter.is_a?(Qernel::FeverFacade::ProducerAdapter) }
       end
+
+      def consumer_adapters
+        adapters.select { |adapter| adapter.is_a?(Qernel::FeverFacade::ConsumerAdapter) }
+      end
     end
   end
 end
