@@ -158,15 +158,6 @@ module Qernel
         end
       end
 
-      # Public: Calculates the CAPEX (operating expenses) including CCS for the node
-      #
-      # Returns the yearly operating expenses including CCS in euro.
-      def capital_expenditures
-        fetch(:capital_expenditures) do
-          capital_expenditures_ccs + capital_expenditures_excluding_ccs if capital_expenditures_ccs && capital_expenditures_excluding_ccs
-        end
-      end
-
       # Public: Calculates the CAPEX (capital expenditures) for CCS for the node
       #
       # Capital expenditures (CAPEX) are major investments that are designed to be
@@ -193,15 +184,6 @@ module Qernel
           (cost_of_capital || 0.0) +
             (depreciation_costs || 0.0) -
             capital_expenditures_ccs
-        end
-      end
-
-      # Public: Calculates the OPEX (operating expenses) including CCS for the node
-      #
-      # Returns the yearly operating expenses including CCS in euro.
-      def operating_expenses
-        fetch(:operating_expenses) do
-          operating_expenses_ccs + operating_expenses_excluding_ccs if operating_expenses_ccs && operating_expenses_excluding_ccs
         end
       end
 
