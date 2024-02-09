@@ -25,6 +25,7 @@ class Inspect::ScenariosController < Inspect::BaseController
       update_user_sortables!(
         user_sortable_attributes,
         forecast_storage_order: @scenario.forecast_storage_order,
+        hydrogen_order: @scenario.hydrogen_order,
         heat_network_order_ht: @scenario.heat_network_order(:ht),
         heat_network_order_mt: @scenario.heat_network_order(:mt),
         heat_network_order_lt: @scenario.heat_network_order(:lt),
@@ -78,6 +79,7 @@ class Inspect::ScenariosController < Inspect::BaseController
   def scenario_attributes
     params.require(:scenario).permit!.except(
       :forecast_storage_order,
+      :hydrogen_order,
       :heat_network_order_ht,
       :heat_network_order_mt,
       :heat_network_order_lt,
@@ -88,6 +90,7 @@ class Inspect::ScenariosController < Inspect::BaseController
   def user_sortable_attributes
     params.require(:scenario).permit(
       forecast_storage_order: [:order],
+      hydrogen_order: [:order],
       heat_network_order_ht: [:order],
       heat_network_order_mt: [:order],
       heat_network_order_lt: [:order],
