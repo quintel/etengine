@@ -11,7 +11,7 @@ module Qernel
           :hydrogen,
           :hydrogen,
           # Later in the project this is to be converted in a graph method and user sortable
-          Qernel::MeritFacade::UserDefinedSorter.new(Etsource::Config.hydrogen_order)
+          Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_order)
         )
 
         super(graph, context)
