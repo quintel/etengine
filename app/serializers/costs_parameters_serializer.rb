@@ -5,38 +5,126 @@
 class CostsParametersSerializer
   QUERIES = {
     costs_building_and_installations_households: %w[
-      costs_building_and_installations_households_insulation
-      costs_building_and_installations_households_heat_delivery_system
+      costs_of_insulation_apartments_before_1945
+      costs_of_insulation_apartments_1945_1964
+      costs_of_insulation_apartments_1965_1984
+      costs_of_insulation_apartments_1985_2004
+      costs_of_insulation_apartments_2005_present
+      costs_of_insulation_apartments_future
+      costs_of_insulation_detached_houses_before_1945
+      costs_of_insulation_detached_houses_1945_1964
+      costs_of_insulation_detached_houses_1965_1984
+      costs_of_insulation_detached_houses_1985_2004
+      costs_of_insulation_detached_houses_2005_present
+      costs_of_insulation_detached_houses_future
+      costs_of_insulation_semi_detached_houses_before_1945
+      costs_of_insulation_semi_detached_houses_1945_1964
+      costs_of_insulation_semi_detached_houses_1965_1984
+      costs_of_insulation_semi_detached_houses_1985_2004
+      costs_of_insulation_semi_detached_houses_2005_present
+      costs_of_insulation_semi_detached_houses_future
+      costs_of_insulation_terraced_houses_before_1945
+      costs_of_insulation_terraced_houses_1945_1964
+      costs_of_insulation_terraced_houses_1965_1984
+      costs_of_insulation_terraced_houses_1985_2004
+      costs_of_insulation_terraced_houses_2005_present
+      costs_of_insulation_terraced_houses_future
+      households_ht_heat_delivery_system
+      households_mt_heat_delivery_system
+      households_lt_heat_delivery_system
     ],
     costs_building_and_installations_buildings: %w[
-      costs_building_and_installations_buildings_insulation
-      costs_building_and_installations_buildings_heat_delivery_system
+      costs_of_insulation_buildings_present
+      costs_of_insulation_buildings_future
+      buildings_ht_heat_delivery_system
+      buildings_mt_heat_delivery_system
+      buildings_lt_heat_delivery_system
     ],
     costs_storage_and_conversion_storage: %w[
       costs_hydrogen_storage
-      heat_infrastructure_ht_storage_annualised_costs
-      heat_infrastructure_mt_storage_annualised_costs
-      heat_infrastructure_lt_storage_annualised_costs
+      heat_infrastructure_ht_storage
+      heat_infrastructure_mt_storage
+      heat_infrastructure_lt_storage
+    ],
+    costs_carriers_biomass: %w[
+      costs_carriers_biomass
+    ],
+    costs_carriers_oil_and_products: %w[
+      costs_carriers_oil_and_products
+    ],
+    costs_carriers_coal_and_products: %w[
+      costs_carriers_coal_and_products
+    ],
+    costs_carriers_uranium: %w[
+      costs_carriers_uranium
+    ],
+    costs_carriers_heat: %w[
+      costs_carriers_heat
+    ],
+    costs_carriers_natural_gas: %w[
+      costs_carriers_natural_gas
+    ],
+    costs_carriers_waste: %w[
+      costs_carriers_waste
+    ],
+    costs_carriers_electricity: %w[
+      costs_carriers_electricity
+    ],
+    costs_carriers_hydrogen: %w[
+      costs_carriers_hydrogen
+    ],
+    costs_carriers_liquid_hydrogen: %w[
+      costs_carriers_liquid_hydrogen
+    ],
+    costs_carriers_lohc: %w[
+      costs_carriers_lohc
+    ],
+    costs_carriers_ammonia: %w[
+      costs_carriers_ammonia
     ],
     costs_infrastructure_electricity: %w[
-      total_costs_of_electricity_network_calculation
+      lv_net_costs_present
+      lv_net_costs_delta_present_future
+      lv_mv_trafo_costs_present
+      lv_mv_trafo_costs_delta_present_future
+      mv_net_costs_present
+      mv_net_costs_delta_present_future
+      mv_hv_trafo_costs_present
+      mv_hv_trafo_costs_delta_present_future
+      hv_net_costs_present
+      hv_net_costs_delta_present_future
+      interconnection_net_costs_present
+      interconnection_net_costs_delta_present_future
+      offshore_net_costs_present
+      offshore_net_costs_delta_present_future
     ],
     costs_infrastructure_heat: %w[
-      costs_infrastructure_heat
-    ],
-    costs_infrastructure_hydrogen: %w[
-      
+      heat_infrastructure_ht_primary_pipelines
+      heat_infrastructure_ht_distribution_pipelines
+      heat_infrastructure_ht_distribution_stations
+      heat_infrastructure_ht_indoor
+      heat_infrastructure_mt_primary_pipelines
+      heat_infrastructure_mt_distribution_pipelines
+      heat_infrastructure_mt_distribution_stations
+      heat_infrastructure_mt_indoor
+      heat_infrastructure_lt_primary_pipelines
+      heat_infrastructure_lt_distribution_pipelines
+      heat_infrastructure_lt_distribution_stations
+      heat_infrastructure_lt_indoor
     ],
     costs_infrastructure_network_gas: %w[
-      gas_network_total_costs
-    ],
-    costs_co2_molecule_nodes: %w[
-      costs_co2_energy_graph
-    ],
-    costs_co2_energy_nodes: %w[
-      costs_molecule_graph
+      gas_network_costs
     ]
   }.freeze
+
+  CSV_HEADER = [
+    'Group', 'Subgroup', 'Key',
+    'Total costs (eur)', 'Total CAPEX (eur)', 'Total OPEX (eur)',
+    'Capital costs (eur)', 'Depreciation costs (eur)',
+    'Fixed operation and maintenance costs (eur)', 'Variable operation and maintenance costs (eur)',
+    'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
+    'CO2 emission costs (eur)', 'Number of units'
+  ]
 
   # Creates a new costs csv serializer.
   #
@@ -45,6 +133,7 @@ class CostsParametersSerializer
   # Returns a CostsCsvSerializer.
   def initialize(scenario)
     @graph = scenario.gql.future.graph
+    @molecule_graph = Qernel::Plugins::Molecules.new(@graph).molecule_graph
     @gql = scenario.gql
   end
 
@@ -56,20 +145,14 @@ class CostsParametersSerializer
     perform_queries!
 
     CSV.generate do |csv|
-      csv << [
-        'Group', 'Subgroup', 'Key',
-        'CAPEX ex ccs (Euro)', 'OPEX ex ccs (Euro)', 'CAPEX ccs (Euro)', 'OPEX ccs (Euro)',
-        'Total ex ccs (Euro)', 'Number of units', 'Total input (MJ)', 'Total output (MJ)'
-      ]
+      csv << CSV_HEADER
 
       groups_with_subtotal.each do |group|
         rows_for(group).each { |row| csv << row }
-        csv << group_total_row(group)
       end
 
       groups_without_subtotal.each do |group|
         rows_for(group, false).each { |row| csv << row }
-        csv << group_total_row(group)
       end
     end
   end
@@ -93,7 +176,7 @@ class CostsParametersSerializer
   def rows_for(group, add_subtotal = true)
     send(group).flat_map do |subgroup|
       if add_subtotal
-        rows_for_subgroup(group, subgroup) << group_total_row(group, subgroup)
+        rows_for_subgroup(group, subgroup)
       else
         rows_for_subgroup(group, subgroup)
       end
@@ -105,7 +188,11 @@ class CostsParametersSerializer
   #
   # Returns an array of arrays of Strings: an array containing all rows for the subgroup
   def rows_for_subgroup(group, subgroup)
-    node_rows_for_subgroup(group, subgroup) +
+    # Process nodes for the energy graph first
+    node_rows_for_subgroup(@graph, group, subgroup) +
+      # then process nodes for the molecule graph
+      node_rows_for_subgroup(@molecule_graph, group, subgroup) +
+      # and finally process queries for the energy graph
       query_rows_for_subgroup(group, subgroup)
   end
 
@@ -117,20 +204,29 @@ class CostsParametersSerializer
   #
   # Returns an array of arrays of Strings: an array containing all node rows for the subgroup
   # Returns an empty [] when no nodes were in the group.
-  def node_rows_for_subgroup(group, subgroup)
-    @graph.group_nodes(:"#{group}_#{subgroup}").map do |node|
+  def node_rows_for_subgroup(graph, group, subgroup)
+    graph.group_nodes(:"#{group}_#{subgroup}").map do |node|
       [
-        group,
-        subgroup,
-        node.key,
-        format_num(node.query.capital_expenditures_excluding_ccs_per(:node)),
-        format_num(node.query.operating_expenses_excluding_ccs_per(:node)),
-        format_num(node.query.capital_expenditures_ccs_per(:node)),
-        format_num(node.query.operating_expenses_ccs_per(:node)),
-        nil,
-        format_num(node.query.number_of_units),
-        format_num(node_flow(node, :inputs)),
-        format_num(node_flow(node, :outputs))
+        group, # Group
+        subgroup, # Subgroup
+        node.key, # Key
+        format_num(node.query.total_costs_per(:node) - 
+          node.query.fuel_costs_per(:node) - node.query.co2_emissions_costs_per(:node)), # Total costs (eur)
+        format_num(node.query.capital_expenditures_excluding_ccs_per(:node) + 
+          node.query.capital_expenditures_ccs_per(:node)), # Total CAPEX (eur)
+        format_num(node.query.operating_expenses_excluding_ccs_per(:node) + 
+          node.query.operating_expenses_ccs_per(:node)), # Total OPEX (eur)
+        format_num(node.query.cost_of_capital_per(:node)), # 'Capital costs (eur)'
+        format_num(node.query.depreciation_costs_per(:node)), # 'Depreciation costs (eur)'
+        format_num(node.query.fixed_operation_and_maintenance_costs_per_year *
+          node.query.number_of_units), # 'Fixed operational and maintenance costs (eur)'
+        format_num(node.query.variable_operation_and_maintenance_costs_per(:node)), # 'Variable operational and maintenance costs (eur)'
+        format_num(node.query.total_investment_over_lifetime_per(:node)), # 'Total investment over lifetime (eur)'
+        format_num(node.query.wacc), # 'WACC'
+        format_num(node.query.construction_time), # 'Construction time (years)'
+        format_num(node.query.technical_lifetime), # 'Technical lifetime (years)'
+        format_num(node.query.co2_emissions_costs_per(:node)), # CO2 emission costs (eur)
+        format_num(node.query.number_of_units) # Number of units
       ]
     end
   end
@@ -146,26 +242,27 @@ class CostsParametersSerializer
     queries_for(group, subgroup).map { |query| query_row(group, subgroup, query) }
   end
 
-  # Internal: The row containing the (sub)total of the (sub)group
-  #
-  # If no subgroup was supplied, gets the query with the name of the main group
-  def group_total_row(group, subgroup = nil)
-    query = subgroup ? "#{group}_#{subgroup}" : group.to_s
-    subgroup_name = subgroup ? subgroup : 'Group total'
-    query_row(group, subgroup_name, query, 'Total')
-  end
-
   # Internal: Returns a row based on a query.
   #
-  # Has no CAPEX or OPEX, so its value is displayed in the Total column.
+  # If a query doesnt exist and/or has no result, nil is returned
   def query_row(group, subgroup, query, name = '')
     [
       group,
       subgroup,
       name.presence || query,
-      nil, nil, nil, nil,
-      format_num(@query_results[query]),
-      nil, nil, nil
+      format_num(@query_results["#{query}_annualised_costs"]), # Total costs (eur)
+      format_num(@query_results["#{query}_capex"]),
+      format_num(@query_results["#{query}_opex"]),
+      format_num(@query_results["#{query}_capital_costs"]),
+      format_num(@query_results["#{query}_depreciation_costs"]),
+      format_num(@query_results["#{query}_fixed_operation_and_maintenance_costs"]),
+      format_num(@query_results["#{query}_variable_operation_and_maintenance_costs"]),
+      format_num(@query_results["#{query}_investment_costs"]),
+      format_num(@query_results["#{query}_wacc"]),
+      format_num(@query_results["#{query}_construction_time"]),
+      format_num(@query_results["#{query}_technical_lifetime"]),
+      nil, # CO2 emission costs (eur)
+      nil # Number of units
     ]
   end
 
@@ -173,9 +270,24 @@ class CostsParametersSerializer
 
   # Internal: Performs the neccesary queries
   #
+  # For each base key it performs a set of queries: [{key}, {key}_capex, ...]
   # Skips queries that could not be found. Saves the results in @query_results.
   def perform_queries!
-    as_queries = queries.map { |key| Gquery.get(key) }.compact
+    as_queries = queries.flat_map do |key| 
+      [
+        Gquery.get(key),
+        Gquery.get("#{key}_annualised_costs"),
+        Gquery.get("#{key}_capex"),
+        Gquery.get("#{key}_opex"),
+        Gquery.get("#{key}_capital_costs"),
+        Gquery.get("#{key}_depreciation_costs"),
+        Gquery.get("#{key}_fixed_operation_and_maintenance_costs"),
+        Gquery.get("#{key}_variable_operation_and_maintenance_costs"),
+        Gquery.get("#{key}_investment_costs"),
+        Gquery.get("#{key}_wacc"),
+        Gquery.get("#{key}_technical_lifetime")
+      ]
+    end.compact
     @query_results = as_queries.to_h do |query|
       [query.key, @gql.query_future(query)]
     end
@@ -222,7 +334,7 @@ class CostsParametersSerializer
   #
   # Has subtotal queries
   def costs_building_and_installations
-    %w[households buildings industry transport agriculture]
+    %w[households buildings industry agriculture]
   end
 
   # Internal: Production for which the costs_production group is valid
@@ -244,7 +356,7 @@ class CostsParametersSerializer
   # This group only needs subtotal group queries
   def costs_carriers
     %w[biomass oil_and_products coal_and_products uranium heat natural_gas waste
-       electricity hydrogen ammonia]
+       electricity hydrogen liquid_hydrogen lohc ammonia]
   end
 
   # Internal: Carriers for which the costs_infrastructure group is valid
@@ -258,7 +370,7 @@ class CostsParametersSerializer
   #
   # This group does not need subtotal group queries
   def costs_co2
-    %w[molecule_nodes energy_nodes]
+    %w[ccus]
   end
 
   # Internal: Sums the input or output flows of the node

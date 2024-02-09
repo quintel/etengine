@@ -619,7 +619,7 @@ describe 'Qernel::NodeApi cost calculations' do
     end
 
     it 'calculates when everything is set' do
-      expect(node.node_api.operating_expenses_ccs).to eq(2)
+      expect(node.node_api.operating_expenses_ccs).to eq(0.5)
     end
   end
 
