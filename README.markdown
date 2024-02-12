@@ -79,37 +79,25 @@ you have to follow these steps to run ETEngine.
    * Ubuntu: `sudo apt-get install graphviz libgraphviz-dev`
 
 1. Install "MySQL" server
-   * Mac: Install latest version using the [Native Package][mysql] (choose the 64-bit DMG version)
+   * Mac: Install latest version using the [Native Package][mysql] (choose the 64-bit DMG version), or install via brew: `brew install mysql`
    * Ubuntu: `sudo apt-get install mysql-server-5.5 libmysqlclient-dev`
 
 1. Clone this repository with `git clone git@github.com:quintel/etengine.git`
 
 1. Run `bundle install` to install the dependencies required by ETEngine.
 
-1. Create your personal configuration files from the samples with
-   ```
-   cp -vn config/database.sample.yml config/database.yml
-   cp -vn config/config.sample.yml config/config.yml
-   ```
-   Then make any changes -- particularly to the database configuration -- as you see fit.
-   * Probably set "standalone" to `true` in "config/config.yml"
-
 1. Clone a copy of [ETSource][etsource] –– which contains the data for each
    region:
    1. `cd ..; git clone git@github.com:quintel/etsource.git`
    1. `cd etsource; bundle install`
-   1. Edit "config/config.yml" and enter the ETSource directory into the
-   "etsource_export" and "etsource_working_copy" options –– or leave at default if possible.
-
 
 1. Create the database you specified in your "database.yml" file, and
-   1. run `bundle exec rake db:setup db:seed` to create the tables and add an
+   1. run `bundle exec rake db:setup` to create the tables and add an
       administrator account –– whose name and password will be output at the end –– OR
    1. run `bundle exec rake db:create` to create your database and
-      `bundle exec cap staging db2local` to fill your database with records from staging server
+      contact the private Quintel slack channel to fill your database with records from staging server
 
-1. You're now ready-to-go! Fire up the Rails process with `rails s`
-   or use [Pow][pow].
+1. You're now ready-to-go! Fire up the Rails process with `rails s` or better `bin/dev`.
 
 1. If you run into an dataset error, check out this
    [explanation](https://github.com/quintel/etsource#csv-documents "Explanation on etsource CSV files") on CSV files
