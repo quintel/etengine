@@ -31,6 +31,8 @@ module Qernel
           heat_network_merit_self_curve(node, carrier, direction)
         when :useable_heat, :heat
           fever_self_curve(node, carrier, direction)
+        when :hydrogen
+          hydrogen_merit_self_curve(node, carrier, direction)
         else
           raise %(Unsupported curve: "self: #{name}" on #{node.key})
         end
@@ -52,6 +54,12 @@ module Qernel
       # Merit order participant.
       def heat_network_merit_self_curve(node, carrier, direction)
         merit_self_curve(node, carrier, direction, @plugin.heat_network.manager_for(node))
+      end
+
+      # Internal: Creates a dynamic curve which reads demand from a hydrogen
+      # Merit order participant.
+      def hydrogen_merit_self_curve(node, carrier, direction)
+        merit_self_curve(node, carrier, direction, @plugin.hydrogen)
       end
 
       # Internal: Creates a dynamic curve which reads demand from a Merit order
