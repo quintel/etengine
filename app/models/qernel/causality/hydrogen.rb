@@ -10,8 +10,9 @@ module Qernel
           graph,
           :hydrogen,
           :hydrogen,
-          # Later in the project this is to be converted in a graph method and user sortable
-          Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_order)
+          Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_supply_order),
+          # Should become the hydrogen demand order
+          Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_demand_order)
         )
 
         super(graph, context)

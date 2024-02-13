@@ -50,8 +50,15 @@ module Etsource
     # Public: Reads the order of dispatchables to be used for hydrogen.
     #
     # Returns an array of strings.
-    def hydrogen_order
-      read('hydrogen_order')
+    def hydrogen_supply_order
+      read('hydrogen_supply_order')
+    end
+
+    # Public: Reads the order of flex to be used for hydrogen.
+    #
+    # Returns an array of strings.
+    def hydrogen_demand_order
+      read('hydrogen_demand_order')
     end
 
     # Public: Reads the order of dispatchables to be used in the heat network.

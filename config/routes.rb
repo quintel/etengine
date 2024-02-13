@@ -89,8 +89,11 @@ Rails.application.routes.draw do
         resource :forecast_storage_order, only: [:show, :update],
           controller: :user_sortables, sortable_type: :forecast_storage
 
-        resource :hydrogen_order, only: [:show, :update],
-          controller: :user_sortables, sortable_type: :hydrogen
+        resource :hydrogen_supply_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :hydrogen_supply
+
+        resource :hydrogen_demand_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :hydrogen_demand
 
         resource :households_space_heating_producer_order, only: [:show, :update],
           controller: :user_sortables, sortable_type: :space_heating
