@@ -68,6 +68,10 @@ module Qernel
         )
       end
 
+      def hydrogen?
+        @attribute == :hydrogen
+      end
+
       # Public: Determines if the context is part of a heat network
       def part_of_heat_network?
         %i[heat_network_lt heat_network_mt heat_network_ht].include?(@attribute)
