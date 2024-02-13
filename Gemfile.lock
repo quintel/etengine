@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: dfd57fe49a05ba5019f185f93fc84af97b5113e1
-  ref: dfd57fe
+  revision: 795588c560cb357829995d04d239687bc29da95b
+  ref: 795588c
   specs:
     atlas (1.0.0)
       activemodel (>= 7)

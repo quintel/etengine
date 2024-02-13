@@ -292,6 +292,17 @@ module Qernel
         end
       end
 
+      # Public: Returns the hydrogen output capacity of the node.
+      #
+      # If no value is assigned in the ETSource data, a capacity will attempt to be derived from the
+      # `typical_input_capacity`. Note that we do not call `input_capacity` and instead rely on the
+      # typical capacity, as `input_capacity` may itself call `hydrogen_output_capacity`.
+      def hydrogen_output_capacity
+        fetch(:hydrogen_output_capacity, false) do
+          typical_input_capacity ? typical_input_capacity * hydrogen_output_conversion : 0.0
+        end
+      end
+
       private
 
       # Internal: Calculates the coefficienct of performance
