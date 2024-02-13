@@ -55,7 +55,7 @@ module Qernel
         attrs[:input_capacity_per_unit] = input_capacity
 
         # We don't ever want heat flex technologies to consume from dispatchables.
-        attrs[:consume_from_dispatchables] = !@context.part_of_heat_network?
+        attrs[:consume_from_dispatchables] = !(@context.part_of_heat_network? || @context.hydrogen?)
 
         attrs
       end
