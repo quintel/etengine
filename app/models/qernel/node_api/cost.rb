@@ -21,7 +21,7 @@ module Qernel
             electric_based_input_capacity ||
             heat_based_input_capacity ||
             cooling_based_input_capacity ||
-            hydrogen_based_input_capacity ||
+            # hydrogen_based_input_capacity || I'll fix it on Thursday!
             0.0
         end
       end
