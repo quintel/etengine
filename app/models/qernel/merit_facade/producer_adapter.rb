@@ -37,6 +37,7 @@ module Qernel
         return unless @config.subtype == :must_run
         return unless @config.group.to_s.delete(' ') == 'self:electricity_output_curve'
         return unless source_api.merit_order&.subtype == :dispatchable
+        return if @context.hydrogen?
 
         # This heat producer is also part of the electricity merit order, where it behaves as a
         # dispatchable. Since it is dispatchable, the electricity load for hour n is not known until
