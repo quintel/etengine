@@ -43,11 +43,7 @@ module Qernel
       # Internal: Creates a dynamic curve which reads demand from a electricity
       # Merit order participant.
       def electricity_merit_self_curve(node, carrier, direction)
-        # Curves read from the electricity merit order have an offset of 1 so
-        # that the load for the current hour is based on the electricity load in
-        # the previous hour. This is because the electricity loads are
-        # calculated *after* the heat network.
-        merit_self_curve(node, carrier, direction, @plugin.merit, 1)
+        merit_self_curve(node, carrier, direction, @plugin.merit, hour_offset)
       end
 
       # Internal: Creates a dynamic curve which reads demand from a heat network
@@ -176,6 +172,17 @@ module Qernel
           raise "Unsupported technology type #{type.inspect} encountered " \
                 "when calculating \"self: ...\" curve for #{node.key}"
         end
+      end
+
+      # Internal: Determines the hour offset a curve should be read from
+      #
+      # Curves read from the electricity merit order have an offset of 1 for heat
+      # networks so that the load for the current hour is based on the electricity
+      # load in the previous hour. This is because the electricity loads are
+      # calculated *after* the heat network.
+      # For hydrogen this offset is not needed.
+      def hour_offset
+        @context.part_of_heat_network? ? 1 : 0
       end
     end
   end
