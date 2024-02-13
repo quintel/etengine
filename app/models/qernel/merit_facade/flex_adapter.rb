@@ -49,7 +49,7 @@ module Qernel
         attrs = super
 
         attrs[:marginal_costs] = marginal_costs
-        attrs[:consumption_price] = source_api.max_consumption_price
+        attrs[:consumption_price] = consumption_price
 
         attrs[:output_capacity_per_unit] = output_capacity
         attrs[:input_capacity_per_unit] = input_capacity
@@ -99,6 +99,10 @@ module Qernel
 
       def marginal_costs
         @context.dispatchable_sorter.cost(source_api, @config)
+      end
+
+      def consumption_price
+        @context.flex_demand_sorter&.cost(source_api, @config) || source_api.max_consumption_price
       end
 
       # Internal: Sets demand and related attributes on the target API.

@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 describe 'APIv3 hydrogen orders' do
-  let(:valid_options) { HydrogenOrder.default_order }
+  let(:valid_options) { HydrogenSupplyOrder.default_order }
   let(:scenario) { create(:scenario) }
-  let(:url) { api_v3_scenario_hydrogen_order_url(scenario_id: scenario.id) }
+  let(:url) { api_v3_scenario_hydrogen_supply_order_url(scenario_id: scenario.id) }
 
   context 'when fetching the hydrogen order' do
     let(:request) { get(url) }
@@ -20,20 +20,20 @@ describe 'APIv3 hydrogen orders' do
         request
 
         expect(JSON.parse(response.body)).to include(
-          'order' => HydrogenOrder.default_order
+          'order' => HydrogenSupplyOrder.default_order
         )
       end
 
       it 'does not save the order' do
-        expect { request }.not_to change(HydrogenOrder, :count)
+        expect { request }.not_to change(HydrogenSupplyOrder, :count)
       end
     end
 
     context 'when an order exists' do
       before do
-        HydrogenOrder.create!(
+        HydrogenSupplyOrder.create!(
           scenario_id: scenario.id,
-          order: HydrogenOrder.default_order.reverse
+          order: HydrogenSupplyOrder.default_order.reverse
         )
       end
 
@@ -46,16 +46,16 @@ describe 'APIv3 hydrogen orders' do
         request
 
         expect(JSON.parse(response.body)).to include(
-          'order' => HydrogenOrder.default_order.reverse
+          'order' => HydrogenSupplyOrder.default_order.reverse
         )
       end
     end
 
     context 'when the existing order contains invalid options' do
       before do
-        fo = HydrogenOrder.new(
+        fo = HydrogenSupplyOrder.new(
           scenario_id: scenario.id,
-          order: ['invalid', *HydrogenOrder.default_order]
+          order: ['invalid', *HydrogenSupplyOrder.default_order]
         )
 
         fo.save(validate: false)
@@ -70,16 +70,16 @@ describe 'APIv3 hydrogen orders' do
         request
 
         expect(JSON.parse(response.body)).to include(
-          'order' => HydrogenOrder.default_order
+          'order' => HydrogenSupplyOrder.default_order
         )
       end
     end
 
     context 'when the existing order is missing some options' do
       before do
-        HydrogenOrder.create!(
+        HydrogenSupplyOrder.create!(
           scenario_id: scenario.id,
-          order: [HydrogenOrder.default_order.last]
+          order: [HydrogenSupplyOrder.default_order.last]
         )
       end
 
@@ -93,8 +93,8 @@ describe 'APIv3 hydrogen orders' do
 
         expect(JSON.parse(response.body)).to include(
           'order' => [
-            HydrogenOrder.default_order.last,
-            *HydrogenOrder.default_order[0..-2]
+            HydrogenSupplyOrder.default_order.last,
+            *HydrogenSupplyOrder.default_order[0..-2]
           ]
         )
       end
@@ -112,7 +112,7 @@ describe 'APIv3 hydrogen orders' do
         request
 
         expect(JSON.parse(response.body)).to include(
-          'order' => HydrogenOrder.default_order.reverse
+          'order' => HydrogenSupplyOrder.default_order.reverse
         )
       end
 
@@ -176,7 +176,7 @@ describe 'APIv3 hydrogen orders' do
       include_examples 'a successful hydrogen order update'
 
       it 'saves the record' do
-        expect { request }.to change(HydrogenOrder, :count).by(1)
+        expect { request }.to change(HydrogenSupplyOrder, :count).by(1)
       end
     end
 
@@ -195,7 +195,7 @@ describe 'APIv3 hydrogen orders' do
       end
 
       it 'does not save the record' do
-        expect { request }.not_to change(HydrogenOrder, :count)
+        expect { request }.not_to change(HydrogenSupplyOrder, :count)
       end
     end
 
@@ -207,7 +207,7 @@ describe 'APIv3 hydrogen orders' do
       include_examples 'a failed hydrogen order update'
 
       it 'does not create a new record' do
-        expect { request }.not_to change(HydrogenOrder, :count)
+        expect { request }.not_to change(HydrogenSupplyOrder, :count)
       end
     end
 
@@ -217,16 +217,16 @@ describe 'APIv3 hydrogen orders' do
       end
 
       before do
-        HydrogenOrder.create!(
+        HydrogenSupplyOrder.create!(
           scenario_id: scenario.id,
-          order: HydrogenOrder.default_order
+          order: HydrogenSupplyOrder.default_order
         )
       end
 
       include_examples 'a successful hydrogen order update'
 
       it 'does not save a new record' do
-        expect { request }.not_to change(HydrogenOrder, :count)
+        expect { request }.not_to change(HydrogenSupplyOrder, :count)
       end
     end
 
@@ -236,23 +236,23 @@ describe 'APIv3 hydrogen orders' do
       end
 
       before do
-        HydrogenOrder.create!(
+        HydrogenSupplyOrder.create!(
           scenario_id: scenario.id,
-          order: HydrogenOrder.default_order
+          order: HydrogenSupplyOrder.default_order
         )
       end
 
       include_examples 'a failed hydrogen order update'
 
       it 'does not change the saved record' do
-        order = HydrogenOrder.find_by(scenario_id: scenario.id)
+        order = HydrogenSupplyOrder.find_by(scenario_id: scenario.id)
         expect { request }.not_to(change { order.reload.attributes })
       end
     end
 
-    context 'when the request contains an invalid hydrogen_order payload' do
+    context 'when the request contains an invalid hydrogen_supply_order payload' do
       let(:request) do
-        put url, params: { hydrogen_order: 'hi' }
+        put url, params: { hydrogen_supply_order: 'hi' }
       end
 
       it 'is a failed request' do

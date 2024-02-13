@@ -59,7 +59,8 @@ module Api
         case params[:sortable_type]
         when :forecast_storage then :forecast_storage_order
         when :heat_network then :heat_network_order
-        when :hydrogen then :hydrogen_order
+        when :hydrogen_supply then :hydrogen_supply_order
+        when :hydrogen_demand then :hydrogen_demand_order
         when :space_heating then :households_space_heating_producer_order
         end
       end

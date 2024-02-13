@@ -26,8 +26,10 @@
       = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }
       = f.simple_fields_for :forecast_storage_order, @scenario.forecast_storage_order do |hno|
         = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.forecast_storage_order) }, label: 'Forecast storage order', hint: 'Delete all lines to revert to default'
-      = f.simple_fields_for :hydrogen_order, @scenario.hydrogen_order do |hno|
-        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.hydrogen_order) }, label: 'Hydrogen producer order', hint: 'Delete all lines to revert to default'
+      = f.simple_fields_for :hydrogen_supply_order, @scenario.hydrogen_supply_order do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.hydrogen_supply_order) }, label: 'Hydrogen producer order', hint: 'Delete all lines to revert to default'
+      = f.simple_fields_for :hydrogen_demand_order, @scenario.hydrogen_demand_order do |hno|
+        = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.hydrogen_demand_order) }, label: 'Hydrogen flex demand order', hint: 'Delete all lines to revert to default'
       = f.simple_fields_for :heat_network_order_ht, @scenario.heat_network_order(:ht) do |hno|
         = hno.input :order, as: :text, input_html: { value: user_sortable_list(@scenario.heat_network_order(:ht)) }, label: 'Heat network (HT) dispatchables order', hint: 'Delete all lines to revert to default'
       = f.simple_fields_for :heat_network_order_mt, @scenario.heat_network_order(:mt) do |hno|
@@ -39,7 +41,7 @@
       = f.button :submit, class: 'btn btn-primary btn-large'
 
   :css
-    #scenario_heat_network_order_ht_order, #scenario_heat_network_order_mt_order,#scenario_heat_network_order_lt_order,#scenario_forecast_storage_order_order,#scenario_households_space_heating_producer_order_order {
+    #scenario_heat_network_order_ht_order, #scenario_heat_network_order_mt_order,#scenario_heat_network_order_lt_order,#scenario_forecast_storage_order_order,#scenario_households_space_heating_producer_order_order,#scenario_hydrogen_supply_order_order,#scenario_hydrogen_demand_order_order {
       font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",  "Courier New", monospace;
       width: 400px;
       height: 220px;
