@@ -6,13 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-<<<<<<< HEAD
-  revision: cdb74be0ed878ecfd83a98b3528c538f6aa47bec
-  ref: cdb74be
-=======
-  revision: dfd57fe49a05ba5019f185f93fc84af97b5113e1
-  ref: dfd57fe
->>>>>>> 48360e8f (Move hydrogen from reconciliation to merit-like)
+  revision: 795588c560cb357829995d04d239687bc29da95b
+  ref: 795588c
   specs:
     atlas (1.0.0)
       activemodel (>= 7)

@@ -21,6 +21,7 @@ module Qernel
             electric_based_input_capacity ||
             heat_based_input_capacity ||
             cooling_based_input_capacity ||
+            hydrogen_based_input_capacity ||
             0.0
         end
       end
@@ -555,6 +556,20 @@ module Qernel
         fetch(:heat_based_input_capacity) do
           if heat_output_conversion && heat_output_conversion > 0
             heat_output_capacity / heat_output_conversion
+          end
+        end
+      end
+
+      # Internal: This method calculates the input capacity of a plant based on the hydrogen
+      # output capacity and hydrogen efficiency of the node.
+      #
+      # DEBT: move to another file when cleaning up Node API.
+      #
+      # Returns the typical input capacity of a plant in MWinput.
+      def hydrogen_based_input_capacity
+        fetch(:hydrogen_based_input_capacity) do
+          if hydrogen_output_conversion && hydrogen_output_conversion > 0
+            hydrogen_output_capacity / hydrogen_output_conversion
           end
         end
       end
