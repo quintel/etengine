@@ -10,6 +10,7 @@ module Qernel::Plugins
     CURVE_ROTATE = 2160
 
     before :first_calculation, :clone_dataset
+    before :first_calculation, :early_setup
     after  :first_calculation, :setup
     after  :first_calculation, :run
     before :recalculation,     :inject
@@ -57,7 +58,6 @@ module Qernel::Plugins
 
     # Internal: Sets up Fever and Merit.
     def setup
-      @fever.setup
       @merit.setup
       @heat_network.setup
       @agriculture_heat.setup
@@ -67,6 +67,10 @@ module Qernel::Plugins
       @agriculture_heat.setup_dynamic
 
       @reconciliation.setup_early
+    end
+
+    def early_setup
+      @fever.setup
     end
 
     def inject(lifecycle)

@@ -57,6 +57,7 @@ module Qernel
             producer_share -= consumer_share
 
             consumer.build_activity(producer, (consumer_share / consumer_share_in_total))
+            consumer.inject_share_to_producer(producer, (consumer_share / consumer_share_in_total))
           end
         end
       end
