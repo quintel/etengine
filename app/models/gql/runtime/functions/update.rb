@@ -122,7 +122,7 @@ module Gql::Runtime
             scope.update_object = object # for UPDATE_OBJECT()
             input_value    = input_value_proc.respond_to?(:call) ? input_value_proc.call : input_value_proc
             input_value    = input_value.first if input_value.is_a?(::Array)
-            original_value = object[attribute_name]
+            original_value = object[attribute_name.to_sym]
 
             if original_value.is_a?(Numeric)
               original_value = original_value.to_f
