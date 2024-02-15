@@ -10,9 +10,10 @@ module Qernel
           graph,
           :hydrogen,
           :hydrogen,
+          # The order is regular, because low marginal cost should be served first
           Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_supply_order),
-          # Should become the hydrogen demand order
-          Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_demand_order)
+          # The order is inverted, because high consumption price should be served first
+          Qernel::MeritFacade::UserDefinedSorter.new(graph.hydrogen_demand_order.reverse)
         )
 
         super(graph, context)
