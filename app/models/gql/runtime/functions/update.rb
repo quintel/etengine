@@ -145,8 +145,8 @@ module Gql::Runtime
 
       # @private
       def update_element_with(object, attribute_name, value)
-        if object.is_a?(Hash)
-          object[attribute_name] = value
+        if object.is_a?(Hash) && object.key?(attribute_name.to_sym)
+          object[attribute_name.to_sym] = value
         else
           object.send("#{attribute_name}=", value)
         end
