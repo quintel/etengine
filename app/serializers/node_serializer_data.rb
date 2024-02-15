@@ -120,7 +120,7 @@ module NodeSerializerData
     },
     cost: {
       'initial_investment_per(:mw_electricity) + cost_of_installing_per(:mw_electricity) + decommissioning_costs_per(:mw_electricity)' => {
-        label: 'Investment over lifetime per MW input',
+        label: 'Investment over lifetime per MW',
         key: :total_initial_investment_per_mw_electricity,
         unit: 'EUR / MW',
         formatter: ->(n) { n.to_i }
