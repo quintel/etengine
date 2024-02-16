@@ -42,6 +42,15 @@ module Qernel
       end
 
       def inject!
+        # Inject shares again
+        @node.input(:useable_heat).edges.each { |e| e.share = 0.0 }
+
+        calculable_activities.each_value do |calc_activity|
+          calc_activity.producers.each do |producer, share|
+            inject_share_to_producer(producer, share)
+          end
+        end
+
         inject_curve!(:input) { demand_curve_from_activities }
       end
 

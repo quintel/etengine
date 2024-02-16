@@ -9,8 +9,6 @@ module Qernel
         @ordered_consumers = ordered_consumers
         @ordered_producers = ordered_producers
 
-        # first build then refactor
-        # make sure we can forget what we don't need
         setup
       end
 
