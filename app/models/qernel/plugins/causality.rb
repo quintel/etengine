@@ -18,6 +18,7 @@ module Qernel::Plugins
 
     attr_reader :merit
     attr_reader :fever
+    attr_reader :hydrogen
     attr_reader :heat_network
     attr_reader :agriculture_heat
 
@@ -66,6 +67,7 @@ module Qernel::Plugins
 
       @merit.setup_dynamic
       @heat_network.setup_dynamic
+      @hydrogen.setup_dynamic
       @agriculture_heat.setup_dynamic
 
       @reconciliation.setup_early
