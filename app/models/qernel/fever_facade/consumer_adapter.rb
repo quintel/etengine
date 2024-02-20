@@ -9,14 +9,14 @@ module Qernel
       def initialize(node, context)
         super
         @was = @node.demand
-        # TODO: at the init we should set all edges shares to 0!!!
-        # Then set them again -rigth? or is it not neccesary? how does future graph work? they are unset right?
+        # Set all edges to 0.0 to ensure that all edges set in the setup phase sum to 1.0
+        # after calculating the consumer producer pairs
+        @node.input(:useable_heat).edges.each { |e| e.share = 0.0 }
       end
 
-      # How much has the consumer already been filled with
+      # How much has the consumer already been filled with (could also be sum of input_edges)
       def share_met
         @share_met ||= 0.0
-        # Of kan dat toch vanuit de summed edges zoals we in de vorige commit hadden?
       end
 
       # Injects share after to calculation
@@ -42,8 +42,7 @@ module Qernel
       end
 
       def inject!
-        # TODO: this feels very very nasty, but I think we have to! Otherwise the
-        # graph wil try to solve it himself based on something unknown
+        # Inject shares again
         @node.input(:useable_heat).edges.each { |e| e.share = 0.0 }
 
         calculable_activities.each_value do |calc_activity|

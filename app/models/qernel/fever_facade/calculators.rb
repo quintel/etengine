@@ -9,8 +9,6 @@ module Qernel
         @ordered_consumers = ordered_consumers
         @ordered_producers = ordered_producers
 
-        # first build then refactor
-        # make sure we can forget what we don't need
         setup
       end
 
@@ -57,6 +55,7 @@ module Qernel
             producer_share -= consumer_share
 
             consumer.build_activity(producer, (consumer_share / consumer_share_in_total))
+            consumer.inject_share_to_producer(producer, (consumer_share / consumer_share_in_total))
           end
         end
       end

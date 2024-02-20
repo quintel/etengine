@@ -7,6 +7,7 @@ module Qernel
     # Fever instance.
     class Group
       attr_reader :name
+      attr_reader :calculators
 
       # Public: Creates a new Group.
       #
@@ -17,13 +18,8 @@ module Qernel
       def initialize(name, plugin)
         @name    = name
         @context = Context.new(plugin, plugin.graph)
-      end
 
-      # Public: Sets up calculators where consumers and producers are matched
-      def calculators
-        @calculators ||= Qernel::FeverFacade::Calculators.new(
-          ordered_producers, ordered_consumers, @context
-        )
+        setup_calculators
       end
 
       # Public: Instructs the calculator to compute a single frame.
@@ -62,7 +58,20 @@ module Qernel
       end
 
       def producer_adapters
-        adapters.select { |adapter| adapter.config.type == :producer }
+        adapters.select { |adapter| adapter.is_a?(Qernel::FeverFacade::ProducerAdapter) }
+      end
+
+      def consumer_adapters
+        adapters.select { |adapter| adapter.is_a?(Qernel::FeverFacade::ConsumerAdapter) }
+      end
+
+      private
+
+      # Private: Sets up calculators where consumers and producers are matched
+      def setup_calculators
+        @calculators = Qernel::FeverFacade::Calculators.new(
+          ordered_producers, ordered_consumers, @context
+        )
       end
     end
   end

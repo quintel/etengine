@@ -44,7 +44,9 @@ module Qernel
         def production_curve_from_activities
           Merit::CurveTools.add_curves(
             calculable_activities.filter_map do |_, activity|
-              activity.activities.sum(&:production_curve) unless activity.empty?
+              unless activity.empty?
+                Merit::CurveTools.add_curves(activity.activities.map(&:production_curve))
+              end
             end
           ) || EMPTY_CURVE
         end

@@ -3,6 +3,17 @@
 # Creates CSV rows describing heat demand and supply for one or more fever groups.
 class FeverCSVSerializer
   attr_reader :filename
+
+  def self.time_column(year)
+    # We don't model leap days: 1970 is a safe choice for accurate times in the CSV.
+    base_date = Time.utc(1970, 1, 1)
+
+    ['Time'] +
+      Array.new(8760) do |i|
+        (base_date + i.hours).strftime("#{year}-%m-%d %R")
+      end
+  end
+
   def initialize(graph, groups, filename)
     @graph = graph
     @groups = groups.map(&:to_sym)
@@ -16,32 +27,51 @@ class FeverCSVSerializer
                 'enabled for this scenario']]
     end
 
-    [headers, *data]
+    data
   end
 
   private
 
-  def headers
+  def columns_for(node, summary)
     [
-      'Production (MW)',
-      'Demand (MW)',
-      'Buffering and time-shifting (MW)',
-      'Deficit (MW)'
+      demand_column_for(node, summary),
+      production_column_for(node, summary)
     ]
   end
 
-  def data
-    curve(:production).zip(
-      curve(:demand),
-      curve(:surplus),
-      curve(:deficit)
-    )
+  def safe_curve(curve)
+    curve.empty? ? [0.0] * 8760 : curve
   end
 
-  def curve(type)
-    Merit::CurveTools.add_curves(
-      @groups.map { |group| summary(group).public_send(type) }
-    )
+  def demand_column_for(node, summary)
+    case node.fever.type
+    when :consumer
+      ["#{node.key}.input.demand (MW)"] +
+        safe_curve(summary.total_demand_curve_for_consumer(node.key))
+    when :producer
+      ["#{node.key}.output.demand (MW)"] +
+        safe_curve(summary.total_demand_curve_for_producer(node.key))
+    end
+  end
+
+  def production_column_for(node, summary)
+    case node.fever.type
+    when :consumer
+      ["#{node.key}.input.production (MW)"] +
+        safe_curve(summary.total_production_curve_for_consumer(node.key))
+    when :producer
+      ["#{node.key}.output.production (MW)"] +
+        safe_curve(summary.total_production_curve_for_producer(node.key))
+    end
+  end
+
+  def data
+    (
+      [self.class.time_column(@graph.year)] + @groups.flat_map do |group|
+        summary = summary(group)
+        summary.nodes.flat_map { |node| columns_for(node, summary) }
+      end
+    ).transpose
   end
 
   def summary(group)

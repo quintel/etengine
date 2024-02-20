@@ -38,7 +38,7 @@ module Qernel
         end
 
         edge = edges.first
-        loss_share = edge.rgt_output.conversion * edge.parent_share
+        loss_share = edge.rgt_output.conversion
 
         other_shares =
           edge.rgt_node.outputs.sum do |input|
