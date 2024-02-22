@@ -75,7 +75,8 @@ module Qernel
           elsif electricity_output_conversion.zero?
             0.0
           else
-            variable_costs_per_typical_input(include_waste: false) *
+            costs = variable_costs_per_typical_input(include_waste: false)
+            (costs.negative? ? 0.0 : costs) *
               SECS_PER_HOUR / # Highlighting
               electricity_output_conversion
           end
@@ -368,7 +369,8 @@ module Qernel
         fetch(cache_key) do
           costable =
             weighted_carrier_cost_per_mj +
-            co2_emissions_costs_per_typical_input
+            co2_emissions_costs_per_typical_input +
+            captured_biogenic_co2_emissions_costs_per_typical_input
 
           costable *= costable_energy_factor unless include_waste
 
@@ -414,6 +416,17 @@ module Qernel
           weighted_carrier_co2_per_mj * area.co2_price *
             (1 - area.co2_percentage_free) *
             (takes_part_in_ets || 1.0) * ((1 - free_co2_factor))
+        end
+      end
+
+      # Internal: Calculates the captured biogenic CO2 emission costs per typical input (in MJ).
+      #
+      # Returns a float representing cost per MJ.
+      def captured_biogenic_co2_emissions_costs_per_typical_input
+        fetch(:captured_biogenic_co2_emissions_costs_per_typical_input) do
+          weighted_carrier_potential_co2_per_mj *
+            - area.captured_biogenic_co2_price *
+            free_co2_factor
         end
       end
 
