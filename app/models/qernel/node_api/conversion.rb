@@ -93,6 +93,10 @@ module Qernel
         convert_to(co2_emissions_costs, unit)
       end
 
+      def captured_biogenic_co2_emissions_costs_per(unit)
+        convert_to(captured_biogenic_co2_emissions_costs, unit)
+      end
+
       def variable_operation_and_maintenance_costs_per(unit)
         convert_to(variable_operation_and_maintenance_costs, unit)
       end
