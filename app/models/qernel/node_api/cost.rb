@@ -419,7 +419,17 @@ module Qernel
         end
       end
 
-      # Internal: Calculates the captured biogenic CO2 emission costs per typical input (in MJ).
+      # Internal: Determines the costs of captured biogenic co2 .
+      #
+      # Return the the yearly costs for captured biogenic co2 for one plant.
+      def captured_biogenic_co2_emissions_costs
+        fetch(:captured_biogenic_co2_emissions_costs) do
+          typical_input * captured_biogenic_co2_emissions_costs_per_typical_input
+        end
+      end
+
+      # Internal: Calculates the captured biogenic co2 costs per typical input (in MJ).
+      # A positive price should lead to negative costs i.e., benefits.
       #
       # Returns a float representing cost per MJ.
       def captured_biogenic_co2_emissions_costs_per_typical_input
