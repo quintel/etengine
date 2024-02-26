@@ -6,6 +6,7 @@ module Qernel
     # storage in electric vehicles.
     class StorageAdapter < FlexAdapter
       def installed?
+        # debugger if  @node.key == :energy_hydrogen_storage_depleted_gas_field
         # Skip storage when there is no volume for storing energy.
         super && storage_volume_per_unit.positive?
       end
@@ -25,8 +26,6 @@ module Qernel
 
       def producer_attributes
         attrs = super
-
-        attrs[:consumption_price] = target_api.max_consumption_price
 
         attrs[:input_efficiency]  = input_efficiency
         attrs[:output_efficiency] = output_efficiency
@@ -107,6 +106,7 @@ module Qernel
       end
 
       def inject_storage_curve!
+        # debugger if  @node.key == :energy_hydrogen_storage_depleted_gas_field
         @participant.reserve.at(8759) # Ensure any trailing values are set to zero.
         inject_curve!(full_name: :storage_curve) { @participant.reserve.to_a }
       end
