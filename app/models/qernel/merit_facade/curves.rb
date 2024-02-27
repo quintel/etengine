@@ -27,6 +27,8 @@ module Qernel
           fever_demand_curve(name[25..-1].strip.to_sym)
         elsif prefix?(name, 'self')
           self_curve(name[5..-1].strip.to_sym, node)
+        elsif prefix?(name, 'unmet-demand')
+          unmet_demand_curve(name, node)
         else
           super
         end
@@ -53,6 +55,19 @@ module Qernel
       def self_curve(name, node)
         @self_curves ||= SelfCurves.new(@graph.plugin(:time_resolve), @context)
         @self_curves.curve(name, node)
+      end
+
+      # Internal: Reads and alters a curve from another causality component (such as
+      # electricity merit order reading heat network merit order).
+      #
+      # The curves from other calculations will be incomplete and only have
+      # values available once that component has been calculated for the current
+      # hour.
+      #
+      # Returns a Causality::LazyCurve.
+      def unmet_demand_curve(name, node)
+        @unmet_demand_curves ||= UnmetDemandCurves.new(@graph.plugin(:time_resolve), @context)
+        @unmet_demand_curves.curve(name, node)
       end
 
       # Public: Returns the total demand of the curve matching the +curve_name+.
