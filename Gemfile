@@ -10,7 +10,7 @@ end
 gem 'bootsnap', require: false
 gem 'puma'
 
-gem 'rails',        '~> 7.0.0'
+gem 'rails',        '~> 7.0.8'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json'
