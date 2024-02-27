@@ -43,18 +43,28 @@ module Qernel
       CURVE_RE =
         /\A(?<carrier>[\w_]+)_(?<direction>input|output)_curve\Z/.freeze
 
+      # Regex which should match curve names, extracting the carrier_to and
+      # carrier_from.
+      UNMET_DEMAND_RE =
+        /\A(?<carrier_to>[\w_]+)_from_(?<carrier_from>[\w_]+)_curve\Z/
+
       # Public: Given a curve name, decodes the carrier name and direction.
       #
       # Returns a hash with :carrier and :direction keys or nil if the curve
       # name is not valid.
-      def self.decode_name(name)
+      def self.decode_name(name, subtype = :self)
         name = name.to_s
 
         if (colon_idx = name.index(':'))
           name = name[(colon_idx + 1)..-1].strip
         end
 
-        match = name.match(CURVE_RE)
+        match =
+          if subtype == :unmet_demand
+            name.match(UNMET_DEMAND_RE)
+          else
+            name.match(CURVE_RE)
+          end
 
         return nil unless match
 

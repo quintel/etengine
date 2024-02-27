@@ -12,6 +12,8 @@ module Qernel
           ConsumptionLossAdapter
         when :electricity_loss
           ElectricityLossAdapter
+        when :subordinate
+          SubordinateConsumerAdapter
         else
           self
         end

@@ -36,6 +36,10 @@ module Qernel
         inject_curve!(full_name: :heat_output_curve) { @heat_output_curve }
       end
 
+      def subtraction_profile
+        demand_profile * total_demand
+      end
+
       private
 
       def producer_attributes
@@ -79,10 +83,6 @@ module Qernel
 
           decay.get(point)
         end
-      end
-
-      def subtraction_profile
-        demand_profile * total_demand
       end
 
       def demand_profile
