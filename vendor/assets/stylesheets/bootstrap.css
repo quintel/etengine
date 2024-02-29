@@ -2011,7 +2011,7 @@ table {
   padding: 8px;
   line-height: 20px;
   vertical-align: top;
-  border-top: 1px solid #dddddd;
+  border-top: 0.5px solid #fff;
 }
 
 .table th:not(.text-center),

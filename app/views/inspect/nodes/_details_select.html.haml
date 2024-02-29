@@ -1,0 +1,91 @@
+
+%ul.nav.nav-tabs
+  - if @serializer.attributes_and_methods_to_show.any?
+    %li.active
+      %a{ 'href' => "#node-summary", 'data-toggle' => 'tab' } Node summary
+    %li
+      %a{ 'href' => "#used-in", 'data-toggle' => 'tab' } Used in
+  - else
+    %li.active
+      %a{ 'href' => "#used-in", 'data-toggle' => 'tab' } Used in
+  - if @node_present.graph.name == :energy
+    %li
+      %a{ 'href' => "#all-attributes", 'data-toggle' => 'tab' } Attributes
+    %li
+      %a{ 'href' => "#all-calculations", 'data-toggle' => 'tab' } Node calculations
+.tab-content.white-box.details
+  #node-summary.tab-pane.active
+    %table.table.table-condensed
+      %thead
+        %tr
+          %th
+          %th Present
+          %th Future
+          %th Unit
+      %tbody
+        - @serializer.attributes_and_methods_to_show.each_pair do |group, items|
+          - next if items.empty?
+          %tr
+            %th{:colspan => 5}= group.capitalize
+          - items.each_pair do |key, opts|
+            %tr
+              %td
+                = opts[:label]
+                %br
+                %span= key
+              %td
+                - val = @serializer.present_value(key)
+                = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
+              %td
+                - val = @serializer.future_value(key)
+                = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
+              %td= opts[:unit]
+  #used-in.tab-pane
+    %h5 Used in Gqueries
+    %ol
+      - Gquery.name_or_query_contains(@node_present.key).sort_by(&:key).each do |gquery|
+        %li= link_to gquery.key, inspect_gquery_path(:id => gquery.id)
+    %h5 Used in Inputs
+    %ol
+      - Input.with_queries_containing(@node_present.key).sort_by(&:key).each do |input|
+        %li= link_to input.key, inspect_input_path(:id => input.id, :highlight => @node_present.key)
+  - if @node_present.graph.name == :energy
+    #all-attributes.tab-pane
+      %table.table.table-condensed
+        %thead
+          %tr
+            %th Node Attributes
+            %th Present
+            %th Future
+            %th Change
+            %th Unit
+        %tbody
+          - Qernel::NodeApi::Attributes::ATTRIBUTE_GROUPS.each do |group, attributes|
+            %tr
+              %th.attribute_group{:colspan => 5}= group
+            - attributes.each do |attr_name, info|
+              - desc, unit = info
+              %tr
+                %th= attr_name
+                - result_fields(@pre,@fut,attr_name)
+                %td= unit
+    #all-calculations.tab-pane
+      %table.table.table-condensed
+        %thead
+          %tr
+            %th Node Calculations
+            %th Present
+            %th Future
+            %th Change
+            %th Unit
+        %tbody
+          - @node_api.calculation_methods.each_pair do |group, methods|
+            %tr
+              %th.calculation_group{:colspan => 5}= group
+            - methods.each_pair do |method, opts|
+              - present_value = @pre.instance_eval(method.to_s).to_f rescue nil
+              - next if present_value <= 0.0 && opts[:hide_if_zero] rescue nil
+              %tr
+                %th= link_to method, calculation_debugger_path(@node_present, method)
+                - result_fields(@pre, @fut, method)
+                %td= opts[:unit]

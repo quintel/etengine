@@ -276,3 +276,44 @@ table th.tablesorter-headerSortUp:after {
 .results .timing.error {
   background: #d64c4a;
 }
+
+.wide {
+  width: 80vw;
+  padding-left: 10vw;
+}
+
+.wide-half {
+  width: 35vw;
+}
+
+.wide-third {
+  width: 20vw;
+}
+
+.wide-two-thirds {
+  width: 58vw;
+}
+
+.detail-tabs {
+  display: flex;
+}
+.detail-tabs ul.nav {
+  display: flex;
+  flex-direction: column;
+  min-width: 10vw;
+}
+
+.details.tab-content {
+  width: 100%;
+}
+
+.white-box {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.row-flex {
+  display: flex;
+  justify-content: space-between;
+}

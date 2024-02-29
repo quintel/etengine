@@ -9,7 +9,7 @@
 
 
 .row-fluid
-  .span12
+  .wide
     .page-header
       %h1
         = node_key
@@ -17,11 +17,14 @@
         %span.graph-name
           = params[:graph_name].humanize
           Graph
-        = link_to 'View document', link_to_node_file(@node_future), class: 'btn btn-small'
-        = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
-        = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
+        %span.graph-name
+          = @node_present.sector_key
+          = @node_present.use_key
+        -# = link_to 'View document', link_to_node_file(@node_future), class: 'btn btn-small'
+        -# = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
+        -# = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
 
-.row-fluid.span-12.node-flows
+.row-fluid.wide.node-flows
   .node-flows-inner
     .energy
       .present
@@ -59,7 +62,7 @@
             </svg>
         == #{ auto_number(delta) }%
 
-.tabbable.edge-flows
+.tabbable.edge-flows.wide
   %ul.nav.nav-tabs
     %li
       %a{ 'href' => "#present-edges", 'data-toggle' => 'tab' } Present Flows
@@ -72,120 +75,25 @@
     #future-edges.tab-pane.active
       = render 'node_edges', c: @node_future
 
-.row-fluid
-  .span12
-    %h2 Details
-    %table.table.table-condensed
-      %tbody
-        %tr
-          %td Sector
-          %td= @node_present.sector_key
-        %tr
-          %td Use
-          %td= @node_present.use_key
-        = render partial: 'object_attributes', locals: { name: 'Demand from energy graph', object: @node_future.from_energy }
-        = render partial: 'object_attributes', locals: { name: 'Demand from molecule graph', object: @node_future.from_molecules }
-        = render partial: 'object_attributes', locals: { name: 'Fever (Heat)', object: @node_future.fever }
-        = render partial: 'object_attributes', locals: { name: 'Heat network (HT)', object: @node_future.heat_network_ht }
-        = render partial: 'object_attributes', locals: { name: 'Heat network (MT)', object: @node_future.heat_network_mt }
-        = render partial: 'object_attributes', locals: { name: 'Heat network (LT)', object: @node_future.heat_network_lt }
-        = render partial: 'object_attributes', locals: { name: 'Hydrogen', object: @node_future.hydrogen }
-        = render partial: 'object_attributes', locals: { name: 'Merit Order', object: @node_future.merit_order }
-        = render partial: 'object_attributes', locals: { name: 'Network Gas', object: @node_future.network_gas }
-        = render partial: 'object_attributes', locals: { name: 'Storage', object: @node_future.storage }
-        %tr
-          %td Node groups
-          %td
-            %ol
-              - @node_present.groups.each do |group|
-                %li= group
-        %tr
-          %td Used in Gqueries
-          %td
-            %ol
-              - Gquery.name_or_query_contains(node_key).sort_by(&:key).each do |gquery|
-                %li= link_to gquery.key, inspect_gquery_path(:id => gquery.id)
-        %tr
-          %td Used in Inputs
-          %td
-            %ol
-              - Input.with_queries_containing(node_key).sort_by(&:key).each do |input|
-                %li= link_to input.key, inspect_input_path(:id => input.id, :highlight => node_key)
-
-- if @serializer.attributes_and_methods_to_show.any?
-  .row-fluid
-    .span12
-      .page-header
-        %h2 Node Summary
+.row-flex.wide
+  .wide-two-thirds.tabbable.detail-tabs
+    = render 'details_select', locals: { serializer: @serializer }
+  .wide-third
+    .white-box
+      %h4 Details
       %table.table.table-condensed
-        %thead
-          %tr
-            %th Method
-            %th Label
-            %th Present
-            %th Future
-            %th Unit
         %tbody
-          - @serializer.attributes_and_methods_to_show.each_pair do |group, items|
-            - next if items.empty?
-            %tr
-              %th{:colspan => 5}= group
-            - items.each_pair do |key, opts|
-              %tr
-                %td= key
-                %td= opts[:label]
-                %td
-                  - val = @serializer.present_value(key)
-                  = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
-                %td
-                  - val = @serializer.future_value(key)
-                  = opts[:formatter] ? opts[:formatter].call(val) : auto_number(val)
-                %td= opts[:unit]
-
-- if @node_present.graph.name == :energy
-  .row-fluid
-    .span6
-      .page-header
-        %h2 All Attributes
-      %table.table.table-condensed
-        %thead
-          %tr
-            %th Node Attributes
-            %th Present
-            %th Future
-            %th Change
-            %th Unit
-        %tbody
-          - Qernel::NodeApi::Attributes::ATTRIBUTE_GROUPS.each do |group, attributes|
-            %tr
-              %th.attribute_group{:colspan => 5}= group
-            - attributes.each do |attr_name, info|
-              - desc, unit = info
-              %tr
-                %th= attr_name
-                - result_fields(@pre,@fut,attr_name)
-                %td= unit
-
-    .span6
-      .page-header
-        %h2 All Calculations
-      %table.table.table-condensed
-        %thead
-          %tr
-            %th Node Calculations
-            %th Present
-            %th Future
-            %th Change
-            %th Unit
-        %tbody
-          - @node_api.calculation_methods.each_pair do |group, methods|
-            %tr
-              %th.calculation_group{:colspan => 5}= group
-            - methods.each_pair do |method, opts|
-              - present_value = @pre.instance_eval(method.to_s).to_f rescue nil
-              - next if present_value <= 0.0 && opts[:hide_if_zero] rescue nil
-              %tr
-                %th= link_to method, calculation_debugger_path(@node_present, method)
-                - result_fields(@pre, @fut, method)
-                %td= opts[:unit]
-      .clear
+          = render partial: 'object_attributes', locals: { name: 'Demand from energy graph', object: @node_future.from_energy }
+          = render partial: 'object_attributes', locals: { name: 'Demand from molecule graph', object: @node_future.from_molecules }
+          = render partial: 'object_attributes', locals: { name: 'Fever (Heat)', object: @node_future.fever }
+          = render partial: 'object_attributes', locals: { name: 'Heat network (HT)', object: @node_future.heat_network_ht }
+          = render partial: 'object_attributes', locals: { name: 'Heat network (MT)', object: @node_future.heat_network_mt }
+          = render partial: 'object_attributes', locals: { name: 'Heat network (LT)', object: @node_future.heat_network_lt }
+          = render partial: 'object_attributes', locals: { name: 'Hydrogen', object: @node_future.hydrogen }
+          = render partial: 'object_attributes', locals: { name: 'Merit Order', object: @node_future.merit_order }
+          = render partial: 'object_attributes', locals: { name: 'Network Gas', object: @node_future.network_gas }
+          = render partial: 'object_attributes', locals: { name: 'Storage', object: @node_future.storage }
+      %h5 Node groups
+      %ol
+        - @node_present.groups.each do |group|
+          %li= group

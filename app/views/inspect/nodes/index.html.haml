@@ -5,7 +5,7 @@
 - fields = (params[:fields] ||= 'demand').split(',').map(&:strip)
 
 .row
-  .span12
+  .wide
     .page-header
       %h2
         = params[:graph_name].singularize.humanize

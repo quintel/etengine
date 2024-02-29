@@ -3,10 +3,10 @@
 = render 'subnav'
 
 .row
-  .span12
-    %h2(style="margin-bottom: .5em") Test GQL
+  .wide
+    %h4(style="margin-bottom: .5em") Test GQL
 
-    = form_tag test_inspect_gqueries_path, style: 'width: 861px', class: 'gql-debug', data: { turbo: 'false' } do |f|
+    = form_tag test_inspect_gqueries_path, style: 'width: 100%', class: 'gql-debug', data: { turbo: 'false' } do |f|
       = text_area_tag :query, params[:query], data: { codemirror: 'ruby' }
       %p
         = button_tag class: 'btn btn-primary btn-large', type: 'submit' do
@@ -20,11 +20,11 @@
 
 - if @result
   .row
-    .span11
-      %h2(style="margin-bottom: .5em") Result
+    .wide
+      %h4(style="margin-bottom: .5em") Result
       = render 'result', result: @result
 - elsif @error
   .row
-    .span11
-      %h2(style="margin-bottom: .5em") Error:
+    .wide
+      %h4(style="margin-bottom: .5em") Error:
       = render partial: 'error', locals: { error: @error }
