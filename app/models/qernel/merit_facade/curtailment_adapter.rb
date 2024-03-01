@@ -37,6 +37,7 @@ module Qernel
 
         attrs[:input_capacity_per_unit] = Float::INFINITY
         attrs[:number_of_units] = 1.0
+        attrs.delete(:consumption_price)
 
         attrs
       end
