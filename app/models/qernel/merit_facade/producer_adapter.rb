@@ -13,6 +13,8 @@ module Qernel
         when :must_run, :volatile
           curtailment = config.production_curtailment
           curtailment&.positive? ? CurtailedAlwaysOnAdapter : AlwaysOnAdapter
+        when :electrolyser
+          ElectrolyserAdapter
         when :import
           ImportAdapter
         when :backup
