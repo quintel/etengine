@@ -30,9 +30,9 @@ class BuiltEnvironmentHeatInputs < ActiveRecord::Migration[7.0]
   HOUSING_STOCK_AGES_NEW = %w[before_1945 1945_1964 1965_1984 1985_2004 2005_present].freeze
 
   USER_CURVES_OLD = %w[
-    insulation_corner_houses_low
-    insulation_corner_houses_mid
-    insulation_corner_houses_high
+    weather/insulation_corner_houses_low_curve
+    weather/insulation_corner_houses_medium_curve
+    weather/insulation_corner_houses_high_curve
   ].freeze
 
   def up
