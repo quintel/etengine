@@ -188,17 +188,16 @@ class BuiltEnvironmentHeatInputs < ActiveRecord::Migration[7.0]
   end
 
   def migrate_buildings_insulation(scenario)
-    change_abs = (
-      1.0 -
-      ( # delta insulation
-        value_or_default(scenario, 'buildings_insulation_level') -
-        @defaults[scenario.area_code.to_s]['insulation_buildings_start_value']
-      ) / 100.0
-    )
+    start_red = @defaults[scenario.area_code.to_s]['insulation_buildings_start_value']
+    future_red = value_or_default(scenario, 'buildings_insulation_level')
 
     # Heating
-    # demand change
-    heating_change = change_abs *
+    heating_change = (
+      1.0 -
+      ( # delta insulation
+        future_red - start_red
+      ) / 100.0
+    ) * # demand change
       change_in(scenario, value_or_default(scenario, 'buildings_useful_demand_for_space_heating'))
 
     scenario.user_values['buildings_insulation_level_buildings_present'] = (
@@ -209,6 +208,7 @@ class BuiltEnvironmentHeatInputs < ActiveRecord::Migration[7.0]
     )
 
     # Cooling
+    change_abs = future_red.zero? ? 1.0 : start_red / future_red
     change_yearly = 1.0 - (change_abs ** (1.0 / (scenario.end_year - scenario.start_year)))
 
     # Start value of the slider is 0.0 for all datasets
