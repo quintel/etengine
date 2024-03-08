@@ -70,7 +70,7 @@ module Qernel
             curtailment = if max_capacity_from_curve.zero?
               0.0
             else
-              @carrier_capacity / max_capacity_from_curve
+              (max_capacity_from_curve - @carrier_capacity) / max_capacity_from_curve
             end
 
             if curtailment.positive? && @config.group.to_s.starts_with?('self:')
