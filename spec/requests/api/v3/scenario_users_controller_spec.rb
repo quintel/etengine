@@ -211,7 +211,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(json['errors'][user.email]).to include(
-          'Role change is not allowed for last owner'
+          'Last owner cannot be altered'
         )
       end
     end
@@ -287,6 +287,8 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
   end
 
   describe 'DELETE /api/v3/scenarios/:id/users' do
+    let(:json) { JSON.parse(response.body) }
+
     context 'with proper params' do
       let(:user_2) { create(:user) }
       let(:user_3) { create(:user) }
@@ -312,10 +314,6 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'returns an empty response body' do
-        expect(response.body).to eq('')
-      end
-
       it 'removes the given users' do
         expect(
           scenario.scenario_users.count
@@ -332,15 +330,35 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           }
       end
 
-      it 'returns OK' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'returns an empty response body' do
-        expect(response.body).to eq('')
+      it 'returns an error' do
+        expect(json['errors']['999']).to include(
+          'Scenario user not found'
+        )
+      end
+    end
+
+    context 'when destroying the last owner' do
+      before do
+        delete "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [{ user_id: user.id }]
+          }
+      end
+
+      it 'returns 422: unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns an error' do
+        expect(json['errors'][user.email]).to include(
+          'Last owner cannot be altered'
+        )
       end
     end
   end
 end
-
-

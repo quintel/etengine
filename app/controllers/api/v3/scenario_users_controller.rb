@@ -1,15 +1,15 @@
 module Api
   module V3
     class ScenarioUsersController < BaseController
+      include UsesScenario
+
       respond_to :json
 
       # Only scenario owners, having the delete authority, may manage scenario users
       before_action { doorkeeper_authorize!(:'scenarios:delete') }
 
-      before_action :find_and_authorize_scenario
-
       def index
-        render json: users_return_values
+        render json: @scenario.scenario_users
       end
 
       # Creates all new ScenarioUsers provided
@@ -67,25 +67,24 @@ module Api
       end
 
       def destroy
-        # TODO: update specs to see if we missed anything, and to use common response format
-        # TODO: return errors in the same json structure as create
-        # TODO: clean up this method
+        destroyed_users = scenario_user_params.filter_map do |user_params|
+          scenario_user = find_scenario_user_by_params(user_params)
 
-        return unless validate_scenario_user_params([['id', 'user_id', 'user_email']])
+          next unless scenario_user
 
-        # Find scenario_users by id, user_id, user_email,
-        # or the id of users found through their email address indirectly
-        scenario_users = @scenario.scenario_users.where(
-          'id in (?) OR user_email IN (?) OR user_id IN (?) OR user_id IN (?)',
-          permitted_params[:scenario_users].pluck('id'),
-          permitted_params[:scenario_users].pluck('user_email'),
-          permitted_params[:scenario_users].pluck('user_id'),
-          User.where(email: permitted_params[:scenario_users].pluck('user_email')).pluck(:id)
-        )
+          unless scenario_user.destroy
+            add_error(scenario_user.email, scenario_user.errors.full_messages)
+            next
+          end
 
-        scenario_users.destroy_all
+          scenario_user
+        end
 
-        head :ok
+        if errors.empty?
+          render json: destroyed_users, status: :ok
+        else
+          render json: { success: destroyed_users, errors: errors }, status: :unprocessable_entity
+        end
       end
 
       private
@@ -102,61 +101,8 @@ module Api
         )
       end
 
-      def find_and_authorize_scenario
-        if current_user.blank?
-          render json: { error: "Saved scenario with id #{permitted_params[:scenario_id]} not found." }, status: :not_found
-
-          return false
-        end
-
-        @scenario = \
-          if current_user.admin?
-            Scenario.find(permitted_params[:scenario_id])
-          else
-            current_user.scenarios.find(permitted_params[:scenario_id])
-          end
-
-        if @scenario.blank? || (@scenario.present? && !@scenario.owner?(current_user) && !current_user.admin?)
-          render json: { error: "Saved scenario with id #{permitted_params[:scenario_id]} not found." }, status: :not_found
-
-          return false
-        end
-      end
-
       def invite?
         permitted_params.dig(:invitation_args, :invite) == true
-      end
-
-      # TODO: this method can probably go, as we update one by one anyway and the model contains a
-      # lot of validations
-      def validate_scenario_user_params(attributes)
-        if permitted_params[:scenario_users].blank?
-          render json: { error: 'No users given to perform action on.' }, status: :unprocessable_entity
-
-          return false
-        end
-
-        # Check if all scenario_users have the requested attributes
-        permitted_params[:scenario_users].each do |user_params|
-          attributes.each do |attribute|
-            # If this is an array of attributes, at least one of the entries should be present
-            valid = \
-              if attribute.is_a? Array
-                (attribute - user_params.keys).length < attribute.length
-              else
-                user_params.keys.include?(attribute)
-              end
-
-            unless valid
-              missing_attr = attribute.is_a?(Array) ? attribute.join(' or ') : attribute
-
-              render json: user_params.merge({ error: "Missing attribute(s) for scenario_user: #{missing_attr}" }),
-                status: :unprocessable_entity
-
-              return false
-            end
-          end
-        end
       end
 
       # Find an existing ScenarioUser record by given user_params
@@ -182,22 +128,6 @@ module Api
         add_not_found_error(user_params) unless scenario_user
 
         scenario_user
-      end
-
-      # TODO: after correcting the responses, this method should go. Only for INDEX we have to find
-      # another solution
-      # Format the return values for the users in the given scenario
-      def users_return_values
-        if permitted_params[:scenario_users].present?
-          user_ids = permitted_params[:scenario_users].pluck(:user_id)
-        end
-
-        scenario_users = @scenario.scenario_users
-        scenario_users = scenario_users.where(user_id: user_ids) if user_ids.present?
-
-        scenario_users.map do |su|
-          { id: su.id, user_id: su.user_id, user_email: su.user_email, role: User::ROLES[su.role_id] }
-        end
       end
 
       def errors
