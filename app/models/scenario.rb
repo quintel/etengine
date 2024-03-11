@@ -330,37 +330,12 @@ class Scenario < ApplicationRecord
     coupled_sliders.any?
   end
 
-  def owned?
-    scenario_users.where(role_id: User::ROLES.key(:scenario_owner)).count.positive?
-  end
-
-  def owner?(user)
-    return false if user.blank?
-
-    ssu = scenario_users.find_by(user_id: user.id)
-    ssu.present? && ssu.role_id == User::ROLES.key(:scenario_owner)
-  end
-
-  def collaborator?(user)
-    return false if user.blank?
-
-    ssu = scenario_users.find_by(user_id: user.id)
-    ssu.present? && ssu.role_id >= User::ROLES.key(:scenario_collaborator)
-  end
-
-  def viewer?(user)
-    return false if user.blank?
-
-    ssu = scenario_users.find_by(user_id: user.id)
-    ssu.present? && ssu.role_id >= User::ROLES.key(:scenario_viewer)
-  end
-
   # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
   # Scenario.create(user: User). Only works when no users are associated yet.
   def user=(user)
-    return false if user.blank? || scenario_users.count > 0
+    return if user.blank? || scenario_users.count.positive?
 
-    return false unless valid?
+    return unless valid?
 
     ScenarioUser.create(scenario: self, user: user, role_id: User::ROLES.key(:scenario_owner))
   end
