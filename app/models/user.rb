@@ -40,6 +40,8 @@ class User < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: 191 }
 
+  after_create :couple_scenario_users
+
   def valid_password?(password)
     return true if super
 
@@ -59,5 +61,16 @@ class User < ApplicationRecord
 
   def active_for_authentication?
     super && deleted_at.nil?
+  end
+
+  # Links existing scenario users to the new User.
+  #
+  # It needs to be linked through the scenario user to ensure the scenario
+  # user stops being marked as dirty.
+  def couple_scenario_users
+    ScenarioUser.where(user_email: email).find_each do |su|
+      su.couple_to(self)
+      su.save
+    end
   end
 end

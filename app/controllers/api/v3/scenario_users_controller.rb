@@ -12,19 +12,20 @@ module Api
         render json: users_return_values
       end
 
+      # Creates all new ScenarioUsers provided
       def create
-        new_users = permitted_params[:scenario_users].filter_map do |scenario_user_params|
+        new_users = scenario_user_params.filter_map do |scenario_user_params|
           scenario_user = new_scenario_user_from(scenario_user_params)
 
           unless scenario_user.valid?
-            add_error(scenario_user, scenario_user.errors.full_messages)
+            add_error(scenario_user.email, scenario_user.errors.full_messages)
             next
           end
 
           begin
             scenario_user.save!
           rescue ActiveRecord::RecordNotUnique
-            add_error(scenario_user, ['duplicate'])
+            add_error(scenario_user.email, ['duplicate'])
             next
           end
 
@@ -41,40 +42,27 @@ module Api
         end
       end
 
+      # Updates all new ScenarioUsers provided
       def update
-        # TODO: render sucessful users in the same way as create
-        # TODO: return errors in the same json structure as create
-        # TODO: clean up this method
-        # TODO: check if specs work now (they are already converted to the 'new' format)
+        updated_users = scenario_user_params.filter_map do |user_params|
+          scenario_user = find_scenario_user_by_params(user_params)
 
-        # TODO: this line can go - we validate when updating each record. If one is invalid we
-        # continue and collect errors and successes
-        return unless validate_scenario_user_params(['role', ['id', 'user_id', 'user_email']])
+          next unless scenario_user
 
-        http_error_status, scenario_user_error = nil, nil
+          scenario_user.update_role(user_params[:role]&.to_sym)
 
-        permitted_params[:scenario_users].each do |user_params|
-          # Find the user
-          unless (scenario_user = find_scenario_user_by_params(user_params))
-            scenario_user_error = user_params.merge({ error: 'Scenario user not found' })
-            http_error_status = :not_found
-
-            break
+          unless scenario_user.save
+            add_error(scenario_user.email, scenario_user.errors.full_messages)
+            next
           end
 
-          # Attempt to update the user
-          unless scenario_user.update(role_id: User::ROLES.key(user_params[:role].to_sym))
-            scenario_user_error = scenario_user.errors
-            http_error_status = :unprocessable_entity
-
-            break
-          end
+          scenario_user
         end
 
-        if scenario_user_error
-          render json: scenario_user_error, status: http_error_status
+        if errors.empty?
+          render json: updated_users, status: :ok
         else
-          render json: users_return_values, status: :ok
+          render json: { success: updated_users, errors: errors }, status: :unprocessable_entity
         end
       end
 
@@ -101,6 +89,10 @@ module Api
       end
 
       private
+
+      def scenario_user_params
+        permitted_params[:scenario_users]
+      end
 
       def permitted_params
         params.permit(
@@ -169,8 +161,6 @@ module Api
 
       # Find an existing ScenarioUser record by given user_params
       def find_scenario_user_by_params(user_params)
-
-        # TODO: why not just use a return in the if statements?
         scenario_user = nil
 
         if user_params[:id]&.present?
@@ -180,17 +170,16 @@ module Api
         elsif user_params[:user_email]&.present?
           scenario_user = @scenario.scenario_users.find_by(user_email: user_params[:user_email])
 
-          # It may have happened the user was registered through email but was saved by
-          # its ID. Search all users for this email, then search for the found ID
-          # through the users for this scenario just to be sure.
+          # It may have happened the ScenarioUser is already coupled to a User.
+          # Search all users for this email, then search for the found ID.
           if scenario_user.blank?
             user = User.find_by(email: user_params[:user_email])
 
-            if user.present?
-              scenario_user = @scenario.scenario_users.find_by(user_id: user.id)
-            end
+            scenario_user = @scenario.scenario_users.find_by(user_id: user.id) if user.present?
           end
         end
+
+        add_not_found_error(user_params) unless scenario_user
 
         scenario_user
       end
@@ -216,8 +205,15 @@ module Api
       end
 
       # TODO: make it so we can add more errors on the same user, not overwrite
-      def add_error(scenario_user, message)
-        errors[scenario_user.email] = message
+      def add_error(scenario_user_key, message)
+        errors[scenario_user_key] = message
+      end
+
+      def add_not_found_error(user_params)
+        add_error(
+          user_params[:id] || user_params[:user_id] || user_params[:user_email],
+          ['Scenario user not found']
+        )
       end
 
       # Create a new ScenarioUser record from given user_params

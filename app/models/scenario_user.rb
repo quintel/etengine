@@ -6,7 +6,7 @@ class ScenarioUser < ApplicationRecord
 
   validate :user_id_or_email
   validates :user_email, format: { with: Devise.email_regexp }, allow_blank: true
-  validates :role_id, inclusion: { in: User::ROLES.keys }
+  validates :role_id, inclusion: { in: User::ROLES.keys, message: 'unknown' }
 
   before_create :couple_existing_user
 
@@ -19,7 +19,12 @@ class ScenarioUser < ApplicationRecord
   def couple_existing_user
     return unless user_email.present? && user_id.blank?
 
-    self.user = User.find_by(email: user_email)
+    couple_to(User.find_by(email: user_email))
+  end
+
+  # Couples the record to an existing User.
+  def couple_to(user)
+    self.user = user
     self.user_email = nil if user
   end
 
@@ -31,14 +36,17 @@ class ScenarioUser < ApplicationRecord
   end
 
   def ensure_one_owner_left_before_save
-  # Don't check new records and ignore if the role is set to owner.
+    # Don't check new records and ignore if the role is set to owner.
     return if new_record? || role_id == User::ROLES.key(:scenario_owner)
 
     # Collect roles for other users of this scenario
     other_role_ids = scenario.scenario_users.where.not(id: id).pluck(:role_id).compact.uniq
 
     # Cancel this action of none of the other users is an owner
-    throw(:abort) if other_role_ids.none?(User::ROLES.key(:scenario_owner))
+    if other_role_ids.none?(User::ROLES.key(:scenario_owner))
+      errors.add(:base, 'Role change is not allowed for last owner')
+      throw(:abort)
+    end
   end
 
   def ensure_one_owner_left_before_destroy
@@ -48,6 +56,10 @@ class ScenarioUser < ApplicationRecord
 
     # Cancel this action of there are other users and none of them is an owner
     throw(:abort) if other_users.count > 0 && other_role_ids.none?(User::ROLES.key(:scenario_owner))
+  end
+
+  def update_role(role_sym)
+    self.role_id = User::ROLES.key(role_sym)
   end
 
   # How to recognise the record for error messages

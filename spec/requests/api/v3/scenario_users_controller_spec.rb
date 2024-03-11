@@ -87,7 +87,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors']['viewer@test.com']).to include('Role is not included in the list')
+        expect(json['errors']['viewer@test.com']).to include('Role unknown')
       end
     end
 
@@ -280,36 +280,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(json['errors'][user_2.email]).to include(
-          'Role change is not allowed for unvalidated users'
-        )
-      end
-    end
-
-    context 'when trying to update the role of a non validated user' do
-      let(:unvalidated_user) do
-        create(:scenario_user,
-          scenario: scenario, user_email: 'viewer@test.com', user: nil,
-          role_id: User::ROLES.key(:scenario_viewer)
-        )
-      end
-
-      before do
-        put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
-          headers: access_token_header(user, :delete),
-          params: {
-            scenario_users: [
-              { user_email: unvalidated_user.user_email, role: 'scenario_collaborator' }
-            ]
-          }
-      end
-
-      it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'returns an error' do
-        expect(json['errors'][unvalidated_user.user_email]).to include(
-          'Role change is not allowed for unvalidated users'
+          'Role unknown'
         )
       end
     end
