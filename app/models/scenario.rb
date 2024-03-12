@@ -70,7 +70,7 @@ class Scenario < ApplicationRecord
     where(%q[
         in_start_menu IS NULL
         AND keep_compatible = ?
-        AND owner_id IS NULL
+        AND scenario_users IS NULL
         AND (
           user_values IS NULL
           OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"

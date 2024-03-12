@@ -25,9 +25,19 @@ class CreateScenarioUsers < ActiveRecord::Migration[7.0]
 
       ScenarioUser.insert_all(scenario_users)
     end
+
+    remove_foreign_key 'scenarios', 'users'
+    remove_column :scenarios, :owner_id
   end
 
   def down
+    add_column :scenarios, :owner_id
+    add_foreign_key 'scenarios', 'users'
+
+    Scenario.where('NOT scenario_users IS NULL').each do |scenario|
+      scenario.update(owner_id: scenario_users.find_by(role_id: 3).first.user_id, touch: false)
+    end
+
     remove_index :scenario_users, name: 'scenario_users_scenario_id_user_id_idx'
     remove_index :scenario_users, name: 'scenario_users_scenario_id_user_email_idx'
     drop_table :scenario_users

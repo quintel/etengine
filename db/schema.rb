@@ -59,18 +59,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
     t.index ["scenario_id"], name: "index_households_space_heating_producer_orders_on_scenario_id", unique: true
   end
 
-  create_table "hydrogen_demand_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "scenario_id"
-    t.text "order"
-    t.index ["scenario_id"], name: "index_hydrogen_demand_orders_on_scenario_id", unique: true
-  end
-
-  create_table "hydrogen_supply_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "scenario_id"
-    t.text "order"
-    t.index ["scenario_id"], name: "index_hydrogen_supply_orders_on_scenario_id", unique: true
-  end
-
   create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
@@ -203,7 +191,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
     t.text "user_values", size: :medium
     t.integer "end_year", default: 2040
     t.boolean "keep_compatible", default: false, null: false
-    t.bigint "owner_id"
     t.boolean "private", default: false, null: false
     t.integer "preset_scenario_id"
     t.string "area_code"
@@ -211,7 +198,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
     t.text "balanced_values", size: :medium
     t.text "metadata"
     t.index ["created_at"], name: "index_scenarios_on_created_at"
-    t.index ["owner_id"], name: "index_scenarios_on_owner_id"
   end
 
   create_table "staff_applications", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -255,7 +241,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
   add_foreign_key "forecast_storage_orders", "scenarios"
   add_foreign_key "heat_network_orders", "scenarios"
   add_foreign_key "households_space_heating_producer_orders", "scenarios"
-  add_foreign_key "hydrogen_demand_orders", "scenarios"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
@@ -265,7 +250,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
   add_foreign_key "personal_access_tokens", "users"
   add_foreign_key "scenario_attachments", "scenarios"
   add_foreign_key "scenario_attachments", "scenarios", column: "source_scenario_id", name: "index_scenario_attachments_on_source_scenario_id"
-  add_foreign_key "scenarios", "users", column: "owner_id"
   add_foreign_key "staff_applications", "oauth_applications", column: "application_id"
   add_foreign_key "staff_applications", "users"
 end
