@@ -16,7 +16,8 @@ class Scenario < ApplicationRecord
   store :balanced_values
   store :metadata, coder: JSON
 
-  has_many :scenario_users, dependent: :destroy
+  # Use delete_all to avoid the before_destroy callback on ScenarioUser
+  has_many :scenario_users, dependent: :delete_all
   has_many :users, through: :scenario_users
 
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
@@ -330,6 +331,10 @@ class Scenario < ApplicationRecord
     coupled_sliders.any?
   end
 
+  def owner?(user)
+    scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_owner))
+  end
+
   # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
   # Scenario.create(user: User). Only works when no users are associated yet.
   def user=(user)
@@ -337,7 +342,18 @@ class Scenario < ApplicationRecord
 
     return unless valid?
 
-    ScenarioUser.create(scenario: self, user: user, role_id: User::ROLES.key(:scenario_owner))
+    ScenarioUser.create(
+      scenario: self,
+      user: user,
+      role_id: User::ROLES.key(:scenario_owner)
+    )
+  end
+
+  # Removes all ScenarioUsers. Used mostly for specs.
+  #
+  # Use delete_all to avoid the before_destroy callback on ScenarioUser
+  def remove_all_users
+    scenario_users.delete_all
   end
 
   private

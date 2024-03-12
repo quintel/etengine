@@ -144,7 +144,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the scenario is owned by someone else' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = create(:user)
         put url, params: { order: valid_options.reverse }
       end
@@ -157,7 +157,7 @@ describe 'APIv3 forecast storage network orders' do
     context 'when the scenario is owned by the current user' do
       before do
         user = create(:user)
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = user
 
         put url,

@@ -34,7 +34,7 @@ describe 'Deleting a scenario with API v3' do
 
     context 'when the scenario is private' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = create(:user)
         scenario.reload.update!(private: true)
         delete "/api/v3/scenarios/#{scenario.id}"
@@ -61,7 +61,7 @@ describe 'Deleting a scenario with API v3' do
 
     context 'when the scenario is public and owned by the user' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = user
         delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)
       end
@@ -73,7 +73,7 @@ describe 'Deleting a scenario with API v3' do
 
     context 'when the scenario is public and owned by the user but the token lacks scenarios:delete' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = user
         delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :write)
       end
@@ -85,7 +85,7 @@ describe 'Deleting a scenario with API v3' do
 
     context 'when the scenario is owned by someone else' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = create(:user)
         delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)
       end
@@ -97,7 +97,7 @@ describe 'Deleting a scenario with API v3' do
 
     context 'when the scenario is private and owned by the user' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = user
         scenario.reload.update!(private: true)
         delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)
@@ -110,7 +110,7 @@ describe 'Deleting a scenario with API v3' do
 
     context 'when the scenario is private and owned by someone else' do
       before do
-        scenario.scenario_users.destroy_all
+        scenario.remove_all_users
         scenario.user = create(:user)
         scenario.reload.update!(private: true)
         delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)

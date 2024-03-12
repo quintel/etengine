@@ -22,7 +22,7 @@ class Scenario::YearInterpolator
     clone.end_year = @year
     clone.source   = @scenario.source
 
-    clone.scenario_users.destroy_all
+    clone.remove_all_users
     clone.user = @current_user if @current_user
     clone.reload unless clone.new_record?
 

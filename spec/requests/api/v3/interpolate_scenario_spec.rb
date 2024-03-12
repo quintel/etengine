@@ -89,7 +89,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     before do
-      source.scenario_users.destroy_all
+      source.remove_all_users
       source.user = user
       source.reload.update!(private: true)
     end
@@ -122,7 +122,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     let(:user) { create(:user) }
 
     before do
-      source.scenario_users.destroy_all
+      source.remove_all_users
       source.user = user
     end
 
@@ -154,7 +154,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     let(:user) { create(:user) }
 
     before do
-      source.scenario_users.destroy_all
+      source.remove_all_users
       source.user = create(:user)
       source.reload.update(private: true)
     end

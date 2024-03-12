@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ScenarioUser do
   let(:scenario) { create(:scenario) }
 
-  it { is_expected.to validate_inclusion_of(:role_id).in_array(User::ROLES.keys) }
+  it { is_expected.to validate_inclusion_of(:role_id).in_array(User::ROLES.keys).with_message("unknown") }
 
   it { is_expected.to belong_to(:scenario) }
   it { is_expected.to belong_to(:user).optional }
@@ -109,20 +109,18 @@ describe ScenarioUser do
 
   it 'cancels a destroy action for the last owner of a scenario if other users are present' do
     owner = create(:scenario_user, scenario: scenario, role_id: User::ROLES.key(:scenario_owner))
-    viewer = create(:scenario_user, scenario: scenario, role_id: User::ROLES.key(:scenario_viewer))
-
     owner.destroy
 
     expect(owner.reload).to_not be(nil)
   end
 
-  it 'does not cancel destroy action for the last owner of a scenario if its the last user' do
+  it 'cancels a destroy action for the last owner of a scenario if its the last user' do
     # The first user added will automatically become the scenario owner
     owner = create(:scenario_user, scenario: scenario, role_id: User::ROLES.key(:scenario_owner))
     owner.destroy
 
     expect(
       scenario.scenario_users.count
-    ).to be(0)
+    ).to be(1)
   end
 end

@@ -89,7 +89,7 @@ RSpec.describe UpdateSavedScenario do
 
   context 'when the scenario is not accessible' do
     before do
-      scenario.scenario_users.destroy_all
+      scenario.remove_all_users
       scenario.reload.update(user: create(:user))
       scenario.reload.update(private: true)
     end
