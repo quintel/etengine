@@ -25,9 +25,10 @@ module Qernel
         # Capacity needs to be calculated early, as number_of_units requires
         # demand to be present; this varies based on demand.
         @carrier_capacity =
-          @node.input_capacity *
-          @node.public_send(@context.carrier_named('%s_output_conversion')) *
+          output_capacity_per_unit *
           @node.number_of_units
+
+        @input_cap = @node.input_capacity * @node.number_of_units
 
         # Pre-compute electricity while demand is set on the node.
         max_available_electricity
@@ -56,6 +57,14 @@ module Qernel
         Merit::VolatileProducer
       end
 
+      def production_profile
+        profile = profile_builder.useable_profile
+        new_sum = profile.sum
+
+        # Normalize to get the curve representable again.
+        profile.class.new(profile.map { |val| val / (new_sum * 3600.0) })
+      end
+
       # Internal: Creates a class which will create the useable profile for the
       # participant, accounting for curtailment.
       #
@@ -65,12 +74,12 @@ module Qernel
       def profile_builder
         @profile_builder ||=
           begin
-            max_capacity_from_curve = unlimited_carrier_curve_max
+            max_capacity_from_curve = unlimited_input_curve_max
 
-            curtailment = if max_capacity_from_curve.zero?
+            curtailment = if max_capacity_from_curve.zero? || @input_cap > max_capacity_from_curve
               0.0
             else
-              (max_capacity_from_curve - @carrier_capacity) / max_capacity_from_curve
+              (max_capacity_from_curve - @input_cap) / max_capacity_from_curve
             end
 
             if curtailment.positive? && @config.group.to_s.starts_with?('self:')
@@ -85,21 +94,13 @@ module Qernel
           end
       end
 
-      # Internal: maximum of a curve representing the maximum amount of carrier energy that
-      # may be produced in each hour, assuming no electricity is curtailed, and
-      # unlimited output capacity of the carrier conversion.
+      # Internal: maximum of a curve representing the maximum amount of electricity energy that
+      # may be input in each hour, assuming no electricity is curtailed, and
+      # unlimited input capacity.
       #
       # Returns a Float
-      def unlimited_carrier_curve_max
-        @context.curves.curve(@config.group, @node).max * max_carrier_production
-      end
-
-      # Internal: The maximum amount of carrier energy which may be emitted by
-      # the electrolyser assuming no curtailment and unlimited output capacity.
-      #
-      # Returns a Float.
-      def max_carrier_production
-        max_available_electricity * @node.output(@context.carrier).conversion
+      def unlimited_input_curve_max
+        @context.curves.curve(@config.group, @node).max * max_available_electricity
       end
 
       # Internal: The maximum amount of electricity available for conversion to
