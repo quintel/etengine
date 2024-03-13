@@ -55,7 +55,7 @@ class ScenarioUser < ApplicationRecord
   def ensure_last_owner
     return unless last_owner?
 
-    errors.add(:base, 'Last owner cannot be altered')
+    errors.add(:base, :ownership, message: 'Last owner cannot be altered')
     throw(:abort)
   end
 
@@ -77,6 +77,10 @@ class ScenarioUser < ApplicationRecord
   def user_id_or_email
     return if user_id.blank? ^ user_email.blank?
 
-    errors.add(:base, 'Either user_id or user_email should be present.')
+    errors.add(
+      :base,
+      :user_or_email_blank,
+      message: 'Either user_id or user_email should be present.'
+    )
   end
 end
