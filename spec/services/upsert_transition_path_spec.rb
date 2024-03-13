@@ -92,7 +92,7 @@ RSpec.describe UpsertTransitionPath do
 
   context 'when a scenario is not accessible' do
     before do
-      scenario1.remove_all_users
+      scenario1.delete_all_users
       scenario1.reload.update(user: create(:user))
       scenario1.reload.update(private: true)
     end

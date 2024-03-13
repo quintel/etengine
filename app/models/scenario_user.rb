@@ -10,7 +10,7 @@ class ScenarioUser < ApplicationRecord
 
   before_save :ensure_one_owner_left_before_save
   before_create :couple_existing_user
-  before_destroy :ensure_last_owner
+  before_destroy :ensure_one_owner_left_before_destroy
 
   # If email is supplied on create, see if we can find a user in the system
   def couple_existing_user
@@ -57,6 +57,13 @@ class ScenarioUser < ApplicationRecord
 
     errors.add(:base, 'Last owner cannot be altered')
     throw(:abort)
+  end
+
+  def ensure_one_owner_left_before_destroy
+    return if destroyed_by_association
+    return unless role_id == User::ROLES.key(:scenario_owner)
+
+    ensure_last_owner
   end
 
   def ensure_one_owner_left_before_save

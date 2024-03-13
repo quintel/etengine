@@ -34,7 +34,7 @@ class User < ApplicationRecord
 
   # rubocop:enable Rails/InverseOf
 
-  has_many :scenario_users, dependent: :delete_all
+  has_many :scenario_users, dependent: :destroy
   has_many :scenarios, through: :scenario_users
   has_many :personal_access_tokens, dependent: :destroy
 

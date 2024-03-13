@@ -411,7 +411,7 @@ describe 'Custom curves', :etsource_fixture do
 
     context 'when uploading a curve to an owned private scenario' do
       before do
-        scenario.remove_all_users
+        scenario.delete_all_users
         scenario.user = user
       end
 
@@ -443,7 +443,7 @@ describe 'Custom curves', :etsource_fixture do
 
     context 'when removing an attached curve' do
       before do
-        scenario.remove_all_users
+        scenario.delete_all_users
 
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
@@ -480,7 +480,7 @@ describe 'Custom curves', :etsource_fixture do
       before do
         put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }
 
-        scenario.remove_all_users
+        scenario.delete_all_users
         scenario.user = user
       end
 

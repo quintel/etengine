@@ -37,7 +37,7 @@ describe 'Updating a scenario with API v3' do
 
   context 'when setting an owned public scenario to be private' do
     before do
-      scenario.remove_all_users
+      scenario.delete_all_users
       scenario.update!(user: user, private: false)
     end
 
@@ -55,7 +55,7 @@ describe 'Updating a scenario with API v3' do
 
   context 'when setting an owned private scenario to be public' do
     before do
-      scenario.remove_all_users
+      scenario.delete_all_users
       scenario.update(user: user)
       scenario.reload.update(private: true)
     end

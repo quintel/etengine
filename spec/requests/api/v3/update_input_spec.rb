@@ -574,7 +574,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when updating a public scenario owned by someone else' do
     before do
-      scenario.remove_all_users
+      scenario.delete_all_users
       scenario.update!(user: create(:user))
     end
 
@@ -591,7 +591,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when updating their own public scenario' do
     before do
-      scenario.remove_all_users
+      scenario.delete_all_users
       scenario.update!(user: user)
 
       autobalance_scenario(
@@ -611,7 +611,7 @@ describe 'Updating inputs with API v3' do
     before do
       user = create(:user)
 
-      scenario.remove_all_users
+      scenario.delete_all_users
       scenario.update!(user: user)
 
       autobalance_scenario(
@@ -629,7 +629,7 @@ describe 'Updating inputs with API v3' do
     before do
       user = create(:user)
 
-      scenario.remove_all_users
+      scenario.delete_all_users
       scenario.update!(user: user)
 
       autobalance_scenario(

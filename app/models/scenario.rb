@@ -16,8 +16,7 @@ class Scenario < ApplicationRecord
   store :balanced_values
   store :metadata, coder: JSON
 
-  # Use delete_all to avoid the before_destroy callback on ScenarioUser
-  has_many :scenario_users, dependent: :delete_all
+  has_many :scenario_users, dependent: :destroy
   has_many :users, through: :scenario_users
 
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
@@ -349,10 +348,10 @@ class Scenario < ApplicationRecord
     )
   end
 
-  # Removes all ScenarioUsers. Used mostly for specs.
+  # Removes all ScenarioUsers without validation. Used only for specs.
   #
   # Use delete_all to avoid the before_destroy callback on ScenarioUser
-  def remove_all_users
+  def delete_all_users
     scenario_users.delete_all
   end
 
