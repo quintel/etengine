@@ -41,7 +41,6 @@ class CostsParametersSerializer
       buildings_lt_heat_delivery_system
     ],
     costs_storage_and_conversion_storage: %w[
-      costs_hydrogen_storage
       heat_infrastructure_ht_storage
       heat_infrastructure_mt_storage
       heat_infrastructure_lt_storage
