@@ -123,7 +123,7 @@ class CostsParametersSerializer
     'Capital costs (eur)', 'Depreciation costs (eur)',
     'Fixed operation and maintenance costs (eur)', 'Variable operation and maintenance costs (eur)',
     'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
-    'CO2 emission costs (eur)', 'Biogenic Co2 emission costs (eur)', 'Number of units'
+    'CO2 emission costs (eur)', 'Captured biogenic CO2 costs (eur)', 'Number of units'
   ]
 
   # Creates a new costs csv serializer.
