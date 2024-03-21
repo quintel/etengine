@@ -232,7 +232,7 @@ describe 'Qernel::NodeApi cost calculations' do
       {
         weighted_carrier_cost_per_mj: 200,
         co2_emissions_costs_per_typical_input: 300,
-        captured_biogenic_co2_emissions_costs_per_typical_input: 0,
+        captured_biogenic_co2_costs_per_typical_input: 0,
         variable_operation_and_maintenance_costs_per_typical_input: 400
       }
     end
@@ -368,7 +368,7 @@ describe 'Qernel::NodeApi cost calculations' do
     end
   end
 
-  describe '#captured_biogenic_co2_emissions_costs_per_typical_input' do
+  describe '#captured_biogenic_co2_costs_per_typical_input' do
     let(:attrs) do
       {
         weighted_carrier_potential_co2_per_mj: 2.0,
@@ -385,7 +385,7 @@ describe 'Qernel::NodeApi cost calculations' do
     end
 
     it 'calculates when everything is set' do
-      expect(api.send(:captured_biogenic_co2_emissions_costs_per_typical_input)).to eq(-4.0)
+      expect(api.send(:captured_biogenic_co2_costs_per_typical_input)).to eq(-4.0)
     end
   end
 

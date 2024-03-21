@@ -212,7 +212,7 @@ class CostsParametersSerializer
         node.key, # Key
         format_num(node.query.total_costs_per(:node) - 
           node.query.fuel_costs_per(:node) - node.query.co2_emissions_costs_per(:node) - 
-          node.query.captured_biogenic_co2_emissions_costs_per(:node)), # Total costs (eur)
+          node.query.captured_biogenic_co2_costs_per(:node)), # Total costs (eur)
         format_num(node.query.capital_expenditures_excluding_ccs_per(:node) + 
           node.query.capital_expenditures_ccs_per(:node)), # Total CAPEX (eur)
         format_num(node.query.operating_expenses_excluding_ccs_per(:node) + 
@@ -227,7 +227,7 @@ class CostsParametersSerializer
         format_num(node.query.construction_time), # 'Construction time (years)'
         format_num(node.query.technical_lifetime), # 'Technical lifetime (years)'
         format_num(node.query.co2_emissions_costs_per(:node)), # CO2 emission costs (eur)
-        format_num(node.query.captured_biogenic_co2_emissions_costs_per(:node)), # Biogenic CO2 emissions costs (eur)
+        format_num(node.query.captured_biogenic_co2_costs_per(:node)), # Biogenic CO2 emissions costs (eur)
         format_num(node.query.number_of_units) # Number of units
       ]
     end
