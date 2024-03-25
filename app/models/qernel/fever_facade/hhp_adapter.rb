@@ -36,7 +36,7 @@ module Qernel
     # conversion of 1.03 would result in inaccurate input of the primary
     # component carriers. To that end, the node will be hard-coded to an
     # output conversion of 1.0, and the input shares will be adjusted to ensure
-    # the flow of energ into the node is correct.
+    # the flow of energy into the node is correct.
     class HHPAdapter < ProducerAdapter
       MJ_IN_MWH = 3600
 
