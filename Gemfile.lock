@@ -6,8 +6,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: d5c84b505494c92f816624f8b30b4b47941ff75d
-  ref: d5c84b5
+  revision: cdb74be0ed878ecfd83a98b3528c538f6aa47bec
+  ref: cdb74be
   specs:
     atlas (1.0.0)
       activemodel (>= 7)
@@ -170,7 +170,7 @@ GEM
       dry-validation (~> 1.0, >= 1.0.0)
     connection_pool (2.4.1)
     crass (1.0.6)
-    csv (3.2.8)
+    csv (3.3.0)
     dalli (3.2.3)
     date (3.3.4)
     debug_inspector (1.1.0)
@@ -252,7 +252,7 @@ GEM
     gctools (0.2.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    gpgme (2.0.23)
+    gpgme (2.0.24)
       mini_portile2 (~> 2.7)
     haml (5.2.2)
       temple (>= 0.8.0)

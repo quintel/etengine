@@ -37,4 +37,24 @@ module Qernel::RecursiveFactor::WeightedCarrier
 
     # Else: continue traversing right.
   end
+
+  # Same as weighted_carrier_cost_per_mj but for co2 potential biogenic capture
+  def weighted_carrier_potential_co2_per_mj
+    fetch(:weighted_carrier_potential_co2_per_mj) do
+      recursive_factor_without_losses(:weighted_carrier_potential_co2_per_mj_factor)
+    end
+  end
+
+  def weighted_carrier_potential_co2_per_mj_factor(edge)
+    return unless edge
+
+    # Carriers with no or zero intrinsic biogenic CO2 capture potential are not
+    # counted in this calculation.
+
+    if edge.carrier.potential_co2_conversion_per_mj || domestic_dead_end?
+      edge.carrier.potential_co2_conversion_per_mj
+    end
+
+    # Else: continue traversing right.
+  end
 end

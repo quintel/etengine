@@ -29,6 +29,12 @@ module Qernel
         0.0
       end
 
+      # Public: The price of captured biogenic CO2 emissions by the node. Molecule nodes do not have
+      # CO2 emissions so this is always zero.
+      def captured_biogenic_co2_costs_per_typical_input
+        0.0
+      end
+
       private
 
       # Molecule nodes define demand in kg (kg/year), while capacities are specified in kg/hour.

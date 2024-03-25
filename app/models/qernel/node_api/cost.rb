@@ -75,7 +75,8 @@ module Qernel
           elsif electricity_output_conversion.zero?
             0.0
           else
-            variable_costs_per_typical_input(include_waste: false) *
+            costs = variable_costs_per_typical_input(include_waste: false)
+            (costs.negative? ? 0.0 : costs) *
               SECS_PER_HOUR / # Highlighting
               electricity_output_conversion
           end
@@ -368,7 +369,8 @@ module Qernel
         fetch(cache_key) do
           costable =
             weighted_carrier_cost_per_mj +
-            co2_emissions_costs_per_typical_input
+            co2_emissions_costs_per_typical_input +
+            captured_biogenic_co2_costs_per_typical_input
 
           costable *= costable_energy_factor unless include_waste
 
@@ -414,6 +416,27 @@ module Qernel
           weighted_carrier_co2_per_mj * area.co2_price *
             (1 - area.co2_percentage_free) *
             (takes_part_in_ets || 1.0) * ((1 - free_co2_factor))
+        end
+      end
+
+      # Internal: Determines the costs of captured biogenic co2 .
+      #
+      # Return the the yearly costs for captured biogenic co2 for one plant.
+      def captured_biogenic_co2_costs
+        fetch(:captured_biogenic_co2_costs) do
+          typical_input * captured_biogenic_co2_costs_per_typical_input
+        end
+      end
+
+      # Internal: Calculates the captured biogenic co2 costs per typical input (in MJ).
+      # A positive price should lead to negative costs i.e., benefits.
+      #
+      # Returns a float representing cost per MJ.
+      def captured_biogenic_co2_costs_per_typical_input
+        fetch(:captured_biogenic_co2_costs_per_typical_input) do
+          weighted_carrier_potential_co2_per_mj *
+            - area.captured_biogenic_co2_price *
+            free_co2_factor
         end
       end
 

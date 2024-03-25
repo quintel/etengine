@@ -123,7 +123,7 @@ class CostsParametersSerializer
     'Capital costs (eur)', 'Depreciation costs (eur)',
     'Fixed operation and maintenance costs (eur)', 'Variable operation and maintenance costs (eur)',
     'Total investment over lifetime (eur)', 'WACC', 'Construction time (years)', 'Technical lifetime (years)',
-    'CO2 emission costs (eur)', 'Number of units'
+    'CO2 emission costs (eur)', 'Captured biogenic CO2 costs (eur)', 'Number of units'
   ]
 
   # Creates a new costs csv serializer.
@@ -133,7 +133,7 @@ class CostsParametersSerializer
   # Returns a CostsCsvSerializer.
   def initialize(scenario)
     @graph = scenario.gql.future.graph
-    @molecule_graph = Qernel::Plugins::Molecules.new(@graph).molecule_graph
+    @molecule_graph = scenario.gql.future.molecules
     @gql = scenario.gql
   end
 
@@ -210,11 +210,12 @@ class CostsParametersSerializer
         group, # Group
         subgroup, # Subgroup
         node.key, # Key
-        format_num(node.query.total_costs_per(:node) - 
-          node.query.fuel_costs_per(:node) - node.query.co2_emissions_costs_per(:node)), # Total costs (eur)
-        format_num(node.query.capital_expenditures_excluding_ccs_per(:node) + 
+        format_num(node.query.total_costs_per(:node) -
+          node.query.fuel_costs_per(:node) - node.query.co2_emissions_costs_per(:node) -
+          node.query.captured_biogenic_co2_costs_per(:node)), # Total costs (eur)
+        format_num(node.query.capital_expenditures_excluding_ccs_per(:node) +
           node.query.capital_expenditures_ccs_per(:node)), # Total CAPEX (eur)
-        format_num(node.query.operating_expenses_excluding_ccs_per(:node) + 
+        format_num(node.query.operating_expenses_excluding_ccs_per(:node) +
           node.query.operating_expenses_ccs_per(:node)), # Total OPEX (eur)
         format_num(node.query.cost_of_capital_per(:node)), # 'Capital costs (eur)'
         format_num(node.query.depreciation_costs_per(:node)), # 'Depreciation costs (eur)'
@@ -226,6 +227,7 @@ class CostsParametersSerializer
         format_num(node.query.construction_time), # 'Construction time (years)'
         format_num(node.query.technical_lifetime), # 'Technical lifetime (years)'
         format_num(node.query.co2_emissions_costs_per(:node)), # CO2 emission costs (eur)
+        format_num(node.query.captured_biogenic_co2_costs_per(:node)), # Biogenic CO2 emissions costs (eur)
         format_num(node.query.number_of_units) # Number of units
       ]
     end
@@ -262,6 +264,7 @@ class CostsParametersSerializer
       format_num(@query_results["#{query}_construction_time"]),
       format_num(@query_results["#{query}_technical_lifetime"]),
       nil, # CO2 emission costs (eur)
+      nil, # Biogenic CO2 emission costs (eur)
       nil # Number of units
     ]
   end
@@ -273,7 +276,7 @@ class CostsParametersSerializer
   # For each base key it performs a set of queries: [{key}, {key}_capex, ...]
   # Skips queries that could not be found. Saves the results in @query_results.
   def perform_queries!
-    as_queries = queries.flat_map do |key| 
+    as_queries = queries.flat_map do |key|
       [
         Gquery.get(key),
         Gquery.get("#{key}_annualised_costs"),
