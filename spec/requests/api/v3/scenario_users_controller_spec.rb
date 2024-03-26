@@ -87,7 +87,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors']['viewer@test.com']).to include('Role unknown')
+        expect(json['errors']['viewer@test.com']).to include('role_id')
       end
     end
 
@@ -105,7 +105,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors']['viewer']).to include('User email is invalid')
+        expect(json['errors']['viewer']).to include('user_email')
       end
     end
 
@@ -211,7 +211,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(json['errors'][user.email]).to include(
-          'Last owner cannot be altered'
+          'base'
         )
       end
     end
@@ -279,9 +279,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors'][user_2.email]).to include(
-          'Role unknown'
-        )
+        expect(json['errors'][user_2.email]).to include('role_id')
       end
     end
   end
@@ -356,7 +354,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'returns an error' do
         expect(json['errors'][user.email]).to include(
-          'Last owner cannot be altered'
+          'base'
         )
       end
     end
