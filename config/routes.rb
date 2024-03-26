@@ -146,6 +146,11 @@ Rails.application.routes.draw do
         get 'curves/residual_load',
           to: 'curves#residual_load',
           as: :curves_residual_load_download
+
+        get 'curves/hydrogen_integral_cost',
+          to: 'curves#hydrogen_integral_cost',
+          as: :hydrogen_integral_cost_download
+  
       end
 
       resources :saved_scenarios
