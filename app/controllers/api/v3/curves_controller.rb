@@ -133,6 +133,14 @@ module Api
         )
       end
 
+      def hydrogen_integral_cost
+        render_serializer QueryCurveCSVSerializer.new(
+          Etsource::Config.hydrogen_integral_cost_csv,
+          @scenario.gql,
+          'hydrogen_integral_cost'
+        )
+      end
+
       private
 
       def merit_required

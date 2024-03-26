@@ -115,6 +115,10 @@ module Etsource
       read('residual_load_csv').map(&:symbolize_keys)
     end
 
+    def hydrogen_integral_cost_csv
+      read('hydrogen_integral_cost_csv').map(&:symbolize_keys)
+    end
+
     # Public: Reads the hash of curves for which users may upload a custom curve.
     #
     # Returns a Hash of {String => CurveHandler::Config}.
