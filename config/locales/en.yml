@@ -49,4 +49,8 @@ en:
         name: Your name
   scenario_invitation_mailer:
     invite_user:
-      subject: You were invited to participate in an Energy Transition Model scenario!
+      subject: 'Invitation: ETM scenario'
+    roles:
+      scenario_viewer: viewer
+      scenario_collaborator: collaborator
+      scenario_owner: owner

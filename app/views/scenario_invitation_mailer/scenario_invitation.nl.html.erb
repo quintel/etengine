@@ -7,7 +7,7 @@
 <p style="font-family: Arial, sans-serif; color: #333;">Hallo!</p>
 
 <p style="font-family: Arial, sans-serif; color: #333;">
-    <%= @inviter_name %> heeft je zojuist uitgenodigd om samen te werken aan het scenario "<%= @saved_scenario_title %>" van het Energiemodel voor de Transitie.
+    <%= @inviter_name %> heeft je zojuist uitgenodigd om samen te werken aan het scenario "<%= @saved_scenario_title %>" van het Energiemodel voor de Transitie als <%=t("scenario_invitation_mailer.roles.#{@new_role}")%>.
 </p>
 <p style="font-family: Arial, sans-serif; color: #333;">
     Als je al een account hebt bij <a href="<%= Settings.etmodel_uri %>" style="color: #007BFF; text-decoration: none;">https://energytransitionmodel.com/</a>, volg dan <a href="<%= @saved_scenario_link %>" style="color: #007BFF; text-decoration: none;">deze link om het scenario te bekijken</a> en begin met samenwerken!
@@ -18,7 +18,7 @@
 </p>
 
 <p style="font-family: Arial, sans-serif; color: #777; font-size: 14px;">
-    Als je deze uitnodiging niet verwachtte, negeer dan deze e-mail. 
+    Als je deze uitnodiging niet verwachtte, negeer dan deze e-mail.
 </p>
 <div style="text-align: center; margin-top: 30px;">
     <img src="app/assets/images/logo.png" alt="Energiemodel voor de Transitie" style="width: 100px;">

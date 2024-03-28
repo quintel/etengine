@@ -49,4 +49,9 @@ nl:
         name: Jouw naam
   scenario_invitation_mailer:
     invite_user:
-      subject: Je bent uitgenodigd om deel te nemen aan een Energie Transitie Model scenario!
+      subject: 'Uitnodiging: ETM scenario'
+    roles:
+      scenario_viewer: beschouwer
+      scenario_collaborator: medewerker
+      scenario_owner: eigenaar
+

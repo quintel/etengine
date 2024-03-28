@@ -159,6 +159,7 @@ module Api
         ScenarioInvitationMailer.invite_user(
           scenario_user.email,
           permitted_params[:invitation_args][:user_name],
+          User::ROLES[scenario_user.role_id],
           permitted_params[:invitation_args].slice(:id, :title)
         )
       end
