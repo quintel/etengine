@@ -157,7 +157,6 @@ module Api
       # Make sure a user knows it was added to a scenario by sending an email notifying them.
       def send_invitation_mail_for(scenario_user)
         ScenarioInvitationMailer.invite_user(
-          scenario_user.user_id.present? ? 'existing' : 'new',
           scenario_user.email,
           permitted_params[:invitation_args][:user_name],
           permitted_params[:invitation_args].slice(:id, :title)
