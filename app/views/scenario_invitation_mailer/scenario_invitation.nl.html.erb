@@ -1,9 +1,28 @@
-<p>Beste <%= @email %>,</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Uitnodigingsemail</title>
+</head>
+<body>
+<p style="font-family: Arial, sans-serif; color: #333;"> Hallo !</p>
 
-<p><%= @inviter_name %> heeft je uitgenodigd om mee te werken aan het scenario "<%= @saved_scenario_title %>" van het Energy Transition Model. Zie hieronder de detials:</p>
+<p style="font-family: Arial, sans-serif; color: #333;">
+    <%= @inviter_name %> heeft je zojuist uitgenodigd om samen te werken aan het scenario "<%= @saved_scenario_title %>" van het Energy Transition Model.
+</p>
 
-<p>Als je al een account hebt op <a href=<%=Settings.etmodel_uri%>>https://energytransitionmodel.com/</a>, volg dan <a href=<%=@saved_scenario_link%>> deze link om het scenario te bekijken </a> en begin met samenwerken!</p>
+<p>Scenario-ID: <%= @saved_scenario_id %><br>
+Scenario Titel: <%= @saved_scenario_title %></p>
 
-<p>Als je nog geen account hebt, volg dan <a href=<%= new_user_registration_url%>> deze link om een account aan te maken </a>.</p>
+<p>Als je al een account hebt op <a href="https://energytransitionmodel.com/">https://energytransitionmodel.com/</a>, volg dan <a href="https://www.energytransitionmodel.com/saved_scenarios/#{@saved_scenario_id}"> deze link om het scenario te bekijken </a> en begin met samenwerken!</p>
 
-<p>Als je deze uitnodiging niet verwachtte, negeer dan deze e-mail.</p>
+<p>Als je nog geen account hebt, volg dan <a href="https://engine.energytransitionmodel.com/identity/sign_up"> deze link om een account aan te maken </a>.</p>
+
+<p style="font-family: Arial, sans-serif; color: #777; font-size: 14px;">
+    Als je deze uitnodiging niet verwachtte, negeer dan deze e-mail.
+</p>
+<div style="text-align: center; margin-top: 30px;">
+    <img src="app/assets/images/logo.png" alt="Energy Transition Model" style="width: 100px;">
+</div>
+
+</body>
+</html>

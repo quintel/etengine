@@ -1,10 +1,31 @@
 <!-- invite_basic_user.html.erb -->
-<p>Hello <%= @email %>!</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invitation Email</title>
+</head>
+<body>
+<p style="font-family: Arial, sans-serif; color: #333;">Hello !</p>
 
-<p><%= @inviter_name %> just invited you to collaborate on scenario "<%= @saved_scenario_title %>" of the Energy Transition Model. Here are the details:</p>
+<p style="font-family: Arial, sans-serif; color: #333;">
+    <%= @inviter_name %> just invited you to collaborate on scenario "<%= @saved_scenario_title %>" of the Energy Transition Model.
+</p>
 
-<p>If you already have an account at <a href=<%=Settings.etmodel_uri%>>https://energytransitionmodel.com/</a>, please follow <a href=<%=@saved_scenario_link%>> this link to view the scenario </a> and start collaborating!</p>
+<p style="font-family: Arial, sans-serif; color: #333;">
+    If you already have an account at <a href="https://energytransitionmodel.com/" style="color: #007BFF; text-decoration: none;">https://energytransitionmodel.com/</a>, please follow 
+    <a href="https://www.energytransitionmodel.com/saved_scenarios/#{@saved_scenario_id}" style="color: #007BFF; text-decoration: none;">this link to view the scenario</a> and start collaborating!
+</p>
 
-<p>If you do not yet have an account, click <a href=<%= new_user_registration_url%>> here to sign up</a>.</p>
+<p style="font-family: Arial, sans-serif; color: #333;">
+    If you do not yet have an account, click <a href="https://engine.energytransitionmodel.com/identity/sign_up" style="color: #007BFF; text-decoration: none;">here to sign up</a>.
+</p>
 
-<p>If you did not expect to receive this invitation, please ignore this email.</p>
+<p style="font-family: Arial, sans-serif; color: #777; font-size: 14px;">
+    If you did not expect to receive this invitation, please ignore this email. 
+</p>
+<div style="text-align: center; margin-top: 30px;">
+    <img src="app/assets/images/logo.png" alt="Energy Transition Model" style="width: 100px;">
+</div>
+
+</body>
+</html>
