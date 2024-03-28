@@ -23,12 +23,12 @@ describe 'Deleting a scenario with API v3' do
   context 'when authenticated' do
     let(:user) { create(:user) }
 
-    let!(:scenario1) { create(:scenario, owner: user, private: false, created_at: 5.minutes.ago) }
-    let!(:scenario2) { create(:scenario, owner: user, private: true,  created_at: 4.minutes.ago) }
-    let!(:scenario3) { create(:scenario, owner: user, private: false, created_at: 3.minutes.ago) }
+    let!(:scenario1) { create(:scenario, user: user, private: false, created_at: 5.minutes.ago) }
+    let!(:scenario2) { create(:scenario, user: user, private: true, created_at: 4.minutes.ago) }
+    let!(:scenario3) { create(:scenario, user: user, private: false, created_at: 3.minutes.ago) }
 
     let!(:public_scenario) { create(:scenario) }
-    let!(:other_scenario) { create(:scenario, owner: create(:user)) }
+    let!(:other_scenario) { create(:scenario, user: create(:user)) }
 
     let(:json) { JSON.parse(response.body) }
 
@@ -41,8 +41,8 @@ describe 'Deleting a scenario with API v3' do
         expect(response.status).to eq(200)
       end
 
-      it 'returns only the public scenarios' do
-        expect(json['data'].map { |scenario| scenario['id'] }.sort)
+      it 'returns only the user-owned public scenarios' do
+        expect(json['data'].pluck('id').sort)
           .to eq([scenario1.id, scenario3.id].sort)
       end
     end
@@ -57,16 +57,16 @@ describe 'Deleting a scenario with API v3' do
       end
 
       it 'lists the scenarios' do
-        expect(json['data'].map { |scenario| scenario['id'] }.sort)
+        expect(json['data'].pluck('id').sort)
           .to eq([scenario3.id, scenario2.id, scenario1.id].sort)
       end
 
       it 'does not include unowned scenarios' do
-        expect(json['data'].map { |scenario| scenario['id'] }).not_to include(public_scenario.id)
+        expect(json['data'].pluck('id')).not_to include(public_scenario.id)
       end
 
       it 'does not include scenarios belonging to other users' do
-        expect(json['data'].map { |scenario| scenario['id'] }).not_to include(other_scenario.id)
+        expect(json['data'].pluck('id')).not_to include(other_scenario.id)
       end
 
       it 'does not include a link to the previous page' do

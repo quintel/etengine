@@ -65,7 +65,7 @@ module Api
         scenarios = Scenario
           .accessible_by(current_ability)
           .where(id: saved_scenarios.map { |s| s['scenario_id'] })
-          .includes(:scaler, :owner)
+          .includes(:scaler, :users)
           .index_by(&:id)
 
         saved_scenarios.map do |saved_scenario|

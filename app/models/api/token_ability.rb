@@ -6,7 +6,6 @@ module Api
     include CanCan::Ability
 
     def initialize(token, user)
-      can :read, Scenario, owner_id: nil
       can :read, Scenario, private: false
 
       # scenarios:read
@@ -14,7 +13,7 @@ module Api
 
       return unless token.scopes.include?('scenarios:read')
 
-      can :read, Scenario, owner_id: user.id
+      can :read, Scenario, id: ScenarioUser.where(user_id: user.id, role_id: User::ROLES.key(:scenario_viewer)..).pluck(:scenario_id)
 
       # scenarios:write
       # ---------------
@@ -24,21 +23,22 @@ module Api
       can :create, Scenario
 
       # Unowned public scenario.
-      can :update, Scenario, private: false, owner_id: nil
+      can :update, Scenario, private: false
+      cannot :update, Scenario, private: false, id: ScenarioUser.pluck(:scenario_id)
 
       # Self-owned scenario.
-      can :update, Scenario, owner_id: user.id
+      can :update, Scenario, id: ScenarioUser.where(user_id: user.id, role_id: User::ROLES.key(:scenario_collaborator)..).pluck(:scenario_id)
 
       # Actions that involve reading one scenario and writing to another.
-      can :clone,  Scenario, private: false
-      can :clone,  Scenario, owner_id: user.id
+      can :clone, Scenario, private: false
+      can :clone, Scenario, id: ScenarioUser.where(user_id: user.id, role_id: User::ROLES.key(:scenario_collaborator)..).pluck(:scenario_id)
 
       # scenarios:delete
       # ----------------
 
       return unless token.scopes.include?('scenarios:delete')
 
-      can :destroy, Scenario, owner_id: user.id
+      can :destroy, Scenario, id: ScenarioUser.where(user_id: user.id, role_id: User::ROLES.key(:scenario_owner)).pluck(:scenario_id)
     end
   end
 end

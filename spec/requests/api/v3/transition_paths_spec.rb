@@ -75,7 +75,7 @@ RSpec.describe 'transition paths API' do
 
   context 'when creating a transition path' do
     context 'when the scenarios exist' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       let(:params) do
         {
@@ -116,7 +116,7 @@ RSpec.describe 'transition paths API' do
     end
 
     context 'when missing the title' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       before do
         stub_etmodel_request('/api/v1/transition_paths', method: :post) do
@@ -139,7 +139,7 @@ RSpec.describe 'transition paths API' do
     end
 
     context 'when a scenario is not accessible' do
-      let(:scenario) { create(:scenario, owner: create(:user), private: true) }
+      let(:scenario) { create(:scenario, user: create(:user), private: true) }
 
       before do
         post '/api/v3/transition_paths',
@@ -189,7 +189,7 @@ RSpec.describe 'transition paths API' do
 
   context 'when updating a transition path' do
     context 'when the scenarios exist' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       let(:params) do
         {
@@ -230,7 +230,7 @@ RSpec.describe 'transition paths API' do
     end
 
     context 'when the transition path is not accessible' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       let(:params) do
         {

@@ -19,7 +19,7 @@
     %tr
       %th.narrow.text-center Visibility
       %th ID
-      %th Owner
+      %th Owners
       %th End Year
       %th Area
       %th.narrow Compatibility
@@ -44,8 +44,9 @@
           - if s.id.to_s == params[:api_scenario_id]
             %span.tag.green &#9733; Current Scenario
         %td
-          - if s.owner
-            = link_to(s.owner.name, user_path(s.owner))
+          - if s.scenario_users.present?
+            - s.scenario_users.each do |scenario_user|
+              = link_to("#{scenario_user.user.name} (#{User::ROLES[scenario_user.role_id].to_s.humanize})", user_path(scenario_user.user))
           - else
             %span.muted No owner
         %td= s.end_year

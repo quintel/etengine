@@ -25,7 +25,7 @@ class ScenarioSerializer
       methods: %i[start_year coupling]
     ).symbolize_keys
 
-    json[:owner]    = @resource.owner&.as_json(only: %i[id name])
+    json[:users]    = @resource.scenario_users.map { |su| { id: su.user.id, email: su.user.email, role: User::ROLES[su.role_id] } }
     json[:scaling]  = @resource.scaler&.as_json(except: %i[id scenario_id])
     json[:template] = @resource.preset_scenario_id
     json[:url]      = @controller.api_v3_scenario_url(@resource)

@@ -35,8 +35,8 @@ RSpec.describe 'Registrations', type: :system do
     sign_in(user)
 
     # Create some data for the user.
-    create(:scenario, owner: user)
-    create(:scenario, owner: user)
+    create(:scenario, user: user)
+    create(:scenario, user: user)
     create(:personal_access_token, user:)
 
     visit '/identity'

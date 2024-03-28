@@ -19,7 +19,7 @@ RSpec.describe 'Saved scenarios API' do
 
   context 'when fetching a single saved scenario' do
     context 'when the saved scenario and scenario exist' do
-      let(:scenario) { create(:scenario, owner: user, area_code: 'nl') }
+      let(:scenario) { create(:scenario, user: user, area_code: 'nl') }
 
       before do
         stub_etmodel_request('/api/v1/saved_scenarios/1') do
@@ -110,7 +110,7 @@ RSpec.describe 'Saved scenarios API' do
     end
 
     context 'when the saved scenario exists but the scenario is not accessible' do
-      let(:scenario) { create(:scenario, owner: create(:user), private: true) }
+      let(:scenario) { create(:scenario, user: create(:user), private: true) }
 
       before do
         stub_etmodel_request('/api/v1/saved_scenarios/1') do
@@ -173,7 +173,7 @@ RSpec.describe 'Saved scenarios API' do
 
   context 'when creating a saved scenario' do
     context 'when the scenario exists' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
       let(:params) do
         {
           title: 'My saved scenario',
@@ -214,7 +214,7 @@ RSpec.describe 'Saved scenarios API' do
     end
 
     context 'when missing the title' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       before do
         stub_etmodel_request('/api/v1/saved_scenarios', method: :post) do
@@ -240,7 +240,7 @@ RSpec.describe 'Saved scenarios API' do
     end
 
     context 'when the scenario is not accessible' do
-      let(:scenario) { create(:scenario, owner: create(:user), private: true) }
+      let(:scenario) { create(:scenario, user: create(:user), private: true) }
 
       before do
         post '/api/v3/saved_scenarios',
@@ -292,7 +292,7 @@ RSpec.describe 'Saved scenarios API' do
 
   context 'when updating a saved scenario' do
     context 'when the scenario exists' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       let(:params) do
         {
@@ -334,7 +334,7 @@ RSpec.describe 'Saved scenarios API' do
     end
 
     context 'when the saved scenario is not accessible' do
-      let(:scenario) { create(:scenario, owner: user) }
+      let(:scenario) { create(:scenario, user: user) }
 
       let(:params) do
         {

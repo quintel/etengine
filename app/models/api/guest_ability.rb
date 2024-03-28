@@ -8,7 +8,8 @@ module Api
     def initialize
       can :create, Scenario
       can :read,   Scenario, private: false
-      can :update, Scenario, private: false, owner_id: nil
+      can :update, Scenario, private: false
+      cannot :update, Scenario, private: false, id: ScenarioUser.pluck(:scenario_id)
 
       # Actions that involve reading one scenario and writing to another.
       can :clone,  Scenario, private: false
