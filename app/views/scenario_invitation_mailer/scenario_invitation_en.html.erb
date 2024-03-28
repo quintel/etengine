@@ -1,0 +1,13 @@
+<!-- invite_basic_user.html.erb -->
+<p>Hello <%= email %>!</p>
+
+<p><%= @inviter_name %> just invited you to collaborate on scenario "<%= @saved_scenario_title %>" of the Energy Transition Model. Here are the details:</p>
+
+<p>Scenario ID: <%= @saved_scenario_id %><br>
+Scenario Title: <%= @saved_scenario_title %></p>
+
+<p>If you already have an account at <a href="https://energytransitionmodel.com/">https://energytransitionmodel.com/</a>, please follow <a href=https://www.energytransitionmodel.com/saved_scenarios/#{@saved_scenario_id}""> this link to view the scenario </a> and start collaborating!</p>
+
+<p>If you do not yet have an account, click <a href="https://engine.energytransitionmodel.com/identity/sign_up"> here to sign up</a>.</p>
+
+<p>If you did not expect to receive this invitation, please ignore this email.</p>
