@@ -39,7 +39,6 @@ module Api
           return
         end
 
-        # We only fetch the scenarios owned by the user for this listing
         scenarios = Scenario
           .accessible_by(current_ability)
           .viewable_by?(current_user)
