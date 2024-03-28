@@ -24,6 +24,7 @@ class Scenario::YearInterpolator
 
     clone.scenario_users.destroy_all
     clone.user = @current_user if @current_user
+    clone.reload unless clone.new_record?
 
     clone.private = @scenario.clone_should_be_private?(@current_user)
 
