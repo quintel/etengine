@@ -811,4 +811,49 @@ describe Scenario do
       end
     end
   end
+
+  describe '#copy_preset_roles' do
+    subject do
+      scenario.copy_preset_roles
+      scenario.reload
+    end
+
+    before do
+      collaborator
+      preset.reload
+    end
+
+    let(:preset_owner) { create(:user) }
+    let(:preset_collaborator) { create(:user) }
+
+    let(:preset) do
+      FactoryBot.create(:scenario, {
+        id:              99999, # Avoid a collision with a preset ID
+        user_values:     { 'grouped_input_one' => 1 },
+        balanced_values: { 'grouped_input_two' => 2 },
+        user: preset_owner
+      })
+    end
+
+    let(:collaborator) do
+      create(:scenario_user, scenario: preset, user: preset_collaborator, role_id: 2)
+    end
+
+    let(:scenario) do
+      create(:scenario, scenario_id: preset.id, user: preset_collaborator)
+    end
+
+    it 'add the roles of the preset' do
+      expect { subject }.to change(scenario.scenario_users, :count).by(1)
+    end
+
+    it 'sets the owner of the preset' do
+      subject
+      expect(scenario.owner?(preset_owner)).to be_truthy
+    end
+
+    it 'sets the collaborator of the preset' do
+      expect { subject }.to(change { scenario.owner?(preset_collaborator) })
+    end
+  end
 end

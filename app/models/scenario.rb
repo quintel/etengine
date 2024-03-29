@@ -355,6 +355,19 @@ class Scenario < ApplicationRecord
     scenario_users.delete_all
   end
 
+  def copy_preset_roles
+    return unless parent
+
+    parent.scenario_users.each do |preset_user|
+      if (existing_user = scenario_users.find_by(user: preset_user.user))
+        existing_user.role_id = preset_user.role_id
+        existing_user.save(validate: false)
+      else
+        scenario_users.create(user: preset_user.user, role_id: preset_user.role_id)
+      end
+    end
+  end
+
   private
 
   # Validation method for when a user sets their metadata.

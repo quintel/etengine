@@ -238,7 +238,13 @@ module Api
       def update
         final_params = filtered_params.to_h
 
-        authorize!(final_params[:scenario].present? ? :update : :read, @scenario)
+        if final_params[:scenario].blank?
+          authorize!(:read, @scenario)
+        elsif final_params[:scenario][:set_preset_roles].present?
+          authorize!(:destroy, @scenario)
+        else
+          authorize!(:update, @scenario)
+        end
 
         updater    = ScenarioUpdater.new(@scenario, final_params)
         serializer = nil
@@ -326,6 +332,7 @@ module Api
           :preset_scenario_id,
           :private,
           :scenario_id,
+          :set_preset_roles,
           :source,
           { user_values: {} },
           { metadata: {} }

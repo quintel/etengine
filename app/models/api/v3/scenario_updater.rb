@@ -47,11 +47,16 @@ module Api
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
           @scenario_data
-            .except(:area_code, :end_year)
+            .except(:area_code, :end_year, :set_preset_roles)
             .merge(balanced_values:, user_values:, metadata:)
         )
 
-        valid? ? @scenario.save(validate: false) : false
+        if valid?
+          @scenario.save(validate: false)
+          @scenario.copy_preset_roles if copy_preset_roles?
+        else
+          false
+        end
       end
 
       # Checks that the data given by the user is valid.
@@ -89,6 +94,10 @@ module Api
       # Returns if the scenario should be uncoupled
       def uncouple?
         FALSEY_VALUES.include?(@data.fetch(:coupling, true))
+      end
+
+      def copy_preset_roles?
+        TRUTHY_VALUES.include?(@scenario_data.fetch(:set_preset_roles, false))
       end
 
       # Validation -----------------------------------------------------------
