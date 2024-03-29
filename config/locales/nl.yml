@@ -51,7 +51,7 @@ nl:
     invite_user:
       subject: 'Uitnodiging: ETM scenario'
     roles:
-      scenario_viewer: beschouwer
-      scenario_collaborator: medewerker
+      scenario_viewer: gast
+      scenario_collaborator: bewerker
       scenario_owner: eigenaar
 
