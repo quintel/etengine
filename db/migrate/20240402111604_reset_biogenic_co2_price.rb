@@ -11,7 +11,7 @@ class ResetBiogenicCo2Price < ActiveRecord::Migration[7.0]
 
   def up
     migrate_scenarios do |scenario|
-      next if scenario.user_values[BIOGENIC_CO2_PRICE]
+      next if scenario.user_values.key?(BIOGENIC_CO2_PRICE)
 
       scenario.user_values[BIOGENIC_CO2_PRICE] = 0.0
     end
