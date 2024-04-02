@@ -381,7 +381,8 @@ describe 'Custom curves', :etsource_fixture do
 
     context "when uploading a curve to someone else's public scenario" do
       before do
-        scenario.update!(owner: create(:user))
+        #scenario.update!(owner: create(:user))
+        scenario.user = create(:user)
       end
 
       let(:request) do
@@ -410,7 +411,8 @@ describe 'Custom curves', :etsource_fixture do
 
     context 'when uploading a curve to an owned private scenario' do
       before do
-        scenario.update!(owner: user)
+        scenario.delete_all_users
+        scenario.user = user
       end
 
       let(:user) { create(:user) }
@@ -441,6 +443,8 @@ describe 'Custom curves', :etsource_fixture do
 
     context 'when removing an attached curve' do
       before do
+        scenario.delete_all_users
+
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
@@ -475,11 +479,14 @@ describe 'Custom curves', :etsource_fixture do
     context 'when removing an attached curve from an owned scenario' do
       before do
         put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }
-        scenario.update!(owner: user)
+
+        scenario.delete_all_users
+        scenario.user = user
       end
 
       let(:user) { create(:user) }
-      let(:request) { delete url, headers: access_token_header(user, :write) }
+
+      let(:request) { delete url, headers: access_token_header(user, :delete) }
 
       it 'succeeds' do
         request
@@ -512,7 +519,7 @@ describe 'Custom curves', :etsource_fixture do
           file: fixture_file_upload('price_curve.csv', 'text/csv')
         }
 
-        scenario.update!(owner: create(:user))
+        scenario.user = create(:user)
       end
 
       let(:request) { delete url }

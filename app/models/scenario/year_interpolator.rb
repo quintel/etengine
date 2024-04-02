@@ -16,14 +16,17 @@ class Scenario::YearInterpolator
 
   def run
     validate!
-
     clone = Scenario.new
     clone.copy_scenario_state(@scenario)
 
     clone.end_year = @year
     clone.source   = @scenario.source
-    clone.private  = @scenario.clone_should_be_private?(@current_user)
-    clone.owner    = @current_user
+
+    clone.scenario_users.destroy_all
+    clone.user = @current_user if @current_user
+    clone.reload unless clone.new_record?
+
+    clone.private = @scenario.clone_should_be_private?(@current_user)
 
     if @year != @scenario.end_year
       clone.user_values =

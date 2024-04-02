@@ -16,7 +16,9 @@ class Scenario < ApplicationRecord
   store :balanced_values
   store :metadata, coder: JSON
 
-  belongs_to :owner, class_name: 'User', optional: true
+  has_many :scenario_users, dependent: :destroy
+  has_many :users, through: :scenario_users
+
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
 
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
@@ -67,7 +69,7 @@ class Scenario < ApplicationRecord
     where(%q[
         in_start_menu IS NULL
         AND keep_compatible = ?
-        AND owner_id IS NULL
+        AND scenario_users IS NULL
         AND (
           user_values IS NULL
           OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
@@ -132,6 +134,30 @@ class Scenario < ApplicationRecord
     end
 
     where(id: id).with_attachments.first!
+  end
+
+  def self.owned_by?(user)
+    joins(:scenario_users)
+      .where(
+        'scenario_users.user_id': user.id,
+        'scenario_users.role_id': User::ROLES.key(:scenario_owner)
+      )
+  end
+
+  def self.collaborated_by?(user)
+    joins(:scenario_users)
+      .where(
+        'scenario_users.user_id': user.id,
+        'scenario_users.role_id': User::ROLES.key(:scenario_collaborator)..
+      )
+  end
+
+  def self.viewable_by?(user)
+    joins(:scenario_users)
+      .where(
+        'scenario_users.user_id': user.id,
+        'scenario_users.role_id': User::ROLES.key(:scenario_viewer)..
+      )
   end
 
   def area
@@ -290,8 +316,8 @@ class Scenario < ApplicationRecord
   # @return [Boolean]
   def clone_should_be_private?(actor)
     return false unless actor
-    return false if owner_id.blank?
-    return private if owner_id == actor.id
+    return false if scenario_users.count.zero?
+    return private if owner?(actor)
 
     actor.private_scenarios?
   end
@@ -302,6 +328,44 @@ class Scenario < ApplicationRecord
 
   def coupled?
     coupled_sliders.any?
+  end
+
+  def owner?(user)
+    scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_owner))
+  end
+
+  # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
+  # Scenario.create(user: User). Only works when no users are associated yet.
+  def user=(user)
+    return if user.blank? || scenario_users.count.positive?
+
+    return unless valid?
+
+    ScenarioUser.create(
+      scenario: self,
+      user: user,
+      role_id: User::ROLES.key(:scenario_owner)
+    )
+  end
+
+  # Removes all ScenarioUsers without validation. Used only for specs.
+  #
+  # Use delete_all to avoid the before_destroy callback on ScenarioUser
+  def delete_all_users
+    scenario_users.delete_all
+  end
+
+  def copy_preset_roles
+    return unless parent
+
+    parent.scenario_users.each do |preset_user|
+      if (existing_user = scenario_users.find_by(user: preset_user.user))
+        existing_user.role_id = preset_user.role_id
+        existing_user.save(validate: false)
+      else
+        scenario_users.create(user: preset_user.user, role_id: preset_user.role_id)
+      end
+    end
   end
 
   private
@@ -319,6 +383,8 @@ class Scenario < ApplicationRecord
   end
 
   def validate_visibility
-    errors.add(:private, 'can not be true on an unowned scenario') if private? && owner_id.blank?
+    if private? && scenario_users.map(&:role_id).none?(User::ROLES.key(:scenario_owner))
+      errors.add(:private, 'can not be true on an unowned scenario')
+    end
   end
 end

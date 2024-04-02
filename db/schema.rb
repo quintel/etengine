@@ -176,13 +176,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
     t.index ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true
   end
 
+  create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.integer "role_id", null: false
+    t.integer "user_id"
+    t.string "user_email"
+    t.index ["scenario_id", "user_email"], name: "scenario_users_scenario_id_user_email_idx", unique: true
+    t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
+  end
+
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.text "user_values", size: :medium
     t.integer "end_year", default: 2040
     t.boolean "keep_compatible", default: false, null: false
-    t.bigint "owner_id"
     t.boolean "private", default: false, null: false
     t.integer "preset_scenario_id"
     t.string "area_code"
@@ -190,7 +198,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
     t.text "balanced_values", size: :medium
     t.text "metadata"
     t.index ["created_at"], name: "index_scenarios_on_created_at"
-    t.index ["owner_id"], name: "index_scenarios_on_owner_id"
   end
 
   create_table "staff_applications", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -243,7 +250,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_21_134650) do
   add_foreign_key "personal_access_tokens", "users"
   add_foreign_key "scenario_attachments", "scenarios"
   add_foreign_key "scenario_attachments", "scenarios", column: "source_scenario_id", name: "index_scenario_attachments_on_source_scenario_id"
-  add_foreign_key "scenarios", "users", column: "owner_id"
   add_foreign_key "staff_applications", "oauth_applications", column: "application_id"
   add_foreign_key "staff_applications", "users"
 end

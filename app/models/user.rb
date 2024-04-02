@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  ROLES = {
+    1 => :scenario_viewer,
+    2 => :scenario_collaborator,
+    3 => :scenario_owner
+  }.freeze
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable, :registerable
   devise :database_authenticatable, :registerable,
@@ -28,10 +34,13 @@ class User < ApplicationRecord
 
   # rubocop:enable Rails/InverseOf
 
-  has_many :scenarios, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :scenario_users, dependent: :destroy
+  has_many :scenarios, through: :scenario_users
   has_many :personal_access_tokens, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 191 }
+
+  after_create :couple_scenario_users
 
   def valid_password?(password)
     return true if super
@@ -52,5 +61,16 @@ class User < ApplicationRecord
 
   def active_for_authentication?
     super && deleted_at.nil?
+  end
+
+  # Links existing scenario users to the new User.
+  #
+  # It needs to be linked through the scenario user to ensure the scenario
+  # user stops being marked as dirty.
+  def couple_scenario_users
+    ScenarioUser.where(user_email: email).find_each do |su|
+      su.couple_to(self)
+      su.save
+    end
   end
 end
