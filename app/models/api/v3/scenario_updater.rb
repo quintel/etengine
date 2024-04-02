@@ -52,8 +52,10 @@ module Api
         )
 
         if valid?
-          @scenario.save(validate: false)
+          return false unless @scenario.save(validate: false)
+
           @scenario.copy_preset_roles if copy_preset_roles?
+          true
         else
           false
         end
