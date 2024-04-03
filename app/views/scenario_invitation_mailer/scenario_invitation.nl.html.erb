@@ -24,7 +24,7 @@
 <p>Hallo!</p>
 
 <p>
-  <%= @inviter_name %> heeft je zojuist uitgenodigd om samen te werken aan het scenario "<%= @saved_scenario_title %>" van het Energiemodel voor de Transitie als <%=t("scenario_invitation_mailer.roles.#{@new_role}")%>.
+  <%= @inviter_name %> heeft je zojuist uitgenodigd om samen te werken aan het scenario "<%= @saved_scenario_title %>" van het Energietransitiemodel als <%=t("scenario_invitation_mailer.roles.#{@new_role}")%>.
 </p>
 <p>
   Als je al een account hebt bij <a href="<%= Settings.etmodel_uri %>">https://energytransitionmodel.com/</a>, volg dan <a href="<%= @saved_scenario_link %>">deze link om het scenario te bekijken</a> en begin met samenwerken!
@@ -38,7 +38,7 @@
   Als je deze uitnodiging niet verwachtte, negeer dan deze e-mail.
 </p>
 <a class="box-around-image" href="<%= Settings.etmodel_uri %>">
-  <img src=<%=image_url('logo.png')%> alt="Energiemodel voor de Transitie" style="width: 200px; height: auto">
+  <%=email_inline_image_tag("logo.png", style: "width: 200px; height: auto")%>
 </a>
 
 </body>

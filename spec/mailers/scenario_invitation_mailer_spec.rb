@@ -14,10 +14,16 @@ RSpec.describe ScenarioInvitationMailer, type: :mailer do
       expect(mail.from).to eq(Mail::Field.parse("From: #{Settings.mailer.from}").addresses)
     end
 
-    it 'renders the body' do
-      expect(mail.body.raw_source).to include("Test user has just invited you")
-      expect(mail.body.raw_source).to include("/saved_scenarios/999")
-      expect(mail.body.raw_source).to include("If you don't have an account yet")
+    it 'renders the invitee' do
+      expect(mail.to_s).to include("Test user has just invited you")
+    end
+
+    it 'renders the link' do
+      expect(mail.to_s).to include("/saved_scenarios/999")
+    end
+
+    it 'renders the acount' do
+      expect(mail.to_s).to include("If you don't have an account yet")
     end
   end
 end

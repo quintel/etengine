@@ -161,7 +161,7 @@ module Api
           permitted_params[:invitation_args][:user_name],
           User::ROLES[scenario_user.role_id],
           permitted_params[:invitation_args].slice(:id, :title)
-        )
+        ).deliver
       end
 
       def json_response(ok_status: :ok, extra_condition: true)
