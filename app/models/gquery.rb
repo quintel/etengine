@@ -78,6 +78,12 @@ class Gquery
     false
   end
 
+  def labels
+    raw_labels = file_path.to_s[(Etsource::Base.instance.base_dir.to_s.size + 1)..].split('/')
+    # Exclude 'gqueries' and filename
+    raw_labels[1..-2]
+  end
+
   # Public: Describes additional behavior for the gquery when executed. Allows
   # the graph to ignore the input or to post-process the results prior to
   # sending them to the client.
@@ -110,6 +116,11 @@ class Gquery
         g.send(attr).to_s.match(/\b#{ escaped }\b/)
       end
     end
+  end
+
+  # Returns all Gqueries that match any given labels
+  def self.filter_by(*labels)
+    Gquery.all.select { |q| q.labels.intersect?(labels) }
   end
 
   def self.contains(q)

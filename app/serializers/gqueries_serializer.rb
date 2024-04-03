@@ -16,7 +16,7 @@ class GqueriesSerializer
   #
   def as_json(*)
     @gqueries.map do |gq|
-      { 'key' => gq.key, 'unit' => gq.unit, 'description' => gq.description }
+      { 'key' => gq.key, 'unit' => gq.unit, 'description' => gq.description, 'labels' => gq.labels }
     end
   end
 end

@@ -13,7 +13,8 @@ describe GqueriesSerializer do
     {
       'key' => gquery.key,
       'description' => gquery.description,
-      'unit' => gquery.unit
+      'unit' => gquery.unit,
+      'labels' => gquery.labels
     }
   end
 
