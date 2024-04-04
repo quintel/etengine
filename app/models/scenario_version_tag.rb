@@ -9,5 +9,7 @@ class ScenarioVersionTag < ApplicationRecord
   belongs_to :scenario
   belongs_to :user
 
-
+  def as_json(*)
+    super(except: %i[id scenario_id])
+  end
 end

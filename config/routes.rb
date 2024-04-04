@@ -65,6 +65,8 @@ Rails.application.routes.draw do
         end
         collection do
           post :merge
+
+          get 'versions', to: 'scenario_version_tags#index'
         end
         get :templates, :on => :collection
 
@@ -77,6 +79,8 @@ Rails.application.routes.draw do
         get 'converters/:id', to: redirect('/api/v3/scenarios/%{scenario_id}/nodes/%{id}')
 
         resources :inputs, :only => [:index, :show]
+
+        resource :version, :only => [:create, :show, :update], controller: 'scenario_version_tags'
 
         # Flexibility orders have been removed. Endpoint returns a 404 with a useful message.
         get   '/flexibility_order', to: 'removed_features#flexibility_order'

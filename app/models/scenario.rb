@@ -347,6 +347,10 @@ class Scenario < ApplicationRecord
     scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_owner))
   end
 
+  def collaborator?(user)
+    scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_collaborator)..)
+  end
+
   # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
   # Scenario.create(user: User). Only works when no users are associated yet.
   def user=(user)
