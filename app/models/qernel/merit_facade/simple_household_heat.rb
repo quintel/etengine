@@ -36,11 +36,7 @@ module Qernel
           return Causality::AggregateCurve.zeroed_profile
         end
 
-        # Get demand curves for each consumer.
-        # TODO: mix the consumer curves here :) THEY ARE NOT ADAPTERS but nodes.
-        # We can only mix if we know their shares - are we sure enough
-        # here that these shares are OK? Because if they go through fever the sahers get set
-        # fo real
+        # Get mixed demand curves for each consumer and sum
         individual =
           consumers.map do |consumer|
             @fever_curves.mixed_consumer_curve(consumer) *

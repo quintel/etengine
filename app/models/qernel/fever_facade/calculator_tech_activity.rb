@@ -25,8 +25,6 @@ module Qernel
       end
 
       def activities
-        # TODO: do we have to memo this? Yes, because we have to trace the actiities agian
-        # Is that not possibe throught he calculator
         @activities ||= producers.map do |producer, share|
           producer.participant(share / total_share)
         end

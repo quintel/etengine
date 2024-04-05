@@ -22,7 +22,6 @@ module Qernel
           main_participant.number_of_units *
           target_api.full_load_seconds
 
-        # TODO: Set input and output capacities.
         target_api.typical_input_capacity = input_capacity
         target_api.electricity_output_capacity = output_capacity
 

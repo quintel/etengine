@@ -56,7 +56,7 @@ module Qernel
         @node.number_of_units.positive?
       end
 
-      # TODO: should be a new object keeping the collection and adding methods for deficits etc
+      # TODO: could be a new object keeping the collection
       def participants
         @participants ||= []
       end

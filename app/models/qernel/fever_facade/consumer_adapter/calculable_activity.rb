@@ -9,7 +9,6 @@ module Qernel
       module CalculableActivity
         EMPTY_CURVE = Merit::Curve.new([0.0] * 8760).freeze
 
-        # TODO: do we setup like this and check for empty, or dynamically add keys when we need them?
         def calculable_activities
           @calculable_activities ||= technology_curve_types.inject({}) do |activities, tech_type|
             activities[tech_type] = CalculatorTechActivity.new
