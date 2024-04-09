@@ -366,7 +366,7 @@ class CostsParametersSerializer
   #
   # This group does not need subtotal group queries
   def costs_infrastructure
-    %w[electricity heat hydrogen network_gas]
+    %w[electricity heat hydrogen network_gas ammonia diesel liquid_hydrogen lng lohc]
   end
 
   # Internal: Subgroups of the costs_co2 group
