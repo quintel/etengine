@@ -39,17 +39,6 @@ module Gql::Runtime
         first.flatten - last.flatten
       end
 
-      def INVALID_TO_ZERO(*keys)
-        is_invalid = Proc.new {|v| v.nil? || (v.respond_to?(:nan?) && v.nan?) }
-
-        if values.respond_to?(:map)
-          values.tap(&:flatten!).map!{|v| is_invalid.call(v) ? 0 : v }
-          values
-        else
-          is_invalid.call(values) ? 0 : v
-        end
-      end
-
       def MAX(*values)
         flatten_compact(values).max
       end
