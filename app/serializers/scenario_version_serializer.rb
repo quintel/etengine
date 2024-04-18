@@ -6,6 +6,7 @@ class ScenarioVersionSerializer
   #
   def initialize(scenario)
     @resource = scenario.scenario_version_tag
+    @last_updated_at = scenario.updated_at
   end
 
   # Creates a Hash suitable for conversion to JSON by Rails.
@@ -14,6 +15,9 @@ class ScenarioVersionSerializer
   #   The Hash containing the scenario version tag attributes.
   #
   def as_json(*)
-    @resource ? @resource.as_json : {}
+    hash = @resource ? @resource.as_json : {}
+    hash[:last_updated_at] = @last_updated_at
+
+    hash
   end
 end

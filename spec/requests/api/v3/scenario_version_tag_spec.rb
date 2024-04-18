@@ -26,12 +26,26 @@ describe 'Scenario versions API' do
         expect(response.status).to eq(200)
       end
 
-      it 'includes the first scenarios version tag' do
-        expect(json).to include(scenario.id.to_s => { 'description' => message, 'user_id' => user.id })
+      it 'includes the first scenarios version tag description' do
+        expect(json[scenario.id.to_s]['description']).to eq(message)
       end
 
+      it 'includes the first scenarios version tag user' do
+        expect(json[scenario.id.to_s]['user_id']).to eq(user.id)
+      end
+
+      it 'includes the first scenarios version tag update time' do
+        expect(json[scenario.id.to_s].keys).to include('last_updated_at')
+      end
+
+
       it 'includes the second scenarios version tag' do
-        expect(json).to include(scenario2.id.to_s => { 'description' => message2, 'user_id' => user.id  })
+        expect(json[scenario2.id.to_s]).to include(
+           {
+            'description' => message2,
+            'user_id' => user.id
+          }
+        )
       end
     end
 
@@ -47,11 +61,16 @@ describe 'Scenario versions API' do
       end
 
       it 'includes the first scenarios version tag' do
-        expect(json).to include(scenario.id.to_s => { 'description' => message, 'user_id' => user.id })
+        expect(json[scenario.id.to_s]).to include(
+          {
+            'description' => message,
+            'user_id' => user.id
+          }
+        )
       end
 
       it 'does not include the second scenario' do
-        expect(json[scenario2.id.to_s]).to be_empty
+        expect(json[scenario2.id.to_s].keys).to eq(['last_updated_at'])
       end
     end
 
@@ -69,7 +88,12 @@ describe 'Scenario versions API' do
       end
 
       it 'includes the first scenarios version tag' do
-        expect(json).to include(scenario.id.to_s => { 'description' => message, 'user_id' => user.id })
+        expect(json[scenario.id.to_s]).to include(
+          {
+            'description' => message,
+            'user_id' => user.id
+          }
+        )
       end
 
       it 'does not include the second scenario' do
