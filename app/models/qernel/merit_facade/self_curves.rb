@@ -135,11 +135,9 @@ module Qernel
                 "#{node.key}"
         end
 
-        # When dealing with hybrid heat pumps, pick the correct component
-        
+        # When dealing with hybrid heat pumps, pick the correct component and conversion
         if adapter.is_a?(Qernel::FeverFacade::HHPAdapter)
           participant = adapter.producer_for_carrier(@context.carrier)
-          # Gaat altijd over output
           conversion = adapter.conversion_for(@context.carrier)
         else
           participant = adapter.producer
