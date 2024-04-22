@@ -2,8 +2,9 @@
 
 module Qernel
   module MeritFacade
-    # A consumer that adjusts its output based on demand already supplied by
-    # a node in another time based calculation
+    # A consumer that uses a load curve based on a subordinate node in another time based
+    # calculation. If an unmet-demand curve is used, the load_curve is first
+    # converted to the input carrier of the current node.
     class SubordinateConsumerAdapter < ConsumerAdapter
       def initialize(*)
         super
@@ -21,14 +22,40 @@ module Qernel
       private
 
       def load_curve
-        @context.curves.curve(
+        demand_curve = @context.curves.curve(
           @config.group,
           @subordinate_node
         )
+
+        if @config.group.start_with? 'unmet-demand'
+          converted_demand_curve(demand_curve)
+        else
+          demand_curve
+        end
       end
 
       def subordinate_node
         @context.graph.node(@config.subordinate_to).node_api
+      end
+
+      def converted_demand_curve(demand_curve)
+        conversion = Qernel::Causality::Conversion.conversion(
+          node.node,
+          @context.carrier,
+          :input,
+          carrier_to,
+          :ouput
+        )
+
+        Qernel::Causality::LazyCurve.new do |frame|
+          demand_curve[frame] * (1.0 / conversion)
+        end
+      end
+
+      def carrier_to
+        Qernel::Causality::SelfDemandProfile
+          .decode_name(@config.group, :unmet_demand)
+          .values_at(:carrier_to).first
       end
     end
   end

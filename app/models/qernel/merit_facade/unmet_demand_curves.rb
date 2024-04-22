@@ -35,6 +35,7 @@ module Qernel
             raise %(Unsupported curve: "self: #{name}" on #{node.key})
           end
 
+        # times its own carrier conversions!
         unmet_demand_curve(node, carrier_from, carrier_to, manager)
       end
 
