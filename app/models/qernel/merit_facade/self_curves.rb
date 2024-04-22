@@ -139,6 +139,8 @@ module Qernel
         participant =
           if adapter.is_a?(Qernel::FeverFacade::HHPAdapter)
             adapter.producer_for_carrier(@context.carrier)
+            # Gaat altijd over output
+            conversion = adapter.conversion_for(@context.carrier)
           else
             adapter.producer
           end

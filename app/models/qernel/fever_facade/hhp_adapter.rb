@@ -69,6 +69,11 @@ module Qernel
         [@config.efficiency_based_on, secondary_carrier].include?(carrier)
       end
 
+      # Only for self curves, which are only output
+      def conversion_for(carrier)
+        1.0 / output_efficiency_of_carrier(carrier)
+      end
+
       private
 
       # Internal: The Fever producer which will be the first one asked to
