@@ -136,14 +136,14 @@ module Qernel
         end
 
         # When dealing with hybrid heat pumps, pick the correct component
-        participant =
-          if adapter.is_a?(Qernel::FeverFacade::HHPAdapter)
-            adapter.producer_for_carrier(@context.carrier)
-            # Gaat altijd over output
-            conversion = adapter.conversion_for(@context.carrier)
-          else
-            adapter.producer
-          end
+        
+        if adapter.is_a?(Qernel::FeverFacade::HHPAdapter)
+          participant = adapter.producer_for_carrier(@context.carrier)
+          # Gaat altijd over output
+          conversion = adapter.conversion_for(@context.carrier)
+        else
+          participant = adapter.producer
+        end
 
         Qernel::Causality::LazyCurve.new do |frame|
           participant.output_at(frame) * conversion
