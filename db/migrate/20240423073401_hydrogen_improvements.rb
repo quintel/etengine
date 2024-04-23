@@ -101,8 +101,8 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
       next unless all_keys(scenario, plant[:key], plant[:share])
 
       total_input_capacity = scenario.user_values[plant[:key]]
-      ccs_input_capacity = total_input_capacity * scenario.user_values[plant[:share]]
-      non_ccs_input_capacity = total_input_capacity * (1.0 - scenario.user_values[plant[:share]])
+      ccs_input_capacity = total_input_capacity * scenario.user_values[plant[:share]] / 100.0
+      non_ccs_input_capacity = total_input_capacity * (1.0 - scenario.user_values[plant[:share]] / 100.0)
 
       ccs_output_capacity = ccs_input_capacity * plant[:ccs_conversion]
       non_ccs_output_capacity = non_ccs_input_capacity * plant[:non_ccs_conversion]
@@ -110,7 +110,7 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
       total_output_capacity = ccs_output_capacity + non_ccs_output_capacity
 
       scenario.user_values[plant[:key]] = total_output_capacity
-      scenario.user_values[plant[:share]] = ccs_output_capacity / total_output_capacity
+      scenario.user_values[plant[:share]] = ccs_output_capacity / total_output_capacity * 100.0
     end
   end
 
@@ -126,11 +126,16 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
         extra_factor = scenario.area[plant[:area]]
       end
 
-      scenario.user_values[plant[:key]] = (
-        scenario.user_values[plant[:key]] *
-        extra_factor *
-        (scenario.user_values[plant[:efficiency_key]] || plant[:default_efficiency])
-      )
+      scenario.user_values[plant[:key]] =
+        if scenario.user_values[plant[:efficiency_key]]
+          scenario.user_values[plant[:key]] *
+          extra_factor *
+          scenario.user_values[plant[:efficiency_key]]
+        else
+          scenario.user_values[plant[:key]] *
+          extra_factor *
+          plant[:default_efficiency]
+        end
     end
   end
 
