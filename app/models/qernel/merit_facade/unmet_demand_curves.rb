@@ -72,6 +72,8 @@ module Qernel
           raise "Participant should be of type power_to_heat_industry: #{node.key}"
         end
 
+        # NOTE: this is probably not the load curve, as P2H has a battery
+        # included
         curve = adapter.participant.load_curve
 
         conversion = carrier_to_carrier_conversion(

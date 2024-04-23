@@ -27,7 +27,7 @@ module Qernel
           @subordinate_node
         )
 
-        if @config.group.start_with? 'unmet-demand'
+        if @config.group.start_with?('unmet-demand')
           converted_demand_curve(demand_curve)
         else
           demand_curve
@@ -40,7 +40,7 @@ module Qernel
 
       def converted_demand_curve(demand_curve)
         conversion = Qernel::Causality::Conversion.conversion(
-          node.node,
+          @node.node,
           @context.carrier,
           :input,
           carrier_to,
