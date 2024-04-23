@@ -130,7 +130,7 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
         if scenario.user_values[plant[:efficiency_key]]
           scenario.user_values[plant[:key]] *
           extra_factor *
-          scenario.user_values[plant[:efficiency_key]]
+          scenario.user_values[plant[:efficiency_key]] / 100.0
         else
           scenario.user_values[plant[:key]] *
           extra_factor *
