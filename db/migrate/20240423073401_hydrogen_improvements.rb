@@ -58,6 +58,11 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
     }
   ].freeze
 
+  RENAME_TRANSPORT = {
+    'energy_transport_hydrogen_compressed_trucks_share' => 'energy_hydrogen_distribution_compressed_trucks_share',
+    'energy_transport_hydrogen_pipelines_share' => 'energy_hydrogen_transport_pipelines_share'
+  }.freeze
+
   def up
     migrate_scenarios do |scenario|
       # Voor alle technologieën waar een flexibele variant van is toegevoegd,
@@ -65,6 +70,8 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
       rename_sliders(scenario, RENAME_CAPACITY_TO_MUST_RUN)
 
       migrate_production(scenario)
+
+      rename_sliders(scenario, RENAME_TRANSPORT)
     end
   end
 
