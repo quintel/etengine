@@ -46,6 +46,10 @@ namespace :hydrogen do
 
     # TODO: remove recent first: only for testing!
     Scenario.migratable.recent_first.find_each.with_index do |scenario, index|
+      if index.positive? && ((index + 1) % 1000).zero?
+        puts "#{index + 1} (#{collected} collected)"
+      end
+
       next unless Atlas::Dataset.exists?(scenario.area_code)
       next unless INPUTS.any? { |key| scenario.user_values.key?(key) }
 
@@ -80,10 +84,6 @@ namespace :hydrogen do
 
       # NOTE: For testing purposes delete this after! @MB feel free to up this when you test
       break if collected >= 10
-
-      if index.positive? && ((index + 1) % 1000).zero?
-        say("#{index + 1} (#{collected} collected)")
-      end
     end
 
     puts "Collected #{collected} results"
