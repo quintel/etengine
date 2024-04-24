@@ -3,16 +3,6 @@ INPUTS = %w[
   households_heater_hybrid_hydrogen_heatpump_air_water_electricity_share
   buildings_space_heater_combined_hydrogen_share
   buildings_space_heater_hybrid_hydrogen_heatpump_air_water_electricity_share
-  transport_car_using_hydrogen_share
-  transport_bus_using_hydrogen_share
-  transport_plane_using_hydrogen_share
-  transport_ship_using_hydrogen_share
-  transport_freight_train_using_hydrogen_share
-  bunkers_ship_using_hydrogen_share
-  transport_passenger_train_using_hydrogen_share
-  transport_truck_using_hydrogen_share
-  transport_van_using_hydrogen_share
-  agriculture_burner_hydrogen_share
   industry_aggregated_other_industry_hydrogen_share_energetic
   industry_aggregated_other_industry_hydrogen_share_non_energetic
   industry_chemicals_fertilizers_local_ammonia_local_hydrogen_share
@@ -45,20 +35,36 @@ INPUTS = %w[
   external_coupling_industry_residual_hydrogen
 ].freeze
 
+SHARES = %w[
+  transport_car_using_hydrogen_share
+  transport_bus_using_hydrogen_share
+  transport_plane_using_hydrogen_share
+  transport_ship_using_hydrogen_share
+  transport_freight_train_using_hydrogen_share
+  bunkers_ship_using_hydrogen_share
+  transport_passenger_train_using_hydrogen_share
+  transport_truck_using_hydrogen_share
+  transport_van_using_hydrogen_share
+  agriculture_burner_hydrogen_share
+].freeze
+
 namespace :hydrogen do
   desc "Computes scenario values for after deploy; saves to JSON"
   task dump: :environment do
     collected = 0
-    data = {}
+    changed = 0
 
     # TODO: remove recent first: only for testing!
     Scenario.migratable.recent_first.find_each.with_index do |scenario, index|
       if index.positive? && ((index + 1) % 1000).zero?
-        puts "#{index + 1} (#{collected} collected)"
+        puts "#{index + 1} (#{collected} calculated, #{changed} were changed)"
       end
 
       next unless Atlas::Dataset.exists?(scenario.area_code)
-      next unless INPUTS.any? { |key| scenario.user_values.key?(key) }
+      next unless (
+        INPUTS.any? { |key| scenario.user_values.key?(key) } ||
+        SHARES.any? { |key| scenario.user_values.key?(key) && !scenario.user_values[key].zero? }
+      )
 
       gql = Inspect::LazyGql.new(scenario)
 
@@ -66,45 +72,35 @@ namespace :hydrogen do
 
       collected += 1
 
-      data[scenario.id] = {}
-
       # -- STORAGE --
       new_storage_volume = volume_of_energy_hydrogen_storage_salt_cavern(gql)
-      data[scenario.id]['volume_of_energy_hydrogen_storage_salt_cavern'] = new_storage_volume
+      scenario.user_values['volume_of_energy_hydrogen_storage_salt_cavern'] = new_storage_volume
 
       new_storage_capacity = capacity_of_energy_hydrogen_storage_salt_cavern(gql, new_storage_volume)
-      data[scenario.id]['capacity_of_energy_hydrogen_storage_salt_cavern'] = new_storage_capacity
+      scenario.user_values['capacity_of_energy_hydrogen_storage_salt_cavern'] = new_storage_capacity
 
       # -- IMPORT/EXPORT --
 
-      if scenario.user_values.key?('capacity_of_energy_imported_hydrogen_baseload')
-        data[scenario.id]['capacity_of_energy_imported_hydrogen_baseload'] =
-          scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] +
-          energy_imported_hydrogen_backup(gql)
-      else
-        data[scenario.id]['capacity_of_energy_imported_hydrogen_baseload'] =
-          energy_imported_hydrogen_backup(gql)
-      end
+      scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] =
+        (scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] || 0.0) +
+        energy_imported_hydrogen_backup(gql)
 
-      if scenario.user_values.key?('volume_of_baseload_export_hydrogen')
-        data[scenario.id]['volume_of_baseload_export_hydrogen'] =
-          scenario.user_values['volume_of_baseload_export_hydrogen'] +
+      scenario.user_values['volume_of_baseload_export_hydrogen'] =
+        (scenario.user_values['volume_of_baseload_export_hydrogen'] || 0.0) +
           energy_export_hydrogen_backup(gql)
-      else
-        data[scenario.id]['volume_of_baseload_export_hydrogen'] =
-          energy_export_hydrogen_backup(gql)
+
+      if scenario.changed?
+        scenario.save(validate: false, touch: false)
+        changed += 1
       end
 
       # NOTE: For testing purposes delete this after! @MB feel free to up this when you test
       break if collected >= 10
+    rescue Psych::DisallowedClass
+      next
     end
 
-    puts "Collected #{collected} results"
-
-    filename = Rails.root.join("tmp/scenario_values.json")
-    FileUtils.mkdir_p(filename.dirname)
-
-    File.write(filename, JSON.dump(data))
+    puts "Results: #{collected} calculated, #{changed} were changed"
   end
 end
 
