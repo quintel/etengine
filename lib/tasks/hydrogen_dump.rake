@@ -24,8 +24,6 @@ INPUTS = %w[
   industry_other_food_burner_hydrogen_share
   industry_other_paper_burner_hydrogen_share
   industry_steel_dri_hydrogen_share
-  industry_aluminium_electrolysis_bat_electricity_share
-  industry_aluminium_electrolysis_current_electricity_share
   volume_of_baseload_export_hydrogen
   capacity_of_energy_power_turbine_hydrogen
   capacity_of_energy_power_combined_cycle_hydrogen
