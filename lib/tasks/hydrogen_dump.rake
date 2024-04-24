@@ -74,11 +74,17 @@ namespace :hydrogen do
         data[scenario.id]['capacity_of_energy_imported_hydrogen_baseload'] =
           scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] +
           energy_imported_hydrogen_backup(gql)
+      else
+        data[scenario.id]['capacity_of_energy_imported_hydrogen_baseload'] =
+          energy_imported_hydrogen_backup(gql)
       end
 
       if scenario.user_values.key?('volume_of_baseload_export_hydrogen')
         data[scenario.id]['volume_of_baseload_export_hydrogen'] =
           scenario.user_values['volume_of_baseload_export_hydrogen'] +
+          energy_export_hydrogen_backup(gql)
+      else
+        data[scenario.id]['volume_of_baseload_export_hydrogen'] =
           energy_export_hydrogen_backup(gql)
       end
 
@@ -97,7 +103,7 @@ end
 
 def volume_of_energy_hydrogen_storage_salt_cavern(gql)
   old_storage_volume = gql.query(
-    'MAX(V(energy_hydrogen_storage,storage_curve))',
+    'DIVIDE(MAX(V(energy_hydrogen_storage,storage_curve)),MILLIONS)',
     nil,
     true
   ).future_value
@@ -151,7 +157,7 @@ end
 
 def energy_export_hydrogen_backup(gql)
   gql.query(
-    'V(energy_export_hydrogen_backup,demand)',
+    'DIVIDE(V(energy_export_hydrogen_backup,demand),BILLIONS)',
     nil,
     true
   ).future_value
