@@ -87,7 +87,7 @@ namespace :hydrogen do
 
       scenario.user_values['volume_of_baseload_export_hydrogen'] =
         (scenario.user_values['volume_of_baseload_export_hydrogen'] || 0.0) +
-          energy_export_hydrogen_backup(gql)
+        energy_export_hydrogen_backup(gql)
 
       if scenario.changed?
         scenario.save(validate: false, touch: false)
