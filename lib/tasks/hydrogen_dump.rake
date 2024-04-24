@@ -1,19 +1,4 @@
 INPUTS = %w[
-  households_heater_combined_hydrogen_share
-  households_heater_hybrid_hydrogen_heatpump_air_water_electricity_share
-  buildings_space_heater_combined_hydrogen_share
-  buildings_space_heater_hybrid_hydrogen_heatpump_air_water_electricity_share
-  industry_aggregated_other_industry_hydrogen_share_energetic
-  industry_aggregated_other_industry_hydrogen_share_non_energetic
-  industry_chemicals_fertilizers_local_ammonia_local_hydrogen_share
-  industry_chemicals_fertilizers_local_ammonia_central_hydrogen_share
-  industry_chemicals_fertilizers_burner_hydrogen_share
-  industry_chemicals_other_burner_hydrogen_share
-  industry_chemicals_other_hydrogen_non_energetic_share
-  industry_chemicals_refineries_burner_hydrogen_share
-  industry_other_food_burner_hydrogen_share
-  industry_other_paper_burner_hydrogen_share
-  industry_steel_dri_hydrogen_share
   volume_of_baseload_export_hydrogen
   capacity_of_energy_power_turbine_hydrogen
   capacity_of_energy_power_combined_cycle_hydrogen
@@ -46,6 +31,21 @@ SHARES = %w[
   transport_truck_using_hydrogen_share
   transport_van_using_hydrogen_share
   agriculture_burner_hydrogen_share
+  households_heater_combined_hydrogen_share
+  households_heater_hybrid_hydrogen_heatpump_air_water_electricity_share
+  buildings_space_heater_combined_hydrogen_share
+  buildings_space_heater_hybrid_hydrogen_heatpump_air_water_electricity_share
+  industry_aggregated_other_industry_hydrogen_share_energetic
+  industry_aggregated_other_industry_hydrogen_share_non_energetic
+  industry_chemicals_fertilizers_local_ammonia_local_hydrogen_share
+  industry_chemicals_fertilizers_local_ammonia_central_hydrogen_share
+  industry_chemicals_fertilizers_burner_hydrogen_share
+  industry_chemicals_other_burner_hydrogen_share
+  industry_chemicals_other_hydrogen_non_energetic_share
+  industry_chemicals_refineries_burner_hydrogen_share
+  industry_other_food_burner_hydrogen_share
+  industry_other_paper_burner_hydrogen_share
+  industry_steel_dri_hydrogen_share
 ].freeze
 
 namespace :hydrogen do
@@ -56,6 +56,7 @@ namespace :hydrogen do
 
     # TODO: remove recent first: only for testing!
     Scenario.migratable.recent_first.find_each.with_index do |scenario, index|
+      #next unless [100, 101, 102].include?(scenario.id)
       if index.positive? && ((index + 1) % 1000).zero?
         puts "#{index + 1} (#{collected} calculated, #{changed} were changed)"
       end
@@ -96,7 +97,7 @@ namespace :hydrogen do
 
       # NOTE: For testing purposes delete this after! @MB feel free to up this when you test
       break if collected >= 10
-    rescue Psych::DisallowedClass
+    rescue Psych::DisallowedClass,Gql::CommandError
       next
     end
 
