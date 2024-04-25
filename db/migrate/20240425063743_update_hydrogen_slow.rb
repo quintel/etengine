@@ -53,13 +53,16 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
     industry_steel_dri_hydrogen_share
   ].freeze
 
+  INPUTS_DONE = %w[
+    volume_of_energy_hydrogen_storage_salt_cavern
+    capacity_of_energy_hydrogen_storage_salt_cavern
+  ].freeze
+
   # Calculates graph properties - can take hours
   def up
-    done = 0
     migrate_scenarios do |scenario|
-      done = done + 1
-      # because of failed migration
-      next unless done > 3300
+      # Check who have already migrated
+      next if INPUTS_DONE.any? { |key| scenario.user_values.key?(key) }
 
       next unless Atlas::Dataset.exists?(scenario.area_code)
       next unless (
