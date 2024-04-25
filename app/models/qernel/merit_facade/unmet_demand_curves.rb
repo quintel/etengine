@@ -32,7 +32,7 @@ module Qernel
           when :hydrogen
             @plugin.hydrogen
           else
-            raise %(Unsupported curve: "self: #{name}" on #{node.key})
+            raise %(Unsupported curve: "unmet-demand: #{name}" on #{node.key})
           end
 
         # times its own carrier conversions!
@@ -72,31 +72,23 @@ module Qernel
           raise "Participant should be of type power_to_heat_industry: #{node.key}"
         end
 
-        # NOTE: this is probably not the load curve, as P2H has a battery
-        # included
-        curve = adapter.participant.load_curve
+        # NOTE: if this is teh correct curve we should treat it more nicely
+        curve = adapter.heat_output_curve
+        # conversion = carrier_to_carrier_conversion(
+        #   node, carrier_from, carrier_to
+        # )
 
-        conversion = carrier_to_carrier_conversion(
-          node, carrier_from, carrier_to
-        )
-
-        filter = merit_curve_value_filter(adapter.config.type, :input)
+        # filter = merit_curve_value_filter(adapter.config.type, :input)
         subtraction_profile = adapter.subtraction_profile
         offset = hour_offset
 
         Qernel::Causality::LazyCurve.new do |frame|
           source_frame = frame - offset
 
-          value =
-            if source_frame.negative?
-              0.0
-            elsif filter
-              filter.call(curve[source_frame]) * conversion
-            else
-              curve[source_frame] * conversion
-            end
+          value = subtraction_profile[frame] - curve[source_frame]
 
-          subtraction_profile[frame] - value
+          # TODO: This one can be too high
+          value.positive? ? value : 0.0
         end
       end
 

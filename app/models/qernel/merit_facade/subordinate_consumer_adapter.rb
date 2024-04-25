@@ -48,14 +48,13 @@ module Qernel
         )
 
         Qernel::Causality::LazyCurve.new do |frame|
-          demand_curve[frame] * (1.0 / conversion)
+          demand_curve[frame] / conversion
         end
       end
 
       def carrier_to
         Qernel::Causality::SelfDemandProfile
-          .decode_name(@config.group, :unmet_demand)
-          .values_at(:carrier_to).first
+          .decode_name(@config.group, :unmet_demand)[:carrier_to]
       end
     end
   end

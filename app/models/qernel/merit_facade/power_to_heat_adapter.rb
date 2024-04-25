@@ -4,6 +4,8 @@ module Qernel
   module MeritFacade
     # Sets up generic power-to-heat participants in Merit.
     class PowerToHeatAdapter < StorageAdapter
+      attr_reader :heat_output_curve
+
       def initialize(*)
         super
         @heat_output_curve = Array.new(8760, 0.0)
@@ -32,6 +34,8 @@ module Qernel
         target_api[:full_load_seconds] = full_load_seconds
 
         target_api.demand = production
+
+        puts "prod: #{production}, heat sum: #{@heat_output_curve.sum}, conv: #{@node.node.output(:useable_heat).conversion}"
 
         inject_curve!(full_name: :heat_output_curve) { @heat_output_curve }
       end
@@ -77,7 +81,7 @@ module Qernel
 
         lambda do |point, stored|
           wanted = decay.get(point) / conversion
-          heat = (stored > wanted ? wanted : stored) * conversion
+          heat = [stored, wanted].min * conversion
 
           @heat_output_curve[point] = heat
 
