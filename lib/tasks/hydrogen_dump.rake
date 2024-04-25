@@ -57,7 +57,7 @@ namespace :hydrogen do
     # TODO: remove recent first: only for testing!
     Scenario.migratable.recent_first.find_each.with_index do |scenario, index|
       #next unless [100, 101, 102].include?(scenario.id)
-      if index.positive? && ((index + 1) % 1000).zero?
+      if index.positive? && ((index + 1) % 100).zero?
         puts "#{index + 1} (#{collected} calculated, #{changed} were changed)"
       end
 
@@ -67,9 +67,13 @@ namespace :hydrogen do
         SHARES.any? { |key| scenario.user_values.key?(key) && !scenario.user_values[key].zero? }
       )
 
-      gql = Inspect::LazyGql.new(scenario)
+      begin
+        gql = Inspect::LazyGql.new(scenario)
 
-      next unless Qernel::Plugins::Causality.enabled?(gql.future_graph)
+        next unless Qernel::Plugins::Causality.enabled?(gql.future_graph)
+      rescue ArgumentError
+        next
+      end
 
       collected += 1
 
@@ -96,7 +100,7 @@ namespace :hydrogen do
       end
 
       # NOTE: For testing purposes delete this after! @MB feel free to up this when you test
-      break if collected >= 10
+      # break if collected >= 10
     rescue Psych::DisallowedClass,Gql::CommandError
       next
     end
