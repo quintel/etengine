@@ -55,7 +55,12 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
 
   # Calculates graph properties - can take hours
   def up
+    done = 0
     migrate_scenarios do |scenario|
+      done = done + 1
+      # because of failed migration
+      next unless done > 3300
+
       next unless Atlas::Dataset.exists?(scenario.area_code)
       next unless (
         INPUTS.any? { |key| scenario.user_values.key?(key) } ||
