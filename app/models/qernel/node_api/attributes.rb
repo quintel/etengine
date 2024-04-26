@@ -13,6 +13,7 @@ module Qernel
         :operational => {
           :electricity_output_capacity => ['', 'MWe'],
           :heat_output_capacity => ['', 'MWth'],
+          :hydrogen_output_capacity => ['', 'MW'],
           :free_co2_factor => ['', ''],
           :ccs_capture_rate => ['', ''],
           :construction_time => ['', ''],

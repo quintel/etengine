@@ -59,6 +59,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_25_063743) do
     t.index ["scenario_id"], name: "index_households_space_heating_producer_orders_on_scenario_id", unique: true
   end
 
+  create_table "hydrogen_demand_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id"
+    t.text "order"
+    t.index ["scenario_id"], name: "index_hydrogen_demand_orders_on_scenario_id", unique: true
+  end
+
+  create_table "hydrogen_supply_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id"
+    t.text "order"
+    t.index ["scenario_id"], name: "index_hydrogen_supply_orders_on_scenario_id", unique: true
+  end
+
   create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
@@ -185,6 +197,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_25_063743) do
     t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
   end
 
+  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.integer "user_id", null: false
+    t.text "description"
+    t.index ["scenario_id", "user_id"], name: "index_scenario_version_tags_on_scenario_id_and_user_id", unique: true
+  end
+
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -241,6 +260,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_25_063743) do
   add_foreign_key "forecast_storage_orders", "scenarios"
   add_foreign_key "heat_network_orders", "scenarios"
   add_foreign_key "households_space_heating_producer_orders", "scenarios"
+  add_foreign_key "hydrogen_demand_orders", "scenarios"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"

@@ -26,8 +26,6 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        attrs[:consumption_price] = target_api.max_consumption_price
-
         attrs[:input_efficiency]  = input_efficiency
         attrs[:output_efficiency] = output_efficiency
 
@@ -63,21 +61,17 @@ module Qernel
       # Internal: Storage with two outputs uses one of the outputs to dump unused energy from the
       # reserve.
       #
-      # Energy emitted by the reserve to be used passes through the share edge, while all remaining
-      # unused energy is dumped throught he inversed_flexible.
+      # Energy emitted by the reserve to be used passes through the carier slot, while all remaining
+      # unused energy is dumped through the loss.
       def inject_dumped_energy_attributes!
-        # If the output slot has two edges, one a share edge and one inversed
-        # flexible, assume that unused energy is dumped through the flexible.
-        # Adjust the share edge so that only energy actually emitted by the
+        # If the node has two output slots, one with the carrier and one as a loss,
+        # assume that unused energy is dumped through the loss.
+        # Adjust the shares so that only energy actually emitted by the
         # storage flows.
         output_slot = @node.node.output(@context.carrier)
+        loss_slot = @node.node.output(:loss)
 
-        return if !output_slot || output_slot.edges.length != 2
-
-        share_edge = output_slot.edges.detect(&:share?)
-        if_edge = output_slot.edges.detect(&:inversed_flexible?)
-
-        return unless share_edge && if_edge
+        return if !output_slot || !loss_slot
 
         total = target_api.demand * output_slot.conversion / 3600
 
@@ -88,7 +82,8 @@ module Qernel
             @participant.load_curve.sum { |v| v.positive? ? v : 0.0 } / total
           end
 
-        share_edge.dataset_set(:share, new_share)
+        output_slot[:conversion] = new_share
+        loss_slot[:conversion] = 1.0 - new_share
       end
 
       def inject_infinite!

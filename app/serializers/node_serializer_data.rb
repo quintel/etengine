@@ -590,6 +590,24 @@ module NodeSerializerData
       }
     }.merge(FLEXIBILITY_COSTS_AND_OTHER)
 
+  # If the node belongs to the h2_storage presentation group then
+  # add these
+  H2_STORAGE_ATTRIBUTES_AND_METHODS =
+    {
+      technical: {
+        'input_capacity * number_of_units' => {
+          label: 'Installed capacity',
+          key: :total_installed_capacity,
+          unit: 'MW'
+        },
+        'storage[:volume] * number_of_units' => {
+          label: 'Total storage capacity',
+          key: :total_storage_capacity,
+          unit: 'MWh'
+        }
+      }
+    }.merge(FLEXIBILITY_COSTS_AND_OTHER)
+
   # If the node belongs to the V2G presentation group then
   # add these
   V2G_ATTRIBUTES_AND_METHODS = {
@@ -786,6 +804,8 @@ module NodeSerializerData
         BIOMASS_ATTRIBUTES_AND_METHODS
       when :steel
         STEEL_ATTRIBUTES_AND_METHODS
+      when :h2_storage
+        H2_STORAGE_ATTRIBUTES_AND_METHODS
       else
         {}
       end

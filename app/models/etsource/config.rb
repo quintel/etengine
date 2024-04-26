@@ -47,6 +47,20 @@ module Etsource
       read("fever.#{group}_#{type}_order").map(&:to_sym)
     end
 
+    # Public: Reads the order of dispatchables to be used for hydrogen.
+    #
+    # Returns an array of strings.
+    def hydrogen_supply_order
+      read('hydrogen_supply_order')
+    end
+
+    # Public: Reads the order of flex to be used for hydrogen.
+    #
+    # Returns an array of strings.
+    def hydrogen_demand_order
+      read('hydrogen_demand_order')
+    end
+
     # Public: Reads the order of dispatchables to be used in the heat network.
     #
     # Returns an array of strings.
@@ -99,6 +113,10 @@ module Etsource
     # Returns an array of hashes.
     def residual_load_csv
       read('residual_load_csv').map(&:symbolize_keys)
+    end
+
+    def hydrogen_integral_cost_csv
+      read('hydrogen_integral_cost_csv').map(&:symbolize_keys)
     end
 
     # Public: Reads the hash of curves for which users may upload a custom curve.

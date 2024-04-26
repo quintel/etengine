@@ -25,6 +25,8 @@ class Scenario < ApplicationRecord
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_many   :heat_network_orders, dependent: :destroy
   has_one    :forecast_storage_order, dependent: :destroy
+  has_one    :hydrogen_supply_order, dependent: :destroy
+  has_one    :hydrogen_demand_order, dependent: :destroy
   has_one    :households_space_heating_producer_order, dependent: :destroy
   has_many   :attachments, dependent: :destroy, class_name: 'ScenarioAttachment'
 
@@ -295,6 +297,14 @@ class Scenario < ApplicationRecord
     super || ForecastStorageOrder.default(scenario_id: id)
   end
 
+  def hydrogen_supply_order
+    super || HydrogenSupplyOrder.default(scenario_id: id)
+  end
+
+  def hydrogen_demand_order
+    super || HydrogenDemandOrder.default(scenario_id: id)
+  end
+
   def households_space_heating_producer_order
     super || HouseholdsSpaceHeatingProducerOrder.default(scenario_id: id)
   end
@@ -302,6 +312,8 @@ class Scenario < ApplicationRecord
   def user_sortables
     %i[lt mt ht].map { |temp| heat_network_order(temp) }.push(
       forecast_storage_order,
+      hydrogen_supply_order,
+      hydrogen_demand_order,
       households_space_heating_producer_order
     )
   end

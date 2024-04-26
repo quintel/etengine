@@ -39,6 +39,8 @@ class Graph
                     :heat_network_order_lt,
                     :heat_network_order_mt,
                     :heat_network_order_ht,
+                    :hydrogen_supply_order,
+                    :hydrogen_demand_order,
                     :households_space_heating_producer_order,
                     # graphs do not know the number of years, that is defined
                     # in scenario and assigned in a 2nd step by the gql.

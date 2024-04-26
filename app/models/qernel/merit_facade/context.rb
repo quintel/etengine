@@ -4,16 +4,17 @@ module Qernel
   module MeritFacade
     # Encapsulates objects useful to the merit calculation.
     class Context
-      attr_reader :attribute, :carrier, :dispatchable_sorter, :graph, :plugin
+      attr_reader :attribute, :carrier, :dispatchable_sorter, :flex_demand_sorter, :graph, :plugin
 
       delegate :curves, to: :plugin
 
-      def initialize(plugin, graph, carrier, attribute, dispatchable_sorter)
+      def initialize(plugin, graph, carrier, attribute, dispatchable_sorter, flex_demand_sorter = nil)
         @plugin = plugin
         @graph = graph
         @carrier = carrier
         @attribute = attribute
         @dispatchable_sorter = dispatchable_sorter
+        @flex_demand_sorter = flex_demand_sorter
       end
 
       def dataset
@@ -66,6 +67,10 @@ module Qernel
           plugin.adapters.values,
           graph.forecast_storage_order
         )
+      end
+
+      def hydrogen?
+        @attribute == :hydrogen
       end
 
       # Public: Determines if the context is part of a heat network

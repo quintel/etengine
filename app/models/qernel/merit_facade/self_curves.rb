@@ -31,6 +31,8 @@ module Qernel
           heat_network_merit_self_curve(node, carrier, direction)
         when :useable_heat, :heat
           fever_self_curve(node, carrier, direction)
+        when :hydrogen
+          hydrogen_merit_self_curve(node, carrier, direction)
         else
           raise %(Unsupported curve: "self: #{name}" on #{node.key})
         end
@@ -41,17 +43,19 @@ module Qernel
       # Internal: Creates a dynamic curve which reads demand from a electricity
       # Merit order participant.
       def electricity_merit_self_curve(node, carrier, direction)
-        # Curves read from the electricity merit order have an offset of 1 so
-        # that the load for the current hour is based on the electricity load in
-        # the previous hour. This is because the electricity loads are
-        # calculated *after* the heat network.
-        merit_self_curve(node, carrier, direction, @plugin.merit, 1)
+        merit_self_curve(node, carrier, direction, @plugin.merit, hour_offset)
       end
 
       # Internal: Creates a dynamic curve which reads demand from a heat network
       # Merit order participant.
       def heat_network_merit_self_curve(node, carrier, direction)
         merit_self_curve(node, carrier, direction, @plugin.heat_network.manager_for(node))
+      end
+
+      # Internal: Creates a dynamic curve which reads demand from a hydrogen
+      # Merit order participant.
+      def hydrogen_merit_self_curve(node, carrier, direction)
+        merit_self_curve(node, carrier, direction, @plugin.hydrogen)
       end
 
       # Internal: Creates a dynamic curve which reads demand from a Merit order
@@ -131,7 +135,13 @@ module Qernel
                 "#{node.key}"
         end
 
-        participant = adapter.producer
+        # When dealing with hybrid heat pumps, pick the correct component and conversion
+        if adapter.is_a?(Qernel::FeverFacade::HHPAdapter)
+          participant = adapter.producer_for_carrier(@context.carrier)
+          conversion = adapter.conversion_for(@context.carrier)
+        else
+          participant = adapter.producer
+        end
 
         Qernel::Causality::LazyCurve.new do |frame|
           participant.output_at(frame) * conversion
@@ -168,6 +178,17 @@ module Qernel
           raise "Unsupported technology type #{type.inspect} encountered " \
                 "when calculating \"self: ...\" curve for #{node.key}"
         end
+      end
+
+      # Internal: Determines the hour offset a curve should be read from
+      #
+      # Curves read from the electricity merit order have an offset of 1 for heat
+      # networks so that the load for the current hour is based on the electricity
+      # load in the previous hour. This is because the electricity loads are
+      # calculated *after* the heat network.
+      # For hydrogen this offset is not needed.
+      def hour_offset
+        @context.part_of_heat_network? ? 1 : 0
       end
     end
   end

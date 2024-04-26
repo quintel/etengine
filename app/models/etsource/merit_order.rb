@@ -14,6 +14,16 @@ module Etsource
       import(:merit_order)
     end
 
+    # Public: reads the hydrogen merit order definitions from Atlas Node
+    # data.
+    #
+    # See MeritOrder#import
+    #
+    # Returns a hash.
+    def import_hydrogen
+      import(:hydrogen)
+    end
+
     # Public: reads the heat network merit order definitions from Atlas Node
     # data.
     #

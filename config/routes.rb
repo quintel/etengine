@@ -89,6 +89,12 @@ Rails.application.routes.draw do
         resource :forecast_storage_order, only: [:show, :update],
           controller: :user_sortables, sortable_type: :forecast_storage
 
+        resource :hydrogen_supply_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :hydrogen_supply
+
+        resource :hydrogen_demand_order, only: [:show, :update],
+          controller: :user_sortables, sortable_type: :hydrogen_demand
+
         resource :households_space_heating_producer_order, only: [:show, :update],
           controller: :user_sortables, sortable_type: :space_heating
 
@@ -140,6 +146,11 @@ Rails.application.routes.draw do
         get 'curves/residual_load',
           to: 'curves#residual_load',
           as: :curves_residual_load_download
+
+        get 'curves/hydrogen_integral_cost',
+          to: 'curves#hydrogen_integral_cost',
+          as: :hydrogen_integral_cost_download
+  
       end
 
       resources :saved_scenarios
