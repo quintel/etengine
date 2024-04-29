@@ -70,6 +70,14 @@ module Api
         params.permit(:subtype)[:subtype] if params.key?(:subtype)
       end
 
+      def assert_valid_sortable_subtype
+        return unless sortable_subtype
+
+        if sortable_name == :heat_network_order && %i[lt mt ht].exclude?(sortable_subtype)
+          render_not_found
+        end
+      end
+
       def sortable_params
         if params.key?(:order)
           params.permit(order: [])
