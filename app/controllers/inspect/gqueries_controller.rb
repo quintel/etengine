@@ -3,6 +3,8 @@ class Inspect::GqueriesController < Inspect::BaseController
 
   before_action :find_model, :only => :show
 
+  skip_authorize_resource only: [:show, :index]
+
   def index
     all = Gquery.all
     all = all.select{|g| g.key.include?(params[:q])} unless params[:q].blank?
