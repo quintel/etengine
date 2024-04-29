@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_25_063743) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_29_091457) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -195,13 +195,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_25_063743) do
     t.string "user_email"
     t.index ["scenario_id", "user_email"], name: "scenario_users_scenario_id_user_email_idx", unique: true
     t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
-  end
-
-  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "scenario_id", null: false
-    t.integer "user_id", null: false
-    t.text "description"
-    t.index ["scenario_id", "user_id"], name: "index_scenario_version_tags_on_scenario_id_and_user_id", unique: true
   end
 
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

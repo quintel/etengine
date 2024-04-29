@@ -110,6 +110,9 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
       total_output_capacity = ccs_output_capacity + non_ccs_output_capacity
 
       scenario.user_values[plant[:key]] = total_output_capacity
+
+      next unless total_output_capacity.positive?
+
       scenario.user_values[plant[:share]] = ccs_output_capacity / total_output_capacity * 100.0
     end
   end
