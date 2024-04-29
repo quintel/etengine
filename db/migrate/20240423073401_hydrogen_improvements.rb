@@ -98,11 +98,13 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
 
   def ccs_smr_atr_biomass(scenario)
     SMR_ATR_BIOMASS.each do |plant|
-      next unless all_keys(scenario, plant[:key], plant[:share])
+      next unless scenario.user_values.key?(plant[:key])
 
       total_input_capacity = scenario.user_values[plant[:key]]
-      ccs_input_capacity = total_input_capacity * (scenario.user_values[plant[:share]] / 100.0)
-      non_ccs_input_capacity = total_input_capacity * (1.0 - scenario.user_values[plant[:share]] / 100.0)
+      ccs_share = scenario.user_values[plant[:share]] || 0.0
+
+      ccs_input_capacity = total_input_capacity * (ccs_share / 100.0)
+      non_ccs_input_capacity = total_input_capacity * (1.0 - ccs_share / 100.0)
 
       ccs_output_capacity = ccs_input_capacity * plant[:ccs_conversion]
       non_ccs_output_capacity = non_ccs_input_capacity * plant[:non_ccs_conversion]
@@ -111,7 +113,7 @@ class HydrogenImprovements < ActiveRecord::Migration[7.0]
 
       scenario.user_values[plant[:key]] = total_output_capacity
 
-      next unless total_output_capacity.positive?
+      next unless total_output_capacity.positive? && scenario.user_values.key?(plant[:share])
 
       scenario.user_values[plant[:share]] = ccs_output_capacity / total_output_capacity * 100.0
     end
