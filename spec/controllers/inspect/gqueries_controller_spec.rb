@@ -5,7 +5,7 @@ describe Inspect::GqueriesController, :etsource_fixture do
 
   let(:admin) { FactoryBot.create :admin }
   let(:owner) { FactoryBot.create :user }
-  let(:scenario) { FactoryBot.create(:scenario, owner: owner) }
+  let(:scenario) { FactoryBot.create(:scenario, user: owner) }
   let!(:gquery) { Gquery.get('bar_demand') }
 
   describe "GET index" do
