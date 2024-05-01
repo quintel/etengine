@@ -87,13 +87,9 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
 
       # -- IMPORT/EXPORT --
 
-      scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] =
-        (scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] || 0.0) +
-        energy_imported_hydrogen_backup(gql)
+      scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] = energy_imported_hydrogen_backup(gql)
 
-      scenario.user_values['volume_of_baseload_export_hydrogen'] =
-        (scenario.user_values['volume_of_baseload_export_hydrogen'] || 0.0) +
-        energy_export_hydrogen_backup(gql)
+      scenario.user_values['volume_of_baseload_export_hydrogen'] = energy_export_hydrogen_backup(gql)
 
     rescue Gql::CommandError
       next
@@ -152,6 +148,7 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
       nil,
       true
     ).future_value
+    old_import_capacity += scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] || 0.0
 
     max_import_capacity = gql.query(
       'present:MAX(500,DIVIDE(Q(total_gas_consumed),PRODUCT(V(energy_imported_hydrogen_baseload,full_load_hours),MJ_PER_MWH)))',
@@ -168,6 +165,7 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
       nil,
       true
     ).future_value
+    old_export_volume += scenario.user_values['volume_of_baseload_export_hydrogen'] || 0.0
 
     max_export_volume = gql.query(
       'present:PRODUCT(2,DIVIDE(Q(total_gas_consumed),BILLIONS))',
