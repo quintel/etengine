@@ -147,18 +147,34 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
   end
 
   def energy_imported_hydrogen_backup(gql)
-    gql.query(
+    old_import_capacity = gql.query(
       'V(energy_imported_hydrogen_backup,demand)/MJ_PER_MWH/8760',
       nil,
       true
     ).future_value
+
+    max_import_capacity = gql.query(
+      'present:MAX(500,DIVIDE(Q(total_gas_consumed),PRODUCT(V(energy_imported_hydrogen_baseload,full_load_hours),MJ_PER_MWH)))',
+      nil,
+      true
+    ).first
+
+    [old_import_capacity, max_import_capacity].min
   end
 
   def energy_export_hydrogen_backup(gql)
-    gql.query(
+    old_export_volume = gql.query(
       'DIVIDE(V(energy_export_hydrogen_backup,demand),BILLIONS)',
       nil,
       true
     ).future_value
+
+    max_export_volume = gql.query(
+      'present:PRODUCT(2,DIVIDE(Q(total_gas_consumed),BILLIONS))',
+      nil,
+      true
+    ).first
+
+    [old_export_volume, max_export_volume].min
   end
 end
