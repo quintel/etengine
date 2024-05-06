@@ -87,4 +87,32 @@ describe 'Updating a scenario with API v3' do
       end
     end
   end
+
+  context 'when a scenario has a version tag set by another user' do
+    let(:params) { { scenario: { private: true } } }
+    let(:user) { create(:user) }
+
+    before do
+      scenario.delete_all_users
+      scenario.update(user: user)
+
+      second_user = create(:user)
+      create(:scenario_user, user: second_user, scenario: scenario, role_id: 2)
+
+      scenario.scenario_version_tag = create(
+        :scenario_version_tag,
+        scenario: scenario,
+        user: second_user
+      )
+
+      scenario.reload
+    end
+
+    it 'changes the version tag user to the user that last updated the scenario' do
+      update_scenario(params:, headers: access_token_header(user, :delete))
+      scenario.scenario_version_tag.reload
+
+      expect(scenario.scenario_version_tag.user.id).to eq(user.id)
+    end
+  end
 end

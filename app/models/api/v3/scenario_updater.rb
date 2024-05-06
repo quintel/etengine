@@ -28,8 +28,9 @@ module Api
       # @param [#[]] params
       #   The HTTP parameters.
       #
-      def initialize(scenario, params)
+      def initialize(scenario, params, current_user)
         @scenario      = scenario
+        @current_user  = current_user
         @data          = (params.to_h || {}).with_indifferent_access
         @scenario_data = (@data[:scenario] || {}).with_indifferent_access
       end
@@ -55,6 +56,7 @@ module Api
           return false unless @scenario.save(validate: false)
 
           @scenario.copy_preset_roles if copy_preset_roles?
+          @scenario.scenario_version_tag&.update(user: @current_user)
           true
         else
           false
