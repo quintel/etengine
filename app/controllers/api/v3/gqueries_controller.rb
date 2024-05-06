@@ -16,7 +16,7 @@ module Api
 
       def filtered_queries
         if labels.present?
-          Gquery.filter_by(*labels)
+          Gquery.filter_by(*labels.uniq)
         else
           Gquery.all
         end

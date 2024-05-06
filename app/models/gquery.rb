@@ -120,7 +120,7 @@ class Gquery
 
   # Returns all Gqueries that match any given labels
   def self.filter_by(*labels)
-    Gquery.all.select { |q| q.labels.intersect?(labels) }
+    Gquery.all.select { |q| (labels - q.labels).empty? }
   end
 
   def self.contains(q)
