@@ -137,6 +137,13 @@ module Gql::Runtime
         values.first
       end
 
+      # Calculates the result of first value multiplied with
+      # the second value to the power of nr of years between
+      # the scenario's start and end year
+      def RELATIVE_CHANGE_PER_YEAR(*values)
+        values[0] * ((1.0 + values[1]) ** scope.scenario.years)
+      end
+
       # Converts a value to another format. Know what you do!
       # Especially useful to write more readable Queries:
       #

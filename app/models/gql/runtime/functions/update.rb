@@ -103,6 +103,20 @@ module Gql::Runtime
         end
       end
 
+      # Same as UPDATE with update_type relative_per_year. INPUT_VALUE() is expected 
+      # to be a percentage change per year that will be applied each year
+      # between the end year and start year. 
+
+      # @example when fo has a preset_demand of 100.0, start year 2019, en year 2050
+      #    UPDATE_RELATIVE_PER_YEAR(V(foo)), preset_demand, 0.01)
+      #    # => foo gets a demand of 136.13
+      #
+      def UPDATE_RELATIVE_PER_YEAR(*value_terms)
+        update_something_by(*value_terms) do |original_value, input_value|
+          original_value * ((1.0 + input_value) ** scope.scenario.years)
+        end
+      end
+
       # Same as UPDATE, but forcefully behaving as the :absolute strategy.
       def UPDATE_ABSOLUTE(*value_terms)
         update_something_by(*value_terms) { |_, input_value| input_value }
