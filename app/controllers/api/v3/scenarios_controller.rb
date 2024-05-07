@@ -246,7 +246,7 @@ module Api
           authorize!(:update, @scenario)
         end
 
-        updater    = ScenarioUpdater.new(@scenario, final_params)
+        updater    = ScenarioUpdater.new(@scenario, final_params, current_user)
         serializer = nil
 
         Scenario.transaction do

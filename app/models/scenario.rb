@@ -23,6 +23,7 @@ class Scenario < ApplicationRecord
 
   has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
+  has_one    :scenario_version_tag, dependent: :destroy
   has_many   :heat_network_orders, dependent: :destroy
   has_one    :forecast_storage_order, dependent: :destroy
   has_one    :hydrogen_supply_order, dependent: :destroy
@@ -344,6 +345,10 @@ class Scenario < ApplicationRecord
 
   def owner?(user)
     scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_owner))
+  end
+
+  def collaborator?(user)
+    scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_collaborator)..)
   end
 
   # Convenience method to quickly set the owner for a scenario, e.g. when creating it as

@@ -55,7 +55,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   end
 
   let(:scenario) { FactoryBot.create(:scenario) }
-  let(:updater)  { Api::V3::ScenarioUpdater.new(scenario, params) }
+  let(:updater)  { Api::V3::ScenarioUpdater.new(scenario, params, nil) }
 
   context 'with no user parameters' do
     let(:params) { {} }
