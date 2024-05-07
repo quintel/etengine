@@ -197,6 +197,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_29_091457) do
     t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
   end
 
+  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.integer "user_id", null: false
+    t.text "description"
+    t.index ["scenario_id", "user_id"], name: "index_scenario_version_tags_on_scenario_id_and_user_id", unique: true
+  end
+
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
