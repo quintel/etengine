@@ -87,9 +87,17 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
 
       # -- IMPORT/EXPORT --
 
-      scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] = energy_imported_hydrogen_backup(gql)
+      new_import_baseload = energy_imported_hydrogen_backup(
+        gql,
+        scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] || 0.0
+      )
+      scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] = new_import_baseload
 
-      scenario.user_values['volume_of_baseload_export_hydrogen'] = energy_export_hydrogen_backup(gql)
+      new_export_baseload = energy_export_hydrogen_backup(
+        gql,
+        scenario.user_values['volume_of_baseload_export_hydrogen'] || 0.0
+      )
+      scenario.user_values['volume_of_baseload_export_hydrogen'] = new_export_baseload
 
     rescue Gql::CommandError
       next
@@ -142,13 +150,13 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
     [[storage_capacity, 1.0].max, max_storage_capacity].min
   end
 
-  def energy_imported_hydrogen_backup(gql)
+  def energy_imported_hydrogen_backup(gql, old_baseload)
     old_import_capacity = gql.query(
       'V(energy_imported_hydrogen_backup,demand)/MJ_PER_MWH/8760',
       nil,
       true
     ).future_value
-    old_import_capacity += scenario.user_values['capacity_of_energy_imported_hydrogen_baseload'] || 0.0
+    old_import_capacity += old_baseload
 
     max_import_capacity = gql.query(
       'present:MAX(500,DIVIDE(Q(total_gas_consumed),PRODUCT(V(energy_imported_hydrogen_baseload,full_load_hours),MJ_PER_MWH)))',
@@ -159,13 +167,13 @@ class UpdateHydrogenSlow < ActiveRecord::Migration[7.0]
     [old_import_capacity, max_import_capacity].min
   end
 
-  def energy_export_hydrogen_backup(gql)
+  def energy_export_hydrogen_backup(gql, old_baseload)
     old_export_volume = gql.query(
       'DIVIDE(V(energy_export_hydrogen_backup,demand),BILLIONS)',
       nil,
       true
     ).future_value
-    old_export_volume += scenario.user_values['volume_of_baseload_export_hydrogen'] || 0.0
+    old_export_volume += old_baseload
 
     max_export_volume = gql.query(
       'present:PRODUCT(2,DIVIDE(Q(total_gas_consumed),BILLIONS))',
