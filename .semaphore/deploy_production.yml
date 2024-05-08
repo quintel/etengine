@@ -5,7 +5,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 execution_time_limit:
-  hours: 100
+  hours: 150
 blocks:
   - name: Docker
     task:
