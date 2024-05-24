@@ -31,7 +31,7 @@ class ScenarioUser < ApplicationRecord
 
   # How to recognise the record for error messages
   def email
-    user_email || user.email
+    user_email || user&.email
   end
 
   def as_json(*)
