@@ -148,7 +148,7 @@ module Gql::Runtime
         elements.tap(&:flatten!).map! do |element|
           GET(element, attr_name)
         end
-        elements.length <= 1 ? (elements.first || 0.0) : elements
+        elements.length <= 1 ? (elements.first ) : elements
       end
       alias MAP M
       # @deprecated
