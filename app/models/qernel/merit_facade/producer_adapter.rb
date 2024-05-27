@@ -21,6 +21,8 @@ module Qernel
           BackupAdapter
         when :always_on_battery_park
           AlwaysOnBatteryParkAdapter
+        when :hybrid_offshore
+          HybridOffshoreAdapter
         else
           raise "Unknown #{context.attribute}.subtype " \
                 "#{config.subtype.to_s.inspect} for #{node.key}"

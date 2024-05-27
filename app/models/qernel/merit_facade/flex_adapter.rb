@@ -26,6 +26,8 @@ module Qernel
           OptimizingStorageAdapter
         when :load_shifting
           LoadShiftingAdapter
+        when :satisfied_demand
+          SatisfiedDemandAdapter
         else
           self
         end
