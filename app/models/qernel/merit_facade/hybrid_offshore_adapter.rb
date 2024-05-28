@@ -11,8 +11,8 @@ module Qernel
         super
 
         # input capacity of the output node
-        @output_input_capacity = output_node.node_api.input_capacity
-        @converter_input_capacity = converter_node.node_api.input_capacity
+        @output_input_capacity = output_node.node_api.input_capacity * output_node.node_api.number_of_units
+        @converter_input_capacity = converter_node.node_api.input_capacity * converter_node.node_api.number_of_units
         @clearing = Array.new(8760)
 
         @converter_curve = Qernel::Causality::LazyCurve.new do |frame|
@@ -70,8 +70,6 @@ module Qernel
       def curtailment_node
         @context.graph.node(@config.relations[:curtailment])
       end
-
-      # something to set the clearing on the correct participant as satisfied demand
     end
   end
 end
