@@ -13,14 +13,44 @@ module Qernel
         # input capacity of the output node
         @output_input_capacity = output_node.node_api.input_capacity * output_node.node_api.number_of_units
         @converter_input_capacity = converter_node.node_api.input_capacity * converter_node.node_api.number_of_units
-        @clearing = Array.new(8760)
+
+        @clearing = Array.new(8760, 0.0)
+        @curtailed = Array.new(8760, 0.0)
 
         @converter_curve = Qernel::Causality::LazyCurve.new do |frame|
           @clearing[frame] * -1
         end
       end
 
+      def inject!
+        super
+
+        total_demand = participant.production
+        converter_demand = @clearing.sum
+        curtailment_demand = @curtailed.sum
+        output_demand = total_demand - converter_demand - curtailment_demand
+
+        find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
+        find_edge(converter_node).dataset_set(:share, safe_div(converter_demand, total_demand))
+        find_edge(output_node).dataset_set(:share, safe_div(output_demand, total_demand))
+      end
+
       private
+
+      def find_edge(consumer, carrier = @context.carrier)
+        edge = target_api.output_edges.find { |e| e.lft_node == consumer }
+
+        unless edge
+          raise "Couldn't find a #{carrier.inspect} edge between #{target_api.key} " \
+                "and #{consumer.key}"
+        end
+
+        edge
+      end
+
+      def safe_div(num, denom)
+        num.zero? || denom.zero? ? 0.0 : num / denom
+      end
 
       def producer_class
         Merit::ConstrainedVolatileProducer
@@ -37,27 +67,23 @@ module Qernel
       end
 
       # Calculates the energy that is constrained from going on the market. The constrained
-      # energy is located to other components
+      # energy is located to other components.
+      #
+      # Returns the energy that is allowed to go on the market
       def constrain(point, amount)
         converted = to_converter(amount)
         @clearing[point] = converted
 
-        [amount - converted, @output_input_capacity].min
+        to_market = [amount - converted, @output_input_capacity].min
+        @curtailed[point] = amount - converted - to_market
+
+        to_market
       end
 
       # The amount that flows to the converter in that hour
       def to_converter(amount)
-        [amount - @output_input_capacity, @converter_input_capacity].min
+        (amount - @output_input_capacity).clamp(0.0, @converter_input_capacity)
       end
-
-      # def curtailment_curve
-      #   # empty curve that will be filled
-      # end
-
-      # def output_curve
-      #   # can we also track this witinh the constarint method?
-      #   # this is what shoudl go into the cable -> so what goes into the market?
-      # end
 
       def converter_node
         @context.graph.node(@config.relations[:converter])
