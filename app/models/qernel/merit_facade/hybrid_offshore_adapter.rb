@@ -26,13 +26,9 @@ module Qernel
         super
 
         total_demand = participant.production
-        converter_demand = @clearing.sum
         curtailment_demand = @curtailed.sum
-        output_demand = total_demand - converter_demand - curtailment_demand
 
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
-        find_edge(converter_node).dataset_set(:share, safe_div(converter_demand, total_demand))
-        find_edge(output_node).dataset_set(:share, safe_div(output_demand, total_demand))
       end
 
       private
