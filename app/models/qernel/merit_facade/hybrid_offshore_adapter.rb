@@ -17,7 +17,7 @@ module Qernel
         @clearing = Array.new(8760, 0.0)
         @curtailed = Array.new(8760, 0.0)
 
-        @converter_curve = Qernel::Causality::LazyCurve.new do |frame|
+        @converter_curve = Qernel::Causality::ActiveLazyCurve.new do |frame|
           @clearing[frame] * -1
         end
       end
