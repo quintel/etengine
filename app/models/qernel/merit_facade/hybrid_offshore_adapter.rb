@@ -28,7 +28,10 @@ module Qernel
         total_demand = participant.production
         curtailment_demand = @curtailed.sum
 
+        # The curtailment egde is a share edge, so we calculate the share
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
+        # The converter node is a constant edge, so we set the demend directly
+        find_edge(converter_node).dataset_set(:share, total_demand_to_converter(curtailment_demand))
       end
 
       private
@@ -79,6 +82,15 @@ module Qernel
       # The amount that flows to the converter in that hour
       def to_converter(amount)
         (amount - @output_input_capacity).clamp(0.0, @converter_input_capacity)
+      end
+
+      # The total demand that should be injected on the edge between producer and converter
+      def total_demand_to_converter(curtailment)
+        [participant.production - curtailment, converter_adapter.participant.production].min
+      end
+
+      def converter_adapter
+        @context.plugin.adapters[@config.relations[:converter].to_sym]
       end
 
       def converter_node
