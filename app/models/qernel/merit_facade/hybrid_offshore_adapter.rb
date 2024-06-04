@@ -28,10 +28,20 @@ module Qernel
         total_demand = participant.production
         curtailment_demand = @curtailed.sum * 3600
 
+        calculate_curves!
+
         # The curtailment egde is a share edge, so we calculate the share
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
-        # The converter node is a constant edge, so we set the demend directly
-        find_edge(converter_node).dataset_set(:share, total_demand_to_converter)
+        # The converter node is a constant edge, so we set the demand directly
+        find_edge(converter_node).dataset_set(:share, @converter_curve.sum * 3600)
+
+        output_node.dataset_lazy_set(:electricity_input_curve) do
+          @context.curves.derotate(@output_curve)
+        end
+
+        curtailment_node.dataset_lazy_set(:electricity_input_curve) do
+          @context.curves.derotate(@curtailed)
+        end
       end
 
       private
@@ -84,14 +94,21 @@ module Qernel
         (amount - @output_input_capacity).clamp(0.0, @converter_input_capacity)
       end
 
-      # The total demand that should be injected on the edge between producer and converter
-      def total_demand_to_converter
-        (0...8760).sum(0.0) do |frame|
-          [
+      # Caluclate the curves after Merit calculations have finished
+      def calculate_curves!
+        @output_curve = Array.new(8760, 0.0)
+        @converter_curve = Array.new(8760, 0.0)
+
+        8760.times do |frame|
+          converted = [
             participant.load_curve[frame] - @curtailed[frame],
             converter_adapter.participant.load_curve[frame].abs
           ].min
-        end * 3600
+
+          @converter_curve[frame] = converted
+          @output_curve[frame] = participant.load_curve[frame] - @curtailed[frame] - converted
+          # TODO: input_curve for offshore net to electrolyser?
+        end
       end
 
       def converter_adapter
