@@ -26,7 +26,7 @@ module Qernel
         super
 
         total_demand = participant.production
-        curtailment_demand = @curtailed.sum
+        curtailment_demand = @curtailed.sum * 3600
 
         # The curtailment egde is a share edge, so we calculate the share
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
