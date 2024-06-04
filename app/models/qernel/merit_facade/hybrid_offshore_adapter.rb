@@ -28,8 +28,6 @@ module Qernel
         total_demand = participant.production
         curtailment_demand = @curtailed.sum
 
-        puts total_demand_to_converter, @clearing.sum, converter_adapter.participant.production
-
         # The curtailment egde is a share edge, so we calculate the share
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
         # The converter node is a constant edge, so we set the demend directly
