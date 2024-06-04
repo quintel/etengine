@@ -754,6 +754,24 @@ module NodeSerializerData
     }
   }.freeze
 
+  # If the node belongs to the electricity_distribution group then
+  # add these
+  ELECTRICITY_DISTRIBUTION_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      'electricity_output_capacity' => {
+        label: 'Installed capacity',
+        key: :total_installed_electricity_capacity,
+        unit: 'MW'
+      },
+      'loss_output_conversion' => {
+        label: 'Distribution losses',
+        key: :distribution_losses,
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      }
+    }
+  }.freeze
+
   # some nodes use extra attributes. Rather than messing up the views I
   # add the method here. I hope this will be removed
   def uses_coal_and_wood_pellets?
@@ -806,6 +824,8 @@ module NodeSerializerData
         STEEL_ATTRIBUTES_AND_METHODS
       when :h2_storage
         H2_STORAGE_ATTRIBUTES_AND_METHODS
+      when :electricity_distribution
+        ELECTRICITY_DISTRIBUTION_ATTRIBUTES_AND_METHODS
       else
         {}
       end
