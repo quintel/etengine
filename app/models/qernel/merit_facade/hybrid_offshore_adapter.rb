@@ -4,6 +4,7 @@
 
 module Qernel
   module MeritFacade
+    # TODO: make a small drawing of the offshore park
     class HybridOffshoreAdapter < AlwaysOnAdapter
       attr_reader :converter_curve
 
@@ -41,6 +42,10 @@ module Qernel
 
         curtailment_node.dataset_lazy_set(:electricity_input_curve) do
           @context.curves.derotate(@curtailed)
+        end
+
+        input_node.dataset_lazy_set(:electricity_output_curve) do
+          @context.curves.derotate(@input_curve)
         end
       end
 
@@ -97,6 +102,7 @@ module Qernel
       # Caluclate the curves after Merit calculations have finished
       def calculate_curves!
         @output_curve = Array.new(8760, 0.0)
+        @input_curve = Array.new(8760, 0.0)
         @converter_curve = Array.new(8760, 0.0)
 
         8760.times do |frame|
@@ -107,7 +113,7 @@ module Qernel
 
           @converter_curve[frame] = converted
           @output_curve[frame] = participant.load_curve[frame] - @curtailed[frame] - converted
-          # TODO: input_curve for offshore net to electrolyser?
+          @input_curve[frame] = converter_adapter.participant.load_curve[frame].abs - converted
         end
       end
 
@@ -121,6 +127,10 @@ module Qernel
 
       def output_node
         @context.graph.node(@config.relations[:output])
+      end
+
+      def input_node
+        @context.graph.node(@config.relations[:input])
       end
 
       def curtailment_node
