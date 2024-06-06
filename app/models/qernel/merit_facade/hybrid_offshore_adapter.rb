@@ -11,9 +11,16 @@ module Qernel
       def initialize(node, context)
         super
 
-        # input capacity of the output node
-        @output_input_capacity = output_node.node_api.input_capacity * output_node.node_api.number_of_units
-        @converter_input_capacity = converter_node.node_api.input_capacity * converter_node.node_api.number_of_units
+        # Input capacity of the output node
+        @output_input_capacity = (
+          output_node.node_api.input_capacity * output_node.node_api.number_of_units
+        )
+        # Input capacity of the converter node
+        @converter_input_capacity = (
+          converter_node.node_api.input_capacity *
+          converter_node.node_api.number_of_units *
+          converter_node.node_api.availability
+        )
 
         @clearing = Array.new(8760, 0.0)
         @curtailed = Array.new(8760, 0.0)
