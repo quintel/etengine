@@ -39,14 +39,13 @@ class UsersController < ApplicationController
     user = User.find_by(id: params[:id])
 
     if user.nil?
-      Rails.logger.debug { "User not found with ID: #{params[:id]}" }
-      redirect_to users_path, alert: 'User does not exist.'
+      redirect_to users_path
+      flash[:notice] = 'User does not exist.'
       return
     end
 
-    if user.confirmed?
-      Rails.logger.debug { "User confirmation status: #{user.confirmed?}" }
-      flash[:notice] = 'User is already confirmed or does not exist.'
+    if user.confirmed_at?
+      flash[:notice] = 'User is already confirmed.'
     else
       user.send_confirmation_instructions
       flash[:notice] = "Confirmation email resent to #{user.email}."
