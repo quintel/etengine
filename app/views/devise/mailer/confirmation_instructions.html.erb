@@ -34,6 +34,10 @@
       text-align: center;
       margin-top: 30px;
     }
+    .confirmation-url {
+      margin-top: 20px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -45,6 +49,10 @@
     </div>
     <div class="btn-container">
       <a href="<%= confirmation_url(@resource, confirmation_token: @token) %>" class="btn">Activate My Account</a>
+    </div>
+    <div class="confirmation-url">
+      <p>If the button above does not work, you can copy and paste the following link into your browser:</p>
+      <p><%= confirmation_url(@resource, confirmation_token: @token) %></p>
     </div>
   </div>
 </body>
