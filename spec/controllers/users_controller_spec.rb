@@ -69,7 +69,8 @@ describe UsersController do
       it 'redirects with an alert message' do
         expect do
           post(:resend_confirmation_email, params: { id: -1 })
-        end.not_to change { ActionMailer::Base.deliveries.count }
+        end
+          .not_to(change { ActionMailer::Base.deliveries.count })
 
         expect(response).to redirect_to(users_path)
         expect(flash[:notice]).to eq('User does not exist.')

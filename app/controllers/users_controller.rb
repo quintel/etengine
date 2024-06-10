@@ -39,12 +39,8 @@ class UsersController < ApplicationController
     user = User.find_by(id: params[:id])
 
     if user.nil?
-      redirect_to users_path
       flash[:notice] = 'User does not exist.'
-      return
-    end
-
-    if user.confirmed_at?
+    elsif user.confirmed_at?
       flash[:notice] = 'User is already confirmed.'
     else
       user.send_confirmation_instructions
