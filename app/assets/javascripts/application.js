@@ -33,16 +33,12 @@ $(document).on("turbo:load", function () {
       viewportMargin: Infinity,
     });
 
-    // Ctrl+Enter submit on the GQL editor.
-    if ($(this).attr("name") == "query") {
-      cm.on("keydown", function (el, event) {
-        if (event.ctrlKey && event.keyCode === 13) {
-          $(event.target).parents("form").submit();
-        }
-      });
-
-      cm.focus();
-    }
+    // Ctrl+Enter submit on any CodeMirror instance
+    cm.on("keydown", function (el, event) {
+      if (event.ctrlKey && event.keyCode === 13) {
+        $(event.target).closest("form").submit();
+      }
+    });
   });
 
   $("#area_code_selector select").change(function (e) {
