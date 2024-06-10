@@ -44,7 +44,11 @@ Rails.application.routes.draw do
   root :to => 'pages#index'
 
   # Frontend
-  resources :users, :except => %i[show destroy]
+  resources :users, :except => %i[show destroy] do
+    member do
+      post 'resend_confirmation_email'
+    end
+  end
 
   namespace :api do
     namespace :v3 do
@@ -155,7 +159,7 @@ Rails.application.routes.draw do
         get 'curves/hydrogen_integral_cost',
           to: 'curves#hydrogen_integral_cost',
           as: :hydrogen_integral_cost_download
-  
+
       end
 
       resources :saved_scenarios

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "active_support/core_ext/integer/time"
+require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -20,7 +20,7 @@ Rails.application.configure do
   config.server_timing = true
 
   # Enable hostname for puma-dev
-  config.hosts << "etengine.test"
+  config.hosts << 'etengine.test'
 
   # Always use a memory store so that we don't reload datasets on every request.
   config.cache_store = :memory_store, { size: 512 * (1024**3) } # 512 Mb
@@ -28,11 +28,11 @@ Rails.application.configure do
   # config.cache_store = :file_store, '/tmp/cache'
 
   # Run rails dev:cache to toggle caching.
-  if Rails.root.join("tmp/caching-dev.txt").exist?
+  if Rails.root.join('tmp/caching-dev.txt').exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
     config.public_file_server.headers = {
-      "Cache-Control" => "public, max-age=#{2.days.to_i}"
+      'Cache-Control' => "public, max-age=#{2.days.to_i}"
     }
   else
     config.action_controller.perform_caching = false
@@ -43,7 +43,7 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
+  config.action_mailer.preview_path = "#{Rails.root}/spec/mailers/previews"
 
   config.action_mailer.perform_caching = false
 

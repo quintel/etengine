@@ -3,6 +3,10 @@ FactoryBot.define do
     name { 'John Doe' }
     sequence(:email) { |n| "hello.#{n}@quintel.com" }
     password { 'password' }
+
+    trait :confirmed_at do
+      confirmed_at { Time.current }
+    end
   end
 
   factory :admin, parent: :user do
