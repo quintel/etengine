@@ -66,7 +66,7 @@ class MeritCSVSerializer < CausalityCurvesCSVSerializer
   end
 
   def exclude_producer_subtypes
-    %i[curtailment]
+    %i[curtailment satisfied_demand]
   end
 
   def consumer_types
