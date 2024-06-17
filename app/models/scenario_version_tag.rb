@@ -17,7 +17,7 @@ class ScenarioVersionTag < ApplicationRecord
   end
 
   def validate_user_in_scenario_users
-    return if scenario.users.exists?(user.id)
+    return if user.present? && scenario.users.exists?(user.id)
 
     errors.add(:user, 'is not a user of the scenario')
   end
