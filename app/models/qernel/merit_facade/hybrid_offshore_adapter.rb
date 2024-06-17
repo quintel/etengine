@@ -1,10 +1,43 @@
 # frozen_string_literal: true
 
-# require 'delegate'
-
 module Qernel
   module MeritFacade
-    # TODO: make a small drawing of the offshore park
+    # Represents a Hybrid Offshore Park.
+    #
+    # This adapter has to be attached to the main volatile producer.
+    #
+    # A hybrid offshore park consist of two e-cables, one output towards land,
+    # one input from land to sea; one volatile producer; a possible curtailment of the producer;
+    # and a converter (e.g electrolyser) that can also bid on the main market through the input
+    # cable. This converter should act as a Flex with SatifiedDemand, as the producer may set a load
+    # directly, bypassing the market to circumvent curtailment.
+    #
+    # The following structure is expected:
+    #
+    #                                                       +-------+
+    #                    +--------------------------------- | Input | <-- ...
+    #                    v                                  +-------+
+    #               +-----------+
+    #     ...  <--  | Converter |  <------------------------\
+    #               +-----------+                     +-------------+
+    #                                  +------------- | V. Producer |
+    #               +--------+         |              +-------------+
+    #     ...  <--  | Output |  <------+                    |
+    #               +--------+                              |
+    #                                                       |
+    #               +-------------+                         |
+    #               | Curtailment |  <----------------------+
+    #               +-------------+
+    #
+    # The adapter will set curves for:
+    #
+    # * Hourly energy output on the producer node (includes energy sent to the output, converter,
+    #   and curtailment).
+    # * Hourly input on the output node.
+    # * Hourly output on the input node.
+    # * Hourly curtailed loads on the curtailment node.
+    # * Combined hourly energy output by the technology on the output node.
+    #
     class HybridOffshoreAdapter < AlwaysOnAdapter
       attr_reader :converter_curve
 
@@ -40,6 +73,7 @@ module Qernel
 
         # The curtailment egde is a share edge, so we calculate the share
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
+
         # The converter node is a constant edge, so we set the demand directly
         find_edge(converter_node).dataset_set(:share, @converter_curve.sum * 3600)
 
@@ -80,8 +114,6 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        # lamba function that takes the frame and subracts the clearing, minimum with the cable in
-        # and that keeps track of the unfilled demand (that will become curtailment!)
         attrs[:constraint] = ->(point, amount) { constrain(point, amount) }
 
         attrs
@@ -123,6 +155,8 @@ module Qernel
           @input_curve[frame] = converter_adapter.participant.load_curve[frame].abs - converted
         end
       end
+
+      # Get relations adapters and nodes
 
       def converter_adapter
         @context.plugin.adapters[@config.relations[:converter].to_sym]
