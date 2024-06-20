@@ -6,7 +6,7 @@ module Qernel
     #
     # This adapter has to be attached to the main volatile producer.
     #
-    # A hybrid offshore park consist of two e-cables, one output towards land,
+    # A hybrid offshore park consist of two e-cables, one output from sea to land,
     # one input from land to sea; one volatile producer; a possible curtailment of the producer;
     # and a converter (e.g electrolyser) that can also bid on the main market through the input
     # cable. This converter should act as a Flex with SatifiedDemand, as the producer may set a load
