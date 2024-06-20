@@ -2,7 +2,7 @@
 
 module Qernel
   module MeritFacade
-    # A flex consumer whos demand is partly satisfied directly by another
+    # A flex consumer whose demand is partly satisfied directly by another
     # participant. Currently, the adapter satisfying the demand has to be of type
     # HybridOffshore.
     class SatisfiedDemandAdapter < FlexAdapter
