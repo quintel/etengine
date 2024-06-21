@@ -3,6 +3,7 @@
 module Api
   module V3
     module ScenarioProvidedValuesModule
+
       def provided_values
         @provided_values ||= calculate_provided_values
       end

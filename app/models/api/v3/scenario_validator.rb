@@ -3,17 +3,15 @@
 module Api
   module V3
     class ScenarioValidator
-      def initialize(scenario:, params:, provided_values:, user_values:, balanced_values:, each_group_proc:)
+
+      def initialize(scenario, params, scenario_updater)
         @scenario = scenario
         @params = params
-        @provided_values = provided_values
-        @user_values = user_values
-        @balanced_values = balanced_values
-        @each_group_proc = each_group_proc
+        @scenario_updater = scenario_updater
       end
 
       def validate_user_values(errors)
-        @provided_values.each do |key, value|
+        @scenario_updater.provided_values_without_resets.each do |key, value|
           input = Input.get(key)
           input_data = Input.cache(@scenario).read(@scenario, input)
 
@@ -30,14 +28,14 @@ module Api
       end
 
       def validate_groups_balance(errors)
-        @each_group_proc.call(@provided_values) do |group, inputs|
+        @scenario_updater.each_group(@scenario_updater.provided_values) do |group, inputs|
           values = inputs.map do |input|
             input_cache = Input.cache(@scenario).read(@scenario, input)
 
             next if input_cache[:disabled]
 
-            @user_values[input.key] ||
-              @balanced_values[input.key] ||
+            @scenario_updater.user_values[input.key] ||
+              @scenario_updater.balanced_values[input.key] ||
               input_cache[:default]
           end.compact
 

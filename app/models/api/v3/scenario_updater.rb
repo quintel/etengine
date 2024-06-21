@@ -35,6 +35,12 @@ module Api
         @scenario_data = (@data[:scenario] || {}).with_indifferent_access
       end
 
+      # Create a worker instances.
+      @metadata_handler = ScenarioMetadataHandler.new(@scenario, @scenario_data)
+      @input_processor = ScenarioInputProcessor.new(@scenario_data, @scenario, provided_values, user_values, uncoupled_sliders, autobalance: true, force_balance: false)
+      @provided_values = @input_processor.provided_values
+      @validator = ScenarioValidator.new(@scenario, @data, provided_values, user_values, balanced_values, method(:each_group))
+
       # Applies the user changes to the scenario, saving the scenario back to
       # the database afterwards.
       #

@@ -3,17 +3,13 @@
 module Api
   module V3
     class ScenarioInputProcessor
+
       TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
       FALSEY_VALUES = Set.new([false, 'false', '0']).freeze
 
-      def initialize(scenario_data, scenario, provided_values, parent_values, uncoupled_sliders, autobalance: true, force_balance: false)
+      def initialize(scenario_data, scenario_updater)
         @scenario_data = scenario_data
-        @scenario = scenario
-        @provided_values = provided_values
-        @parent_values = parent_values
-        @uncoupled_sliders = uncoupled_sliders
-        @autobalance = autobalance
-        @force_balance = force_balance
+        @scenario_updater = scenario_updater
       end
 
       def balanced_values
@@ -27,29 +23,31 @@ module Api
       private
 
       def calculate_balanced_values
-        return {} if user_values.blank?
+        if user_values.blank?
+          {}
+        else
+          balanced = base_balanced_values
 
-        balanced = base_balanced_values
+          @scenario_updater.each_group(@scenario_updater.provided_values) do |_, inputs|
+            inputs.each { |input| balanced.delete(input.key) }
+          end
 
-        each_group(@provided_values) do |_, inputs|
-          inputs.each { |input| balanced.delete(input.key) }
-        end
-
-        if @autobalance
-          each_group(@provided_values) do |_, inputs|
-            if (balanced_group = balance_group(inputs))
-              balanced.merge!(balanced_group)
+          if @scenario_data[:autobalance] != 'false' && @scenario_data[:autobalance] != false
+            @scenario_updater.each_group(@scenario_updater.provided_values) do |_, inputs|
+              if (balanced_group = balance_group(inputs))
+                balanced.merge!(balanced_group)
+              end
             end
           end
-        end
 
-        balanced
+          balanced
+        end
       end
 
       def calculate_user_values
         values = base_user_values
 
-        @provided_values.each do |key, value|
+        @scenario_updater.provided_values.each do |key, value|
           value == :reset ? values.delete(key) : values[key] = value
         end
 
@@ -57,73 +55,57 @@ module Api
       end
 
       def base_user_values
-        if reset?
-          @parent_values.merge(@provided_values)
+        if @scenario_updater.reset?
+          if @scenario_updater.scenario.parent
+            @scenario_updater.scenario.parent.user_values.merge(@scenario_updater.provided_values)
+          else
+            @scenario_updater.provided_values.dup
+          end
         else
           uncoupled_base_user_values
         end
       end
 
       def base_balanced_values
-        if reset?
-          @scenario.parent&.balanced_values || {}
+        if @scenario_updater.reset?
+          @scenario_updater.scenario.parent&.balanced_values || {}
         else
           uncoupled_base_balanced_values
         end
       end
 
       def uncoupled_base_user_values
-        values = @scenario.user_values.dup
+        values = @scenario_updater.scenario.user_values.dup
 
-        if uncouple?
-          values.except!(*@uncoupled_sliders)
+        if @scenario_updater.uncouple?
+          values.except!(*@scenario_updater.scenario.coupled_sliders)
         else
           values
         end
       end
 
       def uncoupled_base_balanced_values
-        values = (@scenario.balanced_values || {}).dup
+        values = (@scenario_updater.scenario.balanced_values || {}).dup
 
-        if uncouple?
-          values.except!(*@uncoupled_sliders)
+        if @scenario_updater.uncouple?
+          values.except!(*@scenario_updater.scenario.coupled_sliders)
         else
           values
         end
       end
 
       def balance_group(inputs)
-        if @force_balance
+        if @scenario_data[:force_balance]
           inputs.each do |input|
-            user_values.delete(input.key) unless @provided_values.key?(input.key)
+            user_values.delete(input.key) unless @scenario_updater.provided_values.key?(input.key)
           end
 
-          Balancer.new(inputs).balance(@scenario, @provided_values)
+          Balancer.new(inputs).balance(@scenario_updater.scenario, @scenario_updater.provided_values)
         else
-          Balancer.new(inputs).balance(@scenario, user_values)
+          Balancer.new(inputs).balance(@scenario_updater.scenario, user_values)
         end
       rescue Balancer::BalancerError
         nil
-      end
-
-      def each_group(values)
-        group_names = values.map do |key, _|
-          (input = Input.get(key)) && input.share_group.presence || nil
-        end.compact.uniq
-
-        group_names.each do |name|
-          yield name, Input.in_share_group(name)
-        end
-
-        nil
-      end
-
-      def reset?
-        @scenario_data[:reset]
-      end
-
-      def uncouple?
-        @scenario_data[:uncouple]
       end
     end
   end

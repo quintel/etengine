@@ -3,9 +3,8 @@
 module Api
   module V3
     class ScenarioMetadataHandler
-      MAX_METADATA_SIZE = 64.kilobytes
 
-      def initialize(scenario:, scenario_data:)
+      def initialize(scenario, scenario_data)
         @scenario = scenario
         @scenario_data = scenario_data
       end
@@ -15,7 +14,7 @@ module Api
       end
 
       def validate_metadata_size(errors)
-        errors.add(:base, 'Metadata cannot exceed 64Kb') if metadata.to_s.bytesize > MAX_METADATA_SIZE
+        errors.add(:base, 'Metadata can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
       end
     end
   end
