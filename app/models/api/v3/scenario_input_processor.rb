@@ -1,5 +1,3 @@
-# app/models/api/v3/scenario_input_processor.rb
-
 module Api
   module V3
     class ScenarioInputProcessor

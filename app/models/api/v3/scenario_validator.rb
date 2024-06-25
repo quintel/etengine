@@ -1,5 +1,3 @@
-# app/models/api/v3/scenario_validator.rb
-
 module Api
   module V3
     class ScenarioValidator

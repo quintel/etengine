@@ -1,5 +1,3 @@
-# app/models/api/v3/scenario_metadata_handler.rb
-
 module Api
   module V3
     class ScenarioMetadataHandler

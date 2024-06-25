@@ -1,5 +1,3 @@
-# app/models/api/v3/scenario_updater.rb
-
 module Api
   module V3
     class ScenarioUpdater
