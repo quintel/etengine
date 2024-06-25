@@ -28,6 +28,8 @@ module Api
         @errors = ActiveModel::Errors.new(self)
       end
 
+      # Applies the user changes to the scenario and saves it to the database.
+      # @return [Boolean]
       def apply
         return true if @data.empty?
 
@@ -57,6 +59,7 @@ module Api
 
       private
 
+      # Validates the scenario and merges any validation errors.
       def validate_scenario
         @validator.validate
         @validator.errors.each do |error|
@@ -70,16 +73,20 @@ module Api
         end
       end
 
+      # Merges errors from the validator into the updater's errors.
       def merge_errors
         @validator.errors.each do |error|
           errors.add(:base, error.message)
         end
       end
 
+      # Determines if preset roles should be copied.
+      # @return [Boolean]
       def copy_preset_roles?
         ScenarioValidator::TRUTHY_VALUES.include?(@scenario_data.fetch(:set_preset_roles, false))
       end
 
+      # Iterates over each group of inputs in the scenario.
       def each_group(values, &block)
         ScenarioValidator.each_group(@scenario, values, &block)
       end

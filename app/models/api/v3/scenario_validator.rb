@@ -17,6 +17,7 @@ module Api
         @current_user = current_user
       end
 
+      # @return [Boolean]
       def validate
         validate_user_values
         validate_groups_balance
@@ -24,6 +25,8 @@ module Api
         errors.empty?
       end
 
+      # Iterates over each group of inputs in the scenario.
+      #   Yields the group name and the inputs in the group.
       def self.each_group(scenario, values)
         group_names = values.map do |key, _|
           (input = Input.get(key)) && input.share_group.presence || nil
@@ -38,6 +41,7 @@ module Api
 
       private
 
+      # Validates the values provided by the user.
       def validate_user_values
         @provided_values_without_resets.each do |key, value|
           input = Input.get(key)
@@ -56,6 +60,7 @@ module Api
         validate_privacy_change
       end
 
+      # Validates that guest users cannot set a scenario to private.
       def validate_privacy_change
         if @data.dig(:scenario, :private) && !@current_user
           errors.add(:base, "Guest users cannot change scenario privacy")
@@ -87,7 +92,9 @@ module Api
       end
 
       def validate_metadata_size
-        errors.add(:base, 'Metadata can not exceed 64Kb') if @data.to_s.bytesize > 64.kilobytes
+        if @data.dig(:scenario, :metadata).to_s.bytesize > 64.kilobytes
+          errors.add(:base, 'Metadata can not exceed 64Kb')
+        end
       end
 
       def validate_numeric_input(key, input, value)
