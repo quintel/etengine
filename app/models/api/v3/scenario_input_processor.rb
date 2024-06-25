@@ -1,111 +1,109 @@
-# frozen_string_literal: true
+# app/models/api/v3/scenario_input_processor.rb
 
 module Api
   module V3
     class ScenarioInputProcessor
+      attr_reader :user_values, :balanced_values, :provided_values, :provided_values_without_resets
 
-      TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
-      FALSEY_VALUES = Set.new([false, 'false', '0']).freeze
-
-      def initialize(scenario_data, scenario_updater)
+      def initialize(scenario_data, scenario, data, current_user)
         @scenario_data = scenario_data
-        @scenario_updater = scenario_updater
-      end
+        @scenario = scenario
+        @data = data
+        @current_user = current_user
 
-      def balanced_values
-        @balanced_values ||= calculate_balanced_values
-      end
-
-      def user_values
-        @user_values ||= calculate_user_values
+        @provided_values = extract_provided_values
+        @provided_values_without_resets = extract_provided_values_without_resets
+        @user_values = extract_user_values
+        @balanced_values = calculate_balanced_values
       end
 
       private
 
-      def calculate_balanced_values
-        if user_values.blank?
-          {}
-        else
-          balanced = base_balanced_values
-
-          @scenario_updater.each_group(@scenario_updater.provided_values) do |_, inputs|
-            inputs.each { |input| balanced.delete(input.key) }
-          end
-
-          if @scenario_data[:autobalance] != 'false' && @scenario_data[:autobalance] != false
-            @scenario_updater.each_group(@scenario_updater.provided_values) do |_, inputs|
-              if (balanced_group = balance_group(inputs))
-                balanced.merge!(balanced_group)
-              end
-            end
-          end
-
-          balanced
+      def extract_provided_values
+        values = @scenario_data[:user_values] || {}
+        values.each_with_object({}) do |(key, value), collection|
+          collection[key.to_s] = coerce_provided_value(key, value)
         end
       end
 
-      def calculate_user_values
-        values = base_user_values
+      def extract_provided_values_without_resets
+        provided_values.reject { |_, value| value == :reset }
+      end
 
-        @scenario_updater.provided_values.each do |key, value|
+      def extract_user_values
+        values = base_user_values
+        provided_values.each do |key, value|
           value == :reset ? values.delete(key) : values[key] = value
         end
-
         values
       end
 
-      def base_user_values
-        if @scenario_updater.reset?
-          if @scenario_updater.scenario.parent
-            @scenario_updater.scenario.parent.user_values.merge(@scenario_updater.provided_values)
-          else
-            @scenario_updater.provided_values.dup
+      def calculate_balanced_values
+        return {} if user_values.blank?
+
+        balanced = base_balanced_values
+        ScenarioValidator.each_group(@scenario, provided_values) do |_, inputs|
+          inputs.each { |input| balanced.delete(input.key) }
+        end
+
+        if @data[:autobalance] != 'false' && @data[:autobalance] != false
+          ScenarioValidator.each_group(@scenario, provided_values) do |_, inputs|
+            if (balanced_group = balance_group(inputs))
+              balanced.merge!(balanced_group)
+            end
           end
+        end
+
+        balanced
+      end
+
+      def base_user_values
+        if reset?
+          @scenario.parent ? @scenario.parent.user_values.merge(provided_values) : provided_values.dup
         else
           uncoupled_base_user_values
         end
       end
 
       def base_balanced_values
-        if @scenario_updater.reset?
-          @scenario_updater.scenario.parent&.balanced_values || {}
-        else
-          uncoupled_base_balanced_values
-        end
+        reset? ? (@scenario.parent&.balanced_values || {}) : uncoupled_base_balanced_values
       end
 
       def uncoupled_base_user_values
-        values = @scenario_updater.scenario.user_values.dup
-
-        if @scenario_updater.uncouple?
-          values.except!(*@scenario_updater.scenario.coupled_sliders)
-        else
-          values
-        end
+        values = @scenario.user_values.dup
+        uncouple? ? values.except!(*@scenario.coupled_sliders) : values
       end
 
       def uncoupled_base_balanced_values
-        values = (@scenario_updater.scenario.balanced_values || {}).dup
-
-        if @scenario_updater.uncouple?
-          values.except!(*@scenario_updater.scenario.coupled_sliders)
-        else
-          values
-        end
+        values = (@scenario.balanced_values || {}).dup
+        uncouple? ? values.except!(*@scenario.coupled_sliders) : values
       end
 
       def balance_group(inputs)
-        if @scenario_data[:force_balance]
-          inputs.each do |input|
-            user_values.delete(input.key) unless @scenario_updater.provided_values.key?(input.key)
-          end
-
-          Balancer.new(inputs).balance(@scenario_updater.scenario, @scenario_updater.provided_values)
-        else
-          Balancer.new(inputs).balance(@scenario_updater.scenario, user_values)
-        end
+        Balancer.new(inputs).balance(@scenario, @data[:force_balance] ? provided_values : user_values)
       rescue Balancer::BalancerError
         nil
+      end
+
+      def coerce_provided_value(key, value)
+        input = Input.get(key)
+        return nil if input.nil?
+        return value_from_parent(key) || :reset if value == 'reset'
+
+        input.coerce(value)
+      end
+
+      def value_from_parent(key)
+        parent = @scenario.parent
+        parent ? (parent.user_values[key] || (parent.respond_to?(:balanced_values) && parent.balanced_values[key])) : nil
+      end
+
+      def reset?
+        @data.fetch(:reset, false)
+      end
+
+      def uncouple?
+        ScenarioValidator::FALSEY_VALUES.include?(@data.fetch(:coupling, true))
       end
     end
   end

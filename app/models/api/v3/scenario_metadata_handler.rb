@@ -1,20 +1,20 @@
-# frozen_string_literal: true
+# app/models/api/v3/scenario_metadata_handler.rb
 
 module Api
   module V3
     class ScenarioMetadataHandler
+      attr_reader :metadata
 
       def initialize(scenario, scenario_data)
         @scenario = scenario
         @scenario_data = scenario_data
+        @metadata = extract_metadata
       end
 
-      def metadata
+      private
+
+      def extract_metadata
         @scenario_data.key?(:metadata) ? @scenario_data[:metadata] : @scenario.metadata.dup
-      end
-
-      def validate_metadata_size(errors)
-        errors.add(:base, 'Metadata can not exceed 64Kb') if metadata.to_s.bytesize > 64.kilobytes
       end
     end
   end
