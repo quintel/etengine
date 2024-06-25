@@ -111,6 +111,9 @@ module Api
       # saves a scenario, too: in that case a copy of the scenario is saved.
       #
       def create
+        # Weird ActiveResource bug: the user values attribute is nested inside
+        # another user_values hash. Used when generating a scenario with the
+        # average values of other scenarios.
         inputs = params[:scenario][:user_values]["user_values"] rescue nil
         if inputs
           params[:scenario][:user_values] = inputs
@@ -130,7 +133,11 @@ module Api
             return
           end
 
+          # If user_values is assigned after the preset ID, we would wipe out
+          # the preset user values.
           attrs.delete(:user_values)
+
+          # Inherit the visibility if no explicity visibility is set.
           attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
         elsif current_user && attrs[:private].nil?
           attrs[:private] = current_user.private_scenarios?
@@ -152,6 +159,8 @@ module Api
           end
         end
 
+        # The scaler needs to be in place before assigning attributes when the
+        # scenario inherits from a preset.
         @scenario.descale = attrs[:descale]
         @scenario.attributes = attrs
 

@@ -1,5 +1,8 @@
 module Api
   module V3
+    # Given a scenario, and parameters from an HTTP request, updates the
+    # scenario with the data, or presents a useful error to sent back to the
+    # client.
     class ScenarioUpdater
       include ActiveModel::Validations
 
