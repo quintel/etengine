@@ -40,6 +40,7 @@ module Qernel
     #
     class HybridOffshoreAdapter < AlwaysOnAdapter
       attr_reader :converter_curve
+      attr_reader :converter_constraint_curve
 
       def initialize(node, context)
         super
@@ -47,6 +48,10 @@ module Qernel
         # Input capacity of the output node
         @output_input_capacity = (
           output_node.node_api.input_capacity * output_node.node_api.number_of_units
+        )
+        # Output capacity of the input node
+        @input_output_capacity = (
+          input_node.node_api.electricity_output_capacity * input_node.node_api.number_of_units
         )
         # Input capacity of the converter node
         @converter_input_capacity = (
@@ -57,6 +62,7 @@ module Qernel
 
         @clearing = Array.new(8760, 0.0)
         @curtailed = Array.new(8760, 0.0)
+        @converter_constraint_curve = Array.new(8760, @input_output_capacity)
 
         @converter_curve = Qernel::Causality::ActiveLazyCurve.new do |frame|
           @clearing[frame] * -1
@@ -129,6 +135,8 @@ module Qernel
 
         to_market = [amount - converted, @output_input_capacity].min
         @curtailed[point] = amount - converted - to_market
+
+        @converter_constraint_curve[point] = [to_market, @input_output_capacity].max
 
         to_market
       end
