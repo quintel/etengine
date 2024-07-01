@@ -33,6 +33,10 @@ $(document).on("turbo:load", function () {
       viewportMargin: Infinity,
     });
 
+    if ($(this).attr("name") == "query") {
+      cm.focus();
+    }
+
     // Ctrl+Enter submit on any CodeMirror instance
     cm.on("keydown", function (el, event) {
       if (event.ctrlKey && event.keyCode === 13) {
