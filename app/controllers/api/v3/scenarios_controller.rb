@@ -161,7 +161,7 @@ module Api
 
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
-        @scenario.descale    = attrs[:descale]
+        @scenario.descale = attrs[:descale]
         @scenario.attributes = attrs
 
         if current_user.present?
@@ -172,13 +172,17 @@ module Api
           )
         end
 
-        Scenario.transaction do
-          @scenario.save!
-        end
+        if @scenario.save
+          updater = ScenarioUpdater.new(@scenario, scenario_params, current_user)
 
-        render json: ScenarioSerializer.new(self, @scenario)
-      rescue ActiveRecord::RecordInvalid
-        render json: { errors: @scenario.errors }, status: 422
+          if updater.apply
+            render json: ScenarioSerializer.new(self, @scenario)
+          else
+            render json: { errors: updater.errors.full_messages }, status: :unprocessable_entity
+          end
+        else
+          render json: { errors: @scenario.errors }, status: :unprocessable_entity
+        end
       end
 
       # POST /api/v3/scenarios/interpolate
