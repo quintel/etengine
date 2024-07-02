@@ -193,24 +193,22 @@ module Qernel::RecursiveFactor::Base
           edge_share = 1.0
         end
 
-        if edge_share.zero?
-          # If the share is 0.0 there is no point in continuing with the
-          # calculation for this edge, as any result would be multiplied by
-          # zero.
+        # We have to multiply the share with the conversion of the
+        # corresponding slot to deal with following scenario:
+        #
+        # +---o slot(0.9) <--(1.0)-- [B] (method: 100)
+        # | A |
+        # +---o slot(0.1) <--(1.0)-- [C] (method: 80)
+        #
+        # [A] should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
+        parent_conversion = self.input(edge.carrier)&.conversion || 1.0
+
+        if edge_share.zero? || parent_conversion.zero?
+          # If the share or parent_conversion is 0.0 there is no point in
+          # continuing with the calculation for this edge, as any result would
+          # be multiplied by zero.
           0.0
         else
-          # We have to multiply the share with the conversion of the
-          # corresponding slot to deal with following scenario:
-          #
-          # +---o slot(0.9) <--(1.0)-- [B] (method: 100)
-          # | A |
-          # +---o slot(0.1) <--(1.0)-- [C] (method: 80)
-          #
-          # [A] should then be: (0.9 * 1.0 * 100) + (0.1 * 1.0 * 80)
-          input = self.input(edge.carrier)
-
-          parent_conversion = input&.conversion || 1.0
-
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
             strategy_method, node_share_method, edge, *args,
