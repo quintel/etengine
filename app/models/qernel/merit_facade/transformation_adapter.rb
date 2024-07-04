@@ -25,7 +25,7 @@ module Qernel
       end
 
       def producer_participant
-        @producer_participant ||= Merit::MustRunProducer.create(
+        @producer_participant ||= Merit::MustRunProducer.new(
           key: @node.key,
           load_profile: profile,
           full_load_hours: source_api.full_load_hours,
