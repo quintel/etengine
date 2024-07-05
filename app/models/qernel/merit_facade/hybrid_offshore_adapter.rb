@@ -136,7 +136,7 @@ module Qernel
         to_market = [amount - converted, @output_input_capacity].min
         @curtailed[point] = amount - converted - to_market
 
-        @converter_constraint_curve[point] = [to_market, @input_output_capacity].max
+        @converter_constraint_curve[point] = to_market + @input_output_capacity
 
         to_market
       end
