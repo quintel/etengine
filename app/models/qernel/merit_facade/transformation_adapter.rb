@@ -11,14 +11,26 @@ module Qernel
         @input_of_carrier = input_of_carrier
       end
 
-      # Our participants! TODO: only add the ones necessary!
+      # One or two participants
       def participant
-        @participant ||= [consumer_participant, producer_participant]
+        @participant ||= if consumer? && producer?
+          [consumer_participant, producer_participant]
+        else
+          consumer? ? consumer_participant : producer_participant
+        end
+      end
+
+      def consumer?
+        @input_of_carrier&.positive?
+      end
+
+      def producer?
+        output_capacity_per_unit.positive?
       end
 
       def consumer_participant
         @consumer_participant ||= Merit::User.create(
-          key: @node.key,
+          key: "#{@node.key}_consumer",
           load_profile: profile,
           total_consumption: @input_of_carrier
         )
@@ -26,15 +38,21 @@ module Qernel
 
       def producer_participant
         @producer_participant ||= Merit::MustRunProducer.new(
-          key: @node.key,
+          key: "#{@node.key}_producer",
           load_profile: profile,
           full_load_hours: source_api.full_load_hours,
           output_capacity_per_unit: output_capacity_per_unit,
-          marginal_costs: :null
+          marginal_costs: :null,
+          number_of_units: target_api.number_of_units
         )
       end
 
-      # Does not inject demand
+      def installed?
+        producer? || consumer?
+      end
+
+      # Does not inject demand, as this node is expected to be a preset demand node
+      # TODO: check if it should inject for carrier specfic
       def inject!
         inject_curve!(:input) { consumer_participant.load_curve }
         inject_curve!(:output) { producer_participant.load_curve }
