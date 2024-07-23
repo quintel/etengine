@@ -19,6 +19,8 @@ module Qernel
             ImportAdapter
           when :storage
             StorageAdapter
+          when :transformation
+            TransformationAdapter
           else
             raise 'Unknown reconciliation participant type for ' \
                   "#{node.key}: #{type.inspect}"
