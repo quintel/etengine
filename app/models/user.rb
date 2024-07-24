@@ -7,6 +7,8 @@ class User < ApplicationRecord
     3 => :scenario_owner
   }.freeze
 
+  attr_accessor :reset_token
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable, :registerable
   devise :database_authenticatable, :registerable,
@@ -73,5 +75,15 @@ class User < ApplicationRecord
       su.couple_to(self)
       su.save
     end
+  end
+
+  def self.new_token
+    SecureRandom.urlsafe_base64
+  end
+
+  # Returns the hash digest of the given string
+  def self.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
   end
 end
