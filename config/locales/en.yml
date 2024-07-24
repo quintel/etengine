@@ -47,6 +47,17 @@ en:
         current_password: Current password
         unconfirmed_email: New e-mail address
         name: Your name
+  user:
+    forgot_password:
+      mail:
+        subject: "Reset password instructions"
+      body:
+        header: "Password Reset Instructions"
+        message: "You requested a password reset. Click the button below to reset your password."
+        button_text: "Reset My Password"
+        link_message: "If the button above does not work, you can copy and paste the following link into your browser:"
+        ignore_message: "If you didn't request this, please ignore this email."
+        no_change_message: "Your password won't change until you access the link above and create a new one."
   scenario_invitation_mailer:
     invite_user:
       subject: 'Invitation: ETM scenario'

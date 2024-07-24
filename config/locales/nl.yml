@@ -35,9 +35,9 @@ nl:
   activemodel:
     attributes:
       'create_personal_access_token/params':
-        name: Token name
-        expires_in: Expiration
-        permissions: Permissions
+        name: Token naam
+        expires_in: Verloopt over
+        permissions: Rechten
   activerecord:
     attributes:
       user:
@@ -47,6 +47,17 @@ nl:
         current_password: Huidig wachtwoord
         unconfirmed_email: Nieuw e-mailadres
         name: Jouw naam
+  user:
+    forgot_password:
+      mail:
+        subject: "Instructies voor het opnieuw instellen van je wachtwoord"
+      body:
+        header: "Instructies voor het opnieuw instellen van je wachtwoord"
+        message: "Je hebt gevraagd om je wachtwoord opnieuw in te stellen. Klik op de onderstaande knop om je wachtwoord opnieuw in te stellen."
+        button_text: "Stel mijn wachtwoord opnieuw in"
+        link_message: "Als de bovenstaande knop niet werkt, kun je de volgende link kopiëren en plakken in je browser:"
+        ignore_message: "Als je dit niet hebt aangevraagd, kun je deze e-mail negeren."
+        no_change_message: "Je wachtwoord wordt niet gewijzigd totdat je de bovenstaande link opent en een nieuw wachtwoord aanmaakt."
   scenario_invitation_mailer:
     invite_user:
       subject: 'Uitnodiging: ETM scenario'
@@ -54,4 +65,3 @@ nl:
       scenario_viewer: gast
       scenario_collaborator: bewerker
       scenario_owner: eigenaar
-
