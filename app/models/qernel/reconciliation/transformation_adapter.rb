@@ -3,6 +3,7 @@
 module Qernel
   module Reconciliation
     # Can act both as a producer and consumer when there is in or output demand
+    # Can act on different carriers at the same time
     class TransformationAdapter < Adapter
       def inject!(_calculator)
         @node.dataset_lazy_set(@context.curve_name(:output)) do
@@ -56,33 +57,49 @@ module Qernel
       def calculate_carrier_demand_output
         # We can't use output_of(carrier) as the graph may not be calculated at
         # the time this method is called.
-        node_demand * output_slot.conversion
+        node_demand * output_conversion
       end
 
       def calculate_carrier_demand_input
         # We can't use input_of(carrier) as the graph may not be calculated at
         # the time this method is called.
-        node_demand * input_slot.conversion
+        node_demand * input_conversion
       end
 
-      def input_slot
-        carrier = @config.demand_carrier || @context.carrier
-
-        @node.input(carrier) ||
-          raise(<<~ERROR.squish)
-            Expected a #{carrier} output on #{@node.key}, but none was
-            found.
-          ERROR
+      def input_conversion
+        input_slots.is_a?(Array) ? input_slots.sum(&:conversion) : input_slots.conversion
       end
 
-      def output_slot
+      def output_conversion
+        output_slots.is_a?(Array) ? output_slots.sum(&:conversion) : output_slots.conversion
+      end
+
+      def input_slots
         carrier = @config.demand_carrier || @context.carrier
 
-        @node.output(carrier) ||
-          raise(<<~ERROR.squish)
-            Expected a #{carrier} output on #{@node.key}, but none was
-            found.
-          ERROR
+        if carrier.is_a?(Array)
+          carrier.filter_map { |c| @node.input(c) }
+        else
+          @node.input(carrier) ||
+            raise(<<~ERROR.squish)
+              Expected a #{carrier} input on #{@node.key}, but none was
+              found.
+            ERROR
+        end
+      end
+
+      def output_slots
+        carrier = @config.demand_carrier || @context.carrier
+
+        if carrier.is_a?(Array)
+          carrier.filter_map { |c| @node.output(c) }
+        else
+          @node.output(carrier) ||
+            raise(<<~ERROR.squish)
+              Expected a #{carrier} output on #{@node.key}, but none was
+              found.
+            ERROR
+        end
       end
     end
   end
