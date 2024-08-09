@@ -77,7 +77,8 @@ module Etsource
           carrier,
           edge.type,
           edge.reversed?,
-          edge.groups
+          edge.groups,
+          circular: edge.circular
         )
       end
 

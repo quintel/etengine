@@ -208,6 +208,8 @@ module Qernel::RecursiveFactor::Base
           # continuing with the calculation for this edge, as any result would
           # be multiplied by zero.
           0.0
+        elsif edge.circular?
+          0.0
         else
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
@@ -354,7 +356,7 @@ module Qernel::RecursiveFactor::Base
   #
   # Returns a float.
   def demanding_share(edge)
-    return 0.0 if edge.loss?
+    return 0.0 if edge.loss? || edge.circular?
 
     demanding_share = (edge.demand || 0.0) / (demand || 0.0)
     demanding_share.nan? || demanding_share.infinite? ? 0.0 : demanding_share

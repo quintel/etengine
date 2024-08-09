@@ -40,11 +40,12 @@ module Qernel
     # groups   - An array of groups to which the edge belongs.
     #
     # Returns a edge.
-    def initialize(id, lft, rgt, carrier, type, reversed = false, groups = [])
+    def initialize(id, lft, rgt, carrier, type, reversed = false, groups = [], circular: false)
       @key = id
       @id  = id.is_a?(Numeric) ? id : Hashpipe.hash(id)
 
       @reversed      = reversed
+      @circular = circular
       @lft_node = lft
       @rgt_node = rgt
       @carrier       = carrier
@@ -119,6 +120,10 @@ module Qernel
 
     def reversed?
       @reversed
+    end
+
+    def circular?
+      @circular
     end
 
     def energetic?
