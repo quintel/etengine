@@ -35,6 +35,8 @@
                               = output_edge.edge_type.to_s.humanize
                               - if output_edge.reversed?
                                 .more-info Reversed
+                              - if output_edge.circular?
+                                .more-info Cicular
                   %td.centered{ title: output_slot.carrier.key.to_s.humanize }
                     .carrier-name{ title: output_slot.class.name }
                       = link_to output_slot.carrier.key.to_s.humanize, inspect_carrier_path(id: output_slot.carrier.key)
@@ -77,7 +79,8 @@
                               = input_edge.edge_type.to_s.humanize
                               - if input_edge.reversed?
                                 .more-info Reversed
-
+                              - if input_edge.circular?
+                                .more-info Circular
                             %td.share{:title => input_edge.share}= "#{(100 * input_edge.share).round(2)} %" unless input_edge.share.nil?
                             %td.value{:title => input_edge.value}= auto_number input_edge.value
                             %td
