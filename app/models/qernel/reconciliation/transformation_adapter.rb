@@ -78,7 +78,7 @@ module Qernel
         carrier = @config.demand_carrier || @context.carrier
 
         if carrier.is_a?(Array)
-          carrier.filter_map { |c| @node.input(c) }
+          carrier.filter_map { |c| @node.input(c.to_sym) }
         else
           @node.input(carrier) ||
             raise(<<~ERROR.squish)
@@ -92,7 +92,7 @@ module Qernel
         carrier = @config.demand_carrier || @context.carrier
 
         if carrier.is_a?(Array)
-          carrier.filter_map { |c| @node.output(c) }
+          carrier.filter_map { |c| @node.output(c.to_sym) }
         else
           @node.output(carrier) ||
             raise(<<~ERROR.squish)
