@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_29_091457) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_09_120624) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -59,13 +59,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_29_091457) do
     t.index ["scenario_id"], name: "index_households_space_heating_producer_orders_on_scenario_id", unique: true
   end
 
-  create_table "hydrogen_demand_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "hydrogen_demand_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
     t.text "order"
     t.index ["scenario_id"], name: "index_hydrogen_demand_orders_on_scenario_id", unique: true
   end
 
-  create_table "hydrogen_supply_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "hydrogen_supply_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
     t.text "order"
     t.index ["scenario_id"], name: "index_hydrogen_supply_orders_on_scenario_id", unique: true
@@ -188,7 +188,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_29_091457) do
     t.index ["scenario_id"], name: "index_scenario_scalings_on_scenario_id", unique: true
   end
 
-  create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "scenario_users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id", null: false
     t.integer "role_id", null: false
     t.integer "user_id"
@@ -197,7 +197,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_29_091457) do
     t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
   end
 
-  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id", null: false
     t.integer "user_id", null: false
     t.text "description"

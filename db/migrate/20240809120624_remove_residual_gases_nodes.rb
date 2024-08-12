@@ -88,14 +88,14 @@ class RemoveResidualGasesNodes < ActiveRecord::Migration[7.0]
     # Iterate over the output mapping and set the output shares
     CONVERSION_OUTPUT_MAPPING.each do |output, input|
       input_value = scenario.user_values[input] || 0
-      scenario.user_values[output] = total_demand.zero? ? 0 : input_value / total_demand
+      scenario.user_values[output] = total_demand.zero? ? 0 : input_value / total_demand * 100.0
     end
 
     # Finish if total_demand is zero
     return if total_demand.zero?
 
     # Set not_defined input carrier to 1.0 and other conversion shares to zero if total_demand > 0
-    scenario.user_values[SET_CONVERSION_INPUT] = 1.0
+    scenario.user_values[SET_CONVERSION_INPUT] = 100.0
     SET_REMAINING_CONVERSION_SHARES.each do |key|
       scenario.user_values[key] = 0.0
     end
