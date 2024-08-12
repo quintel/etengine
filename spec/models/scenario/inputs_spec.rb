@@ -98,4 +98,9 @@ RSpec.describe Scenario::Inputs do
       })
     end
   end
+
+  context 'when a scenario has an active coupling disabling an input' do
+    # the one is enabled
+    # the other is disabled
+  end
 end

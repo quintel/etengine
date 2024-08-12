@@ -21,8 +21,9 @@ class ScenarioSerializer
       only: %i[
         id area_code end_year source private keep_compatible
         created_at updated_at user_values balanced_values metadata
+        active_couplings
       ],
-      methods: %i[start_year coupling]
+      methods: %i[start_year inactive_couplings]
     ).symbolize_keys
 
     json[:users]    = @resource.scenario_users.map { |su| { id: su.user&.id, email: su.email, role: User::ROLES[su.role_id] } }

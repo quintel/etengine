@@ -107,6 +107,15 @@ class Scenario < ApplicationRecord
       inputs_disabled_by_curves.include?(input.key)
     end
 
+    # Interal: Returns if the input is disabled by an active coupling
+    # An input can be disabled by a coupling when it's active, or when
+    # the input has a coupling group, it will be disabled when the coupling
+    # is inactive
+    def disabled_by_coupling?(input)
+      input.disabled_by_couplings.any? { |key| scenario.active_couplings.include?(key) } ||
+        input.coupling_groups.all? { |key| !scenario.active_couplings.include?(key) }
+    end
+
     def inputs_disabled_by_curves
       @inputs_disabled_by_curves ||= Set.new(
         @scenario.attachments

@@ -383,7 +383,7 @@ module Api
         values = @scenario.user_values.dup
 
         if uncouple?
-          values.except!(*@scenario.coupled_sliders)
+          values.except!(*@scenario.coupled_inputs)
         else
           values
         end
@@ -393,7 +393,7 @@ module Api
         values = (@scenario.balanced_values || {}).dup
 
         if uncouple?
-          values.except!(*@scenario.coupled_sliders)
+          values.except!(*@scenario.coupled_inputs)
         else
           values
         end

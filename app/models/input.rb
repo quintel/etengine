@@ -54,8 +54,9 @@ class Input
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  def self.coupling_sliders_keys
-    @coupling_sliders_keys ||= Input.with_coupling_group.map(&:id)
+  # this can also go
+  def self.coupling_inputs_keys
+    @coupling_inputs_keys ||= Input.with_coupling_group.map(&:id)
   end
 
   def disabled_by
@@ -66,6 +67,11 @@ class Input
     @disabled_by = Array(disabled_by).map { |key| key.to_s.freeze }.freeze
   end
 
+  def disabled_by_couplings
+    @disabled_by_couplings || []
+  end
+
+  # TODO: this one should go!
   def disabled_by_coupling_groups
     disabled_by.flat_map { |i| Input.coupling_groups_for(i) }.uniq
   end

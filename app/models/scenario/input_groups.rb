@@ -56,11 +56,4 @@ module Scenario::InputGroups
 
     hash
   end
-
-  # An array of coupled slider keys. For now we ignore what coupling group they belong to.
-  def coupled_sliders
-    input_keys = user_values.keys + balanced_values.keys
-
-    Input.coupling_sliders_keys & input_keys
-  end
 end
