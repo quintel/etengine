@@ -78,7 +78,7 @@ module Qernel
       #
       # Returns a numeric in kg.
       def captured_bio_emissions_from_supplier(edge)
-        if edge.demand.positive?
+        if edge.demand.positive? && !edge.circular?
           edge.rgt_node.query.inherited_captured_bio_emissions *
             edge.parent_share * edge.rgt_output.conversion *
             edge.rgt_node.query.output_compensation_factor
