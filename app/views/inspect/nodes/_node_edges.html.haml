@@ -43,6 +43,8 @@
                     - if output_slot.conversion
                       %span{ title: output_slot.conversion }
                         == #{ (100.0 * output_slot.conversion).round(2) } %
+                      - if output_slot.net_conversion != output_slot.conversion
+                        == (#{ (100.0 * output_slot.net_conversion).round(2) } %)
                       - if kms_slot?(output_slot)
                         .slot-unit== (#{ output_slot.conversion.round(3) } km/MJ)
       %td
@@ -63,6 +65,8 @@
                   - if input_slot.conversion
                     %span{ title: input_slot.conversion }
                       = "#{(100 * input_slot.conversion).round(2)} %"
+                      - if input_slot.net_conversion != input_slot.conversion
+                        == (#{ (100.0 * input_slot.net_conversion).round(2) } %)
                 %td.edges
                   - if input_slot.edges.any?
                     %table.table.table-condensed

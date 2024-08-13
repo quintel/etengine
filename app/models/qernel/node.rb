@@ -401,6 +401,15 @@ public
 
     # inversed_flexible fills up the difference of the calculated input/output slot.
     output_edges.select(&:inversed_flexible?).each(&:calculate)
+
+    # Nettify transformation nodes
+    transformation&.calculate
+  end
+
+  def transformation
+    return unless groups.include?(:industry_transformation)
+
+    @transformation ||= Transformation.new(node)
   end
 
 protected
