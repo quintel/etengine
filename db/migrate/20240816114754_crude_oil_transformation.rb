@@ -49,17 +49,17 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
       next unless Atlas::Dataset.exists?(scenario.area_code)
       dataset = Atlas::Dataset.find(scenario.area_code)
 
-      set_present_demand(scenario, dataset) # Step 1: determine present_demand, determine future_demand, set present_demand based on future_demand
-      assign_inputs(scenario)               # Step 2: assign inputs to NEW_EXTERNAL_COUPLING_INPUT_SHARES
-      assign_outputs(scenario)              # Step 3: assign outputs to NEW_EXTERNAL_COUPLING_OUTPUT_SHARES
-      delete_old_values(scenario)           # Step 4: delete old values
+      assign_demand(scenario, dataset)      # Step 1: determine present_demand, determine future_demand, set future_demand
+      assign_input_shares(scenario)         # Step 2: assign input shares to NEW_EXTERNAL_COUPLING_INPUT_SHARES
+      assign_output_shares(scenario)        # Step 3: assign output shares to NEW_EXTERNAL_COUPLING_OUTPUT_SHARES
+      delete_old_values(scenario)           # Step 4: delete old inputs
 
     end
   end
 
   private
 
-  def set_present_demand(scenario, dataset)
+  def assign_demand(scenario, dataset)
     present_demand = dataset.get(:industry_refinery_transformation_crude_oil, :demand) # present_demand = present:V(industry_refinery_transformation_crude_oil,demand)
                                                                                        # |--> There is a chance this doesn't work in which case we may need to place this into a dataset JSON like the other examples
     raise "Present demand not found" unless present_demand.is_a?(Numeric)
@@ -68,15 +68,15 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
     scenario.user_values[NEW_EXTERNAL_COUPLING_DEMAND] = future_demand                 # external_coupling_industry_chemical_refineries_total_non_energetic = future_demand
   end
 
-  def assign_inputs(scenario)
+  def assign_input_shares(scenario)
     NEW_EXTERNAL_COUPLING_INPUT_SHARES.each do |key|                                   # for each key in NEW_EXTERNAL_COUPLING_INPUT_SHARES set it to 0, then set crude_oil_input_share to 100
       scenario.user_values[key] = 0.0
     end
     scenario.user_values[external_coupling_energy_chemical_other_transformation_external_coupling_node_crude_oil_input_share] = 100.0
   end
 
-  def assign_outputs(scenario)
-    NEW_EXTERNAL_COUPLING_OUTPUT_SHARES.each do |key|                                 # for each key in NEW_EXTERNAL_COUPLING_OUTPUT_SHARES set it to 0, then set some to their old values
+  def assign_output_shares(scenario)
+    NEW_EXTERNAL_COUPLING_OUTPUT_SHARES.each do |key|                                 # for each key in NEW_EXTERNAL_COUPLING_OUTPUT_SHARES set it to 0, then set some to their old values, assign refinery_gas output to loss
       scenario.user_values[key] = 0.0
     end
     scenario.user_values[external_coupling_energy_chemical_other_transformation_external_coupling_node_crude_oil_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_crude_oil_output_share]
