@@ -25,7 +25,7 @@ RSpec.describe Scenario::Couplings do
     end
   end
 
-  context 'when has a coupled input set, and the coupling is active' do
+  context 'when the scenario has a coupled input set, and the coupling is active' do
     before do
       scenario.user_values = {
         input_disabled_by_coupling: 100,
@@ -48,7 +48,7 @@ RSpec.describe Scenario::Couplings do
     end
   end
 
-  context 'when has a coupled input set, and the coupling is inactive' do
+  context 'when the scenario has a coupled input set, and the coupling is inactive' do
     before do
       scenario.user_values = {
         input_disabled_by_coupling: 100,

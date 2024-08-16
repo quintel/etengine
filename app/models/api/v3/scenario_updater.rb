@@ -52,6 +52,8 @@ module Api
             .merge(balanced_values:, user_values:, metadata:)
         )
 
+        activate_coupling_groups
+
         if valid?
           return false unless @scenario.save(validate: false)
 
@@ -83,6 +85,52 @@ module Api
         #      message with "something went wrong" and the Airbrake ID?
         errors.add(:base, e.message)
         false
+      end
+
+      # Checks if any of the sliders/inputs have a coupling group and activates it.
+      #
+      # @return [true, false]
+      #   Returns true if any coupling group was activated, otherwise false.
+      #
+      def activate_coupling_groups
+        activated = false
+        @scenario_data.each do |key, value|
+          if value.is_a?(Hash) && value[:coupling_groups]
+            value[:coupling_groups].each do |coupling_group|
+              activate_coupling_group(coupling_group)
+              activated = true
+            end
+          end
+        end
+        activated
+      end
+
+      # Uncouples the scenario from the given groups.
+      #
+      # @param [Array<String>] groups
+      #   The groups to uncouple.
+      #
+      def uncouple_groups(groups)
+        groups.each do |group|
+          if @scenario.active_couplings.include?(group)
+            @scenario.active_couplings.delete(group)
+            @scenario.inactive_couplings << group
+          end
+        end
+      end
+
+      # Couples the scenario from the given groups.
+      #
+      # @param [Array<String>] groups
+      #   The groups to couple.
+      #
+      def couple_groups(groups)
+        groups.each do |group|
+          if @scenario.inactive_couplings.include?(group)
+            @scenario.inactive_couplings.delete(group)
+            @scenario.active_couplings << group
+          end
+        end
       end
 
       private
@@ -397,6 +445,18 @@ module Api
         else
           values
         end
+      end
+
+      # Activates the given coupling group.
+      #
+      # @param [String] coupling_group
+      #   The coupling group to be activated.
+      #
+      def activate_coupling_group(coupling_group)
+        if @scenario.inactive_couplings.include?(coupling_group)
+          @scenario.inactive_couplings.delete(coupling_group)
+        end
+        @scenario.active_couplings << coupling_group
       end
     end
   end

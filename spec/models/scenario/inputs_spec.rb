@@ -26,13 +26,13 @@ RSpec.describe Scenario::Inputs do
       }
     end
 
-    it 'has removes the disabled input from the "present" list' do
+    it 'removes the disabled input from the "present" list' do
       expect(inputs.present).to eq({
         Input.get(:present_input) => 50
       })
     end
 
-    it 'has removes the disabled input from the "future" list' do
+    it 'removes the disabled input from the "future" list' do
       expect(inputs.future).to eq({
         Input.get(:future_input) => 25
       })
@@ -100,7 +100,7 @@ RSpec.describe Scenario::Inputs do
   end
 
   context 'when a scenario has an active coupling disabling an input' do
-    # the one is enabled
-    # the other is disabled
+     # the one is enabled
+     # the other is disabled
   end
 end

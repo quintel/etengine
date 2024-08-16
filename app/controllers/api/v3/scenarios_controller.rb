@@ -159,6 +159,12 @@ module Api
           end
         end
 
+        # Check for coupling groups in the inputs and activate them
+        if attrs[:user_values]
+          scenario_updater = ScenarioUpdater.new(@scenario, attrs[:user_values], current_user)
+          scenario_updater.activate_coupling_groups
+        end
+
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
@@ -295,6 +301,40 @@ module Api
         end
       rescue ScenarioMerger::Error => ex
         render json: { errors: { base: [ex.message] } }, status: 400
+      end
+
+      def uncouple
+        authorize!(:update, @scenario)
+
+        begin
+          Scenario.transaction do
+            updater = ScenarioUpdater.new(@scenario, current_user)
+            updater.uncouple_groups(params[:groups])
+          end
+
+          render json: { success: true, message: 'Groups uncoupled successfully' }
+        rescue StandardError => e
+          render json: { errors: [e.message] }, status: :unprocessable_entity
+        end
+      end
+
+      # POST /api/v3/scenarios/:id/couple
+      #
+      # Couples the specified groups in the scenario.
+      #
+      def couple
+        authorize!(:update, @scenario)
+
+        begin
+          Scenario.transaction do
+            updater = ScenarioUpdater.new(@scenario, current_user)
+            updater.couple_groups(params[:groups])
+          end
+
+          render json: { success: true, message: 'Groups coupled successfully' }
+        rescue StandardError => e
+          render json: { errors: [e.message] }, status: :unprocessable_entity
+        end
       end
 
       private
