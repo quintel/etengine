@@ -3,9 +3,29 @@
 module Qernel
   # Represents a node whose slot conversions are mimicked to flatten circularities
   class Transformation
-    # Input_carrier: :output_carrier
+    # input_carrier:    :output_carrier
     DISALLOWED = {
-      hydrogen: :hydrogen
+      ammonia:          :ammonia,
+      electricity:      :ammonia,
+      electricity:      :diesel,
+      electricity:      :greengas,
+      electricity:      :hydrogen,
+      electricity:      :natural_gas,
+      greengas:         :greengas,
+      hydrogen:         :ammonia,
+      hydrogen:         :greengas,
+      hydrogen:         :natural_gas,
+      hydrogen:         :hydrogen,
+      methanol:         :ammonia,
+      methanol:         :greengas,
+      methanol:         :hydrogen,
+      methanol:         :methanol,
+      methanol:         :natural_gas,
+      natural_gas:      :natural_gas,
+      steam_hot_water:  :ammonia,
+      steam_hot_water:  :greengas,
+      steam_hot_water:  :hydrogen,
+      steam_hot_water:  :natural_gas,
     }.freeze
 
     def initialize(node)
