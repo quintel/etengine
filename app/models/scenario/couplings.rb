@@ -7,7 +7,7 @@ class Scenario < ApplicationRecord
     end
 
     def deactivate_coupling(coupling)
-      active_couplings.delete!(coupling)
+      active_couplings.delete(coupling)
     end
 
     def inactive_couplings
@@ -28,8 +28,7 @@ class Scenario < ApplicationRecord
     # Returns an array of input keys that are part of a coupling
     def coupled_inputs
       input_keys = user_values.keys + balanced_values.keys
-      puts input_keys
-      puts Input.coupling_inputs_keys
+
       Input.coupling_inputs_keys & input_keys
     end
   end

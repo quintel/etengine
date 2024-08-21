@@ -72,7 +72,7 @@ class Scenario < ApplicationRecord
     # Returns an array of inputs, in order of their execution priority.
     def enabled_inputs
       @enabled_inputs ||= all
-        .reject { |input| disabled_by_exclusivity?(input) || disabled_by_curve?(input) }
+        .reject { |input| disabled_by_exclusivity?(input) || disabled_by_curve?(input) || disabled_by_coupling?(input) }
         .sort_by { |input| [-input.priority, input.key] }
 
       @enabled_inputs
@@ -112,8 +112,11 @@ class Scenario < ApplicationRecord
     # the input has a coupling group, it will be disabled when the coupling
     # is inactive
     def disabled_by_coupling?(input)
-      input.disabled_by_couplings.any? { |key| scenario.active_couplings.include?(key) } ||
-        input.coupling_groups.all? { |key| !scenario.active_couplings.include?(key) }
+      input.disabled_by_couplings.any? { |key| @scenario.active_couplings.include?(key) } ||
+        (
+          input.coupling_groups.present? &&
+          input.coupling_groups.all? { |key| @scenario.active_couplings.exclude?(key) }
+        )
     end
 
     def inputs_disabled_by_curves

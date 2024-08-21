@@ -100,7 +100,36 @@ RSpec.describe Scenario::Inputs do
   end
 
   context 'when a scenario has an active coupling disabling an input' do
-     # the one is enabled
-     # the other is disabled
+    before do
+      scenario.user_values = {
+        input_disabled_by_coupling: 100,
+        input_with_coupling_group: 50
+      }
+
+      scenario.activate_coupling(:steel_sector)
+    end
+
+    it 'enables the coupling_group input and disables the disbale_by_couplin input' do
+      expect(inputs.future).to eq({
+        Input.get(:input_with_coupling_group) => 50
+      })
+    end
+  end
+
+  context 'when a scenario has an inactive coupling disabling an input' do
+    before do
+      scenario.user_values = {
+        input_disabled_by_coupling: 100,
+        input_with_coupling_group: 50
+      }
+
+      scenario.deactivate_coupling(:steel_sector)
+    end
+
+    it 'disables the coupling_group input and enables the disbale_by_couplin input' do
+      expect(inputs.future).to eq({
+        Input.get(:input_disabled_by_coupling) => 100
+      })
+    end
   end
 end
