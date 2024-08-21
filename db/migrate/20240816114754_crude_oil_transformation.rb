@@ -2,97 +2,77 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
   OLD_EXTERNAL_COUPLING_DEMAND = 'external_coupling_industry_chemical_refineries_total_non_energetic'.freeze
+  NEW_EXTERNAL_COUPLING_DEMAND = 'external_coupling_energy_chemical_refineries_transformation_external_coupling_node_total_demand'.freeze
 
-  OLD_EXTERNAL_COUPLING_OUTPUT_SHARES = %w[
-    external_coupling_industry_chemical_refineries_transformation_crude_oil_output_share
-    external_coupling_industry_chemical_refineries_transformation_diesel_output_share
-    external_coupling_industry_chemical_refineries_transformation_gasoline_output_share
-    external_coupling_industry_chemical_refineries_transformation_heavy_fuel_oil_output_share
-    external_coupling_industry_chemical_refineries_transformation_kerosene_output_share
-    external_coupling_industry_chemical_refineries_transformation_loss_output_share
-    external_coupling_industry_chemical_refineries_transformation_lpg_output_share
-    external_coupling_industry_chemical_refineries_transformation_refinery_gas_output_share
-  ]
+  OLD_PREFIX = 'external_coupling_industry_chemical_refineries_transformation_'.freeze
+  NEW_PREFIX = 'external_coupling_energy_chemical_refineries_transformation_external_coupling_node_'.freeze
 
-  NEW_EXTERNAL_COUPLING_DEMAND = 'external_coupling_industry_chemical_refineries_total_non_energetic'.freeze
+  OLD_OUTPUT_SHARE = ->(carrier) { "#{OLD_PREFIX}#{carrier}_output_share" }
+  NEW_OUTPUT_SHARE = ->(carrier) { "#{NEW_PREFIX}#{carrier}_output_share" }
+  NEW_INPUT_SHARE = ->(carrier) { "#{NEW_PREFIX}#{carrier}_input_share" }
 
-  NEW_EXTERNAL_COUPLING_INPUT_SHARES = %w[
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_ammonia_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_crude_oil_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_electricity_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_greengas_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_hydrogen_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_methanol_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_natural_gas_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_steam_hot_water_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_waste_mix_input_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_wood_pellets_input_share
+  # Carriers that can be translated 1-to-1 for output shares. Refinery gas is treated differently later
+  EXISTING_CARRIERS = %w[crude_oil diesel gasoline heavy_fuel_oil kerosene loss lpg].freeze
+  # New output carriers that will be set to 0.0 share. Not_defined is treated differently later
+  NEW_OUTPUT_CARRIERS = %w[ammonia greengas hydrogen methanol natural_gas].freeze
+
+  # New input carriers that will be set to 0.0 share. Crude oil will be later set to 100
+  NEW_INPUT_CARRIERS = %w[
+    ammonia electricity greengas hydrogen methanol natural_gas
+    steam_hot_water waste_mix wood_pellets
   ].freeze
 
-  NEW_EXTERNAL_COUPLING_OUTPUT_SHARES = %w[
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_ammonia_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_crude_oil_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_diesel_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_gasoline_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_greengas_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_heavy_fuel_oil_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_hydrogen_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_kerosene_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_loss_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_lpg_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_methanol_output_share
-    external_coupling_energy_chemical_refineries_transformation_external_coupling_node_natural_gas_output_share
-  ].freeze
-
+  # Step 1: determine present_demand, determine future_demand, set future_demand
+  # Step 2: assign input shares to new external coupling input shares
+  # Step 3: assign output shares to new external coupling output shares
   def up
+    @defaults = JSON.load(File.read(
+      Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
+    ))
+
     migrate_scenarios do |scenario|
       next unless scenario.user_values.key?(OLD_EXTERNAL_COUPLING_DEMAND)
       next unless Atlas::Dataset.exists?(scenario.area_code)
-      dataset = Atlas::Dataset.find(scenario.area_code)
 
-      assign_demand(scenario, dataset)      # Step 1: determine present_demand, determine future_demand, set future_demand
-      assign_input_shares(scenario)         # Step 2: assign input shares to NEW_EXTERNAL_COUPLING_INPUT_SHARES
-      assign_output_shares(scenario)        # Step 3: assign output shares to NEW_EXTERNAL_COUPLING_OUTPUT_SHARES
-      delete_old_values(scenario)           # Step 4: delete old inputs
-
+      assign_demand(scenario)
+      assign_input_shares(scenario)
+      assign_output_shares(scenario)
     end
   end
 
   private
 
-  def assign_demand(scenario, dataset)
-    present_demand = dataset.get(:industry_refinery_transformation_crude_oil, :demand) # present_demand = present:V(industry_refinery_transformation_crude_oil,demand)
-                                                                                       # |--> There is a chance this doesn't work in which case we may need to place this into a dataset JSON like the other examples
-    raise "Present demand not found" unless present_demand.is_a?(Numeric)
-    absolute_demand_change = scenario.user_values[OLD_EXTERNAL_COUPLING_DEMAND]        # absolute_demand_change = INPUT_VALUE(external_coupling_industry_chemical_refineries_total_non_energetic)
-    future_demand = present_demand * absolute_demand_change / 100.0                    # future_demand = present_demand * absolute_demand_change / 100.0
-    scenario.user_values[NEW_EXTERNAL_COUPLING_DEMAND] = future_demand                 # external_coupling_industry_chemical_refineries_total_non_energetic = future_demand
+  def assign_demand(scenario)
+    present_demand = @defaults[scenario.area_code.to_s]['industry_refinery_transformation_crude_oil']
+
+    scenario.user_values[NEW_EXTERNAL_COUPLING_DEMAND] = (
+      present_demand *
+      (scenario.user_values.delete(OLD_EXTERNAL_COUPLING_DEMAND) / 100.0)
+    )
   end
 
+  # Each new carrier gets an input share of 0.0. Crude oil gets an input of 100
   def assign_input_shares(scenario)
-    NEW_EXTERNAL_COUPLING_INPUT_SHARES.each do |key|                                   # for each key in NEW_EXTERNAL_COUPLING_INPUT_SHARES set it to 0, then set crude_oil_input_share to 100
-      scenario.user_values[key] = 0.0
+    NEW_INPUT_CARRIERS.each do |carrier|
+      scenario.user_values[NEW_INPUT_SHARE.call(carrier)] = 0.0
     end
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_crude_oil_input_share] = 100.0
+    scenario.user_values[NEW_INPUT_SHARE.call('crude_oil')] = 100.0
   end
 
+  # Each new output carriers share is set to 0.0,
+  # Each existing carriers share is copied over, with a special case for refinery
+  # gas, which is added to losses.
   def assign_output_shares(scenario)
-    NEW_EXTERNAL_COUPLING_OUTPUT_SHARES.each do |key|                                 # for each key in NEW_EXTERNAL_COUPLING_OUTPUT_SHARES set it to 0, then set some to their old values, assign refinery_gas output to loss
-      scenario.user_values[key] = 0.0
+    NEW_OUTPUT_CARRIERS.each do |carrier|
+      scenario.user_values[NEW_OUTPUT_SHARE.call(carrier)] = 0.0
     end
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_crude_oil_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_crude_oil_output_share]
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_diesel_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_diesel_output_share]
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_gasoline_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_gasoline_output_share]
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_heavy_fuel_oil_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_heavy_fuel_oil_output_share]
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_kerosene_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_kerosene_output_share]
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_loss_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_refinery_gas_output_share] + scenario.user_values[external_coupling_industry_chemical_refineries_transformation_loss_output_share]
-    scenario.user_values[external_coupling_energy_chemical_refineries_transformation_external_coupling_node_lpg_output_share] = scenario.user_values[external_coupling_industry_chemical_refineries_transformation_lpg_output_share]
-  end
 
-  def delete_old_values(scenario)
-    scenario.user_values.delete(OLD_EXTERNAL_COUPLING_DEMAND)
-    OLD_EXTERNAL_COUPLING_OUTPUT_SHARES.each do |key|
-      scenario.user_values.delete(key)
+    EXISTING_CARRIERS.each do |carrier|
+      scenario.user_values[NEW_OUTPUT_SHARE.call(carrier)] =
+        scenario.user_values.delete(OLD_OUTPUT_SHARE.call(carrier)) || 0.0
     end
+
+    scenario.user_values[NEW_OUTPUT_SHARE.call('not_defined')] =
+      scenario.user_values[NEW_OUTPUT_SHARE.call('refinery_gas')]
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_09_120624) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_16_114754) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -197,7 +197,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_09_120624) do
     t.index ["scenario_id", "user_id"], name: "scenario_users_scenario_id_user_id_idx", unique: true
   end
 
-  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "scenario_version_tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "scenario_id", null: false
     t.integer "user_id", null: false
     t.text "description"
@@ -216,6 +216,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_09_120624) do
     t.string "source"
     t.text "balanced_values", size: :medium
     t.text "metadata"
+    t.text "active_couplings", size: :medium
     t.index ["created_at"], name: "index_scenarios_on_created_at"
   end
 
