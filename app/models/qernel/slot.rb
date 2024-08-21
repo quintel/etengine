@@ -250,6 +250,11 @@ class Slot
     @net_conversion || conversion
   end
 
+  # Sets the net_conversion to the original conversion + amout
+  def distribute_net_conversion(amount)
+    @net_conversion = conversion + amount
+  end
+
   attr_writer :net_conversion
 
   # Converts a value using the conversion.

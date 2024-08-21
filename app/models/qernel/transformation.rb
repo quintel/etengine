@@ -5,27 +5,13 @@ module Qernel
   class Transformation
     # input_carrier:    :output_carrier
     DISALLOWED = {
-      ammonia:          :ammonia,
-      electricity:      :ammonia,
-      electricity:      :diesel,
-      electricity:      :greengas,
-      electricity:      :hydrogen,
-      electricity:      :natural_gas,
-      greengas:         :greengas,
-      hydrogen:         :ammonia,
-      hydrogen:         :greengas,
-      hydrogen:         :natural_gas,
-      hydrogen:         :hydrogen,
-      methanol:         :ammonia,
-      methanol:         :greengas,
-      methanol:         :hydrogen,
-      methanol:         :methanol,
-      methanol:         :natural_gas,
-      natural_gas:      :natural_gas,
-      steam_hot_water:  :ammonia,
-      steam_hot_water:  :greengas,
-      steam_hot_water:  :hydrogen,
-      steam_hot_water:  :natural_gas,
+      ammonia:          %i[ammonia],
+      electricity:      %i[ammonia diesel greengas hydrogen natural_gas],
+      greengas:         %i[greengas],
+      hydrogen:         %i[ammonia greengas natural_gas hydrogen],
+      methanol:         %i[ammonia greengas hydrogen methanol natural_gas],
+      natural_gas:      %i[natural_gas],
+      steam_hot_water:  %i[ammonia greengas hydrogen natural_gas]
     }.freeze
 
     def initialize(node)
@@ -35,39 +21,21 @@ module Qernel
     def calculate
       return if @node.demand.zero?
 
-      dirty_input, dirty_output = dirty_slots
-      dirty_input_conversion = dirty_input.sum { |carrier| @node.input(carrier).conversion }
-      dirty_output_conversion = dirty_output.sum { |carrier| @node.output(carrier).conversion }
+      setup_disallowed_slots
 
-      elegible_inputs = @node.inputs.select { |i| i.conversion.positive? && dirty_input.exclude?(i.carrier.key) }
-      elegible_outputs = @node.outputs.select { |o| o.conversion.positive? && dirty_output.exclude?(o.carrier.key) }
+      redistribute(:input)
+      redistribute(:output)
 
-      if elegible_inputs.count.positive?
-        input_division = dirty_input_conversion / elegible_inputs.count
-
-        elegible_inputs.each do |slot|
-          slot.net_conversion = slot.conversion + input_division
-        end
-      end
-
-      if elegible_outputs.count.positive?
-        output_division = dirty_output_conversion / elegible_outputs.count
-
-        elegible_outputs.each do |slot|
-          slot.net_conversion = slot.conversion + output_division
-        end
-      end
-
-      dirty_input.each do |carrier|
-        @node.input(carrier).net_conversion = 0.0
+      disallowed_slots[:input].each do |slot|
+        slot.net_conversion = 0.0
       end
 
       # Because RF comes from the output edges, we have to set those as well
       # to make sure the previous node knows about the flattening
-      dirty_output.each do |carrier|
-        @node.output(carrier).net_conversion = 0.0
+      disallowed_slots[:output].each do |slot|
+        slot.net_conversion = 0.0
 
-        @node.output(carrier).edges.each do |edge|
+        slot.edges.each do |edge|
           edge.net_share = 0.0
           edge.net_demand = 0.0
           edge.lft_input.net_conversion = 0.0
@@ -75,17 +43,46 @@ module Qernel
       end
     end
 
-    def dirty_slots
-      dirty_input = Set.new
-      dirty_output = Set.new
-      DISALLOWED.each do |input_carrier, output_carrier|
-        if @node.input(input_carrier).conversion.positive? && @node.output(output_carrier).conversion.positive?
-          dirty_input << input_carrier
-          dirty_output << output_carrier
-        end
+    private
+
+    # Redistributes the total conversion that is was supplied by the
+    # disallowed carriers evenly over the allowed carriers for the given
+    # direction
+    def redistribute(direction)
+      slots_direction = direction == :input ? :inputs : :outputs
+      allowed_slots = @node.public_send(slots_direction).select do |i|
+        i.conversion.positive? && disallowed_slots[direction].exclude?(i)
       end
 
-      [dirty_input, dirty_output]
+      division = total_disallowed_conversion(direction) / allowed_slots.count
+      allowed_slots.each { |slot| slot.distribute_net_conversion(division) }
+    end
+
+    def disallowed_slots
+      @disallowed_slots ||= {
+        input: Set.new,
+        output: Set.new
+      }
+    end
+
+    def total_disallowed_conversion(direction)
+      disallowed_slots[direction].sum(&:conversion)
+    end
+
+    def setup_disallowed_slots
+      DISALLOWED.each do |input_carrier, output_carriers|
+        output_carriers.each do |output_carrier|
+          if disallowed_combination?(input_carrier, output_carrier)
+            disallowed_slots[:input] <<  @node.input(input_carrier)
+            disallowed_slots[:output] << @node.output(output_carrier)
+          end
+        end
+      end
+    end
+
+    def disallowed_combination?(input_carrier, output_carrier)
+      @node.input(input_carrier)&.conversion&.positive? &&
+        @node.output(output_carrier)&.conversion&.positive?
     end
   end
 end
