@@ -240,6 +240,22 @@ module Qernel
       reversed? ? lft_input : rgt_output
     end
 
+    def net_share
+      @net_share || share
+    end
+
+    def net_share=(val)
+      @net_share = val
+    end
+
+    def net_demand
+      @net_demand || demand
+    end
+
+    def net_demand=(val)
+      @net_demand = val
+    end
+
     private
 
     # Internal: Micro-optimization which improves the performance of
