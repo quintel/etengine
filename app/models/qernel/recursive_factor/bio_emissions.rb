@@ -78,9 +78,9 @@ module Qernel
       #
       # Returns a numeric in kg.
       def captured_bio_emissions_from_supplier(edge)
-        if edge.demand.positive?
+        if edge.net_demand.positive?
           edge.rgt_node.query.inherited_captured_bio_emissions *
-            edge.parent_share * edge.rgt_output.conversion *
+            edge.parent_share * edge.rgt_output.net_conversion *
             edge.rgt_node.query.output_compensation_factor
         else
           # Don't recurse through any edge with no demand. There won't be any emissions from
