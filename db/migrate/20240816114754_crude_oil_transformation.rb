@@ -46,7 +46,7 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
     present_demand = @defaults[scenario.area_code.to_s]['industry_refinery_transformation_crude_oil']
 
     scenario.user_values[NEW_EXTERNAL_COUPLING_DEMAND] = (
-      present_demand *
+      (present_demand / 1000.0) *
       (scenario.user_values.delete(OLD_EXTERNAL_COUPLING_DEMAND) / 100.0)
     )
   end
@@ -61,7 +61,7 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
 
   # Each new output carriers share is set to 0.0,
   # Each existing carriers share is copied over, with a special case for refinery
-  # gas, which is added to losses.
+  # gas, which is allocated to not defined.
   def assign_output_shares(scenario)
     NEW_OUTPUT_CARRIERS.each do |carrier|
       scenario.user_values[NEW_OUTPUT_SHARE.call(carrier)] = 0.0
