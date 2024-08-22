@@ -18,7 +18,13 @@ class Scenario::Editable < SimpleDelegator
     self.metadata = params[:metadata]
     self.user_values = params[:user_values]
     self.balanced_values = params[:balanced_values]
-    @scenario.attributes = params.except(:metadata, :user_values, :balanced_values)
+    params[:active_couplings].to_s.split.each { |coupling| self.activate_coupling(coupling.to_sym) }
+    @scenario.attributes = params.except(
+      :metadata,
+      :user_values,
+      :balanced_values,
+      :active_couplings
+    )
 
     raise ActiveRecord::RecordInvalid if @scenario.errors.any?
 

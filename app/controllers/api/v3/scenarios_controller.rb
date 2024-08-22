@@ -164,7 +164,6 @@ module Api
         end
 
         # Check for coupling groups in the inputs and activate them
-        # TODO: verify logic with MB
         if attrs[:user_values]
           scenario_updater = ScenarioUpdater.new(@scenario, attrs[:user_values], current_user)
           scenario_updater.activate_coupling_groups
