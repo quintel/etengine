@@ -117,7 +117,7 @@ class Scenario < ApplicationRecord
         input.disabled_by_couplings.all? { |key| @scenario.active_couplings.include?(key) }
       ) || (
         input.coupling_groups.present? &&
-        input.coupling_groups.all? { |key| @scenario.active_couplings.exclude?(key) }
+        input.coupling_groups.any? { |key| @scenario.active_couplings.exclude?(key) }
       )
     end
 
