@@ -416,7 +416,7 @@ describe Scenario do
 
     before do
       @scenario = Scenario.default
-      allow(Input).to receive(:coupling_sliders_keys).and_return(
+      allow(Input).to receive(:coupling_inputs_keys).and_return(
         ['coupled_slider_1']
       )
     end

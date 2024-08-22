@@ -27,6 +27,8 @@ RSpec.describe Scenario::Couplings do
 
   context 'when the scenario has a coupled input set, and the coupling is active' do
     before do
+      allow(Input).to receive(:coupling_inputs_keys).and_return(['input_with_coupling_group'])
+
       scenario.user_values = {
         input_disabled_by_coupling: 100,
         input_with_coupling_group: 75
@@ -50,6 +52,8 @@ RSpec.describe Scenario::Couplings do
 
   context 'when the scenario has a coupled input set, and the coupling is inactive' do
     before do
+      allow(Input).to receive(:coupling_inputs_keys).and_return(['input_with_coupling_group'])
+
       scenario.user_values = {
         input_disabled_by_coupling: 100,
         input_with_coupling_group: 75

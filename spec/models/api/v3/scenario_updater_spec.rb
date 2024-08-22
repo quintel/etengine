@@ -250,13 +250,13 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   context 'when uncoupling a scenario that was coupled' do
     let(:params) do
       {
-        coupling: false,
+        uncouple: true,
         scenario: { user_values: { foo_demand: 1 } }
       }
     end
 
     before do
-      allow(Input).to receive(:coupling_sliders_keys).and_return(['exclusive'])
+      allow(Input).to receive(:coupling_inputs_keys).and_return(['exclusive'])
 
       scenario.user_values = {
         exclusive: 10.0,
