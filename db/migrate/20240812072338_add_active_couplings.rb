@@ -3,7 +3,7 @@ require 'etengine/scenario_migration'
 class AddActiveCouplings < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
-  INPUTS = Input.with_coupling_group.map(&:id).freeze
+  INPUTS = Input.coupling_inputs_keys.freeze
 
   def up
     migrate_scenarios do |scenario|
@@ -18,6 +18,6 @@ class AddActiveCouplings < ActiveRecord::Migration[7.0]
 
     matches = INPUTS & input_keys
 
-    matches.map{ |input| Input.coupling_groups_for(input) }.uniq
+    matches.flat_map{ |input| Input.coupling_groups_for(input) }.uniq
   end
 end
