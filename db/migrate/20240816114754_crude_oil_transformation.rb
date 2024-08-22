@@ -18,7 +18,7 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
 
   # New input carriers that will be set to 0.0 share. Crude oil will be later set to 100
   NEW_INPUT_CARRIERS = %w[
-    ammonia electricity greengas hydrogen methanol natural_gas
+    ammonia electricity greengas hydrogen methanol natural_gas not_defined
     steam_hot_water waste_mix wood_pellets
   ].freeze
 
