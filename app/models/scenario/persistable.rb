@@ -50,6 +50,8 @@ module Scenario::Persistable
         other_scaler.attributes.except('id', 'scenario_id'))
     end
 
+    self.active_couplings = preset.active_couplings
+
     self.forecast_storage_order = cloned_user_sortable(preset, :forecast_storage_order)
     self.households_space_heating_producer_order = cloned_user_sortable(
       preset,
