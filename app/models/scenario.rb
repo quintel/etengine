@@ -55,6 +55,7 @@ class Scenario < ApplicationRecord
   validate :validate_metadata_size
   validate :validate_parent_scenario_exists, on: :create
   validate :validate_visibility
+  validate :validate_coupling_groups
 
   validates_associated :scaler, on: :create
 

@@ -14,7 +14,6 @@ module Api
 
       # Boolean API values which are considered truthy.
       TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
-      FALSEY_VALUES = Set.new([false, 'false', '0']).freeze
 
       # @return [Scenario]
       #   Returns the scenario being updated.
@@ -95,42 +94,15 @@ module Api
       def activate_coupling_groups
         activated = false
         @scenario_data.each do |key, value|
+          # TODO: change to Input.find + ask MB for correct logic
           if value.is_a?(Hash) && value[:coupling_groups]
             value[:coupling_groups].each do |coupling_group|
-              activate_coupling_group(coupling_group)
+              @scenario.activate_coupling(coupling_group)
               activated = true
             end
           end
         end
         activated
-      end
-
-      # Uncouples the scenario from the given groups.
-      #
-      # @param [Array<String>] groups
-      #   The groups to uncouple.
-      #
-      def uncouple_groups(groups)
-        groups.each do |group|
-          if @scenario.active_couplings.include?(group)
-            @scenario.active_couplings.delete(group)
-            @scenario.inactive_couplings << group
-          end
-        end
-      end
-
-      # Couples the scenario from the given groups.
-      #
-      # @param [Array<String>] groups
-      #   The groups to couple.
-      #
-      def couple_groups(groups)
-        groups.each do |group|
-          if @scenario.inactive_couplings.include?(group)
-            @scenario.inactive_couplings.delete(group)
-            @scenario.active_couplings << group
-          end
-        end
       end
 
       private
@@ -145,7 +117,7 @@ module Api
 
       # Returns if the scenario should be uncoupled
       def uncouple?
-        FALSEY_VALUES.include?(@data.fetch(:coupling, true))
+        TRUTHY_VALUES.include?(@data.fetch(:uncouple, false))
       end
 
       def copy_preset_roles?

@@ -68,4 +68,12 @@ RSpec.describe Scenario::Couplings do
       expect(scenario.coupled_inputs).not_to be_empty
     end
   end
+
+  context 'when activating a non existing coupling' do
+    before { scenario.activate_coupling(:party) }
+
+    it 'is invalid' do
+      expect(scenario).not_to be_valid
+    end
+  end
 end

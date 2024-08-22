@@ -1,7 +1,6 @@
 class Scenario < ApplicationRecord
   # Utility methods for couplings
   module Couplings
-    # Add validation via Atlas//ETsource -> list all available couplings
     def activate_coupling(coupling)
       active_couplings << coupling unless active_couplings.include?(coupling)
     end
@@ -30,6 +29,14 @@ class Scenario < ApplicationRecord
       input_keys = user_values.keys + balanced_values.keys
 
       Input.coupling_inputs_keys & input_keys
+    end
+
+    private
+
+    def validate_coupling_groups
+      if active_couplings.any? { |coupling| Input.coupling_groups.exclude?(coupling) }
+        errors.add(:coupling_groups, 'invalid coupling')
+      end
     end
   end
 end

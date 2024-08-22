@@ -112,7 +112,7 @@ class Scenario < ApplicationRecord
     # the input has a coupling group, it will be disabled when the coupling
     # is inactive
     def disabled_by_coupling?(input)
-      input.disabled_by_couplings.any? { |key| @scenario.active_couplings.include?(key) } ||
+      input.disabled_by_couplings.all? { |key| @scenario.active_couplings.include?(key) } ||
         (
           input.coupling_groups.present? &&
           input.coupling_groups.all? { |key| @scenario.active_couplings.exclude?(key) }
