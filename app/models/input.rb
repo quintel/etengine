@@ -28,7 +28,7 @@ class Input
   end
 
   def self.coupling_groups_for(q)
-    Input.by_name(q).flat_map(&:coupling_groups)
+    all.find { |input| input.key == q }&.coupling_groups
   end
 
   def self.by_name(q)

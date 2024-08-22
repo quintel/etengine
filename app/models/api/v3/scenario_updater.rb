@@ -43,6 +43,8 @@ module Api
       def apply
         return true if @data.empty?
 
+        activate_coupling_groups
+
         @scenario.attributes = @scenario.attributes.except(
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
@@ -50,8 +52,6 @@ module Api
             .except(:area_code, :end_year, :set_preset_roles)
             .merge(balanced_values:, user_values:, metadata:)
         )
-
-        activate_coupling_groups
 
         if valid?
           return false unless @scenario.save(validate: false)
@@ -86,23 +86,19 @@ module Api
         false
       end
 
-      # Checks if any of the sliders/inputs have a coupling group and activates it.
-      #
-      # @return [true, false]
-      #   Returns true if any coupling group was activated, otherwise false.
-      #
+      # Checks for each new input that will be set, if a new coupling should be
+      # activated
       def activate_coupling_groups
-        activated = false
-        @scenario_data.each do |key, value|
-          # TODO: change to Input.find + ask MB for correct logic
-          if value.is_a?(Hash) && value[:coupling_groups]
-            value[:coupling_groups].each do |coupling_group|
-              @scenario.activate_coupling(coupling_group)
-              activated = true
-            end
+        provided_values_without_resets.each do |key, _|
+          groups = Input.coupling_groups_for(key)
+          next if groups.blank?
+
+          groups.each do |group|
+            next if @scenario.inactive_couplings.include?(group)
+
+            @scenario.activate_coupling(group)
           end
         end
-        activated
       end
 
       private
@@ -417,18 +413,6 @@ module Api
         else
           values
         end
-      end
-
-      # Activates the given coupling group.
-      #
-      # @param [String] coupling_group
-      #   The coupling group to be activated.
-      #
-      def activate_coupling_group(coupling_group)
-        if @scenario.inactive_couplings.include?(coupling_group)
-          @scenario.inactive_couplings.delete(coupling_group)
-        end
-        @scenario.active_couplings << coupling_group
       end
     end
   end
