@@ -73,6 +73,6 @@ class CrudeOilTransformation < ActiveRecord::Migration[7.0]
     end
 
     scenario.user_values[NEW_OUTPUT_SHARE.call('not_defined')] =
-      scenario.user_values[NEW_OUTPUT_SHARE.call('refinery_gas')]
+      scenario.user_values.delete(OLD_OUTPUT_SHARE.call('refinery_gas')) || 0.0
   end
 end
