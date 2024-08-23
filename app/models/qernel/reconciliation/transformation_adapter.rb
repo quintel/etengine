@@ -29,6 +29,7 @@ module Qernel
         @carrier_demand_output || raise("carrier_demand_output not yet calulated for #{@node.key}")
       end
 
+      # TODO: make sure one of them is indeed negative!
       def demand_curve
         Merit::CurveTools.add_curves(demand_curve_input, demand_curve_output)
       end

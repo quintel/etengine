@@ -6,12 +6,12 @@ module Qernel
 
       # Internal: Array describing the hourly carrier demand.
       def total_demand_curve(plugin)
-        combined_curve(plugin, :consumer, :export, :input)
+        combined_curve(plugin, :consumer, :export)
       end
 
       # Internal: Array describing the hourly carrier supply.
       def total_supply_curve(plugin)
-        combined_curve(plugin, :producer, :import, :output)
+        combined_curve(plugin, :producer, :import)
       end
 
       # Public: Given the Reconciliation plugin, returns the balance of supply
@@ -22,29 +22,23 @@ module Qernel
       def supply_demand_balance(plugin)
         consumption = plugin
           .installed_adapters_of_type(:consumer)
-          .sum(&:carrier_demand) +
-          plugin
-            .installed_adapters_of_type(:transformation)
-            .sum(&:carrier_demand_input)
+          .sum(&:carrier_demand)
 
         production = plugin
           .installed_adapters_of_type(:producer)
-          .sum(&:carrier_demand) +
-          plugin
-            .installed_adapters_of_type(:transformation)
-            .sum(&:carrier_demand_output)
+          .sum(&:carrier_demand)
+
+        #  TODO: add transformation here
 
         production - consumption
       end
 
       # Internal: Creates the combined curves of two adapter groups.
-      private_class_method def combined_curve(plugin, group_one, group_two, direction)
+      private_class_method def combined_curve(plugin, group_one, group_two)
         ::Merit::CurveTools.add_curves((
-            plugin.installed_adapters_of_type(group_one) +
-            plugin.installed_adapters_of_type(group_two)
-          ).map(&:demand_curve) +
-            plugin.installed_adapters_of_type(:transformation).map(&:"demand_curve_#{direction}")
-        ).to_a
+          plugin.installed_adapters_of_type(group_one) +
+          plugin.installed_adapters_of_type(group_two)
+        ).map(&:demand_curve)).to_a
       end
     end
   end
