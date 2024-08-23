@@ -39,7 +39,7 @@ class Scenario < ApplicationRecord
     #
     # Returns a boolean.
     def disabled?(input)
-      disabled_by_exclusivity?(input) || disabled_by_curve?(input)
+      disabled_by_exclusivity?(input) || disabled_by_curve?(input) || disabled_by_coupling?(input)
     end
 
     private
