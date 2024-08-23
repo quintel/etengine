@@ -42,6 +42,15 @@ class Scenario < ApplicationRecord
       disabled_by_exclusivity?(input) || disabled_by_curve?(input) || disabled_by_coupling?(input)
     end
 
+    # Public: Returns if the input is disabled due to a coupling.
+    #
+    # input - The input to check.
+    #
+    # Returns a boolean.
+    def coupling_disabled?(input)
+      disabled_by_coupling?(input)
+    end
+
     private
 
     # Internal: A set containing all the inputs which are disabled by exclusivity conflicts.
