@@ -77,9 +77,9 @@ gem 'ruby-progressbar'
 
 # own gems
 gem 'quintel_merit', ref: '76f2343', github: 'quintel/merit'
-gem 'atlas',         ref: '7912a08', github: 'quintel/atlas'
+gem 'atlas',         ref: '64bb548', github: 'quintel/atlas'
 gem 'fever',         ref: '2a91194', github: 'quintel/fever'
-gem 'refinery',      ref: 'adc9982', github: 'quintel/refinery'
+gem 'refinery',      ref: 'c39c9b1', github: 'quintel/refinery'
 gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'
 gem 'turbine-graph', '>=0.1',        require: 'turbine'
 

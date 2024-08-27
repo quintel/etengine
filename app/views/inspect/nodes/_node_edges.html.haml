@@ -36,7 +36,7 @@
                               - if output_edge.reversed?
                                 .more-info Reversed
                               - if output_edge.circular?
-                                .more-info Cicular
+                                .more-info Circular
                   %td.centered{ title: output_slot.carrier.key.to_s.humanize }
                     .carrier-name{ title: output_slot.class.name }
                       = link_to output_slot.carrier.key.to_s.humanize, inspect_carrier_path(id: output_slot.carrier.key)

@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-# Creates CSV rows describing hydrogen production.
+# Creates CSV rows for hydrogen and network gas.
 class ReconciliationCSVSerializer < CausalityCurvesCSVSerializer
   private
 
   def producer_types
-    %i[producer flex]
+    %i[producer flex export storage transformation] 
   end
 
   def consumer_types
-    %i[consumer flex]
+    %i[consumer flex import storage transformation]
   end
 
   def exclude_producer_subtypes

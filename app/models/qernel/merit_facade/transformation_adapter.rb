@@ -52,7 +52,6 @@ module Qernel
       end
 
       # Does not inject demand, as this node is expected to be a preset demand node
-      # TODO: check if it should inject for carrier specfic
       def inject!
         inject_curve!(:input) { consumer_participant.load_curve }
         inject_curve!(:output) { producer_participant.load_curve }

@@ -28,8 +28,6 @@ module Qernel
           .installed_adapters_of_type(:producer)
           .sum(&:carrier_demand)
 
-        #  TODO: add transformation here
-
         production - consumption
       end
 
