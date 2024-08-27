@@ -35,12 +35,16 @@
                               = output_edge.edge_type.to_s.humanize
                               - if output_edge.reversed?
                                 .more-info Reversed
+                              - if output_edge.circular?
+                                .more-info Circular
                   %td.centered{ title: output_slot.carrier.key.to_s.humanize }
                     .carrier-name{ title: output_slot.class.name }
                       = link_to output_slot.carrier.key.to_s.humanize, inspect_carrier_path(id: output_slot.carrier.key)
                     - if output_slot.conversion
                       %span{ title: output_slot.conversion }
                         == #{ (100.0 * output_slot.conversion).round(2) } %
+                      - if output_slot.net_conversion != output_slot.conversion
+                        == (#{ (100.0 * output_slot.net_conversion).round(2) } %)
                       - if kms_slot?(output_slot)
                         .slot-unit== (#{ output_slot.conversion.round(3) } km/MJ)
       %td
@@ -61,6 +65,8 @@
                   - if input_slot.conversion
                     %span{ title: input_slot.conversion }
                       = "#{(100 * input_slot.conversion).round(2)} %"
+                      - if input_slot.net_conversion != input_slot.conversion
+                        == (#{ (100.0 * input_slot.net_conversion).round(2) } %)
                 %td.edges
                   - if input_slot.edges.any?
                     %table.table.table-condensed
@@ -77,7 +83,8 @@
                               = input_edge.edge_type.to_s.humanize
                               - if input_edge.reversed?
                                 .more-info Reversed
-
+                              - if input_edge.circular?
+                                .more-info Circular
                             %td.share{:title => input_edge.share}= "#{(100 * input_edge.share).round(2)} %" unless input_edge.share.nil?
                             %td.value{:title => input_edge.value}= auto_number input_edge.value
                             %td

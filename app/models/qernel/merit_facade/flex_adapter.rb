@@ -28,6 +28,8 @@ module Qernel
           LoadShiftingAdapter
         when :satisfied_demand
           SatisfiedDemandAdapter
+        when :transformation
+          TransformationAdapter
         else
           self
         end
