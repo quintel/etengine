@@ -250,13 +250,13 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   context 'when uncoupling a scenario that was coupled' do
     let(:params) do
       {
-        coupling: false,
+        uncouple: true,
         scenario: { user_values: { foo_demand: 1 } }
       }
     end
 
     before do
-      allow(Input).to receive(:coupling_sliders_keys).and_return(['exclusive'])
+      allow(Input).to receive(:coupling_inputs_keys).and_return(['exclusive'])
 
       scenario.user_values = {
         exclusive: 10.0,
@@ -270,7 +270,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     it 'removes coupled input values' do
       updater.apply
-      expect(scenario.reload.user_values).not_to have_key('exclusive')
+      expect(scenario.reload.user_values).not_to have_key('input_with_coupling_group')
     end
 
     it 'keeps other input values' do
@@ -292,7 +292,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
   context 'when uncoupling a scenario that was not coupled' do
     let(:params) do
       {
-        coupling: false,
+        uncouple: true,
         scenario: { user_values: { foo_demand: 1 } }
       }
     end
@@ -765,4 +765,65 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
     end
   end
   # end: Updating a grouped input with the balancer
+
+  context 'when setting an input with a coupling group that is new' do
+    let(:params) do
+      {
+        uncouple: true,
+        scenario: { user_values: { input_with_coupling_group: 10.0 } }
+      }
+    end
+
+    before do
+      allow(Input).to receive(:coupling_inputs_keys).and_return(['input_with_coupling_group'])
+      allow(Input).to receive(:coupling_groups).and_return([:steel_sector])
+
+      scenario.user_values = {
+        input_2: 100
+      }
+
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'activates the coupling' do
+      updater.apply
+      expect(scenario.reload.active_couplings).to include(:steel_sector)
+    end
+  end
+
+  context 'when setting an input with a coupling group that was deactivated' do
+    let(:params) do
+      {
+        uncouple: true,
+        scenario: { user_values: { input_with_coupling_group: 10.0 } }
+      }
+    end
+
+    before do
+      allow(Input).to receive(:coupling_inputs_keys).and_return(['input_with_coupling_group'])
+      allow(Input).to receive(:coupling_groups).and_return([:steel_sector])
+
+      scenario.user_values = {
+        input_2: 100,
+        input_with_coupling_group: 5.0
+      }
+      scenario.deactivate_coupling(:steel_sector)
+
+      scenario.save!
+    end
+
+    it_behaves_like 'a successful scenario update'
+
+    it 'does no reactivate the coupling' do
+      updater.apply
+      expect(scenario.reload.active_couplings).not_to include(:steel_sector)
+    end
+
+    it 'sets the input' do
+      updater.apply
+      expect(scenario.reload.user_values).to include('input_with_coupling_group' => 10.0)
+    end
+  end
 end

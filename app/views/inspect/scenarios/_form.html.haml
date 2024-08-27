@@ -21,6 +21,13 @@
           The scenario will be migrated when the model is updated, regardless of how long hash
           passed since it was last updated by a user.
 
+      = f.input :active_couplings, label: 'Active couplings', as: :text, input_html: { value: @scenario.active_couplings.join("\n") }
+      %dl.hint{ style: 'margin: 0 0 10px' }
+        %dt Currently inactive:
+        %dd
+          - @scenario.inactive_couplings.each do |coupling|
+            %span= coupling
+
       = f.input :user_values, label: 'User values (YAML)', as: :text, :hint => "Position (values) of all the sliders", input_html: { data: { codemirror: 'yaml' } }
       = f.input :balanced_values, label: 'Balanced values (YAML)', as: :text, :hint => "Values set automatically by ETEngine ensuring groups sum to 100%", input_html: { data: { codemirror: 'yaml' } }
       = f.input :metadata, label: 'Metadata (JSON)', as: :text, input_html: { data: { codemirror: 'application/json' } }

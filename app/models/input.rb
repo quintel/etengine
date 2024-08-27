@@ -28,7 +28,7 @@ class Input
   end
 
   def self.coupling_groups_for(q)
-    Input.by_name(q).flat_map(&:coupling_groups)
+    all.find { |input| input.key == q }&.coupling_groups
   end
 
   def self.by_name(q)
@@ -54,8 +54,12 @@ class Input
     @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
   end
 
-  def self.coupling_sliders_keys
-    @coupling_sliders_keys ||= Input.with_coupling_group.map(&:id)
+  def self.coupling_inputs_keys
+    @coupling_inputs_keys ||= Input.with_coupling_group.map(&:id)
+  end
+
+  def self.coupling_groups
+    @coupling_groups ||= Input.with_coupling_group.flat_map(&:coupling_groups).uniq
   end
 
   def disabled_by
@@ -66,8 +70,8 @@ class Input
     @disabled_by = Array(disabled_by).map { |key| key.to_s.freeze }.freeze
   end
 
-  def disabled_by_coupling_groups
-    disabled_by.flat_map { |i| Input.coupling_groups_for(i) }.uniq
+  def disabled_by_couplings
+    @disabled_by_couplings || []
   end
 
   def before_update?

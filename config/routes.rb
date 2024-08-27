@@ -67,6 +67,8 @@ Rails.application.routes.draw do
           get :merit
           put :dashboard
           post :interpolate
+          post :uncouple
+          post :couple
         end
         collection do
           post :merge

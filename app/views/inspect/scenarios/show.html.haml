@@ -47,6 +47,19 @@
       %tr
         %th Compatibility
         %td= formatted_scenario_compatibility(@scenario)
+      - if @scenario.coupled?
+        %tr
+          %th Active couplings
+          %td
+            - if @scenario.active_couplings.present?
+              - @scenario.active_couplings.each do |coupling|
+                %span.tag.gray= coupling
+        %tr
+          %th Inactive couplings
+          %td
+            - if @scenario.inactive_couplings.present?
+              - @scenario.inactive_couplings.each do |coupling|
+                %span.tag.gray= coupling
 
 .row
   .span10

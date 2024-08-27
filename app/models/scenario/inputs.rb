@@ -39,7 +39,16 @@ class Scenario < ApplicationRecord
     #
     # Returns a boolean.
     def disabled?(input)
-      disabled_by_exclusivity?(input) || disabled_by_curve?(input)
+      disabled_by_exclusivity?(input) || disabled_by_curve?(input) || disabled_by_coupling?(input)
+    end
+
+    # Public: Returns if the input is disabled due to a coupling.
+    #
+    # input - The input to check.
+    #
+    # Returns a boolean.
+    def coupling_disabled?(input)
+      disabled_by_coupling?(input)
     end
 
     private
@@ -72,7 +81,7 @@ class Scenario < ApplicationRecord
     # Returns an array of inputs, in order of their execution priority.
     def enabled_inputs
       @enabled_inputs ||= all
-        .reject { |input| disabled_by_exclusivity?(input) || disabled_by_curve?(input) }
+        .reject { |input| disabled_by_exclusivity?(input) || disabled_by_curve?(input) || disabled_by_coupling?(input) }
         .sort_by { |input| [-input.priority, input.key] }
 
       @enabled_inputs
@@ -105,6 +114,20 @@ class Scenario < ApplicationRecord
     # Internal: Returns if the input is disabled by a custom user curve which has been set.
     def disabled_by_curve?(input)
       inputs_disabled_by_curves.include?(input.key)
+    end
+
+    # Interal: Returns if the input is disabled by an active coupling
+    # An input can be disabled by a coupling when it's active, or when
+    # the input has a coupling group, it will be disabled when the coupling
+    # is inactive
+    def disabled_by_coupling?(input)
+      (
+        input.disabled_by_couplings.present? &&
+        input.disabled_by_couplings.all? { |key| @scenario.active_couplings.include?(key) }
+      ) || (
+        input.coupling_groups.present? &&
+        input.coupling_groups.any? { |key| @scenario.active_couplings.exclude?(key) }
+      )
     end
 
     def inputs_disabled_by_curves

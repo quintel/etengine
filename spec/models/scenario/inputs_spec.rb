@@ -26,13 +26,13 @@ RSpec.describe Scenario::Inputs do
       }
     end
 
-    it 'has removes the disabled input from the "present" list' do
+    it 'removes the disabled input from the "present" list' do
       expect(inputs.present).to eq({
         Input.get(:present_input) => 50
       })
     end
 
-    it 'has removes the disabled input from the "future" list' do
+    it 'removes the disabled input from the "future" list' do
       expect(inputs.future).to eq({
         Input.get(:future_input) => 25
       })
@@ -95,6 +95,40 @@ RSpec.describe Scenario::Inputs do
       expect(inputs.future).to eq({
         Input.get(:exclusive) => 100,
         Input.get(:input_2) => 75
+      })
+    end
+  end
+
+  context 'when a scenario has an active coupling disabling an input' do
+    before do
+      scenario.user_values = {
+        input_disabled_by_coupling: 100,
+        input_with_coupling_group: 50
+      }
+
+      scenario.activate_coupling(:steel_sector)
+    end
+
+    it 'enables the coupling_group input and disables the disbale_by_couplin input' do
+      expect(inputs.future).to eq({
+        Input.get(:input_with_coupling_group) => 50
+      })
+    end
+  end
+
+  context 'when a scenario has an inactive coupling disabling an input' do
+    before do
+      scenario.user_values = {
+        input_disabled_by_coupling: 100,
+        input_with_coupling_group: 50
+      }
+
+      scenario.deactivate_coupling(:steel_sector)
+    end
+
+    it 'disables the coupling_group input and enables the disbale_by_couplin input' do
+      expect(inputs.future).to eq({
+        Input.get(:input_disabled_by_coupling) => 100
       })
     end
   end

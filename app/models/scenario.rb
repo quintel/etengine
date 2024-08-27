@@ -11,9 +11,11 @@ class Scenario < ApplicationRecord
   include Scenario::Persistable
   include Scenario::InputGroups
   include Scenario::Copies
+  include Scenario::Couplings
 
   store :user_values
   store :balanced_values
+  serialize :active_couplings, Array
   store :metadata, coder: JSON
 
   has_many :scenario_users, dependent: :destroy
@@ -53,6 +55,7 @@ class Scenario < ApplicationRecord
   validate :validate_metadata_size
   validate :validate_parent_scenario_exists, on: :create
   validate :validate_visibility
+  validate :validate_coupling_groups
 
   validates_associated :scaler, on: :create
 
@@ -333,14 +336,6 @@ class Scenario < ApplicationRecord
     return private if owner?(actor)
 
     actor.private_scenarios?
-  end
-
-  def coupling
-    coupled?
-  end
-
-  def coupled?
-    coupled_sliders.any?
   end
 
   def owner?(user)

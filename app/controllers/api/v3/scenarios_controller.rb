@@ -24,6 +24,10 @@ module Api
         authorize!(:clone, @scenario)
       end
 
+      before_action only: %i[couple uncouple] do
+        authorize!(:update, @scenario)
+      end
+
       around_action :wrap_with_sentry_context, only: :update
 
       # GET /api/v3/scenarios
@@ -157,6 +161,12 @@ module Api
           elsif parent
             scaler.set_base_with(parent)
           end
+        end
+
+        # Check for coupling groups in the inputs and activate them
+        if attrs[:user_values]
+          scenario_updater = ScenarioUpdater.new(@scenario, attrs[:user_values], current_user)
+          scenario_updater.activate_coupling_groups
         end
 
         # The scaler needs to be in place before assigning attributes when the
@@ -297,6 +307,39 @@ module Api
         render json: { errors: { base: [ex.message] } }, status: 400
       end
 
+      # POST /api/v3/scenarios/:id/couple
+      #
+      # Uncouples the specified groups in the scenario. When the force parameter is passed,
+      # removes all coupled inputs from any coupling from the scenario
+      #
+      def uncouple
+        # When force uncoupling, all inputs related to any coupling are deleted
+        if coupling_parameters[:force]
+          force_uncouple
+        else
+          coupling_parameters[:groups].each { |coupling| @scenario.deactivate_coupling(coupling) }
+          if @scenario.save
+            render json: ScenarioSerializer.new(self, @scenario)
+          else
+            render json: { errors: @scenario.errors.messages }, status: :unprocessable_entity
+          end
+        end
+      end
+
+      # POST /api/v3/scenarios/:id/couple
+      #
+      # Couples the specified groups in the scenario.
+      #
+      def couple
+        coupling_parameters[:groups].each { |coupling| @scenario.activate_coupling(coupling) }
+
+        if @scenario.save
+          render json: ScenarioSerializer.new(self, @scenario)
+        else
+          render json: { errors: @scenario.errors.messages }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def find_preset_or_scenario
@@ -316,7 +359,7 @@ module Api
       # Returns a ActionController::Parameters
       def filtered_params
         params.permit(
-          :autobalance, :force, :reset, :coupling, gqueries: []
+          :autobalance, :force, :reset, gqueries: []
         ).merge(scenario: scenario_params)
       end
 
@@ -388,6 +431,13 @@ module Api
         end
       end
 
+      # Internal: Parameters for coupling and uncoupling
+      #
+      # Returns a ActionController::Parameters.
+      def coupling_parameters
+        params.permit(:force, groups: [])
+      end
+
       # Internal: Parameters for the merit config
       #
       # Returns a ActionController::Parameters.
@@ -400,6 +450,29 @@ module Api
       # Returns a Bool
       def include_curves_in_merit?
         merit_parameters[:include_curves] != 'false'
+      end
+
+      def force_uncouple
+        serializer = nil
+
+        updater = ScenarioUpdater.new(
+          @scenario,
+          { uncouple: coupling_parameters[:force], scenario: {} },
+          current_user
+        )
+
+        Scenario.transaction do
+          updater.apply
+          serializer = ScenarioUpdateSerializer.new(self, updater, {})
+
+          raise ActiveRecord::Rollback if serializer.errors.any?
+        end
+
+        if serializer.errors.any?
+          render json: { errors: serializer.errors }, status: :unprocessable_entity
+        else
+          render json: serializer
+        end
       end
 
       # Internal: Wraps an action with information about a scenario, so that if

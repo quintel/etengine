@@ -14,7 +14,6 @@ module Api
 
       # Boolean API values which are considered truthy.
       TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
-      FALSEY_VALUES = Set.new([false, 'false', '0']).freeze
 
       # @return [Scenario]
       #   Returns the scenario being updated.
@@ -43,6 +42,8 @@ module Api
       #
       def apply
         return true if @data.empty?
+
+        activate_coupling_groups
 
         @scenario.attributes = @scenario.attributes.except(
           'id', 'present_updated_at', 'created_at', 'updated_at'
@@ -85,6 +86,21 @@ module Api
         false
       end
 
+      # Checks for each new input that will be set, if a new coupling should be
+      # activated
+      def activate_coupling_groups
+        provided_values_without_resets.each do |key, _|
+          groups = Input.coupling_groups_for(key)
+          next if groups.blank?
+
+          groups.each do |group|
+            next if @scenario.inactive_couplings.include?(group)
+
+            @scenario.activate_coupling(group)
+          end
+        end
+      end
+
       private
 
       # @return [true, false]
@@ -97,7 +113,7 @@ module Api
 
       # Returns if the scenario should be uncoupled
       def uncouple?
-        FALSEY_VALUES.include?(@data.fetch(:coupling, true))
+        TRUTHY_VALUES.include?(@data.fetch(:uncouple, false))
       end
 
       def copy_preset_roles?
@@ -383,7 +399,7 @@ module Api
         values = @scenario.user_values.dup
 
         if uncouple?
-          values.except!(*@scenario.coupled_sliders)
+          values.except!(*@scenario.coupled_inputs)
         else
           values
         end
@@ -393,7 +409,7 @@ module Api
         values = (@scenario.balanced_values || {}).dup
 
         if uncouple?
-          values.except!(*@scenario.coupled_sliders)
+          values.except!(*@scenario.coupled_inputs)
         else
           values
         end
