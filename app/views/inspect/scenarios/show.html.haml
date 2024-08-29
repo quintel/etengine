@@ -19,7 +19,8 @@
         %td
           - if @scenario.scenario_users.present?
             - @scenario.scenario_users.each do |scenario_user|
-              = link_to("#{scenario_user.user.name} (#{User::ROLES[scenario_user.role_id].to_s.humanize})", user_path(scenario_user.user))
+              - if scenario_user.user
+                = link_to("#{scenario_user.user.name} (#{User::ROLES[scenario_user.role_id].to_s.humanize})", user_path(scenario_user.user))
           - else
             %span.muted No owner
       %tr
