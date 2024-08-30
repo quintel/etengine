@@ -17,6 +17,8 @@ module Qernel
           ElectrolyserAdapter
         when :import
           ImportAdapter
+        when :import_must_run
+          ImportAlwaysOnAdapter
         when :backup
           BackupAdapter
         when :always_on_battery_park

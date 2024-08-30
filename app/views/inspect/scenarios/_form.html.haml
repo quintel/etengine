@@ -21,7 +21,7 @@
           The scenario will be migrated when the model is updated, regardless of how long hash
           passed since it was last updated by a user.
 
-      = f.input :active_couplings, label: 'Active couplings', as: :text, input_html: { value: @scenario.active_couplings.join("\n") }
+      = f.input :active_couplings, label: 'Active couplings', as: :text, input_html: { value: @scenario.active_couplings.join("\n"), data: { codemirror: 'yaml' } }
       %dl.hint{ style: 'margin: 0 0 10px' }
         %dt Currently inactive:
         %dd

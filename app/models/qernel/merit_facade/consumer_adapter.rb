@@ -8,6 +8,8 @@ module Qernel
         case context.node_config(node).subtype
         when :pseudo
           PseudoConsumerAdapter
+        when :export_must_run
+          ExportConsumerAdapter
         when :consumption_loss
           ConsumptionLossAdapter
         when :electricity_loss

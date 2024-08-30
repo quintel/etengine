@@ -22,10 +22,10 @@ module Scenario::UserUpdates
   #
   def update_inputs_for_api(params)
     params.each_pair do |input_id, value|
-      if input = Input.get(input_id)
+      if (input = Input.get(input_id))
         if value == 'reset'
           delete_from_user_values(input.key)
-        elsif typed_value = value.to_f
+        elsif (typed_value = value.to_f)
           update_input(input, typed_value)
         end
       else
