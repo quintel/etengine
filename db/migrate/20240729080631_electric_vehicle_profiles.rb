@@ -1,107 +1,122 @@
 require 'etengine/scenario_migration'
+require 'csv'
 
 class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
-  # Mapping old electric vehicle charging share keys to new ones.
-  NEW_SHARE_MAPPING = {
-    'transport_car_using_electricity_hybrid_charging_share' => 'transport_car_using_electricity_public_charging_share',
-    'transport_car_using_electricity_home_charging_share' => 'transport_car_using_electricity_home_charging_share',
-    'transport_car_using_electricity_fast_charging_share' => 'transport_car_using_electricity_fast_charging_share',
-    'transport_car_using_electricity_smart_charging_share' => 'transport_car_using_electricity_work_charging_share',
-    'transport_car_using_electricity_regular_charging_share' => 'transport_car_using_electricity_custom_profile_charging_share'
-  }.freeze
+  Transformation = Struct.new(:old_key, :new_key, :profile_name)
 
-  # Old profile keys before migration. In order of correspondence to NEW_SHARE_MAPPING
-  OLD_PROFILE_KEYS = %w[
-    electric_vehicle_profile_1
-    electric_vehicle_profile_2
-    electric_vehicle_profile_3
-    electric_vehicle_profile_4
-    electric_vehicle_profile_5
+  TRANSFORMATION = [
+    Transformation.new(
+      old_key='transport_car_using_electricity_hybrid_charging_share',
+      new_key='transport_car_using_electricity_public_charging_share',
+      profile_name='electric_vehicle_profile_1_curve'
+    ),
+    Transformation.new(
+      old_key='transport_car_using_electricity_home_charging_share',
+      new_key='transport_car_using_electricity_home_charging_share',
+      profile_name='electric_vehicle_profile_2_curve'
+    ),
+    Transformation.new(
+      old_key='transport_car_using_electricity_fast_charging_share',
+      new_key='transport_car_using_electricity_fast_charging_share',
+      profile_name='electric_vehicle_profile_3_curve'
+    ),
+    Transformation.new(
+      old_key='transport_car_using_electricity_smart_charging_share',
+      new_key='transport_car_using_electricity_work_charging_share',
+      profile_name='electric_vehicle_profile_4_curve'
+    ),
+    Transformation.new(
+      old_key='transport_car_using_electricity_regular_charging_share',
+      new_key='transport_car_using_electricity_custom_profile_charging_share',
+      profile_name='electric_vehicle_profile_5_curve'
+    )
   ].freeze
+
 
   # Executes the migration for all scenarios.
   def up
+    @default_profiles = ElectricVehicleProfiles.new
+
     migrate_scenarios do |scenario|
-      # Only proceed if a dataset exists for the scenario's area code.
-      next unless Atlas::Dataset.exists?(scenario.area_code)
-
-      dataset = Atlas::Dataset.find(scenario.area_code)
-
-      # Rename the user values based on the new key mapping.
-      rename_keys(scenario)
-
-      # If the scenario has any attached curves (user profiles).
-      # Create and set up a custom profile based on the current setup.
-      if OLD_PROFILE_KEYS.any? { |profile| scenario.attachment?("#{profile}_curve") }
-        create_custom_profile(scenario, dataset)
-      end
+      create_custom_profile(scenario) if rename_keys(scenario)
     end
   end
 
   private
 
   # Renames keys in the scenario's user values based on the provided mapping.
+  # When the inputs were untouched, set the last input to 100%.
+  # Returns true when we should mix a custom profile.
   def rename_keys(scenario)
-    NEW_SHARE_MAPPING.each do |old_key, new_key|
-      next unless scenario.user_values.key? (old_key)
+    if TRANSFORMATION.map(&:old_key).any? { |key| scenario.user_values.key?(key) }
+      TRANSFORMATION.each do |transformation|
+        next unless scenario.user_values.key? (transformation.old_key)
 
-      scenario.user_values[new_key] = scenario.user_values.delete(old_key)
+        scenario.user_values[transformation.new_key] = scenario.user_values.delete(transformation.old_key)
+      end
+
+      true
+    else
+      set_custom_to_100_for(scenario)
+
+      false
     end
+  end
+
+  def set_custom_to_100_for(scenario)
+    TRANSFORMATION.map(&:new_key).each do |new_key|
+      scenario.user_values[new_key] = 0.0
+    end
+
+    scenario.user_values[TRANSFORMATION.last.new_key] = 100.0
   end
 
   # Creates a custom profile based on the current profiles and their shares.
-  def create_custom_profile(scenario, dataset)
-    # Prepare a mix of profiles and their corresponding shares.
-    mix = NEW_SHARE_MAPPING.values.each_with_index.filter_map do |key, index|
-      next unless scenario.user_values[key]&.positive?
-
-      profile = curve_for(scenario, dataset, OLD_PROFILE_KEYS[index])
-
-      next unless profile
-
-      [profile, scenario.user_values[key]]
-    end
-
-    # Exit if no profiles were found in the mix.
-    return if mix.empty?
-
-    # Use Merit to mix a new custom profile and set it on the scenario.
+  # Use Merit to mix a new custom profile and set it on the scenario.
+  def create_custom_profile(scenario)
     set_custom_profile(
       scenario,
-      ::Merit::CurveTools.add_curves(
-        mix.map { |curve, share| Merit::Curve.new(curve) * share }
-      )
+      ::Merit::CurveTools.add_curves(weighted_curves_for(scenario))
     )
   end
 
-  # Fetches attached curve for the profile or defaults to dataset profile if not attached.
-  def curve_for(scenario, dataset, profile_key)
-    if scenario.attachment?("#{profile_key}_curve")
-      # If the user profile is attached, fetch the custom curve.
-      CustomCurveSerializer.new(scenario.attachment("#{profile_key}_curve")).send(:curve)
-    else
-      # Otherwise, load the default profile from the dataset.
-      dataset.load_profile(profile_key.to_sym)
+  # Returns an array of profiles times their corresponding shares.
+  # If no curve was attached, uses the default profile.
+  # Returns array of Merit::Curve
+  def weighted_curves_for(scenario)
+    TRANSFORMATION.filter_map do |transformation|
+      next unless scenario.user_values[transformation.new_key]&.positive?
+
+      (
+        attached_curve_for(scenario, transformation.profile_name) ||
+        @default_profiles.public_send(transformation.profile_name)
+      ) *
+        scenario.user_values[transformation.new_key]
     end
+  end
+
+  # Fetches attached curve for the profile. Returns nil if no profile was attached.
+  def attached_curve_for(scenario, profile_key)
+    return unless scenario.attachment?(profile_key)
+
+    CustomCurveSerializer.new(scenario.attachment(profile_key)).send(:curve)
   end
 
   # Sets the custom profile with a 100% share and assigns it to profile 5.
   def set_custom_profile(scenario, custom_profile)
-    # Set the custom profile share to 100% for the custom profile.
-    NEW_SHARE_MAPPING.values.each { |key| scenario.user_values[key] = 0.0 }
-    scenario.user_values['transport_car_using_electricity_custom_profile_charging_share'] = 100.0
+    set_custom_to_100_for(scenario)
 
     # Detach any existing electric vehicle profile curve attachments.
-    OLD_PROFILE_KEYS.each do |profile_key|
-      attachment = scenario.attachment("#{profile_key}_curve")
-      CurveHandler::DetachService.call(attachment) if attachment
+    TRANSFORMATION.each do |transformation|
+      next unless scenario.attachment?(transformation.profile_name)
+
+      CurveHandler::DetachService.call(scenario.attachment(transformation.profile_name))
     end
 
     attach_custom_profile(scenario, custom_profile)
   end
-
 
   # Attaches the custom profile to the scenario as 'electric_vehicle_profile_5_curve'.
   def attach_custom_profile(scenario, custom_profile)
@@ -126,5 +141,34 @@ class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
     # Close and delete the temporary file.
     temp_file.close
     temp_file.unlink
+  end
+
+  class ElectricVehicleProfiles
+
+    def parse_csv(number)
+      File.open("#{__dir__}/#{File.basename(__FILE__, '.rb')}/electric_vehicle_profile_#{number}.csv") do |file|
+        CSV.parse(file, converters: [:float])
+      end
+    end
+
+    def electric_vehicle_profile_1_curve
+      @electric_vehicle_profile_1_curve ||= ::Merit::Curve.new(parse_csv(1))
+    end
+
+    def electric_vehicle_profile_2_curve
+      @electric_vehicle_profile_2_curve ||= ::Merit::Curve.new(parse_csv(2))
+    end
+
+    def electric_vehicle_profile_3_curve
+      @electric_vehicle_profile_3_curve ||= ::Merit::Curve.new(parse_csv(3))
+    end
+
+    def electric_vehicle_profile_4_curve
+      @electric_vehicle_profile_4_curve ||= ::Merit::Curve.new(parse_csv(4))
+    end
+
+    def electric_vehicle_profile_5_curve
+      @electric_vehicle_profile_5_curve ||= ::Merit::Curve.new(parse_csv(5))
+    end
   end
 end
