@@ -76,9 +76,10 @@ class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
   # Creates a custom profile based on the current profiles and their shares.
   # Use Merit to mix a new custom profile and set it on the scenario.
   def create_custom_profile(scenario)
+    curves = weighted_curves_for(scenario)
     set_custom_profile(
       scenario,
-      ::Merit::CurveTools.add_curves(weighted_curves_for(scenario))
+      curves.one? ? curves.first : ::Merit::CurveTools.add_curves(curves)
     )
   end
 
@@ -148,7 +149,7 @@ class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
     def parse_csv(number)
       File.open("#{__dir__}/#{File.basename(__FILE__, '.rb')}/electric_vehicle_profile_#{number}.csv") do |file|
         CSV.parse(file, converters: [:float])
-      end
+      end.flatten
     end
 
     def electric_vehicle_profile_1_curve
