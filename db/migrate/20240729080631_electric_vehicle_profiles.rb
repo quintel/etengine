@@ -50,7 +50,7 @@ class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
   # When the inputs were untouched, set the last input to 100%.
   # Returns true when we should mix a custom profile.
   def rename_keys(scenario)
-    if TRANSFORMATION.map(&:old_key).any? { |key| scenario.user_values.key?(key) }
+    if any_old_keys_set?(scenario) || any_uploaded_curves?(scenario)
       TRANSFORMATION.each do |transformation|
         next unless scenario.user_values.key? (transformation.old_key)
 
@@ -63,6 +63,14 @@ class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
 
       false
     end
+  end
+
+  def any_uploaded_curves?(scenario)
+    TRANSFORMATION.map(&:profile_name).any? { |key| scenario.attachment?(key) }
+  end
+
+  def any_old_keys_set?(scenario)
+    TRANSFORMATION.map(&:old_key).any? { |key| scenario.user_values.key?(key) }
   end
 
   def set_custom_to_100_for(scenario)
@@ -102,7 +110,9 @@ class ElectricVehicleProfiles < ActiveRecord::Migration[7.0]
   def attached_curve_for(scenario, profile_key)
     return unless scenario.attachment?(profile_key)
 
-    CustomCurveSerializer.new(scenario.attachment(profile_key)).send(:curve)
+    Merit::Curve.new(
+      CustomCurveSerializer.new(scenario.attachment(profile_key)).send(:curve)
+    )
   end
 
   # Sets the custom profile with a 100% share and assigns it to profile 5.
