@@ -103,7 +103,7 @@ module Api
         end
 
         if serializer.errors.any?
-          render json: { errors: serializer.errors }, status: 422
+          render json: { errors: serializer.errors }, status: :unprocessable_entity
         else
           render json: serializer
         end
@@ -188,7 +188,7 @@ module Api
 
         render json: ScenarioSerializer.new(self, @scenario)
       rescue ActiveRecord::RecordInvalid
-        render json: { errors: @scenario.errors }, status: 422
+        render json: { errors: @scenario.errors }, status: :unprocessable_entity
       end
 
       # POST /api/v3/scenarios/interpolate
@@ -267,7 +267,7 @@ module Api
         end
 
         if serializer.errors.any?
-          render json: { errors: serializer.errors }, status: 422
+          render json: { errors: serializer.errors }, status: :unprocessable_entity
         else
           render json: serializer
         end
@@ -288,7 +288,7 @@ module Api
       def merge
         authorize!(:create, Scenario)
 
-        merge_params = params.permit(scenarios: [:scenario_id, :weight])
+        merge_params = params.permit(scenarios: %i[scenario_id weight])
 
         merge_params[:scenarios].each do |scenario|
           authorize!(:read, Scenario.find(scenario[:scenario_id]))
@@ -301,10 +301,10 @@ module Api
           # redirect_to api_v3_scenario_url(scenario)
           render json: ScenarioSerializer.new(self, scenario)
         else
-          render json: { errors: merger.errors }, status: 422
+          render json: { errors: merger.errors }, status: :unprocessable_entity
         end
-      rescue ScenarioMerger::Error => ex
-        render json: { errors: { base: [ex.message] } }, status: 400
+      rescue ScenarioMerger::Error => e
+        render json: { errors: { base: [e.message] } }, status: :bad_request
       end
 
       # POST /api/v3/scenarios/:id/couple
@@ -332,7 +332,6 @@ module Api
       #
       def couple
         coupling_parameters[:groups].each { |coupling| @scenario.activate_coupling(coupling) }
-
         if @scenario.save
           render json: ScenarioSerializer.new(self, @scenario)
         else
@@ -423,12 +422,12 @@ module Api
       #
       # Returns a hash.
       def scaler_attributes
-        if params[:scenario] && params[:scenario][:scale]
-          params[:scenario].require(:scale).permit(
-            :area_attribute, :value,
-            :has_agriculture, :has_energy, :has_industry
-          )
-        end
+        return unless params[:scenario] && params[:scenario][:scale]
+
+        params[:scenario].require(:scale).permit(
+          :area_attribute, :value,
+          :has_agriculture, :has_energy, :has_industry
+        )
       end
 
       # Internal: Parameters for coupling and uncoupling

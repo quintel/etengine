@@ -25,7 +25,7 @@ module Qernel
 
         case @config.subtype
         when :volatile then Merit::VolatileProducer
-        when :must_run then Merit::MustRunProducer
+        when :must_run, :import_must_run then Merit::MustRunProducer
         else
           raise "Unknown producer class for node '#{@node.key}'"
         end

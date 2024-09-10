@@ -87,7 +87,7 @@ module CurveHandler
       @key = key
       @processor_key = processor_key.to_sym
       @reducer_key = reducer_key&.to_sym
-      @input_keys = reducer_key && input_keys || []
+      @input_keys = (reducer_key && input_keys) || []
       @display_group = display_group&.to_sym
       @internal = !!internal
       @disables = disables
@@ -152,7 +152,7 @@ module CurveHandler
 
     # Public: Returns whether the processor should set any input values for the scenario.
     def sets_inputs?
-      @reducer_key && @input_keys.any? || false
+      (@reducer_key && @input_keys.any?) || false
     end
 
     # Public: Returns if the curve is for internal use and experienced users only.
