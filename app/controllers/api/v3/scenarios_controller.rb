@@ -317,7 +317,7 @@ module Api
         if coupling_parameters[:force]
           force_uncouple
         else
-          coupling_parameters[:groups].each { |coupling| @scenario.deactivate_coupling(coupling) }
+          coupling_parameters[:groups].each { |coupling| @scenario.deactivate_coupling(coupling.to_sym) }
           if @scenario.save
             render json: ScenarioSerializer.new(self, @scenario)
           else
@@ -331,7 +331,7 @@ module Api
       # Couples the specified groups in the scenario.
       #
       def couple
-        coupling_parameters[:groups].each { |coupling| @scenario.activate_coupling(coupling) }
+        coupling_parameters[:groups].each { |coupling| @scenario.activate_coupling(coupling.to_sym) }
         if @scenario.save
           render json: ScenarioSerializer.new(self, @scenario)
         else
