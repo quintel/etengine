@@ -90,6 +90,8 @@ gem 'dalli'
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
 
+# sentry gems
+gem "stackprof"
 gem 'sentry-ruby'
 gem "sentry-rails"
 gem "sentry-sidekiq"
