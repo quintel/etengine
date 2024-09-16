@@ -12,9 +12,9 @@ Sentry.init do |config|
 
   # Set traces_sample_rate to 1.0 to capture 100%
   # of transactions for tracing.
-  config.traces_sample_rate = ENV.fetch('SENTRY_TRACES', 1.0)
+  config.traces_sample_rate = ENV.fetch('SENTRY_TRACES', 0.1).to_f
 
   # Set profiles_sample_rate to profile 100%
   # of sampled transactions.
-  config.profiles_sample_rate = ENV.fetch('SENTRY_PROFILES', 1.0)
+  config.profiles_sample_rate = ENV.fetch('SENTRY_PROFILES', 0.1).to_f
 end
