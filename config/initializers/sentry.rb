@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 Sentry.init do |config|
+  # Set release version
+  config.release = '2024.09.1'
+
   config.dsn = ENV.fetch('SENTRY_DSN', nil)
   config.enabled_environments = %w[production staging]
 
