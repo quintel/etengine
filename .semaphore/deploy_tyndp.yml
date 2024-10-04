@@ -25,6 +25,6 @@ blocks:
             - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine-tyndp2026 && ./deploy.sh"
       secrets:
         - name: Docker Hub credentials
-        - name: Production SSH settings
+        - name: Staging SSH settings
     run:
       when: branch = 'tyndp2026'
