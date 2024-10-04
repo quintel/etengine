@@ -23,12 +23,7 @@
           - else
             %a.brand{:href => safe_inspect_path}
               ETEngine
-              - if Rails.env.production?
-                %span.server.production Production
-              - elsif Rails.env.staging?
-                %span.server.beta Beta
-              - else
-                %span.server.local Local
+              %span.server.local TYNDP 2026
 
             - if current_user
               %ul.nav
