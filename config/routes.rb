@@ -85,7 +85,7 @@ Rails.application.routes.draw do
         get 'converters', to: redirect('/api/v3/scenarios/%{scenario_id}/nodes')
         get 'converters/:id', to: redirect('/api/v3/scenarios/%{scenario_id}/nodes/%{id}')
 
-        resources :inputs, :only => [:index, :show]
+        resources :inputs, :only => [:index, :show], defaults: { format: :json}
 
         resource :version, :only => [:create, :show, :update], controller: 'scenario_version_tags'
 
