@@ -100,7 +100,6 @@ module Api
           csv << csv_headers
           cached_values = Input.cache(@scenario.parent)
           user_values = @scenario.user_values
-
           inputs.each do |key, input|
             add_csv_row(csv, key, input, cached_values, user_values)
           end
@@ -108,24 +107,27 @@ module Api
       end
 
       def csv_headers
-        ["Key", "Min", "Max", "Default", "User Value", "Unit", "Share Group"]
+        ["Key", "Unit", "Start Year Value", "Scenario Value", "Min", "Max", "Share Group"]
       end
 
       def add_csv_row(csv, key, input, cached_values, user_values)
         input_data = input.instance_variable_get(:@input)
         return if input_data.nil?
 
-        values = cached_values.read(@scenario.parent, input_data)
-        default_value = input.instance_variable_get(:@default_values_from).call(values)
+        puts(input.data.inspect)
+
+        # Provide a safe fallback for missing values
+        values = cached_values&.read(@scenario.parent, input_data) || {}
+        default_value = input.instance_variable_get(:@default_values_from)&.call(values) || ""
 
         csv << [
           key,
-          input_data.min_value,
-          input_data.max_value,
-          default_value,
+          input_data.unit || "",
+          default_value || "",
           user_values[input_data.key] || "",
-          input_data.unit,
-          input_data.share_group
+          input_data.min_value || "",
+          input_data.max_value || "",
+          input_data.share_group || ""
         ]
       end
     end
