@@ -1,45 +1,42 @@
-require 'sidekiq/web'
 
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  mount Identity::Engine => '/auth'
 
-  use_doorkeeper
-  use_doorkeeper_openid_connect
+  # devise_for :users, path: 'identity', sign_out_via: %i[get post delete], controllers: {
+  #   sessions: 'users/sessions',
+  #   registrations: 'users/registrations'
+  # }
 
-  devise_for :users, path: 'identity', sign_out_via: %i[get post delete], controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
-  }
+  # authenticate :user, lambda { |u| u.admin? } do
+  #   mount Sidekiq::Web => '/sidekiq'
+  # end
 
-  authenticate :user, lambda { |u| u.admin? } do
-    mount Sidekiq::Web => '/sidekiq'
-  end
+  # namespace :identity do
+  #   get '/', to: redirect('/identity/profile')
+  #   get 'profile', to: 'settings#index', as: :profile
 
-  namespace :identity do
-    get '/', to: redirect('/identity/profile')
-    get 'profile', to: 'settings#index', as: :profile
+  #   get 'change_name', to: 'settings#edit_name', as: :edit_name
+  #   post 'change_name', to: 'settings#update_name'
 
-    get 'change_name', to: 'settings#edit_name', as: :edit_name
-    post 'change_name', to: 'settings#update_name'
+  #   get 'change_email', to: 'settings#edit_email', as: :edit_email
+  #   post 'change_email', to: 'settings#update_email'
 
-    get 'change_email', to: 'settings#edit_email', as: :edit_email
-    post 'change_email', to: 'settings#update_email'
+  #   get 'change_password', to: 'settings#edit_password', as: :edit_password
+  #   post 'change_password', to: 'settings#update_password'
 
-    get 'change_password', to: 'settings#edit_password', as: :edit_password
-    post 'change_password', to: 'settings#update_password'
+  #   post 'change_scenario_privacy', to: 'settings#update_scenario_privacy'
 
-    post 'change_scenario_privacy', to: 'settings#update_scenario_privacy'
+  #   get 'newsletter', to: 'newsletter#edit', as: :edit_newsletter
+  #   post 'newsletter', to: 'newsletter#update'
 
-    get 'newsletter', to: 'newsletter#edit', as: :edit_newsletter
-    post 'newsletter', to: 'newsletter#update'
+  #   resources :tokens, only: [:index, :new, :create, :destroy], as: :tokens
+  #   resources :authorized_applications, only: [:index], as: :authorized_applications
+  # end
 
-    resources :tokens, only: [:index, :new, :create, :destroy], as: :tokens
-    resources :authorized_applications, only: [:index], as: :authorized_applications
-  end
-
-  devise_scope :user do
-    get 'identity/delete_account', to: 'users/registrations#confirm_destroy', as: :delete_account
-  end
+  # devise_scope :user do
+  #   get 'identity/delete_account', to: 'users/registrations#confirm_destroy', as: :delete_account
+  # end
 
   root :to => 'pages#index'
 

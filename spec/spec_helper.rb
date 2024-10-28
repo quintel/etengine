@@ -57,8 +57,7 @@ RSpec.configure do |config|
 
   config.include(FactoryBot::Syntax::Methods)
 
-  config.include(Devise::Test::ControllerHelpers, type: :controller)
-  config.include(AuthorizationHelper)
+  # config.include(AuthorizationHelper)
   config.include(MechanicalTurkHelper)
 
   config.include(HouseholdCurvesHelper, household_curves: true)

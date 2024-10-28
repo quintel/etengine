@@ -33,19 +33,22 @@ gem 'kaminari'
 
 # Authentication and authorization
 gem 'cancancan', '~> 3.0'
-gem 'devise', '~> 4.7'
-gem 'doorkeeper'
-gem 'doorkeeper-openid_connect', '~> 1.8.7'
-gem 'faraday'
-gem 'jwt'
-gem 'json-jwt'
-gem 'sidekiq'
+gem 'identity', ref: 'df08519', github: 'quintel/identity_rails'
+
+# gem 'devise', '~> 4.7'
+# gem 'doorkeeper'
+# gem 'doorkeeper-openid_connect', '~> 1.8.7'
+# gem 'faraday'
+# gem 'jwt'
+# gem 'json-jwt'
+# gem 'sidekiq'
 
 # Auth front-end
 gem 'dry-initializer'
 gem 'dry-monads'
 gem 'dry-struct'
 gem 'dry-validation'
+
 gem 'erb-formatter'
 gem 'http_accept_language'
 gem 'importmap-rails'

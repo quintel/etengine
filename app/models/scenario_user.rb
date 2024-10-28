@@ -5,7 +5,7 @@ class ScenarioUser < ApplicationRecord
   belongs_to :user, optional: true
 
   validate :user_id_or_email
-  validates :user_email, format: { with: Devise.email_regexp }, allow_blank: true
+  validates :user_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :role_id, inclusion: { in: User::ROLES.keys, message: 'unknown' }
 
   before_save :ensure_one_owner_left_before_save

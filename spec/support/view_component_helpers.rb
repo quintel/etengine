@@ -6,7 +6,6 @@ module ViewComponentHelpers
   included do
     include ViewComponent::TestHelpers
     include Capybara::RSpecMatchers
-    include Devise::Test::IntegrationHelpers
   end
 
   # Make a template method available for RSpec matchers.
