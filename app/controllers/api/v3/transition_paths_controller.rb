@@ -78,7 +78,7 @@ module Api
       end
 
       def etmodel_client
-        ETEngine::Auth.etmodel_client(current_user, scopes: doorkeeper_token.scopes)
+        ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
       end
 
       def service_error_response(failure)

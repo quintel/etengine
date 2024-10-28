@@ -1,20 +1,29 @@
 module Api
   module V3
     class BaseController < ActionController::API
-      include ActionController::MimeResponds
+      # include ActionController::MimeResponds
 
-      after_action :track_token_use
-
+      # after_action :track_token_use
       rescue_from ActionController::ParameterMissing do |e|
-        render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
+        render json: { errors: [e.message] }, status: :bad_request
       end
 
+      # rescue_from ActionController::ParameterMissing do |e|
+      #   render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
+      # end
+
+      # rescue_from ActiveRecord::RecordNotFound do |e|
+      #   if e.model
+      #     render_not_found(errors: ["#{e.model.underscore.humanize} not found"])
+      #   else
+      #     render_not_found
+      #   end
+      # end
+
       rescue_from ActiveRecord::RecordNotFound do |e|
-        if e.model
-          render_not_found(errors: ["#{e.model.underscore.humanize} not found"])
-        else
-          render_not_found
-        end
+        render json: {
+          errors: ["No such #{e.model.underscore.humanize.downcase}: #{e.id}"]
+        }, status: :not_found
       end
 
       rescue_from ActiveModel::RangeError do
@@ -30,18 +39,19 @@ module Api
       end
 
       private
+# TODO: Update all of these to use JWTs instead of doorkeeper_token - at the moment doorkeeper_token = decoded_token, but this needs to be set up properly
 
       def current_ability
         @current_ability ||=
           if current_user
-            TokenAbility.new(doorkeeper_token, current_user)
+            TokenAbility.new(decoded_token, current_user)
           else
             GuestAbility.new
           end
       end
 
       def current_user
-        @current_user ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
+        @current_user ||= User.find(decoded_token.resource_owner_id) if decoded_token
       end
 
       # Many API actions require an active scenario. Let's set it here
@@ -72,19 +82,19 @@ module Api
         render status: 400, json: { errors: [e.message] }
       end
 
-      def doorkeeper_unauthorized_render_options(error:)
-        { json: { errors: [error.description] } }
-      end
+      # def doorkeeper_unauthorized_render_options(error:)
+      #   { json: { errors: [error.description] } }
+      # end
 
-      def doorkeeper_forbidden_render_options(error:)
-        { json: { errors: [error.description] } }
-      end
+      # def doorkeeper_forbidden_render_options(error:)
+      #   { json: { errors: [error.description] } }
+      # end
 
-      def track_token_use
-        if response.status == 200 && doorkeeper_token && doorkeeper_token.application_id.nil?
-          TrackPersonalAccessTokenUse.perform_later(doorkeeper_token.id, Time.now.utc)
-        end
-      end
+      # def track_token_use
+      #   if response.status == 200 && decoded_token && decoded_token.application_id.nil?
+      #     TrackPersonalAccessTokenUse.perform_later(decoded_token.id, Time.now.utc)
+      #   end
+      # end
     end
   end
 end

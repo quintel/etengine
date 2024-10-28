@@ -22,6 +22,7 @@ module Etm
     config.time_zone = 'Etc/UTC'
 
     config.autoload_paths << Rails.root.join("lib")
+    config.api_only = true # disable view-related modules globally for controllers inheriting from ActionController::API
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
@@ -45,11 +46,6 @@ module Etm
 
     # Store files locally.
     config.active_storage.service = :local
-
-    config.to_prepare do
-      Doorkeeper::AuthorizationsController.layout 'login'
-      Doorkeeper::AuthorizedApplicationsController.layout 'identity'
-    end
 
     # Mail
 
