@@ -5,10 +5,10 @@ module Api
     class ScenarioUsersController < BaseController
       include UsesScenario
 
-      respond_to :json
+      render json:
 
       # Only scenario owners, having the delete authority, may manage scenario users
-      before_action { doorkeeper_authorize!(:'scenarios:delete') }
+      before_action { authorize!(:'scenarios:delete') }
 
       def index
         render json: @scenario.scenario_users

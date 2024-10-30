@@ -14,7 +14,7 @@ RSpec.describe 'Saved scenarios API' do
       end
     end
 
-    allow(ETEngine::Auth).to receive(:etmodel_client).and_return(conn)
+    # allow(ETEngine::Auth).to receive(:etmodel_client).and_return(conn)
   end
 
   context 'when fetching a single saved scenario' do

@@ -3,11 +3,11 @@
 module Api
   module V3
     class TransitionPathsController < BaseController
-      respond_to :json
+      render json:
 
-      before_action(only: %i[index show])    { doorkeeper_authorize!(:'scenarios:read') }
-      before_action(only: %i[create update]) { doorkeeper_authorize!(:'scenarios:write') }
-      before_action(only: %i[destroy])       { doorkeeper_authorize!(:'scenarios:delete') }
+      before_action(only: %i[index show])    { authorize!(:'scenarios:read') }
+      before_action(only: %i[create update]) { authorize!(:'scenarios:write') }
+      before_action(only: %i[destroy])       { authorize!(:'scenarios:delete') }
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
@@ -77,9 +77,9 @@ module Api
         end
       end
 
-      def etmodel_client
-        ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
-      end
+      # def etmodel_client
+      #   ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
+      # end
 
       def service_error_response(failure)
         if failure.respond_to?(:to_response)

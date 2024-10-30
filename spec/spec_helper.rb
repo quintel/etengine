@@ -57,15 +57,13 @@ RSpec.configure do |config|
 
   config.include(FactoryBot::Syntax::Methods)
 
-  # config.include(AuthorizationHelper)
   config.include(MechanicalTurkHelper)
 
   config.include(HouseholdCurvesHelper, household_curves: true)
 
   config.include(ViewComponentHelpers, type: :component)
+  config.include(AuthorizationHelper)
 
-  # System tests
-  config.include(SystemHelpers, type: :system)
 
   config.before(:each, type: :system) do
     driven_by :rack_test

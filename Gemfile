@@ -34,11 +34,12 @@ gem 'kaminari'
 # Authentication and authorization
 gem 'cancancan', '~> 3.0'
 gem 'identity', ref: 'df08519', github: 'quintel/identity_rails'
+gem 'jbuilder'
 
 # gem 'devise', '~> 4.7'
 # gem 'doorkeeper'
 # gem 'doorkeeper-openid_connect', '~> 1.8.7'
-# gem 'faraday'
+gem 'faraday' #TODO: Determine if this is necessary for some tests / client to client
 # gem 'jwt'
 # gem 'json-jwt'
 # gem 'sidekiq'

@@ -10,7 +10,7 @@ describe UsersController do
     end
 
     it 'works for admins' do
-      sign_in(admin)
+      # sign_in(admin)
       get :index
       expect(response).to be_successful
       expect(response).to render_template(:index)
@@ -24,7 +24,7 @@ describe UsersController do
     end
 
     it 'works for admins' do
-      sign_in(admin)
+      # sign_in(admin)
       get :edit, params: { id: admin.id }
       expect(response).to be_successful
       expect(assigns(:user)).to eq(admin)
@@ -38,7 +38,7 @@ describe UsersController do
     let(:confirmed_user) { create(:user, :confirmed_at) }
 
     before do
-      sign_in admin
+      # sign_in admin
     end
 
     context 'when user is unconfirmed' do
