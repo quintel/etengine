@@ -106,38 +106,4 @@ module ApplicationHelper
     format(command, port: app.uri ? URI.parse(app.uri).port : nil)
   end
 
-  # TODO: Assess where to trim, lifted from Model
-  def js_globals
-    Jbuilder.encode do |json|
-      json.api_url          Settings.api_url
-      json.api_proxy_url    Settings.api_proxy_url
-      json.disable_cors     Settings.disable_cors
-      json.standalone       Settings.standalone
-      json.settings         settings_as_json(Current.setting)
-      json.debug_js         admin?
-      json.env              Rails.env
-      json.charts_enabled   @interface && @interface.variant.charts?
-
-      if current_user
-        json.user do
-          json.id current_user.id
-          json.name current_user.name
-        end
-
-        json.access_token do
-          json.token identity_access_token.token
-          json.expires_at identity_access_token.expires_at
-        end
-      else
-        json.user nil
-        json.access_token nil
-      end
-
-      if Current.setting.active_scenario?
-        json.api_session_id Current.setting.api_session_id
-      else
-        json.api_session_id nil
-      end
-    end.html_safe
-  end
 end

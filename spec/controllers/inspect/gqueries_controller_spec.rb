@@ -70,4 +70,24 @@ describe Inspect::GqueriesController, :etsource_fixture do
       end
     end
   end
+
+  #TODO: Remove this test - it is a test test
+  describe Api::V3::GqueriesController, type: :request do
+    # let(:user) { create(:user) }
+    # let(:access_token) { create(:access_token, resource_owner_id: user.id, scopes: 'public scenarios:read') }
+    # let(:token_header) { { 'Authorization' => "Bearer #{access_token.token}" } }
+    let(:user) { create(:user) }
+    let(:token_header) { access_token_header(user, :read) }
+
+    before do
+      # mock_token = OpenStruct.new(sub: user.id.to_s, scopes: 'public scenarios:read')
+      # allow(ETEngine::TokenDecoder).to receive(:decode).and_return(mock_token)
+      get '/api/v3/scenarios', headers: token_header
+    end
+
+    it 'includes Authorization header' do
+      decoded_token = ETEngine::TokenDecoder.decode(token_header['Authorization'].split(' ').last)
+      expect(decoded_token[:sub]).to eq(user.id.to_s)
+    end
+  end
 end

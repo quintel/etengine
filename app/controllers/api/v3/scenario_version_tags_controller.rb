@@ -4,7 +4,6 @@ module Api
       include UsesScenario
 
       skip_before_action :authorize_scenario!, :only => :index
-      respond_to :json
 
       before_action :validate_scenario_version_tag, only: :update
 

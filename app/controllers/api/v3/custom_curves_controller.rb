@@ -9,8 +9,6 @@ module Api
       include ActionController::MimeResponds
       include UsesScenario
 
-      respond_to :json
-
       before_action :ensure_valid_curve_name, except: :index
       before_action :ensure_upload_is_file, only: :update
       before_action :ensure_reasonable_file_size, only: :update
@@ -48,18 +46,14 @@ module Api
       def show
         attachment = current_attachment
 
-        respond_to do |format|
-          format.csv do
-            send_data(
-              attachment.file.blob.download,
-              type: 'text/csv',
-              filename: "#{attachment.key}.#{attachment.scenario_id}.csv"
-            )
-          end
-
-          format.any do
-            render json: attachment_json(attachment)
-          end
+        if request.format.csv?
+          send_data(
+            attachment.file.blob.download,
+            type: 'text/csv',
+            filename: "#{attachment.key}.#{attachment.scenario_id}.csv"
+          )
+        else
+          render json: attachment_json(attachment)
         end
       end
 

@@ -22,7 +22,10 @@ module Etm
     config.time_zone = 'Etc/UTC'
 
     config.autoload_paths << Rails.root.join("lib")
-    config.api_only = true # disable view-related modules globally for controllers inheriting from ActionController::API
+
+    # # Rails.autoloaders.log! # TODO: Remove. To determine what is causing the reloading of ActionController::API
+    # config.action_controller.include_all_helpers = false
+
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]

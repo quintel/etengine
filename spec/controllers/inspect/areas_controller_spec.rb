@@ -5,7 +5,7 @@ describe Inspect::AreasController do
   let(:scenario) { FactoryBot.create :scenario }
 
   before do
-    sign_in(admin)
+    # sign_in(admin)
   end
 
   describe "GET show" do

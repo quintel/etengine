@@ -1,9 +1,11 @@
 module Api
   module V3
     class BaseController < ActionController::API
-      # include ActionController::MimeResponds
+      include ActionController::MimeResponds
 
-      # after_action :track_token_use
+      after_action :track_token_use
+      before_action :authenticate_request!
+
       rescue_from ActionController::ParameterMissing do |e|
         render json: { errors: [e.message] }, status: :bad_request
       end
@@ -38,8 +40,30 @@ module Api
         end
       end
 
+      rescue_from ETEngine::TokenDecoder::DecodeError do
+        render json: { errors: ['Invalid or expired token'] }, status: :unauthorized
+      end
+
       private
 # TODO: Update all of these to use JWTs instead of doorkeeper_token - at the moment doorkeeper_token = decoded_token, but this needs to be set up properly
+
+
+      def decoded_token
+        return @decoded_token if defined?(@decoded_token)
+
+        auth_header = request.headers['Authorization']
+        token = auth_header.split(' ').last if auth_header
+        return unless token
+
+        @decoded_token = ETEngine::TokenDecoder.decode(token)
+      rescue ETEngine::TokenDecoder::DecodeError
+        nil # Return nil if token verification fails
+      end
+
+      # Fetch the user based on the decoded token's subject
+      def current_user
+        @current_user ||= User.find(decoded_token[:sub]) if decoded_token
+      end
 
       def current_ability
         @current_ability ||=
@@ -50,8 +74,9 @@ module Api
           end
       end
 
-      def current_user
-        @current_user ||= User.find(decoded_token.resource_owner_id) if decoded_token
+      # Enforce token presence and validity for authorized access
+      def authenticate_request!
+        render json: { errors: ['Unauthorized'] }, status: :unauthorized unless decoded_token
       end
 
       # Many API actions require an active scenario. Let's set it here
@@ -90,11 +115,11 @@ module Api
       #   { json: { errors: [error.description] } }
       # end
 
-      # def track_token_use
-      #   if response.status == 200 && decoded_token && decoded_token.application_id.nil?
-      #     TrackPersonalAccessTokenUse.perform_later(decoded_token.id, Time.now.utc)
-      #   end
-      # end
+      def track_token_use
+        if response.status == 200 && decoded_token && decoded_token.application_id.nil?
+          TrackPersonalAccessTokenUse.perform_later(decoded_token.id, Time.now.utc)
+        end
+      end
     end
   end
 end

@@ -6,8 +6,6 @@ module Api
     class EsdlFilesController < BaseController
       include UsesScenario
 
-      respond_to :json
-
       before_action :ensure_upload_is_file, only: :update
       before_action :ensure_reasonable_file_size, only: :update
       before_action :set_current_scenario

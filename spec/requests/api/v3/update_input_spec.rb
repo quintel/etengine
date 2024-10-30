@@ -8,10 +8,16 @@ describe 'Updating inputs with API v3' do
     Etsource::Base.loader('spec/fixtures/etsource')
   end
 
+  let(:user) { create(:user) }
+  let(:token_header) { access_token_header(user, :read) }
+
   let(:scenario) do
     FactoryBot.create(:scenario,
       user_values: { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
+  end
+  before do
+    FactoryBot.create(:scenario_user, user: user, scenario: scenario, role_id: 1)
   end
 
   before do
@@ -69,7 +75,7 @@ describe 'Updating inputs with API v3' do
     allow(Input).to receive(:all).and_return(Input.records.values)
   end
 
-  def put_scenario(values: {}, params: {}, headers: {})
+  def put_scenario(values: {}, params: {}, headers: token_header)
     values = values.map { |k, v| [k.to_s, v.to_s] }.to_h
 
     put "/api/v3/scenarios/#{scenario.id}",
@@ -79,12 +85,12 @@ describe 'Updating inputs with API v3' do
     scenario.reload
   end
 
-  def nonbalanced_scenario(values: {}, params: {}, headers: {})
-    put_scenario(values:, params: params.merge(autobalance: false), headers:)
+  def nonbalanced_scenario(values: {}, params: {}, headers: token_header)
+    put_scenario(values:, params: params.merge(autobalance: false), headers: token_header)
   end
 
   def autobalance_scenario(values: {}, params: {}, headers: {})
-    put_scenario(values:, params: params.merge(autobalance: true), headers:)
+    put_scenario(values:, params: params.merge(autobalance: true), headers: token_header)
   end
 
   # --------------------------------------------------------------------------
@@ -108,6 +114,8 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
+        decoded_token = ETEngine::TokenDecoder.decode(token_header['Authorization'].split(' ').last)
+        puts decoded_token.inspect
         expect(response.status).to be(200)
       end
 

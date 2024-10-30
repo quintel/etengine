@@ -19,6 +19,14 @@ class ApplicationController < ActionController::Base
     NastyCache.instance.initialize_request
   end
 
+  def current_user
+    @current_user ||= begin
+      token = request.headers['Authorization']&.split(' ')&.last
+      decoded_token = ETEngine::TokenDecoder.decode(token)
+      User.from_jwt!(decoded_token) if decoded_token
+    end
+  end
+
   def set_locale
     if params[:locale] && I18n.available_locales.include?(params[:locale].to_sym)
       session[:locale] = params[:locale]
@@ -63,12 +71,11 @@ class ApplicationController < ActionController::Base
   #    infinite redirect loop.
   # - The request is an Ajax request as this can lead to very unexpected behaviour.
   def storable_location?
-    request.get? && is_navigational_format? && !request.xhr?
+    request.get? && request.format.html? && !request.xhr?
   end
 
   def store_user_location!
-    # :user is the scope we are authenticating
-    store_location_for(:user, request.fullpath)
+    session[:user_return_to] = request.fullpath
   end
 
   def after_sign_in_path_for(resource_or_scope)

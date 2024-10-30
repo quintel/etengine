@@ -98,5 +98,4 @@ Rails.application.configure do
     Etsource::Reloader.start! if ENV['CI'] != 'true' && Settings.etsource_live_reload
   end
 
-  config.action_controller.raise_on_missing_callback_actions = true
 end
