@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
   helper :all
+  helper_method :current_user
+
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
   before_action :initialize_memory_cache

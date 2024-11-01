@@ -11,7 +11,9 @@ describe 'APIv3 Scenarios' do
     NastyCache.instance.expire!
     Etsource::Base.loader('spec/fixtures/etsource')
 
-    get("/api/v3/scenarios/#{ scenario.id }")
+    get "/api/v3/scenarios/#{ scenario.id }",
+      params: '{',
+      headers: access_token_header(create(:user), :read)
   end
 
   it 'is successful' do

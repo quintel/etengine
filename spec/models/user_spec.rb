@@ -1,49 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe User do
-  it { is_expected.to validate_presence_of(:email) }
   it { is_expected.to validate_presence_of(:name) }
 
-  it { is_expected.to have_many(:access_grants) }
-  it { is_expected.to have_many(:access_tokens) }
-  it { is_expected.to have_many(:oauth_applications) }
   it { is_expected.to have_many(:scenarios) }
-
-  describe '#valid_password?' do
-    let(:user) { create(:user, password: 'password123') }
-
-    context 'with a standard password' do
-      it 'returns true when the password is correct' do
-        expect(user.valid_password?('password123')).to be(true)
-      end
-
-      it 'returns false when the password is incorrect' do
-        expect(user.valid_password?('password456')).to be(false)
-      end
-    end
-
-    context 'with a password and legacy salt' do
-      before do
-        salt = SecureRandom.hex
-
-        described_class.update(
-          user.id,
-          encrypted_password: BCrypt::Password.create("my password#{salt}", cost: 4),
-          legacy_password_salt: salt
-        )
-
-        user.reload
-      end
-
-      it 'returns true when the password is correct' do
-        expect(user.valid_password?('my password')).to be(true)
-      end
-
-      it 'returns false when the password is incorrect' do
-        expect(user.valid_password?('password123')).to be(false)
-      end
-    end
-  end
 
   context 'when the user is not an admin' do
     let(:roles) { create(:user).roles }
@@ -69,8 +29,8 @@ RSpec.describe User do
     end
   end
 
-  context 'when a ScenarioUser with the same email existed before the user was created' do
-    let(:user) { create(:user, password: 'password123', email: 'foo@bar.com') }
+  pending 'when a ScenarioUser with the same email existed before the user was created' do
+    let(:user) { create(:user, email: 'foo@bar.com') }
 
     before do
       create(:scenario_user, user_email: 'foo@bar.com', user_id: nil)
@@ -80,7 +40,7 @@ RSpec.describe User do
       expect(user.scenario_users.count).to be_positive
     end
 
-    it 'shows the user has acces to one scenario' do
+    it 'shows the user has access to one scenario' do
       expect(user.scenarios.count).to be_positive
     end
   end

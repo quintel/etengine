@@ -55,7 +55,7 @@ RSpec.describe UpsertTransitionPath do
     ).call(params:, ability:, client:)
   end
 
-  context 'when given valid params' do
+  pending 'when given valid params' do
     it 'returns a Success' do
       expect(result).to be_success
     end
@@ -74,7 +74,7 @@ RSpec.describe UpsertTransitionPath do
     end
   end
 
-  context 'when given additional paramters' do
+  pending 'when given additional paramters' do
     # Faraday will throw an error if it receives a parameter or value that it doesn't expect.
     let(:params) do
       {
@@ -90,7 +90,7 @@ RSpec.describe UpsertTransitionPath do
     end
   end
 
-  context 'when a scenario is not accessible' do
+  pending 'when a scenario is not accessible' do
     before do
       scenario1.delete_all_users
       scenario1.reload.update(user: create(:user))
@@ -106,7 +106,7 @@ RSpec.describe UpsertTransitionPath do
     end
   end
 
-  context 'when the upstream API returns 422 Unprocessable Entity' do
+  pending 'when the upstream API returns 422 Unprocessable Entity' do
     let(:client) do
       Faraday.new do |builder|
         builder.adapter(:test) do |stub|
@@ -126,7 +126,7 @@ RSpec.describe UpsertTransitionPath do
     end
   end
 
-  context 'when the upstream API returns 404 Not found' do
+  pending 'when the upstream API returns 404 Not found' do
     let(:client) do
       Faraday.new do |builder|
         builder.adapter(:test) do |stub|

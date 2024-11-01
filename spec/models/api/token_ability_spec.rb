@@ -3,11 +3,36 @@
 require 'cancan/matchers'
 
 RSpec.describe Api::TokenAbility do
-  let(:user) { create(:user) }
-  let(:token) { create(:access_token, resource_owner_id: user.id, scopes:) }
-  let(:scopes) { 'public' }
+  let(:user) { create(:user, roles:) }
+  let(:roles) {(:scenario_viewer)}
+  let(:test_token) { JSON.parse(File.read(Rails.root.join('spec/fixtures/identity/token/idp_token.json')))['token'] }
+  let(:test_jwk_set) do
+    client = Faraday.new(Identity.discovery_config.jwks_uri) do |conn|
+      conn.request(:json)
+      conn.response(:json)
+      conn.response(:raise_error)
+    end
+    JSON::JWK::Set.new(client.get.body)
+  end
 
-  let(:ability) { described_class.new(token, user) }
+  let(:scopes) { 'scenarios:read' }
+
+  let(:mock_decoded_token) do
+    {
+      iss: Settings.identity.api_url,
+      aud: 'all_clients',
+      sub: user.id,
+      exp: 1730367768, # Static future expiration
+      scopes: scopes
+    }.with_indifferent_access
+  end
+
+  before do
+    allow(described_class).to receive(:jwk_set).and_return(test_jwk_set)
+    allow(ETEngine::TokenDecoder).to receive(:decode).with(test_token).and_return(mock_decoded_token)
+  end
+
+  let(:ability) { described_class.new(test_token, user) }
 
   let!(:public_scenario) { create(:scenario, user: nil, private: false) }
   let!(:owned_public_scenario) { create(:scenario, user: user, private: false) }

@@ -3,6 +3,8 @@ require 'spec_helper'
 describe Api::V3::ScenariosController do
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:scenarios) { 5.times.map { FactoryBot.create(:scenario) } }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
 
   before do
     allow(Input).to receive(:records).and_return({
@@ -11,6 +13,7 @@ describe Api::V3::ScenariosController do
     })
 
     allow(Input).to receive(:all).and_return(Input.records.values)
+    request.headers.merge!(headers)
   end
 
   describe "GET show.json" do

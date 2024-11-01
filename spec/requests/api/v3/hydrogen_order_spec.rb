@@ -6,9 +6,11 @@ describe 'APIv3 hydrogen orders' do
   let(:valid_options) { HydrogenSupplyOrder.default_order }
   let(:scenario) { create(:scenario) }
   let(:url) { api_v3_scenario_hydrogen_supply_order_url(scenario_id: scenario.id) }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
 
   context 'when fetching the hydrogen order' do
-    let(:request) { get(url) }
+    let(:request) { get(url, headers: headers) }
 
     context 'when no order exists' do
       it 'is a successful request' do
@@ -145,7 +147,7 @@ describe 'APIv3 hydrogen orders' do
     context 'when the scenario is owned by someone else' do
       before do
         scenario.update!(user: create(:user))
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       it 'responds with 403 Forbidden' do
@@ -170,7 +172,7 @@ describe 'APIv3 hydrogen orders' do
 
     context 'when the hydrogen order does not exist, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       include_examples 'a successful hydrogen order update'
@@ -182,7 +184,7 @@ describe 'APIv3 hydrogen orders' do
 
     context 'when the scenario does not exist, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       before do
@@ -201,7 +203,7 @@ describe 'APIv3 hydrogen orders' do
 
     context 'when the hydrogen order does not exist, given invalid data' do
       let(:request) do
-        put url, params: { order: %w[invalid] }
+        put url, params: { order: %w[invalid] }, headers: headers
       end
 
       include_examples 'a failed hydrogen order update'
@@ -213,7 +215,7 @@ describe 'APIv3 hydrogen orders' do
 
     context 'when the hydrogen order exists, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       before do
@@ -232,7 +234,7 @@ describe 'APIv3 hydrogen orders' do
 
     context 'when the hydrogen order exists, given invalid data' do
       let(:request) do
-        put url, params: { order: %w[invalid] }
+        put url, params: { order: %w[invalid] }, headers: headers
       end
 
       before do
@@ -252,7 +254,7 @@ describe 'APIv3 hydrogen orders' do
 
     context 'when the request contains an invalid hydrogen_supply_order payload' do
       let(:request) do
-        put url, params: { hydrogen_supply_order: 'hi' }
+        put url, params: { hydrogen_supply_order: 'hi' }, headers: headers
       end
 
       it 'is a failed request' do

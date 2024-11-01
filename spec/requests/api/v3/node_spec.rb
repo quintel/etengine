@@ -6,12 +6,14 @@ describe 'APIv3 Node details' do
     Etsource::Base.loader('spec/fixtures/etsource')
   end
 
-  let(:scenario) { FactoryBot.create(:scenario) }
-  let(:json)     { JSON.parse(response.body) }
+  let(:scenario)      { FactoryBot.create(:scenario) }
+  let(:json)          { JSON.parse(response.body) }
+  let(:user)          { create(:user) }
+  let(:token_header)  { access_token_header(user, :read) }
 
   context "an existing node" do
     before do
-      get("/api/v3/scenarios/#{ scenario.id }/nodes/foo")
+      get("/api/v3/scenarios/#{ scenario.id }/nodes/foo", headers: token_header)
     end
 
     it 'should be successful' do
@@ -26,7 +28,7 @@ describe 'APIv3 Node details' do
 
   context "a bad node key" do
     before do
-      get("/api/v3/scenarios/#{ scenario.id }/nodes/rick_astley")
+      get("/api/v3/scenarios/#{ scenario.id }/nodes/rick_astley", headers: token_header)
     end
 
     it "should return 404" do

@@ -5,19 +5,23 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     NastyCache.instance.expire!
   end
 
-  let(:source) do
-    FactoryBot.create(:scenario, end_year: 2050)
-  end
-
   let(:response_data) do
     send_data
     JSON.parse(response.body)
   end
 
+  let(:user) { create(:user) }
+  let(:token_header) { access_token_header(user, :write) }
+
+  let(:source) do
+    FactoryBot.create(:scenario, user: user, end_year: 2050)
+  end
+
   context 'with valid parameters' do
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
-        params: { end_year: 2040 }
+        params: { end_year: 2040 },
+        headers: token_header
     end
 
     before { source }
@@ -47,7 +51,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   context 'with an invalid scenario ID' do
     let(:send_data) do
       post '/api/v3/scenarios/999999/interpolate',
-        params: { end_year: 2040 }
+        params: { end_year: 2040 },
+        headers: token_header
     end
 
     it 'returns 404 Not Found' do
@@ -56,7 +61,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['Scenario not found'])
+      expect(response_data).to include('errors' => ["No such scenario: 999999"])
     end
   end
 
@@ -64,7 +69,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     before { source }
 
     let(:send_data) do
-      post "/api/v3/scenarios/#{source.id}/interpolate", params: {}
+      post "/api/v3/scenarios/#{source.id}/interpolate", params: {}, headers: token_header
     end
 
     it 'returns 400 Bad Request' do

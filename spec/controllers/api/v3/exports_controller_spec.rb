@@ -4,9 +4,12 @@ require 'spec_helper'
 
 describe Api::V3::ExportController do
   let(:scenario) { FactoryBot.create(:scenario) }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
 
   describe 'GET energy_flows.csv' do
     before do
+      request.headers.merge!(headers)
       get :energy_flow, params: { id: scenario.id }, format: :csv
     end
 
@@ -29,6 +32,7 @@ describe Api::V3::ExportController do
 
   describe 'GET molecule_flows.csv' do
     before do
+      request.headers.merge!(headers)
       get :molecule_flow, params: { id: scenario.id }, format: :csv
     end
 

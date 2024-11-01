@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ETEngine
-  # Decodes and verifies a JWT.
+  # Decodes and verifies a JWT sent by MyETM.
   module TokenDecoder
     module_function
 
@@ -10,9 +10,9 @@ module ETEngine
     def decode(token)
       decoded = JSON::JWT.decode(token, jwk_set)
 
-      unless decoded[:iss] == Settings.api_url &&
-             decoded[:aud] == Settings.identity.client_uri &&
-             decoded[:sub].present? &&
+      unless decoded[:iss] == Settings.identity.api_url &&
+             decoded[:aud] == Settings.identity.ete_uri &&
+             decoded[:sub].present?
              decoded[:exp] > Time.now.to_i
         raise DecodeError, 'JWT verification failed'
       end

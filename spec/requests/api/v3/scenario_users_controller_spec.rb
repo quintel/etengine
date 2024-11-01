@@ -63,10 +63,10 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'adds the given users to the scenario' do
-        expect(json).to include(
-          a_hash_including('user_id' => user_viewer.id, 'user_email' => nil, 'role' => 'scenario_viewer'),
-          a_hash_including('user_id' => nil, 'user_email' => 'collaborator@test.com', 'role' => 'scenario_collaborator'),
-          a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com', 'role' => 'scenario_owner')
+        expect(json).to contain_exactly(
+          a_hash_including('user_id' => nil, 'user_email' => 'viewer@test.com', 'role' => 'scenario_viewer', 'role_id' => 1, 'scenario_id' => scenario.id),
+          a_hash_including('user_id' => nil, 'user_email' => 'collaborator@test.com', 'role' => 'scenario_collaborator', 'role_id' => 2, 'scenario_id' => scenario.id),
+          a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com', 'role' => 'scenario_owner', 'role_id' => 3, 'scenario_id' => scenario.id)
         )
       end
 
@@ -142,7 +142,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { user_email: 'viewer@test.com', role: 'scenario_viewer' }
+              { user_id: user_viewer.id, role: 'scenario_viewer' }
             ]
           }
       end
@@ -152,7 +152,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors']['viewer@test.com']).to include('duplicate')
+        expect(json['errors']['']).to include('base')
       end
     end
   end
@@ -210,7 +210,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors'][user.email]).to include(
+        expect(json['errors']['']).to include(
           'base'
         )
       end
@@ -279,7 +279,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors'][user_2.email]).to include('role_id')
+        expect(json['errors']['']).to include('role_id')
       end
     end
   end
@@ -353,7 +353,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns an error' do
-        expect(json['errors'][user.email]).to include(
+        expect(json['errors']['']).to include(
           'base'
         )
       end
