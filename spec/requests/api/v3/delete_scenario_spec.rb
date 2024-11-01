@@ -9,11 +9,13 @@ describe 'Deleting a scenario with API v3' do
   end
 
   let(:scenario) { create(:scenario) }
+  let(:user) { create(:user) }
 
   context 'when not authenticated' do
     context 'when the scenario is unowned' do
       before do
-        delete "/api/v3/scenarios/#{scenario.id}"
+        delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)
+
       end
 
       it 'returns 403' do
@@ -24,7 +26,7 @@ describe 'Deleting a scenario with API v3' do
     context 'when the scenario is owned by someone' do
       before do
         scenario.user = create(:user)
-        delete "/api/v3/scenarios/#{scenario.id}"
+        delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)
       end
 
       it 'returns 403' do
@@ -37,7 +39,7 @@ describe 'Deleting a scenario with API v3' do
         scenario.delete_all_users
         scenario.user = create(:user)
         scenario.reload.update!(private: true)
-        delete "/api/v3/scenarios/#{scenario.id}"
+        delete "/api/v3/scenarios/#{scenario.id}", headers: access_token_header(user, :delete)
       end
 
       it 'returns 404' do

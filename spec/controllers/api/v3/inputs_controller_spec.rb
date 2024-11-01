@@ -19,15 +19,23 @@ describe Api::V3::InputsController do
     })
   end
 
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
+
   before do
     NastyCache.instance.expire!
     allow(Input).to receive(:all).and_return([ static_input, gql_input ])
+    request.headers.merge!(headers)
   end
 
   # --------------------------------------------------------------------------
 
   describe 'GET /api/v3/scenarios/:scenario_id/inputs' do
-    let(:json) { JSON.parse(get(:index, params: { scenario_id: scenario.id }).body) }
+    before do
+      get :index, params: { scenario_id: scenario.id }
+    end
+
+    let(:json) { JSON.parse(response.body) }
 
     it 'is successful' do
       json
@@ -61,8 +69,12 @@ describe Api::V3::InputsController do
 
     context '"disabled" attribute' do
       before do
-        expect(static_input).to receive(:disabled_in_current_area?) { true }
-        expect(gql_input).to receive(:disabled_in_current_area?)    { false }
+        allow_any_instance_of(Input).to receive(:disabled_in_current_area?) do |input|
+          input.key == 'static_input_key'
+        end
+
+        # Make the GET request after setting up the stub
+        get :index, params: { scenario_id: scenario.id }
       end
 
       it 'should be true when an input is disabled' do

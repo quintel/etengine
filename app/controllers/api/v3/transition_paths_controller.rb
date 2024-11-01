@@ -7,7 +7,9 @@ module Api
 
       before_action(only: %i[index show])    { authorize!(:'scenarios:read') }
       before_action(only: %i[create update]) { authorize!(:'scenarios:write') }
-      before_action(only: %i[destroy])       { authorize!(:'scenarios:delete') }
+      before_action only: %i[discard undiscard] do
+        authorize!(:destroy, @scenario)
+      end
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
@@ -77,9 +79,9 @@ module Api
         end
       end
 
-      # def etmodel_client
-      #   ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
-      # end
+      def etmodel_client
+        ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
+      end
 
       def service_error_response(failure)
         if failure.respond_to?(:to_response)

@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe 'APIv3 Area details' do
-  before { get("/api/v3/areas/#{id}") }
+  let(:user) {create(:user)}
+  before { get("/api/v3/areas/#{id}", headers: access_token_header(user, :read)) }
 
   context 'with a valid area ID' do
     let(:id) { 'nl' }

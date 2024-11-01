@@ -28,9 +28,9 @@ describe ScenarioUser do
   end
 
   context 'when creating a new scenario user with a known email adres' do
-    let(:user) { create(:user, email: email) }
+    let(:user) { create(:user, ) }
     let(:email) { 'hi@me.com' }
-    let(:scenario_user) { create(:scenario_user, user_email: email, user_id: nil) }
+    let(:scenario_user) { create(:scenario_user, user_id: user.id) }
 
     before { user }
 

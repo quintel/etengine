@@ -5,9 +5,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     NastyCache.instance.expire!
   end
 
+  let(:user) { create(:user) }
+  let(:token_header) { access_token_header(user, :write) }
+
   context 'with valid parameters' do
     it 'should save the scenario' do
-      expect { post '/api/v3/scenarios' }.to change { Scenario.count }.by(1)
+      expect { post '/api/v3/scenarios', headers: token_header }.to change { Scenario.count }.by(1)
 
       expect(response.status).to eql(200)
 
@@ -30,7 +33,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'should save user values' do
       post '/api/v3/scenarios',
-        params: { scenario: { user_values: { foo_demand: 10.0 } } }
+        params: { scenario: { user_values: { foo_demand: 10.0 } } },
+        headers: token_header
 
       expect(response.status).to eql(200)
 
@@ -43,7 +47,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'should optionally include detailed params' do
       expect do
-        post '/api/v3/scenarios', params: { detailed: true }
+        post '/api/v3/scenarios', params: { detailed: true }, headers: token_header
       end.to change { Scenario.count }.by(1)
 
       expect(response.status).to eql(200)
@@ -58,7 +62,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'should save custom end years' do
       running_this = -> {
-        post '/api/v3/scenarios', params: { scenario: { end_year: 2031 } }
+        post '/api/v3/scenarios', params: { scenario: { end_year: 2031 } }, headers: token_header
       }
 
       expect(&running_this).to change { Scenario.count }.by(1)
@@ -72,7 +76,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'should save custom end years' do
       pending 'awaiting reintroduction of non-NL regions'
       running_this = -> {
-        post '/api/v3/scenarios', params: { scenario: { area_code: 'uk' } }
+        post '/api/v3/scenarios', params: { scenario: { area_code: 'uk' } }, headers: token_header
       }
 
       expect(&running_this).to change { Scenario.count }.by(1)
@@ -85,15 +89,15 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets no user' do
       post '/api/v3/scenarios',
-        params: { scenario: { user_values: { foo_demand: 10.0 } } }
+        params: { scenario: { user_values: { foo_demand: 10.0 } } }, headers: access_token_header(user, :public)
 
-      expect(JSON.parse(response.body)['users']).to eq([])
+      expect(JSON.parse(response.body)['users']).to eq(nil)
     end
   end
 
   context 'when authenticated' do
     before do
-      post '/api/v3/scenarios', headers: access_token_header(user, :write)
+      post '/api/v3/scenarios', headers: access_token_header(user, :write), headers: token_header
     end
 
     let(:user) { create(:user) }
@@ -110,7 +114,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   context 'with invalid parameters' do
     it 'should not save the scenario' do
       running_this = -> {
-        post '/api/v3/scenarios', params: { scenario: { area_code: '' } }
+        post '/api/v3/scenarios', params: { scenario: { area_code: '' } }, headers: token_header
       }
 
       expect(&running_this).to_not change { Scenario.count }
@@ -129,7 +133,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     before do
-      post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: parent.id } }, headers: token_header
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -148,7 +152,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'when inheriting from a non-existant scenario' do
     before do
-      post '/api/v3/scenarios', params: { scenario: { scenario_id: 99_999 } }
+      post '/api/v3/scenarios', params: { scenario: { scenario_id: 99_999 } }, headers: token_header
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -164,7 +168,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'when setting keep_compatible to true' do
     before do
-      post '/api/v3/scenarios', params: { scenario: { keep_compatible: true } }
+      post '/api/v3/scenarios', params: { scenario: { keep_compatible: true } }, headers: token_header
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -180,7 +184,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'when setting a scenario to private when not authenticated' do
     before do
-      post '/api/v3/scenarios', params: { scenario: { private: true } }
+      allow_any_instance_of(Api::V3::BaseController).to receive(:authenticate_request!).and_return(true)
+      post '/api/v3/scenarios', params: { scenario: { private: true} }
     end
 
     it 'returns a 422' do
@@ -378,7 +383,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     before do
       post '/api/v3/scenarios', params: {
         scenario: { scenario_id: FactoryBot.create(:scaled_scenario).id }
-      }
+      }, headers: token_header
     end
 
     let(:json) { JSON.parse(response.body) }
@@ -402,7 +407,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         post '/api/v3/scenarios', params: {
           scenario: {
             scale: { area_attribute: 'present_number_of_residences', value: 500_000 } }
-        }
+        }, headers: token_header
       end
 
       it 'should be successful' do
@@ -423,7 +428,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         post '/api/v3/scenarios', params: {
           scenario: {
             scale: { area_attribute: :illegal, value: 500_000 } }
-        }
+        }, headers: token_header
       end
 
       it 'should not save the scenario' do
@@ -431,7 +436,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           post '/api/v3/scenarios', params: {
             scenario: {
               scale: { area_attribute: :illegal, value: 500_000 } }
-          }
+          }, headers: token_header
         }
 
         expect(&running_this).to_not change { Scenario.count }
@@ -446,7 +451,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
             scenario_id: preset.id,
             scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
           }
-        }
+        }, headers: token_header
       end
 
       let(:preset) { FactoryBot.create(:scenario_with_user_values) }
@@ -496,14 +501,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
               scenario_id: preset.id,
               scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
-          }
+          }, headers: token_header
 
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: Scenario.last.id,
               scale: { area_attribute: 'present_number_of_residences', value: 250_000 }
             }
-          }
+          }, headers: token_header
         end
 
         let(:json)  { JSON.parse(response.body) }
@@ -535,13 +540,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
               scenario_id: preset.id,
               scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
-          }
+          }, headers: token_header
 
           post '/api/v3/scenarios', params: {
             scenario: {
               scenario_id: Scenario.last.id, descale: true
             }
-          }
+          }, headers: token_header
         end
 
         let(:json) { JSON.parse(response.body) }
@@ -572,9 +577,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
               scenario_id: preset.id,
               scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
-          }
+          }, headers: token_header
 
-          @scaled = post '/api/v3/scenarios', params: { scenario: { scenario_id: Scenario.last.id } }
+          @scaled = post '/api/v3/scenarios', params: { scenario: { scenario_id: Scenario.last.id } }, headers: token_header
         end
 
         let(:json) { JSON.parse(response.body) }
@@ -610,7 +615,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
                 foo_demand: 100.0
               }
             }
-          }
+          }, headers: token_header
 
           post '/api/v3/scenarios', params: {
             scenario: {
@@ -618,7 +623,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
               area_code: 'ameland',
               scale: { area_attribute: 'present_number_of_residences', value: 100 }
             }
-          }
+          }, headers: token_header
         end
 
         let(:json) { JSON.parse(response.body) }
@@ -644,7 +649,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
               area_code: 'ameland',
               scale: { area_attribute: 'present_number_of_residences', value: 500_000 }
             }
-          }
+          }, headers: token_header
         end
 
         let(:create_scenario) do
@@ -652,7 +657,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
             scenario: {
               scenario_id: Scenario.last.id, descale: true
             }
-          }
+          }, headers: token_header
         end
 
         let(:json) { JSON.parse(response.body) }

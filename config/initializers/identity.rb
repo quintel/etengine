@@ -2,10 +2,9 @@
 
 
 if !ENV['DOCKER_BUILD'] && (
-    Settings.identity.client_uri.blank? ||
+    Settings.identity.ete_uri.blank? ||
     Settings.identity.client_id.blank? ||
     Settings.identity.client_secret.blank?)
-    debugger;
   abort <<~MESSAGE
     ┌─────────────────────────────────────────────────────────────────────────┐
     │           !!!️  NO IDENTITY / AUTHENTICATION CONFIG FOUND !!!️            │
@@ -28,7 +27,7 @@ end
 
 Identity.configure do |config|
   config.issuer = Settings.identity.api_url
-  config.client_uri = Settings.identity.client_uri
+  config.client_uri = Settings.identity.ete_uri
   config.client_id = Settings.identity.client_id
   config.client_secret = Settings.identity.client_secret
   config.scope = 'openid profile email roles scenarios:read scenarios:write scenarios:delete'

@@ -8,17 +8,16 @@ module Api
     def initialize(token, user)
       can :read, Scenario, private: false
 
+      decoded_token = ETEngine::TokenDecoder.decode(token)
+      scopes = decoded_token['scopes']
       # scenarios:read
       # --------------
-
-      return unless token.scopes.include?('scenarios:read')
-
+      return unless scopes.include?('scenarios:read')
       can :read, Scenario, id: ScenarioUser.where(user_id: user.id, role_id: User::ROLES.key(:scenario_viewer)..).pluck(:scenario_id)
-
       # scenarios:write
       # ---------------
 
-      return unless token.scopes.include?('scenarios:write')
+      return unless scopes.include?('scenarios:write')
 
       can :create, Scenario
 
@@ -36,7 +35,7 @@ module Api
       # scenarios:delete
       # ----------------
 
-      return unless token.scopes.include?('scenarios:delete')
+      return unless scopes.include?('scenarios:delete')
 
       can :destroy, Scenario, id: ScenarioUser.where(user_id: user.id, role_id: User::ROLES.key(:scenario_owner)).pluck(:scenario_id)
     end

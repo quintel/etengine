@@ -3,24 +3,11 @@ module Api
     class BaseController < ActionController::API
       include ActionController::MimeResponds
 
-      after_action :track_token_use
       before_action :authenticate_request!
 
       rescue_from ActionController::ParameterMissing do |e|
         render json: { errors: [e.message] }, status: :bad_request
       end
-
-      # rescue_from ActionController::ParameterMissing do |e|
-      #   render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
-      # end
-
-      # rescue_from ActiveRecord::RecordNotFound do |e|
-      #   if e.model
-      #     render_not_found(errors: ["#{e.model.underscore.humanize} not found"])
-      #   else
-      #     render_not_found
-      #   end
-      # end
 
       rescue_from ActiveRecord::RecordNotFound do |e|
         render json: {
@@ -45,7 +32,6 @@ module Api
       end
 
       private
-# TODO: Update all of these to use JWTs instead of doorkeeper_token - at the moment doorkeeper_token = decoded_token, but this needs to be set up properly
 
 
       def decoded_token
@@ -106,14 +92,6 @@ module Api
       rescue ActionDispatch::Http::Parameters::ParseError => e
         render status: 400, json: { errors: [e.message] }
       end
-
-      # def doorkeeper_unauthorized_render_options(error:)
-      #   { json: { errors: [error.description] } }
-      # end
-
-      # def doorkeeper_forbidden_render_options(error:)
-      #   { json: { errors: [error.description] } }
-      # end
 
       def track_token_use
         if response.status == 200 && decoded_token && decoded_token.application_id.nil?

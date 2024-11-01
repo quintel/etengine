@@ -1,46 +1,50 @@
 require 'spec_helper'
 
-describe Inspect::NodesController do
+RSpec.describe 'Inspect::Nodes', type: :request do
   let(:admin) { FactoryBot.create(:admin) }
   let(:scenario) { FactoryBot.create(:scenario) }
+  let(:headers) { access_token_header(admin, :delete) }
 
-  before do
-    # sign_in(admin)
-  end
-
-  describe 'GET index' do
+  describe 'GET /inspect/:api_scenario_id/graphs/:graph_name/nodes' do
     it 'is successful' do
-      get :index, params: { graph_name: 'energy', api_scenario_id: scenario.id }
+      get "/inspect/#{scenario.id}/graphs/energy/nodes", headers: headers
+
+      expect(response).to have_http_status(:ok)
       expect(response).to render_template(:index)
     end
   end
 
-  describe 'GET show' do
+  describe 'GET /inspect/:api_scenario_id/graphs/:graph_name/nodes/:id' do
     context 'with a valid graph and node key' do
       it 'is successful' do
-        get :show, params: { api_scenario_id: scenario.id, graph_name: 'energy', id: 'foo' }
+        get "/inspect/#{scenario.id}/graphs/energy/nodes/foo", headers: headers
+
+        expect(response).to have_http_status(:ok)
         expect(response).to render_template(:show)
       end
     end
 
     context 'with a valid graph and invalid node key' do
       it 'renders Not Found' do
-        get :show, params: { api_scenario_id: scenario.id, graph_name: 'energy', id: 'nope' }
-        expect(response).to be_not_found
+        get "/inspect/#{scenario.id}/graphs/energy/nodes/nope", headers: headers
+
+        expect(response).to have_http_status(:not_found)
       end
     end
 
     context 'with a valid node key, but incorrect graph' do
       it 'renders Not Found' do
-        get :show, params: { api_scenario_id: scenario.id, graph_name: 'molecules', id: 'foo' }
-        expect(response).to be_not_found
+        get "/inspect/#{scenario.id}/graphs/molecules/nodes/foo", headers: headers
+
+        expect(response).to have_http_status(:not_found)
       end
     end
 
-    context 'with n valid node key, but illegal graph' do
+    context 'with a valid node key, but illegal graph' do
       it 'renders Not Found' do
-        get :show, params: { api_scenario_id: scenario.id, graph_name: 'nope', id: 'foo' }
-        expect(response).to be_not_found
+        get "/inspect/#{scenario.id}/graphs/nope/nodes/foo", headers: headers
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
