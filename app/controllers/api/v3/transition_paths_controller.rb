@@ -3,12 +3,18 @@
 module Api
   module V3
     class TransitionPathsController < BaseController
-      render json:
 
-      before_action(only: %i[index show])    { authorize!(:'scenarios:read') }
-      before_action(only: %i[create update]) { authorize!(:'scenarios:write') }
-      before_action only: %i[discard undiscard] do
-        authorize!(:destroy, @scenario)
+      # TODO: Can you authorize when you don't have a model to authorize?
+      before_action(only: %i[index show]) do
+        authorize! (:read)
+      end
+
+      before_action(only: %i[create update]) do
+        authorize! (:write)
+      end
+
+      before_action(only: %i[discard undiscard]) do
+        authorize! (:destroy)
       end
 
       def index
@@ -80,7 +86,7 @@ module Api
       end
 
       def etmodel_client
-        ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
+        ETEngine::ClientConnector.client_app_client(current_user, Settings.clients.etm.uri, scopes: decoded_token.scopes)
       end
 
       def service_error_response(failure)
