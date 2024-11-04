@@ -14,7 +14,7 @@ RSpec.describe 'transition paths API' do
       end
     end
 
-    allow(ETEngine::Auth).to receive(:etmodel_client).and_return(conn)
+    allow(ETEngine::ClientConnector).to receive(:client_app_client).and_return(conn)
   end
 
   context 'when fetching a single transition path' do
@@ -40,7 +40,7 @@ RSpec.describe 'transition paths API' do
           ]
         end
 
-        get '/api/v3/transition_paths/1', headers: access_token_header(user, 'scenarios:read')
+        get '/api/v3/transition_paths/1', headers: access_token_header(user, :read)
       end
 
       it 'is successful' do
