@@ -4,6 +4,8 @@ class ApplicationController < ActionController::Base
 
 
   # TODO refactor move the hooks and corresponding actions into a "concern"
+  before_action :store_token
+  before_action :current_user
   before_action :initialize_memory_cache
   before_action :set_locale
   before_action :configure_sentry
@@ -22,10 +24,17 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    @current_user ||= begin
-      token = request.headers['Authorization']&.split(' ')&.last
-      decoded_token = ETEngine::TokenDecoder.decode(token)
-      User.from_jwt!(decoded_token) if decoded_token
+    return @current_user if defined?(@current_user)
+
+    token = cookies.encrypted[:auth_token] || request.headers['Authorization']&.split(' ')&.last
+    if token.present?
+      decoded_token = ETEngine::TokenDecoder.decode(token) rescue nil
+      @current_user = User.from_jwt!(decoded_token) if decoded_token
+    else
+      @current_user = nil
+      sign_up_uri = URI(sign_up_url.to_s)
+      sign_up_uri.query = URI.encode_www_form(redirect_to: request.original_url)
+      redirect_to sign_up_uri.to_s
     end
   end
 
@@ -118,5 +127,12 @@ class ApplicationController < ActionController::Base
     )
 
     true
+  end
+
+  def store_token
+    if params[:token]
+      cookies.encrypted[:auth_token] = { value: params[:token], httponly: true, secure: Rails.env.production? }
+      redirect_to request.path
+    end
   end
 end

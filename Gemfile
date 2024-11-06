@@ -39,7 +39,7 @@ gem 'jbuilder'
 # gem 'devise', '~> 4.7'
 gem 'doorkeeper'
 # gem 'doorkeeper-openid_connect', '~> 1.8.7'
-gem 'faraday' #TODO: Determine if this is necessary for some tests / client to client
+gem 'faraday'
 gem 'jwt'
 # gem 'json-jwt'
 # gem 'sidekiq'

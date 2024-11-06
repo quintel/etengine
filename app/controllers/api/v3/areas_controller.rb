@@ -3,7 +3,6 @@
 module Api
   module V3
     class AreasController < BaseController
-      render json:
 
       def index
         # Default to sending full data for backwards compatibility.

@@ -42,22 +42,8 @@ mailer:
   from: "Energy Transition Model <info@energytransitionmodel.com>"
 
 auth:
-  issuer: http://localhost:3002   #<%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3002') %>
-
-# TODO: Clean this up for production
-identity:
-  public_key_url: http://localhost:3002/public_key
-  client_id: 'fake_ete_client_id' #<%= ENV['IDENTITY_CLIENT_ID'] %>
-  client_secret: 'fake_ete_client_secret' # <%= ENV['IDENTITY_CLIENT_SECRET'] %>
-  ete_uri: http://localhost:3000
-  api_url: http://localhost:3002
-
-clients:
-  myc:
-    uri: http://localhost:3005
-  etm:
-    uri: http://localhost:3001
-
+  issuer: http://localhost:3002   #<%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3002') %> #TODO: Clean this up for prod
+token_exchange_url: http://localhost:3002/identity/token_exchange
 
 # Optional settings to configure the Mailchimp integration.
 mailchimp:

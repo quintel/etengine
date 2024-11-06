@@ -60,9 +60,10 @@ module Api
           end
       end
 
-      # Enforce token presence and validity for authorized access
       def authenticate_request!
-        render json: { errors: ['Unauthorized'] }, status: :unauthorized unless decoded_token
+        if decoded_token
+          render json: { errors: ['Unauthorized'] }, status: :unauthorized unless current_user
+        end
       end
 
       # Many API actions require an active scenario. Let's set it here

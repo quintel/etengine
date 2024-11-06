@@ -4,7 +4,6 @@ module Api
   module V3
     class TransitionPathsController < BaseController
 
-      # TODO: Can you authorize when you don't have a model to authorize?
       before_action(only: %i[index show]) do
         authorize! (:read)
       end
