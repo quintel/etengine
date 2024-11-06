@@ -2,32 +2,32 @@
 
 
 if !ENV['DOCKER_BUILD'] && (
-    Settings.identity.ete_uri.blank? ||
+    Settings.api_url.blank? ||
     Settings.identity.client_id.blank? ||
     Settings.identity.client_secret.blank?)
   abort <<~MESSAGE
     ┌─────────────────────────────────────────────────────────────────────────┐
     │           !!!️  NO IDENTITY / AUTHENTICATION CONFIG FOUND !!!️            │
     ├─────────────────────────────────────────────────────────────────────────┤
-    │ You're missing the client_id and client_secret used to connect ETModel  │
-    │ to ETEngine. Please add these to your config/settings.local.yml file.   │
+    │ You're missing the client_id and client_secret used to authenticate.    │
+    │ Please add these to your config/settings.local.yml file.                │
     │                                                                         │
-    │ 1. Visit the ETEngine you wish to connect to. If you're running         │
-    │    ETEngine locally, start it with: bundle exec rails server.           │
+    │ 1. Visit the MyETM you wish to connect to. If you're running            │
+    │    MyETM locally, start it with: bin/dev -p3002.                        │
     │                                                                         │
-    │ 2. Sign in to your ETEngine account. If ETEngine is running locally,    │
-    │    sign in at http://localhost:3000.                                    │
+    │ 2. Sign in to your MyETM account. If MyETM is running locally,          │
+    │    sign in at http://localhost:3002.                                    │
     │                                                                         │
-    │ 3. Scroll down and create a new ETModel or Transition Path application. │
+    │ 3. Create a new Engine, Model or Collections application.               │
     │                                                                         │
-    │ 4. Copy the generated config to ETModel.                                │
+    │ 4. Copy the generated config to ETEngine (config/settings.local.yml).   │
     └─────────────────────────────────────────────────────────────────────────┘
   MESSAGE
 end
 
 Identity.configure do |config|
-  config.issuer = Settings.identity.api_url
-  config.client_uri = Settings.identity.ete_uri
+  config.issuer = Settings.api_url
+  config.client_uri = Settings.identity.client_uri
   config.client_id = Settings.identity.client_id
   config.client_secret = Settings.identity.client_secret
   config.scope = 'openid profile email roles scenarios:read scenarios:write scenarios:delete'
@@ -76,14 +76,14 @@ Identity.configure do |config|
   end
 end
 
-# if Rails.env.development?
-#   # In development, ETEngine often runs as only a single process. Pre-fetch the JWKS keys from the
-#   # engine so that the first request to the API does not deadlock.
-#   require_relative '../../lib/etmodel/engine_token'
+if Rails.env.development?
+  # In development, ETEngine often runs as only a single process. Pre-fetch the JWKS keys from the
+  # engine so that the first request to the API does not deadlock.
+  require_relative '../../lib/etengine/token_decoder'
 
-#   begin
-#     ETModel::EngineToken.jwk_set
-#   rescue StandardError => e
-#     warn("Couldn't pre-fetch ETEngine public key: #{e.message}")
-#   end
-# end
+  begin
+    ETEngine::TokenDecoder.jwk_set
+  rescue StandardError => e
+    warn("Couldn't pre-fetch MyETM public key: #{e.message}")
+  end
+end

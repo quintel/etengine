@@ -7,7 +7,6 @@ module ETEngine
 
 
     def client_app_client(user, client_app, scopes: [])
-      debugger
       client_uri = client_uri_for(client_app)
 
       Faraday.new(client_uri) do |conn|
