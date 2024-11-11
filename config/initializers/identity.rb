@@ -2,7 +2,7 @@
 
 
 if !ENV['DOCKER_BUILD'] && (
-    Settings.api_url.blank? ||
+    Settings.idp_url.blank? ||
     Settings.identity.client_id.blank? ||
     Settings.identity.client_secret.blank?)
   abort <<~MESSAGE
@@ -26,7 +26,7 @@ if !ENV['DOCKER_BUILD'] && (
 end
 
 Identity.configure do |config|
-  config.issuer = Settings.api_url
+  config.issuer = Settings.idp_url
   config.client_uri = Settings.identity.client_uri
   config.client_id = Settings.identity.client_id
   config.client_secret = Settings.identity.client_secret
