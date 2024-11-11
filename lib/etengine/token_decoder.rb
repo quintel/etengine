@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ETEngine
-  # Decodes and verifies a JWT sent by MyETM.
+  # Decodes and verifies a token sent by MyETM.
   module TokenDecoder
     DecodeError = Class.new(StandardError)
 
