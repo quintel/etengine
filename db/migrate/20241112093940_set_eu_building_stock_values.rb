@@ -63,6 +63,10 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   }.freeze
 
   def up
+    @defaults = JSON.load(File.read(
+      Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
+    ))
+
     migrate_scenarios do |scenario|
 
       # Filter scenarios for the relevant country datasets
@@ -80,11 +84,8 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     #If slider is set, set value of slider to set value
     EXISTING_STOCK_MAPPING.each do |key, area|
 
-      # Check if key is set and set to old value
-      if scenario.user_values.key?(key)
-        scenario.user_values[key] = scenario.user_values[key]
-      else
-        # If not set, set to default value
+      # Check if key is not set and set to default value
+      if not scenario.user_values.key?(key)
         value = @defaults[scenario.area_code.to_s][key]
         scenario.user_values[key] = value
       end
