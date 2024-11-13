@@ -43,24 +43,24 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   ].freeze
 
   # Inputs and corresponding area attribute
-  EXISTING_STOCK_MAPPING = %w[
-    households_number_of_apartments_before_1945
-    households_number_of_apartments_1945_1964
-    households_number_of_apartments_1965_1984
-    households_number_of_apartments_1985_2004
-    households_number_of_apartments_2005_present
-    households_number_of_detached_houses_before_1945
-    households_number_of_detached_houses_1945_1964
-    households_number_of_detached_houses_1965_1984
-    households_number_of_detached_houses_1985_2004
-    households_number_of_detached_houses_2005_present
-    households_number_of_terraced_houses_before_1945
-    households_number_of_terraced_houses_1945_1964
-    households_number_of_terraced_houses_1965_1984
-    households_number_of_terraced_houses_1985_2004
-    households_number_of_terraced_houses_2005_present
-    buildings_number_of_buildings_present
-  ].freeze
+  EXISTING_STOCK_MAPPING = {
+    'households_number_of_apartments_before_1945' => 'present_number_of_apartments_before_1945',
+    'households_number_of_apartments_1945_1964' => 'present_number_of_apartments_1945_1964',
+    'households_number_of_apartments_1965_1984' => 'present_number_of_apartments_1965_1984',
+    'households_number_of_apartments_1985_2004' => 'present_number_of_apartments_1985_2004',
+    'households_number_of_apartments_2005_present' => 'present_number_of_apartments_2005_present',
+    'households_number_of_detached_houses_before_1945' => 'present_number_of_detached_houses_before_1945',
+    'households_number_of_detached_houses_1945_1964' => 'present_number_of_detached_houses_1945_1964',
+    'households_number_of_detached_houses_1965_1984' => 'present_number_of_detached_houses_1965_1984',
+    'households_number_of_detached_houses_1985_2004' => 'present_number_of_detached_houses_1985_2004',
+    'households_number_of_detached_houses_2005_present' => 'present_number_of_detached_houses_2005_present',
+    'households_number_of_terraced_houses_before_1945' => 'present_number_of_terraced_houses_before_1945',
+    'households_number_of_terraced_houses_1945_1964' => 'present_number_of_terraced_houses_1945_1964',
+    'households_number_of_terraced_houses_1965_1984' => 'present_number_of_terraced_houses_1965_1984',
+    'households_number_of_terraced_houses_1985_2004' => 'present_number_of_terraced_houses_1985_2004',
+    'households_number_of_terraced_houses_2005_present' => 'present_number_of_terraced_houses_2005_present',
+    'buildings_number_of_buildings_present' => 'present_number_of_buildings'
+  }.freeze
 
   def up
     @defaults = JSON.load(File.read(
@@ -82,11 +82,10 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   # set, it should be set to the set value. If slider is not set, then it should be set to the default value.
   def set_existing_stock_excl_semi_detached(scenario)
     #If slider is set, set value of slider to set value
-    EXISTING_STOCK_MAPPING.each do |key|
-
-      # Check if key is not set and set to default value
+    EXISTING_STOCK_MAPPING.each do |key, area|
+      # Check if key is not set and set to default area value
       if not scenario.user_values.key?(key)
-        value = @defaults[scenario.area_code.to_s][key]
+        value = @defaults[scenario.area_code.to_s][area]
         scenario.user_values[key] = value
       end
     end
