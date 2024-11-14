@@ -59,7 +59,6 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     'households_number_of_terraced_houses_1965_1984' => 'present_number_of_terraced_houses_1965_1984',
     'households_number_of_terraced_houses_1985_2004' => 'present_number_of_terraced_houses_1985_2004',
     'households_number_of_terraced_houses_2005_present' => 'present_number_of_terraced_houses_2005_present',
-    'buildings_number_of_buildings_present' => 'present_number_of_buildings'
   }.freeze
 
   def up
