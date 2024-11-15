@@ -82,22 +82,17 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   def set_existing_stock_excl_semi_detached(scenario)
     scenario_defaults = @defaults[scenario.area_code.to_s]
     unless scenario_defaults
-      puts "No defaults found for area code: #{scenario.area_code}"
       return
     end
     #If slider is set, set value of slider to set value
     EXISTING_STOCK_MAPPING.each do |key, area|
       value = scenario_defaults[area]
       if value.nil?
-        puts "Missing value for '#{area}' in #{scenario.area_code}"
         next
       end
 
       unless scenario.user_values.key?(key)
         scenario.user_values[key] = value
-        puts "Set #{key} to #{value} for #{scenario.area_code}"
-      else
-        puts "#{key} already set for #{scenario.area_code}"
       end
     end
   end
