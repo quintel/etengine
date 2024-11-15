@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 module ETEngine
-  # Decodes and verifies a token sent by MyETM.
+  # Handles JWT decoding, verification, and fetching.
   module TokenDecoder
+    module_function
+
     DecodeError = Class.new(StandardError)
+    FetchTokenError = Class.new(StandardError)
 
-    def jwt_format?(token)
-      token.count('.') > 1
-    end
+    # Decodes and verifies a JWT.
+    def decode(token)
+      decoded = JSON::JWT.decode(token, jwk_set)
 
-    def decode_jwt(jwt_token)
-      decoded = JSON::JWT.decode(jwt_token, jwk_set)
-
-      unless decoded[:iss] == Settings.identity.api_url &&
-             decoded[:aud] == Settings.identity.ete_uri &&
+      unless decoded[:iss] == Settings.idp_url &&
+             decoded[:aud] == Settings.identity.client_id &&
              decoded[:sub].present? &&
              decoded[:exp] > Time.now.to_i
         raise DecodeError, 'JWT verification failed'
@@ -22,30 +22,7 @@ module ETEngine
       decoded
     end
 
-    def exchange_bearer_for_jwt(bearer_token)
-      idp_url = Settings.identity.token_exchange_url || 'http://localhost:3002/identity/token_exchange'
-      response = Faraday.post(idp_url) do |req|
-        req.headers['Authorization'] = "Bearer #{bearer_token}"
-        req.headers['Content-Type'] = 'application/json'
-      end
-
-      return JSON.parse(response.body)['jwt'] if response.success?
-      nil
-    end
-
-    def decode(token)
-      # Check if the token is a JWT or a Bearer token
-      if jwt_format?(token)
-        decoded_jwt = decode_jwt(token)
-      else
-        jwt_token = exchange_bearer_for_jwt(token)
-        raise DecodeError, 'Failed to exchange Bearer token for JWT' unless jwt_token
-        decoded_jwt = decode_jwt(jwt_token)
-      end
-
-      decoded_jwt
-    end
-
+    # Fetches and caches the JWK set from the IdP.
     def jwk_set
       jwk_cache.fetch('jwk_hash') do
         client = Faraday.new(Identity.discovery_config.jwks_uri) do |conn|
@@ -58,6 +35,7 @@ module ETEngine
       end
     end
 
+    # Handles caching of JWKs.
     def jwk_cache
       @jwk_cache ||=
         if Rails.env.development?
@@ -67,6 +45,24 @@ module ETEngine
         end
     end
 
-    module_function :decode, :jwt_format?, :decode_jwt, :exchange_bearer_for_jwt, :jwk_set, :jwk_cache
+    # Fetches an access token from the IdP.
+    def fetch_token(user)
+      response = Faraday.post("#{Settings.idp_url}/identity/token") do |req|
+        req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        req.body = {
+          grant_type: 'client_credentials',
+          client_id: Settings.identity.client_id,
+          user_id: user.id # Pass the user to the IdP
+        }
+      end
+
+      parsed_response = JSON.parse(response.body)
+
+      unless response.success? && parsed_response['access_token'].present?
+        raise "Failed to fetch token: #{parsed_response['error_description'] || 'Unknown error'}"
+      end
+
+      parsed_response['access_token']
+    end
   end
 end

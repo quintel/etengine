@@ -43,7 +43,7 @@ mailer:
 
 auth:
   issuer: http://localhost:3002   #<%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3002') %> #TODO: Clean this up for prod
-token_exchange_url: http://localhost:3002/identity/token_exchange
+
 
 # Optional settings to configure the Mailchimp integration.
 mailchimp:

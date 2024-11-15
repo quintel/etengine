@@ -25,7 +25,6 @@ class ApplicationController < ActionController::Base
   def current_user
     @current_user ||= User.from_session_user!(identity_user) if signed_in?
   rescue ActiveRecord::RecordNotFound
-    debugger
     reset_session
     redirect_to root_path
   end

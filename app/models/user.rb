@@ -22,8 +22,8 @@ class User < ApplicationRecord
 
     # after_create :couple_scenario_users
 
-  # Links existing scenario users to the new User. # TODO: Legacy, check if still necessary
-  #
+  # Links existing scenario users to the new User.
+
   # It needs to be linked through the scenario user to ensure the scenario
   # user stops being marked as dirty.
   def couple_scenario_users
