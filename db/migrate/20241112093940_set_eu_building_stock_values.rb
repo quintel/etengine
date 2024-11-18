@@ -34,14 +34,6 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     SE_sweden
   ].freeze
 
-  # EXISTING_STOCK_SEMI_DETACHED = %w[
-  #   households_number_of_semi_detached_houses_before_1945
-  #   households_number_of_semi_detached_houses_1945_1964
-  #   households_number_of_semi_detached_houses_1965_1984
-  #   households_number_of_semi_detached_houses_1985_2004
-  #   households_number_of_semi_detached_houses_2005_present
-  # ].freeze
-
   DETACHED_STOCK = {
     'households_number_of_detached_houses_before_1945' => %w[
       households_number_of_detached_houses_before_1945
@@ -107,7 +99,6 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
 
       set_existing_stock_excl_detached_semi_detached(scenario)
       set_existing_stock_detached_semi_detached(scenario)
-      # set_semi_detached(scenario)
 
     end
   end
