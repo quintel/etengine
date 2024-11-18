@@ -10,7 +10,26 @@ module ETEngine
 
     # Decodes and verifies a JWT.
     def decode(token)
-      decoded = JSON::JWT.decode(token, jwk_set)
+      begin
+        decoded = JSON::JWT.decode(token, jwk_set)
+      rescue JSON::JWT::Exception => e
+        raise DecodeError, "JWT decoding failed: #{e.message}"
+      end
+
+      if decoded[:aud] == Settings.model_id
+        user = User.find_by(id: decoded[:sub])
+        if user.nil?
+          raise DecodeError, "User not found"
+        end
+
+        token = fetch_token(user)
+
+        begin
+          decoded = JSON::JWT.decode(token, jwk_set)
+        rescue JSON::JWT::Exception => e
+          raise DecodeError, "JWT decoding failed: #{e.message}"
+        end
+      end
 
       unless decoded[:iss] == Settings.idp_url &&
              decoded[:aud] == Settings.identity.client_id &&

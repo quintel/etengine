@@ -8,8 +8,8 @@ module Api
     def initialize(token, user)
       can :read, Scenario, private: false
 
-      decoded_token = ETEngine::TokenDecoder.decode(token)
-      scopes = decoded_token['scopes']
+      scopes = token['scopes']
+
       # scenarios:read
       # --------------
       return unless scopes.include?('scenarios:read')

@@ -47,12 +47,13 @@ class User < ApplicationRecord
 
       user.save!
 
-      # For new users, couple existing SavedScenarioUsers
-      if is_new_user
-        SavedScenarioUser
-          .where(user_email: user.email, user_id: nil)
-          .update_all(user_id: user.id, user_email: nil)
-      end
+      # TODO: Fix this
+      # # For new users, couple existing SavedScenarioUsers
+      # if is_new_user
+      #   SavedScenarioUser
+      #     .where(user_email: user.email, user_id: nil)
+      #     .update_all(user_id: user.id, user_email: nil)
+      # end
     end
   end
 

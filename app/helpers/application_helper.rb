@@ -71,28 +71,28 @@ module ApplicationHelper
     end
   end
 
-  # def notice_message
-  #   if notice.is_a?(Hash)
-  #     notice[:message] || notice['message']
-  #   else
-  #     notice
-  #   end
-  # end
+  def notice_message
+    if notice.is_a?(Hash)
+      notice[:message] || notice['message']
+    else
+      notice
+    end
+  end
 
-  # def alert_message
-  #   if alert.is_a?(Hash)
-  #     alert[:message] || alert['message']
-  #   else
-  #     alert
-  #   end
-  # end
+  def alert_message
+    if alert.is_a?(Hash)
+      alert[:message] || alert['message']
+    else
+      alert
+    end
+  end
 
   # Like simple_format, except without inserting breaks on newlines.
-  # def format_paragraphs(text)
-  #   # rubocop:disable Rails/OutputSafety
-  #   text.split("\n\n").map { |content| content_tag(:p, sanitize(content)) }.join.html_safe
-  #   # rubocop:enable Rails/OutputSafety
-  # end
+  def format_paragraphs(text)
+    # rubocop:disable Rails/OutputSafety
+    text.split("\n\n").map { |content| content_tag(:p, sanitize(content)) }.join.html_safe
+    # rubocop:enable Rails/OutputSafety
+  end
 
   # Formats a staff config excerpt for the given application.
   def format_staff_config(config, app)
