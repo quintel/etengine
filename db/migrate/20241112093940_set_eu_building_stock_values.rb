@@ -34,13 +34,51 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     SE_sweden
   ].freeze
 
-  EXISTING_STOCK_SEMI_DETACHED = %w[
-    households_number_of_semi_detached_houses_before_1945
-    households_number_of_semi_detached_houses_1945_1964
-    households_number_of_semi_detached_houses_1965_1984
-    households_number_of_semi_detached_houses_1985_2004
-    households_number_of_semi_detached_houses_2005_present
-  ].freeze
+  # EXISTING_STOCK_SEMI_DETACHED = %w[
+  #   households_number_of_semi_detached_houses_before_1945
+  #   households_number_of_semi_detached_houses_1945_1964
+  #   households_number_of_semi_detached_houses_1965_1984
+  #   households_number_of_semi_detached_houses_1985_2004
+  #   households_number_of_semi_detached_houses_2005_present
+  # ].freeze
+
+  DETACHED_STOCK = {
+    'households_number_of_detached_houses_before_1945' => %w[
+      households_number_of_detached_houses_before_1945
+      households_number_of_semi_detached_houses_before_1945],
+    'households_number_of_detached_houses_1945_1964'=> %w[
+      households_number_of_detached_houses_1945_1964
+      households_number_of_semi_detached_houses_1945_1964],
+    'households_number_of_detached_houses_1965_1984'=> %w[
+      households_number_of_detached_houses_1965_1984
+      households_number_of_semi_detached_houses_1965_1984],
+    'households_number_of_detached_houses_1985_2004'=> %w[
+      households_number_of_detached_houses_1985_2004
+      households_number_of_semi_detached_houses_1985_2004],      
+    'households_number_of_detached_houses_2005_present'=> %w[
+      households_number_of_semi_detached_houses_2005_present
+      households_number_of_detached_houses_2005_present],
+    'households_number_of_detached_houses_future'=> %w[
+      households_number_of_semi_detached_houses_future
+      households_number_of_detached_houses_future
+    ]
+  }.freeze
+
+
+
+  # Inputs and corresponding area attribute
+  EXISTING_STOCK_MAPPING_DETACHED_SEMI_DETACHED = {
+    'households_number_of_detached_houses_before_1945' => 'present_number_of_detached_houses_before_1945',
+    'households_number_of_detached_houses_1945_1964' => 'present_number_of_detached_houses_1945_1964',
+    'households_number_of_detached_houses_1965_1984' => 'present_number_of_detached_houses_1965_1984',
+    'households_number_of_detached_houses_1985_2004' => 'present_number_of_detached_houses_1985_2004',
+    'households_number_of_detached_houses_2005_present' => 'present_number_of_detached_houses_2005_present',
+    'households_number_of_semi_detached_houses_before_1945' => 'present_number_of_detached_houses_before_1945',
+    'households_number_of_semi_detached_houses_1945_1964' => 'present_number_of_detached_houses_1945_1964',
+    'households_number_of_semi_detached_houses_1965_1984' => 'present_number_of_detached_houses_1965_1984',
+    'households_number_of_semi_detached_houses_1985_2004' => 'present_number_of_detached_houses_1985_2004',
+    'households_number_of_semi_detached_houses_2005_present' => 'present_number_of_detached_houses_2005_present'
+  }.freeze
 
   # Inputs and corresponding area attribute
   EXISTING_STOCK_MAPPING = {
@@ -49,17 +87,13 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     'households_number_of_apartments_1965_1984' => 'present_number_of_apartments_1965_1984',
     'households_number_of_apartments_1985_2004' => 'present_number_of_apartments_1985_2004',
     'households_number_of_apartments_2005_present' => 'present_number_of_apartments_2005_present',
-    'households_number_of_detached_houses_before_1945' => 'present_number_of_detached_houses_before_1945',
-    'households_number_of_detached_houses_1945_1964' => 'present_number_of_detached_houses_1945_1964',
-    'households_number_of_detached_houses_1965_1984' => 'present_number_of_detached_houses_1965_1984',
-    'households_number_of_detached_houses_1985_2004' => 'present_number_of_detached_houses_1985_2004',
-    'households_number_of_detached_houses_2005_present' => 'present_number_of_detached_houses_2005_present',
     'households_number_of_terraced_houses_before_1945' => 'present_number_of_terraced_houses_before_1945',
     'households_number_of_terraced_houses_1945_1964' => 'present_number_of_terraced_houses_1945_1964',
     'households_number_of_terraced_houses_1965_1984' => 'present_number_of_terraced_houses_1965_1984',
     'households_number_of_terraced_houses_1985_2004' => 'present_number_of_terraced_houses_1985_2004',
-    'households_number_of_terraced_houses_2005_present' => 'present_number_of_terraced_houses_2005_present',
+    'households_number_of_terraced_houses_2005_present' => 'present_number_of_terraced_houses_2005_present'
   }.freeze
+
 
   def up
     @defaults = JSON.load(File.read(
@@ -71,15 +105,16 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
       # Filter scenarios for the relevant country datasets
       next unless Atlas::Dataset.exists?(scenario.area_code) && COUNTRIES.include?(scenario.area_code)
 
-      set_existing_stock_excl_semi_detached(scenario)
-      set_semi_detached(scenario)
+      set_existing_stock_excl_detached_semi_detached(scenario)
+      set_existing_stock_detached_semi_detached(scenario)
+      # set_semi_detached(scenario)
 
     end
   end
 
   # The numbers of existing buildings should be set according to the slider settings. If the slider is
   # set, it should be set to the set value. If slider is not set, then it should be set to the default value.
-  def set_existing_stock_excl_semi_detached(scenario)
+  def set_existing_stock_excl_detached_semi_detached(scenario)
     scenario_defaults = @defaults[scenario.area_code.to_s]
     unless scenario_defaults
       return
@@ -97,12 +132,33 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     end
   end
 
-  # The new country datasets have > 0 values for number of semi-detached houses  whereas in old scenarios
-  # values for these inputs were set to zero and could not be set by users. To retain the outcomes
-  # of older scenarios  the inputs are set to 0.
-  def set_semi_detached(scenario)
-    EXISTING_STOCK_SEMI_DETACHED.each do |key|
-      scenario.user_values[key] = 0.0
+  def set_existing_stock_detached_semi_detached(scenario)
+    scenario_defaults = @defaults[scenario.area_code.to_s]
+    return unless scenario_defaults
+  
+    # First, handle values that are set in the scenario
+    DETACHED_STOCK.each do |detached_key, semi_detached_keys|
+      value = scenario.user_values[detached_key]
+      next if value.nil?
+  
+      # Divide the value equally among the mapped keys
+      divided_value = value * 0.5
+      semi_detached_keys.each do |key|
+        # Allocate 0.5 to the first element and 0.5 to the second element
+        scenario.user_values[key] = divided_value
+      end
     end
+
+    # Second, handle values that are not set in the scenario
+    EXISTING_STOCK_MAPPING_DETACHED_SEMI_DETACHED.each do |key, area|
+      value = scenario_defaults[area] * 0.5
+      next if value.nil?
+  
+      unless scenario.user_values.key?(key)
+        scenario.user_values[key] = value 
+      end
+    end
+  
+
   end
 end
