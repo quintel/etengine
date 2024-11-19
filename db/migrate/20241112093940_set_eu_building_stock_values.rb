@@ -3,7 +3,7 @@ require 'etengine/scenario_migration'
 class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
-  # Only scenarios made with these country datasets should be updated
+  # Only scenarios with these country datasets should be updated
   COUNTRIES = %w[
     AT_austria
     BE_belgium
@@ -46,7 +46,7 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
       households_number_of_semi_detached_houses_1965_1984],
     'households_number_of_detached_houses_1985_2004'=> %w[
       households_number_of_detached_houses_1985_2004
-      households_number_of_semi_detached_houses_1985_2004],      
+      households_number_of_semi_detached_houses_1985_2004],
     'households_number_of_detached_houses_2005_present'=> %w[
       households_number_of_semi_detached_houses_2005_present
       households_number_of_detached_houses_2005_present],
@@ -55,8 +55,6 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
       households_number_of_detached_houses_future
     ]
   }.freeze
-
-
 
   # Inputs and corresponding area attribute
   EXISTING_STOCK_MAPPING_DETACHED_SEMI_DETACHED = {
@@ -103,20 +101,21 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     end
   end
 
-  # The numbers of existing buildings should be set according to the slider settings. If the slider is
-  # set, it should be set to the set value. If slider is not set, then it should be set to the default value.
+  # The numbers of existing buildings should be set to the default value if not set in the scenario.
   def set_existing_stock_excl_detached_semi_detached(scenario)
+    # Load scenario defaults fron json file
     scenario_defaults = @defaults[scenario.area_code.to_s]
     unless scenario_defaults
       return
     end
-    #If slider is set, set value of slider to set value
+
     EXISTING_STOCK_MAPPING.each do |key, area|
+      # Obtain default area values
       value = scenario_defaults[area]
       if value.nil?
         next
       end
-
+      # If slider not set, set slider to the dataset default value
       unless scenario.user_values.key?(key)
         scenario.user_values[key] = value
       end
@@ -124,14 +123,15 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   end
 
   def set_existing_stock_detached_semi_detached(scenario)
+    # Load scenario defaults fron json file
     scenario_defaults = @defaults[scenario.area_code.to_s]
     return unless scenario_defaults
-  
+
     # First, handle values that are set in the scenario
     DETACHED_STOCK.each do |detached_key, semi_detached_keys|
       value = scenario.user_values[detached_key]
       next if value.nil?
-  
+
       # Divide the value equally among the mapped keys
       divided_value = value * 0.5
       semi_detached_keys.each do |key|
@@ -144,12 +144,10 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     EXISTING_STOCK_MAPPING_DETACHED_SEMI_DETACHED.each do |key, area|
       value = scenario_defaults[area] * 0.5
       next if value.nil?
-  
+
       unless scenario.user_values.key?(key)
-        scenario.user_values[key] = value 
+        scenario.user_values[key] = value
       end
     end
-  
-
   end
 end
