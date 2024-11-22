@@ -142,7 +142,7 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
       next if old_default_value.nil?
 
       # Obtain new default area value
-      new_default_value = scenario.area_code.to_s[area]
+      new_default_value = scenario.area[area]
       next if new_default_value.nil?
 
       set_value = scenario.user_values[key]
@@ -161,18 +161,18 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
   end
 
   def set_future_stock(scenario)
-    BUILDING_STOCK_FUTURE.each do |detached_key,allocation_keys|
+    BUILDING_STOCK_FUTURE.each do |main_key,allocation_keys|
       # Skip if key is not set in user_values
-      next unless scenario.user_values.key?(detached_key)
+      next unless scenario.user_values.key?(main_key)
 
-      set_value = scenario.user_values[detached_key]
-      new_max_value = scenario.area_code.to_s[MAX_FUTURE_STOCK]
+      set_value = scenario.user_values[main_key]
+      new_max_value = scenario.area[MAX_FUTURE_STOCK]
 
       allocation_keys.each do |key|
-        if detached_key == DETACHED_FUTURE
+        if main_key == DETACHED_FUTURE
           set_future_stock_semi_and_detached(scenario, key, set_value, new_max_value)
         else
-          set_future_stock_terraced_apartments(scenario, set_value, new_max_value)
+          set_future_stock_terraced_apartments(scenario, key, set_value, new_max_value)
         end
       end
     end
@@ -188,89 +188,9 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
     end
   end
 
-  def set_future_stock_terraced_apartments(scenario, set_value, new_max_value)
+  def set_future_stock_terraced_apartments(scenario, key, set_value, new_max_value)
     if set_value > new_max_value
       scenario.user_values[key] = new_max_value
     end
   end
 end
-
-  # # The numbers of existing buildings should be set to the default value if not set in the scenario.
-  # def set_existing_stock_excl_detached_semi_detached(scenario)
-  #   # Load scenario defaults fron json file
-  #   scenario_defaults = @defaults[scenario.area_code.to_s]
-  #   unless scenario_defaults
-  #     return
-  #   end
-
-  #   EXISTING_STOCK_MAPPING.each do |key, area|
-  #     # Obtain default area values
-  #     value = scenario_defaults[area]
-  #     if value.nil?
-  #       next
-  #     end
-  #     # If slider not set, set slider to the dataset default value
-  #     unless scenario.user_values.key?(key)
-  #       scenario.user_values[key] = value
-  #     end
-  #   end
-  # end
-
-  # def set_existing_stock_detached_semi_detached(scenario)
-  #   # Load scenario defaults fron json file
-  #   scenario_defaults = @defaults[scenario.area_code.to_s]
-  #   return unless scenario_defaults
-
-  #   # First, handle values that are set in the scenario
-  #   DETACHED_STOCK.each do |detached_key, allocation_keys|
-  #     value = scenario.user_values[detached_key]
-  #     next if value.nil?
-
-  #     # Divide the value equally among the mapped keys
-  #     divided_value = value * 0.5
-  #     allocation_keys.each do |key|
-  #       # Allocate 0.5 to the first element and 0.5 to the second element
-  #       scenario.user_values[key] = divided_value
-  #     end
-  #   end
-
-  #   # Second, handle values that are not set in the scenario
-  #   EXISTING_STOCK_MAPPING_DETACHED_SEMI_DETACHED.each do |key, area|
-  #     value = scenario_defaults[area] * 0.5
-  #     next if value.nil?
-
-  #     unless scenario.user_values.key?(key)
-  #       scenario.user_values[key] = value
-  #     end
-  #   end
-  # end
-
-
-
-  # # Inputs and corresponding area attribute
-  # EXISTING_STOCK_MAPPING_DETACHED_SEMI_DETACHED = {
-  #   'households_number_of_detached_houses_before_1945' => 'present_number_of_detached_houses_before_1945',
-  #   'households_number_of_detached_houses_1945_1964' => 'present_number_of_detached_houses_1945_1964',
-  #   'households_number_of_detached_houses_1965_1984' => 'present_number_of_detached_houses_1965_1984',
-  #   'households_number_of_detached_houses_1985_2004' => 'present_number_of_detached_houses_1985_2004',
-  #   'households_number_of_detached_houses_2005_present' => 'present_number_of_detached_houses_2005_present',
-  #   'households_number_of_semi_detached_houses_before_1945' => 'present_number_of_detached_houses_before_1945',
-  #   'households_number_of_semi_detached_houses_1945_1964' => 'present_number_of_detached_houses_1945_1964',
-  #   'households_number_of_semi_detached_houses_1965_1984' => 'present_number_of_detached_houses_1965_1984',
-  #   'households_number_of_semi_detached_houses_1985_2004' => 'present_number_of_detached_houses_1985_2004',
-  #   'households_number_of_semi_detached_houses_2005_present' => 'present_number_of_detached_houses_2005_present'
-  # }.freeze
-
-  # # Inputs and corresponding area attribute
-  # EXISTING_STOCK_MAPPING = {
-  #   'households_number_of_apartments_before_1945' => 'present_number_of_apartments_before_1945',
-  #   'households_number_of_apartments_1945_1964' => 'present_number_of_apartments_1945_1964',
-  #   'households_number_of_apartments_1965_1984' => 'present_number_of_apartments_1965_1984',
-  #   'households_number_of_apartments_1985_2004' => 'present_number_of_apartments_1985_2004',
-  #   'households_number_of_apartments_2005_present' => 'present_number_of_apartments_2005_present',
-  #   'households_number_of_terraced_houses_before_1945' => 'present_number_of_terraced_houses_before_1945',
-  #   'households_number_of_terraced_houses_1945_1964' => 'present_number_of_terraced_houses_1945_1964',
-  #   'households_number_of_terraced_houses_1965_1984' => 'present_number_of_terraced_houses_1965_1984',
-  #   'households_number_of_terraced_houses_1985_2004' => 'present_number_of_terraced_houses_1985_2004',
-  #   'households_number_of_terraced_houses_2005_present' => 'present_number_of_terraced_houses_2005_present'
-  # }.freeze
