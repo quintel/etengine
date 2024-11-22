@@ -151,8 +151,7 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
 
       if DETACHED_STOCK.key?(key)
         DETACHED_STOCK[key].each do |item|
-          # Allocate half to detached and half to semi detached
-          scenario.user_values[item] = new_value * 0.5
+          scenario.user_values[item] = new_value
         end
       else
         scenario.user_values[key] = new_value
