@@ -14,7 +14,6 @@ class User < ApplicationRecord
   has_many :scenario_users, dependent: :destroy
   has_many :scenarios, through: :scenario_users
   has_many :scenario_version_tags
-  has_many :personal_access_tokens, dependent: :destroy
 
   validates :name, presence: true
 
