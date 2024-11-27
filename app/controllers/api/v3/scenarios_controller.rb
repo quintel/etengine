@@ -1,7 +1,6 @@
 module Api
   module V3
     class ScenariosController < BaseController
-      render json:
       check_authorization
 
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|

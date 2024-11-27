@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v3 do
+      put '/user' => 'user#update'
+      delete '/user' => 'user#destroy'
       resources :areas, :only => [:index, :show]
       resources :gqueries, :only => :index
       resources :scenarios, :only => [:index, :show, :create, :update, :destroy] do

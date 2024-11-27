@@ -66,12 +66,12 @@ module ETEngine
 
     # Fetches an access token from the IdP.
     def fetch_token(user)
-      response = Faraday.post("#{Settings.idp_url}/identity/token") do |req|
+      response = Faraday.post("#{Settings.idp_url}/identity/access_tokens") do |req|
         req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
         req.body = {
           grant_type: 'client_credentials',
           client_id: Settings.identity.client_id,
-          user_id: user.id # Pass the user to the IdP
+          user_id: user.id
         }
       end
 
