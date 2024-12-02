@@ -35,6 +35,7 @@ gem 'kaminari'
 gem 'cancancan', '~> 3.0'
 gem 'identity', ref: 'df08519', github: 'quintel/identity_rails'
 gem 'jbuilder'
+gem 'activerecord-session_store'
 
 # gem 'devise', '~> 4.7'
 gem 'doorkeeper'
