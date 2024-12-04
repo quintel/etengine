@@ -23,9 +23,6 @@ module Etm
 
     config.autoload_paths << Rails.root.join("lib")
 
-    # # Rails.autoloaders.log! # TODO: Remove. To determine what is causing the reloading of ActionController::API
-    # config.action_controller.include_all_helpers = false
-
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
@@ -49,6 +46,16 @@ module Etm
 
     # Store files locally.
     config.active_storage.service = :local
+
+    Config.setup do |config|
+      config.const_name = 'Settings'
+    end
+
+    local_settings_file = Rails.root.join('config/settings.local.yml')
+    if local_settings_file.exist?
+      Settings.add_source!(local_settings_file.to_s)
+      Settings.reload!
+    end
 
     # Mail
 

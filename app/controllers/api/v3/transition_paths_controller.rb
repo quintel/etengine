@@ -5,15 +5,15 @@ module Api
     class TransitionPathsController < BaseController
 
       before_action(only: %i[index show]) do
-        authorize! (:read)
+        authorize!(:read, @scenario)
       end
 
       before_action(only: %i[create update]) do
-        authorize! (:write)
+        authorize!(:write, @scenario)
       end
 
       before_action(only: %i[discard undiscard]) do
-        authorize! (:destroy)
+        authorize!(:destroy, @scenario)
       end
 
       def index
@@ -85,7 +85,7 @@ module Api
       end
 
       def etmodel_client
-        ETEngine::ClientConnector.client_app_client(current_user, Settings.clients.etm.uri, scopes: decoded_token.scopes)
+        ETEngine::ClientConnector.client_app_client(current_user, Settings.etmodel_uri, scopes: decoded_token[:scopes])
       end
 
       def service_error_response(failure)

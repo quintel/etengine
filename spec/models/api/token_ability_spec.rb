@@ -32,7 +32,7 @@ RSpec.describe Api::TokenAbility do
     allow(ETEngine::TokenDecoder).to receive(:decode).with(test_token).and_return(mock_decoded_token)
   end
 
-  let(:ability) { described_class.new(test_token, user) }
+  let(:ability) { described_class.new(mock_decoded_token, user) }
 
   let!(:public_scenario) { create(:scenario, user: nil, private: false) }
   let!(:owned_public_scenario) { create(:scenario, user: user, private: false) }
