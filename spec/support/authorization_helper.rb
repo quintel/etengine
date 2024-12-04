@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 module AuthorizationHelper
-  require 'ostruct'
-
+  require 'jwt'
   def access_token_header(user, scopes, expires_in: 1.hour)
     token = mock_jwt(user, scopes, expires_in: expires_in)
     { 'Authorization' => "Bearer #{token}" }
   end
 
-  def mock_jwt(user, scopes, expires_in: 1.hour)
+  def mock_jwt(user, scopes, client_id: 'Mock_client_id', expires_in: 1.hour)
     scopes =
       case scopes
       when :public
@@ -23,21 +22,24 @@ module AuthorizationHelper
         scopes.to_s
       end
 
-    # Mock the decoded token payload using OpenStruct for method-like access
-    mock_decoded_token = OpenStruct.new(
-      iss: Settings.identity.api_url,
-      aud: 'Settings.identity.ete_uri',
+    # Define the payload for the JWT
+    payload = {
+      iss: Settings.identity.api_url, # Replace with the correct issuer from your app
+      aud: client_id,
       exp: expires_in.from_now.to_i,
       iat: Time.now.to_i,
+      scopes: scopes.split,
       sub: user.id,
-      scopes: scopes.split
-    )
+      user: user.as_json(only: %i[id admin]) # Include only the desired user fields
+    }
 
-    # Stub the `decode` method to return this object whenever called
-    allow(ETEngine::TokenDecoder).to receive(:decode).and_return(mock_decoded_token)
+    key = OpenSSL::PKey::RSA.generate(2048)
+    token = JWT.encode(payload, key, "RS256", typ: "JWT", kid: key.to_jwk["kid"])
 
-    # Return a placeholder token string since the actual value won't be decoded
-    "mocked.token.string"
+    # Stub the decoding logic to return the payload
+    allow(ETEngine::TokenDecoder).to receive(:decode).and_return(payload)
+
+    token # Return the encoded JWT token
   end
 
   def stub_faraday_422(body)

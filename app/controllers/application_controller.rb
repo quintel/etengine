@@ -2,8 +2,6 @@ class ApplicationController < ActionController::Base
   helper :all
   helper_method :current_user
 
-
-  # TODO refactor move the hooks and corresponding actions into a "concern"
   before_action :current_user
   before_action :initialize_memory_cache
   before_action :set_locale
@@ -14,7 +12,7 @@ class ApplicationController < ActionController::Base
     if current_user
       render_not_found
     else
-      redirect_to new_user_session_url
+      redirect_to new_user_url
     end
   end
 

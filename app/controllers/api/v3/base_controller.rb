@@ -31,6 +31,20 @@ module Api
         render json: { errors: ['Invalid or expired token'] }, status: :unauthorized
       end
 
+      def set_current_scenario
+        @scenario = if params[:scenario_id]
+          Scenario.find(params[:scenario_id])
+        else
+          Scenario.last
+        end
+      end
+
+      def process_action(*args)
+        super
+      rescue ActionDispatch::Http::Parameters::ParseError => e
+        render status: 400, json: { errors: [e.message] }
+      end
+
       private
 
       def authenticate_request!
@@ -64,7 +78,7 @@ module Api
 
         if decoded_token
           user_data = decoded_token[:user]
-          @current_user = User.find_or_initialize_by(id: user_data[:id])
+          @current_user = User.find_or_initialize_by(id: decoded_token[:sub])
           @current_user.assign_attributes(user_data)
         else
           Rails.logger.debug "No valid token; cannot find user"

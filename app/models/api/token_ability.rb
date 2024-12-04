@@ -7,8 +7,7 @@ module Api
 
     def initialize(token, user)
       can :read, Scenario, private: false
-
-      scopes = token['scopes']
+      scopes = token[:scopes]
 
       # scenarios:read
       # --------------

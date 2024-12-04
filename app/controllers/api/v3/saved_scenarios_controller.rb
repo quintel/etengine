@@ -5,9 +5,17 @@ module Api
     class SavedScenariosController < BaseController
       render json:
 
-      before_action(only: %i[index show])    { authorize!(:'scenarios:read') }
-      before_action(only: %i[create update]) { authorize!(:'scenarios:write') }
-      before_action(only: %i[destroy])       { authorize!(:'scenarios:delete') }
+      before_action(only: %i[index show]) do
+        authorize!(:read, @scenario)
+      end
+
+      before_action(only: %i[create update]) do
+        authorize!(:write, @scenario)
+      end
+
+      before_action(only: %i[discard undiscard]) do
+        authorize!(:destroy, @scenario)
+      end
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
