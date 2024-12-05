@@ -67,7 +67,7 @@
                     = inline_svg 'hero/20/user-circle.svg', aria_label: 'My profile'
                 %li.divider-vertical
                 %li{ style: 'margin-right: -12px' }
-                  = link_to sign_out_path, method: :delete, class: 'compact-link' do
+                  = link_to sign_out_path, method: :get, class: 'compact-link' do
                     = inline_svg 'phosphor/20/sign-out.svg', aria_label: 'Sign out'
             - else
               %ul.nav
