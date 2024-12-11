@@ -31,49 +31,47 @@ describe Api::V3::InputsController do
   # --------------------------------------------------------------------------
 
   describe 'GET /api/v3/scenarios/:scenario_id/inputs' do
-    before do
-      get :index, params: { scenario_id: scenario.id }
-    end
-
     let(:json) { JSON.parse(response.body) }
 
-    it 'is successful' do
-      json
-      expect(response).to be_ok
-    end
+    context 'without modifications' do
+      before { get :index, params: { scenario_id: scenario.id } }
 
-    it 'should contain each input' do
-      expect(json).to have_key(static_input.key)
-      expect(json).to have_key(gql_input.key)
-    end
+      it 'is successful' do
+        expect(response).to be_ok
+      end
 
-    it 'does not have a "code" attribute for each input' do
-      expect(json[static_input.key]).not_to have_key('code')
-      expect(json[gql_input.key]).not_to    have_key('code')
-    end
+      it 'should contain each input' do
+        expect(json).to have_key(static_input.key)
+        expect(json).to have_key(gql_input.key)
+      end
 
-    it 'should have a "min" attribute for each input' do
-      expect(json[static_input.key]).to include('min' => 5)
-      expect(json[gql_input.key]).to    include('min' => 4)
-    end
+      it 'does not have a "code" attribute for each input' do
+        expect(json[static_input.key]).not_to have_key('code')
+        expect(json[gql_input.key]).not_to    have_key('code')
+      end
 
-    it 'should have a "max" attribute for each input' do
-      expect(json[static_input.key]).to include('max' => 15)
-      expect(json[gql_input.key]).to    include('max' => 16)
-    end
+      it 'should have a "min" attribute for each input' do
+        expect(json[static_input.key]).to include('min' => 5)
+        expect(json[gql_input.key]).to    include('min' => 4)
+      end
 
-    it 'should have a "default" attribute for each input' do
-      expect(json[static_input.key]).to include('default' => 10)
-      expect(json[gql_input.key]).to    include('default' =>  8)
+      it 'should have a "max" attribute for each input' do
+        expect(json[static_input.key]).to include('max' => 15)
+        expect(json[gql_input.key]).to    include('max' => 16)
+      end
+
+      it 'should have a "default" attribute for each input' do
+        expect(json[static_input.key]).to include('default' => 10)
+        expect(json[gql_input.key]).to    include('default' => 8)
+      end
     end
 
     context '"disabled" attribute' do
       before do
         allow_any_instance_of(Input).to receive(:disabled_in_current_area?) do |input|
-          input.key == 'static_input_key'
+          input == static_input
         end
 
-        # Make the GET request after setting up the stub
         get :index, params: { scenario_id: scenario.id }
       end
 
@@ -90,15 +88,18 @@ describe Api::V3::InputsController do
       before do
         static_input.label_query = 'present:2 * 16'
         static_input.label       = 'g'
-        gql_input.label_query    =  nil
+        gql_input.label_query    = nil
+
+        get :index, params: { scenario_id: scenario.id }
       end
 
       it 'should be present when an input has a label' do
-        expect(json[static_input.key]).to \
-          include('label' => { 'value' => 32.0, 'suffix' => 'g'})
+        expect(json[static_input.key]).to include(
+          'label' => { 'value' => 32.0, 'suffix' => 'g' }
+        )
       end
 
-      it 'should not be present when an input is not disabled' do
+      it 'should not be present when an input has no label' do
         expect(json[gql_input.key]).not_to have_key('label')
       end
     end # "label" attribute
@@ -106,6 +107,7 @@ describe Api::V3::InputsController do
     context '"user" attribute' do
       before do
         scenario.update(user_values: { gql_input.key => 42.0 })
+        get :index, params: { scenario_id: scenario.id }
       end
 
       it 'should be present when an input has a user value' do
@@ -122,7 +124,10 @@ describe Api::V3::InputsController do
         ScenarioScaling.create(
           scenario:       scenario,
           area_attribute: 'present_number_of_residences',
-          value:          1_000_000)
+          value:          1_000_000
+        )
+
+        get :index, params: { scenario_id: scenario.id }
       end
 
       let(:divisor) do
@@ -138,8 +143,6 @@ describe Api::V3::InputsController do
       end
 
       it 'does not scale GQL-based input values' do
-        # GQL inputs are not scaled, since they use the local graph to compute
-        # their values.
         expect(json[gql_input.key]).to include(
           'min'     =>  4,
           'max'     => 16,
@@ -157,6 +160,8 @@ describe Api::V3::InputsController do
         })
       end
 
+      before { get :index, params: { scenario_id: scenario.id } }
+
       it 'omits the min value' do
         expect(json[gql_input.key]).not_to have_key('min')
       end
@@ -166,7 +171,6 @@ describe Api::V3::InputsController do
       end
 
       it 'omits the step value' do
-        # expect(json[gql_input.key].keys).not_to include('step')
         expect(json[gql_input.key]).not_to have_key('step')
       end
 
@@ -214,106 +218,103 @@ describe Api::V3::InputsController do
     end
   end # GET /api/v3/scenarios/:scenario_id/inputs
 
- # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
 
- describe 'GET /api/v3/scenarios/:scenario_id/inputs/:id' do
-   let(:json) do
-     allow(Input).to receive(:records).and_return({
-       static_input.key => static_input,
-       gql_input.key    => gql_input
-     })
+  describe 'GET /api/v3/scenarios/:scenario_id/inputs/:id' do
+    let(:json) do
+      allow(Input).to receive(:records).and_return({
+        static_input.key => static_input,
+        gql_input.key    => gql_input
+      })
 
-     get(:show, params: { scenario_id: scenario.id, id: static_input.key })
-     JSON.parse(response.body)
-   end
+      get(:show, params: { scenario_id: scenario.id, id: static_input.key })
+      JSON.parse(response.body)
+    end
 
-   it 'has a "code" attribute' do
-     expect(json['code']).to eql(static_input.key)
-   end
+    it 'has a "code" attribute' do
+      expect(json['code']).to eql(static_input.key)
+    end
 
-   it 'has a "min" attribute' do
-     expect(json['min']).to eql(5)
-   end
+    it 'has a "min" attribute' do
+      expect(json['min']).to eql(5)
+    end
 
-   it 'has a "max" attribute' do
-     expect(json['max']).to eql(15)
-   end
+    it 'has a "max" attribute' do
+      expect(json['max']).to eql(15)
+    end
 
-   it 'has a "default" attribute' do
-     expect(json['default']).to eql(10)
-   end
+    it 'has a "default" attribute' do
+      expect(json['default']).to eql(10)
+    end
 
-   context '"disabled" attribute' do
-     it 'is present when an input is disabled' do
-       expect(static_input).to receive(:disabled_in_current_area?) { true }
-       expect(json['disabled']).to be_truthy
-     end
+    context '"disabled" attribute' do
+      it 'is present when an input is disabled' do
+        expect(static_input).to receive(:disabled_in_current_area?) { true }
+        expect(json['disabled']).to be_truthy
+      end
 
-     it 'is false when an input is not disabled' do
-       expect(static_input).to receive(:disabled_in_current_area?) { false }
-       expect(json).to include('disabled' => false)
-     end
-   end # "disabled" attribute
+      it 'is false when an input is not disabled' do
+        expect(static_input).to receive(:disabled_in_current_area?) { false }
+        expect(json).to include('disabled' => false)
+      end
+    end # "disabled" attribute
 
-   context '"label" attribute' do
-     it 'is present when an input has a label' do
-       static_input.label_query = 'present:2.0 * 16'
-       static_input.label       = 'g'
+    context '"label" attribute' do
+      it 'is present when an input has a label' do
+        static_input.label_query = 'present:2.0 * 16'
+        static_input.label       = 'g'
+        expect(json['label']).to eql('value' => 32.0, 'suffix' => 'g')
+      end
 
-       expect(json['label']).to eql('value' => 32.0, 'suffix' => 'g')
-     end
+      it 'is not present when an input has no label' do
+        static_input.label_query = nil
+        expect(json).not_to have_key('label')
+      end
+    end # "label" attribute
 
-     it 'is present when an input is not disabled' do
-       static_input.label_query =  nil
-       expect(json).not_to have_key('label')
-     end
-   end # "label" attribute
+    context '"user" attribute' do
+      it 'is present when an input has a user value' do
+        scenario.update(user_values: { static_input.key => 42.0 })
+        expect(json['user']).to eql(42.0)
+      end
 
-   context '"user" attribute' do
-     it 'is present when an input has a user value' do
-       scenario.update(user_values: { static_input.key => 42.0 })
-       expect(json['user']).to eql(42.0)
-     end
+      it 'is not present when an input does not have a user value' do
+        expect(json).not_to have_key('user')
+      end
+    end # "user" attribute
+  end # GET /api/v3/scenarios/:scenario_id/inputs
 
-     it 'is not present when an input does not have a user value' do
-       expect(json).not_to have_key('user')
-     end
-   end # "user" attribute
- end # GET /api/v3/scenarios/:scenario_id/inputs
+  # ---------------------------------------------------------------------------
 
- # ---------------------------------------------------------------------------
+  describe 'GET /api/v3/scenarios/:scenario_id/inputs/:id,:id,...' do
+    let(:third_input) { FactoryBot.build(:input) }
 
- describe 'GET /api/v3/scenarios/:scenario_id/inputs/:id,:id,...' do
-   let(:third_input) { FactoryBot.build(:input) }
+    let(:json) do
+      allow(Input).to receive(:records).and_return({
+        static_input.key => static_input,
+        gql_input.key    => gql_input,
+        third_input.key  => third_input
+      })
 
-   let(:json) do
-     allow(Input).to receive(:records).and_return({
-       static_input.key => static_input,
-       gql_input.key    => gql_input,
-       third_input.key  => third_input
-     })
+      allow(Input).to receive(:all).and_return(Input.records.values)
 
-     allow(Input).to receive(:all).and_return(Input.records.values)
+      keys = "#{ static_input.key },#{ third_input.key }"
+      get(:show, params: { scenario_id: scenario.id, id: keys })
+      JSON.parse(response.body)
+    end
 
-     keys = "#{ static_input.key },#{ third_input.key }"
-     get(:show, params: { scenario_id: scenario.id, id: keys })
-     JSON.parse(response.body)
-   end
+    it 'returns an array' do
+      expect(json).to be_kind_of(Array)
+    end
 
-   it 'returns an array' do
-     expect(json).to be_kind_of(Array)
-   end
+    it 'includes the requested inputs' do
+      expect(json.size).to eq(2)
+      expect(json.any? { |v| v['code'] == static_input.key }).to be_truthy
+      expect(json.any? { |v| v['code'] == third_input.key  }).to be_truthy
+    end
 
-   it 'includes the requested inputs' do
-     expect(json.size).to eq(2)
-
-     expect(json.any? { |v| v['code'] == static_input.key }).to be_truthy
-     expect(json.any? { |v| v['code'] == third_input.key  }).to be_truthy
-   end
-
-   it 'does not include unrequested inputs' do
-     expect(json.any? { |v| v['code'] == gql_input.key }).to be_falsey
-   end
- end # GET /api/v3/scenarios/:scenario_id/inputs
-
+    it 'does not include unrequested inputs' do
+      expect(json.any? { |v| v['code'] == gql_input.key }).to be_falsey
+    end
+  end # GET /api/v3/scenarios/:scenario_id/inputs
 end

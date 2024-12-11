@@ -21,6 +21,8 @@ require 'view_component/test_helpers'
 
 require 'capybara/rails'
 require 'capybara/rspec'
+require 'identity/test/controller_helpers'
+
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -63,6 +65,7 @@ RSpec.configure do |config|
 
   config.include(ViewComponentHelpers, type: :component)
   config.include(AuthorizationHelper)
+  config.include Identity::Test::ControllerHelpers, type: :controller
 
 
   config.before(:each, type: :system) do
