@@ -2,3 +2,10 @@ etmodel_uri: http://etmodel.test
 etsource_lazy_load_dataset: false
 etsource_export: spec/fixtures/etsource
 etsource_working_copy: spec/fixtures/etsource
+
+idp_url: http://beta-myetm.energytransitionmodel.com
+
+identity:
+  client_id: client_id_test
+  client_secret: client_secret_test
+  client_uri: http://localhost:3000
