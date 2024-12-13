@@ -8,7 +8,6 @@ password = SecureRandom.base58(8)
 
 User.create!(
   name:     'Admin',
-  email:    'admin@example.org',
   admin:    true
 )
 
