@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :user do
-    sequence(:id) { |n| n }
+    sequence(:id, 1000) { |n| n } # Start IDs at 1000 to avoid conflicts with potential seeds
     name { 'John Doe' }
     sequence(:email) { |n| "person#{n}@quintel.com" }
     roles { %w[user] }
