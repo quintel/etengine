@@ -218,6 +218,7 @@ Rails.application.routes.draw do
   end
 
   get '/data', to: redirect('/inspect', status: 302)
+  get '/redirect_to_external', to: 'redirect#set_cookie_and_redirect', as: :redirect_to_external
 
   get '/data/*rest',
     to: redirect(status: 302) { |params| "/inspect/#{params[:rest]}" }
