@@ -12,6 +12,8 @@ blocks:
       env_vars:
         - name: DATABASE_HOST
           value: localhost
+        - name: RAILS_ENV
+          value: test
       jobs:
         - name: Test
           commands:
