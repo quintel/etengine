@@ -8,4 +8,4 @@ auth:
   issuer: https://engine.energytransitionmodel.com
 
 identity:
-  client_uri: https://my.energytransitionmodel.com
+  client_uri: https://engine.energytransitionmodel.com

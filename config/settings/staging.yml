@@ -8,4 +8,4 @@ auth:
   issuer: https://beta.engine.energytransitionmodel.com
 
 identity:
-  client_uri: https://beta.my.energytransitionmodel.com
+  client_uri: https://beta.engine.energytransitionmodel.com
