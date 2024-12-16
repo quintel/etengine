@@ -9,10 +9,10 @@ execution_time_limit:
 blocks:
   - name: Docker
     task:
-      # prologue:
-      #   commands:
-      #     - chmod 0600 ~/.ssh/id_deploy
-      #     - ssh-add ~/.ssh/id_deploy
+      prologue:
+        commands:
+          - chmod 0600 ~/.ssh/id_deploy
+          - ssh-add ~/.ssh/id_deploy
       jobs:
         - name: Build, publish, deploy
           commands:
@@ -23,10 +23,10 @@ blocks:
             - 'docker tag etengine:stable quintel/etengine:stable'
             - 'docker push quintel/etengine:stable'
             - cache store
-            # - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
-            # - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && ./deploy.sh"
+            - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
+            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && ./deploy.sh"
       secrets:
         - name: Docker Hub credentials
-        # - name: Stable SSH settings
+        - name: Stable SSH settings
     run:
       when: branch = 'auth-again'
