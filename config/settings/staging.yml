@@ -2,10 +2,10 @@ etsource_lazy_load_dataset: false
 etsource_export: tmp/etsource
 etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>
 
-etmodel_uri: <%= ENV.fetch('ETMODEL_URI', https://beta.energytransitionmodel.com) %>
+etmodel_uri: <%= ENV.fetch('ETMODEL_URI', 'https://beta.energytransitionmodel.com') %>
 
 auth:
-  issuer: <%= ENV.fetch('OPENID_ISSUER', https://beta.engine.energytransitionmodel.com) %>
+  issuer: <%= ENV.fetch('OPENID_ISSUER', 'https://beta.engine.energytransitionmodel.com') %>
 
 identity:
-  client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', https://beta.engine.energytransitionmodel.com) %>
+  client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'https://beta.engine.energytransitionmodel.com') %>
