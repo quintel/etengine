@@ -2,7 +2,7 @@
 
 Sentry.init do |config|
   # Set release version
-  config.release = '2024.10'
+  config.release = 'stable.01'
 
   config.dsn = ENV.fetch('SENTRY_DSN', nil)
   config.enabled_environments = %w[production staging]
