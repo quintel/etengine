@@ -16,6 +16,7 @@ gem 'haml',         '~> 5.0'
 gem 'json'
 
 gem 'rake'
+gem 'activeresource', '~> 6.0'
 
 # Ruby gems
 gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
