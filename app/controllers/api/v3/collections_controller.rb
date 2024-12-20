@@ -2,7 +2,8 @@
 
 module Api
   module V3
-    class TransitionPathsController < BaseController
+    class CollectionsController < BaseController
+      before_action :set_current_scenario
 
       before_action(only: %i[index show]) do
         authorize!(:read, @scenario)
@@ -18,7 +19,7 @@ module Api
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
-        response = etmodel_client.get("/api/v1/transition_paths?#{query}")
+        response = idp_client.get("/api/v1/collections?#{query}")
 
         render json: response.body.to_h.merge(
           'data'  => response.body['data'],
@@ -27,7 +28,7 @@ module Api
       end
 
       def show
-        response = etmodel_client.get("/api/v1/transition_paths/#{params.require(:id).to_i}")
+        response = idp_client.get("/api/v1/collections/#{params.require(:id).to_i}")
         render json: response.body
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -35,12 +36,12 @@ module Api
 
       def create
         UpsertTransitionPath.new(
-          endpoint_path: '/api/v1/transition_paths',
+          endpoint_path: '/api/v1/collections',
           method: :post
         ).call(
           params: params.permit!.to_h,
           ability: current_ability,
-          client: etmodel_client
+          client: idp_client
         ).either(
           ->((data, *)) { render json: data },
           ->(errors)    { service_error_response(errors) }
@@ -49,12 +50,12 @@ module Api
 
       def update
         UpsertTransitionPath.new(
-          endpoint_path: "/api/v1/transition_paths/#{params.require(:id).to_i}",
+          endpoint_path: "/api/v1/collections/#{params.require(:id).to_i}",
           method: :put
         ).call(
           params: params.permit!.to_h,
           ability: current_ability,
-          client: etmodel_client
+          client: idp_client
         ).either(
           ->((data, *)) { render json: data },
           ->(error)     { service_error_response(error) }
@@ -62,7 +63,7 @@ module Api
       end
 
       def destroy
-        response = etmodel_client.delete("/api/v1/transition_paths/#{params.require(:id).to_i}")
+        response = idp_client.delete("/api/v1/collections/#{params.require(:id).to_i}")
         render json: response.body
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -84,8 +85,8 @@ module Api
         end
       end
 
-      def etmodel_client
-        ETEngine::ClientConnector.client_app_client(current_user, Settings.etmodel_uri, scopes: decoded_token[:scopes])
+      def idp_client
+        ETEngine::Clients.idp_client(current_user)
       end
 
       def service_error_response(failure)

@@ -5,12 +5,14 @@ RSpec.describe UpdateSavedScenario do
   let!(:user)     { create(:user) }
   let!(:scenario) { create(:scenario, user: user) }
 
-  let!(:token) do
-    create(
-      :access_token,
-      resource_owner_id: user.id,
-      scopes: 'public scenarios:read scenarios:write'
-    )
+  let(:token) do
+    {
+      iss: Settings.identity.api_url,
+      aud: 'all_clients',
+      sub: 1,
+      exp: 2730367768, # Static expiration
+      scopes: %w[read write]
+    }.with_indifferent_access
   end
 
   let(:scenario_id) { scenario.id }
@@ -49,7 +51,7 @@ RSpec.describe UpdateSavedScenario do
     described_class.new.call(id: 123, params:, ability:, client:)
   end
 
-  pending 'when given valid params' do
+  context 'when given valid params' do
     it 'returns a Success' do
       expect(result).to be_success
     end
@@ -73,7 +75,7 @@ RSpec.describe UpdateSavedScenario do
     end
   end
 
-  pending 'when the scenario does not exist' do
+  context 'when the scenario does not exist' do
     before do
       scenario.destroy!
     end
@@ -87,7 +89,7 @@ RSpec.describe UpdateSavedScenario do
     end
   end
 
-  pending 'when the scenario is not accessible' do
+  context 'when the scenario is not accessible' do
     before do
       scenario.delete_all_users
       scenario.reload.update(user: create(:user))
@@ -103,7 +105,7 @@ RSpec.describe UpdateSavedScenario do
     end
   end
 
-  pending 'when the saved scenario is not accessible' do
+  context 'when the saved scenario is not accessible' do
     let(:client) do
       Faraday.new do |builder|
         builder.adapter(:test) do |stub|
@@ -125,7 +127,7 @@ RSpec.describe UpdateSavedScenario do
     end
   end
 
-  pending 'when the params title is blank' do
+  context 'when the params title is blank' do
     let(:params) { super().merge(title: '') }
 
     it 'returns a Failure' do
@@ -137,7 +139,7 @@ RSpec.describe UpdateSavedScenario do
     end
   end
 
-  pending 'when the params scenario_id is nil' do
+  context 'when the params scenario_id is nil' do
     let(:params) { super().merge(scenario_id: nil) }
 
     it 'returns a Failure' do
@@ -149,7 +151,7 @@ RSpec.describe UpdateSavedScenario do
     end
   end
 
-  pending 'when no params are provided' do
+  context 'when no params are provided' do
     let(:params) { {} }
 
     let(:client) do

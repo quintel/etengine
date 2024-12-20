@@ -19,7 +19,7 @@ module Api
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
-        response = etmodel_client.get("/api/v1/saved_scenarios?#{query}")
+        response = ETEngine::Clients.idp_client.get("/api/v1/saved_scenarios?#{query}")
 
         render json: response.body.to_h.merge(
           'data'  => hydrate_scenarios(response.body['data']),
@@ -28,7 +28,7 @@ module Api
       end
 
       def show
-        response = etmodel_client.get("/api/v1/saved_scenarios/#{params.require(:id).to_i}")
+        response = ETEngine::Clients.idp_client.get("/api/v1/saved_scenarios/#{params.require(:id).to_i}")
         render json: hydrate_scenario(response.body)
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -38,11 +38,13 @@ module Api
         CreateSavedScenario.new.call(
           params: params.permit!.to_h,
           ability: current_ability,
-          client: etmodel_client
+          client: ETEngine::Clients.idp_client
         ).either(
           ->((data, *)) { render json: hydrate_scenario(data) },
           ->(errors)    { service_error_response(errors) }
         )
+      rescue Faraday::ResourceNotFound
+        render_not_found
       end
 
       def update
@@ -50,21 +52,25 @@ module Api
           id: params.require(:id),
           params: params.permit!.to_h,
           ability: current_ability,
-          client: etmodel_client
+          client: ETEngine::Clients.idp_client
         ).either(
           ->((data, *)) { render json: hydrate_scenario(data) },
           ->(error)     { service_error_response(error) }
         )
+      rescue Faraday::ResourceNotFound
+        render_not_found
       end
 
       def destroy
         DeleteSavedScenario.new.call(
           id: params.require(:id),
-          client: etmodel_client
+          client: ETEngine::Clients.idp_client
         ).either(
           ->((data, *)) { render json: data },
           ->(error)     { service_error_response(error) }
         )
+      rescue Faraday::ResourceNotFound
+        render_not_found
       end
 
       private
@@ -106,10 +112,6 @@ module Api
       def saved_scenario_params
         params.permit(:scenario_id, :title, :description, :private)
       end
-
-      # def etmodel_client
-      #   ETEngine::Auth.etmodel_client(current_user, scopes: decoded_token.scopes)
-      # end
 
       def service_error_response(failure)
         if failure.respond_to?(:to_response)
