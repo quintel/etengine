@@ -54,4 +54,5 @@ nl:
       scenario_viewer: gast
       scenario_collaborator: bewerker
       scenario_owner: eigenaar
-
+  versions:
+    switch: 'Versies wijzigen:'

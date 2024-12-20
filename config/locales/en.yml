@@ -54,3 +54,5 @@ en:
       scenario_viewer: viewer
       scenario_collaborator: collaborator
       scenario_owner: owner
+  versions:
+    switch: 'Change versions:'
