@@ -129,7 +129,7 @@ Rails.application.routes.draw do
       end
 
       resources :saved_scenarios
-      resources :transition_paths
+      resources :collections
 
       resources :inputs, :only => [:index, :show] do
         get :list, :on => :collection
