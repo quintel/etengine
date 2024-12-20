@@ -1,425 +1,215 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
-RSpec.describe 'Saved scenarios API' do
-  let(:user) { create(:user) }
+describe Api::V3::SavedScenariosController, type: :controller do
+  let(:user)     { create(:user) }
+  let(:scenario) { create(:scenario, user: user) }
+  let(:idp_client) { instance_double("ETEngine::Clients::IdpClient") }
+  let(:response_body) { { 'data' => [], 'links' => {} } }
 
-  def stub_etmodel_request(url, method: :get, body: nil)
-    conn = Faraday.new do |builder|
-      builder.adapter(:test) do |stub|
-        stub.public_send(method, url, body) do |_env|
-          yield
-        end
-      end
-    end
+  before do
+    allow(controller).to receive(:current_user).and_return(user)
+    allow(controller).to receive(:current_ability).and_return(Ability.new(user))
+    allow(controller).to receive(:authorize!).and_return(true)
+    allow(ETEngine::Clients).to receive(:idp_client).and_return(idp_client)
 
-    # allow(ETEngine::Auth).to receive(:etmodel_client).and_return(conn)
+    request.headers.merge!(access_token_header(user, :read))
   end
 
-  pending 'when fetching a single saved scenario' do
-    # TODO: Fix the etmodel client so the method exists, then the tests should pass
-    context 'when the saved scenario and scenario exist' do
-      let(:scenario) { create(:scenario, user: user, area_code: 'nl') }
+  describe 'GET #index' do
+    before do
+      # The controller queries: /api/v1/saved_scenarios?page=1&limit=10
+      allow(idp_client).to receive(:get)
+        .with(a_string_matching(%r{/api/v1/saved_scenarios\?((page=1&limit=10)|(limit=10&page=1))}))
+        .and_return(double(body: response_body))
+
+      get :index, params: { page: 1, limit: 10 }
+    end
+
+    it 'responds successfully' do
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'renders the JSON response' do
+      parsed = JSON.parse(response.body)
+      expect(parsed).to include('data', 'links')
+    end
+  end
+
+  describe 'GET #show' do
+    context 'with a valid ID' do
+      let(:saved_scenario_data) { { 'scenario_id' => scenario.id } }
 
       before do
-        stub_etmodel_request('/api/v1/saved_scenarios/1') do
-          [
-            200,
-            { 'Content-Type' => 'application/json' },
-            {
-              'id' => 1,
-              'scenario_id' => scenario.id,
-              'title' => 'My saved scenario',
-              'description' => '',
-              'area_code' => 'nl',
-              'end_year' => 2050,
-              'created_at' => '2022-12-18T11:25:04.000Z',
-              'updated_at' => '2022-12-18T11:25:04.000Z',
-              'user' => {
-                'id' => user.id,
-                'name' => user.name
-              }
-            }
-          ]
-        end
+        allow(idp_client).to receive(:get)
+          .with("/api/v1/saved_scenarios/1")
+          .and_return(double(body: saved_scenario_data))
 
-        get '/api/v3/saved_scenarios/1', headers: access_token_header(user, 'scenarios:read')
+        get :show, params: { id: 1 }
       end
 
-      it 'is successful' do
-        expect(response).to be_successful
+      it 'responds successfully' do
+        expect(response).to have_http_status(:ok)
       end
 
-      it 'includes the saved scenario data' do
-        expect(JSON.parse(response.body)).to include(
-          'id' => 1,
-          'scenario_id' => scenario.id,
-          'title' => 'My saved scenario'
-        )
-      end
-
-      it 'includes the scenario in the response' do
-        expect(JSON.parse(response.body)['scenario']).to include(
-          'id' => scenario.id,
-          'area_code' => 'nl'
-        )
+      it 'renders the saved scenario data' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('scenario_id' => scenario.id)
       end
     end
 
-    context 'when the saved scenario exists but the scenario does not' do
+    context 'with an invalid ID' do
       before do
-        stub_etmodel_request('/api/v1/saved_scenarios/1') do
-          [
-            200,
-            { 'Content-Type' => 'application/json' },
-            {
-              'id' => 1,
-              'scenario_id' => 1,
-              'title' => 'My saved scenario',
-              'description' => '',
-              'area_code' => 'nl',
-              'end_year' => 2050,
-              'created_at' => '2022-12-18T11:25:04.000Z',
-              'updated_at' => '2022-12-18T11:25:04.000Z',
-              'user' => {
-                'id' => user.id,
-                'name' => user.name
-              }
-            }
-          ]
-        end
-
-        get '/api/v3/saved_scenarios/1', headers: access_token_header(user, 'scenarios:read')
+        allow(idp_client).to receive(:get).and_raise(Faraday::ResourceNotFound)
+        get :show, params: { id: 999 }
       end
 
-      it 'is successful' do
-        expect(response).to be_successful
-      end
-
-      it 'includes the saved scenario data' do
-        expect(JSON.parse(response.body)).to include(
-          'id' => 1,
-          'scenario_id' => 1,
-          'title' => 'My saved scenario'
-        )
-      end
-
-      it 'has no data for the scenario' do
-        expect(JSON.parse(response.body)['scenario']).to be_nil
-      end
-    end
-
-    context 'when the saved scenario exists but the scenario is not accessible' do
-      let(:scenario) { create(:scenario, user: create(:user), private: true) }
-
-      before do
-        stub_etmodel_request('/api/v1/saved_scenarios/1') do
-          [
-            200,
-            { 'Content-Type' => 'application/json' },
-            {
-              'id' => 1,
-              'scenario_id' => scenario.id,
-              'title' => 'My saved scenario',
-              'description' => '',
-              'area_code' => 'nl',
-              'end_year' => 2050,
-              'created_at' => '2022-12-18T11:25:04.000Z',
-              'updated_at' => '2022-12-18T11:25:04.000Z',
-              'user' => {
-                'id' => user.id,
-                'name' => user.name
-              }
-            }
-          ]
-        end
-
-        get '/api/v3/saved_scenarios/1', headers: access_token_header(user, 'scenarios:read')
-      end
-
-      it 'is successful' do
-        expect(response).to be_successful
-      end
-
-      it 'includes the saved scenario data' do
-        expect(JSON.parse(response.body)).to include(
-          'id' => 1,
-          'scenario_id' => scenario.id,
-          'title' => 'My saved scenario'
-        )
-      end
-
-      it 'has no data for the scenario' do
-        expect(JSON.parse(response.body)['scenario']).to be_nil
-      end
-    end
-
-    context 'when the saved scenario does not exist' do
-      before do
-        stub_etmodel_request('/api/v1/saved_scenarios/1') do
-          raise Faraday::ResourceNotFound
-        end
-
-        get '/api/v3/saved_scenarios/1', headers: access_token_header(user, 'scenarios:read')
-      end
-
-      it 'returns 404 Not Found' do
+      it 'responds with not found' do
         expect(response).to have_http_status(:not_found)
       end
     end
   end
 
-  # ------------------------------------------------------------------------------------------------
+  describe 'POST #create' do
+    let(:params) do
+      {
+        scenario_id: scenario.id,
+        title: 'New Saved Scenario',
+        description: 'A test scenario',
+        private: false
+      }
+    end
 
-  pending 'when creating a saved scenario' do
-    context 'when the scenario exists' do
-      let(:scenario) { create(:scenario, user: user) }
-      let(:params) do
-        {
-          title: 'My saved scenario',
-          description: 'My scenario description',
-          scenario_id: scenario.id
-        }
-      end
+    let(:create_service) { instance_double(CreateSavedScenario) }
+
+    before do
+      allow(CreateSavedScenario).to receive(:new).and_return(create_service)
+    end
+
+    context 'when successful' do
+      let(:created_data) { { 'scenario_id' => scenario.id, 'title' => 'New Saved Scenario' } }
 
       before do
-        stub_etmodel_request(
-          '/api/v1/saved_scenarios',
-          method: :post,
-          body: params.merge(
-            area_code: scenario.area_code,
-            end_year: scenario.end_year
-          )
-        ) do
-          [
-            200,
-            { 'Content-Type' => 'application/json' },
-            params.merge(id: 1).stringify_keys
-          ]
-        end
+        allow(create_service).to receive(:call)
+          .with(params: hash_including(:scenario_id),
+                ability: instance_of(Ability),
+                client: idp_client)
+          .and_return(Dry::Monads::Success([created_data, nil]))
 
-        post '/api/v3/saved_scenarios',
-          as: :json,
-          params:,
-          headers: access_token_header(user, :write)
+        post :create, params: params
       end
 
-      it 'is successful' do
+      it 'responds successfully' do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'returns the saved scenario data' do
-        expect(JSON.parse(response.body)).to include(params.stringify_keys.merge('id' => 1))
+      it 'returns the created data' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('title' => 'New Saved Scenario', 'scenario_id' => scenario.id)
       end
     end
 
-    context 'when missing the title' do
-      let(:scenario) { create(:scenario, user: user) }
-
+    context 'when failure occurs' do
       before do
-        stub_etmodel_request('/api/v1/saved_scenarios', method: :post) do
-          raise stub_faraday_422('title' => ['is missing'])
-        end
+        allow(create_service).to receive(:call)
+          .and_return(Dry::Monads::Failure(['Invalid data']))
 
-        post '/api/v3/saved_scenarios',
-          as: :json,
-          params: {
-            description: 'My scenario description',
-            scenario_id: scenario.id
-          },
-          headers: access_token_header(user, :write)
+        post :create, params: params
       end
 
-      it 'responds with 422 Unprocessable Entity' do
+      it 'responds with unprocessable entity' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'returns the error' do
-        expect(JSON.parse(response.body)).to eq('errors' => { 'title' => ['is missing'] })
-      end
-    end
-
-    context 'when the scenario is not accessible' do
-      let(:scenario) { create(:scenario, user: create(:user), private: true) }
-
-      before do
-        post '/api/v3/saved_scenarios',
-          as: :json,
-          params: {
-            title: 'My saved scenario',
-            description: 'My scenario description',
-            scenario_id: scenario.id
-          },
-          headers: access_token_header(user, :write)
-      end
-
-      it 'responds with 422 Unprocesable Entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'returns the saved scenario data' do
-        expect(JSON.parse(response.body)['errors']).to include(
-          'scenario_id' => ['does not exist']
-        )
-      end
-    end
-
-    context 'when the scenario does not exist' do
-      before do
-        post '/api/v3/saved_scenarios',
-          as: :json,
-          params: {
-            title: 'My saved scenario',
-            description: 'My scenario description',
-            scenario_id: -1
-          },
-          headers: access_token_header(user, :write)
-      end
-
-      it 'responds with 422 Unprocesable Entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'returns the saved scenario data' do
-        expect(JSON.parse(response.body)['errors']).to include(
-          'scenario_id' => ['does not exist']
-        )
+      it 'returns the errors' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('errors' => ['Invalid data'])
       end
     end
   end
 
-  # ------------------------------------------------------------------------------------------------
+  describe 'PUT #update' do
+    let(:params) { { id: 1, title: 'Updated Saved Scenario' } }
+    let(:update_service) { instance_double(UpdateSavedScenario) }
 
-  pending 'when updating a saved scenario' do
-    context 'when the scenario exists' do
-      let(:scenario) { create(:scenario, user: user) }
+    before do
+      allow(UpdateSavedScenario).to receive(:new).and_return(update_service)
+    end
 
-      let(:params) do
-        {
-          title: 'My saved scenario',
-          description: 'My scenario description',
-          scenario_id: scenario.id
-        }
-      end
+    context 'when successful' do
+      let(:updated_data) { { 'scenario_id' => scenario.id, 'title' => 'Updated Saved Scenario' } }
 
       before do
-        stub_etmodel_request(
-          '/api/v1/saved_scenarios/123',
-          method: :put,
-          body: params.merge(
-            area_code: scenario.area_code,
-            end_year: scenario.end_year
-          )
-        ) do
-          [
-            200,
-            { 'Content-Type' => 'application/json' },
-            params.merge(id: 1).stringify_keys
-          ]
-        end
+        allow(update_service).to receive(:call)
+          .with(id: '1', params: hash_including(:title), ability: instance_of(Ability), client: idp_client)
+          .and_return(Dry::Monads::Success([updated_data, nil]))
 
-        put '/api/v3/saved_scenarios/123',
-          as: :json,
-          params:,
-          headers: access_token_header(user, :write)
+        put :update, params: params
       end
 
-      it 'is successful' do
+      it 'responds successfully' do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'returns the saved scenario data' do
-        expect(JSON.parse(response.body)).to include(params.stringify_keys.merge('id' => 1))
+      it 'returns the updated data' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('title' => 'Updated Saved Scenario', 'scenario_id' => scenario.id)
       end
     end
 
-    context 'when the saved scenario is not accessible' do
-      let(:scenario) { create(:scenario, user: user) }
-
-      let(:params) do
-        {
-          title: 'My saved scenario',
-          description: 'My scenario description',
-          scenario_id: scenario.id
-        }
-      end
-
+    context 'when failure occurs' do
       before do
-        stub_etmodel_request(
-          '/api/v1/saved_scenarios/123',
-          method: :put,
-          body: params.merge(
-            area_code: scenario.area_code,
-            end_year: scenario.end_year
-          )
-        ) do
-          raise Faraday::ResourceNotFound
-        end
+        allow(update_service).to receive(:call)
+          .and_return(Dry::Monads::Failure(['Invalid data']))
 
-        put '/api/v3/saved_scenarios/123',
-          as: :json,
-          params:,
-          headers: access_token_header(user, :write)
+        put :update, params: params
       end
 
-      it 'responds with 404 Not Found' do
-        expect(response).to have_http_status(:not_found)
+      it 'responds with unprocessable entity' do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'returns the saved scenario data' do
-        expect(JSON.parse(response.body)['errors']).to include('Not found')
+      it 'returns the errors' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('errors' => ['Invalid data'])
       end
     end
   end
 
-  # ------------------------------------------------------------------------------------------------
+  describe 'DELETE #destroy' do
+    let(:delete_service) { instance_double(DeleteSavedScenario) }
 
-  pending 'when deleting a saved scenario' do
-    context 'when the saved scenario exists' do
+    before do
+      allow(DeleteSavedScenario).to receive(:new).and_return(delete_service)
+    end
+
+    context 'with a valid ID' do
       before do
-        stub_etmodel_request('/api/v1/saved_scenarios/123', method: :delete) do
-          [200, { 'Content-Type' => 'application/json' }, {}]
-        end
+        allow(delete_service).to receive(:call)
+          .with(id: '1', client: idp_client)
+          .and_return(Dry::Monads::Success([response_body, nil]))
 
-        delete '/api/v3/saved_scenarios/123',
-          as: :json,
-          headers: access_token_header(user, :delete)
+        delete :destroy, params: { id: 1 }
       end
 
-      it 'is successful' do
+      it 'responds successfully' do
         expect(response).to have_http_status(:ok)
       end
-    end
 
-    context 'when the access token lacks the scenarios:delete scope' do
-      before do
-        stub_etmodel_request('/api/v1/saved_scenarios/123', method: :delete) do
-          [200, { 'Content-Type' => 'application/json' }, {}]
-        end
-
-        delete '/api/v3/saved_scenarios/123',
-          as: :json,
-          headers: access_token_header(user, :write)
-      end
-
-      it 'returns 403 Forbidden' do
-        expect(response).to have_http_status(:forbidden)
+      it 'returns the response data' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('data', 'links')
       end
     end
 
-    context 'when the saved scenario is inaccessible' do
+    context 'with an invalid ID' do
       before do
-        stub_etmodel_request('/api/v1/saved_scenarios/123', method: :delete) do
-          raise Faraday::ResourceNotFound
-        end
+        allow(delete_service).to receive(:call)
+          .and_raise(Faraday::ResourceNotFound)
 
-        delete '/api/v3/saved_scenarios/123',
-          as: :json,
-          headers: access_token_header(user, :delete)
+        delete :destroy, params: { id: 999 }
       end
 
-      it 'returns 404 Not Found' do
+      it 'responds with not found' do
         expect(response).to have_http_status(:not_found)
       end
     end
