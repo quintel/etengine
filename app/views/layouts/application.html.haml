@@ -21,7 +21,7 @@
           - if content_for?(:navbar)
             = content_for :navbar
           - else
-            %a.brand{:href => safe_inspect_path}
+            %a.brand{ href: safe_inspect_path }
               ETEngine
               - if Rails.env.production?
                 %span.server.production Production
@@ -32,34 +32,47 @@
 
             - if current_user
               %ul.nav
-                %li= link_to 'ETSource',  etsource_commits_path
+                %li.dropdown
+                  %a#version-button.nav-link.dropdown-toggle{ href: '#', data: { toggle: 'dropdown' }, role: 'button', aria: { haspopup: 'true', expanded: 'false' } }
+                    %span= "##{ETEngine::Version::TAG}"
+                    %b.caret
+                  %ul.dropdown-menu.version-dropdown.development{ aria: { labelledby: 'version-button' } }
+                    %li{ style: 'margin-bottom:1rem; margin-left:1rem;' }= t('versions.switch')
+                    - MyEtm::Version.all_other_versions.each do |version|
+                      %li
+                        = link_to "##{version.tag}"
+
+                %li
+                  = link_to 'ETSource', etsource_commits_path
 
                 - if params[:api_scenario_id]
                   = render partial: 'header_menus_with_scenario'
                 - else
                   = render partial: 'header_menus_without_scenario'
+
                 %li.dropdown
-                  %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+                  %a.dropdown-toggle{ href: '#', data: { toggle: 'dropdown' } }
                     Misc
                     %b.caret
                   %ul.dropdown-menu
-                    %li= link_to 'Users',     users_path
-                    %li= link_to 'Turk',      mechanical_turk_root_path
+                    %li= link_to 'Users', users_path
+                    %li= link_to 'Turk', mechanical_turk_root_path
 
               %ul.nav.pull-right
                 - if params[:api_scenario_id]
                   %li
-                    %form.form-inline.navbar-search{:action => inspect_search_path, :method => :get}
-                      %input.search-query.typeahead{:name => 'search', :placeholder => "Search", :autocomplete => 'off'}
+                    %form.form-inline.navbar-search{ action: inspect_search_path, method: :get }
+                      %input.search-query.typeahead{ name: 'search', placeholder: "Search", autocomplete: 'off'}
 
                   %li.divider-vertical
                   %li
-                    %form#api_scenario_selector.navbar-form.form.form-inline{:action => inspect_redirect_path, :method => :get}
+                    %form#api_scenario_selector.navbar-form.form.form-inline{ action: inspect_redirect_path, method: :get }
                       - opts = Scenario.recent.map{ |as| [as.identifier, as.id] }
-                      = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), :class => 'span2'
+                      = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), class: 'span2'
+
                   %li
-                    %form#area_code_selector.navbar-form.form.form-inline{:action => '#', :method => :get}
-                      = select_tag 'area_code', grouped_options_for_select(grouped_region_options), :prompt => "New scenario:", :class => 'span1'
+                    %form#area_code_selector.navbar-form.form.form-inline{ action: '#', method: :get }
+                      = select_tag 'area_code', grouped_options_for_select(grouped_region_options), prompt: "New scenario:", class: 'span1'
 
                 %li.divider-vertical
                 %li
