@@ -33,14 +33,14 @@
             - if current_user
               %ul.nav
                 %li.dropdown
-                  %a#version-button.nav-link.dropdown-toggle{ href: '#', data: { toggle: 'dropdown' }, role: 'button', aria: { haspopup: 'true', expanded: 'false' } }
-                    %span= "##{ETEngine::Version::TAG}"
+                  %a.dropdown-toggle{ href: '#', data: { toggle: 'dropdown' }, role: 'button', aria: { haspopup: 'true', expanded: 'false' } }
+                    %span= "##{Settings.version_tag}"
                     %b.caret
-                  %ul.dropdown-menu.version-dropdown.development{ aria: { labelledby: 'version-button' } }
+                  %ul.dropdown-menu{ aria: { labelledby: 'version-button' } }
                     %li{ style: 'margin-bottom:1rem; margin-left:1rem;' }= t('versions.switch')
                     - MyEtm::Version.all_other_versions.each do |version|
                       %li
-                        = link_to "##{version.tag}"
+                        = link_to "##{version.tag}", version.url
 
                 %li
                   = link_to 'ETSource', etsource_commits_path

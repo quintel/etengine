@@ -37,6 +37,8 @@ etmodel_uri: localhost:3001
 # etc.
 standalone: false
 
+version_tag: <%= ENV.fetch('VERSION_TAG', 'latest') %>
+
 mailer:
   # E-mail address from which to send e-mails.
   from: "Energy Transition Model <info@energytransitionmodel.com>"
