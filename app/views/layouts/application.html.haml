@@ -40,7 +40,7 @@
                     %li{ style: 'margin-bottom:1rem; margin-left:1rem;' }= t('versions.switch')
                     - MyEtm::Version.all_other_versions.each do |version|
                       %li
-                        = link_to "##{version.tag}", version.url
+                        = link_to "##{version.tag}", version.engine_url
 
                 %li
                   = link_to 'ETSource', etsource_commits_path
