@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Creates or updates a transition path on ETModel.
+# Creates or updates a collection on MyETM.
 #
 # Must be provided with the path to the API endpoint for creating or updating the saved scenario,
 # and the HTTP method to be used.
@@ -18,9 +18,9 @@ class UpsertTransitionPath
     @method = method
   end
 
-  # Creates or updates the transition path.
+  # Creates or updates the collection.
   #
-  # Returns the transition path data from ETModel.
+  # Returns the collection data from MyETM.
   def call(params:, ability:, client:)
     params = params.slice(:scenario_ids, :title).symbolize_keys
     scenarios = find_scenarios(ability, params[:scenario_ids])
@@ -38,7 +38,7 @@ class UpsertTransitionPath
   end
 
   # Verifies that the user has access to all the scenarios. The params themselves will be validated
-  # by ETModel.
+  # by MyETM.
   def validate_scenario_ids(ids, scenarios)
     return Success() unless ids
 
