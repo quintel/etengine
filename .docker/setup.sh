@@ -33,4 +33,5 @@ cp -R /tmp/atlas/*.pack /app/tmp/atlas
 
 rm -rf /tmp/atlas
 
+bundle exec rails db:setup
 bundle exec rails db:migrate
