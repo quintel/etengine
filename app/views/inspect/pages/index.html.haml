@@ -8,8 +8,5 @@
   = render partial: 'git_gem_info', locals: { name: 'atlas',    commit: Etsource::Commit::ATLAS_COMMIT }
   = render partial: 'git_gem_info', locals: { name: 'refinery', commit: Etsource::Commit::REFINERY_COMMIT }
   %tr
-    %td Uptime
-    %td= %x{uptime}
-  %tr
     %td Ruby Version
     %td== #{ RUBY_VERSION}-p#{ RUBY_PATCHLEVEL }
