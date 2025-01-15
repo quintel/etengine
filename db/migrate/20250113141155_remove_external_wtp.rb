@@ -12,13 +12,13 @@ class RemoveExternalWtp < ActiveRecord::Migration[7.0]
     external_coupling_industry_other_paper_p2h_wtp
   ].freeze
 
-  REGULAR_WTP_KEYS = %w[
-    wtp_of_industry_chemicals_refineries_flexibility_p2h_electricity
-    wtp_of_industry_chemicals_fertilizers_flexibility_p2h_electricity
-    wtp_of_industry_chemicals_other_flexibility_p2h_electricity
-    wtp_of_industry_other_food_flexibility_p2h_electricity
-    wtp_of_industry_other_paper_flexibility_p2h_electricity
-]
+  #REGULAR_WTP_KEYS = %w[
+   # wtp_of_industry_chemicals_refineries_flexibility_p2h_electricity
+    #wtp_of_industry_chemicals_fertilizers_flexibility_p2h_electricity
+    #wtp_of_industry_chemicals_other_flexibility_p2h_electricity
+    #wtp_of_industry_other_food_flexibility_p2h_electricity
+    #wtp_of_industry_other_paper_flexibility_p2h_electricity
+#].freeze
 
   # Mapping of regular keys to external keys
   WTP_KEYS_MAPPING = {
@@ -53,14 +53,14 @@ class RemoveExternalWtp < ActiveRecord::Migration[7.0]
       # Set the corresponding regular key with the retrieved value
       scenario.user_values[regular_key] = value_to_transfer
 
-      end
     end
+  end
 
-    def remove_external_keys(scenario)
+  def remove_external_keys(scenario)
       EXTERNAL_WTP_KEYS.each do |external_key|
         # Remove the external key from user_values
         scenario.user_values.delete(external_key)
-      end
     end
   end
+end
 
