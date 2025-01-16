@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   before_action :ensure_user, only: [:index]
 
   def index
-    return redirect_to(identity_profile_path) unless current_user.admin?
+    return redirect_to(sign_in_path) unless current_user.admin?
 
     scenario = Scenario.default(source: 'ETEngine Admin UI')
     scenario.save!
