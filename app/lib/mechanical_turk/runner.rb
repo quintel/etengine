@@ -15,7 +15,7 @@ module MechanicalTurk
       case type
       when :system then system(rspec_command)
       when :ticks  then `#{rspec_command}`
-      when :x      then %x[#{rspec_command}]      
+      when :x      then %x[#{rspec_command}]
       end
     end
 
@@ -26,6 +26,6 @@ module MechanicalTurk
     def rspec_binary
       File.exists?("bin/rspec") ? 'bin/rspec' : 'rspec'
     end
-    
+
   end
 end

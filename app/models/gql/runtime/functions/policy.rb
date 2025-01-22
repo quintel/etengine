@@ -8,7 +8,7 @@ module Gql::Runtime
       def GOAL(key)
         scope.graph.find_or_create_goal(key.to_sym)
       end
-      
+
       # returns a boolean whether the user has set a goal or not.
       # I'd rather have the VALUE(GOAL(foo); user_value) return nil, but
       # now falsy values are converted to 0.0 unfortunately.
@@ -18,7 +18,7 @@ module Gql::Runtime
       rescue
         nil
       end
-      
+
       # Shortcut for
       # V(GOAL(foobar);user_value)
       #

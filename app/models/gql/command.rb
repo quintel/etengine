@@ -14,7 +14,7 @@ module Gql
     # Public: The original GQL statement as a string.
     attr_reader :source
 
-    # Public: Creates a new command to be executed using the given +source+ 
+    # Public: Creates a new command to be executed using the given +source+
     # statement.
     #
     # Returns a Command.
