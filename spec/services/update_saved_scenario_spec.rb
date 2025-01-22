@@ -10,7 +10,7 @@ RSpec.describe UpdateSavedScenario do
       iss: Settings.identity.api_url,
       aud: 'all_clients',
       sub: 1,
-      exp: 2730367768, # Static expiration
+      exp: 3030367768, # Static expiration
       scopes: %w[read write]
     }.with_indifferent_access
   end

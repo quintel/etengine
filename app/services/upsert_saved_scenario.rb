@@ -51,6 +51,6 @@ class UpsertSavedScenario
 
   # Decorates the params with the scenario's area code and end year when a scenario_id is set.
   def full_params(params, scenario)
-    scenario ? params.merge(area_code: scenario.area_code, end_year: scenario.end_year, version: scenario.version) : params
+    scenario ? params.merge(area_code: scenario.area_code, end_year: scenario.end_year) : params # TODO: add version param:  ", version: scenario.version"
   end
 end
