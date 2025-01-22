@@ -47,9 +47,6 @@ en:
         current_password: Current password
         unconfirmed_email: New e-mail address
         name: Your name
-  scenario_invitation_mailer:
-    invite_user:
-      subject: 'Invitation: ETM scenario'
     roles:
       scenario_viewer: viewer
       scenario_collaborator: collaborator

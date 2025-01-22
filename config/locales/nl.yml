@@ -47,9 +47,6 @@ nl:
         current_password: Huidig wachtwoord
         unconfirmed_email: Nieuw e-mailadres
         name: Jouw naam
-  scenario_invitation_mailer:
-    invite_user:
-      subject: 'Uitnodiging: ETM scenario'
     roles:
       scenario_viewer: gast
       scenario_collaborator: bewerker
