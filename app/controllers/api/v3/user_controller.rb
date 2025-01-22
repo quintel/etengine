@@ -4,21 +4,29 @@ module Api
   module V3
     # Updates user information.
     class UserController < BaseController
+      before_action :authorize_user!, only: :update
 
       def update
-        # Verify that the user being updated matches the user authorized by the token.
-        return head(:forbidden) if current_user.id != params.require(:id).to_i
-
-        if current_user.update(name: params.require(:name))
-          render json: current_user
+        if user.update(name: params.require(:name))
+          render json: user
         else
-          render json: current_user.errors, status: :unprocessable_entity
+          render json: user.errors, status: :unprocessable_entity
         end
       end
 
       def destroy
-        current_user.destroy
+        user.destroy
         head :ok
+      end
+
+      private
+
+      def user
+        @user ||= current_user
+      end
+
+      def authorize_user!
+        head(:forbidden) if user.id != params.require(:id).to_i
       end
     end
   end
