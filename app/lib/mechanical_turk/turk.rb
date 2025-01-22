@@ -34,7 +34,7 @@ module MechanicalTurk
 
 
     def self.get(id)
-      all.detect{ |t| t.to_param == id} 
+      all.detect{ |t| t.to_param == id}
     end
 
     def self.all

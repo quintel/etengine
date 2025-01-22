@@ -33,8 +33,8 @@ module MechanicalTurk
     end
 
     def charts
-      results.dup.delete_if{|k,v| k.include?("dashboard_") || 
-                                  k.include?("peak_load") || 
+      results.dup.delete_if{|k,v| k.include?("dashboard_") ||
+                                  k.include?("peak_load") ||
                                   k.include?("policy_goal") ||
                                   k.include?("(")}
     end

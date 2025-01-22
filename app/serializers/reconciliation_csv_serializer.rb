@@ -5,7 +5,7 @@ class ReconciliationCSVSerializer < CausalityCurvesCSVSerializer
   private
 
   def producer_types
-    %i[producer flex export storage transformation] 
+    %i[producer flex export storage transformation]
   end
 
   def consumer_types

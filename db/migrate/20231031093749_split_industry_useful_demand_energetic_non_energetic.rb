@@ -11,7 +11,7 @@ SET_KEYS = %w[
   industry_aggregated_other_industry_wood_pellets_share
 ]
 
-# Adds energetic and non_energetic input values for the 
+# Adds energetic and non_energetic input values for the
 # inputs listed above.
 #
 # See https://github.com/quintel/etmodel/issues/4116
@@ -26,7 +26,7 @@ class SplitIndustryUsefulDemandEnergeticNonEnergetic < ActiveRecord::Migration[7
 
       # Loop over the keys for which a value was set
       intersect_keys.each do |key|
-        
+
         next if scenario.user_values[key].blank?
 
         case

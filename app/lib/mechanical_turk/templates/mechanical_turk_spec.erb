@@ -3,7 +3,7 @@
 #   $ rake gql:test:generate
 #
 # You can overwrite the tolerance percentage:
-#   $ rake gql:test TOLERANCE=1 
+#   $ rake gql:test TOLERANCE=1
 # A test will pass if the result is within 1 percent (default 3).
 #
 # The template resides in:
@@ -17,7 +17,7 @@ describe "<%= @area_code %>" do
       load_scenario
     end
 
-    <% @gqueries.each do |gquery| 
+    <% @gqueries.each do |gquery|
       present = @gql.query(gquery).present_value.inspect
       future = @gql.query(gquery).future_value.inspect %>
     it "<%= gquery.key %>" do

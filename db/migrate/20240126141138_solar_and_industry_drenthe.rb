@@ -62,7 +62,7 @@ class SolarAndIndustryDrenthe < ActiveRecord::Migration[7.0]
   # SOLAR THERMAL
   # We have restructured the energy graph for households hot water and removed a child share
   # that limited the maximum amount of hot water supplied by solar thermal to households to 50%.
-  # The existing input is maintained, so the same input now is applied to the full 100% of the 
+  # The existing input is maintained, so the same input now is applied to the full 100% of the
   # total useful demand for hot water. To mitigate this change, all inputs are set to 50% of their
   # original value.
   def migrate_solar_thermal(scenario)
