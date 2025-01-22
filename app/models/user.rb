@@ -42,19 +42,10 @@ class User < ApplicationRecord
   # Returns the user. Raises an error if the user could not be saved.
   def self.from_identity!(identity_user)
     where(id: identity_user.id).first_or_initialize.tap do |user|
-      is_new_user = !user.persisted?
       user.identity_user = identity_user
       user.name = identity_user.name
 
       user.save!
-
-      # TODO: Fix this
-      # # For new users, couple existing SavedScenarioUsers
-      # if is_new_user
-      #   SavedScenarioUser
-      #     .where(user_email: user.email, user_id: nil)
-      #     .update_all(user_id: user.id, user_email: nil)
-      # end
     end
   end
 

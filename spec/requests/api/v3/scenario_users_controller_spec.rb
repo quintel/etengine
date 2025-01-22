@@ -69,8 +69,6 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com', 'role' => 'scenario_owner', 'role_id' => 3, 'scenario_id' => scenario.id)
         )
       end
-
-      # TODO: Test for mailer?
     end
 
     context 'with missing role information' do
