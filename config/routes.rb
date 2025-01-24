@@ -39,11 +39,6 @@ Rails.application.routes.draw do
           get  'versions', to: 'scenario_version_tags#index'
         end
 
-        #TODO: is this still necessary?
-        # Redirection of old converter routes to new nodes route
-        get 'converters',      to: redirect('/api/v3/scenarios/%{scenario_id}/nodes')
-        get 'converters/:id',  to: redirect('/api/v3/scenarios/%{scenario_id}/nodes/%{id}')
-
         resources :nodes, only: :show do
           collection do
             get :topology
@@ -54,13 +49,6 @@ Rails.application.routes.draw do
         resources :inputs, only: %i[index show]
 
         resource :version, only: %i[create show update], controller: 'scenario_version_tags'
-
-        # TODO: Do we still need these removed_features routes?
-        # Removed feature: flexibility_order
-        get   :flexibility_order, to: 'removed_features#flexibility_order'
-        put   :flexibility_order, to: 'removed_features#flexibility_order'
-        patch :flexibility_order, to: 'removed_features#flexibility_order'
-
 
         resource :heat_network_order,                     only: %i[show update],
           controller: :user_sortables, sortable_type: :heat_network
@@ -106,8 +94,8 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :saved_scenarios, except: %i[new]
-      resources :collections
+      resources :saved_scenarios, except: %i[new edit]
+      resources :collections, except: %i[new edit]
 
       # Redirecting old transition paths routes to collections
       resources :transition_paths, controller: :collections
