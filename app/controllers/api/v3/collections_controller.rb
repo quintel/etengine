@@ -3,19 +3,18 @@
 module Api
   module V3
     class CollectionsController < BaseController
-      before_action :set_current_scenario
       before_action :warn_if_deprecated
 
       before_action(only: %i[index show]) do
-        authorize!(:read, @scenario)
+        authorize!(:read, Scenario)
       end
 
       before_action(only: %i[create update]) do
-        authorize!(:write, @scenario)
+        authorize!(:write, Scenario)
       end
 
-      before_action(only: %i[discard undiscard]) do
-        authorize!(:destroy, @scenario)
+      before_action(only: %i[destroy]) do
+        authorize!(:destroy, Scenario)
       end
 
       def index
