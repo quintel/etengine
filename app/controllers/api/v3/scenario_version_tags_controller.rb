@@ -73,8 +73,13 @@ module Api
 
       private
 
+      # Allow old and new way of structuring params
       def version_params
-        params.require(:scenario_version_tag).permit(:description)
+        if params['scenario_version_tag']
+          params.require(:scenario_version_tag).permit(:description)
+        else
+          params.permit(:description)
+        end
       end
 
       def scenario_version_tag
