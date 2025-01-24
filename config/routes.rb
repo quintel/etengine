@@ -8,15 +8,6 @@ Rails.application.routes.draw do
   root to: 'pages#index'
 
   # --------------------------------------------------------------------------
-  # FRONTEND
-  # --------------------------------------------------------------------------
-  resources :users, except: %i[show destroy] do
-    member do
-      post :resend_confirmation_email
-    end
-  end
-
-  # --------------------------------------------------------------------------
   # API V3
   # --------------------------------------------------------------------------
   namespace :api do
@@ -26,8 +17,6 @@ Rails.application.routes.draw do
       resources :gqueries, only: :index
 
       resources :scenarios, only: %i[index show create update destroy] do
-        # NOTE: These might be consolidated further if you wish to group
-        #       the multiple :get exports under a single "export" resource.
         member do
           get :batch
           get :application_demands,     to: 'export#application_demands'
@@ -50,6 +39,7 @@ Rails.application.routes.draw do
           get  'versions', to: 'scenario_version_tags#index'
         end
 
+        #TODO: is this still necessary?
         # Redirection of old converter routes to new nodes route
         get 'converters',      to: redirect('/api/v3/scenarios/%{scenario_id}/nodes')
         get 'converters/:id',  to: redirect('/api/v3/scenarios/%{scenario_id}/nodes/%{id}')
@@ -118,6 +108,9 @@ Rails.application.routes.draw do
 
       resources :saved_scenarios, except: %i[new]
       resources :collections
+
+      # Redirecting old transition paths routes to collections
+      resources :transition_paths, controller: :collections
 
       resources :inputs, only: %i[index show] do
         get :list, on: :collection
@@ -213,7 +206,7 @@ Rails.application.routes.draw do
 
   # Misc Redirections
   get '/data',               to: redirect('/inspect', status: 302)
-  get '/redirect_to_external', to: 'redirect#set_cookie_and_redirect', as: :redirect_to_external
+  get '/my_etm/:page',         to: 'redirect#set_cookie_and_redirect', as: :my_etm
 
   get '/data/*rest',
     to: redirect(status: 302) { |params| "/inspect/#{params[:rest]}" }

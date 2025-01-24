@@ -24,7 +24,7 @@ RSpec.describe UpdateSavedScenario do
       builder.adapter(:test) do |stub|
         request_params = params
           .except(:id)
-          .merge(area_code: scenario.area_code, end_year: scenario.end_year)
+          .merge(area_code: scenario.area_code, end_year: scenario.end_year, version: Settings.version_tag)
 
         stub.put('/api/v1/saved_scenarios/123', request_params) do
           [
@@ -109,7 +109,7 @@ RSpec.describe UpdateSavedScenario do
     let(:client) do
       Faraday.new do |builder|
         builder.adapter(:test) do |stub|
-          request_params = params.merge(area_code: scenario.area_code, end_year: scenario.end_year)
+          request_params = params.merge(area_code: scenario.area_code, end_year: scenario.end_year, version: Settings.version_tag)
 
           stub.put('/api/v1/saved_scenarios/123', request_params) do
             raise Faraday::ResourceNotFound
@@ -128,7 +128,7 @@ RSpec.describe UpdateSavedScenario do
   end
 
   context 'when the params title is blank' do
-    let(:params) { super().merge(title: '') }
+    let(:params) { super().merge(title: '', version: Settings.version_tag) }
 
     it 'returns a Failure' do
       expect(result).to be_failure
@@ -157,7 +157,7 @@ RSpec.describe UpdateSavedScenario do
     let(:client) do
       Faraday.new do |builder|
         builder.adapter(:test) do |stub|
-          stub.put('/api/v1/saved_scenarios/123', {}) do
+          stub.put('/api/v1/saved_scenarios/123', { version: Settings.version_tag }) do
             [
               200,
               { 'Content-Type' => 'application/json' },

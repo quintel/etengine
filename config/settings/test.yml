@@ -3,7 +3,7 @@ etsource_lazy_load_dataset: false
 etsource_export: spec/fixtures/etsource
 etsource_working_copy: spec/fixtures/etsource
 
-idp_url: https://beta-engine.energytransitionmodel.com
+idp_url: https://beta.my.energytransitionmodel.com
 
 identity:
   client_id: client_id_test

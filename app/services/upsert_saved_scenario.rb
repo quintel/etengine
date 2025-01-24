@@ -42,7 +42,7 @@ class UpsertSavedScenario
   end
 
   def upsert_saved_scenario(client, params)
-    Success(client.public_send(@method, @endpoint_path, params).body)
+    Success(client.public_send(@method, @endpoint_path, params.merge(version: Settings.version_tag)).body)
   rescue Faraday::UnprocessableEntityError => e
     Failure(e.response[:body]['errors'])
   rescue Faraday::ResourceNotFound
@@ -51,6 +51,6 @@ class UpsertSavedScenario
 
   # Decorates the params with the scenario's area code and end year when a scenario_id is set.
   def full_params(params, scenario)
-    scenario ? params.merge(area_code: scenario.area_code, end_year: scenario.end_year) : params # TODO: add version param:  ", version: scenario.version"
+    scenario ? params.merge(area_code: scenario.area_code, end_year: scenario.end_year) : params
   end
 end
