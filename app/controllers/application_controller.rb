@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
     if current_user
       render_not_found
     else
-      redirect_to new_user_url
+      redirect_to sign_in_path
     end
   end
 
