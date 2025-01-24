@@ -50,42 +50,41 @@
                 - else
                   = render partial: 'header_menus_without_scenario'
 
-                %li.dropdown
-                  %a.dropdown-toggle{ href: '#', data: { toggle: 'dropdown' } }
-                    Misc
-                    %b.caret
-                  %ul.dropdown-menu
-                    %li= link_to 'Users', users_path
-                    %li= link_to 'Turk', mechanical_turk_root_path
+                %li
+                  = link_to 'Turk', mechanical_turk_root_path
 
               %ul.nav.pull-right
                 - if params[:api_scenario_id]
                   %li
                     %form.form-inline.navbar-search{ action: inspect_search_path, method: :get }
-                      %input.search-query.typeahead{ name: 'search', placeholder: "Search", autocomplete: 'off'}
+                      %input.search-query.typeahead{ name: 'search', placeholder: "Search", autocomplete: 'off' }
 
                   %li.divider-vertical
                   %li
-                    %form#api_scenario_selector.navbar-form.form.form-inline{ action: inspect_redirect_path, method: :get }
-                      - opts = Scenario.recent.map{ |as| [as.identifier, as.id] }
+                    %form#api_scenario_selector.navbar-form.form-inline{ action: inspect_redirect_path, method: :get }
+                      - opts = Scenario.recent.map { |as| [as.identifier, as.id] }
                       = select_tag :api_scenario_id, options_for_select(opts, params[:api_scenario_id]), class: 'span2'
 
+                  %li.divider-vertical
                   %li
-                    %form#area_code_selector.navbar-form.form.form-inline{ action: '#', method: :get }
+                    %form#area_code_selector.navbar-form.form-inline{ action: '#', method: :get }
                       = select_tag 'area_code', grouped_options_for_select(grouped_region_options), prompt: "New scenario:", class: 'span1'
 
                 %li.divider-vertical
                 %li
-                  = link_to redirect_to_external_path(destination: user_profile_url, return_to: request.url), class: 'compact-link' do
+                  = link_to my_etm_path("identity/profile"), class: 'compact-link' do
                     = inline_svg 'hero/20/user-circle.svg', aria_label: 'My profile'
+
                 %li.divider-vertical
                 %li{ style: 'margin-right: -12px' }
                   = link_to sign_out_path, method: :get, class: 'compact-link' do
                     = inline_svg 'phosphor/20/sign-out.svg', aria_label: 'Sign out'
+
             - else
               %ul.nav
-                %li= link_to 'login', redirect_to_external_path(destination: new_user_path, return_to: request.url)
-
+                %li
+                  = link_to sign_in_path, method: :get, class: 'compact-link' do
+                    = inline_svg 'phosphor/20/sign-out.svg', aria_label: 'Sign In'
 
     .subnav.subnav-fixed= yield :subnav
 

@@ -24,7 +24,7 @@ RSpec.describe CreateSavedScenario do
   let(:client) do
     Faraday.new do |builder|
       builder.adapter(:test) do |stub|
-        request_params = params.merge(area_code: scenario.area_code, end_year: scenario.end_year)
+        request_params = params.merge(area_code: scenario.area_code, end_year: scenario.end_year, version: Settings.version_tag)
 
         stub.post('/api/v1/saved_scenarios', request_params) do
           [
