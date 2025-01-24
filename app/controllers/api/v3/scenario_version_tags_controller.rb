@@ -74,7 +74,7 @@ module Api
       private
 
       def version_params
-        params.permit(:description)
+        params.require(:scenario_version_tag).permit(:description)
       end
 
       def scenario_version_tag
