@@ -6,7 +6,7 @@ module ScenariosHelper
   end
 
   def user_path(*)
-    "#{Setting.idp_url}/admin/users"
+    "#{Settings.idp_url}/admin/users"
   end
 
   def grouped_region_options
