@@ -5,6 +5,10 @@ module ScenariosHelper
     end
   end
 
+  def user_path(*)
+    "#{Setting.idp_url}/admin/users"
+  end
+
   def grouped_region_options
     grouped_region_types.map do |group|
       [group.human_name, group.regions.map { |region| [region.key, region.key] }]
