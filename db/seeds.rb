@@ -7,15 +7,13 @@ end
 password = SecureRandom.base58(8)
 
 User.create!(
-  name:     'Admin',
-  email:    'admin@example.org',
-  password: password,
+  name:     'Seeded Admin',
   admin:    true
 )
 
 puts <<~MSG
   +------------------------------------------------------------------------------+
-  |         Created admin user admin@example.org with password: #{password}         |
+  |         Created admin user 'Seeded Admin' with password: #{password}         |
   | Please change this password if you're deploying to a production environment! |
   +------------------------------------------------------------------------------+
 MSG

@@ -97,4 +97,5 @@ Rails.application.configure do
     # task).
     Etsource::Reloader.start! if ENV['CI'] != 'true' && Settings.etsource_live_reload
   end
+
 end

@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   helper :all
+  helper_method :current_user
 
-  # TODO refactor move the hooks and corresponding actions into a "concern"
+  before_action :current_user
   before_action :initialize_memory_cache
   before_action :set_locale
   before_action :configure_sentry
@@ -11,12 +12,19 @@ class ApplicationController < ActionController::Base
     if current_user
       render_not_found
     else
-      redirect_to new_user_session_url
+      redirect_to sign_in_path
     end
   end
 
   def initialize_memory_cache
     NastyCache.instance.initialize_request
+  end
+
+  def current_user
+    @current_user ||= User.from_session_user!(identity_user) if signed_in?
+  rescue ActiveRecord::RecordNotFound
+    reset_session
+    redirect_to root_path
   end
 
   def set_locale
@@ -63,12 +71,11 @@ class ApplicationController < ActionController::Base
   #    infinite redirect loop.
   # - The request is an Ajax request as this can lead to very unexpected behaviour.
   def storable_location?
-    request.get? && is_navigational_format? && !devise_controller? && !request.xhr?
+    request.get? && request.format.html? && !request.xhr?
   end
 
   def store_user_location!
-    # :user is the scope we are authenticating
-    store_location_for(:user, request.fullpath)
+    session[:user_return_to] = request.fullpath
   end
 
   def after_sign_in_path_for(resource_or_scope)
@@ -110,4 +117,5 @@ class ApplicationController < ActionController::Base
 
     true
   end
+
 end

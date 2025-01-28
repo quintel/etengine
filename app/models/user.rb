@@ -7,65 +7,24 @@ class User < ApplicationRecord
     3 => :scenario_owner
   }.freeze
 
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable, :registerable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         :confirmable, :trackable
+  attr_accessor :identity_user
 
-  # rubocop:disable Rails/InverseOf
-
-  has_many :access_grants,
-    class_name: 'Doorkeeper::AccessGrant',
-    foreign_key: :resource_owner_id,
-    dependent: :delete_all
-
-  has_many :access_tokens,
-    class_name: 'Doorkeeper::AccessToken',
-    foreign_key: :resource_owner_id,
-    dependent: :delete_all
-
-  has_many :oauth_applications,
-    class_name: 'OAuthApplication',
-    dependent: :delete_all,
-    as: :owner
-
-  has_many :staff_applications, dependent: :destroy
-
-  # rubocop:enable Rails/InverseOf
+  delegate :email, :roles, :admin?, to: :identity_user, allow_nil: true
 
   has_many :scenario_users, dependent: :destroy
   has_many :scenarios, through: :scenario_users
   has_many :scenario_version_tags
   has_many :personal_access_tokens, dependent: :destroy
 
-  validates :name, presence: true, length: { maximum: 191 }
 
-  after_create :couple_scenario_users
+  validates :name, presence: true
 
-  def valid_password?(password)
-    return true if super
+  scope :ordered, -> { order('name') }
 
-    # Fallback to salting the password with the salt for users imported from ETModel.
-    return super("#{password}#{legacy_password_salt}") if legacy_password_salt.present?
-
-    false
-  end
-
-  def roles
-    admin? ? %w[user admin] : %w[user]
-  end
-
-  def as_json(options = {})
-    super(options.merge(except: Array(options[:except]) + [:legacy_password_salt]))
-  end
-
-  def active_for_authentication?
-    super && deleted_at.nil?
-  end
+    # after_create :couple_scenario_users
 
   # Links existing scenario users to the new User.
-  #
+
   # It needs to be linked through the scenario user to ensure the scenario
   # user stops being marked as dirty.
   def couple_scenario_users
@@ -73,5 +32,31 @@ class User < ApplicationRecord
       su.couple_to(self)
       su.save
     end
+  end
+
+ # Performs sign-in steps for an Identity::User.
+  #
+  # If a matching user exists in the database, it will be updated with the latest data from the
+  # Identity::User. Otherwise, a new user will be created.
+  #
+  # Returns the user. Raises an error if the user could not be saved.
+  def self.from_identity!(identity_user)
+    where(id: identity_user.id).first_or_initialize.tap do |user|
+      user.identity_user = identity_user
+      user.name = identity_user.name
+
+      user.save!
+    end
+  end
+
+  # Finds or creates a user from a JWT token.
+  def self.from_jwt!(token)
+    id = token['sub']
+    raise 'Token does not contain user information' unless id.present?
+    User.find_or_create_by!(id: id)
+  end
+
+  def self.from_session_user!(identity_user)
+    find(identity_user.id).tap { |u| u.identity_user = identity_user }
   end
 end

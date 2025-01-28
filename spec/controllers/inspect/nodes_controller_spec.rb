@@ -4,13 +4,13 @@ describe Inspect::NodesController do
   let(:admin) { FactoryBot.create(:admin) }
   let(:scenario) { FactoryBot.create(:scenario) }
 
-  before do
-    sign_in(admin)
-  end
-
   describe 'GET index' do
-    it 'is successful' do
+    before do
+      sign_in admin
       get :index, params: { graph_name: 'energy', api_scenario_id: scenario.id }
+    end
+
+    it 'is successful' do
       expect(response).to render_template(:index)
     end
   end

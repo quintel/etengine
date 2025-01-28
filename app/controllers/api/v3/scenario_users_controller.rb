@@ -5,10 +5,8 @@ module Api
     class ScenarioUsersController < BaseController
       include UsesScenario
 
-      respond_to :json
-
       # Only scenario owners, having the delete authority, may manage scenario users
-      before_action { doorkeeper_authorize!(:'scenarios:delete') }
+      before_action { authorize!(:destroy, @scenario) }
 
       def index
         render json: @scenario.scenario_users
@@ -28,9 +26,6 @@ module Api
             add_error(scenario_user.email, ['duplicate'])
             next
           end
-
-          # Send an email invitation to the added user
-          send_invitation_mail_for(scenario_user) if invite?
 
           scenario_user
         end
@@ -152,16 +147,6 @@ module Api
 
       def invite?
         permitted_params.dig(:invitation_args, :invite) == true
-      end
-
-      # Make sure a user knows it was added to a scenario by sending an email notifying them.
-      def send_invitation_mail_for(scenario_user)
-        ScenarioInvitationMailer.invite_user(
-          scenario_user.email,
-          permitted_params[:invitation_args][:user_name],
-          User::ROLES[scenario_user.role_id],
-          permitted_params[:invitation_args].slice(:id, :title)
-        ).deliver
       end
 
       def json_response(ok_status: :ok, extra_condition: true)

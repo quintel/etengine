@@ -6,12 +6,14 @@ RSpec.describe UpsertTransitionPath do
   let!(:scenario1) { create(:scenario, end_year: 2040, user: user) }
   let!(:scenario2) { create(:scenario, end_year: 2050, user: user) }
 
-  let!(:token) do
-    create(
-      :access_token,
-      resource_owner_id: user.id,
-      scopes: 'public scenarios:read scenarios:write'
-    )
+  let(:token) do
+    {
+      iss: Settings.identity.api_url,
+      aud: 'all_clients',
+      sub: 1,
+      exp: 2730367768, # Static expiration
+      scopes: %w[read write]
+    }.with_indifferent_access
   end
 
   let(:params)  { { scenario_ids: [scenario1.id, scenario2.id], title: 'My transition path' } }

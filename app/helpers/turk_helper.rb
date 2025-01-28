@@ -1,5 +1,5 @@
 module TurkHelper
-  def turk_it(key, result) 
+  def turk_it(key, result)
     present = result.first.last
     future = result.last.last
     if present.is_a?(Numeric) && future.is_a?(Numeric)

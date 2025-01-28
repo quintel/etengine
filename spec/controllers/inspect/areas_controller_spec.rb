@@ -10,7 +10,7 @@ describe Inspect::AreasController do
 
   describe "GET show" do
     it "should be successful" do
-      get :show, params: { :api_scenario_id => scenario.id }
+      get :show, params: {:api_scenario_id => scenario.id }
       expect(response).to render_template(:show)
     end
   end

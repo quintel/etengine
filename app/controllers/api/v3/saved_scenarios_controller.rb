@@ -3,15 +3,23 @@
 module Api
   module V3
     class SavedScenariosController < BaseController
-      respond_to :json
+      render json:
 
-      before_action(only: %i[index show])    { doorkeeper_authorize!(:'scenarios:read') }
-      before_action(only: %i[create update]) { doorkeeper_authorize!(:'scenarios:write') }
-      before_action(only: %i[destroy])       { doorkeeper_authorize!(:'scenarios:delete') }
+      before_action(only: %i[index show]) do
+        authorize!(:read, @scenario)
+      end
+
+      before_action(only: %i[create update]) do
+        authorize!(:write, @scenario)
+      end
+
+      before_action(only: %i[discard undiscard]) do
+        authorize!(:destroy, @scenario)
+      end
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
-        response = etmodel_client.get("/api/v1/saved_scenarios?#{query}")
+        response = idp_client.get("/api/v1/saved_scenarios?#{query}")
 
         render json: response.body.to_h.merge(
           'data'  => hydrate_scenarios(response.body['data']),
@@ -20,7 +28,7 @@ module Api
       end
 
       def show
-        response = etmodel_client.get("/api/v1/saved_scenarios/#{params.require(:id).to_i}")
+        response = idp_client.get("/api/v1/saved_scenarios/#{params.require(:id).to_i}")
         render json: hydrate_scenario(response.body)
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -30,11 +38,13 @@ module Api
         CreateSavedScenario.new.call(
           params: params.permit!.to_h,
           ability: current_ability,
-          client: etmodel_client
+          client: idp_client
         ).either(
           ->((data, *)) { render json: hydrate_scenario(data) },
           ->(errors)    { service_error_response(errors) }
         )
+      rescue Faraday::ResourceNotFound
+        render_not_found
       end
 
       def update
@@ -42,21 +52,25 @@ module Api
           id: params.require(:id),
           params: params.permit!.to_h,
           ability: current_ability,
-          client: etmodel_client
+          client: idp_client
         ).either(
           ->((data, *)) { render json: hydrate_scenario(data) },
           ->(error)     { service_error_response(error) }
         )
+      rescue Faraday::ResourceNotFound
+        render_not_found
       end
 
       def destroy
         DeleteSavedScenario.new.call(
           id: params.require(:id),
-          client: etmodel_client
+          client: idp_client
         ).either(
           ->((data, *)) { render json: data },
           ->(error)     { service_error_response(error) }
         )
+      rescue Faraday::ResourceNotFound
+        render_not_found
       end
 
       private
@@ -95,12 +109,12 @@ module Api
         end
       end
 
-      def saved_scenario_params
-        params.permit(:scenario_id, :title, :description, :private)
+      def idp_client
+        ETEngine::Clients.idp_client(current_user)
       end
 
-      def etmodel_client
-        ETEngine::Auth.etmodel_client(current_user, scopes: doorkeeper_token.scopes)
+      def saved_scenario_params
+        params.permit(:scenario_id, :title, :description, :private)
       end
 
       def service_error_response(failure)

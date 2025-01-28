@@ -23,6 +23,7 @@ module Etm
 
     config.autoload_paths << Rails.root.join("lib")
 
+
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
@@ -46,9 +47,14 @@ module Etm
     # Store files locally.
     config.active_storage.service = :local
 
-    config.to_prepare do
-      Doorkeeper::AuthorizationsController.layout 'login'
-      Doorkeeper::AuthorizedApplicationsController.layout 'identity'
+    Config.setup do |config|
+      config.const_name = 'Settings'
+    end
+
+    local_settings_file = Rails.root.join('config/settings.local.yml')
+    if local_settings_file.exist?
+      Settings.add_source!(local_settings_file.to_s)
+      Settings.reload!
     end
 
     # Mail

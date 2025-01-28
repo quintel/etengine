@@ -7,12 +7,14 @@ RSpec.describe CreateSavedScenario do
   let!(:user)     { create(:user) }
   let!(:scenario) { create(:scenario, user: user) }
 
-  let!(:token) do
-    create(
-      :access_token,
-      resource_owner_id: user.id,
-      scopes: 'public scenarios:read scenarios:write'
-    )
+  let(:token) do
+    {
+      iss: Settings.identity.api_url,
+      aud: 'all_clients',
+      sub: 1,
+      exp: 2730367768, # Static expiration
+      scopes: %w[read write]
+    }.with_indifferent_access
   end
 
   let(:scenario_id) { scenario.id }
@@ -22,7 +24,7 @@ RSpec.describe CreateSavedScenario do
   let(:client) do
     Faraday.new do |builder|
       builder.adapter(:test) do |stub|
-        request_params = params.merge(area_code: scenario.area_code, end_year: scenario.end_year)
+        request_params = params.merge(area_code: scenario.area_code, end_year: scenario.end_year, version: Settings.version_tag)
 
         stub.post('/api/v1/saved_scenarios', request_params) do
           [

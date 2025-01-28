@@ -9,7 +9,9 @@ describe 'APIv3 Topology Data' do
   let(:scenario) { FactoryBot.create(:scenario) }
 
   before do
-    get("/api/v3/scenarios/#{ scenario.id }/nodes/topology")
+    get"/api/v3/scenarios/#{ scenario.id }/nodes/topology",
+      params: "{",
+      headers: access_token_header(create(:user), :read)
   end
 
   it 'should be successful' do

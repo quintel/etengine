@@ -11,10 +11,12 @@ describe 'ESDL files', :etsource_fixture do
 
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:url) { "/api/v3/scenarios/#{scenario.id}/esdl_file" }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
 
   context('when requesting attached esdl file') do
     context 'when nothing is attached' do
-      before { get(url) }
+      before { get(url, headers: headers) }
 
       it 'succeeds' do
         expect(response).to be_successful
@@ -29,9 +31,9 @@ describe 'ESDL files', :etsource_fixture do
       before do
         put url, params: {
           file: fixture_file_upload('valid_esdl_file.esdl', 'text/xml')
-        }
+        }, headers: headers
 
-        get(url)
+        get(url, headers: headers)
       end
 
       it 'succeeds' do
@@ -53,9 +55,9 @@ describe 'ESDL files', :etsource_fixture do
       before do
         put url, params: {
           file: fixture_file_upload('valid_esdl_file.esdl', 'text/xml')
-        }
+        }, headers: headers
 
-        get(url, params: { download: true })
+        get(url, params: { download: true }, headers: headers)
       end
 
       it 'succeeds' do
@@ -84,7 +86,7 @@ describe 'ESDL files', :etsource_fixture do
     let(:request) do
       put url, params: {
         file: fixture_file_upload('valid_esdl_file.esdl', 'text/xml')
-      }
+      }, headers: headers
     end
 
     it 'succeeds' do
@@ -110,7 +112,7 @@ describe 'ESDL files', :etsource_fixture do
     let(:request) do
       put url, params: {
         file: fixture_file_upload(file.path, 'text/xml')
-      }
+      }, headers: headers
     end
 
     before do
@@ -171,7 +173,7 @@ describe 'ESDL files', :etsource_fixture do
     let(:request) do
       put url, params: {
         file: file
-      }
+      }, headers: headers
     end
 
     it 'fails' do

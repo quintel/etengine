@@ -62,8 +62,8 @@ task import_users: :environment do
     first_party: true
   )
 
-  # Create OAuth clients for each staff member.
-  admins.each do |email|
-    CreateStaffApplications.call(User.find_by!(email:))
-  end
+  # # Create OAuth clients for each staff member.
+  # admins.each do |email|
+  #   CreateStaffApplications.call(User.find_by!(email:))
+  # end
 end

@@ -6,9 +6,11 @@ describe 'APIv3 heat network orders' do
   let(:valid_options) { HeatNetworkOrder.default_order }
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:url) { api_v3_scenario_heat_network_order_url(scenario_id: scenario.id, subtype: :ht) }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
 
   context 'when fetching the heat network order' do
-    let(:request) { get(url) }
+    let(:request) { get(url, headers: headers) }
 
     context 'when no order exists' do
       it 'is a successful request' do
@@ -148,7 +150,7 @@ describe 'APIv3 heat network orders' do
       before do
         scenario.delete_all_users
         scenario.user = create(:user)
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       it 'responds with 403 Forbidden' do
@@ -174,7 +176,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the heat network order does not exist, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       include_examples 'a successful heat network order update'
@@ -189,7 +191,7 @@ describe 'APIv3 heat network orders' do
       let(:request) do
         put url, params: {
           heat_network_order: { order: valid_options.reverse }
-        }
+        }, headers: headers
       end
 
       include_examples 'a successful heat network order update'
@@ -201,7 +203,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the scenario does not exist, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       before do
@@ -220,7 +222,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the heat network order does not exist, given invalid data' do
       let(:request) do
-        put url, params: { order: %w[invalid] }
+        put url, params: { order: %w[invalid] }, headers: headers
       end
 
       include_examples 'a failed heat network order update'
@@ -232,7 +234,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the heat network order exists, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       before do
@@ -255,7 +257,7 @@ describe 'APIv3 heat network orders' do
       let(:request) do
         put url, params: {
           heat_network_order: { order: valid_options.reverse }
-        }
+        }, headers: headers
       end
 
       before do
@@ -275,7 +277,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the heat network order exists, given invalid data' do
       let(:request) do
-        put url, params: { order: %w[invalid] }
+        put url, params: { order: %w[invalid] }, headers: headers
       end
 
       before do
@@ -295,7 +297,7 @@ describe 'APIv3 heat network orders' do
 
     context 'when the request contains an invalid heat_network_order payload' do
       let(:request) do
-        put url, params: { heat_network_order: 'hi' }
+        put url, params: { heat_network_order: 'hi' }, headers: headers
       end
 
       it 'is a failed request' do

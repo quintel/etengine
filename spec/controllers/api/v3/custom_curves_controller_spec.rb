@@ -4,9 +4,14 @@ require 'spec_helper'
 
 RSpec.describe Api::V3::CustomCurvesController do
   let(:scenario) { FactoryBot.create(:scenario) }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
 
   context 'when no curves are attached' do
-    before { get(:index, params: { scenario_id: scenario.id }) }
+    before do
+      request.headers.merge!(headers)
+      get(:index, params: { scenario_id: scenario.id })
+    end
 
     it 'is successful' do
       expect(response).to be_successful
@@ -18,7 +23,10 @@ RSpec.describe Api::V3::CustomCurvesController do
   end
 
   context 'when no curves are attached and include_unattached is "true"' do
-    before { get(:index, params: { scenario_id: scenario.id, include_unattached: 'true' }) }
+    before do
+      request.headers.merge!(headers)
+      get(:index, params: { scenario_id: scenario.id, include_unattached: 'true' })
+    end
 
     it 'is successful' do
       expect(response).to be_successful
@@ -30,7 +38,10 @@ RSpec.describe Api::V3::CustomCurvesController do
   end
 
   context 'when no curves are attached and include_unattached is "false"' do
-    before { get(:index, params: { scenario_id: scenario.id, include_unattached: 'false' }) }
+    before do
+      request.headers.merge!(headers)
+      get(:index, params: { scenario_id: scenario.id, include_unattached: 'false' })
+    end
 
     it 'is successful' do
       expect(response).to be_successful
@@ -43,6 +54,7 @@ RSpec.describe Api::V3::CustomCurvesController do
 
   context 'when no curves are attached and include_unattached and include_internal area "true"' do
     before do
+      request.headers.merge!(headers)
       get(
         :index,
         params: { scenario_id: scenario.id, include_unattached: 'true', include_internal: 'true' }
@@ -61,6 +73,7 @@ RSpec.describe Api::V3::CustomCurvesController do
 
   context 'when no curves are attached and include_unattached and include_unattached are "false"' do
     before do
+      request.headers.merge!(headers)
       get(
         :index,
         params: { scenario_id: scenario.id, include_unattached: 'false', include_internal: 'false' }

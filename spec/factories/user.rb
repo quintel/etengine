@@ -1,15 +1,20 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :user do
+    sequence(:id, 1000) { |n| n } # Start IDs at 1000 to avoid conflicts with potential seeds
     name { 'John Doe' }
-    sequence(:email) { |n| "hello.#{n}@quintel.com" }
-    password { 'password' }
+    sequence(:email) { |n| "person#{n}@quintel.com" }
+    roles { %w[user] }
 
-    trait :confirmed_at do
-      confirmed_at { Time.current }
+    initialize_with do
+      User.new(id:, name:).tap do |user|
+        user.identity_user = Identity::User.new(id:, name:, email:, roles:)
+      end
     end
   end
 
   factory :admin, parent: :user do
-    admin { true }
+    roles { %w[user admin] }
   end
 end

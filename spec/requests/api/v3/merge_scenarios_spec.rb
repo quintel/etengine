@@ -21,6 +21,8 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   let(:merged) { Scenario.last }
   let(:json)   { JSON.load(response.body) }
+  let(:user) { create(:user) }
+  let(:token_header) { access_token_header(user, :write) }
 
   context 'with two scenarios' do
     let(:request) do
@@ -29,7 +31,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
           { scenario_id: scenario_one.id, weight: 3.0 },
           { scenario_id: scenario_two.id, weight: 1.0 }
         ]
-      })
+      }, headers: token_header)
     end
 
     it 'is successful' do
@@ -57,7 +59,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
           { scenario_id: scenario_one.id, weight: 3.0 },
           { scenario_id: scenario_two.id }
         ]
-      })
+      }, headers: token_header)
     end
 
     it 'creates a new scenario' do
@@ -77,7 +79,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
           { scenario_id: scenario_one.id, weight: 3.0 },
           { scenario_id: '-1',            weight: 1.0 }
         ]
-      })
+      }, headers: token_header)
     end
 
     it 'does not create a new scenario'
@@ -92,7 +94,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
           { scenario_id: scenario_one.id, weight: 3.0 },
           { scenario_id: scenario_two.id, weight: 1.0 }
         ]
-      })
+      }, headers: token_header)
     end
 
     before { scenario_one.update!(user: create(:user), private: true) }
@@ -109,7 +111,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
         scenarios: [
           { scenario_id: scenario_one.id, weight: 3.0 }
         ]
-      })
+      }, headers: token_header)
     end
 
     it 'creates a new scenario' do
@@ -124,7 +126,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
 
   context 'with no scenarios' do
     let(:request) do
-      post('/api/v3/scenarios/merge', params: { scenarios: [] })
+      post('/api/v3/scenarios/merge', params: { scenarios: [] }, headers: token_header)
     end
 
     it 'does not create a new scenario' do
@@ -157,7 +159,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
           { scenario_id: scenario_one.id, weight: 3.0 },
           { scenario_id: scenario_two.id, weight: 1.0 }
         ]
-      })
+      }, headers: token_header)
     end
 
     it 'does not create a new scenario' do

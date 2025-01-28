@@ -16,6 +16,7 @@ gem 'haml',         '~> 5.0'
 gem 'json'
 
 gem 'rake'
+gem 'activeresource', '~> 6.0'
 
 # Ruby gems
 gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
@@ -33,19 +34,24 @@ gem 'kaminari'
 
 # Authentication and authorization
 gem 'cancancan', '~> 3.0'
-gem 'devise', '~> 4.7'
+gem 'identity', ref: 'df08519', github: 'quintel/identity_rails'
+gem 'jbuilder'
+gem 'activerecord-session_store'
+
+# gem 'devise', '~> 4.7'
 gem 'doorkeeper'
-gem 'doorkeeper-openid_connect', '~> 1.8.7'
+# gem 'doorkeeper-openid_connect', '~> 1.8.7'
 gem 'faraday'
 gem 'jwt'
-gem 'json-jwt'
-gem 'sidekiq'
+# gem 'json-jwt'
+# gem 'sidekiq'
 
 # Auth front-end
 gem 'dry-initializer'
 gem 'dry-monads'
 gem 'dry-struct'
 gem 'dry-validation'
+
 gem 'erb-formatter'
 gem 'http_accept_language'
 gem 'importmap-rails'

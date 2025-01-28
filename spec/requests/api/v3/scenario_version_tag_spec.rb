@@ -19,7 +19,9 @@ describe 'Scenario versions API' do
         create(:scenario_version_tag, scenario: scenario, user: user, description: message)
         create(:scenario_version_tag, scenario: scenario2, user: user, description: message2)
 
-        get("/api/v3/scenarios/versions", params: { scenarios: [scenario.id, scenario2.id] })
+        get "/api/v3/scenarios/versions",
+          params: { scenarios: [scenario.id, scenario2.id] },
+          headers: access_token_header(create(:user), :read)
       end
 
       it 'is successful' do
@@ -53,7 +55,9 @@ describe 'Scenario versions API' do
       before do
         create(:scenario_version_tag, scenario: scenario, user: user, description: message)
 
-        get("/api/v3/scenarios/versions", params: { scenarios: [scenario.id, scenario2.id] })
+        get "/api/v3/scenarios/versions",
+          params: { scenarios: [scenario.id, scenario2.id] },
+          headers: access_token_header(create(:user), :read)
       end
 
       it 'is successful' do
@@ -78,7 +82,9 @@ describe 'Scenario versions API' do
       before do
         create(:scenario_version_tag, scenario: scenario, user: user, description: message)
 
-        get("/api/v3/scenarios/versions", params: { scenarios: [scenario.id, private_scenario.id] })
+        get "/api/v3/scenarios/versions",
+          params: { scenarios: [scenario.id, private_scenario.id] },
+          headers: access_token_header(create(:user), :read)
       end
 
       let(:private_scenario) { create(:scenario, user: create(:user), private: true) }
@@ -106,7 +112,8 @@ describe 'Scenario versions API' do
     before do
       create(:scenario_version_tag, scenario: scenario, user: user, description: message)
 
-      get("/api/v3/scenarios/#{scenario.id}/version")
+      get "/api/v3/scenarios/#{scenario.id}/version",
+        headers: access_token_header(user, :read)
     end
 
     it 'is successful' do
@@ -145,7 +152,7 @@ describe 'Scenario versions API' do
       end
 
       context 'when providing a description' do
-        let(:params) { { description: message } }
+        let(:params) { { scenario_version_tag: { description: message } } }
 
         it 'is successful' do
           expect(response.status).to eq(200)
@@ -206,7 +213,7 @@ describe 'Scenario versions API' do
       end
 
       context 'when updating the message' do
-        let(:params) { { description: message2 } }
+        let(:params) { { scenario_version_tag: { description: message2 } } }
 
         it 'is successful' do
           expect(response.status).to eq(200)
@@ -242,7 +249,10 @@ describe 'Scenario versions API' do
       end
 
       context 'when trying to update the user and the message' do
-        let(:params) { { user_id: create(:user).id, description: message2 } }
+        let(:params) { {
+          user_id: create(:user).id,
+          scenario_version_tag: { description: message2 }
+        } }
 
         it 'is successful' do
           expect(response.status).to eq(200)

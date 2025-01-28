@@ -21,6 +21,8 @@ require 'view_component/test_helpers'
 
 require 'capybara/rails'
 require 'capybara/rspec'
+require 'identity/test/controller_helpers'
+
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -57,16 +59,14 @@ RSpec.configure do |config|
 
   config.include(FactoryBot::Syntax::Methods)
 
-  config.include(Devise::Test::ControllerHelpers, type: :controller)
-  config.include(AuthorizationHelper)
   config.include(MechanicalTurkHelper)
 
   config.include(HouseholdCurvesHelper, household_curves: true)
 
   config.include(ViewComponentHelpers, type: :component)
+  config.include(AuthorizationHelper)
+  config.include Identity::Test::ControllerHelpers, type: :controller
 
-  # System tests
-  config.include(SystemHelpers, type: :system)
 
   config.before(:each, type: :system) do
     driven_by :rack_test

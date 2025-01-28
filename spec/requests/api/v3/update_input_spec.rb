@@ -8,8 +8,12 @@ describe 'Updating inputs with API v3' do
     Etsource::Base.loader('spec/fixtures/etsource')
   end
 
+  let(:user) { create(:user) }
+  let(:token_header) { access_token_header(user, :write) }
+
   let(:scenario) do
     FactoryBot.create(:scenario,
+      user: user,
       user_values: { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
   end
@@ -69,7 +73,7 @@ describe 'Updating inputs with API v3' do
     allow(Input).to receive(:all).and_return(Input.records.values)
   end
 
-  def put_scenario(values: {}, params: {}, headers: {})
+  def put_scenario(values: {}, params: {}, headers: token_header)
     values = values.map { |k, v| [k.to_s, v.to_s] }.to_h
 
     put "/api/v3/scenarios/#{scenario.id}",
@@ -79,12 +83,12 @@ describe 'Updating inputs with API v3' do
     scenario.reload
   end
 
-  def nonbalanced_scenario(values: {}, params: {}, headers: {})
-    put_scenario(values:, params: params.merge(autobalance: false), headers:)
+  def nonbalanced_scenario(values: {}, params: {}, headers: token_header)
+    put_scenario(values:, params: params.merge(autobalance: false), headers: token_header)
   end
 
   def autobalance_scenario(values: {}, params: {}, headers: {})
-    put_scenario(values:, params: params.merge(autobalance: true), headers:)
+    put_scenario(values:, params: params.merge(autobalance: true), headers: token_header)
   end
 
   # --------------------------------------------------------------------------
@@ -108,6 +112,7 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
+        decoded_token = ETEngine::TokenDecoder.decode(token_header['Authorization'].split(' ').last)
         expect(response.status).to be(200)
       end
 
@@ -326,7 +331,9 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'includes the balanaced value when requesting inputs.json' do
-        get "/api/v3/scenarios/#{scenario.id}/inputs.json"
+        get "/api/v3/scenarios/#{scenario.id}/inputs.json",
+          params: '{',
+          headers: token_header
         inputs = JSON.parse(response.body)
 
         expect(inputs['balanced_two']['user']).to be(90.0)
@@ -596,7 +603,7 @@ describe 'Updating inputs with API v3' do
 
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },
-        headers: access_token_header(user, :write)
+        headers: token_header
       )
     end
 
@@ -627,14 +634,9 @@ describe 'Updating inputs with API v3' do
 
   context 'when updating their own private scenario' do
     before do
-      user = create(:user)
-
-      scenario.delete_all_users
-      scenario.update!(user: user)
-
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },
-        headers: access_token_header(user, :write)
+        headers: token_header
       )
     end
 
@@ -647,7 +649,9 @@ describe 'Updating inputs with API v3' do
 
   context 'with an out-of-range scenario ID' do
     it 'returns 404' do
-      put '/api/v3/scenarios/100000000000'
+      put '/api/v3/scenarios/100000000000',
+        params: '{',
+        headers: access_token_header(create(:user), :read)
       expect(response.status).to be(404)
     end
   end
@@ -657,7 +661,7 @@ describe 'Updating inputs with API v3' do
       scenario.area_code = 'invalid'
       scenario.save(validate: false)
 
-      put_scenario(params: { scenario: { end_year: 2030 } })
+      put_scenario(params: { scenario: { end_year: 2030 } }, headers: token_header)
     end
 
     it 'responds 422' do
@@ -672,7 +676,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the input does not exist' do
     before do
-      put_scenario(values: { does_not_exist: 50 })
+      put_scenario(values: { does_not_exist: 50 }, headers: token_header)
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -687,7 +691,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the value is above the permitted maximum' do
     before do
-      put_scenario(values: { nongrouped: 101 })
+      put_scenario(values: { nongrouped: 101 }, headers: token_header)
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -702,7 +706,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the value is beneath the permitted minimum' do
     before do
-      put_scenario(values: { nongrouped: -1 })
+      put_scenario(values: { nongrouped: -1 }, headers: token_header)
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -717,13 +721,13 @@ describe 'Updating inputs with API v3' do
 
   context 'when the value for a boolean input is set' do
     it 'returns 200 for value 0' do
-      put_scenario(values: { boolean_one: 0 })
+      put_scenario(values: { boolean_one: 0 }, headers: token_header)
 
       expect(response).to have_http_status(:ok)
     end
 
     it 'returns 200 for value 1' do
-      put_scenario(values: { boolean_one: 1 })
+      put_scenario(values: { boolean_one: 1 }, headers: token_header)
 
       expect(response).to have_http_status(:ok)
     end
@@ -731,7 +735,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when the value for a boolean input is set to an invalid value' do
     before do
-      put_scenario(values: { boolean_one: 1.5 })
+      put_scenario(values: { boolean_one: 1.5 }, headers: token_header)
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -753,7 +757,7 @@ describe 'Updating inputs with API v3' do
 
   context 'when requesting a non-existant query' do
     before do
-      put_scenario(values: { nongrouped: 10 }, params: { gqueries: %w[does_not_exist] })
+      put_scenario(values: { nongrouped: 10 }, params: { gqueries: %w[does_not_exist] }, headers: token_header)
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -773,7 +777,8 @@ describe 'Updating inputs with API v3' do
   context 'when submitting non-Hash user_values' do
     before do
       put "/api/v3/scenarios/#{scenario.id}",
-        params: { scenario: { user_values: [] } }
+        params: { scenario: { user_values: [] } },
+        headers: token_header
     end
 
     it 'responds 200 OK' do
@@ -785,7 +790,7 @@ describe 'Updating inputs with API v3' do
     before do
       put "/api/v3/scenarios/#{scenario.id}",
         params: '{',
-        headers: { 'CONTENT_TYPE' => 'application/json' }
+        headers: access_token_header(create(:user), :read).merge('CONTENT_TYPE' => 'application/json')
     end
 
     it 'responds 400 Bad Request' do

@@ -6,9 +6,12 @@ describe 'APIv3 forecast storage network orders' do
   let(:valid_options) { ForecastStorageOrder.default_order }
   let(:scenario) { create(:scenario) }
   let(:url) { api_v3_scenario_forecast_storage_order_url(scenario_id: scenario.id) }
+  let(:user) { create(:user) }
+  let(:headers) { access_token_header(user, :write) }
+
 
   context 'when fetching the forecast storage order' do
-    let(:request) { get(url) }
+    let(:request) { get(url, headers: headers) }
 
     context 'when no order exists' do
       it 'is a successful request' do
@@ -102,6 +105,8 @@ describe 'APIv3 forecast storage network orders' do
   end
 
   context 'when updating the forecast storage order' do
+    let(:request) { get(url, headers: access_token_header(user, :write)) }
+
     shared_examples_for 'a successful forecast storage order update' do
       it 'is a successful request' do
         request
@@ -146,7 +151,7 @@ describe 'APIv3 forecast storage network orders' do
       before do
         scenario.delete_all_users
         scenario.user = create(:user)
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       it 'responds with 403 Forbidden' do
@@ -172,7 +177,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the forecast storage order does not exist, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       include_examples 'a successful forecast storage order update'
@@ -184,7 +189,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the scenario does not exist, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       before do
@@ -203,7 +208,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the forecast storage order does not exist, given invalid data' do
       let(:request) do
-        put url, params: { order: %w[invalid] }
+        put url, params: { order: %w[invalid] }, headers: headers
       end
 
       include_examples 'a failed forecast storage order update'
@@ -215,7 +220,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the forecast storage order exists, given valid data' do
       let(:request) do
-        put url, params: { order: valid_options.reverse }
+        put url, params: { order: valid_options.reverse }, headers: headers
       end
 
       before do
@@ -234,7 +239,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the forecast storage order exists, given invalid data' do
       let(:request) do
-        put url, params: { order: %w[invalid] }
+        put url, params: { order: %w[invalid] }, headers: headers
       end
 
       before do
@@ -254,7 +259,7 @@ describe 'APIv3 forecast storage network orders' do
 
     context 'when the request contains an invalid forecast_storage_order payload' do
       let(:request) do
-        put url, params: { forecast_storage_order: 'hi' }
+        put url, params: { forecast_storage_order: 'hi' }, headers: headers
       end
 
       it 'is a failed request' do

@@ -17,11 +17,33 @@ describe 'Updating a scenario with API v3' do
     scenario.reload
   end
 
+  context 'with a keep-compatible scenario' do
+    let(:user) { create(:user) }
+    let(:headers) { access_token_header(user, :write) }
+
+    before do
+      scenario.update!(keep_compatible: true)
+    end
+
+    context 'when setting keep_compatible to false' do
+      let(:params) { { scenario: { keep_compatible: false } } }
+
+      it 'sets keep_compatible to false' do
+        expect {
+          patch api_v3_scenario_path(scenario.id), params: params, headers: headers
+        }.to change { scenario.reload.keep_compatible? }
+          .from(true).to(false)
+      end
+    end
+  end
+
   context 'when setting the scenario keep_compatible to true' do
     let(:params) { { scenario: { keep_compatible: true } } }
+    let(:user) { create(:user) }
+    let(:headers) { access_token_header(user, :write) }
 
     it 'sets keep_compatible to true' do
-      expect { update_scenario(params:) }
+      expect { update_scenario(params:, headers:) }
         .to change(scenario, :keep_compatible?).from(false).to(true)
     end
   end
@@ -69,22 +91,6 @@ describe 'Updating a scenario with API v3' do
           headers: access_token_header(user, :write)
         )
       end.to change(scenario, :private?).from(true).to(false)
-    end
-  end
-
-  context 'with a keep-compatible scenario' do
-    before do
-      scenario.update!(keep_compatible: true)
-    end
-
-    context 'when setting keep_compatible to false' do
-      let(:params) { { scenario: { keep_compatible: false } } }
-
-      it 'sets keep_compatible to false' do
-        expect { update_scenario(params:) }
-          .to change(scenario, :keep_compatible?)
-          .from(true).to(false)
-      end
     end
   end
 

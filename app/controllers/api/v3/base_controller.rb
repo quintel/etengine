@@ -3,18 +3,16 @@ module Api
     class BaseController < ActionController::API
       include ActionController::MimeResponds
 
-      after_action :track_token_use
+      before_action :authenticate_request!
 
       rescue_from ActionController::ParameterMissing do |e|
-        render status: 400, json: { errors: ["param is missing or the value is empty: #{e.param}"] }
+        render json: { errors: [e.message] }, status: :bad_request
       end
 
       rescue_from ActiveRecord::RecordNotFound do |e|
-        if e.model
-          render_not_found(errors: ["#{e.model.underscore.humanize} not found"])
-        else
-          render_not_found
-        end
+        render json: {
+          errors: ["No such #{e.model.underscore.humanize.downcase}: #{e.id}"]
+        }, status: :not_found
       end
 
       rescue_from ActiveModel::RangeError do
@@ -29,24 +27,10 @@ module Api
         end
       end
 
-      private
-
-      def current_ability
-        @current_ability ||=
-          if current_user
-            TokenAbility.new(doorkeeper_token, current_user)
-          else
-            GuestAbility.new
-          end
+      rescue_from ETEngine::TokenDecoder::DecodeError do
+        render json: { errors: ['Invalid or expired token'] }, status: :unauthorized
       end
 
-      def current_user
-        @current_user ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
-      end
-
-      # Many API actions require an active scenario. Let's set it here
-      # and let's prepare the field for the calculations.
-      #
       def set_current_scenario
         @scenario = if params[:scenario_id]
           Scenario.find(params[:scenario_id])
@@ -55,35 +39,60 @@ module Api
         end
       end
 
-      # Send a 404 response with an optional JSON body.
-      def render_not_found(body = { errors: ['Not found'] })
-        render json: body, status: :not_found
-      end
-
-      # Processes the controller action.
-      #
-      # Wraps around the default to rescue malformed params (e.g. JSON bodies)
-      # which is currently not possible with `rescue_from`.
-      #
-      # See: https://github.com/rails/rails/issues/38285
       def process_action(*args)
         super
       rescue ActionDispatch::Http::Parameters::ParseError => e
         render status: 400, json: { errors: [e.message] }
       end
 
-      def doorkeeper_unauthorized_render_options(error:)
-        { json: { errors: [error.description] } }
-      end
+      private
 
-      def doorkeeper_forbidden_render_options(error:)
-        { json: { errors: [error.description] } }
-      end
-
-      def track_token_use
-        if response.status == 200 && doorkeeper_token && doorkeeper_token.application_id.nil?
-          TrackPersonalAccessTokenUse.perform_later(doorkeeper_token.id, Time.now.utc)
+      def authenticate_request!
+        unless decoded_token
+          Rails.logger.warn "Unauthorized: No valid token provided"
+          render json: { errors: ['Unauthorized'] }, status: :unauthorized
+          return
         end
+
+        unless current_user
+          Rails.logger.warn "Unauthorized: No user found for token"
+          render json: { errors: ['Unauthorized'] }, status: :unauthorized
+        end
+      end
+
+      def decoded_token
+        return @decoded_token if defined?(@decoded_token)
+
+        auth_header = request.headers['Authorization']
+        token = auth_header.split(' ').last if auth_header
+        return unless token
+
+        @decoded_token = ETEngine::TokenDecoder.decode(token)
+      rescue ETEngine::TokenDecoder::DecodeError => e
+        Rails.logger.error "Token decoding failed: #{e.message}"
+        nil
+      end
+
+      def current_user
+        return @current_user if defined?(@current_user)
+
+        if decoded_token
+          user_data = decoded_token[:user]
+          @current_user = User.find_or_initialize_by(id: decoded_token[:sub])
+          @current_user.assign_attributes(user_data)
+        else
+          Rails.logger.debug "No valid token; cannot find user"
+        end
+
+        @current_user
+      end
+
+      def current_ability
+        @current_ability ||= @current_user ? TokenAbility.new(decoded_token, @current_user) : GuestAbility.new
+      end
+
+      def render_not_found(body = { errors: ['Not found'] })
+        render json: body, status: :not_found
       end
     end
   end

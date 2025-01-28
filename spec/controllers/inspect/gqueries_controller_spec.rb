@@ -9,63 +9,50 @@ describe Inspect::GqueriesController, :etsource_fixture do
   let!(:gquery) { Gquery.get('bar_demand') }
 
   describe "GET index" do
-    context 'when admin is logged in' do
-      before do
-        sign_in(admin)
-      end
-
+    context 'when admin' do
       it "should be successful" do
-        get :index, params: { :api_scenario_id => scenario.id }
+        request.headers.merge!(access_token_header(admin, :read))
+        get :index, params: { api_scenario_id: scenario.id }
         expect(response).to render_template(:index)
       end
     end
 
-    context 'when scenario owner is logged in' do
-      before do
-        sign_in(owner)
-      end
-
+    context 'when scenario owner' do
       it "should be successful" do
-        get :index, params: { :api_scenario_id => scenario.id }
+        request.headers.merge!(access_token_header(owner, :read))
+        get :index, params: { api_scenario_id: scenario.id }
         expect(response).to render_template(:index)
       end
     end
 
-    context 'when a user is logged in and the scenario is private' do
-
+    context 'when the scenario is private' do
       before do
-        sign_in(create(:user))
-        scenario.private = true
+        scenario.update(private: true)
       end
 
       it "should be unsuccessful" do
-        pending('Wait for merge multi user support')
+        pending('Wait for merge multi-user support')
 
-        get :index, params: { :api_scenario_id => scenario.id }
+        request.headers.merge!(access_token_header(create(:user), :read))
+        get :index, params: { api_scenario_id: scenario.id }
         expect(response).not_to render_template(:index)
       end
     end
   end
 
   describe "GET show" do
-    context 'when admin is logged in' do
-      before do
-        sign_in(admin)
-      end
-
+    context 'when admin' do
       it "should be successful" do
-        get :show, params: { :id => gquery.key, :api_scenario_id => scenario.id }
+        request.headers.merge!(access_token_header(admin, :read))
+        get :show, params: { id: gquery.key, api_scenario_id: scenario.id }
         expect(response).to render_template(:show)
       end
     end
 
-    context 'when scenario owner is logged in' do
-      before do
-        sign_in(owner)
-      end
-
+    context 'when scenario owner' do
       it "should be successful" do
-        get :show, params: { :id => gquery.key, :api_scenario_id => scenario.id }
+        request.headers.merge!(access_token_header(owner, :read))
+        get :show, params: { id: gquery.key, api_scenario_id: scenario.id }
         expect(response).to render_template(:show)
       end
     end

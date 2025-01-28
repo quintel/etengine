@@ -3,7 +3,7 @@
 module Api
   module V3
     class AreasController < BaseController
-      respond_to :json
+      skip_before_action :authenticate_request!
 
       def index
         # Default to sending full data for backwards compatibility.

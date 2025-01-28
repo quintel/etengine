@@ -94,19 +94,4 @@ module ApplicationHelper
     # rubocop:enable Rails/OutputSafety
   end
 
-  def identity_back_to_etm_url
-    session[:back_to_etm_url] || Settings.etmodel_uri || 'https://energytransitionmodel.com'
-  end
-
-  # Formats a staff config excerpt for the given application.
-  def format_staff_config(config, app)
-    format(config, app.attributes.symbolize_keys.merge(
-      etengine_url: root_url.chomp('/'),
-      etmodel_url: Settings.etmodel_uri || 'http://YOUR_ETMODEL_URL'
-    ))
-  end
-
-  def format_staff_run_command(command, app)
-    format(command, port: app.uri ? URI.parse(app.uri).port : nil)
-  end
 end

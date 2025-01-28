@@ -12,7 +12,7 @@ module Gql::Runtime
 
       def EQUALS(*values)
         a,b = values
-        if b.respond_to?(:to_sym) 
+        if b.respond_to?(:to_sym)
           # Figure out whether we compare strings or not
           # EQUALS(AREA(code),nl) would compare 'nl' == :nl, so lets convert to_s.
           a.to_s == b.to_s

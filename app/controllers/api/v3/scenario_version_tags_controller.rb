@@ -4,7 +4,6 @@ module Api
       include UsesScenario
 
       skip_before_action :authorize_scenario!, :only => :index
-      respond_to :json
 
       before_action :validate_scenario_version_tag, only: :update
 
@@ -74,8 +73,13 @@ module Api
 
       private
 
+      # Allow old and new way of structuring params
       def version_params
-        params.permit(:description)
+        if params['scenario_version_tag']
+          params.require(:scenario_version_tag).permit(:description)
+        else
+          params.permit(:description)
+        end
       end
 
       def scenario_version_tag
