@@ -32,12 +32,12 @@ class RemoveExternalWtp < ActiveRecord::Migration[7.0]
 
   def up
 
-    # migrate_scenarios do |scenario|
-    #   # Check if one of external wtip sliders is touched, then some correction should be done to set keys
-    #   next unless EXTERNAL_WTP_KEYS.any? { |key| scenario.user_values.key?(key)}
-    #   set_regular_keys(scenario)
-    #   remove_external_keys(scenario)
-    # end
+    migrate_scenarios do |scenario|
+      # Check if one of external wtip sliders is touched, then some correction should be done to set keys
+      next unless EXTERNAL_WTP_KEYS.any? { |key| scenario.user_values.key?(key)}
+      set_regular_keys(scenario)
+      remove_external_keys(scenario)
+    end
   end
 
   def set_regular_keys(scenario)

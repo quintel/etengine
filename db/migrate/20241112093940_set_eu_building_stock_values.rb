@@ -116,17 +116,17 @@ class SetEuBuildingStockValues < ActiveRecord::Migration[7.0]
       Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
     ))
 
-    # migrate_scenarios do |scenario|
+    migrate_scenarios do |scenario|
 
-    #   # Filter scenarios for the relevant country datasets
-    #   next unless Atlas::Dataset.exists?(scenario.area_code) && COUNTRIES.include?(scenario.area_code)
-    #   # Check if one of building stock sliders is touched, then some correction should be done to set keys
-    #   next unless BUILDING_STOCK_KEYS.any? { |key| scenario.user_values.key?(key)}
+      # Filter scenarios for the relevant country datasets
+      next unless Atlas::Dataset.exists?(scenario.area_code) && COUNTRIES.include?(scenario.area_code)
+      # Check if one of building stock sliders is touched, then some correction should be done to set keys
+      next unless BUILDING_STOCK_KEYS.any? { |key| scenario.user_values.key?(key)}
 
-    #   set_existing_stock(scenario)
-    #   set_future_stock(scenario)
+      set_existing_stock(scenario)
+      set_future_stock(scenario)
 
-    # end
+    end
   end
 
   def set_existing_stock(scenario)
