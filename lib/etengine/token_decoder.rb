@@ -68,5 +68,33 @@ module ETEngine
 
       parsed_response['access_token']
     end
+
+    def exchange_pat(pat)
+      response = Faraday.post("#{Settings.idp_url}/identity/access_tokens/exchange") do |req|
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['Authorization'] = "Bearer #{pat}"
+        req.body = {
+          client_id: Settings.identity.client_id,
+          grant_type: 'pat_exchange'
+        }.to_json
+      end
+
+      begin
+        parsed = JSON.parse(response.body)
+      rescue JSON::ParserError
+        Rails.logger.error "Invalid JSON response from IdP"
+        return nil
+      rescue Faraday::Error => e
+        Rails.logger.error "Connection failed: #{e.message}"
+        return nil
+      end
+
+      if response.success?
+        parsed['access_token']
+      else
+        Rails.logger.error "IdP PAT exchange failed: #{parsed['error']}"
+        nil
+      end
+    end
   end
 end

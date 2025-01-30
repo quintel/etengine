@@ -48,29 +48,45 @@ module Api
       private
 
       def authenticate_request!
-        unless decoded_token
-          Rails.logger.warn "Unauthorized: No valid token provided"
-          render json: { errors: ['Unauthorized'] }, status: :unauthorized
-          return
+        if (token = attempt_jwt_decode)
+          return if current_user
+          return render_unauthorized('Invalid JWT')
         end
 
-        unless current_user
-          Rails.logger.warn "Unauthorized: No user found for token"
-          render json: { errors: ['Unauthorized'] }, status: :unauthorized
+        authenticate_PAT!         # Fallback to PAT exchange
+      end
+
+      def attempt_jwt_decode
+        return unless (auth_header = request.headers['Authorization'])
+        return unless (token = auth_header.split.last)
+
+        # Safely check if token is a JWT without exceptions
+        ETEngine::TokenDecoder.decode(token)
+      rescue JSON::JWT::InvalidFormat, ETEngine::TokenDecoder::DecodeError
+        nil
+      end
+
+      def authenticate_PAT!
+        auth_header = request.headers['Authorization']
+        return render_unauthorized('Missing token') unless auth_header
+
+        pat = auth_header.split.last
+        return render_unauthorized('Invalid PAT format') unless pat.present?
+
+        jwt = ETEngine::TokenDecoder.exchange_pat(pat)
+        return render_unauthorized('PAT exchange failed') unless jwt
+
+        begin
+          @decoded_token = ETEngine::TokenDecoder.decode(jwt)
+        rescue ETEngine::TokenDecoder::DecodeError
+          return render_unauthorized('Invalid exchanged JWT')
         end
+
+        current_user ? true : render_unauthorized('User not found')
       end
 
       def decoded_token
-        return @decoded_token if defined?(@decoded_token)
-
-        auth_header = request.headers['Authorization']
-        token = auth_header.split(' ').last if auth_header
-        return unless token
-
-        @decoded_token = ETEngine::TokenDecoder.decode(token)
-      rescue ETEngine::TokenDecoder::DecodeError => e
-        Rails.logger.error "Token decoding failed: #{e.message}"
-        nil
+        @decoded_token ||= attempt_jwt_decode
       end
 
       def current_user
@@ -93,6 +109,10 @@ module Api
 
       def render_not_found(body = { errors: ['Not found'] })
         render json: body, status: :not_found
+      end
+
+      def render_unauthorized(message)
+        render json: { errors: [message] }, status: :unauthorized
       end
     end
   end
