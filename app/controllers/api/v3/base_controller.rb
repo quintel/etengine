@@ -3,8 +3,6 @@ module Api
     class BaseController < ActionController::API
       include ActionController::MimeResponds
 
-      before_action :authenticate_request!
-
       rescue_from ActionController::ParameterMissing do |e|
         render json: { errors: [e.message] }, status: :bad_request
       end
@@ -47,48 +45,30 @@ module Api
 
       private
 
-      def authenticate_request!
-        unless decoded_token
-          Rails.logger.warn "Unauthorized: No valid token provided"
-          render json: { errors: ['Unauthorized'] }, status: :unauthorized
-          return
-        end
-
-        unless current_user
-          Rails.logger.warn "Unauthorized: No user found for token"
-          render json: { errors: ['Unauthorized'] }, status: :unauthorized
-        end
-      end
-
+      # Returns the contents of the current token, if an Authorization header is set.
       def decoded_token
-        return @decoded_token if defined?(@decoded_token)
+        return @decoded_token if @decoded_token
+        return nil if request.authorization.blank?
 
-        auth_header = request.headers['Authorization']
-        token = auth_header.split(' ').last if auth_header
-        return unless token
-
-        @decoded_token = ETEngine::TokenDecoder.decode(token)
-      rescue ETEngine::TokenDecoder::DecodeError => e
-        Rails.logger.error "Token decoding failed: #{e.message}"
-        nil
+        request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
+          return @decoded_token = ETEngine::TokenDecoder.decode(match[1])
+        end
       end
 
+      # Returns the current user, if a token is set and is valid.
       def current_user
-        return @current_user if defined?(@current_user)
+        return nil unless decoded_token
 
-        if decoded_token
-          user_data = decoded_token[:user]
-          @current_user = User.find_or_initialize_by(id: decoded_token[:sub])
-          @current_user.assign_attributes(user_data)
-        else
-          Rails.logger.debug "No valid token; cannot find user"
-        end
-
-        @current_user
+        @current_user ||= User.from_jwt!(decoded_token) if decoded_token
       end
 
       def current_ability
-        @current_ability ||= @current_user ? TokenAbility.new(decoded_token, @current_user) : GuestAbility.new
+        @current_ability ||=
+          if current_user
+            TokenAbility.new(decoded_token, current_user)
+          else
+            GuestAbility.new
+          end
       end
 
       def render_not_found(body = { errors: ['Not found'] })
