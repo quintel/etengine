@@ -15,8 +15,8 @@ describe 'Deleting a scenario with API v3' do
       get '/api/v3/scenarios'
     end
 
-    it 'returns 401' do
-      expect(response.status).to eq(401)
+    it 'returns 403' do
+      expect(response.status).to eq(403)
     end
   end
 

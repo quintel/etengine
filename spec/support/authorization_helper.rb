@@ -2,44 +2,61 @@
 
 module AuthorizationHelper
   require 'jwt'
-  def access_token_header(user, scopes, expires_in: 1.hour)
-    token = mock_jwt(user, scopes, expires_in: expires_in)
-    { 'Authorization' => "Bearer #{token}" }
+
+  def self.key
+    @key ||= OpenSSL::PKey::RSA.new(2048)
   end
 
-  def mock_jwt(user, scopes, client_id: 'Mock_client_id', expires_in: 1.hour)
-    scopes =
-      case scopes
-      when :public
-        'public'
-      when :read
-        'public scenarios:read'
-      when :write
-        'public scenarios:read scenarios:write'
-      when :delete
-        'public scenarios:read scenarios:write scenarios:delete'
-      else
-        scopes.to_s
-      end
+  def access_token_header(user = nil, scopes = [])
+    user ? { 'Authorization' => "Bearer #{generate_jwt(user, scopes: match_scopes(scopes))}" } : {}
+  end
 
-    # Define the payload for the JWT
-    payload = {
-      iss: Settings.identity.api_url, # Replace with the correct issuer from your app
-      aud: client_id,
-      exp: expires_in.from_now.to_i,
-      iat: Time.now.to_i,
-      scopes: scopes.split,
-      sub: user.id,
-      user: user.as_json(only: %i[id admin]) # Include only the desired user fields
+  def generate_jwt(user, **kwargs)
+    allow(ETEngine::TokenDecoder)
+      .to receive(:jwk_set).and_return(
+        JSON::JWK::Set.new([JSON::JWK.new(AuthorizationHelper.key.public_key, kid: 'test_key')])
+      )
+
+    token = JSON::JWT.new(jwt_payload(user, **kwargs))
+    token.header[:kid] = 'test_key'
+
+    token.sign(AuthorizationHelper.key, :RS256).to_s
+  end
+
+  def jwt_payload(
+    user,
+    aud: Settings.identity.client_id,
+    iat: Time.now.to_i,
+    exp: 1.hour.from_now.to_i,
+    scopes: []
+  )
+    {
+      'iss' => Settings.idp_url,
+      'aud' => aud,
+      'iat' => iat,
+      'exp' => exp,
+      'sub' => user.id,
+      'user' => {
+        'id' => user.id,
+        'name' => user.name
+      },
+      'scopes' => scopes
     }
+  end
 
-    key = OpenSSL::PKey::RSA.generate(2048)
-    token = JWT.encode(payload, key, "RS256", typ: "JWT", kid: key.to_jwk["kid"])
-
-    # Stub the decoding logic to return the payload
-    allow(ETEngine::TokenDecoder).to receive(:decode).and_return(payload)
-
-    token # Return the encoded JWT token
+  def match_scopes(scopes)
+    case scopes
+    when :public
+      'public'
+    when :read
+      'public scenarios:read'
+    when :write
+      'public scenarios:read scenarios:write'
+    when :delete
+      'public scenarios:read scenarios:write scenarios:delete'
+    else
+      scopes.to_s
+    end
   end
 
   def stub_faraday_422(body)

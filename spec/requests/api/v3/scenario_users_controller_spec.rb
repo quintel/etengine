@@ -8,7 +8,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
     it 'returns invalid token without a proper access token' do
       get "/api/v3/scenarios/#{scenario.id}/users", as: :json
 
-      expect(response.status).to be(401)
+      expect(response.status).to be(403)
     end
 
     # A user should have a token with the scenario:delete scope before its allowed
