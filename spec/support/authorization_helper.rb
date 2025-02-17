@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module AuthorizationHelper
-  require 'jwt'
-
   def self.key
     @key ||= OpenSSL::PKey::RSA.new(2048)
   end
@@ -13,8 +11,8 @@ module AuthorizationHelper
 
   def generate_jwt(user, **kwargs)
     allow(ETEngine::TokenDecoder)
-      .to receive(:jwk_set).and_return(
-        JSON::JWK::Set.new([JSON::JWK.new(AuthorizationHelper.key.public_key, kid: 'test_key')])
+      .to receive(:jwk).and_return(
+        JSON::JWK.new(AuthorizationHelper.key.public_key)
       )
 
     token = JSON::JWT.new(jwt_payload(user, **kwargs))
@@ -25,7 +23,7 @@ module AuthorizationHelper
 
   def jwt_payload(
     user,
-    aud: Settings.identity.client_id,
+    aud: Settings.identity.client_uri,
     iat: Time.now.to_i,
     exp: 1.hour.from_now.to_i,
     scopes: []

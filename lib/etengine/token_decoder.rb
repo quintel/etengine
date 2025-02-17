@@ -9,15 +9,13 @@ module ETEngine
 
     # Decodes and verifies a JWT.
     def decode(token)
-      begin
-        decoded = JSON::JWT.decode(token, jwk_set)
-      rescue JSON::JWK::Set::KidNotFound
-        jwk_cache.delete('jwk_hash') # Clear cache and retry
-        decoded = JSON::JWT.decode(token, jwk_set)
-      end
+      decoded = JSON::JWT.decode(token, jwk)
 
       unless decoded[:iss] == Settings.idp_url &&
-             decoded[:aud] == Settings.identity.client_id &&
+             (
+              decoded[:aud] == Settings.identity.client_uri ||
+              decoded[:aud] == Settings.etmodel_uri
+             ) &&
              decoded[:sub].present? &&
              decoded[:exp] > Time.now.to_i
         raise DecodeError, 'JWT verification failed'
@@ -26,8 +24,8 @@ module ETEngine
       decoded
     end
 
-    # Fetches and caches the JWK set from the IdP.
-    def jwk_set
+    # Fetches and caches the JWK from the IdP.
+    def jwk
       jwk_cache.fetch('jwk_hash') do
         client = Faraday.new(Identity.discovery_config.jwks_uri) do |conn|
           conn.request(:json)
@@ -35,7 +33,7 @@ module ETEngine
           conn.response(:raise_error)
         end
 
-        JSON::JWK::Set.new(client.get.body)
+        JSON::JWK.new(client.get.body['keys'].first.symbolize_keys)
       end
     end
 
@@ -47,26 +45,6 @@ module ETEngine
         else
           Rails.cache
         end
-    end
-
-    # Fetches an access token from the IdP.
-    def fetch_token(user)
-      response = Faraday.post("#{Settings.idp_url}/identity/access_tokens") do |req|
-        req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        req.body = {
-          grant_type: 'client_credentials',
-          client_id: Settings.identity.client_id,
-          user_id: user.id
-        }
-      end
-
-      parsed_response = JSON.parse(response.body)
-
-      unless response.success? && parsed_response['access_token'].present?
-        raise "Failed to fetch token: #{parsed_response['error_description'] || 'Unknown error'}"
-      end
-
-      parsed_response['access_token']
     end
   end
 end

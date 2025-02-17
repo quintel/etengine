@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'jwt'
 
 RSpec.describe ETEngine::TokenDecoder do
   let(:test_token) { JSON.parse(File.read(Rails.root.join('spec/fixtures/identity/token/idp_token.json')))['token'] }
