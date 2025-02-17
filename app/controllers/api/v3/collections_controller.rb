@@ -19,7 +19,7 @@ module Api
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
-        response = idp_client.get("/api/v1/collections?#{query}")
+        response = my_etm_client.get("/api/v1/collections?#{query}")
 
         render json: response.body.to_h.merge(
           'data'  => response.body['data'],
@@ -28,7 +28,7 @@ module Api
       end
 
       def show
-        response = idp_client.get("/api/v1/collections/#{params.require(:id).to_i}")
+        response = my_etm_client.get("/api/v1/collections/#{params.require(:id).to_i}")
         render json: response.body
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -41,7 +41,7 @@ module Api
         ).call(
           params: params.permit!.to_h.merge(version: Settings.version_tag),
           ability: current_ability,
-          client: idp_client
+          client: my_etm_client
         ).either(
           ->((data, *)) { render json: data },
           ->(errors)    { service_error_response(errors) }
@@ -55,7 +55,7 @@ module Api
         ).call(
           params: params.permit!.to_h,
           ability: current_ability,
-          client: idp_client
+          client: my_etm_client
         ).either(
           ->((data, *)) { render json: data },
           ->(error)     { service_error_response(error) }
@@ -63,7 +63,7 @@ module Api
       end
 
       def destroy
-        response = idp_client.delete("/api/v1/collections/#{params.require(:id).to_i}")
+        response = my_etm_client.delete("/api/v1/collections/#{params.require(:id).to_i}")
         render json: response.body
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -83,10 +83,6 @@ module Api
           new_uri.query = parsed.query
           new_uri.to_s
         end
-      end
-
-      def idp_client
-        ETEngine::Clients.idp_client(current_user)
       end
 
       def service_error_response(failure)

@@ -46,26 +46,26 @@ module Api
       private
 
       # Returns the contents of the current token, if an Authorization header is set.
-      def decoded_token
-        return @decoded_token if @decoded_token
+      def token
+        return @token if @token
         return nil if request.authorization.blank?
 
         request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
-          return @decoded_token = ETEngine::TokenDecoder.decode(match[1])
+          return @token = ETEngine::TokenDecoder.decode(match[1])
         end
       end
 
       # Returns the current user, if a token is set and is valid.
       def current_user
-        return nil unless decoded_token
+        return nil unless token
 
-        @current_user ||= User.from_jwt!(decoded_token) if decoded_token
+        @current_user ||= User.from_jwt!(token) if token
       end
 
       def current_ability
         @current_ability ||=
           if current_user
-            TokenAbility.new(decoded_token, current_user)
+            TokenAbility.new(token, current_user)
           else
             GuestAbility.new
           end
@@ -73,6 +73,18 @@ module Api
 
       def render_not_found(body = { errors: ['Not found'] })
         render json: body, status: :not_found
+      end
+
+      # Returns the Faraday client which should be used to communicate with the MyETM API.
+      # This reuses the authentication token from the current request.
+      def my_etm_client
+        Faraday.new(url: Settings.idp_url) do |conn|
+          unless request.authorization.blank?
+            request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
+              conn.request(:authorization, match[1])
+            end
+          end
+        end
       end
     end
   end

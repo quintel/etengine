@@ -82,7 +82,7 @@ if Rails.env.development?
   require_relative '../../lib/etengine/token_decoder'
 
   begin
-    ETEngine::TokenDecoder.jwk_set
+    ETEngine::TokenDecoder.jwk
   rescue StandardError => e
     warn("Couldn't pre-fetch MyETM public key: #{e.message}")
   end

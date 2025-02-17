@@ -3,14 +3,14 @@ require 'spec_helper'
 describe Api::V3::SavedScenariosController, type: :controller do
   let(:user)     { create(:user) }
   let(:scenario) { create(:scenario, user: user) }
-  let(:idp_client) { instance_double("ETEngine::Clients::IdpClient") }
+  let(:idp_client) { instance_double(Faraday::Connection) }
   let(:response_body) { { 'data' => [], 'links' => {} } }
 
   before do
     allow(controller).to receive(:current_user).and_return(user)
     allow(controller).to receive(:current_ability).and_return(Ability.new(user))
     allow(controller).to receive(:authorize!).and_return(true)
-    allow(ETEngine::Clients).to receive(:idp_client).and_return(idp_client)
+    allow(controller).to receive(:my_etm_client).and_return(idp_client)
 
     request.headers.merge!(access_token_header(user, :read))
   end
