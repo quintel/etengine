@@ -78,7 +78,7 @@ module Api
       # Returns the Faraday client which should be used to communicate with the MyETM API.
       # This reuses the authentication token from the current request.
       def my_etm_client
-        Faraday.new(url: Settings.idp_url) do |conn|
+        Faraday.new(url: Settings.identity.issuer) do |conn|
           unless request.authorization.blank?
             request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
               conn.request(:authorization, match[1])

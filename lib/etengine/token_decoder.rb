@@ -11,7 +11,7 @@ module ETEngine
     def decode(token)
       decoded = JSON::JWT.decode(token, jwk)
 
-      unless decoded[:iss] == Settings.idp_url &&
+      unless decoded[:iss] == Settings.identity.issuer &&
              (
               decoded[:aud] == Settings.identity.client_uri ||
               decoded[:aud] == Settings.etmodel_uri

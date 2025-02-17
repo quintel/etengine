@@ -12,6 +12,6 @@ class RedirectController < ApplicationController
       expires: 1.day.from_now
     }
 
-    redirect_to "#{Settings.idp_url}/#{params[:page]}", allow_other_host: true
+    redirect_to "#{Settings.identity.issuer}/#{params[:page]}", allow_other_host: true
   end
 end
