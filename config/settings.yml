@@ -43,10 +43,6 @@ mailer:
   # E-mail address from which to send e-mails.
   from: "Energy Transition Model <info@energytransitionmodel.com>"
 
-# TODO: destroy?
-auth:
-  issuer: <%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3002') %>
-
 # Authentication
 # --------------
 identity:
@@ -54,9 +50,6 @@ identity:
   client_id: <%= ENV['IDENTITY_CLIENT_ID'] %>
   client_secret: <%= ENV['IDENTITY_CLIENT_SECRET'] %>
   client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'http://localhost:3000') %>
-
-# TODO: destroy?
-idp_url: <%= ENV.fetch('OPENID_ISSUER', 'http://localhost:3002') %>
 
 # Optional settings to configure the Mailchimp integration.
 mailchimp:

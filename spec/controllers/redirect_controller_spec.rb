@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe RedirectController, type: :controller do
   let(:valid_page) { "identity/profile" } # Matches the :page param in the route
-  let(:idp_url) { Settings.idp_url }
+  let(:idp_url) { Settings.identity.issuer }
   let(:destination_url) { "#{idp_url}/#{valid_page}" }
 
   describe "GET #set_cookie_and_redirect" do
