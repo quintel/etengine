@@ -11,6 +11,7 @@ module ETEngine
     def decode(token)
       decoded = JSON::JWT.decode(token, jwk)
 
+
       unless decoded[:iss] == Settings.identity.issuer &&
              (
               decoded[:aud] == Settings.identity.client_uri ||
@@ -18,6 +19,12 @@ module ETEngine
              ) &&
              decoded[:sub].present? &&
              decoded[:exp] > Time.now.to_i
+        Rails.logger.warn(
+          "#{decoded[:aud]} should match #{Settings.identity.client_uri} or #{Settings.etmodel_uri}"
+        )
+        Rails.logger.warn(
+          "token expired: #{decoded[:exp] > Time.now.to_i}"
+        )
         raise DecodeError, 'JWT verification failed'
       end
 
