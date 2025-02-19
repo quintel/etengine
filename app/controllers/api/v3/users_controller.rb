@@ -3,11 +3,10 @@
 module Api
   module V3
     # Updates user information.
-    class UserController < BaseController
-      before_action :authorize_user!, only: :update
+    class UsersController < BaseController
 
       def update
-        if user.update(name: params.require(:name))
+        if user.update(user_params)
           render json: user
         else
           render json: user.errors, status: :unprocessable_entity
@@ -21,12 +20,12 @@ module Api
 
       private
 
-      def user
-        @user ||= current_user
+      def user_params
+        params.require(:user).permit(:name, :private_scenarios)
       end
 
-      def authorize_user!
-        head(:forbidden) if user.id != params.require(:id).to_i
+      def user
+        @user ||= current_user
       end
     end
   end
