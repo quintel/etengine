@@ -79,10 +79,8 @@ module Api
       # This reuses the authentication token from the current request.
       def my_etm_client
         Faraday.new(url: Settings.identity.issuer) do |conn|
-          unless request.authorization.blank?
-            request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
-              conn.request(:authorization, match[1])
-            end
+          if (auth_header = request.authorization.to_s[/\ABearer (.+)\z/, 1])
+            conn.headers['Authorization'] = "Bearer #{auth_header}"
           end
         end
       end
