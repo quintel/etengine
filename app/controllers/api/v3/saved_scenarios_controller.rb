@@ -20,16 +20,18 @@ module Api
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
+        body = JSON.parse(response.body) rescue nil
 
-        render json: response.body.to_h.merge(
-          'data'  => hydrate_scenarios(response.body['data']),
-          'links' => update_pagination_links(response.body['links'])
+        render json: body.to_h.merge(
+          'data'  => hydrate_scenarios(body['data']),
+          'links' => update_pagination_links(body['links'])
         )
       end
 
       def show
         response = my_etm_client.get("/api/v1/saved_scenarios/#{params.require(:id).to_i}")
-        render json: hydrate_scenario(response.body)
+        body = JSON.parse(response.body) rescue nil
+        render json: hydrate_scenario(body)
       rescue Faraday::ResourceNotFound
         render_not_found
       end
