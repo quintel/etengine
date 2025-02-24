@@ -30,8 +30,6 @@ etsource_lazy_load_dataset: true
 # http://beta.et-model.com/pages/refresh_gqueries
 client_refresh_url:
 
-# Optional scheme and hostname for ETEngine which will be used to send requests to ETModel.
-etmodel_uri: http://localhost:3001
 
 # set to true if the server won't have online access. this disables Sentry,
 # etc.
