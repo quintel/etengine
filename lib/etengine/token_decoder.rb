@@ -9,7 +9,7 @@ module ETEngine
 
     # Decodes and verifies a JWT.
     def decode(token)
-      decoded = JSON::JWT.decode(token, jwk)
+      decoded = JSON::JWT.decode(strip_etm_prefix(token), jwk)
 
       unless decoded[:iss] == Settings.identity.issuer &&
              decoded[:aud].include?(Settings.identity.client_uri) &&
@@ -42,6 +42,10 @@ module ETEngine
         else
           Rails.cache
         end
+    end
+
+    def strip_etm_prefix(token)
+      token.remove(/^(etm_|etm_beta_)/)
     end
   end
 end
