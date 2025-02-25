@@ -19,15 +19,14 @@ blocks:
             - checkout
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             - cache restore
-            - 'docker build -f Dockerfile.production -t etengine:stable .'
-            - 'docker tag etengine:stable quintel/etengine:stable'
-            - 'docker push quintel/etengine:stable'
+            - 'docker build -f Dockerfile.production -t etengine:2025_01 .'
+            - 'docker tag etengine:2025_01 quintel/etengine:2025_01'
+            - 'docker push quintel/etengine:2025_01'
             - cache store
             - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
-            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_stable && ./deploy.sh"
-            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_stable_2 && ./deploy.sh"
+            - ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_2025_01 && ./deploy.sh"
       secrets:
         - name: Docker Hub credentials
         - name: Stable SSH settings
     run:
-      when: branch = 'master'
+      when: branch = '2025-01'
