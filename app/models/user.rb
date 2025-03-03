@@ -53,10 +53,14 @@ class User < ApplicationRecord
   def self.from_jwt!(token)
     id = token['sub']
     admin = token.dig('user', 'admin')
+    name = token.dig('user', 'name')
 
-    raise 'Token does not contain user information' if id.blank?
+    raise 'Token does not contain user information' if id.blank? || name.blank?
 
-    User.find_or_create_by!(id: token['sub']) { |u| u.admin = admin.presence || false }
+    User.find_or_create_by!(id: token['sub']) do |u|
+      u.admin = admin.presence || false
+      u.name = name
+    end
   end
 
   def self.from_session_user!(identity_user)
