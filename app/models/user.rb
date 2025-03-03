@@ -16,15 +16,14 @@ class User < ApplicationRecord
   has_many :scenario_version_tags
   has_many :personal_access_tokens, dependent: :destroy
 
-
   validates :name, presence: true
 
   scope :ordered, -> { order('name') }
 
-    # after_create :couple_scenario_users
+  after_create :couple_scenario_users
 
   # Links existing scenario users to the new User.
-
+  #
   # It needs to be linked through the scenario user to ensure the scenario
   # user stops being marked as dirty.
   def couple_scenario_users
@@ -61,6 +60,14 @@ class User < ApplicationRecord
       u.admin = admin.presence || false
       u.name = name
     end
+  # When a new user is introduced to the engine, this is usually through ETModels
+  # play interface. On entering play for the first time, two requests are sent to
+  # the engine shortly after each other - one to create a scenario, one to initialise
+  # the inputs. In this case it may happen that the first request is still busy creating
+  # the user when the second request hits, resulting in a non-unique record on the users
+  # id.
+  rescue ActiveRecord::RecordNotUnique
+    User.find(token['sub'])
   end
 
   def self.from_session_user!(identity_user)

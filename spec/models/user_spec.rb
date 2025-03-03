@@ -29,7 +29,7 @@ RSpec.describe User do
     end
   end
 
-  pending 'when a ScenarioUser with the same email existed before the user was created' do
+  context 'when a ScenarioUser with the same email existed before the user was created' do
     let(:user) { create(:user, email: 'foo@bar.com') }
 
     before do
