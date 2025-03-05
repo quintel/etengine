@@ -66,7 +66,8 @@ class User < ApplicationRecord
   # the inputs. In this case it may happen that the first request is still busy creating
   # the user when the second request hits, resulting in a non-unique record on the users
   # id.
-  rescue ActiveRecord::RecordNotUnique
+  # Also rescue from Deadlock: https://github.com/rails/rails/issues/54281
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::Deadlocked, ActiveRecord::LockWaitTimeout
     User.find(token['sub'])
   end
 
