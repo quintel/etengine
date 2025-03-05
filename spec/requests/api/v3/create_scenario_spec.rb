@@ -107,7 +107,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets a scenario owner' do
-      expect(response.parsed_body['users'].first).to include('role' => 'scenario_owner')
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -217,7 +219,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -240,7 +244,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -263,7 +269,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -283,7 +291,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -307,7 +317,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -331,7 +343,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -355,7 +369,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets an owner of the new scenario' do
-      expect(json.fetch('users').first).to include({ 'id' => user.id, 'role' => 'scenario_owner' })
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 

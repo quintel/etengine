@@ -113,7 +113,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(response_data['users'].first).to include('role' => 'scenario_owner')
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
@@ -145,7 +147,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sets the scenario owner' do
-      expect(response_data['users'].first).to include('role' => 'scenario_owner')
+      scenario = Scenario.last
+      expect(scenario.users).to include(user)
+      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
     end
   end
 
