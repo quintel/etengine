@@ -9,8 +9,7 @@ class User < ApplicationRecord
 
   attr_accessor :identity_user
 
-  delegate :roles, to: :identity_user, allow_nil: true
-
+  delegate :roles, :admin?, to: :identity_user, allow_nil: true
   has_many :scenario_users, dependent: :destroy
   has_many :scenarios, through: :scenario_users
   has_many :scenario_version_tags
