@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_13_141155) do
+ActiveRecord::Schema[7.0].define(version: 2025_03_06_093020) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -187,6 +187,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_13_141155) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "include_in_qi_db", default: false
+    t.string "user_email"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
