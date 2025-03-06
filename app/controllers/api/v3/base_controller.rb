@@ -25,7 +25,7 @@ module Api
         end
       end
 
-      rescue_from ETEngine::TokenDecoder::DecodeError do
+      rescue_from ETEngine::TokenDecoder::DecodeError, JSON::JWT::Exception do
         render json: { errors: ['Invalid or expired token'] }, status: :unauthorized
       end
 
