@@ -17,11 +17,33 @@ module Api
       def index
         extras = ActiveModel::Type::Boolean.new.cast(params[:include_extras])
 
-        render json: InputSerializer.collection(
-          Input.all,
-          @scenario,
-          **serializer_args(extra_attributes: extras)
-        )
+        respond_to do |format|
+          format.json do
+            render json: InputSerializer.collection(
+              Input.all,
+              @scenario,
+              **serializer_args(extra_attributes: extras)
+            )
+          end
+
+          format.csv do
+            csv_data = CSV.generate(headers: true) do |csv|
+              csv << ["Key", "Min", "Max", "Default", "User value", "Unit", "Share Group"]
+              Input.all.each do |input|
+                serializer = InputSerializer.serializer_for(
+                  input,
+                  @scenario,
+                  **serializer_args(extra_attributes: extras)
+                )
+                csv << serializer.to_csv_row
+              end
+            end
+
+            send_data csv_data,
+                      filename: "scenario_#{@scenario.id}_inputs.csv",
+                      type: "text/csv"
+          end
+        end
       end
 
       # GET /api/v3/inputs/:id
