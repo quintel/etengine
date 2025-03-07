@@ -6,6 +6,7 @@ module Api
       before_action do
         @scenario = Scenario.find(params[:scenario_id])
         authorize!(:read, @scenario)
+        set_default_format
       end
 
       # GET /api/v3/inputs
@@ -98,6 +99,10 @@ module Api
           default_values_from: params[:defaults] ? params[:defaults].to_sym : :parent,
           extra_attributes:
         }
+      end
+
+      def set_default_format
+        request.format = :json unless params[:format]
       end
     end
   end
