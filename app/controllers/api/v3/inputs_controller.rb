@@ -29,7 +29,7 @@ module Api
 
           format.csv do
             csv_data = CSV.generate(headers: true) do |csv|
-              csv << ["Key", "Min", "Max", "Default", "User value", "Unit", "Share Group"]
+              csv << ["Key", "Min value", "Max value", "Default value", "User value", "Unit", "Share group"]
               Input.all.each do |input|
                 serializer = InputSerializer.serializer_for(
                   input,
