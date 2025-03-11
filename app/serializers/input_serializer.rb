@@ -124,6 +124,19 @@ class InputSerializer
     json
   end
 
+  def to_csv_row
+    json = as_json.with_indifferent_access
+    [
+      @input.key,               # Key
+      json[:min] || "",         # Min Value
+      json[:max] || "",         # Max Value
+      json[:default] || "",     # Default Value
+      json[:user] || "",        # User Value
+      json[:unit] || "",        # Unit
+      json[:share_group] || ""  # Share Group
+    ]
+  end
+
   # A simple wrapper around Scenario which converts user and balanced values
   # to an indifferent-access hash. Prevents creating new copies of these
   # hashes for each and every input being presented.
