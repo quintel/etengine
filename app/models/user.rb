@@ -42,6 +42,15 @@ class User < ApplicationRecord
     end
   end
 
+  # Override admin? to fall back to the attribute when identity_user is nil.
+  def admin?
+    if identity_user.nil?
+      self.admin
+    else
+      identity_user.admin?
+    end
+  end
+
   # Performs sign-in steps for an Identity::User.
   #
   # If a matching user exists in the database, it will be updated with the latest data from the

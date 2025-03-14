@@ -6,6 +6,13 @@ module Api
     include CanCan::Ability
 
     def initialize(token, user)
+
+      # Ensure admins can fully manage all resources before any restrictions apply.
+      if user&.admin?
+        can :manage, :all  # Ensures access to everything else
+        return              # Skip further scope restrictions for admins
+      end
+
       can :read, Scenario, private: false
       scopes = token[:scopes]
 
