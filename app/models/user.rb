@@ -9,7 +9,7 @@ class User < ApplicationRecord
 
   attr_accessor :identity_user
 
-  delegate :roles, :admin?, to: :identity_user, allow_nil: true
+  delegate :roles, to: :identity_user, allow_nil: true
 
   has_many :scenario_users, dependent: :destroy
   has_many :scenarios, through: :scenario_users
@@ -44,11 +44,7 @@ class User < ApplicationRecord
 
   # Override admin? to fall back to the attribute when identity_user is nil.
   def admin?
-    if identity_user.nil?
-      self.admin
-    else
-      identity_user.admin?
-    end
+    identity_user&.admin? || admin
   end
 
   # Performs sign-in steps for an Identity::User.
