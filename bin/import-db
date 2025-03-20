@@ -34,11 +34,11 @@ def help!(prompt)
   prompt.say(<<~HELP)
     #{pastel.bold('Usage:')} bin/import-db [file-or-directory]
 
-    import-db looks for files ending in .tbz, .sql, .sql.gz, or
+    import-db looks for files ending in .tbz, .tar.xz, .tar, .sql, .sql.gz, or
     .sql.bz2 in your Downloads directory. Alternatively, provide a
     path to a backup file or different directory.
 
-    A .tbz file is expected to be a backup archive created by dbbot,
+    A .tbz, .tar.xz or .tar file is expected to be a backup archive created by dbbot,
     while sql.* files will be copies of the database without storage
     (such as custom price curves).
 
@@ -86,12 +86,24 @@ end
 # Returns the list of commands which must be executed to import a backup from
 # dbbot. These include database and ActiveStorage files.
 def import_dbbot_commands(file)
+  if file.name.end_with?('.tbz')
+    decompress_command = Kernel.format('tar -jxf %s -C tmp/dbbot-backup --strip-components=1', file.path.shellescape)
+    db_cmd = "bunzip2 -c tmp/dbbot-backup/database.sql.bz2 | bin/rails db"
+  elsif file.name.end_with?('.tar.xz') || file.name.end_with?('.tar')
+    # Accept .tar.xz and .tar as equivalent for etengine backups.
+    decompress_command = Kernel.format('tar -Jxf %s -C tmp/dbbot-backup --strip-components=1', file.path.shellescape)
+    db_cmd = "unxz -c tmp/dbbot-backup/database.sql.xz | bin/rails db"
+  else
+    raise "Unsupported archive type for file: #{file.name}"
+  end
+
   [
     ['Make temporary directory', 'mkdir -p tmp/dbbot-backup'],
-    ['Decompressing archive', Kernel.format('tar -jxf %s -C tmp/dbbot-backup --strip-components=1', file.path.shellescape)],
+    ['Decompressing archive', decompress_command],
     ['Remove existing storage', 'rm -rf storage'],
-    ['Import new storage', 'mv tmp/dbbot-backup/storage storage'],
-    *import_db_commands("bunzip2 -c tmp/dbbot-backup/database.sql.bz2 | bin/rails db", file),
+    # Only move the storage folder if it exists.
+    ['Import new storage', 'if [ -d tmp/dbbot-backup/storage ]; then mv tmp/dbbot-backup/storage storage; fi'],
+    *import_db_commands(db_cmd, file),
     ['Remove temporary directory', 'rm -rf tmp/dbbot-backup']
   ]
 end
@@ -115,7 +127,7 @@ end
 
 if files.none?
   # If there are no files specified in ARGV, search for them in the source dir.
-  files = Dir.glob(source_dir + '/*{.sql,.sql.bz2,.sql.gz,.tbz}')
+  files = Dir.glob(source_dir + '/*{.sql,.sql.bz2,.sql.gz,.tbz,.tar.xz,.tar}')
     .sort_by { |path| [path.include?('etengine_') ? 1 : 0, File.mtime(path)] }
     .reverse
     .map { |path| FileInfo.new(path) }
@@ -159,16 +171,17 @@ end
 
 commands =
   case file.name
-  when /tbz$/ then import_dbbot_commands(file)
+  when /tbz$/, /tar\.xz$/, /tar$/ then import_dbbot_commands(file)
   when /bz2$/ then import_db_commands('bunzip2 -c %s | bin/rails db', file)
   when /gz$/  then import_db_commands('gunzip -c %s | bin/rails db', file)
   when /sql$/ then import_db_commands('bin/rails db < %s', file)
   end
 
+# Check that all commands' executables are available.
 commands.each do |(_, command)|
   executable = command.split(' ').first
-
-  # Assert that all commands are available prior to running.
+  # Skip shell keywords
+  next if %w[if then fi else elif].include?(executable)
   unless Kernel.system("which #{executable} > /dev/null")
     prompt.error("#{executable} not found!")
     exit(1)
