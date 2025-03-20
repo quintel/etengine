@@ -18,13 +18,21 @@ module Api
       end
 
       def index
-        query = { page: params[:page], limit: params[:limit] }.compact.to_query
+        query    = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
 
-        render json: response.body.to_h.merge(
-          'data'  => hydrate_scenarios(response.body['data']),
-          'links' => update_pagination_links(response.body['links'])
-        )
+        if response.body.is_a?(Array)
+          data  = response.body
+          links = {}
+        else
+          data  = response.body['data']
+          links = response.body['links'] || {}
+        end
+
+        render json: {
+          'data'  => hydrate_scenarios(data),
+          'links' => update_pagination_links(links)
+        }
       end
 
       def show
@@ -76,6 +84,7 @@ module Api
       private
 
       def hydrate_scenarios(saved_scenarios)
+        saved_scenarios = Array.wrap(saved_scenarios)
         scenarios = Scenario
           .accessible_by(current_ability)
           .where(id: saved_scenarios.map { |s| s['scenario_id'] })
