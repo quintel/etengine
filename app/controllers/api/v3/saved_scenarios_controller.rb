@@ -3,7 +3,6 @@
 module Api
   module V3
     class SavedScenariosController < BaseController
-      render json:
 
       before_action(only: %i[index show]) do
         authorize!(:read, @scenario)
@@ -14,13 +13,15 @@ module Api
       end
 
       def index
-        query = { page: params[:page], limit: params[:limit] }.compact.to_query
+        query    = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
 
-        render json: response.body.to_h.merge(
-          'data'  => hydrate_scenarios(response.body['data']),
-          'links' => update_pagination_links(response.body['links'])
-        )
+        data = response.body.is_a?(Array) ? response.body : response.body['data'] || []
+
+        render json: {
+          data: hydrate_scenarios(data),
+          links: {}
+        }
       end
 
       def show
@@ -72,6 +73,8 @@ module Api
       private
 
       def hydrate_scenarios(saved_scenarios)
+        saved_scenarios = saved_scenarios.is_a?(Array) ? saved_scenarios : [saved_scenarios]
+
         scenarios = Scenario
           .accessible_by(current_ability)
           .where(id: saved_scenarios.map { |s| s['scenario_id'] })
