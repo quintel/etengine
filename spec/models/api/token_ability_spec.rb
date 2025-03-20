@@ -19,7 +19,7 @@ RSpec.describe Api::TokenAbility do
       ]
     }
   end
-  let(:scopes) { 'scenarios:read' }
+  let(:scopes) { '' }
 
   let(:mock_decoded_token) do
     {
