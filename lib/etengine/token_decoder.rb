@@ -45,7 +45,7 @@ module ETEngine
     end
 
     def strip_etm_prefix(token)
-      token.remove(/^(etm_|etm_beta_)/)
+      token.sub(/^etm_(beta_)?/, '')
     end
   end
 end
