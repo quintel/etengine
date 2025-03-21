@@ -10,7 +10,7 @@ end
 gem 'bootsnap', require: false
 gem 'puma'
 
-gem 'rails',        '~> 7.0.8'
+gem 'rails',        '~> 7.1.5'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json'
@@ -71,7 +71,6 @@ gem 'rest-client'
 # for etsource
 gem 'git',                            github: 'bradhe/ruby-git'
 gem 'fnv'
-gem 'msgpack'
 gem 'parallel'
 gem 'ruby-progressbar'
 
@@ -107,7 +106,7 @@ group :test, :development do
   gem 'factory_bot_rails'
   gem 'pry-byebug'
   gem 'pry-rails'
-  gem 'rspec-rails', '~> 6.0'
+  gem 'rspec-rails', '~> 7.0'
   gem 'watchr'
 
   gem 'rubocop',             '~> 1.27', require: false
