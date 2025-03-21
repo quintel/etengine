@@ -6,6 +6,7 @@ module Api
       before_action do
         @scenario = Scenario.find(params[:scenario_id])
         authorize!(:read, @scenario)
+        set_default_format
       end
 
       # GET /api/v3/inputs
@@ -17,11 +18,33 @@ module Api
       def index
         extras = ActiveModel::Type::Boolean.new.cast(params[:include_extras])
 
-        render json: InputSerializer.collection(
-          Input.all,
-          @scenario,
-          **serializer_args(extra_attributes: extras)
-        )
+        respond_to do |format|
+          format.json do
+            render json: InputSerializer.collection(
+              Input.all,
+              @scenario,
+              **serializer_args(extra_attributes: extras)
+            )
+          end
+
+          format.csv do
+            csv_data = CSV.generate(headers: true) do |csv|
+              csv << ["Key", "Min value", "Max value", "Default value", "User value", "Unit", "Share group"]
+              Input.all.each do |input|
+                serializer = InputSerializer.serializer_for(
+                  input,
+                  @scenario,
+                  **serializer_args(extra_attributes: extras)
+                )
+                csv << serializer.to_csv_row
+              end
+            end
+
+            send_data csv_data,
+                      filename: "scenario_#{@scenario.id}_inputs.csv",
+                      type: "text/csv"
+          end
+        end
       end
 
       # GET /api/v3/inputs/:id
@@ -76,6 +99,10 @@ module Api
           default_values_from: params[:defaults] ? params[:defaults].to_sym : :parent,
           extra_attributes:
         }
+      end
+
+      def set_default_format
+        request.format = :json unless params[:format]
       end
     end
   end
