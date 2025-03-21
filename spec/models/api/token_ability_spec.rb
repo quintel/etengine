@@ -19,7 +19,7 @@ RSpec.describe Api::TokenAbility do
       ]
     }
   end
-  let(:scopes) { 'scenarios:read' }
+  let(:scopes) { '' }
 
   let(:mock_decoded_token) do
     {
@@ -58,7 +58,7 @@ RSpec.describe Api::TokenAbility do
 
   # ------------------------------------------------------------------------------------------------
 
-  shared_examples_for "a token without the 'scenarios:read' scope" do
+  shared_examples_for 'a token without the "scenarios:read" scope' do
     it 'may view an unowned public scenario' do
       expect(ability).to be_able_to(:read, public_scenario)
     end
@@ -73,6 +73,14 @@ RSpec.describe Api::TokenAbility do
 
     it 'may not view an owned private scenario' do
       expect(ability).not_to be_able_to(:read, other_private_scenario)
+    end
+
+    context 'when admin' do
+      let(:user) { create(:user, admin: true, roles:) }
+
+      it 'may not view an owned private scenario' do
+        expect(ability).not_to be_able_to(:read, other_private_scenario)
+      end
     end
   end
 
@@ -91,6 +99,14 @@ RSpec.describe Api::TokenAbility do
 
     it 'may view an owned private scenario' do
       expect(ability).to be_able_to(:read, owned_private_scenario)
+    end
+
+    context 'when admin' do
+      let(:user) { create(:user, admin: true, roles:) }
+
+      it 'may view an owned private scenario' do
+        expect(ability).to be_able_to(:read, other_private_scenario)
+      end
     end
   end
 
@@ -138,6 +154,22 @@ RSpec.describe Api::TokenAbility do
     it 'may not clone an other-owned private scenario' do
       expect(ability).not_to be_able_to(:clone, other_private_scenario)
     end
+
+    context 'when admin' do
+      let(:user) { create(:user, admin: true, roles:) }
+
+      it 'may change an other-owned public scenario' do
+        expect(ability).to be_able_to(:update, other_public_scenario)
+      end
+
+      it 'may change an other-owned private scenario' do
+        expect(ability).to be_able_to(:update, other_private_scenario)
+      end
+
+      it 'may clone an other-owned private scenario' do
+        expect(ability).to be_able_to(:clone, other_private_scenario)
+      end
+    end
   end
 
   shared_examples_for 'a token without the "scenarios:write" scope' do
@@ -176,6 +208,22 @@ RSpec.describe Api::TokenAbility do
     it 'may not clone an owned private scenario' do
       expect(ability).not_to be_able_to(:clone, owned_private_scenario)
     end
+
+    context 'when admin' do
+      let(:user) { create(:user, admin: true, roles:) }
+
+      it 'may not change an other-owned public scenario' do
+        expect(ability).not_to be_able_to(:update, other_public_scenario)
+      end
+
+      it 'may not change an other-owned private scenario' do
+        expect(ability).not_to be_able_to(:update, other_private_scenario)
+      end
+
+      it 'may not clone an other-owned private scenario' do
+        expect(ability).not_to be_able_to(:clone, other_private_scenario)
+      end
+    end
   end
 
   shared_examples_for 'a token with the "scenarios:delete" scope' do
@@ -197,6 +245,18 @@ RSpec.describe Api::TokenAbility do
 
     it 'may not delete an other-owned private scenario' do
       expect(ability).not_to be_able_to(:destroy, other_private_scenario)
+    end
+
+    context 'when admin' do
+      let(:user) { create(:user, admin: true, roles:) }
+
+      it 'may delete an other-owned public scenario' do
+        expect(ability).to be_able_to(:destroy, other_public_scenario)
+      end
+
+      it 'may delete an other-owned private scenario' do
+        expect(ability).to be_able_to(:destroy, other_private_scenario)
+      end
     end
   end
 
@@ -220,11 +280,25 @@ RSpec.describe Api::TokenAbility do
     it 'may not delete an other-owned private scenario' do
       expect(ability).not_to be_able_to(:destroy, other_private_scenario)
     end
+
+    context 'when admin' do
+      let(:user) { create(:user, admin: true, roles:) }
+
+      it 'may not delete an other-owned public scenario' do
+        expect(ability).not_to be_able_to(:destroy, other_public_scenario)
+      end
+
+      it 'may not delete an other-owned private scenario' do
+        expect(ability).not_to be_able_to(:destroy, other_private_scenario)
+      end
+    end
   end
 
   # ------------------------------------------------------------------------------------------------
 
   context 'when the token scope is "public"' do
+    # Read
+    include_examples 'a token without the "scenarios:read" scope'
 
     # Update
     include_examples 'a token without the "scenarios:write" scope'
