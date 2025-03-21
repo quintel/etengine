@@ -13,7 +13,7 @@ end
 require 'rubygems'
 
 ENV["RAILS_ENV"] ||= 'test'
-require File.expand_path("../../config/environment", __FILE__)
+require_relative '../config/environment'
 require 'rspec/rails'
 require 'shoulda/matchers'
 

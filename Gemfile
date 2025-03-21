@@ -1,4 +1,4 @@
-ruby '~> 3.1.0'
+ruby '~> 3.2.7'
 
 source 'https://rubygems.org'
 
@@ -24,7 +24,7 @@ gem 'ice_nine'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
 
-gem 'numo-narray', require: 'numo/narray'
+# gem 'numo-narray', require: 'numo/narray'
 
 # Rails gem
 gem 'simple_form'
@@ -128,6 +128,6 @@ group :test do
 end
 
 group :production, :staging do
-  gem 'gctools', require: false
+  # gem 'gctools', require: false
   gem 'newrelic_rpm'
 end
