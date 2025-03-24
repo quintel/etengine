@@ -14,9 +14,12 @@ module Api
       @user   = user
 
       allow_public_read
-      allow_read if read_scope?
-      allow_write if write_scope?
-      allow_delete if delete_scope?
+      return unless read_scope?
+      allow_read
+      return unless write_scope?
+      allow_write
+      return unless delete_scope?
+      allow_delete
     end
 
     private
