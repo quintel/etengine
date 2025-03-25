@@ -68,7 +68,7 @@ gem 'config'
 gem 'rest-client'
 
 # for etsource
-gem 'git',                            github: 'bradhe/ruby-git'
+gem 'git', '~> 3.0'
 gem 'fnv'
 gem 'parallel'
 gem 'ruby-progressbar'
