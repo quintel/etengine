@@ -566,7 +566,6 @@ GEM
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.11.0)
-    ruby_deep_clone (0.8.0)
     rubyzip (2.3.2)
     securerandom (0.4.1)
     selenium-webdriver (4.7.1)
@@ -739,7 +738,6 @@ DEPENDENCIES
   rubocop-rspec
   ruby-graphviz
   ruby-progressbar
-  ruby_deep_clone (~> 0.8)
   selenium-webdriver
   sentry-rails
   sentry-ruby

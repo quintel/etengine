@@ -9,6 +9,7 @@ module Gql
   class Gql
     extend ActiveModel::Naming
     include Instrumentable
+    include Cloneable
 
     attr_accessor :present_graph, :future_graph, :dataset, :scenario, :calculated
     attr_reader :graph_model, :sandbox_mode
@@ -95,7 +96,7 @@ module Gql
     #
     def dataset_clone
       instrument("gql.performance.dataset_clone") do
-        DeepClone.clone(@dataset)
+        deep_clone(@dataset)
       end
     end
 
