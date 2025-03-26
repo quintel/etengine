@@ -10,15 +10,22 @@ module Gql::Runtime
         name = name.to_s
         scenario = scope.gql.scenario
 
-        return nil unless scenario.attachment?(name)
+        # Prefer the new UserCurve model
+        if (user_curve = scenario.user_curves.find_by(key: name))
+          return user_curve.curve.to_a
+        end
 
-        path = ActiveStorage::Blob.service.path_for(scenario.attachment(name).file.key)
+        # Fallback to legacy attachment system
+        if scenario.attachment?(name)
+          path = ActiveStorage::Blob.service.path_for(scenario.attachment(name).file.key)
+          # The graph wants an array. Loading a curve and converting to an array
+          # is expensive since Merit::Curve has to deal with the possibility of
+          # missing/default values. Using the reader directly avoids this
+          # overhead.
+          return Merit::Curve.reader.read(path)
+        end
 
-        # The graph wants an array. Loading a curve and converting to an array
-        # is expensive since Merit::Curve has to deal with the possibility of
-        # missing/default values. Using the reader directly avoids this
-        # overhead.
-        Merit::Curve.reader.read(path)
+        nil
       end
 
       # Public: Restricts the values in a curve to be between the minimum and maximum. Raises an

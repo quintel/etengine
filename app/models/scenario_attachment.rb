@@ -43,11 +43,6 @@ class ScenarioAttachment < ApplicationRecord
     VALID_FILE_KEYS
   end
 
-  # TODO: Remove I think
-  def loadable_curve?
-    file&.attached? && CurveHandler::Config.db_key?(key)
-  end
-
   # Returns true for attachments which have all their 'source_scenario' metadata
   # set, indicating the attachment was imported from another scenario
   def source_scenario?

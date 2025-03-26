@@ -20,7 +20,7 @@ class UserCurve < ApplicationRecord
     curve.present? && CurveHandler::Config.db_key?(key)
   end
 
-  # TODO: Check if necessary
+  # TODO: Check if still necessary
   # Identify that this record is a curve based on the key suffix
   def curve?
     key.ends_with?('_curve')
