@@ -3,11 +3,17 @@
 class UserCurve < ApplicationRecord
   belongs_to :scenario
 
-  # Serialise the curve using MessagePack
-  serialize :curve, Array, coder: MessagePack
-
   # Ensure that each user curve has a unique key per scenario
   validates :key, presence: true, uniqueness: { scope: :scenario_id, case_sensitive: false }
+
+  def curve
+    @curve ||= MeritCurveSerializer.load(read_attribute(:curve))
+  end
+
+  def curve=(val)
+    @curve = val
+    write_attribute(:curve, MeritCurveSerializer.dump(val))
+  end
 
   # Returns true if a valid curve is stored
   def loadable_curve?
