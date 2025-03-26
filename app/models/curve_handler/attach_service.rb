@@ -3,18 +3,14 @@
 module CurveHandler
   # Processes and validates user-uploaded curves.
   #
-  # AttachService will assert that the uploaded curve is valid (deferring to the processor), saves
-  # the file and ScenarioAttachment, and sets any scenario input values.
+  # AttachService creates/updates a UserCurve record with the serialized curve data.
   class AttachService
     delegate :error_keys, :errors, :valid?, to: :@processor
 
-    # Public: Creates a new Wrapper.
-    #
     # config   - A Config which describes the type of curve and how it should be handled.
-    # file     - The name of the uploaded file.
+    # file     - The uploaded file.
     # scenario - The scenario to which the curve will be attached.
     # metadata - Metadata to be stored with the curve.
-    #
     def initialize(config, file, scenario, metadata = {})
       io = file.tempfile
       io.rewind
@@ -31,34 +27,31 @@ module CurveHandler
     def call
       return false unless @processor.valid?
 
-      # Store the curve.
-      attachment = update_or_create_attachment
+      # Find or create the UserCurve record.
+      user_curve = update_or_create_user_curve
 
-      attachment.file.attach(
-        io: StringIO.new(@processor.curve_for_storage.join("\n")),
-        filename: @filename,
-        content_type: 'text/csv'
-      )
+      # Build a Merit::Curve using the sanitized curve data.
+      new_curve = Merit::Curve.new(@processor.sanitized_curve)
+      user_curve.curve = new_curve
+      user_curve.save!
 
       set_input_values
-      attachment
+
+      user_curve
     end
 
     private
 
-    def current_attachment
-      return @current_attachment if defined?(@current_attachment)
-
-      @current_attatchment = @scenario.attachments.find_by(key: @config.db_key)
+    def current_user_curve
+      @current_user_curve ||= @scenario.user_curves.find_by(key: @config.db_key)
     end
 
-    def update_or_create_attachment
-      attachment = current_attachment ||
-        ScenarioAttachment.create!(key: @config.db_key, scenario_id: @scenario.id)
-
-      # If new metadata is not supplied, remove the old data.
-      attachment.update_or_remove_metadata(@metadata)
-      attachment
+    def update_or_create_user_curve
+      user_curve = current_user_curve ||
+        UserCurve.create!(key: @config.db_key, scenario: @scenario, curve: Merit::Curve.new(@processor.sanitized_curve))
+      user_curve.name = @filename.chomp(File.extname(@filename))
+      user_curve.update_or_remove_metadata(@metadata)
+      user_curve
     end
 
     def set_input_values

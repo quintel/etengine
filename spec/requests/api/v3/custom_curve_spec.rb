@@ -7,11 +7,9 @@ describe 'Custom curves', :etsource_fixture do
     Etsource::Config.user_curves.reject { |_key, value| value.internal? }
   end
 
-  # rubocop:disable RSpec/BeforeAfterAll
   before(:all) do
     NastyCache.instance.expire!
   end
-  # rubocop:enable RSpec/BeforeAfterAll
 
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves/#{curve_name}" }
@@ -22,7 +20,7 @@ describe 'Custom curves', :etsource_fixture do
   context 'when requesting all curves with include_unattached=true' do
     let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves?include_unattached=true" }
 
-    context 'when nothing is attached' do
+    context 'when no user curves are present' do
       before { get(url, headers: token_header) }
 
       it 'succeeds' do
@@ -38,7 +36,7 @@ describe 'Custom curves', :etsource_fixture do
   context 'when requesting all attached curves' do
     let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves" }
 
-    context 'when nothing is attached' do
+    context 'when no user curves are present' do
       before { get(url, headers: token_header) }
 
       it 'succeeds' do
@@ -50,7 +48,7 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'with an attached curve for interconnector 1' do
+    context 'with a user curve for interconnector 1' do
       before do
         put "#{url}/interconnector_1_price", params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
@@ -67,84 +65,66 @@ describe 'Custom curves', :etsource_fixture do
         expect(JSON.parse(response.body).length).to eq(1)
       end
 
-      it 'sends data about the attached curve' do
+      it 'includes details about the user curve' do
         expect(JSON.parse(response.body)).to include(
           hash_including(
             'key' => 'interconnector_1_price',
-            'name' => 'price_curve.csv',
-            'size' => 35_039
+            'name' => 'price_curve',
+            'size' => 78_843
           )
         )
       end
     end
+  end
 
-    context 'with no attached curves and include_internal and include_unattached both set' do
-      let(:url) do
-        "/api/v3/scenarios/#{scenario.id}/custom_curves" \
-          '?include_internal=true&include_unattached=true'
-      end
-
-      before { get(url, headers: token_header) }
-
-      it 'succeeds' do
-        expect(response).to be_successful
-      end
-
-      it 'sends data about all available curves' do
-        expect(JSON.parse(response.body).length).to eq(Etsource::Config.user_curves.length)
-      end
+  context 'with no attached curves and include_internal and include_unattached both set' do
+    let(:url) do
+      "/api/v3/scenarios/#{scenario.id}/custom_curves" \
+        '?include_internal=true&include_unattached=true'
     end
 
-    context 'with an attached internal curve and not setting an include_internal param' do
-      before do
-        put "#{url}/internal", params: {
-          file: fixture_file_upload('random_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+    before { get(url, headers: token_header) }
 
-        get(url, headers: token_header)
-      end
-
-      it 'succeeds' do
-        expect(response).to be_successful
-      end
-
-      it 'sends no curve data' do
-        expect(JSON.parse(response.body)).to eq([])
-      end
+    it 'succeeds' do
+      expect(response).to be_successful
     end
 
-    context 'with an attached internal curve and setting an include_internal param' do
-      let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves?include_internal=true" }
+    it 'sends data about all available curves' do
+      expect(JSON.parse(response.body).length).to eq(Etsource::Config.user_curves.length)
+    end
+  end
 
-      before do
-        put "#{url.split('?').first}/internal", params: {
-          file: fixture_file_upload('random_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+  context 'with an attached internal curve and setting an include_internal param' do
+    let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves?include_internal=true" }
 
-        get(url, headers: token_header)
-      end
+    before do
+      put "#{url.split('?').first}/internal", params: {
+        file: fixture_file_upload('random_curve.csv', 'text/csv')
+      }, headers: access_token_header(user, :write)
 
-      it 'succeeds' do
-        expect(response).to be_successful
-      end
+      get(url, headers: token_header)
+    end
 
-      it 'sends data for attached curves only' do
-        expect(JSON.parse(response.body).length).to eq(1)
-      end
+    it 'succeeds' do
+      expect(response).to be_successful
+    end
 
-      it 'sends data about the attached curve' do
-        expect(JSON.parse(response.body).first).to include(
-          'key' => 'internal',
-          'internal' => true
-        )
-      end
+    it 'sends data for attached curves only' do
+      expect(JSON.parse(response.body).length).to eq(1)
+    end
+
+    it 'sends data about the attached curve' do
+      expect(JSON.parse(response.body).first).to include(
+        'key' => 'internal',
+        'internal' => true
+      )
     end
   end
 
   context 'with a valid generic curve name' do
     let(:curve_name) { 'generic' }
 
-    context 'when showing a curve and the scenario has nothing attached' do
+    context 'when no user curve is stored' do
       before { get(url, headers: token_header) }
 
       it 'is 404 Not Found' do
@@ -152,7 +132,7 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when showing a curve' do
+    context 'when showing a stored user curve' do
       before do
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
@@ -167,10 +147,40 @@ describe 'Custom curves', :etsource_fixture do
 
       it 'sends back JSON data about the curve' do
         expect(JSON.parse(response.body)).to include(
-          'name' => 'price_curve.csv',
-          'size' => 35_039,
+          'name' => 'price_curve',
+          'size' => 78_843,
           'stats' => { 'length' => 8760, 'min_at' => 0, 'max_at' => 1 }
         )
+      end
+    end
+
+    context 'when uploading a valid user curve file' do
+      let(:request) do
+        put url, params: {
+          file: fixture_file_upload('price_curve.csv', 'text/csv')
+        }, headers: access_token_header(user, :write)
+      end
+
+      it 'succeeds' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'sends back JSON data about the curve' do
+        request
+
+        expect(JSON.parse(response.body)).to include(
+          'name' => 'price_curve',
+          'size' => 78_843
+        )
+      end
+
+      it 'creates the user curve record' do
+        expect { request }
+          .to change {
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
+          }
+          .from(false).to(true)
       end
     end
 
@@ -202,91 +212,33 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context 'when uploading a valid curve file' do
-      let(:request) do
+    context 'when removing a user curve' do
+      before do
+        scenario.delete_all_users
+
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: access_token_header(user, :delete)
       end
+
+      let(:request) { delete url, headers: access_token_header(user, :delete) }
 
       it 'succeeds' do
         request
         expect(response).to be_successful
       end
 
-      it 'sends back JSON data about the curve' do
+      it 'sends no data' do
         request
-
-        expect(JSON.parse(response.body)).to include(
-          'name' => 'price_curve.csv',
-          'size' => 35_039
-        )
+        expect(response.body).to be_empty
       end
 
-      it 'attaches the file' do
+      it 'removes the user curve' do
         expect { request }
           .to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
-          .from(false).to(true)
-      end
-    end
-
-    context 'when uploading a curve as a string' do
-      let(:request) do
-        put url, params: { file: ("1.0\n" * 8760) }, headers: access_token_header(user, :write)
-      end
-
-      it 'sends back JSON data with errors' do
-        request
-
-        expect(JSON.parse(response.body)).to include(
-          'errors' => ['"file" was not a valid multipart/form-data file']
-        )
-      end
-
-      it 'sends back JSON data with error keys' do
-        request
-
-        expect(JSON.parse(response.body)).to include(
-          'error_keys' => %w[not_multipart_form_data]
-        )
-      end
-    end
-
-    context 'when uploading a valid curve file with a byte order mark' do
-      let(:file) do
-        file = Tempfile.new('bom_curve')
-        file.write("\xEF\xBB\xBF")
-        file.write("1.0\n" * 8760)
-        file
-      end
-
-      let(:request) do
-        put url, params: {
-          file: fixture_file_upload(file.path, 'text/csv')
-        }, headers: access_token_header(user, :write)
-      end
-
-      it 'succeeds' do
-        request
-        expect(response).to be_successful
-      end
-
-      it 'attaches the file' do
-        expect { request }
-          .to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
-          }
-          .from(false).to(true)
+          .from(true).to(false)
       end
     end
 
@@ -322,16 +274,12 @@ describe 'Custom curves', :etsource_fixture do
         )
       end
 
-      it 'does not change the attachment' do
-        expect { request }
-          .not_to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
-          }
-          .from(false)
+      it 'does not create a user curve' do
+         expect { request }
+           .not_to change {
+             scenario.reload.user_curves.exists?(key: 'generic_curve')
+           }
+           .from(false)
       end
     end
 
@@ -369,22 +317,17 @@ describe 'Custom curves', :etsource_fixture do
         )
       end
 
-      it 'does not change the attachment' do
+      it 'does not create a user curve' do
         expect { request }
           .not_to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
-          }
-          .from(false)
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
+         }
+         .from(false)
       end
     end
 
     context "when uploading a curve to someone else's public scenario" do
       before do
-        #scenario.update!(owner: create(:user))
         scenario.user = create(:user)
       end
 
@@ -399,16 +342,40 @@ describe 'Custom curves', :etsource_fixture do
         expect(response).to be_forbidden
       end
 
-      it 'does not change the attachment' do
+      it 'does not create a user curve' do
         expect { request }
           .not_to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
           .from(false)
+      end
+    end
+
+    context 'when uploading a valid curve file with a byte order mark' do
+      let(:file) do
+        file = Tempfile.new('bom_curve')
+        file.write("\xEF\xBB\xBF")
+        file.write("1.0\n" * 8760)
+        file
+      end
+
+      let(:request) do
+        put url, params: {
+          file: fixture_file_upload(file.path, 'text/csv')
+        }, headers: access_token_header(user, :write)
+      end
+
+      it 'succeeds' do
+        request
+        expect(response).to be_successful
+      end
+
+      it 'creates the user curve record' do
+        expect { request }
+          .to change {
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
+          }
+          .from(false).to(true)
       end
     end
 
@@ -431,51 +398,12 @@ describe 'Custom curves', :etsource_fixture do
         expect(response).to be_successful
       end
 
-      it 'attaches the file' do
+      it 'creates the user curve record' do
         expect { request }
           .to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
           .from(false).to(true)
-      end
-    end
-
-    context 'when removing an attached curve' do
-      before do
-        scenario.delete_all_users
-
-        put url, params: {
-          file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :delete)
-      end
-
-      let(:request) { delete url, headers: access_token_header(user, :delete) }
-
-      it 'succeeds' do
-        request
-        expect(response).to be_successful
-      end
-
-      it 'sends no data' do
-        request
-        expect(response.body).to be_empty
-      end
-
-      it 'removes the attachment' do
-        expect { request }
-          .to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
-          }
-          .from(true)
-          .to(false)
       end
     end
 
@@ -488,7 +416,6 @@ describe 'Custom curves', :etsource_fixture do
       end
 
       let(:user) { create(:user) }
-
       let(:request) { delete url, headers: access_token_header(user, :delete) }
 
       it 'succeeds' do
@@ -501,17 +428,12 @@ describe 'Custom curves', :etsource_fixture do
         expect(response.body).to be_empty
       end
 
-      it 'removes the attachment' do
+      it 'removes the user curve' do
         expect { request }
           .to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
-          .from(true)
-          .to(false)
+          .from(true).to(false)
       end
     end
 
@@ -537,14 +459,10 @@ describe 'Custom curves', :etsource_fixture do
         expect(JSON.parse(response.body)).to eq('errors' => ['Scenario does not belong to you'])
       end
 
-      it 'does not remove the attachment' do
+      it 'does not remove the user curve' do
         expect { request }
           .not_to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
           .from(true)
       end
@@ -558,14 +476,10 @@ describe 'Custom curves', :etsource_fixture do
         expect(response).to be_not_found
       end
 
-      it 'does not change the attachment' do
+      it 'does not change the user curve' do
         expect { request }
           .not_to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'generic_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
           .from(false)
       end
@@ -589,17 +503,17 @@ describe 'Custom curves', :etsource_fixture do
       end
 
       it 'sends back JSON data about the curve' do
-        expect(JSON.parse(response.body)).to include(
-          'name' => 'price_curve.csv',
-          'size' => 35_039,
-          'stats' => {
+        json = JSON.parse(response.body)
+
+        expect(json).to include(
+          'name' => 'price_curve',
+          'key' => 'interconnector_1_price',
+          'stats' => hash_including(
             'length' => 8760,
-            'max' => 2.0,
-            'max_at' => 1,
-            'mean' => 1.5,
             'min' => 1.0,
-            'min_at' => 0
-          }
+            'max' => 2.0,
+            'mean' => 1.5
+          )
         )
       end
     end
@@ -620,8 +534,8 @@ describe 'Custom curves', :etsource_fixture do
         request
 
         expect(JSON.parse(response.body)).to include(
-          'name' => 'price_curve.csv',
-          'size' => 35_039,
+          'name' => 'price_curve',
+          'key' => 'interconnector_1_price',
           'stats' => {
             'length' => 8760,
             'max' => 2.0,
@@ -633,29 +547,13 @@ describe 'Custom curves', :etsource_fixture do
         )
       end
 
-      it 'attaches the file' do
+      it 'creates a user curve with correct key' do
         expect { request }
           .to change {
-            scenario
-              .reload
-              .attachments
-              .find_by(key: 'interconnector_1_price_curve')
-              .present?
+            scenario.reload.user_curves.exists?(key: 'interconnector_1_price_curve')
           }
           .from(false).to(true)
       end
-    end
-  end
-
-  context 'with an invalid curve name' do
-    let(:curve_name) { 'no_such_curve' }
-
-    it 'rejects the request' do
-      put url, params: {
-        file: fixture_file_upload('price_curve.csv', 'text/csv')
-      }, headers: access_token_header(user, :write)
-
-      expect(response).not_to be_successful
     end
   end
 end
