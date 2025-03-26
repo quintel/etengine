@@ -4,7 +4,8 @@ class CreateUserCurves < ActiveRecord::Migration[7.0]
       t.integer :scenario_id, null: false
       t.string  :key, null: false
 
-      # MEDIUMBLOB - expect curves to be 68-72 kb. A normal blob is 64 kb. This is 16 mb.
+      # MEDIUMBLOB - I tested a curve serialized with MessagePack and it was ~70 kb.
+      # A normal blob is 64 kb. So we need a medium blob
       t.binary  :curve, null: false, limit: 16.megabytes - 1
 
       # Metadata fields for imported curves
