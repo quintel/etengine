@@ -43,16 +43,9 @@ class ScenarioAttachment < ApplicationRecord
     VALID_FILE_KEYS
   end
 
+  # TODO: Remove I think
   def loadable_curve?
     file&.attached? && CurveHandler::Config.db_key?(key)
-  end
-
-  def curve?
-    key.ends_with?('_curve')
-  end
-
-  def curve_config
-    Etsource::Config.user_curves[key.chomp('_curve')]
   end
 
   # Returns true for attachments which have all their 'source_scenario' metadata

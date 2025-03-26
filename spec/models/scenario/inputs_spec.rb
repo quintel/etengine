@@ -6,39 +6,6 @@ RSpec.describe Scenario::Inputs do
   let(:scenario) { Scenario.new }
   let(:inputs) { described_class.new(scenario) }
 
-  context 'when the scenario has an attached curve' do
-    before do
-      attachment = scenario.attachments.build(key: 'a_curve')
-      allow(attachment).to receive(:loadable_curve?).and_return(true)
-
-      allow(attachment).to receive(:curve_config).and_return(
-        CurveHandler::Config.from_etsource({
-          key: 'a',
-          type: 'generic',
-          disables: ['both_input']
-        })
-      )
-
-      scenario.user_values = {
-        both_input: 100,
-        present_input: 50,
-        future_input: 25
-      }
-    end
-
-    it 'removes the disabled input from the "present" list' do
-      expect(inputs.present).to eq({
-        Input.get(:present_input) => 50
-      })
-    end
-
-    it 'removes the disabled input from the "future" list' do
-      expect(inputs.future).to eq({
-        Input.get(:future_input) => 25
-      })
-    end
-  end
-
   context 'when a scenario has no inputs' do
     it 'has no before inputs' do
       expect(inputs.before).to be_empty

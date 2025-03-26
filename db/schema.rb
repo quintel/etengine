@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_03_06_093020) do
+ActiveRecord::Schema[7.0].define(version: 2025_03_26_090732) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -71,50 +71,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_06_093020) do
     t.index ["scenario_id"], name: "index_hydrogen_supply_orders_on_scenario_id", unique: true
   end
 
-  create_table "oauth_openid_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "access_grant_id", null: false
-    t.string "nonce", null: false
-    t.index ["access_grant_id"], name: "index_oauth_openid_requests_on_access_grant_id"
-  end
-
-  create_table "old_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "email", null: false
-    t.string "company_school"
-    t.boolean "allow_news", default: true
-    t.string "heared_first_at", default: ".."
-    t.string "password_salt"
-    t.integer "role_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.string "openid_identifier"
-    t.string "phone_number"
-    t.string "group"
-    t.string "trackable", limit: 191, default: "0"
-    t.boolean "send_score", default: false
-    t.boolean "new_round"
-    t.string "old_crypted_password"
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at", precision: nil
-    t.datetime "remember_created_at", precision: nil
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at", precision: nil
-    t.datetime "last_sign_in_at", precision: nil
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
-    t.index ["trackable"], name: "index_old_users_on_trackable"
-  end
-
-  create_table "personal_access_tokens", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "oauth_access_token_id", null: false
-    t.string "name"
-    t.datetime "last_used_at"
-    t.index ["oauth_access_token_id"], name: "index_personal_access_tokens_on_oauth_access_token_id", unique: true
-    t.index ["user_id"], name: "index_personal_access_tokens_on_user_id"
-  end
-
   create_table "scenario_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id", null: false
     t.string "key", null: false
@@ -171,13 +127,22 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_06_093020) do
     t.index ["created_at"], name: "index_scenarios_on_created_at"
   end
 
-  create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "user_curves", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.string "key", null: false
+    t.binary "curve", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scenario_id", "key"], name: "index_user_curves_on_scenario_id_and_key", unique: true
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
