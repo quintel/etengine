@@ -1,23 +1,21 @@
 # frozen_string_literal: true
 
 module CurveHandler
-  # Removes an attachment, unsetting any inputs which the may be been set when the attachmetn was
-  # originally added.
+  # Removes a UserCurve record, unsetting any inputs that may have been set when the curve was added.
   class DetachService
-    # Public: Calls the DetachService, removing the attachment. Looks up the config based on the
-    # attachment type.
-    def self.call(attachment)
-      new(Config.find_by(db_key: attachment.key, allow_nil: true)).call(attachment)
+    # Looks up the configuration by db_key and detaches the user curve.
+    def self.call(user_curve)
+      new(Config.find_by(db_key: user_curve.key, allow_nil: true)).call(user_curve)
     end
 
     def initialize(config)
       @config = config
     end
 
-    def call(attachment)
-      scenario = attachment.scenario
+    def call(user_curve)
+      scenario = user_curve.scenario
 
-      attachment.destroy
+      user_curve.destroy
 
       if @config&.sets_inputs?
         @config.input_keys.each do |key|

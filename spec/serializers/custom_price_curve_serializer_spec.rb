@@ -3,27 +3,26 @@
 require 'spec_helper'
 require_relative './custom_curve_shared_examples'
 
-describe CustomPriceCurveSerializer do
-  let(:attachment) { FactoryBot.create(:scenario_attachment) }
+RSpec.describe CustomPriceCurveSerializer do
+  let(:curve_data) { [1.0, 2.0] + [0.0] * (8760 - 2) }
+
+  let(:curve) do
+    FactoryBot.create(:user_curve).tap do |uc|
+      uc.curve = Merit::Curve.new(curve_data)
+      uc.save!
+    end
+  end
 
   include_examples 'a custom curve Serializer'
 
-  context 'with an attached curve' do
-    let(:json) { described_class.new(attachment).as_json }
+  describe 'with a stored curve' do
+    let(:json) { described_class.new(curve).as_json }
 
-    before do
-      attachment.file.attach(
-        io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
-        filename: 'price_curve.csv',
-        content_type: 'text/csv'
-      )
-    end
-
-    it { expect(json[:stats]).to include(min: 1.0) }
-    it { expect(json[:stats]).to include(min_at: 0) }
+    it { expect(json[:stats]).to include(min: 0.0) }
+    it { expect(json[:stats]).to include(min_at: 2) }
     it { expect(json[:stats]).to include(max: 2.0) }
     it { expect(json[:stats]).to include(max_at: 1) }
-    it { expect(json[:stats]).to include(mean: 1.5) }
+    it { expect(json[:stats]).to include(mean: curve_data.sum / curve_data.length) }
     it { expect(json[:stats]).to include(length: 8760) }
     it { expect(json[:source_scenario]).to eq({}) }
 
@@ -31,7 +30,7 @@ describe CustomPriceCurveSerializer do
       let(:source) { FactoryBot.create(:scenario) }
 
       before do
-        attachment.update(
+        curve.update!(
           source_scenario_id: source.id,
           source_saved_scenario_id: 1,
           source_scenario_title: 'a',

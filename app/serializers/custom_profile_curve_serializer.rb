@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
-# Provides JSON information about a custom price curve.
 class CustomProfileCurveSerializer < CustomCurveSerializer
+  private
+
+  def stats
+    attrs = super
+
+    if config.reducer
+      reduced = config.reducer.call(@curve.to_a)
+      attrs[:full_load_hours] = reduced
+    end
+
+    attrs
+  end
 end

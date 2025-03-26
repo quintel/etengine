@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     # Provides the ability to upload or remove a custom curve from a scenario.
     #
-    # Currently only the imported electricity price curve can be changed, but this controller is
-    # intended to allow additional custom curves to be added later without requiring changes to the
-    # REST API.
+    # This controller now uses the UserCurve model, which stores curves in the database using
+    # MessagePack-encoded Merit::Curve objects.
     class CustomCurvesController < BaseController
       include ActionController::MimeResponds
       include UsesScenario
@@ -27,33 +28,30 @@ module Api
         end
 
         curves = available_curves.values.map do |config|
-          if attachment(config.key).blank? && include_unattached
+          if user_curve(config.db_key).blank? && include_unattached
             UnattachedCustomCurveSerializer.new(config).as_json
           else
-            attachment_json(attachment(config.key)).as_json.presence
+            curve_json(user_curve(config.db_key))&.as_json
           end
         end
 
         render json: curves.compact
       end
 
-      # Sends the name of the current custom curve for the scenario, or an empty object if none is
-      # set.
-      #
-      # If the request wants CSV, the file contents will be sent.
+      # Sends the curve metadata or raw CSV data for a curve stored in the scenario.
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
-        attachment = current_attachment
+        curve = current_user_curve
 
         if request.format.csv?
           send_data(
-            attachment.file.blob.download,
+            CSV.generate { |csv| curve.as_csv.each { |row| csv << row } },
             type: 'text/csv',
-            filename: "#{attachment.key}.#{attachment.scenario_id}.csv"
+            filename: "#{curve.name.presence || curve.key}.#{curve.scenario_id}.csv"
           )
         else
-          render json: attachment_json(attachment)
+          render json: curve_json(curve)
         end
       end
 
@@ -65,7 +63,7 @@ module Api
         handler = create_handler(params[:id], upload)
 
         if handler.valid?
-          render json: attachment_json(handler.call)
+          render json: curve_json(handler.call)
         else
           render json: errors_json(handler), status: :unprocessable_entity
         end
@@ -75,26 +73,23 @@ module Api
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        current_attachment && CurveHandler::DetachService.call(current_attachment)
+        current_user_curve && CurveHandler::DetachService.call(current_user_curve)
         head :no_content
       end
 
       private
 
-      def scenario_attachments
-        ScenarioAttachment.where(scenario_id: params[:scenario_id])
+      # Returns the UserCurve record with the given db_key for the scenario.
+      def current_user_curve
+        user_curve(params[:id])
       end
 
-      def current_attachment
-        attachment(params[:id])
+      # Returns a UserCurve record by the given_key for the scenario.
+      def user_curve(key)
+        scenario.user_curves.find_by(key: config_for(key).db_key)
       end
 
-      def attachment(key)
-        return if scenario_attachments.empty?
-
-        scenario_attachments.find_by(key: config_for(key).db_key)
-      end
-
+      # Extracts metadata from the params, if present.
       def metadata_parameters
         return {} unless params[:metadata]
 
@@ -110,10 +105,12 @@ module Api
       # Serialization
       # -------------
 
-      def attachment_json(attachment)
-        config_for(attachment.key).serializer.new(attachment) if attachment
+      # Returns a serialized representation of the UserCurve.
+      def curve_json(curve)
+        config_for(curve.key).serializer.new(curve) if curve
       end
 
+      # Returns a standardized JSON format for curve upload validation errors.
       def errors_json(handler)
         { errors: handler.errors, error_keys: handler.error_keys }
       end
@@ -121,11 +118,12 @@ module Api
       # Factories
       # ---------
 
+      # Finds the curve configuration for the given curve name.
       def config_for(curve_name)
         CurveHandler::Config.find(curve_name.to_s.chomp('_curve'))
       end
 
-      # Internal: Returns the handler based on the curve name, initialized with the IO.
+      # Returns a CurveHandler::AttachService for handling the curve upload.
       def create_handler(curve_name, io)
         CurveHandler::AttachService.new(
           config_for(curve_name),
@@ -138,18 +136,19 @@ module Api
       # Filters
       # -------
 
-      # Asserts that the named curve is permitted to be changed.
+      # Asserts that the named curve exists in the configuration.
       def ensure_valid_curve_name
         return if CurveHandler::Config.key?(params[:id])
 
         render(
           json: { errors: ["No such custom curve: #{params[:id].inspect}"] },
-          status: 422
+          status: :unprocessable_entity
         )
       end
 
+      # Asserts that the requested curve exists and is loadable.
       def ensure_curve_set
-        render_not_found unless current_attachment&.file&.attached?
+        render_not_found unless current_user_curve&.loadable_curve?
       end
 
       # Asserts that the user uploaded a file, and not a string or other object.
@@ -161,7 +160,7 @@ module Api
             errors: ['"file" was not a valid multipart/form-data file'],
             error_keys: [:not_multipart_form_data]
           },
-          status: 422
+          status: :unprocessable_entity
         )
       end
 
@@ -175,7 +174,7 @@ module Api
             errors: ['Curve should not be larger than 1MB'],
             error_keys: [:file_too_large]
           },
-          status: 422
+          status: :unprocessable_entity
         )
       end
     end
