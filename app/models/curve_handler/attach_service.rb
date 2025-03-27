@@ -3,7 +3,7 @@
 module CurveHandler
   # Processes and validates user-uploaded curves.
   #
-  # AttachService now creates/updates a UserCurve record with the serialized curve data.
+  # AttachService creates/updates a UserCurve record with the serialized curve data.
   class AttachService
     delegate :error_keys, :errors, :valid?, to: :@processor
 
@@ -31,8 +31,7 @@ module CurveHandler
       user_curve = update_or_create_user_curve
 
       # Build a Merit::Curve using the sanitized curve data.
-      # Here we assume @processor.sanitized_curve returns an Array of floats.
-      new_curve = Merit::Curve.new(@processor.sanitized_curve, @processor.sanitized_curve.length, 0.0)
+      new_curve = Merit::Curve.new(@processor.sanitized_curve)
       user_curve.curve = new_curve
       user_curve.save!
 
@@ -49,7 +48,8 @@ module CurveHandler
 
     def update_or_create_user_curve
       user_curve = current_user_curve ||
-        UserCurve.create!(key: @config.db_key, scenario: @scenario, curve: Merit::Curve.new(@processor.sanitized_curve, 8760, 0.0))
+        UserCurve.create!(key: @config.db_key, scenario: @scenario, curve: Merit::Curve.new(@processor.sanitized_curve))
+      user_curve.name = @filename.chomp(File.extname(@filename))
       user_curve.update_or_remove_metadata(@metadata)
       user_curve
     end

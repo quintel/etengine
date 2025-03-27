@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Provides JSON information about a custom curve stored in a UserCurve.
+# Provides JSON information about a custom curve.
 class CustomCurveSerializer
-  # @param user_curve [UserCurve] a record with a serialized curve and metadata
+  # @param user_curve [UserCurve] an object with a serialized curve and metadata.
   def initialize(user_curve)
     @user_curve = user_curve
     @curve = user_curve.curve
@@ -15,7 +15,7 @@ class CustomCurveSerializer
 
     data.merge!(
       attached: true,
-      name: @user_curve.key,
+      name: @user_curve.name || @user_curve.key,
       size: serialized_size,
       date: @user_curve.created_at.utc,
       stats: stats

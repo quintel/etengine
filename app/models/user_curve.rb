@@ -31,12 +31,6 @@ class UserCurve < ApplicationRecord
     curve.present? && CurveHandler::Config.db_key?(key)
   end
 
-  # TODO: Check if this is still necessary
-  # Identify that this record is a curve based on the key suffix
-  def curve?
-    key.ends_with?('_curve')
-  end
-
   # Returns the configuration for the curve using the key (without the suffix)
   def curve_config
     Etsource::Config.user_curves[key.chomp('_curve')]
@@ -63,5 +57,9 @@ class UserCurve < ApplicationRecord
     if SOURCE_SCENARIO_METADATA.any? { |key| public_send(key).present? } && !source_scenario?
       errors.add(:base, 'All metadata needs to be set for curves imported from another scenario')
     end
+  end
+
+  def as_csv
+    curve.map{ |hour| [hour] }
   end
 end

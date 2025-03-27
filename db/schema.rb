@@ -139,6 +139,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_26_090732) do
   create_table "user_curves", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id", null: false
     t.string "key", null: false
+    t.string "name"
     t.binary "curve", size: :medium, null: false
     t.integer "source_scenario_id"
     t.string "source_scenario_title"

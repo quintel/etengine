@@ -8,10 +8,10 @@ module Gql
 
     # Public: Creates a CustomCurveCollection from the attachments on a scenario.
     def self.from_scenario(scenario)
-      curve_attachments = scenario.user_curves.select(&:loadable_curve?)
+      scenario_user_curves = scenario.user_curves.select(&:loadable_curve?)
 
       new(
-        curve_attachments.each_with_object({}) do |user_curve, state|
+        scenario_user_curves.each_with_object({}) do |user_curve, state|
           config = CurveHandler::Config.find_by(db_key: user_curve.key)
 
           next unless config
