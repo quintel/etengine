@@ -489,70 +489,75 @@ describe Scenario do
     end
 
     context 'with a custom interconnector 1 electricity price curve' do
-      let(:preset_attachment) do
-        preset
-          .attachments
-          .create(key: 'interconnector_1_price_curve')
+      let!(:preset)   { create(:scenario) }
+      let!(:scenario) { create(:scenario) }
+      let(:curve_data) { File.read(Rails.root.join('spec/fixtures/files/price_curve.csv')).lines.map(&:to_f) }
+      let(:preset_curve) do
+        create(:user_curve,
+          scenario: preset,
+          key: 'interconnector_1_price_curve',
+          curve: Merit::Curve.new(curve_data)
+        )
       end
 
-      let(:scenario_attachment) do
-        scenario.attachments.first
-      end
+
+      let(:scenario_curve) { scenario.user_curves.find_by(key: 'interconnector_1_price_curve') }
 
       before do
-        preset_attachment.file.attach(
-          io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
-          filename: 'price_curve.csv',
-          content_type: 'text/csv'
+        preset_curve
+        scenario.user_curves.create!(
+          key: 'interconnector_1_price_curve',
+          curve: Merit::Curve.new(curve_data)
         )
       end
 
       it 'works' do
-        expect(scenario_attachment.file).to be_attached
+        expect(scenario_curve).to be_present
+        expect(scenario_curve.curve).to be_a(Merit::Curve)
       end
 
-      it 'creates a new attachment' do
-        expect(scenario_attachment.file)
-          .not_to eq(preset_attachment.file)
+      it 'creates a new curve for the scenario' do
+        expect(scenario_curve.id).not_to eq(preset_curve.id)
       end
 
       it 'has the same content as the original' do
-        expect(scenario_attachment.file.download)
-          .to eq(preset_attachment.file.download)
+        expect(scenario_curve.curve.to_a).to eq(preset_curve.curve.to_a)
       end
     end
 
     context 'with a custom interconnector 2 electricity price curve' do
-      let(:preset_attachment) do
-        preset
-          .attachments
-          .create(key: 'interconnector_2_price_curve')
+      let!(:preset)   { create(:scenario) }
+      let!(:scenario) { create(:scenario) }
+      let(:curve_data) { File.read(Rails.root.join('spec/fixtures/files/price_curve.csv')).lines.map(&:to_f) }
+      let(:preset_curve) do
+        create(:user_curve,
+          scenario: preset,
+          key: 'interconnector_2_price_curve',
+          curve: Merit::Curve.new(curve_data)
+        )
       end
 
-      let(:scenario_attachment) do
-        scenario.attachments.first
-      end
+      let(:scenario_curve) { scenario.user_curves.find_by(key: 'interconnector_2_price_curve') }
 
       before do
-        preset_attachment.file.attach(
-          io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
-          filename: 'price_curve.csv',
-          content_type: 'text/csv'
+        preset_curve
+        scenario.user_curves.create!(
+          key: 'interconnector_2_price_curve',
+          curve: Merit::Curve.new(curve_data)
         )
       end
 
       it 'works' do
-        expect(scenario_attachment.file).to be_attached
+        expect(scenario_curve).to be_present
+        expect(scenario_curve.curve.to_a).to eq(curve_data)
       end
 
-      it 'creates a new attachment' do
-        expect(scenario_attachment.file)
-          .not_to eq(preset_attachment.file)
+      it 'creates a new curve for the scenario' do
+        expect(scenario_curve.id).not_to eq(preset_curve.id)
       end
 
       it 'has the same content as the original' do
-        expect(scenario_attachment.file.download)
-          .to eq(preset_attachment.file.download)
+        expect(scenario_curve.curve.to_a).to eq(preset_curve.curve.to_a)
       end
     end
 
@@ -684,55 +689,47 @@ describe Scenario do
     end
   end
 
-  context 'with two scenarios using the same attached curve' do
-    let(:scenario_one_attachment) { FactoryBot.create(:scenario_attachment) }
-    let(:scenario_two_attachment) { FactoryBot.create(:scenario_attachment) }
+  context 'with two scenarios using the same curve values' do
+    let(:curve_data) { File.read(Rails.root.join('spec/fixtures/files/price_curve.csv')).lines.map(&:to_f) }
 
-    before do
-      scenario_one_attachment.file.attach(
-        io: File.open(Rails.root.join('spec/fixtures/files/price_curve.csv')),
-        filename: 'price_curve.csv',
-        content_type: 'text/csv'
+    let!(:scenario_one) { create(:scenario) }
+    let!(:scenario_two) { create(:scenario) }
+
+    let!(:curve_one) do
+      create(:user_curve,
+        scenario: scenario_one,
+        key: 'interconnector_1_price_curve',
+        curve: Merit::Curve.new(curve_data)
       )
+    end
 
-      scenario_two_attachment.file.attach(
-        scenario_one_attachment.file.blob
+    let!(:curve_two) do
+      create(:user_curve,
+        scenario: scenario_two,
+        key: 'interconnector_1_price_curve',
+        curve: Merit::Curve.new(curve_data)
       )
-
-      scenario_one_attachment.scenario.reload
-      scenario_two_attachment.scenario.reload
     end
 
-    it 'the first scenario has a price curve' do
-      expect(scenario_one_attachment.file).to be_attached
+    it 'both scenarios have a user curve' do
+      expect(scenario_one.user_curves.count).to eq(1)
+      expect(scenario_two.user_curves.count).to eq(1)
     end
 
-    it 'the second scenario has a price curve' do
-      expect(scenario_two_attachment.file).to be_attached
+    it 'both user curves have identical values' do
+      expect(curve_one.curve.to_a).to eq(curve_two.curve.to_a)
     end
 
-    it 'the scenario have the same price curve blob' do
-      expect(scenario_two_attachment.file.blob)
-        .to eq(scenario_one_attachment.file.blob)
+    it 'the curves are different records' do
+      expect(curve_one.id).not_to eq(curve_two.id)
     end
 
-    # Sanity check against Rails behaviour changing in the future.
-    it 'the blob is not deleted when removed from one scenario' do
-      expect { scenario_one_attachment.file.purge }
-        .not_to change(ActiveStorage::Blob, :count)
-    end
+    it 'deleting one curve does not delete the other' do
+      expect {
+        curve_one.destroy
+      }.to change(UserCurve, :count).by(-1)
 
-    it 'the reference is kept intact when removed from only one scenario' do
-      scenario_one_attachment.file.purge
-      expect(scenario_two_attachment.file).to be_attached
-    end
-
-    # Sanity check against Rails behaviour changing in the future.
-    it 'the blob is deleted when removed from both scenarios' do
-      scenario_one_attachment.file.purge
-
-      expect { scenario_two_attachment.file.purge }
-        .to change(ActiveStorage::Blob, :count).by(-1)
+      expect(UserCurve.exists?(curve_two.id)).to be(true)
     end
   end
 

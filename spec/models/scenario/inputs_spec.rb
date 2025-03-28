@@ -3,21 +3,25 @@
 require 'spec_helper'
 
 RSpec.describe Scenario::Inputs do
-  let(:scenario) { Scenario.new }
+  let(:scenario) { create(:scenario) }
   let(:inputs) { described_class.new(scenario) }
 
   context 'when the scenario has an attached curve' do
-    before do
-      attachment = scenario.attachments.build(key: 'a_curve')
-      allow(attachment).to receive(:loadable_curve?).and_return(true)
+    let(:curve) do
+      create(:user_curve, key: 'a_curve', scenario: scenario).tap do |uc|
+        allow(uc).to receive(:curve_config).and_return(
+          CurveHandler::Config.from_etsource(
+            key: 'a',
+            type: 'generic',
+            disables: ['both_input']
+          )
+        )
+        allow(uc).to receive(:loadable_curve?).and_return(true)
+      end
+    end
 
-      allow(attachment).to receive(:curve_config).and_return(
-        CurveHandler::Config.from_etsource({
-          key: 'a',
-          type: 'generic',
-          disables: ['both_input']
-        })
-      )
+    before do
+      allow(scenario).to receive(:user_curves).and_return([curve])
 
       scenario.user_values = {
         both_input: 100,

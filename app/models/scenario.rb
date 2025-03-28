@@ -32,6 +32,8 @@ class Scenario < ApplicationRecord
   has_one    :hydrogen_demand_order, dependent: :destroy
   has_one    :households_space_heating_producer_order, dependent: :destroy
   has_many   :attachments, dependent: :destroy, class_name: 'ScenarioAttachment'
+  has_many :user_curves, dependent: :destroy
+
 
   has_many :source_attachments,
     dependent: :nullify,

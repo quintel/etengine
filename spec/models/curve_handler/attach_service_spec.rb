@@ -7,9 +7,9 @@ shared_examples_for 'a valid CurveHandler::AttachService' do
     expect(service).to be_valid
   end
 
-  it 'attaches the curve' do
+  it 'creates or updates a UserCurve record' do
     expect { service.call }
-      .to change { scenario.reload.attachments.count }
+      .to change { scenario.user_curves.count }
       .from(0).to(1)
   end
 end
@@ -25,6 +25,13 @@ RSpec.describe CurveHandler::AttachService do
     let(:config) { CurveHandler::Config.new(:generic, :generic) }
 
     include_examples 'a valid CurveHandler::AttachService'
+
+    it 'saves the sanitized curve in the UserCurve' do
+      curve = service.call.curve
+      expect(curve).to be_a(Merit::Curve)
+      expect(curve.length).to eq(8760)
+      expect(curve.get(0)).to be_a(Float)
+    end
   end
 
   describe 'when uploading a generic curve with metadata' do
@@ -42,14 +49,9 @@ RSpec.describe CurveHandler::AttachService do
 
     include_examples 'a valid CurveHandler::AttachService'
 
-    it 'sets the metadata on the attachment' do
-      expect(service.call.metadata_json).to eq(
-        source_scenario_id: scenario.id,
-        source_scenario_title: 'hello',
-        source_saved_scenario_id: 1,
-        source_dataset_key: 'nl',
-        source_end_year: 2050
-      )
+    it 'sets the metadata on the UserCurve' do
+      user_curve = service.call
+      expect(user_curve.metadata_json).to eq(metadata)
     end
   end
 
@@ -76,7 +78,8 @@ RSpec.describe CurveHandler::AttachService do
       # The 6570.0 comes from running CurveHandler::Reducers::FullLoadHours on the curve.
       expect { service.call }
         .to change { scenario.reload.user_values }
-        .from({ 'orig' => 1.0 }).to({ 'i1' => 6570.0, 'i2' => 6570.0, 'orig' => 1.0 })
+        .from({ 'orig' => 1.0 })
+        .to({ 'i1' => 6570.0, 'i2' => 6570.0, 'orig' => 1.0 })
     end
   end
 end

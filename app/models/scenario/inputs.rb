@@ -132,10 +132,9 @@ class Scenario < ApplicationRecord
 
     def inputs_disabled_by_curves
       @inputs_disabled_by_curves ||= Set.new(
-        @scenario.attachments
-          .select(&:curve?)
+        @scenario.user_curves
           .select(&:loadable_curve?)
-          .flat_map { |attachment| attachment.curve_config.internal_disabled_inputs }
+          .flat_map { |curve| curve.curve_config.internal_disabled_inputs }
       )
     end
   end

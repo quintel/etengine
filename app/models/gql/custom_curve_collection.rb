@@ -8,15 +8,15 @@ module Gql
 
     # Public: Creates a CustomCurveCollection from the attachments on a scenario.
     def self.from_scenario(scenario)
-      curve_attachments = scenario.attachments.select(&:loadable_curve?)
+      scenario_user_curves = scenario.user_curves.select(&:loadable_curve?)
 
       new(
-        curve_attachments.each_with_object({}) do |attachment, state|
-          config = CurveHandler::Config.find_by(db_key: attachment.key)
+        scenario_user_curves.each_with_object({}) do |user_curve, state|
+          config = CurveHandler::Config.find_by(db_key: user_curve.key)
 
-          state[config.key] = Merit::Curve.reader.read(
-            ActiveStorage::Blob.service.path_for(attachment.file.key)
-          ).freeze
+          next unless config
+
+          state[config.key] = user_curve.curve.to_a.freeze
         end
       )
     end

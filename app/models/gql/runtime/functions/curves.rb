@@ -7,18 +7,10 @@ module Gql::Runtime
       # Public: Looks up the attachment matching the `name`, and converts the
       # contents into a curve. If no attachment is set, nil is returned.
       def ATTACHED_CURVE(name)
-        name = name.to_s
-        scenario = scope.gql.scenario
-
-        return nil unless scenario.attachment?(name)
-
-        path = ActiveStorage::Blob.service.path_for(scenario.attachment(name).file.key)
-
-        # The graph wants an array. Loading a curve and converting to an array
-        # is expensive since Merit::Curve has to deal with the possibility of
-        # missing/default values. Using the reader directly avoids this
-        # overhead.
-        Merit::Curve.reader.read(path)
+        if (user_curve = scope.gql.scenario.user_curves.find_by(key: name.to_s))
+          return user_curve.curve.to_a
+        end
+        nil
       end
 
       # Public: Restricts the values in a curve to be between the minimum and maximum. Raises an

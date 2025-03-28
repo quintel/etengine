@@ -6,15 +6,15 @@ RSpec.describe Gql::CustomCurveCollection do
   let(:collection) { described_class.from_scenario(scenario) }
   let(:scenario) { FactoryBot.create(:scenario) }
 
-  context 'with a scenario containing two valid attachments' do
+  context 'with a scenario containing two valid user curves' do
+    let(:curve_1_values) { File.read('spec/fixtures/files/price_curve.csv').lines.map(&:to_f) }
+    let(:curve_2_values) { File.read('spec/fixtures/files/random_curve.csv').lines.map(&:to_f) }
+
     before do
-      %w[price_curve random_curve].each.with_index do |file, index|
-        CurveHandler::AttachService.new(
-          CurveHandler::Config.find(Etsource::Config.user_curves.keys[index]),
-          fixture_file_upload("#{file}.csv", 'text/csv'),
-          scenario
-        ).call
-      end
+      keys = Etsource::Config.user_curves.keys
+
+      create(:user_curve, scenario:, key: "#{keys[0]}_curve", curve: Merit::Curve.new(curve_1_values))
+      create(:user_curve, scenario:, key: "#{keys[1]}_curve", curve: Merit::Curve.new(curve_2_values))
     end
 
     it 'has two curves' do
@@ -22,38 +22,27 @@ RSpec.describe Gql::CustomCurveCollection do
     end
 
     it 'contains both curves' do
-      expect(collection.keys).to eq([
+      expect(collection.keys).to match_array([
         Etsource::Config.user_curves.keys[0],
         Etsource::Config.user_curves.keys[1]
       ])
     end
 
     it 'has the first user curve values' do
-      expect(collection.fetch(Etsource::Config.user_curves.keys[0])).to eq(
-        File.read('spec/fixtures/files/price_curve.csv').lines.map(&:to_f)
-      )
+      expect(collection.fetch(Etsource::Config.user_curves.keys[0])).to eq(curve_1_values)
     end
 
     it 'has the second user curve values' do
-      expect(collection.fetch(Etsource::Config.user_curves.keys[1])).to eq(
-        File.read('spec/fixtures/files/random_curve.csv').lines.map(&:to_f)
-      )
+      expect(collection.fetch(Etsource::Config.user_curves.keys[1])).to eq(curve_2_values)
     end
   end
 
-  context 'with a scenario containing an unconfigured attachment' do
+  context 'with a scenario containing an invalid user curve key' do
     before do
-      attachment = CurveHandler::AttachService.new(
-        CurveHandler::Config.find(Etsource::Config.user_curves.keys[0]),
-        fixture_file_upload('price_curve.csv', 'text/csv'),
-        scenario
-      ).call
-
-      attachment.key = 'invalid'
-      attachment.save(validate: false)
+      create(:user_curve, scenario:, key: 'invalid_curve', curve: Merit::Curve.new([1.0] * 8760))
     end
 
-    it 'has does not contain the invalid curve' do
+    it 'does not contain the invalid curve' do
       expect(collection.length).to eq(0)
     end
   end

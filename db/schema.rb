@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_03_21_121642) do
+ActiveRecord::Schema[7.0].define(version: 2025_03_26_090732) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -134,6 +134,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_21_121642) do
     t.datetime "updated_at", null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "user_curves", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.integer "scenario_id", null: false
+    t.string "key", null: false
+    t.string "name"
+    t.binary "curve", size: :medium, null: false
+    t.integer "source_scenario_id"
+    t.string "source_scenario_title"
+    t.integer "source_saved_scenario_id"
+    t.string "source_dataset_key"
+    t.integer "source_end_year"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scenario_id", "key"], name: "index_user_curves_on_scenario_id_and_key", unique: true
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
