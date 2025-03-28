@@ -16,7 +16,7 @@ module Etsource
     #   be independent to reduce bugs.
     def energy_graph(country = nil)
       instrument('etsource.loader: graph') do
-        graph = DeepClone.clone(optimized_graph)
+        graph = optimized_graph.create_clone
         graph.dataset = dataset(country) if country
         graph
       end
@@ -24,7 +24,7 @@ module Etsource
 
     def molecule_graph(country = nil)
       instrument('etsource.loader: molecule_graph') do
-        graph = DeepClone.clone(unoptimized_graph(Atlas::GraphConfig.molecules))
+        graph = unoptimized_graph(Atlas::GraphConfig.molecules).create_clone
         graph.dataset = dataset(country) if country
         graph
       end

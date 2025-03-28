@@ -16,6 +16,7 @@ class Graph
   extend  ActiveModel::Naming
   include ActiveSupport::Callbacks
   include Instrumentable
+  include Cloneable
 
   define_callbacks :calculate,
                    :calculate_initial_loop
@@ -390,7 +391,7 @@ class Graph
   #
   #
   def optimize_calculation_order
-    copy = DeepClone.clone self #Marshal.load(Marshal.dump(self))
+    copy = create_clone
     copy.calculate
     copy.finished_nodes.reverse.each_with_index do |node, index|
       if old = nodes.detect{|c| c.id == node.id}

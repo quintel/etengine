@@ -13,10 +13,6 @@ module Api
         authorize!(:write, @scenario)
       end
 
-      before_action(only: %i[discard undiscard]) do
-        authorize!(:destroy, @scenario)
-      end
-
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
