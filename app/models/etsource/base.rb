@@ -24,7 +24,7 @@ module Etsource
     #
     # Returns a Pathname.
     def self.clean_path(path)
-      path.to_s[0] == '/' ? Pathname.new(path).expand_path : Rails.root.join(path)
+      path.to_s[0] == '/' ? Pathname.new(path) : Rails.root.join(path)
     end
 
     # set to true to force reloading the topology
