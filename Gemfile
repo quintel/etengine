@@ -68,7 +68,7 @@ gem 'config'
 gem 'rest-client'
 
 # for etsource
-gem 'git', '~> 2.0'
+gem 'git', '~> 1.19'
 gem 'fnv'
 gem 'parallel'
 gem 'ruby-progressbar'
