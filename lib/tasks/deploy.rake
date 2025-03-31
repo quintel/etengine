@@ -35,7 +35,7 @@ namespace :deploy do
     end
 
     # Mark etsource as safe
-    Open3.capture2e("git config --global --add safe.directory #{etsourc}")
+    Open3.capture2e("git config --global --add safe.directory #{etsource}")
 
     puts 'Refreshing ETSource from GitHub'
     Etsource::Base.instance.refresh
