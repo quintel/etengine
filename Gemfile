@@ -12,7 +12,7 @@ gem 'puma'
 
 gem 'rails',        '~> 7.1.5'
 gem 'jquery-rails', '~> 4.0'
-gem 'haml',         '~> 5.0'
+gem 'haml'
 gem 'json'
 
 gem 'rake'
