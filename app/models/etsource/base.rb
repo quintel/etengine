@@ -132,7 +132,7 @@ module Etsource
     end
 
     def git
-      @git ||= Git.open(@base_dir)
+      @git ||= Git.open(@base_dir, repository: @base_dir.join('.git'))
     end
   end
 end
