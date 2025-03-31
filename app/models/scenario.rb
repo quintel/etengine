@@ -15,7 +15,7 @@ class Scenario < ApplicationRecord
 
   store :user_values
   store :balanced_values
-  serialize :active_couplings, Array
+  serialize :active_couplings, type: Array
   store :metadata, coder: JSON
 
   has_many :scenario_users, dependent: :destroy

@@ -7,11 +7,6 @@ module Api
 
       before_action :validate_scenario_version_tag, only: :update
 
-      before_action only: %i[batch] do
-        # Only check that the user can read. We restrict the search in the action.
-        authorize!(:read, Scenario)
-      end
-
       # GET api/v3/scenarios/:id/version
       def show
         render json: ScenarioVersionSerializer.new(scenario)

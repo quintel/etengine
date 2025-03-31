@@ -48,7 +48,7 @@ module Qernel::Plugins
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
     # can reset the graph after the first calculation.
     def clone_dataset
-      @original_dataset = DeepClone.clone(@graph.dataset)
+      @original_dataset = @graph.deep_clone(@graph.dataset)
     end
 
     # Internal: After the first graph is calculated, demands are passed into the
@@ -93,6 +93,7 @@ module Qernel::Plugins
         agriculture_heat_calc.call(frame)
       end
 
+      # But why???
       lifecycle.attach_dataset(@original_dataset)
 
       # Any subsequent calculations (one of which) must have the merit order

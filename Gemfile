@@ -1,4 +1,4 @@
-ruby '~> 3.1.0'
+ruby '~> 3.2.7'
 
 source 'https://rubygems.org'
 
@@ -10,7 +10,7 @@ end
 gem 'bootsnap', require: false
 gem 'puma'
 
-gem 'rails',        '~> 7.0.8'
+gem 'rails',        '~> 7.1.5'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml',         '~> 5.0'
 gem 'json'
@@ -19,12 +19,11 @@ gem 'rake'
 gem 'activeresource', '~> 6.0'
 
 # Ruby gems
-gem 'ruby_deep_clone', '~> 0.8', require: 'deep_clone'
 gem 'ice_nine'
 gem 'text-table'
 gem 'osmosis',                github: 'quintel/osmosis'
 
-gem 'numo-narray', require: 'numo/narray'
+# gem 'numo-narray', require: 'numo/narray'
 
 # Rails gem
 gem 'simple_form'
@@ -69,9 +68,8 @@ gem 'config'
 gem 'rest-client'
 
 # for etsource
-gem 'git',                            github: 'bradhe/ruby-git'
+gem 'git', '~> 3.0'
 gem 'fnv'
-gem 'msgpack'
 gem 'parallel'
 gem 'ruby-progressbar'
 
@@ -107,7 +105,7 @@ group :test, :development do
   gem 'factory_bot_rails'
   gem 'pry-byebug'
   gem 'pry-rails'
-  gem 'rspec-rails', '~> 6.0'
+  gem 'rspec-rails', '~> 7.0'
   gem 'watchr'
 
   gem 'rubocop',             '~> 1.27', require: false
@@ -129,6 +127,6 @@ group :test do
 end
 
 group :production, :staging do
-  gem 'gctools', require: false
+  # gem 'gctools', require: false
   gem 'newrelic_rpm'
 end

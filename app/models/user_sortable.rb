@@ -7,7 +7,7 @@ module UserSortable
   extend ActiveSupport::Concern
 
   included do
-    serialize :order, Array
+    serialize :order, type: Array
     belongs_to :scenario
 
     validates_with Atlas::UserSortableValidator,

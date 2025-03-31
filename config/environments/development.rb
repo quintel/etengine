@@ -8,7 +8,7 @@ Rails.application.configure do
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
-  config.cache_classes = false
+  config.enable_reloading = true
 
   # Do not eager load code on boot.
   config.eager_load = false
@@ -92,10 +92,12 @@ Rails.application.configure do
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
 
+  # Raise error when a before_action's only/except options reference missing actions
+  config.action_controller.raise_on_missing_callback_actions = true
+
   config.after_initialize do
     # Start ETSource reloader only when running as a server (i.e., not as a rake
     # task).
     Etsource::Reloader.start! if ENV['CI'] != 'true' && Settings.etsource_live_reload
   end
-
 end
