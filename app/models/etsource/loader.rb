@@ -40,7 +40,6 @@ module Etsource
         area = Atlas::Dataset.find(area_code)
         area_attr = area.to_hash
         area_attr[:derived] = area.is_a?(Atlas::Dataset::Derived)
-        area_attr['last_updated_at'] = @etsource.last_updated_at("datasets/#{area_code}")
 
         IceNine.deep_freeze!(area_attr.with_indifferent_access)
       end
