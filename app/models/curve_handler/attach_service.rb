@@ -27,12 +27,11 @@ module CurveHandler
     def call
       return false unless @processor.valid?
 
-      # Find or create the UserCurve record.
-      user_curve = update_or_create_user_curve
+      # Update name and metadata
+      update_metadata
 
       # Build a Merit::Curve using the sanitized curve data.
-      new_curve = Merit::Curve.new(@processor.sanitized_curve)
-      user_curve.curve = new_curve
+      user_curve.curve = merit_curve
       user_curve.save!
 
       set_input_values
@@ -42,16 +41,26 @@ module CurveHandler
 
     private
 
-    def current_user_curve
-      @current_user_curve ||= @scenario.user_curves.find_by(key: @config.db_key)
+    # Returns the user curve attached to the scenario, or a new record
+    def user_curve
+      @user_curve ||= if @scenario.attached_curve?(@config.db_key)
+        @scenario.attached_curve(@config.db_key)
+      else
+        UserCurve.create!(
+          key: @config.db_key,
+          scenario: @scenario,
+          curve: merit_curve
+        )
+      end
     end
 
-    def update_or_create_user_curve
-      user_curve = current_user_curve ||
-        UserCurve.create!(key: @config.db_key, scenario: @scenario, curve: Merit::Curve.new(@processor.sanitized_curve))
+    def merit_curve
+      Merit::Curve.new(@processor.sanitized_curve)
+    end
+
+    def update_metadata
       user_curve.name = @filename.chomp(File.extname(@filename))
       user_curve.update_or_remove_metadata(@metadata)
-      user_curve
     end
 
     def set_input_values
