@@ -27,13 +27,17 @@ module Api
           available_curves = available_curves.reject { |_key, config| config.internal? }
         end
 
-        curves = available_curves.values.map do |config|
-          if user_curve(config.db_key).blank? && include_unattached
-            UnattachedCustomCurveSerializer.new(config).as_json
-          else
-            curve_json(user_curve(config.db_key))&.as_json
+        if attached_user_curves.any? || include_unattached
+          curves = available_curves.values.map do |config|
+            if attached_user_curves.include?(config.db_key)
+              curve_json(user_curve(config.db_key))&.as_json
+            elsif include_unattached
+              UnattachedCustomCurveSerializer.new(config).as_json
+            end
           end
         end
+
+        curves ||= []
 
         render json: curves.compact
       end
@@ -79,6 +83,10 @@ module Api
 
       private
 
+      def attached_user_curves
+        @attached_user_curves ||= scenario.attached_curve_keys
+      end
+
       # Returns the UserCurve record with the given db_key for the scenario.
       def current_user_curve
         user_curve(params[:id])
@@ -86,7 +94,7 @@ module Api
 
       # Returns a UserCurve record by the given_key for the scenario.
       def user_curve(key)
-        scenario.user_curves.find_by(key: config_for(key).db_key)
+        scenario.attached_curve(config_for(key).db_key)
       end
 
       # Extracts metadata from the params, if present.

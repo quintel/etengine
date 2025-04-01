@@ -4,13 +4,12 @@ module Gql::Runtime
   module Functions
     # Contains GQL functions for retrieving and manipulating curves.
     module Curves
-      # Public: Looks up the attachment matching the `name`, and converts the
-      # contents into a curve. If no attachment is set, nil is returned.
+      # Public: Looks up the attachment matching the `name`, and returns a Merit::Curve.
+      # If no attachment is set, nil is returned.
       def ATTACHED_CURVE(name)
-        if (user_curve = scope.gql.scenario.user_curves.find_by(key: name.to_s))
-          return user_curve.curve.to_a
-        end
-        nil
+        return unless scope.gql.scenario.attached_curve?(name.to_s)
+
+        scope.gql.scenario.attached_curve(name.to_s).curve&.to_a
       end
 
       # Public: Restricts the values in a curve to be between the minimum and maximum. Raises an
