@@ -33,7 +33,7 @@ module DebugHelper
     if tree = Qernel::Logger.to_tree(logs)
       log_subtree(tree)
     end
-    haml_tag :h3, "UPDATE commands"
+    concat content_tag(:h3, "UPDATE commands")
     if tree = Qernel::Logger.to_tree(updates)
       log_subtree(tree)
     end
@@ -44,40 +44,39 @@ module DebugHelper
       raise "log_subtree requires the variables @gquery_keys and @method_definitions"
     end
 
-    haml_tag 'ul.unstyled' do
+    concat content_tag('ul', class: 'unstyled') {
       subtree.each do |parent, children|
         next if parent.nil?
-        haml_tag :li do
+        concat content_tag(:li) {
           type      = parent[:type]
           attr_name = parent[:attr_name]
           value     = parent[:value]
 
-
-          haml_tag :p, :class => type do
-            haml_tag "span.label.unfold_toggle", type.to_s, :class => LABELS[type]
+          concat content_tag(:p, class: type) {
+            concat content_tag("span", type.to_s, class: "label unfold_toggle #{LABELS[type]}")
             haml_concat "&nbsp;".html_safe
 
             log_folding_tags(type)
             log_title(parent)
             log_value(value)
-          end
+          }
 
           if (gquery_key = parent[:gquery_key]) && !@gquery_keys.include?(gquery_key)
             if gquery =  Gquery.get(gquery_key.to_s)
-              haml_tag 'strong.pull-right', (gquery.unit || '-')+" "
-              haml_tag 'div.offset1' do
+              concat content_tag('strong', (gquery.unit || '-')+" ", class: 'pull-right')
+              concat content_tag('div', class: 'offset1') {
                 with_tabs(0) do
-                  haml_tag :pre, gquery.query, :class => 'gql'
+                  concat content_tag(:pre, gquery.query, class: 'gql')
                 end
-              end
+              }
               @gquery_keys << gquery_key
             end
           end
 
           log_subtree(children) unless children.nil?
-        end
+        }
       end
-    end
+    }
   end
 
   def log_title(log)
@@ -85,16 +84,18 @@ module DebugHelper
     attr_name = log[:attr_name]
     value     = log[:value]
     if type == :method
-      haml_tag 'a.attr_name', attr_name.to_s,
+      concat content_tag('a', attr_name.to_s,
         :rel  => 'modal',
         :href => 'javacsript:void(null)',
         :data => {
           :target        => "##{attr_name}",
           :"toggle" => :modal
-        }
+        },
+        :class => 'attr_name'
+      )
       @method_definitions << attr_name
     else
-      haml_tag 'span.attr_name', attr_name.to_s
+      concat content_tag('span', attr_name.to_s, class: 'attr_name')
       if log[:node]
         haml_concat link_to(">>", inspect_node_path(id: log[:node], graph_name: :energy))
       end
@@ -105,24 +106,24 @@ module DebugHelper
     value = value.first if value.is_a?(Array) and value.length == 1
 
     if value.is_a?(Array)
-      haml_tag 'strong.pull-right', "#{value.length} #"
+      concat content_tag('strong', "#{value.length} #", class: 'pull-right')
     else
-      haml_tag 'strong.pull-right', auto_number(value)
+      concat content_tag('strong', auto_number(value), class: 'pull-right')
     end
   end
 
   def log_folding_tags(type)
     return
-    haml_tag 'span' do
+    concat content_tag('span') do
       if type == :attr
-        haml_tag 'span', '-'
-        haml_tag 'span', '+'
+        concat content_tag('span', '-')
+        concat content_tag('span', '+')
       else
-        haml_tag 'a.fold_all',   '-', :href => 'javascript:void(null)'
-        haml_tag 'a.unfold_all', '+', :href => 'javascript:void(null)'
+        concat content_tag('a', '-', href: 'javascript:void(null)', class: 'fold_all')
+        concat content_tag('a', '+', href: 'javascript:void(null)', class: 'unfold_all')
       end
-      # haml_tag 'a.unfold_1', '1', :href => '#'
-      # haml_tag 'a.unfold_2', '2', :href => '#'
+      # concat content_tag('a', '1', href: '#', class: 'unfold_1')
+      # concat content_tag('a', '2', href: '#', class: 'unfold_2')
     end
   end
 

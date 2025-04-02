@@ -26,22 +26,20 @@ module InspectHelper
     present_value = present.instance_eval(attr_name.to_s)
     future_value  = future.instance_eval(attr_name.to_s)
 
-    haml_tag :td, auto_number(present_value), :title => title_tag_number(present_value)
-    haml_tag :td, auto_number(future_value), :title => title_tag_number(future_value)
+    concat content_tag(:td, auto_number(present_value), title: title_tag_number(present_value))
+    concat content_tag(:td, auto_number(future_value), title: title_tag_number(future_value))
 
     change_field(present_value, future_value)
   rescue => e
-    haml_tag :td, :colspan => 2 do
-      haml_concat "ERROR (#{e})"
-    end
+    concat content_tag(:td, "ERROR (#{e})", colspan: 2)
   end
 
   def change_field(present_value, future_value)
-    haml_tag :'td.change' do
-      if future_value == 0.0 and present_value == 0.0
-        haml_concat ''
+    concat content_tag(:td, class: 'change') do
+      if future_value == 0.0 && present_value == 0.0
+        ''
       else
-        haml_concat "#{(((future_value / present_value) - 1) * 100).to_i}%" rescue '-'
+        "#{(((future_value / present_value) - 1) * 100).to_i}%" rescue '-'
       end
     end
   end
@@ -167,9 +165,8 @@ module InspectHelper
       css_class.push('warning')
     end
 
-    haml_tag("span.#{css_class.join('.')}") do
-      haml_concat((time * 1000).round(2))
-      haml_concat(' ms')
+    content_tag(:span, class: css_class.join(' ')) do
+      "#{(time * 1000).round(2)} ms"
     end
   end
 
