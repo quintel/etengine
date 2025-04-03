@@ -57,6 +57,15 @@ class ScenarioAttachment < ApplicationRecord
     SOURCE_SCENARIO_METADATA.to_h { |key| [key, public_send(key)] }
   end
 
+  # TODO: Remove these after migrating curves to UserCurve model
+  def curve?
+    key.ends_with?('_curve')
+  end
+
+  def curve_config
+    Etsource::Config.user_curves[key.chomp('_curve')]
+  end
+
   # Updates the source scenario metadata of the attachment. If no metadata is
   # supplied this can indicate the attachment has changed from a
   # scenario-imported curve to a user uploaded curve. Thus we remove all source
