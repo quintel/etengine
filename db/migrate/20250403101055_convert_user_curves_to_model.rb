@@ -4,10 +4,7 @@ class ConvertUserCurvesToModel < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
   def up
-    total_scenarios = Scenario.migratable.count
-
     migrate_scenarios(raise_if_no_changes: false) do |scenario|
-      processed += 1
       scenario_migrated = false
 
       scenario.attachments.find_each do |attachment|
@@ -44,11 +41,8 @@ class ConvertUserCurvesToModel < ActiveRecord::Migration[7.0]
       end
 
       # Marks the scenario as changed so it's counted by ScenarioMigration.
-      scenario.touch if scenario_migrated? # TODO: Either keep this and remove "raise_if_no_changes: false" or remove this
-      end
+      scenario.touch if scenario_migrated
     end
-
-    raise ETEngine::ScenarioMigration::NoScenariosMigrated if migrated.zero?
   end
 
   def down
