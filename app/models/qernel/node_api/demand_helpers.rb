@@ -40,6 +40,23 @@ module Qernel
         set_preset_demand_by_carrier_production(value, :hydrogen)
       end
 
+      # Updates a (steam hot water production plant) node demand by its steam hot water output.
+      #
+      # That means we have to divide by the conversion of the steam hot water slot. So that the steam hot water
+      # output edge receive that value, otherwise one part would go away to losses.
+      #
+      # For example:
+      #
+      #     UPDATE(... , preset_demand_by_steam_hot_water_production, 1000)
+      #
+      #     1000 hydrogen --> +------+
+      #                       | 1030 |
+      #           30 loss --> +------+
+      #
+      def preset_demand_by_steam_hot_water_production=(value)
+        set_preset_demand_by_carrier_production(value, :steam_hot_water)
+      end
+
       # Updates a (ammonia production plant) node demand by its ammonia output.
       #
       # That means we have to divide by the conversion of the ammonia slot. So that the ammonia
