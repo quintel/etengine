@@ -13,7 +13,7 @@ class Scenario < ApplicationRecord
   include Scenario::Copies
   include Scenario::Couplings
 
-  store :user_values
+  serialize :user_values, type: Hash, coder: MessagePack
   store :balanced_values
   serialize :active_couplings, type: Array
   store :metadata, coder: JSON
