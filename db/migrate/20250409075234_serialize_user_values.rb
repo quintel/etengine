@@ -17,9 +17,11 @@ class SerializeUserValues < ActiveRecord::Migration[7.1]
       begin
         # Had to add other permitted_classes
         values = YAML.safe_load(yaml_data, permitted_classes: [Hash, Float, Integer, String, Symbol], aliases: true)
+
         next unless values.is_a?(Hash)
         msgpack_blob = values.to_h.to_msgpack
-        ScenarioForMigration.where(id: scenario.id).update_all(user_values: msgpack_blob)
+
+        ScenarioForMigration.find(id: scenario.id).update!(user_values: msgpack_blob)
       rescue => e
         Rails.logger.warn("Skipping scenario ##{scenario.id}: #{e.message}")
       end

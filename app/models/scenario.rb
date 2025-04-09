@@ -13,8 +13,7 @@ class Scenario < ApplicationRecord
   include Scenario::Copies
   include Scenario::Couplings
 
-  # serialize  :user_values, type: Hash, coder: MessagePack # TODO: implement after migration
-  serialize :user_values, type: Hash, coder: TempDualCoder.new # TODO: remove after migration
+  serialize  :user_values, type: Hash, coder: MessagePack # TODO: implement after migration
   store      :balanced_values
   serialize  :active_couplings, type: Array
   store      :metadata, coder: JSON
