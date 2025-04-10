@@ -21,7 +21,7 @@ class SerializeUserValues < ActiveRecord::Migration[7.1]
         next unless values.is_a?(Hash)
         msgpack_blob = values.to_h.to_msgpack
 
-        ScenarioForMigration.find(id: scenario.id).update!(user_values: msgpack_blob)
+        ScenarioForMigration.find(scenario.id).update!(user_values: msgpack_blob)
       rescue => e
         Rails.logger.warn("Skipping scenario ##{scenario.id}: #{e.message}")
       end
