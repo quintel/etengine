@@ -21,8 +21,13 @@ module Qernel
         end
       end
 
+      # Unused for real demand calculations.
+      #
+      # Should be positive for plugin.installed_adapters_of_type to verify that
+      # this adapter is active. Taking the max will ensure a positive demand if
+      # either consuming or producing
       def carrier_demand
-        carrier_demand_input - carrier_demand_output
+        [carrier_demand_input, carrier_demand_output].max
       end
 
       def carrier_demand_input
