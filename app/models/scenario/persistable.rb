@@ -157,7 +157,10 @@ module Scenario::Persistable
     return if user_curves.blank?
 
     user_curves.each do |curve|
-      yield curve.class.new(curve.attributes.except('id', 'scenario_id'))
+      yield curve.class.new(
+        curve: curve.curve,
+        **curve.attributes.except('id', 'scenario_id', 'curve')
+      )
     end
   end
 end
