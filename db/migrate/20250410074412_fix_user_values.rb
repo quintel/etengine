@@ -1,4 +1,4 @@
-class SerializeUserValues < ActiveRecord::Migration[7.1]
+class FixUserValues < ActiveRecord::Migration[7.1]
   include ETEngine::ScenarioMigration
 
   # Temporary model
@@ -9,6 +9,9 @@ class SerializeUserValues < ActiveRecord::Migration[7.1]
   require 'msgpack'
 
   def up
+    change_column :scenarios, :user_values, :text, size: :medium
+    add_column :scenarios, :user_values_binary, :binary, limit: 16.megabytes
+
     migrate_scenarios(raise_if_no_changes: false) do |scenario|
       original = ScenarioForMigration.find(scenario.id)
       yaml_data = original.read_attribute_before_type_cast("user_values")
@@ -21,13 +24,13 @@ class SerializeUserValues < ActiveRecord::Migration[7.1]
         next unless values.is_a?(Hash)
         msgpack_blob = values.to_h.to_msgpack
 
-        ScenarioForMigration.find(scenario.id).update!(user_values: msgpack_blob)
+        ScenarioForMigration.find(scenario.id).update!(user_values_binary: msgpack_blob)
       rescue => e
         Rails.logger.warn("Skipping scenario ##{scenario.id}: #{e.message}")
       end
     end
 
-    change_column :scenarios, :user_values, :binary, limit: 16.megabytes
+    rename_column :scenarios, :user_values, :user_values_old
+    rename_column :scenarios, :user_values_binary, :user_values
   end
-
 end
