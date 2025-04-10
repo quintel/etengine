@@ -146,6 +146,16 @@ module Qernel
         end
       end
 
+      # Public: Calculates the total steam hot water production of the node, based on the value per unit
+      # and the number of units.
+      #
+      # Returns a numeric value in MJ.
+      def steam_hot_water_production_based_on_number_of_units
+        fetch(:steam_hot_water_production_based_on_number_of_units) do
+          number_of_units * typical_steam_hot_water_production_per_unit
+        end
+      end
+
       # Public: Calculates the total ammonia production of the node, based on the value per unit
       # and the number of units.
       #
@@ -176,6 +186,16 @@ module Qernel
         end
       end
 
+      # Public: Calculates the steam hot water output capacity based on the output conversion and total
+      # input capacity of the node.
+      #
+      # Returns a numeric value in MW.
+      def typical_steam_hot_water_production_capacity
+        fetch(:typical_steam_hot_water_production_capacity) do
+          steam_hot_water_output_conversion * input_capacity
+        end
+      end
+
       # Public: Calculates the ammmonia output capacity based on the output conversion and total
       # input capacity of the node.
       #
@@ -201,6 +221,15 @@ module Qernel
       def typical_hydrogen_production_per_unit
         fetch(:typical_hydrogen_production_per_unit) do
           typical_hydrogen_production_capacity * full_load_seconds
+        end
+      end
+
+      # Public: Calculates the steam hot water production of one unit of the technology.
+      #
+      # Returns a numeric value in MJ.
+      def typical_steam_hot_water_production_per_unit
+        fetch(:typical_steam_hot_water_production_per_unit) do
+          typical_steam_hot_water_production_capacity * full_load_seconds
         end
       end
 
