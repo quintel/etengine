@@ -715,6 +715,7 @@ DEPENDENCIES
   listen
   local_time
   mini_racer
+  msgpack (~> 1.8.0)
   mysql2
   newrelic_rpm
   osmosis!
