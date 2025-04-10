@@ -13,13 +13,13 @@ class Scenario < ApplicationRecord
   include Scenario::Copies
   include Scenario::Couplings
 
-  store :user_values
-  store :balanced_values
-  serialize :active_couplings, type: Array
-  store :metadata, coder: JSON
+  serialize  :user_values, type: Hash, coder: MessagePack
+  store      :balanced_values
+  serialize  :active_couplings, type: Array
+  store      :metadata, coder: JSON
 
-  has_many :scenario_users, dependent: :destroy
-  has_many :users, through: :scenario_users
+  has_many   :scenario_users, dependent: :destroy
+  has_many   :users, through: :scenario_users
 
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
 
@@ -32,7 +32,7 @@ class Scenario < ApplicationRecord
   has_one    :hydrogen_demand_order, dependent: :destroy
   has_one    :households_space_heating_producer_order, dependent: :destroy
   has_many   :attachments, dependent: :destroy, class_name: 'ScenarioAttachment'
-  has_many :user_curves, dependent: :destroy
+  has_many   :user_curves, dependent: :destroy
 
 
   has_many :source_attachments,

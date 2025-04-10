@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_03_101055) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_09_075234) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -114,7 +114,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_03_101055) do
   create_table "scenarios", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.text "user_values", size: :medium
+    t.binary "user_values", size: :long
     t.integer "end_year", default: 2040
     t.boolean "keep_compatible", default: false, null: false
     t.boolean "private", default: false, null: false

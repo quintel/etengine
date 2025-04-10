@@ -216,25 +216,24 @@ describe Scenario do
   end
 
   describe "#user_values" do
-    context ":user_values = YAMLized object (when coming from db)" do
-      before {@scenario = Scenario.new(:user_values => {:foo => :bar})}
-      it "should unyaml,overwrite and return :user_values" do
-        expect(@scenario.user_values).to eq({'foo' => :bar})
-        expect(@scenario.user_values[:foo]).to eq(:bar)
+    context ":user_values = YAMLized object with string keys and string values (when coming from db)" do
+      before { @scenario = Scenario.new(user_values: { foo: :bar }) }
+      it "should unyaml, overwrite and return user_values" do
+        expect(@scenario.user_values).to eq({ 'foo' => 'bar' })
+        expect(@scenario.user_values['foo']).to eq('bar')
       end
-
     end
-    context ":user_values = nil" do
-      before {@scenario = Scenario.new(:user_values => nil)}
 
+    context ":user_values = nil" do
+      before { @scenario = Scenario.new(user_values: nil) }
       describe '#user_values' do
         subject { super().user_values }
         it { is_expected.to eq({}) }
       end
     end
-    context ":user_values = obj" do
-      before {@scenario = Scenario.new(:user_values => {})}
 
+    context ":user_values = obj" do
+      before { @scenario = Scenario.new(user_values: {}) }
       describe '#user_values' do
         subject { super().user_values }
         it { is_expected.to eq({}) }

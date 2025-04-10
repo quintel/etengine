@@ -41,8 +41,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       data     = JSON.parse(response.body)
       scenario = Scenario.find(data['id'])
 
+      # Expect the values to be stored with string keys.
       expect(scenario.user_values).to eq('foo_demand' => 10.0)
-      expect(scenario.user_values).to be_a(ActiveSupport::HashWithIndifferentAccess)
+      expect(scenario.user_values).to be_a(Hash)
     end
 
     it 'should optionally include detailed params' do
@@ -148,7 +149,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       scenario = Scenario.find(json['id'])
 
       expect(scenario.user_values).not_to be_blank
-      expect(scenario.user_values).to eql(parent.user_values.stringify_keys)
+      expect(scenario.user_values).to eq(parent.user_values.stringify_keys)
     end
   end
 
@@ -486,14 +487,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         scenario = Scenario.find(json['id'])
 
         expect(scenario.user_values['foo_demand']).
-          to eq(preset.user_values[:foo_demand] * multi)
+          to eq(preset.user_values['foo_demand'] * multi)
 
         expect(scenario.user_values['input_2']).
-          to eq(preset.user_values[:input_2] * multi)
+          to eq(preset.user_values['input_2'] * multi)
 
         # Input 3 is a non-scaled input
         expect(scenario.user_values['input_3']).
-          to eq(preset.user_values[:input_3])
+          to eq(preset.user_values['input_3'])
       end
 
       context 'when the preset has a heat network order' do
@@ -538,14 +539,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           scenario = Scenario.find(json['id'])
 
           expect(scenario.user_values['foo_demand']).
-            to eq(preset.user_values[:foo_demand] * multi)
+            to eq(preset.user_values['foo_demand'] * multi)
 
           expect(scenario.user_values['input_2']).
-            to eq(preset.user_values[:input_2] * multi)
+            to eq(preset.user_values['input_2'] * multi)
 
           # Input 3 is a non-scaled input
           expect(scenario.user_values['input_3']).
-            to eq(preset.user_values[:input_3])
+            to eq(preset.user_values['input_3'])
         end
       end
 
@@ -575,14 +576,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           scenario = Scenario.find(json['id'])
 
           expect(scenario.user_values['foo_demand']).
-            to be_within(1e-5).of(preset.user_values[:foo_demand])
+            to be_within(1e-5).of(preset.user_values['foo_demand'])
 
           expect(scenario.user_values['input_2']).
-            to be_within(1e-5).of(preset.user_values[:input_2])
+            to be_within(1e-5).of(preset.user_values['input_2'])
 
           # Input 3 is a non-scaled input
           expect(scenario.user_values['input_3']).
-            to be_within(1e-5).of(preset.user_values[:input_3])
+            to be_within(1e-5).of(preset.user_values['input_3'])
         end
       end # unscaling
 
@@ -595,7 +596,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
             }
           }, headers: token_header
 
-          @scaled = post '/api/v3/scenarios', params: { scenario: { scenario_id: Scenario.last.id } }, headers: token_header
+          post '/api/v3/scenarios', params: {
+            scenario: { scenario_id: Scenario.last.id }
+          }, headers: token_header
         end
 
         let(:json) { JSON.parse(response.body) }
@@ -609,14 +612,14 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           scenario = Scenario.find(json['id'])
 
           expect(scenario.user_values['foo_demand']).
-            to eq(preset.user_values[:foo_demand] * multi)
+            to eq(preset.user_values['foo_demand'] * multi)
 
           expect(scenario.user_values['input_2']).
-            to eq(preset.user_values[:input_2] * multi)
+            to eq(preset.user_values['input_2'] * multi)
 
           # Input 3 is a non-scaled input
           expect(scenario.user_values['input_3']).
-            to eq(preset.user_values[:input_3])
+            to eq(preset.user_values['input_3'])
         end
       end # retaining existing scaling
     end # with an already-scaled scenario
@@ -654,7 +657,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           scaled   = Scenario.find(json['id'])
 
           expect(scaled.user_values['foo_demand']).
-            to eq(unscaled.user_values[:foo_demand].to_f * multi)
+            to eq(unscaled.user_values['foo_demand'].to_f * multi)
         end
       end
 
@@ -687,7 +690,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
           expect { create_scenario }.to change(Scenario, :count).by(1)
         end
       end
-    end # with a derived dataset
-  end # when scaling the area
-
-end
+    end
+  end # with a derived dataset
+end # when scaling the area
