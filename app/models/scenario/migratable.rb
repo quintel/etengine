@@ -31,7 +31,7 @@ class Scenario < ApplicationRecord
         keep_compatible: true,
         updated_at: since,
         mechanical_turk_source: 'Mechanical Turk',
-        empty_user_values: ActiveSupport::HashWithIndifferentAccess.new.to_yaml
+        empty_user_values: {}.to_msgpack
       )
     end
   end
