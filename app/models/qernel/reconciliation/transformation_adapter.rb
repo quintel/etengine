@@ -21,12 +21,16 @@ module Qernel
         end
       end
 
+      def carrier_demand
+        carrier_demand_input - carrier_demand_output
+      end
+
       def carrier_demand_input
-        @carrier_demand_input || raise("carrier_demand_input not yet calulated for #{@node.key}")
+        @carrier_demand_input.presence || raise("carrier_demand_input not yet calulated for #{@node.key}")
       end
 
       def carrier_demand_output
-        @carrier_demand_output || raise("carrier_demand_output not yet calulated for #{@node.key}")
+        @carrier_demand_output.presence || raise("carrier_demand_output not yet calulated for #{@node.key}")
       end
 
       def demand_curve
