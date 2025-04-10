@@ -66,6 +66,10 @@ module Scenario::Persistable
       self.heat_network_orders << cloned_order
     end
 
+    cloned_user_curves(preset) do |cloned_curve|
+      self.user_curves << cloned_curve
+    end
+
     self.end_year  = preset.end_year
     self.area_code = preset.area_code
   end
@@ -144,6 +148,16 @@ module Scenario::Persistable
       cloned_attachment.file.attach(attachment.file.blob)
 
       yield cloned_attachment
+    end
+  end
+
+  def cloned_user_curves(preset)
+    user_curves = preset.user_curves
+
+    return if user_curves.blank?
+
+    user_curves.each do |curve|
+      yield curve.class.new(curve.attributes.except('id', 'scenario_id'))
     end
   end
 end
