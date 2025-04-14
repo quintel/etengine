@@ -1,6 +1,6 @@
 require 'etengine/scenario_migration'
 
-class ConvertUserCurvesToModel < ActiveRecord::Migration[7.0]
+class AttachmentsToUserCurves < ActiveRecord::Migration[7.0]
   include ETEngine::ScenarioMigration
 
   def up
@@ -28,7 +28,7 @@ class ConvertUserCurvesToModel < ActiveRecord::Migration[7.0]
 
           service = CurveHandler::AttachService.new(config, file_stub, scenario, attachment.metadata_json)
 
-          if service.call
+          if service.call(false)
             attachment.destroy!
             scenario_migrated = true
           end
