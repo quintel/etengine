@@ -24,7 +24,7 @@ module CurveHandler
       io.rewind
     end
 
-    def call
+    def call(set_inputs=true)
       return false unless @processor.valid?
 
       # Update name and metadata
@@ -34,7 +34,7 @@ module CurveHandler
       user_curve.curve = merit_curve
       user_curve.save!
 
-      set_input_values
+      set_input_values if set_inputs
 
       user_curve
     end
