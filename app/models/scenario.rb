@@ -15,7 +15,7 @@ class Scenario < ApplicationRecord
 
   serialize  :user_values, type: Hash, coder: MessagePack
   store      :balanced_values
-  serialize  :active_couplings, type: Array
+  serialize  :active_couplings, type: Array, coder: Scenario::MessagePackArrayCoder
   store      :metadata, coder: JSON
 
   has_many   :scenario_users, dependent: :destroy

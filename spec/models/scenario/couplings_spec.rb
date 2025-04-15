@@ -34,11 +34,11 @@ RSpec.describe Scenario::Couplings do
         input_with_coupling_group: 75
       }
 
-      scenario.activate_coupling(:steel_sector)
+      scenario.activate_coupling("steel_sector")
     end
 
     it 'has one active coupling' do
-      expect(scenario.active_couplings).to include(:steel_sector)
+      expect(scenario.active_couplings).to include("steel_sector")
     end
 
     it 'has no inactive coupling' do
@@ -65,7 +65,7 @@ RSpec.describe Scenario::Couplings do
     end
 
     it 'has one inactive coupling' do
-      expect(scenario.inactive_couplings).to include(:steel_sector)
+      expect(scenario.inactive_couplings).to include("steel_sector")
     end
 
     it 'has coupled inputs' do
@@ -74,7 +74,7 @@ RSpec.describe Scenario::Couplings do
   end
 
   context 'when activating a non existing coupling' do
-    before { scenario.activate_coupling(:party) }
+    before { scenario.activate_coupling("party") }
 
     it 'is invalid' do
       expect(scenario).not_to be_valid
