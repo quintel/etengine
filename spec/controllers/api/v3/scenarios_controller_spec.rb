@@ -190,9 +190,9 @@ describe Api::V3::ScenariosController do
   describe 'POST couple' do
     context 'when activating a coupling that exists' do
       before do
-        allow(Input).to receive(:coupling_groups).and_return([:steel_sector])
+        allow(Input).to receive(:coupling_groups).and_return(["steel_sector"])
 
-        post :couple, params: { id: scenario.id, groups: [:steel_sector] }
+        post :couple, params: { id: scenario.id, groups: ["steel_sector"] }
       end
 
       it 'is succesful' do
@@ -200,7 +200,7 @@ describe Api::V3::ScenariosController do
       end
 
       it 'activates the coupling' do
-        expect(scenario.reload.active_couplings).to include(:steel_sector)
+        expect(scenario.reload.active_couplings).to include("steel_sector")
       end
 
       it 'returns the active coupling' do

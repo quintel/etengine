@@ -93,7 +93,7 @@ module Api
           groups = Input.coupling_groups_for(key)
           next if groups.blank?
 
-          groups.each do |group|
+          groups.map(&:to_s).each do |group|
             next if @scenario.inactive_couplings.include?(group)
 
             @scenario.activate_coupling(group)

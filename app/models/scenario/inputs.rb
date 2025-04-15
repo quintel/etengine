@@ -123,10 +123,10 @@ class Scenario < ApplicationRecord
     def disabled_by_coupling?(input)
       (
         input.disabled_by_couplings.present? &&
-        input.disabled_by_couplings.all? { |key| @scenario.active_couplings.include?(key) }
+        input.disabled_by_couplings.all? { |key| @scenario.active_couplings.include?(key.to_s) }
       ) || (
         input.coupling_groups.present? &&
-        input.coupling_groups.any? { |key| @scenario.active_couplings.exclude?(key) }
+        input.coupling_groups.any? { |key| @scenario.active_couplings.exclude?(key.to_s) }
       )
     end
 
