@@ -20,15 +20,12 @@ module Qernel
       #
       # Returns a float.
       def supply_demand_balance(plugin)
-        consumption = plugin
-          .installed_adapters_of_type(:consumer)
-          .sum(&:carrier_demand)
+        total_consumption = sum_adapter_demand(plugin, :consumer, :carrier_demand) +
+                            sum_adapter_demand(plugin, :transformation, :carrier_demand_input)
+        total_production  = sum_adapter_demand(plugin, :producer, :carrier_demand) +
+                            sum_adapter_demand(plugin, :transformation, :carrier_demand_output)
 
-        production = plugin
-          .installed_adapters_of_type(:producer)
-          .sum(&:carrier_demand)
-
-        production - consumption
+        total_production - total_consumption
       end
 
       # Internal: Creates the combined curves of two adapter groups.
@@ -37,6 +34,18 @@ module Qernel
           plugin.installed_adapters_of_type(group_one) +
           plugin.installed_adapters_of_type(group_two)
         ).map(&:demand_curve)).to_a
+      end
+
+      # Internal: Sums the specified carrier demand attribute over all adapters of a given type.
+      #
+      # plugin       - The plugin object that holds installed adapters.
+      # adapter_type - The adapter type as a symbol (e.g. :consumer, :producer, or :transformation).
+      # method_name  - The symbol representing the method to call on each adapter (e.g. :carrier_demand,
+      #                :carrier_demand_input, :carrier_demand_output).
+      #
+      # Returns the sum of the demands (as a float).
+      private_class_method def sum_adapter_demand(plugin, adapter_type, method_name)
+        plugin.installed_adapters_of_type(adapter_type).sum(&method_name)
       end
     end
   end
