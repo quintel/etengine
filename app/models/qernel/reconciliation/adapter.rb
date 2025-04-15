@@ -40,7 +40,7 @@ module Qernel
       end
 
       def carrier_demand
-        @carrier_demand || raise("carrier_demand not yet calulated for #{@node.key}")
+        @carrier_demand.presence || raise("carrier_demand not yet calulated for #{@node.key}")
       end
 
       def demand_curve
