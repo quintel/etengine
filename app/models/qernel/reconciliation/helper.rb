@@ -6,12 +6,12 @@ module Qernel
 
       # Internal: Array describing the hourly carrier demand.
       def total_demand_curve(plugin)
-        combined_curve(plugin, :consumer, :export)
+        combined_curve(plugin, :consumer, :export, :input)
       end
 
       # Internal: Array describing the hourly carrier supply.
       def total_supply_curve(plugin)
-        combined_curve(plugin, :producer, :import)
+        combined_curve(plugin, :producer, :import, :output)
       end
 
       # Public: Given the Reconciliation plugin, returns the balance of supply
@@ -29,11 +29,14 @@ module Qernel
       end
 
       # Internal: Creates the combined curves of two adapter groups.
-      private_class_method def combined_curve(plugin, group_one, group_two)
+      private_class_method def combined_curve(plugin, group_one, group_two, transformation)
         ::Merit::CurveTools.add_curves((
           plugin.installed_adapters_of_type(group_one) +
           plugin.installed_adapters_of_type(group_two)
-        ).map(&:demand_curve)).to_a
+        ).map(&:demand_curve) +
+        plugin.installed_adapters_of_type(:transformation)
+              .map(&:"demand_curve_#{transformation}")
+      ).to_a
       end
 
       # Internal: Sums the specified carrier demand attribute over all adapters of a given type.
