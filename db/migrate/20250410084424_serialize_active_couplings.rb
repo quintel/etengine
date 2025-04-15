@@ -9,7 +9,7 @@ class SerializeActiveCouplings < ActiveRecord::Migration[7.1]
 
   def up
     change_column :scenarios, :active_couplings, :text, size: :medium
-    add_column :scenarios, :active_couplings_binary, :binary, limit: 16.megabytes
+    add_column :scenarios, :active_couplings_binary, :binary, limit: 64.kilobytes
 
     migrate_scenarios(raise_if_no_changes: false) do |scenario|
       original = ScenarioForMigration.find(scenario.id)
