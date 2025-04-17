@@ -39,8 +39,8 @@
             %span.tag.gray Public
         %td
           = link_to s.id, inspect_scenario_path(:id => s.id)
-          - if s.metadata[:title]
-            %span{ style: 'margin: 0 0.25rem 0 0.5rem; font-weight: normal' }= s.metadata[:title]
+          - if s.title
+            %span{ style: 'margin: 0 0.25rem 0 0.5rem; font-weight: normal' }= s.title
           - if s.id.to_s == params[:api_scenario_id]
             %span.tag.green &#9733; Current Scenario
         %td
