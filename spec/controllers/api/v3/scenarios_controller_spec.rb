@@ -145,7 +145,7 @@ describe Api::V3::ScenariosController do
 
       it 'makes the ctm_scenario_id available' do
         scenario = Scenario.find(JSON.parse(response.body)['id'])
-        expect(scenario.metadata[:ctm_scenario_id]).to eq('123')
+        expect(scenario.metadata["ctm_scenario_id"]).to eq('123')
       end
 
       context 'when metadata is huge' do
