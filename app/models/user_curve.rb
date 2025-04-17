@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class UserCurve < ApplicationRecord
+  include ScenarioMetadata
+
   belongs_to :scenario
   belongs_to :source_scenario, class_name: 'Scenario', optional: true
 
@@ -34,29 +36,6 @@ class UserCurve < ApplicationRecord
   # Returns the configuration for the curve using the key (without the suffix)
   def curve_config
     Etsource::Config.user_curves[key.chomp('_curve')]
-  end
-
-  def source_scenario?
-    SOURCE_SCENARIO_METADATA.all? { |key| public_send(key).present? }
-  end
-
-  def metadata_json
-    return {} unless source_scenario?
-
-    SOURCE_SCENARIO_METADATA.to_h { |key| [key, public_send(key)] }
-  end
-
-  def update_or_remove_metadata(metadata)
-    return update(metadata) if metadata.present?
-    return unless source_scenario?
-
-    update(SOURCE_SCENARIO_METADATA.index_with { nil })
-  end
-
-  def validate_source_scenario_metadata
-    if SOURCE_SCENARIO_METADATA.any? { |key| public_send(key).present? } && !source_scenario?
-      errors.add(:base, 'All metadata needs to be set for curves imported from another scenario')
-    end
   end
 
   def as_csv
