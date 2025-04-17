@@ -5,6 +5,7 @@ class HouseholdsSpaceHeatingProducerOrder < ApplicationRecord
   include UserSortable
 
   validates :scenario_id, presence: true, uniqueness: true
+  serialize :order, type: Array, coder: MessagePack
 
   def self.default_order
     Etsource::Config.fever_order(:space_heating, :producer).map(&:to_s)
