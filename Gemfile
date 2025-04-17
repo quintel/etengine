@@ -17,7 +17,6 @@ gem 'json'
 
 gem 'rake'
 gem 'activeresource', '~> 6.0'
-gem 'msgpack', '~> 1.8.0'
 
 # Ruby gems
 gem 'ice_nine'
