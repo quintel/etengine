@@ -5,6 +5,7 @@ class ForecastStorageOrder < ApplicationRecord
   include UserSortable
 
   validates :scenario_id, presence: true, uniqueness: true
+  serialize :order, type: Array, coder: MessagePack
 
   def self.default_order
     Etsource::Config.forecast_storage_order
