@@ -3,14 +3,20 @@ class Scenario < ApplicationRecord
   module Couplings
     def activate_coupling(coupling)
       coupling = coupling.to_s
-      self.active_couplings ||= []
-      active_couplings << coupling unless active_couplings.include?(coupling)
+      new_array = active_couplings.dup
+      unless new_array.include?(coupling)
+        new_array << coupling
+        self.active_couplings = new_array
+      end
     end
 
     def deactivate_coupling(coupling)
-      coupling = coupling.to_s
-      self.active_couplings ||= []
-      active_couplings.delete(coupling)
+      coupling   = coupling.to_s
+      new_array  = active_couplings.dup
+
+      if new_array.delete(coupling)
+        self.active_couplings = new_array
+      end
     end
 
     def inactive_couplings
