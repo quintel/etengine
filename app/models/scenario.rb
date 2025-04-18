@@ -14,7 +14,7 @@ class Scenario < ApplicationRecord
   include Scenario::Couplings
 
   serialize  :user_values, type: Hash, coder: MessagePack
-  store      :balanced_values
+  serialize  :balanced_values, type: Hash, coder: MessagePack
   serialize  :active_couplings, type: Array, coder: MessagePack
   store      :metadata, coder: JSON
 
@@ -175,6 +175,7 @@ class Scenario < ApplicationRecord
   def scaled?
     scaler.present? || Area.derived?(area_code)
   end
+
 
   # Public: The year on which the analysis for the scenario's area is based.
   #

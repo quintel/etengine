@@ -204,7 +204,7 @@ describe Api::V3::ScenariosController do
       end
 
       it 'returns the active coupling' do
-        expect(JSON.parse(response.body)['active_couplings']).to include('steel_sector')
+        expect(JSON.parse(response.body)['active_couplings']).to include("steel_sector")
       end
     end
 
