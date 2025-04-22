@@ -68,7 +68,7 @@ module CurveHandler
 
       reduced = Reducer
         .new(@config.reducer, @config.key, @scenario)
-        .call(@processor.sanitized_curve)
+        .call(@processor.curve_for_storage)
 
       @config.input_keys.each do |key|
         @scenario.update_input_clamped(key, reduced)
