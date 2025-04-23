@@ -6,8 +6,8 @@ module Api
         render json: { errors: [ex.message] }, status: :bad_request
       end
 
-      load_resource except: %i[show create destroy]
-      load_and_authorize_resource class: Scenario, only: %i[index show destroy]
+      load_resource except: %i[show create destroy dump]
+      load_and_authorize_resource class: Scenario, only: %i[index show create destroy dump]
 
       before_action only: %i[batch] do
         # Only check that the user can read. We restrict the search in the action.
@@ -339,6 +339,24 @@ module Api
         else
           render json: { errors: @scenario.errors.messages }, status: :unprocessable_entity
         end
+      end
+
+      # GET /api/v3/scenarios/:id/dump
+      def dump
+        render json: ScenarioPacker::Dump.new(@scenario)
+      end
+
+      # POST /api/v3/scenarios/:id/load_dump
+      def load_dump
+        unless current_user&.admin?
+          render(
+            json: { errors: ['You must be authenticated to load dumps'] },
+            status: :forbidden
+          )
+          return
+        end
+
+        render json: ScenarioSerializer.new(self, ScenarioPacker::Load.new(params.permit!).scenario)
       end
 
       private
