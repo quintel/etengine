@@ -27,6 +27,7 @@ Rails.application.routes.draw do
           get :sankey,                 to: 'export#sankey'
           get :storage_parameters,     to: 'export#storage_parameters'
           get :merit
+          get :dump
           put :dashboard
           post :interpolate
           post :uncouple
@@ -35,6 +36,7 @@ Rails.application.routes.draw do
 
         collection do
           post :merge
+          post :load_dump
           get  :templates
           get  'versions', to: 'scenario_version_tags#index'
         end
