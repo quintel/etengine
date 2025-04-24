@@ -4,6 +4,13 @@
 
 .row
   .span12
+    Import a dump
+    = form_with url: load_dump_inspect_scenarios_path do |f_load|
+      = f_load.file_field 'dump', accept: 'application/json'
+      = f_load.submit 'Create'
+
+.row
+  .span12
     = simple_form_for [:data, @scenario],
         :url => @scenario.new_record? ? inspect_scenarios_path : inspect_scenario_path(:id => @scenario) do |f|
       = f.input :end_year
