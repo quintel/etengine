@@ -67,6 +67,17 @@ class Inspect::ScenariosController < Inspect::BaseController
     render :edit
   end
 
+  def load_dump
+    unless current_user.admin?
+      redirect_to root_path
+      return
+    end
+
+    json_data = JSON.parse(File.read(params.permit(:dump)[:dump].path)).with_indifferent_access
+    scenario = ScenarioPacker::Load.new(json_data).scenario
+    redirect_to inspect_scenario_path(id: scenario.id), notice: 'Scenario created'
+  end
+
   private
 
   def find_scenario
