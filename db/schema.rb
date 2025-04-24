@@ -48,8 +48,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_17_090853) do
 
   create_table "heat_network_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
-    t.text "order"
+    t.text "order_old"
     t.string "temperature", default: "mt"
+    t.binary "order", size: :medium
     t.index ["scenario_id", "temperature"], name: "index_heat_network_orders_on_scenario_id_and_temperature", unique: true
     t.index ["scenario_id"], name: "index_heat_network_orders_on_scenario_id"
   end

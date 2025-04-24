@@ -6,7 +6,8 @@ class SerializeUserSortables < ActiveRecord::Migration[7.1]
     forecast_storage_orders: 'ForecastStorageOrder',
     hydrogen_supply_orders: 'HydrogenSupplyOrder',
     hydrogen_demand_orders: 'HydrogenDemandOrder',
-    households_space_heating_producer_orders: 'HouseholdsSpaceHeatingProducerOrder'
+    households_space_heating_producer_orders: 'HouseholdsSpaceHeatingProducerOrder',
+    heat_network_orders: 'HeatNetworkOrder'
   }.freeze
 
   def up
