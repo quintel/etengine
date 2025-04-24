@@ -162,6 +162,7 @@ Rails.application.routes.draw do
 
       resources :scenarios, only: %i[index show edit update new create] do
         put :fix, on: :member
+        post :load_dump, on: :collection
       end
 
       # Checks
