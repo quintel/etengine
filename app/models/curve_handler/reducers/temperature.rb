@@ -2,7 +2,7 @@
 
 module CurveHandler
   module Reducers
-    # Receives a temperature curve and the original curve, returning the different in the two
+    # Receives a temperature curve and the original curve, returning the difference in the two
     # averages.
     Temperature = lambda do |curve, original|
       new_temp = curve.sum / curve.length
