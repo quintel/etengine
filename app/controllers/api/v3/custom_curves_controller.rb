@@ -46,16 +46,29 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
-        curve = current_user_curve
+        user_curve = current_user_curve
+        config     = config_for(params[:id])
+        raw_curve  = user_curve.curve
+
+        # Only pull FLH & rescale for CapacityProfile curves
+        if config.processor_key == :capacity_profile
+          flh_key     = config.input_keys.first
+          full_load   = user_curve.scenario.user_values[flh_key]
+          scaled_curve = CurveHandler::Reducers::Rescaler
+                           .new(raw_curve, full_load)
+                           .call
+        else
+          scaled_curve = raw_curve
+        end
 
         if request.format.csv?
           send_data(
-            CSV.generate { |csv| curve.as_csv.each { |row| csv << row } },
+            CSV.generate { |csv| scaled_curve.each { |v| csv << [v] } },
             type: 'text/csv',
-            filename: "#{curve.name.presence || curve.key}.#{curve.scenario_id}.csv"
+            filename: "#{user_curve.name || user_curve.key}.csv"
           )
         else
-          render json: curve_json(curve)
+          render json: curve_json(user_curve)
         end
       end
 
