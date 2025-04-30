@@ -15,7 +15,6 @@ class HeatNetworkOrder < ApplicationRecord
     case_sensitive: false,
     message: 'already exists for this scenario'
   }
-  serialize :order, type: Array, coder: MessagePack
 
 
   def self.default_order(temperature = :mt)
