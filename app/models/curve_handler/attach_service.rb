@@ -55,7 +55,7 @@ module CurveHandler
     end
 
     def merit_curve
-      Merit::Curve.new(@processor.sanitized_curve)
+      Merit::Curve.new(@processor.curve_for_storage)
     end
 
     def update_metadata
