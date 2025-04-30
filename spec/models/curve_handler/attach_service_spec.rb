@@ -81,5 +81,12 @@ RSpec.describe CurveHandler::AttachService do
         .from({ 'orig' => 1.0 })
         .to({ 'i1' => 6570.0, 'i2' => 6570.0, 'orig' => 1.0 })
     end
+
+    context 'when providing false to the call' do
+      it 'will not set the scenario input value with the reduced value' do
+        expect { service.call(false) }
+          .not_to change { scenario.reload.user_values }
+      end
+    end
   end
 end

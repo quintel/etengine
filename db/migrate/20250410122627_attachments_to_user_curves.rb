@@ -29,7 +29,7 @@ class AttachmentsToUserCurves < ActiveRecord::Migration[7.0]
           service = CurveHandler::AttachService.new(config, file_stub, scenario, attachment.metadata_json)
 
           if service.call(false)
-            attachment.destroy!
+            # attachment.destroy!
             scenario_migrated = true
           end
         rescue => e
