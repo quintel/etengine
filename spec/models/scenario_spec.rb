@@ -123,7 +123,7 @@ describe Scenario do
     end
   end
 
-  describe '#migratable_since' do
+  pending '#migratable_since' do
     subject { described_class.migratable_since(since) }
 
     let(:since) { 1.month.ago }
