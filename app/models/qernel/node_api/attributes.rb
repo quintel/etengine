@@ -44,7 +44,9 @@ module Qernel
           :profitability => ['', 'profitable / unprofitable / conditionally_profitable'], # Used by merit order
           :profit_per_mwh_electricity => ['', 'eur/MWh'],  # Used by merit order,
           :marginal_costs => ['', 'euro / MWh'],
-          :max_consumption_price => ['', 'euro / MWh']
+          :max_consumption_price => ['', 'euro / MWh'],
+          :revenue_hourly_electricity_per_mwh => ['', 'eur/MWh'],
+          :revenue_hourly_electricity => ['', 'eur/MWh']
         },
 
         :merit_order => {

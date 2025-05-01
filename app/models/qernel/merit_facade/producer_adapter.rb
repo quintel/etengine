@@ -35,9 +35,20 @@ module Qernel
         install_demand!
         inject_self_shares!
         inject_curve!(:output) { @participant.load_curve }
+        inject_cost_methods!
       end
 
       private
+
+      def inject_cost_methods!
+        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
+          participant.revenue
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
+          participant.revenue_hourly_electricity_per_mwh
+        end
+      end
 
       def inject_self_shares!
         return unless @config.subtype == :must_run
