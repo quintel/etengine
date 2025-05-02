@@ -103,7 +103,7 @@ module Qernel
           source_api.input_capacity
       end
 
-      # Internal: Capacity used to multiply full load seconds to determien the
+      # Internal: Capacity used to multiply full load seconds to determine the
       # resulting annual demand of the producer.
       def flh_capacity
         source_api.input_capacity

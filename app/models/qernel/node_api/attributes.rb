@@ -46,7 +46,9 @@ module Qernel
           :marginal_costs => ['', 'euro / MWh'],
           :max_consumption_price => ['', 'euro / MWh'],
           :revenue_hourly_electricity_per_mwh => ['', 'eur/MWh'],
-          :revenue_hourly_electricity => ['', 'eur/MWh']
+          :revenue_hourly_electricity => ['', 'eur/MWh'],
+          :operating_expenses_hourly_electricity_per_mwh => ['', 'eur/MWh'],
+          :operating_expenses_hourly_electricity => ['', 'eur/MWh']
         },
 
         :merit_order => {
