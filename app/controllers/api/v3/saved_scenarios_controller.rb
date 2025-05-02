@@ -13,8 +13,13 @@ module Api
       end
 
       def index
-        query    = { page: params[:page], limit: params[:limit] }.compact.to_query
-        response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
+        query = { page: params[:page], limit: params[:limit] }.compact.to_query
+        path  = "/api/v1/saved_scenarios"
+        path += "?#{query}" unless query.empty?
+
+        Rails.logger.info("Requesting: #{path}")
+
+        response = my_etm_client.get(path)
 
         data = response.body.is_a?(Array) ? response.body : response.body['data'] || []
 
@@ -95,6 +100,8 @@ module Api
       end
 
       def update_pagination_links(links)
+        return {} unless links.is_a?(Hash)
+
         request_uri = URI.parse(request.url)
 
         links.transform_values do |link|
