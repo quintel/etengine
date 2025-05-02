@@ -45,6 +45,8 @@ module Qernel
         inject_curve!(:output) do
           @participant.load_curve.map { |v| v.positive? ? v : 0.0 }
         end
+
+        inject_cost_methods!
       end
 
       private
@@ -52,14 +54,14 @@ module Qernel
       def producer_attributes
         attrs = super
 
-        attrs[:marginal_costs] = marginal_costs
-        attrs[:consumption_price] = consumption_price
-
+        attrs[:marginal_costs]           = marginal_costs
+        attrs[:consumption_price]        = consumption_price
         attrs[:output_capacity_per_unit] = output_capacity
-        attrs[:input_capacity_per_unit] = input_capacity
+        attrs[:input_capacity_per_unit]  = input_capacity
+        attrs[:consume_from_dispatchables] =
+          !(@context.part_of_heat_network? || @context.hydrogen?)
 
-        # We don't ever want heat flex technologies to consume from dispatchables.
-        attrs[:consume_from_dispatchables] = !(@context.part_of_heat_network? || @context.hydrogen?)
+        attrs[:fixed_om_costs_per_unit] = source_api.fixed_operation_and_maintenance_costs_per_year
 
         attrs
       end
@@ -127,6 +129,15 @@ module Qernel
           (full_load_seconds / input_efficiency) *
           participant.input_capacity_per_unit *
           participant.number_of_units
+      end
+
+      def inject_cost_methods!
+        target_api.dataset_lazy_set(:operating_expenses_hourly_electricity) do
+          participant.operating_costs
+        end
+        target_api.dataset_lazy_set(:operating_expenses_hourly_electricity_per_mwh) do
+          participant.operating_costs_per_mwh
+        end
       end
     end
   end
