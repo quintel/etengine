@@ -211,6 +211,54 @@ module Qernel
         end
       end
 
+      # Public: The total CAPEX per plant per year (CCS + non-CCS).
+      #
+      # Returns a float (€/year) or nil if neither component is available.
+      def capital_expenditures
+        fetch(:capital_expenditures) do
+          capital_expenditures_ccs.to_f + capital_expenditures_excluding_ccs.to_f
+        end
+      end
+
+      # Public: The CAPEX in €/MWh of electricity produced by a “typical” plant.
+      #
+      # Uses #typical_electricity_output (MJ/yr) → MWh/yr = MJ/yr / 3 600.
+      #
+      # Returns a float (€/MWh) or nil if output is zero or capex is nil.
+      def capital_expenditures_per_mwh
+        fetch(:capital_expenditures_per_mwh) do
+          capex = capital_expenditures
+          mj_per_year = typical_electricity_output.to_f
+          next nil if capex.nil? || mj_per_year.zero?
+
+          capex * SECS_PER_HOUR / mj_per_year
+        end
+      end
+
+      # Public: The total OPEX per plant per year (CCS + non-CCS).
+      #
+      # Returns a float (€/year) or nil if neither component is available.
+      def operating_expenses
+        fetch(:operating_expenses) do
+          operating_expenses_ccs.to_f + operating_expenses_excluding_ccs.to_f
+        end
+      end
+
+      # Public: The OPEX in €/MWh of electricity produced by a “typical” plant.
+      #
+      # Uses the same output‐conversion as CAPEX.
+      #
+      # Returns a float (€/MWh) or nil if output is zero or opex is nil.
+      def operating_expenses_per_mwh
+        fetch(:operating_expenses_per_mwh) do
+          opex = operating_expenses
+          mj_per_year = typical_electricity_output.to_f
+          next nil if opex.nil? || mj_per_year.zero?
+
+          opex * SECS_PER_HOUR / mj_per_year
+        end
+      end
+
       private
 
       # Internal: Calculates the total cost of a plant in euro per plant per year.
