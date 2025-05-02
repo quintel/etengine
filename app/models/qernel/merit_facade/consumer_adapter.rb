@@ -44,6 +44,7 @@ module Qernel
 
       def inject!
         inject_curve!(:input) { @participant.load_curve }
+        inject_cost_methods!
       end
 
       def input_of_carrier
@@ -52,6 +53,17 @@ module Qernel
         end
 
         source_api.public_send(@context.carrier_named('input_of_%s'))
+      end
+
+      def inject_cost_methods!
+        # return unless participant.respond_to?(:operating_costs)
+        # puts 'trigger'
+        target_api.dataset_lazy_set(:operating_expenses_hourly_electricity) do
+          participant.operating_costs
+        end
+        target_api.dataset_lazy_set(:operating_expenses_hourly_electricity_per_mwh) do
+          participant.operating_costs_per_mwh
+        end
       end
 
       def installed?
