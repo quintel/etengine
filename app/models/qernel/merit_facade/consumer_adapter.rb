@@ -56,8 +56,6 @@ module Qernel
       end
 
       def inject_cost_methods!
-        # return unless participant.respond_to?(:operating_costs)
-        # puts 'trigger'
         target_api.dataset_lazy_set(:operating_expenses_hourly_electricity) do
           participant.operating_costs
         end
