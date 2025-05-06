@@ -5,21 +5,16 @@ module Api
     class SavedScenariosController < BaseController
 
       before_action(only: %i[index show]) do
-        authorize!(:read, @scenario)
+        authorize!(:read, Scenario)
       end
 
       before_action(only: %i[create update]) do
-        authorize!(:write, @scenario)
+        authorize!(:write, Scenario)
       end
 
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
-        path  = "/api/v1/saved_scenarios"
-        path += "?#{query}" unless query.empty?
-
-        Rails.logger.info("Requesting: #{path}")
-
-        response = my_etm_client.get(path)
+        response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
 
         data = response.body.is_a?(Array) ? response.body : response.body['data'] || []
 
