@@ -26,6 +26,7 @@ module Api
       end
 
       rescue_from ETEngine::TokenDecoder::DecodeError, JSON::JWT::Exception do
+        Rails.logger.warn("Decode error occured")
         render json: { errors: ['Invalid or expired token'] }, status: :unauthorized
       end
 
