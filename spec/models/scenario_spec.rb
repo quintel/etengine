@@ -737,7 +737,7 @@ describe Scenario do
 
     context 'with no metadata' do
       it 'responds with nil when requesting a key' do
-        expect(scenario.metadata[:ctm_scenario_id]).to be_nil
+        expect(scenario.metadata["ctm_scenario_id"]).to be_nil
       end
     end
 
@@ -745,30 +745,30 @@ describe Scenario do
       before { scenario.metadata = {} }
 
       it 'responds with nil when requesting a key' do
-        expect(scenario.metadata[:ctm_scenario_id]).to be_nil
+        expect(scenario.metadata["ctm_scenario_id"]).to be_nil
       end
     end
 
     context 'with metadata present' do
-      before { scenario.metadata = { ctm_scenario_id: 12_345, kittens: 'mew' } }
+      before { scenario.metadata = { "ctm_scenario_id" => 12_345, "kittens" => "mew" } }
 
       it 'stores numeric data' do
-        expect(scenario.metadata[:ctm_scenario_id]).to eq(12_345)
+        expect(scenario.metadata["ctm_scenario_id"]).to eq(12_345)
       end
 
       it 'stores string data' do
-        expect(scenario.metadata[:kittens]).to eq('mew')
+        expect(scenario.metadata["kittens"]).to eq("mew")
       end
 
-      it 'does not have metadata accesible by accessor' do
+      it 'does not have metadata accessible by accessor' do
         expect { scenario.kittens }.to raise_error(NoMethodError)
       end
     end
 
     context 'when setting metadata' do
-      it 'permits JSON object' do
-        scenario.metadata = JSON.generate({})
-        expect(scenario.metadata).to eq({})
+      it 'permits a hash' do
+        scenario.metadata = { "a" => 1 }
+        expect(scenario.metadata).to eq({ "a" => 1 })
       end
 
       it 'permits a hash' do
@@ -781,21 +781,14 @@ describe Scenario do
         expect(scenario.metadata).to eq({})
       end
 
-      it 'permits empty string' do
-        scenario.metadata = ''
-        expect(scenario.metadata).to eq({})
-      end
-
       it 'denies objects larger than 64Kb' do
-        scenario.metadata = (0..15_000).to_h { |i| [i, i] }
-
+        scenario.metadata = (0..15_000).to_h { |i| [i.to_s, i] }
         expect(scenario).not_to be_valid
       end
     end
 
     context 'when creating a clone of a scenario' do
-      before { scenario.metadata = { ctm_scenario_id: 12_345, kittens: 'mew' } }
-
+      before { scenario.metadata = { "ctm_scenario_id" => 12_345, "kittens" => "mew" } }
       let(:scenario_clone) { described_class.new(scenario_id: scenario.id) }
 
       it 'keeps the original metadata' do
