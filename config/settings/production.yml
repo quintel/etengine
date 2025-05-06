@@ -4,4 +4,4 @@ etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>
 
 identity:
   issuer: https://my.energytransitionmodel.com
-  client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', https://engine.energytransitionmodel.com %>
+  client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'https://engine.energytransitionmodel.com') %>
