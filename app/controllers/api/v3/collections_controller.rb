@@ -72,6 +72,8 @@ module Api
       private
 
       def update_pagination_links(links)
+        return {} unless links.is_a?(Hash)
+
         request_uri = URI.parse(request.url)
 
         links.transform_values do |link|
