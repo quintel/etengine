@@ -16,6 +16,7 @@ class HeatNetworkOrder < ApplicationRecord
     message: 'already exists for this scenario'
   }
 
+
   def self.default_order(temperature = :mt)
     Etsource::Config.public_send("heat_network_order_#{temperature}")
   end
