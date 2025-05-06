@@ -3,13 +3,12 @@
 module Api
   module V3
     class SavedScenariosController < BaseController
-
       before_action(only: %i[index show]) do
-        authorize!(:read, @scenario)
+        authorize!(:read, Scenario)
       end
 
       before_action(only: %i[create update]) do
-        authorize!(:write, @scenario)
+        authorize!(:write, Scenario)
       end
 
       def index
@@ -95,6 +94,8 @@ module Api
       end
 
       def update_pagination_links(links)
+        return {} unless links.is_a?(Hash)
+
         request_uri = URI.parse(request.url)
 
         links.transform_values do |link|
