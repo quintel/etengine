@@ -7,11 +7,16 @@ module Api
       end
 
       load_resource except: %i[show create destroy]
-      load_and_authorize_resource class: Scenario, only: %i[index show create destroy]
+      load_and_authorize_resource class: Scenario, only: %i[index show destroy]
 
       before_action only: %i[batch] do
         # Only check that the user can read. We restrict the search in the action.
         authorize!(:read, Scenario)
+      end
+
+      before_action only: %i[create] do
+        # Authorize create here because we load the resource explicity in the action
+        authorize!(:update, Scenario)
       end
 
       before_action only: %i[dashboard merit] do
