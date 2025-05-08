@@ -63,7 +63,6 @@ class Input
       Input.with_coupling_group
            .flat_map(&:coupling_groups)
            .uniq
-           .map(&:to_s)
            .freeze
   end
 

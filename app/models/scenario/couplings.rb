@@ -2,14 +2,10 @@ class Scenario < ApplicationRecord
   # Utility methods for couplings
   module Couplings
     def activate_coupling(coupling)
-      coupling = coupling.to_s
-      self.active_couplings ||= []
       active_couplings << coupling unless active_couplings.include?(coupling)
     end
 
     def deactivate_coupling(coupling)
-      coupling = coupling.to_s
-      self.active_couplings ||= []
       active_couplings.delete(coupling)
     end
 
@@ -19,7 +15,6 @@ class Scenario < ApplicationRecord
       coupled_inputs
         .flat_map { |i| Input.coupling_groups_for(i) }
         .uniq
-        .map(&:to_s)
         .reject { |cg| active_couplings.include?(cg) }
     end
 
