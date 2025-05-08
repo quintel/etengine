@@ -7,16 +7,22 @@ module Qernel
       def self.factory(node, context)
         case context.node_config(node).subtype
         when :pseudo
+          # NIKS
           PseudoConsumerAdapter
         when :export_must_run
+          # NIKS
           ExportConsumerAdapter
         when :consumption_loss
+          # NIKS
           ConsumptionLossAdapter
         when :electricity_loss
+          # NIKS
           ElectricityLossAdapter
         when :subordinate
+          # NIKS
           SubordinateConsumerAdapter
         else
+          # NIKS
           self
         end
       end
@@ -44,7 +50,6 @@ module Qernel
 
       def inject!
         inject_curve!(:input) { @participant.load_curve }
-        inject_cost_methods!
       end
 
       def input_of_carrier
@@ -53,15 +58,6 @@ module Qernel
         end
 
         source_api.public_send(@context.carrier_named('input_of_%s'))
-      end
-
-      def inject_cost_methods!
-        target_api.dataset_lazy_set(:operating_expenses_hourly_electricity) do
-          participant.operating_costs
-        end
-        target_api.dataset_lazy_set(:operating_expenses_hourly_electricity_per_mwh) do
-          participant.operating_costs_per_mwh
-        end
       end
 
       def installed?

@@ -9,21 +9,29 @@ module Qernel
 
         case config.subtype
         when :dispatchable
+          # revenue (per_mwh)
           DispatchableAdapter
         when :must_run, :volatile
+          # revenue (per_mwh)
           curtailment = config.production_curtailment
           curtailment&.positive? ? CurtailedAlwaysOnAdapter : AlwaysOnAdapter
         when :electrolyser
+          # NIKS
           ElectrolyserAdapter
         when :import
+          # NIKS
           ImportAdapter
         when :import_must_run
+          # NIKS
           ImportAlwaysOnAdapter
         when :backup
+          # NIKS
           BackupAdapter
         when :always_on_battery_park
+          # revenue (per_mwh)
           AlwaysOnBatteryParkAdapter
         when :hybrid_offshore
+          # revenue (per_mwh) op output_curve: opletten voor electrolyser (hydrogen) - hoe gaan zijn fuel costs?
           HybridOffshoreAdapter
         else
           raise "Unknown #{context.attribute}.subtype " \
@@ -35,20 +43,9 @@ module Qernel
         install_demand!
         inject_self_shares!
         inject_curve!(:output) { @participant.load_curve }
-        inject_cost_methods!
       end
 
       private
-
-      def inject_cost_methods!
-        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
-          participant.revenue
-        end
-
-        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
-          participant.revenue_hourly_electricity_per_mwh
-        end
-      end
 
       def inject_self_shares!
         return unless @config.subtype == :must_run
