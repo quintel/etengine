@@ -15,6 +15,13 @@ module ETEngine
              decoded[:aud].include?(Settings.identity.client_uri) &&
              decoded[:sub].present? &&
              decoded[:exp] > Time.now.to_i
+        Rails.logger.warn(
+          "issuer #{decoded[:iss] == Settings.identity.issuer}: #{decoded[:iss]} \
+            aud #{decoded[:aud].include?(Settings.identity.client_uri)} #{decoded[:aud]} \
+            sub #{decoded[:sub].present?} \
+            exp #{decoded[:exp] > Time.now.to_i} #{decoded[:exp]}
+          "
+        )
         raise DecodeError, 'JWT verification failed'
       end
 
