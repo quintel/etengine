@@ -110,10 +110,10 @@ RSpec.describe Scenario::Inputs do
         input_with_coupling_group: 50
       }
 
-      scenario.activate_coupling(:steel_sector)
+      scenario.activate_coupling("steel_sector")
     end
 
-    it 'enables the coupling_group input and disables the disbale_by_couplin input' do
+    it 'enables the coupling_group input and disables the disabled_by_coupling input' do
       expect(inputs.future).to eq({
         Input.get(:input_with_coupling_group) => 50
       })
@@ -127,10 +127,10 @@ RSpec.describe Scenario::Inputs do
         input_with_coupling_group: 50
       }
 
-      scenario.deactivate_coupling(:steel_sector)
+      scenario.deactivate_coupling("steel_sector")
     end
 
-    it 'disables the coupling_group input and enables the disbale_by_couplin input' do
+    it 'disables the coupling_group input and enables the disabled_by_coupling input' do
       expect(inputs.future).to eq({
         Input.get(:input_disabled_by_coupling) => 100
       })

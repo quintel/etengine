@@ -59,7 +59,11 @@ class Input
   end
 
   def self.coupling_groups
-    @coupling_groups ||= Input.with_coupling_group.flat_map(&:coupling_groups).uniq
+    @coupling_groups ||=
+      Input.with_coupling_group
+           .flat_map(&:coupling_groups)
+           .uniq
+           .freeze
   end
 
   def disabled_by

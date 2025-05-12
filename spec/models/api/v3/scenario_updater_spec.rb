@@ -776,7 +776,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     before do
       allow(Input).to receive(:coupling_inputs_keys).and_return(['input_with_coupling_group'])
-      allow(Input).to receive(:coupling_groups).and_return([:steel_sector])
+      allow(Input).to receive(:coupling_groups).and_return(["steel_sector"])
 
       scenario.user_values = {
         input_2: 100
@@ -789,7 +789,7 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     it 'activates the coupling' do
       updater.apply
-      expect(scenario.reload.active_couplings).to include(:steel_sector)
+      expect(scenario.reload.active_couplings).to include("steel_sector")
     end
   end
 
@@ -803,13 +803,13 @@ describe Api::V3::ScenarioUpdater, :etsource_fixture do
 
     before do
       allow(Input).to receive(:coupling_inputs_keys).and_return(['input_with_coupling_group'])
-      allow(Input).to receive(:coupling_groups).and_return([:steel_sector])
+      allow(Input).to receive(:coupling_groups).and_return(["steel_sector"])
 
       scenario.user_values = {
         input_2: 100,
         input_with_coupling_group: 5.0
       }
-      scenario.deactivate_coupling(:steel_sector)
+      scenario.deactivate_coupling("steel_sector")
 
       scenario.save!
     end
