@@ -7,11 +7,16 @@ module Api
       end
 
       load_resource except: %i[show create destroy]
-      load_and_authorize_resource class: Scenario, only: %i[index show create destroy]
+      load_and_authorize_resource class: Scenario, only: %i[index show destroy]
 
       before_action only: %i[batch] do
         # Only check that the user can read. We restrict the search in the action.
         authorize!(:read, Scenario)
+      end
+
+      before_action only: %i[create] do
+        # Authorize create here because we load the resource explicity in the action
+        authorize!(:update, Scenario)
       end
 
       before_action only: %i[dashboard merit] do
@@ -311,11 +316,10 @@ module Api
       # removes all coupled inputs from any coupling from the scenario
       #
       def uncouple
-        # When force uncoupling, all inputs related to any coupling are deleted
         if coupling_parameters[:force]
           force_uncouple
         else
-          coupling_parameters[:groups].each { |coupling| @scenario.deactivate_coupling(coupling.to_sym) }
+          coupling_parameters[:groups].each { |coupling| @scenario.deactivate_coupling(coupling.to_s) }
           if @scenario.save
             render json: ScenarioSerializer.new(self, @scenario)
           else
@@ -329,7 +333,7 @@ module Api
       # Couples the specified groups in the scenario.
       #
       def couple
-        coupling_parameters[:groups].each { |coupling| @scenario.activate_coupling(coupling.to_sym) }
+        coupling_parameters[:groups].each { |coupling| @scenario.activate_coupling(coupling.to_s) }
         if @scenario.save
           render json: ScenarioSerializer.new(self, @scenario)
         else
