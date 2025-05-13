@@ -5,79 +5,41 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
 
   NEW_INPUT = 'households_appliances_electricity_efficiency'.freeze
 
-  OLD_INPUTS = %w[
-    households_appliances_clothes_dryer_electricity_efficiency
-    households_appliances_computer_media_electricity_efficiency
-    households_appliances_dishwasher_electricity_efficiency
-    households_appliances_fridge_freezer_electricity_efficiency
-    households_appliances_other_electricity_efficiency
-    households_appliances_television_electricity_efficiency
-    households_appliances_vacuum_cleaner_electricity_efficiency
-    households_appliances_washing_machine_electricity_efficiency
-  ].freeze
-
-  PARENT_SHARES = %w[
-    households_final_demand_for_appliances_electricity__households_appliances_clothes_dryer_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_computer_media_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_dishwasher_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_fridge_freezer_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_other_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_television_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_vacuum_cleaner_electricity__electricity_parent_share
-    households_final_demand_for_appliances_electricity__households_appliances_washing_machine_electricity__electricity_parent_share
-  ].freeze
+  # Parent shares mapped to corresponding inputs
+  SHARE_MAP = {
+    households_appliances_clothes_dryer_electricity:  'households_appliances_clothes_dryer_electricity_efficiency',
+    households_appliances_computer_media_electricity: 'households_appliances_computer_media_electricity_efficiency',
+    households_appliances_dishwasher_electricity:     'households_appliances_dishwasher_electricity_efficiency',
+    households_appliances_fridge_freezer_electricity: 'households_appliances_fridge_freezer_electricity_efficiency',
+    households_appliances_other_electricity:          'households_appliances_other_electricity_efficiency',
+    households_appliances_television_electricity:     'households_appliances_television_electricity_efficiency',
+    households_appliances_vacuum_cleaner_electricity: 'households_appliances_vacuum_cleaner_electricity_efficiency',
+    households_appliances_washing_machine_electricity:'households_appliances_washing_machine_electricity_efficiency'
+  }.freeze
 
   def up
     migrate_scenarios do |scenario|
-      unless relevant_inputs_set?(scenario)
-        puts "Skipping scenario #{scenario.id}: no relevant old inputs set."
-        next
-      end
-  
-      puts "Migrating scenario #{scenario.id}: relevant old inputs found."
-  
-      new_efficiency = calculate_new_efficiency(scenario)
-  
-      puts "Calculated new efficiency for scenario #{scenario.id}: #{new_efficiency.inspect}"
-  
-      if new_efficiency
-        scenario.user_values[NEW_INPUT] = new_efficiency
-        true
-      else
-        FileUtils.mkdir_p("tmp") # Make sure tmp/ exists
-        File.open("tmp/dataset_dump_#{scenario.id}.txt", "w") do |file|
-          file.puts "Dataset values for scenario #{scenario.id}:"
-          scenario.area.dataset.each do |key, value|
-            file.puts "#{key}: #{value.inspect}"
-          end
+      next unless SHARE_MAP.values.any? { |key| scenario.user_values.key?(key) }
+
+      # Parent shares are recovered from the csvs in etsource
+      dataset = Atlas::Dataset.find(scenario.area_code)
+      parent_shares = dataset.shares("energy/residences_final_demand_for_appliances_electricity_parent_share")
+
+      # Calculate weighted avg. Start value for the old sliders was 0.0
+      weighted_avg = SHARE_MAP.sum(0.0) do |parent_share_key, input_key|
+        if scenario.user_values.key?(input_key)
+          parent_shares.get(parent_share_key) * (1 - (scenario.user_values[input_key]) / 100.0)
+        else
+          0.0
         end
-        nil
       end
+
+      # The weighted average is reconverted into a percentage
+      new_input = (weighted_avg - 1) * 100.0
+
+      # The slider values should be checked for their minimum and maximum values
+      # TODO: check this! What should be minimum and mamximum?
+      scenario.user_values[NEW_INPUT] = new_input
     end
-  end
-  private
-
-  def relevant_inputs_set?(scenario)
-    OLD_INPUTS.any? { |key| scenario.user_values[key].present? }
-  end
-
-  def calculate_new_efficiency(scenario)
-    weighted_sum = 0.0
-    total_share = 0.0
-
-    OLD_INPUTS.each_with_index do |input_key, index|
-      input_value = scenario.user_values[input_key]
-      parent_share_value = scenario.area[PARENT_SHARES[index]] || 0.0
-      puts "Checking input_key: #{input_key} with parent_share_key: #{PARENT_SHARES[index]}"
-      puts "  => input_value: #{input_value.inspect}, parent_share_value: #{parent_share_value.inspect}"
-      next unless input_value && parent_share_value
-
-      weighted_sum += parent_share_value * (1.0 - (input_value / 100.0))
-      total_share += parent_share_value
-    end
-
-    return nil unless total_share.positive?
-
-    (1.0 - (weighted_sum / total_share)) * 100.0
   end
 end
