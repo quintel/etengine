@@ -225,6 +225,7 @@ module Qernel
       # Uses #typical_electricity_output (MJ/yr) → MWh/yr = MJ/yr / 3 600.
       #
       # Returns a float (€/MWh) or nil if output is zero or capex is nil.
+      # TODO: should also work for other carriers!
       def capital_expenditures_per_mwh
         fetch(:capital_expenditures_per_mwh) do
           capex = capital_expenditures
@@ -240,22 +241,23 @@ module Qernel
       # Returns a float (€/year) or nil if neither component is available.
       def operating_expenses
         fetch(:operating_expenses) do
-          operating_expenses_ccs.to_f + operating_expenses_excluding_ccs.to_f
+          operating_expenses_ccs + operating_expenses_excluding_ccs
         end
       end
 
-      # Public: The OPEX in €/MWh of electricity produced by a “typical” plant.
+      # Public: The OPEX in €/MWh produced by a “typical” plant.
       #
       # Uses the same output‐conversion as CAPEX.
       #
-      # Returns a float (€/MWh) or nil if output is zero or opex is nil.
-      def operating_expenses_per_mwh
-        fetch(:operating_expenses_per_mwh) do
-          opex = operating_expenses
-          mj_per_year = typical_electricity_output.to_f
-          next nil if opex.nil? || mj_per_year.zero?
-
-          opex * SECS_PER_HOUR / mj_per_year
+      # Returns a float (€/MWh)
+      def operating_expenses_including_fuel_per_mwh
+        fetch(:operating_expenses_including_fuel_per_mwh) do
+          if typical_input.zero?
+            0.0
+          else
+            # typical_input is in MJ, but we need per_mwh
+            (operating_expenses * SECS_PER_HOUR / typical_input) + fuel_costs_per_mwh
+          end
         end
       end
 
@@ -440,6 +442,20 @@ module Qernel
           end
 
           typical_input * weighted_carrier_cost_per_mj
+        end
+      end
+
+      # Internal: Calculates fuel costs per mwh for a typical plant
+      # This can be overwritten by Merit partipants based on electricity price.
+      #
+      # Returns the fuel costs (€/MWh) per mwh
+      def fuel_costs_per_mwh
+        fetch(:fuel_costs_per_mwh) do
+          if typical_input.zero?
+            0.0
+          else
+            fuel_costs * SECS_PER_HOUR / typical_input
+          end
         end
       end
 
