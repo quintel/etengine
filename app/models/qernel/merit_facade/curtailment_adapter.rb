@@ -41,6 +41,9 @@ module Qernel
 
         attrs
       end
+
+      # Curtailment should not inject fuel costs
+      def inject_fuel_costs!;end
     end
   end
 end

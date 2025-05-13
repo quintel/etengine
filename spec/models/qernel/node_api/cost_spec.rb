@@ -660,4 +660,31 @@ describe 'Qernel::NodeApi cost calculations' do
       expect(node.node_api.operating_expenses_excluding_ccs).to eq(2)
     end
   end
+
+  describe '#operating_expenses_including_fuel_per_mwh' do
+    before do
+      node.with(
+        fixed_operation_and_maintenance_costs_per_year: 1.5,
+        variable_operation_and_maintenance_costs_per_full_load_hour: 3600.0,
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 3600.0,
+        input_capacity: 10.0,
+        typical_input: 5.0
+      )
+    end
+
+    it 'calculates when everything is set' do
+      expect(node.node_api.operating_expenses_including_fuel_per_mwh).to eq(2.5)
+    end
+
+    # Calculates after injection of fuel costs
+    context 'when injecting fuel_costs_per_mwh' do
+      before do
+        node.node_api.dataset_lazy_set(:fuel_costs_per_mwh) { 50.0 }
+      end
+
+      it 'calculates when everything is set' do
+        expect(node.node_api.operating_expenses_including_fuel_per_mwh).to eq(52.5)
+      end
+    end
+  end
 end
