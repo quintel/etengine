@@ -6,6 +6,8 @@ module Api
     include CanCan::Ability
 
     def initialize
+      Rails.logger.warn('Accessing as guest')
+
       can :create, Scenario
       can :read,   Scenario, private: false
       can :update, Scenario, private: false

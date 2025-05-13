@@ -15,10 +15,16 @@ module Api
 
       allow_public_read
       return unless read_scope?
+      Rails.logger.warn('No read scopes')
+
       allow_read
       return unless write_scope?
+      Rails.logger.warn('No write scopes')
+
       allow_write
       return unless delete_scope?
+      Rails.logger.warn('No delete scopes')
+
       allow_delete
     end
 

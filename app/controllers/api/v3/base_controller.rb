@@ -21,6 +21,7 @@ module Api
         if e.subject.is_a?(Scenario) && !e.subject.private?
           render status: :forbidden, json: { errors: ['Scenario does not belong to you'] }
         else
+          Rails.logger.warn('Access denied!')
           render_not_found
         end
       end
