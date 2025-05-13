@@ -70,6 +70,7 @@ module Qernel
           production_participant.load_curve
         end
 
+        inject_fuel_costs!
         # TODO: Figure out the battery price based on the electricity price curve.
       end
 
@@ -79,7 +80,6 @@ module Qernel
 
       private
 
-      # THESE
       def production_participant
         @production_participant ||= Merit::Flex::OptimizingStorage::Producer.new(
           key: :"#{@node.key}_producer",

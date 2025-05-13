@@ -69,6 +69,9 @@ module Qernel
       def storage_volume_per_unit
         infinite_storage? ? Float::INFINITY : super
       end
+
+      # Heat storage should not overwrite fuel costs
+      def inject_fuel_costs!;end
     end
   end
 end
