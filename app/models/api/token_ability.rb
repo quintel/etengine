@@ -15,15 +15,12 @@ module Api
 
       allow_public_read
       return unless read_scope?
-      Rails.logger.warn(viewer_scenario_ids)
 
       allow_read
       return unless write_scope?
-      Rails.logger.warn(collaborator_scenario_ids)
 
       allow_write
       return unless delete_scope?
-      Rails.logger.warn(owner_scenario_ids)
 
       allow_delete
     end
