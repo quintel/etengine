@@ -101,21 +101,21 @@ module Qernel
       # Public: Returns number of blackout hours
       #
       # Returns an Integer
-      def number_of_blackout_hours
+      def number_of_power_shortage_hours
         graph.plugin(:merit).order.blackout.number_of_hours
       end
 
       # Public: Returns the peak of blackout hours, defined as the largest single hour deficit
       #
       # Returns an Integer
-      def peak_of_blackout_hours
+      def peak_of_power_shortage_hours
         graph.plugin(:merit).order.blackout.peak
       end
 
       # Public: Returns volume of blackout hours, defined as the sum of deficit hours
       #
       # Returns an Integer
-      def volume_of_blackout_hours
+      def volume_of_power_shortage_hours
         graph.plugin(:merit).order.blackout.volume
       end
 
