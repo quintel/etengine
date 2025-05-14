@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_12_155230) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_13_071052) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -124,12 +124,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_12_155230) do
     t.integer "preset_scenario_id"
     t.string "area_code"
     t.string "source"
-    t.text "balanced_values_old", size: :medium
     t.text "metadata"
     t.text "active_couplings", size: :medium
     t.binary "user_values", size: :long
     t.binary "balanced_values", size: :medium
-    t.text "user_values_old", size: :medium
     t.index ["created_at"], name: "index_scenarios_on_created_at"
   end
 
