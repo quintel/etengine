@@ -22,6 +22,9 @@ namespace :deploy do
   task load_etsource: :environment do
     etsource    = Pathname.new(ETSOURCE_DIR).expand_path
     destination = Pathname.new(ETSOURCE_EXPORT_DIR).expand_path
+
+    puts "ETSOURCE REF = #{ ENV['ETSOURCE_REF'] }"
+
     revision    = (ENV['ETSOURCE_REF'] || (Rails.env.production? ? 'production' : 'master')).strip
     real_rev    = nil
 
