@@ -69,13 +69,54 @@ class Inspect::ScenariosController < Inspect::BaseController
 
   def load_dump
     unless current_user.admin?
-      redirect_to root_path
+      redirect_to root_path, alert: 'You must be an admin'
       return
     end
 
-    json_data = JSON.parse(File.read(params.permit(:dump)[:dump].path)).with_indifferent_access
-    scenario = ScenarioPacker::Load.new(json_data).scenario
-    redirect_to inspect_scenario_path(id: scenario.id), notice: 'Scenario created'
+    file = params.permit(:dump)[:dump]
+
+    unless file&.respond_to?(:path)
+      redirect_back fallback_location: root_path, alert: 'No file provided'
+      return
+    end
+
+    raw_data = JSON.parse(File.read(file.path))
+    data_array = raw_data.is_a?(Array) ? raw_data : [raw_data]
+
+    scenarios = data_array.map do |scenario_data|
+      ScenarioPacker::Load.new(scenario_data.with_indifferent_access).scenario
+    end
+
+    if scenarios.size == 1
+      redirect_to inspect_scenario_path(id: scenarios.first.id), notice: 'Scenario created'
+    else
+      redirect_to inspect_scenarios_path(api_scenario_id: params[:api_scenario_id]), notice: "#{scenarios.size} scenarios created"
+    end
+  end
+
+  def download_dump
+    unless current_user&.admin?
+      redirect_to root_path, alert: "You must be an admin"
+      return
+    end
+
+    # setup for expansion to multiple scenarios
+    ids = Array(params[:scenario_ids]).map(&:to_i)
+    scenarios = Scenario.where(id: ids)
+
+    payload = scenarios.map { |s| ScenarioPacker::Dump.new(s).as_json }
+
+    filename =
+      if payload.size == 1
+        "scenario-#{scenarios.first.id}-dump.json"
+      else
+        "scenarios-#{ids.join('-')}-dump.json"
+      end
+
+    send_data JSON.pretty_generate(payload),
+              filename: filename,
+              type: 'application/json',
+              disposition: 'attachment'
   end
 
   private
