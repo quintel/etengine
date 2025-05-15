@@ -6,6 +6,14 @@
   = link_to 'Edit scenario', edit_inspect_scenario_path(@scenario), class: 'btn btn-primary'
 
 .row
+  .span12
+    Export current scenario as dump
+    = link_to 'Download Dump',
+        download_dump_inspect_scenarios_path(@scenario.id, scenario_ids: [ @scenario.id ]),
+        class:    'btn btn-secondary',
+        download: "scenario-#{@scenario.id}-dump.json"
+
+.row
   .span8
     %table.table
       %tr

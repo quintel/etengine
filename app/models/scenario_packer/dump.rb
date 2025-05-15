@@ -34,7 +34,7 @@ module ScenarioPacker
       end
 
       json[:user_curves] = @resource.user_curves.each_with_object({}) do |curve, hash|
-        hash[curve.key] = curve.curve
+        hash[curve.key] = curve.curve.to_a
       end
 
       json
