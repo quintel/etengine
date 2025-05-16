@@ -12,6 +12,49 @@
   - if params[:api_scenario_id]
     = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'
 
+.row
+  .span12
+    %h3 Download scenarios by ID
+    = text_field_tag :scenario_ids,
+                     '',
+                     placeholder: 'e.g. 123,456,789',
+                     class: 'form-control w-auto d-inline-block',
+                     id: 'scenario_ids_input'
+    = link_to 'Download Dump',
+              '#',
+              class: 'btn btn-primary ms-2 disabled',
+              id: 'download_link',
+              download: ''
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('scenario_ids_input');
+    var link  = document.getElementById('download_link');
+    var baseUrl = "#{download_dump_inspect_scenarios_path}";
+
+    input.addEventListener('input', function() {
+      var ids = input.value.replace(/[^\d,]/g, '').trim();
+
+      if (!ids) {
+        link.classList.add('disabled');
+        link.removeAttribute('href');
+        link.removeAttribute('download');
+        return;
+      }
+
+      link.href = baseUrl + '?type=user_input&scenario_ids=' + encodeURIComponent(ids);
+      link.download = 'scenarios-' + ids.split(',').join('-') + '-dump.json';
+      link.classList.remove('disabled');
+    });
+  });
+
+.row
+  .span12
+    Import a dump
+    = form_with url: load_dump_inspect_scenarios_path do |f_load|
+      = f_load.file_field 'dump', accept: 'application/json'
+      = f_load.submit 'Create scenarios', class: 'btn btn-primary'
+
 %table.table.table-condensed.scenario-list
   %thead
     %tr
