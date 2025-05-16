@@ -128,6 +128,12 @@ Rails.application.routes.draw do
 
     get 'search.js' => 'search#index', as: :search_autocomplete
 
+    resources :scenarios, only: [] do
+      collection do
+        get 'download_dump', to: 'scenarios#download_dump'
+      end
+    end
+
     scope '/:api_scenario_id' do
       root to: 'pages#index'
       post '/clear_cache' => 'pages#clear_cache', as: 'clear_cache'
@@ -163,7 +169,6 @@ Rails.application.routes.draw do
       resources :scenarios, only: %i[index show edit update new create] do
         put :fix, on: :member
         post :load_dump, on: :collection
-        get :download_dump, on: :collection
       end
 
       # Checks

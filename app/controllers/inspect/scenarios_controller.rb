@@ -2,6 +2,7 @@ class Inspect::ScenariosController < Inspect::BaseController
   layout 'application'
 
   before_action :find_scenario, :only => [:show, :edit, :update]
+  skip_before_action :initialize_gql, only: :download_dump
 
   def index
     @list_params = params.permit(:api_scenario_id, :q, :page)
@@ -96,21 +97,22 @@ class Inspect::ScenariosController < Inspect::BaseController
 
   def download_dump
     unless current_user&.admin?
-      redirect_to root_path, alert: "You must be an admin"
+      redirect_to root_path, alert: "You must be an admin" # TODO: shouldn't everyone already be an admin? Remove check or abstract to before_action
       return
     end
 
-    # setup for expansion to multiple scenarios
-    ids = Array(params[:scenario_ids]).map(&:to_i)
-    scenarios = Scenario.where(id: ids)
+    # Determine which set to dump; default to user-provided IDs
+    type = params[:type] || 'user_input'
+    ids  = ScenarioSetFetcher.fetch(type: type, params: params)
 
-    payload = scenarios.map { |s| ScenarioPacker::Dump.new(s).as_json }
+    scenarios = Scenario.where(id: ids)
+    payload   = scenarios.map { |s| ScenarioPacker::Dump.new(s).as_json }
 
     filename =
-      if payload.size == 1
-        "scenario-#{scenarios.first.id}-dump.json"
+      if payload.one?
+        "#{scenarios.first.id}-dump.json"
       else
-        "scenarios-#{ids.join('-')}-dump.json"
+        "#{ids.join('-')}-dump.json"
       end
 
     send_data JSON.pretty_generate(payload),
