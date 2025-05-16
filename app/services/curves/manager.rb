@@ -92,7 +92,7 @@ module Curves
     def process(raw_curve, user_curve, curve_config)
       return raw_curve unless curve_config.processor_key == :capacity_profile
 
-      full_load_hours = user_curve.scenario.user_values.fetch(curve_config.input_keys.first)
+      full_load_hours = user_curve.scenario.user_values.fetch(curve_config.input_keys.last)
       CurveHandler::Reducers::Rescaler.new(raw_curve, full_load_hours).call
     end
   end
