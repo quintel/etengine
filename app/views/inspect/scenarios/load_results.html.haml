@@ -1,0 +1,20 @@
+- content_for(:title, 'Imported Scenarios')
+
+= render "inspect/shared/inspect_subnav"
+
+.row
+  .span12
+    %h3 Scenarios Created Successfully
+
+    %p The scenarios are now available at the following URLs:
+
+    %ul
+      - @scenarios.each do |scenario|
+        - url = "#{Settings.etmodel}/scenarios/#{scenario.id}"
+        %li
+          = link_to url, url, target: '_blank', rel: 'noopener'
+
+    %p
+    = link_to 'Back to scenarios list',
+                inspect_scenarios_path,
+                class: 'btn btn-secondary mt-3'

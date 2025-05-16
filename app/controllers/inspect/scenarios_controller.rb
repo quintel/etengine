@@ -1,7 +1,9 @@
 class Inspect::ScenariosController < Inspect::BaseController
   layout 'application'
 
+  load_and_authorize_resource only: [:load_dump, :download_dump], class: 'Scenario'
   before_action :find_scenario, :only => [:show, :edit, :update]
+  skip_before_action :initialize_gql, :only => [:download_dump, :load_dump]
 
   def index
     @list_params = params.permit(:api_scenario_id, :q, :page)
@@ -67,6 +69,50 @@ class Inspect::ScenariosController < Inspect::BaseController
     render :edit
   end
 
+def load_dump
+  file = params.permit(:dump)[:dump]
+  unless file&.respond_to?(:path)
+    redirect_back fallback_location: root_path, alert: 'No file provided'
+    return
+  end
+
+  raw_data   = JSON.parse(File.read(file.path))
+  data_array = raw_data.is_a?(Array) ? raw_data : [raw_data]
+
+  @scenarios = data_array.map { |sd| ScenarioPacker::Load.new(sd.with_indifferent_access).scenario }
+
+  if @scenarios.one?
+    redirect_to inspect_scenario_path(id: @scenarios.first.id),
+                notice: 'Scenario created'
+  else
+    api_id             = @scenarios.first.id
+    @api_scenario      = Scenario.find(api_id)
+    @scenario          = Scenario::Editable.new(@api_scenario)
+    render :load_results
+  end
+end
+
+  def download_dump
+    # Determine which set to dump; default to user-provided IDs
+    type = params[:type] || 'user_input'
+    ids  = ScenarioSetFetcher.fetch(type: type, params: params)
+
+    scenarios = Scenario.where(id: ids)
+    payload   = scenarios.map { |s| ScenarioPacker::Dump.new(s).as_json }
+
+    filename =
+      if payload.one?
+        "#{scenarios.first.id}-dump.json"
+      else
+        "#{ids.join('-')}-dump.json"
+      end
+
+    send_data JSON.pretty_generate(payload),
+              filename: filename,
+              type: 'application/json',
+              disposition: 'attachment'
+  end
+
   private
 
   def find_scenario
@@ -99,6 +145,15 @@ class Inspect::ScenariosController < Inspect::BaseController
       heat_network_order_lt: [:order],
       households_space_heating_producer_order: [:order]
     )
+  end
+
+  def default_url_options
+    opts = super
+    if action_name == 'load_dump' && @api_scenario
+      opts.merge(api_scenario_id: @api_scenario.id)
+    else
+      opts
+    end
   end
 
   def update_user_sortables!(attrs, records)
