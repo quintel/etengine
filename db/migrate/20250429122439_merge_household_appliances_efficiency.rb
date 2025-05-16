@@ -39,7 +39,7 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
 
       # The slider values should be checked for their minimum and maximum values
       # TODO: check this! What should be minimum and mamximum?
-      scenario.user_values[NEW_INPUT] = new_input
+      scenario.user_values[NEW_INPUT] = [[new_input, 90.0].min, -90.0].max
     end
   end
 end
