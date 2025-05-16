@@ -130,7 +130,8 @@ Rails.application.routes.draw do
 
     resources :scenarios, only: [] do
       collection do
-        get 'download_dump', to: 'scenarios#download_dump'
+        get :download_dump
+        post :load_dump
       end
     end
 

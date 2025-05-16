@@ -1,30 +1,44 @@
 - content_for(:title, 'Scenarios')
-
 = render "inspect/shared/inspect_subnav"
 
-%section#search_box
-  = form_tag inspect_scenarios_path, method: :get do
-    = search_field_tag :q, params[:q], placeholder: 'Scenario ID'
+%section#search_box.mb-4
+  = form_tag inspect_scenarios_path, method: :get, class: 'd-flex align-items-center gap-2' do
+    = search_field_tag :q, params[:q], placeholder: 'Scenario ID', class: 'form-control'
     = submit_tag 'Search', class: 'btn'
 
-%p
-  = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
-  - if params[:api_scenario_id]
-    = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'
+%div.d-flex.flex-wrap.align-items-center.mb-4.gap-4
+  / ─────────────── Actions ───────────────
+  %div
+    %h5.text-muted.mb-2 Actions
+    .btn-group
+      = link_to 'New scenario', new_inspect_scenario_path, class: 'btn btn-primary'
+      - if params[:api_scenario_id]
+        = link_to 'View current', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn btn-secondary'
 
-.row
-  .span12
-    %h3 Download scenarios by ID
-    = text_field_tag :scenario_ids,
-                     '',
-                     placeholder: 'e.g. 123,456,789',
-                     class: 'form-control w-auto d-inline-block',
-                     id: 'scenario_ids_input'
-    = link_to 'Download Dump',
-              '#',
-              class: 'btn btn-primary ms-2 disabled',
-              id: 'download_link',
-              download: ''
+  / ─────────────── Download ───────────────
+  %div
+    %h5.text-muted.mb-2 Download by ID
+    .input-group
+      = text_field_tag :scenario_ids,
+                       '',
+                       placeholder: 'e.g. 123,456,789',
+                       class: 'form-control w-auto',
+                       id: 'scenario_ids_input'
+      = link_to 'Download Dump',
+                '#',
+                id: 'download_link',
+                class: 'btn btn-secondary disabled',
+                download: ''
+
+  / ─────────────── Import ───────────────
+  %div
+    %h5.text-muted.mb-2 Import dump
+    = form_with url: load_dump_inspect_scenarios_path,
+                method: :post,
+                local: true,
+                html: { multipart: true, class: 'd-flex align-items-center gap-2', data: { turbo: false } } do |f|
+      = f.file_field :dump, accept: 'application/json', class: 'form-control'
+      = f.submit 'Create scenarios', class: 'btn btn-secondary'
 
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
@@ -42,18 +56,11 @@
         return;
       }
 
-      link.href = baseUrl + '?type=user_input&scenario_ids=' + encodeURIComponent(ids);
+      link.href     = baseUrl + '?type=user_input&scenario_ids=' + encodeURIComponent(ids);
       link.download = 'scenarios-' + ids.split(',').join('-') + '-dump.json';
       link.classList.remove('disabled');
     });
   });
-
-.row
-  .span12
-    Import a dump
-    = form_with url: load_dump_inspect_scenarios_path do |f_load|
-      = f_load.file_field 'dump', accept: 'application/json'
-      = f_load.submit 'Create scenarios', class: 'btn btn-primary'
 
 %table.table.table-condensed.scenario-list
   %thead

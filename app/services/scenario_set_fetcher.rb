@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 
-
+# Fetches sets of scenario ids to quickly filter for preset queries when dumping scenarios for testing
 class ScenarioSetFetcher
   def self.fetch(type:, params:)
     case type.to_s
