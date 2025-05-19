@@ -25,20 +25,16 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
       dataset = Atlas::Dataset.find(scenario.area_code)
       parent_shares = dataset.shares("energy/residences_final_demand_for_appliances_electricity_parent_share")
 
-      # Calculate weighted avg. Start value for the old sliders was 0.0
+      # Calculate weighted avg. Start value for the old sliders was 0.0. If input is not set, it's treated as 0.0.
       weighted_avg = SHARE_MAP.sum(0.0) do |parent_share_key, input_key|
-        if scenario.user_values.key?(input_key)
-          parent_shares.get(parent_share_key) * (1 - (scenario.user_values[input_key]) / 100.0)
-        else
-          0.0
-        end
+        efficiency = scenario.user_values.fetch(input_key, 0.0)
+        parent_shares.get(parent_share_key) * (1 - efficiency / 100.0)
       end
 
       # The weighted average is reconverted into a percentage
       new_input = (weighted_avg - 1) * 100.0
 
       # The slider values should be checked for their minimum and maximum values
-      # TODO: check this! What should be minimum and mamximum?
       scenario.user_values[NEW_INPUT] = [[new_input, 90.0].min, -90.0].max
     end
   end
