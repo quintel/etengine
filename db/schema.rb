@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_14_114442) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_19_132450) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -41,14 +41,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_14_114442) do
 
   create_table "forecast_storage_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
-    t.text "order_old"
     t.binary "order", size: :medium
     t.index ["scenario_id"], name: "index_forecast_storage_orders_on_scenario_id", unique: true
   end
 
   create_table "heat_network_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
-    t.text "order_old"
     t.string "temperature", default: "mt"
     t.binary "order", size: :medium
     t.index ["scenario_id", "temperature"], name: "index_heat_network_orders_on_scenario_id_and_temperature", unique: true
@@ -57,21 +55,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_14_114442) do
 
   create_table "households_space_heating_producer_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
-    t.text "order_old"
     t.binary "order", size: :medium
     t.index ["scenario_id"], name: "index_households_space_heating_producer_orders_on_scenario_id", unique: true
   end
 
   create_table "hydrogen_demand_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
-    t.text "order_old"
     t.binary "order", size: :medium
     t.index ["scenario_id"], name: "index_hydrogen_demand_orders_on_scenario_id", unique: true
   end
 
   create_table "hydrogen_supply_orders", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "scenario_id"
-    t.text "order_old"
     t.binary "order", size: :medium
     t.index ["scenario_id"], name: "index_hydrogen_supply_orders_on_scenario_id", unique: true
   end
@@ -125,9 +120,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_14_114442) do
     t.integer "preset_scenario_id"
     t.string "area_code"
     t.string "source"
-    t.text "balanced_values_old", size: :medium
-    t.text "metadata_old", size: :medium
-    t.text "active_couplings_old", size: :medium
     t.binary "user_values", size: :long
     t.binary "balanced_values", size: :medium
     t.binary "active_couplings", size: :medium
