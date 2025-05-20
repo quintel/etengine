@@ -6,7 +6,9 @@ module Curves
     class Result < Struct.new(:series, :filename, :json, :errors, :error_keys)
       def csv_data
         CSV.generate do |csv|
-          series.each { |value| csv << [value] }
+          series.each do |value|
+            csv << [value] unless value.nil? || value == ""
+          end
         end
       end
     end
