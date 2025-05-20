@@ -1,66 +1,88 @@
 - content_for(:title, 'Scenarios')
 = render "inspect/shared/inspect_subnav"
 
-%section#search_box.mb-4
-  = form_tag inspect_scenarios_path, method: :get, class: 'd-flex align-items-center gap-2' do
-    = search_field_tag :q, params[:q], placeholder: 'Scenario ID', class: 'form-control'
-    = submit_tag 'Search', class: 'btn'
+.container-fluid
+  .row-fluid
+    .span6
+      / ──────────── New + Search ───────────────────
+      %section#search_box
+        = form_tag inspect_scenarios_path, method: :get do
+          = search_field_tag :q, params[:q], placeholder: 'Scenario ID'
+          = submit_tag 'Search', class: 'btn'
 
-%div.d-flex.flex-wrap.align-items-center.mb-4.gap-4
-  / ─────────────── Actions ───────────────
-  %div
-    %h5.text-muted.mb-2 Actions
-    .btn-group
-      = link_to 'New scenario', new_inspect_scenario_path, class: 'btn btn-primary'
-      - if params[:api_scenario_id]
-        = link_to 'View current', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn btn-secondary'
+      %p
+        = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
+        - if params[:api_scenario_id]
+          = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'
 
-  / ─────────────── Download ───────────────
-  %div
-    %h5.text-muted.mb-2 Download by ID
-    .input-group
-      = text_field_tag :scenario_ids,
-                       '',
-                       placeholder: 'e.g. 123,456,789',
-                       class: 'form-control w-auto',
-                       id: 'scenario_ids_input'
-      = link_to 'Download Dump',
-                '#',
-                id: 'download_link',
-                class: 'btn btn-secondary disabled',
-                download: ''
 
-  / ─────────────── Import ───────────────
-  %div
-    %h5.text-muted.mb-2 Import dump
-    = form_with url: load_dump_inspect_scenarios_path,
-                method: :post,
-                local: true,
-                html: { multipart: true, class: 'd-flex align-items-center gap-2', data: { turbo: false } } do |f|
-      = f.file_field :dump, accept: 'application/json', class: 'form-control'
-      = f.submit 'Create scenarios', class: 'btn btn-secondary'
+    / ──────────── Download + Import ─────────────
+    .span6.text-right
+      = button_tag 'Download Dump',
+                   type: 'button',
+                   class: 'btn btn-primary',
+                   style: 'min-width:130px; text-align:center;',
+                   'data-toggle' => 'modal',
+                   'data-target' => '#downloadModal'
+      = button_tag 'Import dump',
+                  type: 'button',
+                  class: 'btn btn-secondary',
+                  style: 'min-width:130px; text-align:center;',
+                  'data-toggle' => 'modal',
+                  'data-target' => '#importModal'
 
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
-    var input = document.getElementById('scenario_ids_input');
-    var link  = document.getElementById('download_link');
-    var baseUrl = "#{download_dump_inspect_scenarios_path}";
+    const input  = document.getElementById('scenario_ids_input');
+    const button = document.getElementById('download_button');
+    const baseUrl = button.dataset.baseUrl;
+    const VALID_PATTERN = /^\s*\d+(?:\s*,\s*\d+)*\s*$/;
 
-    input.addEventListener('input', function() {
-      var ids = input.value.replace(/[^\d,]/g, '').trim();
-
-      if (!ids) {
-        link.classList.add('disabled');
-        link.removeAttribute('href');
-        link.removeAttribute('download');
+    input.addEventListener('input', () => {
+      let raw = input.value;
+      if (!VALID_PATTERN.test(raw)) {
+        button.disabled = true;
+        button.removeAttribute('href');
         return;
       }
+      raw = raw.replace(/\s+/g, '');
+      const params = new URLSearchParams({
+        type:        'user_input',
+        scenario_ids: raw
+      });
+      const href = `${baseUrl}?${params.toString()}`;
 
-      link.href     = baseUrl + '?type=user_input&scenario_ids=' + encodeURIComponent(ids);
-      link.download = 'scenarios-' + ids.split(',').join('-') + '-dump.json';
-      link.classList.remove('disabled');
+      button.disabled = false;
+      button.setAttribute('onclick', `window.location='${href}'`);
     });
   });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Download confirm
+    document.getElementById('confirm_download').addEventListener('click', function() {
+      var ids = document.getElementById('modal_scenario_ids').value;
+      if (!ids.match(/^\s*\d+(?:\s*,\s*\d+)*\s*$/)) {
+        alert('Please enter a comma-separated list of numbers.');
+        return;
+      }
+      var form = document.getElementById('download_form');
+      ids = ids.replace(/\s+/g, '');
+      form.action = form.action + '?scenario_ids=' + encodeURIComponent(ids);
+      form.submit();
+    });
+
+    // Import confirm
+    document.getElementById('confirm_import').addEventListener('click', function() {
+      var fileInput = document.getElementById('modal_dump_file');
+      if (!fileInput.value) {
+        alert('Please choose a JSON file to import.');
+        return;
+      }
+      document.getElementById('import_form').submit();
+    });
+  });
+
+
 
 %table.table.table-condensed.scenario-list
   %thead
@@ -112,3 +134,54 @@
           - else
             = link_to 'Make active', inspect_scenarios_path(@list_params.to_h.symbolize_keys.merge(api_scenario_id: s.id))
           = link_to 'Edit', edit_inspect_scenario_path(:id => s.id)
+
+/ Download Modal
+#downloadModal.modal.hide.fade
+  .modal-header
+    %button.close{'data-dismiss' => 'modal'} ×
+    %h3 Download Scenarios
+  .modal-body
+    = form_tag download_dump_inspect_scenarios_path(format: :json),
+               method: :get,
+               id: 'download_form',
+               class: 'form-inline' do
+      = label_tag :modal_scenario_ids, 'Scenario IDs', class: 'inline-label'
+      = text_field_tag :scenario_ids,
+                       '',
+                       placeholder: 'e.g. 123,456',
+                       class: 'input-medium',
+                       id: 'modal_scenario_ids'
+  .modal-footer
+    = button_tag 'Confirm Download',
+                 type: 'button',
+                 id: 'confirm_download',
+                 class: 'btn btn-primary'
+    = button_tag 'Close',
+                 type: 'button',
+                 class: 'btn',
+                 'data-dismiss' => 'modal'
+
+/ Import Modal
+#importModal.modal.hide.fade
+  .modal-header
+    %button.close{'data-dismiss' => 'modal'} ×
+    %h3 Import Scenarios
+  .modal-body
+    = form_tag load_dump_inspect_scenarios_path,
+               multipart: true,
+               local: true,
+               id: 'import_form',
+               class: 'form-inline' do
+      = label_tag :modal_dump_file, 'JSON file', class: 'inline-label'
+      = file_field_tag :dump,
+                       accept: 'application/json',
+                       id: 'modal_dump_file'
+  .modal-footer
+    = button_tag 'Confirm Import',
+                 type: 'button',
+                 id: 'confirm_import',
+                 class: 'btn btn-primary'
+    = button_tag 'Close',
+                 type: 'button',
+                 class: 'btn',
+                 'data-dismiss' => 'modal'

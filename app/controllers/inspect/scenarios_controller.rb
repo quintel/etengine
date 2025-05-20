@@ -69,28 +69,32 @@ class Inspect::ScenariosController < Inspect::BaseController
     render :edit
   end
 
-def load_dump
-  file = params.permit(:dump)[:dump]
-  unless file&.respond_to?(:path)
-    redirect_back fallback_location: root_path, alert: 'No file provided'
-    return
-  end
+  def load_dump
+    file = params.permit(:dump)[:dump]
+    unless file&.respond_to?(:path)
+      redirect_back fallback_location: root_path, alert: 'No file provided'
+      return
+    end
 
-  raw_data   = JSON.parse(File.read(file.path))
-  data_array = raw_data.is_a?(Array) ? raw_data : [raw_data]
+    raw_data   = JSON.parse(File.read(file.path))
+    data_array = raw_data.is_a?(Array) ? raw_data : [raw_data]
 
-  @scenarios = data_array.map { |sd| ScenarioPacker::Load.new(sd.with_indifferent_access).scenario }
+    @scenarios = data_array.map { |sd| ScenarioPacker::Load.new(sd.with_indifferent_access).scenario }
 
-  if @scenarios.one?
-    redirect_to inspect_scenario_path(id: @scenarios.first.id),
+    if @scenarios.one?
+      new_id = @scenarios.first.id
+      redirect_to inspect_scenario_path(
+                    id:              new_id,
+                    api_scenario_id: new_id
+                ),
                 notice: 'Scenario created'
-  else
-    api_id             = @scenarios.first.id
-    @api_scenario      = Scenario.find(api_id)
-    @scenario          = Scenario::Editable.new(@api_scenario)
-    render :load_results
+    else
+      api_id             = @scenarios.first.id
+      @api_scenario      = Scenario.find(api_id)
+      @scenario          = Scenario::Editable.new(@api_scenario)
+      render :load_results
+    end
   end
-end
 
   def download_dump
     # Determine which set to dump; default to user-provided IDs
