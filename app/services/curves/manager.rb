@@ -5,11 +5,10 @@ module Curves
 
     class Result < Struct.new(:series, :filename, :json, :errors, :error_keys)
       def csv_data
-        CSV.generate do |csv|
-          series.each do |value|
-            csv << [value.strip()]
-          end
+        csv = CSV.generate do |csv|
+          series.to_a.each { |value| csv << [value] }
         end
+        csv.chomp
       end
     end
 
@@ -37,7 +36,7 @@ module Curves
     def show
       curve_config = find_config!
       user_curve   = find_curve!(curve_config)
-      raw_curve    = user_curve.curve
+      raw_curve    = user_curve.curve.to_a
       series       = process(raw_curve, user_curve, curve_config)
       json         = curve_config.serializer.new(user_curve).as_json
       filename     = "#{user_curve.name || user_curve.key}.csv"
@@ -94,7 +93,14 @@ module Curves
     def process(raw_curve, user_curve, curve_config)
       return raw_curve unless curve_config.processor_key == :capacity_profile
 
-      full_load_hours = user_curve.scenario.user_values.fetch(curve_config.input_keys.last)
+      input_key = curve_config.input_keys.last
+      full_load_hours = user_curve.scenario.user_values[input_key]
+
+      unless full_load_hours
+        Rails.logger.warn "[Curves::Manager] Missing full_load_hours for #{input_key}; skipping rescale"
+        return raw_curve
+      end
+
       CurveHandler::Reducers::Rescaler.new(raw_curve, full_load_hours).call
     end
   end
