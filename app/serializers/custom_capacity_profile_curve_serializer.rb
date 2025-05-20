@@ -7,7 +7,7 @@ class CustomCapacityProfileCurveSerializer < CustomCurveSerializer
     attrs = super
 
     if config.sets_inputs?
-      flh = Scenario.find(@user_curve.scenario_id).user_values[config.input_keys.first]
+      flh = Scenario.find(@user_curve.scenario_id).user_values[config.input_keys.last]
       attrs[:full_load_hours] = flh
     end
 
