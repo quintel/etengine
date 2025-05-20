@@ -39,6 +39,6 @@ class UserCurve < ApplicationRecord
   end
 
   def as_csv
-    curve.map{ |hour| [hour] }
+    curve.to_a.map { |hour| [hour] }
   end
 end
