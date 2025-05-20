@@ -7,7 +7,7 @@ module Curves
       def csv_data
         CSV.generate do |csv|
           series.each do |value|
-            csv << [value] unless value.nil? || value == ""
+            csv << [value.strip()]
           end
         end
       end
