@@ -141,6 +141,8 @@
     %button.close{'data-dismiss' => 'modal'} ×
     %h3 Download Scenarios
   .modal-body
+    %p.text-muted
+      Enter one or more scenario IDs, separated by commas (e.g. <code>123, 456</code>), to download a JSON dump of their data.
     = form_tag download_dump_inspect_scenarios_path(format: :json),
                method: :get,
                id: 'download_form',
@@ -148,7 +150,7 @@
       = label_tag :modal_scenario_ids, 'Scenario IDs', class: 'inline-label'
       = text_field_tag :scenario_ids,
                        '',
-                       placeholder: 'e.g. 123,456',
+                       placeholder: '123,456',
                        class: 'input-medium',
                        id: 'modal_scenario_ids'
   .modal-footer
