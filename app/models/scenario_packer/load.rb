@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ScenarioPacker
   class Load
     # Creates a new Scenario API loader.
@@ -29,8 +31,8 @@ module ScenarioPacker
 
     def create_sortables
       @data['user_sortables'].each do |class_name, order|
-        if class_name == "HeatNetworkOrder"
-          order.each { |attrs| @scenario.heat_network_orders << HeatNetworkOrder.new(attrs)}
+        if class_name == 'HeatNetworkOrder'
+          order.each { |attrs| @scenario.heat_network_orders << HeatNetworkOrder.new(attrs) }
         else
           @scenario.public_send(:"#{class_name.underscore}=", class_name.constantize.new(order))
         end
@@ -39,7 +41,7 @@ module ScenarioPacker
 
     def create_curves
       @data['user_curves'].each do |key, curve|
-        @scenario.user_curves << UserCurve.new(key: key, curve: curve)
+        @scenario.user_curves << UserCurve.new(key:, curve:)
       end
     end
   end

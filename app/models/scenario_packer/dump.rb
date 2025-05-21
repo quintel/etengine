@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ScenarioPacker
   class Dump
     # Creates a new Scenario API dumper.
@@ -6,7 +8,7 @@ module ScenarioPacker
     #   The scenarios for which we want JSON.
     #
     def initialize(scenario)
-      @resource   = scenario
+      @resource = scenario
     end
 
     # Creates a Hash suitable for conversion to JSON by Rails.

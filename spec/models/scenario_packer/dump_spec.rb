@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ScenarioPacker::Dump, type: :model do
+  subject(:dumper) { described_class.new(scenario) }
+
   let!(:scenario) do
     scenario = create(
       :scenario,
@@ -20,20 +22,18 @@ RSpec.describe ScenarioPacker::Dump, type: :model do
 
     create(
       :heat_network_order,
-      scenario:    scenario,
+      scenario:,
       temperature: 'ht',
       order:       HeatNetworkOrder.default_order
     )
 
     scenario.create_forecast_storage_order!(order: ForecastStorageOrder.default_order)
 
-    create(:user_curve, scenario: scenario, key: 'c1', curve: [1, 2, 3])
-    create(:user_curve, scenario: scenario, key: 'c2', curve: [4, 5, 6])
+    create(:user_curve, scenario:, key: 'c1', curve: [1, 2, 3])
+    create(:user_curve, scenario:, key: 'c2', curve: [4, 5, 6])
 
     scenario
   end
-
-  subject(:dumper) { described_class.new(scenario) }
   let(:json_data)  { dumper.as_json }
   let(:data)       { json_data.with_indifferent_access }
 
@@ -57,15 +57,15 @@ RSpec.describe ScenarioPacker::Dump, type: :model do
     serialized_heat_orders = data[:user_sortables][HeatNetworkOrder]
 
     expect(serialized_heat_orders).to be_an(Array)
-    expect(serialized_heat_orders.first['temperature']).to eq 'ht'
-    expect(serialized_heat_orders.first['order']).to eq HeatNetworkOrder.default_order
+    expect(serialized_heat_orders.first['temperature']).to eq('ht')
+    expect(serialized_heat_orders.first['order']).to eq(HeatNetworkOrder.default_order)
   end
 
   it 'serializes forecast_storage_order under user_sortables as a Hash' do
     serialized_forecast_order = data[:user_sortables][ForecastStorageOrder]
 
     expect(serialized_forecast_order).to be_a(Hash)
-    expect(serialized_forecast_order['order']).to eq ForecastStorageOrder.default_order
+    expect(serialized_forecast_order['order']).to eq(ForecastStorageOrder.default_order)
   end
 
   it 'renders user_curves as plain arrays' do
