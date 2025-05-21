@@ -1,185 +1,211 @@
-class Inspect::ScenariosController < Inspect::BaseController
-  layout 'application'
+# frozen_string_literal: true
 
-  load_and_authorize_resource only: [:load_dump, :download_dump], class: 'Scenario'
-  before_action :find_scenario, :only => [:show, :edit, :update]
-  skip_before_action :initialize_gql, :only => [:download_dump, :load_dump]
+module Inspect
+  class ScenariosController < Inspect::BaseController
+    layout 'application'
 
-  def index
-    @list_params = params.permit(:api_scenario_id, :q, :page)
-    base = Scenario.recent_first.includes(:users)
-    base = base.by_id(@list_params[:q]) if @list_params[:q].present?
-    @scenarios = base.page(@list_params[:page]).per(100)
-  end
+    load_and_authorize_resource only: %i[load_dump download_dump], class: 'Scenario'
+    before_action :find_scenario, only: %i[show edit update]
+    before_action :build_packer,     only: %i[download_dump]
+    skip_before_action :initialize_gql, only: %i[download_dump load_dump]
 
-  def new
-    @scenario = Scenario.new(Scenario.default_attributes)
-  end
-
-  def create
-    Scenario.transaction do
-      @scenario = Scenario.new
-
-      Scenario::Editable.new(@scenario).update!(
-        scenario_attributes.merge(source: 'ETEngine Admin UI')
-      )
-
-      update_user_sortables!(
-        user_sortable_attributes,
-        forecast_storage_order: @scenario.forecast_storage_order,
-        hydrogen_supply_order: @scenario.hydrogen_supply_order,
-        hydrogen_demand_order: @scenario.hydrogen_demand_order,
-        heat_network_order_ht: @scenario.heat_network_order(:ht),
-        heat_network_order_mt: @scenario.heat_network_order(:mt),
-        heat_network_order_lt: @scenario.heat_network_order(:lt),
-        households_space_heating_producer_order: @scenario.households_space_heating_producer_order
-      )
+    # Lists recent scenarios with optional search and pagination
+    def index
+      @list_params = params.permit(:api_scenario_id, :q, :page)
+      base = Scenario.recent_first.includes(:users)
+      base = base.by_id(@list_params[:q]) if @list_params[:q].present?
+      @scenarios = base.page(@list_params[:page]).per(100)
     end
 
-    redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario created'
-  rescue ActiveRecord::RecordInvalid
-    render :new
-  end
-
-  def show
-    respond_to do |format|
-      format.html
-    end
-  end
-
-  def edit
-  end
-
-  def update
-    Scenario.transaction do
-      @scenario.update!(scenario_attributes)
-
-      update_user_sortables!(
-        user_sortable_attributes,
-        forecast_storage_order: @scenario.forecast_storage_order,
-        heat_network_order_ht: @scenario.heat_network_order(:ht),
-        heat_network_order_mt: @scenario.heat_network_order(:mt),
-        heat_network_order_lt: @scenario.heat_network_order(:lt),
-        households_space_heating_producer_order: @scenario.households_space_heating_producer_order
-      )
-
-      redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
-    end
-  rescue ActiveRecord::RecordInvalid
-    render :edit
-  end
-
-  def load_dump
-    file = params.permit(:dump)[:dump]
-    unless file&.respond_to?(:path)
-      redirect_back fallback_location: root_path, alert: 'No file provided'
-      return
+    # Renders form for creating a new scenario
+    def new
+      @scenario = Scenario.new(Scenario.default_attributes)
     end
 
-    raw_data   = JSON.parse(File.read(file.path))
-    data_array = raw_data.is_a?(Array) ? raw_data : [raw_data]
+    # Creates a new scenario with attributes and user sortables
+    def create
+      Scenario.transaction do
+        @scenario = Scenario.new
 
-    @scenarios = data_array.map { |sd| ScenarioPacker::Load.new(sd.with_indifferent_access).scenario }
+        Scenario::Editable.new(@scenario).update!(
+          scenario_attributes.merge(source: 'ETEngine Admin UI')
+        )
 
-    if @scenarios.one?
-      new_id = @scenarios.first.id
-      redirect_to inspect_scenario_path(
-                    id:              new_id,
-                    api_scenario_id: new_id
-                ),
-                notice: 'Scenario created'
-    else
-      api_id             = @scenarios.first.id
-      @api_scenario      = Scenario.find(api_id)
-      @scenario          = Scenario::Editable.new(@api_scenario)
-      render :load_results
-    end
-  end
-
-  def download_dump
-    # Determine which set to dump; default to user-provided IDs
-    type = params[:type] || 'user_input'
-    ids  = ScenarioSetFetcher.fetch(type: type, params: params)
-
-    scenarios = Scenario.where(id: ids)
-    payload   = scenarios.map { |s| ScenarioPacker::Dump.new(s).as_json }
-
-    filename =
-      if payload.one?
-        "#{scenarios.first.id}-dump.json"
-      else
-        "#{ids.join('-')}-dump.json"
+        update_user_sortables!(
+          user_sortable_attributes,
+          forecast_storage_order: @scenario.forecast_storage_order,
+          hydrogen_supply_order: @scenario.hydrogen_supply_order,
+          hydrogen_demand_order: @scenario.hydrogen_demand_order,
+          heat_network_order_ht: @scenario.heat_network_order(:ht),
+          heat_network_order_mt: @scenario.heat_network_order(:mt),
+          heat_network_order_lt: @scenario.heat_network_order(:lt),
+          households_space_heating_producer_order: @scenario.households_space_heating_producer_order
+        )
       end
 
-    send_data JSON.pretty_generate(payload),
-              filename: filename,
-              type: 'application/json',
-              disposition: 'attachment'
-  end
-
-  private
-
-  def find_scenario
-    if params[:id] == 'current'
-      @scenario = @api_scenario
-    else
-      @scenario = Scenario::Editable.new(Scenario.find(params[:id]))
-    end
-  end
-
-  def scenario_attributes
-    params.require(:scenario).permit!.except(
-      :forecast_storage_order,
-      :hydrogen_supply_order,
-      :hydrogen_demand_order,
-      :heat_network_order_ht,
-      :heat_network_order_mt,
-      :heat_network_order_lt,
-      :households_space_heating_producer_order
-    )
-  end
-
-  def user_sortable_attributes
-    params.require(:scenario).permit(
-      forecast_storage_order: [:order],
-      hydrogen_supply_order: [:order],
-      hydrogen_demand_order: [:order],
-      heat_network_order_ht: [:order],
-      heat_network_order_mt: [:order],
-      heat_network_order_lt: [:order],
-      households_space_heating_producer_order: [:order]
-    )
-  end
-
-  def default_url_options
-    opts = super
-    if action_name == 'load_dump' && @api_scenario
-      opts.merge(api_scenario_id: @api_scenario.id)
-    else
-      opts
-    end
-  end
-
-  def update_user_sortables!(attrs, records)
-    records = records.select { |key, _| attrs.key?(key) }
-
-    records.each do |key, record|
-      # Assign the sortable to the scenario explicity, so that we may preserve
-      # the object (and errors) when re-rendering the edit view.
-      record.scenario.public_send("#{key}=", record) if record.scenario.respond_to?("#{key}=")
-      record.order = attrs[key][:order].to_s.split
+      redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario created'
+    rescue ActiveRecord::RecordInvalid
+      render :new
     end
 
-    # Validate each record (to get error message) and raise if any were invalid.
-    unless records.reduce(true) { |status, (_, rec)| rec.valid? && status }
-      raise ActiveRecord::RecordInvalid
+    # Shows a single scenario
+    def show
+      respond_to(&:html)
     end
 
-    records.each do |_, record|
-      if record.default?
-        record.destroy unless record.new_record?
+    # Renders form for editing an existing scenario
+    def edit; end
+
+    # Updates a scenario and its user sortables
+    def update
+      Scenario.transaction do
+        @scenario.update!(scenario_attributes)
+
+        update_user_sortables!(
+          user_sortable_attributes,
+          forecast_storage_order: @scenario.forecast_storage_order,
+          heat_network_order_ht: @scenario.heat_network_order(:ht),
+          heat_network_order_mt: @scenario.heat_network_order(:mt),
+          heat_network_order_lt: @scenario.heat_network_order(:lt),
+          households_space_heating_producer_order: @scenario.households_space_heating_producer_order
+        )
+
+        redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
+      end
+    rescue ActiveRecord::RecordInvalid
+      render :edit
+    end
+
+    # Loads one or more scenarios from a JSON dump file
+    def load_dump
+      loader = ScenarioPacker::LoadCollection.from_file(dump_file_param)
+      if loader.single?
+        redirect_to inspect_scenario_path(id: loader.first_id, api_scenario_id: loader.first_id),
+                    notice: 'Scenario created'
       else
-        record.save!(validate: false)
+        @api_scenario = Scenario.find(loader.first_id)
+        @scenario     = Scenario::Editable.new(@api_scenario)
+        @scenarios    = loader.scenarios
+        render :load_results
+      end
+    rescue ArgumentError
+      redirect_back(fallback_location: root_path, alert: 'No file provided')
+    end
+
+    # Sends JSON file containing one or more scenario dumps
+    def download_dump
+      send_data @packer.to_json,
+                filename: @packer.filename,
+                type: 'application/json',
+                disposition: 'attachment'
+    end
+
+    private
+
+    # Prepares the dumper for the requested IDs
+    def build_packer
+      ids     = ScenarioSetFetcher.fetch(
+                  type:     dump_type_param,
+                  ids:      scenario_ids_param,
+                  end_year: params[:end_year]&.to_i,
+                  group:    params[:group]
+                )
+      @packer = ScenarioPacker::DumpCollection.new(ids)
+    end
+
+    # Returns the dump type (e.g. 'user_input', 'featured'), or raises if invalid
+    def dump_type_param
+      params.fetch(:type, 'user_input').to_s.tap do |t|
+        unless %w[user_input featured].include?(t)
+          raise ActionController::BadRequest, 'Invalid dump type'
+        end
+      end
+    end
+
+    # Parses and returns an array of integer scenario IDs from comma-separated string
+    def scenario_ids_param
+      raw = params[:scenario_ids].to_s
+      raw
+        .split(/\s*,\s*/)    # [ "2684908", "2684909" ]
+        .map(&:to_i)         # [ 2684908, 2684909 ]
+        .reject(&:zero?)     # drop any invalid zeros
+        .uniq
+    end
+
+    # Returns the uploaded file for scenario loading or raises error if invalid
+    def dump_file_param
+      params.require(:dump).tap do |f|
+        raise ArgumentError, 'No file provided' unless f.respond_to?(:path)
+      end
+    end
+
+    # Finds and sets the current scenario for edit/show/update actions
+    def find_scenario
+      @scenario = if params[:id] == 'current'
+        @api_scenario
+      else
+        Scenario::Editable.new(Scenario.find(params[:id]))
+      end
+    end
+
+    # Extracts strong params for scenario attributes (excluding sortables)
+    def scenario_attributes
+      params.require(:scenario).permit!.except(
+        :forecast_storage_order,
+        :hydrogen_supply_order,
+        :hydrogen_demand_order,
+        :heat_network_order_ht,
+        :heat_network_order_mt,
+        :heat_network_order_lt,
+        :households_space_heating_producer_order
+      )
+    end
+
+    # Extracts strong params for sortable order attributes
+    def user_sortable_attributes
+      params.require(:scenario).permit(
+        forecast_storage_order: [:order],
+        hydrogen_supply_order: [:order],
+        hydrogen_demand_order: [:order],
+        heat_network_order_ht: [:order],
+        heat_network_order_mt: [:order],
+        heat_network_order_lt: [:order],
+        households_space_heating_producer_order: [:order]
+      )
+    end
+
+    # Adds the API scenario ID to URL options if loading a dump
+    def default_url_options
+      opts = super
+      if action_name == 'load_dump' && @api_scenario
+        opts.merge(api_scenario_id: @api_scenario.id)
+      else
+        opts
+      end
+    end
+
+    # Updates user sortables with new order values and persists them
+    def update_user_sortables!(attrs, records)
+      records = records.select { |key, _| attrs.key?(key) }
+
+      records.each do |key, record|
+        # Assign the sortable to the scenario explicitly, so we can preserve the object (and errors)
+        record.scenario.public_send("#{key}=", record) if record.scenario.respond_to?("#{key}=")
+        record.order = attrs[key][:order].to_s.split
+      end
+
+      # Validate all records and raise if any are invalid
+      unless records.reduce(true) { |status, (_, rec)| rec.valid? && status }
+        raise ActiveRecord::RecordInvalid
+      end
+
+      # Persist or destroy records depending on whether they’re default
+      records.each do |_, record|
+        if record.default?
+          record.destroy unless record.new_record?
+        else
+          record.save!(validate: false)
+        end
       end
     end
   end
