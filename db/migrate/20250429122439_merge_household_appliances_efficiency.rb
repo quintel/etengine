@@ -32,7 +32,7 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
       end
 
       # The weighted average is reconverted into a percentage
-      new_input = (weighted_avg - 1) * 100.0
+      new_input = (1 - weighted_avg) * 100.0
 
       # The slider values should be checked for their minimum and maximum values
       scenario.user_values[NEW_INPUT] = [[new_input, 90.0].min, -90.0].max
