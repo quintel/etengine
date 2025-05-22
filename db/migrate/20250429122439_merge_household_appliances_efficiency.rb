@@ -21,9 +21,26 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
     migrate_scenarios do |scenario|
       next unless SHARE_MAP.values.any? { |key| scenario.user_values.key?(key) }
 
-      # Parent shares are recovered from the csvs in etsource
-      dataset = Atlas::Dataset.find(scenario.area_code)
-      parent_shares = dataset.shares("energy/residences_final_demand_for_appliances_electricity_parent_share")
+      # Skip if the dataset itself can't be found
+      dataset = begin
+        Atlas::Dataset.find(scenario.area_code)
+      rescue Atlas::DocumentNotFoundError, Atlas::DatasetError
+        next
+      end
+
+      # Skip if the share series can't be loaded
+      parent_shares = begin
+        dataset.shares("energy/residences_final_demand_for_appliances_electricity_parent_share")
+      rescue Atlas::ResourceNotFound, Atlas::DatasetError
+        next
+      end
+
+      # Skip if any individual parent‐share key is missing/nil
+      missing = SHARE_MAP.keys.reject do |parent_key|
+        value = parent_shares.get(parent_key) rescue nil
+        !value.nil?
+      end
+      next unless missing.empty?
 
       # Calculate weighted avg. Start value for the old sliders was 0.0. If input is not set, it's treated as 0.0.
       weighted_avg = SHARE_MAP.sum(0.0) do |parent_share_key, input_key|
