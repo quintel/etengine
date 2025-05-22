@@ -27,7 +27,7 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
 
       # Calculate weighted avg. Start value for the old sliders was 0.0. If input is not set, it's treated as 0.0.
       weighted_avg = SHARE_MAP.sum(0.0) do |parent_share_key, input_key|
-        efficiency = scenario.user_values.fetch(input_key, 0.0)
+        efficiency = scenario.user_values.delete(input_key) || 0.0
         parent_shares.get(parent_share_key) * (1.0 - efficiency / 100.0)
       end
 
