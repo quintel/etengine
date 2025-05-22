@@ -25,18 +25,20 @@ module Qernel
         end.flatten.compact.sum
       end
 
-      # Demand of electricity for all final demand nodes
+      # Demand of electricity for all final demand nodes (MWh)
       def final_demand_for_electricity
         group_demand_for_electricity(:final_demand_group)
       end
 
       # Demand of electricity for all nodes which do not belong to the final_demand_group but
-      # nevertheless consume electricity.
+      # nevertheless consume electricity. (MWh)
       def non_final_demand_for_electricity
         group_demand_for_electricity(:non_final_electricity_demand_nodes)
       end
 
       # Demand of electricity for all nodes which belong to the named group.
+      #
+      # Returns a Numeric representing energy in MWh
       def group_demand_for_electricity(group)
         graph
           .group_nodes(group)
@@ -47,7 +49,7 @@ module Qernel
       # Public: The demand of electricity in the entire graph, including use in the energy sector
       # and losses caused by no exports.
       #
-      # Returns a numeric.
+      # Returns a numeric. (MWh)
       def total_demand_for_electricity
         final_demand_for_electricity +
           non_final_demand_for_electricity +
@@ -93,16 +95,30 @@ module Qernel
 
       # Public: Returns total number of hours there was excess
       #
-      # Returns an Integer
+      # Returns an Integer (hours)
       def total_number_of_excess_events(excludes = [])
         graph.plugin(:merit).order.excess(excludes).total_number_of_events
       end
 
       # Public: Returns number of blackout hours
       #
-      # Returns an Integer
-      def number_of_blackout_hours
+      # Returns an Integer (hours)
+      def number_of_power_shortage_hours
         graph.plugin(:merit).order.blackout.number_of_hours
+      end
+
+      # Public: Returns the peak of blackout hours, defined as the largest single hour deficit
+      #
+      # Returns a Numeric (MW)
+      def peak_of_power_shortage_hours
+        graph.plugin(:merit).order.blackout.peak
+      end
+
+      # Public: Returns volume of blackout hours, defined as the sum of deficit hours
+      #
+      # Returns an Numeric (MWh)
+      def volume_of_power_shortage_hours
+        graph.plugin(:merit).order.blackout.volume
       end
 
       # Public: Builds a model of the electricity network.
@@ -148,7 +164,7 @@ module Qernel
       #
       #   loss = transformer_demand * effL / effE
       #
-      # Returns a numeric: the network losses for the electricity net.
+      # Returns a numeric: the network losses for the electricity net. (MWh)
       def electricity_losses_if_export_is_zero
         transformer_demand     = graph.node(:energy_power_transformer_mv_hv_electricity).demand
         own_use_of_sector      = energy_sector_own_use_electricity
@@ -164,7 +180,7 @@ module Qernel
       private
 
       # Demand of electricity of the energy sector itself (not included in
-      # final_demand_for_electricity)
+      # final_demand_for_electricity)  (MWh)
       def energy_sector_own_use_electricity
         graph.node(:energy_power_sector_own_use_electricity).demand
       end
